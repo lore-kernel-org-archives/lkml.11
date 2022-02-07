@@ -2,143 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2644FC3527A
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:16:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DC57C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:50:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448989AbiBGNOQ (ORCPT
+        id S1388375AbiBGNt1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:14:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
+        Mon, 7 Feb 2022 08:49:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384356AbiBGNLZ (ORCPT
+        with ESMTP id S1449365AbiBGNWK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:11:25 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE570C0401E0;
-        Mon,  7 Feb 2022 05:10:54 -0800 (PST)
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 03/12] iio: buffer-dmaengine: Support specifying buffer direction
-Date:   Mon,  7 Feb 2022 12:59:24 +0000
-Message-Id: <20220207125933.81634-4-paul@crapouillou.net>
-In-Reply-To: <20220207125933.81634-1-paul@crapouillou.net>
-References: <20220207125933.81634-1-paul@crapouillou.net>
+        Mon, 7 Feb 2022 08:22:10 -0500
+X-Greylist: delayed 1805 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 05:22:09 PST
+Received: from mgw-01.mpynet.fi (mgw-01.mpynet.fi [82.197.21.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36E7C043181;
+        Mon,  7 Feb 2022 05:22:08 -0800 (PST)
+Received: from pps.filterd (mgw-01.mpynet.fi [127.0.0.1])
+        by mgw-01.mpynet.fi (8.16.0.43/8.16.0.43) with SMTP id 217BqTPt079090;
+        Mon, 7 Feb 2022 14:07:41 +0200
+Received: from ex13.tuxera.com (ex13.tuxera.com [178.16.184.72])
+        by mgw-01.mpynet.fi with ESMTP id 3e2vptra6j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 14:07:41 +0200
+Received: from virt.srv.tuxera.com (194.100.106.190) by
+ tuxera-exch.ad.tuxera.com (10.20.48.11) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.26; Mon, 7 Feb 2022 14:07:40 +0200
+From:   Ari Sundholm <ari@tuxera.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     Ari Sundholm <ari@tuxera.com>, <linux-kernel@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <stable@vger.kernel.org>,
+        Anton Altaparmakov <anton@tuxera.com>
+Subject: [PATCH] fs/read_write.c: Fix a broken signed integer overflow check.
+Date:   Mon, 7 Feb 2022 14:07:11 +0200
+Message-ID: <20220207120711.4070403-1-ari@tuxera.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [194.100.106.190]
+X-ClientProxiedBy: tuxera-exch.ad.tuxera.com (10.20.48.11) To
+ tuxera-exch.ad.tuxera.com (10.20.48.11)
+X-Proofpoint-ORIG-GUID: mJm75l6b2RkAqRr-SI5hsFtL6HwnwGuJ
+X-Proofpoint-GUID: mJm75l6b2RkAqRr-SI5hsFtL6HwnwGuJ
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.816
+ definitions=2022-02-07_04:2022-02-07,2022-02-07 signatures=0
+X-Proofpoint-Spam-Details: rule=mpy_notspam policy=mpy score=0 bulkscore=0 malwarescore=0 spamscore=0
+ suspectscore=0 phishscore=0 mlxscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202070077
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the devm_iio_dmaengine_buffer_setup() function to support
-specifying the buffer direction.
+The function generic_copy_file_checks() checks that the ends of the
+input and output file ranges do not overflow. Unfortunately, there is
+an issue with the check itself.
 
-Update the iio_dmaengine_buffer_submit() function to handle input
-buffers as well as output buffers.
+Due to the integer promotion rules in C, the expressions
+(pos_in + count) and (pos_out + count) have an unsigned type because
+the count variable has the type uint64_t. Thus, in many cases where we
+should detect signed integer overflow to have occurred (and thus one or
+more of the ranges being invalid), the expressions will instead be
+interpreted as large unsigned integers. This means the check is broken.
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Fix this by explicitly casting the expressions to loff_t.
+
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-fsdevel@vger.kernel.org
+Cc: stable@vger.kernel.org
+Reviewed-by: Anton Altaparmakov <anton@tuxera.com>
+Signed-off-by: Ari Sundholm <ari@tuxera.com>
 ---
- drivers/iio/adc/adi-axi-adc.c                 |  3 ++-
- .../buffer/industrialio-buffer-dmaengine.c    | 24 +++++++++++++++----
- include/linux/iio/buffer-dmaengine.h          |  5 +++-
- 3 files changed, 25 insertions(+), 7 deletions(-)
+ fs/read_write.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
-index a73e3c2d212f..0a6f2c32b1b9 100644
---- a/drivers/iio/adc/adi-axi-adc.c
-+++ b/drivers/iio/adc/adi-axi-adc.c
-@@ -113,7 +113,8 @@ static int adi_axi_adc_config_dma_buffer(struct device *dev,
- 		dma_name = "rx";
+diff --git a/fs/read_write.c b/fs/read_write.c
+index 0074afa7ecb3..64166e74adc5 100644
+--- a/fs/read_write.c
++++ b/fs/read_write.c
+@@ -1431,7 +1431,8 @@ static int generic_copy_file_checks(struct file *file_in, loff_t pos_in,
+ 		return -ETXTBSY;
  
- 	return devm_iio_dmaengine_buffer_setup(indio_dev->dev.parent,
--					       indio_dev, dma_name);
-+					       indio_dev, dma_name,
-+					       IIO_BUFFER_DIRECTION_IN);
- }
+ 	/* Ensure offsets don't wrap. */
+-	if (pos_in + count < pos_in || pos_out + count < pos_out)
++	if ((loff_t)(pos_in + count) < pos_in ||
++			(loff_t)(pos_out + count) < pos_out)
+ 		return -EOVERFLOW;
  
- static int adi_axi_adc_read_raw(struct iio_dev *indio_dev,
-diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-index f8ce26a24c57..ac26b04aa4a9 100644
---- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-@@ -64,14 +64,25 @@ static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
- 	struct dmaengine_buffer *dmaengine_buffer =
- 		iio_buffer_to_dmaengine_buffer(&queue->buffer);
- 	struct dma_async_tx_descriptor *desc;
-+	enum dma_transfer_direction dma_dir;
-+	size_t max_size;
- 	dma_cookie_t cookie;
- 
--	block->bytes_used = min(block->size, dmaengine_buffer->max_size);
--	block->bytes_used = round_down(block->bytes_used,
--			dmaengine_buffer->align);
-+	max_size = min(block->size, dmaengine_buffer->max_size);
-+	max_size = round_down(max_size, dmaengine_buffer->align);
-+
-+	if (queue->buffer.direction == IIO_BUFFER_DIRECTION_IN) {
-+		block->bytes_used = max_size;
-+		dma_dir = DMA_DEV_TO_MEM;
-+	} else {
-+		dma_dir = DMA_MEM_TO_DEV;
-+	}
-+
-+	if (!block->bytes_used || block->bytes_used > max_size)
-+		return -EINVAL;
- 
- 	desc = dmaengine_prep_slave_single(dmaengine_buffer->chan,
--		block->phys_addr, block->bytes_used, DMA_DEV_TO_MEM,
-+		block->phys_addr, block->bytes_used, dma_dir,
- 		DMA_PREP_INTERRUPT);
- 	if (!desc)
- 		return -ENOMEM;
-@@ -275,7 +286,8 @@ static struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
-  */
- int devm_iio_dmaengine_buffer_setup(struct device *dev,
- 				    struct iio_dev *indio_dev,
--				    const char *channel)
-+				    const char *channel,
-+				    enum iio_buffer_direction dir)
- {
- 	struct iio_buffer *buffer;
- 
-@@ -286,6 +298,8 @@ int devm_iio_dmaengine_buffer_setup(struct device *dev,
- 
- 	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
- 
-+	buffer->direction = dir;
-+
- 	return iio_device_attach_buffer(indio_dev, buffer);
- }
- EXPORT_SYMBOL_GPL(devm_iio_dmaengine_buffer_setup);
-diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
-index 5c355be89814..538d0479cdd6 100644
---- a/include/linux/iio/buffer-dmaengine.h
-+++ b/include/linux/iio/buffer-dmaengine.h
-@@ -7,11 +7,14 @@
- #ifndef __IIO_DMAENGINE_H__
- #define __IIO_DMAENGINE_H__
- 
-+#include <linux/iio/buffer.h>
-+
- struct iio_dev;
- struct device;
- 
- int devm_iio_dmaengine_buffer_setup(struct device *dev,
- 				    struct iio_dev *indio_dev,
--				    const char *channel);
-+				    const char *channel,
-+				    enum iio_buffer_direction dir);
- 
- #endif
+ 	/* Shorten the copy to EOF */
 -- 
-2.34.1
+2.20.1
 
