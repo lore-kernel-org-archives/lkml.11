@@ -2,187 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7CA8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:08:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C021FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238283AbiBGTIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:08:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41596 "EHLO
+        id S238709AbiBGTIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:08:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241311AbiBGTFH (ORCPT
+        with ESMTP id S239349AbiBGTCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:05:07 -0500
-X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 11:04:57 PST
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF49C0401E5;
-        Mon,  7 Feb 2022 11:04:56 -0800 (PST)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 4.0.0)
- id 5dd7a95bd39484f6; Mon, 7 Feb 2022 19:58:15 +0100
-Received: from kreacher.localnet (unknown [213.134.187.66])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 4F2E166B39E;
-        Mon,  7 Feb 2022 19:58:14 +0100 (CET)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Abhishek Sahu <abhsahu@nvidia.com>,
-        Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH] PCI: Fix the ACPI power state during runtime resume
-Date:   Mon, 07 Feb 2022 19:58:13 +0100
-Message-ID: <2249802.ElGaqSPkdT@kreacher>
-In-Reply-To: <20220204233219.GA228585@bhelgaas>
-References: <20220204233219.GA228585@bhelgaas>
+        Mon, 7 Feb 2022 14:02:12 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E858EC0401DC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:02:11 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id on2so5419480pjb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 11:02:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CQnU4mgIWrBNoLV8jv6rFk8zS91iwdIqk2USeq5Mhxk=;
+        b=yVhUjLEkQKlp3GP5S64o/vbONxt/pzG3kHpX1nlRL1yVJ0vnG0MUYNa2QrW6binj96
+         AiVQztwurmDh1jc47Y6EdFO4p9sikXFJHvJIneMBNhKLB2Jk5/oW2ZK3dRUkIb1mnf3C
+         KN30jwyv5RmVSeDuupSX6pa1rwtx9jHk5X0VfvEYfVGL6c0HrumRzx/lEGZalLyogh5s
+         e8vfzQrHS1Jyo1KlFjZOJGHq40bf+sGGkp3+e7D4vfJgYujPN4UnPa+bCpBoXqydpRfq
+         THpqHxymW48MJaGVU6Du7sEWWduGJPMM3dYIT352/C8zYSR5BizGsRF/uxl/wKPguwkN
+         RBAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CQnU4mgIWrBNoLV8jv6rFk8zS91iwdIqk2USeq5Mhxk=;
+        b=IwYmm9H0FyORkrx9PbULOPtLdWuvqB8gWq21+c+bub5wJfaZV0q9HxGXBtAsFgVhYP
+         ZOgUTaODB8CRi4DCmgpLSywaeOEtx6IVOPyCxriTLSgR7LeG9KTFxkypDFpkZEcw430V
+         FSkhzqISCJR2NtiXlTCRzAHCYX3k5+JDtJp0n1b7whYV+Rr0a4gJvlz+dUnwoAW+xMav
+         g/7wnjVhiw9U3CRI0kf0GASH2VPBjSZ0I60Gl2cfPEDC9o638ay3zHN7G5t0bdXMft4y
+         SruP6jcUbGWcc9eyv1KV20eCJCY1ejM0vjhdGICXrt0bitvLq3qQdWuM1+9m13kqTmKI
+         HusQ==
+X-Gm-Message-State: AOAM530YKzztHNFhb7ds0H7cFnb2XwmeWWnicZb5vEw7F7DTumJcR8xu
+        LLLBoMcQPM77TwRwdrSneKJcLA==
+X-Google-Smtp-Source: ABdhPJzDFBpb/xo1QLzfzyfXb6Z4kU7LnZJqaraM0ohpSMV4okAPEWVx5ZG0BGMefv35wACp1PZ2sQ==
+X-Received: by 2002:a17:902:7603:: with SMTP id k3mr750552pll.160.1644260531041;
+        Mon, 07 Feb 2022 11:02:11 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id h11sm12149802pfe.214.2022.02.07.11.02.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 11:02:09 -0800 (PST)
+Date:   Mon, 7 Feb 2022 12:02:07 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     James Clark <james.clark@arm.com>, suzuki.poulose@arm.com,
+        coresight@lists.linaro.org, leo.yan@linaro.com,
+        mike.leach@linaro.org, Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 01/15] coresight: Make ETM4x TRCIDR0 register accesses
+ consistent with sysreg.h
+Message-ID: <20220207190207.GB3355405@p14s>
+References: <20220203120604.128396-1-james.clark@arm.com>
+ <20220203120604.128396-2-james.clark@arm.com>
+ <1b649955-cb45-1283-68cd-c82582cef60c@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.187.66
-X-CLIENT-HOSTNAME: 213.134.187.66
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrheehgdduudeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpedvjeelgffhiedukedtleekkedvudfggefhgfegjefgueekjeelvefggfdvledutdenucfkphepvddufedrudefgedrudekjedrieeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudekjedrieeipdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeejpdhrtghpthhtoheprggshhhsrghhuhesnhhvihguihgrrdgtohhmpdhrtghpthhtohephhgvlhhgrggrsheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepsghhvghlghgrrghssehgohhoghhlvgdrtghomhdprhgtphhtthhopehlihhnuhigqdhptghisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdr
- khgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepmhhikhgrrdifvghsthgvrhgsvghrgheslhhinhhugidrihhnthgvlhdrtghomh
-X-DCC--Metrics: v370.home.net.pl 1024; Body=7 Fuz1=7 Fuz2=7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1b649955-cb45-1283-68cd-c82582cef60c@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Saturday, February 5, 2022 12:32:19 AM CET Bjorn Helgaas wrote:
-> [+cc Rafael, hoping for your review :)
-
-+Mika
-
-> Wonder if we should add something like this to MAINTAINERS so you get
-> cc'd on power-related things:
+On Mon, Feb 07, 2022 at 11:14:50AM +0530, Anshuman Khandual wrote:
+> Hi James,
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index ea3e6c914384..3d9a211cad5d 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -15422,6 +15422,7 @@ F:	include/linux/pm.h
->  F:	include/linux/pm_*
->  F:	include/linux/powercap.h
->  F:	kernel/configs/nopm.config
-> +K:	pci_[a-z_]*power[a-z_]*\(
-
-It seems so, but generally PM patches should be CCed to linux-pm anyway.
-
->  
->  DYNAMIC THERMAL POWER MANAGEMENT (DTPM)
->  M:	Daniel Lezcano <daniel.lezcano@kernel.org>
-> ]
+> These are all ETM4X specific changes. Something like this might be cleaner
+> and also more compact. Also would suggest to follow the same for subsequent
+> patches as well.
 > 
-> On Mon, Jan 24, 2022 at 05:51:07PM +0530, Abhishek Sahu wrote:
-> > Consider the following sequence during PCI device runtime
-> > suspend/resume:
-> > 
-> > 1. PCI device goes into runtime suspended state. The PCI state
-> >    will be changed to PCI_D0 and then pci_platform_power_transition()
-> >    will be called which changes the ACPI state to ACPI_STATE_D3_HOT.
+> coresight: etm4x: Cleanup TRCIDR0 register accesses
+> 
+> Consistency with sysreg.h could be mentioned in the commit message itself.
+>
 
-You mean PCI_D3hot I suppose?
+I agree with the above two comments.
 
-> > 2. Parent bridge goes into runtime suspended state. If parent
-> >    bridge supports D3cold, then it will change the power state of all its
-> >    children to D3cold state and the power will be removed.
-> > 
-> > 3. During wake-up time, the bridge will be runtime resumed first
-> >    and pci_power_up() will be called for the bridge. Now, the power
-> >    supply will be resumed.
-> > 
-> > 4. pci_resume_bus() will be called which will internally invoke
-> >    pci_restore_standard_config(). pci_update_current_state()
-> >    will read PCI_PM_CTRL register and the current_state will be
-> >    updated to D0.
-> > 
-> > In the above process, at step 4, the ACPI device state will still be
-> > ACPI_STATE_D3_HOT since pci_platform_power_transition() is not being
-> > invoked.
+> On 2/3/22 5:35 PM, James Clark wrote:
+> > This is a no-op change for style and consistency and has no effect on the
+> > binary produced by gcc-11.
+> 
+> This patch adds register definitions, helper macros as well. Please expand
+> the commit message to add more details. This is too short, for the change
+> it creates. BTW why is it necessary to mention GCC version number here.
+> 
 
-I'm not quite following.
+Here too - I'm not sure adding gcc's version number helps in any way.
 
-I'm assuming that this description applies to the endpoint device that was
-previously put into D3_hot.
-
-Since its current state is D3_hot, it is not D0 (in particular) and the
-pci_set_power_state() in pci_restore_standard_config() should put int into
-D0 proper, including the platform firmware part.
-
-> > We need call the pci_platform_power_transition() with state
-> > D0 to change the ACPI state to ACPI_STATE_D0.
 > > 
-> > This patch calls pci_power_up() if current power state is D0 inside
-> > pci_restore_standard_config(). This pci_power_up() will change the
-> > ACPI state to ACPI_STATE_D0.
-> > 
-> > Following are the steps to confirm:
-> > 
-> > Enable the debug prints in acpi_pci_set_power_state()
-> > 
-> > 0000:01:00.0 is PCI device and 0000:00:01.0 is parent bridge device
-> > 
-> > Before:
-> > 
-> > 0000:01:00.0: power state changed by ACPI to D3hot
-> > 0000:00:01.0: power state changed by ACPI to D3cold
-> > 0000:00:01.0: power state changed by ACPI to D0
-> > 
-> > After:
-> > 
-> > 0000:01:00.0: power state changed by ACPI to D3hot
-> > 0000:00:01.0: power state changed by ACPI to D3cold
-> > 0000:00:01.0: power state changed by ACPI to D0
-> > 0000:01:00.0: power state changed by ACPI to D0
-> > 
-> > So with this patch, the PCI device ACPI state is also being
-> > changed to D0.
-> > 
-> > Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
+> > Signed-off-by: James Clark <james.clark@arm.com>
 > > ---
-> >  drivers/pci/pci-driver.c | 14 +++++++++++---
-> >  1 file changed, 11 insertions(+), 3 deletions(-)
+> >  .../coresight/coresight-etm4x-core.c          | 36 +++++--------------
+> >  drivers/hwtracing/coresight/coresight-etm4x.h | 17 +++++++++
+> >  drivers/hwtracing/coresight/coresight-priv.h  |  5 +++
+> >  3 files changed, 30 insertions(+), 28 deletions(-)
 > > 
-> > diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> > index 588588cfda48..64e0cca12f16 100644
-> > --- a/drivers/pci/pci-driver.c
-> > +++ b/drivers/pci/pci-driver.c
-> > @@ -521,14 +521,22 @@ static void pci_device_shutdown(struct device *dev)
-> >   */
-> >  static int pci_restore_standard_config(struct pci_dev *pci_dev)
-> >  {
-> > +	int error = 0;
-> >  	pci_update_current_state(pci_dev, PCI_UNKNOWN);
+> > diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> > index e2eebd865241..107e81948f76 100644
+> > --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> > +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> > @@ -1091,41 +1091,21 @@ static void etm4_init_arch_data(void *info)
+> >  	etmidr0 = etm4x_relaxed_read32(csa, TRCIDR0);
 > >  
-> >  	if (pci_dev->current_state != PCI_D0) {
-> > -		int error = pci_set_power_state(pci_dev, PCI_D0);
-> > -		if (error)
-> > -			return error;
-> > +		error = pci_set_power_state(pci_dev, PCI_D0);
-> > +	} else {
-> > +		/*
-> > +		 * The platform power state can still be non-D0, so this is
-> > +		 * required to change the platform power state to D0.
-> > +		 */
-
-This really isn't expected to happen.
-
-If the device's power state has been changed to D3hot by ACPI, it is not in D0.
-
-It looks like the state tracking is not working here.
-
-> > +		error = pci_power_up(pci_dev);
-> >  	}
+> >  	/* INSTP0, bits[2:1] P0 tracing support field */
+> > -	if (BMVAL(etmidr0, 1, 2) == 0b11)
+> > -		drvdata->instrp0 = true;
+> > -	else
+> > -		drvdata->instrp0 = false;
+> > -
+> > +	drvdata->instrp0 = !!(REG_VAL(etmidr0, TRCIDR0_INSTP0) == 0b11);
+> >  	/* TRCBB, bit[5] Branch broadcast tracing support bit */
+> > -	if (BMVAL(etmidr0, 5, 5))
+> > -		drvdata->trcbb = true;
+> > -	else
+> > -		drvdata->trcbb = false;
+> > -
+> > +	drvdata->trcbb = !!(etmidr0 & TRCIDR0_TRCBB);
+> >  	/* TRCCOND, bit[6] Conditional instruction tracing support bit */
+> > -	if (BMVAL(etmidr0, 6, 6))
+> > -		drvdata->trccond = true;
+> > -	else
+> > -		drvdata->trccond = false;
+> > -
+> > +	drvdata->trccond = !!(etmidr0 & TRCIDR0_TRCCOND);
+> >  	/* TRCCCI, bit[7] Cycle counting instruction bit */
+> > -	if (BMVAL(etmidr0, 7, 7))
+> > -		drvdata->trccci = true;
+> > -	else
+> > -		drvdata->trccci = false;
+> > -
+> > +	drvdata->trccci = !!(etmidr0 & TRCIDR0_TRCCCI);
+> >  	/* RETSTACK, bit[9] Return stack bit */
+> > -	if (BMVAL(etmidr0, 9, 9))
+> > -		drvdata->retstack = true;
+> > -	else
+> > -		drvdata->retstack = false;
+> > -
+> > +	drvdata->retstack = !!(etmidr0 & TRCIDR0_RETSTACK);
+> >  	/* NUMEVENT, bits[11:10] Number of events field */
+> > -	drvdata->nr_event = BMVAL(etmidr0, 10, 11);
+> > +	drvdata->nr_event = REG_VAL(etmidr0, TRCIDR0_NUMEVENT);
+> >  	/* QSUPP, bits[16:15] Q element support field */
+> > -	drvdata->q_support = BMVAL(etmidr0, 15, 16);
+> > +	drvdata->q_support = REG_VAL(etmidr0, TRCIDR0_QSUPP);
+> >  	/* TSSIZE, bits[28:24] Global timestamp size field */
+> > -	drvdata->ts_size = BMVAL(etmidr0, 24, 28);
+> > +	drvdata->ts_size = REG_VAL(etmidr0, TRCIDR0_TSSIZE);
 > >  
-> > +	if (error)
-> > +		return error;
+> >  	/* maximum size of resources */
+> >  	etmidr2 = etm4x_relaxed_read32(csa, TRCIDR2);
+> > diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
+> > index 3c4d69b096ca..2bd8ad953b8e 100644
+> > --- a/drivers/hwtracing/coresight/coresight-etm4x.h
+> > +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
+> > @@ -130,6 +130,23 @@
+> >  
+> >  #define TRCRSR_TA			BIT(12)
+> >  
+> > +/*
+> > + * Bit positions of registers that are defined above, in the sysreg.h style
+> > + * of _MASK, _SHIFT and BIT().
+> > + */
+> 
+> ^^^ not really necessary. Instead the format requirement for below mentioned
+> CORESIGHT_REG_VAL() macro might be relevant and should be mentioned.
+
+I'm not sure if you're asking to move the comment further below or remove it
+altogether.  In any case more comments is always better than less.
+
+> 
+> > +#define TRCIDR0_INSTP0_SHIFT			1
+> > +#define TRCIDR0_INSTP0_MASK			GENMASK(1, 0)
+> > +#define TRCIDR0_TRCBB				BIT(5)
+> > +#define TRCIDR0_TRCCOND				BIT(6)
+> > +#define TRCIDR0_TRCCCI				BIT(7)
+> > +#define TRCIDR0_RETSTACK			BIT(9)
+> > +#define TRCIDR0_NUMEVENT_SHIFT			10
+> > +#define TRCIDR0_NUMEVENT_MASK			GENMASK(1, 0)
+> > +#define TRCIDR0_QSUPP_SHIFT			15
+> > +#define TRCIDR0_QSUPP_MASK			GENMASK(1, 0)
+> > +#define TRCIDR0_TSSIZE_SHIFT			24
+> > +#define TRCIDR0_TSSIZE_MASK			GENMASK(4, 0)
 > > +
-> >  	pci_restore_state(pci_dev);
-> >  	pci_pme_restore(pci_dev);
-> >  	return 0;
+> >  /*
+> >   * System instructions to access ETM registers.
+> >   * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
+> > diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
+> > index ff1dd2092ac5..1452c6038421 100644
+> > --- a/drivers/hwtracing/coresight/coresight-priv.h
+> > +++ b/drivers/hwtracing/coresight/coresight-priv.h
+> > @@ -36,6 +36,11 @@
+> >  
+> >  #define TIMEOUT_US		100
+> >  #define BMVAL(val, lsb, msb)	((val & GENMASK(msb, lsb)) >> lsb)
+> > +/*
+> > + * Extract a field from a register where field is #defined in the form
+> > + * <register_name>_<field_name>_MASK and <register_name>_<field_name>_SHIFT
+> > + */
+> 
+> Looking at the usage, <register_name> is already embedded in <filed_name>. So
+> it requires <field_name>_SHIFT and <field_name>_MASK instead. Unless register
+> name should be passed as separate argument (which actually might be better).
+> 
+> REG_VAL(etmidr0, TRCIDR0_TSSIZE) ----> REG_VAL(etmidr0, TRCIDR0, TSSIZE)
+
+I don't have strong preference, I'm good either way.
+
+> 
+> with some restructuring in the comment ..
+> 
+> /*
+>  * Extract a field from a coresight register
+>  *
+>  * Required fields are defined as macros like the following
+>  *  
+>  * <register_name>_<field_name>_MASK and <register_name>_<field_name>_SHIFT
+>  */
+> 
+> > +#define REG_VAL(val, field)	((val & (field##_MASK << field##_SHIFT)) >> field##_SHIFT)
+> 
+> This is too generic to be in a coresight header or it should just be
+> named CORESIGHT_REG_VAL() instead, making it more specific for here.
+> 
+> The build should fail in case any required macro definition is absent.
+> I guess no more fortification is required in case macros are missing.
+> 
+> However CORESIGHT_REG_VAL() is better placed in <coresight-etm4x.h>
+> just before all the dependent SHIFT/MASK register field definition
+> starts.
 > 
 
+Not sure about this...  Someone might want to do the same for etmv3 and in that
+case we'll end up moving the macro again.
 
+Thanks,
+Mathieu
 
-
+> >  
+> >  #define ETM_MODE_EXCL_KERN	BIT(30)
+> >  #define ETM_MODE_EXCL_USER	BIT(31)
+> > 
+> 
+> - Anshuman
