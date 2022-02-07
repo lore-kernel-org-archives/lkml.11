@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7994CC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 988E1C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382095AbiBGLSR (ORCPT
+        id S1382134AbiBGLSW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:18:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
+        Mon, 7 Feb 2022 06:18:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356609AbiBGLNR (ORCPT
+        with ESMTP id S1356734AbiBGLNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:13:17 -0500
+        Mon, 7 Feb 2022 06:13:20 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39B8C0401C1;
-        Mon,  7 Feb 2022 03:13:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8088CC043189;
+        Mon,  7 Feb 2022 03:13:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87409611AA;
-        Mon,  7 Feb 2022 11:13:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FE1C004E1;
-        Mon,  7 Feb 2022 11:13:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A565611AA;
+        Mon,  7 Feb 2022 11:13:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 591F4C004E1;
+        Mon,  7 Feb 2022 11:13:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232395;
-        bh=j8GhDE5h8Hapt122YqavWtJP8vnPRrRx5qAl5rxzYAk=;
+        s=korg; t=1644232397;
+        bh=pb9YFJqK6DzbsQ+nfYREskx+GD9DBVbjajIsy4tiFoo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A53nI1wLLh6JPpqCGr2QA02XIpUUaEiuFJdz0TZZlyobyUlSZ/nQt1HLftngzHv18
-         q9dLtAAfIV+uL1SL4+eJOjJsTeF8yFuisUKkCFamJw1XVlQWw/YdNvm/EeVE3GQaS/
-         Bnd5u+KyNAq5QRd+nqfwiCSRkyHp4k2O8D5TvSt0=
+        b=SK4/z2x0cWp6NpAkx0VBRybfIGsvgbZkI2tdzJCkelLlqLgPDHCmtXkROnCR7S1AJ
+         xMTDn/hakY7ZDGCiWSag/dOL2/iHDeTZhQD3nyWujFH1nmWaynK3XFaKzeAABp1CvI
+         5KgXrV+QJGFBtPHx0nhRg3OJAnyzUvHeef+s0rGk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH 4.14 65/69] selftests: futex: Use variable MAKE instead of make
-Date:   Mon,  7 Feb 2022 12:06:27 +0100
-Message-Id: <20220207103757.767977963@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.14 48/69] ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
+Date:   Mon,  7 Feb 2022 12:06:10 +0100
+Message-Id: <20220207103757.202568011@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -51,43 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+From: Mark Brown <broonie@kernel.org>
 
-commit b9199181a9ef8252e47e207be8c23e1f50662620 upstream.
+commit 4f1e50d6a9cf9c1b8c859d449b5031cacfa8404e upstream.
 
-Recursive make commands should always use the variable MAKE, not the
-explicit command name ‘make’. This has benefits and removes the
-following warning when multiple jobs are used for the build:
+We don't currently validate that the values being set are within the range
+we advertised to userspace as being valid, do so and reject any values
+that are out of range.
 
-make[2]: warning: jobserver unavailable: using -j1.  Add '+' to parent make rule.
-
-Fixes: a8ba798bc8ec ("selftests: enable O and KBUILD_OUTPUT")
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Reviewed-by: André Almeida <andrealmeid@collabora.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220124153253.3548853-3-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/futex/Makefile |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/soc-ops.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/futex/Makefile
-+++ b/tools/testing/selftests/futex/Makefile
-@@ -11,7 +11,7 @@ all:
- 	@for DIR in $(SUBDIRS); do		\
- 		BUILD_TARGET=$(OUTPUT)/$$DIR;	\
- 		mkdir $$BUILD_TARGET  -p;	\
--		make OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
-+		$(MAKE) OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
- 		if [ -e $$DIR/$(TEST_PROGS) ]; then \
- 			rsync -a $$DIR/$(TEST_PROGS) $$BUILD_TARGET/; \
- 		fi \
-@@ -40,6 +40,6 @@ override define CLEAN
- 	@for DIR in $(SUBDIRS); do		\
- 		BUILD_TARGET=$(OUTPUT)/$$DIR;	\
- 		mkdir $$BUILD_TARGET  -p;	\
--		make OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
-+		$(MAKE) OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
- 	done
- endef
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -441,8 +441,15 @@ int snd_soc_put_volsw_sx(struct snd_kcon
+ 	int err = 0;
+ 	unsigned int val, val_mask, val2 = 0;
+ 
++	val = ucontrol->value.integer.value[0];
++	if (mc->platform_max && val > mc->platform_max)
++		return -EINVAL;
++	if (val > max - min)
++		return -EINVAL;
++	if (val < 0)
++		return -EINVAL;
+ 	val_mask = mask << shift;
+-	val = (ucontrol->value.integer.value[0] + min) & mask;
++	val = (val + min) & mask;
+ 	val = val << shift;
+ 
+ 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
 
 
