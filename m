@@ -2,97 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57374C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09424C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236945AbiBGHbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 02:31:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59848 "EHLO
+        id S234082AbiBGHaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 02:30:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234842AbiBGHYC (ORCPT
+        with ESMTP id S232738AbiBGH3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 02:24:02 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1A6C043181
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 23:24:02 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id u130so11504657pfc.2
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 23:24:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mXSlfVDKwMF6om0Lh75ktdNJu0SBDC/xJ2BOT9KSvbk=;
-        b=IiY88wbW2bT/FKAhO9Q8+pXHoM8+Dm0ujhhZ7LHC7ZD3usBEdT4zDn2jtqSa0lk7Xv
-         OtuYgOHMaOUcDsRnosOy/m7eE13l9AHe5wi/LtmOJwIELfkZnOCYXHCe41RFppwRGQKa
-         oWdOcrlq9Bal6R8rnmj84oRYXVyv9OhR1potY2CBx6QsYD89IHuDbkwpFrIN8lbeWKyR
-         jv9ALex9BZ65VHyqtNrg+q1/vBF0CGpcOWv9lJuLFW8w72W296lCZfEXk4k16fhTWAhD
-         8QGEWAXg2tE0fLDpXEPXnISzSt9BHzpXiHKmkAgZeAZ+02CFG1JN+ddQwMfwzlluGz+5
-         xszg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mXSlfVDKwMF6om0Lh75ktdNJu0SBDC/xJ2BOT9KSvbk=;
-        b=4vOGHiQm5ZwGgrAHz2AY1viBaUqz5owTpT1uABX7HkTNENFay+hKkzYAUqgFouoK4N
-         Hk8fXzXppsUs4Awrn7QRaDdEvZgwG10kzpQO3RiJTqUmF6kixqu9pyFZNBuKTrVPpFcy
-         uwhrEcCy/XempmfxIy3DjeaMeJt7YKgoX3jqKYyxtCApHkP7t1auL0j66/mPpxOHuOCs
-         N4aWkPqVDeQSeZXKcZOcgKCDVH9XlWZAXCGfCZ/ZG/p19HrkuM9PCXA3hehYg+alSgoI
-         heKRJECX8jAlUtk5ODEfba2JxjlXJMeHVZ1mmy2uj439WcJRdjyE8gywLZ404VJLxOza
-         BVwQ==
-X-Gm-Message-State: AOAM532PNQgStFrDKnbFcvuIMF5ZPrJNUE4wlaGSMJmo7fVBuY2oenks
-        S+Ioq5fK2qJ0AIAsSrjfUCA=
-X-Google-Smtp-Source: ABdhPJx4yZeZ0Ph+3g4I1Y5TX7BY5YJn3N60mofH9h2it4LUr2NriDhiawvWGFDK+vaEhvRUpjEISA==
-X-Received: by 2002:a63:6c84:: with SMTP id h126mr8363072pgc.456.1644218641581;
-        Sun, 06 Feb 2022 23:24:01 -0800 (PST)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id s17sm10258932pfk.156.2022.02.06.23.24.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 23:24:00 -0800 (PST)
-Date:   Mon, 7 Feb 2022 16:23:59 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Mon, 7 Feb 2022 02:29:12 -0500
+X-Greylist: delayed 540 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 23:29:09 PST
+Received: from rhlx01.hs-esslingen.de (rhlx01.hs-esslingen.DE [IPv6:2001:7c0:700::10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C13C043181;
+        Sun,  6 Feb 2022 23:29:09 -0800 (PST)
+Received: by rhlx01.hs-esslingen.de (Postfix, from userid 1203)
+        id 39F2529B540F; Mon,  7 Feb 2022 08:20:02 +0100 (CET)
+Date:   Mon, 7 Feb 2022 08:20:02 +0100
+From:   Adrian Reber <adrian@lisas.de>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Balbir Singh <bsingharora@gmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Eugene Syromiatnikov <esyr@redhat.com>,
+        Florian Weimer <fweimer@redhat.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
         Randy Dunlap <rdunlap@infradead.org>,
-        openrisc@lists.librecores.org
-Subject: Re: [PATCH] openrisc: remove CONFIG_SET_FS
-Message-ID: <YgDJD4jEA+f2hsHg@antec>
-References: <20220206013648.3491865-1-shorne@gmail.com>
- <YgC/8ng5WX6Nt104@infradead.org>
+        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
+        Dave Martin <Dave.Martin@arm.com>,
+        Weijiang Yang <weijiang.yang@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
+        kcc@google.com, eranian@google.com,
+        Andrei Vagin <avagin@gmail.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+Message-ID: <YgDIIpCm3UITk896@lisas.de>
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <YgAWVSGQg8FPCeba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YgC/8ng5WX6Nt104@infradead.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YgAWVSGQg8FPCeba@kernel.org>
+X-Url:  <http://lisas.de/~adrian/>
+X-Operating-System: Linux (5.15.12-200.fc35.x86_64)
+X-Load-Average: 2.46 2.60 2.63
+X-Unexpected: The Spanish Inquisition
+X-GnuPG-Key: gpg --recv-keys D3C4906A
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 06, 2022 at 10:45:06PM -0800, Christoph Hellwig wrote:
-> On Sun, Feb 06, 2022 at 10:36:47AM +0900, Stafford Horne wrote:
-> > Remove the address space override API set_fs() used for User Mode Linux.
-> 
-> This ain't UML :)
+On Sun, Feb 06, 2022 at 08:42:03PM +0200, Mike Rapoport wrote:
+> (added more CRIU people)
 
-Yes, Geert also brought that up.  As I mentioned there I took the text from your
-commit message in commit 8bb227ac34c0 ("um: remove set_fs").
+Thanks, Mike.
 
-I didn't realize arch/um is for User Model Linux, I always thought um was just
-some other processor!  Next, I thought your comment 'used for User Mode Linux'
-was just referring to userpsace.
+> On Sun, Jan 30, 2022 at 01:18:03PM -0800, Rick Edgecombe wrote:
+> > This is a slight reboot of the userspace CET series. I will be taking over the 
+> > series from Yu-cheng. Per some internal recommendations, I’ve reset the version
+> > number and am calling it a new series. Hopefully, it doesn’t cause confusion.
+> > 
+> > The new plan is to upstream only userspace Shadow Stack support at this point. 
+> > IBT can follow later, but for now I’ll focus solely on the most in-demand and
+> > widely available (with the feature on AMD CPUs now) part of CET.
+> > 
+> > I thought as part of this reset, it might be useful to more fully write-up the 
+> > design and summarize the history of the previous CET series. So this slightly
+> > long cover letter does that. The "Updates" section has the changes, if anyone
+> > doesn't want the history.
 
-Now I get it!
+[...]
 
-I will fix this up in v2.
+> > 	CRIU Support
+> > 	------------
+> > 	In the past there was some speculation on the mailing list about 
+> > 	whether CRIU would need to be taught about CET. It turns out, it does. 
+> > 	The first issue hit is that CRIU calls sigreturn directly from its 
+> > 	“parasite code” that it injects into the dumper process. This violates
+> > 	this shadow stack implementation’s protection that intends to prevent
+> > 	attackers from doing this.
+> > 
+> > 	With so many packages already enabled with shadow stack, there is 
+> > 	probably desire to make it work seamlessly. But in the meantime if 
+> > 	distros want to support shadow stack and CRIU, users could manually 
+> > 	disabled shadow stack via “GLIBC_TUNABLES=glibc.cpu.x86_shstk=off” for 
+> > 	a process they will wants to dump. It’s not ideal.
+> > 
+> > 	I’d like to hear what people think about having shadow stack in the 
+> > 	kernel without this resolved. Nothing would change for any users until 
+> > 	they enable shadow stack in the kernel and update to a glibc configured
+> > 	with CET. Should CRIU userspace be solved before kernel support?
 
-> > +	return size <= TASK_SIZE && addr <= (TASK_SIZE - size);
-> 
-> No need for the inner braces.
+From the CRIU side I can say that I would definitely like to see this
+resolved. CRIU just went through a similar exercise with rseq() being
+enabled in glibc and CI broke all around for us and other projects
+relying on CRIU. Although rseq() was around for a long time we were not
+aware of it but luckily 5.13 introduced a way to handle it for CRIU with
+ptrace. An environment variable existed but did not really help when
+CRIU is called somewhere in the middle of the container software stack.
 
-You mean to just write as:
+From my point of view a solution not involving an environment variable
+would definitely be preferred.
 
-	return size <= TASK_SIZE && addr <= TASK_SIZE - size;
-
-I prefer keeping the braces around (TASK_SIZE - size).
-
--Stafford
+		Adrian
