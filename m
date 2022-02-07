@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFB15C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAF9C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349547AbiBGFw2 (ORCPT
+        id S1349480AbiBGFw0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:52:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50752 "EHLO
+        Mon, 7 Feb 2022 00:52:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352085AbiBGEtC (ORCPT
+        with ESMTP id S1352075AbiBGEsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:49:02 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC90C043181;
-        Sun,  6 Feb 2022 20:49:02 -0800 (PST)
+        Sun, 6 Feb 2022 23:48:35 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622E0C043181;
+        Sun,  6 Feb 2022 20:48:35 -0800 (PST)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 136B61F37E;
-        Mon,  7 Feb 2022 04:49:01 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CCCD8210E8;
+        Mon,  7 Feb 2022 04:48:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644209341; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1644209313; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fwJWsWKAHR1izFzYRPVHxF5KD02ioN/att4BQUXt4ok=;
-        b=sz1wvonUJnZOIzGF+QuZIo3wNsZGbbukf6KwBl8JLi/mdJzgN/XeIp0TF7n8p/LI9esb0m
-        EY0JicYakn6JS/QO7pzsdsGFM/oCJlwBltgIhvZUiPS3RZxLEy4KFVi1LKxYoP3wYcROhf
-        KhBa9TRRcd11eO9EB7rpX2jA40FKh3s=
+        bh=ca/QMA9b8aSP2XqDNpzMoh70WOqFOvfMXBDfQmXLg8g=;
+        b=g7MhZp92/rnAsaBQF/LBN2grTXpM1lSbRGyvPNrVbdb93Hur/KShishK0kboEEwtuBgXEN
+        eV5m3zMF/R1LupwK2CXzQ0u20tEnJ9/jxsjPA8hEJhCJA48lpiq2r6PjIQxxf6AYRjBofP
+        Fhn0FQcRrR9S9O3YbkmJ9Fq76of65ME=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644209341;
+        s=susede2_ed25519; t=1644209313;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fwJWsWKAHR1izFzYRPVHxF5KD02ioN/att4BQUXt4ok=;
-        b=IbYQw1WEfmd3EdeiUL3S5rCqI3og24Anje/7B22P1GrYriZCFWzQrYiQlyfnM17v053Lbd
-        yARR1Vb5UxkDklBw==
+        bh=ca/QMA9b8aSP2XqDNpzMoh70WOqFOvfMXBDfQmXLg8g=;
+        b=S7cvC95vxV7Ud1UDWIFO6Oa2myUbnd6qE+5EbMwEIspBQunKCydhhC2WbDtoFc/abo0+oz
+        jz1Nwrey9mHimyDg==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 31A8A1330E;
-        Mon,  7 Feb 2022 04:48:57 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7A6061330E;
+        Mon,  7 Feb 2022 04:48:30 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id WPFKOLmkAGKUNQAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:48:57 +0000
-Subject: [PATCH 19/21] NFS: rename nfs_direct_IO and use as ->swap_rw
+        id jU5zDZ6kAGJ/NQAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:48:30 +0000
+Subject: [PATCH 15/21] SUNRPC: remove scheduling boost for "SWAPPER" tasks.
 From:   NeilBrown <neilb@suse.de>
 To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
         Anna Schumaker <anna.schumaker@netapp.com>,
@@ -62,7 +62,7 @@ To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
 Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
 Date:   Mon, 07 Feb 2022 15:46:01 +1100
-Message-ID: <164420916124.29374.1697475326428179041.stgit@noble.brown>
+Message-ID: <164420916121.29374.301108979284279934.stgit@noble.brown>
 In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
 References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
 User-Agent: StGit/0.23
@@ -73,101 +73,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The nfs_direct_IO() exists to support SWAP IO, but hasn't worked for a
-while.  We now need a ->swap_rw function which behaves slightly
-differently, returning zero for success rather than a byte count.
+Currently, tasks marked as "swapper" tasks get put to the front of
+non-priority rpc_queues, and are sorted earlier than non-swapper tasks on
+the transport's ->xmit_queue.
 
-So modify nfs_direct_IO accordingly, rename it, and use it as the
-->swap_rw function.
+This is pointless as currently *all* tasks for a mount that has swap
+enabled on *any* file are marked as "swapper" tasks.  So the net result
+is that the non-priority rpc_queues are reverse-ordered (LIFO).
 
-Note: it still won't work - that will be fixed in later patches.
+This scheduling boost is not necessary to avoid deadlocks, and hurts
+fairness, so remove it.  If there were a need to expedite some requests,
+the tk_priority mechanism is a more appropriate tool.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: NeilBrown <neilb@suse.de>
 ---
- fs/nfs/direct.c        |   23 ++++++++++-------------
- fs/nfs/file.c          |    5 +----
- include/linux/nfs_fs.h |    2 +-
- 3 files changed, 12 insertions(+), 18 deletions(-)
+ net/sunrpc/sched.c |    7 -------
+ net/sunrpc/xprt.c  |   11 -----------
+ 2 files changed, 18 deletions(-)
 
-diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
-index eabfdab543c8..b929dd5b0c3a 100644
---- a/fs/nfs/direct.c
-+++ b/fs/nfs/direct.c
-@@ -153,28 +153,25 @@ nfs_direct_count_bytes(struct nfs_direct_req *dreq,
- }
- 
- /**
-- * nfs_direct_IO - NFS address space operation for direct I/O
-+ * nfs_swap_rw - NFS address space operation for swap I/O
-  * @iocb: target I/O control block
-  * @iter: I/O buffer
-  *
-- * The presence of this routine in the address space ops vector means
-- * the NFS client supports direct I/O. However, for most direct IO, we
-- * shunt off direct read and write requests before the VFS gets them,
-- * so this method is only ever called for swap.
-+ * Perform IO to the swap-file.  This is much like direct IO.
-  */
--ssize_t nfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
-+int nfs_swap_rw(struct kiocb *iocb, struct iov_iter *iter)
- {
--	struct inode *inode = iocb->ki_filp->f_mapping->host;
--
--	/* we only support swap file calling nfs_direct_IO */
--	if (!IS_SWAPFILE(inode))
--		return 0;
-+	ssize_t ret;
- 
- 	VM_BUG_ON(iov_iter_count(iter) != PAGE_SIZE);
- 
- 	if (iov_iter_rw(iter) == READ)
--		return nfs_file_direct_read(iocb, iter);
--	return nfs_file_direct_write(iocb, iter);
-+		ret = nfs_file_direct_read(iocb, iter);
-+	else
-+		ret = nfs_file_direct_write(iocb, iter);
-+	if (ret < 0)
-+		return ret;
-+	return 0;
- }
- 
- static void nfs_direct_release_pages(struct page **pages, unsigned int npages)
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 81fe996c6272..7d42117b210d 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -490,10 +490,6 @@ static int nfs_swap_activate(struct swap_info_struct *sis, struct file *file,
- 	struct rpc_clnt *clnt = NFS_CLIENT(inode);
- 	struct nfs_client *cl = NFS_SERVER(inode)->nfs_client;
- 
--	if (!file->f_mapping->a_ops->swap_rw)
--		/* Cannot support swap */
--		return -EINVAL;
--
- 	spin_lock(&inode->i_lock);
- 	blocks = inode->i_blocks;
- 	isize = inode->i_size;
-@@ -549,6 +545,7 @@ const struct address_space_operations nfs_file_aops = {
- 	.error_remove_page = generic_error_remove_page,
- 	.swap_activate = nfs_swap_activate,
- 	.swap_deactivate = nfs_swap_deactivate,
-+	.swap_rw = nfs_swap_rw,
- };
+diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
+index d5b6e897f5a5..256302bf6557 100644
+--- a/net/sunrpc/sched.c
++++ b/net/sunrpc/sched.c
+@@ -186,11 +186,6 @@ static void __rpc_add_wait_queue_priority(struct rpc_wait_queue *queue,
  
  /*
-diff --git a/include/linux/nfs_fs.h b/include/linux/nfs_fs.h
-index ff8b3820409c..58807406aff6 100644
---- a/include/linux/nfs_fs.h
-+++ b/include/linux/nfs_fs.h
-@@ -506,7 +506,7 @@ static inline const struct cred *nfs_file_cred(struct file *file)
- /*
-  * linux/fs/nfs/direct.c
+  * Add new request to wait queue.
+- *
+- * Swapper tasks always get inserted at the head of the queue.
+- * This should avoid many nasty memory deadlocks and hopefully
+- * improve overall performance.
+- * Everyone else gets appended to the queue to ensure proper FIFO behavior.
   */
--extern ssize_t nfs_direct_IO(struct kiocb *, struct iov_iter *);
-+int nfs_swap_rw(struct kiocb *, struct iov_iter *);
- extern ssize_t nfs_file_direct_read(struct kiocb *iocb,
- 			struct iov_iter *iter);
- extern ssize_t nfs_file_direct_write(struct kiocb *iocb,
+ static void __rpc_add_wait_queue(struct rpc_wait_queue *queue,
+ 		struct rpc_task *task,
+@@ -199,8 +194,6 @@ static void __rpc_add_wait_queue(struct rpc_wait_queue *queue,
+ 	INIT_LIST_HEAD(&task->u.tk_wait.timer_list);
+ 	if (RPC_IS_PRIORITY(queue))
+ 		__rpc_add_wait_queue_priority(queue, task, queue_priority);
+-	else if (RPC_IS_SWAPPER(task))
+-		list_add(&task->u.tk_wait.list, &queue->tasks[0]);
+ 	else
+ 		list_add_tail(&task->u.tk_wait.list, &queue->tasks[0]);
+ 	task->tk_waitqueue = queue;
+diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
+index 47d207e416ab..a0a2583fe941 100644
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -1354,17 +1354,6 @@ xprt_request_enqueue_transmit(struct rpc_task *task)
+ 				INIT_LIST_HEAD(&req->rq_xmit2);
+ 				goto out;
+ 			}
+-		} else if (RPC_IS_SWAPPER(task)) {
+-			list_for_each_entry(pos, &xprt->xmit_queue, rq_xmit) {
+-				if (pos->rq_cong || pos->rq_bytes_sent)
+-					continue;
+-				if (RPC_IS_SWAPPER(pos->rq_task))
+-					continue;
+-				/* Note: req is added _before_ pos */
+-				list_add_tail(&req->rq_xmit, &pos->rq_xmit);
+-				INIT_LIST_HEAD(&req->rq_xmit2);
+-				goto out;
+-			}
+ 		} else if (!req->rq_seqno) {
+ 			list_for_each_entry(pos, &xprt->xmit_queue, rq_xmit) {
+ 				if (pos->rq_task->tk_owner != task->tk_owner)
 
 
