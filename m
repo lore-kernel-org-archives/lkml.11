@@ -2,176 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A68F7C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF031C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377693AbiBGNLV (ORCPT
+        id S1448450AbiBGNLg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:11:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
+        Mon, 7 Feb 2022 08:11:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343547AbiBGMog (ORCPT
+        with ESMTP id S1359692AbiBGMwQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:44:36 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E217C043181;
-        Mon,  7 Feb 2022 04:44:34 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id C8A6C210FA;
-        Mon,  7 Feb 2022 12:44:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644237872; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Fm3Hca/uzXhbYie979FgZfnFphMe3Z7RRg4zd6rl6XA=;
-        b=fZVCs+CMytbezBVuxQehYFx4LZrjEXf2Vcpr7JlQW/9jUJbBYX5Y7zlL+D3XW9WcU9naGp
-        OA66/Xo0GbPlqvY9+buTsXIa1/DJay1EK+DHrPkCkOASTC0iIGC5y4oLqRCQ+sLO2Lh39A
-        XUyP8msmynKa0nRxQav8fPjk7ejhwcE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644237872;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Fm3Hca/uzXhbYie979FgZfnFphMe3Z7RRg4zd6rl6XA=;
-        b=UvY0vJmR3xSPxee9tQ9XceFUY5Dv1cs4AwxnMCImFrerWtJLkHzLbJ/ZQU3S2y8lePP7R3
-        HzH2+lRzuwMx87Bw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7E21013BF5;
-        Mon,  7 Feb 2022 12:44:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id +0SOHTAUAWLZCgAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Mon, 07 Feb 2022 12:44:32 +0000
-Message-ID: <11d3b6d4-3e31-05cc-c021-22e1497f02d1@suse.de>
-Date:   Mon, 7 Feb 2022 13:44:31 +0100
+        Mon, 7 Feb 2022 07:52:16 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6705CC0401C6
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:52:15 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nH3V0-0001kT-Ap; Mon, 07 Feb 2022 13:52:06 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nH3Ux-00F6BR-1a; Mon, 07 Feb 2022 13:52:02 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nH3Uv-00Acnk-Fe; Mon, 07 Feb 2022 13:52:01 +0100
+Date:   Mon, 7 Feb 2022 13:51:58 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH] dt-bindings: pwm: mtk-disp: add compatible string for
+ MT8183 SoC
+Message-ID: <20220207125158.t5362u2dddccdmsq@pengutronix.de>
+References: <20220207112657.18246-1-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/4] drm/format-helper: Add drm_fb_{xrgb8888,
- gray8}_to_mono_reversed()
-Content-Language: en-US
-To:     Ilia Mirkin <imirkin@alum.mit.edu>
-Cc:     linux-fbdev <linux-fbdev@vger.kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sam Ravnborg <sam@ravnborg.org>
-References: <20220204134347.1187749-1-javierm@redhat.com>
- <20220204134347.1187749-2-javierm@redhat.com>
- <47100413-db63-1efa-45e9-028dfc430b7e@suse.de>
- <CAKb7UvgxhLFT4aqYSE+=dpqfuTkvr62tsGmQP5H46mAytaQBRg@mail.gmail.com>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <CAKb7UvgxhLFT4aqYSE+=dpqfuTkvr62tsGmQP5H46mAytaQBRg@mail.gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------tfQqrAesgLp1qKiU02HjQVFV"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="d3yuhoeyfgyvlc6b"
+Content-Disposition: inline
+In-Reply-To: <20220207112657.18246-1-allen-kh.cheng@mediatek.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------tfQqrAesgLp1qKiU02HjQVFV
-Content-Type: multipart/mixed; boundary="------------DQMouTCacmkGVTRyTTuQE7rM";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Ilia Mirkin <imirkin@alum.mit.edu>
-Cc: linux-fbdev <linux-fbdev@vger.kernel.org>, David Airlie
- <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Javier Martinez Canillas <javierm@redhat.com>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- LKML <linux-kernel@vger.kernel.org>, =?UTF-8?Q?Noralf_Tr=c3=b8nnes?=
- <noralf@tronnes.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
- Maxime Ripard <maxime@cerno.tech>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Sam Ravnborg <sam@ravnborg.org>
-Message-ID: <11d3b6d4-3e31-05cc-c021-22e1497f02d1@suse.de>
-Subject: Re: [PATCH v2 1/4] drm/format-helper: Add drm_fb_{xrgb8888,
- gray8}_to_mono_reversed()
-References: <20220204134347.1187749-1-javierm@redhat.com>
- <20220204134347.1187749-2-javierm@redhat.com>
- <47100413-db63-1efa-45e9-028dfc430b7e@suse.de>
- <CAKb7UvgxhLFT4aqYSE+=dpqfuTkvr62tsGmQP5H46mAytaQBRg@mail.gmail.com>
-In-Reply-To: <CAKb7UvgxhLFT4aqYSE+=dpqfuTkvr62tsGmQP5H46mAytaQBRg@mail.gmail.com>
 
---------------DQMouTCacmkGVTRyTTuQE7rM
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+--d3yuhoeyfgyvlc6b
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-SGkNCg0KQW0gMDQuMDIuMjIgdW0gMjI6MDIgc2NocmllYiBJbGlhIE1pcmtpbjoNCj4gT24g
-RnJpLCBGZWIgNCwgMjAyMiBhdCAxMDo1MyBBTSBUaG9tYXMgWmltbWVybWFubiA8dHppbW1l
-cm1hbm5Ac3VzZS5kZT4gd3JvdGU6DQo+Pg0KPj4gSGkNCj4+DQo+PiBBbSAwNC4wMi4yMiB1
-bSAxNDo0MyBzY2hyaWViIEphdmllciBNYXJ0aW5leiBDYW5pbGxhczoNCj4+PiBBZGQgc3Vw
-cG9ydCB0byBjb252ZXJ0IFhSMjQgYW5kIDgtYml0IGdyYXlzY2FsZSB0byByZXZlcnNlZCBt
-b25vY2hyb21lIGZvcg0KPj4+IGRyaXZlcnMgdGhhdCBjb250cm9sIG1vbm9jaHJvbWF0aWMg
-cGFuZWxzLCB0aGF0IG9ubHkgaGF2ZSAxIGJpdCBwZXIgcGl4ZWwuDQo+Pj4NCj4+PiBUaGUg
-ZHJtX2ZiX2dyYXk4X3RvX21vbm9fcmV2ZXJzZWQoKSBoZWxwZXIgd2FzIGJhc2VkIG9uIHRo
-ZSBmdW5jdGlvbiB0aGF0DQo+Pj4gZG9lcyB0aGUgc2FtZSBpbiB0aGUgZHJpdmVycy9ncHUv
-ZHJtL3RpbnkvcmVwYXBlci5jIGRyaXZlci4NCj4+Pg0KPj4+IFNpZ25lZC1vZmYtYnk6IEph
-dmllciBNYXJ0aW5leiBDYW5pbGxhcyA8amF2aWVybUByZWRoYXQuY29tPg0KPj4+IC0tLQ0K
-Pj4+DQo+Pj4gKG5vIGNoYW5nZXMgc2luY2UgdjEpDQo+Pj4NCj4+PiAgICBkcml2ZXJzL2dw
-dS9kcm0vZHJtX2Zvcm1hdF9oZWxwZXIuYyB8IDgwICsrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrDQo+Pj4gICAgaW5jbHVkZS9kcm0vZHJtX2Zvcm1hdF9oZWxwZXIuaCAgICAgfCAg
-NyArKysNCj4+PiAgICAyIGZpbGVzIGNoYW5nZWQsIDg3IGluc2VydGlvbnMoKykNCj4+Pg0K
-Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vZHJtX2Zvcm1hdF9oZWxwZXIuYyBi
-L2RyaXZlcnMvZ3B1L2RybS9kcm1fZm9ybWF0X2hlbHBlci5jDQo+Pj4gaW5kZXggMGYyOGRk
-MmJkZDcyLi5jZGNlNGI3YzI1ZDkgMTAwNjQ0DQo+Pj4gLS0tIGEvZHJpdmVycy9ncHUvZHJt
-L2RybV9mb3JtYXRfaGVscGVyLmMNCj4+PiArKysgYi9kcml2ZXJzL2dwdS9kcm0vZHJtX2Zv
-cm1hdF9oZWxwZXIuYw0KPj4+IEBAIC01ODQsMyArNTg0LDgzIEBAIGludCBkcm1fZmJfYmxp
-dF90b2lvKHZvaWQgX19pb21lbSAqZHN0LCB1bnNpZ25lZCBpbnQgZHN0X3BpdGNoLCB1aW50
-MzJfdCBkc3RfZm9yDQo+Pj4gICAgICAgIHJldHVybiAtRUlOVkFMOw0KPj4+ICAgIH0NCj4+
-PiAgICBFWFBPUlRfU1lNQk9MKGRybV9mYl9ibGl0X3RvaW8pOw0KPj4+ICsNCj4+PiArc3Rh
-dGljIHZvaWQgZHJtX2ZiX2dyYXk4X3RvX21vbm9fcmV2ZXJzZWRfbGluZSh1OCAqZHN0LCBj
-b25zdCB1OCAqc3JjLCBzaXplX3QgcGl4ZWxzKQ0KPj4+ICt7DQo+Pj4gKyAgICAgdW5zaWdu
-ZWQgaW50IHhiLCBpOw0KPj4+ICsNCj4+PiArICAgICBmb3IgKHhiID0gMDsgeGIgPCBwaXhl
-bHMgLyA4OyB4YisrKSB7DQo+Pg0KPj4gSW4gcHJhY3RpY2UsIGFsbCBtb2RlIHdpZHRocyBh
-cmUgbXVsdGlwbGVzIG9mIDggYmVjYXVzZSBWR0EgbWFuZGF0ZWQgaXQuDQo+PiBTbyBpdCdz
-IG9rLWlzaCB0byBhc3N1bWUgdGhpcyBoZXJlLiBZb3Ugc2hvdWxkIHByb2JhYmx5IGF0IGxl
-YXN0IHByaW50IGENCj4+IHdhcm5pbmcgc29tZXdoZXJlIGlmIChwaXhlbHMgJSA4ICE9IDAp
-DQo+IA0KPiBOb3Qgc3VyZSBpZiBpdCdzIHJlbGV2YW50LCBidXQgMTM2Nng3Njggd2FzIGEg
-ZmFpcmx5IHBvcHVsYXIgbGFwdG9wDQo+IHJlc29sdXRpb24uIFRoZXJlJ3MgZXZlbiBhIGRl
-ZGljYXRlZCBkcm1fbW9kZV9maXh1cF8xMzY2eDc2OCBpbg0KPiBkcm1fZWRpZC5jLiAoV291
-bGQgaXQgaGF2ZSBraWxsZWQgdGhlbSB0byBhZGQgMiBtb3JlIGhvcml6b250YWwNCj4gcGl4
-ZWxzPyBBcHBhcmVudGx5LikNCg0KRCdvaCENCg0KRG8geW91IGtub3cgaG93IHRoZSB0ZXh0
-IGNvbnNvbGUgbG9va3MgaW4gdGhpcyBtb2RlPyBGb250cyBzdGlsbCBleHBlY3QgDQphIG11
-bHRpcGxlIG9mIDguDQoNCkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNCj4gDQo+IENoZWVycywN
-Cj4gDQo+ICAgIC1pbGlhDQoNCi0tIA0KVGhvbWFzIFppbW1lcm1hbm4NCkdyYXBoaWNzIERy
-aXZlciBEZXZlbG9wZXINClNVU0UgU29mdHdhcmUgU29sdXRpb25zIEdlcm1hbnkgR21iSA0K
-TWF4ZmVsZHN0ci4gNSwgOTA0MDkgTsO8cm5iZXJnLCBHZXJtYW55DQooSFJCIDM2ODA5LCBB
-RyBOw7xybmJlcmcpDQpHZXNjaMOkZnRzZsO8aHJlcjogSXZvIFRvdGV2DQo=
+Hello,
 
---------------DQMouTCacmkGVTRyTTuQE7rM--
+On Mon, Feb 07, 2022 at 07:26:57PM +0800, Allen-KH Cheng wrote:
+> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+>=20
+> Add compatible string for MT8183 SoC in device tree binding.
+>=20
+> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Doc=
+umentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> index 902b271891ae..691e58b6c223 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> @@ -6,6 +6,7 @@ Required properties:
+>     - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
+>     - "mediatek,mt8167-disp-pwm", "mediatek,mt8173-disp-pwm": found on mt=
+8167 SoC.
+>     - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+> +   - "mediatek,mt8183-disp-pwm": found on mt8183 SoC.$
 
---------------tfQqrAesgLp1qKiU02HjQVFV
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+The patch looks good in principle. I'd like to see the .txt file
+converted to .yaml though. Would you care for that please?
+
+Also it would be good if you'd care that sender email address and author
+address match.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--d3yuhoeyfgyvlc6b
+Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmIBFC8FAwAAAAAACgkQlh/E3EQov+B+
-0BAAw+HwjL96CAPp6PCfz73k3/HGoFK8bVBoBvx6P8FLvNiqC46JHBXy00kTJ6kA2UZGFkwilhdH
-tTuUXWgKrRlU3xpSV6CZkkaxsoSBozAOIiVCTNXs8OLLErtHJ5WEvEiYsqqaG46agM0ij67KC8t7
-E1uNtdi3CacDAUr/255+vq8Sk7B3z+5GTgIKJ9wH3AaZn0un41HzncQ3ouEFY0p5S4hCDINt6O+u
-OmTtqO5NXZePZP33vhsLOq0F3uu3QLfk4NjB28Xq2xBzW9gEhKsnIHz4wr8ReYOveQK5u8+NehXR
-BulND7Bura3Lia+wTk6Xk8h0NGhP8YxCD/kEznskX4dsVNgdga9Auxwtm9uk5F73bCTlciSAOihW
-YwsV1rX0VSk5iRUOll9ROwmxJpZYbwjQf3jv0DP3Mql3IC9KUipzTIML7Evhe67+gZ04y77uJo5i
-Bv8PsFAp6Qn+T+eUK2wCryJTcg5NZec8AGBwe46KAp8pjm0oAEc98WPinnZn7DZQiCXGZYEU5/ZE
-cMDsRNmbLnvCh70FkRg8cr61PX4/IzKVF54oOldLhd/490a28ISosBWNH9+L/pRxuDerc9Tkr0JM
-w2N8VTlri5V16mQeTI3A/OgnY7gCuS5FKakCirKHqxzTxHHjgs2/DH4cfeHBmgLhX4UONDWrtltZ
-BcY=
-=w1Rr
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIBFesACgkQwfwUeK3K
+7AkkAgf/fg+txDjzVkyHwJVZPCvspksFhmKCPBL43pn/2PuKFzuMBGET5zqIESSD
+g/bRy5VJ3sPbOB2IiRqL8e+5uBRpyjErA9hDuBXAeE0j51fonbIeKx5tLMn0CmCm
+QqngjwSvxBZin6oHjUsmeJ4DmTltc159yQlZJ4OA+0Ur5cSR2ygGBVf/PhNwD1sr
+o6MlZ+PpgNZyD0emGImlgYyEzLlssbqHvcEexQ4Edy+Ia+x+WkKL2PijTSOsPpki
+yh42NYdOPlPgvyLf5iAk2tyeb3b3+Z5z8olSGSLpnKmy/o6KFVLdPRmcF/GRvxKd
+iGe2/E5kAx/Jh8ObG42MHTmx3NUprg==
+=ZzWa
 -----END PGP SIGNATURE-----
 
---------------tfQqrAesgLp1qKiU02HjQVFV--
+--d3yuhoeyfgyvlc6b--
