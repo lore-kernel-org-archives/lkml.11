@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF2CC46467
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A11AC35274
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385509AbiBGLbz (ORCPT
+        id S1385592AbiBGLcB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:31:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33322 "EHLO
+        Mon, 7 Feb 2022 06:32:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382945AbiBGLVN (ORCPT
+        with ESMTP id S1382976AbiBGLVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:21:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AFFC0401E7;
-        Mon,  7 Feb 2022 03:20:49 -0800 (PST)
+        Mon, 7 Feb 2022 06:21:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33A3C0401E3;
+        Mon,  7 Feb 2022 03:20:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE1E7B811BD;
-        Mon,  7 Feb 2022 11:20:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8576C340EB;
-        Mon,  7 Feb 2022 11:20:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E17EB811BC;
+        Mon,  7 Feb 2022 11:20:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D728C004E1;
+        Mon,  7 Feb 2022 11:20:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232846;
-        bh=xAeExFBAmPiP1O3KSIFnaLutCAegQwIdBBJJDvp+Zxs=;
+        s=korg; t=1644232843;
+        bh=ibDfKO43ua73Gx9a9As84eX2A+Zft8z5jC5qig7O/0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=phaYpOI8O4M8DOVWMJaapTDDyteP1yH/rRKCq7gI/jYv5/ohEZ8dBge3TcQqyPvPC
-         o+vyuQRF1E9RBqQbJQoR1vfRDlTlcceeUerYO+BqExomQXqESw5r1Cj57TLTgA9IA1
-         dGYhNEzWFYazwNwiDE2WWmpWF/zGycEYpzFCv2hQ=
+        b=BW6MKdl/B1jRUdwt21HONEZAl2mqoWsMtJw8f52TKnPh1zgkqvbac18m3u/m3Y9X1
+         97Sf428lfsK2mDxwNVMQnQ932qoZVSmUmnYmslc8u0Ag2y9Ay/u59d3DpCdUuVv657
+         q0d9T4DRjOTrfLj+a4MKOah0pp6uXAuh1N57j2eg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Lachner <gladiac@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 10/74] ALSA: hda/realtek: Add missing fixup-model entry for Gigabyte X570 ALC1220 quirks
-Date:   Mon,  7 Feb 2022 12:06:08 +0100
-Message-Id: <20220207103757.570464723@linuxfoundation.org>
+        stable@vger.kernel.org, Vratislav Bendel <vbendel@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+Subject: [PATCH 5.10 01/74] selinux: fix double free of cond_list on error paths
+Date:   Mon,  7 Feb 2022 12:05:59 +0100
+Message-Id: <20220207103757.281148498@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,32 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Lachner <gladiac@gmail.com>
+From: Vratislav Bendel <vbendel@redhat.com>
 
-commit 63394a16086fc2152869d7902621e2525e14bc40 upstream.
+commit 186edf7e368c40d06cf727a1ad14698ea67b74ad upstream.
 
-The initial commit of the new Gigabyte X570 ALC1220 quirks lacked the
-fixup-model entry in alc882_fixup_models[]. It seemed not to cause any ill
-effects but for completeness sake this commit makes up for that.
+On error path from cond_read_list() and duplicate_policydb_cond_list()
+the cond_list_destroy() gets called a second time in caller functions,
+resulting in NULL pointer deref.  Fix this by resetting the
+cond_list_len to 0 in cond_list_destroy(), making subsequent calls a
+noop.
 
-Signed-off-by: Christian Lachner <gladiac@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220129113243.93068-2-gladiac@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Also consistently reset the cond_list pointer to NULL after freeing.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Vratislav Bendel <vbendel@redhat.com>
+[PM: fix line lengths in the description]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ security/selinux/ss/conditional.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -2672,6 +2672,7 @@ static const struct hda_model_fixup alc8
- 	{.id = ALC882_FIXUP_NO_PRIMARY_HP, .name = "no-primary-hp"},
- 	{.id = ALC887_FIXUP_ASUS_BASS, .name = "asus-bass"},
- 	{.id = ALC1220_FIXUP_GB_DUAL_CODECS, .name = "dual-codecs"},
-+	{.id = ALC1220_FIXUP_GB_X570, .name = "gb-x570"},
- 	{.id = ALC1220_FIXUP_CLEVO_P950, .name = "clevo-p950"},
- 	{}
- };
+--- a/security/selinux/ss/conditional.c
++++ b/security/selinux/ss/conditional.c
+@@ -152,6 +152,8 @@ static void cond_list_destroy(struct pol
+ 	for (i = 0; i < p->cond_list_len; i++)
+ 		cond_node_destroy(&p->cond_list[i]);
+ 	kfree(p->cond_list);
++	p->cond_list = NULL;
++	p->cond_list_len = 0;
+ }
+ 
+ void cond_policydb_destroy(struct policydb *p)
+@@ -440,7 +442,6 @@ int cond_read_list(struct policydb *p, v
+ 	return 0;
+ err:
+ 	cond_list_destroy(p);
+-	p->cond_list = NULL;
+ 	return rc;
+ }
+ 
 
 
