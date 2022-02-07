@@ -2,124 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E476CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39DBAC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348142AbiBGI7u (ORCPT
+        id S1349364AbiBGJAC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:59:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
+        Mon, 7 Feb 2022 04:00:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349283AbiBGIzb (ORCPT
+        with ESMTP id S243192AbiBGIxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:55:31 -0500
-X-Greylist: delayed 542 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 00:55:28 PST
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742F2C043181;
-        Mon,  7 Feb 2022 00:55:28 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id CA33458018B;
-        Mon,  7 Feb 2022 03:55:27 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 07 Feb 2022 03:55:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=iY/XWrOv5z+3ui6SOcBcF8zRTUJJdfQQ/DmZSz
-        cWgDQ=; b=tmAloTuurUn7U+BsgBpI54lAsHq8irV/mMs5UuUc1nJip6ZWkiDp+L
-        T/u3M2117jpcSQEcvfjjkne0dhg6ac8klXXP5IL6+mgMJLux6K5ToB1ZhYwvmifO
-        hv5Q72yvoWzZ8+Lri4VNoMRqgOleVY5ScyBt1fg2r6FeTBbaowm4GcMgoApItIhe
-        PuhAy82LJ/l2utVvk8M9i4Iu51RFwP/GOCr/Z4M16GXadaUDg4KiG+1Vqr9CmXlm
-        ZXlLGuYf13q2Lay0MnuFfarJQd2k2DJNn66VrRJqf+XQJNjtDPWI5CzAAmMBQc5o
-        APuJVuw0ULJP6Dp+Nm8I2tOIv85i+qlw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=iY/XWrOv5z+3ui6SO
-        cBcF8zRTUJJdfQQ/DmZSzcWgDQ=; b=mcAE9m3LQgQ/Mnz8l2c8I+uhsaUdOFV9A
-        F2I6r+8TLk7Xbc/rgLk5T4myhRqrQuQPHIi29ycXFZpJ2c17gU/+3FHlz64wqvsW
-        +8dNlATUQDWN/jspHrgAYImJtgREJ//9Oj//tpTW/i1OUOQgQXQYKCsRngU3MWFF
-        SJ5vTqN8JY+vfN35mRV05zsQ6zX6riTzKdf5EpDiYDzhSLBADqhji4LJspl0n6xU
-        jlWrbZ7fHT0zLCqx5YZiPnMDjqbb+PYbFbbigJWs/zEGBamJPCstId3Ue9u8HdXj
-        sDRvZKNwqvH4R3O7XrVfleBiu82m3vclvCcG89kR/CsTjY7qTwMlA==
-X-ME-Sender: <xms:f94AYqEMI9Cp1F63PJcg-q8TS4n8umV8WxW7o-tSXHHGudBRj42uEA>
-    <xme:f94AYrUip6bl_HB9jHcptnOM8gqXJZuNX64xccRa-xYzfA63_BFuBM7humSS3j7Nw
-    IA77nFXWAjpC4gSkvg>
-X-ME-Received: <xmr:f94AYkK9lAr_BiL4xNLJri_D3Uv-e2DSFCyqnXFtOUvUOMuBy17pSOEBs7UnDWXJWkd6U2zxT0fGIkh6NMKXq3qJGxLr8DwqCKfX1_M>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheeggdduvdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
-    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:f94AYkFNGR2CITYSmmXT_WfAa3LYpLu1pNC9XvuBLo8cX9Uta0xGGQ>
-    <xmx:f94AYgUPXvEMcdh6qIH9lRyraTuIW3WcZkoGOPlSsFvFUwXz_AEX8Q>
-    <xmx:f94AYnN_DfYQzRMjD5tto5wZ5f_vzAtX8gN_NtnP8fahgpyzQ7z9Hg>
-    <xmx:f94AYhsBC3c2yhahIurEvvnv87_-GJrnwUqsDdNXOk06ZlDC-Wg_hA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 7 Feb 2022 03:55:27 -0500 (EST)
-Date:   Mon, 7 Feb 2022 09:55:24 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        linux-sunxi@lists.linux.dev,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>
-Subject: Re: [PATCH v3 2/6] dt-bindings: rtc: sun6i: Add H616, R329, and D1
- support
-Message-ID: <20220207085524.rmt6fwku5mdvgvx6@houat>
-References: <20220203021736.13434-1-samuel@sholland.org>
- <20220203021736.13434-3-samuel@sholland.org>
+        Mon, 7 Feb 2022 03:53:25 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D227FC043185
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 00:53:24 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 833D51F37E;
+        Mon,  7 Feb 2022 08:53:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644224003; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gbYYpP1ofdmOnvO7Y4oyOOzmxBbTDWXucvcUs4lpTwE=;
+        b=CrZH/FBjNv0FoVkBxkBMDn6Y86r+hYNL/zLLRtkfwHdN1V90MR6krwMqRqUpEl83zZz1Gj
+        ki/hN3xQ98BAhKFxx9j93S4aEXIzd3tMPWF2Oj9/ISCNOqLWcvcO3W700Z0CdTgK05a0Tr
+        bezLHUdToL5Jir4zMMZAEkM2w+c/QzY=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 55A2513ABC;
+        Mon,  7 Feb 2022 08:53:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id SldeEgPeAGIyCQAAMHmgww
+        (envelope-from <jgross@suse.com>); Mon, 07 Feb 2022 08:53:23 +0000
+Message-ID: <ee3648f2-203a-70be-1a5f-ac1df45a054e@suse.com>
+Date:   Mon, 7 Feb 2022 09:53:22 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qkbg3fjun5hhqpuu"
-Content-Disposition: inline
-In-Reply-To: <20220203021736.13434-3-samuel@sholland.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH] xen/x86: obtain full video frame buffer address for Dom0
+ also under EFI
+Content-Language: en-US
+To:     Jan Beulich <jbeulich@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        lkml <linux-kernel@vger.kernel.org>
+References: <2501ce9d-40e5-b49d-b0e5-435544d17d4a@suse.com>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <2501ce9d-40e5-b49d-b0e5-435544d17d4a@suse.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------hh6pmzbHEFuApL2yB5aX6lcw"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------hh6pmzbHEFuApL2yB5aX6lcw
+Content-Type: multipart/mixed; boundary="------------CiOl9PFExzxoTfP3ssHzdoKF";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Jan Beulich <jbeulich@suse.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ lkml <linux-kernel@vger.kernel.org>
+Message-ID: <ee3648f2-203a-70be-1a5f-ac1df45a054e@suse.com>
+Subject: Re: [PATCH] xen/x86: obtain full video frame buffer address for Dom0
+ also under EFI
+References: <2501ce9d-40e5-b49d-b0e5-435544d17d4a@suse.com>
+In-Reply-To: <2501ce9d-40e5-b49d-b0e5-435544d17d4a@suse.com>
 
---qkbg3fjun5hhqpuu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--------------CiOl9PFExzxoTfP3ssHzdoKF
+Content-Type: multipart/mixed; boundary="------------i2lh93ijwOC0lpitsXG2i3Nn"
+
+--------------i2lh93ijwOC0lpitsXG2i3Nn
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
+
+T24gMDcuMDIuMjIgMDg6NDEsIEphbiBCZXVsaWNoIHdyb3RlOg0KPiBUaGUgaW5pdGlhbCBj
+aGFuZ2Ugd291bGQgbm90IHdvcmsgd2hlbiBYZW4gd2FzIGJvb3RlZCBmcm9tIEVGSTogVGhl
+cmUNCj4gaXMgYW4gZWFybHkgZXhpdCBmcm9tIHRoZSBjYXNlIGJsb2NrIGluIHRoYXQgY2Fz
+ZS4gTW92ZSB0aGUgbmVjZXNzYXJ5DQo+IGNvZGUgYWhlYWQgb2YgdGhhdC4NCj4gDQo+IEZp
+eGVzOiAzMzVlNGRkNjdiNDggKCJ4ZW4veDg2OiBvYnRhaW4gdXBwZXIgMzIgYml0cyBvZiB2
+aWRlbyBmcmFtZQ0KPiBidWZmZXIgYWRkcmVzcyBmb3IgRG9tMCIpIFNpZ25lZC1vZmYtYnk6
+IEphbiBCZXVsaWNoDQo+IDxqYmV1bGljaEBzdXNlLmNvbT4NCg0KUmV2aWV3ZWQtYnk6IEp1
+ZXJnZW4gR3Jvc3MgPGpncm9zc0BzdXNlLmNvbT4NCg0KDQpKdWVyZ2VuDQo=
+--------------i2lh93ijwOC0lpitsXG2i3Nn
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 02, 2022 at 08:17:32PM -0600, Samuel Holland wrote:
-> These new RTC variants all have a single alarm, like the R40 variant.
->=20
-> For the new SoCs, start requiring a complete list of input clocks. The
-> H616 has three required clocks. The R329 also has three required clocks
-> (but one is different), plus an optional crystal oscillator input. The
-> D1 RTC is identical to the one in the R329.
->=20
-> And since these new SoCs will have a well-defined output clock order as
-> well, they do not need the clock-output-names property.
->=20
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-Reviewed-by: Maxime Ripard <maxime@cerno.tech>
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
 
-Maxime
+--------------i2lh93ijwOC0lpitsXG2i3Nn--
 
---qkbg3fjun5hhqpuu
-Content-Type: application/pgp-signature; name="signature.asc"
+--------------CiOl9PFExzxoTfP3ssHzdoKF--
+
+--------------hh6pmzbHEFuApL2yB5aX6lcw
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgDefAAKCRDj7w1vZxhR
-xanbAQCV3IfYrd8wt+3Bv8a73mndzneaP7kXmLPtVzeaBn9tSgEA0xja/ekjRcsL
-rmx3XMyAvoiTBrDJEYr2r1elL9YxQQk=
-=vfa3
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmIA3gIFAwAAAAAACgkQsN6d1ii/Ey+2
+jwf9HhMOA9zsQr5UHsYQs6eP2EcbyibSA8xTSUmyqWlyfHbgNB34Se1NQoET6x5Dlk4wG9/9fB3V
+3v8SacvDlwGpOzoM4yoG6eSNrzN+Me3h2Ozs33JvZtQyHNhg2JhQYD3w5DLgT6ei4ammyZ7O8KH7
+yKmp3tSaE3eMbalbnuis4zPxIUEsUkMzFX5hN3opRG86L6ABzREVPjlLZ4RfoLp9IUouj8dN16zX
+IUMc0JRcWKkByCfsc5TS23iH1HJItSkSAkaMLri0rj7FcJGmRy7SA+N9kRnF6zAyghhHIOLw5G1W
+kOAl8LN4TJ7Ry1PWSt0GHsnBkQSTTFE3CDvtsNeBKg==
+=JjD3
 -----END PGP SIGNATURE-----
 
---qkbg3fjun5hhqpuu--
+--------------hh6pmzbHEFuApL2yB5aX6lcw--
