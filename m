@@ -2,155 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 464FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06787C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244807AbiBGWni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 17:43:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56640 "EHLO
+        id S235991AbiBGWpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 17:45:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238700AbiBGWne (ORCPT
+        with ESMTP id S232785AbiBGWpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 17:43:34 -0500
-X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 14:43:32 PST
-Received: from mail.namei.org (namei.org [65.99.196.166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17ABC061355;
-        Mon,  7 Feb 2022 14:43:32 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.namei.org (Postfix) with ESMTPS id 7235C424;
-        Mon,  7 Feb 2022 22:24:49 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.namei.org 7235C424
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=namei.org; s=2;
-        t=1644272689; bh=0BY/V/NIgDIevFQdF+wBys4ty26sYhLszDEPcdK7lds=;
-        h=Date:From:To:cc:Subject:From;
-        b=1XdVNc4ggTblHTpzOBwW/SI45jMQCePu37bX4zNovZerTp2MOne46L47WP/LiNVcQ
-         421qWS3h/u+x/sEhDPYdUVx6j1/HOySQeMLRET18Vh6cPbgvFQVHx9SLn8H3N4ca4H
-         X2un323LTy/67B8EZaOPlHzv6fGuyaWcO3Gq0NjY=
-Date:   Tue, 8 Feb 2022 09:24:49 +1100 (AEDT)
-From:   James Morris <jmorris@namei.org>
-To:     linux-security-module@vger.kernel.org
-cc:     linux-kernel@vger.kernel.org, lwn@lwn.net,
-        fedora-selinux-list@redhat.com, linux-crypto@vger.kernel.org,
-        kernel-hardening@lists.openwall.com,
-        linux-integrity@vger.kernel.org, selinux@vger.kernel.org,
-        Audit-ML <linux-audit@redhat.com>, gentoo-hardened@gentoo.org,
-        keyrings@linux-nfs.org, tpmdd-devel@lists.sourceforge.net,
-        Linux Security Summit Program Committee 
-        <lss-pc@lists.linuxfoundation.org>
-Subject: [ANNOUNCE][CFP] Linux Security Summit North America 2022
-Message-ID: <3e5acc67-829-fafb-c82-833fc22b35a@namei.org>
+        Mon, 7 Feb 2022 17:45:30 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F79CC061355;
+        Mon,  7 Feb 2022 14:45:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644273930; x=1675809930;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=/kRBeLG+E+e8Fa1In5ioSuQHyPxsmnGL5vggy8pd18g=;
+  b=L6SMl1Wzjc6+j7JJ1y2Lgf+pB80PjC4QCBiQIGcT7m2EFERHHhcShqyV
+   9D4gdeJfpBJSVBZAbYcemgwB0uixZsXj/Amp+x8enWsiixH/pz6QINWLv
+   hCNqVK714QoFAYPa4suZwB22t1JHIqlLYXolXjUUrJhN3qCQ/U+Bk+n4U
+   c7mB8IoZ48yAGiu4XP9VPxw+o3bOmyUKkSOLvpebKRIhvE3j2wZe9Droi
+   S2yF9vARnm5aVXVLEK05G2DFvtTm5bnwu7pD+d/vCM2b1sHzsOOSzZ7lu
+   iaGpoSXYfoBTwFg2ERt9AFrFhbZB3hh7JkoBpeN0QT9Zl9y0/u4dCo7Q2
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="248772082"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="248772082"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 14:45:30 -0800
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="525308323"
+Received: from hgrunes-mobl1.amr.corp.intel.com (HELO [10.251.3.57]) ([10.251.3.57])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 14:45:29 -0800
+Message-ID: <b9d48ed0-699b-585c-a52c-46d789c11dc9@intel.com>
+Date:   Mon, 7 Feb 2022 14:45:26 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Balbir Singh <bsingharora@gmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Eugene Syromiatnikov <esyr@redhat.com>,
+        Florian Weimer <fweimer@redhat.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
+        Dave Martin <Dave.Martin@arm.com>,
+        Weijiang Yang <weijiang.yang@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
+        kcc@google.com, eranian@google.com
+Cc:     Yu-cheng Yu <yu-cheng.yu@intel.com>
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <20220130211838.8382-4-rick.p.edgecombe@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH 03/35] x86/cpufeatures: Add CET CPU feature flags for
+ Control-flow Enforcement Technology (CET)
+In-Reply-To: <20220130211838.8382-4-rick.p.edgecombe@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-==============================================================================
-                   ANNOUNCEMENT AND CALL FOR PARTICIPATION
+On 1/30/22 13:18, Rick Edgecombe wrote:
+> --- a/arch/x86/kernel/cpu/cpuid-deps.c
+> +++ b/arch/x86/kernel/cpu/cpuid-deps.c
+> @@ -78,6 +78,7 @@ static const struct cpuid_dep cpuid_deps[] = {
+>  	{ X86_FEATURE_XFD,			X86_FEATURE_XSAVES    },
+>  	{ X86_FEATURE_XFD,			X86_FEATURE_XGETBV1   },
+>  	{ X86_FEATURE_AMX_TILE,			X86_FEATURE_XFD       },
+> +	{ X86_FEATURE_SHSTK,			X86_FEATURE_XSAVES    },
+>  	{}
+>  };
 
-                   LINUX SECURITY SUMMIT NORTH AMERICA 2022
-                             
-                                 23-24 June
-                           Austin, Texas & Virtual
-==============================================================================
+Please add a chunk to the changelog that explains the dependency.  This
+would suffice:
 
-DESCRIPTION
- 
-Linux Security Summit North America (LSS-NA) is a technical forum for
-collaboration between Linux developers, researchers, and end-users.  Its
-primary aim is to foster community efforts in analyzing and solving Linux
-security challenges.
+	To protect shadow stack state from malicious modification, the
+	registers are only accessible in supervisor mode.  This
+	implementation context-switches the registers with XSAVES.  Make
+	X86_FEATURE_SHSTK depend on XSAVES.
 
- The program committee currently seeks proposals for:
- 
-   * Refereed Presentations:
-     45 minutes in length.
- 
-   * Panel Discussion Topics:
-     45 minutes in length.
- 
-   * Short Topics:
-     30 minutes in total, including at least 10 minutes discussion.
- 
-   * Tutorials
-     90 minutes in length.
- 
-Tutorial sessions should be focused on advanced Linux security defense
-topics within areas such as the kernel, compiler, and security-related
-libraries.  Priority will be given to tutorials created for this conference,
-and those where the presenter a leading subject matter expert on the topic.
- 
-Topic areas include, but are not limited to:
- 
-   * Kernel self-protection
-   * Access control
-   * Cryptography and key management
-   * Integrity policy and enforcement
-   * Hardware Security
-   * IoT and embedded security
-   * Virtualization and containers
-   * System-specific system hardening
-   * Case studies
-   * Security tools
-   * Security UX
-   * Emerging technologies, threats & techniques
-
-  Proposals should be submitted via:
-    https://events.linuxfoundation.org/linux-security-summit-north-america/
-
-
-Note that for 2022, we are returning to having both North American and
-European events (LSS-EU will be held in September).
- 
-
-LSS-NA DATES
- 
-  * CFP close:            March 30
-  * CFP notifications:    April 15
-  * Schedule announced:   April 19
-  * Event:                September 23-24
-
-WHO SHOULD ATTEND
- 
-We're seeking a diverse range of attendees and welcome participation by
-people involved in Linux security development, operations, and research.
- 
-LSS is a unique global event that provides the opportunity to present and
-discuss your work or research with key Linux security community members and
-maintainers.  It's also useful for those who wish to keep up with the latest
-in Linux security development and to provide input to the development
-process.
-
-WEB SITE
-
-    https://events.linuxfoundation.org/linux-security-summit-north-america/
-
-TWITTER
-
-  For event updates and announcements, follow:
-
-    https://twitter.com/LinuxSecSummit
-  
-    #linuxsecuritysummit
-
-PROGRAM COMMITTEE
-
-  The program committee for LSS 2021 is:
-
-    * James Morris, Microsoft
-    * Serge Hallyn, Cisco
-    * Paul Moore, Microsoft
-    * Stephen Smalley, NSA
-    * Elena Reshetova, Intel
-    * John Johansen, Canonical
-    * Kees Cook, Google
-    * Casey Schaufler, Intel
-    * Mimi Zohar, IBM
-    * David A. Wheeler, Linux Foundation
-
-  The program committee may be contacted as a group via email:
-    lss-pc () lists.linuxfoundation.org
-
--- 
-
-
+The XSAVES dependency is touched on in the documentation, but it's a bit
+buried in there.
