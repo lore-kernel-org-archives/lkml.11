@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C39EC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF55C3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383127AbiBGQA0 (ORCPT
+        id S1386323AbiBGQBL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:00:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37812 "EHLO
+        Mon, 7 Feb 2022 11:01:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231263AbiBGP5T (ORCPT
+        with ESMTP id S242971AbiBGP7N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:57:19 -0500
+        Mon, 7 Feb 2022 10:59:13 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4477C0401CC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:57:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF9C8C0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:59:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249437;
+        s=mimecast20190719; t=1644249552;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WfBR/k98L4+bC6Zh+Zl9tYY0D7k4ei3pM6o4QxmereM=;
-        b=QxhU25eTSX7+wMtQN1IjPQiSRqUqtJpL6qNTfD3YUoTXx6eFOlZth/DDrHkqyu6+ncIovb
-        4ieLwbMU56zHv6GvadUCwE8GotML3bFGp1UJp8vfRedeRTwew4Gxz3FUBmtkKuiE+c0T/s
-        EsquTN2LKtCajlTe886vHNnE08erc9g=
+        bh=PA0ZlhnyV8+URLprs6c44r6sDD4SwJewRmeM2u7HZ1o=;
+        b=jMPFZ/gt5tFdRYiobreHN4+W4V4Y6O0LMq1QmlWHrXenrJTzEkx4r7NNva81pFaKSxonzL
+        BXjrhG0rhxCxDGS5fJ+wX8diE0qqq/oU3BWFblCVphn8ZfwP5ZPVuVMr0tJaTN1rvIqa9W
+        m9DOXhKj0wZu4YrreQlSnaLv0Rmwi6M=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-626-HWEGEVyzP7-uSFNtYigGXA-1; Mon, 07 Feb 2022 10:57:14 -0500
-X-MC-Unique: HWEGEVyzP7-uSFNtYigGXA-1
+ us-mta-534-CJQeKoKLORqhqrfN0EJQcg-1; Mon, 07 Feb 2022 10:59:08 -0500
+X-MC-Unique: CJQeKoKLORqhqrfN0EJQcg-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D99BC100C660;
-        Mon,  7 Feb 2022 15:57:11 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1522F3E743;
+        Mon,  7 Feb 2022 15:58:56 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 540707DE38;
-        Mon,  7 Feb 2022 15:56:38 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 923C89652D;
+        Mon,  7 Feb 2022 15:58:47 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>,
@@ -67,9 +67,9 @@ Cc:     Tony Luck <tony.luck@intel.com>,
         Kan Liang <kan.liang@linux.intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 12/30] KVM: x86: SVM: allow AVIC to co-exist with a nested guest running
-Date:   Mon,  7 Feb 2022 17:54:29 +0200
-Message-Id: <20220207155447.840194-13-mlevitsk@redhat.com>
+Subject: [PATCH RESEND 18/30] KVM: x86: mmu: add strict mmu mode
+Date:   Mon,  7 Feb 2022 17:54:35 +0200
+Message-Id: <20220207155447.840194-19-mlevitsk@redhat.com>
 In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
 References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
@@ -79,280 +79,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Inhibit the AVIC of the vCPU that is running nested for the duration of the
-nested run, so that all interrupts arriving from both its vCPU siblings
-and from KVM are delivered using normal IPIs and cause that vCPU to vmexit.
+Add an (mostly debug) option to force KVM's shadow mmu
+to never have unsync pages.
 
-Note that unlike normal AVIC inhibition, there is no need to
-update the AVIC mmio memslot, because the nested guest uses its
-own set of paging tables.
-That also means that AVIC doesn't need to be inhibited VM wide.
+This is useful in some cases to debug it.
 
-Note that in the theory when a nested guest doesn't intercept
-physical interrupts, we could continue using AVIC to deliver them
-to it but don't bother doing so for now. Plus when nested AVIC
-is implemented, the nested guest will likely use it, which will
-not allow this optimization to be used
+It is also useful for some legacy guest OSes which don't
+flush TLBs correctly, and thus don't work on modern
+CPUs which have speculative MMUs.
 
-(can't use real AVIC to support both L1 and L2 at the same time)
+Using this option together with legacy paging (npt/ept=0)
+allows to correctly simulate such old MMU while still
+getting most of the benefits of the virtualization.
 
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/include/asm/kvm-x86-ops.h |  1 +
- arch/x86/include/asm/kvm_host.h    |  8 +++++++-
- arch/x86/kvm/svm/avic.c            |  7 ++++++-
- arch/x86/kvm/svm/nested.c          | 15 ++++++++++-----
- arch/x86/kvm/svm/svm.c             | 31 +++++++++++++++++++-----------
- arch/x86/kvm/svm/svm.h             |  1 +
- arch/x86/kvm/x86.c                 | 18 +++++++++++++++--
- 7 files changed, 61 insertions(+), 20 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index 9e37dc3d88636..c0d8f351dcbc0 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -125,6 +125,7 @@ KVM_X86_OP_NULL(migrate_timers)
- KVM_X86_OP(msr_filter_changed)
- KVM_X86_OP_NULL(complete_emulated_msr)
- KVM_X86_OP(vcpu_deliver_sipi_vector)
-+KVM_X86_OP_NULL(vcpu_has_apicv_inhibit_condition);
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 43c7abdd6b70f..fa2da6990703f 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -91,6 +91,10 @@ __MODULE_PARM_TYPE(nx_huge_pages_recovery_period_ms, "uint");
+ static bool __read_mostly force_flush_and_sync_on_reuse;
+ module_param_named(flush_on_reuse, force_flush_and_sync_on_reuse, bool, 0644);
  
- #undef KVM_X86_OP
- #undef KVM_X86_OP_NULL
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index c371ee7e45f78..256539c0481c5 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1039,7 +1039,6 @@ struct kvm_x86_msr_filter {
- 
- #define APICV_INHIBIT_REASON_DISABLE    0
- #define APICV_INHIBIT_REASON_HYPERV     1
--#define APICV_INHIBIT_REASON_NESTED     2
- #define APICV_INHIBIT_REASON_IRQWIN     3
- #define APICV_INHIBIT_REASON_PIT_REINJ  4
- #define APICV_INHIBIT_REASON_X2APIC	5
-@@ -1494,6 +1493,12 @@ struct kvm_x86_ops {
- 	int (*complete_emulated_msr)(struct kvm_vcpu *vcpu, int err);
- 
- 	void (*vcpu_deliver_sipi_vector)(struct kvm_vcpu *vcpu, u8 vector);
 +
-+	/*
-+	 * Returns true if for some reason APICv (e.g guest mode)
-+	 * must be inhibited on this vCPU
-+	 */
-+	bool (*vcpu_has_apicv_inhibit_condition)(struct kvm_vcpu *vcpu);
- };
- 
- struct kvm_x86_nested_ops {
-@@ -1784,6 +1789,7 @@ gpa_t kvm_mmu_gva_to_gpa_system(struct kvm_vcpu *vcpu, gva_t gva,
- 
- bool kvm_apicv_activated(struct kvm *kvm);
- void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu);
-+bool vcpu_has_apicv_inhibit_condition(struct kvm_vcpu *vcpu);
- void kvm_request_apicv_update(struct kvm *kvm, bool activate,
- 			      unsigned long bit);
- 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index c6072245f7fbb..8f23e7d239097 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -677,6 +677,12 @@ bool avic_dy_apicv_has_pending_interrupt(struct kvm_vcpu *vcpu)
- 	return false;
- }
- 
-+bool avic_has_vcpu_inhibit_condition(struct kvm_vcpu *vcpu)
-+{
-+	return is_guest_mode(vcpu);
-+}
++bool strict_mmu;
++module_param(strict_mmu, bool, 0644);
 +
-+
- static void svm_ir_list_del(struct vcpu_svm *svm, struct amd_iommu_pi_data *pi)
+ /*
+  * When setting this variable to true it enables Two-Dimensional-Paging
+  * where the hardware walks 2 page tables:
+@@ -2703,7 +2707,7 @@ static int mmu_set_spte(struct kvm_vcpu *vcpu, struct kvm_memory_slot *slot,
+ 	}
+ 
+ 	wrprot = make_spte(vcpu, sp, slot, pte_access, gfn, pfn, *sptep, prefetch,
+-			   true, host_writable, &spte);
++			   !strict_mmu, host_writable, &spte);
+ 
+ 	if (*sptep == spte) {
+ 		ret = RET_PF_SPURIOUS;
+@@ -5139,6 +5143,11 @@ static u64 mmu_pte_write_fetch_gpte(struct kvm_vcpu *vcpu, gpa_t *gpa,
+  */
+ static bool detect_write_flooding(struct kvm_mmu_page *sp)
  {
- 	unsigned long flags;
-@@ -888,7 +894,6 @@ bool avic_check_apicv_inhibit_reasons(ulong bit)
- 	ulong supported = BIT(APICV_INHIBIT_REASON_DISABLE) |
- 			  BIT(APICV_INHIBIT_REASON_ABSENT) |
- 			  BIT(APICV_INHIBIT_REASON_HYPERV) |
--			  BIT(APICV_INHIBIT_REASON_NESTED) |
- 			  BIT(APICV_INHIBIT_REASON_IRQWIN) |
- 			  BIT(APICV_INHIBIT_REASON_PIT_REINJ) |
- 			  BIT(APICV_INHIBIT_REASON_X2APIC) |
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 39d280e7e80ef..ac9159b0618c7 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -551,11 +551,6 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
- 	 * exit_int_info, exit_int_info_err, next_rip, insn_len, insn_bytes.
- 	 */
- 
--	/*
--	 * Also covers avic_vapic_bar, avic_backing_page, avic_logical_id,
--	 * avic_physical_id.
--	 */
--	WARN_ON(kvm_apicv_activated(svm->vcpu.kvm));
- 
- 	/* Copied from vmcb01.  msrpm_base can be overwritten later.  */
- 	svm->vmcb->control.nested_ctl = svm->vmcb01.ptr->control.nested_ctl;
-@@ -659,6 +654,9 @@ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
- 
- 	svm_set_gif(svm, true);
- 
-+	if (kvm_vcpu_apicv_active(vcpu))
-+		kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
-+
- 	return 0;
- }
- 
-@@ -923,6 +921,13 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
- 	if (unlikely(svm->vmcb->save.rflags & X86_EFLAGS_TF))
- 		kvm_queue_exception(&(svm->vcpu), DB_VECTOR);
- 
 +	/*
-+	 * Un-inhibit the AVIC right away, so that other vCPUs can start
-+	 * to benefit from VM-exit less IPI right away
++	 * When using non speculating MMU, use a bit higher threshold
++	 * for write flood detection
 +	 */
-+	if (kvm_apicv_activated(vcpu->kvm))
-+		kvm_vcpu_update_apicv(vcpu);
-+
- 	return 0;
- }
- 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 18d4d87e12e15..85035324ed762 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -1392,7 +1392,8 @@ static void svm_set_vintr(struct vcpu_svm *svm)
++	int threshold = strict_mmu ? 10 :  3;
  	/*
- 	 * The following fields are ignored when AVIC is enabled
- 	 */
--	WARN_ON(kvm_apicv_activated(svm->vcpu.kvm));
-+	if (!is_guest_mode(&svm->vcpu))
-+		WARN_ON(kvm_apicv_activated(svm->vcpu.kvm));
+ 	 * Skip write-flooding detected for the sp whose level is 1, because
+ 	 * it can become unsync, then the guest page is not write-protected.
+@@ -5147,7 +5156,7 @@ static bool detect_write_flooding(struct kvm_mmu_page *sp)
+ 		return false;
  
- 	svm_set_intercept(svm, INTERCEPT_VINTR);
- 
-@@ -2898,10 +2899,16 @@ static int interrupt_window_interception(struct kvm_vcpu *vcpu)
- 	svm_clear_vintr(to_svm(vcpu));
- 
- 	/*
--	 * For AVIC, the only reason to end up here is ExtINTs.
-+	 * If not running nested, for AVIC, the only reason to end up here is ExtINTs.
- 	 * In this case AVIC was temporarily disabled for
- 	 * requesting the IRQ window and we have to re-enable it.
-+	 *
-+	 * If running nested, still uninhibit the AVIC in case irq window
-+	 * was requested when it was not running nested.
-+	 * All vCPUs which run nested will have their AVIC still
-+	 * inhibited due to AVIC inhibition override for that.
- 	 */
-+
- 	kvm_request_apicv_update(vcpu->kvm, true, APICV_INHIBIT_REASON_IRQWIN);
- 
- 	++vcpu->stat.irq_window_exits;
-@@ -3451,8 +3458,16 @@ static void svm_enable_irq_window(struct kvm_vcpu *vcpu)
- 		 * unless we have pending ExtINT since it cannot be injected
- 		 * via AVIC. In such case, we need to temporarily disable AVIC,
- 		 * and fallback to injecting IRQ via V_IRQ.
-+		 *
-+		 * If running nested, this vCPU will use separate page tables
-+		 * which don't have L1's AVIC mapped, and the AVIC is
-+		 * already inhibited thus there is no need for global
-+		 * AVIC inhibition.
- 		 */
--		kvm_request_apicv_update(vcpu->kvm, false, APICV_INHIBIT_REASON_IRQWIN);
-+
-+		if (!is_guest_mode(vcpu))
-+			kvm_request_apicv_update(vcpu->kvm, false, APICV_INHIBIT_REASON_IRQWIN);
-+
- 		svm_set_vintr(svm);
- 	}
+ 	atomic_inc(&sp->write_flooding_count);
+-	return atomic_read(&sp->write_flooding_count) >= 3;
++	return atomic_read(&sp->write_flooding_count) >= threshold;
  }
-@@ -3927,14 +3942,6 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 		if (guest_cpuid_has(vcpu, X86_FEATURE_X2APIC))
- 			kvm_request_apicv_update(vcpu->kvm, false,
- 						 APICV_INHIBIT_REASON_X2APIC);
--
--		/*
--		 * Currently, AVIC does not work with nested virtualization.
--		 * So, we disable AVIC when cpuid for SVM is set in the L1 guest.
--		 */
--		if (nested && guest_cpuid_has(vcpu, X86_FEATURE_SVM))
--			kvm_request_apicv_update(vcpu->kvm, false,
--						 APICV_INHIBIT_REASON_NESTED);
- 	}
- 	init_vmcb_after_set_cpuid(vcpu);
- }
-@@ -4657,6 +4664,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.complete_emulated_msr = svm_complete_emulated_msr,
- 
- 	.vcpu_deliver_sipi_vector = svm_vcpu_deliver_sipi_vector,
-+	.vcpu_has_apicv_inhibit_condition = avic_has_vcpu_inhibit_condition,
- };
  
  /*
-@@ -4840,6 +4848,7 @@ static __init int svm_hardware_setup(void)
- 	} else {
- 		svm_x86_ops.vcpu_blocking = NULL;
- 		svm_x86_ops.vcpu_unblocking = NULL;
-+		svm_x86_ops.vcpu_has_apicv_inhibit_condition = NULL;
- 	}
- 
- 	if (vls) {
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 83f9f95eced3e..c02903641d13d 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -580,6 +580,7 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
- void avic_vcpu_blocking(struct kvm_vcpu *vcpu);
- void avic_vcpu_unblocking(struct kvm_vcpu *vcpu);
- void avic_ring_doorbell(struct kvm_vcpu *vcpu);
-+bool avic_has_vcpu_inhibit_condition(struct kvm_vcpu *vcpu);
- 
- /* sev.c */
- 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 8cb5390f75efe..63d84c373e465 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9697,6 +9697,14 @@ void kvm_make_scan_ioapic_request(struct kvm *kvm)
- 	kvm_make_all_cpus_request(kvm, KVM_REQ_SCAN_IOAPIC);
- }
- 
-+bool vcpu_has_apicv_inhibit_condition(struct kvm_vcpu *vcpu)
-+{
-+	if (kvm_x86_ops.vcpu_has_apicv_inhibit_condition)
-+		return static_call(kvm_x86_vcpu_has_apicv_inhibit_condition)(vcpu);
-+	else
-+		return false;
-+}
-+
- void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
- {
- 	bool activate;
-@@ -9706,7 +9714,9 @@ void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
- 
- 	down_read(&vcpu->kvm->arch.apicv_update_lock);
- 
--	activate = kvm_apicv_activated(vcpu->kvm);
-+	activate = kvm_apicv_activated(vcpu->kvm) &&
-+		   !vcpu_has_apicv_inhibit_condition(vcpu);
-+
- 	if (vcpu->arch.apicv_active == activate)
- 		goto out;
- 
-@@ -10110,7 +10120,11 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 		 * per-VM state, and responsing vCPUs must wait for the update
- 		 * to complete before servicing KVM_REQ_APICV_UPDATE.
- 		 */
--		WARN_ON_ONCE(kvm_apicv_activated(vcpu->kvm) != kvm_vcpu_apicv_active(vcpu));
-+		if (vcpu_has_apicv_inhibit_condition(vcpu))
-+			WARN_ON(kvm_vcpu_apicv_active(vcpu));
-+		else
-+			WARN_ON_ONCE(kvm_apicv_activated(vcpu->kvm) != kvm_vcpu_apicv_active(vcpu));
-+
- 
- 		exit_fastpath = static_call(kvm_x86_vcpu_run)(vcpu);
- 		if (likely(exit_fastpath != EXIT_FASTPATH_REENTER_GUEST))
 -- 
 2.26.3
 
