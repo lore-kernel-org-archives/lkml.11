@@ -2,84 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6E1C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84326C3526E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387000AbiBGQae (ORCPT
+        id S1385093AbiBGQab (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:30:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58354 "EHLO
+        Mon, 7 Feb 2022 11:30:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345722AbiBGQVN (ORCPT
+        with ESMTP id S1388549AbiBGQ0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:21:13 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77887C0401CE
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:21:11 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id u23so1987409wru.6
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 08:21:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Np4LH/PHz6uNkDpTZmQ/zoxgwDp96GbmnvDa2V7nWjk=;
-        b=QgufGM+1w3bsYZSJ9xlKRmy3+TsigV3ZsM/lqCkrk+2PFrRq2qAxjaRIcbaZ6XTMpd
-         dHN3csVfUdJlhnr4ISuVdfwWYthqcjlVkwEKaIzb9ohnAgPPPEnUh8ZXbwWBB4FE5VTD
-         v4qiUp1+V61ZK9GFt06cQBjo9kwCIXouNxnx1dWjOOpSi6rvXPFsU0oBn2JtQQ8qDYSE
-         JTzdjg3Q550FQW+DQ/yUhMrzvS9yoNZmt/a2M2/z7siYRPqcfv6jjVIuNkLoSpWuQ8d/
-         sOwBN4knqfQHkxWpOzloC+DeoSvsFYb63wY9gAxv2vVkHqYOCumGB9afLCGKIFbX2MJ5
-         xl2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Np4LH/PHz6uNkDpTZmQ/zoxgwDp96GbmnvDa2V7nWjk=;
-        b=xTCqIa5jsKhPp+GyJUWfhlV/HjGWNTXqz7zGGuXbEW+2TzrAj6GsGTgJNevbCqH/EN
-         m+vgcdmtSCYj3aNTMAx/LKCpdnwMcq0qBrl+ANYZ4ZyFpBXPR/t2S8wI+MkfxNLzG57s
-         NiKdvxdNPpgeueoISpxu955HQ7d/tP15Z1qcr2qAFmHIo7vS3cGKUkepTIwPgsewq9YT
-         A5WStzHd65xJyCHDWQV0DA6xsOpHmOUmxAyjggoT013tGRTaApZsWEs/4Lm/BRdLVcvg
-         6ONCUWHZ8ZZTB3wBPF4v0P5PqoRwIsIsvTIIDuH6GWnng7q8a2gToAktwZsCbdBtHUDz
-         52CA==
-X-Gm-Message-State: AOAM533hl3/r6XaVpgVJijNyLxacHsZg50hBYJa/M39/EZmfVg50MYxR
-        NtfCQtJxkIPhcAm2dFOyI/kY5w==
-X-Google-Smtp-Source: ABdhPJx9cikXNjt/6MFPqIqkMx5U5Ng8Uv5wYgVhdvs4xghr+YQWYDB7vr7F/zL+84q9GXPE6QDA6w==
-X-Received: by 2002:a5d:50c2:: with SMTP id f2mr173218wrt.694.1644250870003;
-        Mon, 07 Feb 2022 08:21:10 -0800 (PST)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id k9sm9789271wrv.81.2022.02.07.08.21.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 08:21:09 -0800 (PST)
-Date:   Mon, 7 Feb 2022 16:21:07 +0000
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-pwm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH] backlight: pwm_bl: Avoid open coded arithmetic in memory
- allocation
-Message-ID: <20220207162107.eblu6rxyhkuyyqnf@maple.lan>
-References: <bd3d74acfa58d59f6f5f81fc5a9fb409edb8d747.1644046817.git.christophe.jaillet@wanadoo.fr>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bd3d74acfa58d59f6f5f81fc5a9fb409edb8d747.1644046817.git.christophe.jaillet@wanadoo.fr>
+        Mon, 7 Feb 2022 11:26:03 -0500
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBCE2C0401CE
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:26:02 -0800 (PST)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOc0w014393;
+        Mon, 7 Feb 2022 17:24:38 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        Willy Tarreau <w@1wt.eu>
+Subject: [PATCH 10/42] tools/nolibc/ctype: add the missing is* functions
+Date:   Mon,  7 Feb 2022 17:23:22 +0100
+Message-Id: <20220207162354.14293-11-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
+In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
+References: <20220207162354.14293-1-w@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 08:40:48AM +0100, Christophe JAILLET wrote:
-> kmalloc_array()/kcalloc() should be used to avoid potential overflow when
-> a multiplication is needed to compute the size of the requested memory.
-> 
-> So turn a kzalloc()+explicit size computation into an equivalent kcalloc().
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+There was only isdigit, this commit adds the other ones.
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+---
+ tools/include/nolibc/ctype.h | 79 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 78 insertions(+), 1 deletion(-)
 
+diff --git a/tools/include/nolibc/ctype.h b/tools/include/nolibc/ctype.h
+index 6735bd906f25..e3000b2992d7 100644
+--- a/tools/include/nolibc/ctype.h
++++ b/tools/include/nolibc/ctype.h
+@@ -13,10 +13,87 @@
+  * As much as possible, please keep functions alphabetically sorted.
+  */
+ 
++static __attribute__((unused))
++int isascii(int c)
++{
++	/* 0x00..0x7f */
++	return (unsigned int)c <= 0x7f;
++}
++
++static __attribute__((unused))
++int isblank(int c)
++{
++	return c == '\t' || c == ' ';
++}
++
++static __attribute__((unused))
++int iscntrl(int c)
++{
++	/* 0x00..0x1f, 0x7f */
++	return (unsigned int)c < 0x20 || c == 0x7f;
++}
++
+ static __attribute__((unused))
+ int isdigit(int c)
+ {
+-	return (unsigned int)(c - '0') <= 9;
++	return (unsigned int)(c - '0') < 10;
++}
++
++static __attribute__((unused))
++int isgraph(int c)
++{
++	/* 0x21..0x7e */
++	return (unsigned int)(c - 0x21) < 0x5e;
++}
++
++static __attribute__((unused))
++int islower(int c)
++{
++	return (unsigned int)(c - 'a') < 26;
++}
++
++static __attribute__((unused))
++int isprint(int c)
++{
++	/* 0x20..0x7e */
++	return (unsigned int)(c - 0x20) < 0x5f;
++}
++
++static __attribute__((unused))
++int isspace(int c)
++{
++	/* \t is 0x9, \n is 0xA, \v is 0xB, \f is 0xC, \r is 0xD */
++	return ((unsigned int)c == ' ') || (unsigned int)(c - 0x09) < 5;
++}
++
++static __attribute__((unused))
++int isupper(int c)
++{
++	return (unsigned int)(c - 'A') < 26;
++}
++
++static __attribute__((unused))
++int isxdigit(int c)
++{
++	return isdigit(c) || (unsigned int)(c - 'A') < 6 || (unsigned int)(c - 'a') < 6;
++}
++
++static __attribute__((unused))
++int isalpha(int c)
++{
++	return islower(c) || isupper(c);
++}
++
++static __attribute__((unused))
++int isalnum(int c)
++{
++	return isalpha(c) || isdigit(c);
++}
++
++static __attribute__((unused))
++int ispunct(int c)
++{
++	return isgraph(c) && !isalnum(c);
+ }
+ 
+ #endif /* _NOLIBC_CTYPE_H */
+-- 
+2.35.1
 
-Daniel.
