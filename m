@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F8AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02FDCC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383156AbiBGLVm (ORCPT
+        id S1383101AbiBGLVg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54270 "EHLO
+        Mon, 7 Feb 2022 06:21:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379072AbiBGLQB (ORCPT
+        with ESMTP id S1378830AbiBGLP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:16:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD30C0401C1;
-        Mon,  7 Feb 2022 03:16:00 -0800 (PST)
+        Mon, 7 Feb 2022 06:15:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07957C0401C2;
+        Mon,  7 Feb 2022 03:15:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14AABB80EC3;
-        Mon,  7 Feb 2022 11:15:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 385B0C004E1;
-        Mon,  7 Feb 2022 11:15:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45E5661261;
+        Mon,  7 Feb 2022 11:15:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3064AC004E1;
+        Mon,  7 Feb 2022 11:15:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232557;
-        bh=rUMuAcN2LGESDpLVqYoXT1cCa4WWguHXuJ2RczFMAsk=;
+        s=korg; t=1644232551;
+        bh=FvBWJosJtyYm8g+flOJrSFqn3OnIohx9YKXeucM2Fw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RHWlABTM8xctAkIpyB3HJYybX9JaWXlawHf/Z8GnSL60iDspIFnC5dNefCis49DDC
-         +a6gPNQh648Eu1YO+zJLkwIKXztqN0WGcJp9dXR/gRADTDpQHQ7147NXyxL2XrglVt
-         iFsn2xCs2qsMA4wpNhClLsJp1DHQixKYEBOYMZsk=
+        b=YFAXM5y3Xj7EDwfJraAuA7548gS4l8JsMPA/IyE00wNe4DI5SYQCSGsBLtSByFxYg
+         +Ciu0BUbD4k8bk3D0AE24jhJui++zz+4xiDoTQOH8qqlxPM5FXnCOd7rZCDESXcfYi
+         WdPKyI/LRs8JjpacJS7+31hur+OcT4fj3INJRrm4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jason Xing <kerneljasonxing@gmail.com>,
-        Zhang Changzhong <zhangchangzhong@huawei.com>,
-        liweishi <liweishi@kuaishou.com>,
-        Shujin Li <lishujin@kuaishou.com>,
-        Neal Cardwell <ncardwell@google.com>
-Subject: [PATCH 4.19 48/86] tcp: fix possible socket leaks in internal pacing mode
-Date:   Mon,  7 Feb 2022 12:06:11 +0100
-Message-Id: <20220207103759.122641352@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 4.19 46/86] netfilter: nat: remove l4 protocol port rovers
+Date:   Mon,  7 Feb 2022 12:06:09 +0100
+Message-Id: <20220207103759.060180554@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -53,101 +49,183 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Florian Westphal <fw@strlen.de>
 
-From: Eric Dumazet <edumazet@google.com>
+commit 6ed5943f8735e2b778d92ea4d9805c0a1d89bc2b upstream.
 
-This patch is addressing an issue in stable linux-4.19 only.
+This is a leftover from days where single-cpu systems were common:
+Store last port used to resolve a clash to use it as a starting point when
+the next conflict needs to be resolved.
 
-In linux-4.20, TCP stack adopted EDT (Earliest Departure
-Time) model and this issue was incidentally fixed.
+When we have parallel attempt to connect to same address:port pair,
+its likely that both cores end up computing the same "available" port,
+as both use same starting port, and newly used ports won't become
+visible to other cores until the conntrack gets confirmed later.
 
-Issue at hand was an extra sock_hold() from tcp_internal_pacing()
-in paths not using tcp_xmit_retransmit_queue()
+One of the cores then has to drop the packet at insertion time because
+the chosen new tuple turns out to be in use after all.
 
-Jason Xing reported this leak and provided a patch stopping
-the extra sock_hold() to happen.
+Lets simplify this: remove port rover and use a pseudo-random starting
+point.
 
-This patch is more complete and makes sure to avoid
-unnecessary extra delays, by reprogramming the high
-resolution timer.
+Note that this doesn't make netfilter default to 'fully random' mode;
+the 'rover' was only used if NAT could not reuse source port as-is.
 
-Fixes: 73a6bab5aa2a ("tcp: switch pacing timer to softirq based hrtimer")
-Reference: https://lore.kernel.org/all/CANn89i+7-wE4xr5D9DpH+N-xkL1SB8oVghCKgz+CT5eG1ODQhA@mail.gmail.com/
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Jason Xing <kerneljasonxing@gmail.com>
-Reported-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc: liweishi <liweishi@kuaishou.com>
-Cc: Shujin Li <lishujin@kuaishou.com>
-Cc: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_output.c |   31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ include/net/netfilter/nf_nat_l4proto.h |    2 +-
+ net/netfilter/nf_nat_proto_common.c    |    8 ++------
+ net/netfilter/nf_nat_proto_dccp.c      |    5 +----
+ net/netfilter/nf_nat_proto_sctp.c      |    5 +----
+ net/netfilter/nf_nat_proto_tcp.c       |    5 +----
+ net/netfilter/nf_nat_proto_udp.c       |   10 ++--------
+ 6 files changed, 8 insertions(+), 27 deletions(-)
 
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -968,6 +968,8 @@ enum hrtimer_restart tcp_pace_kick(struc
+--- a/include/net/netfilter/nf_nat_l4proto.h
++++ b/include/net/netfilter/nf_nat_l4proto.h
+@@ -74,7 +74,7 @@ void nf_nat_l4proto_unique_tuple(const s
+ 				 struct nf_conntrack_tuple *tuple,
+ 				 const struct nf_nat_range2 *range,
+ 				 enum nf_nat_manip_type maniptype,
+-				 const struct nf_conn *ct, u16 *rover);
++				 const struct nf_conn *ct);
  
- static void tcp_internal_pacing(struct sock *sk, const struct sk_buff *skb)
+ int nf_nat_l4proto_nlattr_to_range(struct nlattr *tb[],
+ 				   struct nf_nat_range2 *range);
+--- a/net/netfilter/nf_nat_proto_common.c
++++ b/net/netfilter/nf_nat_proto_common.c
+@@ -38,8 +38,7 @@ void nf_nat_l4proto_unique_tuple(const s
+ 				 struct nf_conntrack_tuple *tuple,
+ 				 const struct nf_nat_range2 *range,
+ 				 enum nf_nat_manip_type maniptype,
+-				 const struct nf_conn *ct,
+-				 u16 *rover)
++				 const struct nf_conn *ct)
  {
-+	struct tcp_sock *tp = tcp_sk(sk);
-+	ktime_t expire, now;
- 	u64 len_ns;
- 	u32 rate;
+ 	unsigned int range_size, min, max, i;
+ 	__be16 *portptr;
+@@ -86,16 +85,13 @@ void nf_nat_l4proto_unique_tuple(const s
+ 	} else if (range->flags & NF_NAT_RANGE_PROTO_OFFSET) {
+ 		off = (ntohs(*portptr) - ntohs(range->base_proto.all));
+ 	} else {
+-		off = *rover;
++		off = prandom_u32();
+ 	}
  
-@@ -979,12 +981,28 @@ static void tcp_internal_pacing(struct s
- 
- 	len_ns = (u64)skb->len * NSEC_PER_SEC;
- 	do_div(len_ns, rate);
--	hrtimer_start(&tcp_sk(sk)->pacing_timer,
--		      ktime_add_ns(ktime_get(), len_ns),
-+	now = ktime_get();
-+	/* If hrtimer is already armed, then our caller has not
-+	 * used tcp_pacing_check().
-+	 */
-+	if (unlikely(hrtimer_is_queued(&tp->pacing_timer))) {
-+		expire = hrtimer_get_softexpires(&tp->pacing_timer);
-+		if (ktime_after(expire, now))
-+			now = expire;
-+		if (hrtimer_try_to_cancel(&tp->pacing_timer) == 1)
-+			__sock_put(sk);
-+	}
-+	hrtimer_start(&tp->pacing_timer, ktime_add_ns(now, len_ns),
- 		      HRTIMER_MODE_ABS_PINNED_SOFT);
- 	sock_hold(sk);
+ 	for (i = 0; ; ++off) {
+ 		*portptr = htons(min + off % range_size);
+ 		if (++i != range_size && nf_nat_used_tuple(tuple, ct))
+ 			continue;
+-		if (!(range->flags & (NF_NAT_RANGE_PROTO_RANDOM_ALL|
+-					NF_NAT_RANGE_PROTO_OFFSET)))
+-			*rover = off;
+ 		return;
+ 	}
  }
+--- a/net/netfilter/nf_nat_proto_dccp.c
++++ b/net/netfilter/nf_nat_proto_dccp.c
+@@ -18,8 +18,6 @@
+ #include <net/netfilter/nf_nat_l3proto.h>
+ #include <net/netfilter/nf_nat_l4proto.h>
  
-+static bool tcp_pacing_check(const struct sock *sk)
-+{
-+	return tcp_needs_internal_pacing(sk) &&
-+	       hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
-+}
-+
- static void tcp_update_skb_after_send(struct tcp_sock *tp, struct sk_buff *skb)
- {
- 	skb->skb_mstamp = tp->tcp_mstamp;
-@@ -2121,6 +2139,9 @@ static int tcp_mtu_probe(struct sock *sk
- 	if (!tcp_can_coalesce_send_queue_head(sk, probe_size))
- 		return -1;
- 
-+	if (tcp_pacing_check(sk))
-+		return -1;
-+
- 	/* We're allowed to probe.  Build it now. */
- 	nskb = sk_stream_alloc_skb(sk, probe_size, GFP_ATOMIC, false);
- 	if (!nskb)
-@@ -2194,12 +2215,6 @@ static int tcp_mtu_probe(struct sock *sk
- 	return -1;
- }
- 
--static bool tcp_pacing_check(const struct sock *sk)
--{
--	return tcp_needs_internal_pacing(sk) &&
--	       hrtimer_is_queued(&tcp_sk(sk)->pacing_timer);
--}
+-static u_int16_t dccp_port_rover;
 -
- /* TCP Small Queues :
-  * Control number of packets in qdisc/devices to two packets / or ~1 ms.
-  * (These limits are doubled for retransmits)
+ static void
+ dccp_unique_tuple(const struct nf_nat_l3proto *l3proto,
+ 		  struct nf_conntrack_tuple *tuple,
+@@ -27,8 +25,7 @@ dccp_unique_tuple(const struct nf_nat_l3
+ 		  enum nf_nat_manip_type maniptype,
+ 		  const struct nf_conn *ct)
+ {
+-	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct,
+-				    &dccp_port_rover);
++	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct);
+ }
+ 
+ static bool
+--- a/net/netfilter/nf_nat_proto_sctp.c
++++ b/net/netfilter/nf_nat_proto_sctp.c
+@@ -12,8 +12,6 @@
+ 
+ #include <net/netfilter/nf_nat_l4proto.h>
+ 
+-static u_int16_t nf_sctp_port_rover;
+-
+ static void
+ sctp_unique_tuple(const struct nf_nat_l3proto *l3proto,
+ 		  struct nf_conntrack_tuple *tuple,
+@@ -21,8 +19,7 @@ sctp_unique_tuple(const struct nf_nat_l3
+ 		  enum nf_nat_manip_type maniptype,
+ 		  const struct nf_conn *ct)
+ {
+-	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct,
+-				    &nf_sctp_port_rover);
++	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct);
+ }
+ 
+ static bool
+--- a/net/netfilter/nf_nat_proto_tcp.c
++++ b/net/netfilter/nf_nat_proto_tcp.c
+@@ -18,8 +18,6 @@
+ #include <net/netfilter/nf_nat_l4proto.h>
+ #include <net/netfilter/nf_nat_core.h>
+ 
+-static u16 tcp_port_rover;
+-
+ static void
+ tcp_unique_tuple(const struct nf_nat_l3proto *l3proto,
+ 		 struct nf_conntrack_tuple *tuple,
+@@ -27,8 +25,7 @@ tcp_unique_tuple(const struct nf_nat_l3p
+ 		 enum nf_nat_manip_type maniptype,
+ 		 const struct nf_conn *ct)
+ {
+-	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct,
+-				    &tcp_port_rover);
++	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct);
+ }
+ 
+ static bool
+--- a/net/netfilter/nf_nat_proto_udp.c
++++ b/net/netfilter/nf_nat_proto_udp.c
+@@ -17,8 +17,6 @@
+ #include <net/netfilter/nf_nat_l3proto.h>
+ #include <net/netfilter/nf_nat_l4proto.h>
+ 
+-static u16 udp_port_rover;
+-
+ static void
+ udp_unique_tuple(const struct nf_nat_l3proto *l3proto,
+ 		 struct nf_conntrack_tuple *tuple,
+@@ -26,8 +24,7 @@ udp_unique_tuple(const struct nf_nat_l3p
+ 		 enum nf_nat_manip_type maniptype,
+ 		 const struct nf_conn *ct)
+ {
+-	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct,
+-				    &udp_port_rover);
++	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct);
+ }
+ 
+ static void
+@@ -78,8 +75,6 @@ static bool udp_manip_pkt(struct sk_buff
+ }
+ 
+ #ifdef CONFIG_NF_NAT_PROTO_UDPLITE
+-static u16 udplite_port_rover;
+-
+ static bool udplite_manip_pkt(struct sk_buff *skb,
+ 			      const struct nf_nat_l3proto *l3proto,
+ 			      unsigned int iphdroff, unsigned int hdroff,
+@@ -103,8 +98,7 @@ udplite_unique_tuple(const struct nf_nat
+ 		     enum nf_nat_manip_type maniptype,
+ 		     const struct nf_conn *ct)
+ {
+-	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct,
+-				    &udplite_port_rover);
++	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct);
+ }
+ 
+ const struct nf_nat_l4proto nf_nat_l4proto_udplite = {
 
 
