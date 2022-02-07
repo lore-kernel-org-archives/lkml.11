@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63028C3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 352ABC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385737AbiBGLcU (ORCPT
+        id S1385831AbiBGLcp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:32:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33188 "EHLO
+        Mon, 7 Feb 2022 06:32:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383021AbiBGLVZ (ORCPT
+        with ESMTP id S1383100AbiBGLVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:21:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9B0C03FECD;
-        Mon,  7 Feb 2022 03:21:05 -0800 (PST)
+        Mon, 7 Feb 2022 06:21:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA904C03FEEE;
+        Mon,  7 Feb 2022 03:21:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69E04B811AF;
-        Mon,  7 Feb 2022 11:21:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F295C004E1;
-        Mon,  7 Feb 2022 11:21:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 859AEB8111C;
+        Mon,  7 Feb 2022 11:21:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C50B9C004E1;
+        Mon,  7 Feb 2022 11:21:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232862;
-        bh=vhAEzco/UHCmcxF7QDa7KCLTLJqPXpSuTCLSQsFmnXo=;
+        s=korg; t=1644232877;
+        bh=LD9q2F7C49Xrr8S/nNPWAaFaRh3oBr6qn1pjqP1/jyY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ibUbqN6flqoJa0wJYlkzkYUqCCucIv5B2+ZL0+kKJCkM+oV6X+MZyC/XWhqddX4G7
-         U8X0aHV4V0i+oKsRNcUZaOQgbl4GZ4VuN6PVWSvDGicsRZKufTmLYLr/kjbUp3I3Ft
-         iNDjdb1LVsL454ZlML/eN5c9Ck/Zc7sT/hRuJz3I=
+        b=Z9wcY26QKFRyRDCowbyvYu4vp/CmLZCD3y1o004qTCBLm+R3BNKRuq7qQD+jHl7uN
+         OOjtGFgkGe8ev1uqF66MrX0cVnZ2FfGQ56LMVvv9hdYdLFj8Wg23e6tTMbxq3qP7Ev
+         EtfL0BFXCDhtTKeOleLmJmpqJXYj2sTJsWnIwo4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
-        Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>
-Subject: [PATCH 5.10 02/74] audit: improve audit queue handling when "audit=1" on cmdline
-Date:   Mon,  7 Feb 2022 12:06:00 +0100
-Message-Id: <20220207103757.311948583@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Sergeyev <sergeev917@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 07/74] ALSA: hda: Fix UAF of leds class devs at unbinding
+Date:   Mon,  7 Feb 2022 12:06:05 +0100
+Message-Id: <20220207103757.479750939@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -50,207 +49,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Moore <paul@paul-moore.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit f26d04331360d42dbd6b58448bd98e4edbfbe1c5 upstream.
+commit 549f8ffc7b2f7561bea7f90930b6c5104318e87b upstream.
 
-When an admin enables audit at early boot via the "audit=1" kernel
-command line the audit queue behavior is slightly different; the
-audit subsystem goes to greater lengths to avoid dropping records,
-which unfortunately can result in problems when the audit daemon is
-forcibly stopped for an extended period of time.
+The LED class devices that are created by HD-audio codec drivers are
+registered via devm_led_classdev_register() and associated with the
+HD-audio codec device.  Unfortunately, it turned out that the devres
+release doesn't work for this case; namely, since the codec resource
+release happens before the devm call chain, it triggers a NULL
+dereference or a UAF for a stale set_brightness_delay callback.
 
-This patch makes a number of changes designed to improve the audit
-queuing behavior so that leaving the audit daemon in a stopped state
-for an extended period does not cause a significant impact to the
-system.
+For fixing the bug, this patch changes the LED class device register
+and unregister in a manual manner without devres, keeping the
+instances in hda_gen_spec.
 
-- kauditd_send_queue() is now limited to looping through the
-  passed queue only once per call.  This not only prevents the
-  function from looping indefinitely when records are returned
-  to the current queue, it also allows any recovery handling in
-  kauditd_thread() to take place when kauditd_send_queue()
-  returns.
-
-- Transient netlink send errors seen as -EAGAIN now cause the
-  record to be returned to the retry queue instead of going to
-  the hold queue.  The intention of the hold queue is to store,
-  perhaps for an extended period of time, the events which led
-  up to the audit daemon going offline.  The retry queue remains
-  a temporary queue intended to protect against transient issues
-  between the kernel and the audit daemon.
-
-- The retry queue is now limited by the audit_backlog_limit
-  setting, the same as the other queues.  This allows admins
-  to bound the size of all of the audit queues on the system.
-
-- kauditd_rehold_skb() now returns records to the end of the
-  hold queue to ensure ordering is preserved in the face of
-  recent changes to kauditd_send_queue().
-
-Cc: stable@vger.kernel.org
-Fixes: 5b52330bbfe63 ("audit: fix auditd/kernel connection state tracking")
-Fixes: f4b3ee3c85551 ("audit: improve robustness of the audit queue handling")
-Reported-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Tested-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Reviewed-by: Richard Guy Briggs <rgb@redhat.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220111195229.a77wrpjclqwrx4bx@localhost.localdomain
+Link: https://lore.kernel.org/r/20220126145011.16728-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/audit.c |   62 +++++++++++++++++++++++++++++++++++++++------------------
- 1 file changed, 43 insertions(+), 19 deletions(-)
+ sound/pci/hda/hda_generic.c |   17 +++++++++++++++--
+ sound/pci/hda/hda_generic.h |    3 +++
+ 2 files changed, 18 insertions(+), 2 deletions(-)
 
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -541,20 +541,22 @@ static void kauditd_printk_skb(struct sk
- /**
-  * kauditd_rehold_skb - Handle a audit record send failure in the hold queue
-  * @skb: audit record
-+ * @error: error code (unused)
-  *
-  * Description:
-  * This should only be used by the kauditd_thread when it fails to flush the
-  * hold queue.
-  */
--static void kauditd_rehold_skb(struct sk_buff *skb)
-+static void kauditd_rehold_skb(struct sk_buff *skb, __always_unused int error)
- {
--	/* put the record back in the queue at the same place */
--	skb_queue_head(&audit_hold_queue, skb);
-+	/* put the record back in the queue */
-+	skb_queue_tail(&audit_hold_queue, skb);
+--- a/sound/pci/hda/hda_generic.c
++++ b/sound/pci/hda/hda_generic.c
+@@ -91,6 +91,12 @@ static void snd_hda_gen_spec_free(struct
+ 	free_kctls(spec);
+ 	snd_array_free(&spec->paths);
+ 	snd_array_free(&spec->loopback_list);
++#ifdef CONFIG_SND_HDA_GENERIC_LEDS
++	if (spec->led_cdevs[LED_AUDIO_MUTE])
++		led_classdev_unregister(spec->led_cdevs[LED_AUDIO_MUTE]);
++	if (spec->led_cdevs[LED_AUDIO_MICMUTE])
++		led_classdev_unregister(spec->led_cdevs[LED_AUDIO_MICMUTE]);
++#endif
  }
  
- /**
-  * kauditd_hold_skb - Queue an audit record, waiting for auditd
-  * @skb: audit record
-+ * @error: error code
-  *
-  * Description:
-  * Queue the audit record, waiting for an instance of auditd.  When this
-@@ -564,19 +566,31 @@ static void kauditd_rehold_skb(struct sk
-  * and queue it, if we have room.  If we want to hold on to the record, but we
-  * don't have room, record a record lost message.
-  */
--static void kauditd_hold_skb(struct sk_buff *skb)
-+static void kauditd_hold_skb(struct sk_buff *skb, int error)
+ /*
+@@ -3911,7 +3917,10 @@ static int create_mute_led_cdev(struct h
+ 						enum led_brightness),
+ 				bool micmute)
  {
- 	/* at this point it is uncertain if we will ever send this to auditd so
- 	 * try to send the message via printk before we go any further */
- 	kauditd_printk_skb(skb);
++	struct hda_gen_spec *spec = codec->spec;
+ 	struct led_classdev *cdev;
++	int idx = micmute ? LED_AUDIO_MICMUTE : LED_AUDIO_MUTE;
++	int err;
  
- 	/* can we just silently drop the message? */
--	if (!audit_default) {
--		kfree_skb(skb);
--		return;
-+	if (!audit_default)
-+		goto drop;
+ 	cdev = devm_kzalloc(&codec->core.dev, sizeof(*cdev), GFP_KERNEL);
+ 	if (!cdev)
+@@ -3921,10 +3930,14 @@ static int create_mute_led_cdev(struct h
+ 	cdev->max_brightness = 1;
+ 	cdev->default_trigger = micmute ? "audio-micmute" : "audio-mute";
+ 	cdev->brightness_set_blocking = callback;
+-	cdev->brightness = ledtrig_audio_get(micmute ? LED_AUDIO_MICMUTE : LED_AUDIO_MUTE);
++	cdev->brightness = ledtrig_audio_get(idx);
+ 	cdev->flags = LED_CORE_SUSPENDRESUME;
+ 
+-	return devm_led_classdev_register(&codec->core.dev, cdev);
++	err = led_classdev_register(&codec->core.dev, cdev);
++	if (err < 0)
++		return err;
++	spec->led_cdevs[idx] = cdev;
++	return 0;
+ }
+ 
+ static void vmaster_update_mute_led(void *private_data, int enabled)
+--- a/sound/pci/hda/hda_generic.h
++++ b/sound/pci/hda/hda_generic.h
+@@ -305,6 +305,9 @@ struct hda_gen_spec {
+ 				   struct hda_jack_callback *cb);
+ 	void (*mic_autoswitch_hook)(struct hda_codec *codec,
+ 				    struct hda_jack_callback *cb);
 +
-+	/* the hold queue is only for when the daemon goes away completely,
-+	 * not -EAGAIN failures; if we are in a -EAGAIN state requeue the
-+	 * record on the retry queue unless it's full, in which case drop it
-+	 */
-+	if (error == -EAGAIN) {
-+		if (!audit_backlog_limit ||
-+		    skb_queue_len(&audit_retry_queue) < audit_backlog_limit) {
-+			skb_queue_tail(&audit_retry_queue, skb);
-+			return;
-+		}
-+		audit_log_lost("kauditd retry queue overflow");
-+		goto drop;
- 	}
++	/* leds */
++	struct led_classdev *led_cdevs[NUM_AUDIO_LEDS];
+ };
  
--	/* if we have room, queue the message */
-+	/* if we have room in the hold queue, queue the message */
- 	if (!audit_backlog_limit ||
- 	    skb_queue_len(&audit_hold_queue) < audit_backlog_limit) {
- 		skb_queue_tail(&audit_hold_queue, skb);
-@@ -585,24 +599,32 @@ static void kauditd_hold_skb(struct sk_b
- 
- 	/* we have no other options - drop the message */
- 	audit_log_lost("kauditd hold queue overflow");
-+drop:
- 	kfree_skb(skb);
- }
- 
- /**
-  * kauditd_retry_skb - Queue an audit record, attempt to send again to auditd
-  * @skb: audit record
-+ * @error: error code (unused)
-  *
-  * Description:
-  * Not as serious as kauditd_hold_skb() as we still have a connected auditd,
-  * but for some reason we are having problems sending it audit records so
-  * queue the given record and attempt to resend.
-  */
--static void kauditd_retry_skb(struct sk_buff *skb)
-+static void kauditd_retry_skb(struct sk_buff *skb, __always_unused int error)
- {
--	/* NOTE: because records should only live in the retry queue for a
--	 * short period of time, before either being sent or moved to the hold
--	 * queue, we don't currently enforce a limit on this queue */
--	skb_queue_tail(&audit_retry_queue, skb);
-+	if (!audit_backlog_limit ||
-+	    skb_queue_len(&audit_retry_queue) < audit_backlog_limit) {
-+		skb_queue_tail(&audit_retry_queue, skb);
-+		return;
-+	}
-+
-+	/* we have to drop the record, send it via printk as a last effort */
-+	kauditd_printk_skb(skb);
-+	audit_log_lost("kauditd retry queue overflow");
-+	kfree_skb(skb);
- }
- 
- /**
-@@ -640,7 +662,7 @@ static void auditd_reset(const struct au
- 	/* flush the retry queue to the hold queue, but don't touch the main
- 	 * queue since we need to process that normally for multicast */
- 	while ((skb = skb_dequeue(&audit_retry_queue)))
--		kauditd_hold_skb(skb);
-+		kauditd_hold_skb(skb, -ECONNREFUSED);
- }
- 
- /**
-@@ -714,16 +736,18 @@ static int kauditd_send_queue(struct soc
- 			      struct sk_buff_head *queue,
- 			      unsigned int retry_limit,
- 			      void (*skb_hook)(struct sk_buff *skb),
--			      void (*err_hook)(struct sk_buff *skb))
-+			      void (*err_hook)(struct sk_buff *skb, int error))
- {
- 	int rc = 0;
--	struct sk_buff *skb;
-+	struct sk_buff *skb = NULL;
-+	struct sk_buff *skb_tail;
- 	unsigned int failed = 0;
- 
- 	/* NOTE: kauditd_thread takes care of all our locking, we just use
- 	 *       the netlink info passed to us (e.g. sk and portid) */
- 
--	while ((skb = skb_dequeue(queue))) {
-+	skb_tail = skb_peek_tail(queue);
-+	while ((skb != skb_tail) && (skb = skb_dequeue(queue))) {
- 		/* call the skb_hook for each skb we touch */
- 		if (skb_hook)
- 			(*skb_hook)(skb);
-@@ -731,7 +755,7 @@ static int kauditd_send_queue(struct soc
- 		/* can we send to anyone via unicast? */
- 		if (!sk) {
- 			if (err_hook)
--				(*err_hook)(skb);
-+				(*err_hook)(skb, -ECONNREFUSED);
- 			continue;
- 		}
- 
-@@ -745,7 +769,7 @@ retry:
- 			    rc == -ECONNREFUSED || rc == -EPERM) {
- 				sk = NULL;
- 				if (err_hook)
--					(*err_hook)(skb);
-+					(*err_hook)(skb, rc);
- 				if (rc == -EAGAIN)
- 					rc = 0;
- 				/* continue to drain the queue */
+ /* values for add_stereo_mix_input flag */
 
 
