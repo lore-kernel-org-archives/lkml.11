@@ -2,62 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD5AC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3CEC35271
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380160AbiBGL4B (ORCPT
+        id S1381995AbiBGL4l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:56:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
+        Mon, 7 Feb 2022 06:56:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385052AbiBGLbC (ORCPT
+        with ESMTP id S1385107AbiBGLbK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73C2C03649B;
-        Mon,  7 Feb 2022 03:29:06 -0800 (PST)
+        Mon, 7 Feb 2022 06:31:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141B4C033247;
+        Mon,  7 Feb 2022 03:29:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 403A1B80EBD;
-        Mon,  7 Feb 2022 11:29:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BDA7C004E1;
-        Mon,  7 Feb 2022 11:29:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D1DE60A67;
+        Mon,  7 Feb 2022 11:29:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4254CC004E1;
+        Mon,  7 Feb 2022 11:29:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233344;
-        bh=fPYdKdWpnGHTHXZCbhnIuCJs8ENy0yQAD1fLx+dFIIs=;
+        s=korg; t=1644233359;
+        bh=96amUmCpTDzItVXSdoi5GA0nI3qQJEkMsW3DEz5lelk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ciMsHFjBm6mBx0qLwnUcEiytLfs3SN2Hf5IEVcUF4rSQusurkwpk9251zTqQtKcQg
-         XDTYbyJxlml9tMAtAgnGyCG0EEGAsiv1f1jW6A23TC1Sn8NLUrD5/qttbJQ5pklRAp
-         LoPUOpeHf1oDIHiikqEI33A297wSfSXv2v/tju8g=
+        b=FdGi85eKiTBKSaV2gXu0xo0ckHPybXaPZue3DFINuX2Xcv4sXSEdZuxflK6DuE0AL
+         MbV0y+ifI7Un63W6XckTGF6tJcmDMI0U3xHbBRKS3uiGqH0t8lnc9uudtdPE7v8rM/
+         d3O+ZP2YfbhO93svBSXkrB0MhaNvS08b8uCkVhA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Asaf Yaffe <asaf.yaffe@intel.com>,
-        Caleb Biggers <caleb.biggers@intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        James Clark <james.clark@arm.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        John Garry <john.garry@huawei.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Kshipra Bopardikar <kshipra.bopardikar@intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Perry Taylor <perry.taylor@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephane Eranian <eranian@google.com>,
-        Vineet Singh <vineet.singh@intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 094/110] perf stat: Fix display of grouped aliased events
-Date:   Mon,  7 Feb 2022 12:07:07 +0100
-Message-Id: <20220207103805.580324499@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Yin <yinxin.x@bytedance.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.15 099/110] ext4: prevent used blocks from being allocated during fast commit replay
+Date:   Mon,  7 Feb 2022 12:07:12 +0100
+Message-Id: <20220207103805.744397195@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -69,256 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Rogers <irogers@google.com>
+From: Xin Yin <yinxin.x@bytedance.com>
 
-[ Upstream commit b2b1aa73ade982c175ac926a1fd34e76ad628b94 ]
+commit 599ea31d13617c5484c40cdf50d88301dc351cfc upstream.
 
-An event may have a number of uncore aliases that when added to the
-evlist are consecutive.
+During fast commit replay procedure, we clear inode blocks bitmap in
+ext4_ext_clear_bb(), this may cause ext4_mb_new_blocks_simple() allocate
+blocks still in use.
 
-If there are multiple uncore events in a group then
-parse_events__set_leader_for_uncore_aliase will reorder the evlist so
-that events on the same PMU are adjacent.
+Make ext4_fc_record_regions() also record physical disk regions used by
+inodes during replay procedure. Then ext4_mb_new_blocks_simple() can
+excludes these blocks in use.
 
-The collect_all_aliases function assumes that aliases are in blocks so
-that only the first counter is printed and all others are marked merged.
-
-The reordering for groups breaks the assumption and so all counts are
-printed.
-
-This change removes the assumption from collect_all_aliases
-that the events are in blocks and instead processes the entire evlist.
-
-Before:
-
-  ```
-  $ perf stat -e '{UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE,UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE},duration_time' -a -A -- sleep 1
-
-   Performance counter stats for 'system wide':
-
-  CPU0                  256,866      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 494,413      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                      967      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,738      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  285,161      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 429,920      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                      955      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,443      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  310,753      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 416,657      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,231      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,573      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  416,067      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 405,966      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,481      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,447      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  312,911      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 408,154      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,086      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,380      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  333,994      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 370,349      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,287      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,335      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  188,107      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 302,423      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                      701      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,070      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  307,221      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 383,642      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,036      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,158      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  318,479      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 821,545      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,028      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   2,550      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  227,618      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 372,272      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                      903      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,456      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  376,783      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 419,827      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,406      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,453      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  286,583      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 429,956      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                      999      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,436      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  313,867      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 370,159      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,114      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,291      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  342,083      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 409,111      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,399      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,684      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  365,828      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 376,037      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,378      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,411      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  382,456      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 621,743      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,232      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,955      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  342,316      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 385,067      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,176      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,268      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  373,588      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 386,163      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,394      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,464      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  381,206      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 546,891      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,266      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,712      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  221,176      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 392,069      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                      831      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,456      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  355,401      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 705,595      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,235      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   2,216      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  371,436      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 428,103      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,306      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,442      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  384,352      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 504,200      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,468      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,860      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  228,856      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 287,976      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                      832      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,060      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  215,121      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 334,162      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                      681      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,026      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  296,179      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 436,083      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,084      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,525      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  262,296      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 416,573      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                      986      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,533      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  285,852      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 359,842      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,073      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,326      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  303,379      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 367,222      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,008      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,156      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  273,487      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 425,449      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                      932      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,367      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  297,596      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 414,793      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,140      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,601      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  342,365      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 360,422      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,291      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,342      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  327,196      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 580,858      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,122      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   2,014      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  296,564      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 452,817      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,087      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,694      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  375,002      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 389,393      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,478      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   1,540      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0                  365,213      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36                 594,685      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                    1,401      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                   2,222      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0            1,000,749,060 ns   duration_time
-
-         1.000749060 seconds time elapsed
-  ```
-
-After:
-
-  ```
-   Performance counter stats for 'system wide':
-
-  CPU0               20,547,434      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU36              45,202,862      UNC_CHA_TOR_OCCUPANCY.IA_MISS_DRD_REMOTE
-  CPU0                   82,001      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU36                 159,688      UNC_CHA_TOR_INSERTS.IA_MISS_DRD_REMOTE
-  CPU0            1,000,464,828 ns   duration_time
-
-         1.000464828 seconds time elapsed
-  ```
-
-Fixes: 3cdc5c2cb924acb4 ("perf parse-events: Handle uncore event aliases in small groups properly")
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Asaf Yaffe <asaf.yaffe@intel.com>
-Cc: Caleb Biggers <caleb.biggers@intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: James Clark <james.clark@arm.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Kan Liang <kan.liang@linux.intel.com>
-Cc: Kshipra Bopardikar <kshipra.bopardikar@intel.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Perry Taylor <perry.taylor@intel.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Vineet Singh <vineet.singh@intel.com>
-Cc: Zhengjun Xing <zhengjun.xing@linux.intel.com>
-Link: https://lore.kernel.org/r/20220205010941.1065469-1-irogers@google.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+Link: https://lore.kernel.org/r/20220110035141.1980-2-yinxin.x@bytedance.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/stat-display.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ fs/ext4/ext4.h        |    3 +++
+ fs/ext4/extents.c     |    4 ++++
+ fs/ext4/fast_commit.c |   20 +++++++++++++++-----
+ 3 files changed, 22 insertions(+), 5 deletions(-)
 
-diff --git a/tools/perf/util/stat-display.c b/tools/perf/util/stat-display.c
-index 588601000f3f9..db00ca6a67deb 100644
---- a/tools/perf/util/stat-display.c
-+++ b/tools/perf/util/stat-display.c
-@@ -584,15 +584,16 @@ static void collect_all_aliases(struct perf_stat_config *config, struct evsel *c
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -2935,6 +2935,9 @@ void ext4_fc_replay_cleanup(struct super
+ int ext4_fc_commit(journal_t *journal, tid_t commit_tid);
+ int __init ext4_fc_init_dentry_cache(void);
+ void ext4_fc_destroy_dentry_cache(void);
++int ext4_fc_record_regions(struct super_block *sb, int ino,
++			   ext4_lblk_t lblk, ext4_fsblk_t pblk,
++			   int len, int replay);
  
- 	alias = list_prepare_entry(counter, &(evlist->core.entries), core.node);
- 	list_for_each_entry_continue (alias, &evlist->core.entries, core.node) {
--		if (strcmp(evsel__name(alias), evsel__name(counter)) ||
--		    alias->scale != counter->scale ||
--		    alias->cgrp != counter->cgrp ||
--		    strcmp(alias->unit, counter->unit) ||
--		    evsel__is_clock(alias) != evsel__is_clock(counter) ||
--		    !strcmp(alias->pmu_name, counter->pmu_name))
--			break;
--		alias->merged_stat = true;
--		cb(config, alias, data, false);
-+		/* Merge events with the same name, etc. but on different PMUs. */
-+		if (!strcmp(evsel__name(alias), evsel__name(counter)) &&
-+			alias->scale == counter->scale &&
-+			alias->cgrp == counter->cgrp &&
-+			!strcmp(alias->unit, counter->unit) &&
-+			evsel__is_clock(alias) == evsel__is_clock(counter) &&
-+			strcmp(alias->pmu_name, counter->pmu_name)) {
-+			alias->merged_stat = true;
-+			cb(config, alias, data, false);
-+		}
+ /* mballoc.c */
+ extern const struct seq_operations ext4_mb_seq_groups_ops;
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -6096,11 +6096,15 @@ int ext4_ext_clear_bb(struct inode *inod
+ 
+ 					ext4_mb_mark_bb(inode->i_sb,
+ 							path[j].p_block, 1, 0);
++					ext4_fc_record_regions(inode->i_sb, inode->i_ino,
++							0, path[j].p_block, 1, 1);
+ 				}
+ 				ext4_ext_drop_refs(path);
+ 				kfree(path);
+ 			}
+ 			ext4_mb_mark_bb(inode->i_sb, map.m_pblk, map.m_len, 0);
++			ext4_fc_record_regions(inode->i_sb, inode->i_ino,
++					map.m_lblk, map.m_pblk, map.m_len, 1);
+ 		}
+ 		cur = cur + map.m_len;
  	}
+--- a/fs/ext4/fast_commit.c
++++ b/fs/ext4/fast_commit.c
+@@ -1603,16 +1603,23 @@ out:
  }
  
--- 
-2.34.1
-
+ /*
+- * Record physical disk regions which are in use as per fast commit area. Our
+- * simple replay phase allocator excludes these regions from allocation.
++ * Record physical disk regions which are in use as per fast commit area,
++ * and used by inodes during replay phase. Our simple replay phase
++ * allocator excludes these regions from allocation.
+  */
+-static int ext4_fc_record_regions(struct super_block *sb, int ino,
+-		ext4_lblk_t lblk, ext4_fsblk_t pblk, int len)
++int ext4_fc_record_regions(struct super_block *sb, int ino,
++		ext4_lblk_t lblk, ext4_fsblk_t pblk, int len, int replay)
+ {
+ 	struct ext4_fc_replay_state *state;
+ 	struct ext4_fc_alloc_region *region;
+ 
+ 	state = &EXT4_SB(sb)->s_fc_replay_state;
++	/*
++	 * during replay phase, the fc_regions_valid may not same as
++	 * fc_regions_used, update it when do new additions.
++	 */
++	if (replay && state->fc_regions_used != state->fc_regions_valid)
++		state->fc_regions_used = state->fc_regions_valid;
+ 	if (state->fc_regions_used == state->fc_regions_size) {
+ 		state->fc_regions_size +=
+ 			EXT4_FC_REPLAY_REALLOC_INCREMENT;
+@@ -1630,6 +1637,9 @@ static int ext4_fc_record_regions(struct
+ 	region->pblk = pblk;
+ 	region->len = len;
+ 
++	if (replay)
++		state->fc_regions_valid++;
++
+ 	return 0;
+ }
+ 
+@@ -1973,7 +1983,7 @@ static int ext4_fc_replay_scan(journal_t
+ 			ret = ext4_fc_record_regions(sb,
+ 				le32_to_cpu(ext.fc_ino),
+ 				le32_to_cpu(ex->ee_block), ext4_ext_pblock(ex),
+-				ext4_ext_get_actual_len(ex));
++				ext4_ext_get_actual_len(ex), 0);
+ 			if (ret < 0)
+ 				break;
+ 			ret = JBD2_FC_REPLAY_CONTINUE;
 
 
