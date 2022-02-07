@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C82FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A585C41535
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387119AbiBGLjV (ORCPT
+        id S1387929AbiBGLmS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:39:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37296 "EHLO
+        Mon, 7 Feb 2022 06:42:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384388AbiBGL2C (ORCPT
+        with ESMTP id S1384616AbiBGL31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:28:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7D0C03E94F;
-        Mon,  7 Feb 2022 03:26:11 -0800 (PST)
+        Mon, 7 Feb 2022 06:29:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7DBCC02B5DC;
+        Mon,  7 Feb 2022 03:27:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9D1C6006F;
-        Mon,  7 Feb 2022 11:26:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B747BC004E1;
-        Mon,  7 Feb 2022 11:26:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 095BCB811AF;
+        Mon,  7 Feb 2022 11:27:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DD8AC340F0;
+        Mon,  7 Feb 2022 11:27:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233169;
-        bh=pejCLm/dhWAINZ/EwhvHtPsSwaQldnRAQnd2fBpHpUA=;
+        s=korg; t=1644233254;
+        bh=EtbOZiAqtWbT4t6/B/vsUfgMMXkYyFMWs8SFTUx3QU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ELlspqw27oAiv79KJh4GEIh30BMh/vI0XWm/oT+1wYl4g+xMzn3OZSKOPI0nljVDH
-         4S78iNalFYWFYjcW4bKsXk5qVHy9ftBfaLRFcy/Mnx4iofksR6mFWlMDBO3yvufWgG
-         ZkfLTEKhVBix7e1J0Lbu+VBrnqGn3pM5Ic0cRJzY=
+        b=Y27jjh47+CUty3MmNRBpQYy+RFfSBWzegOX3K4GVYcsgzCtgNjnuZGe/J75zqcYau
+         WHnHaTRGX5uA+fT2gHQX22udortkTOae5d3QMg6HVR/PRk7hdmZRg1aP4yTa3f22WA
+         4IQch0bNJuL7/snPAx44rhM49IAGSFZIFqHLODhM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Morse <james.morse@arm.com>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.15 038/110] KVM: arm64: Stop handle_exit() from handling HVC twice when an SError occurs
-Date:   Mon,  7 Feb 2022 12:06:11 +0100
-Message-Id: <20220207103803.561653593@linuxfoundation.org>
+        stable@vger.kernel.org, Camel Guo <camelg@axis.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 066/110] net: stmmac: dump gmac4 DMA registers correctly
+Date:   Mon,  7 Feb 2022 12:06:39 +0100
+Message-Id: <20220207103804.510645202@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -49,54 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Camel Guo <camelg@axis.com>
 
-commit 1229630af88620f6e3a621a1ebd1ca14d9340df7 upstream.
+commit 7af037c39b600bac2c716dd1228e8ddbe149573f upstream.
 
-Prior to commit defe21f49bc9 ("KVM: arm64: Move PC rollback on SError to
-HYP"), when an SError is synchronised due to another exception, KVM
-handles the SError first. If the guest survives, the instruction that
-triggered the original exception is re-exectued to handle the first
-exception. HVC is treated as a special case as the instruction wouldn't
-normally be re-exectued, as its not a trap.
+Unlike gmac100, gmac1000, gmac4 has 27 DMA registers and they are
+located at DMA_CHAN_BASE_ADDR (0x1100). In order for ethtool to dump
+gmac4 DMA registers correctly, this commit checks if a net_device has
+gmac4 and uses different logic to dump its DMA registers.
 
-Commit defe21f49bc9 didn't preserve the behaviour of the 'return 1'
-that skips the rest of handle_exit().
+This fixes the following KASAN warning, which can normally be triggered
+by a command similar like "ethtool -d eth0":
 
-Since commit defe21f49bc9, KVM will try to handle the SError and the
-original exception at the same time. When the exception was an HVC,
-fixup_guest_exit() has already rolled back ELR_EL2, meaning if the
-guest has virtual SError masked, it will execute and handle the HVC
-twice.
+BUG: KASAN: vmalloc-out-of-bounds in dwmac4_dump_dma_regs+0x6d4/0xb30
+Write of size 4 at addr ffffffc010177100 by task ethtool/1839
+ kasan_report+0x200/0x21c
+ __asan_report_store4_noabort+0x34/0x60
+ dwmac4_dump_dma_regs+0x6d4/0xb30
+ stmmac_ethtool_gregs+0x110/0x204
+ ethtool_get_regs+0x200/0x4b0
+ dev_ethtool+0x1dac/0x3800
+ dev_ioctl+0x7c0/0xb50
+ sock_ioctl+0x298/0x6c4
+ ...
 
-Restore the original behaviour.
-
-Fixes: defe21f49bc9 ("KVM: arm64: Move PC rollback on SError to HYP")
-Cc: stable@vger.kernel.org
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220127122052.1584324-4-james.morse@arm.com
+Fixes: fbf68229ffe7 ("net: stmmac: unify registers dumps methods")
+Signed-off-by: Camel Guo <camelg@axis.com>
+Link: https://lore.kernel.org/r/20220131083841.3346801-1-camel.guo@axis.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kvm/handle_exit.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h      |    1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c |   19 +++++++++++++++++--
+ 2 files changed, 18 insertions(+), 2 deletions(-)
 
---- a/arch/arm64/kvm/handle_exit.c
-+++ b/arch/arm64/kvm/handle_exit.c
-@@ -226,6 +226,14 @@ int handle_exit(struct kvm_vcpu *vcpu, i
- {
- 	struct kvm_run *run = vcpu->run;
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
+@@ -150,6 +150,7 @@
  
-+	if (ARM_SERROR_PENDING(exception_index)) {
-+		/*
-+		 * The SError is handled by handle_exit_early(). If the guest
-+		 * survives it will re-execute the original instruction.
-+		 */
-+		return 1;
-+	}
+ #define NUM_DWMAC100_DMA_REGS	9
+ #define NUM_DWMAC1000_DMA_REGS	23
++#define NUM_DWMAC4_DMA_REGS	27
+ 
+ void dwmac_enable_dma_transmission(void __iomem *ioaddr);
+ void dwmac_enable_dma_irq(void __iomem *ioaddr, u32 chan, bool rx, bool tx);
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -21,10 +21,18 @@
+ #include "dwxgmac2.h"
+ 
+ #define REG_SPACE_SIZE	0x1060
++#define GMAC4_REG_SPACE_SIZE	0x116C
+ #define MAC100_ETHTOOL_NAME	"st_mac100"
+ #define GMAC_ETHTOOL_NAME	"st_gmac"
+ #define XGMAC_ETHTOOL_NAME	"st_xgmac"
+ 
++/* Same as DMA_CHAN_BASE_ADDR defined in dwmac4_dma.h
++ *
++ * It is here because dwmac_dma.h and dwmac4_dam.h can not be included at the
++ * same time due to the conflicting macro names.
++ */
++#define GMAC4_DMA_CHAN_BASE_ADDR  0x00001100
 +
- 	exception_index = ARM_EXCEPTION_CODE(exception_index);
+ #define ETHTOOL_DMA_OFFSET	55
  
- 	switch (exception_index) {
+ struct stmmac_stats {
+@@ -435,6 +443,8 @@ static int stmmac_ethtool_get_regs_len(s
+ 
+ 	if (priv->plat->has_xgmac)
+ 		return XGMAC_REGSIZE * 4;
++	else if (priv->plat->has_gmac4)
++		return GMAC4_REG_SPACE_SIZE;
+ 	return REG_SPACE_SIZE;
+ }
+ 
+@@ -447,8 +457,13 @@ static void stmmac_ethtool_gregs(struct
+ 	stmmac_dump_mac_regs(priv, priv->hw, reg_space);
+ 	stmmac_dump_dma_regs(priv, priv->ioaddr, reg_space);
+ 
+-	if (!priv->plat->has_xgmac) {
+-		/* Copy DMA registers to where ethtool expects them */
++	/* Copy DMA registers to where ethtool expects them */
++	if (priv->plat->has_gmac4) {
++		/* GMAC4 dumps its DMA registers at its DMA_CHAN_BASE_ADDR */
++		memcpy(&reg_space[ETHTOOL_DMA_OFFSET],
++		       &reg_space[GMAC4_DMA_CHAN_BASE_ADDR / 4],
++		       NUM_DWMAC4_DMA_REGS * 4);
++	} else if (!priv->plat->has_xgmac) {
+ 		memcpy(&reg_space[ETHTOOL_DMA_OFFSET],
+ 		       &reg_space[DMA_BUS_MODE / 4],
+ 		       NUM_DWMAC1000_DMA_REGS * 4);
 
 
