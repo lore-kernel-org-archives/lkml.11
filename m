@@ -2,109 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3095C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2454AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238077AbiBGKtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:49:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60752 "EHLO
+        id S239688AbiBGKtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:49:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351864AbiBGKj0 (ORCPT
+        with ESMTP id S234200AbiBGKng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:39:26 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9AAC043181;
-        Mon,  7 Feb 2022 02:39:25 -0800 (PST)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2177wqw4017916;
-        Mon, 7 Feb 2022 11:39:17 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=5fT7c4Mvgn2+ok+STLBdSgiGaFIlSdUaQbBwjLUOJH0=;
- b=i67U6qLJURxlIpLy7BYqlneYLOC7BdWvvYXtnza2KQDmRrcTbYml/pKJc443HWlff3RN
- znakVb4TkS8kPn3g+v49D34loNf2M+X9zzV6th7oqe2eRL4YZQpDgi8616hvuBPGFUK0
- JXY+LqnKaH9bGnw6VuWI9cJnvPynwDiq7K0qaqt92fLzNtiYN25P1fQylixxZuBeSqtq
- T6Yi4MBXokPTOIYgzaVkFKwbcq2zIpVbC6RB/vWgRoQWBnd5oRW69vexYBYaSckmESAS
- ziGP1HcQsDJd7Dv6uIXTP2ewNa7zQDCtOkEtHLBUdGxwgjFiQgRkj6CbgG2RYXFu+uL4 Mw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e2nfyaveu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 11:39:17 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 86CCF100034;
-        Mon,  7 Feb 2022 11:39:16 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7D6EB215157;
-        Mon,  7 Feb 2022 11:39:16 +0100 (CET)
-Received: from [10.48.0.252] (10.75.127.47) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 7 Feb
- 2022 11:39:15 +0100
-Message-ID: <b35ab20d-479f-a5ae-0e43-2b3c03f087e1@foss.st.com>
-Date:   Mon, 7 Feb 2022 11:39:14 +0100
+        Mon, 7 Feb 2022 05:43:36 -0500
+X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 02:43:34 PST
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 151D2C043189
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:43:34 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 595B811B3;
+        Mon,  7 Feb 2022 02:26:20 -0800 (PST)
+Received: from [10.57.70.156] (unknown [10.57.70.156])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F01BB3F718;
+        Mon,  7 Feb 2022 02:26:18 -0800 (PST)
+Message-ID: <f17da9b7-1642-762c-0854-e131e3c2f438@arm.com>
+Date:   Mon, 7 Feb 2022 10:26:15 +0000
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 00/10] ARM: dts: stm32: update sdmmc nodes
-Content-Language: en-US
-To:     Yann Gautier <yann.gautier@foss.st.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-mmc@vger.kernel.org>
-References: <20220112163226.25384-1-yann.gautier@foss.st.com>
-From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-In-Reply-To: <20220112163226.25384-1-yann.gautier@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 1/2] iommu/arm-smmu-v3: Avoid open coded arithmetic in
+ memory allocation
+Content-Language: en-GB
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org
+References: <de9e8705169b5dc873f6ce9f9a17598de89aa6a7.1644081032.git.christophe.jaillet@wanadoo.fr>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <de9e8705169b5dc873f6ce9f9a17598de89aa6a7.1644081032.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_03,2022-02-07_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yann
+On 2022-02-05 17:10, Christophe JAILLET wrote:
+> kmalloc_array()/kcalloc() should be used to avoid potential overflow when
+> a multiplication is needed to compute the size of the requested memory.
+> 
+> So turn a devm_kzalloc()+explicit size computation into an equivalent
+> devm_kcalloc().
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> This is NOT compile tested.
+> I don't have the needed cross compiling tools.
 
-On 1/12/22 17:32, Yann Gautier wrote:
-> This patches series brings updates for SDMMC nodes on STM32MP13
-> (max frequency, pins slew-rates, sleep pins, and controller version).
-> The sdmmc2 node is also added as STM32MP13 embeds 2 SDMMC controllers.
-> 
-> The compatible for sdmmc nodes is also updated for both STM32MP13
-> and STM32MP15, to align with bootloaders DT, and after arm,pl18x.yaml
-> has been updated [1].
-> 
-> [1] commit 552bc46484b3 ("dt-bindings: mmc: mmci: Add st,stm32-sdmmc2
->      compatible")
-> 
-> Gerald Baeza (1):
->    ARM: dts: stm32: update sdmmc slew-rate in stm32mp13 pinctrl
-> 
-> Yann Gautier (9):
->    ARM: dts: stm32: add st,stm32-sdmmc2 compatible on stm32mp151
->    ARM: dts: stm32: add st,stm32-sdmmc2 compatible on stm32mp131
->    ARM: dts: stm32: increase SDMMC max-frequency for STM32MP13
->    ARM: dts: stm32: update SDMMC clock slew-rate on STM32MP135F-DK board
->    ARM: dts: stm32: add sdmmc sleep pins for STM32MP13
->    ARM: dts: stm32: add sdmmc sleep config for STM32MP135F-DK
->    ARM: dts: stm32: update SDMMC version for STM32MP13
->    ARM: dts: stm32: add SDMMC2 in STM32MP13 DT
->    ARM: dts: stm32: add sdmmc2 pins for STM32MP13
-> 
->   arch/arm/boot/dts/stm32mp13-pinctrl.dtsi | 81 ++++++++++++++++++++----
->   arch/arm/boot/dts/stm32mp131.dtsi        | 20 +++++-
->   arch/arm/boot/dts/stm32mp135f-dk.dts     |  7 +-
->   arch/arm/boot/dts/stm32mp151.dtsi        |  6 +-
->   4 files changed, 94 insertions(+), 20 deletions(-)
-> 
+FYI, https://cdn.kernel.org/pub/tools/crosstool/
 
-Series applied on stm32-next.
+Either way, the patch looks reasonable, thanks!
 
-Thanks
-alex
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 6dc6d8b6b368..14d06aad0726 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2981,10 +2981,10 @@ static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
+>   {
+>   	unsigned int i;
+>   	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+> -	size_t size = sizeof(*cfg->l1_desc) * cfg->num_l1_ents;
+>   	void *strtab = smmu->strtab_cfg.strtab;
+>   
+> -	cfg->l1_desc = devm_kzalloc(smmu->dev, size, GFP_KERNEL);
+> +	cfg->l1_desc = devm_kcalloc(smmu->dev, cfg->num_l1_ents,
+> +				    sizeof(*cfg->l1_desc), GFP_KERNEL);
+>   	if (!cfg->l1_desc)
+>   		return -ENOMEM;
+>   
