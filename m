@@ -2,120 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 963A1C3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3ED2C35272
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350342AbiBGFwk (ORCPT
+        id S1350692AbiBGFwu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:52:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
+        Mon, 7 Feb 2022 00:52:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349441AbiBGC6C (ORCPT
+        with ESMTP id S1350160AbiBGDZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 21:58:02 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EBBC043180
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 18:58:01 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so12036308pjb.1
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 18:58:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FxExIV77Tn6LTPoKZIRsR52CbJyPFso/VdKEunHEkBw=;
-        b=S7jQ23s8oyEzwMduypPD3WabdNlC9spE9m3Kp9V+vzRoH/cm/FwunXNxpa1ssKTugi
-         qcIL8WI1Wc5t0QkN/MpKucZlCvlLRDQ13BBLq/ypDhwEO1gO0VwdwNUueWi0I4Z0hMhl
-         sN0+Z4irV0bTGVKeLxH1EPYrNFPxV/SA4kCXY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FxExIV77Tn6LTPoKZIRsR52CbJyPFso/VdKEunHEkBw=;
-        b=rLECX0/nsKrKd4mgTdHW1rsmRV1E6RqOpX0w6oHQHQdfiPni0Oo58HTeklR4DrxhJr
-         cR0X+xO+DejVANa7M0K1H04bieE5ylYXBRIBzo4f9RfnroThGVqQBe930nrDznnXAO2Z
-         V8sVf+mUCbH67nz0JrQ4kvxDL1P7DiS7vyqDPmUwRjiGFu5QOXjpTyR7gO42k1e/FUZr
-         a8JBxM42N2PJ579DDypfog0cFjDL8xnujvUhepqL27RgTzCK2lESAvn2uTHTybokimy0
-         CH/NmXAV3zw2y5MtxnR3eMtNNFi8ZuiCNG5bWou1jpp6LRShFOLZZCyo3NlosZjfbsRv
-         LvzA==
-X-Gm-Message-State: AOAM531B35jmy9+CMuIdXP6vSpbgPFxg9pIUHdh5d27NxIEa1HQkVwNX
-        M2JRH6ZNcTh1Iu5a5YZcf3nv77w3EBFikg==
-X-Google-Smtp-Source: ABdhPJxWKveza+zkkF09dV74hhKksjFAaFudcZ5ZAuZ08pfsZe1frMkRh60VirGM4nvUEKziJSRZNw==
-X-Received: by 2002:a17:903:32c6:: with SMTP id i6mr14627977plr.60.1644202680932;
-        Sun, 06 Feb 2022 18:58:00 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id kx5sm2167786pjb.16.2022.02.06.18.58.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 18:58:00 -0800 (PST)
-Date:   Sun, 6 Feb 2022 18:57:59 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Popov <alex.popov@linux.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] gcc-plugins/stackleak: Use noinstr in favor of notrace
-Message-ID: <202202061856.EBC48533B@keescook>
-References: <20220202001918.4104428-1-keescook@chromium.org>
- <20220206115816.GA23216@worktop.programming.kicks-ass.net>
- <202202060819.3C86C47DCA@keescook>
- <YgAyL2D25nweODX3@hirez.programming.kicks-ass.net>
+        Sun, 6 Feb 2022 22:25:20 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA94C043180;
+        Sun,  6 Feb 2022 19:25:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644204319; x=1675740319;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=awSixqD/CJJZjbFyd98CVQECftK7r0d61n7TbK+Ouv0=;
+  b=MnqWWhSFGSOQaNovwJais+68Snj3PH3/c6fiPjr9v6J1mIQhDum4T0nP
+   AvS98QOoIzSuZcMVMdFUXQenTloJhQihUAjYosmKN477qiqi1WuP89cWR
+   1JgrxgSNqXKgPJi4Hq1mX+GStmGjH6S7482oVsyZxBx8pjjMkSEU7qyas
+   8J0wN45HWKsoIgg8fwPqeTUlL9E47J3PlR785sYKD3QuTMJr1GOqIRaPo
+   Qg3u392lk2CMvQeWt4zZIh+wkeMfzIgbhr9mFDB7WDMcAA8chIgj5T2aA
+   g3Ft6WN71hLBLlRs9s/FYsSrgncIldAc5QP5Oom+fpSSiSbGTRArEkamw
+   Q==;
+IronPort-SDR: ow9aAvM7mD2zpctncoxDFwZBXFXlkNQLZSvocIIvdYU7oAkRAUYJ3JwfLSPa293fJCM0ZojK/a
+ UztCI3pO7uPCTM4vJXZGTLUxYeeRhl8hfsTfxGASAMCx9q3eMBx+5AdOU3a+6hbSdR+7k5IePL
+ DxXOR0KpsgrYfoTDz+pX44XynnLzXSJDwuazUEmqpe+IJpIpSpNmHKBFSaKbML1V7xxn4NeqOW
+ TAPKW0Z7RFfi6ENClBatLHNC1gkmPC8iI4nhA1sM9ch3GWRXv6vHK/o/xKVaGNxbuvhnAceTN6
+ RPweQedmiMy2+wYRsmt/+PyN
+X-IronPort-AV: E=Sophos;i="5.88,348,1635231600"; 
+   d="scan'208";a="152654142"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Feb 2022 20:24:16 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Sun, 6 Feb 2022 20:24:15 -0700
+Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Sun, 6 Feb 2022 20:24:13 -0700
+From:   Tudor Ambarus <tudor.ambarus@microchip.com>
+To:     <herbert@gondor.apana.org.au>, <robh+dt@kernel.org>
+CC:     <davem@davemloft.net>, <nicolas.ferre@microchip.com>,
+        <claudiu.beznea@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Tudor Ambarus" <tudor.ambarus@microchip.com>
+Subject: [PATCH 2/3] dt-bindings: crypto: Convert Atmel TDES to yaml
+Date:   Mon, 7 Feb 2022 05:24:04 +0200
+Message-ID: <20220207032405.70733-3-tudor.ambarus@microchip.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220207032405.70733-1-tudor.ambarus@microchip.com>
+References: <20220207032405.70733-1-tudor.ambarus@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgAyL2D25nweODX3@hirez.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 06, 2022 at 09:40:15PM +0100, Peter Zijlstra wrote:
-> On Sun, Feb 06, 2022 at 08:46:47AM -0800, Kees Cook wrote:
-> > On Sun, Feb 06, 2022 at 12:58:16PM +0100, Peter Zijlstra wrote:
-> > > On Tue, Feb 01, 2022 at 04:19:18PM -0800, Kees Cook wrote:
-> > > > Is it correct to exclude .noinstr.text here? That means any functions called in
-> > > > there will have their stack utilization untracked. This doesn't seem right to me,
-> > > > though. Shouldn't stackleak_track_stack() just be marked noinstr instead?
-> > > 
-> > > This patch is right. stackleak_track_stack() cannot be marked noinstr
-> > > becaues it accesses things that might not be there.
-> > 
-> > Hmm, as in "current()" may not be available/sane?
-> 
-> Exactly the case; if we lift the PTI address space swizzle, we start
-> with C without having the kernel mapped or even the per-cpu segment
-> offset set. So things like current will explode.
-> 
-> The whole noinstr thing was invented to get back to C as portable
-> Assembler, with the express purpose to lift a bunch of entry code to C.
-> 
-> > > Consider what happens if we pull the PTI page-table swap into the
-> > > noinstr C part.
-> > 
-> > Yeah, I see your point. I suspect the reason this all currently works
-> > is because stackleak is supposed to only instrument leaf functions that
-> > have sufficiently large (default 100 bytes) stack usage.
-> > 
-> > What sorts of things may end up in .noinstr.text that are 100+ byte stack
-> > leaf functions that would be end up deeper in the call stack? (i.e. what
-> > could get missed from stack depth tracking?) Interrupt handling comes
-> > to mind, but I'd expect that to make further calls (i.e. not a leaf).
-> 
-> All the syscall/exception/interrupt entry stuff is noinstr; I don't
-> think we have huge stackframes, but with all that in C that's much
-> easier to do than with then in asm.
-> 
-> If you worry about this, it should be possible to have objtool warn
-> about excessive stack frames for noinstr code I suppose, it already
-> tracks the stack anyway.
+Convert Atmel TDES documentation to yaml format. With the conversion the
+clock and clock-names properties are made mandatory. The driver returns
+-EINVAL if "tdes_clk" is not found, reflect that in the bindings and make
+the clock and clock-names properties mandatory. Update the example to
+better describe how one should define the dt node.
 
-Yeah, I think we should be okay at least for now.
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+---
+ .../bindings/crypto/atmel,tdes.yaml           | 63 +++++++++++++++++++
+ .../bindings/crypto/atmel-crypto.txt          | 23 -------
+ 2 files changed, 63 insertions(+), 23 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/crypto/atmel,tdes.yaml
 
-Let me know what you think of
-https://lore.kernel.org/linux-hardening/20220206174508.2425076-1-keescook@chromium.org/
-and if you like it I can send a v2 Linus's way...
-
--Kees
-
+diff --git a/Documentation/devicetree/bindings/crypto/atmel,tdes.yaml b/Documentation/devicetree/bindings/crypto/atmel,tdes.yaml
+new file mode 100644
+index 000000000000..7efa5e4acaa1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/crypto/atmel,tdes.yaml
+@@ -0,0 +1,63 @@
++# SPDX-License-Identifier: GPL-2.0-only
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/crypto/atmel,tdes.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Atmel Triple Data Encryption Standard (TDES) HW cryptographic accelerator
++
++maintainers:
++  - Tudor Ambarus <tudor.ambarus@microchip.com>
++
++properties:
++  compatible:
++    const: atmel,at91sam9g46-tdes
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    const: tdes_clk
++
++  dmas:
++    items:
++      - description: TX DMA Channel
++      - description: RX DMA Channel
++
++  dma-names:
++    items:
++      - const: tx
++      - const: rx
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/at91.h>
++    #include <dt-bindings/dma/at91.h>
++    tdes: tdes@e2014000 {
++      compatible = "atmel,at91sam9g46-tdes";
++      reg = <0xe2014000 0x100>;
++      interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
++      clocks = <&pmc PMC_TYPE_PERIPHERAL 96>;
++      clock-names = "tdes_clk";
++      dmas = <&dma0 AT91_XDMAC_DT_PERID(54)>,
++             <&dma0 AT91_XDMAC_DT_PERID(53)>;
++      dma-names = "tx", "rx";
++      status = "okay";
++    };
+diff --git a/Documentation/devicetree/bindings/crypto/atmel-crypto.txt b/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
+index 1353ebd0dcaa..5c6541cfcc4a 100644
+--- a/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
++++ b/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
+@@ -2,29 +2,6 @@
+ 
+ These are the HW cryptographic accelerators found on some Atmel products.
+ 
+-* Triple Data Encryption Standard (Triple DES)
+-
+-Required properties:
+-- compatible : Should be "atmel,at91sam9g46-tdes".
+-- reg: Should contain TDES registers location and length.
+-- interrupts: Should contain the IRQ line for the TDES.
+-
+-Optional properties:
+-- dmas: List of two DMA specifiers as described in
+-        atmel-dma.txt and dma.txt files.
+-- dma-names: Contains one identifier string for each DMA specifier
+-             in the dmas property.
+-
+-Example:
+-tdes@f803c000 {
+-	compatible = "atmel,at91sam9g46-tdes";
+-	reg = <0xf803c000 0x100>;
+-	interrupts = <44 4 0>;
+-	dmas = <&dma1 2 20>,
+-	       <&dma1 2 21>;
+-	dma-names = "tx", "rx";
+-};
+-
+ * Secure Hash Algorithm (SHA)
+ 
+ Required properties:
 -- 
-Kees Cook
+2.25.1
+
