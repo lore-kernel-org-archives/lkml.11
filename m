@@ -2,97 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E59C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D30BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245521AbiBGKY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:24:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53444 "EHLO
+        id S236786AbiBGKYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:24:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237462AbiBGKS4 (ORCPT
+        with ESMTP id S1357045AbiBGKL3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:18:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B339BC043181;
-        Mon,  7 Feb 2022 02:18:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D37261297;
-        Mon,  7 Feb 2022 10:18:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6E65C004E1;
-        Mon,  7 Feb 2022 10:18:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644229134;
-        bh=5ldiobl7gosz7YWwdwT3byG6YkZL6Tnfq+gbfeJhlUA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UQm7hMFL0uFUzmJUAL4jkDCy/+B5DeaaldeK1PH7aTnzFnYMDKnLTtbVivvJsyyf4
-         XU2e9HyLROB41Loltr3JkxyGIWX7CirRQNQbfTHDdMhPzSrMao9ydNycTYR5vCaruY
-         KacETv/NQNZClWaHOyfOZNFGeVbBNwE8t1Zyb5/U=
-Date:   Mon, 7 Feb 2022 11:18:51 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     =?utf-8?B?572X6aOe?= <luofei@unicloud.com>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: =?utf-8?B?562U5aSN?= =?utf-8?Q?=3A?= [PATCH] x86/mm,
- mm/hwpoison: fix unmap kernel 1:1 pages
-Message-ID: <YgDyCwOtt8+UfBMN@kroah.com>
-References: <20220207075242.830685-1-luofei@unicloud.com>
- <YgDU3+KsiaQ54J5N@kroah.com>
- <YgDn7WWdcD5xaprX@zn.tnic>
- <2a4b69472f034fc995a047c7ec945cd3@unicloud.com>
+        Mon, 7 Feb 2022 05:11:29 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C9DC0401E3
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:11:09 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id e3so9792186wra.0
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 02:11:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=t1grJfuaAdS3B1XhyLaLbix7QKdpfthiiXC5enSQ1wU=;
+        b=wPpS1R/uWVlqPEkanPeqJeH/0D36BtOQVNLC6MxnxsReockDsvWqZG0Z1ByYDDuvM7
+         4wItKYbdClpjxyuOyRK9/gJfr5YryUe5EgYLsk6JfeJMCd3XkXMnnxdp9JqUXD/1UkV8
+         t0mtIzGSIsgctau6xdm1KHCMbGvMNEL/JVAUQjalNg9u+oU7LrHc3Wn3uSNTw5lbgYUd
+         DpByqvFXqb50PDV3lL8IoxrzzsNtFipGmOWCNjjpRAvXUMLeFiYICD19OtjrI4lXaS4R
+         V0LkGJa1SmI6gGzOs8S5qtFDYA0i7YfRY+bvGhZQkICcuObnwhNHAjilL2KENHyKeg7s
+         CLCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=t1grJfuaAdS3B1XhyLaLbix7QKdpfthiiXC5enSQ1wU=;
+        b=R58i/sTEmxv2miTgW2+kBcH3vvE8JMZO+v7Zo/POWyiaYeeudqOLASmlpE4aGEyezv
+         XYGtQr7vxLxpGAur59AUA1b4UNIcwNmuCpEYt1HgFCCQsS0AXYFMIKppln6l7SUr2h87
+         ZZzLhi13LPfGd1mWTFQcjPQQBMPIh0KtGMROs1gOd23IFbp2+HBFr/hQJ801E2Wk25qZ
+         ZgfUC46dkbW3PnrzksZ9PXbdHtPh1bdruk+msbc3UKMBJXO7xylwTwmJR0yG98wWw/f1
+         76d7bU4ckfQMDaWTcUm8EW4F40Xcc1t8JBSB0xhqY3i6PqxsMqGo1LMJB1n0ZqS+ZfSo
+         m/QA==
+X-Gm-Message-State: AOAM530Yz6FVCv2YfptfFL7UCGOaY5o/v19dFzHRcN+kF/KQ4fFca4B5
+        Y0oA4i2a1Ok8dMojfKG1SwhCMVqPQPFa2Q==
+X-Google-Smtp-Source: ABdhPJyfPm5Ul6/cWxD2ilu20wXd7IFB/LmDVwLybcoxL+DwkSm+3qkAcNf1ZOyzjv+UAG62JG50qg==
+X-Received: by 2002:a05:6000:1548:: with SMTP id 8mr9155762wry.254.1644228667605;
+        Mon, 07 Feb 2022 02:11:07 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id c13sm9620833wrv.24.2022.02.07.02.11.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 02:11:07 -0800 (PST)
+Date:   Mon, 7 Feb 2022 10:11:05 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Chanwoo Choi <cw00.choi@samsung.com>
+Subject: Re: [PATCH v2 0/5] mfd/extcon/regulators: max77843: add
+ dtschema/bindings
+Message-ID: <YgDwOWRpfVBfcXxs@google.com>
+References: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
+ <1bebedb9-644f-783d-492c-84a5de91720d@canonical.com>
+ <YgDnUNCNCO+JLyHU@google.com>
+ <88fcdbe6-5fef-d9cc-a645-69e35230cdeb@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2a4b69472f034fc995a047c7ec945cd3@unicloud.com>
+In-Reply-To: <88fcdbe6-5fef-d9cc-a645-69e35230cdeb@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 10:03:29AM +0000, 罗飞 wrote:
-> >I think he's trying to fix the backport:
-> >
-> >see 26f8c38bb466c1a2d232d7609fb4bfb4bc121678 which is the stable tree backport:
-> >
-> >@@ -582,7 +586,8 @@ static int srao_decode_notifier(struct notifier_block *nb, unsigned long val,
-> >
-> >       if (mce_usable_address(mce) && (mce->severity == MCE_AO_SEVERITY)) {
-> >               pfn = mce->addr >> PAGE_SHIFT;
-> >-               memory_failure(pfn, MCE_VECTOR, 0);
-> >+               if (memory_failure(pfn, MCE_VECTOR, 0))
-> >+                       mce_unmap_kpfn(pfn);
->  >       }
-> >
-> >
-> >vs the upstream commit:
-> >
-> >fd0e786d9d09024f67bd71ec094b110237dc3840
-> >
-> >@@ -590,7 +594,8 @@ static int srao_decode_notifier(struct notifier_block *nb, unsigned long val,
-> >
-> >        if (mce_usable_address(mce) && (mce->severity == MCE_AO_SEVERITY)) {
-> >               pfn = mce->addr >> PAGE_SHIFT;
-> >-               memory_failure(pfn, 0);
-> >+               if (!memory_failure(pfn, 0))
-> >+                       mce_unmap_kpfn(pfn);
-> >       }
-> >
-> >        return NOTIFY_OK;
+On Mon, 07 Feb 2022, Krzysztof Kozlowski wrote:
+
+> On 07/02/2022 10:33, Lee Jones wrote:
+> > On Sun, 06 Feb 2022, Krzysztof Kozlowski wrote:
+> > 
+> >> On 11/01/2022 18:48, Krzysztof Kozlowski wrote:
+> >>> Hi,
+> >>>
+> >>> The max77843 shares some parts with max77693 but it lacked bindings.  All
+> >>> its compatibles were undocumented.  Add basic bindings for max77843,
+> >>> matching existing devicetree.  These are not complete bindings, but
+> >>> rather reverse-engineered to match current state.
+> >>>
+> >>> I do not have access to device with MAX77843, so if anyone else
+> >>> volunteers to be the bindings maintainer, please join.
+> >>>
+> >>> Changes since v1
+> >>> ================
+> >>> 1. MFD: Use absolute path to schemas.
+> >>> 2. Regulator: mention all allowed properties,
+> >>>    additionalProperties=false, add min/max values for voltages and
+> >>>    current, don't use patternProperties when not needed.
+> >>> 3. extcon: Use absolute path to schemas.
+> >>>
+> >>> Dependencies
+> >>> ============
+> >>> 1. Patch 1/5 (dts): nothing depends on it, sending here so Rob's automatic
+> >>>    checker won't complain about DTS.
+> >>>    I will take it via Samsung SoC tree.
+> >>>
+> >>> 2. The patch 4/5 (mfd bindings) depends on regulator and extcon, so they
+> >>>    should come together (2+3+4+5).
+> >>>
+> >> Dear Lee,
+> >>
+> >> This patchset was reviewed and there are no outstanding issues. Could
+> >> you pick up patches 2-5 (skipping DTS patch) via MFD tree?
+> > 
+> > Are the subsystem maintainers not going to review/ack?
+> > 
 > 
-> 
-> Sorry for my not familiar with submitting patches to stable kernel tree, and here Borislav Petkov said exactly what I meant
+> Would be nice to have them, but maybe since these are dt-bindings maybe
+> they were skipped? 
 
-Great, can you please resend this and document what this patch is doing
-and why it is not in upstream and why is it needed only in this one
-branch?
+Agreed, not required, but nice to have to avoid possible conflict.
 
-thanks,
+> Or maybe it was the end-of-year holidays?
 
-greg k-h
+> I can resend hoping it will trigger more acks. Do you wish me to resend?
+
+That shouldn't be necessary.
+
+I'll give the guys a little while to protest/ack, then I'll merge.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
