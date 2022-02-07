@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93616C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D5E7C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357121AbiBGLOL (ORCPT
+        id S1357079AbiBGLOJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:14:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
+        Mon, 7 Feb 2022 06:14:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231384AbiBGLKj (ORCPT
+        with ESMTP id S234936AbiBGLKn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:10:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0578CC043181;
-        Mon,  7 Feb 2022 03:10:39 -0800 (PST)
+        Mon, 7 Feb 2022 06:10:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33269C043188;
+        Mon,  7 Feb 2022 03:10:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9627E61370;
-        Mon,  7 Feb 2022 11:10:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6589DC004E1;
-        Mon,  7 Feb 2022 11:10:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B548F61370;
+        Mon,  7 Feb 2022 11:10:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9008AC004E1;
+        Mon,  7 Feb 2022 11:10:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232238;
-        bh=Q9a/NR6CCkrCfIyyMhl7MJzPq8ENrfsh9TBIGOR7dsc=;
+        s=korg; t=1644232241;
+        bh=djhrL4rw+Ch721ysSBP7ZmkRuMo00a3GMzPeylgxBT4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eiiMeqefyJ401A/cHP1Hn4bvHnSu1QZjKkCIZr43p04MKtDw0VafQLHhxpGhrLYSc
-         7J9EULtdCIgyHVqvRZCd8MrqF4LuausLhcuG3fTvR5Z/G3mmRWlMZ5Z6v0lagajG1U
-         NgvMp0tgzwuIFp/8ro5GJDHmM+FvuLPNhrFmAv5A=
+        b=G2LCZE9bFWorElweQQXbjIy+edgS0QPD2p+LjDBoX9Xy7lPIbmMMDLOHiZTMVcZFH
+         rUDa20OezvMs6xlVzbR2zDdbWMGE5uC3Wbd5tYgmfpiG134bVmriMsk2Pm8QnqbsmU
+         W7pE6ETLNfib0vqroyKw9GnRrFyD9Gwgq1XGlH2M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, butt3rflyh4ck <butterflyhuangxx@gmail.com>,
         Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>
-Subject: [PATCH 4.14 04/69] udf: Restore i_lenAlloc when inode expansion fails
-Date:   Mon,  7 Feb 2022 12:05:26 +0100
-Message-Id: <20220207103755.748378964@linuxfoundation.org>
+Subject: [PATCH 4.14 05/69] udf: Fix NULL ptr deref when converting from inline format
+Date:   Mon,  7 Feb 2022 12:05:27 +0100
+Message-Id: <20220207103755.779967365@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -51,32 +51,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jan Kara <jack@suse.cz>
 
-commit ea8569194b43f0f01f0a84c689388542c7254a1f upstream.
+commit 7fc3b7c2981bbd1047916ade327beccb90994eee upstream.
 
-When we fail to expand inode from inline format to a normal format, we
-restore inode to contain the original inline formatting but we forgot to
-set i_lenAlloc back. The mismatch between i_lenAlloc and i_size was then
-causing further problems such as warnings and lost data down the line.
+udf_expand_file_adinicb() calls directly ->writepage to write data
+expanded into a page. This however misses to setup inode for writeback
+properly and so we can crash on inode->i_wb dereference when submitting
+page for IO like:
+
+  BUG: kernel NULL pointer dereference, address: 0000000000000158
+  #PF: supervisor read access in kernel mode
+...
+  <TASK>
+  __folio_start_writeback+0x2ac/0x350
+  __block_write_full_page+0x37d/0x490
+  udf_expand_file_adinicb+0x255/0x400 [udf]
+  udf_file_write_iter+0xbe/0x1b0 [udf]
+  new_sync_write+0x125/0x1c0
+  vfs_write+0x28e/0x400
+
+Fix the problem by marking the page dirty and going through the standard
+writeback path to write the page. Strictly speaking we would not even
+have to write the page but we want to catch e.g. ENOSPC errors early.
 
 Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
 CC: stable@vger.kernel.org
-Fixes: 7e49b6f2480c ("udf: Convert UDF to new truncate calling sequence")
+Fixes: 52ebea749aae ("writeback: make backing_dev_info host cgroup-specific bdi_writebacks")
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/udf/inode.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/udf/inode.c |    8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
 --- a/fs/udf/inode.c
 +++ b/fs/udf/inode.c
-@@ -311,6 +311,7 @@ int udf_expand_file_adinicb(struct inode
- 		unlock_page(page);
- 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_IN_ICB;
- 		inode->i_data.a_ops = &udf_adinicb_aops;
-+		iinfo->i_lenAlloc = inode->i_size;
- 		up_write(&iinfo->i_data_sem);
- 	}
- 	put_page(page);
+@@ -251,10 +251,6 @@ int udf_expand_file_adinicb(struct inode
+ 	char *kaddr;
+ 	struct udf_inode_info *iinfo = UDF_I(inode);
+ 	int err;
+-	struct writeback_control udf_wbc = {
+-		.sync_mode = WB_SYNC_NONE,
+-		.nr_to_write = 1,
+-	};
+ 
+ 	WARN_ON_ONCE(!inode_is_locked(inode));
+ 	if (!iinfo->i_lenAlloc) {
+@@ -298,8 +294,10 @@ int udf_expand_file_adinicb(struct inode
+ 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_LONG;
+ 	/* from now on we have normal address_space methods */
+ 	inode->i_data.a_ops = &udf_aops;
++	set_page_dirty(page);
++	unlock_page(page);
+ 	up_write(&iinfo->i_data_sem);
+-	err = inode->i_data.a_ops->writepage(page, &udf_wbc);
++	err = filemap_fdatawrite(inode->i_mapping);
+ 	if (err) {
+ 		/* Restore everything back so that we don't lose data... */
+ 		lock_page(page);
 
 
