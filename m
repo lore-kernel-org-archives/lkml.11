@@ -2,157 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7F3C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE732C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343509AbiBGKjA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:39:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58802 "EHLO
+        id S245665AbiBGKi6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:38:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238077AbiBGKdg (ORCPT
+        with ESMTP id S234981AbiBGKft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:33:36 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2073.outbound.protection.outlook.com [40.107.236.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD08C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:33:35 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OTNNRzNH8V01BqmGgX+JwFtALVOVjDcbt5DV0aJ+bLeYa9QY7wtKMpaUMuXftV8e5fLQqTPVm2UxUJsRHz32H87upUNir+wRo5SQFaRp048AMR2I/KJh4AXZpWlPILzdEP/l634QY1upScxG4DE7PeHDr6PbRmkR+6mNX036o7AavN9nbDpRQf24m/WtlGdGbO5S+r+WlXsEMePuyVfQMot1YD5wzcF9yTQgXPV/9V9IpBtpUGaSYbA9PEnfTYJXg8KwoUyIkIde8TwcyJV2FNyB/T8E7Zz+prMS14Na6JfisbAE2xp/reWtKIL44f98TUBwgm2TpnvJTMDRrw//XQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7W8TrdRp9GTsb3nOerdsmaGgiZw0iRhnUQ5vSw5s6Lw=;
- b=ax6zvAAVq5deEZtGas2QdFdp0Yb51HEkoQNtaCBpjrHjQQtHqS36SukubZYfLZ4IRkdnJcw79/MAJVvV2EhumvEH4PRte4KHT/Kx/0Jf31RwGXezQduka+dhI6bmU38xZhrzuLbl0aS+FKV+eNbk2Yq+z6A2C7GR4/n/kG3DP4r0XrHR/pf4vQvWfrTfz2+3rb6vHlKaINDDjH4BkcyLYaV1NFYNWU36UHIWS/453/aiGVlouy2EfNLf2aSKM41KR9lXCRWHPgBNG8vXi+gltOPXwJicZg/cPwMkZsBuK+KDKN5AL3dcRIT/pNM/NGy4KhJF8/o+HjaGdNQ/aKSJTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7W8TrdRp9GTsb3nOerdsmaGgiZw0iRhnUQ5vSw5s6Lw=;
- b=at33ys9vu+nHjp2ZZ5tJCvJX5bLlZq12NlX2MbtmpcYOijM1B6eyhyy3egcM/VY95L6Z87iz/XUOMfjwVUhwSp4oakv9qRUqg8ns8F2G+4StEfQbiMlOZ+zJRUKo188kruU9Ynwc+Prc6QQMZJCDcfS1o4xIXXEpWOFqi13GjZM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vmware.com;
-Received: from BY3PR05MB8081.namprd05.prod.outlook.com (2603:10b6:a03:366::15)
- by DM5PR0501MB3686.namprd05.prod.outlook.com (2603:10b6:4:7d::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.10; Mon, 7 Feb
- 2022 10:33:32 +0000
-Received: from BY3PR05MB8081.namprd05.prod.outlook.com
- ([fe80::283c:d671:e4e5:31f8]) by BY3PR05MB8081.namprd05.prod.outlook.com
- ([fe80::283c:d671:e4e5:31f8%7]) with mapi id 15.20.4975.010; Mon, 7 Feb 2022
- 10:33:32 +0000
-From:   Jorgen Hansen <jhansen@vmware.com>
-To:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     gregkh@linuxfoundation.org, pv-drivers@vmware.com,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>
-Subject: [PATCH v3 1/8] VMCI: dma dg: whitespace formatting change for vmci register defines
-Date:   Mon,  7 Feb 2022 02:27:18 -0800
-Message-Id: <20220207102725.2742-2-jhansen@vmware.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220207102725.2742-1-jhansen@vmware.com>
-References: <20220207102725.2742-1-jhansen@vmware.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BYAPR11CA0062.namprd11.prod.outlook.com
- (2603:10b6:a03:80::39) To BY3PR05MB8081.namprd05.prod.outlook.com
- (2603:10b6:a03:366::15)
+        Mon, 7 Feb 2022 05:35:49 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A9BC043181;
+        Mon,  7 Feb 2022 02:35:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1644230148; x=1675766148;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Xm+zj6goisuqCJN2ekKk7zV6UfCUht5ppayoqpY1lLo=;
+  b=TOVul1DDBBd2MCO69CZRt9h9bxhT9NSeU7KwTzucRmAoX7fdycwZFXpJ
+   Ydx+l7fsHgCbzZFhFRXEeubHEAnpltS06H5wfVMO0qFIfborHp1TSb0/g
+   pCp8G6jdqAFE74nj8PcOHj3G/gHDUIN3yJAsUtSHmi5AbqxY+vC6MzUNH
+   AdOgEh3uh5wYj6vBrupMlxIXqBTM++8tzy3jJWKkvoKAOL3OSSdI3MTkp
+   XAIKPVfzWpTANld1GoS9qTknsmsnez2y1PniTjZgDcabZT28zTtmeLDX8
+   tLhkSq8LfcNsKARA8K2fagi/rhOpmPgWqUhnnl67sgNLXj4vP8jGu5GJY
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
+   d="scan'208";a="21929419"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 07 Feb 2022 11:35:46 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Mon, 07 Feb 2022 11:35:46 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Mon, 07 Feb 2022 11:35:46 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1644230146; x=1675766146;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Xm+zj6goisuqCJN2ekKk7zV6UfCUht5ppayoqpY1lLo=;
+  b=MmbSuvaegsMgPBJuepzfmivdIWkhZRna2n4Sqnjr58yzD+JhcLGtv8Da
+   ueAxG3BIZGHNXvzzAeTZ8QVH4WXn5cJjpjy4YUVIdQpwJ+uWgdAvzuXRh
+   s77PdtYuDJcdZ1qXZ+fqflP+SaMJfDHTVIDIwhuCktlW7wc3Y3xIWIxDC
+   Fw0JQLpC7FvCC7knWNrsuxtrI3Bb5WSWQVWMvN+LVuAKsrVnOEKEzE3+J
+   zgtoZdUei70cHA+trHpDLVTPEElSCXbxSHoV7Zxh0tkhtKVdfT6LM9Mmn
+   ykTNl0643snNyPSqBd0QTm4MUkqjQsMYkzRPi9LYGetXrcxWAf4S3DMpO
+   A==;
+X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
+   d="scan'208";a="21929418"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 07 Feb 2022 11:35:46 +0100
+Received: from steina-w.localnet (unknown [10.123.49.12])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id DFB01280065;
+        Mon,  7 Feb 2022 11:35:45 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Steve Longerbeam <slongerbeam@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: (EXT) Re: [PATCH 7/8] media: imx: utils: Add more Bayer formats
+Date:   Mon, 07 Feb 2022 11:35:45 +0100
+Message-ID: <822120126.0ifERbkFSE@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <Yf3vmMP6EfjyeXOb@pendragon.ideasonboard.com>
+References: <20220204121514.2762676-1-alexander.stein@ew.tq-group.com> <20220204121514.2762676-8-alexander.stein@ew.tq-group.com> <Yf3vmMP6EfjyeXOb@pendragon.ideasonboard.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9ec6861e-4c22-46a3-9b5d-08d9ea2549be
-X-MS-TrafficTypeDiagnostic: DM5PR0501MB3686:EE_
-X-LD-Processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
-X-MS-Exchange-AtpMessageProperties: SA|SL
-X-Microsoft-Antispam-PRVS: <DM5PR0501MB368662A11236F3A591F4B219DA2C9@DM5PR0501MB3686.namprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NTInf8VkwCkkdEyzUZGMQx5eGyowI8eESHIljas7SFfjPf11gwsqr+a3Ii9efB9h+y7UX1vXhQOP0VVg/CDNBKTc3gXqJImsNAK3tnbzgdDO6hTPCUOragfxqgkaehJ3AJQiAMvzubUee/nYp/1M1/hoLxeJIjst09GypUMJVs0oZINx7cvSrjt1BmKo8AkEFIWtCcezPfGuXU3SeSLn0WL/dK2YN259BdYrJ6s0rxrjhXDK0XCc2keNffeGw7jxr8mri4eF62CcpIz6z0e9hsRvkbrL0XZR/M1Yb/2IJF3TWWeE03ywOg8quFvEsGyxPvvOmRvIL2MXMjKbCrk74/F6N6Wlc81884+pKNGja1fyTM0eSLivD/yKXFlijQ3u37hMZ+c3Bs7ZrFHs3jVqV2IYOyj2nuEUl/zeRimpGyoRiHJobBg8xe32OOYCKykZjB+gVqiWOv2PeMOhFX0TCVy7XtvM2fz6tTB6T7NJ0vvPpUIfXapEyaKaIsAoUwQmtQbEnwSL+Y39hu4ajNfxBv4pQBFsXaRu6/PnuVEQBTZEGOJgYM8zLqUy1lVPF8s7yPHwZMgEz9+M23+mkwbPUFLpCGmzyUWXMGXXv0a5hcfOH/XfPuDRIs4j7RKvUUrYa6EgU1Acl2HJWWgRGlZd8fPSysL6MHYOhdOHls9+UaynIY2gmQLhQQMJGQSiuGWfJ1aYZeMqT+3Eiyjv9khbkPzhzgXd2Wp4GW8ytkN2MrU7fjuBDF9ULa8OGS4i1Bzx
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR05MB8081.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38350700002)(508600001)(6486002)(38100700002)(107886003)(52116002)(1076003)(8936002)(6512007)(36756003)(186003)(316002)(5660300002)(54906003)(6506007)(2616005)(2906002)(26005)(66556008)(66476007)(8676002)(4326008)(83380400001)(66946007)(6666004)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9Cf3WQoPq4qFC4pD9mnZZTsOD8MBrkG9gsIB93Jq7hifgpnnP675ZMYmqkcs?=
- =?us-ascii?Q?CdWy1W8byIUgMLpG8M5TU3sq9WYZYUbq7YpUzAVT3olgy8rOd3YrTcrMNKym?=
- =?us-ascii?Q?tOrxMqCJHYgre2nTGXwNf3KW5rSYWGLIU88E+Nj3wFxXc+sII6YXQA5dx+yh?=
- =?us-ascii?Q?epLVSBUGtCc+9F4D865hBg5M72OMB9v0GcM/sU0BJQUnKs8i5fw/I96nsEgQ?=
- =?us-ascii?Q?mZ/tvnGiH1O2xaWJMatMNCXXbZ5tL0/Hp/ePdeC65wUYa3LFpEmf0ypnAHJF?=
- =?us-ascii?Q?ziHdnUwtd+XEUu+ZCYa85XC5245pOYFTOiMf2mHPIRMum9LMX7cwMP/+IAj6?=
- =?us-ascii?Q?3fnV1lTLO1Zb6FVDtty/jqggbH8v+vRNwB66uwcZTdlhuZvZZQhBvnLABQYE?=
- =?us-ascii?Q?HpNh6zjvoi1qMI3QZCi4VJW+MvSP9AbIgk+PBc9zxMLaOLt+0uJCZpEmZ71m?=
- =?us-ascii?Q?bj8VApm6XmBLT7wdt/eipxmW6J0AS519pb7ciA+lEQT8nKxpRqybra+ncaki?=
- =?us-ascii?Q?diXnku54NUW+oQgEtoUXuF74g6e1nsJm9bXqhZfRy557jvpIDuXPgoUU9zeh?=
- =?us-ascii?Q?a5U3GNmfwW9F1NMNEJEQyyGEmsb9ggS5dyusQ39CZcnHdCQfFdeE60V0ZHVo?=
- =?us-ascii?Q?PuosPRv9fIM5o0wzeRHl4Msd2S+Wmj121AjuMYsO+P05hesTMI7mgK28AcRZ?=
- =?us-ascii?Q?pcA2GZf6aeonPgZ2/uft/856X4icvHX88XK6mAaFo3CyBqsXdx6XXDmyew6w?=
- =?us-ascii?Q?SA6XzLMf5A3MarRxtVwqlgNwad9v9YXYIEkXnwtUpjrS2nJL5LnR9oZf30NZ?=
- =?us-ascii?Q?CI53aMnctZlL2C1omJmOusu/AuWAP0KT+wXtSQ5iBrBQexDJBJHP2nyeAZJl?=
- =?us-ascii?Q?Hi4mum7igTiQZ8Z1Kil6Zfgw+HF5L+BTDWHIKmXIqgPCy8R10nBS5TPNZOnG?=
- =?us-ascii?Q?oLbd/FDKrqWSaqXmL0nl3oSLq7hKanJ9YDc2R/QO3r1h9Pjzz6hiGQtMtbxc?=
- =?us-ascii?Q?/drLpSOJ6q7GL9HOUiWp6msq0ZDFDpyhYusLwj+YbfuFox3tbvwmLRZtJJWj?=
- =?us-ascii?Q?H6YJyMoDfP2oqvBkmOMf1SHW9ay44gCIO899YQu1ZRk9TNU4QjW9EfbDNpi+?=
- =?us-ascii?Q?F4d+3OLvw4NFP7+cBCryh4bPr4NWeBvv72u3NJLj2ze4/jBsxwkOLylU30Zx?=
- =?us-ascii?Q?S5tFhZ/kKTdchKG9EBHpxICyxq1KBs60MOs8krmXqeR0ExxooD7i0OFe1uvs?=
- =?us-ascii?Q?fZ+KF6SXkcEFYOfB80L5VeOm/N4iRWcbY10fU8dPZkDyp8oZ31jWEd7rLJod?=
- =?us-ascii?Q?RNvanpDZNFz/Fy4y5RrHkqJo88Tla/XMaDAEW+8e776nwEhzynwNJnO9EzYg?=
- =?us-ascii?Q?31yRCSk6xs2LUSUZXFgZQmMXRRbCQ6V11roSTdZAR6pSKahmb/Kz8eJHl2Ym?=
- =?us-ascii?Q?I3tN/Nfctu1tIE7cgGgAjkVsWj3Nt9LZGwDDzvAjP1bGzzb+CiUFcaKEPAlg?=
- =?us-ascii?Q?VIft4x3C9quaLYVqDnsjIh4FJKiim4auilP2OgmYUH1iRNs3KmtbVXDyD1aZ?=
- =?us-ascii?Q?w/9SAzWWqtntzhkV4Riylqz91hjPEisXrXLs3rxAfmm9x43Mb2+nirrvZDdk?=
- =?us-ascii?Q?RgZ5iKHmsVK4o57z6+E1FQs=3D?=
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ec6861e-4c22-46a3-9b5d-08d9ea2549be
-X-MS-Exchange-CrossTenant-AuthSource: BY3PR05MB8081.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 10:33:32.5615
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RYosy+IdTlKtajOfl0cz12a6Im4ISRnYVfY1wv/8v/+OFiqqld4li83YFBSfvbmr1ZSly8w2On0R1tx35D9ZsQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR0501MB3686
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update formatting of existing register defines in preparation for
-adding additional register definitions for the VMCI device.
+Hi Laurent,
 
-Reviewed-by: Vishnu Dasa <vdasa@vmware.com>
-Signed-off-by: Jorgen Hansen <jhansen@vmware.com>
----
- include/linux/vmw_vmci_defs.h | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+Am Samstag, 5. Februar 2022, 04:31:36 CET schrieb Laurent Pinchart:
+> Hi Alexander,
+> 
+> Thank you for the patch.
+> 
+> On Fri, Feb 04, 2022 at 01:15:13PM +0100, Alexander Stein wrote:
+> > Without this the ioctl VIDIOC_ENUM_FMT will not list the 10/12/14-Bit
+> > Bayer formats. This in return results in
+> > "v4l2-ctl --set-fmt-video pixelformat='RG10'" failing to set the
+> > pixelformat as it is not enumerated as supported format.
+> > 
+> > Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+> 
+> Do IPUv3-based SoCs support 10-, 12- and 14-bit formats ? If so,
+> 
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-diff --git a/include/linux/vmw_vmci_defs.h b/include/linux/vmw_vmci_defs.h
-index e36cb114c188..9911ecfc18ba 100644
---- a/include/linux/vmw_vmci_defs.h
-+++ b/include/linux/vmw_vmci_defs.h
-@@ -12,15 +12,15 @@
- #include <linux/bits.h>
- 
- /* Register offsets. */
--#define VMCI_STATUS_ADDR      0x00
--#define VMCI_CONTROL_ADDR     0x04
--#define VMCI_ICR_ADDR	      0x08
--#define VMCI_IMR_ADDR         0x0c
--#define VMCI_DATA_OUT_ADDR    0x10
--#define VMCI_DATA_IN_ADDR     0x14
--#define VMCI_CAPS_ADDR        0x18
--#define VMCI_RESULT_LOW_ADDR  0x1c
--#define VMCI_RESULT_HIGH_ADDR 0x20
-+#define VMCI_STATUS_ADDR        0x00
-+#define VMCI_CONTROL_ADDR       0x04
-+#define VMCI_ICR_ADDR           0x08
-+#define VMCI_IMR_ADDR           0x0c
-+#define VMCI_DATA_OUT_ADDR      0x10
-+#define VMCI_DATA_IN_ADDR       0x14
-+#define VMCI_CAPS_ADDR          0x18
-+#define VMCI_RESULT_LOW_ADDR    0x1c
-+#define VMCI_RESULT_HIGH_ADDR   0x20
- 
- /* Max number of devices. */
- #define VMCI_MAX_DEVICES 1
--- 
-2.25.1
+I'm no expert regarding IPUv3. But according to i.MX6D/Q RM Rev4 apparently 
+there is difference between Bayer format or "Generic data" 
+(CSI0_SENS_DATA_FORMAT: b011). Data width is set independently in 
+CSI0_DATA_WIDTH where 10-, 12- and 14-bit is supported (even the odd ones in 
+bewteen).
+I don't know if I got the right place, but [1] seems to do the mapping for 
+IPUv3 what imx7_csi_configure() is doing for CSI on imx7/8. The 
+MEDIA_BUS_FMT_Sxxxx14_1X14 formats are not added to the list yet though, but 
+that is a different matter.
+Unless someone objects I'm going forwards with this patch.
+
+Regards,
+Alexander
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+drivers/gpu/ipu-v3/ipu-csi.c#n302
+
+> > ---
+> > This adds the following formats to `v4l2-ctl --list-formats`
+> > [...]
+> > 
+> >         [18]: 'BG10' (10-bit Bayer BGBG/GRGR)
+> >         [19]: 'GB10' (10-bit Bayer GBGB/RGRG)
+> >         [20]: 'BA10' (10-bit Bayer GRGR/BGBG)
+> >         [21]: 'RG10' (10-bit Bayer RGRG/GBGB)
+> >         [22]: 'BG12' (12-bit Bayer BGBG/GRGR)
+> >         [23]: 'GB12' (12-bit Bayer GBGB/RGRG)
+> >         [24]: 'BA12' (12-bit Bayer GRGR/BGBG)
+> >         [25]: 'RG12' (12-bit Bayer RGRG/GBGB)
+> >         [26]: 'BG14' (14-bit Bayer BGBG/GRGR)
+> >         [27]: 'GB14' (14-bit Bayer GBGB/RGRG)
+> >         [28]: 'GR14' (14-bit Bayer GRGR/BGBG)
+> >         [29]: 'RG14' (14-bit Bayer RGRG/GBGB)
+> > 
+> > [...]
+> > 
+> >  drivers/staging/media/imx/imx-media-utils.c | 72 +++++++++++++++++++++
+> >  1 file changed, 72 insertions(+)
+> > 
+> > diff --git a/drivers/staging/media/imx/imx-media-utils.c
+> > b/drivers/staging/media/imx/imx-media-utils.c index
+> > e0a256a08c3b..ea56c82d3b32 100644
+> > --- a/drivers/staging/media/imx/imx-media-utils.c
+> > +++ b/drivers/staging/media/imx/imx-media-utils.c
+> > @@ -130,6 +130,78 @@ static const struct imx_media_pixfmt pixel_formats[]
+> > = {> 
+> >  		.cs     = IPUV3_COLORSPACE_RGB,
+> >  		.bpp    = 8,
+> >  		.bayer  = true,
+> > 
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SBGGR10,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SBGGR10_1X10),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 10,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SGBRG10,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGBRG10_1X10),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 10,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SGRBG10,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGRBG10_1X10),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 10,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SRGGB10,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SRGGB10_1X10),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 10,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SBGGR12,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SBGGR12_1X12),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 12,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SGBRG12,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGBRG12_1X12),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 12,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SGRBG12,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGRBG12_1X12),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 12,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SRGGB12,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SRGGB12_1X12),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 12,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SBGGR14,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SBGGR14_1X14),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 14,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SGBRG14,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGBRG14_1X14),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 14,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SGRBG14,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGRBG14_1X14),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 14,
+> > +		.bayer  = true,
+> > +	}, {
+> > +		.fourcc = V4L2_PIX_FMT_SRGGB14,
+> > +		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SRGGB14_1X14),
+> > +		.cs     = IPUV3_COLORSPACE_RGB,
+> > +		.bpp    = 14,
+> > +		.bayer  = true,
+> > 
+> >  	}, {
+> >  	
+> >  		.fourcc = V4L2_PIX_FMT_SBGGR16,
+> >  		.codes  = IMX_BUS_FMTS(
+
+
+
 
