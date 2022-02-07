@@ -2,87 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3519C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8790C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245104AbiBGIoj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:44:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
+        id S1343844AbiBGIom (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:44:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241038AbiBGIkQ (ORCPT
+        with ESMTP id S241538AbiBGIkd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:40:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FAB4C043181;
-        Mon,  7 Feb 2022 00:40:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6DD361137;
-        Mon,  7 Feb 2022 08:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3CDEC004E1;
-        Mon,  7 Feb 2022 08:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644223214;
-        bh=OXu4ePF9KnYMXzbzhryuJjA+Qn2NlR5TcqjF8HO8C1k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XOKg1tHXXyriKEFLh5p1wdnUqD8okrg/yiG277ztoueOy+HUbu3BTM7esXttteLqc
-         /xEpc3ZVmxG3JaAk0YypUx3Pae73MsXwEcPVrMTXmf8KaXTmg8DvrgufdWwbPI0/6d
-         kmdEPaM+CvRH3dwveMFzmYwKmqiGsmhHK/rq+fqqKM2X0iZ7PMOVxP5h8A2q0DGp5W
-         vtMqrcgzYMs9vzmmdInh/Ql7ogC56Upl9kbg8UN7v2pNcozbJnLmi+L4aVHlSxb6sI
-         maSOv4KaBsdo32ETV936V5isjB1Kr7SIMN+XH6gKwLyPAf4dCs/tYI3xiTpeH+xME1
-         qrTu2tpCBCZkw==
-Date:   Mon, 7 Feb 2022 14:10:07 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Yonglin Tan <yonglin.tan@outlook.com>
-Cc:     hemantk@codeaurora.org, mhi@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] bus: mhi: Add mru_default for Quectel EM1xx series
- modules.
-Message-ID: <20220207084007.GE1905@thinkpad>
-References: <MEYP282MB2374C10BC162393B39D78294FD229@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+        Mon, 7 Feb 2022 03:40:33 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B766C043181;
+        Mon,  7 Feb 2022 00:40:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=03wfvWQ2MzlBiCrO0YAhqTOrHW
+        DVgu9ro63l9uZ4OQSpNAp+MjaQgtX026sT/BNQwhRxzyfgAxh8U1OeviH0htHYMqBEaZJ2ay8poiM
+        38W/3NTc/VYJ9f6oC+Rfoa1o90J0EA8ALXLsDrh5Dee+v30HgA0KSj2oGJ6lYxo8qhEvEBLJUS5Lr
+        V77ziPNpto9g5MWUcOzd8DmFzGJ9tzN1zWCfbaFG/QJV1gJuvPtU40t7rPKf0XtLavV2xQGrWeQUy
+        0sgxB5DxS8J7gyodq6Hfx/spUpTyYmNqwjU+HsNpr+hFzPgDOblszvfQw1UWKr5uDRXGN36QKpFbz
+        kaG1e+bQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nGzZK-009OGr-0a; Mon, 07 Feb 2022 08:40:18 +0000
+Date:   Mon, 7 Feb 2022 00:40:17 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     NeilBrown <neilb@suse.de>
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Hemment <markhemm@googlemail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        David Howells <dhowells@redhat.com>, linux-nfs@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 09/21] MM: submit multipage write for SWP_FS_OPS
+ swap-space
+Message-ID: <YgDa8dKPUMFpLg0f@infradead.org>
+References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+ <164420916117.29374.17897957849434348102.stgit@noble.brown>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <MEYP282MB2374C10BC162393B39D78294FD229@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+In-Reply-To: <164420916117.29374.17897957849434348102.stgit@noble.brown>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 01:24:04PM +0800, Yonglin Tan wrote:
-> For default mechanism, the driver uses default MRU 3500 if mru_default
-> is not initialized. The Qualcomm configured the MRU size to 32768 in the
-> WWAN device FW. So, we align the driver setting with Qualcomm FW setting.
-> 
-> Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
+Looks good,
 
-Please add the Fixes tag for commit ac4bf60bbaa0 and CC stable list.
-
-Also the subject should be:
-"bus: mhi: pci_generic: Add mru_default for Quectel EM1xx series"
-
-With that,
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-
-Thanks,
-Mani
-
-> ---
->  drivers/bus/mhi/pci_generic.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/bus/mhi/pci_generic.c b/drivers/bus/mhi/pci_generic.c
-> index b798958..9527b7d 100644
-> --- a/drivers/bus/mhi/pci_generic.c
-> +++ b/drivers/bus/mhi/pci_generic.c
-> @@ -327,6 +327,7 @@ static const struct mhi_pci_dev_info mhi_quectel_em1xx_info = {
->  	.config = &modem_quectel_em1xx_config,
->  	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
->  	.dma_data_width = 32,
-> +	.mru_default = 32768,
->  	.sideband_wake = true,
->  };
->  
-> -- 
-> 2.7.4
-> 
+Reviewed-by: Christoph Hellwig <hch@lst.de>
