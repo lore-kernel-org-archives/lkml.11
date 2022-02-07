@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 381A3C35271
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0A5C46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389631AbiBGLuW (ORCPT
+        id S1389640AbiBGLu0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:50:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37938 "EHLO
+        Mon, 7 Feb 2022 06:50:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359604AbiBGLaJ (ORCPT
+        with ESMTP id S1380273AbiBGLaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Feb 2022 06:30:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68CB4C03E94C;
-        Mon,  7 Feb 2022 03:28:31 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027B4C03E957;
+        Mon,  7 Feb 2022 03:28:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 270C0B811B3;
-        Mon,  7 Feb 2022 11:28:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E9DDC004E1;
-        Mon,  7 Feb 2022 11:28:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A8026077B;
+        Mon,  7 Feb 2022 11:28:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 733BFC004E1;
+        Mon,  7 Feb 2022 11:28:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233309;
-        bh=HlwO99kzVVDq/w0vcBsb1+gvp57k51VTn37EzEf+CmY=;
+        s=korg; t=1644233312;
+        bh=gL+AJW7aUmc5Iap6xJjIKV40t3Yz1xThdKwzbu6TnWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pogn1h+/KMb8Y7sG1eU4Z3tPqmZDBcQ6cl46Mte8qcQR2IMpgZsCNsgf0iTRactKr
-         /HUX+GP+cPglgKXFE1PtJxuY2C6DUCrDuL9YU6ltCp298yeWLgwAgHSAEMJZImlzRh
-         7eQW3BFS/9KAagZaSrieHSpeI16v0Mb7Pmf8psLA=
+        b=1UKjbuA/p1pvwGSX/KqxDV5muIvTmKvkobZST/EIcHRsbNC429gBU0DyzChmZ+ta7
+         vdHKivlhguH48t5cL7/ln7TASFa+qpGbV7zfEXe1v95fZ/cRaqusQz3Aq+5LUW7WWu
+         wbxJXeSnkz0d+BIfFDqLd2zJbAaJYOzG1woLVltc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?=C5=81ukasz=20Bartosik?= <lb@semihalf.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH 5.15 081/110] pinctrl: intel: fix unexpected interrupt
-Date:   Mon,  7 Feb 2022 12:06:54 +0100
-Message-Id: <20220207103805.134119606@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.15 082/110] pinctrl: bcm2835: Fix a few error paths
+Date:   Mon,  7 Feb 2022 12:06:55 +0100
+Message-Id: <20220207103805.173542541@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -50,120 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Łukasz Bartosik <lb@semihalf.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-commit e986f0e602f19ecb7880b04dd1db415ed9bca3f6 upstream.
+commit 5297c693d8c8e08fa742e3112cf70723f7a04da2 upstream.
 
-ASUS Chromebook C223 with Celeron N3350 crashes sometimes during
-cold booot. Inspection of the kernel log showed that it gets into
-an inifite loop logging the following message:
+After commit 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio
+hogs") a few error paths would not unwind properly the registration of
+gpio ranges. Correct that by assigning a single error label and goto it
+whenever we encounter a fatal error.
 
-->handle_irq():  000000009cdb51e8, handle_bad_irq+0x0/0x251
-->irq_data.chip(): 000000005ec212a7, 0xffffa043009d8e7
-->action(): 00000
-   IRQ_NOPROBE set
-unexpected IRQ trap at vector 7c
-
-The issue happens during cold boot but only if cold boot happens
-at most several dozen seconds after Chromebook is powered off. For
-longer intervals between power off and power on (cold boot) the issue
-does not reproduce. The unexpected interrupt is sourced from INT3452
-GPIO pin which is used for SD card detect. Investigation relevealed
-that when the interval between power off and power on (cold boot)
-is less than several dozen seconds then values of INT3452 GPIO interrupt
-enable and interrupt pending registers survive power off and power
-on sequence and interrupt for SD card detect pin is enabled and pending
-during probe of SD controller which causes the unexpected IRQ message.
-"Intel Pentium and Celeron Processor N- and J- Series" volume 3 doc
-mentions that GPIO interrupt enable and status registers default
-value is 0x0.
-The fix clears INT3452 GPIO interrupt enabled and interrupt pending
-registers in its probe function.
-
-Fixes: 7981c0015af2 ("pinctrl: intel: Add Intel Sunrisepoint pin controller and GPIO support")
-Signed-off-by: Łukasz Bartosik <lb@semihalf.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220127215033.267227-1-f.fainelli@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/intel/pinctrl-intel.c |   54 +++++++++++++++++++++-------------
- 1 file changed, 34 insertions(+), 20 deletions(-)
+ drivers/pinctrl/bcm/pinctrl-bcm2835.c |   23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
---- a/drivers/pinctrl/intel/pinctrl-intel.c
-+++ b/drivers/pinctrl/intel/pinctrl-intel.c
-@@ -1210,6 +1210,39 @@ static irqreturn_t intel_gpio_irq(int ir
- 	return IRQ_RETVAL(ret);
- }
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -1263,16 +1263,18 @@ static int bcm2835_pinctrl_probe(struct
+ 				     sizeof(*girq->parents),
+ 				     GFP_KERNEL);
+ 	if (!girq->parents) {
+-		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
+-		return -ENOMEM;
++		err = -ENOMEM;
++		goto out_remove;
+ 	}
  
-+static void intel_gpio_irq_init(struct intel_pinctrl *pctrl)
-+{
-+	int i;
-+
-+	for (i = 0; i < pctrl->ncommunities; i++) {
-+		const struct intel_community *community;
-+		void __iomem *base;
-+		unsigned int gpp;
-+
-+		community = &pctrl->communities[i];
-+		base = community->regs;
-+
-+		for (gpp = 0; gpp < community->ngpps; gpp++) {
-+			/* Mask and clear all interrupts */
-+			writel(0, base + community->ie_offset + gpp * 4);
-+			writel(0xffff, base + community->is_offset + gpp * 4);
+ 	if (is_7211) {
+ 		pc->wake_irq = devm_kcalloc(dev, BCM2835_NUM_IRQS,
+ 					    sizeof(*pc->wake_irq),
+ 					    GFP_KERNEL);
+-		if (!pc->wake_irq)
+-			return -ENOMEM;
++		if (!pc->wake_irq) {
++			err = -ENOMEM;
++			goto out_remove;
 +		}
-+	}
-+}
-+
-+static int intel_gpio_irq_init_hw(struct gpio_chip *gc)
-+{
-+	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
-+
-+	/*
-+	 * Make sure the interrupt lines are in a proper state before
-+	 * further configuration.
-+	 */
-+	intel_gpio_irq_init(pctrl);
-+
-+	return 0;
-+}
-+
- static int intel_gpio_add_community_ranges(struct intel_pinctrl *pctrl,
- 				const struct intel_community *community)
- {
-@@ -1314,6 +1347,7 @@ static int intel_gpio_probe(struct intel
- 	girq->num_parents = 0;
- 	girq->default_type = IRQ_TYPE_NONE;
- 	girq->handler = handle_bad_irq;
-+	girq->init_hw = intel_gpio_irq_init_hw;
+ 	}
  
- 	ret = devm_gpiochip_add_data(pctrl->dev, &pctrl->chip, pctrl);
- 	if (ret) {
-@@ -1689,26 +1723,6 @@ int intel_pinctrl_suspend_noirq(struct d
+ 	/*
+@@ -1300,8 +1302,10 @@ static int bcm2835_pinctrl_probe(struct
+ 
+ 		len = strlen(dev_name(pc->dev)) + 16;
+ 		name = devm_kzalloc(pc->dev, len, GFP_KERNEL);
+-		if (!name)
+-			return -ENOMEM;
++		if (!name) {
++			err = -ENOMEM;
++			goto out_remove;
++		}
+ 
+ 		snprintf(name, len, "%s:bank%d", dev_name(pc->dev), i);
+ 
+@@ -1320,11 +1324,14 @@ static int bcm2835_pinctrl_probe(struct
+ 	err = gpiochip_add_data(&pc->gpio_chip, pc);
+ 	if (err) {
+ 		dev_err(dev, "could not add GPIO chip\n");
+-		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
+-		return err;
++		goto out_remove;
+ 	}
+ 
+ 	return 0;
++
++out_remove:
++	pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
++	return err;
  }
- EXPORT_SYMBOL_GPL(intel_pinctrl_suspend_noirq);
  
--static void intel_gpio_irq_init(struct intel_pinctrl *pctrl)
--{
--	size_t i;
--
--	for (i = 0; i < pctrl->ncommunities; i++) {
--		const struct intel_community *community;
--		void __iomem *base;
--		unsigned int gpp;
--
--		community = &pctrl->communities[i];
--		base = community->regs;
--
--		for (gpp = 0; gpp < community->ngpps; gpp++) {
--			/* Mask and clear all interrupts */
--			writel(0, base + community->ie_offset + gpp * 4);
--			writel(0xffff, base + community->is_offset + gpp * 4);
--		}
--	}
--}
--
- static bool intel_gpio_update_reg(void __iomem *reg, u32 mask, u32 value)
- {
- 	u32 curr, updated;
+ static struct platform_driver bcm2835_pinctrl_driver = {
 
 
