@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1580C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E163AC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355836AbiBGLzz (ORCPT
+        id S1343921AbiBGLzx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:55:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
+        Mon, 7 Feb 2022 06:55:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385061AbiBGLbD (ORCPT
+        with ESMTP id S1385022AbiBGLa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9ED8C0354AB;
-        Mon,  7 Feb 2022 03:29:09 -0800 (PST)
+        Mon, 7 Feb 2022 06:30:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84F8C03BFFF;
+        Mon,  7 Feb 2022 03:29:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 686D1B811A6;
-        Mon,  7 Feb 2022 11:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86BADC004E1;
-        Mon,  7 Feb 2022 11:29:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5297D60B5C;
+        Mon,  7 Feb 2022 11:29:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F849C004E1;
+        Mon,  7 Feb 2022 11:28:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233347;
-        bh=f1ORtPDAHpcxACauP0gFG5EboxWBRvFWuxzNa3VLo2w=;
+        s=korg; t=1644233340;
+        bh=ztI+U6AJfXgJOfHa3JGdlrmkcr9HcxcswIQ5WY5SUUg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G4riBLUO5ZxbwBMIaeO+6onlM2ZWK1ZtMZSE+yYOnwuIW63PStueCngwRIhM8qikb
-         q5+tCI/iQtAR/1IlPgaalQFNrByvdukSrZi6HMOBYemCWfdvE63IGVMoEFwU8hvUMm
-         IqtuwJU3mUCAcOD5i7HewESv5HOL9KWrYga96Jz4=
+        b=2jpesOpgkmwLZgETVuLO6y5dub6AaoumPwmN168Pl7HtTgKR5fPusfve/Wi3wdOMw
+         C1KSk79jPEKbyS4DEEk0L2GFTY5FjxIcbt0Y2DlnlqnM1GFxSliXUC5CStkcI/5DMy
+         e92sR7WQ/3p04lQy84P82+mX2Ees12p9CmBojddw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tristan Hume <tristan@thume.ca>,
+        stable@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
+        Marco Elver <elver@google.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Adrian Hunter <adrian.hunter@intel.com>, stable@kernel.org
-Subject: [PATCH 5.15 095/110] perf/x86/intel/pt: Fix crash with stop filters in single-range mode
-Date:   Mon,  7 Feb 2022 12:07:08 +0100
-Message-Id: <20220207103805.612059303@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 093/110] perf: Copy perf_event_attr::sig_data on modification
+Date:   Mon,  7 Feb 2022 12:07:06 +0100
+Message-Id: <20220207103805.549583830@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -50,52 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tristan Hume <tristan@thume.ca>
+From: Marco Elver <elver@google.com>
 
-commit 1d9093457b243061a9bba23543c38726e864a643 upstream.
+[ Upstream commit 3c25fc97f5590060464cabfa25710970ecddbc96 ]
 
-Add a check for !buf->single before calling pt_buffer_region_size in a
-place where a missing check can cause a kernel crash.
+The intent has always been that perf_event_attr::sig_data should also be
+modifiable along with PERF_EVENT_IOC_MODIFY_ATTRIBUTES, because it is
+observable by user space if SIGTRAP on events is requested.
 
-Fixes a bug introduced by commit 670638477aed ("perf/x86/intel/pt:
-Opportunistically use single range output mode"), which added a
-support for PT single-range output mode. Since that commit if a PT
-stop filter range is hit while tracing, the kernel will crash because
-of a null pointer dereference in pt_handle_status due to calling
-pt_buffer_region_size without a ToPA configured.
+Currently only PERF_TYPE_BREAKPOINT is modifiable, and explicitly copies
+relevant breakpoint-related attributes in hw_breakpoint_copy_attr().
+This misses copying perf_event_attr::sig_data.
 
-The commit which introduced single-range mode guarded almost all uses of
-the ToPA buffer variables with checks of the buf->single variable, but
-missed the case where tracing was stopped by the PT hardware, which
-happens when execution hits a configured stop filter.
+Since sig_data is not specific to PERF_TYPE_BREAKPOINT, introduce a
+helper to copy generic event-type-independent attributes on
+modification.
 
-Tested that hitting a stop filter while PT recording successfully
-records a trace with this patch but crashes without this patch.
-
-Fixes: 670638477aed ("perf/x86/intel/pt: Opportunistically use single range output mode")
-Signed-off-by: Tristan Hume <tristan@thume.ca>
+Fixes: 97ba62b27867 ("perf: Add support for SIGTRAP on perf events")
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Marco Elver <elver@google.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
-Cc: stable@kernel.org
-Link: https://lkml.kernel.org/r/20220127220806.73664-1-tristan@thume.ca
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Link: https://lore.kernel.org/r/20220131103407.1971678-1-elver@google.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/intel/pt.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ kernel/events/core.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
---- a/arch/x86/events/intel/pt.c
-+++ b/arch/x86/events/intel/pt.c
-@@ -897,8 +897,9 @@ static void pt_handle_status(struct pt *
- 		 * means we are already losing data; need to let the decoder
- 		 * know.
- 		 */
--		if (!intel_pt_validate_hw_cap(PT_CAP_topa_multiple_entries) ||
--		    buf->output_off == pt_buffer_region_size(buf)) {
-+		if (!buf->single &&
-+		    (!intel_pt_validate_hw_cap(PT_CAP_topa_multiple_entries) ||
-+		     buf->output_off == pt_buffer_region_size(buf))) {
- 			perf_aux_output_flag(&pt->handle,
- 			                     PERF_AUX_FLAG_TRUNCATED);
- 			advance++;
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index c7581e3fb8ab1..69c70767b5dff 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -3234,6 +3234,15 @@ static int perf_event_modify_breakpoint(struct perf_event *bp,
+ 	return err;
+ }
+ 
++/*
++ * Copy event-type-independent attributes that may be modified.
++ */
++static void perf_event_modify_copy_attr(struct perf_event_attr *to,
++					const struct perf_event_attr *from)
++{
++	to->sig_data = from->sig_data;
++}
++
+ static int perf_event_modify_attr(struct perf_event *event,
+ 				  struct perf_event_attr *attr)
+ {
+@@ -3256,10 +3265,17 @@ static int perf_event_modify_attr(struct perf_event *event,
+ 	WARN_ON_ONCE(event->ctx->parent_ctx);
+ 
+ 	mutex_lock(&event->child_mutex);
++	/*
++	 * Event-type-independent attributes must be copied before event-type
++	 * modification, which will validate that final attributes match the
++	 * source attributes after all relevant attributes have been copied.
++	 */
++	perf_event_modify_copy_attr(&event->attr, attr);
+ 	err = func(event, attr);
+ 	if (err)
+ 		goto out;
+ 	list_for_each_entry(child, &event->child_list, child_list) {
++		perf_event_modify_copy_attr(&child->attr, attr);
+ 		err = func(child, attr);
+ 		if (err)
+ 			goto out;
+-- 
+2.34.1
+
 
 
