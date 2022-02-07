@@ -2,82 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D19C3527C
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7102C3527A
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389208AbiBGNvW (ORCPT
+        id S1389181AbiBGNvS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:51:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
+        Mon, 7 Feb 2022 08:51:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388363AbiBGNqu (ORCPT
+        with ESMTP id S1387670AbiBGNiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:46:50 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00E7C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:46:49 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id x4so3566277plb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 05:46:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8ug9KpH6bIvmPFydrBBlGOiV1ojuh4o4EvlAVOtW+r8=;
-        b=Ucb6NZccAO1goAXBmte2XO3+lvr0ZtNlsCU1niaB4QeCGfuaC+ZZ34xsjuiUZ34J8P
-         /PnDKyDwwKZuyRevYLH0cVu+uCxqEht+7er+qya2op6bjdApe9jED//PHeQR5KhnvRSi
-         o4CuIM7pIIeu74ADGEG1vVJsUXTxHgkEvPzxtrhogxoQg5Pgb1QV4Ds6kJhzGHEfj/Js
-         X18y8WlvaeZpnMJicsHItS4pA/ToBOt7PEBsnu43DqRWFYqgaSwsjHYfF7nC2ZYrqTz+
-         K3FGWynLI1LQBD2ydHoPIv4f5Q2OU5bpE28FB9kpldJ0ng8rn0wtSRR/4J+59QLHhwRw
-         8fKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8ug9KpH6bIvmPFydrBBlGOiV1ojuh4o4EvlAVOtW+r8=;
-        b=LsGTOx2ekGcWpy8owWOSivSypBUmNRlzG1WrIXyoDi3J8HtRYfaYaVB0xOUH4xOCea
-         8/sRfQL9CDYPzHTRKiRxPC4PIKTVzQewj2uIXlyO9WaFMy/oMIT4t8cAuyKlBpGaLtt0
-         1g24UPS0b+9A24fmBX2pTm7IPzhPXsi9HjthWislQpe94tetN0OSSKtvhznu/O055km5
-         AKD6xQ8blKVflKeYFUarIw+PW0UbK+niv13MsOW4k8AsQuW9V1T99Fzvo3cfobqCx5r1
-         cPmZIe0dTrlkdEE9ju7RmfyT85v5Nog6G6U5iad7nwpZN+dTsRjsjiXpcuqrnB6gr2iS
-         Gq9g==
-X-Gm-Message-State: AOAM530DrFs4mVdhYcGYjypmzg/FMSHMgfRKnmpa5WP3z4u/anVVX6h1
-        HT8+c3yqKrNYCSH58jLHCQipFA==
-X-Google-Smtp-Source: ABdhPJy9dgozjBf35cBNjjoa6rNFAeIyMjWTFI96ymPkw8SlosV4+0d7/rydA66/7FD2PEhtZhWwFA==
-X-Received: by 2002:a17:90a:f414:: with SMTP id ch20mr8409368pjb.146.1644241609260;
-        Mon, 07 Feb 2022 05:46:49 -0800 (PST)
-Received: from [192.168.1.116] ([66.219.217.159])
-        by smtp.gmail.com with ESMTPSA id 198sm8378636pgg.4.2022.02.07.05.46.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 05:46:48 -0800 (PST)
-Subject: Re: [PATCH] io_uring: unregister eventfd while holding lock when
- freeing ring ctx
-To:     Usama Arif <usama.arif@bytedance.com>, io-uring@vger.kernel.org,
-        asml.silence@gmail.com, linux-kernel@vger.kernel.org
-Cc:     fam.zheng@bytedance.com, lkp@lists.01.org, lkp@intel.com,
-        kernel test robot <oliver.sang@intel.com>
-References: <20220207105040.2662467-1-usama.arif@bytedance.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <696e49fe-3d2e-da6c-2fc6-5d69bc7a60f9@kernel.dk>
-Date:   Mon, 7 Feb 2022 06:46:46 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Mon, 7 Feb 2022 08:38:02 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B51BC0401D3
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:37:23 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JsnCC4BhKzZfLg;
+        Mon,  7 Feb 2022 21:33:11 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
+ 2022 21:37:21 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH 0/4] A few cleanup patches around memory_hotplug
+Date:   Mon, 7 Feb 2022 21:36:39 +0800
+Message-ID: <20220207133643.23427-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <20220207105040.2662467-1-usama.arif@bytedance.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 3:50 AM, Usama Arif wrote:
-> This is because ctx->io_ev_fd is rcu_dereference_protected using
-> ctx->uring_lock in io_eventfd_unregister. Not locking the function
-> resulted in suspicious RCU usage reported by kernel test robot.
+Hi,
+This series contains a few patches to fix obsolete and misplaced comments,
+clean up the try_offline_node function and so on. More details can be
+found in the respective changelogs. Thanks!
 
-I'll fold this in with the change, thanks.
+Miaohe Lin (4):
+  mm/memory_hotplug: remove obsolete comment of __add_pages
+  mm/memory_hotplug: avoid calling zone_intersects() for ZONE_NORMAL
+  mm/memory_hotplug: clean up try_offline_node
+  mm/memory_hotplug: fix misplaced comment in offline_pages
+
+ mm/memory_hotplug.c | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
 
 -- 
-Jens Axboe
+2.23.0
 
