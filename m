@@ -2,113 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1971EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58884C35272
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376352AbiBGLop (ORCPT
+        id S1388738AbiBGLpD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:44:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
+        Mon, 7 Feb 2022 06:45:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385982AbiBGLdO (ORCPT
+        with ESMTP id S1386042AbiBGLdX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:33:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E93C043181;
-        Mon,  7 Feb 2022 03:33:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51A8460B20;
-        Mon,  7 Feb 2022 11:33:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C6D0C004E1;
-        Mon,  7 Feb 2022 11:33:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233592;
-        bh=XQ2A7nbGwX4O6tcgG0WTiKbbbmm4PnYNbnVuQr6D52U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QmLCciIucW2XiuaHt+dW8etwOL3zlLathUBaCasX6Rq6U72op6974LrFCMErT/t9T
-         dSUSxCYftG0fafBy17zoOBGgkTDtNdehTpbOF1gmyQT9yX9XFXAzAPYM20jT7XhsPn
-         xOPOEOBf0r9EWYsBNwVorWDE2HMjh4ut3cwaYXb8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aun-Ali Zaidi <admin@kodeit.net>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Aditya Garg <gargaditya08@live.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 028/126] drm/amd/display: Force link_rate as LINK_RATE_RBR2 for 2018 15" Apple Retina panels
-Date:   Mon,  7 Feb 2022 12:05:59 +0100
-Message-Id: <20220207103805.117814786@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-References: <20220207103804.053675072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:33:23 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B839C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:33:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644233602; x=1675769602;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=PvS+cZh5V/ODGurp+2LHIOoc0Up83psXPXZTlCRizIU=;
+  b=eutZucXyy2nl6fjojQRePPPJNerKjS+/7tz+7FYn9qb86+evzmpSqoRR
+   8svgfobKFvy4xXLR3t/7AgwdrsXUakCuJjzE7KupmkxAwNGAOMt0Z3SYO
+   8VmNEq1jPJU3KTmbMQ1kFnFg0HRmCQLCSKUd/HlPEsRrric6pYXPwmYc6
+   S8WwaXr/IRx3EpHieOd18pIXjciW8Bsx5EiE+br939J56gsTJ0p6BYirD
+   hawXS8yxPIfqWNY/y9+DAXEY5MYNW0cwtpailC3bTzF4dm5Iy51W4MVgL
+   tXTIMSZUMd/pPSlghDNekJfWmj9QZv+wjHgslyH3CizpPw2BFONiOTGMI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="228665509"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="228665509"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:33:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="481556851"
+Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 07 Feb 2022 03:33:20 -0800
+Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nH2Gl-0000Th-UD; Mon, 07 Feb 2022 11:33:19 +0000
+Date:   Mon, 7 Feb 2022 19:33:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Maxime Ripard <maxime@cerno.tech>
+Subject: [sunxi:sunxi/clk-for-5.18 2/2] drivers/rtc/rtc-sun6i.c:689:51:
+ error: 'dev' undeclared; did you mean 'pdev'?
+Message-ID: <202202071955.hQjU2RLW-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aun-Ali Zaidi <admin@kodeit.net>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git sunxi/clk-for-5.18
+head:   4f88abd86756e574c733d2ca14676be335cc0058
+commit: 4f88abd86756e574c733d2ca14676be335cc0058 [2/2] clk: sunxi-ng: Add support for the sun6i RTC clocks
+config: microblaze-randconfig-r001-20220207 (https://download.01.org/0day-ci/archive/20220207/202202071955.hQjU2RLW-lkp@intel.com/config)
+compiler: microblaze-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git/commit/?id=4f88abd86756e574c733d2ca14676be335cc0058
+        git remote add sunxi https://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git
+        git fetch --no-tags sunxi sunxi/clk-for-5.18
+        git checkout 4f88abd86756e574c733d2ca14676be335cc0058
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/
 
-commit 30fbce374745a9c6af93c775a5ac49a97f822fda upstream.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The eDP link rate reported by the DP_MAX_LINK_RATE dpcd register (0xa) is
-contradictory to the highest rate supported reported by
-EDID (0xc = LINK_RATE_RBR2). The effects of this compounded with commit
-'4a8ca46bae8a ("drm/amd/display: Default max bpc to 16 for eDP")' results
-in no display modes being found and a dark panel.
+All errors (new ones prefixed by >>):
 
-For now, simply force the maximum supported link rate for the eDP attached
-2018 15" Apple Retina panels.
+   drivers/rtc/rtc-sun6i.c: In function 'sun6i_rtc_probe':
+>> drivers/rtc/rtc-sun6i.c:689:51: error: 'dev' undeclared (first use in this function); did you mean 'pdev'?
+     689 |                         ret = sun6i_rtc_ccu_probe(dev, chip->base);
+         |                                                   ^~~
+         |                                                   pdev
+   drivers/rtc/rtc-sun6i.c:689:51: note: each undeclared identifier is reported only once for each function it appears in
 
-Additionally, we must also check the firmware revision since the device ID
-reported by the DPCD is identical to that of the more capable 16,1,
-incorrectly quirking it. We also use said firmware check to quirk the
-refreshed 15,1 models with Vega graphics as they use a slightly newer
-firmware version.
 
-Tested-by: Aun-Ali Zaidi <admin@kodeit.net>
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Aun-Ali Zaidi <admin@kodeit.net>
-Signed-off-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+vim +689 drivers/rtc/rtc-sun6i.c
+
+   668	
+   669	static SIMPLE_DEV_PM_OPS(sun6i_rtc_pm_ops,
+   670		sun6i_rtc_suspend, sun6i_rtc_resume);
+   671	
+   672	static int sun6i_rtc_probe(struct platform_device *pdev)
+   673	{
+   674		struct sun6i_rtc_dev *chip = sun6i_rtc;
+   675		int ret;
+   676	
+   677		if (!chip) {
+   678			chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
+   679			if (!chip)
+   680				return -ENOMEM;
+   681	
+   682			spin_lock_init(&chip->lock);
+   683	
+   684			chip->base = devm_platform_ioremap_resource(pdev, 0);
+   685			if (IS_ERR(chip->base))
+   686				return PTR_ERR(chip->base);
+   687	
+   688			if (IS_REACHABLE(CONFIG_SUN6I_RTC_CCU)) {
+ > 689				ret = sun6i_rtc_ccu_probe(dev, chip->base);
+   690				if (ret)
+   691					return ret;
+   692			}
+   693		}
+   694	
+   695		platform_set_drvdata(pdev, chip);
+   696	
+   697		chip->irq = platform_get_irq(pdev, 0);
+   698		if (chip->irq < 0)
+   699			return chip->irq;
+   700	
+   701		ret = devm_request_irq(&pdev->dev, chip->irq, sun6i_rtc_alarmirq,
+   702				       0, dev_name(&pdev->dev), chip);
+   703		if (ret) {
+   704			dev_err(&pdev->dev, "Could not request IRQ\n");
+   705			return ret;
+   706		}
+   707	
+   708		/* clear the alarm counter value */
+   709		writel(0, chip->base + SUN6I_ALRM_COUNTER);
+   710	
+   711		/* disable counter alarm */
+   712		writel(0, chip->base + SUN6I_ALRM_EN);
+   713	
+   714		/* disable counter alarm interrupt */
+   715		writel(0, chip->base + SUN6I_ALRM_IRQ_EN);
+   716	
+   717		/* disable week alarm */
+   718		writel(0, chip->base + SUN6I_ALRM1_EN);
+   719	
+   720		/* disable week alarm interrupt */
+   721		writel(0, chip->base + SUN6I_ALRM1_IRQ_EN);
+   722	
+   723		/* clear counter alarm pending interrupts */
+   724		writel(SUN6I_ALRM_IRQ_STA_CNT_IRQ_PEND,
+   725		       chip->base + SUN6I_ALRM_IRQ_STA);
+   726	
+   727		/* clear week alarm pending interrupts */
+   728		writel(SUN6I_ALRM1_IRQ_STA_WEEK_IRQ_PEND,
+   729		       chip->base + SUN6I_ALRM1_IRQ_STA);
+   730	
+   731		/* disable alarm wakeup */
+   732		writel(0, chip->base + SUN6I_ALARM_CONFIG);
+   733	
+   734		clk_prepare_enable(chip->losc);
+   735	
+   736		device_init_wakeup(&pdev->dev, 1);
+   737	
+   738		chip->rtc = devm_rtc_allocate_device(&pdev->dev);
+   739		if (IS_ERR(chip->rtc))
+   740			return PTR_ERR(chip->rtc);
+   741	
+   742		chip->rtc->ops = &sun6i_rtc_ops;
+   743		chip->rtc->range_max = 2019686399LL; /* 2033-12-31 23:59:59 */
+   744	
+   745		ret = devm_rtc_register_device(chip->rtc);
+   746		if (ret)
+   747			return ret;
+   748	
+   749		dev_info(&pdev->dev, "RTC enabled\n");
+   750	
+   751		return 0;
+   752	}
+   753	
+
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c |   20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-@@ -4730,6 +4730,26 @@ static bool retrieve_link_cap(struct dc_
- 		dp_hw_fw_revision.ieee_fw_rev,
- 		sizeof(dp_hw_fw_revision.ieee_fw_rev));
- 
-+	/* Quirk for Apple MBP 2018 15" Retina panels: wrong DP_MAX_LINK_RATE */
-+	{
-+		uint8_t str_mbp_2018[] = { 101, 68, 21, 103, 98, 97 };
-+		uint8_t fwrev_mbp_2018[] = { 7, 4 };
-+		uint8_t fwrev_mbp_2018_vega[] = { 8, 4 };
-+
-+		/* We also check for the firmware revision as 16,1 models have an
-+		 * identical device id and are incorrectly quirked otherwise.
-+		 */
-+		if ((link->dpcd_caps.sink_dev_id == 0x0010fa) &&
-+		    !memcmp(link->dpcd_caps.sink_dev_id_str, str_mbp_2018,
-+			     sizeof(str_mbp_2018)) &&
-+		    (!memcmp(link->dpcd_caps.sink_fw_revision, fwrev_mbp_2018,
-+			     sizeof(fwrev_mbp_2018)) ||
-+		    !memcmp(link->dpcd_caps.sink_fw_revision, fwrev_mbp_2018_vega,
-+			     sizeof(fwrev_mbp_2018_vega)))) {
-+			link->reported_link_cap.link_rate = LINK_RATE_RBR2;
-+		}
-+	}
-+
- 	memset(&link->dpcd_caps.dsc_caps, '\0',
- 			sizeof(link->dpcd_caps.dsc_caps));
- 	memset(&link->dpcd_caps.fec_cap, '\0', sizeof(link->dpcd_caps.fec_cap));
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
