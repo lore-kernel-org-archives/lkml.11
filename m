@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73756C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97674C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356143AbiBGP7w (ORCPT
+        id S1358343AbiBGP7y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:59:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
+        Mon, 7 Feb 2022 10:59:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385583AbiBGPzw (ORCPT
+        with ESMTP id S1377742AbiBGPzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:55:52 -0500
+        Mon, 7 Feb 2022 10:55:05 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4CF59C0401CE
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:55:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB745C0401DD
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:55:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249351;
+        s=mimecast20190719; t=1644249303;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EAX/iPSDnKifJ1ul8GYSz/iW0O/HgQPeT+89Chaumh4=;
-        b=LC569S7T+X3ePsCLgWs9TDNGxFCbz30nhzCdOX1ueMlsvDiwadEb+6ZaT8FT9NNjIjm9Ea
-        gmYEXSb8SMFuoCgnB25X7JYroT+kHae3NOQFnmhkMtO9DtUKF6Pj+QyDsVsGyKXuDaKeyl
-        nStSc1gIyDgHuQawSuVdtamLIAl3bWg=
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ckLuH3eXQt4Wu9Nzp1D8ksAkv1tHukiQ+KMKFiTtdwY=;
+        b=cIx6hvdW99GeleJU4jRK3RUHgV40wH49QCk2UgtyVVxMq7fkD+K5V9JcxmG1r6jcYVKWXm
+        h72qR6Uim788LQWPXDR/cCOy9iohJUdxq1+plDA3TTh1iSQAavw3LnQOSFiocbajLhCulu
+        eCqL8sWlE5+biPjldKlyHuETyp9qw7Y=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-311-jqEL4Il4OMi6dTRpCOZybg-1; Mon, 07 Feb 2022 10:55:48 -0500
-X-MC-Unique: jqEL4Il4OMi6dTRpCOZybg-1
+ us-mta-277-3oJzETgWM123BYxoIWYJeQ-1; Mon, 07 Feb 2022 10:55:00 -0500
+X-MC-Unique: 3oJzETgWM123BYxoIWYJeQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1FA26100C675;
-        Mon,  7 Feb 2022 15:55:45 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EAE56100C609;
+        Mon,  7 Feb 2022 15:54:56 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 495177DE38;
-        Mon,  7 Feb 2022 15:55:37 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 182D87DE5F;
+        Mon,  7 Feb 2022 15:54:48 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>,
@@ -67,43 +66,99 @@ Cc:     Tony Luck <tony.luck@intel.com>,
         Kan Liang <kan.liang@linux.intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 06/30] KVM: x86: mark syntethic SMM vmexit as SVM_EXIT_SW
-Date:   Mon,  7 Feb 2022 17:54:23 +0200
-Message-Id: <20220207155447.840194-7-mlevitsk@redhat.com>
-In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
-References: <20220207155447.840194-1-mlevitsk@redhat.com>
+Subject: [PATCH RESEND 00/30] My patch queue
+Date:   Mon,  7 Feb 2022 17:54:17 +0200
+Message-Id: <20220207155447.840194-1-mlevitsk@redhat.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a dummy unused vmexit reason to mark the 'VM exit'
-that is happening when we exit to handle SMM,
-which is not a real VM exit.
-
-This makes it a bit easier to read the KVM trace,
-and avoids other potential problems.
-
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/svm/svm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 8013be9edf27c..9a4e299ed5673 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4194,7 +4194,7 @@ static int svm_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
- 	svm->vmcb->save.rsp = vcpu->arch.regs[VCPU_REGS_RSP];
- 	svm->vmcb->save.rip = vcpu->arch.regs[VCPU_REGS_RIP];
- 
--	ret = nested_svm_vmexit(svm);
-+	ret = nested_svm_simple_vmexit(svm, SVM_EXIT_SW);
- 	if (ret)
- 		return ret;
- 
--- 
-2.26.3
+This is set of various patches that are stuck in my patch queue.=0D
+=0D
+KVM_REQ_GET_NESTED_STATE_PAGES patch is mostly RFC, but it does seem=0D
+to work for me.=0D
+=0D
+Read-only APIC ID is also somewhat RFC.=0D
+=0D
+Some of these patches are preparation for support for nested AVIC=0D
+which I almost done developing, and will start testing very soon.=0D
+=0D
+Resend with cleaned up CCs.=0D
+=0D
+Best regards,=0D
+	Maxim Levitsky=0D
+=0D
+Maxim Levitsky (30):=0D
+  KVM: x86: SVM: don't passthrough SMAP/SMEP/PKE bits in !NPT &&=0D
+    !gCR0.PG case=0D
+  KVM: x86: nSVM: fix potential NULL derefernce on nested migration=0D
+  KVM: x86: nSVM: mark vmcb01 as dirty when restoring SMM saved state=0D
+  KVM: x86: nSVM/nVMX: set nested_run_pending on VM entry which is a=0D
+    result of RSM=0D
+  KVM: x86: nSVM: expose clean bit support to the guest=0D
+  KVM: x86: mark syntethic SMM vmexit as SVM_EXIT_SW=0D
+  KVM: x86: nSVM: deal with L1 hypervisor that intercepts interrupts but=0D
+    lets L2 control them=0D
+  KVM: x86: lapic: don't touch irr_pending in kvm_apic_update_apicv when=0D
+    inhibiting it=0D
+  KVM: x86: SVM: move avic definitions from AMD's spec to svm.h=0D
+  KVM: x86: SVM: fix race between interrupt delivery and AVIC inhibition=0D
+  KVM: x86: SVM: use vmcb01 in avic_init_vmcb=0D
+  KVM: x86: SVM: allow AVIC to co-exist with a nested guest running=0D
+  KVM: x86: lapic: don't allow to change APIC ID when apic acceleration=0D
+    is enabled=0D
+  KVM: x86: lapic: don't allow to change local apic id when using older=0D
+    x2apic api=0D
+  KVM: x86: SVM: remove avic's broken code that updated APIC ID=0D
+  KVM: x86: SVM: allow to force AVIC to be enabled=0D
+  KVM: x86: mmu: trace kvm_mmu_set_spte after the new SPTE was set=0D
+  KVM: x86: mmu: add strict mmu mode=0D
+  KVM: x86: mmu: add gfn_in_memslot helper=0D
+  KVM: x86: mmu: allow to enable write tracking externally=0D
+  x86: KVMGT: use kvm_page_track_write_tracking_enable=0D
+  KVM: x86: nSVM: correctly virtualize LBR msrs when L2 is running=0D
+  KVM: x86: nSVM: implement nested LBR virtualization=0D
+  KVM: x86: nSVM: implement nested VMLOAD/VMSAVE=0D
+  KVM: x86: nSVM: support PAUSE filter threshold and count when=0D
+    cpu_pm=3Don=0D
+  KVM: x86: nSVM: implement nested vGIF=0D
+  KVM: x86: add force_intercept_exceptions_mask=0D
+  KVM: SVM: implement force_intercept_exceptions_mask=0D
+  KVM: VMX: implement force_intercept_exceptions_mask=0D
+  KVM: x86: get rid of KVM_REQ_GET_NESTED_STATE_PAGES=0D
+=0D
+ arch/x86/include/asm/kvm-x86-ops.h    |   1 +=0D
+ arch/x86/include/asm/kvm_host.h       |  24 +-=0D
+ arch/x86/include/asm/kvm_page_track.h |   1 +=0D
+ arch/x86/include/asm/msr-index.h      |   1 +=0D
+ arch/x86/include/asm/svm.h            |  36 +++=0D
+ arch/x86/include/uapi/asm/kvm.h       |   1 +=0D
+ arch/x86/kvm/Kconfig                  |   3 -=0D
+ arch/x86/kvm/hyperv.c                 |   4 +=0D
+ arch/x86/kvm/lapic.c                  |  53 ++--=0D
+ arch/x86/kvm/mmu.h                    |   8 +-=0D
+ arch/x86/kvm/mmu/mmu.c                |  31 ++-=0D
+ arch/x86/kvm/mmu/page_track.c         |  10 +-=0D
+ arch/x86/kvm/svm/avic.c               | 135 +++-------=0D
+ arch/x86/kvm/svm/nested.c             | 167 +++++++-----=0D
+ arch/x86/kvm/svm/svm.c                | 375 ++++++++++++++++++++++----=0D
+ arch/x86/kvm/svm/svm.h                |  60 +++--=0D
+ arch/x86/kvm/svm/svm_onhyperv.c       |   1 +=0D
+ arch/x86/kvm/vmx/nested.c             | 107 +++-----=0D
+ arch/x86/kvm/vmx/vmcs.h               |   6 +=0D
+ arch/x86/kvm/vmx/vmx.c                |  48 +++-=0D
+ arch/x86/kvm/x86.c                    |  42 ++-=0D
+ arch/x86/kvm/x86.h                    |   5 +=0D
+ drivers/gpu/drm/i915/Kconfig          |   1 -=0D
+ drivers/gpu/drm/i915/gvt/kvmgt.c      |   5 +=0D
+ include/linux/kvm_host.h              |  10 +-=0D
+ 25 files changed, 764 insertions(+), 371 deletions(-)=0D
+=0D
+-- =0D
+2.26.3=0D
+=0D
 
