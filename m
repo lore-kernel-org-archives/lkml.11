@@ -2,171 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECB3C35274
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC50C4707A
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389026AbiBGNvC (ORCPT
+        id S1388966AbiBGNux (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:51:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
+        Mon, 7 Feb 2022 08:50:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387009AbiBGNab (ORCPT
+        with ESMTP id S1385062AbiBGNo0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:30:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC76BC043188
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:30:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644240630;
+        Mon, 7 Feb 2022 08:44:26 -0500
+Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.111.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6FBC043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:44:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1644241464;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=d/RwIpkh1gprTvNPsmejeNnvxhM/jcf++w/m9CVaFcI=;
-        b=Ty6cCWAO4PUPhr+H1W5IqKWS5NU7R7djj0scEiaH5eh2NoWcKUn2n74C7OAyAiJ8QYku3N
-        EAPNxkdCdM9nMSxqWf7v/v7kKj47+HICU4MmTCZVrDNcIaYZ7Yk+xWyI83FPr1WdjvZ+1h
-        ZbvTLayw5adm/rlxpt2YdcktPyzVXQQ=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-516-6lmq81nMNOCCfT2372ptFA-1; Mon, 07 Feb 2022 08:30:28 -0500
-X-MC-Unique: 6lmq81nMNOCCfT2372ptFA-1
-Received: by mail-ed1-f72.google.com with SMTP id s7-20020a508dc7000000b0040f29ccd65aso4084465edh.1
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 05:30:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=d/RwIpkh1gprTvNPsmejeNnvxhM/jcf++w/m9CVaFcI=;
-        b=nyS3gGp7IpkBTnRzdAJxlfBruMBgTap0dZKy16G91oFDcHjrp6DgjVXkR4yUkwcI4b
-         bo5I6CGgIci6rHqE6GBPBZ7eKe1ZTf9dicCoC8UICo/vdNwgYq6pP2EfqRIkhfkr5tZg
-         O8vmOVAwlJEltxqCYrYLUmVS+W6D4+NuipInAEP1JjIgPiyDrvkH7dgGygud7GWZTDeS
-         5X2YDGkt4g84DwN0pXO4WmmLGpnWlbSCp8YtDt6HGujpklnvPDHaIZJawx858GlULNM2
-         s0Pww4qIAQerXGQpugLzdBolLfhSfJ1JE9rCZqq40+1O2+cvihaWeb+8quRuvTFRT6VL
-         ekXg==
-X-Gm-Message-State: AOAM532E1zzFVIxGCe1IDbaIMPuFe0PdQcu3D9TMSy5HDcDygNQIq+N9
-        ib0Khh/c46MAimSxE4g9wd59jymlcFHcLkViZmQGYQ1bmN2qXuB3rKgYPzfW3cNszJ8eZVL2W58
-        Y6rODCSKBR6ilFUPA2N2tfhpS
-X-Received: by 2002:aa7:c685:: with SMTP id n5mr9093114edq.259.1644240627730;
-        Mon, 07 Feb 2022 05:30:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwqkWzxxGviHYUkeA6MDfeaDIq/YZmhUBCfLKbW46BnBEHUYafJM43kTtIMCFfYXULfWBsEng==
-X-Received: by 2002:aa7:c685:: with SMTP id n5mr9093082edq.259.1644240627465;
-        Mon, 07 Feb 2022 05:30:27 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id h21sm1569028edt.26.2022.02.07.05.30.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 05:30:26 -0800 (PST)
-Message-ID: <f2b0cac2-2f8a-60e8-616c-73825b3f62a6@redhat.com>
-Date:   Mon, 7 Feb 2022 14:30:24 +0100
+        bh=G46bKhyGsLqBXvzjvUDZOd+JIKI3euswC2lrBnSLXtc=;
+        b=bYTcVAOTCXTkvaKdH+XQBa/6npE7Cpgbf02AUH+OJHk+lWKx0IcgSdVKvpDzFByfTL7WhS
+        Y/pfxF/GAxTNrqF0RYjT3p4FoJOSIfcj6R5vOSGm7gNZnxgVLNh3Il261uea3pOfdvk/Ed
+        27ttUhVMir8vDF9kMi0/F3evO/LRShk=
+Received: from EUR03-DB5-obe.outbound.protection.outlook.com
+ (mail-db5eur03lp2059.outbound.protection.outlook.com [104.47.10.59]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-12-pB7FPQf7PaGiFq7XV_FiIw-1; Mon, 07 Feb 2022 14:25:02 +0100
+X-MC-Unique: pB7FPQf7PaGiFq7XV_FiIw-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YCLF8CRo10nVvhhMB51N62ytufD4fUlwgl3LghxCU0gQ4lvDiEHrzneR5O29V3PAx6BL1L6ZhAl9+ypEfWyrsDENVCk/XAUr2T4MbwAavWDzovLtJRdtnbE9Z8SphtsPxVwalOTTpAGbWlzI6MrlOz4iKw5JZsKc+WKNAgiMlzcyNQ8b0gNYM647roV2dUYKiKoFAPQt60hlni4fyv0TBEbnAy16fXUVmNpuaCIFgY7qhAZBSoXDvl+MW/IPh1eonMSgSLCKaNHNm/Gx095L/YXqWBtZeC8mGCjsK83+1PM6aKrptvO/v7fQ79ojVQqWNG57zTVs/zqenytIn8NT1w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SrKyVDQL9hZHHmYdICoP+NIBJ2pOvqWAZPGLBjw5zcQ=;
+ b=K6NRiYo2WWrl1xKJqFJDsLl0RVrnrT2/ENm+0YCZjvDzJv8NRuAA6OWUbV+S+IAwAYEm6gQVNwIaqMRKooi1KSIN0T4h7kCfQDAA9EtvFNLtt2nTN5cGp3OqwShlxSb9vKo9X/QDOYnHzR6aNcdj0Gi5omfXc7k4TjY56V4cK3dT0WQSjkJrRX2M6Svw6YvEkOUAhSx1ELn1A7oXur1VLKCf3EppaTX1LUEEYS3OuDn0CVsKq1gy/DQtgDQjsYL8c0mYaJaI50ZJm8NykD2NvvKJJdZRNQutWtE2pwvKxo47eoXsGMF+baKkIQ/ZPbjDICdmYe4BiDmur9pkj5DWdA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VI1PR0402MB3439.eurprd04.prod.outlook.com (2603:10a6:803:4::13)
+ by PA4PR04MB9248.eurprd04.prod.outlook.com (2603:10a6:102:2a3::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Mon, 7 Feb
+ 2022 13:25:01 +0000
+Received: from VI1PR0402MB3439.eurprd04.prod.outlook.com
+ ([fe80::e14a:7928:ecd6:f233]) by VI1PR0402MB3439.eurprd04.prod.outlook.com
+ ([fe80::e14a:7928:ecd6:f233%4]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
+ 13:25:01 +0000
+From:   Chester Lin <clin@suse.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
+        Matthias Brugger <mbrugger@suse.com>, s32@nxp.com,
+        Ghennadi Procopciuc <Ghennadi.Procopciuc@nxp.com>
+CC:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Radu Nicolae Pirea <radu-nicolae.pirea@oss.nxp.com>,
+        "Ivan T . Ivanov" <iivanov@suse.de>,
+        "Lee, Chun-Yi" <jlee@suse.com>, Chester Lin <clin@suse.com>
+Subject: [RFC PATCH 1/3] dt-bindings: clock: Add s32g2 clock binding
+Date:   Mon,  7 Feb 2022 21:24:42 +0800
+Message-ID: <20220207132444.3653-2-clin@suse.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220207132444.3653-1-clin@suse.com>
+References: <20220207132444.3653-1-clin@suse.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-ClientProxiedBy: AM6PR01CA0037.eurprd01.prod.exchangelabs.com
+ (2603:10a6:20b:e0::14) To VI1PR0402MB3439.eurprd04.prod.outlook.com
+ (2603:10a6:803:4::13)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v1 1/2] x86/kvm/fpu: Mask guest fpstate->xfeatures with
- guest_supported_xcr0
-Content-Language: en-US
-To:     Leonardo Bras <leobras@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220205081658.562208-1-leobras@redhat.com>
- <20220205081658.562208-2-leobras@redhat.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220205081658.562208-2-leobras@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b6241138-bba9-480b-003e-08d9ea3d3e41
+X-MS-TrafficTypeDiagnostic: PA4PR04MB9248:EE_
+X-Microsoft-Antispam-PRVS: <PA4PR04MB92480EC8C2D72BF810166CB8AD2C9@PA4PR04MB9248.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1227;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AcDELdibwPI9JEYBqxJgaoRyJZSRGxdlgxolW1AWWnFNLbHSzmWZONvreyzmKRlRZM2yW5IXfE26Apx6TIYk1/C7X9PK95orKiBMeNWs0nt9Q2aV0pfidtZphgU7Od1QuHa6kBFmlSa/jareqD7q7Iglbdi0cewfOW0MTOrDtAaAsvI08W5IYFW27L0PF3xfG0H+LreDcDXSuFj15o0JfVsSMpFFjiTlFvwy1FiaQPG1jcdpJ9mBuOEpWeRd3g/w092fV2G9DrQjsrOZaYpJHJSj69hfksrAuduUdIiWyqkFqQ4UwQJ8iOpWxtD5VQQAfj9Ornx9yS9udZUYvkUDlvAweE1DwAf5UowPhq056HH70MhNZ9L9jrTKcdHw+Ejq9YPxw4AiIRaTLSEsD2C8oftfGXGW3bDs4J6hPxQvdMpJOqNFFb94ebaVKfjqzX/sXdqHUU3CeLm5dyz2Q2xGHxVcso+/DnIxoVueWm4M15svt94wpmkhLtn2uSoQ0/K3NwtuSfNMnnLeUDFrlxUx50YvUtJJYL6JxcSFLzqrRm+6F9WQ6wAUqdHjtrYN4pKS/9cYVV6iRgJ3fUime6izg7ikaNLG8pmnHc9m+r6RRMbLTjLdNPcNZujYFpD8c60LekRqJ0W3FEQHiYyzlqgfHg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3439.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6666004)(66556008)(8936002)(66946007)(5660300002)(6512007)(66476007)(4326008)(6506007)(8676002)(83380400001)(6486002)(36756003)(2616005)(1076003)(26005)(86362001)(110136005)(2906002)(54906003)(508600001)(38100700002)(107886003)(316002)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?66tT+6ZIOj47HJ5UDlHwS4EVkZfCEwCXgy8oTcW3zH46sJBnFaVICvAml+8j?=
+ =?us-ascii?Q?2qEKwFKuqXuKI2xUNSgsSXNqjs2T133BZyJ2pKIPfGaAjxPK5Q/DLZzAPguM?=
+ =?us-ascii?Q?sit5qtqCr4spwBTxOAB/ULK7Zsxx+01zD3Gtm54JM6EGH2dPoI+wa/M2oSoR?=
+ =?us-ascii?Q?FcDcUY9m1NEgHd/fU5Ro11V7i94hsPsTa+hXX3j6RjhWAmQF62c17YECaayu?=
+ =?us-ascii?Q?QgErwNYkFCyaYyH3umZuDJS4ysiqrMWnB4CiiuY/A2NZXbi6KP4tsrW9Sl6Q?=
+ =?us-ascii?Q?iST1MKSi8PDzkpMJoy1aKmLcv35jsArpgq4faNNO+Z69iAvF00FmSe9zE55y?=
+ =?us-ascii?Q?RdTtZ6DD1ZwmGDHWcHqbNA2Ktr4aWl7UOHgZ45qnKegLwCkbnNce2c2873LR?=
+ =?us-ascii?Q?GxagBUVJsoqdpUVbjwiov7pULM0hIgEfHjBhn8DLxAL2A+hsyRQWGrNS1Niw?=
+ =?us-ascii?Q?pUbBVAFvlF1mkOhl6sJ5G3eD+sTL7XZGWw4NrCRGwHEFu1suFdg9kJfXV0G7?=
+ =?us-ascii?Q?sgu5mIxSH19psEJuWPDo+pD9Ew0PYZde4fpURX+UHH2/d8vIr89t0rZdAdru?=
+ =?us-ascii?Q?aBC1XxCVgm3T9MUBYsl/j6dyXiHW8wz2iiFPVA40AG+M3jD3hkQmj4WerW6m?=
+ =?us-ascii?Q?yYwr6TOP5V5KUfF0E/x7ekOgpgHsu6Wng1RVQ44gCom/1NmccCOER9nTAI5u?=
+ =?us-ascii?Q?UAJjz+g8lKfHLVVtwyyosfYbumEyDfR3JH19oP9NVeHio8ccQCA9f1csQRYV?=
+ =?us-ascii?Q?uEfnazoPPsv80nM8ltN6/qr29r/1/KoFbLKOwQh1/+dytZm+zI15kS46SV3q?=
+ =?us-ascii?Q?s0ONXe+/by/3QcZ7wCJai7BuxGkqFXBEF1S4UTCw0/PDyrY9/h2ODmtEWJXL?=
+ =?us-ascii?Q?ppcBekmyklw+wipqEeaO+yIeb0wrAUodoHqcEtyZQ1VDFLv0tbBpQHZ54Lac?=
+ =?us-ascii?Q?7UMlPJJRyte4QiwvhAU0+3M27FidJmhCIR9VmIIAKc2Aa/FYUioMpcbPgs0q?=
+ =?us-ascii?Q?YjY26uGId9C/1XEFv2aeBidfP/qxAwgMagN3eik+spPl7Yhmo8hoVhXBTV5x?=
+ =?us-ascii?Q?XyWQvaqo9hVIauDhY/IEolBPXjz1UfjurjOQOxXUDSbeMVef6IdA1lR/GoFt?=
+ =?us-ascii?Q?eUAeoQY5R91OV42oqqeXxF0tPZVsC8wMhckiVbv2/uGZOExtjD3dx9Kph3LC?=
+ =?us-ascii?Q?VNgR+2bZBB9rZMI+/8J5hG44Y2+8CmrIEgAbpw8dbQWay+llsbrDLgxPjuDm?=
+ =?us-ascii?Q?1qW2YPOW1FvEajgj6zGrL/a0czj40DWuTbXjYVKmPeMcjRwbZeTsEKd1o9A1?=
+ =?us-ascii?Q?PsA7LvpRJnOOBWYW4p44cMCRuLhHCDwb+9S+XvbBZVs9W2F2j3l4yl9+iBoN?=
+ =?us-ascii?Q?R1lvPrTxHfd/dY1MdMb0utSXC7fgvNZu4/gkQ/L1y8HLVGrpWtQYmy8VxRiW?=
+ =?us-ascii?Q?jnlJoO9wZ0+dtGAVO5NeiLcspslmR0xBmxo5g+/uPlO7EPE36dTAn50w2ttw?=
+ =?us-ascii?Q?pwJLcLQqkK38/wWV3wdIwVaTJDb5PenVQbSy7sZBXXmuuiJA08dnAYex/nNJ?=
+ =?us-ascii?Q?5OSjxXKsUUAvKfq5W2Q=3D?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6241138-bba9-480b-003e-08d9ea3d3e41
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3439.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 13:25:01.1268
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OZyppZ99t1zF5Lva901heVAR2qGLgeubVVABLTN7wuki81i/pCeo0p5b1P8QGcFJ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9248
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/5/22 09:16, Leonardo Bras wrote:
-> During host/guest switch (like in kvm_arch_vcpu_ioctl_run()), the kernel
-> swaps the fpu between host/guest contexts, by using fpu_swap_kvm_fpstate().
-> 
-> When xsave feature is available, the fpu swap is done by:
-> - xsave(s) instruction, with guest's fpstate->xfeatures as mask, is used
->    to store the current state of the fpu registers to a buffer.
-> - xrstor(s) instruction, with (fpu_kernel_cfg.max_features &
->    XFEATURE_MASK_FPSTATE) as mask, is used to put the buffer into fpu regs.
-> 
-> For xsave(s) the mask is used to limit what parts of the fpu regs will
-> be copied to the buffer. Likewise on xrstor(s), the mask is used to
-> limit what parts of the fpu regs will be changed.
-> 
-> The mask for xsave(s), the guest's fpstate->xfeatures, is defined on
-> kvm_arch_vcpu_create(), which (in summary) sets it to all features
-> supported by the cpu which are enabled on kernel config.
-> 
-> This means that xsave(s) will save to guest buffer all the fpu regs
-> contents the cpu has enabled when the guest is paused, even if they
-> are not used.
-> 
-> This would not be an issue, if xrstor(s) would also do that.
-> 
-> xrstor(s)'s mask for host/guest swap is basically every valid feature
-> contained in kernel config, except XFEATURE_MASK_PKRU.
-> Accordingto kernel src, it is instead switched in switch_to() and
-> flush_thread().
+Add clock binding for S32G based on SCMI Clock Management Protocol (0x14)
 
-Hi Leonardo, is this an issue when patch 2 is applied?  With this patch, 
-we have to reason about the effect of calling KVM_SET_CPUID2 twice calls 
-back to back.  I think an "&=" would be wrong in that case.
+Signed-off-by: Chester Lin <clin@suse.com>
+---
+ include/dt-bindings/clock/s32g2-clock.h | 28 +++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+ create mode 100644 include/dt-bindings/clock/s32g2-clock.h
 
-On the other hand, with patch 2 the change is only in the KVM_SET_XSAVE 
-output, which is much more self-contained.
-
-Thanks,
-
-Paolo
-
-> Then, the following happens with a host supporting PKRU starts a
-> guest that does not support it:
-> 1 - Host has XFEATURE_MASK_PKRU set. 1st switch to guest,
-> 2 - xsave(s) fpu regs to host fpustate (buffer has XFEATURE_MASK_PKRU)
-> 3 - xrstor(s) guest fpustate to fpu regs (fpu regs have XFEATURE_MASK_PKRU)
-> 4 - guest runs, then switch back to host,
-> 5 - xsave(s) fpu regs to guest fpstate (buffer now have XFEATURE_MASK_PKRU)
-> 6 - xrstor(s) host fpstate to fpu regs.
-> 
-> On 5, even though the guest does not support PKRU, it does have the flag
-> set on guest fpstate, which is transferred to userspace via vcpu ioctl
-> KVM_GET_XSAVE.
-> 
-> This becomes a problem when the user decides on migrating the above guest
-> to another machine that does not support PKRU:
-> The new host restores guest's fpu regs to as they were before (xrstor(s)),
-> but since the new host don't support PKRU, a general-protection exception
-> ocurs in xrstor(s) and that crashes the guest.
-> 
-> This can be solved by making the guest's fpstate->xfeatures only hold
-> values compatible to guest_supported_xcr0. This way, on 5 the only flags
-> saved by xsave(s) will be the ones compatible to guest requirements,
-> and thus there will be no issue during migration.
-> 
-> Signed-off-by: Leonardo Bras <leobras@redhat.com>
-> ---
->   arch/x86/kvm/cpuid.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index 28be02adc669..8ce481cc0f9b 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -296,6 +296,9 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
->   	vcpu->arch.guest_supported_xcr0 =
->   		cpuid_get_supported_xcr0(vcpu->arch.cpuid_entries, vcpu->arch.cpuid_nent);
->   
-> +	/* Mask out features unsupported by guest */
-> +	vcpu->arch.guest_fpu.fpstate->xfeatures &= vcpu->arch.guest_supported_xcr0;
-> +
->   	kvm_update_pv_runtime(vcpu);
->   
->   	vcpu->arch.maxphyaddr = cpuid_query_maxphyaddr(vcpu);
+diff --git a/include/dt-bindings/clock/s32g2-clock.h b/include/dt-bindings/=
+clock/s32g2-clock.h
+new file mode 100644
+index 000000000000..6d8606293865
+--- /dev/null
++++ b/include/dt-bindings/clock/s32g2-clock.h
+@@ -0,0 +1,28 @@
++/* SPDX-License-Identifier: BSD-3-Clause */
++/*
++ * Copyright 2020-2022 NXP
++ */
++#ifndef __DT_BINDINGS_SCMI_CLOCK_S32G2_H
++#define __DT_BINDINGS_SCMI_CLOCK_S32G2_H
++
++#define S32G2_SCMI_CLK_BASE_ID		0U
++#define S32G2_SCMI_CLK(N)		((N) + S32G2_SCMI_CLK_BASE_ID)
++
++/* GMAC0 - SGMII */
++#define S32G2_SCMI_CLK_GMAC0_RX_SGMII	S32G2_SCMI_CLK(16)
++#define S32G2_SCMI_CLK_GMAC0_TX_SGMII	S32G2_SCMI_CLK(17)
++/* GMAC0 - RGMII */
++#define S32G2_SCMI_CLK_GMAC0_RX_RGMII	S32G2_SCMI_CLK(19)
++#define S32G2_SCMI_CLK_GMAC0_TX_RGMII	S32G2_SCMI_CLK(20)
++/* GMAC0 - RMII */
++#define S32G2_SCMI_CLK_GMAC0_RX_RMII	S32G2_SCMI_CLK(22)
++#define S32G2_SCMI_CLK_GMAC0_TX_RMII	S32G2_SCMI_CLK(23)
++/* GMAC0 - MII */
++#define S32G2_SCMI_CLK_GMAC0_RX_MII	S32G2_SCMI_CLK(25)
++#define S32G2_SCMI_CLK_GMAC0_TX_MII	S32G2_SCMI_CLK(26)
++#define S32G2_SCMI_CLK_GMAC0_AXI	S32G2_SCMI_CLK(28)
++/* uSDHC */
++#define S32G2_SCMI_CLK_USDHC_AHB	S32G2_SCMI_CLK(35)
++#define S32G2_SCMI_CLK_USDHC_MODULE	S32G2_SCMI_CLK(36)
++#define S32G2_SCMI_CLK_USDHC_CORE	S32G2_SCMI_CLK(37)
++#endif
+--=20
+2.33.1
 
