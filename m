@@ -2,115 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D73EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C20A3C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359044AbiBGP3w (ORCPT
+        id S1359427AbiBGP36 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:29:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
+        Mon, 7 Feb 2022 10:29:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443868AbiBGPQI (ORCPT
+        with ESMTP id S1443965AbiBGPQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:16:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 55C03C03E96D
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:15:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644246945;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=yRS0jwicXufc7zZ+ZjLAedvo4qD1/VIqyE355apXrv8=;
-        b=bbWNLUnN/+aOIdXG1SWJgPcKTauFo5YCyt0aZdXi18iyjqUN1UhkmHfmTQaP0x2CK7jF+b
-        zKV2Dm+6l+IYzapCGXW8mvWFNJY+A1Uugg08ApcuXvcoDJR8Y4IXq3YV+LVAL0k4CeIlAM
-        fsWErq2OjR6SnSU+UjabzclbZh74L3o=
-Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
- [209.85.219.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-631-neyFT63nOFSBzSrThIra2Q-1; Mon, 07 Feb 2022 10:15:44 -0500
-X-MC-Unique: neyFT63nOFSBzSrThIra2Q-1
-Received: by mail-yb1-f198.google.com with SMTP id y4-20020a5b0f44000000b00611862e546dso28936959ybr.7
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 07:15:44 -0800 (PST)
+        Mon, 7 Feb 2022 10:16:22 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A944C0401C3;
+        Mon,  7 Feb 2022 07:16:21 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id y5so12541149pfe.4;
+        Mon, 07 Feb 2022 07:16:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=mv9y2F1yD1R3tg/trx+ktowkw03PiJgNgeaAhqzGrdM=;
+        b=px9rtIJBp/sp3d43XjV+LbVY60RIlnbv0f98TkounsLIXGnzaJgt3czSjf/fRxGGZh
+         utJTQB/5WXF+gdkixnvv77ygVzPyZjGQKHfnAMADn2sSBAq41oO4iT9y4UzM0i3qs8ZG
+         v1m/JFa0ebM4oDhFvaAjdUt9jpgpNmdBCVAsGBMNAmrO4gKZDU1r2Mds5fLFxky7mt6E
+         T/jRfJu3fFNrD5QSPvsCOY4WXBIYPskgsuHUp9ze2CYykNQC8xmWZhiumUVZ5UTtIvfP
+         e7JxBaN0aiIkXkI9cOADKwI1gSPgd71CU1XVBlZpS7P7ce7bLKXo1mg7QoqIrNyff6mo
+         c0rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=yRS0jwicXufc7zZ+ZjLAedvo4qD1/VIqyE355apXrv8=;
-        b=moJpIyCz1nySaZkEp7fbRGrsgsXyG0TFOmAs9VibSvIYrT/adAvJVpyliKXRszZCYg
-         zFNbtxPk92pblZrDAhv1zN6EnRzSh4mAVzB6paV4VIuyNtAquyDPMAG9PELdYMGHom5a
-         e1P5awx6fqRWJ9wOGgscZeQpTIJNz82a6rMJdmCrCOBH0wpxQPMjqKTuxeVS7zi5vCaf
-         YQfMZbh4VxtXlKbg3NMUxMFV+f9w666GyN9lszJigKk7/eF9CMbHMLBzj1sIiwWmVy27
-         ZwOMriFg81kGX+96cvFX3QUiNG8woOH+uRJld/md2q2CymsoAWfR7Vc1vN7LDKr0eaBN
-         2d6Q==
-X-Gm-Message-State: AOAM530BGCgNGSUSlgxs5B6VUX3Ux4++ky2XK2eGiu+h4IWCKIddIReB
-        zuOGifyFHsZhrI5RUgBHo+dhrwoSBJT3PqZOnYL1BPdU/+YAx+SQ5ZSLOjLjQUU929PyVSWobda
-        3JhhzAD7NLn15fjy87NRxXE2Dud8RZWNX8Wex63Ql
-X-Received: by 2002:a25:eb06:: with SMTP id d6mr154240ybs.318.1644246943914;
-        Mon, 07 Feb 2022 07:15:43 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwXeoD3ojnTOZwKa5lUfxhmIBl5fyP9msdolVbDq/zqr50MBXuutrVFsOhfOWyA9jOd9gjS0pyGenm4USUc87Y=
-X-Received: by 2002:a25:eb06:: with SMTP id d6mr154219ybs.318.1644246943702;
- Mon, 07 Feb 2022 07:15:43 -0800 (PST)
-MIME-Version: 1.0
-From:   Ondrej Mosnacek <omosnace@redhat.com>
-Date:   Mon, 7 Feb 2022 16:15:27 +0100
-Message-ID: <CAFqZXNt0Xp1j7+hTrV9XZ936Yz+H8Le0pqazhLr3drO0tEzB2w@mail.gmail.com>
-Subject: Semantics vs. usage of mutex_is_locked()
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>
-Cc:     Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        SElinux list <selinux@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=mv9y2F1yD1R3tg/trx+ktowkw03PiJgNgeaAhqzGrdM=;
+        b=NClNRgh3I9PjlUyyo1XSbfHlCezWAnW4m0M/V0ubxgZcklGjG6KGnrF0u6GcnOyri/
+         EpcIOiYrx7dekHyZUBvZ3SMlup+Te4UJTYw5QBe5Vyc+g7jml1IFwdbPcCmn6uftKtpE
+         MsWVi5HqCJsVZdWn9KUtPCxdLebkAtJ36dS7OIEoZer81mAqNs1lmdscASML02LhWO1I
+         YdxCRTq+9cXypZwWAxLt6LwHO+oa1X+YpIuX/4D9T+XBAqvn24mL/sQjT6BSeuinP8f4
+         xZJ/SfXd8dPL490EZEmKdpcaRrd668mBUy6wkBAXvWj6I3ld9DTWPm8L2ID73KewNkS2
+         ADHA==
+X-Gm-Message-State: AOAM533N/xQeCAeEAVCR6K7asb2xByVFusAFZN75E5W0BOTX74h0sZp6
+        WRIA8l1JnaNGKxiBZjgXCG8=
+X-Google-Smtp-Source: ABdhPJzvSFN5ZKWfkzCvgR9wxE8yAclgNxt/wiDMTa6p0uG05iO2ptTTQHQ/9W48t7SOOx4zhQlFgA==
+X-Received: by 2002:a63:d80b:: with SMTP id b11mr9935806pgh.189.1644246980782;
+        Mon, 07 Feb 2022 07:16:20 -0800 (PST)
+Received: from localhost.localdomain (1-171-11-6.dynamic-ip.hinet.net. [1.171.11.6])
+        by smtp.gmail.com with ESMTPSA id f2sm11896172pfj.6.2022.02.07.07.16.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Feb 2022 07:16:20 -0800 (PST)
+From:   cy_huang <u0084500@gmail.com>
+To:     robh+dt@kernel.org, heikki.krogerus@linux.intel.com
+Cc:     gregkh@linuxfoundation.org, devicetree@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        cy_huang@richtek.com, will_lin@richtek.com, th_chuang@richtek.com
+Subject: [PATCH v3 1/2] dt-bindings: usb: rt1719: Add binding for Richtek RT1719
+Date:   Mon,  7 Feb 2022 23:16:09 +0800
+Message-Id: <1644246970-18305-2-git-send-email-u0084500@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644246970-18305-1-git-send-email-u0084500@gmail.com>
+References: <1644246970-18305-1-git-send-email-u0084500@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-(This is addressed mainly to the kernel/locking/ maintainers.)
+Add binding for Richtek RT1719.
 
-In security/selinux/ima.c, we have two functions for which we want to
-assert the expected locking status of a mutex. In the first function
-we expect the caller to obtain the lock, so we have
-`WARN_ON(!mutex_is_locked(&state->policy_mutex));` there. The second
-one, on the contrary, takes the lock on its own, so there is an
-inverse assert (that the caller hasn't already taken the lock) -
-`WARN_ON(mutex_is_locked(&state->policy_mutex));`.
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+---
+ .../devicetree/bindings/usb/richtek,rt1719.yaml    | 85 ++++++++++++++++++++++
+ 1 file changed, 85 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/usb/richtek,rt1719.yaml
 
-Recently, I got a report that the second WARN_ON() got triggered,
-while there was no function in the call chain that could have taken
-the lock. Looking into it, I realized that mutex_is_locked() actually
-doesn't check what we assumed ("Are we holding the lock?"), but
-instead answers the question "Is any task holding the lock?". So in
-theory it can happen that the second WARN_ON() gets hit randomly in an
-otherwise correct code simply because some other task happens to be
-holding the mutex. Similarly, the first assert might not catch all
-cases where taking the mutex was forgotten, because another task may
-be holding it, making the assert pass.
-
-Grepping the whole tree for mutex_is_locked finds about 300 uses, the
-vast majority of which are variations of the
-warn-if-mutex-not-locked-by-us pattern. Then there are a handful of
-cases where the usage of mutex_is_locked() seems correct and a few
-cases of the inverse warn-if-mutex-already-locked-by-us pattern.
-
-It seems like introducing a new helper with the "is the mutex locked
-by current task?" semantics would be fairly straightforward, however
-fixing all the mutex_is_locked() misuses would be a rather big and
-noisy patch(set). That said, would it be okay if I send patches that
-introduce a new helper and only fix misuses that can lead to wrong
-behavior when the code is correct (e.g. can yield a false positive
-WARNING/BUG) and documentation? That should be a reasonably small set
-of changes, yet should take care of the most important issues. If
-anyone cares enough for the rest, they can always send further
-patches.
-
-Also, any opinions on the name of the new helper? Perhaps
-mutex_is_held()? Or mutex_is_locked_by_current()?
-
-Thanks,
-
---
-Ondrej Mosnacek
-Software Engineer, Linux Security - SELinux kernel
-Red Hat, Inc.
+diff --git a/Documentation/devicetree/bindings/usb/richtek,rt1719.yaml b/Documentation/devicetree/bindings/usb/richtek,rt1719.yaml
+new file mode 100644
+index 00000000..65a93f7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/usb/richtek,rt1719.yaml
+@@ -0,0 +1,85 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/usb/richtek,rt1719.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Richtek RT1719 sink-only Type-C PD controller bindings
++
++maintainers:
++  - ChiYuan Huang <cy_huang@richtek.com>
++
++description: |
++  The RT1719 is a sink-only USB Type-C contoller that complies with the latest
++  USB Type-C and PD standards. It does the USB Type-C detection including attach
++  and orientation. It integrates the physical layer of the USB BMC power
++  delivery protocol to allow up to 100W of power. The BMC PD block enables full
++  support for alternative interfaces of the Type-C specification.
++
++properties:
++  compatible:
++    enum:
++      - richtek,rt1719
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  wakeup-source:
++    description: enable IRQ remote wakeup, see power/wakeup-source.txt
++    type: boolean
++
++  connector:
++    type: object
++    $ref: ../connector/usb-connector.yaml#
++    description:
++      Properties for usb c connector.
++
++additionalProperties: false
++
++required:
++  - compatible
++  - reg
++  - connector
++  - interrupts
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c0 {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      rt1719@43 {
++        compatible = "richtek,rt1719";
++        reg = <0x43>;
++        interrupts-extended = <&gpio26 2 IRQ_TYPE_LEVEL_LOW>;
++        wakeup-source;
++
++        connector {
++          compatible = "usb-c-connector";
++          label = "USB-C";
++
++          ports {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            port@0 {
++              reg = <0>;
++              endpoint {
++                remote-endpoint = <&usb_hs>;
++              };
++            };
++            port@1 {
++              reg = <1>;
++              endpoint {
++                remote-endpoint = <&usb_ss>;
++              };
++            };
++          };
++        };
++      };
++    };
++...
+-- 
+2.7.4
 
