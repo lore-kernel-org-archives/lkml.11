@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8132C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A222FC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377055AbiBGLPU (ORCPT
+        id S1376891AbiBGLPQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49518 "EHLO
+        Mon, 7 Feb 2022 06:15:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352076AbiBGLLu (ORCPT
+        with ESMTP id S1352055AbiBGLLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:11:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD99C043188;
-        Mon,  7 Feb 2022 03:11:48 -0800 (PST)
+        Mon, 7 Feb 2022 06:11:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50558C043181;
+        Mon,  7 Feb 2022 03:11:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62D216126D;
-        Mon,  7 Feb 2022 11:11:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37737C004E1;
-        Mon,  7 Feb 2022 11:11:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2FE2B80EC3;
+        Mon,  7 Feb 2022 11:11:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B46AC004E1;
+        Mon,  7 Feb 2022 11:11:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232307;
-        bh=f3H77uUMGFs4fTJeeG45VvnQjw3uvXQUwO6qWw3d5xs=;
+        s=korg; t=1644232304;
+        bh=XlE85Z5zOnoqCqnlZdZMCtne7tKQO+tuwpoBNZgBrK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fD4bOKGzpPYBM58rKeKQ/ix9te4IZ/QAN87FpjhpqcsGw6xD2y0hv7lCjA4y3W6V1
-         S2ZOmk4l14ZEiClUN/+Ule3Lvn9bHwOKHhU5llYzGO8WQ/wE3JSP/SEJquLVOEd7Bl
-         jneP+S5TOceiFfGJBML3ccSukeZVAFkCgDK4yWnQ=
+        b=iFXLyhXNNbkH4etQXY2ZiCSa0mK1Lq2gD7d1qCWQ0XncyiJbxLW4m22n8gK/Z5p45
+         dSDRbGyo/M8xkzDwSedkwKBVjjzt6aOWpDF8sdtGSrVQUrFjw93HH8ej/HO8HjZQya
+         NzTJG3GEC4dFARmP0S2gSUjjHwn6CyfruFc18YT0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        stable@vger.kernel.org,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Dany Madden <drt@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 35/69] yam: fix a memory leak in yam_siocdevprivate()
-Date:   Mon,  7 Feb 2022 12:05:57 +0100
-Message-Id: <20220207103756.782049482@linuxfoundation.org>
+Subject: [PATCH 4.14 34/69] ibmvnic: dont spin in tasklet
+Date:   Mon,  7 Feb 2022 12:05:56 +0100
+Message-Id: <20220207103756.750226254@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -50,35 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-[ Upstream commit 29eb31542787e1019208a2e1047bb7c76c069536 ]
+[ Upstream commit 48079e7fdd0269d66b1d7d66ae88bd03162464ad ]
 
-ym needs to be free when ym->cmd != SIOCYAMSMCS.
+ibmvnic_tasklet() continuously spins waiting for responses to all
+capability requests. It does this to avoid encountering an error
+during initialization of the vnic. However if there is a bug in the
+VIOS and we do not receive a response to one or more queries the
+tasklet ends up spinning continuously leading to hard lock ups.
 
-Fixes: 0781168e23a2 ("yam: fix a missing-check bug")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+If we fail to receive a message from the VIOS it is reasonable to
+timeout the login attempt rather than spin indefinitely in the tasklet.
+
+Fixes: 249168ad07cd ("ibmvnic: Make CRQ interrupt tasklet wait for all capabilities crqs")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hamradio/yam.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
-index b74c735a423dd..3338e24b91a57 100644
---- a/drivers/net/hamradio/yam.c
-+++ b/drivers/net/hamradio/yam.c
-@@ -980,9 +980,7 @@ static int yam_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 				 sizeof(struct yamdrv_ioctl_mcs));
- 		if (IS_ERR(ym))
- 			return PTR_ERR(ym);
--		if (ym->cmd != SIOCYAMSMCS)
--			return -EINVAL;
--		if (ym->bitrate > YAM_MAXBITRATE) {
-+		if (ym->cmd != SIOCYAMSMCS || ym->bitrate > YAM_MAXBITRATE) {
- 			kfree(ym);
- 			return -EINVAL;
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 4befc885efb8d..8d8eb9e2465ff 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -3691,12 +3691,6 @@ static void ibmvnic_tasklet(void *data)
+ 			ibmvnic_handle_crq(crq, adapter);
+ 			crq->generic.first = 0;
  		}
+-
+-		/* remain in tasklet until all
+-		 * capabilities responses are received
+-		 */
+-		if (!adapter->wait_capability)
+-			done = true;
+ 	}
+ 	/* if capabilities CRQ's were sent in this tasklet, the following
+ 	 * tasklet must wait until all responses are received
 -- 
 2.34.1
 
