@@ -2,174 +2,333 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC50C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66302C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388966AbiBGNux (ORCPT
+        id S1388829AbiBGNu2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:50:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40388 "EHLO
+        Mon, 7 Feb 2022 08:50:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385062AbiBGNo0 (ORCPT
+        with ESMTP id S1350976AbiBGN0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:44:26 -0500
-Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.111.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6FBC043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:44:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1644241464;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=G46bKhyGsLqBXvzjvUDZOd+JIKI3euswC2lrBnSLXtc=;
-        b=bYTcVAOTCXTkvaKdH+XQBa/6npE7Cpgbf02AUH+OJHk+lWKx0IcgSdVKvpDzFByfTL7WhS
-        Y/pfxF/GAxTNrqF0RYjT3p4FoJOSIfcj6R5vOSGm7gNZnxgVLNh3Il261uea3pOfdvk/Ed
-        27ttUhVMir8vDF9kMi0/F3evO/LRShk=
-Received: from EUR03-DB5-obe.outbound.protection.outlook.com
- (mail-db5eur03lp2059.outbound.protection.outlook.com [104.47.10.59]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-12-pB7FPQf7PaGiFq7XV_FiIw-1; Mon, 07 Feb 2022 14:25:02 +0100
-X-MC-Unique: pB7FPQf7PaGiFq7XV_FiIw-1
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YCLF8CRo10nVvhhMB51N62ytufD4fUlwgl3LghxCU0gQ4lvDiEHrzneR5O29V3PAx6BL1L6ZhAl9+ypEfWyrsDENVCk/XAUr2T4MbwAavWDzovLtJRdtnbE9Z8SphtsPxVwalOTTpAGbWlzI6MrlOz4iKw5JZsKc+WKNAgiMlzcyNQ8b0gNYM647roV2dUYKiKoFAPQt60hlni4fyv0TBEbnAy16fXUVmNpuaCIFgY7qhAZBSoXDvl+MW/IPh1eonMSgSLCKaNHNm/Gx095L/YXqWBtZeC8mGCjsK83+1PM6aKrptvO/v7fQ79ojVQqWNG57zTVs/zqenytIn8NT1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SrKyVDQL9hZHHmYdICoP+NIBJ2pOvqWAZPGLBjw5zcQ=;
- b=K6NRiYo2WWrl1xKJqFJDsLl0RVrnrT2/ENm+0YCZjvDzJv8NRuAA6OWUbV+S+IAwAYEm6gQVNwIaqMRKooi1KSIN0T4h7kCfQDAA9EtvFNLtt2nTN5cGp3OqwShlxSb9vKo9X/QDOYnHzR6aNcdj0Gi5omfXc7k4TjY56V4cK3dT0WQSjkJrRX2M6Svw6YvEkOUAhSx1ELn1A7oXur1VLKCf3EppaTX1LUEEYS3OuDn0CVsKq1gy/DQtgDQjsYL8c0mYaJaI50ZJm8NykD2NvvKJJdZRNQutWtE2pwvKxo47eoXsGMF+baKkIQ/ZPbjDICdmYe4BiDmur9pkj5DWdA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from VI1PR0402MB3439.eurprd04.prod.outlook.com (2603:10a6:803:4::13)
- by PA4PR04MB9248.eurprd04.prod.outlook.com (2603:10a6:102:2a3::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Mon, 7 Feb
- 2022 13:25:01 +0000
-Received: from VI1PR0402MB3439.eurprd04.prod.outlook.com
- ([fe80::e14a:7928:ecd6:f233]) by VI1PR0402MB3439.eurprd04.prod.outlook.com
- ([fe80::e14a:7928:ecd6:f233%4]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
- 13:25:01 +0000
-From:   Chester Lin <clin@suse.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
-        Matthias Brugger <mbrugger@suse.com>, s32@nxp.com,
-        Ghennadi Procopciuc <Ghennadi.Procopciuc@nxp.com>
-CC:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Radu Nicolae Pirea <radu-nicolae.pirea@oss.nxp.com>,
-        "Ivan T . Ivanov" <iivanov@suse.de>,
-        "Lee, Chun-Yi" <jlee@suse.com>, Chester Lin <clin@suse.com>
-Subject: [RFC PATCH 1/3] dt-bindings: clock: Add s32g2 clock binding
-Date:   Mon,  7 Feb 2022 21:24:42 +0800
-Message-ID: <20220207132444.3653-2-clin@suse.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220207132444.3653-1-clin@suse.com>
-References: <20220207132444.3653-1-clin@suse.com>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-ClientProxiedBy: AM6PR01CA0037.eurprd01.prod.exchangelabs.com
- (2603:10a6:20b:e0::14) To VI1PR0402MB3439.eurprd04.prod.outlook.com
- (2603:10a6:803:4::13)
+        Mon, 7 Feb 2022 08:26:34 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19247C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:26:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644240392; x=1675776392;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=OhLq9iOaKgngzX2eyZipiDbgiA3qy4PJPJO7vpmnR4A=;
+  b=k6aBBTrZtT1ntxWE0+Is8HbdPfpf2Xx8ypza7z9MRgFkAqvtNV4pDkvi
+   ykkOgtAen08KGnnnGapBRl7Q+EDewPxXiuYf2vftdI/D6sgoeDwQ6TgS+
+   Sb4GBIbUscRb1g9w7lbCYGCga4BcZkBWIIthCr8wyjCyRJRHnhO33IxD2
+   Iv3ck/w4LPmwDvaKhlraX/rf1EXNIA0cHOOsHFVRYa6a0PhJbWaeYbRyp
+   tWUWhR7HvspU9eIZ9Wo9GCK7Z7vWCOHQFY3t3f0TXDZFRhC1vZM3CHta4
+   htfpBvyz7fkCHzVkneiPTd8Fe3L976sKT9/LuQUn4XPf7LlKpP20OWYio
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="246303119"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="246303119"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 05:26:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="621550973"
+Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 07 Feb 2022 05:26:30 -0800
+Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nH42H-0000ZD-MQ; Mon, 07 Feb 2022 13:26:29 +0000
+Date:   Mon, 7 Feb 2022 21:25:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: drivers/media/dvb-frontends/stv0367.c:995:12: warning: stack frame
+ size (9464) exceeds limit (8192) in 'stv0367ter_algo'
+Message-ID: <202202072142.Mdz2lNT9-lkp@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b6241138-bba9-480b-003e-08d9ea3d3e41
-X-MS-TrafficTypeDiagnostic: PA4PR04MB9248:EE_
-X-Microsoft-Antispam-PRVS: <PA4PR04MB92480EC8C2D72BF810166CB8AD2C9@PA4PR04MB9248.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1227;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AcDELdibwPI9JEYBqxJgaoRyJZSRGxdlgxolW1AWWnFNLbHSzmWZONvreyzmKRlRZM2yW5IXfE26Apx6TIYk1/C7X9PK95orKiBMeNWs0nt9Q2aV0pfidtZphgU7Od1QuHa6kBFmlSa/jareqD7q7Iglbdi0cewfOW0MTOrDtAaAsvI08W5IYFW27L0PF3xfG0H+LreDcDXSuFj15o0JfVsSMpFFjiTlFvwy1FiaQPG1jcdpJ9mBuOEpWeRd3g/w092fV2G9DrQjsrOZaYpJHJSj69hfksrAuduUdIiWyqkFqQ4UwQJ8iOpWxtD5VQQAfj9Ornx9yS9udZUYvkUDlvAweE1DwAf5UowPhq056HH70MhNZ9L9jrTKcdHw+Ejq9YPxw4AiIRaTLSEsD2C8oftfGXGW3bDs4J6hPxQvdMpJOqNFFb94ebaVKfjqzX/sXdqHUU3CeLm5dyz2Q2xGHxVcso+/DnIxoVueWm4M15svt94wpmkhLtn2uSoQ0/K3NwtuSfNMnnLeUDFrlxUx50YvUtJJYL6JxcSFLzqrRm+6F9WQ6wAUqdHjtrYN4pKS/9cYVV6iRgJ3fUime6izg7ikaNLG8pmnHc9m+r6RRMbLTjLdNPcNZujYFpD8c60LekRqJ0W3FEQHiYyzlqgfHg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3439.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6666004)(66556008)(8936002)(66946007)(5660300002)(6512007)(66476007)(4326008)(6506007)(8676002)(83380400001)(6486002)(36756003)(2616005)(1076003)(26005)(86362001)(110136005)(2906002)(54906003)(508600001)(38100700002)(107886003)(316002)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?66tT+6ZIOj47HJ5UDlHwS4EVkZfCEwCXgy8oTcW3zH46sJBnFaVICvAml+8j?=
- =?us-ascii?Q?2qEKwFKuqXuKI2xUNSgsSXNqjs2T133BZyJ2pKIPfGaAjxPK5Q/DLZzAPguM?=
- =?us-ascii?Q?sit5qtqCr4spwBTxOAB/ULK7Zsxx+01zD3Gtm54JM6EGH2dPoI+wa/M2oSoR?=
- =?us-ascii?Q?FcDcUY9m1NEgHd/fU5Ro11V7i94hsPsTa+hXX3j6RjhWAmQF62c17YECaayu?=
- =?us-ascii?Q?QgErwNYkFCyaYyH3umZuDJS4ysiqrMWnB4CiiuY/A2NZXbi6KP4tsrW9Sl6Q?=
- =?us-ascii?Q?iST1MKSi8PDzkpMJoy1aKmLcv35jsArpgq4faNNO+Z69iAvF00FmSe9zE55y?=
- =?us-ascii?Q?RdTtZ6DD1ZwmGDHWcHqbNA2Ktr4aWl7UOHgZ45qnKegLwCkbnNce2c2873LR?=
- =?us-ascii?Q?GxagBUVJsoqdpUVbjwiov7pULM0hIgEfHjBhn8DLxAL2A+hsyRQWGrNS1Niw?=
- =?us-ascii?Q?pUbBVAFvlF1mkOhl6sJ5G3eD+sTL7XZGWw4NrCRGwHEFu1suFdg9kJfXV0G7?=
- =?us-ascii?Q?sgu5mIxSH19psEJuWPDo+pD9Ew0PYZde4fpURX+UHH2/d8vIr89t0rZdAdru?=
- =?us-ascii?Q?aBC1XxCVgm3T9MUBYsl/j6dyXiHW8wz2iiFPVA40AG+M3jD3hkQmj4WerW6m?=
- =?us-ascii?Q?yYwr6TOP5V5KUfF0E/x7ekOgpgHsu6Wng1RVQ44gCom/1NmccCOER9nTAI5u?=
- =?us-ascii?Q?UAJjz+g8lKfHLVVtwyyosfYbumEyDfR3JH19oP9NVeHio8ccQCA9f1csQRYV?=
- =?us-ascii?Q?uEfnazoPPsv80nM8ltN6/qr29r/1/KoFbLKOwQh1/+dytZm+zI15kS46SV3q?=
- =?us-ascii?Q?s0ONXe+/by/3QcZ7wCJai7BuxGkqFXBEF1S4UTCw0/PDyrY9/h2ODmtEWJXL?=
- =?us-ascii?Q?ppcBekmyklw+wipqEeaO+yIeb0wrAUodoHqcEtyZQ1VDFLv0tbBpQHZ54Lac?=
- =?us-ascii?Q?7UMlPJJRyte4QiwvhAU0+3M27FidJmhCIR9VmIIAKc2Aa/FYUioMpcbPgs0q?=
- =?us-ascii?Q?YjY26uGId9C/1XEFv2aeBidfP/qxAwgMagN3eik+spPl7Yhmo8hoVhXBTV5x?=
- =?us-ascii?Q?XyWQvaqo9hVIauDhY/IEolBPXjz1UfjurjOQOxXUDSbeMVef6IdA1lR/GoFt?=
- =?us-ascii?Q?eUAeoQY5R91OV42oqqeXxF0tPZVsC8wMhckiVbv2/uGZOExtjD3dx9Kph3LC?=
- =?us-ascii?Q?VNgR+2bZBB9rZMI+/8J5hG44Y2+8CmrIEgAbpw8dbQWay+llsbrDLgxPjuDm?=
- =?us-ascii?Q?1qW2YPOW1FvEajgj6zGrL/a0czj40DWuTbXjYVKmPeMcjRwbZeTsEKd1o9A1?=
- =?us-ascii?Q?PsA7LvpRJnOOBWYW4p44cMCRuLhHCDwb+9S+XvbBZVs9W2F2j3l4yl9+iBoN?=
- =?us-ascii?Q?R1lvPrTxHfd/dY1MdMb0utSXC7fgvNZu4/gkQ/L1y8HLVGrpWtQYmy8VxRiW?=
- =?us-ascii?Q?jnlJoO9wZ0+dtGAVO5NeiLcspslmR0xBmxo5g+/uPlO7EPE36dTAn50w2ttw?=
- =?us-ascii?Q?pwJLcLQqkK38/wWV3wdIwVaTJDb5PenVQbSy7sZBXXmuuiJA08dnAYex/nNJ?=
- =?us-ascii?Q?5OSjxXKsUUAvKfq5W2Q=3D?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6241138-bba9-480b-003e-08d9ea3d3e41
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3439.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 13:25:01.1268
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OZyppZ99t1zF5Lva901heVAR2qGLgeubVVABLTN7wuki81i/pCeo0p5b1P8QGcFJ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9248
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add clock binding for S32G based on SCMI Clock Management Protocol (0x14)
+Hi Kees,
 
-Signed-off-by: Chester Lin <clin@suse.com>
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   dfd42facf1e4ada021b939b4e19c935dcdd55566
+commit: a52f8a59aef46b59753e583bf4b28fccb069ce64 fortify: Explicitly disable Clang support
+date:   5 months ago
+config: x86_64-randconfig-r034-20220207 (https://download.01.org/0day-ci/archive/20220207/202202072142.Mdz2lNT9-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0d8850ae2cae85d49bea6ae0799fa41c7202c05c)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a52f8a59aef46b59753e583bf4b28fccb069ce64
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout a52f8a59aef46b59753e583bf4b28fccb069ce64
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/media/dvb-frontends/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/media/dvb-frontends/stv0367.c:995:12: warning: stack frame size (9464) exceeds limit (8192) in 'stv0367ter_algo' [-Wframe-larger-than]
+   static int stv0367ter_algo(struct dvb_frontend *fe)
+              ^
+>> drivers/media/dvb-frontends/stv0367.c:2540:12: warning: stack frame size (9368) exceeds limit (8192) in 'stv0367cab_set_frontend' [-Wframe-larger-than]
+   static int stv0367cab_set_frontend(struct dvb_frontend *fe)
+              ^
+   2 warnings generated.
+
+
+vim +/stv0367ter_algo +995 drivers/media/dvb-frontends/stv0367.c
+
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25   994  
+285d55ad5f2cc0 drivers/media/dvb/frontends/stv0367.c Mauro Carvalho Chehab 2011-12-26  @995  static int stv0367ter_algo(struct dvb_frontend *fe)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25   996  {
+285d55ad5f2cc0 drivers/media/dvb/frontends/stv0367.c Mauro Carvalho Chehab 2011-12-26   997  	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25   998  	struct stv0367_state *state = fe->demodulator_priv;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25   999  	struct stv0367ter_state *ter_state = state->ter_state;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1000  	int offset = 0, tempo = 0;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1001  	u8 u_var;
+df1ec0272fd49a drivers/media/dvb/frontends/stv0367.c Peter Senna Tschudin  2012-06-14  1002  	u8 /*constell,*/ counter;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1003  	s8 step;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1004  	s32 timing_offset = 0;
+b16338e3d346ce drivers/media/dvb-frontends/stv0367.c Daniel Scheller       2017-03-29  1005  	u32 trl_nomrate = 0, InternalFreq = 0, temp = 0, ifkhz = 0;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1006  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1007  	dprintk("%s:\n", __func__);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1008  
+b16338e3d346ce drivers/media/dvb-frontends/stv0367.c Daniel Scheller       2017-03-29  1009  	stv0367_get_if_khz(state, &ifkhz);
+b16338e3d346ce drivers/media/dvb-frontends/stv0367.c Daniel Scheller       2017-03-29  1010  
+285d55ad5f2cc0 drivers/media/dvb/frontends/stv0367.c Mauro Carvalho Chehab 2011-12-26  1011  	ter_state->frequency = p->frequency;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1012  	ter_state->force = FE_TER_FORCENONE
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1013  			+ stv0367_readbits(state, F367TER_FORCE) * 2;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1014  	ter_state->if_iq_mode = state->config->if_iq_mode;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1015  	switch (state->config->if_iq_mode) {
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1016  	case FE_TER_NORMAL_IF_TUNER:  /* Normal IF mode */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1017  		dprintk("ALGO: FE_TER_NORMAL_IF_TUNER selected\n");
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1018  		stv0367_writebits(state, F367TER_TUNER_BB, 0);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1019  		stv0367_writebits(state, F367TER_LONGPATH_IF, 0);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1020  		stv0367_writebits(state, F367TER_DEMUX_SWAP, 0);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1021  		break;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1022  	case FE_TER_LONGPATH_IF_TUNER:  /* Long IF mode */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1023  		dprintk("ALGO: FE_TER_LONGPATH_IF_TUNER selected\n");
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1024  		stv0367_writebits(state, F367TER_TUNER_BB, 0);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1025  		stv0367_writebits(state, F367TER_LONGPATH_IF, 1);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1026  		stv0367_writebits(state, F367TER_DEMUX_SWAP, 1);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1027  		break;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1028  	case FE_TER_IQ_TUNER:  /* IQ mode */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1029  		dprintk("ALGO: FE_TER_IQ_TUNER selected\n");
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1030  		stv0367_writebits(state, F367TER_TUNER_BB, 1);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1031  		stv0367_writebits(state, F367TER_PPM_INVSEL, 0);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1032  		break;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1033  	default:
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1034  		printk(KERN_ERR "ALGO: wrong TUNER type selected\n");
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1035  		return -EINVAL;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1036  	}
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1037  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1038  	usleep_range(5000, 7000);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1039  
+285d55ad5f2cc0 drivers/media/dvb/frontends/stv0367.c Mauro Carvalho Chehab 2011-12-26  1040  	switch (p->inversion) {
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1041  	case INVERSION_AUTO:
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1042  	default:
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1043  		dprintk("%s: inversion AUTO\n", __func__);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1044  		if (ter_state->if_iq_mode == FE_TER_IQ_TUNER)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1045  			stv0367_writebits(state, F367TER_IQ_INVERT,
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1046  						ter_state->sense);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1047  		else
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1048  			stv0367_writebits(state, F367TER_INV_SPECTR,
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1049  						ter_state->sense);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1050  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1051  		break;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1052  	case INVERSION_ON:
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1053  	case INVERSION_OFF:
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1054  		if (ter_state->if_iq_mode == FE_TER_IQ_TUNER)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1055  			stv0367_writebits(state, F367TER_IQ_INVERT,
+285d55ad5f2cc0 drivers/media/dvb/frontends/stv0367.c Mauro Carvalho Chehab 2011-12-26  1056  						p->inversion);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1057  		else
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1058  			stv0367_writebits(state, F367TER_INV_SPECTR,
+285d55ad5f2cc0 drivers/media/dvb/frontends/stv0367.c Mauro Carvalho Chehab 2011-12-26  1059  						p->inversion);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1060  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1061  		break;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1062  	}
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1063  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1064  	if ((ter_state->if_iq_mode != FE_TER_NORMAL_IF_TUNER) &&
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1065  				(ter_state->pBW != ter_state->bw)) {
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1066  		stv0367ter_agc_iir_lock_detect_set(state);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1067  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1068  		/*set fine agc target to 180 for LPIF or IQ mode*/
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1069  		/* set Q_AGCTarget */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1070  		stv0367_writebits(state, F367TER_SEL_IQNTAR, 1);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1071  		stv0367_writebits(state, F367TER_AUT_AGC_TARGET_MSB, 0xB);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1072  		/*stv0367_writebits(state,AUT_AGC_TARGET_LSB,0x04); */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1073  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1074  		/* set Q_AGCTarget */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1075  		stv0367_writebits(state, F367TER_SEL_IQNTAR, 0);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1076  		stv0367_writebits(state, F367TER_AUT_AGC_TARGET_MSB, 0xB);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1077  		/*stv0367_writebits(state,AUT_AGC_TARGET_LSB,0x04); */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1078  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1079  		if (!stv0367_iir_filt_init(state, ter_state->bw,
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1080  						state->config->xtal))
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1081  			return -EINVAL;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1082  		/*set IIR filter once for 6,7 or 8MHz BW*/
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1083  		ter_state->pBW = ter_state->bw;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1084  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1085  		stv0367ter_agc_iir_rst(state);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1086  	}
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1087  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1088  	if (ter_state->hierarchy == FE_TER_HIER_LOW_PRIO)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1089  		stv0367_writebits(state, F367TER_BDI_LPSEL, 0x01);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1090  	else
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1091  		stv0367_writebits(state, F367TER_BDI_LPSEL, 0x00);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1092  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1093  	InternalFreq = stv0367ter_get_mclk(state, state->config->xtal) / 1000;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1094  	temp = (int)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1095  		((((ter_state->bw * 64 * (1 << 15) * 100)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1096  						/ (InternalFreq)) * 10) / 7);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1097  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1098  	stv0367_writebits(state, F367TER_TRL_NOMRATE_LSB, temp % 2);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1099  	temp = temp / 2;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1100  	stv0367_writebits(state, F367TER_TRL_NOMRATE_HI, temp / 256);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1101  	stv0367_writebits(state, F367TER_TRL_NOMRATE_LO, temp % 256);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1102  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1103  	temp = stv0367_readbits(state, F367TER_TRL_NOMRATE_HI) * 512 +
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1104  			stv0367_readbits(state, F367TER_TRL_NOMRATE_LO) * 2 +
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1105  			stv0367_readbits(state, F367TER_TRL_NOMRATE_LSB);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1106  	temp = (int)(((1 << 17) * ter_state->bw * 1000) / (7 * (InternalFreq)));
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1107  	stv0367_writebits(state, F367TER_GAIN_SRC_HI, temp / 256);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1108  	stv0367_writebits(state, F367TER_GAIN_SRC_LO, temp % 256);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1109  	temp = stv0367_readbits(state, F367TER_GAIN_SRC_HI) * 256 +
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1110  			stv0367_readbits(state, F367TER_GAIN_SRC_LO);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1111  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1112  	temp = (int)
+b16338e3d346ce drivers/media/dvb-frontends/stv0367.c Daniel Scheller       2017-03-29  1113  		((InternalFreq - ifkhz) * (1 << 16) / (InternalFreq));
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1114  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1115  	dprintk("DEROT temp=0x%x\n", temp);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1116  	stv0367_writebits(state, F367TER_INC_DEROT_HI, temp / 256);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1117  	stv0367_writebits(state, F367TER_INC_DEROT_LO, temp % 256);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1118  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1119  	ter_state->echo_pos = 0;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1120  	ter_state->ucblocks = 0; /* liplianin */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1121  	ter_state->pBER = 0; /* liplianin */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1122  	stv0367_writebits(state, F367TER_LONG_ECHO, ter_state->echo_pos);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1123  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1124  	if (stv0367ter_lock_algo(state) != FE_TER_LOCKOK)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1125  		return 0;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1126  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1127  	ter_state->state = FE_TER_LOCKOK;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1128  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1129  	ter_state->mode = stv0367_readbits(state, F367TER_SYR_MODE);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1130  	ter_state->guard = stv0367_readbits(state, F367TER_SYR_GUARD);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1131  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1132  	ter_state->first_lock = 1; /* we know sense now :) */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1133  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1134  	ter_state->agc_val =
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1135  			(stv0367_readbits(state, F367TER_AGC1_VAL_LO) << 16) +
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1136  			(stv0367_readbits(state, F367TER_AGC1_VAL_HI) << 24) +
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1137  			stv0367_readbits(state, F367TER_AGC2_VAL_LO) +
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1138  			(stv0367_readbits(state, F367TER_AGC2_VAL_HI) << 8);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1139  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1140  	/* Carrier offset calculation */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1141  	stv0367_writebits(state, F367TER_FREEZE, 1);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1142  	offset = (stv0367_readbits(state, F367TER_CRL_FOFFSET_VHI) << 16) ;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1143  	offset += (stv0367_readbits(state, F367TER_CRL_FOFFSET_HI) << 8);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1144  	offset += (stv0367_readbits(state, F367TER_CRL_FOFFSET_LO));
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1145  	stv0367_writebits(state, F367TER_FREEZE, 0);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1146  	if (offset > 8388607)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1147  		offset -= 16777216;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1148  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1149  	offset = offset * 2 / 16384;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1150  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1151  	if (ter_state->mode == FE_TER_MODE_2K)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1152  		offset = (offset * 4464) / 1000;/*** 1 FFT BIN=4.464khz***/
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1153  	else if (ter_state->mode == FE_TER_MODE_4K)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1154  		offset = (offset * 223) / 100;/*** 1 FFT BIN=2.23khz***/
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1155  	else  if (ter_state->mode == FE_TER_MODE_8K)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1156  		offset = (offset * 111) / 100;/*** 1 FFT BIN=1.1khz***/
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1157  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1158  	if (stv0367_readbits(state, F367TER_PPM_INVSEL) == 1) {
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1159  		if ((stv0367_readbits(state, F367TER_INV_SPECTR) ==
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1160  				(stv0367_readbits(state,
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1161  					F367TER_STATUS_INV_SPECRUM) == 1)))
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1162  			offset = offset * -1;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1163  	}
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1164  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1165  	if (ter_state->bw == 6)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1166  		offset = (offset * 6) / 8;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1167  	else if (ter_state->bw == 7)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1168  		offset = (offset * 7) / 8;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1169  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1170  	ter_state->frequency += offset;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1171  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1172  	tempo = 10;  /* exit even if timing_offset stays null */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1173  	while ((timing_offset == 0) && (tempo > 0)) {
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1174  		usleep_range(10000, 20000);	/*was 20ms  */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1175  		/* fine tuning of timing offset if required */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1176  		timing_offset = stv0367_readbits(state, F367TER_TRL_TOFFSET_LO)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1177  				+ 256 * stv0367_readbits(state,
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1178  							F367TER_TRL_TOFFSET_HI);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1179  		if (timing_offset >= 32768)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1180  			timing_offset -= 65536;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1181  		trl_nomrate = (512 * stv0367_readbits(state,
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1182  							F367TER_TRL_NOMRATE_HI)
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1183  			+ stv0367_readbits(state, F367TER_TRL_NOMRATE_LO) * 2
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1184  			+ stv0367_readbits(state, F367TER_TRL_NOMRATE_LSB));
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1185  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1186  		timing_offset = ((signed)(1000000 / trl_nomrate) *
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1187  							timing_offset) / 2048;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1188  		tempo--;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1189  	}
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1190  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1191  	if (timing_offset <= 0) {
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1192  		timing_offset = (timing_offset - 11) / 22;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1193  		step = -1;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1194  	} else {
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1195  		timing_offset = (timing_offset + 11) / 22;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1196  		step = 1;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1197  	}
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1198  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1199  	for (counter = 0; counter < abs(timing_offset); counter++) {
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1200  		trl_nomrate += step;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1201  		stv0367_writebits(state, F367TER_TRL_NOMRATE_LSB,
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1202  						trl_nomrate % 2);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1203  		stv0367_writebits(state, F367TER_TRL_NOMRATE_LO,
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1204  						trl_nomrate / 2);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1205  		usleep_range(1000, 2000);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1206  	}
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1207  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1208  	usleep_range(5000, 6000);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1209  	/* unlocks could happen in case of trl centring big step,
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1210  	then a core off/on restarts demod */
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1211  	u_var = stv0367_readbits(state, F367TER_LK);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1212  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1213  	if (!u_var) {
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1214  		stv0367_writebits(state, F367TER_CORE_ACTIVE, 0);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1215  		msleep(20);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1216  		stv0367_writebits(state, F367TER_CORE_ACTIVE, 1);
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1217  	}
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1218  
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1219  	return 0;
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1220  }
+17cce932e8be9a drivers/media/dvb/frontends/stv0367.c Igor M. Liplianin     2011-01-25  1221  
+
+:::::: The code at line 995 was first introduced by commit
+:::::: 285d55ad5f2cc0b8a316c3574e2faa0a5b45bd0f [media] stv0367: convert set_fontend to use DVBv5 parameters
+
+:::::: TO: Mauro Carvalho Chehab <mchehab@redhat.com>
+:::::: CC: Mauro Carvalho Chehab <mchehab@redhat.com>
+
 ---
- include/dt-bindings/clock/s32g2-clock.h | 28 +++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
- create mode 100644 include/dt-bindings/clock/s32g2-clock.h
-
-diff --git a/include/dt-bindings/clock/s32g2-clock.h b/include/dt-bindings/=
-clock/s32g2-clock.h
-new file mode 100644
-index 000000000000..6d8606293865
---- /dev/null
-+++ b/include/dt-bindings/clock/s32g2-clock.h
-@@ -0,0 +1,28 @@
-+/* SPDX-License-Identifier: BSD-3-Clause */
-+/*
-+ * Copyright 2020-2022 NXP
-+ */
-+#ifndef __DT_BINDINGS_SCMI_CLOCK_S32G2_H
-+#define __DT_BINDINGS_SCMI_CLOCK_S32G2_H
-+
-+#define S32G2_SCMI_CLK_BASE_ID		0U
-+#define S32G2_SCMI_CLK(N)		((N) + S32G2_SCMI_CLK_BASE_ID)
-+
-+/* GMAC0 - SGMII */
-+#define S32G2_SCMI_CLK_GMAC0_RX_SGMII	S32G2_SCMI_CLK(16)
-+#define S32G2_SCMI_CLK_GMAC0_TX_SGMII	S32G2_SCMI_CLK(17)
-+/* GMAC0 - RGMII */
-+#define S32G2_SCMI_CLK_GMAC0_RX_RGMII	S32G2_SCMI_CLK(19)
-+#define S32G2_SCMI_CLK_GMAC0_TX_RGMII	S32G2_SCMI_CLK(20)
-+/* GMAC0 - RMII */
-+#define S32G2_SCMI_CLK_GMAC0_RX_RMII	S32G2_SCMI_CLK(22)
-+#define S32G2_SCMI_CLK_GMAC0_TX_RMII	S32G2_SCMI_CLK(23)
-+/* GMAC0 - MII */
-+#define S32G2_SCMI_CLK_GMAC0_RX_MII	S32G2_SCMI_CLK(25)
-+#define S32G2_SCMI_CLK_GMAC0_TX_MII	S32G2_SCMI_CLK(26)
-+#define S32G2_SCMI_CLK_GMAC0_AXI	S32G2_SCMI_CLK(28)
-+/* uSDHC */
-+#define S32G2_SCMI_CLK_USDHC_AHB	S32G2_SCMI_CLK(35)
-+#define S32G2_SCMI_CLK_USDHC_MODULE	S32G2_SCMI_CLK(36)
-+#define S32G2_SCMI_CLK_USDHC_CORE	S32G2_SCMI_CLK(37)
-+#endif
---=20
-2.33.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
