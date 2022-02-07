@@ -2,97 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A347CC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A93C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349343AbiBGQ7M (ORCPT
+        id S1352848AbiBGQ7O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:59:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
+        Mon, 7 Feb 2022 11:59:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344389AbiBGQxS (ORCPT
+        with ESMTP id S245257AbiBGQzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:53:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D1CC0401D8
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:53:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B82EC61012
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 16:53:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D23FC340ED;
-        Mon,  7 Feb 2022 16:53:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644252797;
-        bh=X39xYx51fikLum/6dHtmOj01yGauqmQNBgR0dA+t/T4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=daQ/U5GjWfNjCv/LB9Bb4/XbLHnn7bL1gcbSSNpasT2b/VlhN0hVFOpSqKam/0dEa
-         bpyiUxlfQlTzbqNwEtgG7vDWrd8uTKgWFaeN1z9j77gL17m0Fwx1GvlcoFD63IOhZ6
-         aUAt6UccpTa0iMVMP9JhHEpJoTaCOugnlvW8u+Xcb44//9MHg7zH6jZkEevSiBr5bN
-         xJhMylojME3ZonO9bIqbR2RjxTze8Mkm7FQcxq352Y2N5gUjNNJ/fGADzZoIUk2KIm
-         pNe/efhQ4UaqmLRW6nyXUhxuqSKaDTbO0GKhwVkYXJ8XUDIdziHpTCA1yN/rYFThfc
-         pTYRUq7PJmu3g==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Yannick Fertre <yannick.fertre@foss.st.com>,
-        Philippe Cornu <philippe.cornu@foss.st.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        dri-devel@lists.freedesktop.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] drm/stm: Avoid using val uninitialized in ltdc_set_ycbcr_config()
-Date:   Mon,  7 Feb 2022 09:53:04 -0700
-Message-Id: <20220207165304.1046867-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Mon, 7 Feb 2022 11:55:43 -0500
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362CCC0401D1;
+        Mon,  7 Feb 2022 08:55:42 -0800 (PST)
+Received: by mail-qv1-xf2d.google.com with SMTP id a19so5076644qvm.4;
+        Mon, 07 Feb 2022 08:55:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=e9tqoHZ6eGG0suM1GXf3LMc5/1N6y/KmfBr0Dip8/uY=;
+        b=nGxrYiQRaBwcgRMlkfXTzLULiwpCmWWPvY1DRcZ/v9VFHLBv9pAGSYbMak54CdUB8t
+         xpDBZsPRCEmNvQyCqzW6JrMUejb/7QWRmEv9OZ+fVb2jMGPCxzsusMtJDQlJN46r3IPt
+         sJxMz0supJTJv5usz2q15DeP+Zsku7fEsrJfTNzZtOz6vvH3qbllf2VdQfGZ5ojvz32N
+         Ah/wVZsEyg8yjYDaOnDLw1OIBsC9GWVfpce6cSEUI85z11Jl680wKzxVqXUMEoyR3rVw
+         MGQRcUxLg0eZkcPI+Ev+p7xYM0WoC4WVp0gMPKv7gavSh0Mx2QmRvHM5nhfMzDBMCOJ2
+         5U6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=e9tqoHZ6eGG0suM1GXf3LMc5/1N6y/KmfBr0Dip8/uY=;
+        b=zLQBC9pnY2ZM0QsHR4wBYRmz0upP5J4xQKfZluwJGRSJtsJTqKJSjQd/MDeKYkLcZL
+         lEDyWlibBaUmfRBGyy1cd8Sbvntwx2Z4BcOuNeRsrs/i9WTj4WMKdDWUHCI/e2uvP5b2
+         K0r5G5ZaYtMCw+Sj9HtIc0SS6FQxtEWfE6udvHxrtNnFtra1pWOrEyftFbq7duqoJxaP
+         fPQhW5lls22ZqmK4ZXq7rY8UglNPvcQfSmK3hwpBFFBeXLI6lchbgzQrX05Dt9FKKwmx
+         L6PEh+zEjcQCdHTwMbOfYQJ3sycn8ho6F2jXOMbsI4QdZ7AeURKQUfCErsiPorikSnYN
+         i2AA==
+X-Gm-Message-State: AOAM531w4xQEb2JMW2Cf41jDcM9g5Y6aZTlOm11axvl4B5h1At/cBnMw
+        JknJt0pWd65ILkc6Zz0cU5I=
+X-Google-Smtp-Source: ABdhPJxqob/6ncXpfn+LPMVwW726hehuKl5C65QmjLullTLesYLDjfAk8tx7rQV1jxHqPW4Y4fp8XQ==
+X-Received: by 2002:a05:6214:29e5:: with SMTP id jv5mr333614qvb.64.1644252941363;
+        Mon, 07 Feb 2022 08:55:41 -0800 (PST)
+Received: from [192.168.1.59] (c-67-187-90-124.hsd1.tn.comcast.net. [67.187.90.124])
+        by smtp.gmail.com with ESMTPSA id t11sm275890qkp.82.2022.02.07.08.55.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 08:55:40 -0800 (PST)
+Subject: Re: [PATCH v2 1/1] Documentation: dev-tools: clarify KTAP
+ specification wording
+From:   Frank Rowand <frowand.list@gmail.com>
+To:     Jonathan Corbet <corbet@lwn.net>, David Gow <davidgow@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>, Rae Moar <rmoar@google.com>,
+        Tim.Bird@sony.com, Brendan Higgins <brendanhiggins@google.com>
+Cc:     rmr167@gmail.com, guillaume.tucker@collabora.com,
+        dlatypov@google.com, kernelci@groups.io,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220207162813.3091899-1-frowand.list@gmail.com>
+ <e795ad1a-ddb1-f0af-4a74-7c2c6a0a949a@gmail.com>
+Message-ID: <0de1426c-5b5d-9160-cd5c-00185fa516f5@gmail.com>
+Date:   Mon, 7 Feb 2022 10:55:39 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <e795ad1a-ddb1-f0af-4a74-7c2c6a0a949a@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang warns:
+On 2/7/22 10:38 AM, Frank Rowand wrote:
+> On 2/7/22 10:28 AM, frowand.list@gmail.com wrote:
+>> From: Frank Rowand <frank.rowand@sony.com>
+>>
+>> Add the spec version to the title line.
+>>
+>> Explain likely source of "Unknown lines".
+>>
+>> "Unknown lines" in nested tests are optionally indented.
+>>
+>> Add "Unknown lines" items to differences between TAP & KTAP list
+>>
+>> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+>> ---
+> 
+> Please do not apply this version (v2).  I was working off the KTAP specification
+                                                                ^^^^ TAP
+> from a different github repo than I should have been referencing.
 
-  drivers/gpu/drm/stm/ltdc.c:625:2: warning: variable 'val' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
-          default:
-          ^~~~~~~
-  drivers/gpu/drm/stm/ltdc.c:635:2: note: uninitialized use occurs here
-          val |= LxPCR_YCEN;
-          ^~~
-  drivers/gpu/drm/stm/ltdc.c:600:9: note: initialize the variable 'val' to silence this warning
-          u32 val;
-                 ^
-                  = 0
-  1 warning generated.
+OK to proceed with this version of the patch.  I was referencing the proposed
+TAP version 14, which is in a different github repo than the TAP version 13
+specification.  Everything in this patch is consistent with TAP version 13,
+as well as the proposed TAP version 14.
 
-Use a return instead of break in the default case to fix the warning.
-Add an error message so that this return is not silent, which could hide
-issues in the future.
+-Frank
 
-Fixes: 484e72d3146b ("drm/stm: ltdc: add support of ycbcr pixel formats")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1575
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- drivers/gpu/drm/stm/ltdc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/stm/ltdc.c b/drivers/gpu/drm/stm/ltdc.c
-index 5eeb32c9c9ce..447ddde1786c 100644
---- a/drivers/gpu/drm/stm/ltdc.c
-+++ b/drivers/gpu/drm/stm/ltdc.c
-@@ -624,7 +624,8 @@ static inline void ltdc_set_ycbcr_config(struct drm_plane *plane, u32 drm_pix_fm
- 		break;
- 	default:
- 		/* RGB or not a YCbCr supported format */
--		break;
-+		drm_err(plane->dev, "Unsupported pixel format: %u\n", drm_pix_fmt);
-+		return;
- 	}
- 
- 	/* Enable limited range */
-
-base-commit: 542898c5aa5c6a3179dffb1d1606884a63f75fed
--- 
-2.35.1
+> 
+> v3 upcoming.
+> 
+> -Frank
+> 
+>>
+>> Changes since version 1
+>>   - Explain likely source of "Unknown lines"
+>>   - "Unknown line" in nested tests are optionally indented
+>>   - Add "Unknown lines" items to differences between TAP & KTAP list
+>>
+>>  Documentation/dev-tools/ktap.rst | 24 ++++++++++++++++++------
+>>  1 file changed, 18 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/Documentation/dev-tools/ktap.rst b/Documentation/dev-tools/ktap.rst
+>> index 878530cb9c27..9c40c94d3f12 100644
+>> --- a/Documentation/dev-tools/ktap.rst
+>> +++ b/Documentation/dev-tools/ktap.rst
+>> @@ -1,8 +1,8 @@
+>>  .. SPDX-License-Identifier: GPL-2.0
+>>  
+>> -========================================
+>> -The Kernel Test Anything Protocol (KTAP)
+>> -========================================
+>> +===================================================
+>> +The Kernel Test Anything Protocol (KTAP), version 1
+>> +===================================================
+>>  
+>>  TAP, or the Test Anything Protocol is a format for specifying test results used
+>>  by a number of projects. It's website and specification are found at this `link
+>> @@ -174,6 +174,13 @@ There may be lines within KTAP output that do not follow the format of one of
+>>  the four formats for lines described above. This is allowed, however, they will
+>>  not influence the status of the tests.
+>>  
+>> +This is an important difference from TAP.  Kernel tests may print messages
+>> +to the system console or a log file.  Both of these destinations may contain
+>> +messages either from unrelated kernel or userspace activity, or kernel
+>> +messages from non-test code that is invoked by the test.  The kernel code
+>> +invoked by the test likely is not aware that a test is in progress and
+>> +thus can not print the message as a diagnostic message.
+>> +
+>>  Nested tests
+>>  ------------
+>>  
+>> @@ -186,10 +193,13 @@ starting with another KTAP version line and test plan, and end with the overall
+>>  result. If one of the subtests fail, for example, the parent test should also
+>>  fail.
+>>  
+>> -Additionally, all result lines in a subtest should be indented. One level of
+>> +Additionally, all lines in a subtest should be indented. One level of
+>>  indentation is two spaces: "  ". The indentation should begin at the version
+>>  line and should end before the parent test's result line.
+>>  
+>> +"Unknown lines" are not considered to be lines in a subtest and thus are
+>> +allowed to be either indented or not indented.
+>> +
+>>  An example of a test with two nested subtests:
+>>  
+>>  .. code-block::
+>> @@ -225,9 +235,11 @@ Major differences between TAP and KTAP
+>>  --------------------------------------
+>>  
+>>  Note the major differences between the TAP and KTAP specification:
+>> -- yaml and json are not recommended in diagnostic messages
+>> -- TODO directive not recognized
+>> +- yaml and json are not recommended in KTAP diagnostic messages
+>> +- TODO directive not recognized in KTAP
+>>  - KTAP allows for an arbitrary number of tests to be nested
+>> +- TAP includes "Unknown lines" in the category of "Anything else"
+>> +- TAP says "Unknown lines" are "incorrect; KTAP allows "Unknown lines"
+>>  
+>>  The TAP14 specification does permit nested tests, but instead of using another
+>>  nested version line, uses a line of the form
+>>
+> 
 
