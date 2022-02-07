@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C2B6C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7B7C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343811AbiBGLLa (ORCPT
+        id S1343715AbiBGLL2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:11:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47780 "EHLO
+        Mon, 7 Feb 2022 06:11:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbiBGLIU (ORCPT
+        with ESMTP id S240329AbiBGLI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:08:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94159C043181;
-        Mon,  7 Feb 2022 03:08:19 -0800 (PST)
+        Mon, 7 Feb 2022 06:08:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3236C043181;
+        Mon,  7 Feb 2022 03:08:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 282F861370;
-        Mon,  7 Feb 2022 11:08:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BB0EC004E1;
-        Mon,  7 Feb 2022 11:08:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71679B81028;
+        Mon,  7 Feb 2022 11:08:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0412C004E1;
+        Mon,  7 Feb 2022 11:08:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232098;
-        bh=5dMnPVgGvcyKRlLrFOFANdLnEP3ROLqN/kgiSsa1FTo=;
+        s=korg; t=1644232136;
+        bh=X4zAEnAPt4ZfgCA3lUjOmtemiVM22+id6pT04M2vi+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rOpGebAWoL8dNUA1QTBZF0+kZpJGzhAM3qQg0BmwXxe7Wn4/OA3O6GR1aT89q31gL
-         oiGpsCmO3dfVcxQDjiDm7tNw2IOjaqg0eFo3vwMB2nsZc89VFEsHw8/QF11IUASIHc
-         TwUX7jQ7gCQcYeRBzPdgTr2UQQBhVDmdw2xL910Y=
+        b=n/zVeAoTKZOt85E3bLt4C4FJdhceWSQlJu9XYx6JeixTJclkDAkQMDiD0+gZk4nhJ
+         2s3fHQsdL9MyK1qF9avVEvmUSNp3zIlkjECsIFp7jvIvGKas0iyxnqJymqRFXczGxG
+         hWJRMh0Ha+udbIy/PkehMP4+FnfJKucAj/2tzJr8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erwan Le Ray <erwan.leray@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>
-Subject: [PATCH 4.9 08/48] serial: stm32: fix software flow control transfer
-Date:   Mon,  7 Feb 2022 12:05:41 +0100
-Message-Id: <20220207103752.609360226@linuxfoundation.org>
+        stable@vger.kernel.org, Georgi Valkov <gvalkov@abv.bg>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.9 28/48] ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+Date:   Mon,  7 Feb 2022 12:06:01 +0100
+Message-Id: <20220207103753.262088019@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -49,34 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Caron <valentin.caron@foss.st.com>
+From: Georgi Valkov <gvalkov@abv.bg>
 
-commit 037b91ec7729524107982e36ec4b40f9b174f7a2 upstream.
+commit 63e4b45c82ed1bde979da7052229a4229ce9cabf upstream.
 
-x_char is ignored by stm32_usart_start_tx() when xmit buffer is empty.
+When rx_buf is allocated we need to account for IPHETH_IP_ALIGN,
+which reduces the usable size by 2 bytes. Otherwise we have 1512
+bytes usable instead of 1514, and if we receive more than 1512
+bytes, ipheth_rcvbulk_callback is called with status -EOVERFLOW,
+after which the driver malfunctiones and all communication stops.
 
-Fix start_tx condition to allow x_char to be sent.
+Resolves ipheth 2-1:4.2: ipheth_rcvbulk_callback: urb status: -75
 
-Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
-Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
-Link: https://lore.kernel.org/r/20220111164441.6178-3-valentin.caron@foss.st.com
+Fixes: f33d9e2b48a3 ("usbnet: ipheth: fix connectivity with iOS 14")
+Signed-off-by: Georgi Valkov <gvalkov@abv.bg>
+Tested-by: Jan Kiszka <jan.kiszka@siemens.com>
+Link: https://lore.kernel.org/all/B60B8A4B-92A0-49B3-805D-809A2433B46C@abv.bg/
+Link: https://lore.kernel.org/all/24851bd2769434a5fc24730dce8e8a984c5a4505.1643699778.git.jan.kiszka@siemens.com/
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/stm32-usart.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/ipheth.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -389,7 +389,7 @@ static void stm32_start_tx(struct uart_p
+--- a/drivers/net/usb/ipheth.c
++++ b/drivers/net/usb/ipheth.c
+@@ -173,7 +173,7 @@ static int ipheth_alloc_urbs(struct iphe
+ 	if (tx_buf == NULL)
+ 		goto free_rx_urb;
+ 
+-	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
++	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN,
+ 				    GFP_KERNEL, &rx_urb->transfer_dma);
+ 	if (rx_buf == NULL)
+ 		goto free_tx_buf;
+@@ -198,7 +198,7 @@ error_nomem:
+ 
+ static void ipheth_free_urbs(struct ipheth_device *iphone)
  {
- 	struct circ_buf *xmit = &port->state->xmit;
+-	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->rx_buf,
++	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN, iphone->rx_buf,
+ 			  iphone->rx_urb->transfer_dma);
+ 	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->tx_buf,
+ 			  iphone->tx_urb->transfer_dma);
+@@ -371,7 +371,7 @@ static int ipheth_rx_submit(struct iphet
  
--	if (uart_circ_empty(xmit))
-+	if (uart_circ_empty(xmit) && !port->x_char)
- 		return;
- 
- 	stm32_transmit_chars(port);
+ 	usb_fill_bulk_urb(dev->rx_urb, udev,
+ 			  usb_rcvbulkpipe(udev, dev->bulk_in),
+-			  dev->rx_buf, IPHETH_BUF_SIZE,
++			  dev->rx_buf, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN,
+ 			  ipheth_rcvbulk_callback,
+ 			  dev);
+ 	dev->rx_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
 
