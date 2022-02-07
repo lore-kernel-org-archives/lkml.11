@@ -2,93 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 073B0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2CBDC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383471AbiBGLaR (ORCPT
+        id S1384848AbiBGLaW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:30:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
+        Mon, 7 Feb 2022 06:30:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383578AbiBGLW7 (ORCPT
+        with ESMTP id S1383591AbiBGLXB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:22:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E076BC043181;
-        Mon,  7 Feb 2022 03:22:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72DA361380;
-        Mon,  7 Feb 2022 11:22:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56EDAC004E1;
-        Mon,  7 Feb 2022 11:22:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232977;
-        bh=Yi+aO17RMvhJzsy4QMGy26kwoK7BkoXux0P4J5pPcf0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IdqxJkYb+rhT5ky6z5/w4qhoXjavqoo5vvViPViuzaGFGsBqEG5RJMB40ooKVsxUW
-         VMhQuUSf1J3cj/QUwpwh3XSKiixWZ08Pz8QnEa/RXY/YzRvw7hFJl/ZV/NBg6VTcYj
-         fYyW5zsHgRy84HXM/9Ty46R79UYxb9+QzaWmUgFw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Monakhov <dmonakhov@openvz.org>,
-        Dmitry Ivanov <dmitry.ivanov2@hpe.com>,
-        Alexey Lyashkov <alexey.lyashkov@hpe.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 20/74] block: bio-integrity: Advance seed correctly for larger interval sizes
-Date:   Mon,  7 Feb 2022 12:06:18 +0100
-Message-Id: <20220207103757.898337254@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
-References: <20220207103757.232676988@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:23:01 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C669C043181;
+        Mon,  7 Feb 2022 03:23:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644232981; x=1675768981;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dUGZzS8EC40nfUarY4jwY+040gT34k7WB1DGm5ou7O8=;
+  b=LfFdJ7r8EFfi0dMcII+OaIQEK4lvBwcCnZWCEQ4ZB27igp2nwPPRSpxy
+   rkOk5wJ/ULpGvox89zKNUx2obukB/wonHeQlQlLJW+FgT0xbiC9HR+oug
+   ZYIU0wWM0u0orYb1tUlmmK6rUQp8A7ocO4D6pVcaKU6y+i5J0aH5L/H8l
+   7fwk66Wyk/0OvwpONbEG6psFiDVrfxJ/VOJvI1Woaz13uaKf5MtDKmNUs
+   GRYeQCaXTOVUFHsQc0t3HicDvm08dgPAyMBidmwqBfPgqERxpS7dJ9aZZ
+   Nfzd+jz8mdN+uuklNw0w1CTsANk+wFBC7UA/kzwYQ7y7qS51Ve9C4u79E
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273213979"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="273213979"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:23:00 -0800
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="632425274"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:22:58 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nH25m-001sYP-Sn;
+        Mon, 07 Feb 2022 13:21:58 +0200
+Date:   Mon, 7 Feb 2022 13:21:58 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Yicong Yang <yangyicong@huawei.com>
+Cc:     Yicong Yang <yangyicong@hisilicon.com>,
+        jarkko.nikula@linux.intel.com, mika.westerberg@linux.intel.com,
+        wsa@kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, prime.zeng@hisilicon.com,
+        linuxarm@huawei.com
+Subject: Re: [PATCH 0/2] Add I2C bus recovery support on Kunpeng 920/930
+Message-ID: <YgEA1lPq7bUnUqKo@smile.fi.intel.com>
+References: <20220125124930.50369-1-yangyicong@hisilicon.com>
+ <0db7b7ab-a640-b8c3-33cc-29731a65227b@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0db7b7ab-a640-b8c3-33cc-29731a65227b@huawei.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin K. Petersen <martin.petersen@oracle.com>
+On Mon, Feb 07, 2022 at 03:37:17PM +0800, Yicong Yang wrote:
+> a friendly ping ...
+> 
+> Hi Designware maintainers and Wolfram, any comments for this?
 
-commit b13e0c71856817fca67159b11abac350e41289f5 upstream.
+Answered, sorry for the delay.
 
-Commit 309a62fa3a9e ("bio-integrity: bio_integrity_advance must update
-integrity seed") added code to update the integrity seed value when
-advancing a bio. However, it failed to take into account that the
-integrity interval might be larger than the 512-byte block layer
-sector size. This broke bio splitting on PI devices with 4KB logical
-blocks.
-
-The seed value should be advanced by bio_integrity_intervals() and not
-the number of sectors.
-
-Cc: Dmitry Monakhov <dmonakhov@openvz.org>
-Cc: stable@vger.kernel.org
-Fixes: 309a62fa3a9e ("bio-integrity: bio_integrity_advance must update integrity seed")
-Tested-by: Dmitry Ivanov <dmitry.ivanov2@hpe.com>
-Reported-by: Alexey Lyashkov <alexey.lyashkov@hpe.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Link: https://lore.kernel.org/r/20220204034209.4193-1-martin.petersen@oracle.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- block/bio-integrity.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/block/bio-integrity.c
-+++ b/block/bio-integrity.c
-@@ -384,7 +384,7 @@ void bio_integrity_advance(struct bio *b
- 	struct blk_integrity *bi = blk_get_integrity(bio->bi_disk);
- 	unsigned bytes = bio_integrity_bytes(bi, bytes_done >> 9);
- 
--	bip->bip_iter.bi_sector += bytes_done >> 9;
-+	bip->bip_iter.bi_sector += bio_integrity_intervals(bi, bytes_done >> 9);
- 	bvec_iter_advance(bip->bip_vec, &bip->bip_iter, bytes);
- }
- 
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
