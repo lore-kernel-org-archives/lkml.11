@@ -2,151 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B6D1C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A68AC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345863AbiBGJ1O (ORCPT
+        id S1346673AbiBGJ1S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:27:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
+        Mon, 7 Feb 2022 04:27:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236790AbiBGJRZ (ORCPT
+        with ESMTP id S241300AbiBGJOq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:17:25 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C0AC043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:17:24 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nH090-0006MV-T6; Mon, 07 Feb 2022 10:17:10 +0100
-Received: from pengutronix.de (unknown [195.138.59.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 5A8732D37D;
-        Mon,  7 Feb 2022 08:11:27 +0000 (UTC)
-Date:   Mon, 7 Feb 2022 09:11:23 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
-Message-ID: <20220207081123.sdmczptqffwr64al@pengutronix.de>
-References: <1fb4407a-1269-ec50-0ad5-074e49f91144@hartkopp.net>
- <2aba02d4-0597-1d55-8b3e-2c67386f68cf@huawei.com>
- <64695483-ff75-4872-db81-ca55763f95cf@hartkopp.net>
- <d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com>
- <97339463-b357-3e0e-1cbf-c66415c08129@hartkopp.net>
- <24e6da96-a3e5-7b4e-102b-b5676770b80e@hartkopp.net>
- <20220128080704.ns5fzbyn72wfoqmx@pengutronix.de>
- <72419ca8-b0cb-1e9d-3fcc-655defb662df@hartkopp.net>
- <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
- <07c69ccd-dbc0-5c74-c68e-8636ec9179ef@hartkopp.net>
+        Mon, 7 Feb 2022 04:14:46 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0529C043181;
+        Mon,  7 Feb 2022 01:14:45 -0800 (PST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 33CCD580162;
+        Mon,  7 Feb 2022 04:14:45 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Mon, 07 Feb 2022 04:14:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=fRedpbJvF62LRmBCsc4UAgTChCDz35rCa9c3ci
+        2rzcE=; b=E3qLLFzZ7x27Y6LGYr9p5KyryCJBq0fTvrNw8LxbhkWgm7tWSOr5Wc
+        JbnbxsFuSUsPU3AMWGoXXkwVyYzsPpd7cKMxraS+vfBOsAP6RXX6VIAxE6T7K9GL
+        tch10X6ZnAE59xSqMoY1qbzvn0B6EbWLJyrbGQ/2MLZRp6tQikW8gCgm3Jd5Q1Na
+        SpU2MQFalf6xGxasAd4dASM241RuGZeLsOA5OmgA/u3y8UVxzYwIowmaFwju4phk
+        g25SMC1J+QSqQOhim6zIu7/GvlE94Pu0yc17hjRWbrcZn6DDmaesxNi3IZvGSx27
+        UP7+Iz5lBA1oCr6o61fS4vzkmD1FtNQQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=fRedpbJvF62LRmBCs
+        c4UAgTChCDz35rCa9c3ci2rzcE=; b=QP8p8FYH3pvD7d5o73KBj4vhjRLiR+z9z
+        TRrN7+R3EANMTHy3iMoJMNC7TaEO9SRLNwbd4oD3WyehaIsrK3qPRbW738g6Qj4u
+        v0jkHQNQFJ0EyyGGnEcd8A9CkKtVRUDIzQQAxkj1uZ3QkunlEnPKJgSimILD9k3d
+        5GlvvDy3zSDfGQSR8WooaX9GvuckVe/r2+Y+llLHLftrxSxEvbxB++ifo57gXMBs
+        ErTLfM0lQ8nNwkPwXXzzQyeU7CS3Liz+ryqSQC+hT4zqQgIpmwWWdfi+YT5TMKAT
+        6LH46blhcSIhS8POJVIkcI0LJL+bWGEogY7QQBlxLTuIrEDyIy4uQ==
+X-ME-Sender: <xms:BOMAYof3azcAMomihQa81XeO9zKQSU-8KIHkUfBbEyybbkjMAd5aEw>
+    <xme:BOMAYqPKxSP612NB0OXpxSqHnFK0CizFjiKI7LR-8tqS0E9rVVKyW4fqNIiBBrx87
+    T0v0ERqN-yZ47h8D50>
+X-ME-Received: <xmr:BOMAYpgR6g7_ov9BmI-SHxq4Ybisztl25b3RuX-0aEACVGWdtOp4HBthtUMm0tpFIgUUpPYXseaykQMhFR5GAN0nJYtDZuasCRdSggA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheehucetufdoteggodetrfdotffvucfrrh
+    hofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgenuceurghi
+    lhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurh
+    epfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhmvgcutfhi
+    phgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrthhtvghrnh
+    epleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieehgedunecu
+    vehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimh
+    gvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:BOMAYt95e_K_S2BJ39m6qk3bwJtnzmCnYmQakNATBSOYfQNFsOE00Q>
+    <xmx:BOMAYksC6SXMDwIp4SsPpfxLzLUKyOnUEDIYn_WB1qgqGKjjAXVPng>
+    <xmx:BOMAYkH4TyTnCiaOxgClyHSG7EGI69UQ6mn8MtCJKjN8CCV9Nzjd5A>
+    <xmx:BeMAYvmg5KmshTQre1NNgPJa3WL6YlgrtRHk_zHrWpDIsD7YlpNEiw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 7 Feb 2022 04:14:44 -0500 (EST)
+Date:   Mon, 7 Feb 2022 10:14:43 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 21/66] media: sun6i-csi: Always set exclusive module
+ clock rate
+Message-ID: <20220207091443.cr5udv7fxx65ptty@houat>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-22-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jlbxuizszf7lp7c6"
+        protocol="application/pgp-signature"; boundary="x7fslyfuomspr4ek"
 Content-Disposition: inline
-In-Reply-To: <07c69ccd-dbc0-5c74-c68e-8636ec9179ef@hartkopp.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <20220205185429.2278860-22-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---jlbxuizszf7lp7c6
-Content-Type: text/plain; charset=utf-8
+--x7fslyfuomspr4ek
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 28.01.2022 15:48:05, Oliver Hartkopp wrote:
-> Hello Marc, hello William,
+On Sat, Feb 05, 2022 at 07:53:44PM +0100, Paul Kocialkowski wrote:
+> In some situations the default rate of the module clock is not the
+> required one for operation (for example when reconfiguring the clock
+> tree to use a different parent). As a result, always set the correct
+> rate for the clock (and take care of cleanup).
 >=20
-> On 28.01.22 09:46, Marc Kleine-Budde wrote:
-> > On 28.01.2022 09:32:40, Oliver Hartkopp wrote:
-> > >=20
-> > >=20
-> > > On 28.01.22 09:07, Marc Kleine-Budde wrote:
-> > > > On 28.01.2022 08:56:19, Oliver Hartkopp wrote:
-> > > > > I've seen the frame processing sometimes freezes for one second w=
-hen
-> > > > > stressing the isotp_rcv() from multiple sources. This finally fre=
-ezes
-> > > > > the entire softirq which is either not good and not needed as we =
-only
-> > > > > need to fix this race for stress tests - and not for real world u=
-sage
-> > > > > that does not create this case.
-> > > >=20
-> > > > Hmmm, this doesn't sound good. Can you test with LOCKDEP enabled?
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> ---
+>  .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 54 ++++++++++++++-----
+>  1 file changed, 41 insertions(+), 13 deletions(-)
 >=20
->=20
-> > > #
-> > > # Lock Debugging (spinlocks, mutexes, etc...)
-> > > #
-> > > CONFIG_LOCK_DEBUGGING_SUPPORT=3Dy
-> > > # CONFIG_PROVE_LOCKING is not set
-> > CONFIG_PROVE_LOCKING=3Dy
->=20
-> Now enabled even more locking (seen relevant kernel config at the end).
->=20
-> It turns out that there is no visible difference when using spin_lock() or
-> spin_trylock().
->=20
-> I only got some of these kernel log entries
->=20
-> Jan 28 11:13:14 silver kernel: [ 2396.323211] perf: interrupt took too lo=
-ng
-> (2549 > 2500), lowering kernel.perf_event_max_sample_rate to 78250
-> Jan 28 11:25:49 silver kernel: [ 3151.172773] perf: interrupt took too lo=
-ng
-> (3188 > 3186), lowering kernel.perf_event_max_sample_rate to 62500
-> Jan 28 11:45:24 silver kernel: [ 4325.583328] perf: interrupt took too lo=
-ng
-> (4009 > 3985), lowering kernel.perf_event_max_sample_rate to 49750
-> Jan 28 12:15:46 silver kernel: [ 6148.238246] perf: interrupt took too lo=
-ng
-> (5021 > 5011), lowering kernel.perf_event_max_sample_rate to 39750
-> Jan 28 13:01:45 silver kernel: [ 8907.303715] perf: interrupt took too lo=
-ng
-> (6285 > 6276), lowering kernel.perf_event_max_sample_rate to 31750
->=20
-> But I get these sporadically anyway. No other LOCKDEP splat.
->=20
-> At least the issue reported by William should be fixed now - but I'm still
-> unclear whether spin_lock() or spin_trylock() is the best approach here in
-> the NET_RX softirq?!?
+> diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers=
+/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> index 8155e9560164..2355088fdc37 100644
+> --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> @@ -154,9 +154,6 @@ int sun6i_csi_set_power(struct sun6i_csi_device *csi_=
+dev, bool enable)
+>  		regmap_update_bits(regmap, CSI_EN_REG, CSI_EN_CSI_EN, 0);
+> =20
+>  		clk_disable_unprepare(csi_dev->clk_ram);
+> -		if (of_device_is_compatible(dev->of_node,
+> -					    "allwinner,sun50i-a64-csi"))
+> -			clk_rate_exclusive_put(csi_dev->clk_mod);
+>  		clk_disable_unprepare(csi_dev->clk_mod);
+>  		reset_control_assert(csi_dev->reset);
+>  		return 0;
+> @@ -168,9 +165,6 @@ int sun6i_csi_set_power(struct sun6i_csi_device *csi_=
+dev, bool enable)
+>  		return ret;
+>  	}
+> =20
+> -	if (of_device_is_compatible(dev->of_node, "allwinner,sun50i-a64-csi"))
+> -		clk_set_rate_exclusive(csi_dev->clk_mod, 300000000);
+> -
+>  	ret =3D clk_prepare_enable(csi_dev->clk_ram);
+>  	if (ret) {
+>  		dev_err(csi_dev->dev, "Enable clk_dram_csi clk err %d\n", ret);
+> @@ -190,8 +184,6 @@ int sun6i_csi_set_power(struct sun6i_csi_device *csi_=
+dev, bool enable)
+>  clk_ram_disable:
+>  	clk_disable_unprepare(csi_dev->clk_ram);
+>  clk_mod_disable:
+> -	if (of_device_is_compatible(dev->of_node, "allwinner,sun50i-a64-csi"))
+> -		clk_rate_exclusive_put(csi_dev->clk_mod);
+>  	clk_disable_unprepare(csi_dev->clk_mod);
+>  	return ret;
+>  }
+> @@ -819,6 +811,7 @@ static int sun6i_csi_resources_setup(struct sun6i_csi=
+_device *csi_dev,
+>  				     struct platform_device *platform_dev)
+>  {
+>  	struct device *dev =3D csi_dev->dev;
+> +	unsigned long clk_mod_rate;
+>  	void __iomem *io_base;
+>  	int ret;
+>  	int irq;
+> @@ -856,28 +849,53 @@ static int sun6i_csi_resources_setup(struct sun6i_c=
+si_device *csi_dev,
+>  		return PTR_ERR(csi_dev->clk_ram);
+>  	}
+> =20
+> +	if (of_device_is_compatible(dev->of_node, "allwinner,sun50i-a64-csi"))
+> +		clk_mod_rate =3D 300000000;
+> +	else
+> +		clk_mod_rate =3D 297000000;
+> +
+> +	ret =3D clk_set_rate_exclusive(csi_dev->clk_mod, clk_mod_rate);
+> +	if (ret) {
+> +		dev_err(dev, "failed to set mod clock rate\n");
+> +		return ret;
+> +	}
+> +
+>  	/* Reset */
+> =20
+>  	csi_dev->reset =3D devm_reset_control_get_shared(dev, NULL);
+>  	if (IS_ERR(csi_dev->reset)) {
+>  		dev_err(dev, "failed to acquire reset\n");
+> -		return PTR_ERR(csi_dev->reset);
+> +		ret =3D PTR_ERR(csi_dev->reset);
+> +		goto error_clk_rate_exclusive;
+>  	}
+> =20
+>  	/* Interrupt */
+> =20
+>  	irq =3D platform_get_irq(platform_dev, 0);
+> -	if (irq < 0)
+> -		return -ENXIO;
+> +	if (irq < 0) {
+> +		dev_err(dev, "failed to get interrupt\n");
+> +		ret =3D -ENXIO;
+> +		goto error_clk_rate_exclusive;
+> +	}
+> =20
+>  	ret =3D devm_request_irq(dev, irq, sun6i_csi_isr, 0, SUN6I_CSI_NAME,
+>  			       csi_dev);
+>  	if (ret) {
+>  		dev_err(dev, "failed to request interrupt\n");
+> -		return ret;
+> +		goto error_clk_rate_exclusive;
+>  	}
+> =20
+>  	return 0;
+> +
+> +error_clk_rate_exclusive:
+> +	clk_rate_exclusive_put(csi_dev->clk_mod);
+> +
+> +	return ret;
+> +}
+> +
+> +static void sun6i_csi_resources_cleanup(struct sun6i_csi_device *csi_dev)
+> +{
+> +	clk_rate_exclusive_put(csi_dev->clk_mod);
+>  }
 
-With the !spin_trylock() -> return you are saying if something
-concurrent happens, drop it. This doesn't sound correct.
+If you're going to have that function anyway, let's use
+devm_add_action_or_reset, it'll simplify the rest of the patch.
 
-Marc
+Maxime
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---jlbxuizszf7lp7c6
+--x7fslyfuomspr4ek
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIA1CkACgkQrX5LkNig
-010zTgf/X9PxwtwpT8fCXmMEHsIdtSANGvXX8JQ6l7gzK39LKaAwSqgkD0k3Smp5
-8emrRja1pmf9sojVGyUpa/DcBCjR3CxblvyaWnsNbqGxRUB5uHXJsK455duJfGWg
-VNdCCHlP2b2Slb0VjZ0g5CXA/DPQElxhHmN3AHvizfflW/RDMV79O2RNqRL9WZBx
-x9wtHzjG6xH5XlO3ULplSD5TXH2GdU+7GYToR7qq7fD+XAarKTIAvdelCcITbfCY
-Wu3XmvtlukCqEwnB1ijF0L5mKGdODON78ykkvqjg3tFm7Rw+yrGQrT22ZiTQe9SN
-T7UFVAOKU7WcLXpa9jrDXJtxSHWjHw==
-=TDl5
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgDjAwAKCRDj7w1vZxhR
+xSxCAP4jyX8jqgvGvO+h+wEMwjSChH7MxCJCEPSEVX9yx3zNIQD/ZClJPRAMyei5
+KPjrNG4XdUDp1/dtKp57fzt1Uh1v1Qg=
+=TZbY
 -----END PGP SIGNATURE-----
 
---jlbxuizszf7lp7c6--
+--x7fslyfuomspr4ek--
