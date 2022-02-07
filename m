@@ -2,652 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E6CC35270
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C0BC35274
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:37:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244586AbiBGGgb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:36:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60228 "EHLO
+        id S230121AbiBGGgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:36:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232859AbiBGGaA (ORCPT
+        with ESMTP id S238419AbiBGGWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:30:00 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BBF1C043185;
-        Sun,  6 Feb 2022 22:29:59 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id v5-20020a17090a4ec500b001b8b702df57so2085797pjl.2;
-        Sun, 06 Feb 2022 22:29:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=xW8dsqVCTbHpGN1HtDYyawjXyg1vMQtfluuNijuegrM=;
-        b=Ln+wySWTGie2chmEdVdFeSm5V+roiWuVua4yj6Fx0FspGnTNklbAckS+FZ/nA8Tyrn
-         zx+wHFSK+0pqYiV3UZC7xLOiiEXAoSif63Ge1ZX9VwHtPxdZBn4JuVYwB8RjQ03bmXnH
-         xURZlWb3auZdHwpzFRPJN8B7RLhxlHQIHSDQSXDwMDTl9LFo5zcP8OxgMw+9zFTnrSQH
-         PHNxNPQxCMR/AenHMyyPoSi/4Q3/RVoYh3esOrMn5p2eutX62b9l/R4pxF+5L60akcNO
-         ivcjeNQm1V1WNFjYBaG27MlF8zWu+j07U6ByBptc5Q0WY+xkSEcMT/cjfP4HHCxHFkU1
-         ak5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=xW8dsqVCTbHpGN1HtDYyawjXyg1vMQtfluuNijuegrM=;
-        b=srdq73Y3d9fRLEvqmoixGZVQwwiMjQxVXbCIXx38oM6paQG2IAIEgjPSrgHVQgN2tC
-         kfonI/oJxN0MZcYW9Qn3bQerixA3LIh4zQirG69jWevKHOTNCi86dpVlri6OlWXylRGE
-         hRIdxYc3wJseXNsuli7rnIgv/7zEl+Agra4LVBSRSzaGquupDNg0QynY2jQX39c2NN4F
-         i9k2xIaGU7S+WpueqHKvJI99SmdpBTpRbIHYvXGE1qKHgRQFmSUycDHJhhfcvMzSWXxj
-         yrNLanT4idM+COtRqjR6Gq+7zDT2PFch0QJuiJR14izavmvDoK9B71kzFDmXrGPfdOyx
-         REZw==
-X-Gm-Message-State: AOAM533iX21LBnHy3FI6qYrw296IthCBmu7mmsDo4RpN1ujgIKOD1e3q
-        SV/GZBAeAIBk8MEyT0VZAcQ=
-X-Google-Smtp-Source: ABdhPJz27O/RyWC9nr+0C4VhQPIiS8l/mI+3WtxMxmN+k5kAoq8FArYtdgmySTTQn6/nbf6EaKTjcQ==
-X-Received: by 2002:a17:902:9a06:: with SMTP id v6mr14708423plp.109.1644215398342;
-        Sun, 06 Feb 2022 22:29:58 -0800 (PST)
-Received: from scdiu3.sunplus.com ([113.196.136.192])
-        by smtp.googlemail.com with ESMTPSA id j8sm3994386pjc.11.2022.02.06.22.29.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Feb 2022 22:29:57 -0800 (PST)
-From:   Tony Huang <tonyhuang.sunplus@gmail.com>
-To:     robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, derek.kiernan@xilinx.com,
-        dragan.cvetic@xilinx.com, arnd@arndb.de,
-        gregkh@linuxfoundation.org, tony.huang@sunplus.com,
-        wells.lu@sunplus.com
-Cc:     Tony Huang <tonyhuang.sunplus@gmail.com>
-Subject: [PATCH v8 2/2] misc: Add iop driver for Sunplus SP7021
-Date:   Mon,  7 Feb 2022 14:30:06 +0800
-Message-Id: <b96f039dc071b1d32bb52fa283fd8afc6d3349cc.1644212476.git.tonyhuang.sunplus@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
-References: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
-In-Reply-To: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
-References: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
+        Mon, 7 Feb 2022 01:22:39 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2056.outbound.protection.outlook.com [40.107.236.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B683C043181
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:22:38 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TgZfhUkLTXgaYE8591THaQiGtE/nTvmJ8/wQ/FGyBUhRNiLnGLEb86DWW9CgU5LbTkgQ5SublTEtvYSEwwjjCnJ74HC4d9Cp0RcnkSSBvH0M+tkBACBdXVZYhZMgwgD0PRwh4446WiWkvF4POaGN8FSE4GOHhH1kn+p6m/pMuybJjdn1yIWLgZY2G9f6ua7uEhkxftVoZ48qkErrkCcRlbfIht0pJqngVFiKeMc6s3xV58EQNcRq2DfhSdYl76XsU5q0FYDrSbJxP7Lcjr4tt3kN74Oy8BHYNK47OBR8BAqnD3b+3s4HQwUcUa4tAE4zorncSKfS2LJ6E7B85EM/KQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VqmeqmDK9WNONzndgAGAbct149ZFM+Hb4kqc64wfHqs=;
+ b=Sf2DfdlYwp3AWcyb5Pn2l57wjZ3ZGlK9gKcygIGbyXHPM1pNnnMUszCAecKuBigF+Mw4SkuS4r0k/vieZkIvf6ZQSU7IdzB56al5dRuUVJkD+hxYAjaBjAqJR7bWFWAGyWpYzHEREXNlBbDfBTW+eRZxi4vqOLvMEqFpSnkPs0NBsg9Pqfs2qasEeNmvMzN4BXki0W54e7wRuf3N5PKa9NZEPM+571cLIw9gwG0zla+OXy54dy2BrccYCFhhqqnLZ0dquAVUVomlhTAHTKAVmGMf3Bqc8+O8lCTGGUQzdFgVXho2/N01cpV4I/J4fT71ahkmvb45i5K03SsXMu+yxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VqmeqmDK9WNONzndgAGAbct149ZFM+Hb4kqc64wfHqs=;
+ b=FPbN0QA4zUB4Fa99nhxNdAVPgFCWUs0tKB5cnURHl3l35F7E0rs/h9AlUiSbYNOnB4RdL5rPCxbtzZv4WJNDpJ9CvRX6DKeZJCA7wXCdoTZKlqq/nVKlIU4xfCe4iDAgPhmVsNAlFJ4OIZ+sboetqxDeoDkus62ot27EENadZ4oWWhkSThSvQ0MPeX516SXxW38WRdH1tp5gly3yWQyID7DD6H90YyLIEAYlCImh6IVLP1E6Z6WQXV26YNENxTtLoEMxVhqNY3xjFwqhXs+6vBVvWiAD384rLjal/KHtYdq6GZZaPkS+vkXtoc18id4muU3k+jnvaH37KmrRtb2iPQ==
+Received: from BN6PR18CA0008.namprd18.prod.outlook.com (2603:10b6:404:121::18)
+ by BN8PR12MB3122.namprd12.prod.outlook.com (2603:10b6:408:44::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.11; Mon, 7 Feb
+ 2022 06:22:36 +0000
+Received: from BN8NAM11FT068.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:121:cafe::ba) by BN6PR18CA0008.outlook.office365.com
+ (2603:10b6:404:121::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18 via Frontend
+ Transport; Mon, 7 Feb 2022 06:22:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ BN8NAM11FT068.mail.protection.outlook.com (10.13.177.69) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4951.12 via Frontend Transport; Mon, 7 Feb 2022 06:22:36 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 7 Feb
+ 2022 06:22:35 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Sun, 6 Feb 2022
+ 22:22:34 -0800
+Received: from sandstorm.attlocal.net (10.127.8.11) by mail.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server id 15.2.986.9 via Frontend
+ Transport; Sun, 6 Feb 2022 22:22:33 -0800
+From:   John Hubbard <jhubbard@nvidia.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>
+CC:     David Hildenbrand <david@redhat.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH v5 3/5] mm/gup: remove unused pin_user_pages_locked()
+Date:   Sun, 6 Feb 2022 22:22:11 -0800
+Message-ID: <20220207062213.235127-4-jhubbard@nvidia.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207062213.235127-1-jhubbard@nvidia.com>
+References: <20220207062213.235127-1-jhubbard@nvidia.com>
+MIME-Version: 1.0
+X-NVConfidentiality: public
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3091bbf4-9ccd-49f3-66a1-08d9ea023bc1
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3122:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB3122A6A63B239840958EB84FA82C9@BN8PR12MB3122.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:972;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tmAyf3gT201eeVSfqvArpAzTLu7Cpx8Mn+QssOe1xn7s2bxtL3LhWBZkesaI3gktH1Q5cqW9SRfS5mYpznUZgvvzqCGx1HAKuOGiFSCNsO4i12TIhaabvaurw0QPpAm8MB149qeBlvqP4HkJWyePND1hakWT+w1eARgQuWBcm7RuzDn90UCUOcipXepcYRN9i66cu+3fASYq00AkrzWmaq3B0r85gD1rB4O7hVrY1wqcMSSv+Oe5vLxsHS+BeYxMd6xwcQNqgmOxxKTw3oMWDJuXUURuh6r/KBMhYPIFKoEH9T9ffa5zr77yx23dPCme67Un/bwBrJzL7Vk13rfDCT23uZR6qr1wY5v4l0i9XbyUqM5gtAWxtDS9MBDUkFhPNG+fO9FvpUcSKowRl+qXZISNafgtKtw776LjhiFXm7G1ZSVohPSQv0UEpL3o9Y4buW3vcWkVNZpVzqztCFSeLumDOo1QdZBMNK8BEhRVZpQsEFc9awctONr/qM8a7Gnsgb9ALgKHpjgQ6bEcLaYFzikCSxWgcp/+mnZbQj5hbnXHL6x2Zc47Uwm+4a5zyrIlCly7ARuoSsTdszghazVlju3pTpYwC08YMh1qI7BhjvrEPpUzloIoi3O5GqGYH5HtrxpQ8H5ahcrpO5AzNI3MWOW3Ghqlnc9ojzM8y74jJdrk7qHGGc0hQR/+0n4dEV4zl2JSfxXyVEY175XnMhW9QQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(7416002)(186003)(4326008)(110136005)(54906003)(5660300002)(2616005)(36756003)(36860700001)(2906002)(70586007)(26005)(356005)(1076003)(70206006)(83380400001)(8676002)(81166007)(8936002)(508600001)(336012)(316002)(40460700003)(86362001)(426003)(82310400004)(47076005)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 06:22:36.1438
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3091bbf4-9ccd-49f3-66a1-08d9ea023bc1
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT068.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3122
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-IOP(8051) embedded inside SP7021 which is used as
-Processor for I/O control, monitor RTC interrupt and
-cooperation with CPU & PMC in power management purpose.
-The IOP core is DQ8051, so also named IOP8051,
-it supports dedicated JTAG debug pins which share with SP7021.
-In standby mode operation, the power spec reach 400uA.
+This routine was used for a short while, but then the calling code was
+refactored and the only caller was removed.
 
-Signed-off-by: Tony Huang <tonyhuang.sunplus@gmail.com>
+Reviewed-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
-Changes in v8:
- - Addressed comments from Greg KH.
+ include/linux/mm.h |  2 --
+ mm/gup.c           | 29 -----------------------------
+ 2 files changed, 31 deletions(-)
 
- Documentation/ABI/testing/sysfs-platform-soc@B |  28 ++
- MAINTAINERS                                    |   2 +
- drivers/misc/Kconfig                           |  20 ++
- drivers/misc/Makefile                          |   1 +
- drivers/misc/sunplus_iop.c                     | 463 +++++++++++++++++++++++++
- 5 files changed, 514 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-platform-soc@B
- create mode 100644 drivers/misc/sunplus_iop.c
-
-diff --git a/Documentation/ABI/testing/sysfs-platform-soc@B b/Documentation/ABI/testing/sysfs-platform-soc@B
-new file mode 100644
-index 0000000..d26d6f5
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-platform-soc@B
-@@ -0,0 +1,28 @@
-+What:		/sys/devices/platform/soc@B/9c000400.iop/sp_iop_mailbox
-+Date:		January 2022
-+KernelVersion:	5.16
-+Contact:	Tony Huang <tonyhuang.sunplus@gmail.com>
-+Description:
-+		Show IOP's mailbox0 register data.
-+		Format: %x
-+
-+What:		/sys/devices/platform/soc@B/9c000400.iop/sp_iop_mode
-+Date:		January 2022
-+KernelVersion:	5.16
-+Contact:	Tony Huang <tonyhuang.sunplus@gmail.com>
-+Description:
-+		Read-Write.
-+
-+		Write this file.
-+		Operation mode of IOP is switched to standby mode by writing
-+		"1" to sysfs.
-+		Operation mode of IOP is switched to normal mode by writing
-+		"0" to sysfs.
-+		Writing of other values is invalid.
-+
-+		Read this file.
-+		Show operation mode of IOP. "0" is normal mode. "1" is standby
-+		mode.
-+		Format: %x
-+
-+
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6f336c9..cbc8dff 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18245,7 +18245,9 @@ F:	drivers/net/ethernet/dlink/sundance.c
- SUNPLUS IOP DRIVER
- M:	Tony Huang <tonyhuang.sunplus@gmail.com>
- S:	Maintained
-+F:	Documentation/ABI/testing/sysfs-platform-soc@B
- F:	Documentation/devicetree/bindings/misc/sunplu-iop.yaml
-+F:	drivers/misc/sunplus_iop.c
- 
- SUPERH
- M:	Yoshinori Sato <ysato@users.sourceforge.jp>
-diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 0f5a49f..c1d790e 100644
---- a/drivers/misc/Kconfig
-+++ b/drivers/misc/Kconfig
-@@ -470,6 +470,26 @@ config HISI_HIKEY_USB
- 	  switching between the dual-role USB-C port and the USB-A host ports
- 	  using only one USB controller.
- 
-+config SUNPLUS_IOP
-+	tristate "Sunplus IOP support"
-+	default ARCH_SUNPLUS
-+	help
-+	  Sunplus I/O processor (8051) driver.
-+	  Processor for I/O control, monitor RTC interrupt
-+	  and cooperation with CPU&PMC in power management.
-+
-+	  The IOP core is DQ8051, so also named IOP8051.
-+	  Need Install DQ8051, The DQ8051 bin file generated by keil C.
-+	  We will provide users with 8051 normal and standby source code.
-+	  Path: https://sunplus.atlassian.net/wiki/spaces/doc/pages/610172933/
-+	  How+to+use+I+O+processor+8051+of+SP7021#5.-Write-C-or-assembly-source-files-for-IOP
-+	  Users can follow the operation steps to generate normal.bin and standby.bin.
-+	  Path: https://sunplus.atlassian.net/wiki/spaces/doc/pages/466190338/26.+IOP8051
-+	  26.5?How To Create 8051 bin file
-+
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called sunplus_iop.
-+
- source "drivers/misc/c2port/Kconfig"
- source "drivers/misc/eeprom/Kconfig"
- source "drivers/misc/cb710/Kconfig"
-diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index a086197..eafeab6 100644
---- a/drivers/misc/Makefile
-+++ b/drivers/misc/Makefile
-@@ -52,6 +52,7 @@ obj-$(CONFIG_DW_XDATA_PCIE)	+= dw-xdata-pcie.o
- obj-$(CONFIG_PCI_ENDPOINT_TEST)	+= pci_endpoint_test.o
- obj-$(CONFIG_OCXL)		+= ocxl/
- obj-$(CONFIG_BCM_VK)		+= bcm-vk/
-+obj-$(CONFIG_SUNPLUS_IOP)	+= sunplus_iop.o
- obj-y				+= cardreader/
- obj-$(CONFIG_PVPANIC)   	+= pvpanic/
- obj-$(CONFIG_HABANA_AI)		+= habanalabs/
-diff --git a/drivers/misc/sunplus_iop.c b/drivers/misc/sunplus_iop.c
-new file mode 100644
-index 0000000..6ef2de7
---- /dev/null
-+++ b/drivers/misc/sunplus_iop.c
-@@ -0,0 +1,463 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * The IOP driver for Sunplus SP7021
-+ *
-+ * Copyright (C) 2021 Sunplus Technology Inc.
-+ *
-+ * All Rights Reserved.
-+ */
-+#include <linux/delay.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/firmware.h>
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
-+#include <linux/miscdevice.h>
-+#include <linux/of_platform.h>
-+#include <linux/of_address.h>
-+#include <linux/of_gpio.h>
-+
-+enum IOP_Status_e {
-+	IOP_SUCCESS,		/* successful */
-+	IOP_ERR_IOP_BUSY,	/* IOP is busy */
-+};
-+
-+/* moon0 register offset */
-+#define IOP_CLKEN0	0x04
-+#define IOP_RESET0	0x54
-+
-+/* IOP register offset */
-+#define IOP_CONTROL	0x00
-+#define IOP_DATA0	0x20
-+#define IOP_DATA1	0x24
-+#define IOP_DATA2	0x28
-+#define IOP_DATA3	0x2c
-+#define IOP_DATA4	0x30
-+#define IOP_DATA5	0x34
-+#define IOP_DATA6	0x38
-+#define IOP_DATA7	0x3c
-+#define IOP_DATA8	0x40
-+#define IOP_DATA9	0x44
-+#define IOP_DATA10	0x48
-+#define IOP_DATA11	0x4c
-+#define IOP_BASE_ADR_L	0x50
-+#define IOP_BASE_ADR_H	0x54
-+
-+/* PMC register offset */
-+#define IOP_PMC_TIMER		0x00
-+#define IOP_PMC_CTRL		0x04
-+#define IOP_XTAL27M_PASSWORD_I	0x08
-+#define IOP_XTAL27M_PASSWORD_II	0x0c
-+#define IOP_XTAL32K_PASSWORD_I	0x10
-+#define IOP_XTAL32K_PASSWORD_II	0x14
-+#define IOP_CLK27M_PASSWORD_I	0x18
-+#define IOP_CLK27M_PASSWORD_II	0x1c
-+#define IOP_PMC_TIMER2		0x20
-+
-+#define NORMAL_CODE_MAX_SIZE 0X1000	/* Max size of normal.bin that can be received */
-+#define STANDBY_CODE_MAX_SIZE 0x4000	/* Max size of standby.bin that can be received */
-+struct sp_iop {
-+	struct miscdevice dev;
-+	struct mutex write_lock;	/* avoid parallel access */
-+	void __iomem *iop_regs;
-+	void __iomem *pmc_regs;
-+	void __iomem *moon0_regs;
-+	int irq;
-+	int gpio_wakeup;
-+	unsigned char iop_normal_code[NORMAL_CODE_MAX_SIZE];
-+	unsigned char iop_standby_code[STANDBY_CODE_MAX_SIZE];
-+	resource_size_t iop_mem_start;
-+	resource_size_t iop_mem_size;
-+	unsigned char bin_code_mode;
-+};
-+
-+static void sp_iop_normal_mode(struct sp_iop *iop)
-+{
-+	void __iomem *iop_kernel_base;
-+	unsigned int reg;
-+
-+	iop_kernel_base = ioremap(iop->iop_mem_start, NORMAL_CODE_MAX_SIZE);
-+	memset(iop_kernel_base, 0, NORMAL_CODE_MAX_SIZE);
-+	memcpy(iop_kernel_base, iop->iop_normal_code, NORMAL_CODE_MAX_SIZE);
-+
-+	writel(0x00100010, iop->moon0_regs + IOP_CLKEN0);
-+
-+	reg = readl(iop->iop_regs + IOP_CONTROL);
-+	reg |= 0x01;
-+	writel(reg, iop->iop_regs + IOP_CONTROL);
-+
-+	reg = readl(iop->iop_regs + IOP_CONTROL);
-+	reg &= ~(0x8000);
-+	writel(reg, iop->iop_regs + IOP_CONTROL);
-+
-+	reg = readl(iop->iop_regs + IOP_CONTROL);
-+	reg |= 0x0200;// disable watchdog event reset IOP
-+	writel(reg, iop->iop_regs + IOP_CONTROL);
-+
-+	reg = (iop->iop_mem_start & 0xFFFF);
-+	writel(reg, iop->iop_regs + IOP_BASE_ADR_L);
-+	reg	= (iop->iop_mem_start >> 16);
-+	writel(reg, iop->iop_regs + IOP_BASE_ADR_H);
-+
-+	reg = readl(iop->iop_regs + IOP_CONTROL);
-+	reg &= ~(0x01);
-+	writel(reg, iop->iop_regs + IOP_CONTROL);
-+	iop->bin_code_mode = 0;
-+}
-+
-+static void sp_iop_standby_mode(struct sp_iop *iop)
-+{
-+	void __iomem *iop_kernel_base;
-+	unsigned long reg;
-+
-+	iop_kernel_base = ioremap(iop->iop_mem_start, STANDBY_CODE_MAX_SIZE);
-+	memset(iop_kernel_base, 0, STANDBY_CODE_MAX_SIZE);
-+	memcpy(iop_kernel_base, iop->iop_standby_code, STANDBY_CODE_MAX_SIZE);
-+
-+	writel(0x00100010, iop->moon0_regs + IOP_CLKEN0);
-+
-+	reg = readl(iop->iop_regs + IOP_CONTROL);
-+	reg |= 0x01;
-+	writel(reg, iop->iop_regs + IOP_CONTROL);
-+
-+	reg = readl(iop->iop_regs + IOP_CONTROL);
-+	reg &= ~(0x8000);
-+	writel(reg, iop->iop_regs + IOP_CONTROL);
-+
-+	reg = readl(iop->iop_regs + IOP_CONTROL);
-+	reg |= 0x0200;// disable watchdog event reset IOP
-+	writel(reg, iop->iop_regs + IOP_CONTROL);
-+
-+	reg = (iop->iop_mem_start & 0xFFFF);
-+	writel(reg, iop->iop_regs + IOP_BASE_ADR_L);
-+	reg = (iop->iop_mem_start >> 16);
-+	writel(reg, iop->iop_regs + IOP_BASE_ADR_H);
-+
-+	reg = readl(iop->iop_regs + IOP_CONTROL);
-+	reg &= ~(0x01);
-+	writel(reg, iop->iop_regs + IOP_CONTROL);
-+	iop->bin_code_mode = 1;
-+}
-+
-+/* 8051 informs linux kerenl. 8051 has been switched to standby.bin code. */
-+#define IOP_READY	0x0004
-+#define RISC_READY	0x0008
-+
-+/* System linux kernel tells 8051 which  gpio pin to wake-up through. */
-+#define WAKEUP_PIN	0xFE02
-+
-+/* System linux kernel tells 8051 to execute S1 or S3 mode. */
-+#define S1	0x5331
-+#define S3	0x5333
-+
-+static int sp_iop_s3mode(struct device *dev, struct sp_iop *iop)
-+{
-+	unsigned int reg;
-+	int ret, value;
-+
-+	/* PMC set */
-+	writel(0x00010001, iop->pmc_regs + IOP_PMC_TIMER);
-+	reg = readl(iop->pmc_regs + IOP_PMC_CTRL);
-+	/* disable system reset PMC, enalbe power down IOP Domain, enable gating clock 27Mhz */
-+	reg |= 0x23;
-+	writel(reg, iop->pmc_regs + IOP_PMC_CTRL);
-+
-+	writel(0x55aa00ff, iop->pmc_regs + IOP_XTAL27M_PASSWORD_I);
-+	writel(0x00ff55aa, iop->pmc_regs + IOP_XTAL27M_PASSWORD_II);
-+	writel(0xaa00ff55, iop->pmc_regs + IOP_XTAL32K_PASSWORD_I);
-+	writel(0xff55aa00, iop->pmc_regs + IOP_XTAL32K_PASSWORD_II);
-+	writel(0xaaff0055, iop->pmc_regs + IOP_CLK27M_PASSWORD_I);
-+	writel(0x5500aaff, iop->pmc_regs + IOP_CLK27M_PASSWORD_II);
-+	writel(0x01000100, iop->pmc_regs + IOP_PMC_TIMER2);
-+
-+	/* IOP Hardware IP reset */
-+	reg = readl(iop->moon0_regs + IOP_RESET0);
-+	reg |= 0x10;
-+	writel(reg, (iop->moon0_regs + IOP_RESET0));
-+	reg &= ~(0x10);
-+	writel(reg, (iop->moon0_regs + IOP_RESET0));
-+
-+	writel(0x00ff0085, (iop->moon0_regs + 32 * 4 * 1 + 4 * 1));
-+
-+	reg = readl(iop->moon0_regs + 32 * 4 * 1 + 4 * 2);
-+	reg |= 0x08000800;
-+	writel(reg, (iop->moon0_regs + 32 * 4 * 1 + 4 * 2));
-+
-+	writel(WAKEUP_PIN, iop->iop_regs + IOP_DATA0);
-+	writel(iop->gpio_wakeup, iop->iop_regs + IOP_DATA1);
-+
-+	ret = readl_poll_timeout(iop->iop_regs + IOP_DATA2, value,
-+				 (value & IOP_READY) == IOP_READY, 1000, 10000);
-+	if (ret) {
-+		dev_err(dev, "timed out\n");
-+		return ret;
-+	}
-+
-+	reg = RISC_READY;
-+	writel(reg, iop->iop_regs + IOP_DATA2);
-+	reg = 0x0000;
-+	writel(reg, iop->iop_regs + IOP_DATA5);
-+	reg = 0x0060;
-+	writel(reg, iop->iop_regs + IOP_DATA6);
-+
-+	ret = readl_poll_timeout(iop->iop_regs + IOP_DATA7, value,
-+				 value == 0xaaaa, 1000, 10000);
-+	if (ret) {
-+		dev_err(dev, "timed out\n");
-+		return ret;
-+	}
-+
-+	/* 8051 bin file call Ultra low function. */
-+	writel(0xdd, iop->iop_regs + IOP_DATA1);
-+	/*
-+	 * When the execution is here, the system linux kernel
-+	 * is about to be powered off
-+	 * The purpose of mdelay(10): Do not let the system linux
-+	 * kernel continue to run other programs.
-+	 */
-+	mdelay(10);
-+	return 0;
-+}
-+
-+static int sp_iop_s1mode(struct device *dev, struct sp_iop *iop)
-+{
-+	int ret, value;
-+
-+	ret = readl_poll_timeout(iop->iop_regs + IOP_DATA2, value,
-+				 (value & IOP_READY) == IOP_READY, 1000, 10000);
-+	if (ret) {
-+		dev_err(dev, "timed out\n");
-+		return ret;
-+	}
-+
-+	writel(RISC_READY, iop->iop_regs + IOP_DATA2);
-+	writel(0x0000, iop->iop_regs + IOP_DATA5);
-+	writel(0x0060, iop->iop_regs + IOP_DATA6);
-+
-+	ret = readl_poll_timeout(iop->iop_regs + IOP_DATA7, value,
-+				 value == 0xaaaa, 1000, 10000);
-+	if (ret) {
-+		dev_err(dev, "timed out\n");
-+		return ret;
-+	}
-+
-+	/* 8051 bin file call S1_mode function. */
-+	writel(0xee, iop->iop_regs + IOP_DATA1);
-+	/*
-+	 * When the execution is here, the system linux kernel
-+	 * is about to be powered off
-+	 * The purpose of mdelay(10): Do not let the system linux
-+	 * kernel continue to run other programs.
-+	 */
-+	mdelay(10);
-+	return 0;
-+}
-+
-+static ssize_t mailbox_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct sp_iop *iop = dev_get_drvdata(dev);
-+	unsigned int mailbox;
-+
-+	mailbox = readl(iop->iop_regs + IOP_DATA0);
-+	return sysfs_emit(buf, "%x\n", mailbox);
-+}
-+
-+static DEVICE_ATTR_RO(mailbox);
-+
-+static ssize_t mode_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct sp_iop *iop = dev_get_drvdata(dev);
-+
-+	return sysfs_emit(buf, "%x\n", iop->bin_code_mode);
-+}
-+
-+static ssize_t mode_store(struct device *dev, struct device_attribute *attr,
-+			  const char *buf, size_t count)
-+{
-+	struct sp_iop *iop = dev_get_drvdata(dev);
-+
-+	if (sysfs_streq(buf, "0"))
-+		sp_iop_normal_mode(iop);
-+	else if (sysfs_streq(buf, "1"))
-+		sp_iop_standby_mode(iop);
-+	else
-+		return -EINVAL;
-+	return count;
-+}
-+
-+static DEVICE_ATTR_RW(mode);
-+
-+static struct attribute *sp_iop_attrs[] = {
-+	&dev_attr_mailbox.attr,
-+	&dev_attr_mode.attr,
-+	NULL,
-+};
-+
-+ATTRIBUTE_GROUPS(sp_iop);
-+
-+static int  sp_iop_get_normal_code(struct device *dev, struct sp_iop *iop)
-+{
-+	const struct firmware *fw;
-+	static const char file[] = "normal.bin";
-+	unsigned int err, i;
-+
-+	err = request_firmware(&fw, file, dev);
-+	if (err) {
-+		dev_err(dev, "get bin file error\n");
-+		return err;
-+	}
-+
-+	for (i = 0; i < NORMAL_CODE_MAX_SIZE; i++) {
-+		char temp;
-+
-+		temp = fw->data[i];
-+		iop->iop_normal_code[i] = temp;
-+	}
-+	release_firmware(fw);
-+	return err;
-+}
-+
-+static int  sp_iop_get_standby_code(struct device *dev, struct sp_iop *iop)
-+{
-+	const struct firmware *fw;
-+	static const char file[] = "standby.bin";
-+	unsigned int err, i;
-+
-+	err = request_firmware(&fw, file, dev);
-+	if (err) {
-+		dev_err(dev, "get bin file error\n");
-+		return err;
-+	}
-+
-+	for (i = 0; i < STANDBY_CODE_MAX_SIZE; i++) {
-+		char temp;
-+
-+		temp = fw->data[i];
-+		iop->iop_standby_code[i] = temp;
-+	}
-+	release_firmware(fw);
-+	return err;
-+}
-+
-+static int sp_iop_get_resources(struct platform_device *pdev, struct sp_iop *p_sp_iop_info)
-+{
-+	struct resource *r;
-+
-+	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "iop");
-+	p_sp_iop_info->iop_regs = devm_ioremap_resource(&pdev->dev, r);
-+	if (IS_ERR(p_sp_iop_info->iop_regs)) {
-+		dev_err(&pdev->dev, "ioremap fail\n");
-+		return PTR_ERR(p_sp_iop_info->iop_regs);
-+	}
-+
-+	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "iop_pmc");
-+	p_sp_iop_info->pmc_regs = devm_ioremap_resource(&pdev->dev, r);
-+	if (IS_ERR(p_sp_iop_info->pmc_regs)) {
-+		dev_err(&pdev->dev, "ioremap fail\n");
-+		return PTR_ERR(p_sp_iop_info->pmc_regs);
-+	}
-+
-+	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "moon0");
-+	p_sp_iop_info->moon0_regs = devm_ioremap_resource(&pdev->dev, r);
-+	if (IS_ERR(p_sp_iop_info->moon0_regs)) {
-+		dev_err(&pdev->dev, "ioremap fail\n");
-+		return PTR_ERR(p_sp_iop_info->moon0_regs);
-+	}
-+	return IOP_SUCCESS;
-+}
-+
-+static int sp_iop_platform_driver_probe(struct platform_device *pdev)
-+{
-+	int ret = -ENXIO;
-+	int rc;
-+	struct sp_iop *iop;
-+	struct device_node *memnp;
-+	struct resource mem_res;
-+
-+	iop = devm_kzalloc(&pdev->dev, sizeof(struct sp_iop), GFP_KERNEL);
-+	if (!iop) {
-+		ret	= -ENOMEM;
-+		goto fail_kmalloc;
-+	}
-+	/* init */
-+	mutex_init(&iop->write_lock);
-+	ret = sp_iop_get_resources(pdev, iop);
-+
-+	// Get reserve address
-+	memnp = of_parse_phandle(pdev->dev.of_node, "memory-region", 0);
-+	if (!memnp) {
-+		dev_err(&pdev->dev, "no memory-region node\n");
-+		return -EINVAL;
-+	}
-+
-+	rc = of_address_to_resource(memnp, 0, &mem_res);
-+	of_node_put(memnp);
-+	if (rc) {
-+		dev_err(&pdev->dev, "failed to translate memory-region to a resource\n");
-+		return -EINVAL;
-+	}
-+
-+	iop->iop_mem_start = mem_res.start;
-+	iop->iop_mem_size = resource_size(&mem_res);
-+
-+	ret = sp_iop_get_normal_code(&pdev->dev, iop);
-+	if (ret != 0) {
-+		dev_err(&pdev->dev, "get normal code err=%d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = sp_iop_get_standby_code(&pdev->dev, iop);
-+	if (ret != 0) {
-+		dev_err(&pdev->dev, "get standby code err=%d\n", ret);
-+		return ret;
-+	}
-+
-+	sp_iop_normal_mode(iop);
-+	platform_set_drvdata(pdev, iop);
-+	iop->gpio_wakeup = of_get_named_gpio(pdev->dev.of_node, "iop-wakeup", 0);
-+	return 0;
-+
-+fail_kmalloc:
-+	return ret;
-+}
-+
-+static void sp_iop_platform_driver_shutdown(struct platform_device *pdev)
-+{
-+	struct sp_iop *iop = platform_get_drvdata(pdev);
-+	unsigned int ret, value;
-+
-+	value = readl(iop->iop_regs + IOP_DATA11);
-+	sp_iop_standby_mode(iop);
-+
-+	ret = readl_poll_timeout(iop->iop_regs + IOP_DATA0, value,
-+				 value == 0x2222, 1000, 100000);
-+	if (ret)
-+		dev_warn(&pdev->dev, "timed out\n");
-+
-+	if (value == S1)
-+		sp_iop_s1mode(&pdev->dev, iop);
-+	else
-+		sp_iop_s3mode(&pdev->dev, iop);
-+}
-+
-+static const struct of_device_id sp_iop_of_match[] = {
-+	{ .compatible = "sunplus,sp7021-iop" },
-+	{ /* sentinel */ },
-+};
-+
-+MODULE_DEVICE_TABLE(of, sp_iop_of_match);
-+
-+static struct platform_driver sp_iop_platform_driver = {
-+	.probe		= sp_iop_platform_driver_probe,
-+	.shutdown	= sp_iop_platform_driver_shutdown,
-+	.driver = {
-+		.name	= "sunplus,sp7021-iop",
-+		.of_match_table = sp_iop_of_match,
-+		.dev_groups = sp_iop_groups,
-+	}
-+};
-+
-+module_platform_driver(sp_iop_platform_driver);
-+
-+MODULE_AUTHOR("Tony Huang <tonyhuang.sunplus@gmail.com>");
-+MODULE_DESCRIPTION("Sunplus IOP Driver");
-+MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 213cc569b192..80c540c17d83 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1918,8 +1918,6 @@ long pin_user_pages(unsigned long start, unsigned long nr_pages,
+ 		    struct vm_area_struct **vmas);
+ long get_user_pages_locked(unsigned long start, unsigned long nr_pages,
+ 		    unsigned int gup_flags, struct page **pages, int *locked);
+-long pin_user_pages_locked(unsigned long start, unsigned long nr_pages,
+-		    unsigned int gup_flags, struct page **pages, int *locked);
+ long get_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
+ 		    struct page **pages, unsigned int gup_flags);
+ long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
+diff --git a/mm/gup.c b/mm/gup.c
+index 2df0d0103c43..6664dfa7a38f 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -3146,32 +3146,3 @@ long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
+ 	return get_user_pages_unlocked(start, nr_pages, pages, gup_flags);
+ }
+ EXPORT_SYMBOL(pin_user_pages_unlocked);
+-
+-/*
+- * pin_user_pages_locked() is the FOLL_PIN variant of get_user_pages_locked().
+- * Behavior is the same, except that this one sets FOLL_PIN and rejects
+- * FOLL_GET.
+- */
+-long pin_user_pages_locked(unsigned long start, unsigned long nr_pages,
+-			   unsigned int gup_flags, struct page **pages,
+-			   int *locked)
+-{
+-	/*
+-	 * FIXME: Current FOLL_LONGTERM behavior is incompatible with
+-	 * FAULT_FLAG_ALLOW_RETRY because of the FS DAX check requirement on
+-	 * vmas.  As there are no users of this flag in this call we simply
+-	 * disallow this option for now.
+-	 */
+-	if (WARN_ON_ONCE(gup_flags & FOLL_LONGTERM))
+-		return -EINVAL;
+-
+-	/* FOLL_GET and FOLL_PIN are mutually exclusive. */
+-	if (WARN_ON_ONCE(gup_flags & FOLL_GET))
+-		return -EINVAL;
+-
+-	gup_flags |= FOLL_PIN;
+-	return __get_user_pages_locked(current->mm, start, nr_pages,
+-				       pages, NULL, locked,
+-				       gup_flags | FOLL_TOUCH);
+-}
+-EXPORT_SYMBOL(pin_user_pages_locked);
 -- 
-2.7.4
+2.35.1
 
