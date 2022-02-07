@@ -2,188 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E75C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 042DEC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448285AbiBGNKQ (ORCPT
+        id S1383509AbiBGNIr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:10:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
+        Mon, 7 Feb 2022 08:08:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443158AbiBGMWK (ORCPT
+        with ESMTP id S1448187AbiBGNFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:22:10 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48927C03BFEB;
-        Mon,  7 Feb 2022 04:16:50 -0800 (PST)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217BWmZS003556;
-        Mon, 7 Feb 2022 12:16:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=YR731IOIUoe6WymUzX7ZbD7U/uLM5NOtPVbMIdoTLTA=;
- b=MN1qvd8OZvYGF4YqTEDssI5L9V4o/C+w9Oj61bKRoVTDIWXkHu3jT5N9p6K+9yGFyfhh
- SCslhbzCHFpeXImPaLVtmPbAYA4bTT/wF+iquHu2ZwfP8W6TvMwzngNcwjD+0i/KhTiI
- lInCxldtYQ6KPqnlDhk4xYC79mlLoboIdVNyK1YdH8QhjVQq9Ah2/wdmes83YSUI5DHF
- 2R1q3Qooh9OVzcvPBl5NhZ/05fotExRXaS1+YhOmfp4pH4toZ8Lo159DYK89ef1wrBh2
- LIKJwXZdNbVPjrWJ4YnzrtuHlm3DY8n7ppC7n3tyn9oNd8piNrY+d8cmfgkMcLp6NugO UA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22qek8a3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 12:16:49 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217CCRe4013446;
-        Mon, 7 Feb 2022 12:16:49 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22qek89c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 12:16:49 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217C84tj005217;
-        Mon, 7 Feb 2022 12:16:47 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3e1gv937jy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 12:16:46 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217CGh3n47383036
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 12:16:43 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 91CB652054;
-        Mon,  7 Feb 2022 12:16:43 +0000 (GMT)
-Received: from p-imbrenda (unknown [9.145.11.12])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 0F7E452051;
-        Mon,  7 Feb 2022 12:16:43 +0000 (GMT)
-Date:   Mon, 7 Feb 2022 13:16:40 +0100
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     Janosch Frank <frankja@linux.ibm.com>
-Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
-Subject: Re: [PATCH v7 10/17] KVM: s390: pv: add mmu_notifier
-Message-ID: <20220207131640.198ff201@p-imbrenda>
-In-Reply-To: <28955238-1fac-ad9a-f2bb-2c6c0c2ed894@linux.ibm.com>
-References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
-        <20220204155349.63238-11-imbrenda@linux.ibm.com>
-        <28955238-1fac-ad9a-f2bb-2c6c0c2ed894@linux.ibm.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Mon, 7 Feb 2022 08:05:41 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E22FC0401C0;
+        Mon,  7 Feb 2022 05:05:40 -0800 (PST)
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 01/12] iio: buffer-dma: Get rid of outgoing queue
+Date:   Mon,  7 Feb 2022 12:59:22 +0000
+Message-Id: <20220207125933.81634-2-paul@crapouillou.net>
+In-Reply-To: <20220207125933.81634-1-paul@crapouillou.net>
+References: <20220207125933.81634-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: yZzlt7oeNMnV4J9c-sY6e4cC9uKNOq6U
-X-Proofpoint-GUID: Q-UssAWRYASupH6j_gbKeSDOSf1f0GwN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_04,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
- adultscore=0 malwarescore=0 clxscore=1015 suspectscore=0 bulkscore=0
- lowpriorityscore=0 impostorscore=0 priorityscore=1501 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070078
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 12:04:56 +0100
-Janosch Frank <frankja@linux.ibm.com> wrote:
+The buffer-dma code was using two queues, incoming and outgoing, to
+manage the state of the blocks in use.
 
-> On 2/4/22 16:53, Claudio Imbrenda wrote:
-> > Add an mmu_notifier for protected VMs. The callback function is
-> > triggered when the mm is torn down, and will attempt to convert all
-> > protected vCPUs to non-protected. This allows the mm teardown to use
-> > the destroy page UVC instead of export.
-> > 
-> > Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> > ---
-> >   arch/s390/include/asm/kvm_host.h |  2 ++
-> >   arch/s390/kvm/pv.c               | 20 ++++++++++++++++++++
-> >   2 files changed, 22 insertions(+)
-> > 
-> > diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
-> > index a22c9266ea05..1bccb8561ba9 100644
-> > --- a/arch/s390/include/asm/kvm_host.h
-> > +++ b/arch/s390/include/asm/kvm_host.h
-> > @@ -19,6 +19,7 @@
-> >   #include <linux/kvm.h>
-> >   #include <linux/seqlock.h>
-> >   #include <linux/module.h>
-> > +#include <linux/mmu_notifier.h>
-> >   #include <asm/debug.h>
-> >   #include <asm/cpu.h>
-> >   #include <asm/fpu/api.h>
-> > @@ -921,6 +922,7 @@ struct kvm_s390_pv {
-> >   	u64 guest_len;
-> >   	unsigned long stor_base;
-> >   	void *stor_var;
-> > +	struct mmu_notifier mmu_notifier;
-> >   };
-> >   
-> >   struct kvm_arch{
-> > diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-> > index f1e812a45acb..d3b8fd9b5b3e 100644
-> > --- a/arch/s390/kvm/pv.c
-> > +++ b/arch/s390/kvm/pv.c
-> > @@ -193,6 +193,21 @@ int kvm_s390_pv_deinit_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
-> >   	return -EIO;
-> >   }
-> >   
-> > +static void kvm_s390_pv_mmu_notifier_release(struct mmu_notifier *subscription,
-> > +					     struct mm_struct *mm)
-> > +{
-> > +	struct kvm *kvm = container_of(subscription, struct kvm, arch.pv.mmu_notifier);  
-> 
-> Are we sure that the kvm pointer is still valid at this point?
+While this totally works, it adds some complexity to the code,
+especially since the code only manages 2 blocks. It is much easier to
+just check each block's state manually, and keep a counter for the next
+block to dequeue.
 
-it should be, because KVM is torn down after the mm. which is the whole
-reason why the notifier is needed.
+Since the new DMABUF based API wouldn't use the outgoing queue anyway,
+getting rid of it now makes the upcoming changes simpler.
 
-on the other hand, I realized that I should have unregistered the
-notifier somewhere, which I forgot to do. the best place would be KVM
-teardown, which then also guarantees that the notifier can only be
-called with a valid struct kvm
+With this change, the IIO_BLOCK_STATE_DEQUEUED is now useless, and can
+be removed.
 
-> 
-> > +	u16 dummy;
-> > +
-> > +	mutex_lock(&kvm->lock);  
-> 
-> Against what are we locking here?
-> 
-> > +	kvm_s390_cpus_from_pv(kvm, &dummy, &dummy);  
-> 
-> I'd guess that we can't really have a second kvm_s390_cpus_from_pv() 
-> call in flight, right? If the mm is being torn down there would be no 
-> code left that can execute the IOCTL.
+v2: - Only remove the outgoing queue, and keep the incoming queue, as we
+      want the buffer to start streaming data as soon as it is enabled.
+    - Remove IIO_BLOCK_STATE_DEQUEUED, since it is now functionally the
+      same as IIO_BLOCK_STATE_DONE.
 
-yeah makes sense
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ drivers/iio/buffer/industrialio-buffer-dma.c | 44 ++++++++++----------
+ include/linux/iio/buffer-dma.h               |  7 ++--
+ 2 files changed, 26 insertions(+), 25 deletions(-)
 
-> 
-> > +	mutex_unlock(&kvm->lock);
-> > +}
-> > +
-> > +static const struct mmu_notifier_ops kvm_s390_pv_mmu_notifier_ops = {
-> > +	.release = kvm_s390_pv_mmu_notifier_release,
-> > +};
-> > +
-> >   int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
-> >   {
-> >   	struct uv_cb_cgc uvcb = {
-> > @@ -234,6 +249,11 @@ int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
-> >   		return -EIO;
-> >   	}
-> >   	kvm->arch.gmap->guest_handle = uvcb.guest_handle;
-> > +	/* Add the notifier only once. No races because we hold kvm->lock */
-> > +	if (kvm->arch.pv.mmu_notifier.ops != &kvm_s390_pv_mmu_notifier_ops) {
-> > +		kvm->arch.pv.mmu_notifier.ops = &kvm_s390_pv_mmu_notifier_ops;
-> > +		mmu_notifier_register(&kvm->arch.pv.mmu_notifier, kvm->mm);
-> > +	}
-> >   	return 0;
-> >   }
-> >   
-> >   
-> 
+diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
+index d348af8b9705..1fc91467d1aa 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dma.c
++++ b/drivers/iio/buffer/industrialio-buffer-dma.c
+@@ -179,7 +179,7 @@ static struct iio_dma_buffer_block *iio_dma_buffer_alloc_block(
+ 	}
+ 
+ 	block->size = size;
+-	block->state = IIO_BLOCK_STATE_DEQUEUED;
++	block->state = IIO_BLOCK_STATE_DONE;
+ 	block->queue = queue;
+ 	INIT_LIST_HEAD(&block->head);
+ 	kref_init(&block->kref);
+@@ -191,16 +191,8 @@ static struct iio_dma_buffer_block *iio_dma_buffer_alloc_block(
+ 
+ static void _iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
+ {
+-	struct iio_dma_buffer_queue *queue = block->queue;
+-
+-	/*
+-	 * The buffer has already been freed by the application, just drop the
+-	 * reference.
+-	 */
+-	if (block->state != IIO_BLOCK_STATE_DEAD) {
++	if (block->state != IIO_BLOCK_STATE_DEAD)
+ 		block->state = IIO_BLOCK_STATE_DONE;
+-		list_add_tail(&block->head, &queue->outgoing);
+-	}
+ }
+ 
+ /**
+@@ -261,7 +253,6 @@ static bool iio_dma_block_reusable(struct iio_dma_buffer_block *block)
+ 	 * not support abort and has not given back the block yet.
+ 	 */
+ 	switch (block->state) {
+-	case IIO_BLOCK_STATE_DEQUEUED:
+ 	case IIO_BLOCK_STATE_QUEUED:
+ 	case IIO_BLOCK_STATE_DONE:
+ 		return true;
+@@ -317,7 +308,6 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
+ 	 * dead. This means we can reset the lists without having to fear
+ 	 * corrution.
+ 	 */
+-	INIT_LIST_HEAD(&queue->outgoing);
+ 	spin_unlock_irq(&queue->list_lock);
+ 
+ 	INIT_LIST_HEAD(&queue->incoming);
+@@ -456,14 +446,20 @@ static struct iio_dma_buffer_block *iio_dma_buffer_dequeue(
+ 	struct iio_dma_buffer_queue *queue)
+ {
+ 	struct iio_dma_buffer_block *block;
++	unsigned int idx;
+ 
+ 	spin_lock_irq(&queue->list_lock);
+-	block = list_first_entry_or_null(&queue->outgoing, struct
+-		iio_dma_buffer_block, head);
+-	if (block != NULL) {
+-		list_del(&block->head);
+-		block->state = IIO_BLOCK_STATE_DEQUEUED;
++
++	idx = queue->fileio.next_dequeue;
++	block = queue->fileio.blocks[idx];
++
++	if (block->state == IIO_BLOCK_STATE_DONE) {
++		idx = (idx + 1) % ARRAY_SIZE(queue->fileio.blocks);
++		queue->fileio.next_dequeue = idx;
++	} else {
++		block = NULL;
+ 	}
++
+ 	spin_unlock_irq(&queue->list_lock);
+ 
+ 	return block;
+@@ -539,6 +535,7 @@ size_t iio_dma_buffer_data_available(struct iio_buffer *buf)
+ 	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buf);
+ 	struct iio_dma_buffer_block *block;
+ 	size_t data_available = 0;
++	unsigned int i;
+ 
+ 	/*
+ 	 * For counting the available bytes we'll use the size of the block not
+@@ -552,8 +549,15 @@ size_t iio_dma_buffer_data_available(struct iio_buffer *buf)
+ 		data_available += queue->fileio.active_block->size;
+ 
+ 	spin_lock_irq(&queue->list_lock);
+-	list_for_each_entry(block, &queue->outgoing, head)
+-		data_available += block->size;
++
++	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
++		block = queue->fileio.blocks[i];
++
++		if (block != queue->fileio.active_block
++		    && block->state == IIO_BLOCK_STATE_DONE)
++			data_available += block->size;
++	}
++
+ 	spin_unlock_irq(&queue->list_lock);
+ 	mutex_unlock(&queue->lock);
+ 
+@@ -617,7 +621,6 @@ int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
+ 	queue->ops = ops;
+ 
+ 	INIT_LIST_HEAD(&queue->incoming);
+-	INIT_LIST_HEAD(&queue->outgoing);
+ 
+ 	mutex_init(&queue->lock);
+ 	spin_lock_init(&queue->list_lock);
+@@ -645,7 +648,6 @@ void iio_dma_buffer_exit(struct iio_dma_buffer_queue *queue)
+ 			continue;
+ 		queue->fileio.blocks[i]->state = IIO_BLOCK_STATE_DEAD;
+ 	}
+-	INIT_LIST_HEAD(&queue->outgoing);
+ 	spin_unlock_irq(&queue->list_lock);
+ 
+ 	INIT_LIST_HEAD(&queue->incoming);
+diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
+index 6564bdcdac66..18d3702fa95d 100644
+--- a/include/linux/iio/buffer-dma.h
++++ b/include/linux/iio/buffer-dma.h
+@@ -19,14 +19,12 @@ struct device;
+ 
+ /**
+  * enum iio_block_state - State of a struct iio_dma_buffer_block
+- * @IIO_BLOCK_STATE_DEQUEUED: Block is not queued
+  * @IIO_BLOCK_STATE_QUEUED: Block is on the incoming queue
+  * @IIO_BLOCK_STATE_ACTIVE: Block is currently being processed by the DMA
+  * @IIO_BLOCK_STATE_DONE: Block is on the outgoing queue
+  * @IIO_BLOCK_STATE_DEAD: Block has been marked as to be freed
+  */
+ enum iio_block_state {
+-	IIO_BLOCK_STATE_DEQUEUED,
+ 	IIO_BLOCK_STATE_QUEUED,
+ 	IIO_BLOCK_STATE_ACTIVE,
+ 	IIO_BLOCK_STATE_DONE,
+@@ -73,12 +71,15 @@ struct iio_dma_buffer_block {
+  * @active_block: Block being used in read()
+  * @pos: Read offset in the active block
+  * @block_size: Size of each block
++ * @next_dequeue: index of next block that will be dequeued
+  */
+ struct iio_dma_buffer_queue_fileio {
+ 	struct iio_dma_buffer_block *blocks[2];
+ 	struct iio_dma_buffer_block *active_block;
+ 	size_t pos;
+ 	size_t block_size;
++
++	unsigned int next_dequeue;
+ };
+ 
+ /**
+@@ -93,7 +94,6 @@ struct iio_dma_buffer_queue_fileio {
+  *   list and typically also a list of active blocks in the part that handles
+  *   the DMA controller
+  * @incoming: List of buffers on the incoming queue
+- * @outgoing: List of buffers on the outgoing queue
+  * @active: Whether the buffer is currently active
+  * @fileio: FileIO state
+  */
+@@ -105,7 +105,6 @@ struct iio_dma_buffer_queue {
+ 	struct mutex lock;
+ 	spinlock_t list_lock;
+ 	struct list_head incoming;
+-	struct list_head outgoing;
+ 
+ 	bool active;
+ 
+-- 
+2.34.1
 
