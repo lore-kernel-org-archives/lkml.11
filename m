@@ -2,103 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B37C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244589AbiBGRKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:10:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34432 "EHLO
+        id S236303AbiBGRWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 12:22:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346605AbiBGRID (ORCPT
+        with ESMTP id S1390804AbiBGRL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:08:03 -0500
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87F7C0401D3;
-        Mon,  7 Feb 2022 09:08:00 -0800 (PST)
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nH7Uc-000FVI-NY; Mon, 07 Feb 2022 17:07:58 +0000
-Date:   Mon, 7 Feb 2022 17:07:58 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Ari Sundholm <ari@tuxera.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        stable@vger.kernel.org, Anton Altaparmakov <anton@tuxera.com>
-Subject: Re: [PATCH] fs/read_write.c: Fix a broken signed integer overflow
- check.
-Message-ID: <YgFR7mJE17C3LyzP@zeniv-ca.linux.org.uk>
-References: <20220207120711.4070403-1-ari@tuxera.com>
- <YgEzs2Hp0LrdDmJu@zeniv-ca.linux.org.uk>
- <cd346b72-1899-8f2d-5ff6-65c4ac93308c@tuxera.com>
+        Mon, 7 Feb 2022 12:11:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24353C0401E5
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:11:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1A8D6118F
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:11:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D04AFC340F2;
+        Mon,  7 Feb 2022 17:11:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644253880;
+        bh=RgvX0jcqavLp9XJXFApY0G2VLvAkEQCQ/aIXU87qu70=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OkCcogNC3DZDflNBkNEseageG13LbVg9LQZvtOXB2Byk0lRVth8BWE4B8zl6BQ4B2
+         Q6qcx7bKtTzImt1qw7mQBZJbnB457mIJ9sL+6mPL0OZSNZwdXms6wt9c02GsSqyN+c
+         zesZ0T+Czt3HiwzGJeeyxfd0/AubF8J2RszyG/1hRLB0UG16WVfZQSPrJIn+AmwNRl
+         5jQSgG7WgRLtHharj+imJ5wq0knTUjChsJCTgvpujHa+7xqwjBRXYlK0why6jpQ2jt
+         1bImjPr0PPVJU8mqz3YGpAACWsDmjXZBseNiggfcIwiGgELoiXuJUexfGQWnv6TGVy
+         1WetWAtPQl5iA==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Yang Shi <shy828301@gmail.com>,
+        David Hildenbrand <david@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH] proc: Avoid unused variable warning in pagemap_pmd_range()
+Date:   Mon,  7 Feb 2022 10:10:50 -0700
+Message-Id: <20220207171049.1102239-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cd346b72-1899-8f2d-5ff6-65c4ac93308c@tuxera.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 06:44:55PM +0200, Ari Sundholm wrote:
-> Hello, Al,
-> 
-> On 2/7/22 16:58, Al Viro wrote:
-> > On Mon, Feb 07, 2022 at 02:07:11PM +0200, Ari Sundholm wrote:
-> > > The function generic_copy_file_checks() checks that the ends of the
-> > > input and output file ranges do not overflow. Unfortunately, there is
-> > > an issue with the check itself.
-> > > 
-> > > Due to the integer promotion rules in C, the expressions
-> > > (pos_in + count) and (pos_out + count) have an unsigned type because
-> > > the count variable has the type uint64_t. Thus, in many cases where we
-> > > should detect signed integer overflow to have occurred (and thus one or
-> > > more of the ranges being invalid), the expressions will instead be
-> > > interpreted as large unsigned integers. This means the check is broken.
-> > 
-> > I must be slow this morning, but... which values of pos_in and count are
-> > caught by your check, but not by the original?
-> > 
-> 
-> Thank you for your response and questions.
-> 
-> Assuming an x86-64 target platform, please consider:
-> 
-> loff_t pos_out = 0x7FFFFFFFFFFEFFFFLL;
-> and
-> uint64_t count = 65537;
-> 
-> The type of the expression (pos_out + count) is a 64-bit unsigned type, by
-> C's integer promotion rules. Its value is 0x8000000000000000ULL, that is,
-> bit 63 is set.
-> 
-> The comparison (pos_out + count) < pos_out, again due to C's integer
-> promotion rules, is unsigned. Thus, the comparison, in this case, is
-> equivalent to:
-> 
-> 0x8000000000000000ULL < 0x7FFFFFFFFFFEFFFFULL,
-> 
-> which is false. Please note that the LHS is not expressible as a positive
-> integer of type loff_t. With larger values for count, the problem should
-> become quite obvious, as some the offsets within the file would not be
-> expressible as positive integers of type loff_t. But I digress. As we can
-> see above, the overflow is missed.
-> 
-> With the LHS explicitly cast to loff_t, the comparison is equivalent to:
-> 
-> 0x8000000000000000LL < 0x7FFFFFFFFFFEFFFFLL,
-> 
-> which is true, as the LHS is negative.
-> 
-> This has also been verified in practice, and was detected when running tests
-> on special cases of the copy_file_range syscall on different filesystems.
+When building with CONFIG_TRANSPARENT_HUGEPAGE=n, there is a warning
+about migration being unused:
 
-Er...  I still don't see the problem here.  If the destination filesystem
-explicitly allows offsets in excess of 2^63, what's the point in that
--EOVERFLOW?  And if it doesn't, you'll get count truncated by
-generic_write_check_limits(), down to the amount remaining until the
-fs limit...
+  fs/proc/task_mmu.c:1444:7: warning: unused variable 'migration' [-Wunused-variable]
+          bool migration = false;
+               ^
+  1 warning generated.
 
-Same on the input side - if your source file is at least 2^63, what's the
-problem?  And if not, you'll get count capped by file size - pos_in, right
-under that check...
+Move the ifdef preprocessor directive up to include migration so it is
+only included in the file when it is used.
 
-Which filesystems had been involved and what was the test?
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+
+This is a fix for fs-proc-task_mmuc-dont-read-mapcount-for-migration-entry-v4.patch.
+
+ fs/proc/task_mmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+index bc2f46033231..6e97ed775074 100644
+--- a/fs/proc/task_mmu.c
++++ b/fs/proc/task_mmu.c
+@@ -1441,9 +1441,9 @@ static int pagemap_pmd_range(pmd_t *pmdp, unsigned long addr, unsigned long end,
+ 	spinlock_t *ptl;
+ 	pte_t *pte, *orig_pte;
+ 	int err = 0;
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ 	bool migration = false;
+ 
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ 	ptl = pmd_trans_huge_lock(pmdp, vma);
+ 	if (ptl) {
+ 		u64 flags = 0, frame = 0;
+
+base-commit: b3c0a155ef77550d48f6eb7c6fdd6075764a5622
+-- 
+2.35.1
+
