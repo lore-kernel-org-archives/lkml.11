@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5F1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1425EC43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383067AbiBGLVa (ORCPT
+        id S1383130AbiBGLVk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54116 "EHLO
+        Mon, 7 Feb 2022 06:21:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378622AbiBGLPy (ORCPT
+        with ESMTP id S1379040AbiBGLP7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:54 -0500
+        Mon, 7 Feb 2022 06:15:59 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA57BC0401C8;
-        Mon,  7 Feb 2022 03:15:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D7AC0401C1;
+        Mon,  7 Feb 2022 03:15:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EBDB61388;
-        Mon,  7 Feb 2022 11:15:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 193DDC004E1;
-        Mon,  7 Feb 2022 11:15:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A8756113B;
+        Mon,  7 Feb 2022 11:15:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 236CEC004E1;
+        Mon,  7 Feb 2022 11:15:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232548;
-        bh=U+c9K6WdzIVH2IfFgZxIiSIM4vFtt9G9/lsDaGV6npA=;
+        s=korg; t=1644232554;
+        bh=LFmkYpZoYitqpsxbqK/+Yq6+QTUAR/LsvVhg5PB8eQU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fuwp6H5gQPfUFDtBLOQNxzcwmYNfwqgHJRJFKctYt9lEjyAfzEtk1IXJaQ0DTGW3j
-         2OlbwtbbsmsmhKTGUqmSs/Gv6Vox7U1U04rlAC1zoJ/yN25ZTC5IYmzd16EZ1RCRIP
-         Cpf6RBI6UXTIGTYn187Y/IlWrFhGGF1yney1dCeE=
+        b=csFNy1zUdlz/y3LyPUqK9+vUBvrIb5SzykyVpvwxHut4AxlkkDU3Z30d+BVrdrfOW
+         xPf5YRu4hHGXz+gY9eGRRty+RtIyVUR0ST7/32NlgPQb515vSzZ0YuIdUDnRkYBKUs
+         crKEz+FX2Z7mFQX7IPpu9TgWd4TU8DoBEhecTZGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Ray Che <xijiache@gmail.com>, David Ahern <dsahern@kernel.org>,
-        Geoff Alexander <alexandg@cs.unm.edu>,
-        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 45/86] ipv4: tcp: send zero IPID in SYNACK messages
-Date:   Mon,  7 Feb 2022 12:06:08 +0100
-Message-Id: <20220207103759.028005440@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 4.19 47/86] netfilter: nat: limit port clash resolution attempts
+Date:   Mon,  7 Feb 2022 12:06:10 +0100
+Message-Id: <20220207103759.092441686@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -52,72 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 970a5a3ea86da637471d3cd04d513a0755aba4bf ]
+commit a504b703bb1da526a01593da0e4be2af9d9f5fa8 upstream.
 
-In commit 431280eebed9 ("ipv4: tcp: send zero IPID for RST and
-ACK sent in SYN-RECV and TIME-WAIT state") we took care of some
-ctl packets sent by TCP.
+In case almost or all available ports are taken, clash resolution can
+take a very long time, resulting in soft lockup.
 
-It turns out we need to use a similar strategy for SYNACK packets.
+This can happen when many to-be-natted hosts connect to same
+destination:port (e.g. a proxy) and all connections pass the same SNAT.
 
-By default, they carry IP_DF and IPID==0, but there are ways
-to ask them to use the hashed IP ident generator and thus
-be used to build off-path attacks.
-(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
+Pick a random offset in the acceptable range, then try ever smaller
+number of adjacent port numbers, until either the limit is reached or a
+useable port was found.  This results in at most 248 attempts
+(128 + 64 + 32 + 16 + 8, i.e. 4 restarts with new search offset)
+instead of 64000+,
 
-One of this way is to force (before listener is started)
-echo 1 >/proc/sys/net/ipv4/ip_no_pmtu_disc
-
-Another way is using forged ICMP ICMP_FRAG_NEEDED
-with a very small MTU (like 68) to force a false return from
-ip_dont_fragment()
-
-In this patch, ip_build_and_send_pkt() uses the following
-heuristics.
-
-1) Most SYNACK packets are smaller than IPV4_MIN_MTU and therefore
-can use IP_DF regardless of the listener or route pmtu setting.
-
-2) In case the SYNACK packet is bigger than IPV4_MIN_MTU,
-we use prandom_u32() generator instead of the IPv4 hashed ident one.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Ray Che <xijiache@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Cc: Geoff Alexander <alexandg@cs.unm.edu>
-Cc: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ip_output.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ net/netfilter/nf_nat_proto_common.c |   29 +++++++++++++++++++++++------
+ 1 file changed, 23 insertions(+), 6 deletions(-)
 
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -160,12 +160,19 @@ int ip_build_and_send_pkt(struct sk_buff
- 	iph->daddr    = (opt && opt->opt.srr ? opt->opt.faddr : daddr);
- 	iph->saddr    = saddr;
- 	iph->protocol = sk->sk_protocol;
--	if (ip_dont_fragment(sk, &rt->dst)) {
-+	/* Do not bother generating IPID for small packets (eg SYNACK) */
-+	if (skb->len <= IPV4_MIN_MTU || ip_dont_fragment(sk, &rt->dst)) {
- 		iph->frag_off = htons(IP_DF);
- 		iph->id = 0;
- 	} else {
- 		iph->frag_off = 0;
--		__ip_select_ident(net, iph, 1);
-+		/* TCP packets here are SYNACK with fat IPv4/TCP options.
-+		 * Avoid using the hashed IP ident generator.
-+		 */
-+		if (sk->sk_protocol == IPPROTO_TCP)
-+			iph->id = (__force __be16)prandom_u32();
-+		else
-+			__ip_select_ident(net, iph, 1);
+--- a/net/netfilter/nf_nat_proto_common.c
++++ b/net/netfilter/nf_nat_proto_common.c
+@@ -40,9 +40,10 @@ void nf_nat_l4proto_unique_tuple(const s
+ 				 enum nf_nat_manip_type maniptype,
+ 				 const struct nf_conn *ct)
+ {
+-	unsigned int range_size, min, max, i;
++	unsigned int range_size, min, max, i, attempts;
+ 	__be16 *portptr;
+-	u_int16_t off;
++	u16 off;
++	static const unsigned int max_attempts = 128;
+ 
+ 	if (maniptype == NF_NAT_MANIP_SRC)
+ 		portptr = &tuple->src.u.all;
+@@ -88,12 +89,28 @@ void nf_nat_l4proto_unique_tuple(const s
+ 		off = prandom_u32();
  	}
  
- 	if (opt && opt->opt.optlen) {
+-	for (i = 0; ; ++off) {
++	attempts = range_size;
++	if (attempts > max_attempts)
++		attempts = max_attempts;
++
++	/* We are in softirq; doing a search of the entire range risks
++	 * soft lockup when all tuples are already used.
++	 *
++	 * If we can't find any free port from first offset, pick a new
++	 * one and try again, with ever smaller search window.
++	 */
++another_round:
++	for (i = 0; i < attempts; i++, off++) {
+ 		*portptr = htons(min + off % range_size);
+-		if (++i != range_size && nf_nat_used_tuple(tuple, ct))
+-			continue;
+-		return;
++		if (!nf_nat_used_tuple(tuple, ct))
++			return;
+ 	}
++
++	if (attempts >= range_size || attempts < 16)
++		return;
++	attempts /= 2;
++	off = prandom_u32();
++	goto another_round;
+ }
+ EXPORT_SYMBOL_GPL(nf_nat_l4proto_unique_tuple);
+ 
 
 
