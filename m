@@ -2,102 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF9BC35275
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40135C3527D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389098AbiBGNvH (ORCPT
+        id S1389229AbiBGNvZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:51:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
+        Mon, 7 Feb 2022 08:51:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380484AbiBGN2f (ORCPT
+        with ESMTP id S1355445AbiBGNqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:28:35 -0500
-X-Greylist: delayed 485 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 05:28:33 PST
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E05F5C043181;
-        Mon,  7 Feb 2022 05:28:33 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 73CC511D4;
-        Mon,  7 Feb 2022 05:20:28 -0800 (PST)
-Received: from [10.57.70.156] (unknown [10.57.70.156])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 223483F70D;
-        Mon,  7 Feb 2022 05:20:25 -0800 (PST)
-Message-ID: <65cde84a-8f8b-ac57-9b66-2b8d6378dbfa@arm.com>
-Date:   Mon, 7 Feb 2022 13:20:22 +0000
+        Mon, 7 Feb 2022 08:46:06 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C9FC043188
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:46:00 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id g8so3172654pfq.9
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 05:46:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+fYYVy93BDFqw0cCdynsbSRegfY0xYWHIfwAqDxymeY=;
+        b=hp3MMQ8ZMedpHg9Nevp1XeEuuEA7IKnvKqo3RmIMgSgkNZVcw4jBrSu78B7Dx97yzi
+         ChG12kiPN5PHLwvGlce9A0y5Co7qoc5PD33ihFDc/g1bGg4tbNHvi4ffk8p1O6Ksm5My
+         8BtSs5gvT2LhokIb2C3tAO+hrK5GTuyzQrRXirbOgMOoWQh3fse1cb5JMHqHIXxI8Fre
+         uYUXkpw437r8QzNVs6c23wTMj6+Kfq6yj2oLsk7GzdQPcsInWy68JVklCfUL8CbW6oGC
+         7JMcutC1k+rlN6rp3tNzXDqgVacnpF5Doatrua7fNfYRD/YTFpNYv00gpZYUSBG4Ylf1
+         eI3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+fYYVy93BDFqw0cCdynsbSRegfY0xYWHIfwAqDxymeY=;
+        b=j//HtBR/J+Y/m7B79eg2sFYgrvfod3ANXXN3vym3GaQEaI7otjrOK9SvLTQHroDxnp
+         t84Ne4apCHkS9WkhRsHokCG31gVjLFN0CHZteEP/cTfceNFlgU4nNPsJz+jH65jcUHfr
+         zPEFEVgF+yfxzTpQGHxDosaHdHzyN29omD+mDQ0RrwDcBVLFPII3zyON7YKGjyRQQi/I
+         8ZXRd0Kqya6aV0hCG8ePDa+bMWZnv47t6pAL39QVKfg/7mBd5H5/fa4zZS1X4GsRyba9
+         +xvheg6zFd7Bdyn1joVb9c53urFx6ifUfXw6lSO71qhBIti4BZnlZBaxQPnWpSlqfTkV
+         Prkg==
+X-Gm-Message-State: AOAM530Kr5UEqWAk2V2zFdwOKVf+tTZnE8OqzfIc1UFojkWfFjL3mU0e
+        so+Q3JP2EDMUrktSRewfGGMAPQ==
+X-Google-Smtp-Source: ABdhPJy13wPQSgj1YQJzHPhdlM4opHdCLY6oe1/iBRCUm78RUTw3mK/LTWyJn4eAdyiaxbyeS+SOEw==
+X-Received: by 2002:a63:e647:: with SMTP id p7mr9358380pgj.23.1644241560350;
+        Mon, 07 Feb 2022 05:46:00 -0800 (PST)
+Received: from [192.168.1.116] ([66.219.217.159])
+        by smtp.gmail.com with ESMTPSA id c11sm12279229pfv.76.2022.02.07.05.45.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 05:45:59 -0800 (PST)
+Subject: Re: [PATCH io_uring-5.17] io_uring: Fix build error potential reading
+ uninitialized value
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        io-uring Mailing list <io-uring@vger.kernel.org>,
+        Tea Inside Mailing List <timl@vger.teainside.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "Chen, Rong A" <rong.a.chen@intel.com>,
+        Pavel Begunkov <asml.silence@gmail.com>
+References: <d33bb5a9-8173-f65b-f653-51fc0681c6d6@intel.com>
+ <20220207114315.555413-1-ammarfaizi2@gnuweeb.org>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <91e8ca64-0670-d998-73d8-f75ec5264cb0@kernel.dk>
+Date:   Mon, 7 Feb 2022 06:45:57 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2] add pmu to amlogic meson sm1
-Content-Language: en-GB
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        Benjamin Mordaunt <crawford.benjamin15@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220205234554.4403-1-crawford.benjamin15@gmail.com>
- <20220206144343.2194-1-crawford.benjamin15@gmail.com>
- <42c51f9d-d122-2d09-cdcd-f733cbc60d5b@baylibre.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <42c51f9d-d122-2d09-cdcd-f733cbc60d5b@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220207114315.555413-1-ammarfaizi2@gnuweeb.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-07 08:14, Neil Armstrong wrote:
-> Hi,
+On 2/7/22 4:43 AM, Ammar Faizi wrote:
+> From: Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>
 > 
-> On 06/02/2022 15:43, Benjamin Mordaunt wrote:
->> ---
->> The dts for meson sm1 appears to omit the SoC's PMU,
->> which is essential for accessing perf events regarding
->> e.g. cache on e.g. the Odroid C4 platform. Add it.
->>
->>   arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 13 ++++++++++++-
->>   1 file changed, 12 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi 
->> b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
->> index 3d8b1f4f2..4147eecd2 100644
->> --- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
->> +++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
->> @@ -6,6 +6,8 @@
->>   #include "meson-g12-common.dtsi"
->>   #include <dt-bindings/clock/axg-audio-clkc.h>
->> +#include <dt-bindings/interrupt-controller/irq.h>
->> +#include <dt-bindings/interrupt-controller/arm-gic.h>
->>   #include <dt-bindings/power/meson-sm1-power.h>
->>   #include <dt-bindings/reset/amlogic,meson-axg-audio-arb.h>
->>   #include <dt-bindings/reset/amlogic,meson-g12a-audio-reset.h>
->> @@ -90,7 +92,16 @@ l2: l2-cache0 {
->>               compatible = "cache";
->>           };
->>       };
->> -
->> +
->> +    arm-pmu {
->> +        compatible = "arm,cortex-a55-pmu";
->> +        interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>,
->> +                 <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>,
->> +                 <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>,
->> +                 <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
->> +        interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
->> +    };
->> +
->>       cpu_opp_table: opp-table {
->>           compatible = "operating-points-v2";
->>           opp-shared;
+> In io_recv() if import_single_range() fails, the @flags variable is
+> uninitialized, then it will goto out_free.
 > 
-> Please see Marc's comments about PMU support:
-> http://lore.kernel.org/r/8735pcq63o.wl-maz@kernel.org
+> After the goto, the compiler doesn't know that (ret < min_ret) is
+> always true, so it thinks the "if ((flags & MSG_WAITALL) ..."  path
+> could be taken.
+> 
+> The complaint comes from gcc-9 (Debian 9.3.0-22) 9.3.0:
+> ```
+>   fs/io_uring.c:5238 io_recvfrom() error: uninitialized symbol 'flags'
+> ```
+> Fix this by bypassing the @ret and @flags check when
+> import_single_range() fails.
 
-If SM1 actually has distinct per-core interrupts as the patch implies 
-then it's fine - it's only G12B and anything else that combines multiple 
-PMU IRQs into a single SPI which are unsupportable.
+The compiler should be able to deduce this, and I guess newer compilers
+do which is why we haven't seen this warning before. I'm fine with doing
+this as a cleanup, but I think the commit title should be modified a
+bit. It sounds like there might be an issue reading uninitialized data,
+which isn't actually true.
 
-Robin.
+-- 
+Jens Axboe
+
