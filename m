@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F38C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B10AC4707E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382415AbiBGQoE (ORCPT
+        id S1382342AbiBGQn4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:44:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40896 "EHLO
+        Mon, 7 Feb 2022 11:43:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390553AbiBGQfD (ORCPT
+        with ESMTP id S1390623AbiBGQfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:35:03 -0500
+        Mon, 7 Feb 2022 11:35:16 -0500
 Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D02DC0401D1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:35:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A12CC0401D3
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:35:15 -0800 (PST)
 Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOcUE014395;
-        Mon, 7 Feb 2022 17:24:38 +0100
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOfL2014421;
+        Mon, 7 Feb 2022 17:24:41 +0100
 From:   Willy Tarreau <w@1wt.eu>
 To:     "Paul E . McKenney" <paulmck@kernel.org>
 Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
         Willy Tarreau <w@1wt.eu>
-Subject: [PATCH 12/42] tools/nolibc/types: make FD_SETSIZE configurable
-Date:   Mon,  7 Feb 2022 17:23:24 +0100
-Message-Id: <20220207162354.14293-13-w@1wt.eu>
+Subject: [PATCH 37/42] tools/nolibc/unistd: extract msleep(), sleep(), tcsetpgrp() to unistd.h
+Date:   Mon,  7 Feb 2022 17:23:49 +0100
+Message-Id: <20220207162354.14293-38-w@1wt.eu>
 X-Mailer: git-send-email 2.17.5
 In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
 References: <20220207162354.14293-1-w@1wt.eu>
@@ -33,47 +33,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The macro was hard-coded to 256 but it's common to see it redefined.
-Let's support this and make sure we always allocate enough entries for
-the cases where it wouldn't be multiple of 32.
+These functions are normally provided by unistd.h. For ease of porting,
+let's create the file and move them there.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- tools/include/nolibc/types.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ tools/include/nolibc/nolibc.h |  1 +
+ tools/include/nolibc/stdlib.h | 30 -----------------------
+ tools/include/nolibc/unistd.h | 46 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 47 insertions(+), 30 deletions(-)
+ create mode 100644 tools/include/nolibc/unistd.h
 
-diff --git a/tools/include/nolibc/types.h b/tools/include/nolibc/types.h
-index b79e10025780..81f69fd5826c 100644
---- a/tools/include/nolibc/types.h
-+++ b/tools/include/nolibc/types.h
-@@ -45,7 +45,9 @@
- #define DT_SOCK        0xc
+diff --git a/tools/include/nolibc/nolibc.h b/tools/include/nolibc/nolibc.h
+index 7eaa09fe9f4d..686726518431 100644
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -91,6 +91,7 @@
+ #include "stdio.h"
+ #include "stdlib.h"
+ #include "string.h"
++#include "unistd.h"
  
- /* commonly an fd_set represents 256 FDs */
-+#ifndef FD_SETSIZE
- #define FD_SETSIZE     256
-+#endif
+ /* Used by programs to avoid std includes */
+ #define NOLIBC
+diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
+index da08ff30c15a..0e6bca4ee089 100644
+--- a/tools/include/nolibc/stdlib.h
++++ b/tools/include/nolibc/stdlib.h
+@@ -300,19 +300,6 @@ char *u64toa(uint64_t in)
+ 	return itoa_buffer;
+ }
  
- /* Special FD used by all the *at functions */
- #ifndef AT_FDCWD
-@@ -72,7 +74,7 @@
+-static __attribute__((unused))
+-int msleep(unsigned int msecs)
+-{
+-	struct timeval my_timeval = { msecs / 1000, (msecs % 1000) * 1000 };
+-
+-	if (sys_select(0, 0, 0, 0, &my_timeval) < 0)
+-		return (my_timeval.tv_sec * 1000) +
+-			(my_timeval.tv_usec / 1000) +
+-			!!(my_timeval.tv_usec % 1000);
+-	else
+-		return 0;
+-}
+-
+ /* This one is not marked static as it's needed by libgcc for divide by zero */
+ __attribute__((weak,unused,section(".text.nolibc_raise")))
+ int raise(int signal)
+@@ -320,21 +307,4 @@ int raise(int signal)
+ 	return sys_kill(sys_getpid(), signal);
+ }
  
- /* for select() */
- typedef struct {
--	uint32_t fd32[FD_SETSIZE / 32];
-+	uint32_t fd32[(FD_SETSIZE + 31) / 32];
- } fd_set;
- 
- #define FD_CLR(fd, set) do {                                            \
-@@ -101,7 +103,7 @@ typedef struct {
- #define FD_ZERO(set) do {                                               \
- 		int __idx;                                              \
- 		fd_set *__set = (fd_set *)(set);                        \
--		for (__idx = 0; __idx < FD_SETSIZE / 32; __idx ++)      \
-+		for (__idx = 0; __idx < (FD_SETSIZE+31) / 32; __idx ++)	\
- 			__set->fd32[__idx] = 0;                         \
- 	} while (0)
- 
+-static __attribute__((unused))
+-unsigned int sleep(unsigned int seconds)
+-{
+-	struct timeval my_timeval = { seconds, 0 };
+-
+-	if (sys_select(0, 0, 0, 0, &my_timeval) < 0)
+-		return my_timeval.tv_sec + !!my_timeval.tv_usec;
+-	else
+-		return 0;
+-}
+-
+-static __attribute__((unused))
+-int tcsetpgrp(int fd, pid_t pid)
+-{
+-	return ioctl(fd, TIOCSPGRP, &pid);
+-}
+-
+ #endif /* _NOLIBC_STDLIB_H */
+diff --git a/tools/include/nolibc/unistd.h b/tools/include/nolibc/unistd.h
+new file mode 100644
+index 000000000000..87b448ff2191
+--- /dev/null
++++ b/tools/include/nolibc/unistd.h
+@@ -0,0 +1,46 @@
++/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
++/*
++ * unistd function definitions for NOLIBC
++ * Copyright (C) 2017-2022 Willy Tarreau <w@1wt.eu>
++ */
++
++#ifndef _NOLIBC_UNISTD_H
++#define _NOLIBC_UNISTD_H
++
++#include "std.h"
++#include "arch.h"
++#include "types.h"
++#include "sys.h"
++
++
++static __attribute__((unused))
++int msleep(unsigned int msecs)
++{
++	struct timeval my_timeval = { msecs / 1000, (msecs % 1000) * 1000 };
++
++	if (sys_select(0, 0, 0, 0, &my_timeval) < 0)
++		return (my_timeval.tv_sec * 1000) +
++			(my_timeval.tv_usec / 1000) +
++			!!(my_timeval.tv_usec % 1000);
++	else
++		return 0;
++}
++
++static __attribute__((unused))
++unsigned int sleep(unsigned int seconds)
++{
++	struct timeval my_timeval = { seconds, 0 };
++
++	if (sys_select(0, 0, 0, 0, &my_timeval) < 0)
++		return my_timeval.tv_sec + !!my_timeval.tv_usec;
++	else
++		return 0;
++}
++
++static __attribute__((unused))
++int tcsetpgrp(int fd, pid_t pid)
++{
++	return ioctl(fd, TIOCSPGRP, &pid);
++}
++
++#endif /* _NOLIBC_UNISTD_H */
 -- 
 2.35.1
 
