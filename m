@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 228D8C4707F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F56C47087
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352722AbiBGLMA (ORCPT
+        id S1355551AbiBGLMj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48322 "EHLO
+        Mon, 7 Feb 2022 06:12:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbiBGLJL (ORCPT
+        with ESMTP id S239309AbiBGLJU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:09:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECBBC043188;
-        Mon,  7 Feb 2022 03:09:10 -0800 (PST)
+        Mon, 7 Feb 2022 06:09:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32761C043188;
+        Mon,  7 Feb 2022 03:09:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37FFFB81028;
-        Mon,  7 Feb 2022 11:09:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6536BC004E1;
-        Mon,  7 Feb 2022 11:09:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3EA4B80EE8;
+        Mon,  7 Feb 2022 11:09:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36188C004E1;
+        Mon,  7 Feb 2022 11:09:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232147;
-        bh=YLwFUj/qGa4A9lOD6Jrv9/IDdUiWibOX92N/u2dtIB0=;
+        s=korg; t=1644232156;
+        bh=pb9YFJqK6DzbsQ+nfYREskx+GD9DBVbjajIsy4tiFoo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z5WXmCpDs29Xw7E77qNAPlFLTxah2BDai5YctEL6ZKJg1/k59SdNeJ5MksVvZ9P+6
-         m0pJTcy/kfxe/tT1StVE+K3WF1DtmzONUi9NlrqG3HTf/UFqKkwj8bQybeyDEJtxL6
-         agiT6lYL2yi1LHTpqK04uqknmh61adqk+BRjW2zQ=
+        b=Te+ZXUy2K/YFq6IwrgIktcY8WhNUjfZU880twzuByF7u7HN2RWtbkphOPbLe4w9BX
+         WqNPr7F6B13r2YvtBqhSBvGE2Bhz3nelSAhKg0NyGgaD3TL0v3By1hq86LMJes7Wjj
+         7GuP8BDJBThXbR1Rcx6GCVRmnvvxt8DwZKfln8/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 31/48] rtnetlink: make sure to refresh master_dev/m_ops in __rtnl_newlink()
-Date:   Mon,  7 Feb 2022 12:06:04 +0100
-Message-Id: <20220207103753.356609584@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.9 34/48] ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
+Date:   Mon,  7 Feb 2022 12:06:07 +0100
+Message-Id: <20220207103753.450763414@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -49,48 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Mark Brown <broonie@kernel.org>
 
-commit c6f6f2444bdbe0079e41914a35081530d0409963 upstream.
+commit 4f1e50d6a9cf9c1b8c859d449b5031cacfa8404e upstream.
 
-While looking at one unrelated syzbot bug, I found the replay logic
-in __rtnl_newlink() to potentially trigger use-after-free.
+We don't currently validate that the values being set are within the range
+we advertised to userspace as being valid, do so and reject any values
+that are out of range.
 
-It is better to clear master_dev and m_ops inside the loop,
-in case we have to replay it.
-
-Fixes: ba7d49b1f0f8 ("rtnetlink: provide api for getting and setting slave info")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Jiri Pirko <jiri@nvidia.com>
-Link: https://lore.kernel.org/r/20220201012106.216495-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220124153253.3548853-3-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/rtnetlink.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ sound/soc/soc-ops.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2454,9 +2454,9 @@ static int rtnl_newlink(struct sk_buff *
- {
- 	struct net *net = sock_net(skb->sk);
- 	const struct rtnl_link_ops *ops;
--	const struct rtnl_link_ops *m_ops = NULL;
-+	const struct rtnl_link_ops *m_ops;
- 	struct net_device *dev;
--	struct net_device *master_dev = NULL;
-+	struct net_device *master_dev;
- 	struct ifinfomsg *ifm;
- 	char kind[MODULE_NAME_LEN];
- 	char ifname[IFNAMSIZ];
-@@ -2487,6 +2487,8 @@ replay:
- 			dev = NULL;
- 	}
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -441,8 +441,15 @@ int snd_soc_put_volsw_sx(struct snd_kcon
+ 	int err = 0;
+ 	unsigned int val, val_mask, val2 = 0;
  
-+	master_dev = NULL;
-+	m_ops = NULL;
- 	if (dev) {
- 		master_dev = netdev_master_upper_dev_get(dev);
- 		if (master_dev)
++	val = ucontrol->value.integer.value[0];
++	if (mc->platform_max && val > mc->platform_max)
++		return -EINVAL;
++	if (val > max - min)
++		return -EINVAL;
++	if (val < 0)
++		return -EINVAL;
+ 	val_mask = mask << shift;
+-	val = (ucontrol->value.integer.value[0] + min) & mask;
++	val = (val + min) & mask;
+ 	val = val << shift;
+ 
+ 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
 
 
