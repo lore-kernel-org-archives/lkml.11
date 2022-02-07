@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF3BCC4708A
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:37:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 826A8C38162
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384664AbiBGL3d (ORCPT
+        id S1384699AbiBGL3g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:29:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
+        Mon, 7 Feb 2022 06:29:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383468AbiBGLWg (ORCPT
+        with ESMTP id S1383483AbiBGLWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:22:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19ADCC043181;
-        Mon,  7 Feb 2022 03:22:34 -0800 (PST)
+        Mon, 7 Feb 2022 06:22:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A02AC043181;
+        Mon,  7 Feb 2022 03:22:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7F40B81028;
-        Mon,  7 Feb 2022 11:22:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0634C004E1;
-        Mon,  7 Feb 2022 11:22:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D009F61380;
+        Mon,  7 Feb 2022 11:22:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8964DC004E1;
+        Mon,  7 Feb 2022 11:22:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232951;
-        bh=VMbaaDzs3K6lmluIUIPk3ffjNBsj3IfW/jyNMjzDMyo=;
+        s=korg; t=1644232958;
+        bh=OItqso0sCJtmD1G4NoDFiCdXogSvDlQgXz28I1duIro=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ip6G5Kzj7ntDVKr8jrf2RthG9RVfmUGTCAfTsOSfzhyvxuqu2RmxXMm0qE5OSsnVR
-         BPtw5NKnl3L3eFjAzmpB2lwMFmf3UGPR+5et0Bvv2TvfBo2mcca8kFy4SF15mYZRgm
-         XtzX3fQxUdIeDfzwJYNcxVroPQ89FTMFGN4XqEQU=
+        b=SmRyvKa+kdJqj2j2fRypF03OsudKGry9yL28tDR9zOuR0FoLyHCNiTKD3YA7jWhMP
+         BgmeqylLvoImFPSRji8mqngtO0VIc+yUzoVSwvapZHcd2Zr79T6t8y2+H9XsYSdts4
+         RUOHlz1oCeXxjQ0e8b0/uKMRlmypUjOhe8jkFfXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yannick Vignon <yannick.vignon@nxp.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 43/74] net: stmmac: ensure PTP time register reads are consistent
-Date:   Mon,  7 Feb 2022 12:06:41 +0100
-Message-Id: <20220207103758.633267782@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Rapoport <rppt@linux.ibm.com>,
+        Christian Dietrich <stettberger@dokucode.de>,
+        Khalid Aziz <khalid.aziz@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 18/74] mm/pgtable: define pte_index so that preprocessor could recognize it
+Date:   Mon,  7 Feb 2022 12:06:16 +0100
+Message-Id: <20220207103757.833909941@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -50,55 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yannick Vignon <yannick.vignon@nxp.com>
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-commit 80d4609008e6d696a279e39ae7458c916fcd44c1 upstream.
+commit 314c459a6fe0957b5885fbc65c53d51444092880 upstream.
 
-Even if protected from preemption and interrupts, a small time window
-remains when the 2 register reads could return inconsistent values,
-each time the "seconds" register changes. This could lead to an about
-1-second error in the reported time.
+Since commit 974b9b2c68f3 ("mm: consolidate pte_index() and
+pte_offset_*() definitions") pte_index is a static inline and there is
+no define for it that can be recognized by the preprocessor.  As a
+result, vm_insert_pages() uses slower loop over vm_insert_page() instead
+of insert_pages() that amortizes the cost of spinlock operations when
+inserting multiple pages.
 
-Add logic to ensure the "seconds" and "nanoseconds" values are consistent.
-
-Fixes: 92ba6888510c ("stmmac: add the support for PTP hw clock driver")
-Signed-off-by: Yannick Vignon <yannick.vignon@nxp.com>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/20220203160025.750632-1-yannick.vignon@oss.nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lkml.kernel.org/r/20220111145457.20748-1-rppt@kernel.org
+Fixes: 974b9b2c68f3 ("mm: consolidate pte_index() and pte_offset_*() definitions")
+Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+Reported-by: Christian Dietrich <stettberger@dokucode.de>
+Reviewed-by: Khalid Aziz <khalid.aziz@oracle.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c |   17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ include/linux/pgtable.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-@@ -142,15 +142,20 @@ static int adjust_systime(void __iomem *
- 
- static void get_systime(void __iomem *ioaddr, u64 *systime)
+--- a/include/linux/pgtable.h
++++ b/include/linux/pgtable.h
+@@ -44,6 +44,7 @@ static inline unsigned long pte_index(un
  {
--	u64 ns;
-+	u64 ns, sec0, sec1;
- 
--	/* Get the TSSS value */
--	ns = readl(ioaddr + PTP_STNSR);
--	/* Get the TSS and convert sec time value to nanosecond */
--	ns += readl(ioaddr + PTP_STSR) * 1000000000ULL;
-+	/* Get the TSS value */
-+	sec1 = readl_relaxed(ioaddr + PTP_STSR);
-+	do {
-+		sec0 = sec1;
-+		/* Get the TSSS value */
-+		ns = readl_relaxed(ioaddr + PTP_STNSR);
-+		/* Get the TSS value */
-+		sec1 = readl_relaxed(ioaddr + PTP_STSR);
-+	} while (sec0 != sec1);
- 
- 	if (systime)
--		*systime = ns;
-+		*systime = ns + (sec1 * 1000000000ULL);
+ 	return (address >> PAGE_SHIFT) & (PTRS_PER_PTE - 1);
  }
++#define pte_index pte_index
  
- const struct stmmac_hwtimestamp stmmac_ptp = {
+ #ifndef pmd_index
+ static inline unsigned long pmd_index(unsigned long address)
 
 
