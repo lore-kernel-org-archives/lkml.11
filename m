@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7D44C47084
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CDAC43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382540AbiBGLTj (ORCPT
+        id S1382594AbiBGLTw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:19:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52640 "EHLO
+        Mon, 7 Feb 2022 06:19:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359447AbiBGLOx (ORCPT
+        with ESMTP id S1376441AbiBGLPK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:14:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92EAC0401F0;
-        Mon,  7 Feb 2022 03:14:39 -0800 (PST)
+        Mon, 7 Feb 2022 06:15:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6459C03FED0;
+        Mon,  7 Feb 2022 03:14:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9F3FB80EE8;
-        Mon,  7 Feb 2022 11:14:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17F93C004E1;
-        Mon,  7 Feb 2022 11:14:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 486DE6126D;
+        Mon,  7 Feb 2022 11:14:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2699DC004E1;
+        Mon,  7 Feb 2022 11:14:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232473;
-        bh=Ix88BbVE44Hp8fk81rkzhtG4c4qYphPjneTs+ojK5Hw=;
+        s=korg; t=1644232470;
+        bh=kvmeKDKq4ruE2gAqLGR7+eCTMNUXOvT8e/qFwT9YNBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RMmuLOIfAP/Hb+wkx81kVRuUVtS1fQqdFL9xlwZsQX6DCCq7VxB3UihbNwmBjGtiW
-         VyG8B1R33RELnP2DUPcofEhF0VGnUcov6xZLuvYmPQ65NWSot4ZQCrWhW7N/M81wkW
-         rcpLTGD+WFQTYFwYbSKHgkyTdSuDCRDhTXFDtn4A=
+        b=2JIS9umjzFaBjOtQi+sIQb0htFkZF5P4XBou4l5brqYjzMFGFg0tX14nFgq/WRNh+
+         MOV9Y9UMym4d4G6jc0s3GsI6k+qfF08qEouzNYReIuf9TRwFAWBj+BndZLkjhIAQeY
+         GTpLK4k624cOtSGCZnp51/t8jG3Okt3VVKoWvHog=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 4.19 20/86] i40e: Increase delay to 1 s after global EMP reset
-Date:   Mon,  7 Feb 2022 12:05:43 +0100
-Message-Id: <20220207103758.213293734@linuxfoundation.org>
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 4.19 02/86] s390/hypfs: include z/VM guests with access control group set
+Date:   Mon,  7 Feb 2022 12:05:25 +0100
+Message-Id: <20220207103757.630831675@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -52,47 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Vasily Gorbik <gor@linux.ibm.com>
 
-commit 9b13bd53134c9ddd544a790125199fdbdb505e67 upstream.
+commit 663d34c8df98740f1e90241e78e456d00b3c6cad upstream.
 
-Recently simplified i40e_rebuild causes that FW sometimes
-is not ready after NVM update, the ping does not return.
+Currently if z/VM guest is allowed to retrieve hypervisor performance
+data globally for all guests (privilege class B) the query is formed in a
+way to include all guests but the group name is left empty. This leads to
+that z/VM guests which have access control group set not being included
+in the results (even local vm).
 
-Increase the delay in case of EMP reset.
-Old delay of 300 ms was introduced for specific cards for 710 series.
-Now it works for all the cards and delay was increased.
+Change the query group identifier from empty to "any" to retrieve
+information about all guests from any groups (or without a group set).
 
-Fixes: 1fa51a650e1d ("i40e: Add delay after EMP reset for firmware to recover")
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: stable@vger.kernel.org
+Fixes: 31cb4bd31a48 ("[S390] Hypervisor filesystem (s390_hypfs) for z/VM")
+Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ arch/s390/hypfs/hypfs_vm.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -9486,15 +9486,9 @@ static void i40e_rebuild(struct i40e_pf
- 	}
- 	i40e_get_oem_version(&pf->hw);
+--- a/arch/s390/hypfs/hypfs_vm.c
++++ b/arch/s390/hypfs/hypfs_vm.c
+@@ -20,6 +20,7 @@
  
--	if (test_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state) &&
--	    ((hw->aq.fw_maj_ver == 4 && hw->aq.fw_min_ver <= 33) ||
--	     hw->aq.fw_maj_ver < 4) && hw->mac.type == I40E_MAC_XL710) {
--		/* The following delay is necessary for 4.33 firmware and older
--		 * to recover after EMP reset. 200 ms should suffice but we
--		 * put here 300 ms to be sure that FW is ready to operate
--		 * after reset.
--		 */
--		mdelay(300);
-+	if (test_and_clear_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state)) {
-+		/* The following delay is necessary for firmware update. */
-+		mdelay(1000);
- 	}
+ static char local_guest[] = "        ";
+ static char all_guests[] = "*       ";
++static char *all_groups = all_guests;
+ static char *guest_query;
  
- 	/* re-verify the eeprom if we just had an EMP reset */
+ struct diag2fc_data {
+@@ -62,10 +63,11 @@ static int diag2fc(int size, char* query
+ 
+ 	memcpy(parm_list.userid, query, NAME_LEN);
+ 	ASCEBC(parm_list.userid, NAME_LEN);
+-	parm_list.addr = (unsigned long) addr ;
++	memcpy(parm_list.aci_grp, all_groups, NAME_LEN);
++	ASCEBC(parm_list.aci_grp, NAME_LEN);
++	parm_list.addr = (unsigned long)addr;
+ 	parm_list.size = size;
+ 	parm_list.fmt = 0x02;
+-	memset(parm_list.aci_grp, 0x40, NAME_LEN);
+ 	rc = -1;
+ 
+ 	diag_stat_inc(DIAG_STAT_X2FC);
 
 
