@@ -2,139 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61175C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90078C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383609AbiBGPnL (ORCPT
+        id S1384238AbiBGPnS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:43:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53058 "EHLO
+        Mon, 7 Feb 2022 10:43:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345227AbiBGPhz (ORCPT
+        with ESMTP id S233016AbiBGPeN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:37:55 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E956C0401CA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:37:54 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id h7so17256350iof.3
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 07:37:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OVQkazA38Xs9TAErBTjWdO6iUtOuwl/winaYJ9o81FU=;
-        b=48XlmHJS3i0F3tDt8IW0RPM3YClhDQwRwMrwLBb2zN9KGmi6BULuL/eoN60AZtMDTp
-         dI9oc4EWlTAyVpe9OK+NVU2RFXFVZ+n70oJwyW+EW1xkrBX/+ZJ/ibA/qOCBcMpE+WqK
-         etwyeVa2uJjc26Wckq74cCNHsYm5qebX8cDv3FiJLbqNnKUleCh5i92zCtCdzh/NYocQ
-         nmyCcJ2iGPu/K+wD/njpw0wjqBKzP6J9AwMqZ72ptG6zZSAeXNzg+SzEuTnvogeWGAQi
-         kKlCsRrcdujp4G/usKOvDv3eCoaouB7/HjNgymyeIt21prhZflRIDdRjMmj2bxQiB3+E
-         tH1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OVQkazA38Xs9TAErBTjWdO6iUtOuwl/winaYJ9o81FU=;
-        b=wH2up6uHHq8kNvk2B4bq90gdbX5ZkIL0C7S7iihUVNO28HAP+3CTuNjRxmiRXCp3X+
-         wHdJZRTwm0U8+QKhQLXPwOM76g6HSIOZ+AHKOLSemwoTzC1enOyXz0U6WnAdijTM9xeu
-         6vXJjJClim8FruUPR3I/TWgC3JqBqPGW9ZNqHRBs2I0w41clv6GFIa6AOLO5ImGvZUvN
-         fpvAdtqwQZnpod8i1uyNoAL1NNM44af2b6C1kc633HzOLi/IhX2+XWeuItjywnN/4VbY
-         bt9qOUuAj2ElsqccUtLM7xc6gm/ExNSylt8wqx7+eOGZYEjqlQZm0Yhglqb01i872n1s
-         cd3A==
-X-Gm-Message-State: AOAM531U5IKnkYiyhea40ZdHlIOXU215AUOefTwlVYuRO2YXXlSMjvkn
-        kG+EcbZIFDZQkB9iAL+5bpVhrQ==
-X-Google-Smtp-Source: ABdhPJwEVJPTtO4O5g1aR8TU5u2jGY2/Fd+8lMSh+MkotBvUoDaXZ/ULqHa0zOSCIghSgzPfUnSPKA==
-X-Received: by 2002:a05:6638:1305:: with SMTP id r5mr112912jad.154.1644248273876;
-        Mon, 07 Feb 2022 07:37:53 -0800 (PST)
-Received: from [192.168.1.30] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id p11sm6431831iov.38.2022.02.07.07.37.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 07:37:53 -0800 (PST)
-Subject: Re: [PATCH io_uring-5.17] io_uring: Fix build error potential reading
- uninitialized value
-To:     Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        io-uring Mailing list <io-uring@vger.kernel.org>,
-        Tea Inside Mailing List <timl@vger.teainside.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        "Chen, Rong A" <rong.a.chen@intel.com>,
-        Pavel Begunkov <asml.silence@gmail.com>
-References: <d33bb5a9-8173-f65b-f653-51fc0681c6d6@intel.com>
- <20220207114315.555413-1-ammarfaizi2@gnuweeb.org>
- <91e8ca64-0670-d998-73d8-f75ec5264cb0@kernel.dk>
- <20220207142046.GP1978@kadam>
- <CAOG64qN1fQ_surhMJSuygyf_emSvFm3HKRgj_JAZteFVjaP3+A@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <e3373f74-d7a5-6279-0440-2342092eef90@kernel.dk>
-Date:   Mon, 7 Feb 2022 08:37:50 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Mon, 7 Feb 2022 10:34:13 -0500
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97241C0401CA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:34:12 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 58FD860008;
+        Mon,  7 Feb 2022 15:34:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1644248051;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UNbH3GXexGdP8asRoGUVYUSmCCb0DsippkqLnYR8tlU=;
+        b=NaR/jhgiusyCl0F+9RdOyYfrupXLDC8VV/qcRtRuEt4vS3svCLgTIv563RWOw4i+k7B0Ze
+        UXp/T202w0dggkozb7gjFMDHn682+IMwdKjPhylUg2ggKyZC+4tiEVkLg/0c5NsJE+ozfX
+        B/OBxqFw/Ie52fF2/8R3xlxV8sbzPk7q9Q/pppk1WGtV7UJpUlLzPnaV6LDBe8bV3LBluS
+        ZvWvJ657wOJRJZeVPGqTWkiAQIyP0nynuBMTYiTyW2nDifhoJbFodAbiGrxygO1MXu6Nmx
+        HMHyUjL1OBfM3SvWSZEz/ncDgE79LohA+x7DfcdgPu4IEs4h9PDFEeZ0PklRXw==
+Date:   Mon, 7 Feb 2022 16:34:09 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Jean-Marc Eurin <jmeurin@google.com>
+Cc:     Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mtdoops: Fix the size of the header read buffer.
+Message-ID: <20220207163409.19c3bc4c@xps13>
+In-Reply-To: <CAL3wywWSDJUsbgJf4NXctxJmrJRzyO9V-PVcu3qftM1GGPyU_Q@mail.gmail.com>
+References: <20220128220156.4057446-1-jmeurin@google.com>
+        <20220131110003.7aacad70@xps13>
+        <CAL3wywWSDJUsbgJf4NXctxJmrJRzyO9V-PVcu3qftM1GGPyU_Q@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <CAOG64qN1fQ_surhMJSuygyf_emSvFm3HKRgj_JAZteFVjaP3+A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 7:33 AM, Alviro Iskandar Setiawan wrote:
-> On Mon, Feb 7, 2022 at 9:21 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
->> On Mon, Feb 07, 2022 at 06:45:57AM -0700, Jens Axboe wrote:
->>> On 2/7/22 4:43 AM, Ammar Faizi wrote:
->>>> From: Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>
->>>>
->>>> In io_recv() if import_single_range() fails, the @flags variable is
->>>> uninitialized, then it will goto out_free.
->>>>
->>>> After the goto, the compiler doesn't know that (ret < min_ret) is
->>>> always true, so it thinks the "if ((flags & MSG_WAITALL) ..."  path
->>>> could be taken.
->>>>
->>>> The complaint comes from gcc-9 (Debian 9.3.0-22) 9.3.0:
->>>> ```
->>>>   fs/io_uring.c:5238 io_recvfrom() error: uninitialized symbol 'flags'
->>>> ```
->>>> Fix this by bypassing the @ret and @flags check when
->>>> import_single_range() fails.
->>>
->>> The compiler should be able to deduce this, and I guess newer compilers
->>> do which is why we haven't seen this warning before.
-> 
-> The compiler can't deduce this because the import_single_range() is
-> located in a different translation unit (different C file), so it
-> can't prove that (ret < min_ret) is always true as it can't see the
-> function definition (in reality, it is always true because it only
-> returns either 0 or -EFAULT).
+Hi Jean-Marc,
 
-Yes you are right, I forgot this is the generic helper, and not our
-internal one.
+It looks like you changed the title when answering to my question, I
+thought this was a v2 and could not find it in patchwork. That is
+because the v2 does not actually exist?
 
->> No, we disabled GCC's uninitialized variable checking a couple years
->> back.  Linus got sick of the false positives.  You can still see it if
->> you enable W=2
->>
->> fs/io_uring.c: In function ‘io_recv’:
->> fs/io_uring.c:5252:20: warning: ‘flags’ may be used uninitialized in this function [-Wmaybe-uninitialized]
->>   } else if ((flags & MSG_WAITALL) && (msg.msg_flags & (MSG_TRUNC | MSG_CTRUNC))) {
->>              ~~~~~~~^~~~~~~~~~~~~~
->>
->> If you introduce an uninitialized variable bug then likelyhood is the
->> kbuild-bot will send you a Clang warning or a Smatch warning or both.
->> I don't think anyone looks at GCC W=2 warnings.
->>
-> 
-> This warning is valid, and the compiler should really warn that. But
-> again, in reality, this is still a false-positive warning, because
-> that "else if" will never be taken from the "goto out_free" path.
+jmeurin@google.com wrote on Thu, 3 Feb 2022 17:53:47
+-0800:
 
-Right, as mentioned in my email, there is no bug there. But I do like
-the patch as it cleans it up too, the error-out path should not include
-non-cleanup items.
+> On Mon, Jan 31, 2022 at 2:00 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> >
+> > Hi Jean-Marc,
+> >
+> > jmeurin@google.com wrote on Fri, 28 Jan 2022 14:01:56 -0800:
+> > =20
+> > > The read buffer size depends on the MTDOOPS_HEADER_SIZE.
+> > >
+> > > Tested: Changed the header size, it doesn't panic, header is still
+> > > read/written correctly. =20
+> >
+> > On what Linux kernel version are you? It looks like we don't share the
+> > same code base, are we? =20
+>=20
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/d=
+rivers/mtd/mtdoops.c?h=3Dv5.17-rc2
+> has that bug.  If you try to increase the MTDOOPS_HEADER_SIZE,
+> find_next_position() will try to do an mtd_read() of
+> MTDOOPS_HEADER_SIZE bytes in a count buffer that is fixed to only 8
+> bytes.
 
--- 
-Jens Axboe
+I might have checked another function then. Indeed the fix looks legit.
 
+Can you please send a v2 with:
+- Your two patches in the same series (formatted with git-format-patch
+  to get the dependency/order right)
+- In the other commit, drop the reference pointing to (I believe) a
+  commit hash that is local to your tree only.
+- Use the right prefix ("mtd: mtdoops:").
+
+And we should be good.
+
+>=20
+> Thanks,
+>=20
+> Jean-Marc
+>=20
+> > =20
+> > >
+> > > Signed-off-by: Jean-Marc Eurin <jmeurin@google.com>
+> > > ---
+> > >  drivers/mtd/mtdoops.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/mtd/mtdoops.c b/drivers/mtd/mtdoops.c
+> > > index 227df24387df..09a26747f490 100644
+> > > --- a/drivers/mtd/mtdoops.c
+> > > +++ b/drivers/mtd/mtdoops.c
+> > > @@ -223,7 +223,7 @@ static void find_next_position(struct mtdoops_con=
+text *cxt)
+> > >  {
+> > >       struct mtd_info *mtd =3D cxt->mtd;
+> > >       int ret, page, maxpos =3D 0;
+> > > -     u32 count[2], maxcount =3D 0xffffffff;
+> > > +     u32 count[MTDOOPS_HEADER_SIZE/sizeof(u32)], maxcount =3D 0xffff=
+ffff;
+> > >       size_t retlen;
+> > >
+> > >       for (page =3D 0; page < cxt->oops_pages; page++) { =20
+> >
+> >
+> > Thanks,
+> > Miqu=C3=A8l =20
+
+
+Thanks,
+Miqu=C3=A8l
