@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D313FC47082
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 073B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386676AbiBGLfS (ORCPT
+        id S1383471AbiBGLaR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:35:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36448 "EHLO
+        Mon, 7 Feb 2022 06:30:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384060AbiBGLYh (ORCPT
+        with ESMTP id S1383578AbiBGLW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:24:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C9FC043181;
-        Mon,  7 Feb 2022 03:24:36 -0800 (PST)
+        Mon, 7 Feb 2022 06:22:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E076BC043181;
+        Mon,  7 Feb 2022 03:22:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D95461426;
-        Mon,  7 Feb 2022 11:24:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 262D4C340EB;
-        Mon,  7 Feb 2022 11:24:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72DA361380;
+        Mon,  7 Feb 2022 11:22:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56EDAC004E1;
+        Mon,  7 Feb 2022 11:22:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233075;
-        bh=hGthDrumJtm6T5rSAr+FgCa3SsvvzGoGvBKplDoc2ng=;
+        s=korg; t=1644232977;
+        bh=Yi+aO17RMvhJzsy4QMGy26kwoK7BkoXux0P4J5pPcf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ONQNk2MBfJdMeqfDb5bTrFanj5Hp4NnP0a6A7cwfgX7rFGi9Eb4049jpKuKPECGAP
-         KbSQTuEGTVYC7fB9w1ZpWfp11Hi534Nn8bm4t/k7QYxPP2Pq9CmqIOkkYA9Z9CEf7B
-         f6Rd15HXIkl0tRpt+W2DAcgqj16bUI5E7HbEW1ic=
+        b=IdqxJkYb+rhT5ky6z5/w4qhoXjavqoo5vvViPViuzaGFGsBqEG5RJMB40ooKVsxUW
+         VMhQuUSf1J3cj/QUwpwh3XSKiixWZ08Pz8QnEa/RXY/YzRvw7hFJl/ZV/NBg6VTcYj
+         fYyW5zsHgRy84HXM/9Ty46R79UYxb9+QzaWmUgFw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kane Chen <kane.chen@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Grace Kao <grace.kao@intel.com>
-Subject: [PATCH 5.10 49/74] pinctrl: intel: Fix a glitch when updating IRQ flags on a preconfigured line
-Date:   Mon,  7 Feb 2022 12:06:47 +0100
-Message-Id: <20220207103758.827863262@linuxfoundation.org>
+        stable@vger.kernel.org, Dmitry Monakhov <dmonakhov@openvz.org>,
+        Dmitry Ivanov <dmitry.ivanov2@hpe.com>,
+        Alexey Lyashkov <alexey.lyashkov@hpe.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 20/74] block: bio-integrity: Advance seed correctly for larger interval sizes
+Date:   Mon,  7 Feb 2022 12:06:18 +0100
+Message-Id: <20220207103757.898337254@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -51,69 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Martin K. Petersen <martin.petersen@oracle.com>
 
-commit e12963c453263d5321a2c610e98cbc731233b685 upstream.
+commit b13e0c71856817fca67159b11abac350e41289f5 upstream.
 
-The commit af7e3eeb84e2 ("pinctrl: intel: Disable input and output buffer
-when switching to GPIO") hadn't taken into account an update of the IRQ
-flags scenario.
+Commit 309a62fa3a9e ("bio-integrity: bio_integrity_advance must update
+integrity seed") added code to update the integrity seed value when
+advancing a bio. However, it failed to take into account that the
+integrity interval might be larger than the 512-byte block layer
+sector size. This broke bio splitting on PI devices with 4KB logical
+blocks.
 
-When updating the IRQ flags on the preconfigured line the ->irq_set_type()
-is called again. In such case the sequential Rx buffer configuration
-changes may trigger a falling or rising edge interrupt that may lead,
-on some platforms, to an undesired event.
+The seed value should be advanced by bio_integrity_intervals() and not
+the number of sectors.
 
-This may happen because each of intel_gpio_set_gpio_mode() and
-__intel_gpio_set_direction() updates the pad configuration with a different
-value of the GPIORXDIS bit. Notable, that the intel_gpio_set_gpio_mode() is
-called only for the pads that are configured as an input. Due to this fact,
-integrate the logic of __intel_gpio_set_direction() call into the
-intel_gpio_set_gpio_mode() so that the Rx buffer won't be disabled and
-immediately re-enabled.
-
-Fixes: af7e3eeb84e2 ("pinctrl: intel: Disable input and output buffer when switching to GPIO")
-Reported-by: Kane Chen <kane.chen@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Tested-by: Grace Kao <grace.kao@intel.com>
+Cc: Dmitry Monakhov <dmonakhov@openvz.org>
+Cc: stable@vger.kernel.org
+Fixes: 309a62fa3a9e ("bio-integrity: bio_integrity_advance must update integrity seed")
+Tested-by: Dmitry Ivanov <dmitry.ivanov2@hpe.com>
+Reported-by: Alexey Lyashkov <alexey.lyashkov@hpe.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Link: https://lore.kernel.org/r/20220204034209.4193-1-martin.petersen@oracle.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/intel/pinctrl-intel.c |   10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ block/bio-integrity.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/pinctrl/intel/pinctrl-intel.c
-+++ b/drivers/pinctrl/intel/pinctrl-intel.c
-@@ -441,8 +441,8 @@ static void intel_gpio_set_gpio_mode(voi
- 	value &= ~PADCFG0_PMODE_MASK;
- 	value |= PADCFG0_PMODE_GPIO;
+--- a/block/bio-integrity.c
++++ b/block/bio-integrity.c
+@@ -384,7 +384,7 @@ void bio_integrity_advance(struct bio *b
+ 	struct blk_integrity *bi = blk_get_integrity(bio->bi_disk);
+ 	unsigned bytes = bio_integrity_bytes(bi, bytes_done >> 9);
  
--	/* Disable input and output buffers */
--	value |= PADCFG0_GPIORXDIS;
-+	/* Disable TX buffer and enable RX (this will be input) */
-+	value &= ~PADCFG0_GPIORXDIS;
- 	value |= PADCFG0_GPIOTXDIS;
+-	bip->bip_iter.bi_sector += bytes_done >> 9;
++	bip->bip_iter.bi_sector += bio_integrity_intervals(bi, bytes_done >> 9);
+ 	bvec_iter_advance(bip->bip_vec, &bip->bip_iter, bytes);
+ }
  
- 	/* Disable SCI/SMI/NMI generation */
-@@ -487,9 +487,6 @@ static int intel_gpio_request_enable(str
- 
- 	intel_gpio_set_gpio_mode(padcfg0);
- 
--	/* Disable TX buffer and enable RX (this will be input) */
--	__intel_gpio_set_direction(padcfg0, true);
--
- 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
- 
- 	return 0;
-@@ -1105,9 +1102,6 @@ static int intel_gpio_irq_type(struct ir
- 
- 	intel_gpio_set_gpio_mode(reg);
- 
--	/* Disable TX buffer and enable RX (this will be input) */
--	__intel_gpio_set_direction(reg, true);
--
- 	value = readl(reg);
- 
- 	value &= ~(PADCFG0_RXEVCFG_MASK | PADCFG0_RXINV);
 
 
