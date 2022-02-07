@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07356C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78650C3527C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390744AbiBGL5n (ORCPT
+        id S1390766AbiBGL5v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:57:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44580 "EHLO
+        Mon, 7 Feb 2022 06:57:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385201AbiBGLbT (ORCPT
+        with ESMTP id S1384717AbiBGL3m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:19 -0500
+        Mon, 7 Feb 2022 06:29:42 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76763C0302EA;
-        Mon,  7 Feb 2022 03:29:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E73AC043189;
+        Mon,  7 Feb 2022 03:28:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DDEBB80EC3;
-        Mon,  7 Feb 2022 11:29:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92901C004E1;
-        Mon,  7 Feb 2022 11:29:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5900B811AF;
+        Mon,  7 Feb 2022 11:28:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAC81C004E1;
+        Mon,  7 Feb 2022 11:28:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233376;
-        bh=fvqCg9Xu5uhA5L3q+FEDsw1sBGuqJaYbDtNqhJQvLfI=;
+        s=korg; t=1644233293;
+        bh=QSzRICIWp+0GChseBdZWcjIxGZHnKp6X93Ah6uWn+to=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JCxn0wU7G01L/P5qbqjZ3CHOwVt9T+C0+Nd6uN1NL5Wg1+JaksQFrT4q2cxf9HO6d
-         hVTV6GPhNuSsHJ9Hs1NVQrBkuJiRYQJRk+fAfx/5PFetsX5PaQcqQj1jIWXSs0ypEK
-         FQ+If6JKNbgJ81xGdG3WKmZ9guMU+FSEE42jV/Hc=
+        b=BF+yxwpHCg6gHgJJG2EB5psc3KwzTfZ/sTe8yQpMUOfxFyx0lTFCBniJrK4Nmrvrz
+         U5vxl5yJI6CjZlV9x1iWSUEGXDrg736avj34uC7mBqYsOlFmPjnIuxipcYCw1XyoqQ
+         +ImCHisApsQ+zyhY+HpZXw6+VYIGeZNd2GCa8WdU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        stable@kernel.org, Xin Yin <yinxin.x@bytedance.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.15 103/110] ext4: fix incorrect type issue during replay_del_range
-Date:   Mon,  7 Feb 2022 12:07:16 +0100
-Message-Id: <20220207103805.877048294@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 077/110] ASoC: codecs: lpass-rx-macro: fix sidetone register offsets
+Date:   Mon,  7 Feb 2022 12:06:50 +0100
+Message-Id: <20220207103804.987633377@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -51,37 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Yin <yinxin.x@bytedance.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-commit 8fca8a2b0a822f7936130af7299d2fd7f0a66714 upstream.
+commit fca041a3ab70a099a6d5519ecb689b6279bd04f3 upstream.
 
-should not use fast commit log data directly, add le32_to_cpu().
+For some reason we ended up with incorrect register offfset calcuations
+for sidetone. regmap clearly throw errors when accessing these incorrect
+registers as these do not belong to any read/write ranges.
+so fix them to point to correct register offsets.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 0b5b5a62b945 ("ext4: use ext4_ext_remove_space() for fast commit replay delete range")
-Cc: stable@kernel.org
-Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
-Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220126063146.2302-1-yinxin.x@bytedance.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: f3ce6f3c9a99 ("ASoC: codecs: lpass-rx-macro: add iir widgets")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220126113549.8853-3-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/fast_commit.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ sound/soc/codecs/lpass-rx-macro.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/fs/ext4/fast_commit.c
-+++ b/fs/ext4/fast_commit.c
-@@ -1816,8 +1816,9 @@ ext4_fc_replay_del_range(struct super_bl
- 	}
+--- a/sound/soc/codecs/lpass-rx-macro.c
++++ b/sound/soc/codecs/lpass-rx-macro.c
+@@ -2688,8 +2688,8 @@ static uint32_t get_iir_band_coeff(struc
+ 	int reg, b2_reg;
  
- 	down_write(&EXT4_I(inode)->i_data_sem);
--	ret = ext4_ext_remove_space(inode, lrange.fc_lblk,
--				lrange.fc_lblk + lrange.fc_len - 1);
-+	ret = ext4_ext_remove_space(inode, le32_to_cpu(lrange.fc_lblk),
-+				le32_to_cpu(lrange.fc_lblk) +
-+				le32_to_cpu(lrange.fc_len) - 1);
- 	up_write(&EXT4_I(inode)->i_data_sem);
- 	if (ret)
- 		goto out;
+ 	/* Address does not automatically update if reading */
+-	reg = CDC_RX_SIDETONE_IIR0_IIR_COEF_B1_CTL + 16 * iir_idx;
+-	b2_reg = CDC_RX_SIDETONE_IIR0_IIR_COEF_B2_CTL + 16 * iir_idx;
++	reg = CDC_RX_SIDETONE_IIR0_IIR_COEF_B1_CTL + 0x80 * iir_idx;
++	b2_reg = CDC_RX_SIDETONE_IIR0_IIR_COEF_B2_CTL + 0x80 * iir_idx;
+ 
+ 	snd_soc_component_write(component, reg,
+ 				((band_idx * BAND_MAX + coeff_idx) *
+@@ -2718,7 +2718,7 @@ static uint32_t get_iir_band_coeff(struc
+ static void set_iir_band_coeff(struct snd_soc_component *component,
+ 			       int iir_idx, int band_idx, uint32_t value)
+ {
+-	int reg = CDC_RX_SIDETONE_IIR0_IIR_COEF_B2_CTL + 16 * iir_idx;
++	int reg = CDC_RX_SIDETONE_IIR0_IIR_COEF_B2_CTL + 0x80 * iir_idx;
+ 
+ 	snd_soc_component_write(component, reg, (value & 0xFF));
+ 	snd_soc_component_write(component, reg, (value >> 8) & 0xFF);
+@@ -2739,7 +2739,7 @@ static int rx_macro_put_iir_band_audio_m
+ 	int iir_idx = ctl->iir_idx;
+ 	int band_idx = ctl->band_idx;
+ 	u32 coeff[BAND_MAX];
+-	int reg = CDC_RX_SIDETONE_IIR0_IIR_COEF_B1_CTL + 16 * iir_idx;
++	int reg = CDC_RX_SIDETONE_IIR0_IIR_COEF_B1_CTL + 0x80 * iir_idx;
+ 
+ 	memcpy(&coeff[0], ucontrol->value.bytes.data, params->max);
+ 
 
 
