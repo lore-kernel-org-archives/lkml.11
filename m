@@ -2,255 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63140C38A2D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 981F2C3A59E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391557AbiBGMCN (ORCPT
+        id S1391586AbiBGMCX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:02:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
+        Mon, 7 Feb 2022 07:02:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386800AbiBGLhP (ORCPT
+        with ESMTP id S1388275AbiBGLnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:37:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C67C043181;
-        Mon,  7 Feb 2022 03:37:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0C836091A;
-        Mon,  7 Feb 2022 11:37:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3316FC340EB;
-        Mon,  7 Feb 2022 11:37:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233833;
-        bh=YXdkOb+AW7YT32Y3DFc/rWRM/5lbSEXUizTTYCWC+2E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aLJ3vXDAQr9sSJno+YYmUnThc2nOTRbzsYe1DJK6WSK5/AB5FOGKNBB2NZhrI0RH+
-         Cat6tFG7Xr0FZhbRtxCsF3i6fICMfJzRdIQCohgEK68GQZatHzIXgc9EA2jx+A6W4M
-         BHmrvJgHWVW49WNNVEw0RYwR8SO0Vyo9sEdKo+xs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.16 126/126] selftests: netfilter: check stateless nat udp checksum fixup
-Date:   Mon,  7 Feb 2022 12:07:37 +0100
-Message-Id: <20220207103808.392194264@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-References: <20220207103804.053675072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:43:21 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52E8C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:43:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644234200; x=1675770200;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=w6w2ccADFu4cgHqYIRIYRuBh3hLMbxfmsazq1+C6hWg=;
+  b=JX14QN5VjuHXYw9U3PEm5T7eJ8eEXg6Ul7wY1wFcOl7IlUvE+eZt03KZ
+   kDSZq2JTsFsTng/oqK5RnC+0Ysql+xqGuyim+KFkHKN/gdltUXA8NiDJw
+   E81Ytshbk3mU+moYbSLfE7juyeYaatY5nQF3VtlHXGDbKD/yhWgvSnOWB
+   Bs+qE57bTwxgKE67R0HD9JT/tyaAwO890hmI9rI0/3Xe9YlDEy9Y14nll
+   Kwylp2VnwdhWEu6LJbZXQI8P1uDq2xaR64CsMihfFJTajOL4Q8sdC2eFd
+   Q2JppkRJSt/7cpWiBYCz4nc+UXvJiPMFNzYKaabNtjYgKWVQ9sAlG46v1
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="246287263"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="246287263"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:42:15 -0800
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="700436349"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:42:12 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nH2OO-001ss2-Lg;
+        Mon, 07 Feb 2022 13:41:12 +0200
+Date:   Mon, 7 Feb 2022 13:41:12 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jan =?utf-8?B?RMSFYnJvxZs=?= <jsd@semihalf.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Raul E Rangel <rrangel@chromium.org>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "Deucher, Alexander" <alexander.deucher@amd.com>,
+        "Easow, Nimesh" <Nimesh.Easow@amd.com>,
+        "Limonciello, Mario" <mario.limonciello@amd.com>
+Subject: Re: [PATCH v3 2/2] i2c: designware: Add AMD PSP I2C bus support
+Message-ID: <YgEFWN8K7Yh452GY@smile.fi.intel.com>
+References: <20220120001621.705352-2-jsd@semihalf.com>
+ <20220202144302.1438303-1-jsd@semihalf.com>
+ <20220202144302.1438303-2-jsd@semihalf.com>
+ <YfqtkBIZZxp2Au2l@smile.fi.intel.com>
+ <CAOtMz3O_j5-0ZLJngQpzQSGduhZVnQ8awBvGkMdUQWAX8nN5Hw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAOtMz3O_j5-0ZLJngQpzQSGduhZVnQ8awBvGkMdUQWAX8nN5Hw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On Mon, Feb 07, 2022 at 09:27:12AM +0100, Jan Dąbroś wrote:
+> śr., 2 lut 2022 o 17:16 Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> napisał(a):
+> > On Wed, Feb 02, 2022 at 03:43:02PM +0100, Jan Dabros wrote:
 
-commit aad51ca71ad83273e8826d6cfdcf53c98748d1fa upstream.
+...
 
-Add a test that sends large udp packet (which is fragmented)
-via a stateless nft nat rule, i.e. 'ip saddr set 10.2.3.4'
-and check that the datagram is received by peer.
+> > > +struct psp_i2c_req {
+> > > +     struct psp_req_buffer_hdr hdr;
+> > > +     enum psp_i2c_req_type type;
+> > > +} __aligned(32);
+> >
+> > I forgot if this alignment is requirement due to DMA or so?
+> > We may use ____cacheline_aligned in such case.
+> 
+> I used some old code as a reference - this structure is mapped by PSP,
+> thus alignment applied here. I'm checking this with AMD whether it is
+> really needed or at least can be somehow limited - still waiting for
+> their response.
+> I propose to left this as is right now and eventually remove or make
+> more liberal in the future.
 
-On kernels without
-commit 4e1860a38637 ("netfilter: nft_payload: do not update layer 4 checksum when mangling fragments")',
-this will fail with:
+Would be nice to clarify sooner than later.
+In either case it needs a good comment.
 
-cmp: EOF on /tmp/tmp.V1q0iXJyQF which is empty
--rw------- 1 root root 4096 Jan 24 22:03 /tmp/tmp.Aaqnq4rBKS
--rw------- 1 root root    0 Jan 24 22:03 /tmp/tmp.V1q0iXJyQF
-ERROR: in and output file mismatch when checking udp with stateless nat
-FAIL: nftables v1.0.0 (Fearless Fosdick #2)
+...
 
-On patched kernels, this will show:
-PASS: IP statless for ns2-PFp89amx
+> > > +     return readl_poll_timeout(&mbox->cmd_fields, tmp, (tmp == expected),
+> > > +                               0, 1000 * PSP_CMD_TIMEOUT_MS);
+> >
+> > 0?!
+> 
+> Yes, we are checking for readiness of PSP mailbox in a tight loop. We
+> would like to proceed further quickly as soon as this bit is set.
+> Actually checking this twice per every ACQUIRE&RELEASE - once before
+> sending command (to check whether PSP is ready to accept requests) and
+> second time after sending it. Do you think we should increase
+> @sleep_us value?
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- tools/testing/selftests/netfilter/nft_nat.sh |  152 +++++++++++++++++++++++++++
- 1 file changed, 152 insertions(+)
+It depends on what you have in mind about hardware. I'm fine with either way,
+but 0 has to be explained (in the comment).
 
---- a/tools/testing/selftests/netfilter/nft_nat.sh
-+++ b/tools/testing/selftests/netfilter/nft_nat.sh
-@@ -898,6 +898,144 @@ EOF
- 	ip netns exec "$ns0" nft delete table $family nat
- }
- 
-+test_stateless_nat_ip()
-+{
-+	local lret=0
-+
-+	ip netns exec "$ns0" sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
-+	ip netns exec "$ns0" sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
-+
-+	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null # ping ns2->ns1
-+	if [ $? -ne 0 ] ; then
-+		echo "ERROR: cannot ping $ns1 from $ns2 before loading stateless rules"
-+		return 1
-+	fi
-+
-+ip netns exec "$ns0" nft -f /dev/stdin <<EOF
-+table ip stateless {
-+	map xlate_in {
-+		typeof meta iifname . ip saddr . ip daddr : ip daddr
-+		elements = {
-+			"veth1" . 10.0.2.99 . 10.0.1.99 : 10.0.2.2,
-+		}
-+	}
-+	map xlate_out {
-+		typeof meta iifname . ip saddr . ip daddr : ip daddr
-+		elements = {
-+			"veth0" . 10.0.1.99 . 10.0.2.2 : 10.0.2.99
-+		}
-+	}
-+
-+	chain prerouting {
-+		type filter hook prerouting priority -400; policy accept;
-+		ip saddr set meta iifname . ip saddr . ip daddr map @xlate_in
-+		ip daddr set meta iifname . ip saddr . ip daddr map @xlate_out
-+	}
-+}
-+EOF
-+	if [ $? -ne 0 ]; then
-+		echo "SKIP: Could not add ip statless rules"
-+		return $ksft_skip
-+	fi
-+
-+	reset_counters
-+
-+	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null # ping ns2->ns1
-+	if [ $? -ne 0 ] ; then
-+		echo "ERROR: cannot ping $ns1 from $ns2 with stateless rules"
-+		lret=1
-+	fi
-+
-+	# ns1 should have seen packets from .2.2, due to stateless rewrite.
-+	expect="packets 1 bytes 84"
-+	cnt=$(ip netns exec "$ns1" nft list counter inet filter ns0insl | grep -q "$expect")
-+	if [ $? -ne 0 ]; then
-+		bad_counter "$ns1" ns0insl "$expect" "test_stateless 1"
-+		lret=1
-+	fi
-+
-+	for dir in "in" "out" ; do
-+		cnt=$(ip netns exec "$ns2" nft list counter inet filter ns1${dir} | grep -q "$expect")
-+		if [ $? -ne 0 ]; then
-+			bad_counter "$ns2" ns1$dir "$expect" "test_stateless 2"
-+			lret=1
-+		fi
-+	done
-+
-+	# ns1 should not have seen packets from ns2, due to masquerade
-+	expect="packets 0 bytes 0"
-+	for dir in "in" "out" ; do
-+		cnt=$(ip netns exec "$ns1" nft list counter inet filter ns2${dir} | grep -q "$expect")
-+		if [ $? -ne 0 ]; then
-+			bad_counter "$ns1" ns0$dir "$expect" "test_stateless 3"
-+			lret=1
-+		fi
-+
-+		cnt=$(ip netns exec "$ns0" nft list counter inet filter ns1${dir} | grep -q "$expect")
-+		if [ $? -ne 0 ]; then
-+			bad_counter "$ns0" ns1$dir "$expect" "test_stateless 4"
-+			lret=1
-+		fi
-+	done
-+
-+	reset_counters
-+
-+	socat -h > /dev/null 2>&1
-+	if [ $? -ne 0 ];then
-+		echo "SKIP: Could not run stateless nat frag test without socat tool"
-+		if [ $lret -eq 0 ]; then
-+			return $ksft_skip
-+		fi
-+
-+		ip netns exec "$ns0" nft delete table ip stateless
-+		return $lret
-+	fi
-+
-+	local tmpfile=$(mktemp)
-+	dd if=/dev/urandom of=$tmpfile bs=4096 count=1 2>/dev/null
-+
-+	local outfile=$(mktemp)
-+	ip netns exec "$ns1" timeout 3 socat -u UDP4-RECV:4233 OPEN:$outfile < /dev/null &
-+	sc_r=$!
-+
-+	sleep 1
-+	# re-do with large ping -> ip fragmentation
-+	ip netns exec "$ns2" timeout 3 socat - UDP4-SENDTO:"10.0.1.99:4233" < "$tmpfile" > /dev/null
-+	if [ $? -ne 0 ] ; then
-+		echo "ERROR: failed to test udp $ns1 to $ns2 with stateless ip nat" 1>&2
-+		lret=1
-+	fi
-+
-+	wait
-+
-+	cmp "$tmpfile" "$outfile"
-+	if [ $? -ne 0 ]; then
-+		ls -l "$tmpfile" "$outfile"
-+		echo "ERROR: in and output file mismatch when checking udp with stateless nat" 1>&2
-+		lret=1
-+	fi
-+
-+	rm -f "$tmpfile" "$outfile"
-+
-+	# ns1 should have seen packets from 2.2, due to stateless rewrite.
-+	expect="packets 3 bytes 4164"
-+	cnt=$(ip netns exec "$ns1" nft list counter inet filter ns0insl | grep -q "$expect")
-+	if [ $? -ne 0 ]; then
-+		bad_counter "$ns1" ns0insl "$expect" "test_stateless 5"
-+		lret=1
-+	fi
-+
-+	ip netns exec "$ns0" nft delete table ip stateless
-+	if [ $? -ne 0 ]; then
-+		echo "ERROR: Could not delete table ip stateless" 1>&2
-+		lret=1
-+	fi
-+
-+	test $lret -eq 0 && echo "PASS: IP statless for $ns2"
-+
-+	return $lret
-+}
-+
- # ip netns exec "$ns0" ping -c 1 -q 10.0.$i.99
- for i in 0 1 2; do
- ip netns exec ns$i-$sfx nft -f /dev/stdin <<EOF
-@@ -964,6 +1102,19 @@ table inet filter {
- EOF
- done
- 
-+# special case for stateless nat check, counter needs to
-+# be done before (input) ip defragmentation
-+ip netns exec ns1-$sfx nft -f /dev/stdin <<EOF
-+table inet filter {
-+	counter ns0insl {}
-+
-+	chain pre {
-+		type filter hook prerouting priority -400; policy accept;
-+		ip saddr 10.0.2.2 counter name "ns0insl"
-+	}
-+}
-+EOF
-+
- sleep 3
- # test basic connectivity
- for i in 1 2; do
-@@ -1018,6 +1169,7 @@ $test_inet_nat && test_redirect inet
- $test_inet_nat && test_redirect6 inet
- 
- test_port_shadowing
-+test_stateless_nat_ip
- 
- if [ $ret -ne 0 ];then
- 	echo -n "FAIL: "
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
