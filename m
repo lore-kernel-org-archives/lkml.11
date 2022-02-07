@@ -2,68 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8D5C35280
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECA2C38162
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344969AbiBHBEN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:04:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37140 "EHLO
+        id S233015AbiBHBEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:04:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238462AbiBGXJs (ORCPT
+        with ESMTP id S237255AbiBGXjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:09:48 -0500
-Received: from smtprelay05.ispgateway.de (smtprelay05.ispgateway.de [80.67.18.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B181C061355;
-        Mon,  7 Feb 2022 15:09:47 -0800 (PST)
-Received: from [92.206.166.137] (helo=note-book.lan)
-        by smtprelay05.ispgateway.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        Mon, 7 Feb 2022 18:39:13 -0500
+X-Greylist: delayed 1473 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 15:39:12 PST
+Received: from qproxy6-pub.mail.unifiedlayer.com (qproxy6-pub.mail.unifiedlayer.com [69.89.23.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64888C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:39:12 -0800 (PST)
+Received: from progateway7-pub.mail.pro1.eigbox.com (unknown [67.222.38.55])
+        by qproxy6.mail.unifiedlayer.com (Postfix) with ESMTP id 2F3098027B56
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 23:14:38 +0000 (UTC)
+Received: from cmgw11.mail.unifiedlayer.com (unknown [10.0.90.126])
+        by progateway7.mail.pro1.eigbox.com (Postfix) with ESMTP id 8E1A410047C07
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 23:14:37 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id HDDRn1o1Wwm8iHDDRn1zYj; Mon, 07 Feb 2022 23:14:37 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=DpSTREz+ c=1 sm=1 tr=0 ts=6201a7dd
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=oGFeUVbbRNcA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=t6qOm/KOiiaWIRHa5sTT1Md15Mq9agO6m6D3H1sdlVI=; b=uf2Itfti2TXiliur05qCnyJUKY
+        rZeyAwkVfF0LHb0EoXbSI6xLqDJiXju5aBJovlfQKC6iQUT17Il+kRj9sDEzONC6wcdz+Y9wTeSiw
+        PFa4/Qm5yg4svSnGWIIWSmiXN;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:53750 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <git@apitzsch.eu>)
-        id 1nHD78-0001JC-EZ; Tue, 08 Feb 2022 00:08:06 +0100
-From:   =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>
-To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>
-Subject: [PATCH v2 3/3] leds: sgm3140: Add ocs,ocp8110 compatible
-Date:   Tue,  8 Feb 2022 00:06:38 +0100
-Message-Id: <20220207230638.56730-4-git@apitzsch.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207230638.56730-1-git@apitzsch.eu>
-References: <20211117091405.7412-1-git@apitzsch.eu>
- <20220207230638.56730-1-git@apitzsch.eu>
+        (envelope-from <re@w6rz.net>)
+        id 1nHDDQ-0024ix-Ko; Mon, 07 Feb 2022 16:14:36 -0700
+Message-ID: <60a77fd9-299a-ff38-7ccb-1d1e10f30a8d@w6rz.net>
+Date:   Mon, 7 Feb 2022 15:14:34 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Df-Sender: YW5kcmVAYXBpdHpzY2guZXU=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.15 000/111] 5.15.22-rc2 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220207133903.595766086@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220207133903.595766086@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nHDDQ-0024ix-Ko
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:53750
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 13
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Orient-Chip's ocp8110 has the same pin configuration as the sgm3140.
-The data sheet can be found at:
-https://cdn.datasheetspdf.com/pdf-down/O/C/P/OCP8110-OrientChip.pdf
+On 2/7/22 06:04, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.22 release.
+> There are 111 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Feb 2022 13:38:43 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.22-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Signed-off-by: André Apitzsch <git@apitzsch.eu>
----
- drivers/leds/flash/leds-sgm3140.c | 1 +
- 1 file changed, 1 insertion(+)
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-diff --git a/drivers/leds/flash/leds-sgm3140.c b/drivers/leds/flash/leds-sgm3140.c
-index f4f831570f11..d3a30ad94ac4 100644
---- a/drivers/leds/flash/leds-sgm3140.c
-+++ b/drivers/leds/flash/leds-sgm3140.c
-@@ -290,6 +290,7 @@ static int sgm3140_remove(struct platform_device *pdev)
- }
- 
- static const struct of_device_id sgm3140_dt_match[] = {
-+	{ .compatible = "ocs,ocp8110" },
- 	{ .compatible = "sgmicro,sgm3140" },
- 	{ /* sentinel */ }
- };
--- 
-2.35.1
+Tested-by: Ron Economos <re@w6rz.net>
 
