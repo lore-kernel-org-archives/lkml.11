@@ -2,75 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA6FC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4583C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239208AbiBGFuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:50:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
+        id S239411AbiBGFul (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241121AbiBGEEQ (ORCPT
+        with ESMTP id S1352095AbiBGEtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:04:16 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C10C061A73;
-        Sun,  6 Feb 2022 20:04:14 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id om8so3537152pjb.5;
-        Sun, 06 Feb 2022 20:04:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=Ef8RfYKN5vU0y0FO0NXmiv5ngEm6ZpY470MLNvKXbrY=;
-        b=f+skw+Va4Yz4MHLM2TF2/afLG+PCdsEIb659x64bE2hKdzXPSopNdu5uQeti98AYJr
-         5l8N/MReYH7qyFbRU/imjrDIPMsep8QUT3592v6G06NjSJmUemcRbgGk1DnHJjQJ+9NB
-         ib70QhYW5gAseExz/6Jb+BIE8BVsAz1zjAvxy8ZnFu8lHMee123ZOVRoY7sM3Dy9o5dC
-         UOuISy2zpUwCLHWaQ5PJ0RjeDnNSMQk0sMuFtPO0m77fbpIGWcHFJFjLjyUliG6sj9KZ
-         VvNIZbV5qFJwJ5Y8COyvo9QMTx3nn7ClO408oNcn0LG8tQ7WhSTBTxcSzBnciHqd6ORc
-         wSyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Ef8RfYKN5vU0y0FO0NXmiv5ngEm6ZpY470MLNvKXbrY=;
-        b=i9RNXi08QOCfDgnuCa2B7qF6W74+rKFwfrLi4Hq8hL1J/zVLEGX3EhsMBoj7Pmyy9M
-         s2TozOx456RRH2XYe3mrcKihAHVvMCk68G9YsaZHmdmdzOMD+MxuqSPXfT20cBNr6n5B
-         CvRsQbkR714MPxuY+aHfVbtg+MqM2nwKBkczqUcZ2dJs2gsXqJuj3bIiGj4XdkLyrcMt
-         tjkPwFLs9BwBniBkXkcy1RqGQlDzCg33KrgFhxG6iAV8gEWavYE9qpVAUqw6md5HMU3m
-         XeJgjX+VrHGNnCXJEQ7LPSS4PPFggwlJKUSy9DngzUCN+LFUTP1F6uDcgtNF5ZzVPWjG
-         iK8g==
-X-Gm-Message-State: AOAM530ThUHwuTMBqkomV0uiSYWKCIqbUG73yHKsnzclcvL9sIMwNq7y
-        mbHnHIqyMW2owcscjjHWIag=
-X-Google-Smtp-Source: ABdhPJz6xnEtE83IHlSGRxWocNnq5wnyKtifmRBuwRFKgHS7lII1rD3EW67H+bjH6e3H7OiWX14hQw==
-X-Received: by 2002:a17:902:bc82:: with SMTP id bb2mr3600802plb.21.1644206653675;
-        Sun, 06 Feb 2022 20:04:13 -0800 (PST)
-Received: from localhost.localdomain ([27.7.146.135])
-        by smtp.gmail.com with ESMTPSA id j18sm10601234pfj.13.2022.02.06.20.04.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 20:04:13 -0800 (PST)
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     jic23@kernel.org, lars@metafoo.de, andy.shevchenko@gmail.com,
-        sst@poczta.fm, robh+dt@kernel.org
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Sun, 6 Feb 2022 23:49:16 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A94C043181;
+        Sun,  6 Feb 2022 20:49:15 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id F1FD3210E8;
+        Mon,  7 Feb 2022 04:49:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644209353; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8RjmMA1NrNB1dcX8VlrCIeURT/zjbUyKgTSkkvTTrZ4=;
+        b=eH4GEA19qQ07ImRUOY2A8Sm2l4231phSU/9mIfpFmNGSBtN/OXjXOLrrPmN7/7gZBO9LOU
+        znkMvj6r5hd7Bp8KTHQm/KjMzjhkUiPV9Q3+bx8G1KBxzb65nFaj4VRcI6tZcCQtbMR76J
+        8TPio5UkYLoXB+d/+vSet5L5w5cH1FU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644209353;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8RjmMA1NrNB1dcX8VlrCIeURT/zjbUyKgTSkkvTTrZ4=;
+        b=gg+Xt3GS+NULgkfMEQ5/eDYBs276HjW/e20Y9e5NxQtC0tLeRLB/8gCLHZiJqdYdH5eMew
+        OACLY5ZojWUu/3Bw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EA35D1330E;
+        Mon,  7 Feb 2022 04:49:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id PnInKcakAGKgNQAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:49:10 +0000
+Subject: [PATCH 21/21] NFS: swap-out must always use STABLE writes.
+From:   NeilBrown <neilb@suse.de>
+To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Hemment <markhemm@googlemail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        David Howells <dhowells@redhat.com>
+Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] iio: potentiometer: Add support for DS3502
-Date:   Mon,  7 Feb 2022 09:34:06 +0530
-Message-Id: <20220207040408.4273-1-jagathjog1996@gmail.com>
-X-Mailer: git-send-email 2.17.1
+Date:   Mon, 07 Feb 2022 15:46:01 +1100
+Message-ID: <164420916125.29374.15563574398247024921.stgit@noble.brown>
+In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+User-Agent: StGit/0.23
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dt-bindings and support for Maxim DS3502 into existing ds1803 driver.
-DS3502 is a 7 bit Nonvolatile Digital Potentiometer.
+The commit handling code is not safe against memory-pressure deadlocks
+when writing to swap.  In particular, nfs_commitdata_alloc() blocks
+indefinitely waiting for memory, and this can consume all available
+workqueue threads.
 
-Jagath Jog J (2):
-  dt-bindings: iio: potentiometer: Add Maxim DS3502 in trivial-devices
-  iio: potentiometer: Add support for Maxim DS3502
+swap-out most likely uses STABLE writes anyway as COND_STABLE indicates
+that a stable write should be used if the write fits in a single
+request, and it normally does.  However if we ever swap with a small
+wsize, or gather unusually large numbers of pages for a single write,
+this might change.
 
- .../devicetree/bindings/trivial-devices.yaml  |   2 +
- drivers/iio/potentiometer/Kconfig             |   4 +-
- drivers/iio/potentiometer/ds1803.c            | 150 ++++++++++++++----
- 3 files changed, 122 insertions(+), 34 deletions(-)
+For safety, make it explicit in the code that direct writes used for swap
+must always use FLUSH_STABLE.
 
--- 
-2.17.1
+Signed-off-by: NeilBrown <neilb@suse.de>
+---
+ fs/nfs/direct.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
+index c5c53219beeb..4eb2a8380a28 100644
+--- a/fs/nfs/direct.c
++++ b/fs/nfs/direct.c
+@@ -791,7 +791,7 @@ static const struct nfs_pgio_completion_ops nfs_direct_write_completion_ops = {
+  */
+ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
+ 					       struct iov_iter *iter,
+-					       loff_t pos)
++					       loff_t pos, int ioflags)
+ {
+ 	struct nfs_pageio_descriptor desc;
+ 	struct inode *inode = dreq->inode;
+@@ -799,7 +799,7 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
+ 	size_t requested_bytes = 0;
+ 	size_t wsize = max_t(size_t, NFS_SERVER(inode)->wsize, PAGE_SIZE);
+ 
+-	nfs_pageio_init_write(&desc, inode, FLUSH_COND_STABLE, false,
++	nfs_pageio_init_write(&desc, inode, ioflags, false,
+ 			      &nfs_direct_write_completion_ops);
+ 	desc.pg_dreq = dreq;
+ 	get_dreq(dreq);
+@@ -945,11 +945,13 @@ ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter,
+ 	pnfs_init_ds_commit_info_ops(&dreq->ds_cinfo, inode);
+ 
+ 	if (swap) {
+-		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
++		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos,
++							    FLUSH_STABLE);
+ 	} else {
+ 		nfs_start_io_direct(inode);
+ 
+-		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
++		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos,
++							    FLUSH_COND_STABLE);
+ 
+ 		if (mapping->nrpages) {
+ 			invalidate_inode_pages2_range(mapping,
+
 
