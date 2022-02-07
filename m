@@ -2,94 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA351C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B21AC43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243111AbiBGKza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:55:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
+        id S240987AbiBGK4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:56:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240091AbiBGKtN (ORCPT
+        with ESMTP id S1352481AbiBGKvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:49:13 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E063C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:49:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zFFfeACZv+Zz/Z1pAOvHul7A7nmnAr1YmT299E07rqo=; b=qaHAIEhcQUKF0ItqKyJo6puHQ3
-        VMYiiC1DLx2H4xdjksPDGcndvBmobNu0wdngb8ZtQB7h5QT9VN+9pcdjK6TOS2tvhC4TRLhaa/rkw
-        Wq3DEPY105JCBbLYafyumLyAG39czuljCAyn49KgyB2Nwhb7+gENr7NSAvc7k9s+rNWFG2zX/Rz5U
-        aTWPJn/WJCfEv98o84IOHJnHbdY7HYAM9IwdsbSKBNEnmXES3n6qNRCEn5YCAvt+bmFOGqTARDxN4
-        UU8ks08k9Bxxvn5JaD/ohJasSzIGSIzemM5feW5E0hpjhirTsXj9BeH/r7730n/s177DKW5BLa5fh
-        /MZ8IfKA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nH1Zf-000KcB-0y; Mon, 07 Feb 2022 10:48:47 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B8545986235; Mon,  7 Feb 2022 11:48:45 +0100 (CET)
-Date:   Mon, 7 Feb 2022 11:48:45 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     YT Chang <yt.chang@mediatek.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com
-Subject: Re: [PATCH 1/1] sched: Add update_rq_clock() in sched_rt_rq_enqueue()
-Message-ID: <20220207104845.GD23216@worktop.programming.kicks-ass.net>
-References: <20211224012239.4694-1-yt.chang@mediatek.com>
+        Mon, 7 Feb 2022 05:51:18 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2044.outbound.protection.outlook.com [40.107.237.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF602C043181;
+        Mon,  7 Feb 2022 02:51:17 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TNCct+sOLgyW9MqWlkdLu1Z1nw2G000Nu8Yiii6aFJKDcwn4/X6Wujz/DaQn3RdKgboXOxkNOyfupEgMPDE2cn9wUog05vSZH9c9kH+XNYTioX7Ak78ZydU4skcUm1KD6TKj0GcEg8Txwn6e8A177jC7euexbedgAOtPWPA89IALJZ63hSxSWEwINefMuXbLeZHj06NnICn7xCUx350wlXglgqzMuWPKtGzzc04wUaZz+Y+a13sUByzPNeXZtYvuEDoeT5mzMS2rH8wqpD/sEPxyL0tGWV+csEv2RMx5HCVlKK5c3WdYk4MR9+4Ou85BCweO38ypVu8q7BcprNnFCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GmOsTMYoPyt+EMa6/G7D2cBX0asmGes7MTGnDcub4SY=;
+ b=N5b8JwJcCPloMh6XP/5oG9DRi8VknisEm0QDF/RIwv4nrEo0IIBDcdX7SY/oV/pZkqr/YhgvqmPbd45ak2NwY+8qyMHO0u04bUceR6pWnwfyUps17mJA0mI1YtAJEfv/lFL+Y0i4Hxngr5pxuxZKVzY7B8wldK+ZkdjeoHtBrekIiCbD4zDWJDLPvCngdOxDQQUf1aC+JKkn1d+bTzRXzOnxpsvcPfNfgwnjnetCo63u8vy3h0i2Df3NFZCWHfRxhLaAyUCuKnyJMqu6jAI8I999hk+a3+r09T6Yyef/I60gy/PcFNYcpqlxWpnSPINkHuVt3xoQusMRh+BkC9SltA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GmOsTMYoPyt+EMa6/G7D2cBX0asmGes7MTGnDcub4SY=;
+ b=kpxnpZ2fPtPQnQ1cqaqBBX8je9MOc9WFGeG9tF0SgAGZ+wyO/+TkxmyotMUXFtfnnNI3/qkG+m+CIYvpPH+aajiefVC98makLT+XaBQZiiqjWGiUXnmEPq3rh+1gfrMe+i+2vuhQtWclyP29VsA0g+/zINS9fERTHRltR+sL9b6QQrDCbJoUtQJoJ/9V2P8uS5RV8Q8i9hg4ugn5iB0gdb88IRrH08BPEdaJdWb+mdTkwoF6a7G5yAZInWXUDPCYmOvBoLZ3FVtog+9SvxjgyqMeRMptS2+0mP6r66wfdjJGKiFJQSu9v+/jt6kHHhF65IMKZizLe7fa9579D7t9kg==
+Received: from MW4PR03CA0286.namprd03.prod.outlook.com (2603:10b6:303:b5::21)
+ by BN6PR12MB1427.namprd12.prod.outlook.com (2603:10b6:404:20::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Mon, 7 Feb
+ 2022 10:51:15 +0000
+Received: from CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b5:cafe::b6) by MW4PR03CA0286.outlook.office365.com
+ (2603:10b6:303:b5::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17 via Frontend
+ Transport; Mon, 7 Feb 2022 10:51:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT018.mail.protection.outlook.com (10.13.175.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4951.12 via Frontend Transport; Mon, 7 Feb 2022 10:51:14 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 7 Feb
+ 2022 10:51:13 +0000
+Received: from [172.27.26.97] (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 7 Feb 2022
+ 02:51:08 -0800
+Message-ID: <af122e70-d073-cd83-541c-b3a0125c7cfb@nvidia.com>
+Date:   Mon, 7 Feb 2022 12:51:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211224012239.4694-1-yt.chang@mediatek.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next 2/4] net: bridge: dsa: Add support for offloading
+ of locked port flag
+Content-Language: en-US
+To:     Hans Schultz <schultz.hans@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Vladimir Oltean" <olteanv@gmail.com>,
+        <bridge@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
+References: <20220207100742.15087-1-schultz.hans+netdev@gmail.com>
+ <20220207100742.15087-3-schultz.hans+netdev@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+In-Reply-To: <20220207100742.15087-3-schultz.hans+netdev@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6881ccf2-f704-4578-54fc-08d9ea27c30b
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1427:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB142732CB8F4F383DEBA982E8DF2C9@BN6PR12MB1427.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Wu55FupcrmMQp9K0KcbraQ5PypTAYvFoLmyAjD9a3jk0PSp5MtysayOTqzYk6ozHBrC4MBhJdyLC6LKh579k2ej6vUKu5x8jgVdxOM6CD73ZS3S5JlykLkV3XkPOM6u2M+akYoyHbslCncLQRmcFx6X93YMeo4nhmLASWrhDf+XYxnjJf4gCCYvaJTpqRcP15mjnN0Lm832GZUNmJfEJWN26dsHr6nve7WF9gQZcYHC8Hdmq70GLs7A6dtxHLcJwm1ZfaNvxzsQUpjCeR0HtOfkVvSU/FpQobk4lSV0YYI2e72DJXhQCo2bVseWyMvjQKiY25Ji4p6Bc8i5sSH93PlrV+RtOzAJAy/1BotxsSxa7hXXAUKAe+kJS/nHWRocYT8r/+QUfQMNguq24uZWgqUa6M0rzSLX0KFLqIHDeSvKpxoFg9abH7N5vRhR10Dq9eTznPvWtR3f/j8wBbQxHM2zqqx/6dsVy0gWI+KBzfCeFseUtIpNxn70jcSB7xdYJirBEnCMK2CGYufbTXHEZ4w21yWtpNs8N4iayBJqpN9KnnWFhmvLBVl4FjpDDo7miCqyf0RMAzdJQTRUaDV9j79uHbOCd83ebGVR/I+DUte42rXsr+xt+8S3ZRv07qW9C+KNpL/9zu71EwKGi8VLF3UoF5ylwsumjRhvYpJyVQ82+UjDCSVLUt8hTXSRn9+PXgGDCbSIPp6Ev4sYw7EVrk7wfb7ccw3hMgm7jJwtCfRD4FgpGuoKSpaqYEcwF2M44
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(31696002)(16576012)(336012)(316002)(6666004)(53546011)(82310400004)(47076005)(426003)(40460700003)(86362001)(36756003)(2616005)(4744005)(36860700001)(186003)(4326008)(7416002)(31686004)(5660300002)(110136005)(54906003)(83380400001)(8936002)(508600001)(8676002)(81166007)(2906002)(16526019)(26005)(70586007)(70206006)(356005)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 10:51:14.5466
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6881ccf2-f704-4578-54fc-08d9ea27c30b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1427
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Dec 24, 2021 at 09:22:39AM +0800, YT Chang wrote:
-> Add update_rq_clock() in sched_rt_rq_enqueue() to
-> prevent the warning "rq->clock_update_flags < RQCF_ACT_SKIP"
-> when call rq_clock() in cpufreq_update_util().
+On 07/02/2022 12:07, Hans Schultz wrote:
+> Various switchcores support setting ports in locked mode, so that
+> clients behind locked ports cannot send traffic through the port
+> unless a fdb entry is added with the clients MAC address.
 > 
-> sched_rt_rq_enqueue ->
->    enqueue_top_rt_rq ->
->       cpufreq_update_util ->
->          rq_clock ->
->             assert_clock_updated
+> Among the switchcores that support this feature is the Marvell
+> mv88e6xxx family.
 > 
-> Signed-off-by: YT Chang <yt.chang@mediatek.com>
-> Change-Id: I4fba5a561b7064aafa991d7f1a34431607779cb4
-
-Change-Id does not belong in kernel patches..
-
+> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
 > ---
->  kernel/sched/rt.c | 1 +
->  1 file changed, 1 insertion(+)
+>  net/bridge/br_switchdev.c | 2 +-
+>  net/dsa/port.c            | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-> index b48baaba2fc2..faf1a68c0723 100644
-> --- a/kernel/sched/rt.c
-> +++ b/kernel/sched/rt.c
-> @@ -539,6 +539,7 @@ static void sched_rt_rq_enqueue(struct rt_rq *rt_rq)
->  
->  	int cpu = cpu_of(rq);
->  
-> +	update_rq_clock(rq);
 
-This isn't right I think; there's at least one caller of this function
-that already did that. A double clock update is also wrong. Each path
-should have just one.
+Hi,
+For some reason I still haven't received patch 01 which adds this new flag,
+so I'll comment on this patch first.
 
->  	rt_se = rt_rq->tg->rt_se[cpu];
->  
->  	if (rt_rq->rt_nr_running) {
-> -- 
-> 2.18.0
-> 
+These should be 2 separate patches, there is no bridge: dsa:.
+Please break them into a bridge: and dsa: parts that add the flag, it also
+makes it easier for people who have to backport patches and fixes later.
+
+In addition please mention in the commit message why the flag is
+added there, i.e. in order to allow to be offloaded.
+
+Thanks,
+ Nik
+
