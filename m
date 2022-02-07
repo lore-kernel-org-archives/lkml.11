@@ -2,118 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E09C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:50:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241177AbiBGJsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:48:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
+        id S242876AbiBGJtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 04:49:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245311AbiBGJql (ORCPT
+        with ESMTP id S236371AbiBGJpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:46:41 -0500
-X-Greylist: delayed 1740 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 01:46:40 PST
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0982CC043181;
-        Mon,  7 Feb 2022 01:46:39 -0800 (PST)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2177eoFF028141;
-        Mon, 7 Feb 2022 10:46:31 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=oOSVeuiwVcknZy/uywJxudXEDah2iCuCkHFyhcMZmdY=;
- b=1rQn7010jrDIA5RFqb16ksXRsTaa3Qj53EtAqUiQd2MQKR9ifK/kzSK4oqy+lvdl+eVe
- k9FepXUCrEvLcksBBVmNB0lRC/ey9iALP8IQW9M+gvfdSWGi5BhR59UDnIfygkbsRAL7
- CmUqaIn/XfTIwJpH5LLgM6DRlWDpZQBs5xPzb089c9lMx9InYHpbYz90a0lIEAdvWqqJ
- IcOVCr9HgksQ3AcRS8C2P+LV8AMqVSdVbqctwrqlUZaWeNsTKOu/Un3RovFj9I/JIuaN
- ulizCyvlnIQYQSI/Ig0LkBo++rt+ZCVXgagN4u12l6dTcFHTYx8sjYZAp2dGwSSAsynA mw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e2fg5kd26-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 10:46:31 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id A345A10002A;
-        Mon,  7 Feb 2022 10:46:30 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 807962138C1;
-        Mon,  7 Feb 2022 10:46:30 +0100 (CET)
-Received: from [10.48.0.252] (10.75.127.45) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 7 Feb
- 2022 10:46:29 +0100
-Message-ID: <c6091ca7-2c82-7169-4a76-e1506212439a@foss.st.com>
-Date:   Mon, 7 Feb 2022 10:46:29 +0100
+        Mon, 7 Feb 2022 04:45:38 -0500
+X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 01:45:33 PST
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBF0C043181;
+        Mon,  7 Feb 2022 01:45:32 -0800 (PST)
+X-UUID: dd927d56bee2402fbb0e9691367e02e9-20220207
+X-UUID: dd927d56bee2402fbb0e9691367e02e9-20220207
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 265153567; Mon, 07 Feb 2022 17:40:27 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 7 Feb 2022 17:40:26 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 7 Feb 2022 17:40:26 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, <nfraprado@collabora.com>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+Subject: [PATCH] arm64: dts: mt8192: Add watchdog node
+Date:   Mon, 7 Feb 2022 17:40:24 +0800
+Message-ID: <20220207094024.22674-1-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 0/2] new emtrion hardware emSBC-Argon
-Content-Language: en-US
-To:     <reinhold.mueller@emtrion.com>, <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20211209104947.4647-1-reinhold.mueller@emtrion.com>
-From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-In-Reply-To: <20211209104947.4647-1-reinhold.mueller@emtrion.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_03,2022-02-07_01,2021-12-02_01
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Reinhold
+From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
 
-On 12/9/21 11:49, reinhold.mueller@emtrion.com wrote:
-> From: Reinhold Mueller <reinhold.mueller@emtrion.com>
-> 
-> This patch series adds support for the emtrion emSBC-Argon
-> 
-> Changes
-> 
-> v2:
-> [PATCH 1/2]
-> 	- replaced enum by const
-> [PATCH 2/2]
-> 	- no fixes
-> 
-> v1:
-> [PATCH 0/2]
-> 	- split former patch in dts -and yaml patches
-> [PATCH 1/2]
-> 	- no fixes
-> [PATCH 2/2]
-> 	- small modification in subject name
-> 	- node name for leds moved to led-X
-> 	- update of clocknames removed,
-> 		already defined in stm32mp151.dtsi
-> 	- removing some unneeded entries status = "disabled"
-> 	- moved pin configurations to stm32mp15-pinctrl
-> 
-> Reinhold Mueller (2):
->    dt-binding: arm/stm32: Add emtrion hardware emSBC-Argon
->    ARM: dts: stm32: Add support for the emtrion emSBC-Argon
-> 
->   .../devicetree/bindings/arm/stm32/stm32.yaml  |   6 +
->   arch/arm/boot/dts/Makefile                    |   1 +
->   arch/arm/boot/dts/stm32mp15-pinctrl.dtsi      |  92 +++
->   arch/arm/boot/dts/stm32mp157c-emsbc-argon.dts |  53 ++
->   .../boot/dts/stm32mp157c-emstamp-argon.dtsi   | 552 ++++++++++++++++++
->   5 files changed, 704 insertions(+)
->   create mode 100644 arch/arm/boot/dts/stm32mp157c-emsbc-argon.dts
->   create mode 100644 arch/arm/boot/dts/stm32mp157c-emstamp-argon.dtsi
-> 
+Add watchdog device node to MT8192 SoC.
 
-Thanks to add new STM32 board! Series applied on stm32-next.
+Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+---
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Arnd,
-This series introduces new dtbs_check errors mainly because it re-use
-nodes from existing STM32 boards. I think it is acceptable to merge it 
-as it is not "new' errors but replication of existing errors.
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+index cc3953df0153..c1d4030e7e4b 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+@@ -301,6 +301,12 @@
+ 			#interrupt-cells = <2>;
+ 		};
+ 
++		watchdog: watchdog@10007000 {
++			compatible = "mediatek,mt8192-wdt";
++			reg = <0 0x10007000 0 0x100>;
++			#reset-cells = <1>;
++		};
++
+ 		apmixedsys: syscon@1000c000 {
+ 			compatible = "mediatek,mt8192-apmixedsys", "syscon";
+ 			reg = <0 0x1000c000 0 0x1000>;
+-- 
+2.18.0
 
-Thanks
-Alex
