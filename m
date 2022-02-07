@@ -2,93 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:31:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76816C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240070AbiBGUa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:30:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50780 "EHLO
+        id S238051AbiBGUbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243033AbiBGU1z (ORCPT
+        with ESMTP id S237353AbiBGU35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:27:55 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A7BC0401DA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:27:55 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 96C5D1EC01A8;
-        Mon,  7 Feb 2022 21:27:49 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644265669;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=qfQlZszpnOZtjwDDKq/4Q/EBp4qQMckKH/pcJcQzPzs=;
-        b=KglyvPlrbWnAs+VFCQB/Cz/6r59ZcLUi4TwxC0XRBbddxh6K4TqoGW07crfq4t4qhyXbUa
-        Rn94p0mBx3gjF098KMMxieOpAZe2T5npYupxbl0Nb6v/xzpqjJExHP8QUeZs+X/TTW9l8U
-        SSQFSLdKzcrTUEagcoA9qJz5uW/lxec=
-Date:   Mon, 7 Feb 2022 21:27:43 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Luck, Tony" <tony.luck@intel.com>
-Cc:     Jue Wang <juew@google.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev
-Subject: Re: [RFC] x86/mce: Add workaround for SKX/CLX/CPX spurious machine
- checks
-Message-ID: <YgGAv/aCVG+RDADI@zn.tnic>
-References: <20220207043640.2829295-1-juew@google.com>
- <YgFqiJOU5tZsHbY6@zn.tnic>
- <YgFyBRIOIquMI2ng@agluck-desk2.amr.corp.intel.com>
+        Mon, 7 Feb 2022 15:29:57 -0500
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8DAC0401E4;
+        Mon,  7 Feb 2022 12:29:57 -0800 (PST)
+Received: by mail-oo1-f49.google.com with SMTP id i10-20020a4aab0a000000b002fccf890d5fso15092009oon.5;
+        Mon, 07 Feb 2022 12:29:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=97ZiDr1pWOIZs6a0V07Cgau+iYYDAgVzyXSEggW9BA4=;
+        b=26o6ONDiDMj4+0qrLXYrJUEFQhgULH2cmBPwBItkcMXhVFCwtNiMJT3YxvlnLT2pC8
+         PVcVX0XGQgW0XwgGchXs+Ez6wlZRHl0v1ms6beBJCP/aVktaRRUw/L9wZHegmo6w+tpU
+         mYOc4x/9ntydwWW3wMAeuUs15+onkgiAUf6ySHx7udbo3xMCvKlBjqqWHmCe1GysT5da
+         L+bfNkrlj9J4uYG6RYUwEHBqqMdD3G5cCgzV+C8CqmCiD/ReDodNEYEbsqQDVdg7vpj0
+         B6K0nAujSumhn0ZaKnC+daDllhrQuokwmxewlYgmS028XfCCe+EoTAZJVttul/jTEmBy
+         1eRA==
+X-Gm-Message-State: AOAM533+LV8iTQP0xD3QH1pwFERkCUdNYsDVk/8BGbQWdUj2aOfy8lnQ
+        ODhAqu2sgTHkBbOpdOSQTHbGCRYRNQ==
+X-Google-Smtp-Source: ABdhPJxhm8erulb0bepfDZ4zFRrkl/KUgSCcfuY9JQGf4h0LaLKEtK0zuhGspiKqRi6UXyJYQkTXpQ==
+X-Received: by 2002:a05:6870:a604:: with SMTP id e4mr235985oam.74.1644265796865;
+        Mon, 07 Feb 2022 12:29:56 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id a19sm4424207otf.27.2022.02.07.12.29.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 12:29:55 -0800 (PST)
+Received: (nullmailer pid 854530 invoked by uid 1000);
+        Mon, 07 Feb 2022 20:29:54 -0000
+Date:   Mon, 7 Feb 2022 14:29:54 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Patrick Rudolph <patrick.rudolph@9elements.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-i2c@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Peter Rosin <peda@axentia.se>
+Subject: Re: [v4 1/3] dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
+Message-ID: <YgGBQhBrMez+caA0@robh.at.kernel.org>
+References: <20220207092827.104978-1-patrick.rudolph@9elements.com>
+ <20220207092827.104978-2-patrick.rudolph@9elements.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YgFyBRIOIquMI2ng@agluck-desk2.amr.corp.intel.com>
+In-Reply-To: <20220207092827.104978-2-patrick.rudolph@9elements.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 11:24:53AM -0800, Luck, Tony wrote:
-> I suggested breaking it out as a helper to make the
-> code easier to read.
-
-We have waaay too many small helpers. I guess it is just as readable if
-you do in the function:
-
-	bool is_intel_srar = mci_status &
-			(MCI_STATUS_VAL|MCI_STATUS_OVER|MCI_STATUS_UC|MCI_STATUS_EN|
-			(MCI_STATUS_ADDRV|MCI_STATUS_MISCV|MCI_STATUS_PCC|
-			 MCI_STATUS_AR|MCI_STATUS_S)) ==
-			(MCI_STATUS_VAL|MCI_STATUS_UC|MCI_STATUS_EN|MCI_STATUS_ADDRV|
-			 MCI_STATUS_MISCV|MCI_STATUS_AR|MCI_STATUS_S);
-
-> X86_FEATURE_FSRM is a different (but confusingly simlilar) feature.
+On Mon, 07 Feb 2022 10:28:24 +0100, Patrick Rudolph wrote:
+> Update the pca954x bindings to add support for the Maxim MAX735x/MAX736x
+> chips. The functionality will be provided by the exisintg pca954x driver.
 > 
-> The MSR is per-thread. So the write only disabled the fast string
-> operation on this one logical CPU. So the per-cpu srar_dcu_signaled
-> variable is just to avoid getting into a loop when this #MC isn't
-> because of a REP MOVS peeking at things it shouldn't.
-
-In that case, you can just as well test the MSR bit directly
-MSR_IA32_MISC_ENABLE_FAST_STRING_BIT. If it set, you clear it, done.
-
-> Maybe this would be more human friendly?
+> While on it make the interrupts support conditionally as not all of the
+> existing chips have interrupts.
 > 
-> 		pr_err("CPU%d: Performance now degraded after applying machine check workaround\n",
-> 			smp_processor_id());
+> For chips that are powered off by default add an optional regulator
+> called vdd-supply.
+> 
+> Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+> ---
+>  .../bindings/i2c/i2c-mux-pca954x.yaml         | 44 ++++++++++++++-----
+>  1 file changed, 34 insertions(+), 10 deletions(-)
+> 
 
-Well, is there an erratum you can refer to in it instead?
-
-Explaining the whole deal in a single error message is hard and almost
-certainly insufficient.
-
-Also, what's the use of that message issuing once on every CPU? Instead
-of being a _once() message?
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Reviewed-by: Rob Herring <robh@kernel.org>
