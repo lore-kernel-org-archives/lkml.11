@@ -2,97 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DABF5C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA21CC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356102AbiBGQ7R (ORCPT
+        id S1356476AbiBGQ7T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:59:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53500 "EHLO
+        Mon, 7 Feb 2022 11:59:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391951AbiBGQtW (ORCPT
+        with ESMTP id S1390804AbiBGQvG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:49:22 -0500
-X-Greylist: delayed 136 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 08:49:18 PST
-Received: from p3plsmtpa09-10.prod.phx3.secureserver.net (p3plsmtpa09-10.prod.phx3.secureserver.net [173.201.193.239])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA0A9C0401D1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:49:18 -0800 (PST)
-Received: from localhost ([82.17.115.212])
-        by :SMTPAUTH: with ESMTPA
-        id H7AKnDbUXApSlH7ALnd9Bd; Mon, 07 Feb 2022 09:47:01 -0700
-X-CMAE-Analysis: v=2.4 cv=G8PZr/o5 c=1 sm=1 tr=0 ts=62014d05
- a=9gipVNR6X1CoIeAWHwLoWw==:117 a=9gipVNR6X1CoIeAWHwLoWw==:17
- a=IkcTkHD0fZMA:10 a=2kAAarxy9VumCd_w3i8A:9 a=QEXdDO2ut3YA:10
-X-SECURESERVER-ACCT: atomlin@atomlin.com
-Date:   Mon, 7 Feb 2022 16:46:59 +0000
-From:   Aaron Tomlin <atomlin@atomlin.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        "cl@linux.com" <cl@linux.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "ghalat@redhat.com" <ghalat@redhat.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "void@manifault.com" <void@manifault.com>,
-        "joe@perches.com" <joe@perches.com>
-Subject: Re: [RFC PATCH v4 00/13] module: core code clean up
-Message-ID: <20220207164659.ap42at2nphxu4q6o@ava.usersys.com>
-References: <20220130213214.1042497-1-atomlin@redhat.com>
- <Yfsf2SGELhQ71Ovo@bombadil.infradead.org>
- <1ae3a950-8c1e-a212-e557-8f112a16457d@csgroup.eu>
+        Mon, 7 Feb 2022 11:51:06 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3636C0401D1;
+        Mon,  7 Feb 2022 08:51:05 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: adalessandro)
+        with ESMTPSA id 1B6861F43CA7
+From:   Apertis package maintainers <packagers@lists.apertis.org>
+To:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
+        linux-imx@nxp.com, linux-kernel@vger.kernel.org
+Cc:     ariel.dalessandro@collabora.com, broonie@kernel.org,
+        festevam@gmail.com, krzysztof.kozlowski@canonical.com,
+        lgirdwood@gmail.com, michael@amarulasolutions.com,
+        robh+dt@kernel.org, s.hauer@pengutronix.de, shawnguo@kernel.org
+Subject: [PATCH 2/2] arm64: dts: imx8mn-bsh-smm-s2pro: Add tlv320aic31xx audio card node
+Date:   Mon,  7 Feb 2022 13:49:46 -0300
+Message-Id: <20220207164946.558862-2-packagers@lists.apertis.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220207164946.558862-1-packagers@lists.apertis.org>
+References: <20220207164946.558862-1-packagers@lists.apertis.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1ae3a950-8c1e-a212-e557-8f112a16457d@csgroup.eu>
-X-CMAE-Envelope: MS4xfIIP/gozzRca46HAMgtbNxlM88SmUAYVFUTUVULzz9RI4E7KbG7Hppy3y3R5XZmICdyxGrEHvphguxwTZchx6L/p5YdM0Qgkpprm0S/IYGXhaQO3uTh0
- U3khktuuYFCAW64IolFGGSSJODOc6JcJcEmdyO6pnzDbg99NgnlPqASloJQzFlIOUVMz2hPd4t8lO/Puzu05agrXl9AnQK/swFoI4iX1anmHlkK5x2K7wie8
- ohK9ppjHkxyhsH1iBp8LehTSInyBQOSh0eeL0yFPMGRqHLYXIp0cwldrRO6B9Td/cC0BYRR/SRSk/ldy4aT9T0PzWrfOfYjxAB6pgw20wTZFD74YfZxxqY0Z
- RxkBIwxHFCqnj8daSf1AA0ZE39fymqZKiZ4aqSaw41PZg5wxtQOrWZK5nKv7PgieTLHmm9TPItv0MHXem4GI0R38HSm+pkheSljgQPsBmcfAB78H79/hTMrm
- bzGbM2Jr8d2j4BiGwKZVZrJHXoek1t21/0rW/JYL+CdAxZl+cqeHekwEKgrOVgsddZmDRWe5DttopKpMwDQJoITHS1rgVfonXVYSgyKJKqiwOrMbAUaFSVTa
- Ph7rC1IHzL+kp/6gpdNWcMOPccsH+4B6exgW23xr9vcWyBZgTW8k/+un3AM6+txgW9g=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 2022-02-03 18:01 +0000, Christophe Leroy wrote:
-> I don't know exactly what was the motivation for commit 93651f80dcb6 
-> ("modules: fix compile error if don't have strict module rwx") at the 
-> first place but it is just wrong and we should fix it.
+From: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
 
-Christophe,
+BSH SystemMaster (SMM) S2 PRO board comes with an audio card based on
+tlv320aic31xx family codec.
 
-I think we are in agreement. If I understand correctly, it should not be
-possible to enable CONFIG_STRICT_MODULE_RWX without
-CONFIG_ARCH_HAS_STRICT_MODULE_RWX (or inversely), as per arch/Kconfig:
+The audio card exposes two playback devices, one of them using the EASRC
+(Enhanced Asynchronous Sample Rate Converter) module. Note that this
+would require SDMA and EASRC firmware in order to work.
 
-  config STRICT_MODULE_RWX
-	  bool "Set loadable kernel module data as NX and text as RO" if ARCH_OPTIONAL_KERNEL_RWX
-	  depends on ARCH_HAS_STRICT_MODULE_RWX && MODULES
-	  default !ARCH_OPTIONAL_KERNEL_RWX || ARCH_OPTIONAL_KERNEL_RWX_DEFAULT
+Signed-off-by: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+---
+ .../dts/freescale/imx8mn-bsh-smm-s2pro.dts    | 94 +++++++++++++++++++
+ 1 file changed, 94 insertions(+)
 
-The objective of Linus' commit ad21fc4faa2a1 ("arch: Move
-CONFIG_DEBUG_RODATA and CONFIG_SET_MODULE_RONX to be common") and in
-particular commit 0f5bf6d0afe4b ("arch: Rename CONFIG_DEBUG_RODATA and
-CONFIG_DEBUG_MODULE_RONX") does seem correct. So, architectures that would
-prefer to make this feature selectable rather than enabled by default
-should continue to have this option.
-
-> module_enable_x() should work just fine regardless of 
-> CONFIG_ARCH_HAS_STRICT_MODULE_RWX.
-
-As per the above, we should fix commit 93651f80dcb6 ("modules: fix compile
-error if don't have strict module rwx") so a stub for module_enable_x()
-would no longer be required, right?
-
-
-Kind regards,
-
+diff --git a/arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dts b/arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dts
+index c6a8ed6745c1..3621354b4a92 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dts
+@@ -7,6 +7,7 @@
+ /dts-v1/;
+ 
+ #include "imx8mn-bsh-smm-s2-common.dtsi"
++#include <dt-bindings/sound/tlv320aic31xx.h>
+ 
+ / {
+ 	model = "BSH SMM S2 PRO";
+@@ -16,6 +17,69 @@ memory@40000000 {
+ 		device_type = "memory";
+ 		reg = <0x0 0x40000000 0x0 0x20000000>;
+ 	};
++
++	sound-tlv320aic31xx {
++		compatible = "fsl,imx-audio-tlv320aic31xx";
++		model = "tlv320aic31xx-hifi";
++		audio-cpu = <&sai3>;
++		audio-codec = <&codec>;
++		audio-asrc = <&easrc>;
++		audio-routing =
++			"Ext Spk", "SPL",
++			"Ext Spk", "SPR";
++		mclk-id = <PLL_CLKIN_BCLK>;
++	};
++
++	vdd_input: vdd_input {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd_input";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++	};
++};
++
++&easrc {
++	fsl,asrc-rate  = <48000>;
++	fsl,asrc-format = <10>;
++	status = "okay";
++};
++
++&i2c2 {
++	clock-frequency = <400000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c2>;
++	status = "okay";
++
++	codec: tlv320dac3101@18 {
++		#sound-dai-cells = <0>;
++		compatible = "ti,tlv320dac3101";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_dac_rst>;
++		reg = <0x18>;
++
++		ai31xx-micbias-vg = <MICBIAS_AVDDV>;
++
++		HPVDD-supply = <&buck4_reg>;
++		SPRVDD-supply = <&vdd_input>;
++		SPLVDD-supply = <&vdd_input>;
++		AVDD-supply = <&buck4_reg>;
++		IOVDD-supply = <&buck4_reg>;
++		DVDD-supply = <&buck5_reg>;
++		reset-gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
++
++		clocks = <&clk IMX8MN_CLK_SAI3_ROOT>;
++		clock-names = "mclk";
++	};
++};
++
++&sai3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_sai3>;
++	assigned-clocks = <&clk IMX8MN_CLK_SAI3>;
++	assigned-clock-parents = <&clk IMX8MN_AUDIO_PLL1_OUT>;
++	assigned-clock-rates = <24576000>;
++	fsl,sai-mclk-direction-output;
++	status = "okay";
+ };
+ 
+ /* eMMC */
+@@ -30,6 +94,36 @@ &usdhc1 {
+ };
+ 
+ &iomuxc {
++	pinctrl_dac_rst: dac_rst {
++		fsl,pins = <
++			MX8MN_IOMUXC_GPIO1_IO06_GPIO1_IO6		0x19 /* DAC_RST */
++		>;
++	};
++
++	pinctrl_espi2: espi2grp {
++		fsl,pins = <
++			MX8MN_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK            0x082
++			MX8MN_IOMUXC_ECSPI2_MOSI_ECSPI2_MOSI            0x082
++			MX8MN_IOMUXC_ECSPI2_MISO_ECSPI2_MISO            0x082
++			MX8MN_IOMUXC_ECSPI2_SS0_ECSPI2_SS0		0x040
++		>;
++	};
++
++	pinctrl_i2c2: i2c2grp {
++		fsl,pins = <
++			MX8MN_IOMUXC_I2C2_SCL_I2C2_SCL			0x400000c3
++			MX8MN_IOMUXC_I2C2_SDA_I2C2_SDA			0x400000c3
++		>;
++	};
++
++	pinctrl_sai3: sai3grp {
++		fsl,pins = <
++			MX8MN_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC		0xd6
++			MX8MN_IOMUXC_SAI3_TXC_SAI3_TX_BCLK		0xd6
++			MX8MN_IOMUXC_SAI3_TXD_SAI3_TX_DATA0		0xd6
++		>;
++	};
++
+ 	pinctrl_usdhc1: usdhc1grp {
+ 		fsl,pins = <
+ 			MX8MN_IOMUXC_SD1_CLK_USDHC1_CLK			0x40000090
 -- 
-Aaron Tomlin
+2.34.1
+
