@@ -2,216 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7870C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D1FC35273
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354760AbiBGGiT (ORCPT
+        id S1353648AbiBGGhw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:38:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33358 "EHLO
+        Mon, 7 Feb 2022 01:37:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241891AbiBGGeB (ORCPT
+        with ESMTP id S237034AbiBGGdR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:34:01 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA12C043184;
-        Sun,  6 Feb 2022 22:34:00 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id y7so5129950plp.2;
-        Sun, 06 Feb 2022 22:34:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=+MqqM6tGyjbKjTboDXjFmiWET4pIP1qrQBFIZ6c46cU=;
-        b=P5bnYBJfDsOkUTYIaJSy2VvWW6Wvh+nbRYCQSGnR2534RfjwGkvzzMq4LHkL2/jvmL
-         IGGGq5CA3TPG8U3jqleottZ+CMFBfuUOjh5soppe68jXg92Z2Gq/EHXhqaSbR4TbSNjc
-         Sn/dOR7lMKK9jfaaFuAfp9LrNl3FnJiYagFq/S30TNOh49id2d83TOe9VOHVhr8Nl2IR
-         cbptwC0i/cY2aoZZDSP23ZLSGUaPLVRE7ZJtmdOGFoBPIzMuQ0pAx0aLHIlg2D7cxD1f
-         JlGfOEXt1DSzUFGy6PJkxGN9H/9ALtDSKzXH2nD+dHDWUwX+D+it29GLEwPa5RdCVAAb
-         bh4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=+MqqM6tGyjbKjTboDXjFmiWET4pIP1qrQBFIZ6c46cU=;
-        b=j3mJqauV5vtCsmEAmakEXJ05xapjxKuyoTbqdoW3A8GObnYc+b7fLbjRzlwJpkSsyo
-         xJ0wXs/uuLkGSFvVQrIkmN3FQurC9T/gi5uLo6iRiU2Y6/x+vUR+KUdZbY8VPqJ9V9nn
-         7BcCoc10BY2RU3jpqPNeqmQpZ9D8T6FLW57dJzzL0f2amIrf9gr6FbBGR8nkePIaUTaz
-         j9KgbPpmd2ckndR5mxXNRVfUizePX2e54e/8hEja9oyhyRe2vXsvgC0M55VXYnqe5Mf/
-         ZzLL10RYC0/+KUHNnV7HaluaTXmhjyr7aUlE3/nLXgurkf7xKjJTT/UTAQ0jxJhplo2T
-         BtjQ==
-X-Gm-Message-State: AOAM531SDiDbQY79JznTxVg9cUnETP9qKtjXXiNoRFGy9IVNKqGwGdku
-        3r0lOCs6AhyGmetD6dm9oXjRqXGuXMfjMlw=
-X-Google-Smtp-Source: ABdhPJxlUUaid24a39E6u5RfKpUrqK+tScS5xaa9m6Q/VX1CeNlx7GBM6zh5bvKdVgUmtzRktoxi6g==
-X-Received: by 2002:a17:902:d641:: with SMTP id y1mr14826366plh.64.1644215639633;
-        Sun, 06 Feb 2022 22:33:59 -0800 (PST)
-Received: from localhost ([2401:e180:8894:9737:7848:1ec7:b697:7d50])
-        by smtp.gmail.com with ESMTPSA id e14sm10546295pfv.219.2022.02.06.22.33.58
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 06 Feb 2022 22:33:59 -0800 (PST)
-From:   Tyrone Ting <warp5tw@gmail.com>
-To:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
-        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
-        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
-        olof@lixom.net, andriy.shevchenko@linux.intel.com,
-        warp5tw@gmail.com, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com
-Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 5/6] i2c: npcm: Remove own slave addresses 2:10
-Date:   Mon,  7 Feb 2022 14:33:37 +0800
-Message-Id: <20220207063338.6570-6-warp5tw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220207063338.6570-1-warp5tw@gmail.com>
-References: <20220207063338.6570-1-warp5tw@gmail.com>
+        Mon, 7 Feb 2022 01:33:17 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36474C0401C2
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:33:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=bye3hAU4tARWJK8GmttNb5Jb+L/Xg96ScGQILFEZXqw=; b=hsJ7H9lud+lJDZXvl9Bclp2Nqf
+        7jlPjB3wm3Z5RnVEJNWD8OVt91a6wwmFBSrcXW/E+1s+bvv/JNDulU7CkWa0kVtiZmFU2OuT5Ybm3
+        vyx5w+ZFrQlmXczMoI5kDDlIEt2+e7OgRqvnhALgxZJaiuBkzEUeBek5tlsNs5TnOG5Ar0cWEwd/b
+        wxIcQQlRyGpDNQaZdj2p+JNAu8ke5GtIOqd3VEK85teirrOPsAyJ4k+Pn888fsrx+UTw5x0ZPAHkK
+        bGRYmlzn8b7/29Y1/dmntmyxysGYtek4tnWS1yLQdmp/OR1mWJUTCwCs33K3C5ulw6SK1H2S8TZqI
+        bEEL+rEA==;
+Received: from [2001:4bb8:188:3efc:2cbe:55d7:bb63:46d2] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nGxa7-0099Iq-NG; Mon, 07 Feb 2022 06:33:00 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Dan Williams <dan.j.williams@intel.com>
+Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Alistair Popple <apopple@nvidia.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org
+Subject: [PATCH 3/8] mm: remove pointless includes from <linux/hmm.h>
+Date:   Mon,  7 Feb 2022 07:32:44 +0100
+Message-Id: <20220207063249.1833066-4-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220207063249.1833066-1-hch@lst.de>
+References: <20220207063249.1833066-1-hch@lst.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tali Perry <tali.perry1@gmail.com>
+hmm.h pulls in the world for no good reason at all.  Remove the
+includes and push a few ones into the users instead.
 
-NPCM can support up to 10 own slave addresses.
-In practice, only one address is actually being used.
-In order to access addresses 2 and above, need to switch
-register banks. The switch needs spinlock.
-To avoid using spinlock for this useless feature
-removed support of SA >= 2.
-
-Also fix returned slave event enum.
-
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/i2c/busses/i2c-npcm7xx.c | 44 +++++++++++++++++---------------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_migrate.c | 1 +
+ drivers/gpu/drm/nouveau/nouveau_dmem.c   | 1 +
+ include/linux/hmm.h                      | 9 ++-------
+ lib/test_hmm.c                           | 2 ++
+ 4 files changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
-index 1ddf309b91a3..0af97f179af2 100644
---- a/drivers/i2c/busses/i2c-npcm7xx.c
-+++ b/drivers/i2c/busses/i2c-npcm7xx.c
-@@ -124,6 +124,8 @@ enum i2c_addr {
-  * use this array to get the address or each register.
-  */
- #define I2C_NUM_OWN_ADDR 10
-+#define I2C_NUM_OWN_ADDR_SUPPORTED 2
-+
- static const int npcm_i2caddr[I2C_NUM_OWN_ADDR] = {
- 	NPCM_I2CADDR1, NPCM_I2CADDR2, NPCM_I2CADDR3, NPCM_I2CADDR4,
- 	NPCM_I2CADDR5, NPCM_I2CADDR6, NPCM_I2CADDR7, NPCM_I2CADDR8,
-@@ -393,13 +395,11 @@ static void npcm_i2c_disable(struct npcm_i2c *bus)
- 	int i;
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_migrate.c b/drivers/gpu/drm/amd/amdkfd/kfd_migrate.c
+index ed5385137f4831..cb835f95a76e66 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_migrate.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_migrate.c
+@@ -24,6 +24,7 @@
+ #include <linux/hmm.h>
+ #include <linux/dma-direction.h>
+ #include <linux/dma-mapping.h>
++#include <linux/migrate.h>
+ #include "amdgpu_sync.h"
+ #include "amdgpu_object.h"
+ #include "amdgpu_vm.h"
+diff --git a/drivers/gpu/drm/nouveau/nouveau_dmem.c b/drivers/gpu/drm/nouveau/nouveau_dmem.c
+index 3828aafd3ac46f..e886a3b9e08c7d 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_dmem.c
++++ b/drivers/gpu/drm/nouveau/nouveau_dmem.c
+@@ -39,6 +39,7 @@
  
- 	/* select bank 0 for I2C addresses */
--	npcm_i2c_select_bank(bus, I2C_BANK_0);
+ #include <linux/sched/mm.h>
+ #include <linux/hmm.h>
++#include <linux/migrate.h>
  
- 	/* Slave addresses removal */
--	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR; i++)
-+	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR_SUPPORTED; i++)
- 		iowrite8(0, bus->reg + npcm_i2caddr[i]);
+ /*
+  * FIXME: this is ugly right now we are using TTM to allocate vram and we pin
+diff --git a/include/linux/hmm.h b/include/linux/hmm.h
+index 2fd2e91d5107c0..d5a6f101f843e6 100644
+--- a/include/linux/hmm.h
++++ b/include/linux/hmm.h
+@@ -9,14 +9,9 @@
+ #ifndef LINUX_HMM_H
+ #define LINUX_HMM_H
  
--	npcm_i2c_select_bank(bus, I2C_BANK_1);
- #endif
- 	/* Disable module */
- 	i2cctl2 = ioread8(bus->reg + NPCM_I2CCTL2);
-@@ -604,8 +604,7 @@ static int npcm_i2c_slave_enable(struct npcm_i2c *bus, enum i2c_addr addr_type,
- 			i2cctl1 &= ~NPCM_I2CCTL1_GCMEN;
- 		iowrite8(i2cctl1, bus->reg + NPCM_I2CCTL1);
- 		return 0;
--	}
--	if (addr_type == I2C_ARP_ADDR) {
-+	} else if (addr_type == I2C_ARP_ADDR) {
- 		i2cctl3 = ioread8(bus->reg + NPCM_I2CCTL3);
- 		if (enable)
- 			i2cctl3 |= I2CCTL3_ARPMEN;
-@@ -614,16 +613,18 @@ static int npcm_i2c_slave_enable(struct npcm_i2c *bus, enum i2c_addr addr_type,
- 		iowrite8(i2cctl3, bus->reg + NPCM_I2CCTL3);
- 		return 0;
- 	}
-+	if (addr_type > I2C_SLAVE_ADDR2 && addr_type <= I2C_SLAVE_ADDR10) {
-+		dev_err(bus->dev,
-+			"try to enable more then 2 SA not supported\n");
-+	}
- 	if (addr_type >= I2C_ARP_ADDR)
- 		return -EFAULT;
- 	/* select bank 0 for address 3 to 10 */
--	if (addr_type > I2C_SLAVE_ADDR2)
--		npcm_i2c_select_bank(bus, I2C_BANK_0);
-+
- 	/* Set and enable the address */
- 	iowrite8(sa_reg, bus->reg + npcm_i2caddr[addr_type]);
- 	npcm_i2c_slave_int_enable(bus, enable);
--	if (addr_type > I2C_SLAVE_ADDR2)
--		npcm_i2c_select_bank(bus, I2C_BANK_1);
-+
- 	return 0;
- }
- #endif
-@@ -846,15 +847,13 @@ static u8 npcm_i2c_get_slave_addr(struct npcm_i2c *bus, enum i2c_addr addr_type)
- {
- 	u8 slave_add;
+-#include <linux/kconfig.h>
+-#include <linux/pgtable.h>
++#include <linux/mm.h>
  
--	/* select bank 0 for address 3 to 10 */
--	if (addr_type > I2C_SLAVE_ADDR2)
--		npcm_i2c_select_bank(bus, I2C_BANK_0);
-+	if (addr_type > I2C_SLAVE_ADDR2 && addr_type <= I2C_SLAVE_ADDR10) {
-+		dev_err(bus->dev,
-+			"get slave: try to use more then 2 slave addresses not supported\n");
-+	}
+-#include <linux/device.h>
+-#include <linux/migrate.h>
+-#include <linux/memremap.h>
+-#include <linux/completion.h>
+-#include <linux/mmu_notifier.h>
++struct mmu_interval_notifier;
  
- 	slave_add = ioread8(bus->reg + npcm_i2caddr[(int)addr_type]);
+ /*
+  * On output:
+diff --git a/lib/test_hmm.c b/lib/test_hmm.c
+index 767538089a62e4..396beee6b061d4 100644
+--- a/lib/test_hmm.c
++++ b/lib/test_hmm.c
+@@ -26,6 +26,8 @@
+ #include <linux/sched/mm.h>
+ #include <linux/platform_device.h>
+ #include <linux/rmap.h>
++#include <linux/mmu_notifier.h>
++#include <linux/migrate.h>
  
--	if (addr_type > I2C_SLAVE_ADDR2)
--		npcm_i2c_select_bank(bus, I2C_BANK_1);
--
- 	return slave_add;
- }
+ #include "test_hmm_uapi.h"
  
-@@ -864,12 +863,12 @@ static int npcm_i2c_remove_slave_addr(struct npcm_i2c *bus, u8 slave_add)
- 
- 	/* Set the enable bit */
- 	slave_add |= 0x80;
--	npcm_i2c_select_bank(bus, I2C_BANK_0);
--	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR; i++) {
-+
-+	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR_SUPPORTED; i++) {
- 		if (ioread8(bus->reg + npcm_i2caddr[i]) == slave_add)
- 			iowrite8(0, bus->reg + npcm_i2caddr[i]);
- 	}
--	npcm_i2c_select_bank(bus, I2C_BANK_1);
-+
- 	return 0;
- }
- 
-@@ -924,11 +923,15 @@ static int npcm_i2c_slave_get_wr_buf(struct npcm_i2c *bus)
- 	for (i = 0; i < I2C_HW_FIFO_SIZE; i++) {
- 		if (bus->slv_wr_size >= I2C_HW_FIFO_SIZE)
- 			break;
--		i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
-+		if (bus->state == I2C_SLAVE_MATCH) {
-+			i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
-+			bus->state = I2C_OPER_STARTED;
-+		} else {
-+			i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
-+		}
- 		ind = (bus->slv_wr_ind + bus->slv_wr_size) % I2C_HW_FIFO_SIZE;
- 		bus->slv_wr_buf[ind] = value;
- 		bus->slv_wr_size++;
--		i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
- 	}
- 	return I2C_HW_FIFO_SIZE - ret;
- }
-@@ -976,7 +979,6 @@ static void npcm_i2c_slave_xmit(struct npcm_i2c *bus, u16 nwrite,
- 	if (nwrite == 0)
- 		return;
- 
--	bus->state = I2C_OPER_STARTED;
- 	bus->operation = I2C_WRITE_OPER;
- 
- 	/* get the next buffer */
 -- 
-2.17.1
+2.30.2
 
