@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FCBC3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D58E0C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378390AbiBGQAB (ORCPT
+        id S1378261AbiBGQAA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:00:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
+        Mon, 7 Feb 2022 11:00:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239857AbiBGP6r (ORCPT
+        with ESMTP id S238444AbiBGP6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:58:47 -0500
+        Mon, 7 Feb 2022 10:58:38 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30880C0401CF
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:58:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4BD0FC0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:58:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249526;
+        s=mimecast20190719; t=1644249517;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JIz72i323mNLi2DkTwdrDXZhWqpT5EG0EiEDO8eaza0=;
-        b=Q2UMtfD/dqUHrm6Uq45HfDH27v2JGBDZjBGgqTuUdUYIn39LHUOtsCooloR5DDW1Xn+ZiA
-        Jrx1QaTEBwxC5M/0i6JZ5M3A2QZ5vpHu73PH+KjvRQ3eDO/cVtJ+pKgkGuFSnGDKqp7Byq
-        D7cpXjC06KpvQbpR5HuNcRjyz4Gopm4=
+        bh=WZW9E72jh7L2Mkny6o+vpEWPJ8Jc7Yzvnii4XswRCco=;
+        b=TImUIBmmKlnPFJb+y34X9rn2bqcRQFZMmwrvA/e7hANyr7cupt1Zh6PDcqFa1YUQPS23Sl
+        EQqCIbEf4qq7AGXFEML7X0Fs4xRT+TNTF6nA+7k67y4/cntvdY28VEoCb+T6BtJ3dKysDC
+        NFDUGitD720N1IW8Wh4XWxf+6NZ/NSg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-624-1uywd_D1N1C3NLAYKqlggA-1; Mon, 07 Feb 2022 10:58:43 -0500
-X-MC-Unique: 1uywd_D1N1C3NLAYKqlggA-1
+ us-mta-102-ItZjqKbCO7yGGgBJ6tjfpA-1; Mon, 07 Feb 2022 10:58:34 -0500
+X-MC-Unique: ItZjqKbCO7yGGgBJ6tjfpA-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E95F4814503;
-        Mon,  7 Feb 2022 15:58:39 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 896937DE5C;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 293E6192FDB5;
         Mon,  7 Feb 2022 15:58:31 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.192.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A20C67DE38;
+        Mon,  7 Feb 2022 15:57:48 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>,
@@ -67,9 +67,9 @@ Cc:     Tony Luck <tony.luck@intel.com>,
         Kan Liang <kan.liang@linux.intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 16/30] KVM: x86: SVM: allow to force AVIC to be enabled
-Date:   Mon,  7 Feb 2022 17:54:33 +0200
-Message-Id: <20220207155447.840194-17-mlevitsk@redhat.com>
+Subject: [PATCH RESEND 15/30] KVM: x86: SVM: remove avic's broken code that updated APIC ID
+Date:   Mon,  7 Feb 2022 17:54:32 +0200
+Message-Id: <20220207155447.840194-16-mlevitsk@redhat.com>
 In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
 References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
@@ -79,47 +79,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Apparently on some systems AVIC is disabled in CPUID but still usable.
-
-Allow the user to override the CPUID if the user is willing to
-take the risk.
+Now that KVM doesn't allow to change APIC ID in case AVIC is
+enabled, remove buggy AVIC code that tried to do so.
 
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/svm/svm.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ arch/x86/kvm/svm/avic.c | 35 -----------------------------------
+ 1 file changed, 35 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 85035324ed762..b88ca7f07a0fc 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -202,6 +202,9 @@ module_param(tsc_scaling, int, 0444);
- static bool avic;
- module_param(avic, bool, 0444);
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index 8f23e7d239097..768252b3dfee6 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -440,35 +440,6 @@ static int avic_handle_ldr_update(struct kvm_vcpu *vcpu)
+ 	return ret;
+ }
  
-+static bool force_avic;
-+module_param_unsafe(force_avic, bool, 0444);
-+
- bool __read_mostly dump_invalid_vmcb;
- module_param(dump_invalid_vmcb, bool, 0644);
+-static int avic_handle_apic_id_update(struct kvm_vcpu *vcpu)
+-{
+-	u64 *old, *new;
+-	struct vcpu_svm *svm = to_svm(vcpu);
+-	u32 id = kvm_xapic_id(vcpu->arch.apic);
+-
+-	if (vcpu->vcpu_id == id)
+-		return 0;
+-
+-	old = avic_get_physical_id_entry(vcpu, vcpu->vcpu_id);
+-	new = avic_get_physical_id_entry(vcpu, id);
+-	if (!new || !old)
+-		return 1;
+-
+-	/* We need to move physical_id_entry to new offset */
+-	*new = *old;
+-	*old = 0ULL;
+-	to_svm(vcpu)->avic_physical_id_cache = new;
+-
+-	/*
+-	 * Also update the guest physical APIC ID in the logical
+-	 * APIC ID table entry if already setup the LDR.
+-	 */
+-	if (svm->ldr_reg)
+-		avic_handle_ldr_update(vcpu);
+-
+-	return 0;
+-}
+-
+ static void avic_handle_dfr_update(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+@@ -488,10 +459,6 @@ static int avic_unaccel_trap_write(struct vcpu_svm *svm)
+ 				AVIC_UNACCEL_ACCESS_OFFSET_MASK;
  
-@@ -4839,10 +4842,14 @@ static __init int svm_hardware_setup(void)
- 			nrips = false;
- 	}
+ 	switch (offset) {
+-	case APIC_ID:
+-		if (avic_handle_apic_id_update(&svm->vcpu))
+-			return 0;
+-		break;
+ 	case APIC_LDR:
+ 		if (avic_handle_ldr_update(&svm->vcpu))
+ 			return 0;
+@@ -584,8 +551,6 @@ int avic_init_vcpu(struct vcpu_svm *svm)
  
--	enable_apicv = avic = avic && npt_enabled && boot_cpu_has(X86_FEATURE_AVIC);
-+	enable_apicv = avic = avic && npt_enabled && (boot_cpu_has(X86_FEATURE_AVIC) || force_avic);
- 
- 	if (enable_apicv) {
--		pr_info("AVIC enabled\n");
-+		if (!boot_cpu_has(X86_FEATURE_AVIC)) {
-+			pr_warn("AVIC is not supported in CPUID but force enabled");
-+			pr_warn("Your system might crash and burn");
-+		} else
-+			pr_info("AVIC enabled\n");
- 
- 		amd_iommu_register_ga_log_notifier(&avic_ga_log_notifier);
- 	} else {
+ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu)
+ {
+-	if (avic_handle_apic_id_update(vcpu) != 0)
+-		return;
+ 	avic_handle_dfr_update(vcpu);
+ 	avic_handle_ldr_update(vcpu);
+ }
 -- 
 2.26.3
 
