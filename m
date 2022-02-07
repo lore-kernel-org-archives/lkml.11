@@ -2,150 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3ACC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49317C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353677AbiBGQOf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:14:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
+        id S229690AbiBGQOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:14:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345732AbiBGQJz (ORCPT
+        with ESMTP id S239346AbiBGQJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:09:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9EEC0401E3;
-        Mon,  7 Feb 2022 08:09:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54EABB81620;
-        Mon,  7 Feb 2022 16:09:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B487C36AE2;
-        Mon,  7 Feb 2022 16:09:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644250185;
-        bh=zmd2o9oLA0EJ0hPOoSHeAgUAtJ/i5oTwZaJJrykDlgM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mJSTsCnbTI3gwg/8BhSVQ+RBGPrG+psB6hlPxH2TkERftMdOHpsCZTo5MNoeifO1L
-         oFrULqWEX0iWf+gGMaZH2QDadFBqmSGfutMMDcVyYKu0uwtxsIRlZPSsWP+XN7t+gA
-         r8OaZctUL0ilvXmdCUeQTDILiTKRgaqk5rtCiY+MEkaT+0HodiWd37fMVWTP+uaeya
-         0zU4tVUBj2JvaEpJfySAVL5/b0dWuwoC3v8xANFI6+v+VCvFYfU5v4dcOruIH8co/X
-         Je4AJeG6Vl3Vyo+7Euuk3LCkuySqicc0lRH4jodrf47WNRi/RLTPmyAnNHDKac1GqM
-         dpmi98M+KgR3A==
-Received: by mail-ed1-f42.google.com with SMTP id f17so14004784edd.2;
-        Mon, 07 Feb 2022 08:09:45 -0800 (PST)
-X-Gm-Message-State: AOAM532O3hG1AOvJ2wvbh2SeBUlFdEsZYiP3JcIBVdw+BfdP1NoWV6yQ
-        ZcWy/S4q7xQoelYZctvy2uOm66fB5C2TE5QfGA==
-X-Google-Smtp-Source: ABdhPJxkzi+j5PDhmc4PGrG364yBx0Lt608JLV09wibWGr9XJBFhwpweKp1UvdU3JzJzVyrWRoTz/EIpL6vQYPBMLKo=
-X-Received: by 2002:a50:e68d:: with SMTP id z13mr160190edm.307.1644250183395;
- Mon, 07 Feb 2022 08:09:43 -0800 (PST)
+        Mon, 7 Feb 2022 11:09:22 -0500
+X-Greylist: delayed 1076 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 08:09:21 PST
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58757C0401D2;
+        Mon,  7 Feb 2022 08:09:21 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 95CCC340;
+        Mon,  7 Feb 2022 17:09:19 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644250159;
+        bh=4a6oyH40Csn50dUhVk1KKkhWqQ+bT0AQuD8nF5SL40Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BjnDuSwJb7zSiLkq8jUPy87i86c/x8YPcQgITE7qtB6aMKmQkRGRJBy/mXUrT5wiS
+         UFKmU9sVo1jhp1siSPFBNdhP5/+HTcmDw/ZJG72onGz6ggZMRoSmaOzYuUutBa/+5+
+         TQPkXjgQ4skbl4oTC1mFEoZ3pUrC0BOs7fpCsuW8=
+Date:   Mon, 7 Feb 2022 18:09:17 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 08/66] dt-bindings: media: Add Allwinner A31 MIPI
+ CSI-2 bindings documentation
+Message-ID: <YgFELcVluEqr9LAH@pendragon.ideasonboard.com>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-9-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-References: <20211129173637.303201-1-robh@kernel.org> <Yf2wTLjmcRj+AbDv@xps13.dannf>
- <CAL_Jsq+4b4Yy8rJGJv9j9j_TCm6mTAkW5fzcDuuW-jOoiZ2GLg@mail.gmail.com> <CALdTtnuK+D7gNbEDgHbrc29pFFCR3XYAHqrK3=X_hQxUx-Seow@mail.gmail.com>
-In-Reply-To: <CALdTtnuK+D7gNbEDgHbrc29pFFCR3XYAHqrK3=X_hQxUx-Seow@mail.gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 7 Feb 2022 10:09:31 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJUmjG-SiuR9T7f=5nGcSjTLhuF_382EQDf74kcqdAq_w@mail.gmail.com>
-Message-ID: <CAL_JsqJUmjG-SiuR9T7f=5nGcSjTLhuF_382EQDf74kcqdAq_w@mail.gmail.com>
-Subject: Re: [PATCH] PCI: xgene: Fix IB window setup
-To:     dann frazier <dann.frazier@canonical.com>
-Cc:     Toan Le <toan@os.amperecomputing.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Andrew Murray <amurray@thegoodpenguin.co.uk>,
-        =?UTF-8?Q?St=C3=A9phane_Graber?= <stgraber@ubuntu.com>,
-        stable <stable@vger.kernel.org>, PCI <linux-pci@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220205185429.2278860-9-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 5, 2022 at 3:13 PM dann frazier <dann.frazier@canonical.com> wr=
-ote:
->
-> On Sat, Feb 5, 2022 at 9:05 AM Rob Herring <robh@kernel.org> wrote:
-> >
-> > On Fri, Feb 4, 2022 at 5:01 PM dann frazier <dann.frazier@canonical.com=
-> wrote:
-> > >
-> > > On Mon, Nov 29, 2021 at 11:36:37AM -0600, Rob Herring wrote:
-> > > > Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
-> > > > broke PCI support on XGene. The cause is the IB resources are now s=
-orted
-> > > > in address order instead of being in DT dma-ranges order. The resul=
-t is
-> > > > which inbound registers are used for each region are swapped. I don=
-'t
-> > > > know the details about this h/w, but it appears that IB region 0
-> > > > registers can't handle a size greater than 4GB. In any case, limiti=
-ng
-> > > > the size for region 0 is enough to get back to the original assignm=
-ent
-> > > > of dma-ranges to regions.
-> > >
-> > > hey Rob!
-> > >
-> > > I've been seeing a panic on HP Moonshoot m400 cartridges (X-Gene1) -
-> > > only during network installs - that I also bisected down to commit
-> > > 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup"). I was
-> > > hoping that this patch that fixed the issue on St=C3=A9phane's X-Gene=
-2
-> > > system would also fix my issue, but no luck. In fact, it seems to jus=
-t
-> > > makes it fail differently. Reverting both patches is required to get =
-a
-> > > v5.17-rc kernel to boot.
-> > >
-> > > I've collected the following logs - let me know if anything else woul=
-d
-> > > be useful.
-> > >
-> > > 1) v5.17-rc2+ (unmodified):
-> > >    http://dannf.org/bugs/m400-no-reverts.log
-> > >    Note that the mlx4 driver fails initialization.
-> > >
-> > > 2) v5.17-rc2+, w/o the commit that fixed St=C3=A9phane's system:
-> > >    http://dannf.org/bugs/m400-xgene2-fix-reverted.log
-> > >    Note the mlx4 MSI-X timeout, and later panic.
-> > >
-> > > 3) v5.17-rc2+, w/ both commits reverted (works)
-> > >    http://dannf.org/bugs/m400-both-reverted.log
-> >
-> > The ranges and dma-ranges addresses don't appear to match up with any
-> > upstream dts files. Can you send me the DT?
->
-> Sure: http://dannf.org/bugs/fdt
+Hi Paul,
 
-The first fix certainly is a problem. It's going to need something
-besides size to key off of (originally it was dependent on order of
-dma-ranges entries).
+Thank you for the patch.
 
-The 2nd issue is the 'dma-ranges' has a second entry that is now ignored:
+On Sat, Feb 05, 2022 at 07:53:31PM +0100, Paul Kocialkowski wrote:
+> This introduces YAML bindings documentation for the Allwinner A31 MIPI
+> CSI-2 controller.
+> 
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> Reviewed-by: Maxime Ripard <mripard@kernel.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../media/allwinner,sun6i-a31-mipi-csi2.yaml  | 142 ++++++++++++++++++
+>  1 file changed, 142 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml
+> new file mode 100644
+> index 000000000000..09207904b6db
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-mipi-csi2.yaml
+> @@ -0,0 +1,142 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-mipi-csi2.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Allwinner A31 MIPI CSI-2 Device Tree Bindings
+> +
+> +maintainers:
+> +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - const: allwinner,sun6i-a31-mipi-csi2
+> +      - items:
+> +          - const: allwinner,sun8i-v3s-mipi-csi2
+> +          - const: allwinner,sun6i-a31-mipi-csi2
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    items:
+> +      - description: Bus Clock
+> +      - description: Module Clock
+> +
+> +  clock-names:
+> +    items:
+> +      - const: bus
+> +      - const: mod
+> +
+> +  phys:
+> +    maxItems: 1
+> +    description: MIPI D-PHY
+> +
+> +  phy-names:
+> +    items:
+> +      - const: dphy
+> +
+> +  resets:
+> +    maxItems: 1
+> +
+> +  ports:
+> +    $ref: /schemas/graph.yaml#/properties/ports
+> +
+> +    properties:
+> +      port@0:
+> +        $ref: /schemas/graph.yaml#/$defs/port-base
+> +        description: Input port, connect to a MIPI CSI-2 sensor
+> +
+> +        properties:
+> +          reg:
+> +            const: 0
+> +
+> +          endpoint:
+> +            $ref: video-interfaces.yaml#
+> +            unevaluatedProperties: false
+> +
+> +            properties:
+> +              data-lanes:
+> +                minItems: 1
+> +                maxItems: 4
+> +
+> +            required:
+> +              - data-lanes
+> +
+> +        additionalProperties: false
+> +
+> +      port@1:
+> +        $ref: /schemas/graph.yaml#/$defs/port-base
+> +        description: Output port, connect to a CSI controller
+> +
+> +        properties:
+> +          reg:
+> +            const: 1
+> +
+> +          endpoint:
+> +            $ref: video-interfaces.yaml#
+> +            unevaluatedProperties: false
+> +
+> +        additionalProperties: false
 
-dma-ranges =3D <0x42000000 0x40 0x00 0x40 0x00 0x40 0x00 0x00>, <0x00
-0x79000000 0x00 0x79000000 0x00 0x800000>;
+The two ports should be required.
 
-Based on the flags (3rd addr cell: 0x0), we have an inbound config
-space which the kernel now ignores because inbound config space
-accesses make no sense. But clearly some setup is needed. Upstream, in
-contrast, sets up a memory range that includes this region, so the
-setup does happen:
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +  - phys
+> +  - phy-names
 
-<0x42000000 0x00 0x00000000 0x00 0x00000000 0x80 0x00000000>
+And ports should be required here.
 
-Minimally, I suspect it will work if you change dma-ranges 2nd entry to:
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-<0x42000000 0x79000000 0x00 0x79000000 0x00 0x800000>
+> +  - resets
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
+> +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
+> +
+> +    mipi_csi2: csi@1cb1000 {
+> +        compatible = "allwinner,sun8i-v3s-mipi-csi2",
+> +                     "allwinner,sun6i-a31-mipi-csi2";
+> +        reg = <0x01cb1000 0x1000>;
+> +        interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
+> +        clocks = <&ccu CLK_BUS_CSI>,
+> +                 <&ccu CLK_CSI1_SCLK>;
+> +        clock-names = "bus", "mod";
+> +        resets = <&ccu RST_BUS_CSI>;
+> +
+> +        phys = <&dphy>;
+> +        phy-names = "dphy";
+> +
+> +        ports {
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            mipi_csi2_in: port@0 {
+> +                reg = <0>;
+> +
+> +                mipi_csi2_in_ov5648: endpoint {
+> +                    data-lanes = <1 2 3 4>;
+> +
+> +                    remote-endpoint = <&ov5648_out_mipi_csi2>;
+> +                };
+> +            };
+> +
+> +            mipi_csi2_out: port@1 {
+> +                reg = <1>;
+> +
+> +                mipi_csi2_out_csi0: endpoint {
+> +                    remote-endpoint = <&csi0_in_mipi_csi2>;
+> +                };
+> +            };
+> +        };
+> +    };
+> +
+> +...
 
-While we shouldn't break existing DTs, the moonshot DT doesn't use
-what's documented upstream. There are multiple differences compared to
-what's documented. Is upstream supposed to support upstream DTs,
-downstream DTs, and ACPI for XGene which is an abandoned platform with
-only a handful of users?
+-- 
+Regards,
 
-Rob
+Laurent Pinchart
