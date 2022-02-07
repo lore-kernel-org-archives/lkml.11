@@ -2,55 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:46:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4C85C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:46:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386860AbiBGLhz (ORCPT
+        id S1386909AbiBGLiC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:37:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37362 "EHLO
+        Mon, 7 Feb 2022 06:38:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355803AbiBGL0B (ORCPT
+        with ESMTP id S244593AbiBGLZJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:26:01 -0500
+        Mon, 7 Feb 2022 06:25:09 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CAA8C03E968;
-        Mon,  7 Feb 2022 03:25:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF5BC0401C6;
+        Mon,  7 Feb 2022 03:25:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B32BEB80EC3;
-        Mon,  7 Feb 2022 11:25:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6A65C004E1;
-        Mon,  7 Feb 2022 11:25:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37984B81028;
+        Mon,  7 Feb 2022 11:25:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E358C340F6;
+        Mon,  7 Feb 2022 11:25:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233133;
-        bh=LLYIADvuVzP5s+T9xBErFHnFjFO3FixGAqGldwSpfRM=;
+        s=korg; t=1644233106;
+        bh=5IsXqdmiyDuHjCKLVr33FdSRI3q+QbGeX0U1P/98KaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SQbRX+/rnigdCUOpT2p5+Zbp9lDJpqpCxfWnIqZY1fCbIlQXdCk51Pt/GEd9ETtQU
-         TJ9/z4aqnKZFlgallqZIZYyvW3o5j0PWGWGjbCxJC7++b8oHNfYwWe8rdMPOoprSv+
-         Y5phggj+l5LqF41pelcg4tqJro4wuIB1SNy/ZsPI=
+        b=PntqZ7XK5f0k6/DhgvlMJ4Ih4tj3pVR4qg2+4hmXpi7jRNVSzoz3PYH3UCwgcJrus
+         xhRlp9v2z3T2eWz5YW6ivFRD6oR4tvliRPzyy6VHkSU/Xf+B/C21cHIZtWiB91tOyZ
+         +MnB+nicccytgYn5lvWJclYiSGwmiE00LGNrnG5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Zi Yan <ziy@nvidia.com>, David Rientjes <rientjes@google.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Paul Turner <pjt@google.com>, Wei Xu <weixugc@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 027/110] mm/debug_vm_pgtable: remove pte entry from the page table
-Date:   Mon,  7 Feb 2022 12:06:00 +0100
-Message-Id: <20220207103803.165197284@linuxfoundation.org>
+        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 006/110] ASoC: hdmi-codec: Fix OOB memory accesses
+Date:   Mon,  7 Feb 2022 12:05:39 +0100
+Message-Id: <20220207103802.499218364@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -62,75 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
+From: Dmitry Osipenko <digetx@gmail.com>
 
-commit fb5222aae64fe25e5f3ebefde8214dcf3ba33ca5 upstream.
+commit 06feec6005c9d9500cd286ec440aabf8b2ddd94d upstream.
 
-Patch series "page table check fixes and cleanups", v5.
+Correct size of iec_status array by changing it to the size of status
+array of the struct snd_aes_iec958. This fixes out-of-bounds slab
+read accesses made by memcpy() of the hdmi-codec driver. This problem
+is reported by KASAN.
 
-This patch (of 4):
-
-The pte entry that is used in pte_advanced_tests() is never removed from
-the page table at the end of the test.
-
-The issue is detected by page_table_check, to repro compile kernel with
-the following configs:
-
-CONFIG_DEBUG_VM_PGTABLE=y
-CONFIG_PAGE_TABLE_CHECK=y
-CONFIG_PAGE_TABLE_CHECK_ENFORCED=y
-
-During the boot the following BUG is printed:
-
-  debug_vm_pgtable: [debug_vm_pgtable         ]: Validating architecture page table helpers
-  ------------[ cut here ]------------
-  kernel BUG at mm/page_table_check.c:162!
-  invalid opcode: 0000 [#1] PREEMPT SMP PTI
-  CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.16.0-11413-g2c271fe77d52 #3
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
-  ...
-
-The entry should be properly removed from the page table before the page
-is released to the free list.
-
-Link: https://lkml.kernel.org/r/20220131203249.2832273-1-pasha.tatashin@soleen.com
-Link: https://lkml.kernel.org/r/20220131203249.2832273-2-pasha.tatashin@soleen.com
-Fixes: a5c3b9ffb0f4 ("mm/debug_vm_pgtable: add tests validating advanced arch page table helpers")
-Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-Reviewed-by: Zi Yan <ziy@nvidia.com>
-Tested-by: Zi Yan <ziy@nvidia.com>
-Acked-by: David Rientjes <rientjes@google.com>
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: Paul Turner <pjt@google.com>
-Cc: Wei Xu <weixugc@google.com>
-Cc: Greg Thelen <gthelen@google.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Mike Rapoport <rppt@kernel.org>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: H. Peter Anvin <hpa@zytor.com>
-Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Muchun Song <songmuchun@bytedance.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: <stable@vger.kernel.org>	[5.9+]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Link: https://lore.kernel.org/r/20220112195039.1329-1-digetx@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/debug_vm_pgtable.c |    2 ++
- 1 file changed, 2 insertions(+)
+ include/uapi/sound/asound.h   |    4 +++-
+ sound/soc/codecs/hdmi-codec.c |    2 +-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
---- a/mm/debug_vm_pgtable.c
-+++ b/mm/debug_vm_pgtable.c
-@@ -171,6 +171,8 @@ static void __init pte_advanced_tests(st
- 	ptep_test_and_clear_young(args->vma, args->vaddr, args->ptep);
- 	pte = ptep_get(args->ptep);
- 	WARN_ON(pte_young(pte));
-+
-+	ptep_get_and_clear_full(args->mm, args->vaddr, args->ptep, 1);
- }
+--- a/include/uapi/sound/asound.h
++++ b/include/uapi/sound/asound.h
+@@ -56,8 +56,10 @@
+  *                                                                          *
+  ****************************************************************************/
  
- static void __init pte_savedwrite_tests(struct pgtable_debug_args *args)
++#define AES_IEC958_STATUS_SIZE		24
++
+ struct snd_aes_iec958 {
+-	unsigned char status[24];	/* AES/IEC958 channel status bits */
++	unsigned char status[AES_IEC958_STATUS_SIZE]; /* AES/IEC958 channel status bits */
+ 	unsigned char subcode[147];	/* AES/IEC958 subcode bits */
+ 	unsigned char pad;		/* nothing */
+ 	unsigned char dig_subframe[4];	/* AES/IEC958 subframe bits */
+--- a/sound/soc/codecs/hdmi-codec.c
++++ b/sound/soc/codecs/hdmi-codec.c
+@@ -277,7 +277,7 @@ struct hdmi_codec_priv {
+ 	bool busy;
+ 	struct snd_soc_jack *jack;
+ 	unsigned int jack_status;
+-	u8 iec_status[5];
++	u8 iec_status[AES_IEC958_STATUS_SIZE];
+ };
+ 
+ static const struct snd_soc_dapm_widget hdmi_widgets[] = {
 
 
