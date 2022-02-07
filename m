@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 217AAC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0AFC47082
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237792AbiBGL0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:26:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58988 "EHLO
+        id S1359284AbiBGLZs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:25:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382546AbiBGLTl (ORCPT
+        with ESMTP id S1382515AbiBGLTb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:19:41 -0500
+        Mon, 7 Feb 2022 06:19:31 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8BBEC043181;
-        Mon,  7 Feb 2022 03:19:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A786C043181;
+        Mon,  7 Feb 2022 03:19:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D6D86077B;
-        Mon,  7 Feb 2022 11:19:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 372FAC340F0;
-        Mon,  7 Feb 2022 11:19:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB9E961426;
+        Mon,  7 Feb 2022 11:19:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE455C004E1;
+        Mon,  7 Feb 2022 11:19:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232779;
-        bh=wsyRc9ZMvzorUJmWyI3fLh+nyyibMv5xQACoeXZCBwc=;
+        s=korg; t=1644232769;
+        bh=V5zhYNZoU8n/q3yA/4X3J6GPtvrP5VLschKaveJCJQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XCRSVOhZuJHvM1A/Z/Ixnj6wJXlM/ksa1skypCs0DG8ZbE9oib8aPLDfWAlMrt4hi
-         PXc+tE6nGWoTSl7qrXcHsT8lG2Bs2SW4KPGwEtijw5q6EtAEtkeErQT/BGI1HOdMer
-         0TXfHWKhPPEcH3I2xOgF0pNdEUeAYT8nXmPXaWPs=
+        b=leyNAmdUWmuJRpCY8eo2IMnYPHWaEdIen25iLP3LNsdXKNSkwMwhAG0kyizDF8upg
+         B2tBrbMQZO6uFyyDVjeYGEc+l6Rf00l9JJGnYcpUZ8nPQK/Fq8iN++WIQlRvpoc20r
+         6KdOuQxkoTMyPJHN6C4+Ny/6L4ZrSublb8goNoT8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.4 05/44] ALSA: usb-audio: Simplify quirk entries with a macro
-Date:   Mon,  7 Feb 2022 12:06:21 +0100
-Message-Id: <20220207103753.334915098@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.4 03/44] ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
+Date:   Mon,  7 Feb 2022 12:06:19 +0100
+Message-Id: <20220207103753.267178413@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
 References: <20220207103753.155627314@linuxfoundation.org>
@@ -47,39 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Mark Brown <broonie@kernel.org>
 
-commit fa10635fca359f047df6a18b3befd2f1e7304e1a upstream.
+commit 4f1e50d6a9cf9c1b8c859d449b5031cacfa8404e upstream.
 
-Introduce a new macro USB_AUDIO_DEVICE() for the entries matching with
-the pid/vid pair and the class/subclass, and remove the open-code.
+We don't currently validate that the values being set are within the range
+we advertised to userspace as being valid, do so and reject any values
+that are out of range.
 
-Link: https://lore.kernel.org/r/20200817082140.20232-3-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-[ just add the macro for 5.4.y, no entry changes made - gregkh ]
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220124153253.3548853-3-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/quirks-table.h |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ sound/soc/soc-ops.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/sound/usb/quirks-table.h
-+++ b/sound/usb/quirks-table.h
-@@ -25,6 +25,16 @@
- 	.idProduct = prod, \
- 	.bInterfaceClass = USB_CLASS_VENDOR_SPEC
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -436,8 +436,15 @@ int snd_soc_put_volsw_sx(struct snd_kcon
+ 	int err = 0;
+ 	unsigned int val, val_mask, val2 = 0;
  
-+/* A standard entry matching with vid/pid and the audio class/subclass */
-+#define USB_AUDIO_DEVICE(vend, prod) \
-+	.match_flags = USB_DEVICE_ID_MATCH_DEVICE | \
-+		       USB_DEVICE_ID_MATCH_INT_CLASS | \
-+		       USB_DEVICE_ID_MATCH_INT_SUBCLASS, \
-+	.idVendor = vend, \
-+	.idProduct = prod, \
-+	.bInterfaceClass = USB_CLASS_AUDIO, \
-+	.bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL
-+
- /* HP Thunderbolt Dock Audio Headset */
- {
- 	USB_DEVICE(0x03f0, 0x0269),
++	val = ucontrol->value.integer.value[0];
++	if (mc->platform_max && val > mc->platform_max)
++		return -EINVAL;
++	if (val > max - min)
++		return -EINVAL;
++	if (val < 0)
++		return -EINVAL;
+ 	val_mask = mask << shift;
+-	val = (ucontrol->value.integer.value[0] + min) & mask;
++	val = (val + min) & mask;
+ 	val = val << shift;
+ 
+ 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
 
 
