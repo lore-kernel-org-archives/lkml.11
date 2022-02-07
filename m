@@ -2,103 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B0BC43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22639C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350641AbiBGSBh (ORCPT
+        id S1352722AbiBGSBk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:01:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
+        Mon, 7 Feb 2022 13:01:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345044AbiBGR4O (ORCPT
+        with ESMTP id S242872AbiBGRz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:56:14 -0500
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB511C0401DA;
-        Mon,  7 Feb 2022 09:56:13 -0800 (PST)
-Received: by mail-wr1-f46.google.com with SMTP id m14so26209141wrg.12;
-        Mon, 07 Feb 2022 09:56:13 -0800 (PST)
+        Mon, 7 Feb 2022 12:55:58 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D35FC0401E2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:55:56 -0800 (PST)
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 584A140303
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:55:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644256555;
+        bh=iL0LIepeQaRgfvOw682KQCC7APivisHIQkh+XV3XvQY=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=s/R8Sngq+OaS6sh6NHe8zsUyuOQ8FKnmvari+FhDNC0VQPZW964d4ry4OYmgGkkLu
+         iMC8xa/lNA6eQE3RpmXyM1zYCqYrZs0SsWn9htTqTUfoSU8mCInW+QWi4IJ9lH3QzJ
+         t7Vgrb7RqrVJOB44MZkPyRs9AJ4K9/UWvLJfJylZMUFDg0wY8hHHZiKPdLEJl7Ouhf
+         wsHygPEH2h9DhpFaTV6tsivCfKCXmOX8airBhPCed/+jI8mKjMMZ1rT6FLJq8Kgg6/
+         qki9u2q+Z/O3IOmSZfRj/cxqMagUasOO7J3uiasVCaZmrgeRBxABjIir39+ps9tDrX
+         wf/pEMdgeVnbw==
+Received: by mail-ej1-f69.google.com with SMTP id d7-20020a1709061f4700b006bbf73a7becso4615447ejk.17
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 09:55:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VANB5eLHbFe+mcOUZTXCO8085NJWiAnZpaxFhcfyGQg=;
-        b=iZSIQqsGC/FlZTPHRADkgy0FyTzuCdgIIcdg1/Xp0ZDItHxrhsSgi6/6e1jt2rYNPm
-         j99sgXP2hNlUMVKlfQ8Dqs63YUWAqnYU1O7voAw/rrTp91XHZzMxqB4wRPU8zXAZOVkT
-         PP390YgWJPn4X+sWKCmz5N113JJo1SmdnhwHuutEZlR9ZTBTLd03HiqMnsA7RLKzQMqi
-         3neypZUFhrkki4el/M55RstfVkvegPZotuRYIcEq6cBVdmMHIuAxXLw7AR2x2KGjJbh/
-         lXM4C+s40FGRHjyKrqS+i573sS+krU98lbJUsKTdKKKxRBEDiULu3lrhsmWy1FwWNU7/
-         OALg==
-X-Gm-Message-State: AOAM533M1fC3TlMT/0njfsbil4fH0yohdMsI2QOWBWWaHLtyx4GsKf25
-        4GhmWPTmZGhmXK36RGWNhW4=
-X-Google-Smtp-Source: ABdhPJy+UZLmhDTpX5ObL76eagCOxR1zQgFmHIPctpKJTg9fy1tIFL5aCPMqR4ApMo/VcnIk+x/C1Q==
-X-Received: by 2002:a5d:4b11:: with SMTP id v17mr452829wrq.461.1644256572330;
-        Mon, 07 Feb 2022 09:56:12 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id t17sm10633453wrs.10.2022.02.07.09.56.11
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=iL0LIepeQaRgfvOw682KQCC7APivisHIQkh+XV3XvQY=;
+        b=7Y1mAjUliYAAKifnaeaZpZtFaAge/yLzb2HFTmwoog/RVU9wXrSXFPYT0rJmrxqnR0
+         c9GCrhCHKbzcBZPguzZiCTMBGvF2kIu9WxL3tsgXX5a3QH4KbjFgGLjfrUlZcUI9Cmlm
+         ZUIAZD59HHb/C9jSpV1KNjc5DYm3sAmrZ96lqBMH8PVxNI7RQaQp22KN43srA1+CWLM+
+         yA+vBOfv99SuO2zQHVyJeDi3OBJJbrnPyywLzYAJwxtYeu9kbaYMzBBK2dofzgJ8Dm5S
+         tiStUysoJ8m2Fgi7u9JjkOOH6i9zz3qj0Vws1JqZnVwmXSx0TOCEvDRPUbNoaVgTF+ok
+         bBzw==
+X-Gm-Message-State: AOAM532kXElR0pRRPhXuCbt9dEXXQKujNZnlJ8eekk7v1bjVDrZ7coQq
+        BQ+cm4EKGo5hNXt3YEbApezoZ8p7wEkIwnDwWfQ2Kcoa0+SOB9cvnuB8FK3Z+OfFYkZCTZ/DwsA
+        n3HPoVfrD0yaM8AV9CNlFWCk9EhbS74NLI4V7s7vC9A==
+X-Received: by 2002:aa7:db01:: with SMTP id t1mr637164eds.394.1644256554744;
+        Mon, 07 Feb 2022 09:55:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy1G4vKpj2os6F6Z7fqUqCrdFZ65ttguW/jqIW3WbwlVZjZTC1cTnFdJkB82oG6+PYM+9UXHw==
+X-Received: by 2002:aa7:db01:: with SMTP id t1mr637145eds.394.1644256554541;
+        Mon, 07 Feb 2022 09:55:54 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id c20sm3765210edy.41.2022.02.07.09.55.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 09:56:12 -0800 (PST)
-Date:   Mon, 7 Feb 2022 17:56:10 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Long Li <longli@microsoft.com>,
-        "ndesaulniers@google.com" <ndesaulniers@google.com>,
-        "vt@altlinux.org" <vt@altlinux.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
-Subject: Re: [PATCH 1/1] Drivers: hv: vmbus: Rework use of DMA_BIT_MASK(64)
-Message-ID: <20220207175610.rrhgfuyvsfp7evcp@liuwe-devbox-debian-v2>
-References: <1644176216-12531-1-git-send-email-mikelley@microsoft.com>
- <YgB36FwuRaF85WQq@dev-arch.archlinux-ax161>
- <MWHPR21MB1593B68BFCFC1AF8F39345ECD72C9@MWHPR21MB1593.namprd21.prod.outlook.com>
+        Mon, 07 Feb 2022 09:55:53 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     arm@kernel.org, soc@kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 2/2] MAINTAINERS: add IRC to ARM sub-architectures and Devicetree
+Date:   Mon,  7 Feb 2022 18:55:03 +0100
+Message-Id: <20220207175503.425200-2-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220207175503.425200-1-krzysztof.kozlowski@canonical.com>
+References: <20220207175503.425200-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MWHPR21MB1593B68BFCFC1AF8F39345ECD72C9@MWHPR21MB1593.namprd21.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 02:42:31AM +0000, Michael Kelley (LINUX) wrote:
-> From: Nathan Chancellor <nathan@kernel.org> Sent: Sunday, February 6, 2022 5:38 PM
-> > 
-> > Hi Michael,
-> > 
-> > On Sun, Feb 06, 2022 at 11:36:56AM -0800, Michael Kelley wrote:
-> > > Using DMA_BIT_MASK(64) as an initializer for a global variable
-> > > causes problems with Clang 12.0.1. The compiler doesn't understand
-> > > that value 64 is excluded from the shift at compile time, resulting
-> > > in a build error.
-> > >
-> > > While this is a compiler problem, avoid the issue by setting up
-> > > the dma_mask memory as part of struct hv_device, and initialize
-> > > it using dma_set_mask().
-> > >
-> > > Reported-by: Nathan Chancellor <nathan@kernel.org>
-> > > Reported-by: Vitaly Chikunov <vt@altlinux.org>
-> > > Reported-by: Jakub Kicinski <kuba@kernel.org>
-> > > Fixes: 743b237c3a7b ("scsi: storvsc: Add Isolation VM support for storvsc driver")
-> > > Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-> > 
-> > Thanks a lot for working around this. I am hoping that this will be
-> > fixed in clang soon, as it is high priority on our list of issues to
-> > fix. Once it has been fixed, we should be able to undo this workaround
-> > in one way or another.
-> 
-> FWIW, the new code is as good a solution as the old code.  The new code
-> also follows some existing patterns, such as with struct platform_device.
-> As such, I don't think of this as a workaround that needs to be undone
-> in the future.
-> 
+Mention the IRC channels used for discussions about ARM/ARM64
+sub-architectures and Devicetree.  This documents purely existing state.
 
-Yes indeed.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ MAINTAINERS | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Patch applied to hyperv-fixes. Thanks.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e219ba2c5ac9..95ecf8ac709b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1623,6 +1623,7 @@ M:	Olof Johansson <olof@lixom.net>
+ M:	soc@kernel.org
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ S:	Maintained
++C:	irc://irc.libera.chat/armlinux
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git
+ F:	arch/arm/boot/dts/Makefile
+ F:	arch/arm64/boot/dts/Makefile
+@@ -1630,6 +1631,7 @@ F:	arch/arm64/boot/dts/Makefile
+ ARM SUB-ARCHITECTURES
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ S:	Maintained
++C:	irc://irc.libera.chat/armlinux
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git
+ F:	arch/arm/mach-*/
+ F:	arch/arm/plat-*/
+@@ -14443,6 +14445,7 @@ M:	Rob Herring <robh+dt@kernel.org>
+ M:	Frank Rowand <frowand.list@gmail.com>
+ L:	devicetree@vger.kernel.org
+ S:	Maintained
++C:	irc://irc.libera.chat/devicetree
+ W:	http://www.devicetree.org/
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git
+ F:	Documentation/ABI/testing/sysfs-firmware-ofw
+@@ -14454,6 +14457,7 @@ OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS
+ M:	Rob Herring <robh+dt@kernel.org>
+ L:	devicetree@vger.kernel.org
+ S:	Maintained
++C:	irc://irc.libera.chat/devicetree
+ Q:	http://patchwork.ozlabs.org/project/devicetree-bindings/list/
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git
+ F:	Documentation/devicetree/
+-- 
+2.32.0
+
