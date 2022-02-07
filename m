@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC5EC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C01C3526E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382382AbiBGQoA (ORCPT
+        id S1382316AbiBGQnz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:44:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
+        Mon, 7 Feb 2022 11:43:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390449AbiBGQeq (ORCPT
+        with ESMTP id S1390609AbiBGQfO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:34:46 -0500
+        Mon, 7 Feb 2022 11:35:14 -0500
 Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B99D1C0401D1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:34:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DA84C0401DA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:35:13 -0800 (PST)
 Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOdSv014405;
-        Mon, 7 Feb 2022 17:24:39 +0100
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOfFi014417;
+        Mon, 7 Feb 2022 17:24:41 +0100
 From:   Willy Tarreau <w@1wt.eu>
 To:     "Paul E . McKenney" <paulmck@kernel.org>
 Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
         Willy Tarreau <w@1wt.eu>
-Subject: [PATCH 22/42] tools/nolibc/types: define EXIT_SUCCESS and EXIT_FAILURE
-Date:   Mon,  7 Feb 2022 17:23:34 +0100
-Message-Id: <20220207162354.14293-23-w@1wt.eu>
+Subject: [PATCH 33/42] tools/nolibc/arch: mark the _start symbol as weak
+Date:   Mon,  7 Feb 2022 17:23:45 +0100
+Message-Id: <20220207162354.14293-34-w@1wt.eu>
 X-Mailer: git-send-email 2.17.5
 In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
 References: <20220207162354.14293-1-w@1wt.eu>
@@ -33,28 +33,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These ones are found in some examples found in man pages and ease
-portability tests.
+By doing so we can link together multiple C files that have been compiled
+with nolibc and which each have a _start symbol.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- tools/include/nolibc/types.h | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/include/nolibc/arch-aarch64.h | 1 +
+ tools/include/nolibc/arch-arm.h     | 1 +
+ tools/include/nolibc/arch-i386.h    | 1 +
+ tools/include/nolibc/arch-mips.h    | 1 +
+ tools/include/nolibc/arch-riscv.h   | 1 +
+ tools/include/nolibc/arch-x86_64.h  | 1 +
+ 6 files changed, 6 insertions(+)
 
-diff --git a/tools/include/nolibc/types.h b/tools/include/nolibc/types.h
-index fb4d35f60850..dac1cc186dab 100644
---- a/tools/include/nolibc/types.h
-+++ b/tools/include/nolibc/types.h
-@@ -71,6 +71,9 @@
- #define WEXITSTATUS(status) (((status) & 0xff00) >> 8)
- #define WIFEXITED(status)   (((status) & 0x7f) == 0)
+diff --git a/tools/include/nolibc/arch-aarch64.h b/tools/include/nolibc/arch-aarch64.h
+index 443de5fb7f54..87d9e434820c 100644
+--- a/tools/include/nolibc/arch-aarch64.h
++++ b/tools/include/nolibc/arch-aarch64.h
+@@ -183,6 +183,7 @@ struct sys_stat_struct {
  
-+/* standard exit() codes */
-+#define EXIT_SUCCESS 0
-+#define EXIT_FAILURE 1
+ /* startup code */
+ asm(".section .text\n"
++    ".weak _start\n"
+     ".global _start\n"
+     "_start:\n"
+     "ldr x0, [sp]\n"              // argc (x0) was in the stack
+diff --git a/tools/include/nolibc/arch-arm.h b/tools/include/nolibc/arch-arm.h
+index 66f687ad987f..001a3c8c9ad5 100644
+--- a/tools/include/nolibc/arch-arm.h
++++ b/tools/include/nolibc/arch-arm.h
+@@ -176,6 +176,7 @@ struct sys_stat_struct {
  
- /* for select() */
- typedef struct {
+ /* startup code */
+ asm(".section .text\n"
++    ".weak _start\n"
+     ".global _start\n"
+     "_start:\n"
+ #if defined(__THUMBEB__) || defined(__THUMBEL__)
+diff --git a/tools/include/nolibc/arch-i386.h b/tools/include/nolibc/arch-i386.h
+index 32f42e2cee26..d7e4d53325a3 100644
+--- a/tools/include/nolibc/arch-i386.h
++++ b/tools/include/nolibc/arch-i386.h
+@@ -175,6 +175,7 @@ struct sys_stat_struct {
+  *
+  */
+ asm(".section .text\n"
++    ".weak _start\n"
+     ".global _start\n"
+     "_start:\n"
+     "pop %eax\n"                // argc   (first arg, %eax)
+diff --git a/tools/include/nolibc/arch-mips.h b/tools/include/nolibc/arch-mips.h
+index e330201dde6a..c9a6aac87c6d 100644
+--- a/tools/include/nolibc/arch-mips.h
++++ b/tools/include/nolibc/arch-mips.h
+@@ -190,6 +190,7 @@ struct sys_stat_struct {
+ 
+ /* startup code, note that it's called __start on MIPS */
+ asm(".section .text\n"
++    ".weak __start\n"
+     ".set nomips16\n"
+     ".global __start\n"
+     ".set    noreorder\n"
+diff --git a/tools/include/nolibc/arch-riscv.h b/tools/include/nolibc/arch-riscv.h
+index 9d5ff78f606b..bc10b7b5706d 100644
+--- a/tools/include/nolibc/arch-riscv.h
++++ b/tools/include/nolibc/arch-riscv.h
+@@ -184,6 +184,7 @@ struct sys_stat_struct {
+ 
+ /* startup code */
+ asm(".section .text\n"
++    ".weak _start\n"
+     ".global _start\n"
+     "_start:\n"
+     ".option push\n"
+diff --git a/tools/include/nolibc/arch-x86_64.h b/tools/include/nolibc/arch-x86_64.h
+index 83c4b458ada7..fe517c16cd4d 100644
+--- a/tools/include/nolibc/arch-x86_64.h
++++ b/tools/include/nolibc/arch-x86_64.h
+@@ -198,6 +198,7 @@ struct sys_stat_struct {
+  *
+  */
+ asm(".section .text\n"
++    ".weak _start\n"
+     ".global _start\n"
+     "_start:\n"
+     "pop %rdi\n"                // argc   (first arg, %rdi)
 -- 
 2.35.1
 
