@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46414C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9BBC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356911AbiBGLOB (ORCPT
+        id S1357065AbiBGLOG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:14:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49122 "EHLO
+        Mon, 7 Feb 2022 06:14:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237060AbiBGLLC (ORCPT
+        with ESMTP id S235197AbiBGLKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:11:02 -0500
+        Mon, 7 Feb 2022 06:10:47 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA56C043181;
-        Mon,  7 Feb 2022 03:11:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32830C043189;
+        Mon,  7 Feb 2022 03:10:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EF0CB80EE8;
-        Mon,  7 Feb 2022 11:11:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64F40C004E1;
-        Mon,  7 Feb 2022 11:10:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 889B4B80EE8;
+        Mon,  7 Feb 2022 11:10:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 940E7C004E1;
+        Mon,  7 Feb 2022 11:10:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232259;
-        bh=fUmpoc5Q7kPSh3lk2DSZ6dxRzwy8WuVR6z88Xi+OUNw=;
+        s=korg; t=1644232244;
+        bh=fWA7+yWKegMS40cpvXEP1/eohdqQT4jfg/9bqF05LxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pz9xh9DBC7/x1Ph/34OFwyOjBxvbss3Wha9390I3bT5yKVUpY5JQ4GjpJWy94eoae
-         6lE3cqfn0zP59b/YhuPmVRDbrc1nmnidOkEP714l82UKGwlUzCNQSzSZys5uoFKeZ2
-         nQqfup1ll5LckON3KB91/Yb2HQinDLwfWkygcPS8=
+        b=GaadPUriA8fZrnnPXJ6+/obK5xARRrwdbmgVrEVN58qgY0keA0atxY0k33AHjJCSp
+         /xUUB+9ZbPMq9AQ/DcLkisTGeYcaSwdGaQFaHs7Bg8IV6GMAoLrj1vCwqQgcTwiIOB
+         xwwdnxtq9Ttq3UnKVA8OIwZcULoCWcmfXoyTn+Wo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>
-Subject: [PATCH 4.14 12/69] usb: common: ulpi: Fix crash in ulpi_match()
-Date:   Mon,  7 Feb 2022 12:05:34 +0100
-Message-Id: <20220207103756.018983504@linuxfoundation.org>
+        stable@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 4.14 06/69] PM: wakeup: simplify the output logic of pm_show_wakelocks()
+Date:   Mon,  7 Feb 2022 12:05:28 +0100
+Message-Id: <20220207103755.813910177@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -48,47 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Hunter <jonathanh@nvidia.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit 2e3dd4a6246945bf84ea6f478365d116e661554c upstream.
+commit c9d967b2ce40d71e968eb839f36c936b8a9cf1ea upstream.
 
-Commit 7495af930835 ("ARM: multi_v7_defconfig: Enable drivers for
-DragonBoard 410c") enables the CONFIG_PHY_QCOM_USB_HS for the ARM
-multi_v7_defconfig. Enabling this Kconfig is causing the kernel to crash
-on the Tegra20 Ventana platform in the ulpi_match() function.
+The buffer handling in pm_show_wakelocks() is tricky, and hopefully
+correct.  Ensure it really is correct by using sysfs_emit_at() which
+handles all of the tricky string handling logic in a PAGE_SIZE buffer
+for us automatically as this is a sysfs file being read from.
 
-The Qualcomm USB HS PHY driver that is enabled by CONFIG_PHY_QCOM_USB_HS,
-registers a ulpi_driver but this driver does not provide an 'id_table',
-so when ulpi_match() is called on the Tegra20 Ventana platform, it
-crashes when attempting to deference the id_table pointer which is not
-valid. The Qualcomm USB HS PHY driver uses device-tree for matching the
-ULPI driver with the device and so fix this crash by using device-tree
-for matching if the id_table is not valid.
-
-Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
-Link: https://lore.kernel.org/r/20220117150039.44058-1-jonathanh@nvidia.com
+Reviewed-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/common/ulpi.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ kernel/power/wakelock.c |   12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
---- a/drivers/usb/common/ulpi.c
-+++ b/drivers/usb/common/ulpi.c
-@@ -42,8 +42,11 @@ static int ulpi_match(struct device *dev
- 	struct ulpi *ulpi = to_ulpi_dev(dev);
- 	const struct ulpi_device_id *id;
+--- a/kernel/power/wakelock.c
++++ b/kernel/power/wakelock.c
+@@ -39,23 +39,19 @@ ssize_t pm_show_wakelocks(char *buf, boo
+ {
+ 	struct rb_node *node;
+ 	struct wakelock *wl;
+-	char *str = buf;
+-	char *end = buf + PAGE_SIZE;
++	int len = 0;
  
--	/* Some ULPI devices don't have a vendor id so rely on OF match */
--	if (ulpi->id.vendor == 0)
-+	/*
-+	 * Some ULPI devices don't have a vendor id
-+	 * or provide an id_table so rely on OF match.
-+	 */
-+	if (ulpi->id.vendor == 0 || !drv->id_table)
- 		return of_driver_match_device(dev, driver);
+ 	mutex_lock(&wakelocks_lock);
  
- 	for (id = drv->id_table; id->vendor; id++)
+ 	for (node = rb_first(&wakelocks_tree); node; node = rb_next(node)) {
+ 		wl = rb_entry(node, struct wakelock, node);
+ 		if (wl->ws.active == show_active)
+-			str += scnprintf(str, end - str, "%s ", wl->name);
++			len += sysfs_emit_at(buf, len, "%s ", wl->name);
+ 	}
+-	if (str > buf)
+-		str--;
+-
+-	str += scnprintf(str, end - str, "\n");
++	len += sysfs_emit_at(buf, len, "\n");
+ 
+ 	mutex_unlock(&wakelocks_lock);
+-	return (str - buf);
++	return len;
+ }
+ 
+ #if CONFIG_PM_WAKELOCKS_LIMIT > 0
 
 
