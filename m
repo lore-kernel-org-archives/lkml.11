@@ -2,156 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 476F2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A4DC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232278AbiBGFtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:49:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
+        id S232184AbiBGFtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:49:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232291AbiBGFTk (ORCPT
+        with ESMTP id S1351276AbiBGENI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 00:19:40 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2083.outbound.protection.outlook.com [40.107.237.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30CBFC043181
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 21:19:40 -0800 (PST)
+        Sun, 6 Feb 2022 23:13:08 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2056.outbound.protection.outlook.com [40.107.96.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24463C043180;
+        Sun,  6 Feb 2022 20:13:07 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KWE3xQSU+vBkOTrPbttIBxJP0EhQ6wo8VtKHK9KnMkpY2VXYGQ67N4jcRCW82pdFk3aVAkE2D70KTZYA3xcJvEwk7IMmsKlvF0JeTp9Iftw9TIQJulOUAHeUN9xIvRXXUxQOmB5z0sBeei45BdTyouXXK72dB4YrD5mR0T7Ikk6Lwt5SHA8awEhGhj5UPgD1jwxZPM+iun4aAl0eEFjTJKxaR5gsjP9/iqE5LZnsYiXGt0D/oA8iXwUb7V3IHyATQ/FtkV/uUB2L8AlDoZnkSqHcTswCFgQ1T8iuUYlAQpi0YzgymrXXEbbby11EhHpC+pzMxhBE5ndEyL8cG+ZBwQ==
+ b=evPlkVCnWu6fvxRQacVbZ7oHD7wLy+qRtTay7LR7leFAwewTUr07/PKEQTcbHmG8o8w2xOrtqSIY57DkC6OSSQHBPL7VejGErFHm2cSMgpUfRYsgjTIyOlr8lXCOkjy5pZnN8zPT6HE7C62AIztI2AbUGa/12iPGvUvUvOBS5x6uwOJrWcXySZyjmPXxK+Mql+e+Ncd5YsCPoAT02JnnBmE4pCzc0midI2f9iUWIxejmliG/IBGuTD7SsL3PEJx1Dcm3T1yvSA3fXaYxdUhXAZs5DQsyt888UfGjuUatSKPEgAf4s3iarYOlVH1yeZiKiBkpAa+yeNpwAbFjBRj9tw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fRAqy5KRkobPsuaO4NHRU4kgqT2nR38a1IyzJq1qOg0=;
- b=CpeZKHW7fy7/dpDRGGxeb52WfDNij4RV/m1OiId+igxRAuKjrHjZc3F8/qY9Qdlxzl6WWSb78+IUZn9c6F0DtWK8lNvoqM+bKW7jx0rRNO69xOhcIK2J5A6JAo8Gq5ufVoM/xAr132wKNToLvG9LXJvVOLtX1aLJ0SJHoGEIJ3D7HVZvh9M/65PWRzyLwqs36PmPDBJqNiHRrTPrq8a+gziGv20dImrINgc5/mushiWHcpZtvVmvxk9b46AEyZ0tCLo3h37uEFrOngq+qRMMqKd5ZXsAIrxR4bpH54s8AgPmquDbKIqexhy9ylNxyBOTeYypj9LC3CxkEZEJf7eC7g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=IdJI5ur0mYlyE8KZosw09tYlAKu4OjZBFoQ1x1k1vsw=;
+ b=dltrw1A8tb3UaE22AVWENkwK48yzGzAjeN5YszqrovPNpuPhpNwV+9fEuEY8aqLKBo/+5opFDyGz4+ZZ6VKCiBMTyEDCv1d1TCiRuVLBm3N8L01AaxLeq8JrJPawCyjiKra0mLwvICcgiwfcGNhqCYItqOfHkYjkOPo9sFEWopjl27cyymIvCYkWFId0eu+GH8ORnkqQSrTRTVMzm19k7zblDzdK+NzsuF1GCxQJljhKxREU5yaiOd7p8aqa2fcaZxMV4w4j1KcuqFTydOVpQXmfeT097P2cFPCVgZfH4T5/l/cejIQOt0mo//GgfWUcEicNt+bhhMJFyo1SiPb7og==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fRAqy5KRkobPsuaO4NHRU4kgqT2nR38a1IyzJq1qOg0=;
- b=uTvdtT8YGgMmQHu6S9ml7VSoER/J40XuJh/mvO1Y2+FAp4PGvOwJ42uLpwe1wM3Q92vL8fT76qx3y2hRReCTb/HMGM5bQhm6JIUHt+FAQwI+MR7etcFvzV9DHiRSXf/Q8Buzy90OWJiWG5viFTjuQdnsx0/O3SzFtT54maaTCm+yElYrU+6Q9RBL325eCKH++g61P+pzivNgOTvmZKQADbjTG5Tc6CmTyLz5DizKqkUBD8ccE+lNze3tL1l20M5tdVBpAs/BGCcWQqq6GD2IjZ55rsb3YiqgIeO8yvGCadsh2HL0OWcVfpNezAENGY3rMXcH/xbJTZZvZMGNsXfZEQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16)
- by MW4PR12MB5601.namprd12.prod.outlook.com (2603:10b6:303:168::13) with
+ bh=IdJI5ur0mYlyE8KZosw09tYlAKu4OjZBFoQ1x1k1vsw=;
+ b=koOu0Ta2RXDRpGNqlVZdGp/TTpK6cuV8xH5JkxWqGExI1nYU2uq2BFSFpvRvAtozcNc01IbWfvzuiGD3iybMF25ciAuYAZXzHwdAdVBTsSL2GN7R8+cKd2M+LMZ61AvASxreyKm/UYD2gc6kgWirPNSjmTuEI08k232+QOO2ZpM=
+Received: from DM5PR15CA0041.namprd15.prod.outlook.com (2603:10b6:4:4b::27) by
+ BY5PR02MB6404.namprd02.prod.outlook.com (2603:10b6:a03:1f8::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.11; Mon, 7 Feb
- 2022 05:19:37 +0000
-Received: from BY5PR12MB4130.namprd12.prod.outlook.com
- ([fe80::2d75:a464:eaed:5f99]) by BY5PR12MB4130.namprd12.prod.outlook.com
- ([fe80::2d75:a464:eaed:5f99%6]) with mapi id 15.20.4951.019; Mon, 7 Feb 2022
- 05:19:37 +0000
-Message-ID: <9a5e9fac-7597-80b6-1cc8-9818b8ff73cd@nvidia.com>
-Date:   Sun, 6 Feb 2022 21:19:35 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v4 1/5] mm: Fix invalid page pointer returned with
- FOLL_PIN gups
-Content-Language: en-US
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        David Hildenbrand <david@redhat.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org
-References: <20220204020010.68930-1-jhubbard@nvidia.com>
- <20220204020010.68930-2-jhubbard@nvidia.com> <YfzU4Yh/1Oh7Dsw0@infradead.org>
-From:   John Hubbard <jhubbard@nvidia.com>
-In-Reply-To: <YfzU4Yh/1Oh7Dsw0@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR01CA0004.prod.exchangelabs.com (2603:10b6:a02:80::17)
- To BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17; Mon, 7 Feb
+ 2022 04:13:04 +0000
+Received: from DM3NAM02FT009.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:4:4b:cafe::7c) by DM5PR15CA0041.outlook.office365.com
+ (2603:10b6:4:4b::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18 via Frontend
+ Transport; Mon, 7 Feb 2022 04:13:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT009.mail.protection.outlook.com (10.13.5.5) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4951.12 via Frontend Transport; Mon, 7 Feb 2022 04:13:04 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Sun, 6 Feb 2022 20:13:01 -0800
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Sun, 6 Feb 2022 20:13:01 -0800
+Envelope-to: linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ lorenzo.pieralisi@arm.com,
+ bhelgaas@google.com
+Received: from [10.140.9.2] (port=45184 helo=xhdbharatku40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <bharat.kumar.gogada@xilinx.com>)
+        id 1nGvOe-0005Nx-TP; Sun, 06 Feb 2022 20:13:01 -0800
+From:   Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+To:     <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <lorenzo.pieralisi@arm.com>, <bhelgaas@google.com>,
+        <michals@xilinx.com>,
+        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Subject: [PATCH 1/2] PCI: xilinx-cpm: Update YAML schemas for Versal CPM5 Root Port
+Date:   Mon, 7 Feb 2022 09:42:48 +0530
+Message-ID: <20220207041250.1658-2-bharat.kumar.gogada@xilinx.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220207041250.1658-1-bharat.kumar.gogada@xilinx.com>
+References: <20220207041250.1658-1-bharat.kumar.gogada@xilinx.com>
 MIME-Version: 1.0
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4f168f77-ad5d-4683-9375-08d9e9f96f49
-X-MS-TrafficTypeDiagnostic: MW4PR12MB5601:EE_
-X-Microsoft-Antispam-PRVS: <MW4PR12MB5601706181635E071ED598FDA82C9@MW4PR12MB5601.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1284;
+X-MS-Office365-Filtering-Correlation-Id: 0b3879f3-9328-4956-3e8b-08d9e9f0232b
+X-MS-TrafficTypeDiagnostic: BY5PR02MB6404:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR02MB64046FCE36775A591AA215B5A52C9@BY5PR02MB6404.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:2399;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lWqn9MLwMJ5sbmXP9ofrmQYsIBRNz4QCArNnx9msU0wsx0jGxl6gCqVApvt1P6MD5diqtxWosVJ+m8bqssSFgUag77FPLtVVGzZU/850LqYiN0ee3X20+tmpHhtcfhR9egcgUtluHEqozviZ5G0gEyk115upZPFce45Ww64MScyBPq3JXvDtpPk1IAsR6NyUl0p0YaPiYGflzeuiX5PUIMAhflp7nK+UWXMv3E6SBrVwVne5TjwWbPneIJy5LjFYk0ZCYDss4C17SfZMMQ+/TjeCPviVgSUwQnynbfA2wJ3bgKOH3aXahX/ZK2FluW1d92cuas3u7zikrOmdHrkfv3QKmLPyhkbdAeYGZdi7wrBc68A/CqqItYhrUynStSgdn0VnGIHGGWrn3AzEX0F0PJKZ0fmtfjF3/afPnt6RhODD8weWHuor4e1ShZIjCyya2W9pjH9UKgvD0HAB13uQcTNjARFWWHD0d//6rWAkIiLqDevhCzub8tw/l7jdoo23cUsrMPYhqsvhATBD8Uu/bu5EbRJmJIKmD+TeCWgeDT10PdpXphm4JM7N/VM+/ykHJkpitsRtlbbdmpwUZpRZ/VIO159FoNQ1ybnW9dLhgLSiBhYekVXM7GTxiDXO8LClYlblJ+J9Km6ac+UclyybdnHQupTzK6+bzj0uiq96CqujZ8pEPII4NEt0xnnXae0HAIjcZ69kX8hDEaFmKy3X2Ov4sh2u1FDgtgBEgvsa8zYUQU6LILlO/uW02/wXrFA9
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4130.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(6512007)(2906002)(6506007)(53546011)(2616005)(31686004)(36756003)(31696002)(6486002)(508600001)(86362001)(38100700002)(83380400001)(26005)(7416002)(4326008)(8676002)(4744005)(316002)(54906003)(5660300002)(186003)(66556008)(66946007)(6916009)(66476007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QlM4MjErSjM5TmpYOWZ0YzF1RjNSNk5pa0pCbndxOVhoU2VPVkMvTTNhbzEy?=
- =?utf-8?B?OXNSN3BZZVREM1NkY3VoY3h5L2pjL09vMFdjQTJCamVrYXNFWnRrNHZsUUNX?=
- =?utf-8?B?QUVDUElqOEpVQmRpMEJLQzlPbTQwMWlacXBZeGl6V09BbTdzZC9RTFdpNGxz?=
- =?utf-8?B?a2NwNXdZN2Y1L2JWMVA0cmV2MFd4ZTNTNlg3Z2ozNmwvNnk1dFRRWTcxV2VG?=
- =?utf-8?B?TUx3VnY1dDNCc3pFYllMRmhMa1JUQUdLVnRKZmpnRWlPWHFxdndBd2dSdG1o?=
- =?utf-8?B?bUF1cmNwNGUzZm85NjdvOTlQSmxPSjQyYnRxV1pYeTRjUDlHeWhQNDhtcmRD?=
- =?utf-8?B?ZENVMmEzazErblZsZjhxM0hmejJPcmNPZ003cE9vcWorY0Z5YXIzaWNpMkpw?=
- =?utf-8?B?NG5rZ0t6SDk4RXY5dE90WktHOEZQRTlBTkpFU3hoSmZtVzJHc2VieTNaOVpa?=
- =?utf-8?B?TG1LQVN1U01qdm4yNFFVSUhmM2FMVDNyMmp1U2FTU0FINWhscGpSNndTa05o?=
- =?utf-8?B?dHVteEU0VHUzUmlqSWFZY0NTeWtkZDRFcHAyVVhUSGhFcVR5bjRpMU5pelhu?=
- =?utf-8?B?Qzg3ZUd1d2E1dWlQZUhReDlkOTFZaWdZbjdZVlpCN2hZUHVYSHJIcElWVVQ0?=
- =?utf-8?B?cU1veE1ZM0hyZlRwSTlQNE56VDlXVUJSSFF5ejlpRHlxejdCTS9SRUM2M2d3?=
- =?utf-8?B?MFlnUGh4NVJuSGJrNGN5c01kVFZnbDdOWjFGeGs2UGNOdkx3OVpvbVlFTTQz?=
- =?utf-8?B?MC9vMEpwbXVFdUFoVU5VbzVxWC9xcE5PNkZTUEJJQUlFMnA5NmMxQ2pETTd2?=
- =?utf-8?B?d21wYldpUUk1Vi9ib29CSFFkT2Q1ZE5rRG1kS0RpWGlVcGRad1NjdG9BRS9p?=
- =?utf-8?B?SzVzYlZtQ0FoZEhVZXhrY2ZJY0ZVeG5mQjlyenoyMGh5dFFrK3lLMDdha1l0?=
- =?utf-8?B?SkVxUzRIMDVpUTRoMzNTUERQdVdGTExPTDJCc1RMaXk0YkV3N1VIZ1dBclcv?=
- =?utf-8?B?SUpDWE1wTVJRYTdFeXAyekRJQlhDWnFNbHNBNnN6dHg2SWxNOERWU1JjdjNu?=
- =?utf-8?B?TVpOYTRWUUg1RUVTYjhXVzdRZDlVSWtWYmN6SUxqeEptNkVMSC91V3h4NkY4?=
- =?utf-8?B?dEFzWVV4N2lnTnR4dlUram85bG4zclhjdzJ3YTJaeTM1UzZzWDFVZHVTTWM1?=
- =?utf-8?B?eXVyeTU5eHYxb2tBY1k2enNwYmoyaG4reFpyRmhuZVlIMTNROC9TS25naWlK?=
- =?utf-8?B?YUM2MlZWVzFGOVdlWjhGTWljVlF2OU41UC9xUXpYeW1sT241bUVJcFlGc0Yw?=
- =?utf-8?B?UnFYWHUxeGEyTzJ3eFVSbVpKSmxJRVQrWUs3RVlKTjdFUnVrTjk1L0dyd1NM?=
- =?utf-8?B?NlBzUFJXMDB5d1JXbjJpck9DWnFuY1Job3NSeWVHVVZTTlpyWDNpSWIvYjBF?=
- =?utf-8?B?ZExJN3ByVXgvcUNaSjhVTG9VZ3ljT3JjVlEwblZoSXFuOHVhNXhGL3FVNVNq?=
- =?utf-8?B?N2FhbXBtcDlLcW5rc2k4TlJCMGEzMXZiSG43SUc2S0c1NkVMczFHVGdVUU1V?=
- =?utf-8?B?Y1U2VDRjdHRZNDhCSVdrM2tuUFJNdy9sS3IvSmVRS0xiRFRRNjRPemFWYmhO?=
- =?utf-8?B?aE1GM3VCb3VPYkZ0V1dXMjU5eng3TUpzeEMvdklwdFYvWWlubHgwK3BCV3dq?=
- =?utf-8?B?d081L3EwOVRjSnc2czFqcmZLN3VsMkJlVGJ5WnRRbVM1R0p4aWRyL1dEZi9B?=
- =?utf-8?B?cXZzeHFMYndIQnIwdXVlRUVOQ3cyR3VqM0JqQ3JhZUxFa3RyZVozejZhdlBW?=
- =?utf-8?B?aDVIWW1xV01acGh6Z0lnZHJVbmFGNTBGYUtYSUthY0V4VnVXdVFhaktmRHRy?=
- =?utf-8?B?M01QRWI1a2tuWXVjWkp0RHZKV2RsMDNvbzUrc2F4VUJ1cDZpelU1T1NsSCs4?=
- =?utf-8?B?clNpRmI1TVNCMHFlOE9rVlFUdDdUS0FLWnh3WEFZOFNqcktOaS9BdXEzOXA1?=
- =?utf-8?B?VWxxMnVuWFk3bGFqUWVDY1R0b1hnU2t3REpRT3ZzOXBSS1JPa0xYUkIzaTNW?=
- =?utf-8?B?WXovOGZjU21yR1FYQ1ROMHZ1MGFOZ0EvL2MxblMrQnM3MFBjclNLbmx6NnRG?=
- =?utf-8?B?b1pCdTJFWDF0aHFWRWU3dEp1MXdYNS9sRkExREZyT2xDUkp5Zy96ajU0dFRW?=
- =?utf-8?Q?ZOr79H601wh3/UmaZzOZy/E=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f168f77-ad5d-4683-9375-08d9e9f96f49
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4130.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 05:19:37.4263
+X-Microsoft-Antispam-Message-Info: uGfy8LXPGa4D6Zbo6KE6qd3fVNZKgPHhfbUtMxOJ5ioDpp1rKLErS4hTHIFvGJlljgcyWceFgDnN0vgQPISgXP70T+DmlD723IzSHQAvOz0pOHa+X04PTjlbllSqUVniUYjgeirE0Qyz8qbu8ATtuq61B7yKgF5sWOMUB70ycmrqKKcWZ9f4GEgSkK3W2rnlsEb/S2UJ6Tk2J1L1VWhhou1gtqoPMWfZnJOJgX+cWseh5TLOFibAuchLJSgZL0Upl6d3KyNeBrobp4VkwgHS0UNASzVjDN49xn9qeh7p1n2uF37llThcFalaL7ChnRXDrFE+BnZrTpZJSOpAAzPwADGp4cY93yiFpJxPfhIwfgLLegGw0sil2bN7P3qI3vu5Uo8OK3rMwHnUwG9wT9dD0KV26byDzfqdODTBlgjo1AWV5+6ccvs7iCDTaYG1l7TDqT2x1GeBegebYRI+Lz7R8vZoL38Yh+iW57uF45enM4RIuURFRRz3idrLrtzK+8uucHovxwhiNhtQgxHd2qDnoa/qawZaO/ps580vYqabipPa3vsD4F5AFppowYv43l/vAzh0Od5emfrRTssOKAfV4mtRp8ICL4vMzS5n7AM3eklUkUm77Cj68AUtBV54tzUd9r3w7xluFaiT2Yi/lSVG2uG0tbemNam/5LU5p8ydFMMlUiqDCga1yZNE0PESsc0v
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(103116003)(107886003)(2906002)(508600001)(26005)(186003)(1076003)(336012)(426003)(6666004)(2616005)(7696005)(82310400004)(47076005)(316002)(70586007)(70206006)(36860700001)(8936002)(36756003)(9786002)(83380400001)(5660300002)(54906003)(110136005)(4326008)(8676002)(7636003)(356005)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 04:13:04.0314
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: d2Fh6YQs2RxKdT6zigpr9ksxE6oYYjogi139Ilf7nFczeocq3GtXKiNwc8bmh66nKBFMO4YxttuCXhbp2jfp6Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5601
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b3879f3-9328-4956-3e8b-08d9e9f0232b
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT009.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR02MB6404
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/3/22 23:25, Christoph Hellwig wrote:
-> On Thu, Feb 03, 2022 at 06:00:06PM -0800, John Hubbard wrote:
->> From: Peter Xu <peterx@redhat.com>
->>
->> Alex reported invalid page pointer returned with pin_user_pages_remote() from
->> vfio after upstream commit 4b6c33b32296 ("vfio/type1: Prepare for batched
->> pinning with struct vfio_batch").
-> 
-> This commit message uses overly long lines all over.
+Xilinx Versal Premium series has CPM5 block which supports Root port
+functioning at Gen5 speed.
+Add support for YAML schemas documentation for Versal CPM5 Root Port driver.
 
-I'll reflow it to 72 columns and post a v5 with the full set of
-reviewed-by tags.
+Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+---
+ .../bindings/pci/xilinx-versal-cpm.yaml       | 47 ++++++++++++++++---
+ 1 file changed, 40 insertions(+), 7 deletions(-)
 
-> 
-> Otherwise looks good:
-> 
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-
-I appreciate the reviews, from you and everyone, as always.
-
-
-thanks,
+diff --git a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+index 32f4641085bc..97c7229d7f91 100644
+--- a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
++++ b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+@@ -14,17 +14,21 @@ allOf:
+ 
+ properties:
+   compatible:
+-    const: xlnx,versal-cpm-host-1.00
++    contains:
++      enum:
++        - xlnx,versal-cpm-host-1.00
++        - xlnx,versal-cpm5-host-1.00
+ 
+   reg:
+-    items:
+-      - description: Configuration space region and bridge registers.
+-      - description: CPM system level control and status registers.
++    description: |
++      Should contain cpm_slcr, cfg registers location and length.
++      For xlnx,versal-cpm5-host-1.00, it should also contain cpm_csr.
++    minItems: 2
++    maxItems: 3
+ 
+   reg-names:
+-    items:
+-      - const: cfg
+-      - const: cpm_slcr
++    minItems: 2
++    maxItems: 3
+ 
+   interrupts:
+     maxItems: 1
+@@ -95,4 +99,33 @@ examples:
+                                interrupt-controller;
+                        };
+                };
++
++              cpm5_pcie: pcie@fcdd0000 {
++                       compatible = "xlnx,versal-cpm5-host-1.00";
++                       device_type = "pci";
++                       #address-cells = <3>;
++                       #interrupt-cells = <1>;
++                       #size-cells = <2>;
++                       interrupts = <0 72 4>;
++                       interrupt-parent = <&gic>;
++                       interrupt-map-mask = <0 0 0 7>;
++                       interrupt-map = <0 0 0 1 &pcie_intc_1 0>,
++                                       <0 0 0 2 &pcie_intc_1 1>,
++                                       <0 0 0 3 &pcie_intc_1 2>,
++                                       <0 0 0 4 &pcie_intc_1 3>;
++                       bus-range = <0x00 0xff>;
++                       ranges = <0x02000000 0x0 0xe0000000 0x0 0xe0000000 0x0 0x10000000>,
++                                <0x43000000 0x80 0x00000000 0x80 0x00000000 0x0 0x80000000>;
++                       msi-map = <0x0 &its_gic 0x0 0x10000>;
++                       reg = <0x00 0xfcdd0000 0x00 0x1000>,
++                             <0x06 0x00000000 0x00 0x1000000>,
++                             <0x00 0xfce20000 0x00 0x1000000>;
++                       reg-names = "cpm_slcr", "cfg", "cpm_csr";
++
++                       pcie_intc_1: interrupt-controller {
++                               #address-cells = <0>;
++                               #interrupt-cells = <1>;
++                               interrupt-controller;
++                       };
++               };
+     };
 -- 
-John Hubbard
-NVIDIA
+2.17.1
+
