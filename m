@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCBB0C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AC4C35273
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233527AbiBGLZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:25:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58850 "EHLO
+        id S1352148AbiBGLXR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:23:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382481AbiBGLTU (ORCPT
+        with ESMTP id S1379451AbiBGLSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:19:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16F3C043188;
-        Mon,  7 Feb 2022 03:19:19 -0800 (PST)
+        Mon, 7 Feb 2022 06:18:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374DCC0401C9;
+        Mon,  7 Feb 2022 03:17:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A02BB81028;
-        Mon,  7 Feb 2022 11:19:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B311C004E1;
-        Mon,  7 Feb 2022 11:19:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C42FB61314;
+        Mon,  7 Feb 2022 11:17:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B92BC340EB;
+        Mon,  7 Feb 2022 11:17:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232757;
-        bh=P0lrcZEgh8hsPsHCOTaIbX26/xGUq6E+ZqOZeIfDWz0=;
+        s=korg; t=1644232673;
+        bh=n/RJ37BfvaQCe9xTuupKRuHFLifrohdspvASD97qDXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R7FPqb4twrpUtW33OSM6k3wZfG0a0hxETW9m1euvQwcsuhnRqtpWBW/JfZoyNKXVC
-         AgFbOpwEkbLI7GcWiAQMMdRTodLG7xlpOpvg3hMltKK+TuZrE3dFeKN+jAlMPZwDRY
-         fNFFXdfUJPBCpaz5/43ZMoY8SruAYXIDrEjqWawI=
+        b=zB9N5OMBvkgHAq6S8u+kH9eBYcFFLTFVglAuKoiToCTRgWPnMwiNnOyykRch/6BHO
+         UgsVJCh1o82O+nbjbuOnoJVYFugdyhr5OgMi/bOojBX8T7N5cSaBnfxMHB51pgAJ6H
+         BORxEjvXQOtOSELaTNt7AvIh7jdwofQTKPHvab7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 5.4 26/44] net: ieee802154: ca8210: Stop leaking skbs
-Date:   Mon,  7 Feb 2022 12:06:42 +0100
-Message-Id: <20220207103754.010886863@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Whitney <enwlinux@gmail.com>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 4.19 86/86] ext4: fix error handling in ext4_restore_inline_data()
+Date:   Mon,  7 Feb 2022 12:06:49 +0100
+Message-Id: <20220207103800.504129882@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
-References: <20220207103753.155627314@linuxfoundation.org>
+In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
+References: <20220207103757.550973048@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,35 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Ritesh Harjani <riteshh@linux.ibm.com>
 
-commit 621b24b09eb61c63f262da0c9c5f0e93348897e5 upstream.
+commit 897026aaa73eb2517dfea8d147f20ddb0b813044 upstream.
 
-Upon error the ieee802154_xmit_complete() helper is not called. Only
-ieee802154_wake_queue() is called manually. We then leak the skb
-structure.
+While running "./check -I 200 generic/475" it sometimes gives below
+kernel BUG(). Ideally we should not call ext4_write_inline_data() if
+ext4_create_inline_data() has failed.
 
-Free the skb structure upon error before returning.
+<log snip>
+[73131.453234] kernel BUG at fs/ext4/inline.c:223!
 
-Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-5-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+<code snip>
+ 212 static void ext4_write_inline_data(struct inode *inode, struct ext4_iloc *iloc,
+ 213                                    void *buffer, loff_t pos, unsigned int len)
+ 214 {
+<...>
+ 223         BUG_ON(!EXT4_I(inode)->i_inline_off);
+ 224         BUG_ON(pos + len > EXT4_I(inode)->i_inline_size);
+
+This patch handles the error and prints out a emergency msg saying potential
+data loss for the given inode (since we couldn't restore the original
+inline_data due to some previous error).
+
+[ 9571.070313] EXT4-fs (dm-0): error restoring inline_data for inode -- potential data loss! (inode 1703982, error -30)
+
+Reported-by: Eric Whitney <enwlinux@gmail.com>
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/9f4cd7dfd54fa58ff27270881823d94ddf78dd07.1642416995.git.riteshh@linux.ibm.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ieee802154/ca8210.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/ext4/inline.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -1770,6 +1770,7 @@ static int ca8210_async_xmit_complete(
- 			status
- 		);
- 		if (status != MAC_TRANSACTION_OVERFLOW) {
-+			dev_kfree_skb_any(priv->tx_skb);
- 			ieee802154_wake_queue(priv->hw);
- 			return 0;
- 		}
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -1125,7 +1125,15 @@ static void ext4_restore_inline_data(han
+ 				     struct ext4_iloc *iloc,
+ 				     void *buf, int inline_size)
+ {
+-	ext4_create_inline_data(handle, inode, inline_size);
++	int ret;
++
++	ret = ext4_create_inline_data(handle, inode, inline_size);
++	if (ret) {
++		ext4_msg(inode->i_sb, KERN_EMERG,
++			"error restoring inline_data for inode -- potential data loss! (inode %lu, error %d)",
++			inode->i_ino, ret);
++		return;
++	}
+ 	ext4_write_inline_data(inode, iloc, buf, 0, inline_size);
+ 	ext4_set_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+ }
 
 
