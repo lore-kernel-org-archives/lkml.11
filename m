@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F316FC35294
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A17C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391155AbiBGL6g (ORCPT
+        id S1390716AbiBGL5a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:58:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
+        Mon, 7 Feb 2022 06:57:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385613AbiBGLcB (ORCPT
+        with ESMTP id S1385249AbiBGLb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4985CC03CA4B;
-        Mon,  7 Feb 2022 03:31:11 -0800 (PST)
+        Mon, 7 Feb 2022 06:31:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89438C02B647;
+        Mon,  7 Feb 2022 03:29:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4EAE60B20;
-        Mon,  7 Feb 2022 11:31:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE4D6C340EB;
-        Mon,  7 Feb 2022 11:31:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5398EB8111C;
+        Mon,  7 Feb 2022 11:29:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91106C004E1;
+        Mon,  7 Feb 2022 11:29:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233470;
-        bh=5IsXqdmiyDuHjCKLVr33FdSRI3q+QbGeX0U1P/98KaI=;
+        s=korg; t=1644233389;
+        bh=Bhdf+S29ZevkiMeS0rzmUpQEcBMlLRTwt6TQNWmKMNc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TpdlaYUuFKDBNLzMrjnDoomZmrM2ls4juHZlczdsnRlA7BOCkZ7KrgxUsJwgsuvgx
-         LyeA4mLciJDhPaTVlHVeZzdLsnnjIDTm/cVkMCBUc8iVqTMp+0uO9EdiZiM3t0jVtk
-         AB+yJjdgLkM/nPoM+oMoyBd0QAabWhAVrFaOW+Dc=
+        b=vyUSsswwmfKojG0ORAIc8rB/6ufEi4M0wZKlcAxWgx57EAqX8VEqfIGBf0rQt4W3b
+         ME5oIIfh98/SGLryW5sib4mZHQFgdApDM+sTyIG3UcxnAePSn1ZBLfnQ7wqkTePso6
+         Re1sm56fR9kAkr6PesyTKCKIz2o8oP42hAvMNoRc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.16 006/126] ASoC: hdmi-codec: Fix OOB memory accesses
-Date:   Mon,  7 Feb 2022 12:05:37 +0100
-Message-Id: <20220207103804.281396179@linuxfoundation.org>
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 5.15 107/110] gpio: idt3243x: Fix an ignored error return from platform_get_irq()
+Date:   Mon,  7 Feb 2022 12:07:20 +0100
+Message-Id: <20220207103806.015849410@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-References: <20220207103804.053675072@linuxfoundation.org>
+In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
+References: <20220207103802.280120990@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,49 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <digetx@gmail.com>
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-commit 06feec6005c9d9500cd286ec440aabf8b2ddd94d upstream.
+commit 7c1cf55577782725ea2bc24687767c8fe8e57486 upstream.
 
-Correct size of iec_status array by changing it to the size of status
-array of the struct snd_aes_iec958. This fixes out-of-bounds slab
-read accesses made by memcpy() of the hdmi-codec driver. This problem
-is reported by KASAN.
+The return from the call to platform_get_irq() is int, it can be
+a negative error code, however this is being assigned to an unsigned
+int variable 'parent_irq', so making 'parent_irq' an int.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Link: https://lore.kernel.org/r/20220112195039.1329-1-digetx@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Eliminate the following coccicheck warning:
+./drivers/gpio/gpio-idt3243x.c:167:6-16: WARNING: Unsigned expression
+compared with zero: parent_irq < 0
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Fixes: 30fee1d7462a ("gpio: idt3243x: Fix IRQ check in idt_gpio_probe")
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/sound/asound.h   |    4 +++-
- sound/soc/codecs/hdmi-codec.c |    2 +-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpio/gpio-idt3243x.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/uapi/sound/asound.h
-+++ b/include/uapi/sound/asound.h
-@@ -56,8 +56,10 @@
-  *                                                                          *
-  ****************************************************************************/
+--- a/drivers/gpio/gpio-idt3243x.c
++++ b/drivers/gpio/gpio-idt3243x.c
+@@ -132,7 +132,7 @@ static int idt_gpio_probe(struct platfor
+ 	struct device *dev = &pdev->dev;
+ 	struct gpio_irq_chip *girq;
+ 	struct idt_gpio_ctrl *ctrl;
+-	unsigned int parent_irq;
++	int parent_irq;
+ 	int ngpios;
+ 	int ret;
  
-+#define AES_IEC958_STATUS_SIZE		24
-+
- struct snd_aes_iec958 {
--	unsigned char status[24];	/* AES/IEC958 channel status bits */
-+	unsigned char status[AES_IEC958_STATUS_SIZE]; /* AES/IEC958 channel status bits */
- 	unsigned char subcode[147];	/* AES/IEC958 subcode bits */
- 	unsigned char pad;		/* nothing */
- 	unsigned char dig_subframe[4];	/* AES/IEC958 subframe bits */
---- a/sound/soc/codecs/hdmi-codec.c
-+++ b/sound/soc/codecs/hdmi-codec.c
-@@ -277,7 +277,7 @@ struct hdmi_codec_priv {
- 	bool busy;
- 	struct snd_soc_jack *jack;
- 	unsigned int jack_status;
--	u8 iec_status[5];
-+	u8 iec_status[AES_IEC958_STATUS_SIZE];
- };
- 
- static const struct snd_soc_dapm_widget hdmi_widgets[] = {
 
 
