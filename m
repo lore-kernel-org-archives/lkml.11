@@ -2,68 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E83C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D152FC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:20:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241766AbiBGUSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:18:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45374 "EHLO
+        id S241854AbiBGUSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:18:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241810AbiBGUOp (ORCPT
+        with ESMTP id S243005AbiBGUMw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:14:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E29C0401E2;
-        Mon,  7 Feb 2022 12:14:45 -0800 (PST)
+        Mon, 7 Feb 2022 15:12:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D0FC0401E7
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:12:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A72361460;
-        Mon,  7 Feb 2022 20:14:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 86371C004E1;
-        Mon,  7 Feb 2022 20:14:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644264884;
-        bh=vKsG/uWUXHsAh6WfbSKrv7geN+bm6kyGW2sX2wduaHk=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ooAddBWVEWxEcID4bcrIu3Q2BB1KeBVccs5tkcBCwmfh3+bKNdT6VXsSvLzFjryE8
-         pPmSa3DvLZ0XuGKkMy1H4HnU5Yf6/F8z/N0MoIqyWY3GpicbSQ5p8gkTipuNeDK/ca
-         DhbaH65DSYy4Xo6f/us4XGcah52VQEBN9HXzjL8ZyQ2WJO+8q8+VlUgKzxUe9MgloA
-         HRpumgyC61snW9Blf2NI8wbPmA8j8/mKcw5t8CFhH7EE1APDURMNdC9RQWeY7lmfO9
-         XpaPP2IIrF+zn4X0yKQxfdr2CuowHlAOPiIiD1qXafoJhaozJydpA40uaPBNGT4kho
-         sIP7ZX7hNINlg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 76596E5D09D;
-        Mon,  7 Feb 2022 20:14:44 +0000 (UTC)
-Subject: Re: [GIT PULL] MMC fixes for v5.17-rc4
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220207112605.246647-1-ulf.hansson@linaro.org>
-References: <20220207112605.246647-1-ulf.hansson@linaro.org>
-X-PR-Tracked-List-Id: <linux-mmc.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220207112605.246647-1-ulf.hansson@linaro.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git tags/mmc-v5.17-rc1
-X-PR-Tracked-Commit-Id: bd2db32e7c3e35bd4d9b8bbff689434a50893546
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 51f7ea914d79aa44156dd63fe9e1cc75708d781d
-Message-Id: <164426488448.18191.15469163597693131085.pr-tracker-bot@kernel.org>
-Date:   Mon, 07 Feb 2022 20:14:44 +0000
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     Linus <torvalds@linux-foundation.org>, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BCBCB81677
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 20:12:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB706C004E1;
+        Mon,  7 Feb 2022 20:12:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1644264768;
+        bh=kXoXRf04u+w4CWyQZgTAB7nm472L2Icz48OR33YGQt8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LwVI5+jid1TeZjul4yCBJPvxgfx8VsNnt38y2pEtRcCcSlZB3sIht3ghVWL+On82x
+         eRf/xbAuVah51N+riVadi+c6A/mKfFmMhopNVTB3MidzMPzdeI3BGk+UvpwjtnFssz
+         IHZsh1c+0oPHQcsqE5wcgyAsR6itraheauIdSK/A=
+Date:   Mon, 7 Feb 2022 12:12:47 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Miaohe Lin <linmiaohe@huawei.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] mm/memory_hotplug: remove obsolete comment of
+ __add_pages
+Message-Id: <20220207121247.736ac7240836934247678477@linux-foundation.org>
+In-Reply-To: <21cec396-9d6a-03b7-716d-2a84c79eeb73@redhat.com>
+References: <20220207133643.23427-1-linmiaohe@huawei.com>
+        <20220207133643.23427-2-linmiaohe@huawei.com>
+        <21cec396-9d6a-03b7-716d-2a84c79eeb73@redhat.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon,  7 Feb 2022 12:26:05 +0100:
+On Mon, 7 Feb 2022 15:41:21 +0100 David Hildenbrand <david@redhat.com> wrote:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git tags/mmc-v5.17-rc1
+> On 07.02.22 14:36, Miaohe Lin wrote:
+> > Since commit f1dd2cd13c4b ("mm, memory_hotplug: do not associate hotadded
+> > memory to zones until online"), there is no need to pass in the zone.
+> > 
+> > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> > ---
+> >  mm/memory_hotplug.c | 5 +----
+> >  1 file changed, 1 insertion(+), 4 deletions(-)
+> > 
+> > diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> > index a4f69d399929..cbc67c27e0dd 100644
+> > --- a/mm/memory_hotplug.c
+> > +++ b/mm/memory_hotplug.c
+> > @@ -296,10 +296,7 @@ struct page *pfn_to_online_page(unsigned long pfn)
+> >  EXPORT_SYMBOL_GPL(pfn_to_online_page);
+> >  
+> >  /*
+> > - * Reasonably generic function for adding memory.  It is
+> > - * expected that archs that support memory hotplug will
+> > - * call this function after deciding the zone to which to
+> > - * add the new pages.
+> > + * Reasonably generic function for adding memory.
+> >   */
+> >  int __ref __add_pages(int nid, unsigned long pfn, unsigned long nr_pages,
+> >  		struct mhp_params *params)
+> 
+> I'd suggest just removing the comment completely.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/51f7ea914d79aa44156dd63fe9e1cc75708d781d
+Thanks, I made that change.
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+A better site for documentation is at add_memory().  Which, as a
+full-on exported-to-modules API function, should really have some
+docs...
