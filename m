@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C1DC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31205C35276
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382844AbiBGLU6 (ORCPT
+        id S1382684AbiBGLUn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:20:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53968 "EHLO
+        Mon, 7 Feb 2022 06:20:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378274AbiBGLPs (ORCPT
+        with ESMTP id S1377777AbiBGLPi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25EEEC0401F4;
-        Mon,  7 Feb 2022 03:15:28 -0800 (PST)
+        Mon, 7 Feb 2022 06:15:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9416BC0401F2;
+        Mon,  7 Feb 2022 03:15:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 121E661314;
-        Mon,  7 Feb 2022 11:15:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D56ACC004E1;
-        Mon,  7 Feb 2022 11:15:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EED686140C;
+        Mon,  7 Feb 2022 11:15:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6614C340EB;
+        Mon,  7 Feb 2022 11:15:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232524;
-        bh=Nkw1yonictg+Vl5AIlRidS8URAZhjWZJs3TS6IUeap0=;
+        s=korg; t=1644232515;
+        bh=nE1n+sYB/6tK0H31pEAPox5TGZ1MxQk8Tj9aFsa/z74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ge03sf56Aca+s5gZlHG3NhuRn3KedZ6yCuTgbV9qRlhLbHB9BtoWHBNClnl3LSAPA
-         snXEHkbxRaDOHxPYaex0WdunUefseBIvrDb/HIAxu3lCNGTiBEvSb4CTVf0fV/ggVC
-         N6AEN1KQga4So++stgGpoD07hdjLZSeosSdfZ/IQ=
+        b=sEZpEr1wJ40JvgX3vMACWQI6kWrOm5ip/POY0L0GDJhUWzju9r6ZEiYRIBZL7d9Fl
+         Ui4GBoI4tLGH/V6bUBZnnA1mHWcznWUG8612ojF7U9WG2FhehUsOv0rtpdEcHf35R7
+         6oFZOV11SHgUNHW1Bdd/t9J71sbIjkpzHjAv6djc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 38/86] NFS: Ensure the server has an up to date ctime before hardlinking
-Date:   Mon,  7 Feb 2022 12:06:01 +0100
-Message-Id: <20220207103758.783148819@linuxfoundation.org>
+Subject: [PATCH 4.19 35/86] drm/msm: Fix wrong size calculation
+Date:   Mon,  7 Feb 2022 12:05:58 +0100
+Message-Id: <20220207103758.680625641@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -51,32 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-[ Upstream commit 204975036b34f55237bc44c8a302a88468ef21b5 ]
+commit 0a727b459ee39bd4c5ced19d6024258ac87b6b2e upstream.
 
-Creating a hard link is required by POSIX to update the file ctime, so
-ensure that the file data is synced to disk so that we don't clobber the
-updated ctime by writing back after creating the hard link.
+For example, memory-region in .dts as below,
+	reg = <0x0 0x50000000 0x0 0x20000000>
 
-Fixes: 9f7682728728 ("NFS: Move the delegation return down into nfs4_proc_link()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+We can get below values,
+struct resource r;
+r.start = 0x50000000;
+r.end	= 0x6fffffff;
+
+So the size should be:
+size = r.end - r.start + 1 = 0x20000000
+
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Fixes: 072f1f9168ed ("drm/msm: add support for "stolen" mem")
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220112123334.749776-1-xianting.tian@linux.alibaba.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/dir.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/msm/msm_drv.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -2033,6 +2033,8 @@ nfs_link(struct dentry *old_dentry, stru
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -388,7 +388,7 @@ static int msm_init_vram(struct drm_devi
+ 		of_node_put(node);
+ 		if (ret)
+ 			return ret;
+-		size = r.end - r.start;
++		size = r.end - r.start + 1;
+ 		DRM_INFO("using VRAM carveout: %lx@%pa\n", size, &r.start);
  
- 	trace_nfs_link_enter(inode, dir, dentry);
- 	d_drop(dentry);
-+	if (S_ISREG(inode->i_mode))
-+		nfs_sync_inode(inode);
- 	error = NFS_PROTO(dir)->link(inode, dir, &dentry->d_name);
- 	if (error == 0) {
- 		ihold(inode);
+ 		/* if we have no IOMMU, then we need to use carveout allocator.
 
 
