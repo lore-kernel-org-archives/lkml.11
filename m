@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E98D4C35296
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4B3C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355475AbiBGLMi (ORCPT
+        id S1355824AbiBGLMq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48304 "EHLO
+        Mon, 7 Feb 2022 06:12:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343558AbiBGLJI (ORCPT
+        with ESMTP id S242774AbiBGLJ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:09:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB85C043181;
-        Mon,  7 Feb 2022 03:09:07 -0800 (PST)
+        Mon, 7 Feb 2022 06:09:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD97AC043181;
+        Mon,  7 Feb 2022 03:09:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 497FDB80EC3;
-        Mon,  7 Feb 2022 11:09:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DFE9C004E1;
-        Mon,  7 Feb 2022 11:09:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 605B7611AA;
+        Mon,  7 Feb 2022 11:09:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B6CEC004E1;
+        Mon,  7 Feb 2022 11:09:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232145;
-        bh=sSN5IaaNkR+bNNzEnIm5DAhmzKX7oOdxJ9V2k3QJHgU=;
+        s=korg; t=1644232165;
+        bh=8ghriyWbh+VukJ7ln3XXsA/uQ+qN6yX00Mc0zjol/ck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jz99Pwx4TsGkCc7VeyC4wjhIeGm1UR5tm8zU53pJtpZ9ZuYsgll8zNdTk5A90GR3A
-         KX56ZH2HcR6FnJq0NdcXpPHHOUNtbLQA2BX2mSTgoKTb1FFRDLHZFSXL+2805IzhmF
-         Mr7hZOPnlClakt9WjHDy7q568Jod6xeyeUcYgI2c=
+        b=g7PJIoFyV2/D+xK8ZrRiRTDPcTIJoRXjwdGTlspCeC3c583L0Ly47K6cuWZbIiZCi
+         xTCty5J+0flz/xJPXA2I/3riDgSP7ZbQbxNTSFER7P1cygxmKGa4JUVi6q8nmLfjpg
+         DNnHtoqM527LdZPcuWwKjRniApiHPWnswnII8dFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 30/48] net: amd-xgbe: Fix skb data length underflow
-Date:   Mon,  7 Feb 2022 12:06:03 +0100
-Message-Id: <20220207103753.325503466@linuxfoundation.org>
+        stable@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 4.9 37/48] iommu/amd: Fix loop timeout issue in iommu_ga_log_enable()
+Date:   Mon,  7 Feb 2022 12:06:10 +0100
+Message-Id: <20220207103753.546943012@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -50,55 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+From: Joerg Roedel <jroedel@suse.de>
 
-commit 5aac9108a180fc06e28d4e7fb00247ce603b72ee upstream.
+commit 9b45a7738eec52bf0f5d8d3d54e822962781c5f2 upstream.
 
-There will be BUG_ON() triggered in include/linux/skbuff.h leading to
-intermittent kernel panic, when the skb length underflow is detected.
+The polling loop for the register change in iommu_ga_log_enable() needs
+to have a udelay() in it.  Otherwise the CPU might be faster than the
+IOMMU hardware and wrongly trigger the WARN_ON() further down the code
+stream. Use a 10us for udelay(), has there is some hardware where
+activation of the GA log can take more than a 100ms.
 
-Fix this by dropping the packet if such length underflows are seen
-because of inconsistencies in the hardware descriptors.
+A future optimization should move the activation check of the GA log
+to the point where it gets used for the first time. But that is a
+bigger change and not suitable for a fix.
 
-Fixes: 622c36f143fc ("amd-xgbe: Fix jumbo MTU processing on newer hardware")
-Suggested-by: Tom Lendacky <thomas.lendacky@amd.com>
-Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
-Link: https://lore.kernel.org/r/20220127092003.2812745-1-Shyam-sundar.S-k@amd.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 8bda0cfbdc1a ("iommu/amd: Detect and initialize guest vAPIC log")
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Link: https://lore.kernel.org/r/20220204115537.3894-1-joro@8bytes.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/iommu/amd_iommu_init.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-@@ -1968,6 +1968,14 @@ read_again:
- 			buf2_len = xgbe_rx_buf2_len(rdata, packet, len);
- 			len += buf2_len;
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -28,6 +28,7 @@
+ #include <linux/amd-iommu.h>
+ #include <linux/export.h>
+ #include <linux/iommu.h>
++#include <linux/iopoll.h>
+ #include <asm/pci-direct.h>
+ #include <asm/iommu.h>
+ #include <asm/gart.h>
+@@ -715,6 +716,7 @@ static int iommu_ga_log_enable(struct am
+ 		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+ 		if (status & (MMIO_STATUS_GALOG_RUN_MASK))
+ 			break;
++		udelay(10);
+ 	}
  
-+			if (buf2_len > rdata->rx.buf.dma_len) {
-+				/* Hardware inconsistency within the descriptors
-+				 * that has resulted in a length underflow.
-+				 */
-+				error = 1;
-+				goto skip_data;
-+			}
-+
- 			if (!skb) {
- 				skb = xgbe_create_skb(pdata, napi, rdata,
- 						      buf1_len);
-@@ -1997,8 +2005,10 @@ skip_data:
- 		if (!last || context_next)
- 			goto read_again;
- 
--		if (!skb)
-+		if (!skb || error) {
-+			dev_kfree_skb(skb);
- 			goto next_packet;
-+		}
- 
- 		/* Be sure we don't exceed the configured MTU */
- 		max_len = netdev->mtu + ETH_HLEN;
+ 	if (i >= LOOP_TIMEOUT)
 
 
