@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCA3C38A2E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D869EC38A2B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391496AbiBGMCA (ORCPT
+        id S1391475AbiBGMB4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:02:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48736 "EHLO
+        Mon, 7 Feb 2022 07:01:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386791AbiBGLhA (ORCPT
+        with ESMTP id S1386790AbiBGLg6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:37:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF85C043188;
-        Mon,  7 Feb 2022 03:37:00 -0800 (PST)
+        Mon, 7 Feb 2022 06:36:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC2DC043181;
+        Mon,  7 Feb 2022 03:36:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCA996091A;
-        Mon,  7 Feb 2022 11:36:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FE55C004E1;
-        Mon,  7 Feb 2022 11:36:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FFC960B20;
+        Mon,  7 Feb 2022 11:36:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7712BC004E1;
+        Mon,  7 Feb 2022 11:36:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233819;
-        bh=djEWEpnDCk7CcnGly2CXbCMMBRAixEGBx4BvC4JPjCE=;
+        s=korg; t=1644233816;
+        bh=DX9ZtOOKRH0mzrq1ltNPjopdAWTDfpB8KXDdSkYRa0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Apvbl6NMzg4LjzuN/CnA6CrezgJeMBL1lvWsGDMtmpY7DPCW3g6o16VItoiqHWKle
-         9EIttKGVBCHVQ/AoCPSP1RAwDUrg67S+QpbRDESFfPKOh6by5REbhAWXjyyvd6TyjX
-         on4DPoNxD2AnCZi+LGqvWxj9oSwiahcZO7sqninY=
+        b=VwZtTThMYaLka2Bz9ylYBwSRYQqX3F3bmhDQmi1PjpUEBjx+kqoOE0bOEejqdPYTn
+         s4mdLLqKAqgRksu9iEOvsgjiG7Pyf6JK30ws9HyvqMpXAk68xZRA9fctKaD5+jnIdY
+         uSSMuRGSWlZ0vMoW3ZOTAXNOTD9axa6b9R96k1OE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Anand Jain <anand.jain@oracle.com>, Tom Rix <trix@redhat.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 097/126] btrfs: fix use of uninitialized variable at rm device ioctl
-Date:   Mon,  7 Feb 2022 12:07:08 +0100
-Message-Id: <20220207103807.431628136@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.16 096/126] pinctrl: bcm2835: Fix a few error paths
+Date:   Mon,  7 Feb 2022 12:07:07 +0100
+Message-Id: <20220207103807.395308718@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,38 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-commit 37b4599547e324589e011c20f74b021d6d25cb7f upstream.
+commit 5297c693d8c8e08fa742e3112cf70723f7a04da2 upstream.
 
-Clang static analysis reports this problem
-ioctl.c:3333:8: warning: 3rd function call argument is an
-  uninitialized value
-    ret = exclop_start_or_cancel_reloc(fs_info,
+After commit 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio
+hogs") a few error paths would not unwind properly the registration of
+gpio ranges. Correct that by assigning a single error label and goto it
+whenever we encounter a fatal error.
 
-cancel is only set in one branch of an if-check and is always used.  So
-initialize to false.
-
-Fixes: 1a15eb724aae ("btrfs: use btrfs_get_dev_args_from_path in dev removal ioctls")
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: Anand Jain <anand.jain@oracle.com>
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220127215033.267227-1-f.fainelli@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/ioctl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/bcm/pinctrl-bcm2835.c |   23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -3310,7 +3310,7 @@ static long btrfs_ioctl_rm_dev(struct fi
- 	struct block_device *bdev = NULL;
- 	fmode_t mode;
- 	int ret;
--	bool cancel;
-+	bool cancel = false;
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -1264,16 +1264,18 @@ static int bcm2835_pinctrl_probe(struct
+ 				     sizeof(*girq->parents),
+ 				     GFP_KERNEL);
+ 	if (!girq->parents) {
+-		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
+-		return -ENOMEM;
++		err = -ENOMEM;
++		goto out_remove;
+ 	}
  
- 	if (!capable(CAP_SYS_ADMIN))
- 		return -EPERM;
+ 	if (is_7211) {
+ 		pc->wake_irq = devm_kcalloc(dev, BCM2835_NUM_IRQS,
+ 					    sizeof(*pc->wake_irq),
+ 					    GFP_KERNEL);
+-		if (!pc->wake_irq)
+-			return -ENOMEM;
++		if (!pc->wake_irq) {
++			err = -ENOMEM;
++			goto out_remove;
++		}
+ 	}
+ 
+ 	/*
+@@ -1301,8 +1303,10 @@ static int bcm2835_pinctrl_probe(struct
+ 
+ 		len = strlen(dev_name(pc->dev)) + 16;
+ 		name = devm_kzalloc(pc->dev, len, GFP_KERNEL);
+-		if (!name)
+-			return -ENOMEM;
++		if (!name) {
++			err = -ENOMEM;
++			goto out_remove;
++		}
+ 
+ 		snprintf(name, len, "%s:bank%d", dev_name(pc->dev), i);
+ 
+@@ -1321,11 +1325,14 @@ static int bcm2835_pinctrl_probe(struct
+ 	err = gpiochip_add_data(&pc->gpio_chip, pc);
+ 	if (err) {
+ 		dev_err(dev, "could not add GPIO chip\n");
+-		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
+-		return err;
++		goto out_remove;
+ 	}
+ 
+ 	return 0;
++
++out_remove:
++	pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
++	return err;
+ }
+ 
+ static struct platform_driver bcm2835_pinctrl_driver = {
 
 
