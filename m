@@ -2,86 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD20CC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC4CBC3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448076AbiBGNKH (ORCPT
+        id S1448139AbiBGNKK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:10:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
+        Mon, 7 Feb 2022 08:10:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387706AbiBGMpa (ORCPT
+        with ESMTP id S1442952AbiBGMVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:45:30 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F8CC0401F3
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:45:26 -0800 (PST)
+        Mon, 7 Feb 2022 07:21:54 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E37C0423D2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:14:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644237926; x=1675773926;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BFLLIMligc7LnrDeDla/jrh0cC9WCj+osQ4TGk1JTzg=;
-  b=DdorTX/190Blu3bzIjH6Qt4M2gCRPcNmANbyljRQ2uI6f7zqOvdJ6Cd5
-   b+k+2+sogJpBa2xsFukXDhvQ9XzLLSW7iOyjI3VzFRTNRmHe4YxBWtZ3B
-   zDlGx/7vx9rV8WEa1QIGW3ggN9yCwlEGvYzp51Mub/cDAw+GHtjoHPNaB
-   zvj7AviUsjMwNFmos/3oBRF3cREUK+nU9MhcwzcgibbKxFBPpyHMB0qKs
-   3ea1xazaCTZhtWdUzMN9dzAXO3gyZkP98QGBZ81cIbC2YK2IEDU4bSfkC
-   bNa2RMqw7o+4U+yzNwRFQd+XkYB1ssmE/lWBnbFnK0B2zMcMwk1J3JYPt
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="232271285"
+  t=1644236041; x=1675772041;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=TgpvuJ0R1lB2H8FhHzTp6Ej42dRZzsbIJPbNKhwWF1s=;
+  b=KZ9vv96jzpJ8FjOqk9TIVTGDquBcEH6fZof/qWEf1jHbC6YlmVjymzQF
+   wzbWVj/aH3aLt0zqnjHHV7gtY6SQIWsUSUJe9PcijiP9uh3pibyhoUu1z
+   fT8Ykj1+C8+fEu/i5IdPc/b+SlLqs7sevwjbi9mR++CTntsGBBnXA5NQN
+   QTXkkFAk4rpR6Aol3DJc5PoZkzGmRIQX999N9ph8gQpKjSI/6jA+r2AsP
+   MFtKAHgKJbwC8onmY5d0DH8CfDAN1kk4JDBDwsb9hxb/l4Vx0rf66bWgz
+   f8piZKZmgqWEMJuMHhvBX/qASR9Sc+51mb6NKS9PfKRKcq5ahvdDi0Vet
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="312000577"
 X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="232271285"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:45:25 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="312000577"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:14:00 -0800
 X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="525121420"
-Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 07 Feb 2022 04:45:24 -0800
-Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nH3OV-0000Wu-Oq; Mon, 07 Feb 2022 12:45:23 +0000
-Date:   Mon, 7 Feb 2022 20:44:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Guo Ren <guoren@linux.alibaba.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Liu Shaohua <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>
-Subject: [csky-linux:riscv_compat_v6_sv48_xtpbmt 22/22] errata.c:undefined
- reference to `protection_map'
-Message-ID: <202202072027.HVj3XQyw-lkp@intel.com>
+   d="scan'208";a="484401961"
+Received: from nbaca1-mobl.ger.corp.intel.com (HELO localhost) ([10.252.18.25])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:13:56 -0800
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Christoph Hellwig <hch@lst.de>, Zhi Wang <zhi.wang.linux@gmail.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        "Wang, Zhi A" <zhi.a.wang@intel.com>,
+        "jgg@nvidia.com" <jgg@nvidia.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        "Xu, Terrence" <terrence.xu@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: Re: [PATCH 1/3] i915/gvt: Introduce the mmio_table.c to support
+ VFIO new mdev API
+In-Reply-To: <20220207120647.GA28851@lst.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220127120508.11330-1-zhi.a.wang@intel.com>
+ <20220207073247.GA24327@lst.de>
+ <DM4PR11MB5549FE45F8098368114ADE75CA2C9@DM4PR11MB5549.namprd11.prod.outlook.com>
+ <20220207083535.GA25345@lst.de> <877da7rlzr.fsf@intel.com>
+ <5c916187-8a8c-323a-adb4-8bce141180cc@gmail.com>
+ <20220207120647.GA28851@lst.de>
+Date:   Mon, 07 Feb 2022 14:13:50 +0200
+Message-ID: <87v8xqri0x.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/c-sky/csky-linux riscv_compat_v6_sv48_xtpbmt
-head:   660358cf7b5b9fda72e619f37efe4c68af19dccb
-commit: 660358cf7b5b9fda72e619f37efe4c68af19dccb [22/22] riscv: errata: pgtable: Add custom Svpbmt supported for Allwinner D1
-config: riscv-nommu_virt_defconfig (https://download.01.org/0day-ci/archive/20220207/202202072027.HVj3XQyw-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/c-sky/csky-linux/commit/660358cf7b5b9fda72e619f37efe4c68af19dccb
-        git remote add csky-linux https://github.com/c-sky/csky-linux
-        git fetch --no-tags csky-linux riscv_compat_v6_sv48_xtpbmt
-        git checkout 660358cf7b5b9fda72e619f37efe4c68af19dccb
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
+On Mon, 07 Feb 2022, Christoph Hellwig <hch@lst.de> wrote:
+> On Mon, Feb 07, 2022 at 06:57:13AM -0500, Zhi Wang wrote:
+>> Hi Christoph and Jani:
+>>
+>> Thanks for the comments. It would be nice that people can achieve a 
+>> agreement. I am OK with both of the options and also moving some files into 
+>> different folders doesn't needs me to do the full test run again. :)
+>
+> The way I understood Jani he agrees that the mmio table, which needs to
+> be part of the core i915 module should not be under the gvt/ subdiretory.
+> I.e. it could be drivers/gpu/drm/i915/intel_gvt_mmio_table.c.  The
+> declarations could then go either into drivers/gpu/drm/i915/intel_gvt.h
+> or drivers/gpu/drm/i915/intel_gvt_mmio_table.h.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Correct.
 
-All errors (new ones prefixed by >>):
+Generally I prefer to have the declarations for stuff in intel_foo.c to
+be placed in intel_foo.h, and named intel_foo_*.
 
-   riscv64-linux-ld: arch/riscv/errata/thead/errata.o: in function `.L0 ':
->> errata.c:(.init.text+0x28): undefined reference to `protection_map'
->> riscv64-linux-ld: errata.c:(.init.text+0x30): undefined reference to `protection_map'
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+BR,
+Jani.
+
+-- 
+Jani Nikula, Intel Open Source Graphics Center
