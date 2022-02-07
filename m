@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E309C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3896C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388276AbiBGLnV (ORCPT
+        id S1388318AbiBGLnb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
+        Mon, 7 Feb 2022 06:43:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385681AbiBGLcG (ORCPT
+        with ESMTP id S1385531AbiBGLb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:06 -0500
+        Mon, 7 Feb 2022 06:31:56 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E381C0401D4;
-        Mon,  7 Feb 2022 03:31:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75208C02B5C6;
+        Mon,  7 Feb 2022 03:30:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F35CB8111C;
-        Mon,  7 Feb 2022 11:31:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95434C004E1;
-        Mon,  7 Feb 2022 11:31:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD839B8111C;
+        Mon,  7 Feb 2022 11:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF1BBC004E1;
+        Mon,  7 Feb 2022 11:30:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233515;
-        bh=QVmF++sgL5K8mV3wQlECsBRirJ5ovffGWfToglpzGLc=;
+        s=korg; t=1644233439;
+        bh=IEgE565Gtb1btIQogTZvSJuRAGwhj+7xF4Okv16Im2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xaAhfGqRXaeQntRv/zLuSiU5H15SMHBuMqZv7cL4ewpvNzA/QFPz76NxokQCn2Ikn
-         cLdP9tJTEg7ya5hV1TNo2ZUPAfGHzwh+kQ/H2O870gJ1D2uYajEDODS4mVlWwA4m6n
-         FhbiF6Ixp1IAgN5EO+mHLrtyIVck92RtgfVJQeSs=
+        b=KJVZJGB9XeDNqtMU83pmMnhY11ozCvms4nnNYQodItKv/o8xCZb7ugA7248MWVH9s
+         c/PQsyvrbxTIBhOau/DiSFsDH81v6ThiShXNdkTG6ZGnjWmNim9gmpbuXDF+Eqs4e2
+         PCYdi9bduvIp1oQozT/LMa1In0ZwJz/xmC0ZDspY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.16 037/126] IB/hfi1: Fix alloc failure with larger txqueuelen
-Date:   Mon,  7 Feb 2022 12:06:08 +0100
-Message-Id: <20220207103805.418161681@linuxfoundation.org>
+        =?UTF-8?q?Albert=20Geant=C4=83?= <albertgeanta@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.16 013/126] ALSA: hda/realtek: Add quirk for ASUS GU603
+Date:   Mon,  7 Feb 2022 12:05:44 +0100
+Message-Id: <20220207103804.527072518@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -51,186 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
+From: Albert Geantă <albertgeanta@gmail.com>
 
-commit b1151b74ff68cc83c2a8e1a618efe7d056e4f237 upstream.
+commit 94db9cc8f8fa2d5426ce79ec4ca16028f7084224 upstream.
 
-The following allocation with large txqueuelen will result in the
-following warning:
+The ASUS GU603 (Zephyrus M16 - SSID 1043:16b2) requires a quirk similar to
+other ASUS devices for correctly routing the 4 integrated speakers. This
+fixes it by adding a corresponding quirk entry, which connects the bass
+speakers to the proper DAC.
 
-  Call Trace:
-   __alloc_pages_nodemask+0x283/0x2c0
-   kmalloc_large_node+0x3c/0xa0
-   __kmalloc_node+0x22a/0x2f0
-   hfi1_ipoib_txreq_init+0x19f/0x330 [hfi1]
-   hfi1_ipoib_setup_rn+0xd3/0x1a0 [hfi1]
-   rdma_init_netdev+0x5a/0x80 [ib_core]
-   ipoib_intf_init+0x6c/0x350 [ib_ipoib]
-   ipoib_intf_alloc+0x5c/0xc0 [ib_ipoib]
-   ipoib_add_one+0xbe/0x300 [ib_ipoib]
-   add_client_context+0x12c/0x1a0 [ib_core]
-   ib_register_client+0x147/0x190 [ib_core]
-   ipoib_init_module+0xdd/0x132 [ib_ipoib]
-   do_one_initcall+0x46/0x1c3
-   do_init_module+0x5a/0x220
-   load_module+0x14c5/0x17f0
-   __do_sys_init_module+0x13b/0x180
-   do_syscall_64+0x5b/0x1a0
-   entry_SYSCALL_64_after_hwframe+0x65/0xca
-
-For ipoib, the txqueuelen is modified with the module parameter
-send_queue_size.
-
-Fix by changing to use kv versions of the same allocator to handle the
-large allocations.  The allocation embeds a hdr struct that is dma mapped.
-Change that struct to a pointer to a kzalloced struct.
-
-Cc: stable@vger.kernel.org
-Fixes: d99dc602e2a5 ("IB/hfi1: Add functions to transmit datagram ipoib packets")
-Link: https://lore.kernel.org/r/1642287756-182313-3-git-send-email-mike.marciniszyn@cornelisnetworks.com
-Reviewed-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Albert Geantă <albertgeanta@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220131010523.546386-1-albertgeanta@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hfi1/ipoib.h    |    2 -
- drivers/infiniband/hw/hfi1/ipoib_tx.c |   36 +++++++++++++++++++++++-----------
- 2 files changed, 26 insertions(+), 12 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/infiniband/hw/hfi1/ipoib.h
-+++ b/drivers/infiniband/hw/hfi1/ipoib.h
-@@ -55,7 +55,7 @@ union hfi1_ipoib_flow {
-  */
- struct ipoib_txreq {
- 	struct sdma_txreq           txreq;
--	struct hfi1_sdma_header     sdma_hdr;
-+	struct hfi1_sdma_header     *sdma_hdr;
- 	int                         sdma_status;
- 	int                         complete;
- 	struct hfi1_ipoib_dev_priv *priv;
---- a/drivers/infiniband/hw/hfi1/ipoib_tx.c
-+++ b/drivers/infiniband/hw/hfi1/ipoib_tx.c
-@@ -122,7 +122,7 @@ static void hfi1_ipoib_free_tx(struct ip
- 		dd_dev_warn(priv->dd,
- 			    "%s: Status = 0x%x pbc 0x%llx txq = %d sde = %d\n",
- 			    __func__, tx->sdma_status,
--			    le64_to_cpu(tx->sdma_hdr.pbc), tx->txq->q_idx,
-+			    le64_to_cpu(tx->sdma_hdr->pbc), tx->txq->q_idx,
- 			    tx->txq->sde->this_idx);
- 	}
- 
-@@ -231,7 +231,7 @@ static int hfi1_ipoib_build_tx_desc(stru
- {
- 	struct hfi1_devdata *dd = txp->dd;
- 	struct sdma_txreq *txreq = &tx->txreq;
--	struct hfi1_sdma_header *sdma_hdr = &tx->sdma_hdr;
-+	struct hfi1_sdma_header *sdma_hdr = tx->sdma_hdr;
- 	u16 pkt_bytes =
- 		sizeof(sdma_hdr->pbc) + (txp->hdr_dwords << 2) + tx->skb->len;
- 	int ret;
-@@ -256,7 +256,7 @@ static void hfi1_ipoib_build_ib_tx_heade
- 					   struct ipoib_txparms *txp)
- {
- 	struct hfi1_ipoib_dev_priv *priv = tx->txq->priv;
--	struct hfi1_sdma_header *sdma_hdr = &tx->sdma_hdr;
-+	struct hfi1_sdma_header *sdma_hdr = tx->sdma_hdr;
- 	struct sk_buff *skb = tx->skb;
- 	struct hfi1_pportdata *ppd = ppd_from_ibp(txp->ibp);
- 	struct rdma_ah_attr *ah_attr = txp->ah_attr;
-@@ -483,7 +483,7 @@ static int hfi1_ipoib_send_dma_single(st
- 	if (likely(!ret)) {
- tx_ok:
- 		trace_sdma_output_ibhdr(txq->priv->dd,
--					&tx->sdma_hdr.hdr,
-+					&tx->sdma_hdr->hdr,
- 					ib_is_sc5(txp->flow.sc5));
- 		hfi1_ipoib_check_queue_depth(txq);
- 		return NETDEV_TX_OK;
-@@ -547,7 +547,7 @@ static int hfi1_ipoib_send_dma_list(stru
- 	hfi1_ipoib_check_queue_depth(txq);
- 
- 	trace_sdma_output_ibhdr(txq->priv->dd,
--				&tx->sdma_hdr.hdr,
-+				&tx->sdma_hdr->hdr,
- 				ib_is_sc5(txp->flow.sc5));
- 
- 	if (!netdev_xmit_more())
-@@ -683,7 +683,8 @@ int hfi1_ipoib_txreq_init(struct hfi1_ip
- {
- 	struct net_device *dev = priv->netdev;
- 	u32 tx_ring_size, tx_item_size;
--	int i;
-+	struct hfi1_ipoib_circ_buf *tx_ring;
-+	int i, j;
- 
- 	/*
- 	 * Ring holds 1 less than tx_ring_size
-@@ -701,7 +702,9 @@ int hfi1_ipoib_txreq_init(struct hfi1_ip
- 
- 	for (i = 0; i < dev->num_tx_queues; i++) {
- 		struct hfi1_ipoib_txq *txq = &priv->txqs[i];
-+		struct ipoib_txreq *tx;
- 
-+		tx_ring = &txq->tx_ring;
- 		iowait_init(&txq->wait,
- 			    0,
- 			    hfi1_ipoib_flush_txq,
-@@ -725,14 +728,19 @@ int hfi1_ipoib_txreq_init(struct hfi1_ip
- 					     priv->dd->node);
- 
- 		txq->tx_ring.items =
--			kcalloc_node(tx_ring_size, tx_item_size,
--				     GFP_KERNEL, priv->dd->node);
-+			kvzalloc_node(array_size(tx_ring_size, tx_item_size),
-+				      GFP_KERNEL, priv->dd->node);
- 		if (!txq->tx_ring.items)
- 			goto free_txqs;
- 
- 		txq->tx_ring.max_items = tx_ring_size;
- 		txq->tx_ring.shift = ilog2(tx_item_size);
- 		txq->tx_ring.avail = hfi1_ipoib_ring_hwat(txq);
-+		tx_ring = &txq->tx_ring;
-+		for (j = 0; j < tx_ring_size; j++)
-+			hfi1_txreq_from_idx(tx_ring, j)->sdma_hdr =
-+				kzalloc_node(sizeof(*tx->sdma_hdr),
-+					     GFP_KERNEL, priv->dd->node);
- 
- 		netif_tx_napi_add(dev, &txq->napi,
- 				  hfi1_ipoib_poll_tx_ring,
-@@ -746,7 +754,10 @@ free_txqs:
- 		struct hfi1_ipoib_txq *txq = &priv->txqs[i];
- 
- 		netif_napi_del(&txq->napi);
--		kfree(txq->tx_ring.items);
-+		tx_ring = &txq->tx_ring;
-+		for (j = 0; j < tx_ring_size; j++)
-+			kfree(hfi1_txreq_from_idx(tx_ring, j)->sdma_hdr);
-+		kvfree(tx_ring->items);
- 	}
- 
- 	kfree(priv->txqs);
-@@ -780,17 +791,20 @@ static void hfi1_ipoib_drain_tx_list(str
- 
- void hfi1_ipoib_txreq_deinit(struct hfi1_ipoib_dev_priv *priv)
- {
--	int i;
-+	int i, j;
- 
- 	for (i = 0; i < priv->netdev->num_tx_queues; i++) {
- 		struct hfi1_ipoib_txq *txq = &priv->txqs[i];
-+		struct hfi1_ipoib_circ_buf *tx_ring = &txq->tx_ring;
- 
- 		iowait_cancel_work(&txq->wait);
- 		iowait_sdma_drain(&txq->wait);
- 		hfi1_ipoib_drain_tx_list(txq);
- 		netif_napi_del(&txq->napi);
- 		hfi1_ipoib_drain_tx_ring(txq);
--		kfree(txq->tx_ring.items);
-+		for (j = 0; j < tx_ring->max_items; j++)
-+			kfree(hfi1_txreq_from_idx(tx_ring, j)->sdma_hdr);
-+		kvfree(tx_ring->items);
- 	}
- 
- 	kfree(priv->txqs);
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8854,6 +8854,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1043, 0x1e51, "ASUS Zephyrus M15", ALC294_FIXUP_ASUS_GU502_PINS),
+ 	SND_PCI_QUIRK(0x1043, 0x1e8e, "ASUS Zephyrus G15", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x1f11, "ASUS Zephyrus G14", ALC289_FIXUP_ASUS_GA401),
++	SND_PCI_QUIRK(0x1043, 0x16b2, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x3030, "ASUS ZN270IE", ALC256_FIXUP_ASUS_AIO_GPIO2),
+ 	SND_PCI_QUIRK(0x1043, 0x831a, "ASUS P901", ALC269_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x1043, 0x834a, "ASUS S101", ALC269_FIXUP_STEREO_DMIC),
 
 
