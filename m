@@ -2,166 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4CB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3ACC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245758AbiBGQNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:13:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40302 "EHLO
+        id S1353677AbiBGQOf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:14:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386871AbiBGQBe (ORCPT
+        with ESMTP id S1345732AbiBGQJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:01:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB066C0401CC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:01:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249692;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0Xxoic2Sn/qFA/mhRCvHnS08xjpesyCCqOxwVNKsehI=;
-        b=cO0eQu0lc3jovwgySvnvTYi6RUR53fc1kchKQQgFZ/RpNzQNzBiv+A+VWWfBm9kEF+PBuZ
-        Dk3xxMcLBR+ZVDsAjvT94gvXuIBTFvInr/4ZaccMc5LUxRVdY4kvKmd2dI3kbz+Pge4lPJ
-        mEVb0JJ5AjHf45jRr0/fhpYZGyszJHg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-488-U0zzcjwdOgqudp1ofBwlyw-1; Mon, 07 Feb 2022 11:01:31 -0500
-X-MC-Unique: U0zzcjwdOgqudp1ofBwlyw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 7 Feb 2022 11:09:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9EEC0401E3;
+        Mon,  7 Feb 2022 08:09:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 49ED4814243;
-        Mon,  7 Feb 2022 16:01:28 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C07CA83796;
-        Mon,  7 Feb 2022 16:00:48 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Tony Luck <tony.luck@intel.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sean Christopherson <seanjc@google.com>,
-        David Airlie <airlied@linux.ie>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Jim Mattson <jmattson@google.com>, x86@kernel.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH RESEND 27/30] KVM: x86: add force_intercept_exceptions_mask
-Date:   Mon,  7 Feb 2022 17:54:44 +0200
-Message-Id: <20220207155447.840194-28-mlevitsk@redhat.com>
-In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
-References: <20220207155447.840194-1-mlevitsk@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54EABB81620;
+        Mon,  7 Feb 2022 16:09:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B487C36AE2;
+        Mon,  7 Feb 2022 16:09:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644250185;
+        bh=zmd2o9oLA0EJ0hPOoSHeAgUAtJ/i5oTwZaJJrykDlgM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=mJSTsCnbTI3gwg/8BhSVQ+RBGPrG+psB6hlPxH2TkERftMdOHpsCZTo5MNoeifO1L
+         oFrULqWEX0iWf+gGMaZH2QDadFBqmSGfutMMDcVyYKu0uwtxsIRlZPSsWP+XN7t+gA
+         r8OaZctUL0ilvXmdCUeQTDILiTKRgaqk5rtCiY+MEkaT+0HodiWd37fMVWTP+uaeya
+         0zU4tVUBj2JvaEpJfySAVL5/b0dWuwoC3v8xANFI6+v+VCvFYfU5v4dcOruIH8co/X
+         Je4AJeG6Vl3Vyo+7Euuk3LCkuySqicc0lRH4jodrf47WNRi/RLTPmyAnNHDKac1GqM
+         dpmi98M+KgR3A==
+Received: by mail-ed1-f42.google.com with SMTP id f17so14004784edd.2;
+        Mon, 07 Feb 2022 08:09:45 -0800 (PST)
+X-Gm-Message-State: AOAM532O3hG1AOvJ2wvbh2SeBUlFdEsZYiP3JcIBVdw+BfdP1NoWV6yQ
+        ZcWy/S4q7xQoelYZctvy2uOm66fB5C2TE5QfGA==
+X-Google-Smtp-Source: ABdhPJxkzi+j5PDhmc4PGrG364yBx0Lt608JLV09wibWGr9XJBFhwpweKp1UvdU3JzJzVyrWRoTz/EIpL6vQYPBMLKo=
+X-Received: by 2002:a50:e68d:: with SMTP id z13mr160190edm.307.1644250183395;
+ Mon, 07 Feb 2022 08:09:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20211129173637.303201-1-robh@kernel.org> <Yf2wTLjmcRj+AbDv@xps13.dannf>
+ <CAL_Jsq+4b4Yy8rJGJv9j9j_TCm6mTAkW5fzcDuuW-jOoiZ2GLg@mail.gmail.com> <CALdTtnuK+D7gNbEDgHbrc29pFFCR3XYAHqrK3=X_hQxUx-Seow@mail.gmail.com>
+In-Reply-To: <CALdTtnuK+D7gNbEDgHbrc29pFFCR3XYAHqrK3=X_hQxUx-Seow@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Mon, 7 Feb 2022 10:09:31 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJUmjG-SiuR9T7f=5nGcSjTLhuF_382EQDf74kcqdAq_w@mail.gmail.com>
+Message-ID: <CAL_JsqJUmjG-SiuR9T7f=5nGcSjTLhuF_382EQDf74kcqdAq_w@mail.gmail.com>
+Subject: Re: [PATCH] PCI: xgene: Fix IB window setup
+To:     dann frazier <dann.frazier@canonical.com>
+Cc:     Toan Le <toan@os.amperecomputing.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Andrew Murray <amurray@thegoodpenguin.co.uk>,
+        =?UTF-8?Q?St=C3=A9phane_Graber?= <stgraber@ubuntu.com>,
+        stable <stable@vger.kernel.org>, PCI <linux-pci@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This parameter will be used by VMX and SVM code to force
-interception of a set of exceptions, given by a bitmask
-for guest debug and/or kvm debug.
+On Sat, Feb 5, 2022 at 3:13 PM dann frazier <dann.frazier@canonical.com> wr=
+ote:
+>
+> On Sat, Feb 5, 2022 at 9:05 AM Rob Herring <robh@kernel.org> wrote:
+> >
+> > On Fri, Feb 4, 2022 at 5:01 PM dann frazier <dann.frazier@canonical.com=
+> wrote:
+> > >
+> > > On Mon, Nov 29, 2021 at 11:36:37AM -0600, Rob Herring wrote:
+> > > > Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
+> > > > broke PCI support on XGene. The cause is the IB resources are now s=
+orted
+> > > > in address order instead of being in DT dma-ranges order. The resul=
+t is
+> > > > which inbound registers are used for each region are swapped. I don=
+'t
+> > > > know the details about this h/w, but it appears that IB region 0
+> > > > registers can't handle a size greater than 4GB. In any case, limiti=
+ng
+> > > > the size for region 0 is enough to get back to the original assignm=
+ent
+> > > > of dma-ranges to regions.
+> > >
+> > > hey Rob!
+> > >
+> > > I've been seeing a panic on HP Moonshoot m400 cartridges (X-Gene1) -
+> > > only during network installs - that I also bisected down to commit
+> > > 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup"). I was
+> > > hoping that this patch that fixed the issue on St=C3=A9phane's X-Gene=
+2
+> > > system would also fix my issue, but no luck. In fact, it seems to jus=
+t
+> > > makes it fail differently. Reverting both patches is required to get =
+a
+> > > v5.17-rc kernel to boot.
+> > >
+> > > I've collected the following logs - let me know if anything else woul=
+d
+> > > be useful.
+> > >
+> > > 1) v5.17-rc2+ (unmodified):
+> > >    http://dannf.org/bugs/m400-no-reverts.log
+> > >    Note that the mlx4 driver fails initialization.
+> > >
+> > > 2) v5.17-rc2+, w/o the commit that fixed St=C3=A9phane's system:
+> > >    http://dannf.org/bugs/m400-xgene2-fix-reverted.log
+> > >    Note the mlx4 MSI-X timeout, and later panic.
+> > >
+> > > 3) v5.17-rc2+, w/ both commits reverted (works)
+> > >    http://dannf.org/bugs/m400-both-reverted.log
+> >
+> > The ranges and dma-ranges addresses don't appear to match up with any
+> > upstream dts files. Can you send me the DT?
+>
+> Sure: http://dannf.org/bugs/fdt
 
-This is based on an idea first shown here:
-https://patchwork.kernel.org/project/kvm/patch/20160301192822.GD22677@pd.tnic/
+The first fix certainly is a problem. It's going to need something
+besides size to key off of (originally it was dependent on order of
+dma-ranges entries).
 
-CC: Borislav Petkov <bp@suse.de>
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/include/asm/kvm_host.h | 7 +++++++
- arch/x86/kvm/x86.c              | 9 +++++++++
- arch/x86/kvm/x86.h              | 5 +++++
- 3 files changed, 21 insertions(+)
+The 2nd issue is the 'dma-ranges' has a second entry that is now ignored:
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 428ab1cc7dd34..fa498612839a0 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1168,6 +1168,13 @@ struct kvm_arch {
- 	struct kvm_pmu_event_filter __rcu *pmu_event_filter;
- 	struct task_struct *nx_lpage_recovery_thread;
- 
-+	/*
-+	 * Bitmask of exceptions that KVM will intercept
-+	 * and forward to the guest, even if that is not needed
-+	 * for normal operation. Debug feature.
-+	 */
-+	u32 force_intercept_exceptions_bitmask;
-+
- #ifdef CONFIG_X86_64
- 	/*
- 	 * Whether the TDP MMU is enabled for this VM. This contains a
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 63d84c373e465..202c34697852f 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -193,6 +193,13 @@ module_param(enable_pmu, bool, 0444);
- bool __read_mostly eager_page_split = true;
- module_param(eager_page_split, bool, 0644);
- 
-+/*
-+ * force_intercept_exceptions_mask is a writable param and its value
-+ * is snapshotted when a VM is created
-+ */
-+static uint force_intercept_exceptions_mask;
-+module_param(force_intercept_exceptions_mask, uint, S_IRUGO | S_IWUSR);
-+
- /*
-  * Restoring the host value for MSRs that are only consumed when running in
-  * usermode, e.g. SYSCALL MSRs and TSC_AUX, can be deferred until the CPU
-@@ -11646,6 +11653,7 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
- 	raw_spin_unlock_irqrestore(&kvm->arch.tsc_write_lock, flags);
- 
- 	kvm->arch.guest_can_read_msr_platform_info = true;
-+	kvm->arch.force_intercept_exceptions_bitmask = force_intercept_exceptions_mask;
- 
- #if IS_ENABLED(CONFIG_HYPERV)
- 	spin_lock_init(&kvm->arch.hv_root_tdp_lock);
-@@ -12886,6 +12894,7 @@ int kvm_sev_es_string_io(struct kvm_vcpu *vcpu, unsigned int size,
- }
- EXPORT_SYMBOL_GPL(kvm_sev_es_string_io);
- 
-+
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_entry);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_exit);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_fast_mmio);
-diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
-index e9b303b21f173..34f96f483c7e5 100644
---- a/arch/x86/kvm/x86.h
-+++ b/arch/x86/kvm/x86.h
-@@ -91,6 +91,11 @@ static inline bool kvm_exception_is_soft(unsigned int nr)
- 	return (nr == BP_VECTOR) || (nr == OF_VECTOR);
- }
- 
-+static inline bool kvm_is_exception_force_intercepted(struct kvm *kvm, int exception)
-+{
-+	return kvm->arch.force_intercept_exceptions_bitmask & BIT(exception);
-+}
-+
- static inline bool is_protmode(struct kvm_vcpu *vcpu)
- {
- 	return kvm_read_cr0_bits(vcpu, X86_CR0_PE);
--- 
-2.26.3
+dma-ranges =3D <0x42000000 0x40 0x00 0x40 0x00 0x40 0x00 0x00>, <0x00
+0x79000000 0x00 0x79000000 0x00 0x800000>;
 
+Based on the flags (3rd addr cell: 0x0), we have an inbound config
+space which the kernel now ignores because inbound config space
+accesses make no sense. But clearly some setup is needed. Upstream, in
+contrast, sets up a memory range that includes this region, so the
+setup does happen:
+
+<0x42000000 0x00 0x00000000 0x00 0x00000000 0x80 0x00000000>
+
+Minimally, I suspect it will work if you change dma-ranges 2nd entry to:
+
+<0x42000000 0x79000000 0x00 0x79000000 0x00 0x800000>
+
+While we shouldn't break existing DTs, the moonshot DT doesn't use
+what's documented upstream. There are multiple differences compared to
+what's documented. Is upstream supposed to support upstream DTs,
+downstream DTs, and ACPI for XGene which is an abandoned platform with
+only a handful of users?
+
+Rob
