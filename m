@@ -2,134 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:37:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27801C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238036AbiBGThm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:37:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
+        id S239829AbiBGTgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:36:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239972AbiBGTgh (ORCPT
+        with ESMTP id S240653AbiBGTeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:36:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8849FC0401E0;
-        Mon,  7 Feb 2022 11:36:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 7 Feb 2022 14:34:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AED62C0401E9
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:34:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644262449;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Mt0dY24O8oy81HO9eljR8ZyBXQGPacTP1E1VhcVXUbE=;
+        b=gqjno34FsP3Ad3i/263EtKO4WP01HVIVSCCZNE7wIADEx8oH5SHC7E3TLWjF+rfm7W/VSu
+        NQ0yc3Q+gYs7hrVv5t2+UFizkGGYfnUFfbNcJB9HrxB5JclsRtL+P4yhPNn3dJLxNS65dp
+        qZ3Iq7qF6oJboG5lA0MD98XM2JUlWQ0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-623-aVSMeVKxOSmcoeJFlsExTA-1; Mon, 07 Feb 2022 14:34:08 -0500
+X-MC-Unique: aVSMeVKxOSmcoeJFlsExTA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22C08614C1;
-        Mon,  7 Feb 2022 19:36:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1754BC340EE;
-        Mon,  7 Feb 2022 19:36:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644262595;
-        bh=X85IxOM9alAAsRrIinDHcQgMGXL1xHuMRVkHNR1XB5g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FeOnvFbTZmncgid/0FHDbyDbdWHmnTq/PTM23fUR91cF+/eNIeh6gSRtARDHjevUe
-         W2KUfUSbZJVPxk4GoYW/UkD7kN1b2D6eHyiecKvvKh/AiAQ2QNtnwxIbavn2TV90/l
-         x+r05+BeQIv8biOZ/J15ZPFzHCCiQJBr6tXUDHwcOU6xIUAEfYwgssz4fv/5gd69pO
-         khlwPMhHmwg9JVNDYG1+t/9I57ATPm8LFzNX/H9zLdBL1WqR+lqVIM+XlRIwKaMpSP
-         Cv7G438E6JYBQ+tKOXcsyNGzAxAUbuFzgV7akZvMBCP+F8BlJetGnlUkJtpcxyfqgR
-         tGGXLnfBYj5dQ==
-Date:   Mon, 7 Feb 2022 12:36:31 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Usama Arif <usama.arif@bytedance.com>,
-        io-uring@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH] io_uring: Fix use of uninitialized ret in
- io_eventfd_register()
-Message-ID: <YgF0vyDgnsSARZf1@dev-arch.archlinux-ax161>
-References: <20220207162410.1013466-1-nathan@kernel.org>
- <CAKwvOdnfQeY8sC0iET4hm-kgeFhurWf_jrh4=czBj17zQ5+x0Q@mail.gmail.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4E2761898291;
+        Mon,  7 Feb 2022 19:34:05 +0000 (UTC)
+Received: from [10.22.32.15] (unknown [10.22.32.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BDA3A452E6;
+        Mon,  7 Feb 2022 19:33:57 +0000 (UTC)
+Message-ID: <53f89ef2-3894-ad23-7484-38ce192bce20@redhat.com>
+Date:   Mon, 7 Feb 2022 14:33:57 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKwvOdnfQeY8sC0iET4hm-kgeFhurWf_jrh4=czBj17zQ5+x0Q@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v4 3/4] mm/page_owner: Print memcg information
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Roman Gushchin <guro@fb.com>, Rafael Aquini <aquini@redhat.com>
+References: <20220131192308.608837-5-longman@redhat.com>
+ <20220202203036.744010-4-longman@redhat.com>
+ <YfvOp5VXrxy9IW1w@dhcp22.suse.cz>
+ <3f042edb-3769-afea-17a7-899578cd5c69@redhat.com>
+ <YgFUxFI5bMbc42j4@dhcp22.suse.cz>
+ <20220207110947.f07b58898d91c02090f9aacf@linux-foundation.org>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220207110947.f07b58898d91c02090f9aacf@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 11:32:03AM -0800, Nick Desaulniers wrote:
-> On Mon, Feb 7, 2022 at 8:24 AM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > Clang warns:
-> >
-> >   fs/io_uring.c:9396:9: warning: variable 'ret' is uninitialized when used here [-Wuninitialized]
-> >           return ret;
-> >                  ^~~
-> >   fs/io_uring.c:9373:13: note: initialize the variable 'ret' to silence this warning
-> >           int fd, ret;
-> >                      ^
-> >                       = 0
-> >   1 warning generated.
-> >
-> > Just return 0 directly and reduce the scope of ret to the if statement,
-> > as that is the only place that it is used, which is how the function was
-> > before the fixes commit.
-> >
-> > Fixes: 1a75fac9a0f9 ("io_uring: avoid ring quiesce while registering/unregistering eventfd")
-> 
-> Did SHA's change? In linux-next, I see:
-> commit b77e315a9644 ("io_uring: avoid ring quiesce while
-> registering/unregistering eventfd")
-> otherwise LGTM
 
-Yes, this is against Jens' latest for-5.18/io_uring branch, which was
-rebased after next-20220207 was released.
+On 2/7/22 14:09, Andrew Morton wrote:
+> On Mon, 7 Feb 2022 18:20:04 +0100 Michal Hocko <mhocko@suse.com> wrote:
+>
+>> On Thu 03-02-22 14:03:58, Waiman Long wrote:
+>>> On 2/3/22 07:46, Michal Hocko wrote:
+>>>> On Wed 02-02-22 15:30:35, Waiman Long wrote:
+>>>> [...]
+>> ...
+>>>>> +	online = (memcg->css.flags & CSS_ONLINE);
+>>>>> +	cgroup_name(memcg->css.cgroup, name, sizeof(name));
+>>>> Is there any specific reason to use another buffer allocated on the
+>>>> stack? Also 80B seems too short to cover NAME_MAX.
+>>>>
+>>>> Nothing else jumped at me.
+>>> I suppose we can print directly into kbuf with cgroup_name(), but using a
+>>> separate buffer is easier to read and understand. 79 characters should be
+>>> enough for most cgroup names. Some auto-generated names with some kind of
+>>> embedded uuids may be longer than that, but the random sequence of hex
+>>> digits that may be missing do not convey much information for identification
+>>> purpose. We can always increase the buffer length later if it turns out to
+>>> be an issue.
+>> Cutting a name short sounds like a source of confusion and there doesn't
+>> seem to be any good reason for that.
+> Yes.  If we give them 79 characters, someone will go and want 94.  If
+> we can prevent this once and for ever, let's please do so.
 
-https://git.kernel.dk/cgit/linux-block/log/?h=for-5.18/io_uring
+Sure. Will send a version with that change.
 
 Cheers,
-Nathan
+Longman
 
-> > Link: https://github.com/ClangBuiltLinux/linux/issues/1579
-> > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> > ---
-> >  fs/io_uring.c | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/fs/io_uring.c b/fs/io_uring.c
-> > index 5479f0607430..7ef04bb66da1 100644
-> > --- a/fs/io_uring.c
-> > +++ b/fs/io_uring.c
-> > @@ -9370,7 +9370,7 @@ static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg,
-> >  {
-> >         struct io_ev_fd *ev_fd;
-> >         __s32 __user *fds = arg;
-> > -       int fd, ret;
-> > +       int fd;
-> >
-> >         ev_fd = rcu_dereference_protected(ctx->io_ev_fd,
-> >                                         lockdep_is_held(&ctx->uring_lock));
-> > @@ -9386,14 +9386,14 @@ static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg,
-> >
-> >         ev_fd->cq_ev_fd = eventfd_ctx_fdget(fd);
-> >         if (IS_ERR(ev_fd->cq_ev_fd)) {
-> > -               ret = PTR_ERR(ev_fd->cq_ev_fd);
-> > +               int ret = PTR_ERR(ev_fd->cq_ev_fd);
-> >                 kfree(ev_fd);
-> >                 return ret;
-> >         }
-> >         ev_fd->eventfd_async = eventfd_async;
-> >
-> >         rcu_assign_pointer(ctx->io_ev_fd, ev_fd);
-> > -       return ret;
-> > +       return 0;
-> >  }
-> >
-> >  static void io_eventfd_put(struct rcu_head *rcu)
-> >
-> > base-commit: 88a0394bc27de2dd8a8715970f289c5627052532
-> > --
-> > 2.35.1
-> >
-> >
-> 
-> 
-> -- 
-> Thanks,
-> ~Nick Desaulniers
+>
+
