@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00536C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C1AC43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358102AbiBGLOd (ORCPT
+        id S1358480AbiBGLOl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:14:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49090 "EHLO
+        Mon, 7 Feb 2022 06:14:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236283AbiBGLK4 (ORCPT
+        with ESMTP id S238560AbiBGLLP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:10:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F06C043189;
-        Mon,  7 Feb 2022 03:10:55 -0800 (PST)
+        Mon, 7 Feb 2022 06:11:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E717BC0401C4;
+        Mon,  7 Feb 2022 03:11:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54FABB80EE8;
-        Mon,  7 Feb 2022 11:10:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99378C004E1;
-        Mon,  7 Feb 2022 11:10:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77C8561261;
+        Mon,  7 Feb 2022 11:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A0F7C340EB;
+        Mon,  7 Feb 2022 11:11:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232253;
-        bh=Ah7q0SidRjtwGRZkKQdwXV4dI21H3xhu6NXssBEZaoY=;
+        s=korg; t=1644232273;
+        bh=sm5sbFHOTB/cW9HRgnuJ81rw67nPFJSlWPf3S0Er/qk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0A5STAfUfwfi/vkUGQQJ6O9XNzyV7E4X6DRn71LUoJTcyBHyTcyZanY3ollQ84P3Q
-         SrOfNhVL0vNjWJO9goXbMJsZJwanReNzHjvwNv8wiiTk5QPwUx93p5q9wezWhiodPp
-         Ac5DVax2Y8jAxLBcMPT59EGTpMLVLzfm9qG4SDE0=
+        b=kkVNuTpI0qPRpVD1v15A+AWWPvhHgYi5X8MfoaFdzr08RPtlHdBsZcEj9kEryNujp
+         PaIGrgwbtOWql672TwATEGjILh6Boa50eyVeBbbOctWjF7KCvsJQaoIAFtJVrxmpki
+         NtpNQb2MedYCOpjkcPjqNoC6BPA/yipw0hmqOFbQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.14 09/69] tty: n_gsm: fix SW flow control encoding/handling
-Date:   Mon,  7 Feb 2022 12:05:31 +0100
-Message-Id: <20220207103755.918880700@linuxfoundation.org>
+        stable@vger.kernel.org, Congyu Liu <liu3101@purdue.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 25/69] net: fix information leakage in /proc/net/ptype
+Date:   Mon,  7 Feb 2022 12:05:47 +0100
+Message-Id: <20220207103756.446972586@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -48,64 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+From: Congyu Liu <liu3101@purdue.edu>
 
-commit 8838b2af23caf1ff0610caef2795d6668a013b2d upstream.
+commit 47934e06b65637c88a762d9c98329ae6e3238888 upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.2.7.3 states that DC1 (XON) and DC3 (XOFF)
-are the control characters defined in ISO/IEC 646. These shall be quoted if
-seen in the data stream to avoid interpretation as flow control characters.
+In one net namespace, after creating a packet socket without binding
+it to a device, users in other net namespaces can observe the new
+`packet_type` added by this packet socket by reading `/proc/net/ptype`
+file. This is minor information leakage as packet socket is
+namespace aware.
 
-ISO/IEC 646 refers to the set of ISO standards described as the ISO
-7-bit coded character set for information interchange. Its final version
-is also known as ITU T.50.
-See https://www.itu.int/rec/T-REC-T.50-199209-I/en
+Add a net pointer in `packet_type` to keep the net namespace of
+of corresponding packet socket. In `ptype_seq_show`, this net pointer
+must be checked when it is not NULL.
 
-To abide the standard it is needed to quote DC1 and DC3 correctly if these
-are seen as data bytes and not as control characters. The current
-implementation already tries to enforce this but fails to catch all
-defined cases. 3GPP 27.010 chapter 5.2.7.3 clearly states that the most
-significant bit shall be ignored for DC1 and DC3 handling. The current
-implementation handles only the case with the most significant bit set 0.
-Cases in which DC1 and DC3 have the most significant bit set 1 are left
-unhandled.
-
-This patch fixes this by masking the data bytes with ISO_IEC_646_MASK (only
-the 7 least significant bits set 1) before comparing them with XON
-(a.k.a. DC1) and XOFF (a.k.a. DC3) when testing which byte values need
-quotation via byte stuffing.
-
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220120101857.2509-1-daniel.starke@siemens.com
+Fixes: 2feb27dbe00c ("[NETNS]: Minor information leak via /proc/net/ptype file.")
+Signed-off-by: Congyu Liu <liu3101@purdue.edu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/linux/netdevice.h |    1 +
+ net/core/net-procfs.c     |    3 ++-
+ net/packet/af_packet.c    |    2 ++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -325,6 +325,7 @@ static struct tty_driver *gsm_tty_driver
- #define GSM1_ESCAPE_BITS	0x20
- #define XON			0x11
- #define XOFF			0x13
-+#define ISO_IEC_646_MASK	0x7F
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2206,6 +2206,7 @@ struct packet_type {
+ 					 struct net_device *);
+ 	bool			(*id_match)(struct packet_type *ptype,
+ 					    struct sock *sk);
++	struct net		*af_packet_net;
+ 	void			*af_packet_priv;
+ 	struct list_head	list;
+ };
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -279,7 +279,8 @@ static int ptype_seq_show(struct seq_fil
  
- static const struct tty_port_operations gsm_port_ops;
+ 	if (v == SEQ_START_TOKEN)
+ 		seq_puts(seq, "Type Device      Function\n");
+-	else if (pt->dev == NULL || dev_net(pt->dev) == seq_file_net(seq)) {
++	else if ((!pt->af_packet_net || net_eq(pt->af_packet_net, seq_file_net(seq))) &&
++		 (!pt->dev || net_eq(dev_net(pt->dev), seq_file_net(seq)))) {
+ 		if (pt->type == htons(ETH_P_ALL))
+ 			seq_puts(seq, "ALL ");
+ 		else
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1756,6 +1756,7 @@ static int fanout_add(struct sock *sk, u
+ 		match->prot_hook.dev = po->prot_hook.dev;
+ 		match->prot_hook.func = packet_rcv_fanout;
+ 		match->prot_hook.af_packet_priv = match;
++		match->prot_hook.af_packet_net = read_pnet(&match->net);
+ 		match->prot_hook.id_match = match_fanout_group;
+ 		list_add(&match->list, &fanout_list);
+ 	}
+@@ -3330,6 +3331,7 @@ static int packet_create(struct net *net
+ 		po->prot_hook.func = packet_rcv_spkt;
  
-@@ -543,7 +544,8 @@ static int gsm_stuff_frame(const u8 *inp
- 	int olen = 0;
- 	while (len--) {
- 		if (*input == GSM1_SOF || *input == GSM1_ESCAPE
--		    || *input == XON || *input == XOFF) {
-+		    || (*input & ISO_IEC_646_MASK) == XON
-+		    || (*input & ISO_IEC_646_MASK) == XOFF) {
- 			*output++ = GSM1_ESCAPE;
- 			*output++ = *input++ ^ GSM1_ESCAPE_BITS;
- 			olen++;
+ 	po->prot_hook.af_packet_priv = sk;
++	po->prot_hook.af_packet_net = sock_net(sk);
+ 
+ 	if (proto) {
+ 		po->prot_hook.type = proto;
 
 
