@@ -2,92 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41827C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12654C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448298AbiBGNKS (ORCPT
+        id S1385188AbiBGNJc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:10:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
+        Mon, 7 Feb 2022 08:09:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446823AbiBGMoV (ORCPT
+        with ESMTP id S1442351AbiBGMU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:44:21 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF55C0401DA;
-        Mon,  7 Feb 2022 04:44:19 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 7 Feb 2022 07:20:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBEE0C02B5C4;
+        Mon,  7 Feb 2022 04:08:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 85E26210FA;
-        Mon,  7 Feb 2022 12:44:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644237858; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=REWCo4WyXqeggxlaQoc81Z4br+c6dPKsB4gSuuK5a8s=;
-        b=MNQOcYiQ53o6zEK8Lc1m4mw9C6G14uAiy47KM0MqG0ye9B82f7xDvHneHXV3JfqHdRqNxt
-        HVIaFh+Iw13hiJ+6YgTNex5CM610q2JgC4WvW66CzSqbQ+ypFqV9XAoxMMU9Ws9Y8wM2TW
-        /12zf2YrSTPnlc5H+4w0mU1YBeO1idI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644237858;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=REWCo4WyXqeggxlaQoc81Z4br+c6dPKsB4gSuuK5a8s=;
-        b=K2P7SDskUm/1d2WOVLh3wZ975jizBirt8lNG5kSdDCFQxfOD2K53K2lSDQN9BMFYZFHrd8
-        h7UU/o6AheZG3NAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F0AA213BF5;
-        Mon,  7 Feb 2022 12:44:17 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 6Hy8OCEUAWKqCgAAMHmgww
-        (envelope-from <jdelvare@suse.de>); Mon, 07 Feb 2022 12:44:17 +0000
-Date:   Mon, 7 Feb 2022 13:44:16 +0100
-From:   Jean Delvare <jdelvare@suse.de>
-To:     Terry Bowman <terry.bowman@amd.com>
-Cc:     <linux@roeck-us.net>, <linux-watchdog@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <wsa@kernel.org>,
-        <andy.shevchenko@gmail.com>, <rafael.j.wysocki@intel.com>,
-        <linux-kernel@vger.kernel.org>, <wim@linux-watchdog.org>,
-        <rrichter@amd.com>, <thomas.lendacky@amd.com>,
-        <sudheesh.mavila@amd.com>, <Nehal-bakulchandra.Shah@amd.com>,
-        <Basavaraj.Natikar@amd.com>, <Shyam-sundar.S-k@amd.com>,
-        <Mario.Limonciello@amd.com>
-Subject: Re: [PATCH v4 0/4] Watchdog: sp5100_tco: Replace cd6h/cd7h port I/O
- accesses with MMIO accesses
-Message-ID: <20220207134416.72c22504@endymion.delvare>
-In-Reply-To: <20220130191225.303115-1-terry.bowman@amd.com>
-References: <20220130191225.303115-1-terry.bowman@amd.com>
-Organization: SUSE Linux
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66A1061027;
+        Mon,  7 Feb 2022 12:08:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 239F2C004E1;
+        Mon,  7 Feb 2022 12:08:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644235696;
+        bh=aJS2fMJOFOu6nNUlDjL6FgGlZo9MICA7XYvXLN/4y6k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Fhg3SvK4SFuwMYrPoW/24O1P70+1xqqeudOs8fEyomQr/FN/UJwWCMoUdDjxmgPS5
+         cCesZajB+PjlwovB1EeOhC2UyCYNhejtYILBJuv3/GQWjAQbOoxRpcCyB7IjAoDGVm
+         YiR5fhwPIjf3EZ5/ygKIbW5UuLTD3pT7F0x4rzXVfH+R5ugiHn6pXsESDJtYOAZnZ1
+         UELlN2dofYGqtcQfawmd+sDerheL3N77KK/p2Ku40CYIO8EsZXUjxISCl4gt7MtUmI
+         Efopu4Zp8pTdtKFm0/SHx7zfNKGRZhB8UmS74f7Afv0uRnHJBnx5EMTMCf+efZOVdQ
+         NVkwj+x+4B4xw==
+Date:   Mon, 7 Feb 2022 13:08:10 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Terry Bowman <terry.bowman@amd.com>,
+        Jean Delvare <jdelvare@suse.de>
+Cc:     linux@roeck-us.net, linux-watchdog@vger.kernel.org,
+        linux-i2c@vger.kernel.org, andy.shevchenko@gmail.com,
+        rafael.j.wysocki@intel.com, linux-kernel@vger.kernel.org,
+        wim@linux-watchdog.org, rrichter@amd.com, thomas.lendacky@amd.com,
+        sudheesh.mavila@amd.com, Nehal-bakulchandra.Shah@amd.com,
+        Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com,
+        Mario.Limonciello@amd.com
+Subject: Re: [PATCH v4 0/9] i2c: piix4: Replace cd6h/cd7h port I/O accesses
+ with MMIO accesses
+Message-ID: <YgELqjDHnPdJeor8@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Jean Delvare <jdelvare@suse.de>, linux@roeck-us.net,
+        linux-watchdog@vger.kernel.org, linux-i2c@vger.kernel.org,
+        andy.shevchenko@gmail.com, rafael.j.wysocki@intel.com,
+        linux-kernel@vger.kernel.org, wim@linux-watchdog.org,
+        rrichter@amd.com, thomas.lendacky@amd.com, sudheesh.mavila@amd.com,
+        Nehal-bakulchandra.Shah@amd.com, Basavaraj.Natikar@amd.com,
+        Shyam-sundar.S-k@amd.com, Mario.Limonciello@amd.com
+References: <20220130184130.176646-1-terry.bowman@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="0kO5rWOtCL0wqwOz"
+Content-Disposition: inline
+In-Reply-To: <20220130184130.176646-1-terry.bowman@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Terry,
 
-On Sun, 30 Jan 2022 13:12:21 -0600, Terry Bowman wrote:
-> Please confirm to leave your reviewed-by and tested-by.
+--0kO5rWOtCL0wqwOz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Confirmed. I reviewed the 4 patches of this version of the series and
-I'm fine with them. I also tested the result successfully on my laptop.
+On Sun, Jan 30, 2022 at 12:41:21PM -0600, Terry Bowman wrote:
+> This series changes the piix4_smbus driver's cd6h/cd7h port I/O accesses
+> to use MMIO instead. This is necessary because cd6h/cd7h port I/O may be
+> disabled on later AMD processors.
 
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Tested-by: Jean Delvare <jdelvare@suse.de>
+Review from Andy is already great, I'll give Jean a few more days for comments.
 
-Thanks for your work.
 
--- 
-Jean Delvare
-SUSE L3 Support
+--0kO5rWOtCL0wqwOz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIBC6YACgkQFA3kzBSg
+Kbbf+A//QnkzRA2XLzIn4yFkblDLK1v4Eb8XLapnVWTg6CF3fjzr5vYT0PTd/J+c
+OdWVrwW1SlhKHMRVEyfZMpXPw/6Zys8EPKuoBA7eitqXCnz3mSu0RFx9SNcAd1Xm
+HPPamxgrf38Tq7jFOaVpUPzTulkB4rvDfBcy4CdKJAF7hKUdXvGtC3n3tKwRHvrw
+gZalZOaCKK6bvL/VcCrNr0MagP32Lte9+uziOSgBY6e5OJovnux7xHYGlsSU/E49
+Uvy6dcIkK+351RUT+kHe//hPGTyeK8EZ1/vIDd7YSAbOY2bfAC7fcC7UV4DBoX5T
+hwdi2s7nRybXqfORTbN1sPoxjyJx/l3w3yLghhrm3zknNGu24qF/7iAh7ZggRvpK
+we5a1eLAe//7ozZQmmk7Evj1+uEj/JPbDsAX3fOXDJfMlkYaRaGRFtcbCViY7cJj
+1gVApL4oA2/0RhRC9G0DJNsvXeyY6tsW2Kf0RYtAjVnxs4PGFxzDOfyPno78pRuY
+6udoUbHHw46sMYRnhiRxRz8L4EFcNfbKpKjkEV8Ynazpp5qlDwDThCjUgg+EwBSp
+x9H7HjlcuD8T3s2cXtZpyjvT0JoCHcWYL5HYIplBjM+LBF6bjvERHv2xP6PyS0lF
++KHLpea6ON3CJDH+/NWLe8lpNWEZy7IqY36GVMp7xlg/mdQowCw=
+=+FEx
+-----END PGP SIGNATURE-----
+
+--0kO5rWOtCL0wqwOz--
