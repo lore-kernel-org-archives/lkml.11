@@ -2,285 +2,316 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05DD9C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E70C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343583AbiBGJ1J (ORCPT
+        id S1347288AbiBGJ1U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:27:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
+        Mon, 7 Feb 2022 04:27:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354897AbiBGJWd (ORCPT
+        with ESMTP id S1344147AbiBGJYT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:22:33 -0500
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC4EC043181;
-        Mon,  7 Feb 2022 01:22:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1644225750; x=1675761750;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=LF/zFQV6Qwy5MAPcX4cN38iqSsremnh4cnUn5ng85pc=;
-  b=XbAmqizWbcXsPMu7NL8lB/BYVFBHMQnSUYnEoHVwSWb4WCTS5EWIW+LP
-   ezLO+rq7Zjjqy3UQap/6kijZg2jobDHS489I/XSf4BqbwllcF0HaMEpBb
-   Qoo2ykDeww1Q4vG+lKWg8Pm3tCqK9DNNXNbToYxZo18IgDNOFQBmkLHPt
-   L4e3/eHzMb2dFniEBsszpB88Q7ENRcuJXoCXvmcmylgtUC3jK65Jolxhq
-   O1hc7OWBTbcEEae1mo4k+E8TMviZBa3DAtee0IU+A+i6EalKXz5hzd6SP
-   +NGdvS7zcAsgG9sgxaZKbo1tgiv2XBrDOuODY9lca8YI1jZar/RBeYlbi
-   A==;
-X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
-   d="scan'208";a="21926828"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 07 Feb 2022 10:22:28 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 07 Feb 2022 10:22:28 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 07 Feb 2022 10:22:28 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1644225748; x=1675761748;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=LF/zFQV6Qwy5MAPcX4cN38iqSsremnh4cnUn5ng85pc=;
-  b=eGLWidI7FUHvb4Bi9ukH7Ftizr5zd2TNXD+pK43dIwIdqqpG5o0hpsJh
-   w19PhxzBrR0Fnf9OpgGgpRMpsg0uCbwVFIn8h0SSUTTU9dCRAdg91XIjt
-   wE2raFYJHCAO/SMiKc9iRsJuDbrMYE2urrCSMnckJ03BDS2ccbcKq+YRc
-   dpCZDD67cUFt6vm74K6yhTMHkFj1cW7MibI9EIsjyIzXx1CDjP1I5lGd6
-   xdJ7pW17LfibJwJIp0j0BSEZ8JdyxCGD7wgT/7Wu+OUPKvNTDqDz2DdpQ
-   L7mDPsCQlDmzVe1RF21WWITMGY5Y9LnhB5C/7dvIGYdeagoltKrkhMSIz
-   g==;
-X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
-   d="scan'208";a="21926827"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 07 Feb 2022 10:22:28 +0100
-Received: from steina-w.localnet (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 0358D280065;
-        Mon,  7 Feb 2022 10:22:27 +0100 (CET)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Steve Longerbeam <slongerbeam@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mon, 7 Feb 2022 04:24:19 -0500
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 01:24:18 PST
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71763C043181;
+        Mon,  7 Feb 2022 01:24:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644225858; x=1675761858;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1z1k3NFAvHcc9e0Mx/KGHH5k0M0yUJtCdBjP4j5K64g=;
+  b=Vb9ljBKYKJAFMifEoZUMTglM7IWED37lNbYNdPY3j4F/9lpYbAVInL2c
+   dBdyz4pVFsBqGBng7TUOCX5i6aZc7fvNkVs7iCHGse/6Z6pgOpAC8SWjl
+   rNW0lJEw+RGyeY4waKvhkx+pDXpEGFwK8VN+ZleVmFkaRKg0g9UykDEA7
+   pMSvAizPtJLkPQJcKlbatk+/vXM2JGuf9pNPcuA/zAA+R6iQE7pmGOJsk
+   FZc5oeh8vnZ0S1SyNetTkH+NozpxBsxCA8QqZP7bNrFlIIuth3+6l74Qu
+   hzp0fO7+wTqcAHHvBlAJRxp5YvEMbncFP6G1L9YtT1cA96uCZsoeD7KbA
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="311977638"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="311977638"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 01:23:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="677704920"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 07 Feb 2022 01:22:57 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 07 Feb 2022 11:22:56 +0200
+Date:   Mon, 7 Feb 2022 11:22:56 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Badhri Jagan Sridharan <badhri@google.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: (EXT) Re: [PATCH 1/8] media: imx: Store the type of hardware implementation
-Date:   Mon, 07 Feb 2022 10:22:25 +0100
-Message-ID: <3650787.kQq0lBPeGt@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <Yf3tPuwbyz5UU6eC@pendragon.ideasonboard.com>
-References: <20220204121514.2762676-1-alexander.stein@ew.tq-group.com> <20220204121514.2762676-2-alexander.stein@ew.tq-group.com> <Yf3tPuwbyz5UU6eC@pendragon.ideasonboard.com>
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kyle Tso <kyletso@google.com>, Benson Leung <bleung@google.com>
+Subject: Re: [PATCH v1 1/2] usb: typec: Introduce typec attributes for
+ limiting source current
+Message-ID: <YgDk8M3N8VEZK5Sk@kuha.fi.intel.com>
+References: <20220207043907.2758424-1-badhri@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207043907.2758424-1-badhri@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Laurent,
++Benson
 
-Am Samstag, 5. Februar 2022, 04:21:34 CET schrieb Laurent Pinchart:
-> Hi Alexander and Dorota,
+On Sun, Feb 06, 2022 at 08:39:06PM -0800, Badhri Jagan Sridharan wrote:
+> This change introduces the following two attributes to the
+> typec sysfs class which allows userspace to limit the power
+> advertised while acting as source. This is useful to mitigate
+> battery drain in portable devices when the battery SOC is low.
 > 
-> On Fri, Feb 04, 2022 at 01:15:07PM +0100, Alexander Stein wrote:
-> > From: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
-> > 
-> > The driver covers i.MX5/6, as well as i.MX7/8 hardware.
-> > Those implementations differ, e.g. in the sizes of buffers they accept.
-> > 
-> > Some functionality should be abstracted, and storing type achieves that.
+> New attibutes introduced:
+> 1. limit_src_current_active
+> 2. limit_src_current_ma
 > 
-> I think that longer term (which ideally shouldn't be too far in the
-> future) we should decouple the i.MX5/6 and i.MX7/8 drivers (this naming
-> is actually not quite correct, there are i.MX6 SoCs that have a CSI
-> bridge, not an IPUv3). The platforms are completely different at the
-> hardware level, they shouldn't share the same code. That would allow us
-> to evolve the CSI bridge driver independently from the IPUv3 driver, and
-> move it from staging to drivers/media/.
+> The port while in PD contract and acting as source would
+> only advertise vSafe5V fixed PDO with current set through
+> limit_src_current_ma when limit_src_current_active is set
+> to 1. When limit_src_current_active is set to 0, the port
+> would publish the default source capabilities.
+> limit_src_current_ma would limit the current to the
+> Maximum current published by vSafe5V fixed pdo of the default
+> source capabilities of the port.
 
-That sounds reasonable. Although I'm not sure where to start. Split it for 
-i.MX6 in the first place (CSI bridge vs. IPUv3)? Or start splitting across 
-i.MX generation? I've yet to have broad knowledge about the internals to be 
-able to come up with a good decision.
+This competes with Benson's idea of having "sets" of capabilites from
+which to choose the ones that we advertise to the partner. You could
+also use that idea to cover this case as well. You just have two
+source capabilities sets defined - one where you only have the vSafe5V
+and another for everything.
 
-> I'm not against merging this if it can help short term, but please also
-> feel free to start decoupling the drivers, even if it results in some
-> duplicated code.
+Benson's idea also seems to be something what we can support with UCSI
+and some native USB PD controller host interfaces, but limiting the
+source capabitites to only vSafe5V is something that we can't do. I
+means, on some platforms we may have a source capabilities "set" that
+we can choose that only exposes the vSafe5V, but there is no guarantee
+that we always have it (and it's unlikely that we ever have it). It's
+up to some firmware that we have no control over.
 
-Thanks for willing to accept this short term patches. I'm hesitating to 
-decoupling for now as I haven't fully grasped all the details and small 
-similarities and differences.
+So this is the wrong way and Benson's idea is the right way IMO.
 
-> > Signed-off-by: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
-> > Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-> > ---
-> > Changes in comparison to original commit from Dorota:
-> > * Applied the suggestion from Hans at [1].
-> > 
-> > [1]
-> > https://patchwork.linuxtv.org/project/linux-media/patch/20211104113631.20
-> > 6899-2-dorota.czaplejewicz@puri.sm/> 
-> >  drivers/staging/media/imx/imx-ic-prpencvf.c   | 3 ++-
-> >  drivers/staging/media/imx/imx-media-capture.c | 5 ++++-
-> >  drivers/staging/media/imx/imx-media-csi.c     | 3 ++-
-> >  drivers/staging/media/imx/imx-media.h         | 3 ++-
-> >  drivers/staging/media/imx/imx7-media-csi.c    | 3 ++-
-> >  5 files changed, 12 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/staging/media/imx/imx-ic-prpencvf.c
-> > b/drivers/staging/media/imx/imx-ic-prpencvf.c index
-> > 9b81cfbcd777..caaaac1a515a 100644
-> > --- a/drivers/staging/media/imx/imx-ic-prpencvf.c
-> > +++ b/drivers/staging/media/imx/imx-ic-prpencvf.c
-> > @@ -1266,7 +1266,8 @@ static int prp_registered(struct v4l2_subdev *sd)
-> > 
-> >  	priv->vdev = imx_media_capture_device_init(ic_priv->ipu_dev,
-> >  	
-> >  						   &ic_priv-
->sd,
-> > 
-> > -						   
-PRPENCVF_SRC_PAD, true);
-> > +						   
-PRPENCVF_SRC_PAD, true,
-> > +						   true);
-> > 
-> >  	if (IS_ERR(priv->vdev))
-> >  	
-> >  		return PTR_ERR(priv->vdev);
-> > 
-> > diff --git a/drivers/staging/media/imx/imx-media-capture.c
-> > b/drivers/staging/media/imx/imx-media-capture.c index
-> > 93ba09236010..b61bf9f8ddf8 100644
-> > --- a/drivers/staging/media/imx/imx-media-capture.c
-> > +++ b/drivers/staging/media/imx/imx-media-capture.c
-> > @@ -47,6 +47,7 @@ struct capture_priv {
-> > 
-> >  	struct v4l2_ctrl_handler ctrl_hdlr;	/* Controls inherited 
-from subdevs
-> >  	*/
-> >  	
-> >  	bool legacy_api;			/* Use the legacy (pre-
-MC) API */
-> > 
-> > +	bool is_imx56;				/* Hardware 
-is i.MX5/i.MX6 */
+I already prepared a proposal for adding support for Benson's idea:
+https://lore.kernel.org/linux-usb/20220203144657.16527-1-heikki.krogerus@linux.intel.com/
+
+This patch adds the attributes that you can use to choose the
+capabilities that are advertised to the partner:
+https://lore.kernel.org/linux-usb/20220203144657.16527-3-heikki.krogerus@linux.intel.com/
+
+> Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
+> ---
+>  Documentation/ABI/testing/sysfs-class-typec | 25 ++++++
+>  drivers/usb/typec/class.c                   | 99 +++++++++++++++++++++
+>  drivers/usb/typec/class.h                   |  5 ++
+>  include/linux/usb/typec.h                   |  4 +
+>  4 files changed, 133 insertions(+)
 > 
-> Can we create an enum type instead, to make the code more explicit ?
+> diff --git a/Documentation/ABI/testing/sysfs-class-typec b/Documentation/ABI/testing/sysfs-class-typec
+> index 75088ecad202..dd2240632172 100644
+> --- a/Documentation/ABI/testing/sysfs-class-typec
+> +++ b/Documentation/ABI/testing/sysfs-class-typec
+> @@ -141,6 +141,31 @@ Description:
+>  		- "reverse": CC2 orientation
+>  		- "unknown": Orientation cannot be determined.
+>  
+> +What:		/sys/class/typec/<port>/limit_src_current_active
+> +Date:		February 2022
+> +Contact:	Badhri Jagan Sridharan <badhri@google.com>
+> +Description:
+> +		This attribute can be used to make the port only publish
+> +		vSafe5V fixed pdo with Maximum current limited to the
+> +		current limit set by limit_src_current_ma when the port
+> +		is acting as source.
+> +		Valid values:
+> +		- write(2) "1" limits source capabilities to vSafe5V
+> +		  with max current specified by limit_src_current_ma
+> +		- write(2) "0" publishes the default source capabilities
+> +		  of the port.
+> +
+> +What:		/sys/class/typec/<port>/limit_src_current_ma
+> +Date:		February 2022
+> +Contact:	Badhri Jagan Sridharan <badhri@google.com>
+> +Description:
+> +		This attribute allows write(2) to set the Maximum
+> +		current published when limit_src_current_active is set
+> +		to 1. When limit_src_current_active is already set
+> +		to 1, if the port is already acting as source with
+> +		explicit contract in place, write(2) will make the port
+> +		renegotiate the pd contract.
+> +
+>  USB Type-C partner devices (eg. /sys/class/typec/port0-partner/)
+>  
+>  What:		/sys/class/typec/<port>-partner/accessory_mode
+> diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
+> index 45a6f0c807cb..3b3c7b080ad1 100644
+> --- a/drivers/usb/typec/class.c
+> +++ b/drivers/usb/typec/class.c
+> @@ -1403,6 +1403,102 @@ port_type_show(struct device *dev, struct device_attribute *attr,
+>  }
+>  static DEVICE_ATTR_RW(port_type);
+>  
+> +static ssize_t
+> +limit_src_current_active_store(struct device *dev, struct device_attribute *attr, const char *buf,
+> +			       size_t size)
+> +{
+> +	struct typec_port *port = to_typec_port(dev);
+> +	int ret;
+> +	u8 active;
+> +
+> +	if (port->cap->type == TYPEC_PORT_SNK || !port->ops || !port->ops->limit_src_current_set ||
+> +	    !port->cap->pd_revision) {
+> +		dev_dbg(dev, "Limiting source current not supported\n");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (kstrtou8(buf, 0, &active))
+> +		return -EINVAL;
+> +
+> +	if (active != 1 && active != 0)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&port->limit_src_current_lock);
+> +
+> +	if (port->limit_src_current_active == (bool)active) {
+> +		ret = size;
+> +		goto unlock_and_ret;
+> +	}
+> +
+> +	ret = port->ops->limit_src_current_set(port, port->limit_src_current_ma, active);
+> +	if (ret)
+> +		goto unlock_and_ret;
+> +
+> +	port->limit_src_current_active = active;
+> +	ret = size;
+> +
+> +unlock_and_ret:
+> +	mutex_unlock(&port->limit_src_current_lock);
+> +	return ret;
+> +}
+> +
+> +static ssize_t
+> +limit_src_current_active_show(struct device *dev, struct device_attribute *attr, char *buf)
+> +{
+> +	struct typec_port *port = to_typec_port(dev);
+> +
+> +	return sysfs_emit(buf, "%d\n", port->limit_src_current_active ? 1 : 0);
+> +}
+> +static DEVICE_ATTR_RW(limit_src_current_active);
+> +
+> +static ssize_t
+> +limit_src_current_ma_store(struct device *dev, struct device_attribute *attr, const char *buf,
+> +			   size_t size)
+> +{
+> +	struct typec_port *port = to_typec_port(dev);
+> +	int ret;
+> +	u32 src_current_ma;
+> +
+> +	if (port->cap->type == TYPEC_PORT_SNK || !port->ops || !port->ops->limit_src_current_set ||
+> +	    !port->cap->pd_revision) {
+> +		dev_dbg(dev, "Limiting source current not supported\n");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (kstrtou32(buf, 0, &src_current_ma))
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&port->limit_src_current_lock);
+> +
+> +	if (port->limit_src_current_ma == src_current_ma) {
+> +		ret = size;
+> +		goto unlock_and_ret;
+> +	}
+> +
+> +	if (port->limit_src_current_active) {
+> +		ret = port->ops->limit_src_current_set(port, src_current_ma,
+> +						       port->limit_src_current_active);
+> +		if (ret)
+> +			goto unlock_and_ret;
+> +	}
+> +
+> +	port->limit_src_current_ma = src_current_ma;
+> +	ret = size;
+> +
+> +unlock_and_ret:
+> +	mutex_unlock(&port->limit_src_current_lock);
+> +	return ret;
+> +}
+> +
+> +static ssize_t
+> +limit_src_current_ma_show(struct device *dev, struct device_attribute *attr, char *buf)
+> +{
+> +	struct typec_port *port = to_typec_port(dev);
+> +
+> +	return sysfs_emit(buf, "%u\n", port->limit_src_current_ma);
+> +}
+> +static DEVICE_ATTR_RW(limit_src_current_ma);
+> +
+>  static const char * const typec_pwr_opmodes[] = {
+>  	[TYPEC_PWR_MODE_USB]	= "default",
+>  	[TYPEC_PWR_MODE_1_5A]	= "1.5A",
+> @@ -1536,6 +1632,8 @@ static struct attribute *typec_attrs[] = {
+>  	&dev_attr_vconn_source.attr,
+>  	&dev_attr_port_type.attr,
+>  	&dev_attr_orientation.attr,
+> +	&dev_attr_limit_src_current_active.attr,
+> +	&dev_attr_limit_src_current_ma.attr,
+>  	NULL,
+>  };
+>  
+> @@ -2039,6 +2137,7 @@ struct typec_port *typec_register_port(struct device *parent,
+>  
+>  	ida_init(&port->mode_ids);
+>  	mutex_init(&port->port_type_lock);
+> +	mutex_init(&port->limit_src_current_lock);
+>  
+>  	port->id = id;
+>  	port->ops = cap->ops;
+> diff --git a/drivers/usb/typec/class.h b/drivers/usb/typec/class.h
+> index 0f1bd6d19d67..3856bc058444 100644
+> --- a/drivers/usb/typec/class.h
+> +++ b/drivers/usb/typec/class.h
+> @@ -54,6 +54,11 @@ struct typec_port {
+>  
+>  	const struct typec_capability	*cap;
+>  	const struct typec_operations   *ops;
+> +
+> +	/* lock to protect limit_src_current_*_store operation */
+> +	struct mutex			limit_src_current_lock;
+> +	u32				limit_src_current_ma;
+> +	bool				limit_src_current_active;
+>  };
+>  
+>  #define to_typec_port(_dev_) container_of(_dev_, struct typec_port, dev)
+> diff --git a/include/linux/usb/typec.h b/include/linux/usb/typec.h
+> index 7ba45a97eeae..1b1958ae4c16 100644
+> --- a/include/linux/usb/typec.h
+> +++ b/include/linux/usb/typec.h
+> @@ -213,6 +213,8 @@ struct typec_partner_desc {
+>   * @pr_set: Set Power Role
+>   * @vconn_set: Source VCONN
+>   * @port_type_set: Set port type
+> + * @limit_src_current_set: Used to limit source current advertisement while
+> + *                         acting as source
+>   */
+>  struct typec_operations {
+>  	int (*try_role)(struct typec_port *port, int role);
+> @@ -221,6 +223,8 @@ struct typec_operations {
+>  	int (*vconn_set)(struct typec_port *port, enum typec_role role);
+>  	int (*port_type_set)(struct typec_port *port,
+>  			     enum typec_port_type type);
+> +	int (*limit_src_current_set)(struct typec_port *port, u32 limit_src_current_ma,
+> +				     bool enable);
+>  };
+>  
+>  enum usb_pd_svdm_ver {
+> -- 
+> 2.35.0.263.gb82422642f-goog
 
-I don't mind. So I will pick up the original patches from Dorota at [1] 
-instead which already had an enum.
-
-Best regards,
-Alexander
-
-[1] https://patchwork.kernel.org/project/linux-arm-kernel/patch/
-20211104113631.206899-2-dorota.czaplejewicz@puri.sm/
-
-> >  };
-> >  
-> >  #define to_capture_priv(v) container_of(v, struct capture_priv, vdev)
-> > 
-> > @@ -957,7 +958,8 @@
-> > EXPORT_SYMBOL_GPL(imx_media_capture_device_unregister);
-> > 
-> >  struct imx_media_video_dev *
-> >  imx_media_capture_device_init(struct device *dev, struct v4l2_subdev
-> >  *src_sd,> 
-> > -			      int pad, bool legacy_api)
-> > +			      int pad, bool legacy_api,
-> > +			      bool is_imx56)
-> > 
-> >  {
-> >  
-> >  	struct capture_priv *priv;
-> >  	struct video_device *vfd;
-> > 
-> > @@ -972,6 +974,7 @@ imx_media_capture_device_init(struct device *dev,
-> > struct v4l2_subdev *src_sd,> 
-> >  	priv->src_sd_pad = pad;
-> >  	priv->dev = dev;
-> >  	priv->legacy_api = legacy_api;
-> > 
-> > +	priv->is_imx56 = is_imx56;
-> > 
-> >  	mutex_init(&priv->mutex);
-> >  	INIT_LIST_HEAD(&priv->ready_q);
-> > 
-> > diff --git a/drivers/staging/media/imx/imx-media-csi.c
-> > b/drivers/staging/media/imx/imx-media-csi.c index
-> > bd7f156f2d52..c8f6add00dbb 100644
-> > --- a/drivers/staging/media/imx/imx-media-csi.c
-> > +++ b/drivers/staging/media/imx/imx-media-csi.c
-> > @@ -1803,7 +1803,8 @@ static int csi_registered(struct v4l2_subdev *sd)
-> > 
-> >  	}
-> >  	
-> >  	priv->vdev = imx_media_capture_device_init(priv->sd.dev, &priv->sd,
-> > 
-> > -						   
-CSI_SRC_PAD_IDMAC, true);
-> > +						   
-CSI_SRC_PAD_IDMAC, true,
-> > +						   true);
-> > 
-> >  	if (IS_ERR(priv->vdev)) {
-> >  	
-> >  		ret = PTR_ERR(priv->vdev);
-> >  		goto free_fim;
-> > 
-> > diff --git a/drivers/staging/media/imx/imx-media.h
-> > b/drivers/staging/media/imx/imx-media.h index f263fc3adbb9..73e8e6e0d8e8
-> > 100644
-> > --- a/drivers/staging/media/imx/imx-media.h
-> > +++ b/drivers/staging/media/imx/imx-media.h
-> > @@ -282,7 +282,8 @@ int imx_media_ic_unregister(struct v4l2_subdev *sd);
-> > 
-> >  /* imx-media-capture.c */
-> >  struct imx_media_video_dev *
-> >  imx_media_capture_device_init(struct device *dev, struct v4l2_subdev
-> >  *src_sd,> 
-> > -			      int pad, bool legacy_api);
-> > +			      int pad, bool legacy_api,
-> > +			      bool is_imx56);
-> > 
-> >  void imx_media_capture_device_remove(struct imx_media_video_dev *vdev);
-> >  int imx_media_capture_device_register(struct imx_media_video_dev *vdev,
-> >  
-> >  				      u32 link_flags);
-> > 
-> > diff --git a/drivers/staging/media/imx/imx7-media-csi.c
-> > b/drivers/staging/media/imx/imx7-media-csi.c index
-> > 32311fc0e2a4..158d2a736c6d 100644
-> > --- a/drivers/staging/media/imx/imx7-media-csi.c
-> > +++ b/drivers/staging/media/imx/imx7-media-csi.c
-> > @@ -1039,7 +1039,8 @@ static int imx7_csi_registered(struct v4l2_subdev
-> > *sd)> 
-> >  	}
-> >  	
-> >  	csi->vdev = imx_media_capture_device_init(csi->sd.dev, &csi->sd,
-> > 
-> > -						  
-IMX7_CSI_PAD_SRC, false);
-> > +						  
-IMX7_CSI_PAD_SRC, false,
-> > +						  false);
-> > 
-> >  	if (IS_ERR(csi->vdev))
-> >  	
-> >  		return PTR_ERR(csi->vdev);
-
-
-
-
+-- 
+heikki
