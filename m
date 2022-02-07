@@ -2,88 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B37C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9912C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236303AbiBGRWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:22:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36154 "EHLO
+        id S238760AbiBGRW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 12:22:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390804AbiBGRL0 (ORCPT
+        with ESMTP id S237603AbiBGRW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:11:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24353C0401E5
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:11:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1A8D6118F
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:11:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D04AFC340F2;
-        Mon,  7 Feb 2022 17:11:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644253880;
-        bh=RgvX0jcqavLp9XJXFApY0G2VLvAkEQCQ/aIXU87qu70=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OkCcogNC3DZDflNBkNEseageG13LbVg9LQZvtOXB2Byk0lRVth8BWE4B8zl6BQ4B2
-         Q6qcx7bKtTzImt1qw7mQBZJbnB457mIJ9sL+6mPL0OZSNZwdXms6wt9c02GsSqyN+c
-         zesZ0T+Czt3HiwzGJeeyxfd0/AubF8J2RszyG/1hRLB0UG16WVfZQSPrJIn+AmwNRl
-         5jQSgG7WgRLtHharj+imJ5wq0knTUjChsJCTgvpujHa+7xqwjBRXYlK0why6jpQ2jt
-         1bImjPr0PPVJU8mqz3YGpAACWsDmjXZBseNiggfcIwiGgELoiXuJUexfGQWnv6TGVy
-         1WetWAtPQl5iA==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Yang Shi <shy828301@gmail.com>,
-        David Hildenbrand <david@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] proc: Avoid unused variable warning in pagemap_pmd_range()
-Date:   Mon,  7 Feb 2022 10:10:50 -0700
-Message-Id: <20220207171049.1102239-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Mon, 7 Feb 2022 12:22:27 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04EBC0401D5;
+        Mon,  7 Feb 2022 09:22:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644254547; x=1675790547;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9Cowf7J9LryTk5PzMkLkhfkff1e0+oXlLWDASRWsqFs=;
+  b=VSEEQJbvPYneVjTIzM5cWHXF6w85fHpjLTEm3S10ZyqGjfKhS3RPNlQo
+   ByCluDmG+AzplMMxV2W+fxQlaXk8rms0+5b5io4lQAV8K1z12TKl9M6yf
+   aIHyuW+Zd7KAdyiLapuu5m/YIkGqn1pKX0FT3qNTXo9hyTp5LpZSGyXXL
+   STpF3Tg5m7lMWQq3EK78+TherR7xBhH9jSz40bRHfr/rNBwWIuZHUrMM1
+   blBe4XPV8Sk5IcLn3AopAxkzikFBNH0WWv0pkj4gF+5uQMbIzD+NjGb5G
+   wPSz5XLHPHN3rGJ+qyJcOjMYdgD/NXureKNw0YCsES3f94snduwAjpUUC
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="309509447"
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="309509447"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 09:22:26 -0800
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="484492252"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 09:22:24 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nH7hd-001ybo-I0;
+        Mon, 07 Feb 2022 19:21:25 +0200
+Date:   Mon, 7 Feb 2022 19:21:25 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code
+ defined constants in messages
+Message-ID: <YgFVFceYQtWq4Hww@smile.fi.intel.com>
+References: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
+ <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building with CONFIG_TRANSPARENT_HUGEPAGE=n, there is a warning
-about migration being unused:
+On Mon, Feb 07, 2022 at 08:37:55AM -0800, Joe Perches wrote:
+> On Mon, 2022-02-07 at 12:48 +0200, Andy Shevchenko wrote:
+> > In a couple of messages the constants, which have their definitions,
+> > are hard coded into the message text. Unhardcode them.
+> 
+> Found by inspection or tool?
 
-  fs/proc/task_mmu.c:1444:7: warning: unused variable 'migration' [-Wunused-variable]
-          bool migration = false;
-               ^
-  1 warning generated.
+Does it matter? No, a side effect of the following patch.
 
-Move the ifdef preprocessor directive up to include migration so it is
-only included in the file when it is used.
+...
 
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
+> > +		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
+> > +			LTC2983_CUSTOM_STEINHART_SIZE);
+> 
+> probably better using "%u" and not "%d"
+> 
+> and better with a \n termination too.
 
-This is a fix for fs-proc-task_mmuc-dont-read-mapcount-for-migration-entry-v4.patch.
+I think it would be a separate change if we wish so. Let Jonathan to tell what
+to do here.
 
- fs/proc/task_mmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index bc2f46033231..6e97ed775074 100644
---- a/fs/proc/task_mmu.c
-+++ b/fs/proc/task_mmu.c
-@@ -1441,9 +1441,9 @@ static int pagemap_pmd_range(pmd_t *pmdp, unsigned long addr, unsigned long end,
- 	spinlock_t *ptl;
- 	pte_t *pte, *orig_pte;
- 	int err = 0;
-+#ifdef CONFIG_TRANSPARENT_HUGEPAGE
- 	bool migration = false;
- 
--#ifdef CONFIG_TRANSPARENT_HUGEPAGE
- 	ptl = pmd_trans_huge_lock(pmdp, vma);
- 	if (ptl) {
- 		u64 flags = 0, frame = 0;
-
-base-commit: b3c0a155ef77550d48f6eb7c6fdd6075764a5622
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
