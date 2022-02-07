@@ -2,129 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD66AC35274
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 507E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237389AbiBGFuI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:50:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50598 "EHLO
+        id S237919AbiBGFuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352074AbiBGEs2 (ORCPT
+        with ESMTP id S1352002AbiBGEmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:48:28 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E389C043181;
-        Sun,  6 Feb 2022 20:48:27 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 353921F37E;
-        Mon,  7 Feb 2022 04:48:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644209306; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a+dzRdJ1CEiYYNz26tJO1Hsz32DqZM0fgdDIWGvYfvU=;
-        b=lfv/cyb2G2DNPQTKbRop55g6PPjG1/708V4hQnTQAafD0bZ9UtKAxn2iYQoECGw8O1j85V
-        PMIrabGZ3le/+8BBDqS1s3koU+vRWhWcFT3uueX8MIn2jnE5amCTbNjCpeGlSpnN03buIS
-        CL0t0YYd98rDIgC4MeIwwFYNCzNrrt4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644209306;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a+dzRdJ1CEiYYNz26tJO1Hsz32DqZM0fgdDIWGvYfvU=;
-        b=sbcOPan0DVFL0E5MLU5X6ME2JEKy2viqKrzKBOOAt7EgYngT/daz1mGkkQLHl+tcBAOFff
-        pE+zXdtPfmXl/6BA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 244891330E;
-        Mon,  7 Feb 2022 04:48:22 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id sQAQNJakAGJ0NQAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:48:22 +0000
-Subject: [PATCH 14/21] SUNRPC/xprt: async tasks mustn't block waiting for
- memory
-From:   NeilBrown <neilb@suse.de>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mark Hemment <markhemm@googlemail.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>
-Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 07 Feb 2022 15:46:01 +1100
-Message-ID: <164420916120.29374.8047763295599370687.stgit@noble.brown>
-In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-User-Agent: StGit/0.23
+        Sun, 6 Feb 2022 23:42:49 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA3CC043181
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 20:42:48 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id i5so15798196oih.1
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 20:42:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9B7hEs0KWcQeTdm4T9H3BJwl4p0pXjpU9Q2BlklK5nw=;
+        b=ogHtHZj5pYia9KG+9lnOx+hJUMVnASvfP2FaPZEG2F1hARL0ApwxjQ9fYXzFhdXe+w
+         34eaBy8AGjbXUWPk7izMMi5b6gTWfr4/dJxp5rzqd/3maLLnmDXsUoEtgi/Bv67F3/E4
+         qA68/1GFCvE5S9vQNq+E+noZH8k3MDZLsn+nXeprmVzS0tXxi3Ft1zSb/GRJa/SiYMyX
+         BlEqtHX7AbkvcmLfkvrliCn039B9Q4pXQ+FAzMiDWx8TLD5H7rPZ3f3b6PlHcj6CctNP
+         gQbUbYO8QNa+VUU2ar6zZrlQ0R3tcFTG1z8P7IkYaHPoGSn52swUTZCKEr/MSGEOVG7Q
+         9OEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9B7hEs0KWcQeTdm4T9H3BJwl4p0pXjpU9Q2BlklK5nw=;
+        b=QotZ0IRB8vOQ2cROYfq3oqhzxVIFvdvMooT0cgvlwVSO7xym7IWNSCYvKaGtLsNanS
+         PpgwkAHaQp0ZtTLltc07MRcLgew/lryF+HfXtTJlC4Q1pOLvUvwoW1iKEKHVfgolgdXQ
+         gxdgW+OoXEqGDF0/dckNCa9CAA5JmQsIb32fTAtZTPFVCBpqExafogXGVPsRRSBJ03cG
+         wlLLedqg40ZycsRUN2oUgnN52IEUf04WMEon6IW+3YWTtgIqFfENruABYlDg19MkGdeS
+         BoykKbd9iINYzjIvLUFheioKUNgqGK1fGTfPKRbpyyGViVGKNbqjEBkHwThvBOvOuEVq
+         o05g==
+X-Gm-Message-State: AOAM533vkZvTJsHmAY0SuPaPcWLsnFUNzqazsAMljRGoCgxSGXHM1Z2c
+        CFP1VaQGz8IUUct+qut+5sY=
+X-Google-Smtp-Source: ABdhPJxu2M2k7b/YsVOzH6NSYTjv7KOW6x56V4qPUAjyREt2tF9FM+ULRbOweDMT/chJW/bYqeQsiA==
+X-Received: by 2002:a05:6808:2188:: with SMTP id be8mr4597474oib.63.1644208967876;
+        Sun, 06 Feb 2022 20:42:47 -0800 (PST)
+Received: from localhost.localdomain ([2804:14d:4cd8:12bf:4134:806a:5a4a:2a88])
+        by smtp.gmail.com with ESMTPSA id f21sm3515752otq.4.2022.02.06.20.42.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 20:42:47 -0800 (PST)
+From:   Leonardo Araujo <leonardo.aa88@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        sparmaintainer@unisys.com,
+        Leonardo Araujo <leonardo.aa88@gmail.com>
+Subject: [PATCH] Staging: unisys: visorhba: alignment should match open parenthesis
+Date:   Mon,  7 Feb 2022 01:42:30 -0300
+Message-Id: <20220207044230.19918-1-leonardo.aa88@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When memory is short, new worker threads cannot be created and we depend
-on the minimum one rpciod thread to be able to handle everything.  So it
-must not block waiting for memory.
+Fixed a coding style issue.
 
-xprt_dynamic_alloc_slot can block indefinitely.  This can tie up all
-workqueue threads and NFS can deadlock.  So when called from a
-workqueue, set __GFP_NORETRY.
-
-The rdma alloc_slot already does not block.  However it sets the error
-to -EAGAIN suggesting this will trigger a sleep.  It does not.  As we
-can see in call_reserveresult(), only -ENOMEM causes a sleep.  -EAGAIN
-causes immediate retry.
-
-Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Leonardo Araujo <leonardo.aa88@gmail.com>
 ---
- net/sunrpc/xprt.c               |    5 ++++-
- net/sunrpc/xprtrdma/transport.c |    2 +-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/staging/unisys/visorhba/visorhba_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
-index a02de2bddb28..47d207e416ab 100644
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -1687,12 +1687,15 @@ static bool xprt_throttle_congested(struct rpc_xprt *xprt, struct rpc_task *task
- static struct rpc_rqst *xprt_dynamic_alloc_slot(struct rpc_xprt *xprt)
+diff --git a/drivers/staging/unisys/visorhba/visorhba_main.c b/drivers/staging/unisys/visorhba/visorhba_main.c
+index 8eee131e834d..48aa18f8b984 100644
+--- a/drivers/staging/unisys/visorhba/visorhba_main.c
++++ b/drivers/staging/unisys/visorhba/visorhba_main.c
+@@ -192,7 +192,7 @@ static struct uiscmdrsp *get_scsipending_cmdrsp(struct visorhba_devdata *ddata,
+  * @result:   The location to place the result of the event handle into
+  */
+ static int setup_scsitaskmgmt_handles(struct xarray *xa, struct uiscmdrsp *cmdrsp,
+-				       wait_queue_head_t *event, int *result)
++				      wait_queue_head_t *event, int *result)
  {
- 	struct rpc_rqst *req = ERR_PTR(-EAGAIN);
-+	gfp_t gfp_mask = GFP_NOFS;
- 
- 	if (xprt->num_reqs >= xprt->max_reqs)
- 		goto out;
- 	++xprt->num_reqs;
- 	spin_unlock(&xprt->reserve_lock);
--	req = kzalloc(sizeof(struct rpc_rqst), GFP_NOFS);
-+	if (current->flags & PF_WQ_WORKER)
-+		gfp_mask |= __GFP_NORETRY | __GFP_NOWARN;
-+	req = kzalloc(sizeof(struct rpc_rqst), gfp_mask);
- 	spin_lock(&xprt->reserve_lock);
- 	if (req != NULL)
- 		goto out;
-diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
-index 5714bf880e95..923e4b512ee9 100644
---- a/net/sunrpc/xprtrdma/transport.c
-+++ b/net/sunrpc/xprtrdma/transport.c
-@@ -517,7 +517,7 @@ xprt_rdma_alloc_slot(struct rpc_xprt *xprt, struct rpc_task *task)
- 	return;
- 
- out_sleep:
--	task->tk_status = -EAGAIN;
-+	task->tk_status = -ENOMEM;
- 	xprt_add_backlog(xprt, task);
- }
- 
-
+ 	int ret;
+ 	u32 id;
+-- 
+2.29.0
 
