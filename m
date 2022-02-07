@@ -2,116 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A716C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79402C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386785AbiBGMDv (ORCPT
+        id S1356448AbiBGMDc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:03:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
+        Mon, 7 Feb 2022 07:03:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391445AbiBGMBt (ORCPT
+        with ESMTP id S1391100AbiBGL6T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:01:49 -0500
-X-Greylist: delayed 210 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 03:59:31 PST
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E917C03E921;
-        Mon,  7 Feb 2022 03:59:30 -0800 (PST)
-Received: from integral2.. (unknown [36.72.213.52])
-        by gnuweeb.org (Postfix) with ESMTPSA id A50E97E258;
-        Mon,  7 Feb 2022 11:44:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1644234255;
-        bh=UC+l746d+ctD97nNi+ogzS1mPkamtQDrniJtWWP4aXM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M8RxUq8vBDKlrMWCk6tUjzExD87kUWg+ChDGFxXP4ig7iMkkzz389ytZoZG/In1i4
-         DCDMeFvvZ5/7fp3IEuf/wupbvmAyPfAJnwWXpqChxyndNjM5l1PHI7QqLsyU4PJUfT
-         V+oS8oNUo5UBy9TohgSER7tI1yEoSAaE+vBxnyiV8z5nM9ORVnG6A5ie3Wpl8BSF8Q
-         W8G9PqVd8o+MnyfPP4LOs9iLhpUx35UfMPvADdyW1Q/bDrpkz8Sq6PW+AftCLixJBY
-         w1S5zJ0TH8NPIOMvZfYp44I+b0XSPt4W7i4W4Zalm6M0UHJI7HN2xx23T2w+JEcGv3
-         rAS4mnNqq3ERQ==
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        io-uring Mailing list <io-uring@vger.kernel.org>,
-        Tea Inside Mailing List <timl@vger.teainside.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Chen, Rong A" <rong.a.chen@intel.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: [PATCH io_uring-5.17] io_uring: Fix build error potential reading uninitialized value
-Date:   Mon,  7 Feb 2022 18:43:15 +0700
-Message-Id: <20220207114315.555413-1-ammarfaizi2@gnuweeb.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <d33bb5a9-8173-f65b-f653-51fc0681c6d6@intel.com>
-References: <d33bb5a9-8173-f65b-f653-51fc0681c6d6@intel.com>
+        Mon, 7 Feb 2022 06:58:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45F9C03542F
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:57:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F626B811D8
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:57:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBCA6C004E1;
+        Mon,  7 Feb 2022 11:57:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644235031;
+        bh=1gjzPxzY6TrtkD/E/QoBv0Pnu4h98uNL6Xtp/W2eAWY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=G2r0Qy0d1WxcFIB9DEbkeirAjqXCRmYv72myWdUQv+Sl6L6cOuQ96/CqWHBCl726P
+         5N+5dA+Kj7lVCVQW5eK3Q3zSRj3watMYybj4UAVv7bDfOuDjZKCoP9ltw1jBElZCSl
+         CqABD0U62RXhE6JrkJIkZzSj11k8yx00F+hdPy/RtMvg1MGqQJUIY9j6GlTTXs3RSj
+         4i5/Hwz7tKZGyXl3RBlr6VnGnnFCSm+muQDfmGLL5IZr1ZWFKMDZUFS8eTCYNAZ89q
+         DOYGSx+BWlq24iahh5TJ0DR5HdE0sxdTJ/kopFIWHI6N4l4t0PXjQb8z06SDJC670U
+         rfXPuGm5csCiQ==
+Date:   Mon, 7 Feb 2022 12:57:08 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org, ardb@kernel.org,
+        bp@alien8.de, catalin.marinas@arm.com, dave.hansen@linux.intel.com,
+        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
+        peterz@infradead.org, tglx@linutronix.de,
+        valentin.schneider@arm.com, will@kernel.org
+Subject: Re: [PATCH v2 5/7] sched/preempt: add PREEMPT_DYNAMIC using static
+ keys
+Message-ID: <20220207115708.GA514319@lothringen>
+References: <20220204150557.434610-1-mark.rutland@arm.com>
+ <20220204150557.434610-6-mark.rutland@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204150557.434610-6-mark.rutland@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>
+On Fri, Feb 04, 2022 at 03:05:55PM +0000, Mark Rutland wrote:
+> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+> index dfd84c59b144..141952f4fee8 100644
+> --- a/include/linux/entry-common.h
+> +++ b/include/linux/entry-common.h
+> @@ -456,13 +456,19 @@ irqentry_state_t noinstr irqentry_enter(struct pt_regs *regs);
+>   */
+>  void raw_irqentry_exit_cond_resched(void);
+>  #ifdef CONFIG_PREEMPT_DYNAMIC
+> +#if defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
+>  #define irqentry_exit_cond_resched_dynamic_enabled	raw_irqentry_exit_cond_resched
+>  #define irqentry_exit_cond_resched_dynamic_disabled	NULL
+>  DECLARE_STATIC_CALL(irqentry_exit_cond_resched, raw_irqentry_exit_cond_resched);
+>  #define irqentry_exit_cond_resched()	static_call(irqentry_exit_cond_resched)()
+> -#else
+> -#define irqentry_exit_cond_resched()	raw_irqentry_exit_cond_resched()
+> +#elif defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
+> +DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
 
-In io_recv() if import_single_range() fails, the @flags variable is
-uninitialized, then it will goto out_free.
+If CONFIG_PREEMPT && CONFIG_PREEMPT_DYNAMIC and no "preempt=" parameter is
+passed, nothing is overriden on boot. So you need to either have cond_resched
+and might_resched initially disabled (STATIC_KEY_FALSE?) or call
+sched_dynamic_update() from preempt_dynamic_init() also when CONFIG_PREEMPT=y.
 
-After the goto, the compiler doesn't know that (ret < min_ret) is
-always true, so it thinks the "if ((flags & MSG_WAITALL) ..."  path
-could be taken.
-
-The complaint comes from gcc-9 (Debian 9.3.0-22) 9.3.0:
-```
-  fs/io_uring.c:5238 io_recvfrom() error: uninitialized symbol 'flags'
-```
-Fix this by bypassing the @ret and @flags check when
-import_single_range() fails.
-
-Reasons:
- 1. import_single_range() only returns -EFAULT when it fails.
- 2. At that point @flags is uninitialized and shouldn't be read.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reported-by: "Chen, Rong A" <rong.a.chen@intel.com>
-Link: https://lore.gnuweeb.org/timl/d33bb5a9-8173-f65b-f653-51fc0681c6d6@intel.com/
-Cc: Pavel Begunkov <asml.silence@gmail.com>
-Suggested-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Fixes: 7297ce3d59449de49d3c9e1f64ae25488750a1fc ("io_uring: improve send/recv error handling")
-Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
----
- fs/io_uring.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 2e04f718319d..3445c4da0153 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5228,7 +5228,6 @@ static int io_recv(struct io_kiocb *req, unsigned int issue_flags)
- 		min_ret = iov_iter_count(&msg.msg_iter);
- 
- 	ret = sock_recvmsg(sock, &msg, flags);
--out_free:
- 	if (ret < min_ret) {
- 		if (ret == -EAGAIN && force_nonblock)
- 			return -EAGAIN;
-@@ -5236,9 +5235,9 @@ static int io_recv(struct io_kiocb *req, unsigned int issue_flags)
- 			ret = -EINTR;
- 		req_set_fail(req);
- 	} else if ((flags & MSG_WAITALL) && (msg.msg_flags & (MSG_TRUNC | MSG_CTRUNC))) {
-+out_free:
- 		req_set_fail(req);
- 	}
--
- 	__io_req_complete(req, issue_flags, ret, io_put_kbuf(req));
- 	return 0;
- }
-
-base-commit: f6133fbd373811066c8441737e65f384c8f31974
--- 
-2.32.0
-
+Thanks.
