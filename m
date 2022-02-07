@@ -2,119 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1480BC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BDEC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245672AbiBGLF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:05:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
+        id S245619AbiBGLFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:05:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235021AbiBGLDf (ORCPT
+        with ESMTP id S239955AbiBGLCp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:03:35 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690C3C043189
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:03:34 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id d187so12290740pfa.10
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 03:03:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=QipFVohgJzcUrL8UlK2rRcSdvLXpuSzlSK+QMwQdeWY=;
-        b=Qb119yI+PwQFr6jPKxXD6Ro4Zr7EG7UM/FLvCcgGAyGO4UZKe0qx5zkQ9m6t4wCsua
-         Lr3C0gHfNRgM504750ff14hLhU48/xCzEwjIVySWXyX30+gdQJeo/dT3tc6VSKOD7133
-         yuHaY94GUIkVEq2P9mnQSRyF/Khh14jwlIvRXiVE9LHEBIzYVnkezgNM5hXfKNtq+LcV
-         +zZ1X1K3f2x928jJpPUHQnMZZsXdAbJgjxC2zwgh116dVn2to5FYas9V2M+yb7pFIuLh
-         +lHAmyZISmrSYbGvxwIR6AfihL5ALm9QK8atWLuWo9sGxzPZr7brKPDvQKQR4uxZzDob
-         QnNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=QipFVohgJzcUrL8UlK2rRcSdvLXpuSzlSK+QMwQdeWY=;
-        b=INzhnWJLxEpHFnAgkX+XwSqxb1a36CUh36vaSrXbM+uN7vRlvkc+p2aCFIjmFUXlTK
-         f55DcSpcDsqUerXgxFXbK+jO1s89gzQ2tkqcDR3+MkH2EXkopbLxKZo7mRNc9JRGahdv
-         Z5Oea3EIPTbqLB57213V4vQ2rRvNxh4obDH97+Eoo9GXpEOt/7gJTm/Dko9eBfRE5MxV
-         PwfKXetZFRVUWF1Rh1fz/Mq+tJPYE/Z4TsSiGPhHW1cTsMmzZGlGUgOJwDulhGZPvLQT
-         LQp4skUImrRYU8VcCdQd1jiJHoreU4IMW4ZILmqJQzyR4EEeGS0J0znsps6c29d6ctlr
-         WR6A==
-X-Gm-Message-State: AOAM532Oto0JEUteie1/BuLNyES9ei8snOsQdnTS0OM/xKuGspneHtvT
-        i//T9+7WAwFj6Psb6a20VlXH4Q==
-X-Google-Smtp-Source: ABdhPJwzLSLHEnWnuunnTtL/YTkSva49GkpsXaZ+Y54wrksTuThVmDmOfpLyc2tgR7wI7aJjY3L6mQ==
-X-Received: by 2002:a63:b207:: with SMTP id x7mr8823276pge.392.1644231813678;
-        Mon, 07 Feb 2022 03:03:33 -0800 (PST)
-Received: from leoy-ThinkPad-X240s ([204.124.180.34])
-        by smtp.gmail.com with ESMTPSA id 142sm2799944pfy.11.2022.02.07.03.03.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 03:03:33 -0800 (PST)
-Date:   Mon, 7 Feb 2022 19:03:25 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     German Gomez <german.gomez@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] perf test: Add perf_event_attr tests for the arm_spe
- event
-Message-ID: <20220207110325.GA73277@leoy-ThinkPad-X240s>
-References: <20220126160710.32983-1-german.gomez@arm.com>
- <20220205081013.GA391033@leoy-ThinkPad-X240s>
- <37a1a2f9-2c94-664f-19fb-8337029b8fe5@arm.com>
+        Mon, 7 Feb 2022 06:02:45 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D6EC043188
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:02:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644231765; x=1675767765;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=UzI41Op0LdiA4fxHsjsrc6pgw6L092Cn3Cy1cpg+6tg=;
+  b=DVnkN+WWd9zuch12QV1q7FpbQFP32Bm2atgSRJBReWhIDJ5Sg7lZKleK
+   8MuUqNEHSb/i2uqZdPws0Pvo36qB4RuuWYWNFG0aJq6yV8Iksv+IzOAET
+   5qfq3cYwXeeJtOVB2Yi6gaw75bNCGRUAAXrDt85enjMzk59gX9x4d4IFI
+   VnJ6KAkzviG/eu22tr+ceLb+reB6W0R+Yq3+FJLoyE7nvLsQO2GxIGVfw
+   hZdiNm/03SClmGfS1Zs4Ttc1O1IN1Zqj4nnfv+2Kku9QroqaojT+ZKyQe
+   z5ijjH98DlFiozCel+nnkb2j7arRqNFXthhwMvF1Mdv6Qhdzwzj6fE23X
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="248456523"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="248456523"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:02:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="628485911"
+Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 07 Feb 2022 03:02:19 -0800
+Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nH1mk-0000Qo-KS; Mon, 07 Feb 2022 11:02:18 +0000
+Date:   Mon, 7 Feb 2022 19:02:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within
+ 'struct htt_tx_fetch_ind' is less aligned than 'union
+ htt_tx_fetch_ind::(anonymous at
+ drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct
+ htt_tx_fetch_ind' being...
+Message-ID: <202202071856.7s2z6Cam-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <37a1a2f9-2c94-664f-19fb-8337029b8fe5@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 10:50:26AM +0000, German Gomez wrote:
-> Hi Leo, thanks for checking this
-> 
-> On 05/02/2022 08:10, Leo Yan wrote:
-> > Hi German,
-> >
-> > On Wed, Jan 26, 2022 at 04:07:09PM +0000, German Gomez wrote:
-> >> Adds a couple of perf_event_attr tests for the fix introduced in [1].
-> >> The tests check that the correct sample_period value is set in the
-> >> struct perf_event_attr of the arm_spe events.
-> >>
-> >> [1]: https://lore.kernel.org/all/20220118144054.2541-1-german.gomez@arm.com/
-> >>
-> >> Signed-off-by: German Gomez <german.gomez@arm.com>
-> > I tested this patch with two commands:
-> >
-> > # PERF_TEST_ATTR=/tmp /usr/bin/python2 ./tests/attr.py -d ./tests/attr/ \
-> >         -p ./perf -vvvvv -t test-record-spe-period
-> > # PERF_TEST_ATTR=/tmp /usr/bin/python2 ./tests/attr.py -d ./tests/attr/ \
-> >         -p ./perf -vvvvv -t test-record-spe-period-term
-> >
-> > Both testing can pass on Hisilicon D06 board.
-> >
-> > One question: I'm a bit concern this case will fail on some Arm64
-> > platforms which doesn't contain Arm SPE modules.  E.g. below commands
-> > will always fail on Arm64 platforms if SPE module is absent.  So I am
-> > wandering if we can add extra checking ARM SPE event is existed or not?
->  
-> The test reports "unsupported" if the return code and the 'ret' field don't match.
-> 
-> When I unload the SPE module:
-> 
-> running './tests/attr//test-record-spe-period-term'
-> test limitation 'aarch64'
-> unsupp  './tests/attr//test-record-spe-period-term'
+Hi Kees,
 
-Thanks for confirmation, German.
+FYI, the error/warning still remains.
 
-You could add my testing tag for this patch:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   dfd42facf1e4ada021b939b4e19c935dcdd55566
+commit: fa7845cfd53f3b1d3f60efa55db89805595bc045 treewide: Replace open-coded flex arrays in unions
+date:   4 months ago
+config: arm-buildonly-randconfig-r006-20220207 (https://download.01.org/0day-ci/archive/20220207/202202071856.7s2z6Cam-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0d8850ae2cae85d49bea6ae0799fa41c7202c05c)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fa7845cfd53f3b1d3f60efa55db89805595bc045
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout fa7845cfd53f3b1d3f60efa55db89805595bc045
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/net/
 
-Tested-by: Leo Yan <leo.yan@linaro.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/net/wireless/ath/ath10k/mac.c:8:
+   In file included from drivers/net/wireless/ath/ath10k/mac.h:11:
+   In file included from drivers/net/wireless/ath/ath10k/core.h:18:
+   drivers/net/wireless/ath/ath10k/htt.h:721:34: warning: field prefix within 'struct htt_rx_indication' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+   drivers/net/wireless/ath/ath10k/htt.h:742:34: warning: field prefix within 'struct htt_rx_indication_hl' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication_hl' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+>> drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within 'struct htt_tx_fetch_ind' is less aligned than 'union htt_tx_fetch_ind::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct htt_tx_fetch_ind' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   drivers/net/wireless/ath/ath10k/htt.h:1815:2: warning: field  within 'struct htt_resp' is less aligned than 'union htt_resp::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1815:2)' and is usually due to 'struct htt_resp' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   drivers/net/wireless/ath/ath10k/mac.c:5942:22: warning: parameter 'changed_flags' set but not used [-Wunused-but-set-parameter]
+                                       unsigned int changed_flags,
+                                                    ^
+   5 warnings generated.
+--
+   In file included from drivers/net/wireless/ath/ath10k/debug.c:14:
+   In file included from drivers/net/wireless/ath/ath10k/core.h:18:
+   drivers/net/wireless/ath/ath10k/htt.h:721:34: warning: field prefix within 'struct htt_rx_indication' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+   drivers/net/wireless/ath/ath10k/htt.h:742:34: warning: field prefix within 'struct htt_rx_indication_hl' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication_hl' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+>> drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within 'struct htt_tx_fetch_ind' is less aligned than 'union htt_tx_fetch_ind::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct htt_tx_fetch_ind' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   drivers/net/wireless/ath/ath10k/htt.h:1815:2: warning: field  within 'struct htt_resp' is less aligned than 'union htt_resp::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1815:2)' and is usually due to 'struct htt_resp' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   4 warnings generated.
+--
+   In file included from drivers/net/wireless/ath/ath10k/ce.c:8:
+   In file included from drivers/net/wireless/ath/ath10k/hif.h:11:
+   In file included from drivers/net/wireless/ath/ath10k/core.h:18:
+   drivers/net/wireless/ath/ath10k/htt.h:721:34: warning: field prefix within 'struct htt_rx_indication' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+   drivers/net/wireless/ath/ath10k/htt.h:742:34: warning: field prefix within 'struct htt_rx_indication_hl' is less aligned than 'struct htt_rx_indication_prefix' and is usually due to 'struct htt_rx_indication_hl' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           struct htt_rx_indication_prefix prefix;
+                                           ^
+>> drivers/net/wireless/ath/ath10k/htt.h:1677:2: warning: field  within 'struct htt_tx_fetch_ind' is less aligned than 'union htt_tx_fetch_ind::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1677:2)' and is usually due to 'struct htt_tx_fetch_ind' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   drivers/net/wireless/ath/ath10k/htt.h:1815:2: warning: field  within 'struct htt_resp' is less aligned than 'union htt_resp::(anonymous at drivers/net/wireless/ath/ath10k/htt.h:1815:2)' and is usually due to 'struct htt_resp' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           union {
+           ^
+   drivers/net/wireless/ath/ath10k/ce.c:127:1: warning: unused function 'ath10k_get_ring_byte' [-Wunused-function]
+   ath10k_get_ring_byte(unsigned int offset,
+   ^
+   drivers/net/wireless/ath/ath10k/ce.c:212:1: warning: unused function 'ath10k_ce_shadow_dest_ring_write_index_set' [-Wunused-function]
+   ath10k_ce_shadow_dest_ring_write_index_set(struct ath10k *ar,
+   ^
+   drivers/net/wireless/ath/ath10k/ce.c:449:20: warning: unused function 'ath10k_ce_error_intr_enable' [-Wunused-function]
+   static inline void ath10k_ce_error_intr_enable(struct ath10k *ar,
+                      ^
+   7 warnings generated.
+
+
+vim +1677 drivers/net/wireless/ath/ath10k/htt.h
+
+  1670	
+  1671	struct htt_tx_fetch_ind {
+  1672		u8 pad0;
+  1673		__le16 fetch_seq_num;
+  1674		__le32 token;
+  1675		__le16 num_resp_ids;
+  1676		__le16 num_records;
+> 1677		union {
+  1678			/* ath10k_htt_get_tx_fetch_ind_resp_ids() */
+  1679			DECLARE_FLEX_ARRAY(__le32, resp_ids);
+  1680			DECLARE_FLEX_ARRAY(struct htt_tx_fetch_record, records);
+  1681		};
+  1682	} __packed;
+  1683	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
