@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2530C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A015C35276
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353674AbiBGLMP (ORCPT
+        id S1352895AbiBGLMD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
+        Mon, 7 Feb 2022 06:12:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238814AbiBGLIu (ORCPT
+        with ESMTP id S1355265AbiBGLIN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:08:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56493C043181;
-        Mon,  7 Feb 2022 03:08:49 -0800 (PST)
+        Mon, 7 Feb 2022 06:08:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4B7C043188;
+        Mon,  7 Feb 2022 03:08:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11043B81158;
-        Mon,  7 Feb 2022 11:08:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CDCC004E1;
-        Mon,  7 Feb 2022 11:08:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 06C6C61261;
+        Mon,  7 Feb 2022 11:08:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7A50C004E1;
+        Mon,  7 Feb 2022 11:08:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232126;
-        bh=kFoh9Zc4+HnA41aDNdolCCovmrIzEChsHplzS5kQCkI=;
+        s=korg; t=1644232092;
+        bh=0Cq6hiZ7YsNrUK6HHr6pAyM3KJv2Ya2Cm6SehmCrLPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NkmFjDsK+3++aelMdO2SL9Z0bjm507UPUVb3SlgkSzOeSWh0tDDD7cjMw0q59worJ
-         9nCEJbN+x8EMwzkabdkRrU1CWwW5OsIHDzpjzhgZREdjWPzKnn6Il/QSSHwtxs7J8P
-         zgYGFn9WLut0u2GHuudhxh5SuzKfRsYE39nELPN8=
+        b=cSJUysm18/oyoMMtpvlOv+ZYT07FBhVEMW9kPaOKFCFDFUa7oLA+qDOLoIPr8CJ3+
+         97NchBGB+xBtxugzLFoO2qhGu2ZG+avma3pfAasaRymakp28+CYMb0KnoZYILcC8ko
+         8gYPG9Lvo/ueHqmlT2JroxRKzxeF4ouzCClrIgOw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Ray Che <xijiache@gmail.com>, David Ahern <dsahern@kernel.org>,
-        Geoff Alexander <alexandg@cs.unm.edu>,
-        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 25/48] ipv4: tcp: send zero IPID in SYNACK messages
-Date:   Mon,  7 Feb 2022 12:05:58 +0100
-Message-Id: <20220207103753.162252683@linuxfoundation.org>
+        stable@vger.kernel.org, butt3rflyh4ck <butterflyhuangxx@gmail.com>,
+        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>
+Subject: [PATCH 4.9 06/48] udf: Fix NULL ptr deref when converting from inline format
+Date:   Mon,  7 Feb 2022 12:05:39 +0100
+Message-Id: <20220207103752.548604476@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -52,72 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 970a5a3ea86da637471d3cd04d513a0755aba4bf ]
+commit 7fc3b7c2981bbd1047916ade327beccb90994eee upstream.
 
-In commit 431280eebed9 ("ipv4: tcp: send zero IPID for RST and
-ACK sent in SYN-RECV and TIME-WAIT state") we took care of some
-ctl packets sent by TCP.
+udf_expand_file_adinicb() calls directly ->writepage to write data
+expanded into a page. This however misses to setup inode for writeback
+properly and so we can crash on inode->i_wb dereference when submitting
+page for IO like:
 
-It turns out we need to use a similar strategy for SYNACK packets.
+  BUG: kernel NULL pointer dereference, address: 0000000000000158
+  #PF: supervisor read access in kernel mode
+...
+  <TASK>
+  __folio_start_writeback+0x2ac/0x350
+  __block_write_full_page+0x37d/0x490
+  udf_expand_file_adinicb+0x255/0x400 [udf]
+  udf_file_write_iter+0xbe/0x1b0 [udf]
+  new_sync_write+0x125/0x1c0
+  vfs_write+0x28e/0x400
 
-By default, they carry IP_DF and IPID==0, but there are ways
-to ask them to use the hashed IP ident generator and thus
-be used to build off-path attacks.
-(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
+Fix the problem by marking the page dirty and going through the standard
+writeback path to write the page. Strictly speaking we would not even
+have to write the page but we want to catch e.g. ENOSPC errors early.
 
-One of this way is to force (before listener is started)
-echo 1 >/proc/sys/net/ipv4/ip_no_pmtu_disc
-
-Another way is using forged ICMP ICMP_FRAG_NEEDED
-with a very small MTU (like 68) to force a false return from
-ip_dont_fragment()
-
-In this patch, ip_build_and_send_pkt() uses the following
-heuristics.
-
-1) Most SYNACK packets are smaller than IPV4_MIN_MTU and therefore
-can use IP_DF regardless of the listener or route pmtu setting.
-
-2) In case the SYNACK packet is bigger than IPV4_MIN_MTU,
-we use prandom_u32() generator instead of the IPv4 hashed ident one.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Ray Che <xijiache@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Cc: Geoff Alexander <alexandg@cs.unm.edu>
-Cc: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
+CC: stable@vger.kernel.org
+Fixes: 52ebea749aae ("writeback: make backing_dev_info host cgroup-specific bdi_writebacks")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ip_output.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ fs/udf/inode.c |    8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -159,12 +159,19 @@ int ip_build_and_send_pkt(struct sk_buff
- 	iph->daddr    = (opt && opt->opt.srr ? opt->opt.faddr : daddr);
- 	iph->saddr    = saddr;
- 	iph->protocol = sk->sk_protocol;
--	if (ip_dont_fragment(sk, &rt->dst)) {
-+	/* Do not bother generating IPID for small packets (eg SYNACK) */
-+	if (skb->len <= IPV4_MIN_MTU || ip_dont_fragment(sk, &rt->dst)) {
- 		iph->frag_off = htons(IP_DF);
- 		iph->id = 0;
- 	} else {
- 		iph->frag_off = 0;
--		__ip_select_ident(net, iph, 1);
-+		/* TCP packets here are SYNACK with fat IPv4/TCP options.
-+		 * Avoid using the hashed IP ident generator.
-+		 */
-+		if (sk->sk_protocol == IPPROTO_TCP)
-+			iph->id = (__force __be16)prandom_u32();
-+		else
-+			__ip_select_ident(net, iph, 1);
- 	}
+--- a/fs/udf/inode.c
++++ b/fs/udf/inode.c
+@@ -259,10 +259,6 @@ int udf_expand_file_adinicb(struct inode
+ 	char *kaddr;
+ 	struct udf_inode_info *iinfo = UDF_I(inode);
+ 	int err;
+-	struct writeback_control udf_wbc = {
+-		.sync_mode = WB_SYNC_NONE,
+-		.nr_to_write = 1,
+-	};
  
- 	if (opt && opt->opt.optlen) {
+ 	WARN_ON_ONCE(!inode_is_locked(inode));
+ 	if (!iinfo->i_lenAlloc) {
+@@ -306,8 +302,10 @@ int udf_expand_file_adinicb(struct inode
+ 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_LONG;
+ 	/* from now on we have normal address_space methods */
+ 	inode->i_data.a_ops = &udf_aops;
++	set_page_dirty(page);
++	unlock_page(page);
+ 	up_write(&iinfo->i_data_sem);
+-	err = inode->i_data.a_ops->writepage(page, &udf_wbc);
++	err = filemap_fdatawrite(inode->i_mapping);
+ 	if (err) {
+ 		/* Restore everything back so that we don't lose data... */
+ 		lock_page(page);
 
 
