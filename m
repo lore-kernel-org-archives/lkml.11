@@ -2,142 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DAD5C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CDFFC3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442803AbiBGPJj (ORCPT
+        id S1442795AbiBGPJf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:09:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52628 "EHLO
+        Mon, 7 Feb 2022 10:09:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442026AbiBGOrV (ORCPT
+        with ESMTP id S1442452AbiBGOuk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:47:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C9BBC03FEF9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:46:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644245194;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q5t79iozaE2m1xAHOPqGRMffMv8r6J72j302frUn+qI=;
-        b=LtLtZBjUVRn7XOI16Rm33AyVBLaZdrsThpomhyNYCwzeg/Hq7bh+3tksxcWir5IewuTBHB
-        ONV6ChWTkySxD1zuoc8DGtK1LKukHuPi6XgC6IXMtLds4o+0QRV6vjYpUuPgqDmTA79UqN
-        07rUu2whVDxU+cSfuLvTPSGjIUn64+g=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-544-NdaVxt5qMaWX012cjtR1Vw-1; Mon, 07 Feb 2022 09:46:33 -0500
-X-MC-Unique: NdaVxt5qMaWX012cjtR1Vw-1
-Received: by mail-wm1-f72.google.com with SMTP id c7-20020a1c3507000000b0034a0dfc86aaso12353216wma.6
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 06:46:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=q5t79iozaE2m1xAHOPqGRMffMv8r6J72j302frUn+qI=;
-        b=Q8tUJy4vC80C/1RTd2ygSehA5rIkiZUFo/bW3+uG/hiK80Gr+QS8WcsrENSIgkjaf3
-         fsVzs1/6QrmsyXzN+MvyJw2UeVXwrFzbg/I+NQ93UEayhMhI6XLDOyDqg933sgRyCBlQ
-         5cVX6ybio5FSGCOfGWZrfQdVQC55UCTTiZyop9jgek706EhcN4XvUmQiyY508rmRbOdd
-         35Esu6ETzCrrJMZnXw0JNCvJTvnZY3ErZbRvXkDCvBaBMX+T2b3AJ3zCX8ydCNo7f2JT
-         IXuEqIN9VgBomLXuvgj12QNXr6n2Bgk7YK/eDZkYFrfebdXhj0Z0r5Vw6JABac1a39sG
-         sYsA==
-X-Gm-Message-State: AOAM533c4TbdEz0u2x7vmkuvp++86bIievkgK7Q2YB4j6kDoXZdva2Yp
-        a3g0NYCVTH2Tvz5ROJSmRFubwCLSKSRcsPRjAmtYqbBh1V7H4BsDGkIk2yvIiaZI1AuYG9JZoly
-        TmhUzxxvhAWOM7IShb3hgZ8W6
-X-Received: by 2002:a05:600c:3552:: with SMTP id i18mr14940655wmq.21.1644245192310;
-        Mon, 07 Feb 2022 06:46:32 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzMVrR+RBrnlh8AzddSCKZ1Ca+zUuQZLn9WpRkM1MqzW2/120srKfxv4zFbFiH8BjRv6BS54w==
-X-Received: by 2002:a05:600c:3552:: with SMTP id i18mr14940642wmq.21.1644245192085;
-        Mon, 07 Feb 2022 06:46:32 -0800 (PST)
-Received: from ?IPV6:2003:cb:c709:6300:a751:d742:1f76:8639? (p200300cbc7096300a751d7421f768639.dip0.t-ipconnect.de. [2003:cb:c709:6300:a751:d742:1f76:8639])
-        by smtp.gmail.com with ESMTPSA id bg26sm18421742wmb.48.2022.02.07.06.46.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 06:46:31 -0800 (PST)
-Message-ID: <ba692f24-794e-300d-248a-93165acd18e5@redhat.com>
-Date:   Mon, 7 Feb 2022 15:46:31 +0100
+        Mon, 7 Feb 2022 09:50:40 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B361C0401C2;
+        Mon,  7 Feb 2022 06:50:40 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 398861F444B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644245439;
+        bh=Ju2Q5YwjY/LdNga4EoB41t6xw3DyFhmTZT8pPKyD1xI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=oaFTUYvRYY60eNHWhaNtRSsVies+YMnhzdtJ+Bbe5HKv/sU+giIdxU7YGk5i6vX9C
+         JFxLcTAtzSPpheVOyDCYr6OoyKAqDEq9EFgOyvsbd20C0LtSwrBFT6fzFKlEJtbmk0
+         0CsH33VM8IVpNuNcLk+hDjxj/o47W0VGlYzyThdkzJsjHiCJLj16R43gfo1luP1rW4
+         Am8CvuA2Yp3Bh0MgOqxTJc9OOgXzgtZyNLZETmTq1ZfOhP2r3saOYg6yhIAmtfFmTy
+         v1thQMWM5I2nSfeq0YyPlz0m0Dhd0jFizEWGwe/iMLrxc4/tH1dh35MguKPph+JVOp
+         Kx+ZQl1rF+4RQ==
+Message-ID: <d91f056c-227f-7a01-9e9c-9b4d53ec04f4@collabora.com>
+Date:   Mon, 7 Feb 2022 15:50:36 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 3/4] mm/memory_hotplug: clean up try_offline_node
+ Thunderbird/91.5.1
+Subject: Re: [PATCH V6, 3/5] media: mtk-jpegenc: add jpegenc timeout func
+ interface
 Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220207133643.23427-1-linmiaohe@huawei.com>
- <20220207133643.23427-4-linmiaohe@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220207133643.23427-4-linmiaohe@huawei.com>
-Content-Type: text/plain; charset=UTF-8
+To:     "kyrie.wu" <kyrie.wu@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, xia.jiang@mediatek.com,
+        maoguang.meng@mediatek.com, srv_heupstream@mediatek.com,
+        irui.wang@mediatek.com
+References: <1638501230-13417-1-git-send-email-kyrie.wu@mediatek.com>
+ <1638501230-13417-4-git-send-email-kyrie.wu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <1638501230-13417-4-git-send-email-kyrie.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07.02.22 14:36, Miaohe Lin wrote:
-> We can use helper macro node_spanned_pages to check whether node spans
-> pages. And we can change the parameter of check_cpu_on_node to nid as
-> that's what it really cares. Thus we can further get rid of the local
-> variable pgdat and improve the readability a bit.
+Il 03/12/21 04:13, kyrie.wu ha scritto:
+> Generalizes jpegenc timeout func interfaces to handle HW timeout.
 > 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> Signed-off-by: kyrie.wu <kyrie.wu@mediatek.com>
 > ---
->  mm/memory_hotplug.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
+> V6: no change
+> ---
+>   drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h   |  8 ++++++++
+>   drivers/media/platform/mtk-jpeg/mtk_jpeg_enc_hw.c | 23 +++++++++++++++++++++++
+>   2 files changed, 31 insertions(+)
 > 
-> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-> index 140809e60e9a..4b9eef861ee4 100644
-> --- a/mm/memory_hotplug.c
-> +++ b/mm/memory_hotplug.c
-> @@ -2008,12 +2008,12 @@ static int get_nr_vmemmap_pages_cb(struct memory_block *mem, void *arg)
->  	return mem->nr_vmemmap_pages;
->  }
->  
-> -static int check_cpu_on_node(pg_data_t *pgdat)
-> +static int check_cpu_on_node(int nid)
->  {
->  	int cpu;
->  
->  	for_each_present_cpu(cpu) {
-> -		if (cpu_to_node(cpu) == pgdat->node_id)
-> +		if (cpu_to_node(cpu) == nid)
->  			/*
->  			 * the cpu on this node isn't removed, and we can't
->  			 * offline this node.
-> @@ -2047,7 +2047,6 @@ static int check_no_memblock_for_node_cb(struct memory_block *mem, void *arg)
->   */
->  void try_offline_node(int nid)
->  {
-> -	pg_data_t *pgdat = NODE_DATA(nid);
->  	int rc;
->  
->  	/*
-> @@ -2055,7 +2054,7 @@ void try_offline_node(int nid)
->  	 * offline it. A node spans memory after move_pfn_range_to_zone(),
->  	 * e.g., after the memory block was onlined.
->  	 */
-> -	if (pgdat->node_spanned_pages)
-> +	if (node_spanned_pages(nid))
->  		return;
->  
->  	/*
-> @@ -2067,7 +2066,7 @@ void try_offline_node(int nid)
->  	if (rc)
->  		return;
->  
-> -	if (check_cpu_on_node(pgdat))
-> +	if (check_cpu_on_node(nid))
->  		return;
->  
->  	/*
+> diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
+> index 7d013de..baab305 100644
+> --- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
+> +++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
+> @@ -75,6 +75,12 @@ struct mtk_jpeg_variant {
+>   	u32 cap_q_default_fourcc;
+>   };
+>   
+> +struct mtk_jpeg_hw_param {
+> +	struct vb2_v4l2_buffer *src_buffer;
+> +	struct vb2_v4l2_buffer *dst_buffer;
+> +	struct mtk_jpeg_ctx *curr_ctx;
+> +};
+> +
+>   enum mtk_jpegenc_hw_id {
+>   	MTK_JPEGENC_HW0,
+>   	MTK_JPEGENC_HW1,
+> @@ -122,6 +128,8 @@ struct mtk_jpegenc_comp_dev {
+>   	struct mtk_jpeg_dev *master_dev;
+>   	struct mtk_jpegenc_pm pm;
+>   	int jpegenc_irq;
+> +	struct delayed_work job_timeout_work;
+> +	struct mtk_jpeg_hw_param hw_param;
+>   };
+>   
+>   /**
+> diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_enc_hw.c b/drivers/media/platform/mtk-jpeg/mtk_jpeg_enc_hw.c
+> index 4ccda1d..e62b875 100644
+> --- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_enc_hw.c
+> +++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_enc_hw.c
+> @@ -183,6 +183,24 @@ void mtk_jpeg_set_enc_params(struct mtk_jpeg_ctx *ctx,  void __iomem *base)
+>   	writel(ctx->restart_interval, base + JPEG_ENC_RST_MCU_NUM);
+>   }
+>   
+> +static void mtk_jpegenc_timeout_work(struct work_struct *work)
+> +{
+> +	struct delayed_work *Pwork =
+> +		container_of(work, struct delayed_work, work);
+> +	struct mtk_jpegenc_comp_dev *cjpeg =
+> +		container_of(Pwork, struct mtk_jpegenc_comp_dev,
+> +		job_timeout_work);
+> +	enum vb2_buffer_state buf_state = VB2_BUF_STATE_ERROR;
+> +	struct vb2_v4l2_buffer *src_buf;
+> +
+> +	src_buf = cjpeg->hw_param.src_buffer;
+> +
+> +	mtk_jpeg_enc_reset(cjpeg->reg_base);
+> +	clk_disable_unprepare(cjpeg->pm.venc_clk.clk_info->jpegenc_clk);
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+You disable and unprepare the clock, but you never turn it back on?
 
--- 
-Thanks,
+This will lead to unbalanced disable on module removal but, more importantly,
+will lead to unclocked access after a timeout, for which the platform may or
+may not crash, but the jpgenc hardware will be unrecoverable until performing
+a full system reboot.
 
-David / dhildenb
+Please fix this.
+
+> +	pm_runtime_put(cjpeg->pm.dev);
+> +	v4l2_m2m_buf_done(src_buf, buf_state);
+> +}
+> +
+>   static irqreturn_t mtk_jpegenc_hw_irq_handler(int irq, void *priv)
+>   {
+>   	struct vb2_v4l2_buffer *src_buf, *dst_buf;
+> @@ -194,6 +212,8 @@ static irqreturn_t mtk_jpegenc_hw_irq_handler(int irq, void *priv)
+>   	struct mtk_jpegenc_comp_dev *jpeg = priv;
+>   	struct mtk_jpeg_dev *master_jpeg = jpeg->master_dev;
+>   
+> +	cancel_delayed_work(&jpeg->job_timeout_work);
+> +
+>   	irq_status = readl(jpeg->reg_base + JPEG_ENC_INT_STS) &
+>   		JPEG_ENC_INT_STATUS_MASK_ALLIRQ;
+>   	if (irq_status)
+> @@ -322,6 +342,9 @@ static int mtk_jpegenc_hw_probe(struct platform_device *pdev)
+>   
+>   	dev->plat_dev = pdev;
+>   
+> +	INIT_DELAYED_WORK(&dev->job_timeout_work,
+> +		mtk_jpegenc_timeout_work);
+> +
+>   	ret = mtk_jpegenc_init_pm(dev);
+>   	if (ret) {
+>   		dev_err(&pdev->dev, "Failed to get jpeg enc clock source");
+
 
