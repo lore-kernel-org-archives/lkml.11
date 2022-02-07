@@ -2,122 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 523A0C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D5AC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351932AbiBGGhM (ORCPT
+        id S1354174AbiBGGiF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:37:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
+        Mon, 7 Feb 2022 01:38:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234073AbiBGGbR (ORCPT
+        with ESMTP id S241627AbiBGGds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:31:17 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E2DC0401C1
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:30:54 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id x3so10414406pll.3
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 22:30:54 -0800 (PST)
+        Mon, 7 Feb 2022 01:33:48 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B081C043181;
+        Sun,  6 Feb 2022 22:33:47 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id t4-20020a17090a510400b001b8c4a6cd5dso1169324pjh.5;
+        Sun, 06 Feb 2022 22:33:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=O3fmm4nvalmQleWa1byPzKYwRMYCW7Pxtk8Gk5epwAE=;
-        b=Mev+fmMrEndOiPaIwMiostWKbCgoFUolVWzZCS5uUOeb6YzZKZEj6A9J+rHrqQqR1b
-         FfCWf6jS25cRBOHFXTGitsymEc26oKLYlLLr4D4R0sNOup6+y6vzmEnPUbVKelaVdhFg
-         F03jL7I3xrKN6prjd7rT616gqxvZcctqtMaWnyXsuQNlrEkD/GbYCOXrEZfqeuDGJh9+
-         oFz365NpbqYAz4kSJOv6L1wQBP8D7yXOe8Unverh0JpEvOQvoMIA0+i3rH4v57fyrLOf
-         Ps15s79JTNhaF4VRgNZYkbR6r0o9WR6DTFOTFXw3AqgmOZarWyVpad9aRR1sKCPoxEUM
-         CLaw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=5w4/ennwCAEEkQywko6dYbRCf/YpCkpMTELAq3SETZ0=;
+        b=Hh53y7v9NqRMkLkoNG8j78dhkJPtGq5sFnpbaHmwv98uBLw3f32oI311L5p3FsJKJ3
+         IgrPn3pu9YeOnJzCeFAgfkY9+N8XVvBodUNzDn+qfjnrk/4nx0g/L9pyLyBsTMjfrZ/D
+         34Eb2vBm+bm+FF7/WxOe/zU/utjATQBnpvQiEf1XRkuAyaDtQXGOSRla9Rx36lSnSFCl
+         Kz/cEyzX+XqzrcnXtwAMRKwYkscyU0U+9pzEy23Rd0t7zzMfFKAAKNA/iop5FskRk39L
+         JOk5Ut+nY244dW4vzbXVIg8BJiCeT1yfuxCNAR7SEZi5s6zwM30kAYnVHR0rD06KNikt
+         Bhtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=O3fmm4nvalmQleWa1byPzKYwRMYCW7Pxtk8Gk5epwAE=;
-        b=ggh+dCZCWyZBKYV1F2xNPqBBLdj+i0CKLwZiEZCWae0CjcsWcK2Be5j7WoiXQ2WK1P
-         KbvpaAhsu+hq5r5b52frUIRAWMGXttxfcZhTEl2HYCyrTgnwQMpNG8p8Ejj3mahuguAv
-         /yiV4mGG3xzRmw8E6RxUSkIi3ggVGpBr3sOegy9LYA7oWbPHhsdtd0pUOHXX5TezG1lf
-         1udNrtYN6WpBUcxaiFAbDI/hALj/NabQS6ggBSbCwD/Rg8JTCz/HPgU2W4iv4UuxCD2X
-         SVNSjgtOJdhYvY+cmbzwmvLmFVOCAh9ovUCqj9wnE7NBcM+xttGksBWBbhwk9MkTvaYg
-         b2+w==
-X-Gm-Message-State: AOAM533kATqPW+aSXKWSiATHMUam1QUpdHo3bQlXHEPnd+kQVECoBu53
-        E3sWQknyj/dfFvG+KcooWkOw9g==
-X-Google-Smtp-Source: ABdhPJz8oBJ3w7oZV38zeOV4odPSlf2oJfYGXKEsseSqcLYbDUnaotjNjwPZV1gk/z/pgQvbgRWgyg==
-X-Received: by 2002:a17:90a:5a01:: with SMTP id b1mr7252147pjd.134.1644215453808;
-        Sun, 06 Feb 2022 22:30:53 -0800 (PST)
-Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id i10sm5266634pjd.2.2022.02.06.22.30.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 22:30:53 -0800 (PST)
-From:   Zong Li <zong.li@sifive.com>
-To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
-        conor.dooley@microchip.com, geert@linux-m68k.org,
-        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Cc:     Zong Li <zong.li@sifive.com>, Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH v5 2/3] riscv: dts: Add dma-channels property and modify compatible
-Date:   Mon,  7 Feb 2022 14:30:39 +0800
-Message-Id: <ed0a70966acded2d9b8f7208d6e01b6d8324c1bf.1644215230.git.zong.li@sifive.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1644215230.git.zong.li@sifive.com>
-References: <cover.1644215230.git.zong.li@sifive.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5w4/ennwCAEEkQywko6dYbRCf/YpCkpMTELAq3SETZ0=;
+        b=dCt7ZUL5730M22Et2LAnpJRsHW0fccyGP29nPWAIGB7m3oRGQ50+70+BAsz0dkVlge
+         uHIlq3LnN/DFby+03Ns1uMVbSrpGzWHjzdH8hv0FzfzH1LGj7imlJtsbrSFwCzSN/5wK
+         HeVtwUQ6eLcgONkvppzUL6xlPZj6h1XbobFh9XzdZvCd8yWitcUUksZ6PVjMosmUeG5x
+         PGq3gv9zrtOZpjRFUqVPSEgnghMYFOwFSe1scdGDxnXIlELdGpK2QYxbcWAJnTwKVhdC
+         FG98TRErmjNUajm47UVPorw2J6wvS0dDkY0NbJJUkxwsbvZLPC5vvtED950q4ERqzGUS
+         okGg==
+X-Gm-Message-State: AOAM530qgtik2pOVBfIyA9C3e5p6bwA8r8Q5df1ZQW8Su4ZYQs8sNDS8
+        At+ZAFnaHHq3Sx8xSUweEg==
+X-Google-Smtp-Source: ABdhPJwAH1K+CWgey8aVJCIHJ53hQkGzwDi9PAMPA/2HOH43X+MSCDHXYztTHNJXL8NB9GZijsI3XQ==
+X-Received: by 2002:a17:90b:351:: with SMTP id fh17mr5008108pjb.28.1644215627026;
+        Sun, 06 Feb 2022 22:33:47 -0800 (PST)
+Received: from localhost ([2401:e180:8894:9737:7848:1ec7:b697:7d50])
+        by smtp.gmail.com with ESMTPSA id d13sm2803452pfj.205.2022.02.06.22.33.46
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 06 Feb 2022 22:33:46 -0800 (PST)
+From:   Tyrone Ting <warp5tw@gmail.com>
+To:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
+        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
+        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
+        olof@lixom.net, andriy.shevchenko@linux.intel.com,
+        warp5tw@gmail.com, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com
+Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/6] i2c: npcm: Bug fixes timeout, spurious interrupts
+Date:   Mon,  7 Feb 2022 14:33:32 +0800
+Message-Id: <20220207063338.6570-1-warp5tw@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dma-channels property, then we can determine how many channels there
-by device tree, in addition, we add the pdma versioning scheme for
-compatible.
+From: Tyrone Ting <kfting@nuvoton.com>
 
-Signed-off-by: Zong Li <zong.li@sifive.com>
-Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
----
- arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi | 3 ++-
- arch/riscv/boot/dts/sifive/fu540-c000.dtsi        | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+This patchset includes the following fixes:
 
-diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-index 869aaf0d5c06..d8869ec99945 100644
---- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-+++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-@@ -187,11 +187,12 @@ plic: interrupt-controller@c000000 {
- 		};
- 
- 		dma@3000000 {
--			compatible = "sifive,fu540-c000-pdma";
-+			compatible = "sifive,fu540-c000-pdma", "sifive,pdma0";
- 			reg = <0x0 0x3000000 0x0 0x8000>;
- 			interrupt-parent = <&plic>;
- 			interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>,
- 				     <30>;
-+			dma-channels = <4>;
- 			#dma-cells = <1>;
- 		};
- 
-diff --git a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-index 3eef52b1a59b..6a3011180846 100644
---- a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-+++ b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-@@ -168,11 +168,12 @@ uart0: serial@10010000 {
- 			status = "disabled";
- 		};
- 		dma: dma@3000000 {
--			compatible = "sifive,fu540-c000-pdma";
-+			compatible = "sifive,fu540-c000-pdma", "sifive,pdma0";
- 			reg = <0x0 0x3000000 0x0 0x8000>;
- 			interrupt-parent = <&plic0>;
- 			interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>,
- 				     <30>;
-+			dma-channels = <4>;
- 			#dma-cells = <1>;
- 		};
- 		uart1: serial@10011000 {
+- Add dt-bindings description for NPCM845.
+- Bug fix for timeout calculation.
+- Better handling of spurious interrupts.
+- Fix for event type in slave mode.
+- Removal of own slave addresses [2:10].
+- Support for next gen BMC (NPCM845).
+
+The NPCM I2C driver is tested on NPCM750 and NPCM845 evaluation boards.
+
+Tali Perry (4):
+  i2c: npcm: Fix timeout calculation
+  i2c: npcm: Add tx complete counter
+  i2c: npcm: Handle spurious interrupts
+  i2c: npcm: Remove own slave addresses 2:10
+
+Tyrone Ting (2):
+  dt-bindings: i2c: npcm: support NPCM845
+  i2c: npcm: Support NPCM845
+
+ .../bindings/i2c/nuvoton,npcm7xx-i2c.yaml     |  21 +-
+ drivers/i2c/busses/Kconfig                    |   8 +-
+ drivers/i2c/busses/Makefile                   |   2 +-
+ drivers/i2c/busses/i2c-npcm7xx.c              | 191 ++++++++++++------
+ 4 files changed, 149 insertions(+), 73 deletions(-)
+
 -- 
-2.31.1
+2.17.1
 
