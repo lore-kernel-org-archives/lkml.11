@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90259C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E309C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388291AbiBGLnY (ORCPT
+        id S1388276AbiBGLnV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
+        Mon, 7 Feb 2022 06:43:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385682AbiBGLcG (ORCPT
+        with ESMTP id S1385681AbiBGLcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Feb 2022 06:32:06 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE58CC0401D5;
-        Mon,  7 Feb 2022 03:32:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E381C0401D4;
+        Mon,  7 Feb 2022 03:31:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74B0BB80EBD;
-        Mon,  7 Feb 2022 11:31:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1D77C004E1;
-        Mon,  7 Feb 2022 11:31:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F35CB8111C;
+        Mon,  7 Feb 2022 11:31:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95434C004E1;
+        Mon,  7 Feb 2022 11:31:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233518;
-        bh=mEtObQG33qfn2d7Uum/gcizK3oGUXgWfZ3PZj7UOunU=;
+        s=korg; t=1644233515;
+        bh=QVmF++sgL5K8mV3wQlECsBRirJ5ovffGWfToglpzGLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1BOsNOeU6sJ3MloAvZxzwcSi8Ix6s2vF9F0Q0GbliX91B10MPLjwGDvtLW7EmEB87
-         cGBxP9q+bY7fcJrgbgz85e89FmhvHxLp+GvBfE/jZ0DuHPsgmXlDyM5Vax5A+WVSq9
-         nHZmEqcUEpgu/opnJgnS5boe7vi2/YrYcypWhRpA=
+        b=xaAhfGqRXaeQntRv/zLuSiU5H15SMHBuMqZv7cL4ewpvNzA/QFPz76NxokQCn2Ikn
+         cLdP9tJTEg7ya5hV1TNo2ZUPAfGHzwh+kQ/H2O870gJ1D2uYajEDODS4mVlWwA4m6n
+         FhbiF6Ixp1IAgN5EO+mHLrtyIVck92RtgfVJQeSs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
         Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
         Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.16 038/126] IB/hfi1: Fix AIP early init panic
-Date:   Mon,  7 Feb 2022 12:06:09 +0100
-Message-Id: <20220207103805.449533570@linuxfoundation.org>
+Subject: [PATCH 5.16 037/126] IB/hfi1: Fix alloc failure with larger txqueuelen
+Date:   Mon,  7 Feb 2022 12:06:08 +0100
+Message-Id: <20220207103805.418161681@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -53,121 +53,184 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
 
-commit 5f8f55b92edd621f056bdf09e572092849fabd83 upstream.
+commit b1151b74ff68cc83c2a8e1a618efe7d056e4f237 upstream.
 
-An early failure in hfi1_ipoib_setup_rn() can lead to the following panic:
+The following allocation with large txqueuelen will result in the
+following warning:
 
-  BUG: unable to handle kernel NULL pointer dereference at 00000000000001b0
-  PGD 0 P4D 0
-  Oops: 0002 [#1] SMP NOPTI
-  Workqueue: events work_for_cpu_fn
-  RIP: 0010:try_to_grab_pending+0x2b/0x140
-  Code: 1f 44 00 00 41 55 41 54 55 48 89 d5 53 48 89 fb 9c 58 0f 1f 44 00 00 48 89 c2 fa 66 0f 1f 44 00 00 48 89 55 00 40 84 f6 75 77 <f0> 48 0f ba 2b 00 72 09 31 c0 5b 5d 41 5c 41 5d c3 48 89 df e8 6c
-  RSP: 0018:ffffb6b3cf7cfa48 EFLAGS: 00010046
-  RAX: 0000000000000246 RBX: 00000000000001b0 RCX: 0000000000000000
-  RDX: 0000000000000246 RSI: 0000000000000000 RDI: 00000000000001b0
-  RBP: ffffb6b3cf7cfa70 R08: 0000000000000f09 R09: 0000000000000001
-  R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
-  R13: ffffb6b3cf7cfa90 R14: ffffffff9b2fbfc0 R15: ffff8a4fdf244690
-  FS:  0000000000000000(0000) GS:ffff8a527f400000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 00000000000001b0 CR3: 00000017e2410003 CR4: 00000000007706f0
-  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-  PKRU: 55555554
   Call Trace:
-   __cancel_work_timer+0x42/0x190
-   ? dev_printk_emit+0x4e/0x70
-   iowait_cancel_work+0x15/0x30 [hfi1]
-   hfi1_ipoib_txreq_deinit+0x5a/0x220 [hfi1]
-   ? dev_err+0x6c/0x90
-   hfi1_ipoib_netdev_dtor+0x15/0x30 [hfi1]
-   hfi1_ipoib_setup_rn+0x10e/0x150 [hfi1]
+   __alloc_pages_nodemask+0x283/0x2c0
+   kmalloc_large_node+0x3c/0xa0
+   __kmalloc_node+0x22a/0x2f0
+   hfi1_ipoib_txreq_init+0x19f/0x330 [hfi1]
+   hfi1_ipoib_setup_rn+0xd3/0x1a0 [hfi1]
    rdma_init_netdev+0x5a/0x80 [ib_core]
-   ? hfi1_ipoib_free_rdma_netdev+0x20/0x20 [hfi1]
    ipoib_intf_init+0x6c/0x350 [ib_ipoib]
    ipoib_intf_alloc+0x5c/0xc0 [ib_ipoib]
    ipoib_add_one+0xbe/0x300 [ib_ipoib]
    add_client_context+0x12c/0x1a0 [ib_core]
-   enable_device_and_get+0xdc/0x1d0 [ib_core]
-   ib_register_device+0x572/0x6b0 [ib_core]
-   rvt_register_device+0x11b/0x220 [rdmavt]
-   hfi1_register_ib_device+0x6b4/0x770 [hfi1]
-   do_init_one.isra.20+0x3e3/0x680 [hfi1]
-   local_pci_probe+0x41/0x90
-   work_for_cpu_fn+0x16/0x20
-   process_one_work+0x1a7/0x360
-   ? create_worker+0x1a0/0x1a0
-   worker_thread+0x1cf/0x390
-   ? create_worker+0x1a0/0x1a0
-   kthread+0x116/0x130
-   ? kthread_flush_work_fn+0x10/0x10
-   ret_from_fork+0x1f/0x40
+   ib_register_client+0x147/0x190 [ib_core]
+   ipoib_init_module+0xdd/0x132 [ib_ipoib]
+   do_one_initcall+0x46/0x1c3
+   do_init_module+0x5a/0x220
+   load_module+0x14c5/0x17f0
+   __do_sys_init_module+0x13b/0x180
+   do_syscall_64+0x5b/0x1a0
+   entry_SYSCALL_64_after_hwframe+0x65/0xca
 
-The panic happens in hfi1_ipoib_txreq_deinit() because there is a NULL
-deref when hfi1_ipoib_netdev_dtor() is called in this error case.
+For ipoib, the txqueuelen is modified with the module parameter
+send_queue_size.
 
-hfi1_ipoib_txreq_init() and hfi1_ipoib_rxq_init() are self unwinding so
-fix by adjusting the error paths accordingly.
-
-Other changes:
-- hfi1_ipoib_free_rdma_netdev() is deleted including the free_netdev()
-  since the netdev core code deletes calls free_netdev()
-- The switch to the accelerated entrances is moved to the success path.
+Fix by changing to use kv versions of the same allocator to handle the
+large allocations.  The allocation embeds a hdr struct that is dma mapped.
+Change that struct to a pointer to a kzalloced struct.
 
 Cc: stable@vger.kernel.org
 Fixes: d99dc602e2a5 ("IB/hfi1: Add functions to transmit datagram ipoib packets")
-Link: https://lore.kernel.org/r/1642287756-182313-4-git-send-email-mike.marciniszyn@cornelisnetworks.com
+Link: https://lore.kernel.org/r/1642287756-182313-3-git-send-email-mike.marciniszyn@cornelisnetworks.com
 Reviewed-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
 Signed-off-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hfi1/ipoib_main.c |   13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ drivers/infiniband/hw/hfi1/ipoib.h    |    2 -
+ drivers/infiniband/hw/hfi1/ipoib_tx.c |   36 +++++++++++++++++++++++-----------
+ 2 files changed, 26 insertions(+), 12 deletions(-)
 
---- a/drivers/infiniband/hw/hfi1/ipoib_main.c
-+++ b/drivers/infiniband/hw/hfi1/ipoib_main.c
-@@ -168,12 +168,6 @@ static void hfi1_ipoib_netdev_dtor(struc
- 	free_percpu(dev->tstats);
- }
+--- a/drivers/infiniband/hw/hfi1/ipoib.h
++++ b/drivers/infiniband/hw/hfi1/ipoib.h
+@@ -55,7 +55,7 @@ union hfi1_ipoib_flow {
+  */
+ struct ipoib_txreq {
+ 	struct sdma_txreq           txreq;
+-	struct hfi1_sdma_header     sdma_hdr;
++	struct hfi1_sdma_header     *sdma_hdr;
+ 	int                         sdma_status;
+ 	int                         complete;
+ 	struct hfi1_ipoib_dev_priv *priv;
+--- a/drivers/infiniband/hw/hfi1/ipoib_tx.c
++++ b/drivers/infiniband/hw/hfi1/ipoib_tx.c
+@@ -122,7 +122,7 @@ static void hfi1_ipoib_free_tx(struct ip
+ 		dd_dev_warn(priv->dd,
+ 			    "%s: Status = 0x%x pbc 0x%llx txq = %d sde = %d\n",
+ 			    __func__, tx->sdma_status,
+-			    le64_to_cpu(tx->sdma_hdr.pbc), tx->txq->q_idx,
++			    le64_to_cpu(tx->sdma_hdr->pbc), tx->txq->q_idx,
+ 			    tx->txq->sde->this_idx);
+ 	}
  
--static void hfi1_ipoib_free_rdma_netdev(struct net_device *dev)
--{
--	hfi1_ipoib_netdev_dtor(dev);
--	free_netdev(dev);
--}
--
- static void hfi1_ipoib_set_id(struct net_device *dev, int id)
+@@ -231,7 +231,7 @@ static int hfi1_ipoib_build_tx_desc(stru
  {
- 	struct hfi1_ipoib_dev_priv *priv = hfi1_ipoib_priv(dev);
-@@ -211,24 +205,23 @@ static int hfi1_ipoib_setup_rn(struct ib
- 	priv->port_num = port_num;
- 	priv->netdev_ops = netdev->netdev_ops;
+ 	struct hfi1_devdata *dd = txp->dd;
+ 	struct sdma_txreq *txreq = &tx->txreq;
+-	struct hfi1_sdma_header *sdma_hdr = &tx->sdma_hdr;
++	struct hfi1_sdma_header *sdma_hdr = tx->sdma_hdr;
+ 	u16 pkt_bytes =
+ 		sizeof(sdma_hdr->pbc) + (txp->hdr_dwords << 2) + tx->skb->len;
+ 	int ret;
+@@ -256,7 +256,7 @@ static void hfi1_ipoib_build_ib_tx_heade
+ 					   struct ipoib_txparms *txp)
+ {
+ 	struct hfi1_ipoib_dev_priv *priv = tx->txq->priv;
+-	struct hfi1_sdma_header *sdma_hdr = &tx->sdma_hdr;
++	struct hfi1_sdma_header *sdma_hdr = tx->sdma_hdr;
+ 	struct sk_buff *skb = tx->skb;
+ 	struct hfi1_pportdata *ppd = ppd_from_ibp(txp->ibp);
+ 	struct rdma_ah_attr *ah_attr = txp->ah_attr;
+@@ -483,7 +483,7 @@ static int hfi1_ipoib_send_dma_single(st
+ 	if (likely(!ret)) {
+ tx_ok:
+ 		trace_sdma_output_ibhdr(txq->priv->dd,
+-					&tx->sdma_hdr.hdr,
++					&tx->sdma_hdr->hdr,
+ 					ib_is_sc5(txp->flow.sc5));
+ 		hfi1_ipoib_check_queue_depth(txq);
+ 		return NETDEV_TX_OK;
+@@ -547,7 +547,7 @@ static int hfi1_ipoib_send_dma_list(stru
+ 	hfi1_ipoib_check_queue_depth(txq);
  
--	netdev->netdev_ops = &hfi1_ipoib_netdev_ops;
--
- 	ib_query_pkey(device, port_num, priv->pkey_index, &priv->pkey);
+ 	trace_sdma_output_ibhdr(txq->priv->dd,
+-				&tx->sdma_hdr.hdr,
++				&tx->sdma_hdr->hdr,
+ 				ib_is_sc5(txp->flow.sc5));
  
- 	rc = hfi1_ipoib_txreq_init(priv);
- 	if (rc) {
- 		dd_dev_err(dd, "IPoIB netdev TX init - failed(%d)\n", rc);
--		hfi1_ipoib_free_rdma_netdev(netdev);
- 		return rc;
+ 	if (!netdev_xmit_more())
+@@ -683,7 +683,8 @@ int hfi1_ipoib_txreq_init(struct hfi1_ip
+ {
+ 	struct net_device *dev = priv->netdev;
+ 	u32 tx_ring_size, tx_item_size;
+-	int i;
++	struct hfi1_ipoib_circ_buf *tx_ring;
++	int i, j;
+ 
+ 	/*
+ 	 * Ring holds 1 less than tx_ring_size
+@@ -701,7 +702,9 @@ int hfi1_ipoib_txreq_init(struct hfi1_ip
+ 
+ 	for (i = 0; i < dev->num_tx_queues; i++) {
+ 		struct hfi1_ipoib_txq *txq = &priv->txqs[i];
++		struct ipoib_txreq *tx;
+ 
++		tx_ring = &txq->tx_ring;
+ 		iowait_init(&txq->wait,
+ 			    0,
+ 			    hfi1_ipoib_flush_txq,
+@@ -725,14 +728,19 @@ int hfi1_ipoib_txreq_init(struct hfi1_ip
+ 					     priv->dd->node);
+ 
+ 		txq->tx_ring.items =
+-			kcalloc_node(tx_ring_size, tx_item_size,
+-				     GFP_KERNEL, priv->dd->node);
++			kvzalloc_node(array_size(tx_ring_size, tx_item_size),
++				      GFP_KERNEL, priv->dd->node);
+ 		if (!txq->tx_ring.items)
+ 			goto free_txqs;
+ 
+ 		txq->tx_ring.max_items = tx_ring_size;
+ 		txq->tx_ring.shift = ilog2(tx_item_size);
+ 		txq->tx_ring.avail = hfi1_ipoib_ring_hwat(txq);
++		tx_ring = &txq->tx_ring;
++		for (j = 0; j < tx_ring_size; j++)
++			hfi1_txreq_from_idx(tx_ring, j)->sdma_hdr =
++				kzalloc_node(sizeof(*tx->sdma_hdr),
++					     GFP_KERNEL, priv->dd->node);
+ 
+ 		netif_tx_napi_add(dev, &txq->napi,
+ 				  hfi1_ipoib_poll_tx_ring,
+@@ -746,7 +754,10 @@ free_txqs:
+ 		struct hfi1_ipoib_txq *txq = &priv->txqs[i];
+ 
+ 		netif_napi_del(&txq->napi);
+-		kfree(txq->tx_ring.items);
++		tx_ring = &txq->tx_ring;
++		for (j = 0; j < tx_ring_size; j++)
++			kfree(hfi1_txreq_from_idx(tx_ring, j)->sdma_hdr);
++		kvfree(tx_ring->items);
  	}
  
- 	rc = hfi1_ipoib_rxq_init(netdev);
- 	if (rc) {
- 		dd_dev_err(dd, "IPoIB netdev RX init - failed(%d)\n", rc);
--		hfi1_ipoib_free_rdma_netdev(netdev);
-+		hfi1_ipoib_txreq_deinit(priv);
- 		return rc;
+ 	kfree(priv->txqs);
+@@ -780,17 +791,20 @@ static void hfi1_ipoib_drain_tx_list(str
+ 
+ void hfi1_ipoib_txreq_deinit(struct hfi1_ipoib_dev_priv *priv)
+ {
+-	int i;
++	int i, j;
+ 
+ 	for (i = 0; i < priv->netdev->num_tx_queues; i++) {
+ 		struct hfi1_ipoib_txq *txq = &priv->txqs[i];
++		struct hfi1_ipoib_circ_buf *tx_ring = &txq->tx_ring;
+ 
+ 		iowait_cancel_work(&txq->wait);
+ 		iowait_sdma_drain(&txq->wait);
+ 		hfi1_ipoib_drain_tx_list(txq);
+ 		netif_napi_del(&txq->napi);
+ 		hfi1_ipoib_drain_tx_ring(txq);
+-		kfree(txq->tx_ring.items);
++		for (j = 0; j < tx_ring->max_items; j++)
++			kfree(hfi1_txreq_from_idx(tx_ring, j)->sdma_hdr);
++		kvfree(tx_ring->items);
  	}
  
-+	netdev->netdev_ops = &hfi1_ipoib_netdev_ops;
-+
- 	netdev->priv_destructor = hfi1_ipoib_netdev_dtor;
- 	netdev->needs_free_netdev = true;
- 
+ 	kfree(priv->txqs);
 
 
