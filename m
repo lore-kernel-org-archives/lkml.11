@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F131C352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B53DDC38162
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356106AbiBGLM4 (ORCPT
+        id S1356361AbiBGLNA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48612 "EHLO
+        Mon, 7 Feb 2022 06:13:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343790AbiBGLJm (ORCPT
+        with ESMTP id S240665AbiBGLKP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:09:42 -0500
+        Mon, 7 Feb 2022 06:10:15 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F2AC043181;
-        Mon,  7 Feb 2022 03:09:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2724C043181;
+        Mon,  7 Feb 2022 03:10:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48CCC611AA;
-        Mon,  7 Feb 2022 11:09:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A6CEC004E1;
-        Mon,  7 Feb 2022 11:09:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AC4761261;
+        Mon,  7 Feb 2022 11:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49D6FC340EB;
+        Mon,  7 Feb 2022 11:10:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232180;
-        bh=eVnM4/vWa5RlrsKSZ9YEG2ii+6AgOF8vjc0ymH0k7qA=;
+        s=korg; t=1644232213;
+        bh=XrtW0ZArxYJTRdmv3Z0rOi+EM5gu1mr+SJFAJDlw2WM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n4+CUdKCOr5dpilGvFkd3SMtH53XFLBCJZY6jRKZWvzGojZNckEr6WjfhOa8VCxWm
-         EmyXBOfdNN4V/bFx+LU3GgVyJYB9q8r4+VZNbPbT7hvpYlpPO9bEmULP/qUicsxygA
-         bP4MRDuBCzy2Uik+aMWD4dn9izpE22lkdiAgx6VE=
+        b=Gt0kPKV12StN30LDaalFy0aOilchEAGpqBJzy687g/m8O73hgZbvGSSzuDuFSpyq/
+         UjyFTjwZSUk9egiUaAUyD0pjpKgKskoJnCPSsTh2Bn5A7cwFgKMvt+n/x/fyHQj3Wy
+         DTtg/3xqP1GUPhXKFK8Ff168EVw+o329pe8LUwWE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lior Nahmanson <liorna@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 41/48] net: macsec: Verify that send_sci is on when setting Tx sci explicitly
-Date:   Mon,  7 Feb 2022 12:06:14 +0100
-Message-Id: <20220207103753.667970822@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Borislav Petkov <bp@suse.de>, Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 4.9 46/48] EDAC/altera: Fix deferred probing
+Date:   Mon,  7 Feb 2022 12:06:19 +0100
+Message-Id: <20220207103753.828046068@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -49,47 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lior Nahmanson <liorna@nvidia.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit d0cfa548dbde354de986911d3913897b5448faad upstream.
+commit 279eb8575fdaa92c314a54c0d583c65e26229107 upstream.
 
-When setting Tx sci explicit, the Rx side is expected to use this
-sci and not recalculate it from the packet.However, in case of Tx sci
-is explicit and send_sci is off, the receiver is wrongly recalculate
-the sci from the source MAC address which most likely be different
-than the explicit sci.
+The driver overrides the error codes returned by platform_get_irq() to
+-ENODEV for some strange reason, so if it returns -EPROBE_DEFER, the
+driver will fail the probe permanently instead of the deferred probing.
+Switch to propagating the proper error codes to platform driver code
+upwards.
 
-Fix by preventing such configuration when macsec newlink is established
-and return EINVAL error code on such cases.
+  [ bp: Massage commit message. ]
 
-Fixes: c09440f7dcb3 ("macsec: introduce IEEE 802.1AE driver")
-Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Raed Salem <raeds@nvidia.com>
-Link: https://lore.kernel.org/r/1643542672-29403-1-git-send-email-raeds@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 71bcada88b0f ("edac: altera: Add Altera SDRAM EDAC support")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220124185503.6720-2-s.shtylyov@omp.ru
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/macsec.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/edac/altera_edac.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -3230,6 +3230,15 @@ static int macsec_newlink(struct net *ne
+--- a/drivers/edac/altera_edac.c
++++ b/drivers/edac/altera_edac.c
+@@ -363,7 +363,7 @@ static int altr_sdram_probe(struct platf
+ 	if (irq < 0) {
+ 		edac_printk(KERN_ERR, EDAC_MC,
+ 			    "No irq %d in DT\n", irq);
+-		return -ENODEV;
++		return irq;
+ 	}
  
- 	macsec->real_dev = real_dev;
- 
-+	/* send_sci must be set to true when transmit sci explicitly is set */
-+	if ((data && data[IFLA_MACSEC_SCI]) &&
-+	    (data && data[IFLA_MACSEC_INC_SCI])) {
-+		u8 send_sci = !!nla_get_u8(data[IFLA_MACSEC_INC_SCI]);
-+
-+		if (!send_sci)
-+			return -EINVAL;
-+	}
-+
- 	if (data && data[IFLA_MACSEC_ICV_LEN])
- 		icv_len = nla_get_u8(data[IFLA_MACSEC_ICV_LEN]);
- 	mtu = real_dev->mtu - icv_len - macsec_extra_len(true);
+ 	/* Arria10 has a 2nd IRQ */
 
 
