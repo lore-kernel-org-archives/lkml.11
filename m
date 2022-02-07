@@ -2,124 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A28C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43830C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243296AbiBGJNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:13:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49444 "EHLO
+        id S1347530AbiBGJMf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 04:12:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243239AbiBGJKS (ORCPT
+        with ESMTP id S1349361AbiBGJDx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:10:18 -0500
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90EBC043181;
-        Mon,  7 Feb 2022 01:10:17 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 3564F580197;
-        Mon,  7 Feb 2022 04:10:17 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 07 Feb 2022 04:10:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=R7UJ3iF3QHld5VlL8DXB8KHalc3jQUprq6G9Hy
-        azmd4=; b=pnZ8k0BqtwOlrpwjVR9F+Ywos6Celc3JwwbWPdnm6EpMOZwuNw7ayN
-        oxHfUAk1haNbOFsrs3Pcsj9Z3kgikXa5tl9sahiBMI34BPJxwtSrhI0NcoQ6f1tX
-        co1HIxABhBVHZm3PVKHcz/LUQgS8vzLMHtV0Zx052z9fztFg6eXB5Tmr/GvEcMI9
-        6TtoyUHbIJDCgR+PD6OurVD3nbcZ7LXMI20KFgnHMnLx/Qym0onRKMv4q7hB1pKI
-        J4E3YiUq/AguO4vMKuEbvat7JDC2XdFFplRfBblgEo2IVoz2AD68VJGLuDwF2Ci7
-        sIgww9T6PD8iuELP7AQEe2ORxnaemNyw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=R7UJ3iF3QHld5VlL8
-        DXB8KHalc3jQUprq6G9Hyazmd4=; b=I6KDPlL1blMggMMpM4sfBmsi+xz5ZkoIy
-        CGG1kfBDiZ+Cb6stxr9Q4wl2ekuaVwuWsbgiN+6qI0qSQiwy9kn9rmUVVtYCcDg+
-        QfOItq+ftrzN7AMoxS/BRrY7xrd7F1HAJ69UH0/ywES29RFZqF0dPsIxQF/DUzoX
-        SADmRDVMMqelhoPIpxJgOif5YnFmQjTst/ryXZId60emVmLuRbEsA2fZrbW3yRKT
-        iWnrMMTRtk0vMcc7LXVdidjTMdvIbxOlVX+mMDvutOKp7As0J9EqX9HD6Bf5iVqO
-        F+Bx2cIkuXM/lAlNaQvX4EE2zDmC4Yl1taf8UF1KaGsizsQKzducw==
-X-ME-Sender: <xms:-OEAYi6ZC8ybTYDe51-rgSjE4J6tYtrXvr4fH1xFVQsyUM__fG4fFQ>
-    <xme:-OEAYr6o7a5xsoJU-ado0ccOaUNIj96q7Bir_gXZXdKd5iJeK_HYJOqNOGUH5UIYu
-    o48IKfCAfb5umVCaZU>
-X-ME-Received: <xmr:-OEAYhflU0vIqTcdb4UeLBNpRHEOj-PB-ZOvMufB8UYJ2umvuZJILke-Fv0Nrh97PMjDGBs9zDJHcOccgsl1NE3LLNBwpWuNMK1Y9_E>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheeggdduvdegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
-    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:-OEAYvKgotox7wuaen_JPKuVushrlWshKfgnHyw5fFKH3yny111A5Q>
-    <xmx:-OEAYmK3M6uHOz0aREF_IB9-a-w0kaD-iIsdKJCjnIDRmb415DsIHQ>
-    <xmx:-OEAYgy9BeecMal-mAODbT4HdTHd_y5Rb4e5CKlpeFpXK0Luk3RoUg>
-    <xmx:-eEAYrBt6LqJFndomEn_wOo7QhXvozfYzDdBtJn3nKnIbVMkNdTIvA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 7 Feb 2022 04:10:15 -0500 (EST)
-Date:   Mon, 7 Feb 2022 10:10:14 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 17/66] media: sun6i-csi: Define and use driver name
- and (reworked) description
-Message-ID: <20220207091014.6rugcnspzjdubuxb@houat>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-18-paul.kocialkowski@bootlin.com>
+        Mon, 7 Feb 2022 04:03:53 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F2FC043181;
+        Mon,  7 Feb 2022 01:03:51 -0800 (PST)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2178PwWw003446;
+        Mon, 7 Feb 2022 09:03:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=NnzYlCgthbEUz7/lw6koHj5t8c8GN7rOAzDAF4Yiv+E=;
+ b=l1GOKiDDQS/9DJgWBqdiH/nzLkPDV0VG2tiZceZy0g5Yd734D9AtDqBuQXCUwAwaiyIr
+ itiHG/s96uYNiuMChQxgtlCpGvswqqNM7/FjRlQOSG5wRKDjhtT6+Y024q+Wro/Ez24J
+ yitx5KdMyUEI7FwzbMICXvzsFB7PJ/k59Zb3YDhYVaAgu4Fianh6vDA795a7oD8FYLul
+ QyXMFR8XRH1ySAWDpPTJV06b3EwUS4JAkNePZzxZBmdb5uowsEbuvU+8VUraGlaENYbD
+ 6cYFWUqfRB7RLu6jPrON+rU/PupBagY4Zqr0kGd2hA7E9B9h1UqMiK6KWTPb17hgmII0 JA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22qeeu4n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 09:03:51 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21790lMu004651;
+        Mon, 7 Feb 2022 09:03:51 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22qeeu3r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 09:03:50 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21792dmd029455;
+        Mon, 7 Feb 2022 09:03:48 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3e1gv91j0s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 09:03:48 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21792hlL45482358
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 09:02:43 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 523464C04A;
+        Mon,  7 Feb 2022 09:02:43 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C16D64C050;
+        Mon,  7 Feb 2022 09:02:42 +0000 (GMT)
+Received: from p-imbrenda (unknown [9.145.11.12])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Feb 2022 09:02:42 +0000 (GMT)
+Date:   Mon, 7 Feb 2022 10:02:39 +0100
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     Janosch Frank <frankja@linux.ibm.com>
+Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
+Subject: Re: [PATCH v7 01/17] KVM: s390: pv: leak the topmost page table
+ when destroy fails
+Message-ID: <20220207100239.1e043759@p-imbrenda>
+In-Reply-To: <0939aac3-9427-ed04-17e4-3c1e4195d509@linux.ibm.com>
+References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
+        <20220204155349.63238-2-imbrenda@linux.ibm.com>
+        <0939aac3-9427-ed04-17e4-3c1e4195d509@linux.ibm.com>
+Organization: IBM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="w2mtmwumvelpbuht"
-Content-Disposition: inline
-In-Reply-To: <20220205185429.2278860-18-paul.kocialkowski@bootlin.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: XWKoMgsixDdrJx6WSfWN23fVGdutGVLX
+X-Proofpoint-GUID: JfX93O4wsBtnnpKel1C0pV0RmAWdza5g
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_03,2022-02-03_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ adultscore=0 malwarescore=0 clxscore=1015 suspectscore=0 bulkscore=0
+ lowpriorityscore=0 impostorscore=0 priorityscore=1501 spamscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070059
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 7 Feb 2022 09:56:39 +0100
+Janosch Frank <frankja@linux.ibm.com> wrote:
 
---w2mtmwumvelpbuht
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On 2/4/22 16:53, Claudio Imbrenda wrote:
+> > Each secure guest must have a unique ASCE (address space control
+> > element); we must avoid that new guests use the same page for their
+> > ASCE, to avoid errors.
+> > 
+> > Since the ASCE mostly consists of the address of the topmost page table
+> > (plus some flags), we must not return that memory to the pool unless
+> > the ASCE is no longer in use.
+> > 
+> > Only a successful Destroy Secure Configuration UVC will make the ASCE
+> > reusable again.
+> > 
+> > If the Destroy Configuration UVC fails, the ASCE cannot be reused for a
+> > secure guest (either for the ASCE or for other memory areas). To avoid
+> > a collision, it must not be used again. This is a permanent error and
+> > the page becomes in practice unusable, so we set it aside and leak it.
+> > On failure we already leak other memory that belongs to the ultravisor
+> > (i.e. the variable and base storage for a guest) and not leaking the
+> > topmost page table was an oversight.
+> > 
+> > This error (and thus the leakage) should not happen unless the hardware
+> > is broken or KVM has some unknown serious bug.
+> > 
+> > Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+> > Fixes: 29b40f105ec8d55 ("KVM: s390: protvirt: Add initial vm and cpu lifecycle handling")
+> > ---
+> >   arch/s390/include/asm/gmap.h |  2 ++
+> >   arch/s390/kvm/pv.c           |  9 +++--
+> >   arch/s390/mm/gmap.c          | 69 ++++++++++++++++++++++++++++++++++++
+> >   3 files changed, 77 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/arch/s390/include/asm/gmap.h b/arch/s390/include/asm/gmap.h
+> > index 40264f60b0da..746e18bf8984 100644
+> > --- a/arch/s390/include/asm/gmap.h
+> > +++ b/arch/s390/include/asm/gmap.h
+> > @@ -148,4 +148,6 @@ void gmap_sync_dirty_log_pmd(struct gmap *gmap, unsigned long dirty_bitmap[4],
+> >   			     unsigned long gaddr, unsigned long vmaddr);
+> >   int gmap_mark_unmergeable(void);
+> >   void s390_reset_acc(struct mm_struct *mm);
+> > +void s390_remove_old_asce(struct gmap *gmap);
+> > +int s390_replace_asce(struct gmap *gmap);
+> >   #endif /* _ASM_S390_GMAP_H */
+> > diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
+> > index 7f7c0d6af2ce..3c59ef763dde 100644
+> > --- a/arch/s390/kvm/pv.c
+> > +++ b/arch/s390/kvm/pv.c
+> > @@ -166,10 +166,13 @@ int kvm_s390_pv_deinit_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
+> >   	atomic_set(&kvm->mm->context.is_protected, 0);
+> >   	KVM_UV_EVENT(kvm, 3, "PROTVIRT DESTROY VM: rc %x rrc %x", *rc, *rrc);
+> >   	WARN_ONCE(cc, "protvirt destroy vm failed rc %x rrc %x", *rc, *rrc);
+> > -	/* Inteded memory leak on "impossible" error */
+> > -	if (!cc)
+> > +	/* Intended memory leak on "impossible" error */
+> > +	if (!cc) {
+> >   		kvm_s390_pv_dealloc_vm(kvm);
+> > -	return cc ? -EIO : 0;
+> > +		return 0;
+> > +	}
+> > +	s390_replace_asce(kvm->arch.gmap);
+> > +	return -EIO;
+> >   }
+> >   
+> >   int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
+> > diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
+> > index dfee0ebb2fac..ce6cac4463f2 100644
+> > --- a/arch/s390/mm/gmap.c
+> > +++ b/arch/s390/mm/gmap.c
+> > @@ -2714,3 +2714,72 @@ void s390_reset_acc(struct mm_struct *mm)
+> >   	mmput(mm);
+> >   }
+> >   EXPORT_SYMBOL_GPL(s390_reset_acc);
+> > +
+> > +/**
+> > + * s390_remove_old_asce - Remove the topmost level of page tables from the
+> > + * list of page tables of the gmap.
+> > + * @gmap the gmap whose table is to be removed
+> > + *
+> > + * This means that it will not be freed when the VM is torn down, and needs
+> > + * to be handled separately by the caller, unless an intentional leak is
+> > + * intended.
+> > + */
+> > +void s390_remove_old_asce(struct gmap *gmap)
+> > +{
+> > +	struct page *old;
+> > +
+> > +	old = virt_to_page(gmap->table);
+> > +	spin_lock(&gmap->guest_table_lock);
+> > +	list_del(&old->lru);
+> > +	/*
+> > +	 * in case the ASCE needs to be "removed" multiple times, for example
+> > +	 * if the VM is rebooted into secure mode several times
+> > +	 * concurrently.
+> > +	 */
+> > +	INIT_LIST_HEAD(&old->lru);
+> > +	spin_unlock(&gmap->guest_table_lock);  
+> 
+> The patch itself looks fine to me, but there's one oddity which made me 
+> look twice:
+> 
+> You're not overwriting gmap->table here so you can use it in the 
+> function below. I guess that's intentional so it can still be used as a 
+> reference until we switch over to the new ASCE page?
 
-On Sat, Feb 05, 2022 at 07:53:40PM +0100, Paul Kocialkowski wrote:
-> Add proper defines for driver name and description instead of
-> MODULE_NAME and hardcoding (cosmetics).
->=20
-> Also rework the description while at it to mention the hardware
-> generation that the driver supports and remove the video capture
-> mentions since it applies to the whole media device.
->=20
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+yes. maybe I should rename the function or add more comments explaining
+that the page is only removed from the list, so that it will not be freed at
+teardown, but it's still in use by the VM (because we always need an
+ASCE)
 
-Reviewed-by: Maxime Ripard <maxime@cerno.tech>
+> 
+> 
+> > +}
+> > +EXPORT_SYMBOL_GPL(s390_remove_old_asce);
+> > +
+> > +/**
+> > + * s390_replace_asce - Try to replace the current ASCE of a gmap with
+> > + * another equivalent one.
+> > + * @gmap the gmap
+> > + *
+> > + * If the allocation of the new top level page table fails, the ASCE is not
+> > + * replaced.
+> > + * In any case, the old ASCE is always removed from the list. Therefore the
+> > + * caller has to make sure to save a pointer to it beforehands, unless an > + * intentional leak is intended.
+> > + */
+> > +int s390_replace_asce(struct gmap *gmap)
+> > +{
+> > +	unsigned long asce;
+> > +	struct page *page;
+> > +	void *table;
+> > +
+> > +	s390_remove_old_asce(gmap);
+> > +
+> > +	page = alloc_pages(GFP_KERNEL_ACCOUNT, CRST_ALLOC_ORDER);
+> > +	if (!page)
+> > +		return -ENOMEM;
+> > +	table = page_to_virt(page);
+> > +	memcpy(table, gmap->table, 1UL << (CRST_ALLOC_ORDER + PAGE_SHIFT));
+> > +
+> > +	/*
+> > +	 * The caller has to deal with the old ASCE, but here we make sure
+> > +	 * the new one is properly added to the list of page tables, so that
+> > +	 * it will be freed when the VM is torn down.
+> > +	 */
+> > +	spin_lock(&gmap->guest_table_lock);
+> > +	list_add(&page->lru, &gmap->crst_list);
+> > +	spin_unlock(&gmap->guest_table_lock);
+> > +
+> > +	asce = (gmap->asce & ~PAGE_MASK) | __pa(table);  
+> 
+> Please add a comment:
+> Set the new table origin while preserving ASCE control bits like table 
+> type and length.
 
-Maxime
+will do
 
---w2mtmwumvelpbuht
-Content-Type: application/pgp-signature; name="signature.asc"
+> 
+> > +	WRITE_ONCE(gmap->asce, asce);
+> > +	WRITE_ONCE(gmap->mm->context.gmap_asce, asce);
+> > +	WRITE_ONCE(gmap->table, table);
+> > +
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(s390_replace_asce);
+> >   
+> 
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgDh9gAKCRDj7w1vZxhR
-xUhdAQDxosvE5Z1tfazCfFwKTKvd8wdE1L1J0eAJW2n0zJD0GwD/Y/ZSfxTbktu6
-mAwempvC3dPabl4ELRLwkyfcajQdcwg=
-=hI7k
------END PGP SIGNATURE-----
-
---w2mtmwumvelpbuht--
