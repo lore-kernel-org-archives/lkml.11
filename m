@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 346FDC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A15C47081
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386469AbiBGLem (ORCPT
+        id S1386597AbiBGLfE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:34:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
+        Mon, 7 Feb 2022 06:35:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234232AbiBGLXO (ORCPT
+        with ESMTP id S1384001AbiBGLYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:23:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB94C0401C0;
-        Mon,  7 Feb 2022 03:23:13 -0800 (PST)
+        Mon, 7 Feb 2022 06:24:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79961C043188;
+        Mon,  7 Feb 2022 03:24:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEC3EB80EC3;
-        Mon,  7 Feb 2022 11:23:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F557C004E1;
-        Mon,  7 Feb 2022 11:23:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CB30B81158;
+        Mon,  7 Feb 2022 11:24:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F74DC004E1;
+        Mon,  7 Feb 2022 11:24:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232990;
-        bh=yyjs4xP38S6pltTHny3dYs+0bVDofK7LasEUo8BHNSA=;
+        s=korg; t=1644233060;
+        bh=2kK5sbq3cpZ3QtSC6O0CqOyEdKdVWKxpE+KMJ3HVuHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h3acLb4Y1Y4KaUHsqnjDaDsdzkPgeJKoPIF+GAT6WP+qxUtHUii4rtOnbwr3klhAr
-         tq81Eal7AJwX2p5puRDoHcKfzihDAV4Jixg5FKJtwxnKrcNsJmQR6RQVpksF32pGtr
-         mxvp4hLq4pJewQPF/uGzfDyj3/f58Xd5raVLN2u8=
+        b=QWZ8u266EFvHsaQwtxPwp1Zq6G2GUfjlgDKVsH1sc9Tex6H4soAZwPt+2Uzx3I9qr
+         GIcmD/goROb2vUTqf7+rsk+r+6OiG/xVqQTUZ/she87TnlTTsWU1yv/LeoEkq1HFXM
+         Ol/KoWf1SI/35GajjcM/OQkiN/xEGgkAkrdGbL3M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yutian Yang <nglaive@gmail.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        shenwenbo@zju.edu.cn, Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 24/74] memcg: charge fs_context and legacy_fs_context
-Date:   Mon,  7 Feb 2022 12:06:22 +0100
-Message-Id: <20220207103758.031431111@linuxfoundation.org>
+        stable@vger.kernel.org, Haiyue Wang <haiyue.wang@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 54/74] gve: fix the wrong AdminQ buffer queue index check
+Date:   Mon,  7 Feb 2022 12:06:52 +0100
+Message-Id: <20220207103758.983776899@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -54,107 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yutian Yang <nglaive@gmail.com>
+From: Haiyue Wang <haiyue.wang@intel.com>
 
-commit bb902cb47cf93b33cd92b3b7a4019330a03ef57f upstream.
+commit 1f84a9450d75e08af70d9e2f2d5e1c0ac0c881d2 upstream.
 
-This patch adds accounting flags to fs_context and legacy_fs_context
-allocation sites so that kernel could correctly charge these objects.
+The 'tail' and 'head' are 'unsigned int' type free-running count, when
+'head' is overflow, the 'int i (= tail) < u32 head' will be false:
 
-We have written a PoC to demonstrate the effect of the missing-charging
-bugs.  The PoC takes around 1,200MB unaccounted memory, while it is
-charged for only 362MB memory usage.  We evaluate the PoC on QEMU x86_64
-v5.2.90 + Linux kernel v5.10.19 + Debian buster.  All the limitations
-including ulimits and sysctl variables are set as default.  Specifically,
-the hard NOFILE limit and nr_open in sysctl are both 1,048,576.
+Only '- loop 0: idx = 63' result is shown, so it needs to use 'int' type
+to compare, it can handle the overflow correctly.
 
-/*------------------------- POC code ----------------------------*/
+typedef uint32_t u32;
 
-#define _GNU_SOURCE
-#include <sys/types.h>
-#include <sys/file.h>
-#include <time.h>
-#include <sys/wait.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <signal.h>
-#include <sched.h>
-#include <fcntl.h>
-#include <linux/mount.h>
-
-#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
-                        } while (0)
-
-#define STACK_SIZE (8 * 1024)
-#ifndef __NR_fsopen
-#define __NR_fsopen 430
-#endif
-static inline int fsopen(const char *fs_name, unsigned int flags)
+int main()
 {
-        return syscall(__NR_fsopen, fs_name, flags);
+        u32 tail, head;
+        int stail, shead;
+        int i, loop;
+
+        tail = 0xffffffff;
+        head = 0x00000000;
+
+        for (i = tail, loop = 0; i < head; i++) {
+                unsigned int idx = i & 63;
+
+                printf("+ loop %d: idx = %u\n", loop++, idx);
+        }
+
+        stail = tail;
+        shead = head;
+        for (i = stail, loop = 0; i < shead; i++) {
+                unsigned int idx = i & 63;
+
+                printf("- loop %d: idx = %u\n", loop++, idx);
+        }
+
+        return 0;
 }
 
-static char thread_stack[512][STACK_SIZE];
-
-int thread_fn(void* arg)
-{
-  for (int i = 0; i< 800000; ++i) {
-    int fsfd = fsopen("nfs", FSOPEN_CLOEXEC);
-    if (fsfd == -1) {
-      errExit("fsopen");
-    }
-  }
-  while(1);
-  return 0;
-}
-
-int main(int argc, char *argv[]) {
-  int thread_pid;
-  for (int i = 0; i < 1; ++i) {
-    thread_pid = clone(thread_fn, thread_stack[i] + STACK_SIZE, \
-      SIGCHLD, NULL);
-  }
-  while(1);
-  return 0;
-}
-
-/*-------------------------- end --------------------------------*/
-
-Link: https://lkml.kernel.org/r/1626517201-24086-1-git-send-email-nglaive@gmail.com
-Signed-off-by: Yutian Yang <nglaive@gmail.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
-Cc: <shenwenbo@zju.edu.cn>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 5cdad90de62c ("gve: Batch AQ commands for creating and destroying queues.")
+Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fs_context.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/google/gve/gve_adminq.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/fs_context.c
-+++ b/fs/fs_context.c
-@@ -231,7 +231,7 @@ static struct fs_context *alloc_fs_conte
- 	struct fs_context *fc;
- 	int ret = -ENOMEM;
- 
--	fc = kzalloc(sizeof(struct fs_context), GFP_KERNEL);
-+	fc = kzalloc(sizeof(struct fs_context), GFP_KERNEL_ACCOUNT);
- 	if (!fc)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -631,7 +631,7 @@ const struct fs_context_operations legac
+--- a/drivers/net/ethernet/google/gve/gve_adminq.c
++++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+@@ -141,7 +141,7 @@ static int gve_adminq_parse_err(struct g
   */
- static int legacy_init_fs_context(struct fs_context *fc)
+ static int gve_adminq_kick_and_wait(struct gve_priv *priv)
  {
--	fc->fs_private = kzalloc(sizeof(struct legacy_fs_context), GFP_KERNEL);
-+	fc->fs_private = kzalloc(sizeof(struct legacy_fs_context), GFP_KERNEL_ACCOUNT);
- 	if (!fc->fs_private)
- 		return -ENOMEM;
- 	fc->ops = &legacy_fs_context_ops;
+-	u32 tail, head;
++	int tail, head;
+ 	int i;
+ 
+ 	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
 
 
