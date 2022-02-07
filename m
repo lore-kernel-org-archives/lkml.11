@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC48C3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F595C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381975AbiBGL4g (ORCPT
+        id S1380349AbiBGL4T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:56:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37938 "EHLO
+        Mon, 7 Feb 2022 06:56:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384900AbiBGLab (ORCPT
+        with ESMTP id S1385092AbiBGLbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:30:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42886C03C193;
-        Mon,  7 Feb 2022 03:28:45 -0800 (PST)
+        Mon, 7 Feb 2022 06:31:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7241C033241;
+        Mon,  7 Feb 2022 03:29:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 382B06006F;
-        Mon,  7 Feb 2022 11:28:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F227FC004E1;
-        Mon,  7 Feb 2022 11:28:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6437F6077B;
+        Mon,  7 Feb 2022 11:29:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B3EEC004E1;
+        Mon,  7 Feb 2022 11:29:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233324;
-        bh=7QUCjhG7b2OWuM/D+SKi0gaN56aTrCQMmg2TU98RO+E=;
+        s=korg; t=1644233356;
+        bh=3+OdnXHnwYipTw8qEI909/tZBBwnRXIhertLR4aPfWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tPcuJzdFirvmXUL/TljN7v+TYRpLxFnSpWLE1PK9+TvO2hK9pJXI2RWUUhDr1QUq2
-         kMsHUuQ+ieOUn7C6oFd4b9QJlDmNHAtsii5sorf7rxINvSvAGmu3Z/W9Ek9s2ypU4x
-         sJKw9MdtNddTG55J5dH0bQnzVmyQLFzjjRNnrqjs=
+        b=aq23/UZvX6IbQeIztvpZyWcN6Xs/+naP+96Yi6YBtWfKS7rVajvzjRhH+vVE/HSmx
+         9HR7z6q8Udx/0pp9qIkFkAgIxms/DnqXzJavOEESEX6V1LWlFpmEJLTf94Tf15Jt5c
+         0PcUtuY61e5iKF/0s/I1QWwJjtk+CVSRf0L/+9jU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Mark Zhang <markzhang@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.15 055/110] IB/cm: Release previously acquired reference counter in the cm_id_priv
-Date:   Mon,  7 Feb 2022 12:06:28 +0100
-Message-Id: <20220207103804.145489928@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.15 098/110] EDAC/xgene: Fix deferred probing
+Date:   Mon,  7 Feb 2022 12:07:11 +0100
+Message-Id: <20220207103805.711854566@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -51,37 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Zhang <markzhang@nvidia.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit b856101a1774b5f1c8c99e8dfdef802856520732 upstream.
+commit dfd0dfb9a7cc04acf93435b440dd34c2ca7b4424 upstream.
 
-In failure flow, the reference counter acquired was not released,
-and the following error was reported:
+The driver overrides error codes returned by platform_get_irq_optional()
+to -EINVAL for some strange reason, so if it returns -EPROBE_DEFER, the
+driver will fail the probe permanently instead of the deferred probing.
+Switch to propagating the proper error codes to platform driver code
+upwards.
 
-  drivers/infiniband/core/cm.c:3373 cm_lap_handler() warn: inconsistent
-			refcounting 'cm_id_priv->refcount.refs.counter':
+  [ bp: Massage commit message. ]
 
-Fixes: 7345201c3963 ("IB/cm: Improve the calling of cm_init_av_for_lap and cm_init_av_by_path")
-Link: https://lore.kernel.org/r/7615f23bbb5c5b66d03f6fa13e1c99d51dae6916.1642581448.git.leonro@nvidia.com
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Mark Zhang <markzhang@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 0d4429301c4a ("EDAC: Add APM X-Gene SoC EDAC driver")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220124185503.6720-3-s.shtylyov@omp.ru
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/core/cm.c |    2 +-
+ drivers/edac/xgene_edac.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/infiniband/core/cm.c
-+++ b/drivers/infiniband/core/cm.c
-@@ -3322,7 +3322,7 @@ static int cm_lap_handler(struct cm_work
- 	ret = cm_init_av_by_path(param->alternate_path, NULL, &alt_av);
- 	if (ret) {
- 		rdma_destroy_ah_attr(&ah_attr);
--		return -EINVAL;
-+		goto deref;
- 	}
- 
- 	spin_lock_irq(&cm_id_priv->lock);
+--- a/drivers/edac/xgene_edac.c
++++ b/drivers/edac/xgene_edac.c
+@@ -1919,7 +1919,7 @@ static int xgene_edac_probe(struct platf
+ 			irq = platform_get_irq_optional(pdev, i);
+ 			if (irq < 0) {
+ 				dev_err(&pdev->dev, "No IRQ resource\n");
+-				rc = -EINVAL;
++				rc = irq;
+ 				goto out_err;
+ 			}
+ 			rc = devm_request_irq(&pdev->dev, irq,
 
 
