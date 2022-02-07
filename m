@@ -2,83 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2617C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 523A0C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354089AbiBGGiC (ORCPT
+        id S1351932AbiBGGhM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:38:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33090 "EHLO
+        Mon, 7 Feb 2022 01:37:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238648AbiBGGdY (ORCPT
+        with ESMTP id S234073AbiBGGbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:33:24 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167D1C043184
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:33:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=/NCdUINdSDF5KM2Tb0Dq1i00on9a3wMEZ1QazdYyuYI=; b=ooIei4pfJnCYjgGG+26anfZyxt
-        7RPGv8eBlOliwSMzx5DHbMG1ml8zLJe9WG/7xmz++kRingnQ+IvxnuJTHlPCs1Hwm0do7LNzBLi48
-        68VBDLLuGuVYNK7Iw0TK6gyltfjGMgLQ72FXo3g7g+myJm1KPzOnKffgXxRtNjKsiKuk2IQ1ZLCAh
-        d0FhUJIcuwhbbJ05Q9J4VNkVt+7xskowLyUjFLZJ3GHD1iZ+b7MwEfcwP/jO5gGmbPetBVX4fWBLv
-        zknna1w060pYHr37Om6EfjDULgdFda5Q+HPWdA3z5JG8pwz8w19XAjipmSILOVQe8fO6fqp2mXlbq
-        P+0uB/VA==;
-Received: from [2001:4bb8:188:3efc:2cbe:55d7:bb63:46d2] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nGxaL-0099Ok-Pz; Mon, 07 Feb 2022 06:33:14 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Alistair Popple <apopple@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        nvdimm@lists.linux.dev, linux-mm@kvack.org
-Subject: [PATCH 8/8] fsdax: depend on ZONE_DEVICE || FS_DAX_LIMITED
-Date:   Mon,  7 Feb 2022 07:32:49 +0100
-Message-Id: <20220207063249.1833066-9-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220207063249.1833066-1-hch@lst.de>
-References: <20220207063249.1833066-1-hch@lst.de>
+        Mon, 7 Feb 2022 01:31:17 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E2DC0401C1
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:30:54 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id x3so10414406pll.3
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 22:30:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=O3fmm4nvalmQleWa1byPzKYwRMYCW7Pxtk8Gk5epwAE=;
+        b=Mev+fmMrEndOiPaIwMiostWKbCgoFUolVWzZCS5uUOeb6YzZKZEj6A9J+rHrqQqR1b
+         FfCWf6jS25cRBOHFXTGitsymEc26oKLYlLLr4D4R0sNOup6+y6vzmEnPUbVKelaVdhFg
+         F03jL7I3xrKN6prjd7rT616gqxvZcctqtMaWnyXsuQNlrEkD/GbYCOXrEZfqeuDGJh9+
+         oFz365NpbqYAz4kSJOv6L1wQBP8D7yXOe8Unverh0JpEvOQvoMIA0+i3rH4v57fyrLOf
+         Ps15s79JTNhaF4VRgNZYkbR6r0o9WR6DTFOTFXw3AqgmOZarWyVpad9aRR1sKCPoxEUM
+         CLaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=O3fmm4nvalmQleWa1byPzKYwRMYCW7Pxtk8Gk5epwAE=;
+        b=ggh+dCZCWyZBKYV1F2xNPqBBLdj+i0CKLwZiEZCWae0CjcsWcK2Be5j7WoiXQ2WK1P
+         KbvpaAhsu+hq5r5b52frUIRAWMGXttxfcZhTEl2HYCyrTgnwQMpNG8p8Ejj3mahuguAv
+         /yiV4mGG3xzRmw8E6RxUSkIi3ggVGpBr3sOegy9LYA7oWbPHhsdtd0pUOHXX5TezG1lf
+         1udNrtYN6WpBUcxaiFAbDI/hALj/NabQS6ggBSbCwD/Rg8JTCz/HPgU2W4iv4UuxCD2X
+         SVNSjgtOJdhYvY+cmbzwmvLmFVOCAh9ovUCqj9wnE7NBcM+xttGksBWBbhwk9MkTvaYg
+         b2+w==
+X-Gm-Message-State: AOAM533kATqPW+aSXKWSiATHMUam1QUpdHo3bQlXHEPnd+kQVECoBu53
+        E3sWQknyj/dfFvG+KcooWkOw9g==
+X-Google-Smtp-Source: ABdhPJz8oBJ3w7oZV38zeOV4odPSlf2oJfYGXKEsseSqcLYbDUnaotjNjwPZV1gk/z/pgQvbgRWgyg==
+X-Received: by 2002:a17:90a:5a01:: with SMTP id b1mr7252147pjd.134.1644215453808;
+        Sun, 06 Feb 2022 22:30:53 -0800 (PST)
+Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id i10sm5266634pjd.2.2022.02.06.22.30.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 22:30:53 -0800 (PST)
+From:   Zong Li <zong.li@sifive.com>
+To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
+        conor.dooley@microchip.com, geert@linux-m68k.org,
+        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc:     Zong Li <zong.li@sifive.com>, Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH v5 2/3] riscv: dts: Add dma-channels property and modify compatible
+Date:   Mon,  7 Feb 2022 14:30:39 +0800
+Message-Id: <ed0a70966acded2d9b8f7208d6e01b6d8324c1bf.1644215230.git.zong.li@sifive.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1644215230.git.zong.li@sifive.com>
+References: <cover.1644215230.git.zong.li@sifive.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a depends on ZONE_DEVICE support or the s390-specific limited DAX
-support, as one of the two is required at runtime for fsdax code to
-actually work.
+Add dma-channels property, then we can determine how many channels there
+by device tree, in addition, we add the pdma versioning scheme for
+compatible.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Zong Li <zong.li@sifive.com>
+Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- fs/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi | 3 ++-
+ arch/riscv/boot/dts/sifive/fu540-c000.dtsi        | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/Kconfig b/fs/Kconfig
-index 05efea674bffa0..6e8818a5e53c45 100644
---- a/fs/Kconfig
-+++ b/fs/Kconfig
-@@ -48,6 +48,7 @@ config FS_DAX
- 	bool "File system based Direct Access (DAX) support"
- 	depends on MMU
- 	depends on !(ARM || MIPS || SPARC)
-+	depends on ZONE_DEVICE || FS_DAX_LIMITED
- 	select FS_IOMAP
- 	select DAX
- 	help
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+index 869aaf0d5c06..d8869ec99945 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+@@ -187,11 +187,12 @@ plic: interrupt-controller@c000000 {
+ 		};
+ 
+ 		dma@3000000 {
+-			compatible = "sifive,fu540-c000-pdma";
++			compatible = "sifive,fu540-c000-pdma", "sifive,pdma0";
+ 			reg = <0x0 0x3000000 0x0 0x8000>;
+ 			interrupt-parent = <&plic>;
+ 			interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>,
+ 				     <30>;
++			dma-channels = <4>;
+ 			#dma-cells = <1>;
+ 		};
+ 
+diff --git a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
+index 3eef52b1a59b..6a3011180846 100644
+--- a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
++++ b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
+@@ -168,11 +168,12 @@ uart0: serial@10010000 {
+ 			status = "disabled";
+ 		};
+ 		dma: dma@3000000 {
+-			compatible = "sifive,fu540-c000-pdma";
++			compatible = "sifive,fu540-c000-pdma", "sifive,pdma0";
+ 			reg = <0x0 0x3000000 0x0 0x8000>;
+ 			interrupt-parent = <&plic0>;
+ 			interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>,
+ 				     <30>;
++			dma-channels = <4>;
+ 			#dma-cells = <1>;
+ 		};
+ 		uart1: serial@10011000 {
 -- 
-2.30.2
+2.31.1
 
