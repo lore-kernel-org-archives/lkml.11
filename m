@@ -2,85 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF5EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233374AbiBGUsF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:48:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53194 "EHLO
+        id S234327AbiBGUsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:48:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241934AbiBGUcK (ORCPT
+        with ESMTP id S242599AbiBGUhu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:32:10 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6DAC0401E1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:32:09 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id a8so15009499pfa.6
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 12:32:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1P8hA1j9aywFJgfHjGYLfcilDGyQWP/oEP/rL7ICpyg=;
-        b=C06fimZteiDPoqZEu2rPd0hp5X05Xu0F8lNukNvXrC+SHmbeaRXXVOOPeN18tKtywR
-         P1+CY4LIGJR3E4i+nMbWJgjXQLn0rgLLAbMXyEDV7jWHBD66bf1bRgmGfwSbPpsJCu//
-         FFlgWppTLm/5QqkvSGU/tM/Y1y30kZ6w/e+cqsczks/n8G2VRUX/Yr/7QKsOHOcJLe9F
-         WOO+bGwKVmf4WWCoOSQ7ilLPzkYbMmeyT0lNJONAGNKITT6/PApHfzpuqUHjixPw373F
-         9/1MDyR0oQawyfmi+5YY2P/IDWOb6kQsvefxAMaUCqC4FSpSOwFSgQ2flSnipZz5F+Rb
-         MRmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1P8hA1j9aywFJgfHjGYLfcilDGyQWP/oEP/rL7ICpyg=;
-        b=5AJIW+uPigHBADkMBFcLaXAxgKI1G1+Z+kf6909nM3hloU8e6XRZG3fcmQB/Hg5BQh
-         xDNtvlIfCPGKBMna2974hL8Sd/k4H3MW4rfDNYKKJLDwmdgMKe4Dr00uwt16hgJZWCBe
-         U9AhqQSUtbHcBABUNEQ2ePtH1ui9B4TE/dFKrHYPUpMPNzU/XEY3a8GTa/umplVN7b/s
-         0E9kgmYXxxb5aq74XhRGhtnmFEuobCg78LXkfxana4br6QfM1hEnCi5MzkvRko8wkTYg
-         /S7ZdbIaxXuqhzF4FzAFa+u2oZ7VhndqfEEDYyQDpGtDifc8nLyCFfAzepZpEEMPs+TL
-         Q0bw==
-X-Gm-Message-State: AOAM530IssoFMJDDhzG9ckYu499Ai0BxEHqbWtcvytYaUaZx4UBfSnFg
-        ePt4Adl/NmFnX0+856JPfLJwlnmXRvXrix2N6WO7lQ==
-X-Google-Smtp-Source: ABdhPJzdiVW/zhtdK0Fc+Zk69XCZxEluVIICSO7cBbOk5Z3lLzYGJkWJ/w2d7cthfjL73eD7SoteD4xaEYUlVPSO2Nw=
-X-Received: by 2002:a05:6a00:1508:: with SMTP id q8mr1109927pfu.3.1644265928635;
- Mon, 07 Feb 2022 12:32:08 -0800 (PST)
+        Mon, 7 Feb 2022 15:37:50 -0500
+X-Greylist: delayed 201 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 12:37:50 PST
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC46C0401DA;
+        Mon,  7 Feb 2022 12:37:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 69338CE10EF;
+        Mon,  7 Feb 2022 20:37:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6687EC004E1;
+        Mon,  7 Feb 2022 20:37:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644266266;
+        bh=IgAuBdjgFLxpzyuTFtxQnKiQ28etrzscehcAocUU+Tg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VqlmucnKui7TMn1XduYKgDyTgILjXVAJy1KHKfLJ3+Isf3ztsu8BxIsj8spr9joY5
+         0S6wIuiB3dVtnWWkcLRgDugXPq894VXMvElJNoUEGidLjkcMYPk+wjOmxqoLmsSTpP
+         cvKdmGieZhs5hgOUF+jEd0PMbx6PnV05KXmZXVHgvD+pP9eDcM/pRdQWlRtj9NyLGi
+         gS0L8IoD0n1sapSUvOQQ0PUpSmg/joajcuyYNuSruCbaV0PEaWANBu65hYOtBqBEgx
+         BYsISPk9Z9VK/+AqpI8Rzj58SKIycjO136cX526qV/TX6sKbYxXDNKaxNmvZB2fn5N
+         /x7kAF2g8GK+A==
+Date:   Mon, 7 Feb 2022 20:44:21 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Joe Perches <joe@perches.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code
+ defined constants in messages
+Message-ID: <20220207204421.7f905aa5@jic23-huawei>
+In-Reply-To: <YgFVFceYQtWq4Hww@smile.fi.intel.com>
+References: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
+        <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
+        <YgFVFceYQtWq4Hww@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220207112043.397074-1-akirakawata1@gmail.com>
-In-Reply-To: <20220207112043.397074-1-akirakawata1@gmail.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Mon, 7 Feb 2022 15:31:57 -0500
-Message-ID: <CAFd5g466EGdOvvAp8t1tZDe4ks1XgJpA1Hwouds+9ASjznxhFA@mail.gmail.com>
-Subject: Re: [PATCH v1] Documentation: KUnit: Fix usage bug
-To:     Akira Kawata <akirakawata1@gmail.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>, linux-kselftest@vger.kernel.org,
-        kunit-dev@googlegroups.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 6:21 AM Akira Kawata <akirakawata1@gmail.com> wrote:
->
-> Fix a bug of kunit documentation.
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=205773
->
-> : Quoting Steve Pfetsch:
-> :
-> : kunit documentation is incorrect:
-> : https://kunit.dev/third_party/stable_kernel/docs/usage.html
-> : struct rectangle *self = container_of(this, struct shape, parent);
-> :
-> :
-> : Shouldn't it be:
-> : struct rectangle *self = container_of(this, struct rectangle, parent);
-> : ?
->
-> Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
+On Mon, 7 Feb 2022 19:21:25 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Wow. I can't believe we let this go for this long...and even after
-doing an *almost* complete rewrite of that page.
+> On Mon, Feb 07, 2022 at 08:37:55AM -0800, Joe Perches wrote:
+> > On Mon, 2022-02-07 at 12:48 +0200, Andy Shevchenko wrote:  
+> > > In a couple of messages the constants, which have their definitions,
+> > > are hard coded into the message text. Unhardcode them.  
+> > 
+> > Found by inspection or tool?  
+> 
+> Does it matter? No, a side effect of the following patch.
+> 
+> ...
+> 
+> > > +		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
+> > > +			LTC2983_CUSTOM_STEINHART_SIZE);  
+> > 
+> > probably better using "%u" and not "%d"
+> > 
+> > and better with a \n termination too.  
+> 
+> I think it would be a separate change if we wish so. Let Jonathan to tell what
+> to do here.
+> 
+Either way is fine by me.  I tend to be a little flexible of trivial fixes
+in patches that are as simple as this one.
 
-Anyway, thanks for fixing this!
+Thanks,
 
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Jonathan
+
+
