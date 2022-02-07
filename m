@@ -2,85 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F018C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD03C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233417AbiBGUrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:47:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55536 "EHLO
+        id S233927AbiBGUr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:47:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242675AbiBGUmI (ORCPT
+        with ESMTP id S229525AbiBGUok (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:42:08 -0500
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12278C0401DA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:42:08 -0800 (PST)
-Received: by mail-oi1-x22b.google.com with SMTP id ay7so4424445oib.8
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 12:42:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:subject:in-reply-to:message-id:references:mime-version;
-        bh=aIR7KrDtJqCLnJ6yRWzpe9i6aIeGs2Rrzys79FVSx0Q=;
-        b=dz3LSjSOVl7gUNM6a98y2Dqp0GO30yh2tr2rpvolTUSqFFcD0xXuKfUUmESN5+Op9K
-         eLl8NuP+kRAsyyQDKc/5gfeW+Xk0/a1uh8SDOjMoQmwIWQZmOcXLc0pIj9LlXh4kdiyX
-         0QhYyuC0BGWtK7IWmagFeUC8Au7Gy6962sJX49e4n5lUJ/Sc2NMwKyuR1UUYWS6T7pPB
-         PJhMFVtfrIStFcsna6RV4XCyWl/rBiDVSBUJqeipa3DkMhYKuoZt7CapHo/BdtMz6rJ4
-         ypl2rtEm4reuNAzBO1y09e0jkjvK/1KnviKd4djj8p+vMmrox4aGImsehdL2GxThLw7D
-         RqUg==
+        Mon, 7 Feb 2022 15:44:40 -0500
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66862C0401E4;
+        Mon,  7 Feb 2022 12:44:37 -0800 (PST)
+Received: by mail-oi1-f170.google.com with SMTP id v67so18355671oie.9;
+        Mon, 07 Feb 2022 12:44:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=aIR7KrDtJqCLnJ6yRWzpe9i6aIeGs2Rrzys79FVSx0Q=;
-        b=McmCCy987ewtwvWvH95gcJTlc+wpU4p8w9eXugzBf6nP77ADWvSvmckxZZNk7/AQHc
-         WKiCOCtNudQkbVOTpaoLq/4DDX13arHb1O9Qf2II4Ec89iXY1L3K+cp0C0tPKDZqjEif
-         wbU/wpqQcGvBhLPyt20nrztUQ47N1PoWHjudMjZfg1aFx1jGAFAtqde2UVplqBGTxifb
-         piAmXYVRxckhkeHXQOMukx0b0rP8b4nGKLN7/c4ZOppntsL+Bf2Esvv2OpBaxBglCbc9
-         rOiGuxEUzUPHjKBpd54Yl51A0ovdoDubmrJYugu3mECMPEpau2h1RHlsZyhULN3oRqlc
-         IZtQ==
-X-Gm-Message-State: AOAM530Yu5WkTo8sUlgdQrsP+UC1ZhspthQ4vUUBXHyN2qxTDaRUYcp1
-        j5A9yyZr7EVPlnZU/JrFmpepMg==
-X-Google-Smtp-Source: ABdhPJwM5d10fPToNTaj8Ln27I71FtDDp3Apv4XrT49+MBRolD3+SV6kwkjKXVH+4ljVMwtNMcpFoA==
-X-Received: by 2002:a05:6808:156:: with SMTP id h22mr336348oie.79.1644266527001;
-        Mon, 07 Feb 2022 12:42:07 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id f17sm4388344ots.40.2022.02.07.12.42.05
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=25o5fEbKKcJzCYVxzyDmg4WVA8H2QgFhoj5UAD125bY=;
+        b=CfzGb0cuc3b91swojYfC89PQQZcMo4GSH4TsNSdr27ZCw7eeBF5yd6Ra7qUXxDexBh
+         ve4ImpL/aVznmWclabQPgVNbZo83fY/D4m93FCE7AgG0wmC/f8UR/cima9lRmVGbb/5p
+         f3WEEsajH7s06ufu7NTLT+ceFOoxsdnVcZB7PnryoPpF8D3p13INneDU3OSRlInjy3DT
+         gD7Vm7EJpsCn/Jbpb1kKkHTVm22Way9SwabsvVfnfG9oMIhue6isq5Q5ni3LoygxU3Iw
+         fqKtiBnJsL/ecLOc3S5GTGFWhsrcjttyCL6eed3xUZGXeSKKvcuBuQr6qtXeHNf5lF9S
+         wFlA==
+X-Gm-Message-State: AOAM532qFJl5UBT/v2TmAqBv6X4SlvlZah124QO+SfpcGwXBvOo0zsGf
+        TNMV+6/mAaeWc9cxK20fAw==
+X-Google-Smtp-Source: ABdhPJwg99eaeCun36HwI4ITFM8x+iu5bk4427O5oWJn4TSawH3xmz43w0LTJB6I+fs+IJ0UGN2YXA==
+X-Received: by 2002:a05:6808:11c6:: with SMTP id p6mr362172oiv.208.1644266676647;
+        Mon, 07 Feb 2022 12:44:36 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id b8sm4434395otk.36.2022.02.07.12.44.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 12:42:06 -0800 (PST)
-Date:   Mon, 7 Feb 2022 12:41:55 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Wolfram Sang <wsa@kernel.org>, Hugh Dickins <hughd@google.com>,
-        Derek Basehore <dbasehore@chromium.org>,
-        Rajat Jain <rajatja@google.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org
-Subject: Re: 5.17-rc regression: X1 Carbon touchpad not resumed
-In-Reply-To: <YgF/0QGFN4SppLKg@shikoro>
-Message-ID: <62e369a0-831e-1346-3d8-c394fc49ddf6@google.com>
-References: <89456fcd-a113-4c82-4b10-a9bcaefac68f@google.com> <YgF/0QGFN4SppLKg@shikoro>
+        Mon, 07 Feb 2022 12:44:35 -0800 (PST)
+Received: (nullmailer pid 886052 invoked by uid 1000);
+        Mon, 07 Feb 2022 20:44:35 -0000
+Date:   Mon, 7 Feb 2022 14:44:35 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     srini@kernel.org, linux-kernel@vger.kernel.org,
+        ekangupt@qti.qualcomm.com, Jeya R <jeyr@codeaurora.org>,
+        bjorn.andersson@linaro.org, bkumar@qti.qualcomm.com,
+        robh+dt@kernel.org, gregkh@linuxfoundation.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v3 04/12] dt-bindings: misc: add property to support
+ non-secure DSP
+Message-ID: <YgGEs1iigfMvxtT8@robh.at.kernel.org>
+References: <20220126135304.16340-1-srinivas.kandagatla@linaro.org>
+ <20220126135304.16340-5-srinivas.kandagatla@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220126135304.16340-5-srinivas.kandagatla@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022, Wolfram Sang wrote:
-> Hello Hugh,
+On Wed, 26 Jan 2022 13:52:56 +0000, Srinivas Kandagatla wrote:
+> From: Jeya R <jeyr@codeaurora.org>
 > 
-> > Bisection led to 172d931910e1db800f4e71e8ed92281b6f8c6ee2
-> > ("i2c: enable async suspend/resume on i2c client devices")
-> > and reverting that fixes it for me.
+> Add property to set DSP domain as non-secure.
 > 
-> Thank you for the report plus bisection and sorry for the regression!
+> ADSP/MDSP/SDSP are by default secured, where as CDSP can be either be
+> secured/unsecured.
+> non-secured Compute DSP would allow users to load unsigned process
+> and run hexagon instructions, but limiting access to secured hardware
+> within the DSP.
 > 
-> I will wait a few days if people come up with a fix. If not, I will
-> revert the offending commit. Are you willing to test patches in case
-> there will be some?
+> Based on this flag device nodes for secured and unsecured are created.
+> 
+> Signed-off-by: Jeya R <jeyr@codeaurora.org>
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/misc/qcom,fastrpc.txt | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
 
-Many thanks for such quick response (I found it at rc1, but couldn't
-spend time to bisect until yesterday).  Willing to test?  Absolutely.
-
-Hugh
+Acked-by: Rob Herring <robh@kernel.org>
