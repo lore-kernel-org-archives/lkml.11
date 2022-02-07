@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7143C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD0FC47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382449AbiBGLTN (ORCPT
+        id S1382473AbiBGLTS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:19:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50606 "EHLO
+        Mon, 7 Feb 2022 06:19:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356892AbiBGLOB (ORCPT
+        with ESMTP id S1357099AbiBGLOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:14:01 -0500
+        Mon, 7 Feb 2022 06:14:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 284A3C0401C3;
-        Mon,  7 Feb 2022 03:13:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1325BC0401E9;
+        Mon,  7 Feb 2022 03:14:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF695B811B2;
-        Mon,  7 Feb 2022 11:13:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 028A1C3410F;
-        Mon,  7 Feb 2022 11:13:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE945B811A6;
+        Mon,  7 Feb 2022 11:14:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB838C340F4;
+        Mon,  7 Feb 2022 11:13:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232437;
-        bh=yeDeXjpWppdu9/9dIEFujO4fJ+lWGcnNamhR4Qn4rls=;
+        s=korg; t=1644232440;
+        bh=7oFoEPGzK+bKffKRx947QX+QkBnNxzfsNzoyMVkLe1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nJKrZ4z0bmGBvOYSch3Kpd/04Omi1kBNihXXbVK2yZYlOR9hbgJPIGovbGLTcualY
-         NZNS1ZXw21kV12aLgMMVFB71bnUrYqmCxyRlAGwXT8P2yTErQh83doquVXsQPaqdfG
-         kz0HWO1pS6zuLygu+ULUIoPSWXFOboXm03ZaDE8o=
+        b=kQophlCF9eJEyCl8ehtmXaHh6tHdJRXduzQIseF46ypKMO9LgdM1m3u+S3sTT5IXe
+         2YlhLDqqOoijH6kdYHRt2V9gPaFU9zHcIG/e365gK11eo6RyxhBG8i4pp1fIcwhE3x
+         hhOP2cfOAD7poMn2XPmguqPnafgO0+eFe9+rjf2Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Gix <brian.gix@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        syphyr <syphyr@gmail.com>
-Subject: [PATCH 4.19 01/86] Bluetooth: refactor malicious adv data check
-Date:   Mon,  7 Feb 2022 12:05:24 +0100
-Message-Id: <20220207103757.599197143@linuxfoundation.org>
+        stable@vger.kernel.org, Erwan Le Ray <erwan.leray@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>
+Subject: [PATCH 4.19 10/86] serial: stm32: fix software flow control transfer
+Date:   Mon,  7 Feb 2022 12:05:33 +0100
+Message-Id: <20220207103757.892670659@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,48 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Gix <brian.gix@intel.com>
+From: Valentin Caron <valentin.caron@foss.st.com>
 
-commit 899663be5e75dc0174dc8bda0b5e6826edf0b29a upstream.
+commit 037b91ec7729524107982e36ec4b40f9b174f7a2 upstream.
 
-Check for out-of-bound read was being performed at the end of while
-num_reports loop, and would fill journal with false positives. Added
-check to beginning of loop processing so that it doesn't get checked
-after ptr has been advanced.
+x_char is ignored by stm32_usart_start_tx() when xmit buffer is empty.
 
-Signed-off-by: Brian Gix <brian.gix@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Cc: syphyr <syphyr@gmail.com>
+Fix start_tx condition to allow x_char to be sent.
+
+Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
+Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+Link: https://lore.kernel.org/r/20220111164441.6178-3-valentin.caron@foss.st.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/hci_event.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/serial/stm32-usart.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -5391,6 +5391,11 @@ static void hci_le_adv_report_evt(struct
- 		struct hci_ev_le_advertising_info *ev = ptr;
- 		s8 rssi;
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -509,7 +509,7 @@ static void stm32_start_tx(struct uart_p
+ {
+ 	struct circ_buf *xmit = &port->state->xmit;
  
-+		if (ptr > (void *)skb_tail_pointer(skb) - sizeof(*ev)) {
-+			bt_dev_err(hdev, "Malicious advertising data.");
-+			break;
-+		}
-+
- 		if (ev->length <= HCI_MAX_AD_LENGTH &&
- 		    ev->data + ev->length <= skb_tail_pointer(skb)) {
- 			rssi = ev->data[ev->length];
-@@ -5402,11 +5407,6 @@ static void hci_le_adv_report_evt(struct
- 		}
+-	if (uart_circ_empty(xmit))
++	if (uart_circ_empty(xmit) && !port->x_char)
+ 		return;
  
- 		ptr += sizeof(*ev) + ev->length + 1;
--
--		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
--			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
--			break;
--		}
- 	}
- 
- 	hci_dev_unlock(hdev);
+ 	stm32_transmit_chars(port);
 
 
