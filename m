@@ -2,90 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B91C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:15:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03103C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:15:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234612AbiBGTOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:14:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
+        id S239402AbiBGTPA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:15:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240081AbiBGTJv (ORCPT
+        with ESMTP id S236838AbiBGTNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:09:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1E1C0401DA;
-        Mon,  7 Feb 2022 11:09:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D514EB80EF6;
-        Mon,  7 Feb 2022 19:09:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F935C340EE;
-        Mon,  7 Feb 2022 19:09:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1644260988;
-        bh=1RclloxgFVd2RY/SeAe+aZcV9sRA2fEBnErBCQ5PRjk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FFY2E0gZcn+hlSYQnpefUNBA1l5rE11wEoXKl40YqV1L1HpuqhxmQ+kJNZu2t373W
-         AjoDjYCQxy2ZubNzmVoAB4s6o/jE/wIg65oRrZ4Gg/7IbWTaQBO1slEgGnuCXBGRd7
-         L+OKUzs+E87cP4vkY5QndLicBOgQ4Yc4qujZ4vsU=
-Date:   Mon, 7 Feb 2022 11:09:47 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Waiman Long <longman@redhat.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Roman Gushchin <guro@fb.com>, Rafael Aquini <aquini@redhat.com>
-Subject: Re: [PATCH v4 3/4] mm/page_owner: Print memcg information
-Message-Id: <20220207110947.f07b58898d91c02090f9aacf@linux-foundation.org>
-In-Reply-To: <YgFUxFI5bMbc42j4@dhcp22.suse.cz>
-References: <20220131192308.608837-5-longman@redhat.com>
-        <20220202203036.744010-4-longman@redhat.com>
-        <YfvOp5VXrxy9IW1w@dhcp22.suse.cz>
-        <3f042edb-3769-afea-17a7-899578cd5c69@redhat.com>
-        <YgFUxFI5bMbc42j4@dhcp22.suse.cz>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 7 Feb 2022 14:13:11 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12E9C0401DA;
+        Mon,  7 Feb 2022 11:13:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644261189; x=1675797189;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XSZpboCIkbXi1GE1bciC1P+mAUTpL2x/5a3sVLbpD0E=;
+  b=LtO8CcM02fpLBuKxjoRgN/CY46ho8CHSseMbaqiNGavjzK+ytNPJ1BC1
+   HPeRD/yqLB7IeapGF/dSyORfDI5WILz+Za6TEEVVMQeWDLb7EruSG/1fx
+   aJFTdN6V+ay5SGFT0c3++j8Pv+jEM17qgX6gs3uRGGpRTEJZ7rLtIVQIl
+   PrzAwdi+f7UErgiXGYfYcvXWMnIE73WZBzTSO0tATsXNcyc9TE/ZWLi7C
+   NYJVHlCCbGY4khelRDODftuypWt89iNieIRZOfujmNLOPAm726PwSK2bF
+   TvtDiwYg6+JPSwl212jF+bpiG+EdeviZ4IBxKB+ViK56GhHXd2jSbtZxH
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="232354585"
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="232354585"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 11:13:09 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="567586162"
+Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
+  by orsmga001.jf.intel.com with ESMTP; 07 Feb 2022 11:13:09 -0800
+From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     corbet@lwn.net, rafael@kernel.org, hdegoede@redhat.com,
+        markgross@kernel.org
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] Documentation: admin-guide: pm: Document uncore frequency scaling
+Date:   Mon,  7 Feb 2022 11:13:07 -0800
+Message-Id: <20220207191307.2903314-1-srinivas.pandruvada@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 18:20:04 +0100 Michal Hocko <mhocko@suse.com> wrote:
+Added documentation to configure uncore frequency limits in Intel
+Xeon processors.
 
-> On Thu 03-02-22 14:03:58, Waiman Long wrote:
-> > On 2/3/22 07:46, Michal Hocko wrote:
-> > > On Wed 02-02-22 15:30:35, Waiman Long wrote:
-> > > [...]
-> ...
-> > > > +	online = (memcg->css.flags & CSS_ONLINE);
-> > > > +	cgroup_name(memcg->css.cgroup, name, sizeof(name));
-> > > Is there any specific reason to use another buffer allocated on the
-> > > stack? Also 80B seems too short to cover NAME_MAX.
-> > > 
-> > > Nothing else jumped at me.
-> > 
-> > I suppose we can print directly into kbuf with cgroup_name(), but using a
-> > separate buffer is easier to read and understand. 79 characters should be
-> > enough for most cgroup names. Some auto-generated names with some kind of
-> > embedded uuids may be longer than that, but the random sequence of hex
-> > digits that may be missing do not convey much information for identification
-> > purpose. We can always increase the buffer length later if it turns out to
-> > be an issue.
-> 
-> Cutting a name short sounds like a source of confusion and there doesn't
-> seem to be any good reason for that.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+Resent by adding linux-pm@vger.kernel.org
 
-Yes.  If we give them 79 characters, someone will go and want 94.  If
-we can prevent this once and for ever, let's please do so.
+ .../pm/intel_uncore_frequency_scaling.rst     | 56 +++++++++++++++++++
+ .../admin-guide/pm/working-state.rst          |  1 +
+ 2 files changed, 57 insertions(+)
+ create mode 100644 Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst
+
+diff --git a/Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst b/Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst
+new file mode 100644
+index 000000000000..b3519560594b
+--- /dev/null
++++ b/Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst
+@@ -0,0 +1,56 @@
++.. SPDX-License-Identifier: GPL-2.0
++.. include:: <isonum.txt>
++
++==============================
++Intel Uncore Frequency Scaling
++==============================
++
++:Copyright: |copy| 2022 Intel Corporation
++
++:Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
++
++Introduction
++===========================================
++
++Uncore can consume significant amount of power in Intel's Xeon servers based
++on the workload characteristics. To optimize total power and improve overall
++performance, SoC has an internal algorithm for scaling uncore frequency. These
++algorithms monitor workload usage of uncore and set a desirable frequency.
++
++It is possible that users have different expectations of uncore performance and
++want to have control over it. The objective is similar to set scaling min/max
++frequencies using cpufreq sysfs to improve compute performance. Users may have
++some latency sensitive workload where they do not want any change to uncore
++frequency. Also, users may have workload which requires different core and
++uncore performance at distinct phases and they want to use both cpufreq and
++uncore scaling interface to distribute power and improve overall performance.
++
++To control uncore frequency, a sysfs interface is provided in the directory:
++`/sys/devices/system/cpu/intel_uncore_frequency/`.
++
++There is one directory for each package and die combination as the scope of
++uncore scaling control is per die in multiple dies/package SoC or per
++package for single die per package SoC. The name represents the
++scope of control. For example: 'package_00_die_00' is for package id 0 and
++die 0 in it.
++
++Each package_*_die_* contains following attributes:
++
++``initial_max_freq_khz``
++	Out of reset, this attribute represent the maximum possible frequency.
++	This is a read only attribute. If users adjust max_freq_khz,
++	they can always go back to maximum using the value from this attribute.
++
++``initial_min_freq_khz``
++	Out of reset, this attribute represent the minimum possible frequency.
++	This is a read only attribute. If users adjust min_freq_khz,
++	they can always go back to minimum using the value from this attribute.
++
++``max_freq_khz``
++	This attribute is used to set the maximum uncore frequency.
++
++``min_freq_khz``
++	This attribute is used to set the minimum uncore frequency.
++
++``current_freq_khz``
++	This attribute is used to get the current uncore frequency.
+diff --git a/Documentation/admin-guide/pm/working-state.rst b/Documentation/admin-guide/pm/working-state.rst
+index 5d2757e2de65..ee45887811ff 100644
+--- a/Documentation/admin-guide/pm/working-state.rst
++++ b/Documentation/admin-guide/pm/working-state.rst
+@@ -15,3 +15,4 @@ Working-State Power Management
+    cpufreq_drivers
+    intel_epb
+    intel-speed-select
++   intel_uncore_frequency_scaling
+-- 
+2.34.1
 
