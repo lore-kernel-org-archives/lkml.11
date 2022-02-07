@@ -2,199 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D4FC3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 576FFC46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:37:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244263AbiBGGgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:36:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60778 "EHLO
+        id S244509AbiBGGg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:36:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239618AbiBGGbh (ORCPT
+        with ESMTP id S231303AbiBGGdH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:31:37 -0500
-X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 22:31:35 PST
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DA8C043181;
-        Sun,  6 Feb 2022 22:31:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1644215495; x=1675751495;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Wq/xULOuP/jvk92XmnTa8NRyCBGFLagVj5mIPmhXCgg=;
-  b=KcmvVb4bNLLQtmC9DQEwxG3EYkMR5ZUqy1F+h6KHtqlfKng4Jqxoddz3
-   xISbzygx0HjRCqC+QRnw3NfS9fxfknMAoHIozm8giM0yE6DomIWlyHlz9
-   Dl/6eUXJ0CAJydJEeq1PCRyIQGcSQG9afA7tZI1gz8dx9KKFnF0yI5lt0
-   5ndt8clHeVHMygZwsmlD3fDkvf+DEfqabaOoh/FfwetomPia7VyNdY7v6
-   lD8xQxzQEjfH6YKydd2gPlWn030o3abTmd5GBT1pic1gncPogMm9ryqBP
-   X73t75lwNaSl6mXOV80dpWVdCCMhNHKgdDnUN/tgKpy+cPBt/yqUVrDiW
-   g==;
-X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
-   d="scan'208";a="21920108"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 07 Feb 2022 07:30:28 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 07 Feb 2022 07:30:28 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 07 Feb 2022 07:30:28 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1644215428; x=1675751428;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Wq/xULOuP/jvk92XmnTa8NRyCBGFLagVj5mIPmhXCgg=;
-  b=BE0+XcqqIwWe058GxcNFZCo42yRP3dWCit9o/vKc3X3X15RT+j+FU+Zr
-   8gK0oqDorM5nZjRBv5XA2kF1KL63x5LpgA/o+3ZWDhNtU7KmE8wPWefqw
-   AlWejtC8LwB8p1WUriQOIuiWxOdz/kIqFZgwVrIO3O12tu5hG4yLR+Ypy
-   k7xlJLG6qqEG2FxGa/4Qbw4eIyYhoPsq1eF8K4deBBnn7QlAnLXXrYdko
-   Ve1MfxW2h9gj4oqLCGxSrcIHhdyn+W5rGGF9y22rKtx5JxS2eOBmKKLeo
-   c1549qmR9KRNIQSrTDSgGSMPYH70F77GfP1IToZ4njAaic/kfUWPvKBnD
-   g==;
-X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
-   d="scan'208";a="21920107"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 07 Feb 2022 07:30:28 +0100
-Received: from steina-w.localnet (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 16B47280065;
-        Mon,  7 Feb 2022 07:30:28 +0100 (CET)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     jeanmichel.hautbois@ideasonboard.com,
-        linux-arm-kernel@lists.infradead.org,
-        dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
-        kernel-list@raspberrypi.com, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-        lukasz@jany.st, mchehab@kernel.org, naush@raspberrypi.com,
-        robh@kernel.org, tomi.valkeinen@ideasonboard.com,
-        nsaenz@kernel.org, bcm-kernel-feedback-list@broadcom.com
-Subject: Re: (EXT) Re: (EXT) [RFC PATCH v4 03/12] dt-bindings: media: Add bindings for bcm2835-unicam
-Date:   Mon, 07 Feb 2022 07:30:25 +0100
-Message-ID: <5541132.DvuYhMxLoT@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <Yf3fe2F88SNcl2Jd@pendragon.ideasonboard.com>
-References: <20220203175009.558868-1-jeanmichel.hautbois@ideasonboard.com> <7954256.DvuYhMxLoT@steina-w> <Yf3fe2F88SNcl2Jd@pendragon.ideasonboard.com>
+        Mon, 7 Feb 2022 01:33:07 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C018C043181
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:33:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=OAyNE091yCbn5wGWEV3bEarGLGijE2hU2ufW9HOL5jw=; b=WGwvHWbsXwe5wqUsSmyCBTNueH
+        xk61jWDsclmQ3MXQmxsiFbu7uwHqSJFlej9Qi/rp8m99Hw0XniTY4A3Grnbh0Jpf1VGSxuMJfmUYm
+        ReqqD/bAe6zwXBv/R5upJOQ70pLXbkMeYTzwwq4aNSgZRXW50435OU8wfWZmtiH9zyihvpaAef/c2
+        f6w1YXhaNOSTsMQILzMse2D6uGCZM5oEEQZ/xpWwfHUziH6xa1jBRLQm7OyXnhPuzWDdfaOOTiCP6
+        7AOcgAjdJsbIAuZ1YHMjx3F+HE0yRYwKzMGjA9gEucL9tbBUAcfeQjrYaEbc0IpLFJ2GpP5tb3eKs
+        ZwA+tflg==;
+Received: from [2001:4bb8:188:3efc:2cbe:55d7:bb63:46d2] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nGxZz-0099GK-6j; Mon, 07 Feb 2022 06:32:51 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Dan Williams <dan.j.williams@intel.com>
+Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Alistair Popple <apopple@nvidia.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org
+Subject: start sorting out the ZONE_DEVICE refcount mess
+Date:   Mon,  7 Feb 2022 07:32:41 +0100
+Message-Id: <20220207063249.1833066-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Laurent,
+Hi all,
 
-Am Samstag, 5. Februar 2022, 03:22:51 CET schrieb Laurent Pinchart:
-> Hi Alexander,
-> 
-> On Fri, Feb 04, 2022 at 09:50:06AM +0100, Alexander Stein wrote:
-> > Am Donnerstag, 3. Februar 2022, 18:50:00 CET schrieb Jean-Michel Hautbois:
-> > > Introduce the dt-bindings documentation for bcm2835 CCP2/CSI2 Unicam
-> > > camera interface. Also add a MAINTAINERS entry for it.
-> > > 
-> > > Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-> > > Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
-> > > Signed-off-by: Jean-Michel Hautbois
-> > > <jeanmichel.hautbois@ideasonboard.com>
-> > > 
-> > > ---
-> > > v4:
-> > > - make MAINTAINERS its own patch
-> > > - describe the reg and clocks correctly
-> > > - use a vendor entry for the number of data lanes
-> > > ---
-> > > 
-> > >  .../bindings/media/brcm,bcm2835-unicam.yaml   | 110 ++++++++++++++++++
-> > >  1 file changed, 110 insertions(+)
-> > >  create mode 100644
-> > > 
-> > > Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
-> > > 
-> > > diff --git
-> > > a/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
-> > > b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml new
-> > > file
-> > > mode 100644
-> > > index 000000000000..0725a0267c60
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
-> > > @@ -0,0 +1,110 @@
-> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: http://devicetree.org/schemas/media/brcm,bcm2835-unicam.yaml#
-> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > +
-> > > +title: Broadcom BCM283x Camera Interface (Unicam)
-> > > +
-> > > +maintainers:
-> > > +  - Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>
-> > > +
-> > > +description: |-
-> > > +  The Unicam block on BCM283x SoCs is the receiver for either
-> > > +  CSI-2 or CCP2 data from image sensors or similar devices.
-> > > +
-> > > +  The main platform using this SoC is the Raspberry Pi family of
-> > > boards.
-> > > +  On the Pi the VideoCore firmware can also control this hardware
-> > > block,
-> > > +  and driving it from two different processors will cause issues.
-> > > +  To avoid this, the firmware checks the device tree configuration
-> > > +  during boot. If it finds device tree nodes starting by csi then
-> > > +  it will stop the firmware accessing the block, and it can then
-> > > +  safely be used via the device tree binding.
-> > > +
-> > > +properties:
-> > > +  compatible:
-> > > +    const: brcm,bcm2835-unicam
-> > > +
-> > > +  reg:
-> > > +    items:
-> > > +      - description: Unicam block.
-> > > +      - description: Clock Manager Image (CMI) block.
-> > > +
-> > > +  interrupts:
-> > > +    maxItems: 1
-> > > +
-> > > +  clocks:
-> > > +    items:
-> > > +      - description: Clock to drive the LP state machine of Unicam.
-> > > +      - description: Clock for the vpu (core clock).
-> > > +
-> > > +  clock-names:
-> > > +    items:
-> > > +      - const: lp
-> > > +      - const: vpu
-> > > +
-> > > +  power-domains:
-> > > +    items:
-> > > +      - description: Unicam power domain
-> > > +
-> > > +  brcm,num-data-lanes:
-> > > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > > +    enum: [ 2, 4 ]
-> > > +    description: Number of data lanes on the csi bus
-> > 
-> > There is already data-lanes in
-> > Documentation/devicetree/bindings/media/video- interfaces.yaml. AFAICS
-> > these two are identical. Can't the video-
-> > interface.yaml be used for this? I'm no expert TBH.
-> 
-> This is the number of data lanes that the Unicam instance supports.
-> There are two Unicam instances, and they can have 2 or 4 data lanes
-> depending on the SoC. The data-lanes endpoint property indicates the
-> number of lanes used on a particular board.
+this series removes the offset by one refcount for ZONE_DEVICE pages
+that are freed back to the driver owning them, which is just device
+private ones for now, but also the planned device coherent pages
+and the ehanced p2p ones pending.
 
-Thanks for the explanation. Isn't this something which could be derived from 
-the compatible, e.g. having 2 different ones for 2 and 4 lanes respectively?
-See [1] for a similar situation in the SPI subsystem.
-I don't have a strong opinion, just want to share my feedback.
+It does not address the fsdax pages yet, which will be attacked in a
+follow on series.
 
-Regards,
-Alexander
-
-[1] https://patchwork.kernel.org/project/spi-devel-general/patch/
-20211207104114.2720764-1-alexander.stein@ew.tq-group.com/#24641405
-
-
+Diffstat:
+ arch/arm64/mm/mmu.c                      |    1 
+ arch/powerpc/kvm/book3s_hv_uvmem.c       |    1 
+ drivers/gpu/drm/amd/amdkfd/kfd_migrate.c |    2 
+ drivers/gpu/drm/amd/amdkfd/kfd_priv.h    |    1 
+ drivers/gpu/drm/drm_cache.c              |    2 
+ drivers/gpu/drm/nouveau/nouveau_dmem.c   |    3 -
+ drivers/gpu/drm/nouveau/nouveau_svm.c    |    1 
+ drivers/infiniband/core/rw.c             |    1 
+ drivers/nvdimm/pmem.h                    |    1 
+ drivers/nvme/host/pci.c                  |    1 
+ drivers/nvme/target/io-cmd-bdev.c        |    1 
+ fs/Kconfig                               |    2 
+ fs/fuse/virtio_fs.c                      |    1 
+ include/linux/hmm.h                      |    9 ----
+ include/linux/memremap.h                 |   22 +++++++++-
+ include/linux/mm.h                       |   59 ++++-------------------------
+ lib/test_hmm.c                           |    4 +
+ mm/Kconfig                               |    4 -
+ mm/internal.h                            |    2 
+ mm/memcontrol.c                          |   11 +----
+ mm/memremap.c                            |   63 ++++++++++++++++---------------
+ mm/migrate.c                             |    6 --
+ mm/swap.c                                |   49 ++----------------------
+ 23 files changed, 90 insertions(+), 157 deletions(-)
