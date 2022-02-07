@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05870C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D1BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388485AbiBGLnq (ORCPT
+        id S1388500AbiBGLnt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
+        Mon, 7 Feb 2022 06:43:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385729AbiBGLcT (ORCPT
+        with ESMTP id S1385760AbiBGLc3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:19 -0500
+        Mon, 7 Feb 2022 06:32:29 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EF5C043189;
-        Mon,  7 Feb 2022 03:32:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF456C043181;
+        Mon,  7 Feb 2022 03:32:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B4F660A67;
-        Mon,  7 Feb 2022 11:32:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 611B5C004E1;
-        Mon,  7 Feb 2022 11:32:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7290460C99;
+        Mon,  7 Feb 2022 11:32:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F1F7C004E1;
+        Mon,  7 Feb 2022 11:32:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233537;
-        bh=idzC9wTmQOAG07iR2RbTzqlDGaG9udT+X4x1GRMFd3A=;
+        s=korg; t=1644233547;
+        bh=pejCLm/dhWAINZ/EwhvHtPsSwaQldnRAQnd2fBpHpUA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pFDLn3ArROto2tlYpRvyyvibYk2eozmsvmRJ6dEO8G/QR51U0oDMrft2s3pTv2QIP
-         hvyFFWpoiJ3Fn5u9n7cYZWa+2bc5yxQoSAMAqNlxwSbwM2ZlUMKO0EqrvH3YOqJrbc
-         7dOB2YtvYlGla8t+wbSLjscrllnAgbcphp8f+bts=
+        b=A9hWeim76AJ8AxFR+JuDdCbICabx/yEa0DJVRJ6hk4e+uN1oAPLJ0aUYsEW3+IoPi
+         5neydjqRmgYNRYX/J+w74Ip9hzbP9EULMLqANiRKnNj6ZGglZK1bR1lsLw7+2CWLLM
+         xfY5dt4qluHWwaYloXEA7UhXDduQuPiUmu9AmoBA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
-        James Liao <jamesjj.liao@mediatek.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 5.16 043/126] [PATCH] Revert "ASoC: mediatek: Check for error clk pointer"
-Date:   Mon,  7 Feb 2022 12:06:14 +0100
-Message-Id: <20220207103805.609153851@linuxfoundation.org>
+        stable@vger.kernel.org, James Morse <james.morse@arm.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.16 046/126] KVM: arm64: Stop handle_exit() from handling HVC twice when an SError occurs
+Date:   Mon,  7 Feb 2022 12:06:17 +0100
+Message-Id: <20220207103805.706627373@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -54,95 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: James Morse <james.morse@arm.com>
 
-This reverts commit e0bf3c9e05ca6837ac756ec7d9de70b44603da12 which is
-commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e upstream
+commit 1229630af88620f6e3a621a1ebd1ca14d9340df7 upstream.
 
-With this patch in the tree, Chromebooks running the affected hardware
-no longer boot. Bisect points to this patch, and reverting it fixes
-the problem.
+Prior to commit defe21f49bc9 ("KVM: arm64: Move PC rollback on SError to
+HYP"), when an SError is synchronised due to another exception, KVM
+handles the SError first. If the guest survives, the instruction that
+triggered the original exception is re-exectued to handle the first
+exception. HVC is treated as a special case as the instruction wouldn't
+normally be re-exectued, as its not a trap.
 
-An analysis of the code with this patch applied shows:
+Commit defe21f49bc9 didn't preserve the behaviour of the 'return 1'
+that skips the rest of handle_exit().
 
-        ret = init_clks(pdev, clk);
-        if (ret)
-                return ERR_PTR(ret);
-...
-                for (j = 0; j < MAX_CLKS && data->clk_id[j]; j++) {
-                        struct clk *c = clk[data->clk_id[j]];
+Since commit defe21f49bc9, KVM will try to handle the SError and the
+original exception at the same time. When the exception was an HVC,
+fixup_guest_exit() has already rolled back ELR_EL2, meaning if the
+guest has virtual SError masked, it will execute and handle the HVC
+twice.
 
-                        if (IS_ERR(c)) {
-                                dev_err(&pdev->dev, "%s: clk unavailable\n",
-                                        data->name);
-                                return ERR_CAST(c);
-                        }
+Restore the original behaviour.
 
-                        scpd->clk[j] = c;
-                }
-
-Not all clocks in the clk_names array have to be present. Only the clocks
-in the data->clk_id array are actually needed. The code already checks if
-the required clocks are available and bails out if not. The assumption that
-all clocks have to be present is wrong, and commit 9de2b9286a6d needs to be
-reverted.
-
-Fixes: 9de2b9286a6d ("ASoC: mediatek: Check for error clk pointer")
-Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: James Liao <jamesjj.liao@mediatek.com>
-Cc: Kevin Hilman <khilman@baylibre.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com
-Cc: Frank Wunderlich <frank-w@public-files.de>
-Cc: Daniel Golle <daniel@makrotopia.org>
-Link: https://lore.kernel.org/lkml/20220205014755.699603-1-linux@roeck-us.net/
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: defe21f49bc9 ("KVM: arm64: Move PC rollback on SError to HYP")
+Cc: stable@vger.kernel.org
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220127122052.1584324-4-james.morse@arm.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soc/mediatek/mtk-scpsys.c |   15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
+ arch/arm64/kvm/handle_exit.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/soc/mediatek/mtk-scpsys.c
-+++ b/drivers/soc/mediatek/mtk-scpsys.c
-@@ -411,17 +411,12 @@ out:
- 	return ret;
- }
- 
--static int init_clks(struct platform_device *pdev, struct clk **clk)
-+static void init_clks(struct platform_device *pdev, struct clk **clk)
+--- a/arch/arm64/kvm/handle_exit.c
++++ b/arch/arm64/kvm/handle_exit.c
+@@ -226,6 +226,14 @@ int handle_exit(struct kvm_vcpu *vcpu, i
  {
- 	int i;
+ 	struct kvm_run *run = vcpu->run;
  
--	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
-+	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
- 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
--		if (IS_ERR(clk[i]))
--			return PTR_ERR(clk[i]);
--	}
--
--	return 0;
- }
++	if (ARM_SERROR_PENDING(exception_index)) {
++		/*
++		 * The SError is handled by handle_exit_early(). If the guest
++		 * survives it will re-execute the original instruction.
++		 */
++		return 1;
++	}
++
+ 	exception_index = ARM_EXCEPTION_CODE(exception_index);
  
- static struct scp *init_scp(struct platform_device *pdev,
-@@ -431,7 +426,7 @@ static struct scp *init_scp(struct platf
- {
- 	struct genpd_onecell_data *pd_data;
- 	struct resource *res;
--	int i, j, ret;
-+	int i, j;
- 	struct scp *scp;
- 	struct clk *clk[CLK_MAX];
- 
-@@ -486,9 +481,7 @@ static struct scp *init_scp(struct platf
- 
- 	pd_data->num_domains = num;
- 
--	ret = init_clks(pdev, clk);
--	if (ret)
--		return ERR_PTR(ret);
-+	init_clks(pdev, clk);
- 
- 	for (i = 0; i < num; i++) {
- 		struct scp_domain *scpd = &scp->domains[i];
+ 	switch (exception_index) {
 
 
