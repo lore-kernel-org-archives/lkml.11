@@ -2,118 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FB6C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F0FC47082
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238464AbiBGFuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:50:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48790 "EHLO
+        id S238533AbiBGFuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351851AbiBGEky (ORCPT
+        with ESMTP id S1352076AbiBGEsn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:40:54 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3FC5C043181;
-        Sun,  6 Feb 2022 20:40:52 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Sun, 6 Feb 2022 23:48:43 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A818C043181;
+        Sun,  6 Feb 2022 20:48:42 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JsYNz1HsNz4xcZ;
-        Mon,  7 Feb 2022 15:40:51 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1644208851;
-        bh=PDkMNGz9lzSvYPAAsjozPtMokUKhqT2nnJaS3aMjUNQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=iDHwA+zs11NYDTPW/eWNgXbNE9x9/nqL8MWJBSuvgfD79Co3eVp3fG1/HWmpDRLd5
-         zUBOgoth5M5cNG3eTaVp+h3LMApV7O2QG1DqbWrbK1McY1QqpjTF0IFUyQAZIqtMoR
-         Wgi3xt/sA3tzP5BmWokJG7uZigCOmrO+kMYaSrv2rzvfqPJJ5gYP1VOY+DD94xunPL
-         P/ZL28egOBm8UbnffoBGB9GTo26/2DA5+xzZcK7t2EeA7DHsNhNGy+Hp38dYkV30EG
-         jKGUYvwYZJh2rU2xePMacsGBSP8xrW3NOS7H0DRtYlD2EmmvoJwK/y2NJnLP5/y7jl
-         vPAAifGHyPGtA==
-Date:   Mon, 7 Feb 2022 15:40:50 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: linux-next: Tree for Feb 7
-Message-ID: <20220207154050.13d1af27@canb.auug.org.au>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2472B1F37E;
+        Mon,  7 Feb 2022 04:48:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644209321; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=abp/o94+2rJ4ao5gU5Y3VRhEK9AxXE9gpElUGz0LzVk=;
+        b=CCn6rwGgP1ohSmx2GAqIuYP8+Qj6wqy0px0oekO6styNpRvwCtVHm+LgMww7xKi0dZxr33
+        F9KVX5dJGAHKxI8KHRFoW/9WEqDbubyDmE97JuSIsq374hFBq9bgFNGw7hHp+kM2IV8b6V
+        v8ETLUb5TzNyIoMihm1YrQCqDarH5TE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644209321;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=abp/o94+2rJ4ao5gU5Y3VRhEK9AxXE9gpElUGz0LzVk=;
+        b=zX3qPGqzKSp/jTG3hChxzUyM+Yu2Mr9oyUJcRa20dUWYAXy1z0gdUFudbbOcKK+2H6ZalB
+        KkALKn9wZTiQL3CA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 47EF01330E;
+        Mon,  7 Feb 2022 04:48:37 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id HcYZAaWkAGKHNQAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:48:37 +0000
+Subject: [PATCH 16/21] NFS: discard NFS_RPC_SWAPFLAGS and RPC_TASK_ROOTCREDS
+From:   NeilBrown <neilb@suse.de>
+To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Hemment <markhemm@googlemail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        David Howells <dhowells@redhat.com>
+Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 07 Feb 2022 15:46:01 +1100
+Message-ID: <164420916121.29374.12391432623392264427.stgit@noble.brown>
+In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/jVFwx2E0D7Sudvk.Vw=RnML";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/jVFwx2E0D7Sudvk.Vw=RnML
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+NFS_RPC_SWAPFLAGS is only used for READ requests.
+It sets RPC_TASK_SWAPPER which gives some memory-allocation priority to
+requests.  This is not needed for swap READ - though it is for writes
+where it is set via a different mechanism.
 
-Hi all,
+RPC_TASK_ROOTCREDS causes the 'machine' credential to be used.
+This is not needed as the root credential is saved when the swap file is
+opened, and this is used for all IO.
 
-Changes since 20220204:
+So NFS_RPC_SWAPFLAGS isn't needed, and as it is the only user of
+RPC_TASK_ROOTCREDS, that isn't needed either.
 
-The folio tree gained a build failure so I used the version from
-next-20220204.
+Remove both.
 
-Non-merge commits (relative to Linus' tree): 3686
- 4056 files changed, 155617 insertions(+), 54888 deletions(-)
+Signed-off-by: NeilBrown <neilb@suse.de>
+---
+ fs/nfs/read.c                 |    4 ----
+ include/linux/nfs_fs.h        |    5 -----
+ include/linux/sunrpc/sched.h  |    1 -
+ include/trace/events/sunrpc.h |    1 -
+ net/sunrpc/auth.c             |    2 +-
+ 5 files changed, 1 insertion(+), 12 deletions(-)
 
-----------------------------------------------------------------------------
+diff --git a/fs/nfs/read.c b/fs/nfs/read.c
+index eb00229c1a50..cd797ce3a67c 100644
+--- a/fs/nfs/read.c
++++ b/fs/nfs/read.c
+@@ -194,10 +194,6 @@ static void nfs_initiate_read(struct nfs_pgio_header *hdr,
+ 			      const struct nfs_rpc_ops *rpc_ops,
+ 			      struct rpc_task_setup *task_setup_data, int how)
+ {
+-	struct inode *inode = hdr->inode;
+-	int swap_flags = IS_SWAPFILE(inode) ? NFS_RPC_SWAPFLAGS : 0;
+-
+-	task_setup_data->flags |= swap_flags;
+ 	rpc_ops->read_setup(hdr, msg);
+ 	trace_nfs_initiate_read(hdr);
+ }
+diff --git a/include/linux/nfs_fs.h b/include/linux/nfs_fs.h
+index 02aa49323d1d..ff8b3820409c 100644
+--- a/include/linux/nfs_fs.h
++++ b/include/linux/nfs_fs.h
+@@ -45,11 +45,6 @@
+  */
+ #define NFS_MAX_TRANSPORTS 16
+ 
+-/*
+- * These are the default flags for swap requests
+- */
+-#define NFS_RPC_SWAPFLAGS		(RPC_TASK_SWAPPER|RPC_TASK_ROOTCREDS)
+-
+ /*
+  * Size of the NFS directory verifier
+  */
+diff --git a/include/linux/sunrpc/sched.h b/include/linux/sunrpc/sched.h
+index db964bb63912..56710f8056d3 100644
+--- a/include/linux/sunrpc/sched.h
++++ b/include/linux/sunrpc/sched.h
+@@ -124,7 +124,6 @@ struct rpc_task_setup {
+ #define RPC_TASK_MOVEABLE	0x0004		/* nfs4.1+ rpc tasks */
+ #define RPC_TASK_NULLCREDS	0x0010		/* Use AUTH_NULL credential */
+ #define RPC_CALL_MAJORSEEN	0x0020		/* major timeout seen */
+-#define RPC_TASK_ROOTCREDS	0x0040		/* force root creds */
+ #define RPC_TASK_DYNAMIC	0x0080		/* task was kmalloc'ed */
+ #define	RPC_TASK_NO_ROUND_ROBIN	0x0100		/* send requests on "main" xprt */
+ #define RPC_TASK_SOFT		0x0200		/* Use soft timeouts */
+diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
+index 29982d60b68a..ac33892da411 100644
+--- a/include/trace/events/sunrpc.h
++++ b/include/trace/events/sunrpc.h
+@@ -311,7 +311,6 @@ TRACE_EVENT(rpc_request,
+ 		{ RPC_TASK_MOVEABLE, "MOVEABLE" },			\
+ 		{ RPC_TASK_NULLCREDS, "NULLCREDS" },			\
+ 		{ RPC_CALL_MAJORSEEN, "MAJORSEEN" },			\
+-		{ RPC_TASK_ROOTCREDS, "ROOTCREDS" },			\
+ 		{ RPC_TASK_DYNAMIC, "DYNAMIC" },			\
+ 		{ RPC_TASK_NO_ROUND_ROBIN, "NO_ROUND_ROBIN" },		\
+ 		{ RPC_TASK_SOFT, "SOFT" },				\
+diff --git a/net/sunrpc/auth.c b/net/sunrpc/auth.c
+index 6bfa19f9fa6a..682fcd24bf43 100644
+--- a/net/sunrpc/auth.c
++++ b/net/sunrpc/auth.c
+@@ -670,7 +670,7 @@ rpcauth_bindcred(struct rpc_task *task, const struct cred *cred, int flags)
+ 	/* If machine cred couldn't be bound, try a root cred */
+ 	if (new)
+ 		;
+-	else if (cred == &machine_cred || (flags & RPC_TASK_ROOTCREDS))
++	else if (cred == &machine_cred)
+ 		new = rpcauth_bind_root_cred(task, lookupflags);
+ 	else if (flags & RPC_TASK_NULLCREDS)
+ 		new = authnull_ops.lookup_cred(NULL, NULL, 0);
 
-I have created today's linux-next tree at
-git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-(patches at http://www.kernel.org/pub/linux/kernel/next/ ).  If you
-are tracking the linux-next tree using git, you should not use "git pull"
-to do so as that will try to merge the new linux-next release with the
-old one.  You should use "git fetch" and checkout or reset to the new
-master.
 
-You can see which trees have been included by looking in the Next/Trees
-file in the source.  There are also quilt-import.log and merge.log
-files in the Next directory.  Between each merge, the tree was built
-with a ppc64_defconfig for powerpc, an allmodconfig for x86_64, a
-multi_v7_defconfig for arm and a native build of tools/perf. After
-the final fixups (if any), I do an x86_64 modules_install followed by
-builds for x86_64 allnoconfig, powerpc allnoconfig (32 and 64 bit),
-ppc44x_defconfig, allyesconfig and pseries_le_defconfig and i386,
-arm64, sparc and sparc64 defconfig and htmldocs. And finally, a simple
-boot test of the powerpc pseries_le_defconfig kernel in qemu (with and
-without kvm enabled).
-
-Below is a summary of the state of the merge.
-
-I am currently merging 345 trees (counting Linus' and 93 trees of bug
-fix patches pending for the current merge release).
-
-Stats about the size of the tree over time can be seen at
-http://neuling.org/linux-next-size.html .
-
-Status of my local build tests will be at
-http://kisskb.ellerman.id.au/linux-next .  If maintainers want to give
-advice about cross compilers/configs that work, we are always open to add
-more builds.
-
-Thanks to Randy Dunlap for doing many randconfig builds.  And to Paul
-Gortmaker for triage and bug fixes.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/jVFwx2E0D7Sudvk.Vw=RnML
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIAotIACgkQAVBC80lX
-0GwNUAgApW2/1Vg+WiSp8fljJDDVmucZylGkbsl0QFRT+L6l5b+hKy5ibIgbcU4B
-Z2Axyv+OTJI8so9tGhOH1aIDsS98EQDCvCouskkytBSgV2FSgPuJRWdx1YPSmKBI
-pbyVxiZL/2vbESDX3R3oJ3hbBor5khgRSd2lY0q0XpJOEYbToZYVsyskomfPozja
-oyDOabD9PKkPPQtWfOfPlAJyS6c8QmzKACumWm6HkKf5tQX5f98/Wkh7tC+cgBAV
-bZxC/ulxiuDNMVGiYHsQw4ySQEdiFWWtJMXn6Za4+ESDonsbe7iAiC9MHD04aDhQ
-s5FjC4cLV/L5CAEhr8ij3SM/YPy7Pw==
-=yP5A
------END PGP SIGNATURE-----
-
---Sig_/jVFwx2E0D7Sudvk.Vw=RnML--
