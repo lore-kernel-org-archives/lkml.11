@@ -2,105 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5185C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4DFEC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245147AbiBGRXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:23:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
+        id S240971AbiBGRXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 12:23:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238850AbiBGRUM (ORCPT
+        with ESMTP id S1377080AbiBGRNT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:20:12 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0284EC0401D5;
-        Mon,  7 Feb 2022 09:20:11 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 6403E21106;
-        Mon,  7 Feb 2022 17:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644254409; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WgeOunKZPWr1u7CmKBkIn3aI6IvIjxAaiaRIxKsTWU4=;
-        b=oJXyY0lg033cJKb3vjdcvI1hPZc0gH3NGf+1IsuEJ2ysu4j/U4GQMpA/uH+PHT9ObqH4c3
-        /ifMCTOMsZOAoJluh2kAlCYa+QIjE9Jlssbw6yrsZiFNwdqn5cHqm8RNt6f4GoH3hPvEjk
-        GOdslupORGgeUQ8/DjTm1kwISSSRba0=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 234B7A3B84;
-        Mon,  7 Feb 2022 17:20:08 +0000 (UTC)
-Date:   Mon, 7 Feb 2022 18:20:04 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Roman Gushchin <guro@fb.com>, Rafael Aquini <aquini@redhat.com>
-Subject: Re: [PATCH v4 3/4] mm/page_owner: Print memcg information
-Message-ID: <YgFUxFI5bMbc42j4@dhcp22.suse.cz>
-References: <20220131192308.608837-5-longman@redhat.com>
- <20220202203036.744010-4-longman@redhat.com>
- <YfvOp5VXrxy9IW1w@dhcp22.suse.cz>
- <3f042edb-3769-afea-17a7-899578cd5c69@redhat.com>
+        Mon, 7 Feb 2022 12:13:19 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6592C0401D8
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:13:17 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id v74so14093164pfc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 09:13:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DzeP33bVe/PRU7l8u7/ekAKVRkuaC91XduTpV1y5u6w=;
+        b=fPGGV4+OqfBLxhXgKlBk8GEqB/OZwotFkK2VUylFNXnzzoy5k7PKvKS/VII80jgz2x
+         cRWUvL8sVKacsUb96Hf2u9AzOSzpy4joW1TerxQfRN7cXU5HS+a4DMdiqRCpeAGZgpTS
+         bwcuIoPZbpT6NZqgWYXJHRpUPuvZ4z2HqFn4I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DzeP33bVe/PRU7l8u7/ekAKVRkuaC91XduTpV1y5u6w=;
+        b=Vf44G4+8sk2OL1kEtYjWG4qcPLJQcan1pLPjaAUjcKreBCxj5Y6fStvnC9eeh31qS/
+         37PNTZMAtvi/blL73sKdv8h5vO4HMOIHlI3lqKsp4RYlaPK64RhsU6htqQPRHfTM9Cex
+         h1L66IEsWcCYDuaFtkwTuZE0pOWsaSr+VcQuV0Dvl/YWxB+vwC6ECkYrd5ni2iuEIRZq
+         BMQ8phrQHzdDxZSYifDoAl+7Q49JLJJuv5XilnXXR/qFNW4x9Z5p4k34MEH5Tjzs5kHr
+         j5p8coRLt9qZNFTD2Ri+5JGJ1jatKuFVGsYplY7xiJH30Ny3N9wjEhBs+TAawWOE5jXo
+         vHug==
+X-Gm-Message-State: AOAM532HGSImYEZyyk12+e/0DbLfspjt/+oEa5XOo5PIfETSD0UYVUTi
+        blY/XYFysQKvQc02r66RBUkdiQ==
+X-Google-Smtp-Source: ABdhPJzcsEZUqhK8vVVbURSYFjIx0GewfFVvnIgrF3hcReRYwiUJF+QzYtK2SQJb856KCk4saoJebg==
+X-Received: by 2002:a63:5a65:: with SMTP id k37mr285365pgm.431.1644253997205;
+        Mon, 07 Feb 2022 09:13:17 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:21ed:2162:c25b:6bf7])
+        by smtp.gmail.com with UTF8SMTPSA id 12sm9010815pgb.71.2022.02.07.09.13.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 09:13:16 -0800 (PST)
+Date:   Mon, 7 Feb 2022 09:13:14 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Sai Teja Aluvala <quic_saluvala@quicinc.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        quic_hemantg@quicinc.com, linux-arm-msm@vger.kernel.org,
+        quic_bgodavar@quicinc.com, quic_rjliao@quicinc.com,
+        quic_hbandi@quicinc.com, abhishekpandit@chromium.org,
+        mcchou@chromium.org
+Subject: Re: [PATCH v1] arm64: dts: qcom: sc7280: Add bluetooth node on
+ SC7280 crd board
+Message-ID: <YgFTKid5hOCmSJHh@google.com>
+References: <1644207878-19839-1-git-send-email-quic_saluvala@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <3f042edb-3769-afea-17a7-899578cd5c69@redhat.com>
+In-Reply-To: <1644207878-19839-1-git-send-email-quic_saluvala@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 03-02-22 14:03:58, Waiman Long wrote:
-> On 2/3/22 07:46, Michal Hocko wrote:
-> > On Wed 02-02-22 15:30:35, Waiman Long wrote:
-> > [...]
-> > > +#ifdef CONFIG_MEMCG
-> > > +	unsigned long memcg_data;
-> > > +	struct mem_cgroup *memcg;
-> > > +	bool online;
-> > > +	char name[80];
-> > > +
-> > > +	rcu_read_lock();
-> > > +	memcg_data = READ_ONCE(page->memcg_data);
-> > > +	if (!memcg_data)
-> > > +		goto out_unlock;
-> > > +
-> > > +	if (memcg_data & MEMCG_DATA_OBJCGS)
-> > > +		ret += scnprintf(kbuf + ret, count - ret,
-> > > +				"Slab cache page\n");
-> > > +
-> > > +	memcg = page_memcg_check(page);
-> > > +	if (!memcg)
-> > > +		goto out_unlock;
-> > > +
-> > > +	online = (memcg->css.flags & CSS_ONLINE);
-> > > +	cgroup_name(memcg->css.cgroup, name, sizeof(name));
-> > Is there any specific reason to use another buffer allocated on the
-> > stack? Also 80B seems too short to cover NAME_MAX.
-> > 
-> > Nothing else jumped at me.
-> 
-> I suppose we can print directly into kbuf with cgroup_name(), but using a
-> separate buffer is easier to read and understand. 79 characters should be
-> enough for most cgroup names. Some auto-generated names with some kind of
-> embedded uuids may be longer than that, but the random sequence of hex
-> digits that may be missing do not convey much information for identification
-> purpose. We can always increase the buffer length later if it turns out to
-> be an issue.
+On Mon, Feb 07, 2022 at 09:54:38AM +0530, Sai Teja Aluvala wrote:
 
-Cutting a name short sounds like a source of confusion and there doesn't
-seem to be any good reason for that.
--- 
-Michal Hocko
-SUSE Labs
+> Subject: arm64: dts: qcom: sc7280: Add bluetooth node on SC7280 crd board
+>
+> Add Bluetooth SoC WCN6750 node for SC7280 crd board
+
+That doesn't describe accurately what this patch does. The CRD already
+has a Bluetooth node - from including sc7280-idp.dtsi - what this patch
+does is setting the vddio supply for Bluetooth on the CRD.
