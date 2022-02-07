@@ -2,114 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7362EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6DEC35276
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389849AbiBGQaw (ORCPT
+        id S1389834AbiBGQat (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:30:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32948 "EHLO
+        Mon, 7 Feb 2022 11:30:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387635AbiBGQ0j (ORCPT
+        with ESMTP id S244795AbiBGQ2Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:26:39 -0500
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2B0BC0401CE
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:26:37 -0800 (PST)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOeL4014415;
-        Mon, 7 Feb 2022 17:24:40 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     "Paul E . McKenney" <paulmck@kernel.org>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        Willy Tarreau <w@1wt.eu>
-Subject: [PATCH 31/42] tools/nolibc/string: add tiny versions of strncat() and strlcat()
-Date:   Mon,  7 Feb 2022 17:23:43 +0100
-Message-Id: <20220207162354.14293-32-w@1wt.eu>
-X-Mailer: git-send-email 2.17.5
-In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
-References: <20220207162354.14293-1-w@1wt.eu>
+        Mon, 7 Feb 2022 11:28:24 -0500
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C164BC0401DC;
+        Mon,  7 Feb 2022 08:28:22 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id o3so12290991qtm.12;
+        Mon, 07 Feb 2022 08:28:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xjuYbPqGlUU+uIXv13zUv8IJB7OPzzTg6ohYTp3I1lU=;
+        b=IU3HAqftGzdEiHLQ5P3E0wX8ENgnTWKRN+2SAH5KdWQHa5um85ch2zDilFcHkt6olY
+         uVg+a+2brsJewG6N0oIibftvqH13FjygO6/WXAQIwfdE+5hqV/FDwt3XSQUUUHhHDKgz
+         wGlyn9KJxmxaBfNtlVTbHNgyMwmljNL1iJ7CB6eOAPTh5XZoYKUk18i9Qt7N1Tv6hLQw
+         jt7mWG+YNV5CT7VLzkAxiIeAM14IHhaxOJd1hMZon2LpYLfoyLLTqRQQ2FBKA/faoPca
+         U/dGpcspb1MZGoGmxSYxeLuEonVuw4QI1i3aZMOrdxsKwq6YcLDPJY/UEGcmv71Nv+TF
+         aJkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xjuYbPqGlUU+uIXv13zUv8IJB7OPzzTg6ohYTp3I1lU=;
+        b=c5T1TZ74NzY4koLR7ZYMSeDWh0MajACw4LjNNvBhwo9bEVvJJtzi3Xq0DzkkKfI4Lv
+         5va99ATQvtB3daefXxgARL4TD4qph9P55daebpl6yx7g8Wd2HslQR0Q0P5RvI6KahI79
+         hLGyLCnrwA9Vdi0zhh4Qc1T5s9M7ik8u7ONy8qbE8XsfswONIqi9ASoEuuXD/OWD+3/B
+         vPO0qaVwiWPPVOlPdqis1J2KA/l9jL+qnSeqTO8ESmkWIsQHYVX6PjU0qe2lBrFDGgw4
+         geYfEZBEXChypmVGK+S47F3jy6w/g7ik+KuVYibm6CP34M5VtGwBRxavfoVj2pbqPNYz
+         7F7w==
+X-Gm-Message-State: AOAM531n7EgF/wqWevPwNb4wDznNcVlUNNh89a5SzkLzxwhHF0raJbIV
+        MFF3Y9ORmGh6fopxVCPby2U=
+X-Google-Smtp-Source: ABdhPJwX1a1/fFvnULl6HaYsf119iOikOAO7Z7I1JhSJceT872zBsey2kuDqr/eSFqF5a3bgKRPLyA==
+X-Received: by 2002:ac8:7f48:: with SMTP id g8mr199849qtk.622.1644251301886;
+        Mon, 07 Feb 2022 08:28:21 -0800 (PST)
+Received: from localhost.localdomain (c-67-187-90-124.hsd1.ky.comcast.net. [67.187.90.124])
+        by smtp.gmail.com with ESMTPSA id w3sm6175253qta.13.2022.02.07.08.28.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 08:28:21 -0800 (PST)
+From:   frowand.list@gmail.com
+To:     Jonathan Corbet <corbet@lwn.net>, David Gow <davidgow@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>, Rae Moar <rmoar@google.com>,
+        Tim.Bird@sony.com, Brendan Higgins <brendanhiggins@google.com>
+Cc:     rmr167@gmail.com, guillaume.tucker@collabora.com,
+        dlatypov@google.com, kernelci@groups.io,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/1] Documentation: dev-tools: clarify KTAP specification wording
+Date:   Mon,  7 Feb 2022 10:28:13 -0600
+Message-Id: <20220207162813.3091899-1-frowand.list@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While these functions are often dangerous, forcing the user to work
-around their absence is often much worse. Let's provide small versions
-of each of them. The respective sizes in bytes on a few architectures
-are:
+From: Frank Rowand <frank.rowand@sony.com>
 
-  strncat(): x86:0x33 mips:0x68 arm:0x3c
-  strlcat(): x86:0x25 mips:0x4c arm:0x2c
+Add the spec version to the title line.
 
-The two are quite different, and strncat() is even different from
-strncpy() in that it limits the amount of data it copies and will always
-terminate the output by one zero, while strlcat() will always limit the
-total output to the specified size and will put a zero if possible.
+Explain likely source of "Unknown lines".
 
-Signed-off-by: Willy Tarreau <w@1wt.eu>
+"Unknown lines" in nested tests are optionally indented.
+
+Add "Unknown lines" items to differences between TAP & KTAP list
+
+Signed-off-by: Frank Rowand <frank.rowand@sony.com>
 ---
- tools/include/nolibc/string.h | 41 +++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
 
-diff --git a/tools/include/nolibc/string.h b/tools/include/nolibc/string.h
-index 7c274efcdfae..c550c9ba8f4c 100644
---- a/tools/include/nolibc/string.h
-+++ b/tools/include/nolibc/string.h
-@@ -121,6 +121,28 @@ size_t nolibc_strlen(const char *str)
- 		nolibc_strlen((str));           \
- })
+Changes since version 1
+  - Explain likely source of "Unknown lines"
+  - "Unknown line" in nested tests are optionally indented
+  - Add "Unknown lines" items to differences between TAP & KTAP list
+
+ Documentation/dev-tools/ktap.rst | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/Documentation/dev-tools/ktap.rst b/Documentation/dev-tools/ktap.rst
+index 878530cb9c27..9c40c94d3f12 100644
+--- a/Documentation/dev-tools/ktap.rst
++++ b/Documentation/dev-tools/ktap.rst
+@@ -1,8 +1,8 @@
+ .. SPDX-License-Identifier: GPL-2.0
  
-+static __attribute__((unused))
-+size_t strlcat(char *dst, const char *src, size_t size)
-+{
-+	size_t len;
-+	char c;
-+
-+	for (len = 0; dst[len];	len++)
-+		;
-+
-+	for (;;) {
-+		c = *src;
-+		if (len < size)
-+			dst[len] = c;
-+		if (!c)
-+			break;
-+		len++;
-+		src++;
-+	}
-+
-+	return len;
-+}
-+
- static __attribute__((unused))
- size_t strlcpy(char *dst, const char *src, size_t size)
- {
-@@ -138,6 +160,25 @@ size_t strlcpy(char *dst, const char *src, size_t size)
- 	return len;
- }
+-========================================
+-The Kernel Test Anything Protocol (KTAP)
+-========================================
++===================================================
++The Kernel Test Anything Protocol (KTAP), version 1
++===================================================
  
-+static __attribute__((unused))
-+char *strncat(char *dst, const char *src, size_t size)
-+{
-+	char *orig = dst;
+ TAP, or the Test Anything Protocol is a format for specifying test results used
+ by a number of projects. It's website and specification are found at this `link
+@@ -174,6 +174,13 @@ There may be lines within KTAP output that do not follow the format of one of
+ the four formats for lines described above. This is allowed, however, they will
+ not influence the status of the tests.
+ 
++This is an important difference from TAP.  Kernel tests may print messages
++to the system console or a log file.  Both of these destinations may contain
++messages either from unrelated kernel or userspace activity, or kernel
++messages from non-test code that is invoked by the test.  The kernel code
++invoked by the test likely is not aware that a test is in progress and
++thus can not print the message as a diagnostic message.
 +
-+	while (*dst)
-+		dst++;
+ Nested tests
+ ------------
+ 
+@@ -186,10 +193,13 @@ starting with another KTAP version line and test plan, and end with the overall
+ result. If one of the subtests fail, for example, the parent test should also
+ fail.
+ 
+-Additionally, all result lines in a subtest should be indented. One level of
++Additionally, all lines in a subtest should be indented. One level of
+ indentation is two spaces: "  ". The indentation should begin at the version
+ line and should end before the parent test's result line.
+ 
++"Unknown lines" are not considered to be lines in a subtest and thus are
++allowed to be either indented or not indented.
 +
-+	while (size && (*dst = *src)) {
-+		src++;
-+		dst++;
-+		size--;
-+	}
-+
-+	*dst = 0;
-+	return orig;
-+}
-+
-+
- static __attribute__((unused))
- char *strncpy(char *dst, const char *src, size_t size)
- {
+ An example of a test with two nested subtests:
+ 
+ .. code-block::
+@@ -225,9 +235,11 @@ Major differences between TAP and KTAP
+ --------------------------------------
+ 
+ Note the major differences between the TAP and KTAP specification:
+-- yaml and json are not recommended in diagnostic messages
+-- TODO directive not recognized
++- yaml and json are not recommended in KTAP diagnostic messages
++- TODO directive not recognized in KTAP
+ - KTAP allows for an arbitrary number of tests to be nested
++- TAP includes "Unknown lines" in the category of "Anything else"
++- TAP says "Unknown lines" are "incorrect; KTAP allows "Unknown lines"
+ 
+ The TAP14 specification does permit nested tests, but instead of using another
+ nested version line, uses a line of the form
 -- 
-2.35.1
+Frank Rowand <frank.rowand@sony.com>
 
