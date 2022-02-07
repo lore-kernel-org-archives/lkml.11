@@ -2,166 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C08AC35273
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0057C46467
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391064AbiBGOTO (ORCPT
+        id S1390149AbiBGOTJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:19:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58220 "EHLO
+        Mon, 7 Feb 2022 09:19:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391016AbiBGOIf (ORCPT
+        with ESMTP id S1346694AbiBGONR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:08:35 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2042.outbound.protection.outlook.com [40.107.96.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B961C0401F5
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:08:25 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LAGbmdjwLzOuEEUibP1iPBRso0z/Ef/9eYi96SwwzaP9Gr4a7Pf8zeDEf5OXT85VTXuYf5kO4conCDjJT5Ee8+9C3z8cye6HOMEER1Y6hjuh1S7q+8LGwzkqJClSYdK7TCD+vdIxhizU4i60Utn+AS9J/Uzh0iHb2JNp77aU8f5tJDyqlPl+GFnXOEoebbNZAZUV0U/CK1+enO/khh+CJdY3qNURhIS0nH9rs38iCHWQEYVCWBuU8ETjWV/GNAZX+djuNKV8Ayw5/QXqYVEObH9+/lZWstpZGIanEG8eDcMepqCzbpOaRRjBxLMdRUP7iBHoFXpTZbZ1IdchQ74XFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XYMfBfu3FYWtNzL30FI7HuisMpHBQE0rBdpzOve3j/M=;
- b=aCPVQ3KE6pqOdGN6nrbqX/sWBZn+racRLTOilg4vQpbDsuP4Bes6brIzWi61aRlhaiXtxxjMxeYoOqmx1/Jima6mh+09xG/YrDTROT5wGQoOf7dYZrx9FA+Qn94k5JDg5zGn0Oe8L8XNH4Pi9qKUUFFKXHMSzMIZcSf9X/LdWe1mXCiocFccO00QV9ykPvhK1qrNoDC6DUOs+4b3x96OyvxGqdEKzZB4m2mbaF6GsmchZycTyHgSwKeKZ25GsuQRQuwDxtbAeuiTKYbcrKshQ6GS/wXVptncaN+EFDrg8Sh4/3qddP4g/Y3Z8hpkBLRsNuGxaifWHoSP5iUBtvafeg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XYMfBfu3FYWtNzL30FI7HuisMpHBQE0rBdpzOve3j/M=;
- b=j50c/8HweS9yZYQGvJabCkyqw8BIGbvV4pOUPRs8iA4kK+F/Bj8Ewox8pF8eKor8MEYck5+LNpjhlMrpuJLWawLxvl9P6SRE8s2haDQuUyDF/NL4f9E8j0v95JBvEUuNyhD1TZREHDmEqWwDnyJTBce2qqWntpn3kfEa0Q3AjSo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL1PR12MB5221.namprd12.prod.outlook.com (2603:10b6:208:30b::9)
- by MN2PR12MB4239.namprd12.prod.outlook.com (2603:10b6:208:1d2::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Mon, 7 Feb
- 2022 14:08:19 +0000
-Received: from BL1PR12MB5221.namprd12.prod.outlook.com
- ([fe80::b9af:8be3:36e5:1a13]) by BL1PR12MB5221.namprd12.prod.outlook.com
- ([fe80::b9af:8be3:36e5:1a13%7]) with mapi id 15.20.4951.019; Mon, 7 Feb 2022
- 14:08:19 +0000
-Message-ID: <95d1475e-fc30-89cf-19a7-4f125f5113d8@amd.com>
-Date:   Mon, 7 Feb 2022 08:08:15 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCHv2 26/29] x86/tdx: ioapic: Add shared bit for IOAPIC base
- address
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        Isaku Yamahata <isaku.yamahata@intel.com>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
- <20220124150215.36893-27-kirill.shutemov@linux.intel.com>
- <871r0mvyqr.ffs@tglx> <20220204223153.l2g3lpm4hxknwsof@black.fi.intel.com>
-From:   Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <20220204223153.l2g3lpm4hxknwsof@black.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR07CA0025.namprd07.prod.outlook.com
- (2603:10b6:208:1a0::35) To BL1PR12MB5221.namprd12.prod.outlook.com
- (2603:10b6:208:30b::9)
+        Mon, 7 Feb 2022 09:13:17 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFE1C0401C3
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:13:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644243196; x=1675779196;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=hGogMlAz2ABL6mZ3F5RdiX3bnIRNxQzIMwuH0LxLLDw=;
+  b=iNxgyhf4mK4NfnPUUq6J8jQz+noAif4ARgAHeZ7x26ElM0SdsiQdcuzF
+   ia+Z6eKWhnsYgo4JRMX1sFXYMnZ6PkpteJNLheGhyAib6wSLdbPJyrgI0
+   K2PhP3KUtLy2ynemxzF8NGDRvyeVfM2KJGiYQNjP69p2rVNc5x62R0UYP
+   cgVD3Fg0Ew+fzp1r6TqfdRp+UySCEOWtY3rV3oF/dDVbGtH2d+lSe2rUI
+   fbdDbV0KR/lNhckXCveZ/YakaxeqLba7TGVepcd592Oaa6myFdLe7TSky
+   IHi4NnWPBlGLhTebrMkD9K9tl2SVTXEAXwirPfOTBFGvHuKO5bSDIvaic
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="229371937"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="229371937"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 06:12:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="481594287"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 07 Feb 2022 06:12:34 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id DF32A31D; Mon,  7 Feb 2022 16:12:48 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Joerg Roedel <jroedel@suse.de>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc:     David Woodhouse <dwmw2@infradead.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 1/1] iommu/vt-d: Move intel_iommu_ops to header file
+Date:   Mon,  7 Feb 2022 16:12:40 +0200
+Message-Id: <20220207141240.8253-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8450e3ec-7a77-4c7c-0b34-08d9ea434a8f
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4239:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4239AE229EAC34DE7E6F767BEC2C9@MN2PR12MB4239.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2Lm2z/2wMXstqOXr1Pd81VB7WDHBbty2P8M/bCBtNb3wUUG8+NLUj+c+x8lbK6OM4HB6+O+CEfPw+z84fXbmShlL05H+yv/N/YukrHZIcwvoTorekkt/qc4Qk2p5bdboJwRUNff9xpaH6EiDuNOcbkDb1H0QOxJE4banvvMzWs1Z/qigTD89ZMxXBFurArqGjP9IrWhLzov13fihNzgEzEkBelPwnr2LyigHldT3xLzzzG6s/3uviKDJBK19O/PGLj5jcz31Zo/RdBj3rGdOatfPFv8gkod5njs20oQCcDWfLkenwbE3ojWRHBOLkeRojfhR5evMDAij/QEWL6YRc+Ks+ukpOHBXIxyGYSQqCcfEpFsc1ZBAsrquTveFtEf+M0uKwNxIxofhYg/UdHcGIi1fqh2N1aXv6O5Oelysl+ocXszXGEQkEQFn6xBgiphJfWUqtZzhnZr3woi+ak5c1OofPHOWI12wWBfws9/8NcEkMvh5nZjooOgX9ZorZ2pd8WDIhj80KPbwDIGW+/rFSSHcvlw8ayDANIFlqjUKl7ddIwSs3oSV7ZK9GnVvw+Vxq9GzqiKgT4veyGHPbaXI5/3qsa6N+sDlGFp9McnzKYaF8RoDiyNdRu8urEMpRFzjalxPEwakqbssE10s6UTVRjvZW3Vg7bFzYRbG4q6Q9m9hWCZ7RLZtVQ+4QDza7Dbw4H22Q/CLmgGAVJK534AEpNSCemH/grIJ4GuhYMebmsc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5221.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(53546011)(6512007)(86362001)(2906002)(2616005)(5660300002)(186003)(83380400001)(26005)(31696002)(7416002)(36756003)(6506007)(508600001)(8936002)(8676002)(66476007)(6486002)(38100700002)(6666004)(66946007)(31686004)(316002)(66556008)(4326008)(110136005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eXd5WXFza01OVXRrempKcEhZeGUrOVowS1U1VkRvRnJDejdyY3JoWG5lQ0Rp?=
- =?utf-8?B?RFRrWjdiMTBRbUY2QURHOWhTYXdBYzlReEo5SDZPTVBZTTZ1dUxGOVlHMWdS?=
- =?utf-8?B?Y2psWnQvYjltUFZGM0U1SjVtb1JzOU9kR2FHKzdISnNTZGQyVTF5cnRYZGFE?=
- =?utf-8?B?Z1N1WnFIaHFjbFNFZU1FTVVML21md1lDUWh0UWxEZEJpalZQeW05VURkYURI?=
- =?utf-8?B?MVFhdmJCb21HdkI1UGhMcHd3T3djbDJiUU5rMDBCNWI2U2JZcnA2b3VCZ1p2?=
- =?utf-8?B?UXJCZ093UnVNOE1xL1kzV2xvWUNqL09UckpBdjZmZ2ZuOU5USVc0MllDZGF1?=
- =?utf-8?B?NHhIaVVPU05YTVJXWnRHOW84dGdYYzMxQURnZFhpWFluY3RsaEhyTmt4NmtF?=
- =?utf-8?B?TU1wYTlYVEM1RFVpbjQrSzA0MFJoWWl3ZXV0UnN3Ykt4RFd4V1dmVDB0cFc0?=
- =?utf-8?B?THZHTlhpbXV4eDh5ZC9iMS9EMUZNTFgxV0xVNDJEMkwxUVFLRkFlMlk2c2FC?=
- =?utf-8?B?Z0U0Y0pQbnRyRUIvZzV1VHorRDZSY1hZQzZiL3FDaDZVK1VOOU5pZGlFQWdl?=
- =?utf-8?B?YnpObEo1SlA1aXl2RDVwQi9BTlZSOWNNT3pucTIrUTlYUmI3LzdvQ3QvZUxB?=
- =?utf-8?B?b0hzajVaYmxCOEw0dTFBdGo3UmQ1RGpFN0lmM1NhMmR2S1NqRDA4cldQRHNw?=
- =?utf-8?B?VEhjaUJxRXpOV2dkaXM0QkJ5cGdDb1pubVI5ZUc2Mi9tYmEwd3RvaDhXZXZO?=
- =?utf-8?B?SzJaaEw3OE5CZUNUTXpuT3dvZEJENzBqd1JVQW1GeEQwMXZRWVIrTTNFbmxS?=
- =?utf-8?B?eXltRzF0WDZBTTlaeS9QMGNaVTJ6MjJvWVFnbGxqdWFZSEhWWTNpa05ScnEw?=
- =?utf-8?B?a2JaZHJYbi80Mm1JOW5qUk1sZk9rbHo1SUJJWGN6WjZENmprQndhc1labFVQ?=
- =?utf-8?B?emo0dUtHS0ZLSkZOTXZzVHZhNTBLKzA1VmdlcGtmNnJFOFZ3RWhSZU1CZVJm?=
- =?utf-8?B?MjRUa0xrU0VsZHFrdUt2TWxGN2NnSVpxYXNSais4TFVJQlZKZ05ZU3NYTnps?=
- =?utf-8?B?eVlyS2VyQzhZSlcrTEVEb0QvSkRkZHI3ZDV5K0s1R25SUHZqaVF5d0c1UjJR?=
- =?utf-8?B?ajhOdm5tNHRLQmFaTm9Fam5MVXZueUMzVU5IN21iRUNoNHRLUHNxK0JPT29w?=
- =?utf-8?B?ZnNrRzg2K0RMd01QcXI0WUo3YWJUUXFZVTkrTWdwcUFVdlZiaU45QjRMQUdV?=
- =?utf-8?B?UzZUdnFsaW5ITlhwWVozaS9ML3VJSkhTckdTRGZtYzVoOUhJZW5aMFBGSnpG?=
- =?utf-8?B?NXpIb0U5cW5zVXNQenhEeU5tWXpCN0VKSllsMVRGaytUcGc0SUF5TUFsRTlE?=
- =?utf-8?B?RjZ5OFZ4U2VSWWs3SXRqVUc4TGdRYy9xQS9JZW1HTjFiTXlhdHdxL3FYQ3Jx?=
- =?utf-8?B?Y0hpekdSSCtITXdvai9aUENmS2IrNmJVSytGMG5QcHVaMHZDclhxUGRGL3Fa?=
- =?utf-8?B?UTFaK2Erc0tMdm5MSjcrMmJYb0dhQklsZmw2MHNscEdzZklEQkNndlU3ek8w?=
- =?utf-8?B?dWdVSGE3Tysvbm1QSmZSK3ljVEVPRFVicG5wcHQ5VUxvRExwWW1YM25pVG9h?=
- =?utf-8?B?OWpWTnpWMnQxRGptR09oZkw0b0dqM21obHdteWh1ejJTUGtPa0JYeTJxZlRi?=
- =?utf-8?B?MEVERkdTWFBtbCtSZ09LMi9pV0hxTE94VnNWeUJZNWIxK053NDFMd0dBK1lP?=
- =?utf-8?B?VldxTUhLRXlGYXhycmk4czc1U3BKd3gvcnR6d29naWhPNS94OEN0WVA1Yk9o?=
- =?utf-8?B?WVBaLzhIakZSVUZnNW1lak9sYXhpd1hQRmtUU0NBSEhIZlZTU0Y0S3F1akk4?=
- =?utf-8?B?YmtMRzlTc3g1RXZLcVowVzhYbHRhK3RLUWdzUFh3Z0hjOGFVdE9ESVh2SUlw?=
- =?utf-8?B?ZE1IdVlxamtFOVgydWhKMzg1ZVMrVUdraGJGaXJFMSt0WlU0dDZsdWV6ZUxa?=
- =?utf-8?B?a1IwV05NLzVwUDJQT1U0WXZkQkRkcUJUeWltWEVkWVdqeHg5RGNGbjhLYXh4?=
- =?utf-8?B?UVdEMDIyb0xrbUlidDhTbUdydFI1Q2xnNWtyNllCSWVaWWNreTVDNFZaWFE3?=
- =?utf-8?B?WHRJOVJzbjhmRU9HOGNxR25NZ3JlME9STlZmUmZwRFE2Mi9iODlCa1J2ZUlT?=
- =?utf-8?Q?qqWhKeR59zLLvt+NYIohR40=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8450e3ec-7a77-4c7c-0b34-08d9ea434a8f
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5221.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 14:08:18.8450
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e3OBMyaqNVVQOVZuY/xaUXf08GqcLStnhqC0M253wNJ0hfFfdg7Kq/50A7y9J3kNBvP3n3dyig5gpD2cWFUFQQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4239
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/4/22 16:31, Kirill A. Shutemov wrote:
-> On Wed, Feb 02, 2022 at 02:33:16AM +0100, Thomas Gleixner wrote:
->> On Mon, Jan 24 2022 at 18:02, Kirill A. Shutemov wrote:
->>> ioremap()-created mappings such as virtio will be marked as
->>> shared. However, the IOAPIC code does not use ioremap() and instead
->>> uses the fixmap mechanism.
->>>
->>> Introduce a special fixmap helper just for the IOAPIC code.  Ensure
->>> that it marks IOAPIC pages as "shared".  This replaces
->>> set_fixmap_nocache() with __set_fixmap() since __set_fixmap()
->>> allows custom 'prot' values.
->>
->> Why is this a TDX only issue and SEV does not suffer from that?
-> 
-> Hm. Good question.
-> 
-> I think it is because FIXMAP_PAGE_NOCACHE does not have __ENC bit set so
-> the mapping is accessible to host. With TDX the logic is oposit:
-> everything is private if the bit is not set.
-> 
-> Tom, does it sound right?
+Compiler is not happy about hidden declaration of intel_iommu_ops.
 
-Correct, FIXMAP_PAGE_NOCACHE => PAGE_KERNEL_IO_NOCACHE, which does not 
-have the encryption bit set, so it is mapped as shared under SEV.
+.../iommu.c:414:24: warning: symbol 'intel_iommu_ops' was not declared. Should it be static?
 
-Thanks,
-Tom
+Move declaration to header file to make compiler happy.
 
-> 
-> BTW, I will drop 'if (cc_platform_has(CC_ATTR_GUEST_TDX))'.
-> pgprot_decrypted() is nop on AMD in this case.
-> 
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: made sure it compiles with IRQ_REMAP=y, INTEL_IOMMU=n (Lu)
+ drivers/iommu/intel/dmar.c  | 2 --
+ include/linux/intel-iommu.h | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 915bff76fe96..b114e09a647d 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -66,8 +66,6 @@ static unsigned long dmar_seq_ids[BITS_TO_LONGS(DMAR_UNITS_SUPPORTED)];
+ static int alloc_iommu(struct dmar_drhd_unit *drhd);
+ static void free_iommu(struct intel_iommu *iommu);
+ 
+-extern const struct iommu_ops intel_iommu_ops;
+-
+ static void dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
+ {
+ 	/*
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 69230fd695ea..1036c1900b5c 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -813,6 +813,8 @@ bool context_present(struct context_entry *context);
+ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
+ 					 u8 devfn, int alloc);
+ 
++extern const struct iommu_ops intel_iommu_ops;
++
+ #ifdef CONFIG_INTEL_IOMMU
+ extern int iommu_calculate_agaw(struct intel_iommu *iommu);
+ extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+-- 
+2.34.1
+
