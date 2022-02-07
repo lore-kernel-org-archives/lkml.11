@@ -2,64 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF01C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D040C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391093AbiBGOTT (ORCPT
+        id S1390956AbiBGOTN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:19:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59364 "EHLO
+        Mon, 7 Feb 2022 09:19:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381876AbiBGOL7 (ORCPT
+        with ESMTP id S1389323AbiBGNwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:11:59 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFC8C0401C3;
-        Mon,  7 Feb 2022 06:11:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=sDZcTdthLVK7szlPjHCIXwYM3fqcQ0lcfaos24QABmA=; b=LvNO9O05ToAroojyVi6aHCQaRS
-        dC7qLtE2VC8YDQdSfZ9POLjxHBaCIWSlqe/ZfgIjZJy84PnuCYfSXutlvg1b5R+uZ2u/hlr+4hvqF
-        5GhHNaKH5r+QPhn1paF71BWfbHkFNIhxwVKP/SEiTPbMYChP0JLSaHAEtsBeB+KSEI/YBGkGCKybX
-        HwvQoIsYPX6hbjg1hVG2dmMT8NEPIrYQXzQe7zXhXfMnoGquHQJ6eYe/99epJBP8Bp7so5C3VOacM
-        B9bfg4hn5jUkmrmdseQMKaHH4g3h24RjAIlfuFscgxxq7N18A/mZ0vmAxGNT2C4JWmUOp9zXHE1GP
-        ptE9TbcA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nH4jy-007mzB-Gg; Mon, 07 Feb 2022 14:11:38 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 9378E986235; Mon,  7 Feb 2022 15:11:36 +0100 (CET)
-Date:   Mon, 7 Feb 2022 15:11:36 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Zhipeng Xie <xiezhipeng1@huawei.com>
-Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
-        namhyung@kernel.org, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Fix perf_mmap fail when CONFIG_PERF_USE_VMALLOC enabled
-Message-ID: <20220207141136.GG23216@worktop.programming.kicks-ass.net>
-References: <20220207170259.2566-1-xiezhipeng1@huawei.com>
+        Mon, 7 Feb 2022 08:52:42 -0500
+X-Greylist: delayed 2220 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 05:52:41 PST
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D35BC043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:52:41 -0800 (PST)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2177mw96004196;
+        Mon, 7 Feb 2022 08:15:37 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e1ky9n08c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 08:15:36 -0500
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 217DFZL1062642
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 7 Feb 2022 08:15:35 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 7 Feb 2022
+ 08:15:34 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 7 Feb 2022 08:15:34 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 217DFMUW004584;
+        Mon, 7 Feb 2022 08:15:31 -0500
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v6 4/4] MAINTAINERS: add maintainer for ADMV1014 driver
+Date:   Mon, 7 Feb 2022 15:05:49 +0200
+Message-ID: <20220207130549.98415-4-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207130549.98415-1-antoniu.miclaus@analog.com>
+References: <20220207130549.98415-1-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207170259.2566-1-xiezhipeng1@huawei.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: ThD-htmUggFxx1eLhH7hn6TxTZzXw8Ih
+X-Proofpoint-GUID: ThD-htmUggFxx1eLhH7hn6TxTZzXw8Ih
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
+ mlxscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
+ malwarescore=0 phishscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070086
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add myself as maintainer for the ADMV1014 driver.
 
-Your $Subject needs a subsystem prefix.
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+no changes in v6.
+ MAINTAINERS | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-On Mon, Feb 07, 2022 at 12:02:59PM -0500, Zhipeng Xie wrote:
-> when CONFIG_PERF_USE_VMALLOC is enabled, rb->nr_pages is always
-> equal to 1 in rb_alloc, causing perf_mmap return -EINVAL when mmap.
-> Fix this problem using data_page_nr.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 170bbbeefc3f..b05148cfd4aa 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1119,6 +1119,14 @@ W:	http://ez.analog.com/community/linux-device-drivers
+ F:	Documentation/devicetree/bindings/hwmon/adi,adm1177.yaml
+ F:	drivers/hwmon/adm1177.c
+ 
++ANALOG DEVICES INC ADMV1014 DRIVER
++M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
++F:	drivers/iio/frequency/admv1014.c
++
+ ANALOG DEVICES INC ADP5061 DRIVER
+ M:	Michael Hennerich <Michael.Hennerich@analog.com>
+ L:	linux-pm@vger.kernel.org
+-- 
+2.35.1
 
-How can this be? This would mean that any arch that selects that hasn't
-worked for forever ?! That seems unlikely.
-
-> Signed-off-by: Zhipeng Xie <xiezhipeng1@huawei.com>
-
-If this is correct; this is also missing a Fixes: tag.
