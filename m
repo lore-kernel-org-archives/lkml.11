@@ -2,164 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BE4C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1357BC3526C
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448500AbiBGNLm (ORCPT
+        id S1448533AbiBGNLt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:11:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58598 "EHLO
+        Mon, 7 Feb 2022 08:11:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447089AbiBGMxW (ORCPT
+        with ESMTP id S1447831AbiBGNB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:53:22 -0500
-X-Greylist: delayed 181 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 04:53:21 PST
-Received: from condef-08.nifty.com (condef-08.nifty.com [202.248.20.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B8EC0401C1;
-        Mon,  7 Feb 2022 04:53:20 -0800 (PST)
-Received: from conssluserg-04.nifty.com ([10.126.8.83])by condef-08.nifty.com with ESMTP id 217CYfOO006569;
-        Mon, 7 Feb 2022 21:34:41 +0900
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 217CYN2K029695;
-        Mon, 7 Feb 2022 21:34:23 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 217CYN2K029695
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1644237263;
-        bh=9zKrPVPrkksURJV3q1ADM90/dTQqSdo5AISbXfRbAK8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ncgNidLu5reIUSqWMWHKjwcp1pH8YB2Nl81GvQ0hpGnx78rZFCVFxFRPAqaszZw/2
-         dtUs614cqV/1Xz451imobbGRu/hvXbtxlF3ZfTD3WRWDZpfMQkIlu5PqWgblXK56Ei
-         HH7kYXenqhXRVZNEd6CPHTBzOTY0+UwNTbP8TdJdskvIRA2xhID06vWqZzduuXywao
-         CW61Xtx3JOtQBi8WkQnv+ieoidDZsTOnqLESj4LdpNqzofVS/2qxNYdm3qW8HSLkbQ
-         dLd4b0T2tLs3UY9acXOCyeXvHKMxC5b2KI4/CTBQhVBPZhdOH6jdb0gj7+ZjDGRetb
-         YTgr+HMQZfHtg==
-X-Nifty-SrcIP: [209.85.214.174]
-Received: by mail-pl1-f174.google.com with SMTP id z17so1009414plb.9;
-        Mon, 07 Feb 2022 04:34:23 -0800 (PST)
-X-Gm-Message-State: AOAM531P+CO1a3ScQZp+4a4qpUGL/PwsPN0ubKSR2KMZpO903RW/kuMk
-        Fglse2NSftWLHUwLVHo0dKwn74gj7L9VHIR1dPs=
-X-Google-Smtp-Source: ABdhPJw3cX3TxmQPv1QYgm1VN+3TehX/6SKbg9GVGNoFJP8Soe+of9JeFW0Lh7zcdp1x15eRDqMYFJrt4S2w8Y3RoUM=
-X-Received: by 2002:a17:90b:4a4b:: with SMTP id lb11mr13886889pjb.144.1644237262520;
- Mon, 07 Feb 2022 04:34:22 -0800 (PST)
+        Mon, 7 Feb 2022 08:01:57 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FE9C0401C8;
+        Mon,  7 Feb 2022 05:01:55 -0800 (PST)
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 12/12] Documentation: iio: Document high-speed DMABUF based API
+Date:   Mon,  7 Feb 2022 13:01:40 +0000
+Message-Id: <20220207130140.81891-2-paul@crapouillou.net>
+In-Reply-To: <20220207130140.81891-1-paul@crapouillou.net>
+References: <20220207125933.81634-1-paul@crapouillou.net>
+ <20220207130140.81891-1-paul@crapouillou.net>
 MIME-Version: 1.0
-References: <20211218031122.4117631-1-willy@infradead.org> <CAK7LNAQUChvX3NoukBnjBfJJGu+a96pfbM--xHEHOygWPgE9eA@mail.gmail.com>
- <YdSOV7LL0vWCMcWl@casper.infradead.org>
-In-Reply-To: <YdSOV7LL0vWCMcWl@casper.infradead.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 7 Feb 2022 21:33:46 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQgixJSnDUMfjc+tg90oMdVoh+i5faEn-rqgmHR3Bk6dQ@mail.gmail.com>
-Message-ID: <CAK7LNAQgixJSnDUMfjc+tg90oMdVoh+i5faEn-rqgmHR3Bk6dQ@mail.gmail.com>
-Subject: Re: [PATCH v2] builddeb: Support signing kernels with the module
- signing key
-To:     Matthew Wilcox <willy@infradead.org>,
-        Ben Hutchings <ben@decadent.org.uk>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        efi@lists.einval.com,
-        debian-kernel <debian-kernel@lists.debian.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        David Howells <dhowells@redhat.com>, keyrings@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added "Ben Hutchings <ben@decadent.org.uk>"
+Document the new DMABUF based API.
 
-On Wed, Jan 5, 2022 at 3:13 AM Matthew Wilcox <willy@infradead.org> wrote:
->
-> On Wed, Jan 05, 2022 at 12:39:57AM +0900, Masahiro Yamada wrote:
-> > > +vmlinux=$($MAKE -s -f $srctree/Makefile image_name)
-> > > +key=
-> > > +if is_enabled CONFIG_EFI_STUB && is_enabled CONFIG_MODULE_SIG; then
-> > > +       cert=$(grep ^CONFIG_MODULE_SIG_KEY= include/config/auto.conf | cut -d\" -f2)
-> > > +       if [ ! -f $cert ]; then
-> > > +               cert=$srctree/$cert
-> > > +       fi
-> > > +
-> > > +       key=${cert%pem}priv
-> > > +       if [ ! -f $key ]; then
-> > > +               key=$cert
-> > > +       fi
-> >
-> >
-> > I still do not understand this part.
-> >
-> > It is true that the Debian document you referred to creates separate files
-> > for the key and the certificate:
-> >   # openssl req -new -x509 -newkey rsa:2048 -keyout MOK.priv -outform
-> > DER -out MOK.der -days 36500 -subj "/CN=My Name/" -nodes
-> >
-> > but, is such a use-case possible in Kbuild?
->
-> If someone has followed the Debian instructions for creating a MOK,
-> then they will have two separate files.  We should support both the case
-> where someone has created a Debian MOK and the case where someone has
-> used Kbuild to create this foolish blob with both private and public
-> key in one file.
+v2: - Explicitly state that the new interface is optional and is
+      not implemented by all drivers.
+    - The IOCTLs can now only be called on the buffer FD returned by
+      IIO_BUFFER_GET_FD_IOCTL.
+    - Move the page up a bit in the index since it is core stuff and not
+      driver-specific.
 
-But, this patch is doing different things than the Debian document.
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ Documentation/driver-api/dma-buf.rst |  2 +
+ Documentation/iio/dmabuf_api.rst     | 94 ++++++++++++++++++++++++++++
+ Documentation/iio/index.rst          |  2 +
+ 3 files changed, 98 insertions(+)
+ create mode 100644 Documentation/iio/dmabuf_api.rst
 
-
-The Debian document you referred to says:
-  "Ubuntu puts its MOK key under /var/lib/shim-signed/mok/ and some
-   software such as Oracle's virtualbox package expect the key there
-   so we follow suit (see 989463 for reference) and put it at the same place"
-
-
-
-In Debian, MOK is generated under /var/lib/shim-signed/mok/,
-and its primary use is for signing the kernel.
-Then, you can reuse it for signing modules as well.
-
-
-This patch adopts the opposite direction:
-  Kbuild generates the module signing key, then
-  this patch reuses it for singing the kernel.
-
-The key is located in the kernel build tree
-(that is, the key is lost when you run "make mrproper").
-
-You need to "mokutil --import path/to/module/sining/key"
-every time Kbuild generates a new key.
-
-
-
-So, another possible approach is:
-
-builddeb signs the kernel with the key
-in /var/lib/shim-signed/mok/.
-
-I think this is more aligned with the debian documenation.
-
-I added Ben Hutchings, who might give us insights.
-
-
-
-
-
-
-
-> > In the old days, yes, the key and the certificate were stored in separate files.
-> > (the key in *.priv and the certificate in *.x509)
-> >
-> >
-> > Please read this commit:
->
-> Yes, I did.
->
-> > The motivation for this change is still questionable to me;
-> > the commit description sounds like they merged *.priv and *.x509
-> > into *.pem just because they could not write a correct Makefile.
-> > (If requested, I can write a correct Makefile that works in parallel build)
->
-> I think that would be preferable.  Putting the private and public keys
-> in the same file cannot be good security practice!
-
-
-
+diff --git a/Documentation/driver-api/dma-buf.rst b/Documentation/driver-api/dma-buf.rst
+index 2cd7db82d9fe..d3c9b58d2706 100644
+--- a/Documentation/driver-api/dma-buf.rst
++++ b/Documentation/driver-api/dma-buf.rst
+@@ -1,3 +1,5 @@
++.. _dma-buf:
++
+ Buffer Sharing and Synchronization
+ ==================================
+ 
+diff --git a/Documentation/iio/dmabuf_api.rst b/Documentation/iio/dmabuf_api.rst
+new file mode 100644
+index 000000000000..43bb2c1b9fdc
+--- /dev/null
++++ b/Documentation/iio/dmabuf_api.rst
+@@ -0,0 +1,94 @@
++===================================
++High-speed DMABUF interface for IIO
++===================================
++
++1. Overview
++===========
++
++The Industrial I/O subsystem supports access to buffers through a file-based
++interface, with read() and write() access calls through the IIO device's dev
++node.
++
++It additionally supports a DMABUF based interface, where the userspace
++application can allocate and append DMABUF objects to the buffer's queue.
++This interface is however optional and is not available in all drivers.
++
++The advantage of this DMABUF based interface vs. the read()
++interface, is that it avoids an extra copy of the data between the
++kernel and userspace. This is particularly useful for high-speed
++devices which produce several megabytes or even gigabytes of data per
++second.
++
++The data in this DMABUF interface is managed at the granularity of
++DMABUF objects. Reducing the granularity from byte level to block level
++is done to reduce the userspace-kernelspace synchronization overhead
++since performing syscalls for each byte at a few Mbps is just not
++feasible.
++
++This of course leads to a slightly increased latency. For this reason an
++application can choose the size of the DMABUFs as well as how many it
++allocates. E.g. two DMABUFs would be a traditional double buffering
++scheme. But using a higher number might be necessary to avoid
++underflow/overflow situations in the presence of scheduling latencies.
++
++2. User API
++===========
++
++``IIO_BUFFER_DMABUF_ALLOC_IOCTL(struct iio_dmabuf_alloc_req *)``
++----------------------------------------------------------------
++
++Each call will allocate a new DMABUF object. The return value (if not
++a negative errno value as error) will be the file descriptor of the new
++DMABUF.
++
++``IIO_BUFFER_DMABUF_ENQUEUE_IOCTL(struct iio_dmabuf *)``
++--------------------------------------------------------
++
++Place the DMABUF object into the queue pending for hardware process.
++
++These two IOCTLs have to be performed on the IIO buffer's file
++descriptor, obtained using the `IIO_BUFFER_GET_FD_IOCTL` ioctl.
++
++3. Usage
++========
++
++To access the data stored in a block by userspace the block must be
++mapped to the process's memory. This is done by calling mmap() on the
++DMABUF's file descriptor.
++
++Before accessing the data through the map, you must use the
++DMA_BUF_IOCTL_SYNC(struct dma_buf_sync *) ioctl, with the
++DMA_BUF_SYNC_START flag, to make sure that the data is available.
++This call may block until the hardware is done with this block. Once
++you are done reading or writing the data, you must use this ioctl again
++with the DMA_BUF_SYNC_END flag, before enqueueing the DMABUF to the
++kernel's queue.
++
++If you need to know when the hardware is done with a DMABUF, you can
++poll its file descriptor for the EPOLLOUT event.
++
++Finally, to destroy a DMABUF object, simply call close() on its file
++descriptor.
++
++For more information about manipulating DMABUF objects, see: :ref:`dma-buf`.
++
++A typical workflow for the new interface is:
++
++    for block in blocks:
++      DMABUF_ALLOC block
++      mmap block
++
++    enable buffer
++
++    while !done
++      for block in blocks:
++        DMABUF_ENQUEUE block
++
++        DMABUF_SYNC_START block
++        process data
++        DMABUF_SYNC_END block
++
++    disable buffer
++
++    for block in blocks:
++      close block
+diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
+index 58b7a4ebac51..669deb67ddee 100644
+--- a/Documentation/iio/index.rst
++++ b/Documentation/iio/index.rst
+@@ -9,4 +9,6 @@ Industrial I/O
+ 
+    iio_configfs
+ 
++   dmabuf_api
++
+    ep93xx_adc
 -- 
-Best Regards
-Masahiro Yamada
+2.34.1
+
