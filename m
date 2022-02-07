@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBDBC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 590F6C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377673AbiBGLPd (ORCPT
+        id S1378108AbiBGLPo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49596 "EHLO
+        Mon, 7 Feb 2022 06:15:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352845AbiBGLMB (ORCPT
+        with ESMTP id S1353119AbiBGLMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:12:01 -0500
+        Mon, 7 Feb 2022 06:12:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3AB9C043181;
-        Mon,  7 Feb 2022 03:12:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D724BC043189;
+        Mon,  7 Feb 2022 03:12:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91E4261314;
-        Mon,  7 Feb 2022 11:12:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BBD2C004E1;
-        Mon,  7 Feb 2022 11:11:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72E2161380;
+        Mon,  7 Feb 2022 11:12:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44A14C004E1;
+        Mon,  7 Feb 2022 11:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232320;
-        bh=GVclLUpV5I6fB7xF9BnCi/GSDE4G3lqHd2p6FC+z9kA=;
+        s=korg; t=1644232325;
+        bh=4jO7K2E2c5x+A9y9hULWt9uHAkK9NZL2YaHuUeXezB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=alyJOE3b5xqHbSZpa1jkGOLntMxsLlgZl2If0NiAKD8UoQv5EMX0vtXT/SJ7YsyFn
-         dyxFmrtWWu5Su/ucnxg97VWOZC1ZojnMRfeC0Bx4hmar1rYXOH24PzHiT7CpLiSws6
-         rYPpowzxDJve1HPXJ/3h32pxC40nUpkipoOUrFbc=
+        b=sixaUP5wZpPz0mEyAGBl8sJxOeMflkp5yxvHZ9IGhmKDNx3DBMcm2hwk/J31FHo+r
+         whf35qiYQDCO7STKFdIwTOgxv/4o+r4xQyMg0R1aZ6/ElDwHzmrh4YfPT4vM7eTSea
+         Eeo6QBcT7HIJ4MqJoaSr6zG98bCtqrLnosdGWtAA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 4.14 39/69] netfilter: nat: remove l4 protocol port rovers
-Date:   Mon,  7 Feb 2022 12:06:01 +0100
-Message-Id: <20220207103756.914150863@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
+Subject: [PATCH 4.14 14/69] USB: core: Fix hang in usb_kill_urb by adding memory barriers
+Date:   Mon,  7 Feb 2022 12:05:36 +0100
+Message-Id: <20220207103756.084594797@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -49,182 +49,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 6ed5943f8735e2b778d92ea4d9805c0a1d89bc2b upstream.
+commit 26fbe9772b8c459687930511444ce443011f86bf upstream.
 
-This is a leftover from days where single-cpu systems were common:
-Store last port used to resolve a clash to use it as a starting point when
-the next conflict needs to be resolved.
+The syzbot fuzzer has identified a bug in which processes hang waiting
+for usb_kill_urb() to return.  It turns out the issue is not unlinking
+the URB; that works just fine.  Rather, the problem arises when the
+wakeup notification that the URB has completed is not received.
 
-When we have parallel attempt to connect to same address:port pair,
-its likely that both cores end up computing the same "available" port,
-as both use same starting port, and newly used ports won't become
-visible to other cores until the conntrack gets confirmed later.
+The reason is memory-access ordering on SMP systems.  In outline form,
+usb_kill_urb() and __usb_hcd_giveback_urb() operating concurrently on
+different CPUs perform the following actions:
 
-One of the cores then has to drop the packet at insertion time because
-the chosen new tuple turns out to be in use after all.
+CPU 0					CPU 1
+----------------------------		---------------------------------
+usb_kill_urb():				__usb_hcd_giveback_urb():
+  ...					  ...
+  atomic_inc(&urb->reject);		  atomic_dec(&urb->use_count);
+  ...					  ...
+  wait_event(usb_kill_urb_queue,
+	atomic_read(&urb->use_count) == 0);
+					  if (atomic_read(&urb->reject))
+						wake_up(&usb_kill_urb_queue);
 
-Lets simplify this: remove port rover and use a pseudo-random starting
-point.
+Confining your attention to urb->reject and urb->use_count, you can
+see that the overall pattern of accesses on CPU 0 is:
 
-Note that this doesn't make netfilter default to 'fully random' mode;
-the 'rover' was only used if NAT could not reuse source port as-is.
+	write urb->reject, then read urb->use_count;
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+whereas the overall pattern of accesses on CPU 1 is:
+
+	write urb->use_count, then read urb->reject.
+
+This pattern is referred to in memory-model circles as SB (for "Store
+Buffering"), and it is well known that without suitable enforcement of
+the desired order of accesses -- in the form of memory barriers -- it
+is entirely possible for one or both CPUs to execute their reads ahead
+of their writes.  The end result will be that sometimes CPU 0 sees the
+old un-decremented value of urb->use_count while CPU 1 sees the old
+un-incremented value of urb->reject.  Consequently CPU 0 ends up on
+the wait queue and never gets woken up, leading to the observed hang
+in usb_kill_urb().
+
+The same pattern of accesses occurs in usb_poison_urb() and the
+failure pathway of usb_hcd_submit_urb().
+
+The problem is fixed by adding suitable memory barriers.  To provide
+proper memory-access ordering in the SB pattern, a full barrier is
+required on both CPUs.  The atomic_inc() and atomic_dec() accesses
+themselves don't provide any memory ordering, but since they are
+present, we can use the optimized smp_mb__after_atomic() memory
+barrier in the various routines to obtain the desired effect.
+
+This patch adds the necessary memory barriers.
+
+CC: <stable@vger.kernel.org>
+Reported-and-tested-by: syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/Ye8K0QYee0Q0Nna2@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/netfilter/nf_nat_l4proto.h |    2 +-
- net/netfilter/nf_nat_proto_common.c    |    7 ++-----
- net/netfilter/nf_nat_proto_dccp.c      |    5 +----
- net/netfilter/nf_nat_proto_sctp.c      |    5 +----
- net/netfilter/nf_nat_proto_tcp.c       |    5 +----
- net/netfilter/nf_nat_proto_udp.c       |   10 ++--------
- 6 files changed, 8 insertions(+), 26 deletions(-)
+ drivers/usb/core/hcd.c |   14 ++++++++++++++
+ drivers/usb/core/urb.c |   12 ++++++++++++
+ 2 files changed, 26 insertions(+)
 
---- a/include/net/netfilter/nf_nat_l4proto.h
-+++ b/include/net/netfilter/nf_nat_l4proto.h
-@@ -74,7 +74,7 @@ void nf_nat_l4proto_unique_tuple(const s
- 				 struct nf_conntrack_tuple *tuple,
- 				 const struct nf_nat_range *range,
- 				 enum nf_nat_manip_type maniptype,
--				 const struct nf_conn *ct, u16 *rover);
-+				 const struct nf_conn *ct);
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1679,6 +1679,13 @@ int usb_hcd_submit_urb (struct urb *urb,
+ 		urb->hcpriv = NULL;
+ 		INIT_LIST_HEAD(&urb->urb_list);
+ 		atomic_dec(&urb->use_count);
++		/*
++		 * Order the write of urb->use_count above before the read
++		 * of urb->reject below.  Pairs with the memory barriers in
++		 * usb_kill_urb() and usb_poison_urb().
++		 */
++		smp_mb__after_atomic();
++
+ 		atomic_dec(&urb->dev->urbnum);
+ 		if (atomic_read(&urb->reject))
+ 			wake_up(&usb_kill_urb_queue);
+@@ -1788,6 +1795,13 @@ static void __usb_hcd_giveback_urb(struc
  
- int nf_nat_l4proto_nlattr_to_range(struct nlattr *tb[],
- 				   struct nf_nat_range *range);
---- a/net/netfilter/nf_nat_proto_common.c
-+++ b/net/netfilter/nf_nat_proto_common.c
-@@ -38,8 +38,7 @@ void nf_nat_l4proto_unique_tuple(const s
- 				 struct nf_conntrack_tuple *tuple,
- 				 const struct nf_nat_range *range,
- 				 enum nf_nat_manip_type maniptype,
--				 const struct nf_conn *ct,
--				 u16 *rover)
-+				 const struct nf_conn *ct)
- {
- 	unsigned int range_size, min, max, i;
- 	__be16 *portptr;
-@@ -84,15 +83,13 @@ void nf_nat_l4proto_unique_tuple(const s
- 	} else if (range->flags & NF_NAT_RANGE_PROTO_RANDOM_FULLY) {
- 		off = prandom_u32();
- 	} else {
--		off = *rover;
-+		off = prandom_u32();
- 	}
- 
- 	for (i = 0; ; ++off) {
- 		*portptr = htons(min + off % range_size);
- 		if (++i != range_size && nf_nat_used_tuple(tuple, ct))
- 			continue;
--		if (!(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL))
--			*rover = off;
+ 	usb_anchor_resume_wakeups(anchor);
+ 	atomic_dec(&urb->use_count);
++	/*
++	 * Order the write of urb->use_count above before the read
++	 * of urb->reject below.  Pairs with the memory barriers in
++	 * usb_kill_urb() and usb_poison_urb().
++	 */
++	smp_mb__after_atomic();
++
+ 	if (unlikely(atomic_read(&urb->reject)))
+ 		wake_up(&usb_kill_urb_queue);
+ 	usb_put_urb(urb);
+--- a/drivers/usb/core/urb.c
++++ b/drivers/usb/core/urb.c
+@@ -686,6 +686,12 @@ void usb_kill_urb(struct urb *urb)
+ 	if (!(urb && urb->dev && urb->ep))
  		return;
- 	}
- }
---- a/net/netfilter/nf_nat_proto_dccp.c
-+++ b/net/netfilter/nf_nat_proto_dccp.c
-@@ -18,8 +18,6 @@
- #include <net/netfilter/nf_nat_l3proto.h>
- #include <net/netfilter/nf_nat_l4proto.h>
+ 	atomic_inc(&urb->reject);
++	/*
++	 * Order the write of urb->reject above before the read
++	 * of urb->use_count below.  Pairs with the barriers in
++	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
++	 */
++	smp_mb__after_atomic();
  
--static u_int16_t dccp_port_rover;
--
- static void
- dccp_unique_tuple(const struct nf_nat_l3proto *l3proto,
- 		  struct nf_conntrack_tuple *tuple,
-@@ -27,8 +25,7 @@ dccp_unique_tuple(const struct nf_nat_l3
- 		  enum nf_nat_manip_type maniptype,
- 		  const struct nf_conn *ct)
- {
--	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct,
--				    &dccp_port_rover);
-+	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct);
- }
+ 	usb_hcd_unlink_urb(urb, -ENOENT);
+ 	wait_event(usb_kill_urb_queue, atomic_read(&urb->use_count) == 0);
+@@ -727,6 +733,12 @@ void usb_poison_urb(struct urb *urb)
+ 	if (!urb)
+ 		return;
+ 	atomic_inc(&urb->reject);
++	/*
++	 * Order the write of urb->reject above before the read
++	 * of urb->use_count below.  Pairs with the barriers in
++	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
++	 */
++	smp_mb__after_atomic();
  
- static bool
---- a/net/netfilter/nf_nat_proto_sctp.c
-+++ b/net/netfilter/nf_nat_proto_sctp.c
-@@ -12,8 +12,6 @@
- 
- #include <net/netfilter/nf_nat_l4proto.h>
- 
--static u_int16_t nf_sctp_port_rover;
--
- static void
- sctp_unique_tuple(const struct nf_nat_l3proto *l3proto,
- 		  struct nf_conntrack_tuple *tuple,
-@@ -21,8 +19,7 @@ sctp_unique_tuple(const struct nf_nat_l3
- 		  enum nf_nat_manip_type maniptype,
- 		  const struct nf_conn *ct)
- {
--	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct,
--				    &nf_sctp_port_rover);
-+	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct);
- }
- 
- static bool
---- a/net/netfilter/nf_nat_proto_tcp.c
-+++ b/net/netfilter/nf_nat_proto_tcp.c
-@@ -18,8 +18,6 @@
- #include <net/netfilter/nf_nat_l4proto.h>
- #include <net/netfilter/nf_nat_core.h>
- 
--static u16 tcp_port_rover;
--
- static void
- tcp_unique_tuple(const struct nf_nat_l3proto *l3proto,
- 		 struct nf_conntrack_tuple *tuple,
-@@ -27,8 +25,7 @@ tcp_unique_tuple(const struct nf_nat_l3p
- 		 enum nf_nat_manip_type maniptype,
- 		 const struct nf_conn *ct)
- {
--	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct,
--				    &tcp_port_rover);
-+	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct);
- }
- 
- static bool
---- a/net/netfilter/nf_nat_proto_udp.c
-+++ b/net/netfilter/nf_nat_proto_udp.c
-@@ -17,8 +17,6 @@
- #include <net/netfilter/nf_nat_l3proto.h>
- #include <net/netfilter/nf_nat_l4proto.h>
- 
--static u16 udp_port_rover;
--
- static void
- udp_unique_tuple(const struct nf_nat_l3proto *l3proto,
- 		 struct nf_conntrack_tuple *tuple,
-@@ -26,8 +24,7 @@ udp_unique_tuple(const struct nf_nat_l3p
- 		 enum nf_nat_manip_type maniptype,
- 		 const struct nf_conn *ct)
- {
--	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct,
--				    &udp_port_rover);
-+	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct);
- }
- 
- static void
-@@ -78,8 +75,6 @@ static bool udp_manip_pkt(struct sk_buff
- }
- 
- #ifdef CONFIG_NF_NAT_PROTO_UDPLITE
--static u16 udplite_port_rover;
--
- static bool udplite_manip_pkt(struct sk_buff *skb,
- 			      const struct nf_nat_l3proto *l3proto,
- 			      unsigned int iphdroff, unsigned int hdroff,
-@@ -103,8 +98,7 @@ udplite_unique_tuple(const struct nf_nat
- 		     enum nf_nat_manip_type maniptype,
- 		     const struct nf_conn *ct)
- {
--	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct,
--				    &udplite_port_rover);
-+	nf_nat_l4proto_unique_tuple(l3proto, tuple, range, maniptype, ct);
- }
- 
- const struct nf_nat_l4proto nf_nat_l4proto_udplite = {
+ 	if (!urb->dev || !urb->ep)
+ 		return;
 
 
