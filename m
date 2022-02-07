@@ -2,168 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF821C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0623C35278
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391313AbiBGOTq (ORCPT
+        id S1391298AbiBGOTn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:19:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44576 "EHLO
+        Mon, 7 Feb 2022 09:19:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389301AbiBGNwK (ORCPT
+        with ESMTP id S240034AbiBGOGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:52:10 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4701AC0401C8;
-        Mon,  7 Feb 2022 05:52:09 -0800 (PST)
-Date:   Mon, 07 Feb 2022 13:52:05 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644241926;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NrTTwpwn5bIp2YK7PszkaXMvna76qOYCB+KkaAB6N+c=;
-        b=F/H2AaUCfMsk8jcztYvXMetU8hqaWq45VrA4c8wKxAawFIlMo7NU0fMyGarNgchSbkhWgL
-        /zeoArw5hhEERlo2F/rUf29tWUhDBWYhSNP9zKmmmTSIIKSJ7XHa2jxVThjXRRvIO0zTy0
-        9iimwWNjA0dNVZQsyyd+Ry5Ixuw+Y2ztoNK0xcqQGSuivbUYaput/vOjEtwvWBDHGaPr9q
-        9iDlrGxFBBEYj288SYVcB/p/YYi7f552+WKsbT+NsW1pw5brVHxE/uFwtKKqHHZ5CFfl8W
-        SFJHZTlakZvRNiphmyFUlg9zHkVy7E0u+7TVsgBbXGQ/bJvNHfNDVuSZSbVvKA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644241926;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NrTTwpwn5bIp2YK7PszkaXMvna76qOYCB+KkaAB6N+c=;
-        b=Flk8l8A+rrGLENRcgfS4Ug4q8GEJPax2QwzIDDvKiwweICYrLpuv0i8XaVzBYMcCNBv4VK
-        BKHaBwfflP8+MsDg==
-From:   "tip-bot2 for Tadeusz Struk" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/urgent] sched/fair: Fix fault in reweight_entity
-Cc:     syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        stable@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220203161846.1160750-1-tadeusz.struk@linaro.org>
-References: <20220203161846.1160750-1-tadeusz.struk@linaro.org>
+        Mon, 7 Feb 2022 09:06:21 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B984C0401C3;
+        Mon,  7 Feb 2022 06:06:20 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id k18so24984471wrg.11;
+        Mon, 07 Feb 2022 06:06:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tBKWnS+g7You4oahdBZV1moenSdw6O464+uIoP4Ehfw=;
+        b=dXHUkHHHLQVcF081BhnShtt/ILiXpVb0T3NzyCo3i0nakhqxWs2EPz9K/tIrOG4t/q
+         ZmJBv6zMZ9oe2EmWqrcUsw0RWxqGsxtBSS4T4i2UE1VGygzOS0q5+qq1slHJLFk61oua
+         32mR5gFhRVh0FEPZ8PCqrbEPsdeUVImaqnqPUkg2cYvsF55RNOzS7L/8Bl9l/pljVxiV
+         Tc8pb7VPlg5FpOF2bd6lqh7OJ7EpRKlboqsn/+n+WB8gl5tuYmx6b8XTa6k97x7IPPxt
+         q7Mvq5E2Hi7r8q6eIWDyZ0jZ+gnBR4HFiHWwyOlmMbRQeGVbu6rIxc85DNgUrhocF6eh
+         OF4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tBKWnS+g7You4oahdBZV1moenSdw6O464+uIoP4Ehfw=;
+        b=Oa/vru13XJJl4LvgtF3HepbIBVdR4bkWMYXBGmJKDEtgEOg+fCVhJ5y606pI0+j3On
+         z/bpDHUSqPjV45QanUjDPUbe0jO9+8iTMBufbfyBuHrlP9u7dYLJq0d2Zs9G2rbA0Abs
+         SkNk2F7KlvjzxoeeAPdbnK3cDNYFaLex7KlBfNzZpeI85+UbXtvMsXt75LVZQHDRSNiy
+         GPumB6A2pOrV/shzsFCOFykR+hIGIrb7Fhby21HyYDumG4RTen21sX0KAUQe+PrtW8mz
+         pCYsWDpwZ8yaSapCQx0vliUW9Q7kWpgya+WMrs2EBKoyctwlR3jlNAfI1Djtpp6TxZLA
+         Fufw==
+X-Gm-Message-State: AOAM532iJqyj9LXFZTcE/MgVSXvk0uu3jd+wf3JxI+3EsHzBGYXZ5fSR
+        UU+n4dXBn5j/LdfAjulZvZsdmh7TCEGCJQ==
+X-Google-Smtp-Source: ABdhPJyKet9Uuh60UU/p6hDZJIyCF7NM/ixYXuVRcY9k1xOZeokpEzA36xzaIhpdpjAHmboNRpfbrw==
+X-Received: by 2002:a05:6000:1866:: with SMTP id d6mr10140333wri.309.1644242778904;
+        Mon, 07 Feb 2022 06:06:18 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id n10sm4140786wrt.93.2022.02.07.06.06.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 06:06:18 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ALSA: usb-audio: remove redundant assignment to variable c
+Date:   Mon,  7 Feb 2022 14:06:17 +0000
+Message-Id: <20220207140617.341172-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Message-ID: <164424192533.16921.7865952180431807276.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/urgent branch of tip:
+The variable c is being initialized in an outer for-loop and also
+re-initialized inside an inner for-loop. The first initialization
+is redundant and can be removed.
 
-Commit-ID:     13765de8148f71fa795e0a6607de37c49ea5915a
-Gitweb:        https://git.kernel.org/tip/13765de8148f71fa795e0a6607de37c49ea=
-5915a
-Author:        Tadeusz Struk <tadeusz.struk@linaro.org>
-AuthorDate:    Thu, 03 Feb 2022 08:18:46 -08:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Sun, 06 Feb 2022 22:37:26 +01:00
-
-sched/fair: Fix fault in reweight_entity
-
-Syzbot found a GPF in reweight_entity. This has been bisected to
-commit 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid
-sched_task_group")
-
-There=C2=A0is a race between sched_post_fork() and setpriority(PRIO_PGRP)
-within a thread group that causes a null-ptr-deref=C2=A0in
-reweight_entity() in CFS. The scenario is that the main process spawns
-number of new threads, which then call setpriority(PRIO_PGRP, 0, -20),
-wait, and exit.  For each of the new threads the copy_process() gets
-invoked, which adds the new task_struct and calls sched_post_fork()
-for it.
-
-In the above scenario there is a possibility that
-setpriority(PRIO_PGRP) and set_one_prio() will be called for a thread
-in the group that is just being created by copy_process(), and for
-which the sched_post_fork() has not been executed yet. This will
-trigger a null pointer dereference in reweight_entity(),=C2=A0as it will
-try to access the run queue pointer, which hasn't been set.
-
-Before the mentioned change the cfs_rq pointer for the task  has been
-set in sched_fork(), which is called much earlier in copy_process(),
-before the new task is added to the thread_group.  Now it is done in
-the sched_post_fork(), which is called after that.  To fix the issue
-the remove the update_load param from the update_load param() function
-and call reweight_task() only if the task flag doesn't have the
-TASK_NEW flag set.
-
-Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_=
-task_group")
-Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220203161846.1160750-1-tadeusz.struk@linaro=
-.org
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- kernel/sched/core.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ sound/usb/mixer_s1810c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 848eaa0..fcf0c18 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -1214,8 +1214,9 @@ int tg_nop(struct task_group *tg, void *data)
- }
- #endif
-=20
--static void set_load_weight(struct task_struct *p, bool update_load)
-+static void set_load_weight(struct task_struct *p)
- {
-+	bool update_load =3D !(READ_ONCE(p->__state) & TASK_NEW);
- 	int prio =3D p->static_prio - MAX_RT_PRIO;
- 	struct load_weight *load =3D &p->se.load;
-=20
-@@ -4406,7 +4407,7 @@ int sched_fork(unsigned long clone_flags, struct task_s=
-truct *p)
- 			p->static_prio =3D NICE_TO_PRIO(0);
-=20
- 		p->prio =3D p->normal_prio =3D p->static_prio;
--		set_load_weight(p, false);
-+		set_load_weight(p);
-=20
- 		/*
- 		 * We don't need the reset flag anymore after the fork. It has
-@@ -6921,7 +6922,7 @@ void set_user_nice(struct task_struct *p, long nice)
- 		put_prev_task(rq, p);
-=20
- 	p->static_prio =3D NICE_TO_PRIO(nice);
--	set_load_weight(p, true);
-+	set_load_weight(p);
- 	old_prio =3D p->prio;
- 	p->prio =3D effective_prio(p);
-=20
-@@ -7212,7 +7213,7 @@ static void __setscheduler_params(struct task_struct *p,
- 	 */
- 	p->rt_priority =3D attr->sched_priority;
- 	p->normal_prio =3D normal_prio(p);
--	set_load_weight(p, true);
-+	set_load_weight(p);
- }
-=20
- /*
-@@ -9445,7 +9446,7 @@ void __init sched_init(void)
- #endif
- 	}
-=20
--	set_load_weight(&init_task, false);
-+	set_load_weight(&init_task);
-=20
- 	/*
- 	 * The boot idle thread does lazy MMU switching as well:
+diff --git a/sound/usb/mixer_s1810c.c b/sound/usb/mixer_s1810c.c
+index 0255089c9efb..fac4bbc6b275 100644
+--- a/sound/usb/mixer_s1810c.c
++++ b/sound/usb/mixer_s1810c.c
+@@ -221,7 +221,7 @@ static int snd_s1810c_init_mixer_maps(struct snd_usb_audio *chip)
+ 	e = 0xbc;
+ 	for (n = 0; n < 2; n++) {
+ 		off = n * 18;
+-		for (b = off, c = 0; b < 18 + off; b++) {
++		for (b = off; b < 18 + off; b++) {
+ 			/* This channel to all outputs ? */
+ 			for (c = 0; c <= 8; c++) {
+ 				snd_s1810c_send_ctl_packet(dev, a, b, c, 0, e);
+-- 
+2.34.1
+
