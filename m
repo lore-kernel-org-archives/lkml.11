@@ -2,253 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F154C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E97EC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240546AbiBGT41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:56:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
+        id S240978AbiBGT4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:56:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241004AbiBGTzy (ORCPT
+        with ESMTP id S241619AbiBGT4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:55:54 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F32C0401DA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:55:53 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id y6so28627904ybc.5
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 11:55:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=cIeGIDwEX25ldmpB0Z226M8rnhkEGp63Yp0NEvcjQyM=;
-        b=FxDPRuncyydboj5DBXA9bBILTdhAgivJ2t+m/B2zLIEe8l5/I5tjzLZtn+CdBoqa2F
-         PHABYz1evnKZkqaiYlDgujbQwMDajqFUb0U2Ib9rpKfTdU/KBXc5f6X3d++6qwSW612L
-         Qy2PHiLfVyNuWpWlk2eR9pbICvHOLSubwinut7li25SC2vP3LQkOJ53uL9jA1C0y8yGx
-         UYIHDU/0R1WX9noC8R+YuiNgnm7SIFk4O5ISzf0a2nptzLEmDPx8N+eSbz2bBlHlPUAF
-         EKLUK8+Y4RmXTcV8qbx9maZTLq5xuzocwA6KfVu3yxeERBG/jhtsvsr8nAVfFSh1Nu+g
-         q9Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=cIeGIDwEX25ldmpB0Z226M8rnhkEGp63Yp0NEvcjQyM=;
-        b=PtGjZXtONXiljlKatOY5x5+gIhD1wV+AkSIktqlHwJXyYuA7OxKT2yXezSAWiLQyCQ
-         p1GJZQl65ZQKQ9TZrVvRTLKQzNlxKvu2Pm+shDQg06TgqXB7Gob1JhB8foMzshiTI6Rw
-         cLdu5ff8Be6P+fNhyocwwjFC8hwmgferEU9cMJ9WTieNPTcoV6tTOnty39/5KthKbA40
-         2TiVoR8z5fqNE6yD4LJE+LdsPmPtYBz/wvLAg9DB2gI9c/N/EZnNn6DDiCT/gMA45Mg3
-         7ljNgRviea2rwr0DP11dxCBTHwJn3lEm6pgI0ZGy6tyfU9GP/dmzBWKjqUvOmF065MH2
-         NolQ==
-X-Gm-Message-State: AOAM533ZHjsMfGRR7L/Bump5yHNvJNjoLMKzBQpaULFHxqQ44fCpFht5
-        P4zLpguMVgbER6OSZA9FXftjQ88ZIECagAKWHWOZFQ==
-X-Google-Smtp-Source: ABdhPJypA1OJ3anBiqKzgFuvUx+sUQdROCHaXV8NFzNKd1pSP7YKC/6bNcHVADdFPGCRcSLgYJ1ESdFxCUM8AN4UN00=
-X-Received: by 2002:a81:3986:: with SMTP id g128mr1556995ywa.129.1644263752610;
- Mon, 07 Feb 2022 11:55:52 -0800 (PST)
+        Mon, 7 Feb 2022 14:56:07 -0500
+X-Greylist: delayed 439 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 11:56:00 PST
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B829C0401DA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:56:00 -0800 (PST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 0B5BA32021EF;
+        Mon,  7 Feb 2022 14:48:38 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Mon, 07 Feb 2022 14:48:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=qdPXUDXW0aWei852djVIbEVF7fBHoOacUefmwT
+        P0fCc=; b=bi/WHUxYvVRZjQyTlknYCHJeQMVWYxRb/Q7v1d5jNgl8PMPLZnN+oK
+        PZHcJZB0W+rJlmgOXXrZKZSGHgvSWDrSGJg7LwTjpMnvqpsu4HF+qpe5YGpgf+YU
+        vU4vId0T+Tu7hrix4zNsThBb0a1AqOZxHGqDW68tZOP0jM41SMikxS0ROl7KG/0m
+        DcFVYlpo4012Zk3GrYh3QYmMkaTqI0+M15x1IaX+YyJzikP3+rNTCAbEtlI/SDSS
+        RdVte8p3PWRvw4wdMaiPjA2MrPLgTtrRwZRR2wSWmV4hzPz9Ld5NmEGSPfo4lrpm
+        g5TKMyWJT2axAIMQpiJ2nnzZvGoXjmPA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=qdPXUDXW0aWei852d
+        jVIbEVF7fBHoOacUefmwTP0fCc=; b=X8oxJSUyDYqjyPsclY8hXODNNK7GNG/j8
+        8uwEFOkjA/bFxuwIoLsmJmeHOjGijvMYDe4Qtqy62H/yDAL452HA8WNVPj+MnBJM
+        willU6XxPgsm2wvF2z731SkDXnJZtUaMKLxPvkI2yFBChBdUhPjvipnPPLqgEFqy
+        P+EYmx112jHIILKtFWt6uTwdrNaFWL2Lys7Xbc7TA2mnrhtRJxHQgPOUUX399cIq
+        7HV4ibI6ID3nBULOBw3/hsvfIzfE5mWchUiCCiC8KN71kLIBl1VjvRQk+0yIqFnR
+        x88koNgbNpXu5XmxbpOIZ+srGVlVH/+fQSz0nMPIEK0qTkQCcoIeA==
+X-ME-Sender: <xms:lncBYhudkACCwopqxxvI-RF1RDk6crTe4RXjDl6jW-01Umpc7wHJQg>
+    <xme:lncBYqdCk7FlZmRRcln65BKvjYzvzBA-WWQrNiGpLfHbMTPmOxitB9N0Umn9QRgJW
+    UlH07az-CflUs91QY4>
+X-ME-Received: <xmr:lncBYkzD6SRY47uMdnyPlGgHFRR0B-jFNzpfeWAQBo2gUXQNVwKyeRK4E-4t12hrhSUdUHTnCXyhuYJ9CthcAtRmsP-Pr4VEBZFhNTU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheehgdduvdeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepkedutdelhfeijeeuudetgfdttdeiteeiuddvtddutdeitefgheeiffdvvefg
+    tedvnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdptddurdhorhhgpdhgihhthhhusg
+    hushgvrhgtohhnthgvnhhtrdgtohhmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghr
+    rghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:lncBYoPb8fOzA9_92AYWo-ncaXGSEkWzqC8LpNcTxHHtvYalityakA>
+    <xmx:lncBYh_tOVw1s1c115aCyYmDs6cQG9DaUr3AS0xxx5ia8tOVUASlJA>
+    <xmx:lncBYoVsLkuLwbaQJ-PFOh-DOkrSk1sYdd32HRiy2eh66EqQ5hgetA>
+    <xmx:lncBYjLfAyHCYQB8xfHFmQQZgFHhtcw_ZFXuFKQT-R9iqdmnvDP2LA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 7 Feb 2022 14:48:37 -0500 (EST)
+Date:   Mon, 7 Feb 2022 20:48:35 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Samuel Holland <samuel@sholland.org>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [sunxi:sunxi/clk-for-5.18 2/2]
+ drivers/clk/sunxi-ng/ccu-sun6i-rtc.h:6:10: fatal error:
+ dt-bindings/clock/sun6i-rtc.h: No such file or directory
+Message-ID: <20220207194835.tsxmhaibya3kbban@houat>
+References: <202202072224.hjVEpIij-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220207133856.644483064@linuxfoundation.org>
-In-Reply-To: <20220207133856.644483064@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 8 Feb 2022 01:25:41 +0530
-Message-ID: <CA+G9fYuCnmRoDu4xDhyKzPX1RB5uj7iw-GUo2=y6KP-_Qcnvzw@mail.gmail.com>
-Subject: Re: [PATCH 5.16 000/127] 5.16.8-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="stq24hziqrn6og6t"
+Content-Disposition: inline
+In-Reply-To: <202202072224.hjVEpIij-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 at 19:34, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.16.8 release.
-> There are 127 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 09 Feb 2022 13:38:34 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.16.8-rc2.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.16.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+--stq24hziqrn6og6t
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+On Mon, Feb 07, 2022 at 10:47:22PM +0800, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git s=
+unxi/clk-for-5.18
+> head:   4f88abd86756e574c733d2ca14676be335cc0058
+> commit: 4f88abd86756e574c733d2ca14676be335cc0058 [2/2] clk: sunxi-ng: Add=
+ support for the sun6i RTC clocks
+> config: powerpc-allyesconfig (https://download.01.org/0day-ci/archive/202=
+20207/202202072224.hjVEpIij-lkp@intel.com/config)
+> compiler: powerpc-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=3D1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbi=
+n/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git=
+/commit/?id=3D4f88abd86756e574c733d2ca14676be335cc0058
+>         git remote add sunxi https://git.kernel.org/pub/scm/linux/kernel/=
+git/sunxi/linux.git
+>         git fetch --no-tags sunxi sunxi/clk-for-5.18
+>         git checkout 4f88abd86756e574c733d2ca14676be335cc0058
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-11.2.0 make.cro=
+ss O=3Dbuild_dir ARCH=3Dpowerpc SHELL=3D/bin/bash
+>=20
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>=20
+> All errors (new ones prefixed by >>):
+>=20
+>    In file included from drivers/clk/sunxi-ng/ccu-sun6i-rtc.c:18:
+> >> drivers/clk/sunxi-ng/ccu-sun6i-rtc.h:6:10: fatal error: dt-bindings/cl=
+ock/sun6i-rtc.h: No such file or directory
+>        6 | #include <dt-bindings/clock/sun6i-rtc.h>
+>          |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    compilation terminated.
 
-## Build
-* kernel: 5.16.8-rc2
-* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
-rc.git
-* git branch: linux-5.16.y
-* git commit: 87d888a197db9443026045ba3c253a1a929114d4
-* git describe: v5.16.7-128-g87d888a197db
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.16.y/build/v5.16=
-.7-128-g87d888a197db
+I've dropped these patches for now
 
-## Test Regressions (compared to v5.16.7)
-No test regressions found.
+Maxime
 
-## Metric Regressions (compared to v5.16.7)
-No metric regressions found.
+--stq24hziqrn6og6t
+Content-Type: application/pgp-signature; name="signature.asc"
 
-## Test Fixes (compared to v5.16.7)
-No test fixes found.
+-----BEGIN PGP SIGNATURE-----
 
-## Metric Fixes (compared to v5.16.7)
-No metric fixes found.
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgF3kwAKCRDj7w1vZxhR
+xdnSAQCaVOCYToJfqw3QTOuUdyxnRGuSxI1ewUGBJiv3+KKkYgEA68loh+EJyzml
+P3VWzq6xeFWP7fLMxPjw37+zqurzLQ8=
+=aDZc
+-----END PGP SIGNATURE-----
 
-## Test result summary
-total: 103985, pass: 89106, fail: 847, skip: 13204, xfail: 828
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 259 total, 259 passed, 0 failed
-* arm64: 37 total, 37 passed, 0 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 36 total, 36 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 34 total, 34 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 52 total, 48 passed, 4 failed
-* riscv: 24 total, 20 passed, 4 failed
-* s390: 18 total, 18 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 37 total, 37 passed, 0 failed
-
-## Test suites summary
-* fwts
-* kselftest-android
-* kselftest-arm64
-* kselftest-arm64/arm64.btitest.bti_c_func
-* kselftest-arm64/arm64.btitest.bti_j_func
-* kselftest-arm64/arm64.btitest.bti_jc_func
-* kselftest-arm64/arm64.btitest.bti_none_func
-* kselftest-arm64/arm64.btitest.nohint_func
-* kselftest-arm64/arm64.btitest.paciasp_func
-* kselftest-arm64/arm64.nobtitest.bti_c_func
-* kselftest-arm64/arm64.nobtitest.bti_j_func
-* kselftest-arm64/arm64.nobtitest.bti_jc_func
-* kselftest-arm64/arm64.nobtitest.bti_none_func
-* kselftest-arm64/arm64.nobtitest.nohint_func
-* kselftest-arm64/arm64.nobtitest.paciasp_func
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-lkdtm
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* prep-tmp-disk
-* rcutorture
-* ssuite
-* v4l2-compliance
-
---
-Linaro LKFT
-https://lkft.linaro.org
+--stq24hziqrn6og6t--
