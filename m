@@ -2,327 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C21C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C7DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353898AbiBGGh5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:37:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33060 "EHLO
+        id S238128AbiBGGgu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:36:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238186AbiBGGdU (ORCPT
+        with ESMTP id S239411AbiBGGag (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:33:20 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A09A7C043185
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:33:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:
-        To:From:Sender:Reply-To:Content-ID:Content-Description;
-        bh=FprCSxOzzhgt/vZhOSgfyqEp3ddGvZRG1UbdNuX2PMc=; b=UwxDJOl0w3Tc1ukfFptssv9q89
-        9iR1FrPpwD+U46r34HDO/qCEmzzoMWkIx7aATXOezYEaExx6dG22CM+sgENWERwKTrXGLtHWK3E0z
-        jd4Hm1fFI0p4hipzo6+ehRMszzaFAcqibfgBSnlrP7V7RlwN9ARXb/tZdJAsL8rVbnL+A1A+3ycLf
-        ppjemEaVPzCqfT8/DAAZ47dItaXNA+cTc1HtotheMsIb6/Jatu8QHcR/CAfzmhSoz3dWVbajEmffZ
-        OSj97pifQbugN4ukyI0wugraPA4GyyfLZofP0mrsteXLa3qvcI96M1dSlkZPmI4UlY1afjewiEe/O
-        vRDGlOJQ==;
-Received: from [2001:4bb8:188:3efc:2cbe:55d7:bb63:46d2] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nGxaG-0099MB-7n; Mon, 07 Feb 2022 06:33:08 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Alistair Popple <apopple@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        nvdimm@lists.linux.dev, linux-mm@kvack.org
-Subject: [PATCH 6/8] mm: don't include <linux/memremap.h> in <linux/mm.h>
-Date:   Mon,  7 Feb 2022 07:32:47 +0100
-Message-Id: <20220207063249.1833066-7-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220207063249.1833066-1-hch@lst.de>
-References: <20220207063249.1833066-1-hch@lst.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Mon, 7 Feb 2022 01:30:36 -0500
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2060.outbound.protection.outlook.com [40.107.20.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657BFC043181;
+        Sun,  6 Feb 2022 22:30:34 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YY5GffQLlPp3ppJZRTgq/WsPvC+tkHETkFbhNHnZy/BPgIfKbSgRsmau/KMb52mRqjy+AyFAjkzNxvZeIN33U71J18EbDoIkH+Hltu/0QO7CxFjyFPmf2SC8wbvcW0s2E+PJsI+1RPZqHYZKVLwyPN9mLKUtU+LEkyHFhxMvKCv53Gz4TXGbJnn6QunyPBXHuPnGWLveK9ZNe9C0FpyprTr218m7H2YFLq8g6rcPA91y2S8LD45CrBqw+lajB5OqOpI8QuaWS4v8TNbrYQIZAB/Xf6MDMVvXeDPN4AdZ/+8raXRetQze0JYt+EG6N0LSFqy3guojI5mqTN5QtgNxNw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FWI5ciy7AGlNTFV7JlN+J8IXDk6YKphtQW50wT9uo1M=;
+ b=fn/SCF0g7Vpst0zHuFwMZ0o2I8eNdqo87m9NRHnOlAS1KvICpxTz9FgdV7kDD9i7ioGiO0WIOzUfaEV/GFbROV0TKi7/axswoOEe+11PPaKdUe2EjjSMrlFQdZkfShr8dOG/79fb2jJLg+fQQqMx01cdmoYL3vR5p6EGQp797LciH7io7L3Q9lMF2zxGp8zd/QyUpS0VOWXtG8xkd17KA78m2yoA2wXHR2Xnl61V3B/Zm89NXH601l2tSN5ZXU3fRS7Yx1xP9mrLxeFPOjzpxjTaXsag+4r+7851JEfXpPhOrAe4S3j6jMg92DiYVy/vZp0C7/gnKkp1fWwxZKWn2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FWI5ciy7AGlNTFV7JlN+J8IXDk6YKphtQW50wT9uo1M=;
+ b=Zl8H5EhyUIL9/H+MT+VQMs5fTbhg1mGFU/PrtSvrlPACiD3qUGmmXn1xgsaZmjubxXYIZG6m6UxXwV+qPatIIES14ZUBLmh+3iAw3ysb0lmNY2e7cq8gJPfeZZ+Tp4mYm31YS4QqsFFmqKUzsTM0KASO1hqgKcQc3l2wo71nSSQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by DB7PR04MB5356.eurprd04.prod.outlook.com (2603:10a6:10:37::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Mon, 7 Feb
+ 2022 06:30:32 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::3d7e:6627:fdd0:9d13]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::3d7e:6627:fdd0:9d13%5]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
+ 06:30:32 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        mirela.rabulea@oss.nxp.com
+Cc:     hverkuil-cisco@xs4all.nl, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v1] media: imx-jpeg: set V4L2_BUF_FLAG_LAST at eos
+Date:   Mon,  7 Feb 2022 14:29:58 +0800
+Message-Id: <20220207062958.15907-1-ming.qian@nxp.com>
+X-Mailer: git-send-email 2.33.0
 Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0171.apcprd06.prod.outlook.com
+ (2603:1096:1:1e::25) To AM6PR04MB6341.eurprd04.prod.outlook.com
+ (2603:10a6:20b:d8::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6170b928-d3ed-4fc0-6f62-08d9ea03572c
+X-MS-TrafficTypeDiagnostic: DB7PR04MB5356:EE_
+X-Microsoft-Antispam-PRVS: <DB7PR04MB53560544D74C072ED8E89952E72C9@DB7PR04MB5356.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:651;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vw5bLp3SnthOw8cUdvRHfNOyleXnmKhNci1CnG7gB9NHriRJfXJ6mM72tw53D2Lcym7S8AMovnPrRXpMFFKX9FLFUNdY8zYiLJ+f0g9UcCo7vxycbAztNuFF028Nri6IZNIZtQ/kedEutbhchNz4uEI+c2YrsYpIS8sr+e4LzwLIcyMnt/72ok3eZw2pH6pFoPGGJL2QGAjWmy/IWYGXds5Yq/Bifafd/uuGXDG1s71ZyMmXWpQHCQNMJzBSL9tf4N52Wk5JAljqhwqN53NJnbemqzIL/8U6gGiH1bqjlkGE7DWYcaczK2ihmUh4myaD0VQ6OicesYWrVD95x0U1nchLEHyY7aHu+2TFGr9IoLX+kOhESJdQgdYjdpdAsqp0oOYbguT8bFbMFXFHazE06VMw8EC6+2RJ74yKvpjm4HRUwUmrVenxAYC7vmmmVRpVqq3dh4OWiOEl7HJlUY03fRBM3UmDkCTMq0zc97NezPKuvY0kXpE1jqqbsySylcaH7ZpLQdSTIBA589PI2Uebu1JbCC/z0NTDS2gTeHFSrRT78frWJ+xgRnCcnKhujseqiFNzUhxKl+EZWfGd5mrtZu63P+WcTtpT1mAYjzAAVgW3Jiziq1aUH8vKwUCZarhhMPRj1/Mih1rLCUd5z05vQyNPWVCnlF5gNcmyQkYHh/59xRw7qi5J3NB7WXXSE3oZb0oYBn8qh1oJclcNosnfuw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(52116002)(6512007)(44832011)(6506007)(38100700002)(38350700002)(86362001)(6666004)(7416002)(2906002)(186003)(316002)(66946007)(83380400001)(66476007)(8936002)(66556008)(4326008)(2616005)(1076003)(6486002)(26005)(8676002)(508600001)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fIBqwleqB+PLOLa+V7bP4Te5liMka1gN9Qu5LvVtAc+XWGTMh85B38F72i9P?=
+ =?us-ascii?Q?YnadOCTvq/PKPO+yKrK6BIitOE38codOQEP3R5ro3DrFWF2kWSEdA4CkI8hr?=
+ =?us-ascii?Q?/S0kvNn4imBZGnxsW7bCm/DxHU3B2LJKscl04InRWEQloLhjD+9ntoU4o61e?=
+ =?us-ascii?Q?fDnnkbzpmgc43UQyFMwE2Qe4NnjxIjMVttylVf6NQSChDHKIQO8vZ3DHD1zi?=
+ =?us-ascii?Q?owcBhEWH7dh2Lmh+gjfZF42wgsvMZygWuGEB1Y5n3ywebrjkkbw8tm/QqfB7?=
+ =?us-ascii?Q?861oubCaBhhpymKfPN0KH/GRLNnOccOeSBGvD6iGUujv7d3pKVYAlZ8S+thP?=
+ =?us-ascii?Q?ew193DV0JYOzA3wg7cphjRd2S9b3fnD1LWE76tVj+13Tfs2YPLtl5TxKy1fL?=
+ =?us-ascii?Q?FJc2vr84zBdgPNRaf+yi/a6dLp5jU4V51mtYcTIK3N5fNYGevBVlTWGWyIFo?=
+ =?us-ascii?Q?yBX+iCVQ59isKklCOjiEjN1O2GODmTAiH26CHV11RY9g6HAnsCv38dGaHH3P?=
+ =?us-ascii?Q?w2RKrby/YVs8BKSt8cMz9IZlPln4tS1N95Ayzu2V7A8hbMXsJW+5PD8YJ1XF?=
+ =?us-ascii?Q?5UiAYlQZCXEiMZY+3S29IxJXxkB3J/ksjHrT7K9JqARWg6GlBpnNXeCYL9rd?=
+ =?us-ascii?Q?7OicZBgERym51f1fTcZM6ycFaOD+d6iYaudDbmT/9uc2gDYjXzBWMNm9yLm7?=
+ =?us-ascii?Q?Vc4coOefgplM62totcVei12QVPaYSORvmwxNeBzwrRefwepeYMCM+DKW+aOa?=
+ =?us-ascii?Q?MKXs2t3aqcLkm08hU4BROIO0lW9n2bTputiUoZ2NsttUONUdhXtdTJs399lU?=
+ =?us-ascii?Q?f9P8IyaeUO34AB8QRrxFkmsmFJX+OCS++MDmobmUw4whFRa06TrXxa32Ya1N?=
+ =?us-ascii?Q?n6LCZM1d+VWabUNYfewXDCjGqg05csVlyaYqdGTyjPKrSyywBzZ9SHXRjUpo?=
+ =?us-ascii?Q?pj34KtYRy6WRC4DvtODgkyELPoND2/5UOy//NBFA+LbTkJID9KZOhJl4Ezhc?=
+ =?us-ascii?Q?29tjlMWWwNqwrPcMYXnR9oNAsux4BXgf4nj47VsAVq9aYJBpN9p6/ZgIhD1c?=
+ =?us-ascii?Q?7+bfT4mn136EAtefIMQS9dcV9dfSNzt2TPXQ9N8ljfDHhHud1NJ4DcfK07sX?=
+ =?us-ascii?Q?PvCWgcxcDE1RDUlNrl+UaEnuZwHCBGUFhgYeaMCJNkCYBLqVAqxi9oqbYoDb?=
+ =?us-ascii?Q?PEnkGyB4OkN9A1/H3iV9rA+yVm1obYflLOefn8aAqHUiDPxV8UjEr2ECGKoh?=
+ =?us-ascii?Q?cO+UQwvA68MEAqHjKXGNRJB5UZZ3DmpeYLEL2cwjASc8Fbm5GYpbZttYdLFn?=
+ =?us-ascii?Q?kOL4eeH5i6wxMhQHkjKoNAqZxhD14i77TuVjkuHhRWMwEwRs3eSpdt+OyGcO?=
+ =?us-ascii?Q?swgpnv8M4ap1E7z51j4XEjxOKoGFkyXKEFfDj1Oni2JZvIrAeP2cShyXXlDR?=
+ =?us-ascii?Q?SfZeFKQdcjmSvTBnKfM1cZM9JmQSdSUsnCsAVdp7+Tpcq2EkOqCSzgym0dqX?=
+ =?us-ascii?Q?gDoWOo1CWnAR17P93dF+Pcfhcxvwfl9ojQhuFMB7K7+DdSNUg9Xu12xBqtom?=
+ =?us-ascii?Q?6OwODklQy/73/FxPdOg3/hfLbuvc3soNcZz2TbPOvxJU72I8lV8aIdw20hHT?=
+ =?us-ascii?Q?U3dm0RByvMsPOwHzPNkLCgE=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6170b928-d3ed-4fc0-6f62-08d9ea03572c
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 06:30:31.9685
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 78Q1nfPdzFWWaCIO9IJq1lCs/fI31sWWAw+IFC8Jtvi7lu3/Vp+5cMGGwjq5ZPkqnPdNrRk03eVFOM1E27uUsQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5356
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the check for the actual pgmap types that need the free at refcount
-one behavior into the out of line helper, and thus avoid the need to
-pull memremap.h into mm.h.
+the V4L2_EVENT_EOS event is a deprecated behavior,
+The V4L2_BUF_FLAG_LAST buffer flag should be used instead.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
 ---
- arch/arm64/mm/mmu.c                    |  1 +
- drivers/gpu/drm/amd/amdkfd/kfd_priv.h  |  1 +
- drivers/gpu/drm/drm_cache.c            |  2 +-
- drivers/gpu/drm/nouveau/nouveau_dmem.c |  1 +
- drivers/gpu/drm/nouveau/nouveau_svm.c  |  1 +
- drivers/infiniband/core/rw.c           |  1 +
- drivers/nvdimm/pmem.h                  |  1 +
- drivers/nvme/host/pci.c                |  1 +
- drivers/nvme/target/io-cmd-bdev.c      |  1 +
- fs/fuse/virtio_fs.c                    |  1 +
- include/linux/memremap.h               | 18 ++++++++++++++++++
- include/linux/mm.h                     | 20 --------------------
- lib/test_hmm.c                         |  1 +
- mm/memremap.c                          |  6 +++++-
- 14 files changed, 34 insertions(+), 22 deletions(-)
+ drivers/media/platform/imx-jpeg/mxc-jpeg.c | 45 +++++++++++++++++++++-
+ drivers/media/platform/imx-jpeg/mxc-jpeg.h |  1 +
+ 2 files changed, 44 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
-index acfae9b41cc8c9..580abae6c0b93f 100644
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -17,6 +17,7 @@
- #include <linux/mman.h>
- #include <linux/nodemask.h>
- #include <linux/memblock.h>
-+#include <linux/memremap.h>
- #include <linux/memory.h>
- #include <linux/fs.h>
- #include <linux/io.h>
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
-index ea68f3b3a4e9cb..6d643b4b791d87 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_priv.h
-@@ -25,6 +25,7 @@
- 
- #include <linux/hashtable.h>
- #include <linux/mmu_notifier.h>
-+#include <linux/memremap.h>
- #include <linux/mutex.h>
- #include <linux/types.h>
- #include <linux/atomic.h>
-diff --git a/drivers/gpu/drm/drm_cache.c b/drivers/gpu/drm/drm_cache.c
-index f19d9acbe95936..50b8a088f763a6 100644
---- a/drivers/gpu/drm/drm_cache.c
-+++ b/drivers/gpu/drm/drm_cache.c
-@@ -27,11 +27,11 @@
- /*
-  * Authors: Thomas Hellström <thomas-at-tungstengraphics-dot-com>
-  */
--
- #include <linux/dma-buf-map.h>
- #include <linux/export.h>
- #include <linux/highmem.h>
- #include <linux/cc_platform.h>
-+#include <linux/ioport.h>
- #include <xen/xen.h>
- 
- #include <drm/drm_cache.h>
-diff --git a/drivers/gpu/drm/nouveau/nouveau_dmem.c b/drivers/gpu/drm/nouveau/nouveau_dmem.c
-index e886a3b9e08c7d..a5cdfbe32b5e54 100644
---- a/drivers/gpu/drm/nouveau/nouveau_dmem.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_dmem.c
-@@ -39,6 +39,7 @@
- 
- #include <linux/sched/mm.h>
- #include <linux/hmm.h>
-+#include <linux/memremap.h>
- #include <linux/migrate.h>
- 
- /*
-diff --git a/drivers/gpu/drm/nouveau/nouveau_svm.c b/drivers/gpu/drm/nouveau/nouveau_svm.c
-index 266809e511e2c1..090b9b47708cca 100644
---- a/drivers/gpu/drm/nouveau/nouveau_svm.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_svm.c
-@@ -35,6 +35,7 @@
- #include <linux/sched/mm.h>
- #include <linux/sort.h>
- #include <linux/hmm.h>
-+#include <linux/memremap.h>
- #include <linux/rmap.h>
- 
- struct nouveau_svm {
-diff --git a/drivers/infiniband/core/rw.c b/drivers/infiniband/core/rw.c
-index 5a3bd41b331c93..4d98f931a13ddd 100644
---- a/drivers/infiniband/core/rw.c
-+++ b/drivers/infiniband/core/rw.c
-@@ -2,6 +2,7 @@
- /*
-  * Copyright (c) 2016 HGST, a Western Digital Company.
-  */
-+#include <linux/memremap.h>
- #include <linux/moduleparam.h>
- #include <linux/slab.h>
- #include <linux/pci-p2pdma.h>
-diff --git a/drivers/nvdimm/pmem.h b/drivers/nvdimm/pmem.h
-index 59cfe13ea8a85c..1f51a23614299b 100644
---- a/drivers/nvdimm/pmem.h
-+++ b/drivers/nvdimm/pmem.h
-@@ -3,6 +3,7 @@
- #define __NVDIMM_PMEM_H__
- #include <linux/page-flags.h>
- #include <linux/badblocks.h>
-+#include <linux/memremap.h>
- #include <linux/types.h>
- #include <linux/pfn_t.h>
- #include <linux/fs.h>
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 6a99ed68091589..ab15bc72710dbe 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -15,6 +15,7 @@
- #include <linux/init.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
-+#include <linux/memremap.h>
- #include <linux/mm.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-diff --git a/drivers/nvme/target/io-cmd-bdev.c b/drivers/nvme/target/io-cmd-bdev.c
-index 70ca9dfc1771a9..a141446db1bea3 100644
---- a/drivers/nvme/target/io-cmd-bdev.c
-+++ b/drivers/nvme/target/io-cmd-bdev.c
-@@ -6,6 +6,7 @@
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- #include <linux/blkdev.h>
- #include <linux/blk-integrity.h>
-+#include <linux/memremap.h>
- #include <linux/module.h>
- #include "nvmet.h"
- 
-diff --git a/fs/fuse/virtio_fs.c b/fs/fuse/virtio_fs.c
-index 9d737904d07c0b..86b7dbb6a0d43e 100644
---- a/fs/fuse/virtio_fs.c
-+++ b/fs/fuse/virtio_fs.c
-@@ -8,6 +8,7 @@
- #include <linux/dax.h>
- #include <linux/pci.h>
- #include <linux/pfn_t.h>
-+#include <linux/memremap.h>
- #include <linux/module.h>
- #include <linux/virtio.h>
- #include <linux/virtio_fs.h>
-diff --git a/include/linux/memremap.h b/include/linux/memremap.h
-index 1fafcc38acbad6..514ab46f597e5c 100644
---- a/include/linux/memremap.h
-+++ b/include/linux/memremap.h
-@@ -1,6 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- #ifndef _LINUX_MEMREMAP_H_
- #define _LINUX_MEMREMAP_H_
-+
-+#include <linux/mm.h>
- #include <linux/range.h>
- #include <linux/ioport.h>
- #include <linux/percpu-refcount.h>
-@@ -129,6 +131,22 @@ static inline unsigned long pgmap_vmemmap_nr(struct dev_pagemap *pgmap)
- 	return 1 << pgmap->vmemmap_shift;
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+index 86d37d14cfe2..22572a1ae7a4 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+@@ -991,6 +991,20 @@ static void mxc_jpeg_device_run(void *priv)
+ 	spin_unlock_irqrestore(&ctx->mxc_jpeg->hw_lock, flags);
  }
  
-+static inline bool is_device_private_page(const struct page *page)
++static void mxc_jpeg_set_last_buffer_dequeued(struct mxc_jpeg_ctx *ctx)
 +{
-+	return IS_ENABLED(CONFIG_DEV_PAGEMAP_OPS) &&
-+		IS_ENABLED(CONFIG_DEVICE_PRIVATE) &&
-+		is_zone_device_page(page) &&
-+		page->pgmap->type == MEMORY_DEVICE_PRIVATE;
++	struct vb2_queue *q;
++
++	ctx->stopped = 1;
++	q = v4l2_m2m_get_dst_vq(ctx->fh.m2m_ctx);
++	if (!list_empty(&q->done_list))
++		return;
++
++	q->last_buffer_dequeued = true;
++	wake_up(&q->done_wq);
++	ctx->stopped = 0;
 +}
 +
-+static inline bool is_pci_p2pdma_page(const struct page *page)
-+{
-+	return IS_ENABLED(CONFIG_DEV_PAGEMAP_OPS) &&
-+		IS_ENABLED(CONFIG_PCI_P2PDMA) &&
-+		is_zone_device_page(page) &&
-+		page->pgmap->type == MEMORY_DEVICE_PCI_P2PDMA;
-+}
-+
- #ifdef CONFIG_ZONE_DEVICE
- void *memremap_pages(struct dev_pagemap *pgmap, int nid);
- void memunmap_pages(struct dev_pagemap *pgmap);
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 26baadcef4556b..80fccfe31c3444 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -23,7 +23,6 @@
- #include <linux/err.h>
- #include <linux/page-flags.h>
- #include <linux/page_ref.h>
--#include <linux/memremap.h>
- #include <linux/overflow.h>
- #include <linux/sizes.h>
- #include <linux/sched.h>
-@@ -1101,9 +1100,6 @@ static inline bool put_devmap_managed_page(struct page *page)
- 		return false;
- 	if (!is_zone_device_page(page))
- 		return false;
--	if (page->pgmap->type != MEMORY_DEVICE_PRIVATE &&
--	    page->pgmap->type != MEMORY_DEVICE_FS_DAX)
--		return false;
- 	return __put_devmap_managed_page(page);
- }
- 
-@@ -1114,22 +1110,6 @@ static inline bool put_devmap_managed_page(struct page *page)
- }
- #endif /* CONFIG_DEV_PAGEMAP_OPS */
- 
--static inline bool is_device_private_page(const struct page *page)
--{
--	return IS_ENABLED(CONFIG_DEV_PAGEMAP_OPS) &&
--		IS_ENABLED(CONFIG_DEVICE_PRIVATE) &&
--		is_zone_device_page(page) &&
--		page->pgmap->type == MEMORY_DEVICE_PRIVATE;
--}
--
--static inline bool is_pci_p2pdma_page(const struct page *page)
--{
--	return IS_ENABLED(CONFIG_DEV_PAGEMAP_OPS) &&
--		IS_ENABLED(CONFIG_PCI_P2PDMA) &&
--		is_zone_device_page(page) &&
--		page->pgmap->type == MEMORY_DEVICE_PCI_P2PDMA;
--}
--
- /* 127: arbitrary random number, small enough to assemble well */
- #define folio_ref_zero_or_close_to_overflow(folio) \
- 	((unsigned int) folio_ref_count(folio) + 127u <= 127u)
-diff --git a/lib/test_hmm.c b/lib/test_hmm.c
-index 396beee6b061d4..e5fc14ba71f33e 100644
---- a/lib/test_hmm.c
-+++ b/lib/test_hmm.c
-@@ -12,6 +12,7 @@
- #include <linux/kernel.h>
- #include <linux/cdev.h>
- #include <linux/device.h>
-+#include <linux/memremap.h>
- #include <linux/mutex.h>
- #include <linux/rwsem.h>
- #include <linux/sched.h>
-diff --git a/mm/memremap.c b/mm/memremap.c
-index f41233a67edb12..a0ece2344c2cab 100644
---- a/mm/memremap.c
-+++ b/mm/memremap.c
-@@ -4,7 +4,7 @@
- #include <linux/io.h>
- #include <linux/kasan.h>
- #include <linux/memory_hotplug.h>
--#include <linux/mm.h>
-+#include <linux/memremap.h>
- #include <linux/pfn_t.h>
- #include <linux/swap.h>
- #include <linux/mmzone.h>
-@@ -504,6 +504,10 @@ void free_devmap_managed_page(struct page *page)
- 
- bool __put_devmap_managed_page(struct page *page)
+ static int mxc_jpeg_decoder_cmd(struct file *file, void *priv,
+ 				struct v4l2_decoder_cmd *cmd)
  {
-+	if (page->pgmap->type != MEMORY_DEVICE_PRIVATE &&
-+	    page->pgmap->type != MEMORY_DEVICE_FS_DAX)
-+		return false;
+@@ -1008,6 +1022,10 @@ static int mxc_jpeg_decoder_cmd(struct file *file, void *priv,
+ 		if (v4l2_m2m_num_src_bufs_ready(fh->m2m_ctx) == 0) {
+ 			/* No more src bufs, notify app EOS */
+ 			notify_eos(ctx);
++			if (!mutex_lock_interruptible(&ctx->mxc_jpeg->lock)) {
++				mxc_jpeg_set_last_buffer_dequeued(ctx);
++				mutex_unlock(&ctx->mxc_jpeg->lock);
++			}
+ 		} else {
+ 			/* will send EOS later*/
+ 			ctx->stopping = 1;
+@@ -1034,6 +1052,10 @@ static int mxc_jpeg_encoder_cmd(struct file *file, void *priv,
+ 		if (v4l2_m2m_num_src_bufs_ready(fh->m2m_ctx) == 0) {
+ 			/* No more src bufs, notify app EOS */
+ 			notify_eos(ctx);
++			if (!mutex_lock_interruptible(&ctx->mxc_jpeg->lock)) {
++				mxc_jpeg_set_last_buffer_dequeued(ctx);
++				mutex_unlock(&ctx->mxc_jpeg->lock);
++			}
+ 		} else {
+ 			/* will send EOS later*/
+ 			ctx->stopping = 1;
+@@ -1110,6 +1132,8 @@ static void mxc_jpeg_stop_streaming(struct vb2_queue *q)
+ 		v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
+ 	}
+ 	pm_runtime_put_sync(&ctx->mxc_jpeg->pdev->dev);
++	ctx->stopping = 0;
++	ctx->stopped = 0;
+ }
+ 
+ static int mxc_jpeg_valid_comp_id(struct device *dev,
+@@ -1401,12 +1425,29 @@ static int mxc_jpeg_buf_prepare(struct vb2_buffer *vb)
+ 	return 0;
+ }
+ 
++static void mxc_jpeg_buf_finish(struct vb2_buffer *vb)
++{
++	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
++	struct mxc_jpeg_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
++	struct vb2_queue *q = vb->vb2_queue;
 +
- 	/*
- 	 * devmap page refcounts are 1-based, rather than 0-based: if
- 	 * refcount is 1, then the page is free and the refcount is
++	if (V4L2_TYPE_IS_OUTPUT(vb->type))
++		return;
++	if (!ctx->stopped)
++		return;
++	if (list_empty(&q->done_list)) {
++		vbuf->flags |= V4L2_BUF_FLAG_LAST;
++		ctx->stopped = 0;
++	}
++}
++
+ static const struct vb2_ops mxc_jpeg_qops = {
+ 	.queue_setup		= mxc_jpeg_queue_setup,
+ 	.wait_prepare		= vb2_ops_wait_prepare,
+ 	.wait_finish		= vb2_ops_wait_finish,
+ 	.buf_out_validate	= mxc_jpeg_buf_out_validate,
+ 	.buf_prepare		= mxc_jpeg_buf_prepare,
++	.buf_finish             = mxc_jpeg_buf_finish,
+ 	.start_streaming	= mxc_jpeg_start_streaming,
+ 	.stop_streaming		= mxc_jpeg_stop_streaming,
+ 	.buf_queue		= mxc_jpeg_buf_queue,
+@@ -1842,14 +1883,14 @@ static int mxc_jpeg_dqbuf(struct file *file, void *priv,
+ 	int ret;
+ 
+ 	dev_dbg(dev, "DQBUF type=%d, index=%d", buf->type, buf->index);
+-	if (ctx->stopping == 1	&& num_src_ready == 0) {
++	if (ctx->stopping == 1 && num_src_ready == 0) {
+ 		/* No more src bufs, notify app EOS */
+ 		notify_eos(ctx);
+ 		ctx->stopping = 0;
++		mxc_jpeg_set_last_buffer_dequeued(ctx);
+ 	}
+ 
+ 	ret = v4l2_m2m_dqbuf(file, fh->m2m_ctx, buf);
+-
+ 	return ret;
+ }
+ 
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.h b/drivers/media/platform/imx-jpeg/mxc-jpeg.h
+index 9fb2a5aaa941..f53f004ba851 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.h
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.h
+@@ -91,6 +91,7 @@ struct mxc_jpeg_ctx {
+ 	struct v4l2_fh			fh;
+ 	enum mxc_jpeg_enc_state		enc_state;
+ 	unsigned int			stopping;
++	unsigned int			stopped;
+ 	unsigned int			slot;
+ };
+ 
 -- 
-2.30.2
+2.33.0
 
