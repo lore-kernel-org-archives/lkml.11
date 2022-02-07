@@ -2,107 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C24C47086
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D2FC352AA
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232047AbiBHBE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:04:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
+        id S1345225AbiBHBEg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:04:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343611AbiBGXmn (ORCPT
+        with ESMTP id S245715AbiBGX2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:42:43 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EF6C061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:42:41 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id s185so18818260oie.3
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 15:42:40 -0800 (PST)
+        Mon, 7 Feb 2022 18:28:17 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBE6C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:28:16 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id cz16so15320580edb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 15:28:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=X94FZ2c+7TUXwZqG/jE1cAOFdmfyxcJBnlGMdedsJC0=;
-        b=EEKRZvEo5wj8N0q0UazmMypoDWIzYj1SS/fXmHO1sqtNkhMVbrCRUiMCrKYkMeCx/A
-         P+XQa5R/00XOevC4mc/SJ8/E3zA9DemKHgMSzKxZHVE6hxcFvSWAFoW9ulhXxGeySoV0
-         /65iUadXmZYasgRtATsjOhYWm7vsiO0Bzen5UU7clkaivpJwXqAZF0Fpz/StHIIsMLxV
-         /qjBwGKsYY1VwF/rTtOhaZdwXGTjJV21S7sJAz3lEADVRCfouU6J1O1/BiF+O7MpBgVB
-         WTtBz1CE9VWApuIMr8AHs4drbcqBr0k5xEXn+QfhPKTPNdkpgj7v1GPtF+F6/5KNYsu7
-         z7nQ==
+        bh=STukwnHLJ5JlQRTYdPROsCoSZDqNrbFLjrqiynzZIGo=;
+        b=V1LxTsspX/2KvteenHDf18lalZxHNEVBq4cfehyDGPcEMldBsF1aN+NyubcTrnYnZP
+         grCXV5UnY7xQB3Yf4Pbs77nsnZDwdkrh4g3rHHu7AFYi20uhNplepumFGBZa+phjsarp
+         Y+z9CZ9nxLRzdcqOq80GxU85D0BQTw5NaiCUXxhE70ABGJiPv8slPFiW0XA3opcK4Pm+
+         eoUs+lyeDd6OabER4VzIqTzv7h5UKHhnYCrWzSYkpTZVdI3UmnsBi5tYnbgT5RpDTfyx
+         yxRpg3fyXDz1likmSTgfNhK4gortG49lQ1p48V/9Kiq5qujXRLFoLg1Cfe4cdBCc/rPy
+         mY8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=X94FZ2c+7TUXwZqG/jE1cAOFdmfyxcJBnlGMdedsJC0=;
-        b=LaT78VMnD5eyCFmunISTZPOo8H81qW77Y+caIj6dHeD0ejxVVkB5nXqu1346JISlpz
-         0O/v5Gl3yscmO/172lLsKmh+BX9UIvXiHxF0UAFbAvHhK8tByIsSQhL8oJ5vtnzHg2kl
-         9UF8PIuiNwlTQzmjwhCG2cXQbDFPvI3YDYWiwJKtvj9HWZx98MikaBnfLxDUxsT6kmct
-         gEA4rx8VlOVCUdNVvtTwOUt5+fRmnexDl7syH0J+kb+I86YWag+JhyR6tHWweiLp4n6Q
-         Lccb/X9ulOqJpXsqRg9+Z/mrmA8yGWOXbmtpx1PCL1O/bMksAxlk95UcG7IpXxCMDqM1
-         jmPg==
-X-Gm-Message-State: AOAM53341/evPVpgkwcCJvYLij5JzpBSiu60rCbrnxWHCtr5oZjWODZG
-        Uu1y9rl/BZYVa5NjI4A7DSU=
-X-Google-Smtp-Source: ABdhPJwex7LwSxsPOqDgiTeSbxDjuSKwRYmdSxhr9EFfsRIDBn7ix6ZU0W0bEvpF5TJxPYOnGM5Pdg==
-X-Received: by 2002:a05:6808:2188:: with SMTP id be8mr620443oib.63.1644277360326;
-        Mon, 07 Feb 2022 15:42:40 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:4cd8:12bf:4134:806a:5a4a:2a88])
-        by smtp.gmail.com with ESMTPSA id w20sm4590903ooe.3.2022.02.07.15.42.37
+        bh=STukwnHLJ5JlQRTYdPROsCoSZDqNrbFLjrqiynzZIGo=;
+        b=YfuqjpTUP6Y3Ds5MhEi/9pOICmzrPLnJ/Lg+xzAY7aL6gNjBBF0Ovh0iwL8e4eXTxD
+         S9GpA4+NisTqB21DCdxFJdCcq2tCs5twBOlnCZpODtIC/HZkFD/jYPUgQvCB7AuuXMTR
+         Jb91cOfk7ePe6DzVI+5upbLH2Ql22Vtq7u/HfNZ233cctbdvXoaEwrn0TxkNpvLnsV8l
+         rnibPekGQrtIuUMQQN0MydBtRSyi5Iy/T4as+D79jj95nzSzSZ27/Og72lSUF5xjqqRG
+         c2Eq8+fO1GgDUlEH1p/iuQrSFF8p5bElr9TbPDnQMqmCVxkPRAngeY/o+JS+hw6P6lYn
+         sC3w==
+X-Gm-Message-State: AOAM532qmizyPS53z/nDa+0a7E9liCWYq45oj+6cEho0QuV3XUOIVJWQ
+        9+HjqLBYZPPsnerRHHd3SlM=
+X-Google-Smtp-Source: ABdhPJxFIkBlfI0ZUVxiZnz5qy93KNnZAceYCmxedK9MI9MRjx1vOEdwSVgvmh6jaNA4WY4bL0LTxw==
+X-Received: by 2002:aa7:dd15:: with SMTP id i21mr1759125edv.198.1644276495213;
+        Mon, 07 Feb 2022 15:28:15 -0800 (PST)
+Received: from ubuntu-laptop.speedport.ip (p200300c58721e9801b2c6bc4bf3c75fd.dip0.t-ipconnect.de. [2003:c5:8721:e980:1b2c:6bc4:bf3c:75fd])
+        by smtp.gmail.com with ESMTPSA id j12sm1776765ejc.83.2022.02.07.15.28.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 15:42:39 -0800 (PST)
-From:   Leonardo Araujo <leonardo.aa88@gmail.com>
-To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Leonardo Araujo <leonardo.aa88@gmail.com>
-Subject: [PATCH] Staging: r8188eu: core: 'associcated' may be misspelled - perhaps 'associated'?
-Date:   Mon,  7 Feb 2022 20:42:10 -0300
-Message-Id: <20220207234210.26097-1-leonardo.aa88@gmail.com>
-X-Mailer: git-send-email 2.29.0
+        Mon, 07 Feb 2022 15:28:14 -0800 (PST)
+From:   Bean Huo <huobean@gmail.com>
+To:     kbusch@kernel.org, axboe@fb.com, hch@lst.de, sagi@grimberg.me,
+        linux-nvme@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, beanhuo@micron.com
+Subject: [PATCH] nvme: add nvme_complete_req tracepoint for batched completion
+Date:   Tue,  8 Feb 2022 00:28:06 +0100
+Message-Id: <20220207232806.411801-1-huobean@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fixes the following checkpatch.pl warning:
+From: Bean Huo <beanhuo@micron.com>
 
-CHECK: 'associcated' may be misspelled - perhaps 'associated'?
+Add NVMe request completion trace in nvme_complete_batch_req() because
+nvme:nvme_complete_req tracepoint is missing in case of request batched
+completion.
 
-Signed-off-by: Leonardo Araujo <leonardo.aa88@gmail.com>
+Signed-off-by: Bean Huo <beanhuo@micron.com>
 ---
- drivers/staging/r8188eu/core/rtw_ap.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/nvme/host/core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_ap.c b/drivers/staging/r8188eu/core/rtw_ap.c
-index 1675e2e8439c..e02dd8e11c95 100644
---- a/drivers/staging/r8188eu/core/rtw_ap.c
-+++ b/drivers/staging/r8188eu/core/rtw_ap.c
-@@ -819,7 +819,7 @@ static int rtw_ht_operation_update(struct adapter *padapter)
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 5e0bfda04bd7..eaf0b18ff29e 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -368,6 +368,7 @@ EXPORT_SYMBOL_GPL(nvme_complete_rq);
  
- void associated_clients_update(struct adapter *padapter, u8 updated)
+ void nvme_complete_batch_req(struct request *req)
  {
--	/* update associcated stations cap. */
-+	/* update associated stations cap. */
- 	if (updated) {
- 		struct list_head *phead, *plist;
- 		struct sta_info *psta = NULL;
-@@ -972,7 +972,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
- 		update_beacon(padapter, _HT_ADD_INFO_IE_, NULL, true);
- 	}
- 
--	/* update associcated stations cap. */
-+	/* update associated stations cap. */
- 	associated_clients_update(padapter,  beacon_updated);
- 
- 	DBG_88E("%s, updated =%d\n", __func__, beacon_updated);
-@@ -1036,7 +1036,7 @@ u8 bss_cap_update_on_sta_leave(struct adapter *padapter, struct sta_info *psta)
- 		update_beacon(padapter, _HT_ADD_INFO_IE_, NULL, true);
- 	}
- 
--	/* update associcated stations cap. */
-+	/* update associated stations cap. */
- 
- 	DBG_88E("%s, updated =%d\n", __func__, beacon_updated);
- 
++	trace_nvme_complete_rq(req);
+ 	nvme_cleanup_cmd(req);
+ 	nvme_end_req_zoned(req);
+ }
 -- 
-2.29.0
+2.25.1
 
