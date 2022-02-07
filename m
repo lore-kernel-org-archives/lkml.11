@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A06F0C352A7
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0C4C38161
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355894AbiBGLMs (ORCPT
+        id S1356244AbiBGLM7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48548 "EHLO
+        Mon, 7 Feb 2022 06:12:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244593AbiBGLJb (ORCPT
+        with ESMTP id S1346277AbiBGLJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:09:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BACBC0401C0;
-        Mon,  7 Feb 2022 03:09:31 -0800 (PST)
+        Mon, 7 Feb 2022 06:09:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57674C043181;
+        Mon,  7 Feb 2022 03:09:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3513B81028;
-        Mon,  7 Feb 2022 11:09:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27F17C004E1;
-        Mon,  7 Feb 2022 11:09:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7E1B61261;
+        Mon,  7 Feb 2022 11:09:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ADC9C004E1;
+        Mon,  7 Feb 2022 11:09:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232168;
-        bh=h26siPkwY4qdDG27Hy2p6yoYlHa37dXXGoSZUXxo4xk=;
+        s=korg; t=1644232187;
+        bh=A73VDMZcIsuiSE1vytGOv6KnVkctfiB40PR3pOzmyJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lrKnfzNuoat0sRiKnchMQ2otr1fFTkRvZveY6vttu7cQ2pZa/JQdMtOs31Dp4Yqb3
-         1vkuWQ72SNynuxAROO08ZPY4QKOVFVOXb3RXL/z6UjpVAJovuHQyl6uZ75b1SrgUlB
-         uB9a8OlQkyIR3K2NdUMaCCBRHmxk4yNazKnp9JhA=
+        b=tlczAESGOFMMkwyNez/AXNDs8Mnn6H72JVWaAkkxd/ujkpIcH+2Qj/xqfyCQBg5st
+         HsfdB7aMkxi0iDO/hJspXqaQg9Y6K0Vwp4xte7QCN2pOUj8MG8AXhboTYp3rxxoVYw
+         Xt+Y1j3MvJb0XR1gfOfvHQxolKbJlzEqiIJyWUhg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.9 38/48] spi: bcm-qspi: check for valid cs before applying chip select
-Date:   Mon,  7 Feb 2022 12:06:11 +0100
-Message-Id: <20220207103753.577049817@linuxfoundation.org>
+        stable@vger.kernel.org, Guangwu Zhang <guazhang@redhat.com>,
+        Saurav Kashyap <skashyap@marvell.com>,
+        John Meneghini <jmeneghi@redhat.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 4.9 43/48] scsi: bnx2fc: Make bnx2fc_recv_frame() mp safe
+Date:   Mon,  7 Feb 2022 12:06:16 +0100
+Message-Id: <20220207103753.730454805@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -50,36 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Dasu <kdasu.kdev@gmail.com>
+From: John Meneghini <jmeneghi@redhat.com>
 
-commit 2cbd27267ffe020af1442b95ec57f59a157ba85c upstream.
+commit 936bd03405fc83ba039d42bc93ffd4b88418f1d3 upstream.
 
-Apply only valid chip select value. This change fixes case where chip
-select is set to initial value of '-1' during probe and  PM supend and
-subsequent resume can try to use the value with undefined behaviour.
-Also in case where gpio based chip select, the check in
-bcm_qspi_chip_select() shall prevent undefined behaviour on resume.
+Running tests with a debug kernel shows that bnx2fc_recv_frame() is
+modifying the per_cpu lport stats counters in a non-mpsafe way.  Just boot
+a debug kernel and run the bnx2fc driver with the hardware enabled.
 
-Fixes: fa236a7ef240 ("spi: bcm-qspi: Add Broadcom MSPI driver")
-Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220127185359.27322-1-kdasu.kdev@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+[ 1391.699147] BUG: using smp_processor_id() in preemptible [00000000] code: bnx2fc_
+[ 1391.699160] caller is bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
+[ 1391.699174] CPU: 2 PID: 4355 Comm: bnx2fc_l2_threa Kdump: loaded Tainted: G    B
+[ 1391.699180] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
+[ 1391.699183] Call Trace:
+[ 1391.699188]  dump_stack_lvl+0x57/0x7d
+[ 1391.699198]  check_preemption_disabled+0xc8/0xd0
+[ 1391.699205]  bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
+[ 1391.699215]  ? do_raw_spin_trylock+0xb5/0x180
+[ 1391.699221]  ? bnx2fc_npiv_create_vports.isra.0+0x4e0/0x4e0 [bnx2fc]
+[ 1391.699229]  ? bnx2fc_l2_rcv_thread+0xb7/0x3a0 [bnx2fc]
+[ 1391.699240]  bnx2fc_l2_rcv_thread+0x1af/0x3a0 [bnx2fc]
+[ 1391.699250]  ? bnx2fc_ulp_init+0xc0/0xc0 [bnx2fc]
+[ 1391.699258]  kthread+0x364/0x420
+[ 1391.699263]  ? _raw_spin_unlock_irq+0x24/0x50
+[ 1391.699268]  ? set_kthread_struct+0x100/0x100
+[ 1391.699273]  ret_from_fork+0x22/0x30
+
+Restore the old get_cpu/put_cpu code with some modifications to reduce the
+size of the critical section.
+
+Link: https://lore.kernel.org/r/20220124145110.442335-1-jmeneghi@redhat.com
+Fixes: d576a5e80cd0 ("bnx2fc: Improve stats update mechanism")
+Tested-by: Guangwu Zhang <guazhang@redhat.com>
+Acked-by: Saurav Kashyap <skashyap@marvell.com>
+Signed-off-by: John Meneghini <jmeneghi@redhat.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-bcm-qspi.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/bnx2fc/bnx2fc_fcoe.c |   21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
---- a/drivers/spi/spi-bcm-qspi.c
-+++ b/drivers/spi/spi-bcm-qspi.c
-@@ -546,7 +546,7 @@ static void bcm_qspi_chip_select(struct
- 	u32 rd = 0;
- 	u32 wr = 0;
+--- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
++++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
+@@ -521,7 +521,8 @@ static int bnx2fc_l2_rcv_thread(void *ar
  
--	if (qspi->base[CHIP_SELECT]) {
-+	if (cs >= 0 && qspi->base[CHIP_SELECT]) {
- 		rd = bcm_qspi_read(qspi, CHIP_SELECT, 0);
- 		wr = (rd & ~0xff) | (1 << cs);
- 		if (rd == wr)
+ static void bnx2fc_recv_frame(struct sk_buff *skb)
+ {
+-	u32 fr_len;
++	u64 crc_err;
++	u32 fr_len, fr_crc;
+ 	struct fc_lport *lport;
+ 	struct fcoe_rcv_info *fr;
+ 	struct fc_stats *stats;
+@@ -553,6 +554,11 @@ static void bnx2fc_recv_frame(struct sk_
+ 	skb_pull(skb, sizeof(struct fcoe_hdr));
+ 	fr_len = skb->len - sizeof(struct fcoe_crc_eof);
+ 
++	stats = per_cpu_ptr(lport->stats, get_cpu());
++	stats->RxFrames++;
++	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
++	put_cpu();
++
+ 	fp = (struct fc_frame *)skb;
+ 	fc_frame_init(fp);
+ 	fr_dev(fp) = lport;
+@@ -604,16 +610,15 @@ static void bnx2fc_recv_frame(struct sk_
+ 		return;
+ 	}
+ 
+-	stats = per_cpu_ptr(lport->stats, smp_processor_id());
+-	stats->RxFrames++;
+-	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
++	fr_crc = le32_to_cpu(fr_crc(fp));
+ 
+-	if (le32_to_cpu(fr_crc(fp)) !=
+-			~crc32(~0, skb->data, fr_len)) {
+-		if (stats->InvalidCRCCount < 5)
++	if (unlikely(fr_crc != ~crc32(~0, skb->data, fr_len))) {
++		stats = per_cpu_ptr(lport->stats, get_cpu());
++		crc_err = (stats->InvalidCRCCount++);
++		put_cpu();
++		if (crc_err < 5)
+ 			printk(KERN_WARNING PFX "dropping frame with "
+ 			       "CRC error\n");
+-		stats->InvalidCRCCount++;
+ 		kfree_skb(skb);
+ 		return;
+ 	}
 
 
