@@ -2,20 +2,20 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0739DC35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 176BFC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448962AbiBGNOC (ORCPT
+        id S1448973AbiBGNOI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:14:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
+        Mon, 7 Feb 2022 08:14:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448428AbiBGNLe (ORCPT
+        with ESMTP id S1448552AbiBGNL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:11:34 -0500
+        Mon, 7 Feb 2022 08:11:56 -0500
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6E5C03E958;
-        Mon,  7 Feb 2022 05:11:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0858AC043189;
+        Mon,  7 Feb 2022 05:11:56 -0800 (PST)
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -27,9 +27,9 @@ Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
         dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 10/12] iio: core: Add support for cyclic buffers
-Date:   Mon,  7 Feb 2022 12:59:31 +0000
-Message-Id: <20220207125933.81634-11-paul@crapouillou.net>
+Subject: [PATCH v2 04/12] iio: buffer-dmaengine: Enable write support
+Date:   Mon,  7 Feb 2022 12:59:25 +0000
+Message-Id: <20220207125933.81634-5-paul@crapouillou.net>
 In-Reply-To: <20220207125933.81634-1-paul@crapouillou.net>
 References: <20220207125933.81634-1-paul@crapouillou.net>
 MIME-Version: 1.0
@@ -38,49 +38,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a new flag IIO_BUFFER_DMABUF_CYCLIC in the "flags" field of
-the iio_dmabuf uapi structure.
-
-When set, the DMABUF enqueued with the enqueue ioctl will be endlessly
-repeated on the TX output, until the buffer is disabled.
+Use the iio_dma_buffer_write() and iio_dma_buffer_space_available()
+functions provided by the buffer-dma core, to enable write support in
+the buffer-dmaengine code.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
 ---
- drivers/iio/industrialio-buffer.c | 5 +++++
- include/uapi/linux/iio/buffer.h   | 3 ++-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 72f333a519bc..85331cedaad8 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -1535,6 +1535,11 @@ static int iio_buffer_enqueue_dmabuf(struct iio_buffer *buffer,
- 	if (dmabuf.flags & ~IIO_BUFFER_DMABUF_SUPPORTED_FLAGS)
- 		return -EINVAL;
+diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+index ac26b04aa4a9..5cde8fd81c7f 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
++++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+@@ -123,12 +123,14 @@ static void iio_dmaengine_buffer_release(struct iio_buffer *buf)
  
-+	/* Cyclic flag is only supported on output buffers */
-+	if ((dmabuf.flags & IIO_BUFFER_DMABUF_CYCLIC) &&
-+	    buffer->direction != IIO_BUFFER_DIRECTION_OUT)
-+		return -EINVAL;
-+
- 	return buffer->access->enqueue_dmabuf(buffer, &dmabuf);
- }
+ static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
+ 	.read = iio_dma_buffer_read,
++	.write = iio_dma_buffer_write,
+ 	.set_bytes_per_datum = iio_dma_buffer_set_bytes_per_datum,
+ 	.set_length = iio_dma_buffer_set_length,
+ 	.request_update = iio_dma_buffer_request_update,
+ 	.enable = iio_dma_buffer_enable,
+ 	.disable = iio_dma_buffer_disable,
+ 	.data_available = iio_dma_buffer_data_available,
++	.space_available = iio_dma_buffer_space_available,
+ 	.release = iio_dmaengine_buffer_release,
  
-diff --git a/include/uapi/linux/iio/buffer.h b/include/uapi/linux/iio/buffer.h
-index e4621b926262..2d541d038c02 100644
---- a/include/uapi/linux/iio/buffer.h
-+++ b/include/uapi/linux/iio/buffer.h
-@@ -7,7 +7,8 @@
- 
- #include <linux/types.h>
- 
--#define IIO_BUFFER_DMABUF_SUPPORTED_FLAGS	0x00000000
-+#define IIO_BUFFER_DMABUF_CYCLIC		(1 << 0)
-+#define IIO_BUFFER_DMABUF_SUPPORTED_FLAGS	0x00000001
- 
- /**
-  * struct iio_dmabuf_alloc_req - Descriptor for allocating IIO DMABUFs
+ 	.modes = INDIO_BUFFER_HARDWARE,
 -- 
 2.34.1
 
