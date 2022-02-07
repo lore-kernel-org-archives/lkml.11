@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8EAC35272
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:30:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C3FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232603AbiBGL0G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:26:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
+        id S1355113AbiBGLZP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:25:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382556AbiBGLTp (ORCPT
+        with ESMTP id S1382498AbiBGLTY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:19:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9135C043188;
-        Mon,  7 Feb 2022 03:19:43 -0800 (PST)
+        Mon, 7 Feb 2022 06:19:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0AA9C043188;
+        Mon,  7 Feb 2022 03:19:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69BB961380;
-        Mon,  7 Feb 2022 11:19:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D99FC340EB;
-        Mon,  7 Feb 2022 11:19:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CE54B81028;
+        Mon,  7 Feb 2022 11:19:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 700E9C004E1;
+        Mon,  7 Feb 2022 11:19:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232782;
-        bh=PAuiHtXzfk347fL1QmZgs7OeKP/ZsguDOxlOMYZNuj8=;
+        s=korg; t=1644232760;
+        bh=b/jaS3gZ4GJOd892pMLEgrmPKsoc4pGUo8wjHqVt8EA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R/5EYfv7YTRrsSPoE/dAcenAZAOxq9tfnXZYjq2VVuj+GbmNZNYSr6KfBIHW5/5oK
-         Uw+u4pUpsaYdrDUmE2hDXwHkrZFeKvcGp7SePbPSvwIi+iBI1j7T0azhobDJ6O1gHD
-         EzqtonZkatPr5Rh6dQslVZhJyZLxYbA5rSqOm1Jw=
+        b=kJz7UAgYkvgVymntf4m9n2OY68bmFRQg9Z8gfJtKr7KsrdUK9EQwZcSGAZexlbCXE
+         xVUv7iVaMzyt2c7cH67cDETARNbYBZaBY5iQMZ++Uheav+Is4zc6LZ2ZdAL9X22Bl9
+         wrINzIaS1cEZrgcqiPvOAYOvErmOPic/GpajoIEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Albert=20Geant=C4=83?= <albertgeanta@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.4 06/44] ALSA: hda/realtek: Add quirk for ASUS GU603
-Date:   Mon,  7 Feb 2022 12:06:22 +0100
-Message-Id: <20220207103753.365886628@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>
+Subject: [PATCH 5.4 27/44] net: ieee802154: Return meaningful error codes from the netlink helpers
+Date:   Mon,  7 Feb 2022 12:06:43 +0100
+Message-Id: <20220207103754.043485447@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
 References: <20220207103753.155627314@linuxfoundation.org>
@@ -49,33 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Albert Geantă <albertgeanta@gmail.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit 94db9cc8f8fa2d5426ce79ec4ca16028f7084224 upstream.
+commit 79c37ca73a6e9a33f7b2b7783ba6af07a448c8a9 upstream.
 
-The ASUS GU603 (Zephyrus M16 - SSID 1043:16b2) requires a quirk similar to
-other ASUS devices for correctly routing the 4 integrated speakers. This
-fixes it by adding a corresponding quirk entry, which connects the bass
-speakers to the proper DAC.
+Returning -1 does not indicate anything useful.
 
-Signed-off-by: Albert Geantă <albertgeanta@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220131010523.546386-1-albertgeanta@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Use a standard and meaningful error code instead.
+
+Fixes: a26c5fd7622d ("nl802154: add support for security layer")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20220125121426.848337-6-miquel.raynal@bootlin.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/ieee802154/nl802154.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8180,6 +8180,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1043, 0x1e51, "ASUS Zephyrus M15", ALC294_FIXUP_ASUS_GU502_PINS),
- 	SND_PCI_QUIRK(0x1043, 0x1e8e, "ASUS Zephyrus G15", ALC289_FIXUP_ASUS_GA401),
- 	SND_PCI_QUIRK(0x1043, 0x1f11, "ASUS Zephyrus G14", ALC289_FIXUP_ASUS_GA401),
-+	SND_PCI_QUIRK(0x1043, 0x16b2, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
- 	SND_PCI_QUIRK(0x1043, 0x3030, "ASUS ZN270IE", ALC256_FIXUP_ASUS_AIO_GPIO2),
- 	SND_PCI_QUIRK(0x1043, 0x831a, "ASUS P901", ALC269_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK(0x1043, 0x834a, "ASUS S101", ALC269_FIXUP_STEREO_DMIC),
+--- a/net/ieee802154/nl802154.c
++++ b/net/ieee802154/nl802154.c
+@@ -1457,7 +1457,7 @@ static int nl802154_send_key(struct sk_b
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1650,7 +1650,7 @@ static int nl802154_send_device(struct s
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1828,7 +1828,7 @@ static int nl802154_send_devkey(struct s
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -2004,7 +2004,7 @@ static int nl802154_send_seclevel(struct
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
 
 
