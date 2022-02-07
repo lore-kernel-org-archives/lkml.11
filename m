@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3E1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE52BC46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386161AbiBGLdt (ORCPT
+        id S1386192AbiBGLdz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:33:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36572 "EHLO
+        Mon, 7 Feb 2022 06:33:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233007AbiBGLZC (ORCPT
+        with ESMTP id S239868AbiBGLZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:25:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349BBC043188;
-        Mon,  7 Feb 2022 03:24:58 -0800 (PST)
+        Mon, 7 Feb 2022 06:25:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C23C043188;
+        Mon,  7 Feb 2022 03:25:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6B666077B;
-        Mon,  7 Feb 2022 11:24:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8767CC004E1;
-        Mon,  7 Feb 2022 11:24:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 652F2B81158;
+        Mon,  7 Feb 2022 11:25:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A419AC004E1;
+        Mon,  7 Feb 2022 11:25:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233097;
-        bh=vhAEzco/UHCmcxF7QDa7KCLTLJqPXpSuTCLSQsFmnXo=;
+        s=korg; t=1644233103;
+        bh=OOrci6zsJTgNVekK33PRhoxSHZ4Cd74TJOKyCSGkGLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IFOZmOmM3D/eHS7XTMR0jjrCYxkeqHfHM2lcOPb+i2kfIOwy9uT3RzHzc2q8Oyl/1
-         ZSOwc70pcEvqZAiPBl/UIOas3ToYarW6/B727a/qroFs/v3QgAt+cOmaB13fzSZ5ej
-         EsDu2ldwTI6IXdNKsMM5eg2qOmvk2dzKXxXTEMRc=
+        b=E7ObEN/qJKjf8LAbkFspi27W1DWEG7CPG7AcAaJ8pEW1ba2bCGZ8qPYaDuJh8QrEN
+         6HCu5soMilMep6oCzUH8vnUSEIaGQa/3DhY9lKT4iNThx0nnl4p5sf91H8D2jHAudf
+         xiM6ZYssPLlIhYZUvy2mYko43vR1diboEGxdWQJQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
-        Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>
-Subject: [PATCH 5.15 003/110] audit: improve audit queue handling when "audit=1" on cmdline
-Date:   Mon,  7 Feb 2022 12:05:36 +0100
-Message-Id: <20220207103802.395720866@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Lukas Wunner <lukas@wunner.de>, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 005/110] spi: stm32-qspi: Update spi registering
+Date:   Mon,  7 Feb 2022 12:05:38 +0100
+Message-Id: <20220207103802.467844676@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -50,207 +50,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Moore <paul@paul-moore.com>
+From: Patrice Chotard <patrice.chotard@foss.st.com>
 
-commit f26d04331360d42dbd6b58448bd98e4edbfbe1c5 upstream.
+commit e4d63473d3110afd170e6e0e48494d3789d26136 upstream.
 
-When an admin enables audit at early boot via the "audit=1" kernel
-command line the audit queue behavior is slightly different; the
-audit subsystem goes to greater lengths to avoid dropping records,
-which unfortunately can result in problems when the audit daemon is
-forcibly stopped for an extended period of time.
+Some device driver need to communicate to qspi device during the remove
+process, qspi controller must be functional when spi_unregister_master()
+is called.
 
-This patch makes a number of changes designed to improve the audit
-queuing behavior so that leaving the audit daemon in a stopped state
-for an extended period does not cause a significant impact to the
-system.
+To ensure this, replace devm_spi_register_master() by spi_register_master()
+and spi_unregister_master() is called directly in .remove callback before
+stopping the qspi controller.
 
-- kauditd_send_queue() is now limited to looping through the
-  passed queue only once per call.  This not only prevents the
-  function from looping indefinitely when records are returned
-  to the current queue, it also allows any recovery handling in
-  kauditd_thread() to take place when kauditd_send_queue()
-  returns.
+This issue was put in evidence using kernel v5.11 and later
+with a spi-nor which supports the software reset feature introduced
+by commit d73ee7534cc5 ("mtd: spi-nor: core: perform a Soft Reset on
+shutdown")
 
-- Transient netlink send errors seen as -EAGAIN now cause the
-  record to be returned to the retry queue instead of going to
-  the hold queue.  The intention of the hold queue is to store,
-  perhaps for an extended period of time, the events which led
-  up to the audit daemon going offline.  The retry queue remains
-  a temporary queue intended to protect against transient issues
-  between the kernel and the audit daemon.
+Fixes: c530cd1d9d5e ("spi: spi-mem: add stm32 qspi controller")
 
-- The retry queue is now limited by the audit_backlog_limit
-  setting, the same as the other queues.  This allows admins
-  to bound the size of all of the audit queues on the system.
-
-- kauditd_rehold_skb() now returns records to the end of the
-  hold queue to ensure ordering is preserved in the face of
-  recent changes to kauditd_send_queue().
-
-Cc: stable@vger.kernel.org
-Fixes: 5b52330bbfe63 ("audit: fix auditd/kernel connection state tracking")
-Fixes: f4b3ee3c85551 ("audit: improve robustness of the audit queue handling")
-Reported-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Tested-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Reviewed-by: Richard Guy Briggs <rgb@redhat.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+Cc: <stable@vger.kernel.org> # 5.8.x
+Reviewed-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/20220117121744.29729-1-patrice.chotard@foss.st.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/audit.c |   62 +++++++++++++++++++++++++++++++++++++++------------------
- 1 file changed, 43 insertions(+), 19 deletions(-)
+ drivers/spi/spi-stm32-qspi.c |   47 +++++++++++++++----------------------------
+ 1 file changed, 17 insertions(+), 30 deletions(-)
 
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -541,20 +541,22 @@ static void kauditd_printk_skb(struct sk
- /**
-  * kauditd_rehold_skb - Handle a audit record send failure in the hold queue
-  * @skb: audit record
-+ * @error: error code (unused)
-  *
-  * Description:
-  * This should only be used by the kauditd_thread when it fails to flush the
-  * hold queue.
-  */
--static void kauditd_rehold_skb(struct sk_buff *skb)
-+static void kauditd_rehold_skb(struct sk_buff *skb, __always_unused int error)
- {
--	/* put the record back in the queue at the same place */
--	skb_queue_head(&audit_hold_queue, skb);
-+	/* put the record back in the queue */
-+	skb_queue_tail(&audit_hold_queue, skb);
- }
+--- a/drivers/spi/spi-stm32-qspi.c
++++ b/drivers/spi/spi-stm32-qspi.c
+@@ -688,7 +688,7 @@ static int stm32_qspi_probe(struct platf
+ 	struct resource *res;
+ 	int ret, irq;
  
- /**
-  * kauditd_hold_skb - Queue an audit record, waiting for auditd
-  * @skb: audit record
-+ * @error: error code
-  *
-  * Description:
-  * Queue the audit record, waiting for an instance of auditd.  When this
-@@ -564,19 +566,31 @@ static void kauditd_rehold_skb(struct sk
-  * and queue it, if we have room.  If we want to hold on to the record, but we
-  * don't have room, record a record lost message.
-  */
--static void kauditd_hold_skb(struct sk_buff *skb)
-+static void kauditd_hold_skb(struct sk_buff *skb, int error)
- {
- 	/* at this point it is uncertain if we will ever send this to auditd so
- 	 * try to send the message via printk before we go any further */
- 	kauditd_printk_skb(skb);
+-	ctrl = spi_alloc_master(dev, sizeof(*qspi));
++	ctrl = devm_spi_alloc_master(dev, sizeof(*qspi));
+ 	if (!ctrl)
+ 		return -ENOMEM;
  
- 	/* can we just silently drop the message? */
--	if (!audit_default) {
--		kfree_skb(skb);
--		return;
-+	if (!audit_default)
-+		goto drop;
-+
-+	/* the hold queue is only for when the daemon goes away completely,
-+	 * not -EAGAIN failures; if we are in a -EAGAIN state requeue the
-+	 * record on the retry queue unless it's full, in which case drop it
-+	 */
-+	if (error == -EAGAIN) {
-+		if (!audit_backlog_limit ||
-+		    skb_queue_len(&audit_retry_queue) < audit_backlog_limit) {
-+			skb_queue_tail(&audit_retry_queue, skb);
-+			return;
-+		}
-+		audit_log_lost("kauditd retry queue overflow");
-+		goto drop;
+@@ -697,58 +697,46 @@ static int stm32_qspi_probe(struct platf
+ 
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "qspi");
+ 	qspi->io_base = devm_ioremap_resource(dev, res);
+-	if (IS_ERR(qspi->io_base)) {
+-		ret = PTR_ERR(qspi->io_base);
+-		goto err_master_put;
+-	}
++	if (IS_ERR(qspi->io_base))
++		return PTR_ERR(qspi->io_base);
+ 
+ 	qspi->phys_base = res->start;
+ 
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "qspi_mm");
+ 	qspi->mm_base = devm_ioremap_resource(dev, res);
+-	if (IS_ERR(qspi->mm_base)) {
+-		ret = PTR_ERR(qspi->mm_base);
+-		goto err_master_put;
+-	}
++	if (IS_ERR(qspi->mm_base))
++		return PTR_ERR(qspi->mm_base);
+ 
+ 	qspi->mm_size = resource_size(res);
+-	if (qspi->mm_size > STM32_QSPI_MAX_MMAP_SZ) {
+-		ret = -EINVAL;
+-		goto err_master_put;
+-	}
++	if (qspi->mm_size > STM32_QSPI_MAX_MMAP_SZ)
++		return -EINVAL;
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	if (irq < 0) {
+-		ret = irq;
+-		goto err_master_put;
+-	}
++	if (irq < 0)
++		return irq;
+ 
+ 	ret = devm_request_irq(dev, irq, stm32_qspi_irq, 0,
+ 			       dev_name(dev), qspi);
+ 	if (ret) {
+ 		dev_err(dev, "failed to request irq\n");
+-		goto err_master_put;
++		return ret;
  	}
  
--	/* if we have room, queue the message */
-+	/* if we have room in the hold queue, queue the message */
- 	if (!audit_backlog_limit ||
- 	    skb_queue_len(&audit_hold_queue) < audit_backlog_limit) {
- 		skb_queue_tail(&audit_hold_queue, skb);
-@@ -585,24 +599,32 @@ static void kauditd_hold_skb(struct sk_b
+ 	init_completion(&qspi->data_completion);
+ 	init_completion(&qspi->match_completion);
  
- 	/* we have no other options - drop the message */
- 	audit_log_lost("kauditd hold queue overflow");
-+drop:
- 	kfree_skb(skb);
+ 	qspi->clk = devm_clk_get(dev, NULL);
+-	if (IS_ERR(qspi->clk)) {
+-		ret = PTR_ERR(qspi->clk);
+-		goto err_master_put;
+-	}
++	if (IS_ERR(qspi->clk))
++		return PTR_ERR(qspi->clk);
+ 
+ 	qspi->clk_rate = clk_get_rate(qspi->clk);
+-	if (!qspi->clk_rate) {
+-		ret = -EINVAL;
+-		goto err_master_put;
+-	}
++	if (!qspi->clk_rate)
++		return -EINVAL;
+ 
+ 	ret = clk_prepare_enable(qspi->clk);
+ 	if (ret) {
+ 		dev_err(dev, "can not enable the clock\n");
+-		goto err_master_put;
++		return ret;
+ 	}
+ 
+ 	rstc = devm_reset_control_get_exclusive(dev, NULL);
+@@ -784,7 +772,7 @@ static int stm32_qspi_probe(struct platf
+ 	pm_runtime_enable(dev);
+ 	pm_runtime_get_noresume(dev);
+ 
+-	ret = devm_spi_register_master(dev, ctrl);
++	ret = spi_register_master(ctrl);
+ 	if (ret)
+ 		goto err_pm_runtime_free;
+ 
+@@ -806,8 +794,6 @@ err_dma_free:
+ 	stm32_qspi_dma_free(qspi);
+ err_clk_disable:
+ 	clk_disable_unprepare(qspi->clk);
+-err_master_put:
+-	spi_master_put(qspi->ctrl);
+ 
+ 	return ret;
  }
+@@ -817,6 +803,7 @@ static int stm32_qspi_remove(struct plat
+ 	struct stm32_qspi *qspi = platform_get_drvdata(pdev);
  
- /**
-  * kauditd_retry_skb - Queue an audit record, attempt to send again to auditd
-  * @skb: audit record
-+ * @error: error code (unused)
-  *
-  * Description:
-  * Not as serious as kauditd_hold_skb() as we still have a connected auditd,
-  * but for some reason we are having problems sending it audit records so
-  * queue the given record and attempt to resend.
-  */
--static void kauditd_retry_skb(struct sk_buff *skb)
-+static void kauditd_retry_skb(struct sk_buff *skb, __always_unused int error)
- {
--	/* NOTE: because records should only live in the retry queue for a
--	 * short period of time, before either being sent or moved to the hold
--	 * queue, we don't currently enforce a limit on this queue */
--	skb_queue_tail(&audit_retry_queue, skb);
-+	if (!audit_backlog_limit ||
-+	    skb_queue_len(&audit_retry_queue) < audit_backlog_limit) {
-+		skb_queue_tail(&audit_retry_queue, skb);
-+		return;
-+	}
-+
-+	/* we have to drop the record, send it via printk as a last effort */
-+	kauditd_printk_skb(skb);
-+	audit_log_lost("kauditd retry queue overflow");
-+	kfree_skb(skb);
- }
- 
- /**
-@@ -640,7 +662,7 @@ static void auditd_reset(const struct au
- 	/* flush the retry queue to the hold queue, but don't touch the main
- 	 * queue since we need to process that normally for multicast */
- 	while ((skb = skb_dequeue(&audit_retry_queue)))
--		kauditd_hold_skb(skb);
-+		kauditd_hold_skb(skb, -ECONNREFUSED);
- }
- 
- /**
-@@ -714,16 +736,18 @@ static int kauditd_send_queue(struct soc
- 			      struct sk_buff_head *queue,
- 			      unsigned int retry_limit,
- 			      void (*skb_hook)(struct sk_buff *skb),
--			      void (*err_hook)(struct sk_buff *skb))
-+			      void (*err_hook)(struct sk_buff *skb, int error))
- {
- 	int rc = 0;
--	struct sk_buff *skb;
-+	struct sk_buff *skb = NULL;
-+	struct sk_buff *skb_tail;
- 	unsigned int failed = 0;
- 
- 	/* NOTE: kauditd_thread takes care of all our locking, we just use
- 	 *       the netlink info passed to us (e.g. sk and portid) */
- 
--	while ((skb = skb_dequeue(queue))) {
-+	skb_tail = skb_peek_tail(queue);
-+	while ((skb != skb_tail) && (skb = skb_dequeue(queue))) {
- 		/* call the skb_hook for each skb we touch */
- 		if (skb_hook)
- 			(*skb_hook)(skb);
-@@ -731,7 +755,7 @@ static int kauditd_send_queue(struct soc
- 		/* can we send to anyone via unicast? */
- 		if (!sk) {
- 			if (err_hook)
--				(*err_hook)(skb);
-+				(*err_hook)(skb, -ECONNREFUSED);
- 			continue;
- 		}
- 
-@@ -745,7 +769,7 @@ retry:
- 			    rc == -ECONNREFUSED || rc == -EPERM) {
- 				sk = NULL;
- 				if (err_hook)
--					(*err_hook)(skb);
-+					(*err_hook)(skb, rc);
- 				if (rc == -EAGAIN)
- 					rc = 0;
- 				/* continue to drain the queue */
+ 	pm_runtime_get_sync(qspi->dev);
++	spi_unregister_master(qspi->ctrl);
+ 	/* disable qspi */
+ 	writel_relaxed(0, qspi->io_base + QSPI_CR);
+ 	stm32_qspi_dma_free(qspi);
 
 
