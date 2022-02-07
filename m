@@ -2,135 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8D9C35270
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:10:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06704C46467
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:10:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448192AbiBGNKL (ORCPT
+        id S1376827AbiBGNKU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:10:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
+        Mon, 7 Feb 2022 08:10:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382905AbiBGM3x (ORCPT
+        with ESMTP id S1445601AbiBGMmT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:29:53 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD7FC1DF3F0
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:20:00 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id z62so27084124ybc.11
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 04:20:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VHNFlCmigziJYsY7QoVzu5haHaeukfsTdmobb9TO3j8=;
-        b=LQLjBYiLGL4wmygWsQlLUjGwQvJXBVwTdEL2M8BH3Gx4jP/fVduLt/LdMM8rh9jIsB
-         F6FfGIslomU1jb2TotoJFA14x24mnEVt7VXgqPFYjo8h5OaVXWu0SSsUxOkiVc16ME3p
-         +30xfdeNKunJBoByaSCH1Fa6REk9vLcNcI+UT/hF9wlynoIf8wKUgRWO0rz4qzyrIN8T
-         +0AhV3xDPIm/D15znH2TDto0nd1a9AHCMbsPTDVyhd6ulVrCM/tBPKS1iQolGacdq7EQ
-         fjZ+pykwq4cDZAWzf56aI1pgRr/aVcDpcQ0NsS93UMqQQikZC3XzyTxUpSnLRUBnvsXP
-         XgVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VHNFlCmigziJYsY7QoVzu5haHaeukfsTdmobb9TO3j8=;
-        b=HQClPxVA50oxPYJ8/tanNXz4QQ5awmUmQEoliLEJBHoV2pIK1Edm6G3Lew9XJ6u3fo
-         ckCJPYeghK8hu0suleVpbL61rADmyVru9Gf/piyezA25JWDzsV6l1FYo2XRP0lNX+BX4
-         E2NFjhGZlC47WDrO0IXwRq+jFUlUG6k0JJEWYe1Owm/nLdYajVABmGrh0hrDJIXzyeNW
-         U23HTh417NsGiteqAleOytNEEPpk9t9C+uPeFtBV2QxOsq2yZcwgMp4IACg2W+ONWdvm
-         K64GRPwiTifTRSi2eM5z+iaKROQRsHilp2GoaKxxa1iaNm4XebYQ/4zRULKm1CiP9BBi
-         5RLg==
-X-Gm-Message-State: AOAM530cmN6dlp/P1rMEdtll+Z9Gc1rOB/CZg8u1Pc5ijIVWOauHnjW/
-        Ywo4dH2AHry5lQyCgkgUmA6PEPAtWN4LFebI8nu8kA==
-X-Google-Smtp-Source: ABdhPJyrWjotRFPL1k46j6tfUbmGvI5LdgYUvJ+NC6Opl84UW0tcgzx6coW5EgUf03fwKzLZHrnowYgYGBhbBULA4ME=
-X-Received: by 2002:a25:1402:: with SMTP id 2mr9304845ybu.684.1644236399245;
- Mon, 07 Feb 2022 04:19:59 -0800 (PST)
+        Mon, 7 Feb 2022 07:42:19 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7170CE033DB9;
+        Mon,  7 Feb 2022 04:34:00 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 9B67F1F390;
+        Mon,  7 Feb 2022 12:24:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1644236683; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ua1slhO3tu08xV7nWywNOiJcEeO08Yt5cZK027Ezf3k=;
+        b=nqOMyxSjLMJbw6hGT7aanNF6FeXa6FgYOuO77ErGEuJACVK/WzQrAuxx4D21488QVNhJuX
+        M+sLFDEPq88gwTDe26b9nVE+8dD+rccnKtBCMorKDcqUMR/hUGcHCEQDFi9AQT2nbVRY6T
+        L9BFC+P98Kw1UD74kp27KbhpGlpRgMg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1644236683;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ua1slhO3tu08xV7nWywNOiJcEeO08Yt5cZK027Ezf3k=;
+        b=Ig+IalBCscALNaeSnDxlQzpZStR+QTv+QgbHxgBVrWcg56NLco/bfe/fTeu43aME0FqSGV
+        EH9EbjksryG48uCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 239E113BBC;
+        Mon,  7 Feb 2022 12:24:43 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id K8/ABosPAWKEfgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 07 Feb 2022 12:24:43 +0000
+Message-ID: <64407833-1387-0c46-c569-8b6a3db8e88c@suse.cz>
+Date:   Mon, 7 Feb 2022 13:24:42 +0100
 MIME-Version: 1.0
-References: <20220207103804.053675072@linuxfoundation.org>
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 7 Feb 2022 17:49:48 +0530
-Message-ID: <CA+G9fYsd_kjuXOJx9umAhkaA7rRx40gVhY9ZBEe6xsMOZ2oTQg@mail.gmail.com>
-Subject: Re: [PATCH 5.16 000/126] 5.16.8-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Arnd Bergmann <arnd@arndb.de>,
-        James Morse <james.morse@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Content-Language: en-US
+To:     Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, qemu-devel@nongnu.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
+ <20220118132121.31388-2-chao.p.peng@linux.intel.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v4 01/12] mm/shmem: Introduce F_SEAL_INACCESSIBLE
+In-Reply-To: <20220118132121.31388-2-chao.p.peng@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 at 17:01, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.16.8 release.
-> There are 126 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.8-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On 1/18/22 14:21, Chao Peng wrote:
+> From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+> 
+> Introduce a new seal F_SEAL_INACCESSIBLE indicating the content of
+> the file is inaccessible from userspace through ordinary MMU access
+> (e.g., read/write/mmap). However, the file content can be accessed
+> via a different mechanism (e.g. KVM MMU) indirectly.
+> 
+> It provides semantics required for KVM guest private memory support
+> that a file descriptor with this seal set is going to be used as the
+> source of guest memory in confidential computing environments such
+> as Intel TDX/AMD SEV but may not be accessible from host userspace.
+> 
+> At this time only shmem implements this seal.
+> 
+> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> ---
+>  include/uapi/linux/fcntl.h |  1 +
+>  mm/shmem.c                 | 40 ++++++++++++++++++++++++++++++++++++--
+>  2 files changed, 39 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/fcntl.h b/include/uapi/linux/fcntl.h
+> index 2f86b2ad6d7e..09ef34754dfa 100644
+> --- a/include/uapi/linux/fcntl.h
+> +++ b/include/uapi/linux/fcntl.h
+> @@ -43,6 +43,7 @@
+>  #define F_SEAL_GROW	0x0004	/* prevent file from growing */
+>  #define F_SEAL_WRITE	0x0008	/* prevent writes */
+>  #define F_SEAL_FUTURE_WRITE	0x0010  /* prevent future writes while mapped */
+> +#define F_SEAL_INACCESSIBLE	0x0020  /* prevent ordinary MMU access (e.g. read/write/mmap) to file content */
+>  /* (1U << 31) is reserved for signed error codes */
+>  
+>  /*
+> diff --git a/mm/shmem.c b/mm/shmem.c
+> index 18f93c2d68f1..72185630e7c4 100644
+> --- a/mm/shmem.c
+> +++ b/mm/shmem.c
+> @@ -1098,6 +1098,13 @@ static int shmem_setattr(struct user_namespace *mnt_userns,
+>  		    (newsize > oldsize && (info->seals & F_SEAL_GROW)))
+>  			return -EPERM;
+>  
+> +		if (info->seals & F_SEAL_INACCESSIBLE) {
+> +			if(i_size_read(inode))
 
+Is this needed? The rest of the function seems to trust oldsize obtained by
+plain reading inode->i_size well enough, so why be suddenly paranoid here?
 
-Linux stable-rc 5.16 arm64 builds failed due to below errors.
+> +				return -EPERM;
+> +			if (newsize & ~PAGE_MASK)
+> +				return -EINVAL;
+> +		}
+> +
+>  		if (newsize != oldsize) {
+>  			error = shmem_reacct_size(SHMEM_I(inode)->flags,
+>  					oldsize, newsize);
+> @@ -1364,6 +1371,8 @@ static int shmem_writepage(struct page *page, struct writeback_control *wbc)
+>  		goto redirty;
+>  	if (!total_swap_pages)
+>  		goto redirty;
+> +	if (info->seals & F_SEAL_INACCESSIBLE)
+> +		goto redirty;
+>  
+>  	/*
+>  	 * Our capabilities prevent regular writeback or sync from ever calling
+> @@ -2262,6 +2271,9 @@ static int shmem_mmap(struct file *file, struct vm_area_struct *vma)
+>  	if (ret)
+>  		return ret;
+>  
+> +	if (info->seals & F_SEAL_INACCESSIBLE)
+> +		return -EPERM;
+> +
+>  	/* arm64 - allow memory tagging on RAM-based files */
+>  	vma->vm_flags |= VM_MTE_ALLOWED;
+>  
+> @@ -2459,12 +2471,15 @@ shmem_write_begin(struct file *file, struct address_space *mapping,
+>  	pgoff_t index = pos >> PAGE_SHIFT;
+>  
+>  	/* i_rwsem is held by caller */
+> -	if (unlikely(info->seals & (F_SEAL_GROW |
+> -				   F_SEAL_WRITE | F_SEAL_FUTURE_WRITE))) {
+> +	if (unlikely(info->seals & (F_SEAL_GROW | F_SEAL_WRITE |
+> +				    F_SEAL_FUTURE_WRITE |
+> +				    F_SEAL_INACCESSIBLE))) {
+>  		if (info->seals & (F_SEAL_WRITE | F_SEAL_FUTURE_WRITE))
+>  			return -EPERM;
+>  		if ((info->seals & F_SEAL_GROW) && pos + len > inode->i_size)
+>  			return -EPERM;
+> +		if (info->seals & F_SEAL_INACCESSIBLE)
+> +			return -EPERM;
+>  	}
+>  
+>  	return shmem_getpage(inode, index, pagep, SGP_WRITE);
+> @@ -2538,6 +2553,21 @@ static ssize_t shmem_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+>  		end_index = i_size >> PAGE_SHIFT;
+>  		if (index > end_index)
+>  			break;
+> +
+> +		/*
+> +		 * inode_lock protects setting up seals as well as write to
+> +		 * i_size. Setting F_SEAL_INACCESSIBLE only allowed with
+> +		 * i_size == 0.
+> +		 *
+> +		 * Check F_SEAL_INACCESSIBLE after i_size. It effectively
+> +		 * serialize read vs. setting F_SEAL_INACCESSIBLE without
+> +		 * taking inode_lock in read path.
+> +		 */
+> +		if (SHMEM_I(inode)->seals & F_SEAL_INACCESSIBLE) {
+> +			error = -EPERM;
+> +			break;
+> +		}
+> +
+>  		if (index == end_index) {
+>  			nr = i_size & ~PAGE_MASK;
+>  			if (nr <= offset)
+> @@ -2663,6 +2693,12 @@ static long shmem_fallocate(struct file *file, int mode, loff_t offset,
+>  			goto out;
+>  		}
+>  
+> +		if ((info->seals & F_SEAL_INACCESSIBLE) &&
+> +		    (offset & ~PAGE_MASK || len & ~PAGE_MASK)) {
 
-  kvm/arm64: rework guest entry logic
-  [ Upstream commit 8cfe148a7136bc60452a5c6b7ac2d9d15c36909b ]
+Could we use PAGE_ALIGNED()?
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> +			error = -EINVAL;
+> +			goto out;
+> +		}
+> +
+>  		shmem_falloc.waitq = &shmem_falloc_waitq;
+>  		shmem_falloc.start = (u64)unmap_start >> PAGE_SHIFT;
+>  		shmem_falloc.next = (unmap_end + 1) >> PAGE_SHIFT;
 
-arch/arm64/kvm/arm.c: In function 'kvm_arm_vcpu_enter_exit':
-arch/arm64/kvm/arm.c:778:9: error: implicit declaration of function
-'guest_state_enter_irqoff'; did you mean 'guest_enter_irqoff'?
-[-Werror=implicit-function-declaration]
-  778 |         guest_state_enter_irqoff();
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~
-      |         guest_enter_irqoff
-arch/arm64/kvm/arm.c:780:9: error: implicit declaration of function
-'guest_state_exit_irqoff'; did you mean 'guest_exit_irqoff'?
-[-Werror=implicit-function-declaration]
-  780 |         guest_state_exit_irqoff();
-      |         ^~~~~~~~~~~~~~~~~~~~~~~
-      |         guest_exit_irqoff
-arch/arm64/kvm/arm.c: In function 'kvm_arch_vcpu_ioctl_run':
-arch/arm64/kvm/arm.c:875:17: error: implicit declaration of function
-'guest_timing_enter_irqoff'; did you mean 'guest_enter_irqoff'?
-[-Werror=implicit-function-declaration]
-  875 |                 guest_timing_enter_irqoff();
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~
-      |                 guest_enter_irqoff
-arch/arm64/kvm/arm.c:925:17: error: implicit declaration of function
-'guest_timing_exit_irqoff'; did you mean 'guest_exit_irqoff'?
-[-Werror=implicit-function-declaration]
-  925 |                 guest_timing_exit_irqoff();
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~
-      |                 guest_exit_irqoff
-cc1: some warnings being treated as errors
-
-
-build link:
------------
-https://builds.tuxbuild.com/24mSvZ8HXKXM8ToJvie1FaTpCz0/
-
-
---
-Linaro LKFT
-https://lkft.linaro.org
