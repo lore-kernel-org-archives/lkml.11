@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2428C47086
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDD5C47089
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350081AbiBGL71 (ORCPT
+        id S1382171AbiBGMAw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:59:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
+        Mon, 7 Feb 2022 07:00:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382918AbiBGLf7 (ORCPT
+        with ESMTP id S1386743AbiBGLga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:35:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 166C6C03FEC0;
-        Mon,  7 Feb 2022 03:35:56 -0800 (PST)
+        Mon, 7 Feb 2022 06:36:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B082C0401E2;
+        Mon,  7 Feb 2022 03:36:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C24A3B8102E;
-        Mon,  7 Feb 2022 11:35:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7EBEC004E1;
-        Mon,  7 Feb 2022 11:35:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2C61B80EBD;
+        Mon,  7 Feb 2022 11:36:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 508B0C004E1;
+        Mon,  7 Feb 2022 11:36:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233753;
-        bh=fkBbCu26Q7qpm8psYy59pDkbehGMf3egVEF0vTplVJk=;
+        s=korg; t=1644233786;
+        bh=vyXTZ8AOqJjuqo2aDoJFDqpiBjhdsEXIRrAn431eoUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HE0mrW9W8MeA9Wpe8m4c9iwVZwlql/IFrUq69jQGFai0AnO4/A04Bxs9UPgsZzHev
-         vYh0AvM2gL8ST8DKZkVBqI/QSvEauKEH7UAPk/Uo6TQuzlkAZ1Vz8o3YYeYgrF+3PN
-         fDsZS99gnSQ9yM5+9AyS3xNMEf9kJiZJU6SFfkYg=
+        b=Tg1E62YzPok89s6TcrEKoVEWje4T8Xjdz6acw+E1d715BM+ojwGxxRayzuVZ2Z6Z0
+         CcOH/+2SIt3HvUxzHL0TBv2LNGrNGpNdK56JK8nvxHFjQQaBUSO37xjndQU/MHiDQW
+         1hnsePQOjGUqvK9AkKwcqIRO7/8IRvvx23kqzjOs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
-        Marco Elver <elver@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 109/126] perf: Copy perf_event_attr::sig_data on modification
-Date:   Mon,  7 Feb 2022 12:07:20 +0100
-Message-Id: <20220207103807.824862640@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.16 092/126] ASoC: qdsp6: q6apm-dai: only stop graphs that are started
+Date:   Mon,  7 Feb 2022 12:07:03 +0100
+Message-Id: <20220207103807.265670256@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -51,73 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marco Elver <elver@google.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 3c25fc97f5590060464cabfa25710970ecddbc96 ]
+commit 8f2e5c65ec7534cce6d315fccf2c3aef023f68f0 upstream.
 
-The intent has always been that perf_event_attr::sig_data should also be
-modifiable along with PERF_EVENT_IOC_MODIFY_ATTRIBUTES, because it is
-observable by user space if SIGTRAP on events is requested.
+Its possible that the sound card is just opened and closed without actually
+playing stream, ex: if the audio file itself is missing.
 
-Currently only PERF_TYPE_BREAKPOINT is modifiable, and explicitly copies
-relevant breakpoint-related attributes in hw_breakpoint_copy_attr().
-This misses copying perf_event_attr::sig_data.
+Even in such cases we do call stop on graphs that are not yet started.
+DSP can throw errors in such cases, so add a check to see if the graph
+was started before stopping it.
 
-Since sig_data is not specific to PERF_TYPE_BREAKPOINT, introduce a
-helper to copy generic event-type-independent attributes on
-modification.
-
-Fixes: 97ba62b27867 ("perf: Add support for SIGTRAP on perf events")
-Reported-by: Dmitry Vyukov <dvyukov@google.com>
-Signed-off-by: Marco Elver <elver@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
-Link: https://lore.kernel.org/r/20220131103407.1971678-1-elver@google.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9b4fe0f1cd79 ("ASoC: qdsp6: audioreach: add q6apm-dai support")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220126113549.8853-5-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/events/core.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ sound/soc/qcom/qdsp6/q6apm-dai.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 6ed890480c4aa..04e6e2dae60e4 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -3234,6 +3234,15 @@ static int perf_event_modify_breakpoint(struct perf_event *bp,
- 	return err;
- }
+--- a/sound/soc/qcom/qdsp6/q6apm-dai.c
++++ b/sound/soc/qcom/qdsp6/q6apm-dai.c
+@@ -308,8 +308,11 @@ static int q6apm_dai_close(struct snd_so
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+ 	struct q6apm_dai_rtd *prtd = runtime->private_data;
  
-+/*
-+ * Copy event-type-independent attributes that may be modified.
-+ */
-+static void perf_event_modify_copy_attr(struct perf_event_attr *to,
-+					const struct perf_event_attr *from)
-+{
-+	to->sig_data = from->sig_data;
-+}
+-	q6apm_graph_stop(prtd->graph);
+-	q6apm_unmap_memory_regions(prtd->graph, substream->stream);
++	if (prtd->state) { /* only stop graph that is started */
++		q6apm_graph_stop(prtd->graph);
++		q6apm_unmap_memory_regions(prtd->graph, substream->stream);
++	}
 +
- static int perf_event_modify_attr(struct perf_event *event,
- 				  struct perf_event_attr *attr)
- {
-@@ -3256,10 +3265,17 @@ static int perf_event_modify_attr(struct perf_event *event,
- 	WARN_ON_ONCE(event->ctx->parent_ctx);
- 
- 	mutex_lock(&event->child_mutex);
-+	/*
-+	 * Event-type-independent attributes must be copied before event-type
-+	 * modification, which will validate that final attributes match the
-+	 * source attributes after all relevant attributes have been copied.
-+	 */
-+	perf_event_modify_copy_attr(&event->attr, attr);
- 	err = func(event, attr);
- 	if (err)
- 		goto out;
- 	list_for_each_entry(child, &event->child_list, child_list) {
-+		perf_event_modify_copy_attr(&child->attr, attr);
- 		err = func(child, attr);
- 		if (err)
- 			goto out;
--- 
-2.34.1
-
+ 	q6apm_graph_close(prtd->graph);
+ 	prtd->graph = NULL;
+ 	kfree(prtd);
 
 
