@@ -2,125 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFEBC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6378FC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385490AbiBGQPO (ORCPT
+        id S1385729AbiBGQPR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:15:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
+        Mon, 7 Feb 2022 11:15:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443304AbiBGQHX (ORCPT
+        with ESMTP id S1387251AbiBGQDL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:07:23 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C0BC0401CC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:07:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=c66i+fvb+BntxE0hmNeI91Z4XSAdHTegp/Zffxoq4F0=; b=YEBZjURnVf7zB/KbNxXSxg5TVs
-        Gzcj3upFPfG5fgcYA0eNQxffQtndfcH/4BC90yHdXNUFuhc78tyYvnW+ogKIivBs+ZcWHX7OJpqRI
-        OBoqcAPmTCe69cNlC6TDbT+ioG4DyEktqu/MMiZviiSGazQZmN5fNzOMy3jX2085ASocaFdcHcifP
-        9QnanEl5UksMG30Bof79L6cLZzjgxnbRxtyecOKLQfemw9Do0MC+3bxUp3TiVzKWM9ca7+anDa48y
-        CI20WCcAPdr+snfSSXp1HfQp5PDVkNExCzRgbaNE9l4Nt6QSpj2vjE+3tS/hghrR0UsSBmSd8dBso
-        fl+2MMeQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nH6Xf-001QzH-Vb; Mon, 07 Feb 2022 16:07:04 +0000
-Message-ID: <a141e090-7049-d693-1dc2-7c0a593b9682@infradead.org>
-Date:   Mon, 7 Feb 2022 08:06:59 -0800
+        Mon, 7 Feb 2022 11:03:11 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47D9C0401CE;
+        Mon,  7 Feb 2022 08:03:08 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id DC3CF340;
+        Mon,  7 Feb 2022 17:03:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644249787;
+        bh=nfHhY7SAAx/jSa8dp1hMDTzjQj/OuY2kGz3jjvPk5xk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=S+CZh0fGXgBerQVwuj4ZfLJQ6bwJ9df1Vzllh4VKcSm+MtCyn0LFsexbZWLsxjcsb
+         2skIMGdk4g0rNN5bgOMEeHnJUPIe4cLJ3I4iUbUt3S9fuywk0x7fmElGrEqbiPZV8J
+         3HmpuM9QGZsrLtswnZ8AtdRp5YENQqjto4nHkQHs=
+Date:   Mon, 7 Feb 2022 18:03:05 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 07/66] dt-bindings: media: sun6i-a31-csi: Add MIPI
+ CSI-2 input port
+Message-ID: <YgFCuaf007wd8sJy@pendragon.ideasonboard.com>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-8-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: ld.lld: error: undefined symbol: socfpga_reset_init
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dinh Nguyen <dinguyen@kernel.org>
-References: <202202050539.Mtk9I4Ef-lkp@intel.com>
- <67f432e2-1bfd-29dc-f2ed-051b47ef0844@kernel.org>
- <YgBtAdhl8dZVTAV+@dev-arch.archlinux-ax161>
- <8c315714-ea7b-d3ec-f131-6beded67b479@kernel.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <8c315714-ea7b-d3ec-f131-6beded67b479@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220205185429.2278860-8-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Paul,
 
+Thank you for the patch.
 
-On 2/6/22 23:55, Krzysztof Kozlowski wrote:
-> On 07/02/2022 01:51, Nathan Chancellor wrote:
->> Hi Krzysztof,
->>
->> On Sun, Feb 06, 2022 at 12:55:57PM +0100, Krzysztof Kozlowski wrote:
->>> On 04/02/2022 22:12, kernel test robot wrote:
->>>> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->>>> head:   dcb85f85fa6f142aae1fe86f399d4503d49f2b60
->>>> commit: 4483397b03536506535d611b0cb28a81a69e8edf ARM: socfpga: drop ARCH_SOCFPGA
->>>> date:   11 months ago
->>>> config: arm-socfpga_defconfig (https://download.01.org/0day-ci/archive/20220205/202202050539.Mtk9I4Ef-lkp@intel.com/config)
->>>> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a73e4ce6a59b01f0e37037761c1e6889d539d233)
->>>> reproduce (this is a W=1 build):
->>>>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>>>         chmod +x ~/bin/make.cross
->>>>         # install arm cross compiling tool for clang build
->>>>         # apt-get install binutils-arm-linux-gnueabi
->>>>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4483397b03536506535d611b0cb28a81a69e8edf
->>>>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>>>         git fetch --no-tags linus master
->>>>         git checkout 4483397b03536506535d611b0cb28a81a69e8edf
->>>>         # save the config file to linux build tree
->>>>         mkdir build_dir
->>>>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
->>>>
->>>> If you fix the issue, kindly add following tag as appropriate
->>>> Reported-by: kernel test robot <lkp@intel.com>
->>>>
->>>> All errors (new ones prefixed by >>):
->>>>
->>>>>> ld.lld: error: undefined symbol: socfpga_reset_init
->>>>    >>> referenced by socfpga.c
->>>>    >>>               socfpga.o:(socfpga_init_irq) in archive arch/arm/mach-socfpga/built-in.a
->>>>    >>> referenced by socfpga.c
->>>>    >>>               socfpga.o:(socfpga_arria10_init_irq) in archive arch/arm/mach-socfpga/built-in.a
->>>>
->>>
->>> This looks like a false positive. On the socfpga defconfig arm build,
->>> the socfpga_reset_init() (drivers/reset/reset-socfpga.c) is built.
->>>
->>> I also could not reproduce it with GCC.
->>
->> I can reproduce this error with the configuration that the bot provides
->> at both 4483397b03536506535d611b0cb28a81a69e8edf and v5.17-rc3, even
->> with GCC:
->>
->> $ curl -LSso .config https://download.01.org/0day-ci/archive/20220205/202202050539.Mtk9I4Ef-lkp@intel.com/config
->>
->> $ make -skj"$(nproc)" ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- olddefconfig all
->> ...
->> arm-linux-gnueabi-ld: arch/arm/mach-socfpga/socfpga.o: in function `socfpga_init_irq':
->> socfpga.c:(.init.text+0x104): undefined reference to `socfpga_reset_init'
->> ...
->>
->> Whether or not this reproduces with the in-tree socfpga_defconfig, I am
->> not sure.
+On Sat, Feb 05, 2022 at 07:53:30PM +0100, Paul Kocialkowski wrote:
+> The A31 CSI controller supports two distinct input interfaces:
+> parallel and an external MIPI CSI-2 bridge. The parallel interface
+> is often connected to a set of hardware pins while the MIPI CSI-2
+> bridge is an internal FIFO-ish link. As a result, these two inputs
+> are distinguished as two different ports.
 > 
-> Thanks for checking - it seems I misread (and find it confusing...) the
-> report - that it is socfpga defconfig. It clearly says "config:
-> arm-socfpga_defconfig"...
+> Note that only one of the two may be present on a controller instance.
+> For example, the V3s has one controller dedicated to MIPI-CSI2 and one
+> dedicated to parallel.
 
-Aha, I did the same thing and could not reproduce it. :(
+Is it that only one of the two is present, or only one of the two is
+connected ? In the latter case I'd make both ports required, but with
+only one of them connected.
 
-> I can reproduce it with the config from the URL. I'll work on fix.
+> Update the binding with an explicit ports node that holds two distinct
+> port nodes: one for parallel input and one for MIPI CSI-2.
+> 
+> This is backward-compatible with the single-port approach that was
+> previously taken for representing the parallel interface port, which
+> stays enumerated as fwnode port 0.
+> 
+> Note that additional ports may be added in the future, especially to
+> support feeding the CSI controller's output to the ISP.
+> 
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Acked-by: Maxime Ripard <mripard@kernel.org>
+> ---
+>  .../media/allwinner,sun6i-a31-csi.yaml        | 60 +++++++++++++++----
+>  1 file changed, 47 insertions(+), 13 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
+> index 8b568072a069..3cc61866ea89 100644
+> --- a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
+> +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
+> @@ -61,6 +61,34 @@ properties:
+>  
+>      additionalProperties: false
+>  
+> +  ports:
+> +    $ref: /schemas/graph.yaml#/properties/ports
+> +
+> +    properties:
+> +      port@0:
+> +        $ref: "#/properties/port"
+> +        unevaluatedProperties: false
+> +
+> +      port@1:
+> +        $ref: /schemas/graph.yaml#/$defs/port-base
+> +        description: MIPI CSI-2 bridge input port
+> +
+> +        properties:
+> +          reg:
+> +            const: 1
+> +
+> +          endpoint:
+> +            $ref: video-interfaces.yaml#
+> +            unevaluatedProperties: false
+> +
+> +        additionalProperties: false
+> +
+> +    anyOf:
+> +      - required:
+> +        - port@0
+> +      - required:
+> +        - port@1
+> +
+>  required:
+>    - compatible
+>    - reg
 
-Thanks.
+Shouldn't you specify that either port or ports is required, but not
+both ? I'd also add a comment in the port node to tell it's deprecated,
+and that ports should be used instead.
+
+> @@ -89,19 +117,25 @@ examples:
+>                        "ram";
+>          resets = <&ccu RST_BUS_CSI>;
+>  
+> -        port {
+> -            /* Parallel bus endpoint */
+> -            csi1_ep: endpoint {
+> -                remote-endpoint = <&adv7611_ep>;
+> -                bus-width = <16>;
+> -
+> -                /*
+> -                 * If hsync-active/vsync-active are missing,
+> -                 * embedded BT.656 sync is used.
+> -                 */
+> -                 hsync-active = <0>; /* Active low */
+> -                 vsync-active = <0>; /* Active low */
+> -                 pclk-sample = <1>;  /* Rising */
+> +        ports {
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            port@0 {
+> +                reg = <0>;
+> +                /* Parallel bus endpoint */
+> +                csi1_ep: endpoint {
+> +                    remote-endpoint = <&adv7611_ep>;
+> +                    bus-width = <16>;
+> +
+> +                    /*
+> +                     * If hsync-active/vsync-active are missing,
+> +                     * embedded BT.656 sync is used.
+> +                     */
+> +                     hsync-active = <0>; /* Active low */
+> +                     vsync-active = <0>; /* Active low */
+> +                     pclk-sample = <1>;  /* Rising */
+
+Wrong indentation.
+
+> +                };
+>              };
+>          };
+>      };
 
 -- 
-~Randy
+Regards,
+
+Laurent Pinchart
