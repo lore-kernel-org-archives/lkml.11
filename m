@@ -2,231 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B85C35270
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2991BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448553AbiBGNL4 (ORCPT
+        id S1448606AbiBGNMK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:11:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
+        Mon, 7 Feb 2022 08:12:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392273AbiBGMJG (ORCPT
+        with ESMTP id S1388936AbiBGMjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:09:06 -0500
-X-Greylist: delayed 368 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 04:01:45 PST
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA8EC03FED2;
-        Mon,  7 Feb 2022 04:01:45 -0800 (PST)
-Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jskkk5Zbgz67y8Z;
-        Mon,  7 Feb 2022 19:41:50 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Feb 2022 12:42:31 +0100
-Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
- 2022 11:42:29 +0000
-Date:   Mon, 7 Feb 2022 11:42:28 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Yicong Yang <yangyicong@hisilicon.com>
-CC:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <daniel.thompson@linaro.org>, <joro@8bytes.org>,
-        <john.garry@huawei.com>, <shameerali.kolothum.thodi@huawei.com>,
-        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
-        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
-        <linuxarm@huawei.com>, <song.bao.hua@hisilicon.com>
-Subject: Re: [PATCH v3 2/8] hisi_ptt: Register PMU device for PTT trace
-Message-ID: <20220207114228.00002e6f@Huawei.com>
-In-Reply-To: <20220124131118.17887-3-yangyicong@hisilicon.com>
-References: <20220124131118.17887-1-yangyicong@hisilicon.com>
-        <20220124131118.17887-3-yangyicong@hisilicon.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Mon, 7 Feb 2022 07:39:13 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41ACCC001F74
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:29:47 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id e145so19311769yba.12
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 04:29:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zFqQ4IUhh5vrztnUr/w/RGdaRcKDiZgiBwmvAthyBgg=;
+        b=VN+FcB+RSvt9TStrknBTJ9/6bBJGnhDmxvWrAUS8ukTM3V8TQy0ZgdfR1JkLwgNB3V
+         YskmmsD3gir3pMGVQpb1dsfRUT1M4w6JljiA67SFvXWGHfYCva42QhHgnQYyfrTbWz4v
+         t46BA05XelyzFpcBHUd9c5VpyweixV+Z6qN5m2EnRUiirmu/wuUcIB+YEOlY9pCNLgcr
+         /Q6LIclFHwUP0iQm2QRVsFyVJQ0paCUzBwxh7T60uJCHm6j2q9YNkmmTISRWtGJ7szPV
+         B6nsE0NZXlRo50QV6N4KtvmM86OcE6ZSH6hTYpwYE0OmkMpbNv3C8zkbKMh+HtEi3JC8
+         FEoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zFqQ4IUhh5vrztnUr/w/RGdaRcKDiZgiBwmvAthyBgg=;
+        b=t++6rfVmLZHVZzVjU2WADKxK6xqkGLwzpLuSMxlEU8E2r+NV4A4fyBMUu0bP+6Lo3C
+         ITVrpRWQSC8/fT1izTj6ftgehviF7hywJBl9UrvXaXg3PGksITjinYMmLYyK3PTvOeOT
+         6YRJ+hkiaCY/Mxmkct3yrmeHGL8gRC3KW5/GM1PJS7Nnf4p+kLl89ghoVKpBaAE9FhK8
+         evtRBrTb4LfUoXSmNyOvQ31mzLDxLutqq80mNANY2cF/K6dZTAHdi8f/guMwtrT8Kl3O
+         CZWN6X6Zj9TqvuvJwnX5xrdERfmxb9g2QzAqUcej6HpErxR4dRW16Sz79Tc3ptQq4KQ9
+         c/sg==
+X-Gm-Message-State: AOAM530w55NtM65kkdCu3McAzrzrOywiz0UfNagjs4s2L1+nj0Kls1EN
+        pAqNE5McU7ledzQHZy03lH7QxKeI+Ze8yvhhSd6yvg==
+X-Google-Smtp-Source: ABdhPJzrRE2p9LRRkBiCf1z3sq4PCL4vokQUZAyBx14AqSX+BLjiHW9TChxVT7HaWTtBHB6TmmWZIX2APyxubPvxA64=
+X-Received: by 2002:a25:1402:: with SMTP id 2mr9338333ybu.684.1644236986311;
+ Mon, 07 Feb 2022 04:29:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.41]
-X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+References: <20220207103802.280120990@linuxfoundation.org>
+In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 7 Feb 2022 17:59:34 +0530
+Message-ID: <CA+G9fYtLmasiEHvfTw+PSabJCfJR2d8yiVyhn1nd4TcKfZ7bOw@mail.gmail.com>
+Subject: Re: [PATCH 5.15 000/110] 5.15.22-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Marc Zyngier <maz@kernel.org>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 24 Jan 2022 21:11:12 +0800
-Yicong Yang <yangyicong@hisilicon.com> wrote:
-
-> Register PMU device of PTT trace, then users can use
-> trace through perf command. The driver makes use of perf
-> AUX trace and support following events to configure the
-> trace:
-> 
-> - filter: select Root port or Endpoint to trace
-> - type: select the type of traced TLP headers
-> - direction: select the direction of traced TLP headers
-> - format: select the data format of the traced TLP headers
-> 
-> This patch adds the PMU driver part of PTT trace. The perf
-> command support of PTT trace is added in the following
-> patch.
-> 
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> ---
-
-
-> @@ -294,6 +346,405 @@ static void hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
->  	hisi_ptt->trace_ctrl.default_cpu = cpumask_first(cpumask_of_node(dev_to_node(&pdev->dev)));
->  }
->  
-> +#define HISI_PTT_PMU_FILTER_IS_PORT	BIT(19)
-> +#define HISI_PTT_PMU_FILTER_VAL_MASK	GENMASK(15, 0)
-> +#define HISI_PTT_PMU_DIRECTION_MASK	GENMASK(23, 20)
-> +#define HISI_PTT_PMU_TYPE_MASK		GENMASK(31, 24)
-> +#define HISI_PTT_PMU_FORMAT_MASK	GENMASK(35, 32)
-> +
-> +static ssize_t available_filters_show(struct device *dev,
-> +				      struct device_attribute *attr,
-> +				      char *buf)
-> +{
-> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(dev_get_drvdata(dev));
-> +	struct hisi_ptt_filter_desc *filter;
-> +	int pos = 0;
-> +
-> +	if (list_empty(&hisi_ptt->port_filters))
-> +		return sysfs_emit(buf, "#### No available filter ####\n");
-> +
-
-This is a very unusual sysfs attribute.
-They are supposed to be one "thing" per file, so I'd have expected this to
-be at least two files
-
-root_ports_available_filters
-request_available_filters
-and no available filter is indicated by these attribute returning an empty
-string.
-
-However you need to match convention for hwtracing drivers so if
-this is common approach perhaps you could point me to a similar
-example? My grep skills didn't find me one.
-
-> +	mutex_lock(&hisi_ptt->mutex);
-> +	pos += sysfs_emit_at(buf, pos, "#### Root Ports ####\n");
-> +	list_for_each_entry(filter, &hisi_ptt->port_filters, list)
-> +		pos += sysfs_emit_at(buf, pos, "%s	0x%05lx\n",
-> +				     pci_name(filter->pdev),
-> +				     hisi_ptt_get_filter_val(filter->pdev) |
-> +				     HISI_PTT_PMU_FILTER_IS_PORT);
-> +
-> +	pos += sysfs_emit_at(buf, pos, "#### Requesters ####\n");
-> +	list_for_each_entry(filter, &hisi_ptt->req_filters, list)
-> +		pos += sysfs_emit_at(buf, pos, "%s	0x%05x\n",
-> +				     pci_name(filter->pdev),
-> +				     hisi_ptt_get_filter_val(filter->pdev));
-> +
-> +	mutex_unlock(&hisi_ptt->mutex);
-> +	return pos;
-> +}
-> +static DEVICE_ATTR_ADMIN_RO(available_filters);
-> +
-
-...
+On Mon, 7 Feb 2022 at 16:55, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.22 release.
+> There are 110 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.22-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
 
-> +static int hisi_ptt_trace_valid_config_onehot(u32 val, u32 *available_list, u32 list_size)
-> +{
-> +	int i, ret = -EINVAL;
-> +
-> +	for (i = 0; i < list_size; i++)
-> +		if (val == available_list[i]) {
-> +			ret = 0;
+Linux stable-rc 5.15 and 5.16 arm64 builds failed due to below errors.
 
-return 0;
+  kvm/arm64: rework guest entry logic
+  [ Upstream commit 8cfe148a7136bc60452a5c6b7ac2d9d15c36909b ]
 
-> +			break;
-> +		}
-> +
-> +	return ret;
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-return -EINVAL;
-
-> +}
-> +
-
-> +
-> +static void hisi_ptt_pmu_free_aux(void *aux)
-> +{
-> +	struct hisi_ptt_pmu_buf *buf = aux;
-> +
-> +	vunmap(buf->base);
-> +	kfree(buf);
-> +}
-> +
-
-
-...
-
-> +static int hisi_ptt_pmu_add(struct perf_event *event, int flags)
-> +{
-> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(event->pmu);
-> +	struct hw_perf_event *hwc = &event->hw;
-> +	int cpu = event->cpu;
-> +
-> +	if (cpu == -1 && smp_processor_id() != hisi_ptt->trace_ctrl.default_cpu)
-
-This check is not entirely obvious to me. Perhaps a comment would help
-readers understand why this condition is successful, but doesn't involve
-actually starting the pmu?
-
-> +		return 0;
-> +
-> +	hwc->state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
-> +
-> +	if (flags & PERF_EF_START) {
-> +		hisi_ptt_pmu_start(event, PERF_EF_RELOAD);
-> +		if (hwc->state & PERF_HES_STOPPED)
-> +			return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-
-...
-
->  /*
->   * The DMA of PTT trace can only use direct mapping, due to some
->   * hardware restriction. Check whether there is an iommu or the
-> @@ -359,6 +810,12 @@ static int hisi_ptt_probe(struct pci_dev *pdev,
->  
->  	hisi_ptt_init_ctrls(hisi_ptt);
->  
-> +	ret = hisi_ptt_register_pmu(hisi_ptt);
-> +	if (ret) {
-> +		pci_err(pdev, "failed to register pmu device, ret = %d", ret);
-
-Given I think this exposes userspace interfaces, it should be the very
-last thing done in probe(). Otherwise we have a race condition (at least in
-theory) where someone starts using it before we then fail the iommu mapping check.
+arch/arm64/kvm/arm.c: In function 'kvm_arm_vcpu_enter_exit':
+arch/arm64/kvm/arm.c:769:9: error: implicit declaration of function
+'guest_state_enter_irqoff'; did you mean 'guest_enter_irqoff'?
+[-Werror=implicit-function-declaration]
+  769 |         guest_state_enter_irqoff();
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~
+      |         guest_enter_irqoff
+arch/arm64/kvm/arm.c:771:9: error: implicit declaration of function
+'guest_state_exit_irqoff'; did you mean 'guest_exit_irqoff'?
+[-Werror=implicit-function-declaration]
+  771 |         guest_state_exit_irqoff();
+      |         ^~~~~~~~~~~~~~~~~~~~~~~
+      |         guest_exit_irqoff
+arch/arm64/kvm/arm.c: In function 'kvm_arch_vcpu_ioctl_run':
+arch/arm64/kvm/arm.c:866:17: error: implicit declaration of function
+'guest_timing_enter_irqoff'; did you mean 'guest_enter_irqoff'?
+[-Werror=implicit-function-declaration]
+  866 |                 guest_timing_enter_irqoff();
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~
+      |                 guest_enter_irqoff
+arch/arm64/kvm/arm.c:916:17: error: implicit declaration of function
+'guest_timing_exit_irqoff'; did you mean 'guest_exit_irqoff'?
+[-Werror=implicit-function-declaration]
+  916 |                 guest_timing_exit_irqoff();
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                 guest_exit_irqoff
+cc1: some warnings being treated as errors
 
 
-> +		return ret;
-> +	}
-> +
->  	ret = hisi_ptt_check_iommu_mapping(hisi_ptt);
->  	if (ret) {
->  		pci_err(pdev, "cannot work with non-direct DMA mapping.\n");
+build link:
+-----------
+https://builds.tuxbuild.com/24mNSY65SpZIASD4qYSPgMWIVqH/
 
-Thanks,
+steps to reproduce:
+tuxmake --runtime podman --target-arch arm64 --toolchain gcc-11
+--kconfig https://builds.tuxbuild.com/24mNSY65SpZIASD4qYSPgMWIVqH/config
 
-Jonathan
-
+--
+Linaro LKFT
+https://lkft.linaro.org
