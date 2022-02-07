@@ -2,105 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78FCBC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88181C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347530AbiBGJ1V (ORCPT
+        id S1348653AbiBGJ1X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:27:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50524 "EHLO
+        Mon, 7 Feb 2022 04:27:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351034AbiBGJN1 (ORCPT
+        with ESMTP id S1353674AbiBGJQl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:13:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CF1C043187;
-        Mon,  7 Feb 2022 01:13:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 7 Feb 2022 04:16:41 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A983CC0401DE;
+        Mon,  7 Feb 2022 01:16:39 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61BC361139;
-        Mon,  7 Feb 2022 09:13:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1F1FC340F4;
-        Mon,  7 Feb 2022 09:13:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644225205;
-        bh=loNDVX86jkz7vPamh6R+7NHKKkH44fLHUGIwxCxL54I=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=L3qKS4GcjeFf9L8rovgeNZ8vSs81DbEsRricgR8snuEiTtE5qtGwO+t5ejmjTWnE/
-         3p5qPvPUFvK95lfF8emhaz9Oss/BNFFFwYykCdrz9e6TPUpmOwVmooJ8+wO5QH7Ysf
-         UBXQXH8lt9nKYUW6VdDMBkxsj3L6CuTJh45w2MlfYSXy0zPcWm00VhtJm1omFzwI3h
-         TPZ/mSKnuY0y5ADde8wKQl/t5N9IUhmAULM06+lV+2PHIaWkoqizwy0h3DmK68d7El
-         rl6GKzy1PC6EOzhRP7JZi7CXUlFvmzQqG19UCKQw2b6TsJkAf1YbOuB6/uiGgbsy78
-         oyw05Ak1bBqCw==
-Received: by mail-ua1-f54.google.com with SMTP id w21so21632123uan.7;
-        Mon, 07 Feb 2022 01:13:25 -0800 (PST)
-X-Gm-Message-State: AOAM5317xhSD5WrrRLUA21mJplKsI9hHjKDgOh18ZfYFvwC314nd0KkY
-        fMHQqJdsZ9GXhRmfywN31VTmj7YJnsasjjAijY4=
-X-Google-Smtp-Source: ABdhPJxu8H5EnszM02kixttFF4U4u7kjCty3W4zLrxfbfQuHtQaVYD+2dwHDNYwaLA6hLb+W2wZbCs1H8ChTqC6nLBg=
-X-Received: by 2002:a05:6102:3bd9:: with SMTP id a25mr4173991vsv.8.1644225204809;
- Mon, 07 Feb 2022 01:13:24 -0800 (PST)
-MIME-Version: 1.0
-References: <20220130135634.1213301-1-guoren@kernel.org> <20220130135634.1213301-3-guoren@kernel.org>
- <5b59a816-a1a2-1e75-9c78-8bc9be18f70d@sholland.org>
-In-Reply-To: <5b59a816-a1a2-1e75-9c78-8bc9be18f70d@sholland.org>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Mon, 7 Feb 2022 17:13:14 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTSki27uum+vPEsU50ktuBmkFC=XSr_KuAmKG2pwX2OwtA@mail.gmail.com>
-Message-ID: <CAJF2gTSki27uum+vPEsU50ktuBmkFC=XSr_KuAmKG2pwX2OwtA@mail.gmail.com>
-Subject: Re: [PATCH V7 2/2] irqchip/sifive-plic: Fixup thead,c900-plic DT
- parse missing
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Anup Patel <anup@brainfault.org>,
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 934AB1EC0354;
+        Mon,  7 Feb 2022 10:16:33 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644225393;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=RhZCvESkq4uv/MnXkVCgST7XyZ/TXxrvV+qyZmcFnNo=;
+        b=eAKkrWkC+wccOlnhlbQ0D0g7WmKJasDAmaBpYzOdvOmVRMP0ZaG1AwvCvcMmCdqGiXFPhB
+        mDdy3SsIbwarUgR8GGZzsL3BbYqfAh1nXlT2ZSnFtaxZcLh1lIS3GFFk2oPLpdP7wfNDOf
+        Y74CWeSnp3mCrLoztWbkxIjH5UWMU8I=
+Date:   Mon, 7 Feb 2022 10:16:27 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Brijesh Singh <brijesh.singh@amd.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
         Thomas Gleixner <tglx@linutronix.de>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>,
-        Samuel Holland <samuel@sholland.org>
-Content-Type: text/plain; charset="UTF-8"
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: Re: [PATCH v9 43/43] virt: sevguest: Add support to get extended
+ report
+Message-ID: <YgDjayeFRpzh1xEu@zn.tnic>
+References: <20220128171804.569796-1-brijesh.singh@amd.com>
+ <20220128171804.569796-44-brijesh.singh@amd.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220128171804.569796-44-brijesh.singh@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marc,
+On Fri, Jan 28, 2022 at 11:18:04AM -0600, Brijesh Singh wrote:
+> +static int get_ext_report(struct snp_guest_dev *snp_dev, struct snp_guest_request_ioctl *arg)
+> +{
+> +	struct snp_guest_crypto *crypto = snp_dev->crypto;
+> +	struct snp_ext_report_req req = {0};
+> +	struct snp_report_resp *resp;
+> +	int ret, npages = 0, resp_len;
+> +
+> +	if (!arg->req_data || !arg->resp_data)
+> +		return -EINVAL;
+> +
+> +	/* Copy the request payload from userspace */
 
-On Wed, Feb 2, 2022 at 12:42 PM Samuel Holland <samuel@sholland.org> wrote:
->
-> On 1/30/22 7:56 AM, guoren@kernel.org wrote:
-> > From: Guo Ren <guoren@linux.alibaba.com>
-> >
-> > The thead,c900-plic has been used in opensbi to distinguish
-> > PLIC [1]. Although PLICs have the same behaviors in Linux,
-> > they are different hardware with some custom initializing in
-> > firmware(opensbi).
-> >
-> > Qute opensbi patch commit-msg by Samuel:
-> >
-> >   The T-HEAD PLIC implementation requires setting a delegation bit
-> >   to allow access from S-mode. Now that the T-HEAD PLIC has its own
-> >   compatible string, set this bit automatically from the PLIC driver,
-> >   instead of reaching into the PLIC's MMIO space from another driver.
-> >
-> > [1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
-> >
-> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> > Cc: Anup Patel <anup@brainfault.org>
-> > Cc: Marc Zyngier <maz@kernel.org>
-> > Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> > Cc: Samuel Holland <samuel@sholland.org>
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > ---
-> >  drivers/irqchip/irq-sifive-plic.c | 1 +
-> >  1 file changed, 1 insertion(+)
->
-> Tested-by: Samuel Holland <samuel@sholland.org>
+Useless comment.
 
-ping... gently. Any problem with the above patch?
+> +	if (copy_from_user(&req, (void __user *)arg->req_data, sizeof(req)))
+> +		return -EFAULT;
+> +
+> +	if (req.certs_len) {
+> +		if (req.certs_len > SEV_FW_BLOB_MAX_SIZE ||
+> +		    !IS_ALIGNED(req.certs_len, PAGE_SIZE))
+> +			return -EINVAL;
+> +	}
+> +
+> +	if (req.certs_address && req.certs_len) {
+> +		if (!access_ok(req.certs_address, req.certs_len))
+> +			return -EFAULT;
+> +
+> +		/*
+> +		 * Initialize the intermediate buffer with all zero's. This buffer
 
---
-Best Regards
- Guo Ren
+"zeros"
 
-ML: https://lore.kernel.org/linux-csky/
+> +		 * is used in the guest request message to get the certs blob from
+> +		 * the host. If host does not supply any certs in it, then copy
+> +		 * zeros to indicate that certificate data was not provided.
+> +		 */
+> +		memset(snp_dev->certs_data, 0, req.certs_len);
+> +
+> +		npages = req.certs_len >> PAGE_SHIFT;
+> +	}
+> +
+> +	/*
+> +	 * The intermediate response buffer is used while decrypting the
+> +	 * response payload. Make sure that it has enough space to cover the
+> +	 * authtag.
+> +	 */
+> +	resp_len = sizeof(resp->data) + crypto->a_len;
+> +	resp = kzalloc(resp_len, GFP_KERNEL_ACCOUNT);
+> +	if (!resp)
+> +		return -ENOMEM;
+> +
+> +	snp_dev->input.data_npages = npages;
+> +	ret = handle_guest_request(snp_dev, SVM_VMGEXIT_EXT_GUEST_REQUEST, arg->msg_version,
+> +				   SNP_MSG_REPORT_REQ, &req.data,
+> +				   sizeof(req.data), resp->data, resp_len, &arg->fw_err);
+> +
+> +	/* If certs length is invalid then copy the returned length */
+> +	if (arg->fw_err == SNP_GUEST_REQ_INVALID_LEN) {
+> +		req.certs_len = snp_dev->input.data_npages << PAGE_SHIFT;
+> +
+> +		if (copy_to_user((void __user *)arg->req_data, &req, sizeof(req)))
+> +			ret = -EFAULT;
+> +	}
+> +
+> +	if (ret)
+> +		goto e_free;
+> +
+> +	/* Copy the certificate data blob to userspace */
+> +	if (req.certs_address && req.certs_len &&
+> +	    copy_to_user((void __user *)req.certs_address, snp_dev->certs_data,
+> +			 req.certs_len)) {
+> +		ret = -EFAULT;
+> +		goto e_free;
+> +	}
+> +
+> +	/* Copy the response payload to userspace */
+
+Both comments are not needed.
+
+> +	if (copy_to_user((void __user *)arg->resp_data, resp, sizeof(*resp)))
+> +		ret = -EFAULT;
+> +
+> +e_free:
+> +	kfree(resp);
+> +	return ret;
+> +}
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
