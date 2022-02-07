@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCD1DC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E7BC41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382283AbiBGLSq (ORCPT
+        id S1382303AbiBGLSs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:18:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50354 "EHLO
+        Mon, 7 Feb 2022 06:18:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356748AbiBGLN0 (ORCPT
+        with ESMTP id S1356758AbiBGLNa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:13:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D6DC0401C0;
-        Mon,  7 Feb 2022 03:13:23 -0800 (PST)
+        Mon, 7 Feb 2022 06:13:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9507C043181;
+        Mon,  7 Feb 2022 03:13:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FA95B81028;
-        Mon,  7 Feb 2022 11:13:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F15AC004E1;
-        Mon,  7 Feb 2022 11:13:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70E86B80EC3;
+        Mon,  7 Feb 2022 11:13:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88423C004E1;
+        Mon,  7 Feb 2022 11:13:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232401;
-        bh=VmPwG06BoYxolGXfIBhJmLsdJiUdT/22gIzJPpO0ABE=;
+        s=korg; t=1644232407;
+        bh=3BnQTiy1lYRjKYs33OvlOJ3AUlWRFB7XgubtblS7lzg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KikeQzjgGhawUDfVYpygf6skTb3bNLDW1Mhtbtzyx2qTqkgodIX3sioTWtu1FpR/y
-         Fz2HCaUoLVQSnQKP9W2hfI7p+fs0Ej78dS3G0DQEgVM1O/8zsq3UEkBU51RdOpk8Lu
-         isSg0tllrw7yLy8Xt8/2/mOQUZ89o0auRcpgKEgs=
+        b=FOj69oZqfyWpAhx1IcEsX3ZStBSW2wL7cvzXvJP+svxfWoWnHWdZdZqkMmVv3zAfa
+         ezGVdbSjlJxiSBehOupKHR3oemnGMadhB0lDSXPi/Ap3j2Gs07xMiaqtjxcVDCasJ9
+         6q7Y54QVOWIdCk9tQNfaR7vlTW4jsl2udTciy+Q4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Riwen Lu <luriwen@kylinos.cn>,
-        Eric Wong <e@80x24.org>,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 4.14 66/69] rtc: cmos: Evaluate century appropriate
-Date:   Mon,  7 Feb 2022 12:06:28 +0100
-Message-Id: <20220207103757.798785618@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 4.14 68/69] EDAC/xgene: Fix deferred probing
+Date:   Mon,  7 Feb 2022 12:06:30 +0100
+Message-Id: <20220207103757.869276090@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -51,43 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Riwen Lu <luriwen@kylinos.cn>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit ff164ae39b82ee483b24579c8e22a13a8ce5bd04 upstream.
+commit dfd0dfb9a7cc04acf93435b440dd34c2ca7b4424 upstream.
 
-There's limiting the year to 2069. When setting the rtc year to 2070,
-reading it returns 1970. Evaluate century starting from 19 to count the
-correct year.
+The driver overrides error codes returned by platform_get_irq_optional()
+to -EINVAL for some strange reason, so if it returns -EPROBE_DEFER, the
+driver will fail the probe permanently instead of the deferred probing.
+Switch to propagating the proper error codes to platform driver code
+upwards.
 
-$ sudo date -s 20700106
-Mon 06 Jan 2070 12:00:00 AM CST
-$ sudo hwclock -w
-$ sudo hwclock -r
-1970-01-06 12:00:49.604968+08:00
+  [ bp: Massage commit message. ]
 
-Fixes: 2a4daadd4d3e5071 ("rtc: cmos: ignore bogus century byte")
-
-Signed-off-by: Riwen Lu <luriwen@kylinos.cn>
-Acked-by: Eric Wong <e@80x24.org>
-Reviewed-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220106084609.1223688-1-luriwen@kylinos.cn
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl> # preparation for stable
+Fixes: 0d4429301c4a ("EDAC: Add APM X-Gene SoC EDAC driver")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220124185503.6720-3-s.shtylyov@omp.ru
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rtc/rtc-mc146818-lib.c |    2 +-
+ drivers/edac/xgene_edac.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/rtc/rtc-mc146818-lib.c
-+++ b/drivers/rtc/rtc-mc146818-lib.c
-@@ -82,7 +82,7 @@ unsigned int mc146818_get_time(struct rt
- 	time->tm_year += real_year - 72;
- #endif
- 
--	if (century > 20)
-+	if (century > 19)
- 		time->tm_year += (century - 19) * 100;
- 
- 	/*
+--- a/drivers/edac/xgene_edac.c
++++ b/drivers/edac/xgene_edac.c
+@@ -1934,7 +1934,7 @@ static int xgene_edac_probe(struct platf
+ 			irq = platform_get_irq(pdev, i);
+ 			if (irq < 0) {
+ 				dev_err(&pdev->dev, "No IRQ resource\n");
+-				rc = -EINVAL;
++				rc = irq;
+ 				goto out_err;
+ 			}
+ 			rc = devm_request_irq(&pdev->dev, irq,
 
 
