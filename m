@@ -2,111 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26BE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D16C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239892AbiBGV24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 16:28:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
+        id S240312AbiBGV32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 16:29:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239693AbiBGV2m (ORCPT
+        with ESMTP id S231607AbiBGV3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 16:28:42 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96271C061355;
-        Mon,  7 Feb 2022 13:28:41 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id t14so21593687ljh.8;
-        Mon, 07 Feb 2022 13:28:41 -0800 (PST)
+        Mon, 7 Feb 2022 16:29:24 -0500
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEA9C0612A4
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:29:24 -0800 (PST)
+Received: by mail-il1-x129.google.com with SMTP id z4so12278450ilz.4
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 13:29:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=JsnvO3rI0+4fx0hfi5N5XanAKysJ+GmqbV5i8hTt1PU=;
-        b=YIfY4SL0GTsR8+0O8tf1ZeI9rQE/y62ul1fzP6lIGyz8802y80cdTc21Wj6LVDNeHO
-         Zy+HBlM9G9YfPIVX+BXrhxxu7at9jTvasrv/nM+Sci0NH077UZMJFJvyymHv4qWGsqXa
-         p4vBrrxu6eowtMSRleEME8DiX7wYeziYcFeFWydNXDgH/lhRnbgH9+zljgShvsr2jduy
-         rVTCHmcOzGvPrJwFd9WMYAqjp8/oc+62DJiN6gxZdlHy2fjJfviIaagPKO++Na8E6WT5
-         4Jvfn14xQN2xyiCK/lRqEKlgw268c2DwDuhgJ9G9yuuJnr4oGfb7m/gGtnnvn0HPguj1
-         /OtQ==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jOgA3pSSAKNdGgRKEE4AjEam+tqusyVtFE0cVMEfM10=;
+        b=Nva5TpWxQ5v79ciD7l3O1KNjet0TxpPDuMeNxWEt+nkWapiWoQCkOm6mYiiB7BoWG3
+         +vIpaY9l3OueN4Aq0dPAUlkDgrU9KZTRwGshMITWX8nuNy79aRfChyr+HaASdCGMb0Y3
+         iMsygt6b+LgwDJql8RZQ7rwVa/nur3nvYMvII=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JsnvO3rI0+4fx0hfi5N5XanAKysJ+GmqbV5i8hTt1PU=;
-        b=qKp5VQvMPkFAYxWkHSozfMQo6za1zENkCmCJlYsBTaK0Cg0uCQq//B/0rZ05OFt0P/
-         StioeBojk9vHsljRuuimQcXjfLp/F0X3vsDoJRzenyXVQxi0PktBCREFFyYo9er1GxNG
-         y0ajPq9lPq3tSaI/2L2fTZ4uAeWbEzZgW3msRG42QyTH4SJUlLoQCGX7AljWUfwtWY1k
-         lIRVrLx1LRsd0ynJyfZiAszTXcrwBNF9JmLJgBDj813TzYuYfXsgJgVzB3VxinWBwraU
-         iIlLZktMigzg+UOeGKQ2J3x6opAd8ZNUAmYAUD/i3vQeCGRxFpIu2fAoaVpr9LGwXdxP
-         9ezw==
-X-Gm-Message-State: AOAM533iPwvwEAkKPyeahMSMOL58UPnIQeimxKh6vJ9yKoM8nvAQ319q
-        ZMfiX7UTtGCrcMd4NFaODpU=
-X-Google-Smtp-Source: ABdhPJzYfESh7qQYfY3f8FgXV5iyT4MTLoMeKiZZXdkSkmU+76CoZyNmut0UCSBJVXCWeuFe6UDgWQ==
-X-Received: by 2002:a2e:bc11:: with SMTP id b17mr879679ljf.74.1644269320006;
-        Mon, 07 Feb 2022 13:28:40 -0800 (PST)
-Received: from localhost.localdomain (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.gmail.com with ESMTPSA id i3sm1650867lfj.144.2022.02.07.13.28.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 13:28:39 -0800 (PST)
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Svyatoslav Ryhel <clamor95@gmail.com>,
-        David Heidelberg <david@ixit.cz>,
-        Robert Eckelmann <longnoserob@gmail.com>,
-        Agneli <poczt@protonmail.ch>
-Cc:     linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 4/4] ARM: tegra: paz00: Add MMC aliases
-Date:   Tue,  8 Feb 2022 00:28:26 +0300
-Message-Id: <20220207212826.10307-5-digetx@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220207212826.10307-1-digetx@gmail.com>
-References: <20220207212826.10307-1-digetx@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jOgA3pSSAKNdGgRKEE4AjEam+tqusyVtFE0cVMEfM10=;
+        b=MlCslSa2qxfgkP9dJXeAMzPfD4IYieS4bKpBm1of0vNMG+IZfYGOPOmRI9DsQuSRJA
+         XVImMYPDQYJCKr4rQn8ie8UO6DSaO5JF7d+dyU0vYdOJmPhzQK5qytCmsWjCWGFjHmOA
+         RQv64s6UiuwjyMJv+eWuwsN/VZ5CkgChS0nsHCls0WxomHhsQ4FCluyL/SpKg1vRAhkT
+         xoDGYHk8ZYtFiE1SMXj12xcJYMYUSlbAcGmgPxD97U6EJdBuH6Dhss6vKYQgdSM7MXdn
+         7r9o3wG0cr1LwxS+oUgWl89crDZJzQZuxAluLtOwOXaqiRAyEtuzwRVBy4Pdmradqp5y
+         ai7Q==
+X-Gm-Message-State: AOAM533e04b8ZSO6uXAvIzl4XCakSIPnspwiTMchNa236E28g8ncI4jg
+        d8+l4GV+OXzuYf6M37ZRa6ndOA==
+X-Google-Smtp-Source: ABdhPJwbWx7WJrn+PczkXfnSNrY216m0joVsgirUQj52qH9YUX4vBM/r9ao4+kBGtJq1/K3aPcjmXw==
+X-Received: by 2002:a05:6e02:1489:: with SMTP id n9mr685956ilk.313.1644269363703;
+        Mon, 07 Feb 2022 13:29:23 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id c12sm5020450ilo.70.2022.02.07.13.29.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 13:29:23 -0800 (PST)
+Subject: Re: [PATCH 5.4 00/44] 5.4.178-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220207103753.155627314@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <f8e14a61-42d3-972e-0511-4457c7273b41@linuxfoundation.org>
+Date:   Mon, 7 Feb 2022 14:29:22 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add MMC aliases to ensure that the /dev/mmcblk IDs won't change depending
-on the probe order of the MMC drivers.
+On 2/7/22 4:06 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.178 release.
+> There are 44 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.178-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
----
- arch/arm/boot/dts/tegra20-paz00.dts | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Compiled and booted on my test system. No dmesg regressions.
 
-diff --git a/arch/arm/boot/dts/tegra20-paz00.dts b/arch/arm/boot/dts/tegra20-paz00.dts
-index d53a175dc17a..0fb4b1f5bc1c 100644
---- a/arch/arm/boot/dts/tegra20-paz00.dts
-+++ b/arch/arm/boot/dts/tegra20-paz00.dts
-@@ -13,6 +13,8 @@ / {
- 	compatible = "compal,paz00", "nvidia,tegra20";
- 
- 	aliases {
-+		mmc0 = &sdmmc4; /* eMMC */
-+		mmc1 = &sdmmc1; /* MicroSD */
- 		rtc0 = "/i2c@7000d000/tps6586x@34";
- 		rtc1 = "/rtc@7000e000";
- 		serial0 = &uarta;
-@@ -558,7 +560,7 @@ usb-phy@c5008000 {
- 		status = "okay";
- 	};
- 
--	mmc@c8000000 {
-+	sdmmc1: mmc@c8000000 {
- 		status = "okay";
- 		cd-gpios = <&gpio TEGRA_GPIO(V, 5) GPIO_ACTIVE_LOW>;
- 		wp-gpios = <&gpio TEGRA_GPIO(H, 1) GPIO_ACTIVE_HIGH>;
-@@ -566,7 +568,7 @@ mmc@c8000000 {
- 		bus-width = <4>;
- 	};
- 
--	mmc@c8000600 {
-+	sdmmc4: mmc@c8000600 {
- 		status = "okay";
- 		bus-width = <8>;
- 		non-removable;
--- 
-2.34.1
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
+thanks,
+-- Shuah
