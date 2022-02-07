@@ -2,108 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 758F0C35275
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAEE0C4707A
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448599AbiBGNMI (ORCPT
+        id S1448569AbiBGNMA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:12:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44754 "EHLO
+        Mon, 7 Feb 2022 08:12:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445593AbiBGMmS (ORCPT
+        with ESMTP id S1446786AbiBGMnz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:42:18 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D33BE033DB2;
-        Mon,  7 Feb 2022 04:33:57 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 84DE11F37E;
-        Mon,  7 Feb 2022 12:18:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644236292; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=QzKGUR8l2ANJZZ33siPyM5ZbfG1iAsiLZfA06Eklo2s=;
-        b=t4tem1l8nL6PTmdZ+KQ4TZfGehFe/oB+t+9GgFdng1NUQhi+1jlTKMBMHSdpTLeu3wkInk
-        Le/Dz3WF5awnyQQynQfzCqGdSQgj1lV3Yz95XfP7yHip1fyy9NNH7VNG/ercZMPDt2HPd/
-        JiWKNEsych/QP66n8tcndCK5NjNoLFg=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 592D713BBC;
-        Mon,  7 Feb 2022 12:18:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id +7w4FQQOAWLMegAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Mon, 07 Feb 2022 12:18:12 +0000
-From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
-To:     Eric Biederman <ebiederm@xmission.com>,
-        Alexey Gladkov <legion@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>
-Subject: [RFC PATCH 0/6] RLIMIT_NPROC in ucounts fixups
-Date:   Mon,  7 Feb 2022 13:17:54 +0100
-Message-Id: <20220207121800.5079-1-mkoutny@suse.com>
+        Mon, 7 Feb 2022 07:43:55 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2986C0401C5;
+        Mon,  7 Feb 2022 04:41:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644237713; x=1675773713;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=lthWInRe5rhsFpXyr44BcVGfaJiVQJ2UlxjwGFZbtNQ=;
+  b=XNT1fQWLr+sI4RLUBAZFk7TEsWNaxnqTUHTM6CDA0eikp5DVR4TXz8C6
+   0KYyIA21g5orVtrrSIJXtjl67VKM4FmnhZLNkOaY1N/t7qJJzOjYt5Zqg
+   jVoVZuekv02AX6M9zcjR4aIu5PRfukjefwqZSGCUxWkNz+i5QnY6SZtMr
+   9uYJlHvQKgryMZ+6hGm5zIMhwKBvyXJRE1KnPWxTOciPGleMB88vlWeZj
+   4VeOTdfsRppYtHeTaeVp6viKzNCwP9x15+vMgPgBZTwB2mWs9+lomG+Vo
+   CDqBJmnZ7alB+DqcY365jE6cO0lUqSCD93KdmeIgg03JTMSq9n/8c0lhY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="229354774"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="229354774"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:41:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="536203226"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 07 Feb 2022 04:41:52 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id E71F53ED; Mon,  7 Feb 2022 14:42:06 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v3 1/1] iio: chemical: atlas-ezo-sensor: Make use of device properties
+Date:   Mon,  7 Feb 2022 14:42:04 +0200
+Message-Id: <20220207124204.11658-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series is a result of looking deeper into breakage of
-tools/testing/selftests/rlimits/rlimits-per-userns.c after 
-https://lore.kernel.org/r/20220204181144.24462-1-mkoutny@suse.com/
-is applied.
+Convert the module to be property provider agnostic and allow
+it to be used on non-OF platforms.
 
-The description of the original problem that lead to RLIMIT_NPROC et al.
-ucounts rewrite could be ambiguously interpretted as supporting either
-the case of:
-- never-fork service or
-- fork (RLIMIT_NPROC-1) times service.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v3: reincarnated enum (Jonathan)
+ drivers/iio/chemical/atlas-ezo-sensor.c | 32 +++++++++++++------------
+ 1 file changed, 17 insertions(+), 15 deletions(-)
 
-The scenario is weird anyway given existence of pids controller.
-
-The realization of that scenario relies not only on tracking number of
-processes per user_ns but also newly allows the root to override limit through
-set*uid. The commit message didn't mention that, so it's unclear if it
-was the intention too.
-
-I also noticed that the RLIMIT_NPROC enforcing in fork seems subject to TOCTOU
-race (check(nr_tasks),...,nr_tasks++) so the limit is rather advisory (but
-that's not a new thing related to ucounts rewrite).
-
-This series is RFC to discuss relevance of the subtle changes RLIMIT_NPROC to
-ucounts rewrite introduced.
-
-Michal Koutný (6):
-  set_user: Perform RLIMIT_NPROC capability check against new user
-    credentials
-  set*uid: Check RLIMIT_PROC against new credentials
-  cred: Count tasks by their real uid into RLIMIT_NPROC
-  ucounts: Allow root to override RLIMIT_NPROC
-  selftests: Challenge RLIMIT_NPROC in user namespaces
-  selftests: Test RLIMIT_NPROC in clone-created user namespaces
-
- fs/exec.c                                     |   2 +-
- include/linux/cred.h                          |   2 +-
- kernel/cred.c                                 |  29 ++-
- kernel/fork.c                                 |   2 +-
- kernel/sys.c                                  |  20 +-
- kernel/ucount.c                               |   3 +
- kernel/user_namespace.c                       |   2 +-
- .../selftests/rlimits/rlimits-per-userns.c    | 233 +++++++++++++++---
- 8 files changed, 229 insertions(+), 64 deletions(-)
-
+diff --git a/drivers/iio/chemical/atlas-ezo-sensor.c b/drivers/iio/chemical/atlas-ezo-sensor.c
+index b1bacfe3c3ce..bbcf5a59c1f4 100644
+--- a/drivers/iio/chemical/atlas-ezo-sensor.c
++++ b/drivers/iio/chemical/atlas-ezo-sensor.c
+@@ -6,13 +6,15 @@
+  * Author: Matt Ranostay <matt.ranostay@konsulko.com>
+  */
+ 
+-#include <linux/module.h>
+ #include <linux/init.h>
+ #include <linux/delay.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
+ #include <linux/mutex.h>
++#include <linux/property.h>
+ #include <linux/err.h>
+ #include <linux/i2c.h>
+-#include <linux/of_device.h>
++
+ #include <linux/iio/iio.h>
+ 
+ #define ATLAS_EZO_DRV_NAME		"atlas-ezo-sensor"
+@@ -33,7 +35,7 @@ struct atlas_ezo_device {
+ 
+ struct atlas_ezo_data {
+ 	struct i2c_client *client;
+-	struct atlas_ezo_device *chip;
++	const struct atlas_ezo_device *chip;
+ 
+ 	/* lock to avoid multiple concurrent read calls */
+ 	struct mutex lock;
+@@ -184,17 +186,17 @@ static const struct iio_info atlas_info = {
+ };
+ 
+ static const struct i2c_device_id atlas_ezo_id[] = {
+-	{ "atlas-co2-ezo", ATLAS_CO2_EZO },
+-	{ "atlas-o2-ezo", ATLAS_O2_EZO },
+-	{ "atlas-hum-ezo", ATLAS_HUM_EZO },
++	{ "atlas-co2-ezo", (kernel_ulong_t)&atlas_ezo_devices[ATLAS_CO2_EZO] },
++	{ "atlas-o2-ezo", (kernel_ulong_t)&atlas_ezo_devices[ATLAS_O2_EZO] },
++	{ "atlas-hum-ezo", (kernel_ulong_t)&atlas_ezo_devices[ATLAS_HUM_EZO] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, atlas_ezo_id);
+ 
+ static const struct of_device_id atlas_ezo_dt_ids[] = {
+-	{ .compatible = "atlas,co2-ezo", .data = (void *)ATLAS_CO2_EZO, },
+-	{ .compatible = "atlas,o2-ezo", .data = (void *)ATLAS_O2_EZO, },
+-	{ .compatible = "atlas,hum-ezo", .data = (void *)ATLAS_HUM_EZO, },
++	{ .compatible = "atlas,co2-ezo", .data = &atlas_ezo_devices[ATLAS_CO2_EZO], },
++	{ .compatible = "atlas,o2-ezo", .data = &atlas_ezo_devices[ATLAS_O2_EZO], },
++	{ .compatible = "atlas,hum-ezo", .data = &atlas_ezo_devices[ATLAS_HUM_EZO], },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
+@@ -202,20 +204,20 @@ MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
+ static int atlas_ezo_probe(struct i2c_client *client,
+ 		       const struct i2c_device_id *id)
+ {
++	const struct atlas_ezo_device *chip;
+ 	struct atlas_ezo_data *data;
+-	struct atlas_ezo_device *chip;
+-	const struct of_device_id *of_id;
+ 	struct iio_dev *indio_dev;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-	of_id = of_match_device(atlas_ezo_dt_ids, &client->dev);
+-	if (!of_id)
+-		chip = &atlas_ezo_devices[id->driver_data];
++	if (dev_fwnode(&client->dev))
++		chip = device_get_match_data(&client->dev);
+ 	else
+-		chip = &atlas_ezo_devices[(unsigned long)of_id->data];
++		chip = (const struct atlas_ezo_device *)id->driver_data;
++	if (!chip)
++		return -EINVAL;
+ 
+ 	indio_dev->info = &atlas_info;
+ 	indio_dev->name = ATLAS_EZO_DRV_NAME;
 -- 
 2.34.1
 
