@@ -2,158 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CC52C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B203C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377342AbiBGQOj (ORCPT
+        id S1357204AbiBGQOh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:14:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39224 "EHLO
+        Mon, 7 Feb 2022 11:14:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383302AbiBGQAc (ORCPT
+        with ESMTP id S1386896AbiBGQBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:00:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC834C0401CC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:00:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249630;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uQ1uiq30ca/wtmdEmBkE1pSZd4AYgwDXu3pWHPnS4Sg=;
-        b=DKthNpp6ft1+OIFATQB7lU0WK3Ozn7127Q9Lq2dw+7FBOMODuyN1tvKpXl6boZh7AH8BRC
-        2nX5CH+shdmUjJUW14J2fbNSeNFwUUy4NdnGJb8+xns/o5OIgygxHll6IbYMmYqUZiZIOm
-        M3OmBN4+7sT7LkjCA9bOFqVIK9iFR0Q=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-go2mTwCUMJOBBfV8StMKZA-1; Mon, 07 Feb 2022 11:00:27 -0500
-X-MC-Unique: go2mTwCUMJOBBfV8StMKZA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 7 Feb 2022 11:01:40 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94431C0401D1;
+        Mon,  7 Feb 2022 08:01:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6588C8144E1;
-        Mon,  7 Feb 2022 16:00:12 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0FC027DE38;
-        Mon,  7 Feb 2022 15:59:49 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Tony Luck <tony.luck@intel.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sean Christopherson <seanjc@google.com>,
-        David Airlie <airlied@linux.ie>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Jim Mattson <jmattson@google.com>, x86@kernel.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 25/30] KVM: x86: nSVM: support PAUSE filter threshold and count when cpu_pm=on
-Date:   Mon,  7 Feb 2022 17:54:42 +0200
-Message-Id: <20220207155447.840194-26-mlevitsk@redhat.com>
-In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
-References: <20220207155447.840194-1-mlevitsk@redhat.com>
+        by sin.source.kernel.org (Postfix) with ESMTPS id CCB0CCE112B;
+        Mon,  7 Feb 2022 16:01:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F7FAC004E1;
+        Mon,  7 Feb 2022 16:01:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644249694;
+        bh=PWwSvTHrKik+WHkFYTy4105egats4siq+txQzN9k8F4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qbld5TRvdN3JK2qBA/enz1wOCB2gKXQpDexQEKA0I2oGPR/w/XQnzeJpaLue5P6eN
+         pM6pQQFDCFKUEiFf28DxJ2NETNCKs07CGHmblczmM2dQOhAdgv3qSe4DK0NDr+T40F
+         xvn1YnHqr+eZ6NSYhjrNDagleMKiHaMjz5mJ0EiYTEDsSmcKpROSnenFoUS8WheatQ
+         ZU980LBUk8YVbLekOWx6ENkIqiySkTx8lZIhvrWswvRY3OwBH/esSsREKCcb5xvFLz
+         c5EUeqCb/zuokfJesm06e6DWxWJFlL6e/t5CUWe4j0egzymjBj4ng88RPZEtX3CKu7
+         H+xcbalp7/A9g==
+Date:   Mon, 7 Feb 2022 17:01:30 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        linux-i2c@vger.kernel.org
+Subject: Re: [PATCH] i2c: ACPI: Replace acpi_bus_get_device()
+Message-ID: <YgFCWq3mMQkv8UMY@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        linux-i2c@vger.kernel.org
+References: <4374434.LvFx2qVVIh@kreacher>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="fA8vdV3lkfQ9XeqW"
+Content-Disposition: inline
+In-Reply-To: <4374434.LvFx2qVVIh@kreacher>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow L1 to use these settings if L0 disables PAUSE interception
-(AKA cpu_pm=on)
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/svm/nested.c |  6 ++++++
- arch/x86/kvm/svm/svm.c    | 17 +++++++++++++++++
- arch/x86/kvm/svm/svm.h    |  2 ++
- 3 files changed, 25 insertions(+)
+--fA8vdV3lkfQ9XeqW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index bdcb23c76e89e..601d38ae05cc6 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -630,6 +630,12 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
- 	if (!nested_vmcb_needs_vls_intercept(svm))
- 		svm->vmcb->control.virt_ext |= VIRTUAL_VMLOAD_VMSAVE_ENABLE_MASK;
- 
-+	if (svm->pause_filter_enabled)
-+		svm->vmcb->control.pause_filter_count = svm->nested.ctl.pause_filter_count;
-+
-+	if (svm->pause_threshold_enabled)
-+		svm->vmcb->control.pause_filter_thresh = svm->nested.ctl.pause_filter_thresh;
-+
- 	nested_svm_transition_tlb_flush(vcpu);
- 
- 	/* Enter Guest-Mode */
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 0f068da098d9f..e49043807ec44 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -3997,6 +3997,17 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 
- 	svm->v_vmload_vmsave_enabled = vls && guest_cpuid_has(vcpu, X86_FEATURE_V_VMSAVE_VMLOAD);
- 
-+	if (kvm_pause_in_guest(vcpu->kvm)) {
-+		svm->pause_filter_enabled = pause_filter_count > 0 &&
-+					    guest_cpuid_has(vcpu, X86_FEATURE_PAUSEFILTER);
-+
-+		svm->pause_threshold_enabled = pause_filter_thresh > 0 &&
-+					    guest_cpuid_has(vcpu, X86_FEATURE_PFTHRESHOLD);
-+	} else {
-+		svm->pause_filter_enabled = false;
-+		svm->pause_threshold_enabled = false;
-+	}
-+
- 	svm_recalc_instruction_intercepts(vcpu, svm);
- 
- 	/* For sev guests, the memory encryption bit is not reserved in CR3.  */
-@@ -4806,6 +4817,12 @@ static __init void svm_set_cpu_caps(void)
- 		if (vls)
- 			kvm_cpu_cap_set(X86_FEATURE_V_VMSAVE_VMLOAD);
- 
-+		if (pause_filter_count)
-+			kvm_cpu_cap_set(X86_FEATURE_PAUSEFILTER);
-+
-+		if (pause_filter_thresh)
-+			kvm_cpu_cap_set(X86_FEATURE_PFTHRESHOLD);
-+
- 		/* Nested VM can receive #VMEXIT instead of triggering #GP */
- 		kvm_cpu_cap_set(X86_FEATURE_SVME_ADDR_CHK);
- 	}
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index e8ffd458a5575..297ec57f9941c 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -222,6 +222,8 @@ struct vcpu_svm {
- 	bool tsc_scaling_enabled          : 1;
- 	bool lbrv_enabled                 : 1;
- 	bool v_vmload_vmsave_enabled      : 1;
-+	bool pause_filter_enabled         : 1;
-+	bool pause_threshold_enabled      : 1;
- 
- 	u32 ldr_reg;
- 	u32 dfr_reg;
--- 
-2.26.3
+On Tue, Feb 01, 2022 at 07:00:42PM +0100, Rafael J. Wysocki wrote:
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>=20
+> Replace acpi_bus_get_device() that is going to be dropped with
+> acpi_fetch_acpi_dev().
+>=20
+> No intentional functional impact.
+>=20
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
+Applied to for-next, thanks! Let me know if you need it in for-current
+instead to get rid of the to-be-deprecated function earlier.
+
+
+--fA8vdV3lkfQ9XeqW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIBQlYACgkQFA3kzBSg
+KbYFHRAAjCNtHwASK/9YtSoj9aaDnmw082YXj89IHSSkNj02vkjJhvljsYJrz9EU
+KOVIhQUJRSkmWO/5FsQCNGzqtb8tfdPgeRPV0JtMQDUcEI7Z5CSnmnvBAUXItj/C
+FkSE8DfBykr7z/47LOj5tXUn+yet/mevpojDYgz2meo6++bqEVdZjMVaZYSjt7rU
+GTLJFjMzlaZBDEzfh/Rz8tS5zPsYteQijT2x8yujo89qaZ+jRqnw/YgawFRXN5Mx
+e1Wj5wdXWGrYTiHlWC/B/9InZ4sFtcebOIKzkz8nFNCFdmEXelJ5MM3B+owZV5nN
+/J5nuV94umPntEoFmd1nHYfxD9rLeoyhkX1muSRa9O6PPy+BAt+zr6Laq6rbj7eM
+bZVOdbuevrUYRP5Tz2UIDr1sArFoTeqTdQ38AKTfyM2LTxWJ8DaeBdtiuVak95Jh
+y5RWRzoNp/vSNaypF2qSsHUrozai83o5WqejVmPThs1NblKOTNAVGh9tQqOcK5Je
+WMNG2U2bOIRqQBH0Z1yN/jcAa2EWDs0UY+Mq5A5+Bq6PQgicyCtIShZeyAawPAic
+yOwaRye8QU85RK1O4RPSNN9Yska+A3a4wYQB8HY/SbdDM3igpw5H9+/rnTP2PQkk
+tuMQYoyEb9QoYFBgqHO2Or45jMKtNiPrfpmaf3OihhDCYPy2Wqg=
+=X+Sc
+-----END PGP SIGNATURE-----
+
+--fA8vdV3lkfQ9XeqW--
