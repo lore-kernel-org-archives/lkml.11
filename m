@@ -2,85 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAFADC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4BACC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:46:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240477AbiBGIoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:44:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
+        id S231447AbiBGIpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:45:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236729AbiBGIgI (ORCPT
+        with ESMTP id S243028AbiBGInx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:36:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFFA2C043185
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 00:36:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644222966;
+        Mon, 7 Feb 2022 03:43:53 -0500
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CA1C043181;
+        Mon,  7 Feb 2022 00:43:50 -0800 (PST)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7BAC8E000C;
+        Mon,  7 Feb 2022 08:43:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1644223426;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=EnlsbuxwF4ALdiCaBmB6LDE1NtPSwP5sAmBAFk/m7Ms=;
-        b=N+2lxbhU+Kyr6g1zogRinYWZPkDCcTZhQoZwG0biM47o/8rRPuMVYt42LGM36uISLZulFL
-        8/f5fMGOIFMDezRffLDxQk3isxV0ZtjtNxE8X13BR6QdfzDmFl94ya+OiGrr1dAK2YXHDM
-        B1VFWZA5abn4bK5IYvFRC3gLR6usk0s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-558-GjHXXjkVODuR9_aUygqaJw-1; Mon, 07 Feb 2022 03:36:03 -0500
-X-MC-Unique: GjHXXjkVODuR9_aUygqaJw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C24E0802926;
-        Mon,  7 Feb 2022 08:36:00 +0000 (UTC)
-Received: from localhost (unknown [10.39.193.241])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2C7B362D6E;
-        Mon,  7 Feb 2022 08:35:41 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, schnelle@linux.ibm.com,
-        farman@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 14/30] vfio/pci: re-introduce CONFIG_VFIO_PCI_ZDEV
-In-Reply-To: <20220204211536.321475-15-mjrosato@linux.ibm.com>
-Organization: Red Hat GmbH
-References: <20220204211536.321475-1-mjrosato@linux.ibm.com>
- <20220204211536.321475-15-mjrosato@linux.ibm.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Mon, 07 Feb 2022 09:35:39 +0100
-Message-ID: <87czjzvztw.fsf@redhat.com>
+        bh=aqtEkkE4CxAPCqiyjvQlRqA4fyM6M/H+WbMg+4em3bk=;
+        b=b/8uLavJfT0Pt7E5NoIji6JTEqyrnFW8AjRy2crSYjYa2+QxdwCGQc+rmkX8TpLU5/QH2B
+        uXn/ZDuogrQ6mrqVH7TXf8npZfUUAvpaAkd7mavWrTl8CLvuYVYlLmJiQLtaw8z3KSzzHh
+        0dClE6y7UCGqM1NJDXiyE8WDFc/dV6WZNEG7TJBNCL4fJmBdtmMsgNJEB/BHqTf5ryGxfR
+        3y7pKlclTbaRTjTWl94cEd38+jWj3JUtyi6B+JFfjXc/S9vXarXeekHfSn1K95ltQdwScI
+        KtNMhUPRgqM/sKC1j20xCDvOlzNXAmuXMF4bCE3bSsX+SdJGU3T7pWgvuBjZfA==
+Date:   Mon, 7 Feb 2022 09:43:43 +0100
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 02/66] dt-bindings: interconnect: sunxi: Add V3s mbus
+ compatible
+Message-ID: <YgDbv8aQEOOjwTb0@aptenodytes>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-3-paul.kocialkowski@bootlin.com>
+ <5386b1f5-9e75-4ce3-6641-bd7667c85d42@sholland.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="siWsic/QuhUMqNlN"
+Content-Disposition: inline
+In-Reply-To: <5386b1f5-9e75-4ce3-6641-bd7667c85d42@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04 2022, Matthew Rosato <mjrosato@linux.ibm.com> wrote:
 
-> This was previously removed as unnecessary; while that was true, subsequent
-> changes will make KVM an additional required component for vfio-pci-zdev.
-> Let's re-introduce CONFIG_VFIO_PCI_ZDEV as now there is actually a reason
-> to say 'n' for it (when not planning to CONFIG_KVM).
+--siWsic/QuhUMqNlN
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hm... can the file be split into parts that depend on KVM and parts that
-don't? Does anybody ever use vfio-pci on a non-kvm s390 system?
+Hi,
 
-[Apologies if that has been discussed before, this is my first look at
-this series.]
+On Sat 05 Feb 22, 14:14, Samuel Holland wrote:
+> On 2/5/22 12:53 PM, Paul Kocialkowski wrote:
+> > Since the V3s uses the internal mbus, document its compatible.
+> >=20
+> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > ---
+> >  .../devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml  | 1 +
+> >  1 file changed, 1 insertion(+)
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4=
+i-a10-mbus.yaml b/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun=
+4i-a10-mbus.yaml
+> > index 29c9961ee2d8..b67bf9261a6a 100644
+> > --- a/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-m=
+bus.yaml
+> > +++ b/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-m=
+bus.yaml
+> > @@ -31,6 +31,7 @@ properties:
+> >        - allwinner,sun5i-a13-mbus
+> >        - allwinner,sun8i-h3-mbus
+> >        - allwinner,sun8i-r40-mbus
+> > +      - allwinner,sun8i-v3s-mbus
+>=20
+> Please enable the expanded binding added in commit 245578ba9f03 ("dt-bind=
+ings:
+> arm: sunxi: Expand MBUS binding")[1] by adding the new compatible to the =
+"if"
+> block lower in the file. That way we can add V3S devfreq support in the f=
+uture
+> without changing that binding.
 
->
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->  drivers/vfio/pci/Kconfig      | 11 +++++++++++
->  drivers/vfio/pci/Makefile     |  2 +-
->  include/linux/vfio_pci_core.h |  2 +-
->  3 files changed, 13 insertions(+), 2 deletions(-)
->
+I had missed that new driver but surely I will expand the updated binding.
 
+By the way do you have an explanation about the cell index given to the
+interconnects (after &mbus)?
+
+Paul
+
+> Regards,
+> Samuel
+>=20
+> [1]: https://git.kernel.org/torvalds/c/245578ba9f03
+>=20
+> >        - allwinner,sun50i-a64-mbus
+> > =20
+> >    reg:
+> >=20
+>=20
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--siWsic/QuhUMqNlN
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmIA274ACgkQ3cLmz3+f
+v9Hedwf/dd7O5weguOH+OM1fWPM+D01os8bCMg2BVi/eJAzHIsTRwpzNVnuC5GkL
+jEPrckhWzLYI9QVdh9sxYGDe3WtMpG5L0mXxvfM0AruEZ8OA9Up1eZ/4a/pXtjmp
+ge2AkXEcmDd2BbtlMHe8obvpO9se0uDYHjA1MgApK8F5fVwRNn2dmu1zE5dAhufc
+GF3GDEPpS7MLe7ReDnGd9wAt109SEIxDgJ9XeiC1XdumNE5BAnT49+7Qq2Wy4zjf
+HDyDxIoHke+4+66Gf03JpeGikvOIW/8C/rwwh8AWLopLrcNVzyh1AM4BVI83Yaf2
+DMLRURk+Ae/bMrUUReDsYsgpsKZ42w==
+=B81B
+-----END PGP SIGNATURE-----
+
+--siWsic/QuhUMqNlN--
