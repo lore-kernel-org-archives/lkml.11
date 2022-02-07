@@ -2,47 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE32C47084
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B482C352A8
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391127AbiBGL6Y (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:58:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
+        id S233173AbiBGL65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:58:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385470AbiBGLby (ORCPT
+        with ESMTP id S1378601AbiBGLf4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:54 -0500
+        Mon, 7 Feb 2022 06:35:56 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93729C03E944;
-        Mon,  7 Feb 2022 03:30:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE4CC0401C2;
+        Mon,  7 Feb 2022 03:35:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 475E0B811BE;
-        Mon,  7 Feb 2022 11:30:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50C22C004E1;
-        Mon,  7 Feb 2022 11:30:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA6E6B8112C;
+        Mon,  7 Feb 2022 11:35:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9BD2C004E1;
+        Mon,  7 Feb 2022 11:35:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233424;
-        bh=dDv+O0Tzmkl7n2hL6tah/Kh7Z2X5dd7k5qI4BVpOqWQ=;
+        s=korg; t=1644233745;
+        bh=L7Ua2JQNOCa06ZsUU44srCbAmLOJXVGTcK1MykbM4Rw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NzR4wutdE+XwIjzcLIwdTFghUFpoyYBENoFRRMl2reMmNDnhEQhzh0YctLMDNHNHz
-         T5Tt7KaHmq9TAuqITNyy9tzmGVnyzNt3RI3n3Q9W9h8w12sjSPCTbiexbSBrk1rQok
-         cnhAui0z7iOq4X/1iN+i/7YjGBCjM/S7ULd8zMjg=
+        b=qX054NArC84lEl8xczT06RMS/Ueu2VsOaLpocVYuVmGADv40cFoTtH3oacPD3JPd2
+         O+2q1oprRVPF15q4rrTD5WGaMhgNBI3k/ixAQfqJyyObszTMGci4E3hfsYEX/3kgFX
+         PtZnoryfH+LdH9rQzdJzDI3aWr/SgPu5JNIjZSPU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guangwu Zhang <guazhang@redhat.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        John Meneghini <jmeneghi@redhat.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 083/110] scsi: bnx2fc: Make bnx2fc_recv_frame() mp safe
-Date:   Mon,  7 Feb 2022 12:06:56 +0100
-Message-Id: <20220207103805.208752206@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 108/126] kvm/arm64: rework guest entry logic
+Date:   Mon,  7 Feb 2022 12:07:19 +0100
+Message-Id: <20220207103807.791632381@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
-References: <20220207103802.280120990@linuxfoundation.org>
+In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
+References: <20220207103804.053675072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,92 +58,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Meneghini <jmeneghi@redhat.com>
+From: Mark Rutland <mark.rutland@arm.com>
 
-commit 936bd03405fc83ba039d42bc93ffd4b88418f1d3 upstream.
+[ Upstream commit 8cfe148a7136bc60452a5c6b7ac2d9d15c36909b ]
 
-Running tests with a debug kernel shows that bnx2fc_recv_frame() is
-modifying the per_cpu lport stats counters in a non-mpsafe way.  Just boot
-a debug kernel and run the bnx2fc driver with the hardware enabled.
+In kvm_arch_vcpu_ioctl_run() we enter an RCU extended quiescent state
+(EQS) by calling guest_enter_irqoff(), and unmasked IRQs prior to
+exiting the EQS by calling guest_exit(). As the IRQ entry code will not
+wake RCU in this case, we may run the core IRQ code and IRQ handler
+without RCU watching, leading to various potential problems.
 
-[ 1391.699147] BUG: using smp_processor_id() in preemptible [00000000] code: bnx2fc_
-[ 1391.699160] caller is bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
-[ 1391.699174] CPU: 2 PID: 4355 Comm: bnx2fc_l2_threa Kdump: loaded Tainted: G    B
-[ 1391.699180] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
-[ 1391.699183] Call Trace:
-[ 1391.699188]  dump_stack_lvl+0x57/0x7d
-[ 1391.699198]  check_preemption_disabled+0xc8/0xd0
-[ 1391.699205]  bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
-[ 1391.699215]  ? do_raw_spin_trylock+0xb5/0x180
-[ 1391.699221]  ? bnx2fc_npiv_create_vports.isra.0+0x4e0/0x4e0 [bnx2fc]
-[ 1391.699229]  ? bnx2fc_l2_rcv_thread+0xb7/0x3a0 [bnx2fc]
-[ 1391.699240]  bnx2fc_l2_rcv_thread+0x1af/0x3a0 [bnx2fc]
-[ 1391.699250]  ? bnx2fc_ulp_init+0xc0/0xc0 [bnx2fc]
-[ 1391.699258]  kthread+0x364/0x420
-[ 1391.699263]  ? _raw_spin_unlock_irq+0x24/0x50
-[ 1391.699268]  ? set_kthread_struct+0x100/0x100
-[ 1391.699273]  ret_from_fork+0x22/0x30
+Additionally, we do not inform lockdep or tracing that interrupts will
+be enabled during guest execution, which caan lead to misleading traces
+and warnings that interrupts have been enabled for overly-long periods.
 
-Restore the old get_cpu/put_cpu code with some modifications to reduce the
-size of the critical section.
+This patch fixes these issues by using the new timing and context
+entry/exit helpers to ensure that interrupts are handled during guest
+vtime but with RCU watching, with a sequence:
 
-Link: https://lore.kernel.org/r/20220124145110.442335-1-jmeneghi@redhat.com
-Fixes: d576a5e80cd0 ("bnx2fc: Improve stats update mechanism")
-Tested-by: Guangwu Zhang <guazhang@redhat.com>
-Acked-by: Saurav Kashyap <skashyap@marvell.com>
-Signed-off-by: John Meneghini <jmeneghi@redhat.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+	guest_timing_enter_irqoff();
+
+	guest_state_enter_irqoff();
+	< run the vcpu >
+	guest_state_exit_irqoff();
+
+	< take any pending IRQs >
+
+	guest_timing_exit_irqoff();
+
+Since instrumentation may make use of RCU, we must also ensure that no
+instrumented code is run during the EQS. I've split out the critical
+section into a new kvm_arm_enter_exit_vcpu() helper which is marked
+noinstr.
+
+Fixes: 1b3d546daf85ed2b ("arm/arm64: KVM: Properly account for guest CPU time")
+Reported-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Reviewed-by: Marc Zyngier <maz@kernel.org>
+Reviewed-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Cc: Alexandru Elisei <alexandru.elisei@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Frederic Weisbecker <frederic@kernel.org>
+Cc: James Morse <james.morse@arm.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Paul E. McKenney <paulmck@kernel.org>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Message-Id: <20220201132926.3301912-3-mark.rutland@arm.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c |   21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ arch/arm64/kvm/arm.c | 51 ++++++++++++++++++++++++++++----------------
+ 1 file changed, 33 insertions(+), 18 deletions(-)
 
---- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-+++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-@@ -508,7 +508,8 @@ static int bnx2fc_l2_rcv_thread(void *ar
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index e4727dc771bf3..b2222d8eb0b55 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -764,6 +764,24 @@ static bool kvm_vcpu_exit_request(struct kvm_vcpu *vcpu, int *ret)
+ 			xfer_to_guest_mode_work_pending();
+ }
  
- static void bnx2fc_recv_frame(struct sk_buff *skb)
- {
--	u32 fr_len;
-+	u64 crc_err;
-+	u32 fr_len, fr_crc;
- 	struct fc_lport *lport;
- 	struct fcoe_rcv_info *fr;
- 	struct fc_stats *stats;
-@@ -542,6 +543,11 @@ static void bnx2fc_recv_frame(struct sk_
- 	skb_pull(skb, sizeof(struct fcoe_hdr));
- 	fr_len = skb->len - sizeof(struct fcoe_crc_eof);
- 
-+	stats = per_cpu_ptr(lport->stats, get_cpu());
-+	stats->RxFrames++;
-+	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
-+	put_cpu();
++/*
++ * Actually run the vCPU, entering an RCU extended quiescent state (EQS) while
++ * the vCPU is running.
++ *
++ * This must be noinstr as instrumentation may make use of RCU, and this is not
++ * safe during the EQS.
++ */
++static int noinstr kvm_arm_vcpu_enter_exit(struct kvm_vcpu *vcpu)
++{
++	int ret;
 +
- 	fp = (struct fc_frame *)skb;
- 	fc_frame_init(fp);
- 	fr_dev(fp) = lport;
-@@ -624,16 +630,15 @@ static void bnx2fc_recv_frame(struct sk_
- 		return;
- 	}
++	guest_state_enter_irqoff();
++	ret = kvm_call_hyp_ret(__kvm_vcpu_run, vcpu);
++	guest_state_exit_irqoff();
++
++	return ret;
++}
++
+ /**
+  * kvm_arch_vcpu_ioctl_run - the main VCPU run function to execute guest code
+  * @vcpu:	The VCPU pointer
+@@ -854,9 +872,9 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
+ 		 * Enter the guest
+ 		 */
+ 		trace_kvm_entry(*vcpu_pc(vcpu));
+-		guest_enter_irqoff();
++		guest_timing_enter_irqoff();
  
--	stats = per_cpu_ptr(lport->stats, smp_processor_id());
--	stats->RxFrames++;
--	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
-+	fr_crc = le32_to_cpu(fr_crc(fp));
+-		ret = kvm_call_hyp_ret(__kvm_vcpu_run, vcpu);
++		ret = kvm_arm_vcpu_enter_exit(vcpu);
  
--	if (le32_to_cpu(fr_crc(fp)) !=
--			~crc32(~0, skb->data, fr_len)) {
--		if (stats->InvalidCRCCount < 5)
-+	if (unlikely(fr_crc != ~crc32(~0, skb->data, fr_len))) {
-+		stats = per_cpu_ptr(lport->stats, get_cpu());
-+		crc_err = (stats->InvalidCRCCount++);
-+		put_cpu();
-+		if (crc_err < 5)
- 			printk(KERN_WARNING PFX "dropping frame with "
- 			       "CRC error\n");
--		stats->InvalidCRCCount++;
- 		kfree_skb(skb);
- 		return;
- 	}
+ 		vcpu->mode = OUTSIDE_GUEST_MODE;
+ 		vcpu->stat.exits++;
+@@ -891,26 +909,23 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
+ 		kvm_arch_vcpu_ctxsync_fp(vcpu);
+ 
+ 		/*
+-		 * We may have taken a host interrupt in HYP mode (ie
+-		 * while executing the guest). This interrupt is still
+-		 * pending, as we haven't serviced it yet!
++		 * We must ensure that any pending interrupts are taken before
++		 * we exit guest timing so that timer ticks are accounted as
++		 * guest time. Transiently unmask interrupts so that any
++		 * pending interrupts are taken.
+ 		 *
+-		 * We're now back in SVC mode, with interrupts
+-		 * disabled.  Enabling the interrupts now will have
+-		 * the effect of taking the interrupt again, in SVC
+-		 * mode this time.
++		 * Per ARM DDI 0487G.b section D1.13.4, an ISB (or other
++		 * context synchronization event) is necessary to ensure that
++		 * pending interrupts are taken.
+ 		 */
+ 		local_irq_enable();
++		isb();
++		local_irq_disable();
++
++		guest_timing_exit_irqoff();
++
++		local_irq_enable();
+ 
+-		/*
+-		 * We do local_irq_enable() before calling guest_exit() so
+-		 * that if a timer interrupt hits while running the guest we
+-		 * account that tick as being spent in the guest.  We enable
+-		 * preemption after calling guest_exit() so that if we get
+-		 * preempted we make sure ticks after that is not counted as
+-		 * guest time.
+-		 */
+-		guest_exit();
+ 		trace_kvm_exit(ret, kvm_vcpu_trap_get_class(vcpu), *vcpu_pc(vcpu));
+ 
+ 		/* Exit types that need handling before we can be preempted */
+-- 
+2.34.1
+
 
 
