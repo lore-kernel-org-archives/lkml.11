@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C57FC3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE33C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345985AbiBGLLg (ORCPT
+        id S1347158AbiBGLLi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:11:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48784 "EHLO
+        Mon, 7 Feb 2022 06:11:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237982AbiBGLKL (ORCPT
+        with ESMTP id S240553AbiBGLJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:10:11 -0500
+        Mon, 7 Feb 2022 06:09:01 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D92C043181;
-        Mon,  7 Feb 2022 03:10:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCCEC043181;
+        Mon,  7 Feb 2022 03:09:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DEA761380;
-        Mon,  7 Feb 2022 11:10:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B4E6C004E1;
-        Mon,  7 Feb 2022 11:10:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3723611AA;
+        Mon,  7 Feb 2022 11:08:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A58C004E1;
+        Mon,  7 Feb 2022 11:08:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232207;
-        bh=ZeDUeqjVFY5hR5gcDoPLSCYZkaeoS06bacBxe8SFSYo=;
+        s=korg; t=1644232139;
+        bh=0QW7+GCZDYh9fPwQDA+Rn5HB0hc2alUnHw19nBfPscY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GnBd8wn/P3XDO6N86wnGOyLlN6MDxaskKpXvDza+9OrsH+DQnGXic9jGI7g3VcAKF
-         sTK9gYwqloH5ae+OMN5qWVy9rpcghRZ9vCO3GraAhHsbek27k3JUFEFa0wYqBSoyZv
-         Frmq1Rj2xtzw1u+ztGbnVbnemFGQnyB5DTDToFV4=
+        b=a23hQ0izfl3fKEYx15ET/hZ1rlSMEt5XtfztI7NjldsrayI69UslkV2Rqpq/OXAtM
+         StvXGTSDRdzMe3QYiTILsnEV7q2xv3YvVIIEVpUe6frXomwtPNAZXzPccQDRT/T3tg
+         P+XZyUKz5PUUEULcZcB1zkwacTmi5Q6M3ErGzIhg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.9 09/48] tty: n_gsm: fix SW flow control encoding/handling
-Date:   Mon,  7 Feb 2022 12:05:42 +0100
-Message-Id: <20220207103752.643784889@linuxfoundation.org>
+        stable@vger.kernel.org, DocMAX <mail@vacharakis.de>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
+Subject: [PATCH 4.9 11/48] usb-storage: Add unusual-devs entry for VL817 USB-SATA bridge
+Date:   Mon,  7 Feb 2022 12:05:44 +0100
+Message-Id: <20220207103752.706563657@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -48,64 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 8838b2af23caf1ff0610caef2795d6668a013b2d upstream.
+commit 5b67b315037250a61861119683e7fcb509deea25 upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.2.7.3 states that DC1 (XON) and DC3 (XOFF)
-are the control characters defined in ISO/IEC 646. These shall be quoted if
-seen in the data stream to avoid interpretation as flow control characters.
+Two people have reported (and mentioned numerous other reports on the
+web) that VIA's VL817 USB-SATA bridge does not work with the uas
+driver.  Typical log messages are:
 
-ISO/IEC 646 refers to the set of ISO standards described as the ISO
-7-bit coded character set for information interchange. Its final version
-is also known as ITU T.50.
-See https://www.itu.int/rec/T-REC-T.50-199209-I/en
+[ 3606.232149] sd 14:0:0:0: [sdg] tag#2 uas_zap_pending 0 uas-tag 1 inflight: CMD
+[ 3606.232154] sd 14:0:0:0: [sdg] tag#2 CDB: Write(16) 8a 00 00 00 00 00 18 0c c9 80 00 00 00 80 00 00
+[ 3606.306257] usb 4-4.4: reset SuperSpeed Plus Gen 2x1 USB device number 11 using xhci_hcd
+[ 3606.328584] scsi host14: uas_eh_device_reset_handler success
 
-To abide the standard it is needed to quote DC1 and DC3 correctly if these
-are seen as data bytes and not as control characters. The current
-implementation already tries to enforce this but fails to catch all
-defined cases. 3GPP 27.010 chapter 5.2.7.3 clearly states that the most
-significant bit shall be ignored for DC1 and DC3 handling. The current
-implementation handles only the case with the most significant bit set 0.
-Cases in which DC1 and DC3 have the most significant bit set 1 are left
-unhandled.
+Surprisingly, the devices do seem to work okay for some other people.
+The cause of the differing behaviors is not known.
 
-This patch fixes this by masking the data bytes with ISO_IEC_646_MASK (only
-the 7 least significant bits set 1) before comparing them with XON
-(a.k.a. DC1) and XOFF (a.k.a. DC3) when testing which byte values need
-quotation via byte stuffing.
+In the hope of getting the devices to work for the most users, even at
+the possible cost of degraded performance for some, this patch adds an
+unusual_devs entry for the VL817 to block it from binding to the uas
+driver by default.  Users will be able to override this entry by means
+of a module parameter, if they want.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220120101857.2509-1-daniel.starke@siemens.com
+CC: <stable@vger.kernel.org>
+Reported-by: DocMAX <mail@vacharakis.de>
+Reported-and-tested-by: Thomas Weißschuh <linux@weissschuh.net>
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/Ye8IsK2sjlEv1rqU@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/usb/storage/unusual_devs.h |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -329,6 +329,7 @@ static struct tty_driver *gsm_tty_driver
- #define GSM1_ESCAPE_BITS	0x20
- #define XON			0x11
- #define XOFF			0x13
-+#define ISO_IEC_646_MASK	0x7F
+--- a/drivers/usb/storage/unusual_devs.h
++++ b/drivers/usb/storage/unusual_devs.h
+@@ -2308,6 +2308,16 @@ UNUSUAL_DEV(  0x2027, 0xa001, 0x0000, 0x
+ 		USB_SC_DEVICE, USB_PR_DEVICE, usb_stor_euscsi_init,
+ 		US_FL_SCM_MULT_TARG ),
  
- static const struct tty_port_operations gsm_port_ops;
- 
-@@ -547,7 +548,8 @@ static int gsm_stuff_frame(const u8 *inp
- 	int olen = 0;
- 	while (len--) {
- 		if (*input == GSM1_SOF || *input == GSM1_ESCAPE
--		    || *input == XON || *input == XOFF) {
-+		    || (*input & ISO_IEC_646_MASK) == XON
-+		    || (*input & ISO_IEC_646_MASK) == XOFF) {
- 			*output++ = GSM1_ESCAPE;
- 			*output++ = *input++ ^ GSM1_ESCAPE_BITS;
- 			olen++;
++/*
++ * Reported by DocMAX <mail@vacharakis.de>
++ * and Thomas Weißschuh <linux@weissschuh.net>
++ */
++UNUSUAL_DEV( 0x2109, 0x0715, 0x9999, 0x9999,
++		"VIA Labs, Inc.",
++		"VL817 SATA Bridge",
++		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
++		US_FL_IGNORE_UAS),
++
+ UNUSUAL_DEV( 0x2116, 0x0320, 0x0001, 0x0001,
+ 		"ST",
+ 		"2A",
 
 
