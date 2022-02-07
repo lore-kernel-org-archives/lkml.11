@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B60E0C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 135D0C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:59:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385570AbiBGLo6 (ORCPT
+        id S1388791AbiBGLpK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:44:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46164 "EHLO
+        Mon, 7 Feb 2022 06:45:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386025AbiBGLdU (ORCPT
+        with ESMTP id S1386060AbiBGLdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:33:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BD5C043181;
-        Mon,  7 Feb 2022 03:33:20 -0800 (PST)
+        Mon, 7 Feb 2022 06:33:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E859C043181;
+        Mon,  7 Feb 2022 03:33:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E6AD60C8E;
-        Mon,  7 Feb 2022 11:33:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAD58C004E1;
-        Mon,  7 Feb 2022 11:33:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0E9CB80EBD;
+        Mon,  7 Feb 2022 11:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A97FC004E1;
+        Mon,  7 Feb 2022 11:33:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233599;
-        bh=8eH1MdEVdu2hKNRuGIzmCqaimYky5xcS1WJ3g2iEc98=;
+        s=korg; t=1644233602;
+        bh=7QUCjhG7b2OWuM/D+SKi0gaN56aTrCQMmg2TU98RO+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nYBjP/lpsYMSpxS2KGxgpjebAfpxTLD9ORgOuV013wD4J8V1fPzwukRYrJbXRsIbf
-         J2t7UxSXcvhcDQj6YHRhSGJyhBibqJWtAARj3QtAUwFpGtfiBGhm+pZ34wqhJLwCHz
-         nhLb3pWzNtxwGHYa7ajQ3ZOkIp2ey8Z1BpiTjxMk=
+        b=Elpu5vbNyhAESYf4JMD5PXDd5HdWz6/cp0zb2CTbFrU4BmQSA3CWLpPZFidyA/ANR
+         ayHBxg9o/I92c/wjZKz4lByrVy3sdRpLa1s62xu8FntSoEFGU60gyARkvdfqCPBSfy
+         dna+RLXPy3NNJOLd0dVBiFT5QSgyc8z+hJS8kmsg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 055/126] ALSA: hda: Fix signedness of sscanf() arguments
-Date:   Mon,  7 Feb 2022 12:06:26 +0100
-Message-Id: <20220207103806.014919306@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Mark Zhang <markzhang@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.16 064/126] IB/cm: Release previously acquired reference counter in the cm_id_priv
+Date:   Mon,  7 Feb 2022 12:06:35 +0100
+Message-Id: <20220207103806.314771662@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -49,33 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Mark Zhang <markzhang@nvidia.com>
 
-commit 0444f82766f0b5b9c8302ad802dafa5dd0e722d0 upstream.
+commit b856101a1774b5f1c8c99e8dfdef802856520732 upstream.
 
-The %x format of sscanf() takes an unsigned int pointer, while we pass
-a signed int pointer.  Practically it's OK, but this may result in a
-compile warning.  Let's fix it.
+In failure flow, the reference counter acquired was not released,
+and the following error was reported:
 
-Fixes: a235d5b8e550 ("ALSA: hda: Allow model option to specify PCI SSID alias")
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/r/20220127135717.31751-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+  drivers/infiniband/core/cm.c:3373 cm_lap_handler() warn: inconsistent
+			refcounting 'cm_id_priv->refcount.refs.counter':
+
+Fixes: 7345201c3963 ("IB/cm: Improve the calling of cm_init_av_for_lap and cm_init_av_by_path")
+Link: https://lore.kernel.org/r/7615f23bbb5c5b66d03f6fa13e1c99d51dae6916.1642581448.git.leonro@nvidia.com
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Mark Zhang <markzhang@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/hda_auto_parser.c |    2 +-
+ drivers/infiniband/core/cm.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/hda/hda_auto_parser.c
-+++ b/sound/pci/hda/hda_auto_parser.c
-@@ -985,7 +985,7 @@ void snd_hda_pick_fixup(struct hda_codec
- 	int id = HDA_FIXUP_ID_NOT_SET;
- 	const char *name = NULL;
- 	const char *type = NULL;
--	int vendor, device;
-+	unsigned int vendor, device;
+--- a/drivers/infiniband/core/cm.c
++++ b/drivers/infiniband/core/cm.c
+@@ -3322,7 +3322,7 @@ static int cm_lap_handler(struct cm_work
+ 	ret = cm_init_av_by_path(param->alternate_path, NULL, &alt_av);
+ 	if (ret) {
+ 		rdma_destroy_ah_attr(&ah_attr);
+-		return -EINVAL;
++		goto deref;
+ 	}
  
- 	if (codec->fixup_id != HDA_FIXUP_ID_NOT_SET)
- 		return;
+ 	spin_lock_irq(&cm_id_priv->lock);
 
 
