@@ -2,54 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE67EC3A5A3
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F36ABC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391630AbiBGMCe (ORCPT
+        id S1385679AbiBGMBP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:02:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50290 "EHLO
+        Mon, 7 Feb 2022 07:01:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381291AbiBGLj7 (ORCPT
+        with ESMTP id S1386776AbiBGLgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:39:59 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7658C03C191
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:38:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644233923; x=1675769923;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=RYlSCwq69RZXQwKdVlT1T4csr1Jgf18eqzB9RNwrG80=;
-  b=F59QWWr75/lIH6EMr0wMRkqcfMfX3L0+DjzjBhObcS6NXERMFaxvihlr
-   NFsI8LFjvIKeKHqogdAf4cyMc3sT0YDwvNfoKrY1W3uN7J5eqidrCiMQB
-   mrkpKk+UzNn8Tkuvq6m2/dZKawgKJ+TCcPFTgZFfVGA2Cd+QJRna2doU2
-   61xFb+8I/2SKuM5CP4zfDOMLI/Y+Jo/ZW9/Nw5VgtqiA0eSWkWw3r0Vva
-   c8vnLSEU73rLr0v014tbFij+BoFFZW7xcgYCjhSwUu27FWleGNcAv3Hjp
-   rhIUXoOTjj7fZ8odTBdWoRvOZofJ82UiSqOT4f6Knoy2QXUuf42XeAzAg
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="309441146"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="309441146"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:38:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="677731904"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 07 Feb 2022 03:38:39 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 5636E3ED; Mon,  7 Feb 2022 13:38:54 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Jan=20D=C4=85bro=C5=9B?= <jsd@semihalf.com>
-Subject: [PATCH v1 1/1] bitfield: Add explicit inclusions to the example
-Date:   Mon,  7 Feb 2022 13:38:51 +0200
-Message-Id: <20220207113851.88149-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Feb 2022 06:36:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456E0C043188;
+        Mon,  7 Feb 2022 03:36:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D67DA60B20;
+        Mon,  7 Feb 2022 11:36:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A026AC004E1;
+        Mon,  7 Feb 2022 11:36:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644233799;
+        bh=OtP5r+gyCFy9t1qM39CdxkthGbobIllUleGvZdo9M9s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZPmCA9K8TJo+PAHgWDGs0Qq0jvCQWjQPrKAPpP13HK8lbQHpIdId3OWkt7n2cCqTt
+         gwxNKYcBh0xhNh9Zb8wdUsM/xKbxdjd5KQm0pBYeRNcr65Li8Hcx5pOred7wC1OBgy
+         Mr9NQ3Umoa02xP3Tpz+egYP9to8gQxEViMt/RwBM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.de>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.16 122/126] tools include UAPI: Sync sound/asound.h copy with the kernel sources
+Date:   Mon,  7 Feb 2022 12:07:33 +0100
+Message-Id: <20220207103808.264148455@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
+References: <20220207103804.053675072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -57,34 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's not obvious that bitfield.h doesn't guarantee the bits.h
-inclusion and the example in the former is confusing. Some
-developers think that it's okay to just include bitfield.h to
-get it working. Change example to explicitly include necessary
-headers in order to avoid confusion.
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-Fixes: 3e9b3112ec74 ("add basic register-field manipulation macros")
-Depends-on: 8bd9cb51daac ("locking/atomics, asm-generic: Move some macros from <linux/bitops.h> to a new <linux/bits.h> file")
-Reported-by: Jan Dąbroś <jsd@semihalf.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+commit 4f2492731ada9d702ffdfaa6ec1ff64820a1664c upstream.
+
+Picking the changes from:
+
+  06feec6005c9d950 ("ASoC: hdmi-codec: Fix OOB memory accesses")
+
+Which entails no changes in the tooling side as it doesn't introduce new
+SNDRV_PCM_IOCTL_ ioctls.
+
+To silence this perf tools build warning:
+
+  Warning: Kernel ABI header at 'tools/include/uapi/sound/asound.h' differs from latest version at 'include/uapi/sound/asound.h'
+  diff -u tools/include/uapi/sound/asound.h include/uapi/sound/asound.h
+
+Cc: Dmitry Osipenko <digetx@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Takashi Iwai <tiwai@suse.de>
+Link: https://lore.kernel.org/lkml/Yf+6OT+2eMrYDEeX@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bitfield.h | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/include/uapi/sound/asound.h |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
-index 6093fa6db260..ee433c60ee1b 100644
---- a/include/linux/bitfield.h
-+++ b/include/linux/bitfield.h
-@@ -19,6 +19,9 @@
-  *
-  * Example:
-  *
-+ *  #include <bitfield.h>
-+ *  #include <bits.h>
-+ *
-  *  #define REG_FIELD_A  GENMASK(6, 0)
-  *  #define REG_FIELD_B  BIT(7)
-  *  #define REG_FIELD_C  GENMASK(15, 8)
--- 
-2.34.1
+--- a/tools/include/uapi/sound/asound.h
++++ b/tools/include/uapi/sound/asound.h
+@@ -56,8 +56,10 @@
+  *                                                                          *
+  ****************************************************************************/
+ 
++#define AES_IEC958_STATUS_SIZE		24
++
+ struct snd_aes_iec958 {
+-	unsigned char status[24];	/* AES/IEC958 channel status bits */
++	unsigned char status[AES_IEC958_STATUS_SIZE]; /* AES/IEC958 channel status bits */
+ 	unsigned char subcode[147];	/* AES/IEC958 subcode bits */
+ 	unsigned char pad;		/* nothing */
+ 	unsigned char dig_subframe[4];	/* AES/IEC958 subframe bits */
+
 
