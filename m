@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0283CC35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9D2C4707F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386257AbiBGLeN (ORCPT
+        id S1386355AbiBGLe2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:34:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
+        Mon, 7 Feb 2022 06:34:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383741AbiBGLXa (ORCPT
+        with ESMTP id S1383684AbiBGLXY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:23:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A3BC0401E0;
-        Mon,  7 Feb 2022 03:23:25 -0800 (PST)
+        Mon, 7 Feb 2022 06:23:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F3FC0401F0;
+        Mon,  7 Feb 2022 03:23:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62210B811A6;
-        Mon,  7 Feb 2022 11:23:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73CE9C004E1;
-        Mon,  7 Feb 2022 11:23:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9271E6126D;
+        Mon,  7 Feb 2022 11:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F859C004E1;
+        Mon,  7 Feb 2022 11:23:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233003;
-        bh=yO3LhB07wisAP8zLBuI9Btmm5UY0wnl9UCKhljWaxqY=;
+        s=korg; t=1644233000;
+        bh=tvZEM60YYnpiLaqprdHNK3Tb+A8gmqs5ag5ZSNH2XMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H4H/yKfyO/gBLkfkjTRNWT1+umPzzLtj1FYXp/TDhlGWjTBeHwYHCkMNOY+0bu+Gt
-         tdsN34cOO/mF8oaiMfYcmyH8MqfoG//4c9QCGWdytBNnSWRKzvBrLOF30X5VFA82Sw
-         j+xF7QYWuMC1paxjKH0HXyoC12OKc+AwIcrXC6l0=
+        b=Mo+Fahqc6Qjr1l4+HpPxpX2Mm2v61A4tBu1eTDM2jYcDkl4Y9vCaY3mFBg6f8Urhe
+         uE8jUEriMVE+UKxa19Eesz6OC83jZQLVt+Rw81YS2b7GnFCOpLO6rNZq4MHtC1E5bN
+         Ia9EIfWPjMTaIMxwQhYC2SKnwJka01vWBEENa0AU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sven Schnelle <svens@stackframe.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
-Subject: [PATCH 5.10 60/74] Revert "fbcon: Disable accelerated scrolling"
-Date:   Mon,  7 Feb 2022 12:06:58 +0100
-Message-Id: <20220207103759.193379962@linuxfoundation.org>
+        stable@vger.kernel.org, Riwen Lu <luriwen@kylinos.cn>,
+        Eric Wong <e@80x24.org>,
+        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 5.10 59/74] rtc: cmos: Evaluate century appropriate
+Date:   Mon,  7 Feb 2022 12:06:57 +0100
+Message-Id: <20220207103759.158334607@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -51,192 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Riwen Lu <luriwen@kylinos.cn>
 
-commit 87ab9f6b7417349aa197a6c7098d4fdd4beebb74 upstream.
+commit ff164ae39b82ee483b24579c8e22a13a8ce5bd04 upstream.
 
-This reverts commit 39aead8373b3c20bb5965c024dfb51a94e526151.
+There's limiting the year to 2069. When setting the rtc year to 2070,
+reading it returns 1970. Evaluate century starting from 19 to count the
+correct year.
 
-Revert the first (of 2) commits which disabled scrolling acceleration in
-fbcon/fbdev.  It introduced a regression for fbdev-supported graphic cards
-because of the performance penalty by doing screen scrolling by software
-instead of using the existing graphic card 2D hardware acceleration.
+$ sudo date -s 20700106
+Mon 06 Jan 2070 12:00:00 AM CST
+$ sudo hwclock -w
+$ sudo hwclock -r
+1970-01-06 12:00:49.604968+08:00
 
-Console scrolling acceleration was disabled by dropping code which
-checked at runtime the driver hardware capabilities for the
-BINFO_HWACCEL_COPYAREA or FBINFO_HWACCEL_FILLRECT flags and if set, it
-enabled scrollmode SCROLL_MOVE which uses hardware acceleration to move
-screen contents.  After dropping those checks scrollmode was hard-wired
-to SCROLL_REDRAW instead, which forces all graphic cards to redraw every
-character at the new screen position when scrolling.
+Fixes: 2a4daadd4d3e5071 ("rtc: cmos: ignore bogus century byte")
 
-This change effectively disabled all hardware-based scrolling acceleration for
-ALL drivers, because now all kind of 2D hardware acceleration (bitblt,
-fillrect) in the drivers isn't used any longer.
-
-The original commit message mentions that only 3 DRM drivers (nouveau, omapdrm
-and gma500) used hardware acceleration in the past and thus code for checking
-and using scrolling acceleration is obsolete.
-
-This statement is NOT TRUE, because beside the DRM drivers there are around 35
-other fbdev drivers which depend on fbdev/fbcon and still provide hardware
-acceleration for fbdev/fbcon.
-
-The original commit message also states that syzbot found lots of bugs in fbcon
-and thus it's "often the solution to just delete code and remove features".
-This is true, and the bugs - which actually affected all users of fbcon,
-including DRM - were fixed, or code was dropped like e.g. the support for
-software scrollback in vgacon (commit 973c096f6a85).
-
-So to further analyze which bugs were found by syzbot, I've looked through all
-patches in drivers/video which were tagged with syzbot or syzkaller back to
-year 2005. The vast majority fixed the reported issues on a higher level, e.g.
-when screen is to be resized, or when font size is to be changed. The few ones
-which touched driver code fixed a real driver bug, e.g. by adding a check.
-
-But NONE of those patches touched code of either the SCROLL_MOVE or the
-SCROLL_REDRAW case.
-
-That means, there was no real reason why SCROLL_MOVE had to be ripped-out and
-just SCROLL_REDRAW had to be used instead. The only reason I can imagine so far
-was that SCROLL_MOVE wasn't used by DRM and as such it was assumed that it
-could go away. That argument completely missed the fact that SCROLL_MOVE is
-still heavily used by fbdev (non-DRM) drivers.
-
-Some people mention that using memcpy() instead of the hardware acceleration is
-pretty much the same speed. But that's not true, at least not for older graphic
-cards and machines where we see speed decreases by factor 10 and more and thus
-this change leads to console responsiveness way worse than before.
-
-That's why the original commit is to be reverted. By reverting we
-reintroduce hardware-based scrolling acceleration and fix the
-performance regression for fbdev drivers.
-
-There isn't any impact on DRM when reverting those patches.
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Sven Schnelle <svens@stackframe.org>
-Cc: stable@vger.kernel.org # v5.10+
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220202135531.92183-3-deller@gmx.de
+Signed-off-by: Riwen Lu <luriwen@kylinos.cn>
+Acked-by: Eric Wong <e@80x24.org>
+Reviewed-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220106084609.1223688-1-luriwen@kylinos.cn
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl> # preparation for stable
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/gpu/todo.rst       |   18 ---------------
- drivers/video/fbdev/core/fbcon.c |   45 ++++++++++++++++++++++++++++++++-------
- 2 files changed, 37 insertions(+), 26 deletions(-)
+ drivers/rtc/rtc-mc146818-lib.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/gpu/todo.rst
-+++ b/Documentation/gpu/todo.rst
-@@ -273,24 +273,6 @@ Contact: Daniel Vetter, Noralf Tronnes
+--- a/drivers/rtc/rtc-mc146818-lib.c
++++ b/drivers/rtc/rtc-mc146818-lib.c
+@@ -83,7 +83,7 @@ unsigned int mc146818_get_time(struct rt
+ 	time->tm_year += real_year - 72;
+ #endif
  
- Level: Advanced
- 
--Garbage collect fbdev scrolling acceleration
----------------------------------------------
--
--Scroll acceleration is disabled in fbcon by hard-wiring p->scrollmode =
--SCROLL_REDRAW. There's a ton of code this will allow us to remove:
--- lots of code in fbcon.c
--- a bunch of the hooks in fbcon_ops, maybe the remaining hooks could be called
--  directly instead of the function table (with a switch on p->rotate)
--- fb_copyarea is unused after this, and can be deleted from all drivers
--
--Note that not all acceleration code can be deleted, since clearing and cursor
--support is still accelerated, which might be good candidates for further
--deletion projects.
--
--Contact: Daniel Vetter
--
--Level: Intermediate
--
- idr_init_base()
- ---------------
- 
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -1033,7 +1033,7 @@ static void fbcon_init(struct vc_data *v
- 	struct vc_data *svc = *default_mode;
- 	struct fbcon_display *t, *p = &fb_display[vc->vc_num];
- 	int logo = 1, new_rows, new_cols, rows, cols, charcnt = 256;
--	int ret;
-+	int cap, ret;
- 
- 	if (WARN_ON(info_idx == -1))
- 	    return;
-@@ -1042,6 +1042,7 @@ static void fbcon_init(struct vc_data *v
- 		con2fb_map[vc->vc_num] = info_idx;
- 
- 	info = registered_fb[con2fb_map[vc->vc_num]];
-+	cap = info->flags;
- 
- 	if (logo_shown < 0 && console_loglevel <= CONSOLE_LOGLEVEL_QUIET)
- 		logo_shown = FBCON_LOGO_DONTSHOW;
-@@ -1146,13 +1147,11 @@ static void fbcon_init(struct vc_data *v
- 
- 	ops->graphics = 0;
- 
--	/*
--	 * No more hw acceleration for fbcon.
--	 *
--	 * FIXME: Garbage collect all the now dead code after sufficient time
--	 * has passed.
--	 */
--	p->scrollmode = SCROLL_REDRAW;
-+	if ((cap & FBINFO_HWACCEL_COPYAREA) &&
-+	    !(cap & FBINFO_HWACCEL_DISABLED))
-+		p->scrollmode = SCROLL_MOVE;
-+	else /* default to something safe */
-+		p->scrollmode = SCROLL_REDRAW;
+-	if (century > 20)
++	if (century > 19)
+ 		time->tm_year += (century - 19) * 100;
  
  	/*
- 	 *  ++guenther: console.c:vc_allocate() relies on initializing
-@@ -1965,15 +1964,45 @@ static void updatescrollmode(struct fbco
- {
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	int fh = vc->vc_font.height;
-+	int cap = info->flags;
-+	u16 t = 0;
-+	int ypan = FBCON_SWAP(ops->rotate, info->fix.ypanstep,
-+				  info->fix.xpanstep);
-+	int ywrap = FBCON_SWAP(ops->rotate, info->fix.ywrapstep, t);
- 	int yres = FBCON_SWAP(ops->rotate, info->var.yres, info->var.xres);
- 	int vyres = FBCON_SWAP(ops->rotate, info->var.yres_virtual,
- 				   info->var.xres_virtual);
-+	int good_pan = (cap & FBINFO_HWACCEL_YPAN) &&
-+		divides(ypan, vc->vc_font.height) && vyres > yres;
-+	int good_wrap = (cap & FBINFO_HWACCEL_YWRAP) &&
-+		divides(ywrap, vc->vc_font.height) &&
-+		divides(vc->vc_font.height, vyres) &&
-+		divides(vc->vc_font.height, yres);
-+	int reading_fast = cap & FBINFO_READS_FAST;
-+	int fast_copyarea = (cap & FBINFO_HWACCEL_COPYAREA) &&
-+		!(cap & FBINFO_HWACCEL_DISABLED);
-+	int fast_imageblit = (cap & FBINFO_HWACCEL_IMAGEBLIT) &&
-+		!(cap & FBINFO_HWACCEL_DISABLED);
- 
- 	p->vrows = vyres/fh;
- 	if (yres > (fh * (vc->vc_rows + 1)))
- 		p->vrows -= (yres - (fh * vc->vc_rows)) / fh;
- 	if ((yres % fh) && (vyres % fh < yres % fh))
- 		p->vrows--;
-+
-+	if (good_wrap || good_pan) {
-+		if (reading_fast || fast_copyarea)
-+			p->scrollmode = good_wrap ?
-+				SCROLL_WRAP_MOVE : SCROLL_PAN_MOVE;
-+		else
-+			p->scrollmode = good_wrap ? SCROLL_REDRAW :
-+				SCROLL_PAN_REDRAW;
-+	} else {
-+		if (reading_fast || (fast_copyarea && !fast_imageblit))
-+			p->scrollmode = SCROLL_MOVE;
-+		else
-+			p->scrollmode = SCROLL_REDRAW;
-+	}
- }
- 
- #define PITCH(w) (((w) + 7) >> 3)
 
 
