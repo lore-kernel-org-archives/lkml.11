@@ -2,283 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D15C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F66C352A8
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235671AbiBHBEi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:04:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41412 "EHLO
+        id S1345198AbiBHBEf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:04:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245717AbiBGX2Z (ORCPT
+        with ESMTP id S236779AbiBGX2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:28:25 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17393C0612A4;
-        Mon,  7 Feb 2022 15:28:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644276504; x=1675812504;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=HOtSxOsxsg3P8RM3tbFgDc9I3beqaq6pdDO0U9LNiiQ=;
-  b=lWU/SvhkCVjNdveIr1NuCqmwF/eSttiPX952/qx5g4JhipzxopX0JKO3
-   90v4g9LL3kGkvVZo9jNiPzZkmHVar2OI0W8TwhfbhU50QxLwNB6wlaOnS
-   7+9TO/rqVFBYkJxBDq1IneeA6XJ/eFVTPjn4DEc7CG+tVPQOZRv1746Bx
-   W2GgAndlFCVSVr8eCMwzGsWcNapjpwDigkxM3vS6SNkBulUynW2Mj3NJw
-   HDX4WPz79+sXYxlMB3Oygu/gfSJoOhmNw8gNs1J4hHIjP4zjC2wjVpP7E
-   +k3dDnHy9eF1w69x9m+aycGGgpWuOG9nZnRs4Xqp4eSvACqvH4yQKCIvw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="247665155"
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="247665155"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 15:28:23 -0800
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="525319051"
-Received: from hgrunes-mobl1.amr.corp.intel.com (HELO [10.251.3.57]) ([10.251.3.57])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 15:28:22 -0800
-Message-ID: <9ad0f7f7-e034-eb6d-eee4-1e977123efe7@intel.com>
-Date:   Mon, 7 Feb 2022 15:28:19 -0800
+        Mon, 7 Feb 2022 18:28:04 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5724C061355;
+        Mon,  7 Feb 2022 15:28:03 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id om7so1288966pjb.5;
+        Mon, 07 Feb 2022 15:28:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wMCF6rrG4H4mtR75i+Ow3RIxozoNm0ZBZY8u8XRb4YI=;
+        b=FUfAOdIhJc/NIZaF7i6SnkgHZUqRweh3C67UTQ0+Y9pki22+ZtNB7min1qoUAIdleb
+         QQ3WMe9ppSf9nVF8/rWzFkYC/DemMLlUGzlwLM2qsS+VTl3J3SlP2DKlMPUtVUhyCe1v
+         OxStvo3MwAmq/IE2pyosgPvKco1i51JvFFwxADCmenMzPJg1NRS8zGaeTnH0HK3RhMN9
+         AeA/IvO9EZJpyovTWWQAfDb7hUGe7U/fZKEdXM7qBEFqcItHRbJgnLraex/tRnxtjagH
+         Yg1NXXT15ZT/71E71nB8dUCp9+9FQXFG1oegbw91QuRc2ZtiJBEAhmnFW4cd9eVlt4Fs
+         qbrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wMCF6rrG4H4mtR75i+Ow3RIxozoNm0ZBZY8u8XRb4YI=;
+        b=d7QVgs3DAVhFLRAuDFNkmRRJNsa3WOLx7dNXduXeQg3eOb9q3/QWwPhAT+DkF7gvc0
+         k8VMV8R6YpOE33r2djhVCsqAhg8PvmxL2Wj6eIGuMD0GBewiZgX3O0x5Hg4VqELSRLLN
+         ntZDkfAy09XqJ4oazzcYzLqVTQKN1TdQIosZokcO7RqywKgwJl1V3qQaSaJZ8jtDdAwB
+         XvF4HoUITJPNf3GBsJKkECJaO3dDxAEDAA04I9Q5qBruI3ohwSD+tuC0iQ+PCBlJPxWZ
+         AqSKG60rySTn/DCkx8ICjogJXf5pXrMzdEXrNEISA7fB4N/omIoornSXtboyw/2IMBls
+         bB/A==
+X-Gm-Message-State: AOAM530V1E+dMeHtH5EB5wwqByEjNLJBg0frT3PTpSfZbEC8jQoUacTo
+        30POuQja+WAZT9fjFVXjAVM=
+X-Google-Smtp-Source: ABdhPJwQ05+7spxyqqMOdTZMnDmFos3xpomIyWBNabfORn7hpQFI0tMroajmfSyqOs8P7RR7NhQ+4A==
+X-Received: by 2002:a17:903:1105:: with SMTP id n5mr1706476plh.99.1644276483121;
+        Mon, 07 Feb 2022 15:28:03 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id mz4sm395744pjb.53.2022.02.07.15.27.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 15:28:02 -0800 (PST)
+Subject: Re: [PATCH 5.4 00/44] 5.4.178-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220207103753.155627314@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <2d0979d7-ecc1-3ff0-6bb7-c4295f3aeb7c@gmail.com>
+Date:   Mon, 7 Feb 2022 15:27:32 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
+In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Balbir Singh <bsingharora@gmail.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cyrill Gorcunov <gorcunov@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Eugene Syromiatnikov <esyr@redhat.com>,
-        Florian Weimer <fweimer@redhat.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
-        Dave Martin <Dave.Martin@arm.com>,
-        Weijiang Yang <weijiang.yang@intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
-        kcc@google.com, eranian@google.com
-Cc:     Yu-cheng Yu <yu-cheng.yu@intel.com>
-References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
- <20220130211838.8382-6-rick.p.edgecombe@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH 05/35] x86/fpu/xstate: Introduce CET MSR and XSAVES
- supervisor states
-In-Reply-To: <20220130211838.8382-6-rick.p.edgecombe@intel.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/30/22 13:18, Rick Edgecombe wrote:
-> From: Yu-cheng Yu <yu-cheng.yu@intel.com>
+On 2/7/22 3:06 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.178 release.
+> There are 44 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Control-flow Enforcement Technology (CET) introduces these MSRs:
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
 > 
->     MSR_IA32_U_CET (user-mode CET settings),
->     MSR_IA32_PL3_SSP (user-mode shadow stack pointer),
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.178-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> and the diffstat can be found below.
 > 
->     MSR_IA32_PL0_SSP (kernel-mode shadow stack pointer),
->     MSR_IA32_PL1_SSP (Privilege Level 1 shadow stack pointer),
->     MSR_IA32_PL2_SSP (Privilege Level 2 shadow stack pointer),
->     MSR_IA32_S_CET (kernel-mode CET settings),
->     MSR_IA32_INT_SSP_TAB (exception shadow stack table).
+> thanks,
+> 
+> greg k-h
 
-To be honest, I'm not sure this is very valuable.  It's *VERY* close to
-the exact information in the structure definitions.  It's also not
-obviously related to XSAVE.  It's more of the "what" this patch does
-than the "why".  Good changelogs talk about "why".
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-> The two user-mode MSRs belong to XFEATURE_CET_USER.  The first three of
-> kernel-mode MSRs belong to XFEATURE_CET_KERNEL.  Both XSAVES states are
-> supervisor states.  This means that there is no direct, unprivileged access
-> to these states, making it harder for an attacker to subvert CET.
-
-Forgive me while I go into changelog lecture mode for a moment.
-
-I was constantly looking up at the list of MSRs and trying to reconcile
-them with this paragraph.  Imagine if you had started out this changelog
-by saying:
-
-	Shadow stack register state can be managed with XSAVE.  The
-	registers can logically be separated into two groups:
-
-		* Registers controlling user-mode operation
-		* Registers controlling kernel-mode operation
-
-	The architecture has two new XSAVE state components: one for
-	each group of registers.  This _lets_ an OS manage them
-	separately if it chooses.  Linux chooses to ... <explain the
-	design choice here, or why we don't care yet>.
-
-	Both XSAVE state components are supervisor states, even the
-	state controlling user-mode operation.  This is a departure from
-	earlier features like protection keys where the PKRU state is
-	a normal user (non-supervisor) state.  Having the user state be	
-	supervisor-managed ensures there is no direct, unprivileged
-	access to it, making it harder for an attacker to subvert CET.
-
-Also, IBT gunk is in here too, right?  Let's at least *mention* that in
-the changelog.
-
-...
->  /* All supervisor states including supported and unsupported states. */
->  #define XFEATURE_MASK_SUPERVISOR_ALL (XFEATURE_MASK_SUPERVISOR_SUPPORTED | \
-> diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
-> index 3faf0f97edb1..0ee77ce4c753 100644
-> --- a/arch/x86/include/asm/msr-index.h
-> +++ b/arch/x86/include/asm/msr-index.h
-> @@ -362,6 +362,26 @@
->  
->  
->  #define MSR_CORE_PERF_LIMIT_REASONS	0x00000690
-> +
-> +/* Control-flow Enforcement Technology MSRs */
-> +#define MSR_IA32_U_CET			0x000006a0 /* user mode cet setting */
-> +#define MSR_IA32_S_CET			0x000006a2 /* kernel mode cet setting */
-> +#define CET_SHSTK_EN			BIT_ULL(0)
-> +#define CET_WRSS_EN			BIT_ULL(1)
-> +#define CET_ENDBR_EN			BIT_ULL(2)
-> +#define CET_LEG_IW_EN			BIT_ULL(3)
-> +#define CET_NO_TRACK_EN			BIT_ULL(4)
-> +#define CET_SUPPRESS_DISABLE		BIT_ULL(5)
-> +#define CET_RESERVED			(BIT_ULL(6) | BIT_ULL(7) | BIT_ULL(8) | BIT_ULL(9))
-
-Would GENMASK_ULL() look any nicer here?  I guess it's pretty clear
-as-is that bits 6->9 are reserved.
-
-> +#define CET_SUPPRESS			BIT_ULL(10)
-> +#define CET_WAIT_ENDBR			BIT_ULL(11)
-
-Are those bit fields common for both registers?  It might be worth a
-comment to mention that.
-
-> +#define MSR_IA32_PL0_SSP		0x000006a4 /* kernel shadow stack pointer */
-> +#define MSR_IA32_PL1_SSP		0x000006a5 /* ring-1 shadow stack pointer */
-> +#define MSR_IA32_PL2_SSP		0x000006a6 /* ring-2 shadow stack pointer */
-
-Are PL1/2 ever used in this implementation?  If not, let's axe these
-definitions.
-
-> +#define MSR_IA32_PL3_SSP		0x000006a7 /* user shadow stack pointer */
-> +#define MSR_IA32_INT_SSP_TAB		0x000006a8 /* exception shadow stack table */
-> +
->  #define MSR_GFX_PERF_LIMIT_REASONS	0x000006B0
->  #define MSR_RING_PERF_LIMIT_REASONS	0x000006B1
->  
-> diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
-> index 02b3ddaf4f75..44397202762b 100644
-> --- a/arch/x86/kernel/fpu/xstate.c
-> +++ b/arch/x86/kernel/fpu/xstate.c
-> @@ -50,6 +50,8 @@ static const char *xfeature_names[] =
->  	"Processor Trace (unused)"	,
->  	"Protection Keys User registers",
->  	"PASID state",
-> +	"Control-flow User registers"	,
-> +	"Control-flow Kernel registers"	,
->  	"unknown xstate feature"	,
->  	"unknown xstate feature"	,
->  	"unknown xstate feature"	,
-> @@ -73,6 +75,8 @@ static unsigned short xsave_cpuid_features[] __initdata = {
->  	[XFEATURE_PT_UNIMPLEMENTED_SO_FAR]	= X86_FEATURE_INTEL_PT,
->  	[XFEATURE_PKRU]				= X86_FEATURE_PKU,
->  	[XFEATURE_PASID]			= X86_FEATURE_ENQCMD,
-> +	[XFEATURE_CET_USER]			= X86_FEATURE_SHSTK,
-> +	[XFEATURE_CET_KERNEL]			= X86_FEATURE_SHSTK,
->  	[XFEATURE_XTILE_CFG]			= X86_FEATURE_AMX_TILE,
->  	[XFEATURE_XTILE_DATA]			= X86_FEATURE_AMX_TILE,
->  };
-> @@ -250,6 +254,8 @@ static void __init print_xstate_features(void)
->  	print_xstate_feature(XFEATURE_MASK_Hi16_ZMM);
->  	print_xstate_feature(XFEATURE_MASK_PKRU);
->  	print_xstate_feature(XFEATURE_MASK_PASID);
-> +	print_xstate_feature(XFEATURE_MASK_CET_USER);
-> +	print_xstate_feature(XFEATURE_MASK_CET_KERNEL);
->  	print_xstate_feature(XFEATURE_MASK_XTILE_CFG);
->  	print_xstate_feature(XFEATURE_MASK_XTILE_DATA);
->  }
-> @@ -405,6 +411,7 @@ static __init void os_xrstor_booting(struct xregs_state *xstate)
->  	 XFEATURE_MASK_BNDREGS |		\
->  	 XFEATURE_MASK_BNDCSR |			\
->  	 XFEATURE_MASK_PASID |			\
-> +	 XFEATURE_MASK_CET_USER |		\
->  	 XFEATURE_MASK_XTILE)
->  
->  /*
-> @@ -621,6 +628,8 @@ static bool __init check_xstate_against_struct(int nr)
->  	XCHECK_SZ(sz, nr, XFEATURE_PKRU,      struct pkru_state);
->  	XCHECK_SZ(sz, nr, XFEATURE_PASID,     struct ia32_pasid_state);
->  	XCHECK_SZ(sz, nr, XFEATURE_XTILE_CFG, struct xtile_cfg);
-> +	XCHECK_SZ(sz, nr, XFEATURE_CET_USER,   struct cet_user_state);
-> +	XCHECK_SZ(sz, nr, XFEATURE_CET_KERNEL, struct cet_kernel_state);
->  
->  	/* The tile data size varies between implementations. */
->  	if (nr == XFEATURE_XTILE_DATA)
-> @@ -634,7 +643,9 @@ static bool __init check_xstate_against_struct(int nr)
->  	if ((nr < XFEATURE_YMM) ||
->  	    (nr >= XFEATURE_MAX) ||
->  	    (nr == XFEATURE_PT_UNIMPLEMENTED_SO_FAR) ||
-> -	    ((nr >= XFEATURE_RSRVD_COMP_11) && (nr <= XFEATURE_RSRVD_COMP_16))) {
-> +	    (nr == XFEATURE_RSRVD_COMP_13) ||
-> +	    (nr == XFEATURE_RSRVD_COMP_14) ||
-> +	    (nr == XFEATURE_RSRVD_COMP_16)) {
->  		WARN_ONCE(1, "no structure for xstate: %d\n", nr);
->  		XSTATE_WARN_ON(1);
->  		return false;
-
-That if() is getting unweildy.  While I generally despise macros
-implicitly modifying variables, this might be worth it.  We could have a
-local function variable:
-
-	bool feature_checked = false;
-
-and then muck with it in the macro:
-
-#define XCHECK_SZ(sz, nr, nr_macro, __struct) do {
-	if (nr == nr_macro)) {
-		feature_checked = true;
-		if (WARN_ONCE(sz != sizeof(__struct), ... ) {
-			__xstate_dump_leaves();
-		}
-        }
-} while (0)
-
-Then the if() just makes sure the feature was checked instead of
-checking for reserved features explicitly.  We could also do:
-
-	bool c = false;
-
-	...
-
-        c |= XCHECK_SZ(sz, nr, XFEATURE_YMM,       struct ymmh_struct);
-        c |= XCHECK_SZ(sz, nr, XFEATURE_BNDREGS,   struct ...
-        c |= XCHECK_SZ(sz, nr, XFEATURE_BNDCSR,    struct ...
-	...
-
-but that starts to run into 80 columns.  Those are both nice because
-they mean you don't have to maintain a list of reserved features in the
-code.  Another option would be to define a:
-
-bool xfeature_is_reserved(int nr)
-{
-	switch (nr) {
-		case XFEATURE_RSRVD_COMP_13:
-		...
-
-so the if() looks nicer and won't grow; the function will grow instead.
-
-Either way, I think this needs some refactoring.
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
