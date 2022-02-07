@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBA7C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40AA1C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382929AbiBGQAW (ORCPT
+        id S1381171AbiBGQAQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:00:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36786 "EHLO
+        Mon, 7 Feb 2022 11:00:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385427AbiBGPzU (ORCPT
+        with ESMTP id S241454AbiBGP4i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:55:20 -0500
+        Mon, 7 Feb 2022 10:56:38 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 40347C0401D1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:55:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 429A8C0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:56:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249319;
+        s=mimecast20190719; t=1644249396;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZWkaPZigKR8ZVYYpYKUmXEITXI5Ito7CWFDFszKolT0=;
-        b=FoU8VjHyA+VSai7IIWulvkhJQjrpuuPMquS9VTYvhuUenzPoTfK4I6jigdXuoh3qz15aGv
-        og9ZRJaErQA1JH5Voh+7ke904RmlWh5KMeg7KkyO+9mAKXBztt58y7TWsGnaS3s8Gw71s2
-        sAusFqEUzeFoDplWE0J8E/mMQsHWbFM=
+        bh=+qBv9qwSEqvx96/HtSvc9qvyeLhvKy4iFAhj6kK93B8=;
+        b=VwkIm7pLfErka3+ERfW68lySY2MW5iCGJO9t9Se2t8ZGMGeDvawJIW7ctNSag9sZdOoM7j
+        SaJ02iZY0hThj+bCxIqyqlLRVNIrOBDn5+N8TlZ22++oVYRw3XhQzBjjlENoENJQ2dsptg
+        0WTxcy6V8gv7aglei2gvZbYwjELl+GY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-663-UJZl6NgZNt-ieIzpmnWFHQ-1; Mon, 07 Feb 2022 10:55:16 -0500
-X-MC-Unique: UJZl6NgZNt-ieIzpmnWFHQ-1
+ us-mta-663-WnQs0KM8Phi6NpwLCF8Bkw-1; Mon, 07 Feb 2022 10:56:33 -0500
+X-MC-Unique: WnQs0KM8Phi6NpwLCF8Bkw-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 064471091DA2;
-        Mon,  7 Feb 2022 15:55:13 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A9F2192D786;
+        Mon,  7 Feb 2022 15:56:30 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 51F757DE38;
-        Mon,  7 Feb 2022 15:55:05 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3D44B7DE57;
+        Mon,  7 Feb 2022 15:56:19 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>,
@@ -66,10 +66,10 @@ Cc:     Tony Luck <tony.luck@intel.com>,
         Zhenyu Wang <zhenyuw@linux.intel.com>,
         Kan Liang <kan.liang@linux.intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>, stable@vger.kernel.org
-Subject: [PATCH RESEND 02/30] KVM: x86: nSVM: fix potential NULL derefernce on nested migration
-Date:   Mon,  7 Feb 2022 17:54:19 +0200
-Message-Id: <20220207155447.840194-3-mlevitsk@redhat.com>
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH RESEND 10/30] KVM: x86: SVM: fix race between interrupt delivery and AVIC inhibition
+Date:   Mon,  7 Feb 2022 17:54:27 +0200
+Message-Id: <20220207155447.840194-11-mlevitsk@redhat.com>
 In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
 References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
@@ -79,68 +79,250 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Turns out that due to review feedback and/or rebases
-I accidentally moved the call to nested_svm_load_cr3 to be too early,
-before the NPT is enabled, which is very wrong to do.
+If svm_deliver_avic_intr is called just after the target vcpu's AVIC got
+inhibited, it might read a stale value of vcpu->arch.apicv_active
+which can lead to the target vCPU not noticing the interrupt.
 
-KVM can't even access guest memory at that point as nested NPT
-is needed for that, and of course it won't initialize the walk_mmu,
-which is main issue the patch was addressing.
+To fix this use load-acquire/store-release so that, if the target vCPU
+is IN_GUEST_MODE, we're guaranteed to see a previous disabling of the
+AVIC.  If AVIC has been disabled in the meanwhile, proceed with the
+KVM_REQ_EVENT-based delivery.
 
-Fix this for real.
+All this complicated logic is actually exactly how we can handle an
+incomplete IPI vmexit; the only difference lies in who sets IRR, whether
+KVM or the processor.
 
-Fixes: 232f75d3b4b5 ("KVM: nSVM: call nested_svm_load_cr3 on nested state load")
-Cc: stable@vger.kernel.org
+Also incomplete IPI vmexit also has the same races as
+svm_deliver_avic_intr.
+Therefore use the avic_kick_target_vcpu there as well.
 
+Co-developed-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/svm/nested.c | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+ arch/x86/kvm/svm/avic.c | 73 ++++++++++++++---------------------------
+ arch/x86/kvm/svm/svm.c  | 65 ++++++++++++++++++++++++++++--------
+ arch/x86/kvm/svm/svm.h  |  3 ++
+ arch/x86/kvm/x86.c      |  4 ++-
+ 4 files changed, 82 insertions(+), 63 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 1218b5a342fc8..39d280e7e80ef 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -1457,18 +1457,6 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
- 	    !__nested_vmcb_check_save(vcpu, &save_cached))
- 		goto out_free;
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index fabfc337e1c35..4c2d622b3b9f0 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -269,6 +269,24 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+ 	return 0;
+ }
  
++
++void avic_ring_doorbell(struct kvm_vcpu *vcpu)
++{
++	/*
++	 * Note, the vCPU could get migrated to a different pCPU at any
++	 * point, which could result in signalling the wrong/previous
++	 * pCPU.  But if that happens the vCPU is guaranteed to do a
++	 * VMRUN (after being migrated) and thus will process pending
++	 * interrupts, i.e. a doorbell is not needed (and the spurious
++	 * one is harmless).
++	 */
++	int cpu = READ_ONCE(vcpu->cpu);
++
++	if (cpu != get_cpu())
++		wrmsrl(MSR_AMD64_SVM_AVIC_DOORBELL, kvm_cpu_get_apicid(cpu));
++	put_cpu();
++}
++
+ static void avic_kick_target_vcpus(struct kvm *kvm, struct kvm_lapic *source,
+ 				   u32 icrl, u32 icrh)
+ {
+@@ -284,8 +302,13 @@ static void avic_kick_target_vcpus(struct kvm *kvm, struct kvm_lapic *source,
+ 	kvm_for_each_vcpu(i, vcpu, kvm) {
+ 		if (kvm_apic_match_dest(vcpu, source, icrl & APIC_SHORT_MASK,
+ 					GET_APIC_DEST_FIELD(icrh),
+-					icrl & APIC_DEST_MASK))
+-			kvm_vcpu_wake_up(vcpu);
++					icrl & APIC_DEST_MASK)) {
++			vcpu->arch.apic->irr_pending = true;
++			svm_complete_interrupt_delivery(vcpu,
++							icrl & APIC_MODE_MASK,
++							icrl & APIC_INT_LEVELTRIG,
++							icrl & APIC_VECTOR_MASK);
++		}
+ 	}
+ }
+ 
+@@ -649,52 +672,6 @@ void avic_load_eoi_exitmap(struct kvm_vcpu *vcpu, u64 *eoi_exit_bitmap)
+ 	return;
+ }
+ 
+-int svm_deliver_avic_intr(struct kvm_vcpu *vcpu, int vec)
+-{
+-	if (!vcpu->arch.apicv_active)
+-		return -1;
+-
+-	kvm_lapic_set_irr(vec, vcpu->arch.apic);
+-
 -	/*
--	 * While the nested guest CR3 is already checked and set by
--	 * KVM_SET_SREGS, it was set when nested state was yet loaded,
--	 * thus MMU might not be initialized correctly.
--	 * Set it again to fix this.
+-	 * Pairs with the smp_mb_*() after setting vcpu->guest_mode in
+-	 * vcpu_enter_guest() to ensure the write to the vIRR is ordered before
+-	 * the read of guest_mode, which guarantees that either VMRUN will see
+-	 * and process the new vIRR entry, or that the below code will signal
+-	 * the doorbell if the vCPU is already running in the guest.
 -	 */
+-	smp_mb__after_atomic();
 -
--	ret = nested_svm_load_cr3(&svm->vcpu, vcpu->arch.cr3,
--				  nested_npt_enabled(svm), false);
--	if (WARN_ON_ONCE(ret))
--		goto out_free;
+-	/*
+-	 * Signal the doorbell to tell hardware to inject the IRQ if the vCPU
+-	 * is in the guest.  If the vCPU is not in the guest, hardware will
+-	 * automatically process AVIC interrupts at VMRUN.
+-	 */
+-	if (vcpu->mode == IN_GUEST_MODE) {
+-		int cpu = READ_ONCE(vcpu->cpu);
 -
+-		/*
+-		 * Note, the vCPU could get migrated to a different pCPU at any
+-		 * point, which could result in signalling the wrong/previous
+-		 * pCPU.  But if that happens the vCPU is guaranteed to do a
+-		 * VMRUN (after being migrated) and thus will process pending
+-		 * interrupts, i.e. a doorbell is not needed (and the spurious
+-		 * one is harmless).
+-		 */
+-		if (cpu != get_cpu())
+-			wrmsrl(MSR_AMD64_SVM_AVIC_DOORBELL, kvm_cpu_get_apicid(cpu));
+-		put_cpu();
+-	} else {
+-		/*
+-		 * Wake the vCPU if it was blocking.  KVM will then detect the
+-		 * pending IRQ when checking if the vCPU has a wake event.
+-		 */
+-		kvm_vcpu_wake_up(vcpu);
+-	}
+-
+-	return 0;
+-}
+-
+ bool avic_dy_apicv_has_pending_interrupt(struct kvm_vcpu *vcpu)
+ {
+ 	return false;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 22e614008cf59..18d4d87e12e15 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3310,20 +3310,6 @@ static void svm_inject_irq(struct kvm_vcpu *vcpu)
+ 		SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_INTR;
+ }
  
- 	/*
- 	 * All checks done, we can enter guest mode. Userspace provides
-@@ -1494,6 +1482,20 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
+-static void svm_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
+-				  int trig_mode, int vector)
+-{
+-	struct kvm_vcpu *vcpu = apic->vcpu;
+-
+-	if (svm_deliver_avic_intr(vcpu, vector)) {
+-		kvm_lapic_set_irr(vector, apic);
+-		kvm_make_request(KVM_REQ_EVENT, vcpu);
+-		kvm_vcpu_kick(vcpu);
+-	} else {
+-		trace_kvm_apicv_accept_irq(vcpu->vcpu_id, delivery_mode,
+-					   trig_mode, vector);
+-	}
+-}
  
- 	svm_switch_vmcb(svm, &svm->nested.vmcb02);
- 	nested_vmcb02_prepare_control(svm);
+ static void svm_update_cr8_intercept(struct kvm_vcpu *vcpu, int tpr, int irr)
+ {
+@@ -4142,6 +4128,57 @@ static int svm_check_intercept(struct kvm_vcpu *vcpu,
+ 	return ret;
+ }
+ 
++void svm_complete_interrupt_delivery(struct kvm_vcpu *vcpu, int delivery_mode,
++		  int trig_mode, int vec)
++{
++	/*
++	 * vcpu->arch.apicv_active must be read after vcpu->mode.
++	 * Pairs with smp_store_release in vcpu_enter_guest.
++	 */
++	bool in_guest_mode = (smp_load_acquire(&vcpu->mode) == IN_GUEST_MODE);
++
++	if (!READ_ONCE(vcpu->arch.apicv_active)) {
++		/*
++		 * Manually signal the event
++		 */
++		kvm_make_request(KVM_REQ_EVENT, vcpu);
++		kvm_vcpu_kick(vcpu);
++		return;
++	}
++
++	trace_kvm_apicv_accept_irq(vcpu->vcpu_id, delivery_mode, trig_mode, vec);
++
++	if (in_guest_mode)
++		/*
++		 * Signal the doorbell to tell hardware to inject the IRQ if the vCPU
++		 * is in the guest.  If the vCPU is not in the guest, hardware will
++		 * automatically process AVIC interrupts at VMRUN.
++		 */
++		avic_ring_doorbell(vcpu);
++	else
++		/*
++		 * Wake the vCPU if it was blocking.  KVM will then detect the
++		 * pending IRQ when checking if the vCPU has a wake event.
++		 */
++		kvm_vcpu_wake_up(vcpu);
++}
++
++static void svm_deliver_interrupt(struct kvm_lapic *apic,  int delivery_mode,
++		  int trig_mode, int vec)
++{
++	kvm_lapic_set_irr(vec, apic);
 +
 +	/*
-+	 * While the nested guest CR3 is already checked and set by
-+	 * KVM_SET_SREGS, it was set when nested state was yet loaded,
-+	 * thus MMU might not be initialized correctly.
-+	 * Set it again to fix this.
++	 * Pairs with the smp_mb_*() after setting vcpu->guest_mode in
++	 * vcpu_enter_guest() to ensure the write to the vIRR is ordered before
++	 * the read of guest_mode, which guarantees that either VMRUN will see
++	 * and process the new vIRR entry, or that the below code will signal
++	 * the doorbell if the vCPU is already running in the guest.
 +	 */
++	smp_mb__after_atomic();
++	svm_complete_interrupt_delivery(apic->vcpu, delivery_mode, trig_mode, vec);
++}
 +
-+	ret = nested_svm_load_cr3(&svm->vcpu, vcpu->arch.cr3,
-+				  nested_npt_enabled(svm), false);
-+	if (WARN_ON_ONCE(ret))
-+		goto out_free;
+ static void svm_handle_exit_irqoff(struct kvm_vcpu *vcpu)
+ {
+ }
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index 6343558982c73..83f9f95eced3e 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -488,6 +488,8 @@ void svm_set_gif(struct vcpu_svm *svm, bool value);
+ int svm_invoke_exit_handler(struct kvm_vcpu *vcpu, u64 exit_code);
+ void set_msr_interception(struct kvm_vcpu *vcpu, u32 *msrpm, u32 msr,
+ 			  int read, int write);
++void svm_complete_interrupt_delivery(struct kvm_vcpu *vcpu, int delivery_mode,
++		  int trig_mode, int vec);
+ 
+ /* nested.c */
+ 
+@@ -577,6 +579,7 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+ 			uint32_t guest_irq, bool set);
+ void avic_vcpu_blocking(struct kvm_vcpu *vcpu);
+ void avic_vcpu_unblocking(struct kvm_vcpu *vcpu);
++void avic_ring_doorbell(struct kvm_vcpu *vcpu);
+ 
+ /* sev.c */
+ 
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 6f69f3e3635e2..8cb5390f75efe 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -10039,7 +10039,9 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	 * result in virtual interrupt delivery.
+ 	 */
+ 	local_irq_disable();
+-	vcpu->mode = IN_GUEST_MODE;
 +
-+
- 	kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
- 	ret = 0;
- out_free:
++	/* Store vcpu->apicv_active before vcpu->mode.  */
++	smp_store_release(&vcpu->mode, IN_GUEST_MODE);
+ 
+ 	srcu_read_unlock(&vcpu->kvm->srcu, vcpu->srcu_idx);
+ 
 -- 
 2.26.3
 
