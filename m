@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB723C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E165EC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388172AbiBGLnI (ORCPT
+        id S1388188AbiBGLnJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
+        Mon, 7 Feb 2022 06:43:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385667AbiBGLcF (ORCPT
+        with ESMTP id S1385570AbiBGLb7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:05 -0500
+        Mon, 7 Feb 2022 06:31:59 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE31EC0401C1;
-        Mon,  7 Feb 2022 03:31:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273C1C03E96B;
+        Mon,  7 Feb 2022 03:30:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41C2A60B5B;
-        Mon,  7 Feb 2022 11:31:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECAA8C004E1;
-        Mon,  7 Feb 2022 11:31:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA7DB60AB0;
+        Mon,  7 Feb 2022 11:30:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81337C004E1;
+        Mon,  7 Feb 2022 11:30:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233495;
-        bh=5kuKbyyGYmLTOSeoatF/Dlu5tcSfSUYM07uZYakDJNk=;
+        s=korg; t=1644233455;
+        bh=n9gapmnR3BmvRHyNXNq14LqFhx8NlinKmjcEoRr3GL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vLU+MzoFYkCueOsp8BwjQH5MdVdoq8ML8zoDLHy2NZWCAhm2KuG2y2ewCYqcaRE02
-         RClKM2bBVhLcPQHR3ygRk90N+V6/Vs/j3Fw3UQveiHm5eJQ0kSiZ+RSbzeCv0+/sSs
-         /e5XWaeNmcmm81NjPmrtehJHirtJJxRIbKdXHfXg=
+        b=EKJkgPv5zgFw4nyGZJDLXHTWyZPy5hNgyOi1azjp/yx1NwXslqOnJI1jwFVYRHOl3
+         z49EtoNQ5OkCWHSBkPN+1yptfMKLHr3ymrBEE+bp4j5zh6UmT+Qk1Vmbs43GoNfGXg
+         QVuBUEjQJlS5QCrQc2PKpVmLO++d8o6RsHbX8Jqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Rapoport <rppt@linux.ibm.com>,
-        Christian Dietrich <stettberger@dokucode.de>,
-        Khalid Aziz <khalid.aziz@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 031/126] mm/pgtable: define pte_index so that preprocessor could recognize it
-Date:   Mon,  7 Feb 2022 12:06:02 +0100
-Message-Id: <20220207103805.216538888@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 018/126] btrfs: dont start transaction for scrub if the fs is mounted read-only
+Date:   Mon,  7 Feb 2022 12:05:49 +0100
+Message-Id: <20220207103804.695325273@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -52,39 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Rapoport <rppt@linux.ibm.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit 314c459a6fe0957b5885fbc65c53d51444092880 upstream.
+commit 2d192fc4c1abeb0d04d1c8cd54405ff4a0b0255b upstream.
 
-Since commit 974b9b2c68f3 ("mm: consolidate pte_index() and
-pte_offset_*() definitions") pte_index is a static inline and there is
-no define for it that can be recognized by the preprocessor.  As a
-result, vm_insert_pages() uses slower loop over vm_insert_page() instead
-of insert_pages() that amortizes the cost of spinlock operations when
-inserting multiple pages.
+[BUG]
+The following super simple script would crash btrfs at unmount time, if
+CONFIG_BTRFS_ASSERT() is set.
 
-Link: https://lkml.kernel.org/r/20220111145457.20748-1-rppt@kernel.org
-Fixes: 974b9b2c68f3 ("mm: consolidate pte_index() and pte_offset_*() definitions")
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-Reported-by: Christian Dietrich <stettberger@dokucode.de>
-Reviewed-by: Khalid Aziz <khalid.aziz@oracle.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+ mkfs.btrfs -f $dev
+ mount $dev $mnt
+ xfs_io -f -c "pwrite 0 4k" $mnt/file
+ umount $mnt
+ mount -r ro $dev $mnt
+ btrfs scrub start -Br $mnt
+ umount $mnt
+
+This will trigger the following ASSERT() introduced by commit
+0a31daa4b602 ("btrfs: add assertion for empty list of transactions at
+late stage of umount").
+
+That patch is definitely not the cause, it just makes enough noise for
+developers.
+
+[CAUSE]
+We will start transaction for the following call chain during scrub:
+
+  scrub_enumerate_chunks()
+  |- btrfs_inc_block_group_ro()
+     |- btrfs_join_transaction()
+
+However for RO mount, there is no running transaction at all, thus
+btrfs_join_transaction() will start a new transaction.
+
+Furthermore, since it's read-only mount, btrfs_sync_fs() will not call
+btrfs_commit_super() to commit the new but empty transaction.
+
+And leads to the ASSERT().
+
+The bug has been there for a long time. Only the new ASSERT() makes it
+noisy enough to be noticed.
+
+[FIX]
+For read-only scrub on read-only mount, there is no need to start a
+transaction nor to allocate new chunks in btrfs_inc_block_group_ro().
+
+Just do extra read-only mount check in btrfs_inc_block_group_ro(), and
+if it's read-only, skip all chunk allocation and go inc_block_group_ro()
+directly.
+
+CC: stable@vger.kernel.org # 5.4+
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/pgtable.h |    1 +
- 1 file changed, 1 insertion(+)
+ fs/btrfs/block-group.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/include/linux/pgtable.h
-+++ b/include/linux/pgtable.h
-@@ -62,6 +62,7 @@ static inline unsigned long pte_index(un
- {
- 	return (address >> PAGE_SHIFT) & (PTRS_PER_PTE - 1);
- }
-+#define pte_index pte_index
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -2547,6 +2547,19 @@ int btrfs_inc_block_group_ro(struct btrf
+ 	int ret;
+ 	bool dirty_bg_running;
  
- #ifndef pmd_index
- static inline unsigned long pmd_index(unsigned long address)
++	/*
++	 * This can only happen when we are doing read-only scrub on read-only
++	 * mount.
++	 * In that case we should not start a new transaction on read-only fs.
++	 * Thus here we skip all chunk allocations.
++	 */
++	if (sb_rdonly(fs_info->sb)) {
++		mutex_lock(&fs_info->ro_block_group_mutex);
++		ret = inc_block_group_ro(cache, 0);
++		mutex_unlock(&fs_info->ro_block_group_mutex);
++		return ret;
++	}
++
+ 	do {
+ 		trans = btrfs_join_transaction(fs_info->extent_root);
+ 		if (IS_ERR(trans))
 
 
