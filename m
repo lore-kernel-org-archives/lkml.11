@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C3FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E39C4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:30:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355113AbiBGLZP (ORCPT
+        id S1357482AbiBGLZY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:25:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58876 "EHLO
+        Mon, 7 Feb 2022 06:25:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382498AbiBGLTY (ORCPT
+        with ESMTP id S1382505AbiBGLT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:19:24 -0500
+        Mon, 7 Feb 2022 06:19:26 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0AA9C043188;
-        Mon,  7 Feb 2022 03:19:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A604BC043181;
+        Mon,  7 Feb 2022 03:19:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CE54B81028;
-        Mon,  7 Feb 2022 11:19:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 700E9C004E1;
-        Mon,  7 Feb 2022 11:19:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 666C3B8111C;
+        Mon,  7 Feb 2022 11:19:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88789C340EB;
+        Mon,  7 Feb 2022 11:19:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232760;
-        bh=b/jaS3gZ4GJOd892pMLEgrmPKsoc4pGUo8wjHqVt8EA=;
+        s=korg; t=1644232763;
+        bh=CFaBO+EbxGmw9/Yfmk0ysdAHrDRLa/UwHDHnUYFFR4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kJz7UAgYkvgVymntf4m9n2OY68bmFRQg9Z8gfJtKr7KsrdUK9EQwZcSGAZexlbCXE
-         xVUv7iVaMzyt2c7cH67cDETARNbYBZaBY5iQMZ++Uheav+Is4zc6LZ2ZdAL9X22Bl9
-         wrINzIaS1cEZrgcqiPvOAYOvErmOPic/GpajoIEA=
+        b=TNk6FGrRRkj3wwXfS0/j9RceOQAN1NHwLaDbgj8f4UzGFoMNCijBobJjEqRfe7UaF
+         hKgBt6JHhU8XydpDxXW/AfCDgFslb/up2IJnyS1sTWmTzZSpUVwjyqs0q2cK832HnO
+         qKsgj6ndWQjidPl5vhkGGJ/XAOf0sT6aSQFxX2Vg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 5.4 27/44] net: ieee802154: Return meaningful error codes from the netlink helpers
-Date:   Mon,  7 Feb 2022 12:06:43 +0100
-Message-Id: <20220207103754.043485447@linuxfoundation.org>
+        stable@vger.kernel.org, Lior Nahmanson <liorna@nvidia.com>,
+        Raed Salem <raeds@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 28/44] net: macsec: Verify that send_sci is on when setting Tx sci explicitly
+Date:   Mon,  7 Feb 2022 12:06:44 +0100
+Message-Id: <20220207103754.074785512@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
 References: <20220207103753.155627314@linuxfoundation.org>
@@ -50,61 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Lior Nahmanson <liorna@nvidia.com>
 
-commit 79c37ca73a6e9a33f7b2b7783ba6af07a448c8a9 upstream.
+commit d0cfa548dbde354de986911d3913897b5448faad upstream.
 
-Returning -1 does not indicate anything useful.
+When setting Tx sci explicit, the Rx side is expected to use this
+sci and not recalculate it from the packet.However, in case of Tx sci
+is explicit and send_sci is off, the receiver is wrongly recalculate
+the sci from the source MAC address which most likely be different
+than the explicit sci.
 
-Use a standard and meaningful error code instead.
+Fix by preventing such configuration when macsec newlink is established
+and return EINVAL error code on such cases.
 
-Fixes: a26c5fd7622d ("nl802154: add support for security layer")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-6-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Fixes: c09440f7dcb3 ("macsec: introduce IEEE 802.1AE driver")
+Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Raed Salem <raeds@nvidia.com>
+Link: https://lore.kernel.org/r/1643542672-29403-1-git-send-email-raeds@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ieee802154/nl802154.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/macsec.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -1457,7 +1457,7 @@ static int nl802154_send_key(struct sk_b
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -3247,6 +3247,15 @@ static int macsec_newlink(struct net *ne
  
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
+ 	macsec->real_dev = real_dev;
  
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
-@@ -1650,7 +1650,7 @@ static int nl802154_send_device(struct s
- 
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
- 
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
-@@ -1828,7 +1828,7 @@ static int nl802154_send_devkey(struct s
- 
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
- 
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
-@@ -2004,7 +2004,7 @@ static int nl802154_send_seclevel(struct
- 
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
- 
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
++	/* send_sci must be set to true when transmit sci explicitly is set */
++	if ((data && data[IFLA_MACSEC_SCI]) &&
++	    (data && data[IFLA_MACSEC_INC_SCI])) {
++		u8 send_sci = !!nla_get_u8(data[IFLA_MACSEC_INC_SCI]);
++
++		if (!send_sci)
++			return -EINVAL;
++	}
++
+ 	if (data && data[IFLA_MACSEC_ICV_LEN])
+ 		icv_len = nla_get_u8(data[IFLA_MACSEC_ICV_LEN]);
+ 	mtu = real_dev->mtu - icv_len - macsec_extra_len(true);
 
 
