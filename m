@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31205C35276
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 276C4C3527E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382684AbiBGLUn (ORCPT
+        id S1382962AbiBGLVP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:20:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53766 "EHLO
+        Mon, 7 Feb 2022 06:21:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377777AbiBGLPi (ORCPT
+        with ESMTP id S1378393AbiBGLPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:38 -0500
+        Mon, 7 Feb 2022 06:15:50 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9416BC0401F2;
-        Mon,  7 Feb 2022 03:15:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3BCC03FEE8;
+        Mon,  7 Feb 2022 03:15:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EED686140C;
-        Mon,  7 Feb 2022 11:15:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6614C340EB;
-        Mon,  7 Feb 2022 11:15:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCA0C6113B;
+        Mon,  7 Feb 2022 11:15:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2460C004E1;
+        Mon,  7 Feb 2022 11:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232515;
-        bh=nE1n+sYB/6tK0H31pEAPox5TGZ1MxQk8Tj9aFsa/z74=;
+        s=korg; t=1644232530;
+        bh=2OOCeYXrVO5I2xFEe1arKQB7R0jBUJ86hcpONKyUaUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sEZpEr1wJ40JvgX3vMACWQI6kWrOm5ip/POY0L0GDJhUWzju9r6ZEiYRIBZL7d9Fl
-         Ui4GBoI4tLGH/V6bUBZnnA1mHWcznWUG8612ojF7U9WG2FhehUsOv0rtpdEcHf35R7
-         6oFZOV11SHgUNHW1Bdd/t9J71sbIjkpzHjAv6djc=
+        b=sBBVUiQIBmGhpxNd1dSxkMMFxIEwbxJWPhH286x66Qhhz3D+JTOmZnxqm/ZcpO/wM
+         IxsxryPQIGTtEBlTufbDLj4r6L4MIrKawdQ++zVqQR9lEdmU5gs1HNmHzQHL7VmGIH
+         4D4inhjXVhBRn0sZ6iAxZX/PdBXxHJP0x56OtBA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 35/86] drm/msm: Fix wrong size calculation
-Date:   Mon,  7 Feb 2022 12:05:58 +0100
-Message-Id: <20220207103758.680625641@linuxfoundation.org>
+Subject: [PATCH 4.19 40/86] phylib: fix potential use-after-free
+Date:   Mon,  7 Feb 2022 12:06:03 +0100
+Message-Id: <20220207103758.845485398@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -51,42 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+From: Marek Behún <kabel@kernel.org>
 
-commit 0a727b459ee39bd4c5ced19d6024258ac87b6b2e upstream.
+[ Upstream commit cbda1b16687580d5beee38273f6241ae3725960c ]
 
-For example, memory-region in .dts as below,
-	reg = <0x0 0x50000000 0x0 0x20000000>
+Commit bafbdd527d56 ("phylib: Add device reset GPIO support") added call
+to phy_device_reset(phydev) after the put_device() call in phy_detach().
 
-We can get below values,
-struct resource r;
-r.start = 0x50000000;
-r.end	= 0x6fffffff;
+The comment before the put_device() call says that the phydev might go
+away with put_device().
 
-So the size should be:
-size = r.end - r.start + 1 = 0x20000000
+Fix potential use-after-free by calling phy_device_reset() before
+put_device().
 
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Fixes: 072f1f9168ed ("drm/msm: add support for "stolen" mem")
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220112123334.749776-1-xianting.tian@linux.alibaba.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bafbdd527d56 ("phylib: Add device reset GPIO support")
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220119162748.32418-1-kabel@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_drv.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/phy_device.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -388,7 +388,7 @@ static int msm_init_vram(struct drm_devi
- 		of_node_put(node);
- 		if (ret)
- 			return ret;
--		size = r.end - r.start;
-+		size = r.end - r.start + 1;
- 		DRM_INFO("using VRAM carveout: %lx@%pa\n", size, &r.start);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index b884b681d5c52..a03d0627efb06 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1166,6 +1166,9 @@ void phy_detach(struct phy_device *phydev)
+ 	    phydev->mdio.dev.driver == &genphy_driver.mdiodrv.driver)
+ 		device_release_driver(&phydev->mdio.dev);
  
- 		/* if we have no IOMMU, then we need to use carveout allocator.
++	/* Assert the reset signal */
++	phy_device_reset(phydev, 1);
++
+ 	/*
+ 	 * The phydev might go away on the put_device() below, so avoid
+ 	 * a use-after-free bug by reading the underlying bus first.
+@@ -1175,9 +1178,6 @@ void phy_detach(struct phy_device *phydev)
+ 	put_device(&phydev->mdio.dev);
+ 	if (ndev_owner != bus->owner)
+ 		module_put(bus->owner);
+-
+-	/* Assert the reset signal */
+-	phy_device_reset(phydev, 1);
+ }
+ EXPORT_SYMBOL(phy_detach);
+ 
+-- 
+2.34.1
+
 
 
