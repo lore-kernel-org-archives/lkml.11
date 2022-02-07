@@ -2,117 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCAFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C73C3526C
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343906AbiBHBG0 (ORCPT
+        id S1343919AbiBHBGe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:06:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48958 "EHLO
+        Mon, 7 Feb 2022 20:06:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343872AbiBHAA7 (ORCPT
+        with ESMTP id S237274AbiBHABK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 19:00:59 -0500
-X-Greylist: delayed 406 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 16:00:55 PST
-Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF1FCC0612A4;
-        Mon,  7 Feb 2022 16:00:55 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id 5FB362B001F4;
-        Mon,  7 Feb 2022 18:54:06 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 07 Feb 2022 18:54:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; bh=7T1gb9q/dG3+e+
-        HVYc4URRtl0zI51K/MI/cYy1EcerM=; b=SDYv224gBZ5TT66LpyAI9ivK3tYsVZ
-        GBDiKxzdAELBE+LHIad5qxjwoVvgShjRZqvs1T+iE1ug4DfXaHnPXWqu3w3dW6iS
-        VWYhOUl/EqRiKCBjT+8acRD/NDUoFmg5rDbRyxEem25KtRpeEtsIn3OmVvQ1o06O
-        /uqL4Hxvu1eOldEvKivAb8tYgEdUAQSxU1Mkq6qXmntsEwnrRGo26NV31u68KB62
-        pUUkKRlaMcTRtlWJ21rw2p46tK/w0LVXTHjN6vY6X7GLaePGA86U3dyc2+cE58bi
-        p4llC4FgLAdhQXgDDIqSD7J/XMQiPkeJqz7AKEjiOTDKs39DBr95K10g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=7T1gb9q/dG3+e+HVYc4URRtl0zI51K/MI/cYy1Ece
-        rM=; b=dLl3ZpuPFU64fHFzudMdRGhNEh23o8k+blqkqXrk485ZDHglhYjDWyueC
-        5REvXvS1FtUvdEeK4if4sRQffIpOKH7TEaO+zUNr+oqz4k5vHKGcV3VWNNpmM1mx
-        NX5EkDA1FyaHWQTEKowbGpsbqvyhCJM9q55+c3e1dOLBzDS4VXQQM2f0ZrUZ3vnL
-        m4BPwW+hlb7MdHrWwZc6R/Pq7jca+ihKDFWK59yYtCMUr5CdDixJsYXdhTX9L/es
-        yqH0pAQTvLaBul6yAU/SIpiJLEYxfAGmIw6zcqG7DMHNGiLMp1yDaSbNwN/o/Gmz
-        H2HlSD5bqBi3RplwL/SnkD0wD0KUQ==
-X-ME-Sender: <xms:HLEBYg6jw33gP6tAXBkbbBPNm4gGLbfE98ysR-hGoL_Ozu60Rylstw>
-    <xme:HLEBYh4dqQ3adV6Qd1t2gCrgiDnlBoAzzy10EMDTx_34cils8jIJ2dFvr7LpOjpgw
-    OkkCQNwtrwns3djTA>
-X-ME-Received: <xmr:HLEBYvexMpT1Ym7Mbdz_UUlt-gJcQg9yRVtICaIGsb8uWm1ySPLnl9dFPKc6UB_tgm8zQRI_kif1DqEn5HzNmLdboZvH6x0-qMysB0BXYv2pXglTTIPAfvhT_w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheeigddugecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefuvfhfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghmuhgv
-    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpefgveffteelheffjeeukedvkedviedtheevgeefkeehueeiieeuteeu
-    gfettdeggeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:HLEBYlIcESxYubPnsfJoYBFrpQV7Eca9oPiwAtrBPV0poWN-8a0Tew>
-    <xmx:HLEBYkJ_lpYGg0JrkD8SfUuIEutebjO3VnO7aYSFpLvmu_rCRQzf0w>
-    <xmx:HLEBYmwXKGJNpft6ZS79msn9_tfLg7HwdqRIBM_EBdjbuyZTxtrRXg>
-    <xmx:HbEBYnZPQRdSjNs7ec0qiolHyDVZ8LMFS3OghivBTbNnBGrprWFMS9OcNV8>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 7 Feb 2022 18:54:03 -0500 (EST)
-Subject: Re: (subset) [PATCH v3 5/6] clk: sunxi-ng: Add support for the sun6i
- RTC clocks
-To:     Maxime Ripard <maxime@cerno.tech>, Chen-Yu Tsai <wens@csie.org>,
-        linux-sunxi@lists.linux.dev, Maxime Ripard <mripard@kernel.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     Stephen Boyd <sboyd@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Alessandro Zummo <a.zummo@towertech.it>
-References: <20220203021736.13434-1-samuel@sholland.org>
- <20220203021736.13434-6-samuel@sholland.org>
- <164422443570.21572.13511859513410998733.b4-ty@cerno.tech>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <bb05bc64-2a9e-fe21-5a69-0ea31134e978@sholland.org>
-Date:   Mon, 7 Feb 2022 17:54:02 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Mon, 7 Feb 2022 19:01:10 -0500
+X-Greylist: delayed 1405 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 16:01:09 PST
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E75C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 16:01:08 -0800 (PST)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 217H4HOE018958;
+        Mon, 7 Feb 2022 15:37:34 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=date : from : to :
+ cc : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pfpt0220; bh=2GtHM1eGlNpKVq9KM0Vi+3v3pnVheuIZbnPmvAsFOu8=;
+ b=fMyxtERUTt+89o/sRVLzAKt3hXqZX4xbP9xtb0CLUVOAp2qx7voNVvDxE3c4eOz97EgK
+ Vk2M2Qz4DPPYxqCTTRwaZbrfoe5EUeJkDWd3/H7v0B7AEQeQBm3jHT90n8UCQ6kU5CWl
+ /a7FBvorPRDWda9aQzyU22t57Ig6iwPcqc/B30z1d2DI1li/m2aHvBKyh0WURfE0nttu
+ qg+7JE7CfbAXJXWODnbF1UfY1x+Fovqer++zJ2bXA6PcFs6TMVF850XozvonpbQCV8xN
+ jSo4asgU/JIrSGqGVYw5tTzsJVud8t4jsrFLXHQL97Oa60oY1bdCWyomoQ8zvDr3qiZH lQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3e3095unuf-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 15:37:34 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 7 Feb
+ 2022 15:37:33 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 7 Feb 2022 15:37:33 -0800
+Received: from proliant-dl360 (unknown [10.110.150.170])
+        by maili.marvell.com (Postfix) with ESMTP id E5ADA3F7078;
+        Mon,  7 Feb 2022 15:37:32 -0800 (PST)
+Date:   Mon, 7 Feb 2022 15:37:32 -0800
+From:   Wojciech Bartczak <wbartczak@marvell.com>
+To:     Sudeep Holla <sudeep.holla@arm.com>
+CC:     <cristian.marussi@arm.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <sbalcerak@marvell.com>
+Subject: Re: Mixing SCMI and ACPI?
+Message-ID: <20220207233732.GA4824@proliant-dl360>
+References: <20220204142150.glsu6ujjtqpcktjp@bogus>
+ <20220204181641.28176-1-wbartczak@marvell.com>
+ <20220207101024.rpcbbhtd6y6g7ykc@bogus>
 MIME-Version: 1.0
-In-Reply-To: <164422443570.21572.13511859513410998733.b4-ty@cerno.tech>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220207101024.rpcbbhtd6y6g7ykc@bogus>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-ORIG-GUID: MT4SyCfZZNZDlzTiGLYPNH1Cpr03qfS7
+X-Proofpoint-GUID: MT4SyCfZZNZDlzTiGLYPNH1Cpr03qfS7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_07,2022-02-07_02,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maxime,
-
-On 2/7/22 3:00 AM, Maxime Ripard wrote:
-> On Wed, 2 Feb 2022 20:17:35 -0600, Samuel Holland wrote:
->> The RTC power domain in sun6i and newer SoCs manages the 16 MHz RC
->> oscillator (called "IOSC" or "osc16M") and the optional 32 kHz crystal
->> oscillator (called "LOSC" or "osc32k"). Starting with the H6, this power
->> domain also handles the 24 MHz DCXO (called variously "HOSC", "dcxo24M",
->> or "osc24M") as well. The H6 also adds a calibration circuit for IOSC.
->>
->> Later SoCs introduce further variations on the design:
->>  - H616 adds an additional mux for the 32 kHz fanout source.
->>  - R329 adds an additional mux for the RTC timekeeping clock, a clock
->>    for the SPI bus between power domains inside the RTC, and removes the
->>    IOSC calibration functionality.
->>
->> [...]
+On Mon, Feb 07, 2022 at 10:10:24AM +0000, Sudeep Holla wrote:
+> On Fri, Feb 04, 2022 at 10:16:41AM -0800, Wojciech Bartczak wrote:
+> >
+> > I should've explained it slightly better. Of course SCMI does great work
+> > when managing the clocks. However, what the intent here is the SCMI
+> > clocks register itself nicely into common clk framework.
+> > I don't intend to change the clock. SCP in my case is invariant source.
+> > Hence, no need for ASL methods. I just want to read given clock and have it
+> > registered in clk framework.
+> > Reason for that is simple, there's a good code in SCMI. I don't
+> > want to create own driver for that. I just have to be able to start SCMI
+> > when only source of hardware information is ACPI/UEFI.
+> >
 > 
-> Applied to local tree (sunxi/clk-for-5.18).
+> I don't agree, more details below.
+> 
+> > This is still most specific thing I could have found on the internet.
+> > So, to clear up the clouds about my idea.
+> >
+> > I have platform with UEFI/ACPI only. I want my clocks to be registered.
+> 
+> Just to read clock rates ?
+> 
+> > So, I use SCMI. The framework needs bindings for proper registration.
+> > Instead using DT approach:
+> >
+> > firmware {
+> > 	scmi {
+> > 		compatible = "arm-scmi";
+> > 		/* ... */
+> >
+> > 		clks: protocol@14 {
+> > 			reg = <0x14>;
+> > 			#clock-cells = <1>;
+> > 		}
+> > 	}
+> > }
+> >
+> > I add ACPI match table to SCMI code and present it with matching ACPI
+> > tables. It might look like this:
+> >
+> > Scope (_SB) {
+> > 	Device (ARMSCMI) {
+> > 		Name (_HID, "ASCM0001")
+> > 		Name (_UID, 0)
+> >
+> > 		Method (_STA) {
+> > 			Return (0xF)
+> > 		}
+> >
+> > 		Device (CLKS) {
+> > 			Name (_ADR, 0x14)
+> > 			Name (_UID, 0)
+> >
+> > 			Method (_STA) {
+> > 				Return (0xF)
+> > 			}
+> > 		}
+> > 	}
+> > }
+> >
+> 
+> A *BIG FAT NACK* for this approach. SCMI is not intended to be used like
+> this on ACPI. Since ACPI has not support for clocks, you can't just do
+> something like above for clocks and rest of the SCMI support in the standard
+> ACPI methods. 
+> 
+> > Then SCMI registers the clocks protocol and does remaining magic.
+> >
+> 
+> Sure, but what is the issue if you don't have this SCMI clock support
+> in ACPI system ? Can you provide details as what is failing ?
+> 
+I have at least one driver that requires the clock information to do
+fancy tuning and clocks division 'drivers/mmc/host/cavium*.[ch]'.
+Without the clock info MMC driver is useless. Moreover clock is configurable,
+so I can't stick with sane default. That said, this is no on the Kernel
+to solve, but on me and the IP designer :). Btw. this is just example,
+there are more gems in this crown.
 
-Part of the build failures were because this patch depends on patch 3. Is that
-okay, or should I update this patch to be independent?
+I understand my approach is convoluted. I also don't agree with it
+completely. The goal was to have SCMI to minimize porting effort for
+some drivers (MMC). At least until full ACPI implementation.
+Mostly the ones that use the common clk framework.
+Additionally, maybe have some extras for the platform.
+SCMI could provide clocks, drivers can read it as usually.
+Nevertheless, more I think about it then more I see all the nasty side
+effects of this approach. I completely agree with NACK here.
 
-Regards,
-Samuel
+Over a weekend I did additional research. I have found this post
+
+https://lore.kernel.org/lkml/CABe79T6zQ_7Ycws5b=xaQ3edpVn1QPQyWd9p24eqLGpYbdtt0A@mail.gmail.com/#t
+
+(Thanks Google for keeping it on 10th page).
+
+This sheds some light on the topic. I was able to put my hands on
+"Server Base System Architecture" and "Arm Base Boot Requirements".
+This gives me extra ideas how to proceed.
+
+Thank you for your help here! I think I will drop the topic at this
+moment.
+
+Kind regards,
+Wojciech.
+
+> --
+> Regards,
+> Sudeep
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
