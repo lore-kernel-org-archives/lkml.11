@@ -2,76 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88602C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87602C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243454AbiBGWEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 17:04:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
+        id S243518AbiBGWHb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 17:07:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243436AbiBGWEM (ORCPT
+        with ESMTP id S230345AbiBGWHa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 17:04:12 -0500
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47BD0C061355;
-        Mon,  7 Feb 2022 14:04:12 -0800 (PST)
-Received: by mail-oi1-f181.google.com with SMTP id r27so18606724oiw.4;
-        Mon, 07 Feb 2022 14:04:12 -0800 (PST)
+        Mon, 7 Feb 2022 17:07:30 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227D9C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 14:07:29 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id h14-20020a17090a130e00b001b88991a305so380189pja.3
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 14:07:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZHETUekZPTtiHL5dMF4kZArX4bJsrtlJFkqOqsn+FVY=;
+        b=oKWNQblaJu1yOsLu4STWKuV7RV2fT2/zNxeMtrOCPfNj1cn3ZXsol7tMwK9w46Q18C
+         cmC1B2ov7GsZSNsvnEx97u8JPMffXZuo7C8GWBN+I7Bl+aeS9uXsoERTPw3sjlbjBAQH
+         MnBYFj987d1rgQirvwEbq4bIs/hXaCN+c5Jwc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Q/wggRenO/vzVBS70QLnVZiNuU5fxQ5DeAwQ15+x+oU=;
-        b=DJLs3M/Nv3lDB21M0EaNn+2iR1yXn7AlF+h9tiwxg2Vhsfow7Y8YmB50HfR7kI7Fl4
-         uxGszlxmjy34xxHNbClyqrOQE47aR4E6Eh8VVdKPjMTbPqDsYE3aLhqSxzVqOZzRawEX
-         C9xtea5DAFiM8nANuz+Zo+YqA64tbjBRI84elGyFom5Oba+/MYoEB8G41j3o/JSPZFEb
-         NLHi8UG4JURSmM0gKVVVYMKgDwjp9mbuWOCjF2VQU4jM5QEIve6WR0nAWWyh1hlJgZeB
-         H7g5OXoJ5YW3hoKRhZKaEyMpWK7d9HBU4qksvFxGunTNBwSLkY+FuGsZirNC1vMgcDzL
-         2hEg==
-X-Gm-Message-State: AOAM533Qk4lbgM0mK0OUpHltOhR7tAt9ulUqZLR7H4mpT9sJAdS3PL4r
-        vNgLpy61GTer9HdZsrvZsg==
-X-Google-Smtp-Source: ABdhPJx2GaomN8+6iVxLTWHVeOW8B30rYogggWW6K4pN5aer58lexokJMRHrT3DHesQ//EEEmHQ8UQ==
-X-Received: by 2002:a05:6808:252:: with SMTP id m18mr465112oie.285.1644271451568;
-        Mon, 07 Feb 2022 14:04:11 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id h17sm4516681otn.60.2022.02.07.14.04.10
+        bh=ZHETUekZPTtiHL5dMF4kZArX4bJsrtlJFkqOqsn+FVY=;
+        b=RxC5ek1xq1ckju6GIMPEaM3gSVtlpZSa0EcYU8cTB585UAqMwYXcu59xMrQ7k1cdas
+         UXnB/t6Uyji0h2O6AUhYSmRzj4CKV6KHHBVWZVhDKOzRcqn6XLQmFEFA2RjfrhIn4xFx
+         2Ohz8JaOa13A+Vjovd6ceEjPeGijO/GnDcq+S3gR7D4z4E8Jth7uKOrTGgOrhoRpkF1u
+         Matb8DOZ8aUTbXlRAEEfBxws+gCzFW1n1wpPdeiOL1eKNZnhJrvDt09+FdRbU56jtC5W
+         WaDYYqZK3L0ujqSrKyHiILEmehYtLnzkBpKhERNjXglzD5B+XmR+1D+S0Wqq4lE3YYqG
+         Q0uw==
+X-Gm-Message-State: AOAM533fGNvJEGiI1voq54DYr0Yk7UuXZpPHB0V3Kk8GM/19M9NktkpC
+        RKNIrrkO+YWDk7KqM0MV1l66lg==
+X-Google-Smtp-Source: ABdhPJzjIAsDyYY5YOWIeBIgXI9qB9X68AvdHC603QccGBlLr5nREvFhNoZFmxCBwu6mtYnRcCumlg==
+X-Received: by 2002:a17:902:f1cb:: with SMTP id e11mr1683411plc.48.1644271648558;
+        Mon, 07 Feb 2022 14:07:28 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id s11sm13819879pfu.58.2022.02.07.14.07.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 14:04:10 -0800 (PST)
-Received: (nullmailer pid 1006262 invoked by uid 1000);
-        Mon, 07 Feb 2022 22:04:09 -0000
-Date:   Mon, 7 Feb 2022 16:04:09 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Henrik Grimler <henrik@grimler.se>
-Cc:     martin.juecker@gmail.com, cw00.choi@samsung.com,
-        virag.david003@gmail.com, robh+dt@kernel.org,
-        semen.protsenko@linaro.org, devicetree@vger.kernel.org,
-        krzysztof.kozlowski@canonical.com,
-        linux-samsung-soc@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, alim.akhtar@samsung.com,
-        linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] dt-bindings: arm: samsung: document chagallwifi
- board binding
-Message-ID: <YgGXWcW2s/yMdPr3@robh.at.kernel.org>
-References: <20220115162703.699347-1-henrik@grimler.se>
- <20220115162703.699347-2-henrik@grimler.se>
+        Mon, 07 Feb 2022 14:07:28 -0800 (PST)
+Date:   Mon, 7 Feb 2022 14:07:27 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>
+Subject: Re: [PATCH v2 3/6] x86/cpu: Remove CONFIG_X86_SMAP and "nosmap"
+Message-ID: <202202071405.FB72C07@keescook>
+References: <20220127115626.14179-1-bp@alien8.de>
+ <20220127115626.14179-4-bp@alien8.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220115162703.699347-2-henrik@grimler.se>
+In-Reply-To: <20220127115626.14179-4-bp@alien8.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 15 Jan 2022 17:27:01 +0100, Henrik Grimler wrote:
-> Add binding for Samsung Galaxy Tab S 10.5", based on Exynos 5420 with
-> codename chagallwifi. It was released in 2014 and has several siblings
-> with similar hardware.
+On Thu, Jan 27, 2022 at 12:56:23PM +0100, Borislav Petkov wrote:
+> From: Borislav Petkov <bp@suse.de>
 > 
-> Signed-off-by: Henrik Grimler <henrik@grimler.se>
+> Those were added as part of the SMAP enablement but SMAP is currently
+> an integral part of kernel proper and there's no need to disable it
+> anymore.
+> 
+> Rip out that functionality.
+> 
+> If still needed - clearcpuid=smap.
+> 
+> Signed-off-by: Borislav Petkov <bp@suse.de>
+> Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
 > ---
->  .../devicetree/bindings/arm/samsung/samsung-boards.yaml          | 1 +
->  1 file changed, 1 insertion(+)
-> 
+>  .../admin-guide/kernel-parameters.txt         |  2 +-
+>  Documentation/x86/cpuinfo.rst                 |  5 ++--
+>  arch/x86/Kconfig                              | 11 ---------
+>  arch/x86/include/asm/disabled-features.h      |  8 +------
+>  arch/x86/include/asm/smap.h                   | 24 -------------------
+>  arch/x86/kernel/cpu/common.c                  | 15 +-----------
+>  scripts/Makefile.build                        |  1 -
+>  scripts/link-vmlinux.sh                       |  3 ---
+>  .../arch/x86/include/asm/disabled-features.h  |  8 +------
+>  9 files changed, 6 insertions(+), 71 deletions(-)
+> [...]
+> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> index a4b89b757287..9b37902607ed 100644
+> --- a/scripts/Makefile.build
+> +++ b/scripts/Makefile.build
+> @@ -233,7 +233,6 @@ objtool_args =								\
+>  	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+>  	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
+>  	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+> -	$(if $(CONFIG_X86_SMAP), --uaccess)				\
+>  	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+>  	$(if $(CONFIG_SLS), --sls)
+>  
+> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> index 666f7bbc13eb..8547aaa1a630 100755
+> --- a/scripts/link-vmlinux.sh
+> +++ b/scripts/link-vmlinux.sh
+> @@ -140,9 +140,6 @@ objtool_link()
+>  		if is_enabled CONFIG_RETPOLINE; then
+>  			objtoolopt="${objtoolopt} --retpoline"
+>  		fi
+> -		if is_enabled CONFIG_X86_SMAP; then
+> -			objtoolopt="${objtoolopt} --uaccess"
+> -		fi
+>  		if is_enabled CONFIG_SLS; then
+>  			objtoolopt="${objtoolopt} --sls"
+>  		fi
 
-Acked-by: Rob Herring <robh@kernel.org>
+I was expecting to see --uaccess unconditionally added to objtool
+arguments. I think that needs to happen?
+
+-- 
+Kees Cook
