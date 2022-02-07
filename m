@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8198CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DB2C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383385AbiBGLWX (ORCPT
+        id S1383397AbiBGLWZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:22:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55652 "EHLO
+        Mon, 7 Feb 2022 06:22:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381962AbiBGLRo (ORCPT
+        with ESMTP id S1381938AbiBGLRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:17:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6D9C0401C3;
-        Mon,  7 Feb 2022 03:17:43 -0800 (PST)
+        Mon, 7 Feb 2022 06:17:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249EAC03FEC4;
+        Mon,  7 Feb 2022 03:17:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54222B81028;
-        Mon,  7 Feb 2022 11:17:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 834B1C004E1;
-        Mon,  7 Feb 2022 11:17:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D15461314;
+        Mon,  7 Feb 2022 11:17:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A90C3C004E1;
+        Mon,  7 Feb 2022 11:17:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232661;
-        bh=72vwZ6kvzEMAGleLWY/VTPiDOeZhPnE8/1zmPpNqG64=;
+        s=korg; t=1644232658;
+        bh=qsiRW50ItvfqNk39rx4iQNL2zPEHh9RQigQRJslqeGE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NdpK2FzaK48UqZN4AspslELwEVKvXZ9DJYLuyjalVMniPgt8/rYtn8pckqXgFBs6j
-         eLKRx5jp5CH7JRARP9u1sDOWaTxqBvRaZXDxRRvxwAHIdEMrijIZ8ZMpn61IgeRuv8
-         DQXbjrrDvPDCNQyf1b5wKRWXHtFMzYA0bCcNGw4c=
+        b=PXMBtdcLtPW8Y4M+3FXfwaAKhYuAJSBMH0yOK5Gd+QgLwkplQ+XMso3Goueac3R19
+         jUgegMCSLfVzjqQK7DHa1NZBF6EqfCLoEbXnxXRAAhVdNxzn0vVMx837XY0AQjpwIx
+         lC6c3zAmmkBCuJbv4qCHhBtWEVIWLgsbEbduMFvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH 4.19 82/86] selftests: futex: Use variable MAKE instead of make
-Date:   Mon,  7 Feb 2022 12:06:45 +0100
-Message-Id: <20220207103800.378114752@linuxfoundation.org>
+        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Bruce Fields <bfields@fieldses.org>
+Subject: [PATCH 4.19 81/86] nfsd: nfsd4_setclientid_confirm mistakenly expires confirmed client.
+Date:   Mon,  7 Feb 2022 12:06:44 +0100
+Message-Id: <20220207103800.339431786@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -51,43 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+From: Dai Ngo <dai.ngo@oracle.com>
 
-commit b9199181a9ef8252e47e207be8c23e1f50662620 upstream.
+commit ab451ea952fe9d7afefae55ddb28943a148247fe upstream.
 
-Recursive make commands should always use the variable MAKE, not the
-explicit command name ‘make’. This has benefits and removes the
-following warning when multiple jobs are used for the build:
+>From RFC 7530 Section 16.34.5:
 
-make[2]: warning: jobserver unavailable: using -j1.  Add '+' to parent make rule.
+o  The server has not recorded an unconfirmed { v, x, c, *, * } and
+   has recorded a confirmed { v, x, c, *, s }.  If the principals of
+   the record and of SETCLIENTID_CONFIRM do not match, the server
+   returns NFS4ERR_CLID_INUSE without removing any relevant leased
+   client state, and without changing recorded callback and
+   callback_ident values for client { x }.
 
-Fixes: a8ba798bc8ec ("selftests: enable O and KBUILD_OUTPUT")
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Reviewed-by: André Almeida <andrealmeid@collabora.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+The current code intends to do what the spec describes above but
+it forgot to set 'old' to NULL resulting to the confirmed client
+to be expired.
+
+Fixes: 2b63482185e6 ("nfsd: fix clid_inuse on mount with security change")
+Signed-off-by: Dai Ngo <dai.ngo@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reviewed-by: Bruce Fields <bfields@fieldses.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/futex/Makefile |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/nfsd/nfs4state.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/futex/Makefile
-+++ b/tools/testing/selftests/futex/Makefile
-@@ -11,7 +11,7 @@ all:
- 	@for DIR in $(SUBDIRS); do		\
- 		BUILD_TARGET=$(OUTPUT)/$$DIR;	\
- 		mkdir $$BUILD_TARGET  -p;	\
--		make OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
-+		$(MAKE) OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
- 		if [ -e $$DIR/$(TEST_PROGS) ]; then \
- 			rsync -a $$DIR/$(TEST_PROGS) $$BUILD_TARGET/; \
- 		fi \
-@@ -32,6 +32,6 @@ override define CLEAN
- 	@for DIR in $(SUBDIRS); do		\
- 		BUILD_TARGET=$(OUTPUT)/$$DIR;	\
- 		mkdir $$BUILD_TARGET  -p;	\
--		make OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
-+		$(MAKE) OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
- 	done
- endef
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -3446,8 +3446,10 @@ nfsd4_setclientid_confirm(struct svc_rqs
+ 			status = nfserr_clid_inuse;
+ 			if (client_has_state(old)
+ 					&& !same_creds(&unconf->cl_cred,
+-							&old->cl_cred))
++							&old->cl_cred)) {
++				old = NULL;
+ 				goto out;
++			}
+ 			status = mark_client_expired_locked(old);
+ 			if (status) {
+ 				old = NULL;
 
 
