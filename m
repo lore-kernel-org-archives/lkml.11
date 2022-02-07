@@ -2,88 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD56C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B6FC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243394AbiBGOSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:18:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
+        id S1388892AbiBGOS7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 09:18:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390703AbiBGN7q (ORCPT
+        with ESMTP id S1382419AbiBGOHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:59:46 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DE8C0401C1;
-        Mon,  7 Feb 2022 05:59:45 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id r29so7007928wrr.13;
-        Mon, 07 Feb 2022 05:59:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mcWbPuUD9zG5TmO7Q6+xyivnOj6cc3M0HEAfvxU+7N0=;
-        b=itcITwBvp8aqCL8K9Inahp3hlAut70WgrUe2y7ZIrA9VKxPz5YUyvnE3a6pyDhe7A5
-         9vh8ylalPe4+CfW7VnQE6FYt0nWmKLEUUimUbA5rYZRjK6R/yR/rnCzDMvMwOGqwR/Zi
-         hZMn8ocr5DmpXhxBGcPQUF59bHnfxyRNzw9w21vKyd8f6n3YNIgvLlDsCdVZB41xbJNh
-         rOJIDTfuOSzYS4lLL/sIW6fSo6jCT0OF5a+UjFIc0coPFk15bf2HDT8tVKRWAPjCj7yU
-         YgAlaJkL6dDuWNxsVtQu0zHa2myy9fMZ2AJufcculCPCgrzfcE7r/xpAKnBJUON6DL2u
-         CeEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mcWbPuUD9zG5TmO7Q6+xyivnOj6cc3M0HEAfvxU+7N0=;
-        b=j3Gl14xoooPcjP0mo/aGRjYZL25QLYbD8byGfeFDpuxkgVYIOxjTyV1EpWTsHp97x3
-         9BG808HY0RBpvkxum89K7bU4RcCqKN9ay+VFYVQ9Hh7M7BryB2a1DApk4pR5hBB9OOdX
-         ioGI0nLq+kcxC1UgDfVzdduWUmI+vK+lzSQuR4+CNU+QFuLAtOp/CF2YWEFUDjw1FfX5
-         LmbreM0KP1wZSVFa8gZ52vLlgvjaJeCJP3jDCNgtajD6qL0UumEO7PfunoNbN4y3TeVH
-         D3iujowfkeqao+weeGKMWzUlWXX7fRQ8CPDmelrNC4y5ZllZxMbb64ibm5TOGJa2O4h7
-         1/+A==
-X-Gm-Message-State: AOAM533WlbpllNtbtjjP7s2C9OjNbhHQkAMrWVyQy0y9XUaqRwwV/4bZ
-        t7vsNoT4FMNpVxyXuWUq7Yfodq/3WGA=
-X-Google-Smtp-Source: ABdhPJwoYphSKekOyNfRZroxq98own7clIJ9kHg2JAwpfGVrwxrfnBnu7pYQNCeL7DH24pgwwfvC9g==
-X-Received: by 2002:adf:f312:: with SMTP id i18mr9978656wro.441.1644242384384;
-        Mon, 07 Feb 2022 05:59:44 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id x7sm9910183wrt.77.2022.02.07.05.59.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 05:59:43 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: cpcap-adc: remove redundant assignment to variable cal_data_diff
-Date:   Mon,  7 Feb 2022 13:59:43 +0000
-Message-Id: <20220207135943.340629-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Feb 2022 09:07:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48E9C043189
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:07:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F5BB6132E
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 14:07:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AA00C004E1;
+        Mon,  7 Feb 2022 14:07:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644242833;
+        bh=lRjIYWVVdIi/4oqqXti673TN17KrAL49hwRnJtI+lUc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W5+4Nf4DbH3YHb9kwcPqwKDppYH4O/O1/E6SlLBri9Bz+fDlZw/hNITLiUKTJDQYt
+         7uS2RQtYsT2uFp1wMLNocY9REqlBasjvv5PjBskYkLZUACGBNqA3s0YwTNNKUCT2Sh
+         XxR8cHt9vgJzbK2N1KFH601rSS1kElxOZEoMQ6EI=
+Date:   Mon, 7 Feb 2022 15:07:11 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Alexander Komrakov <alexander.komrakov@broadcom.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] Calculate the monotonic clock from the timespec
+ clock to generate PPS elapsed real-time event value and stores the result
+ into /sys/class/pps/pps0/assert_elapsed.
+Message-ID: <YgEnj/XeOMzvsNh1@kroah.com>
+References: <20211118032217.244985-1-alexander.komrakov@broadcom.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211118032217.244985-1-alexander.komrakov@broadcom.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The variable cal_data_diff is being assigned a value that is never read,
-it is being re-assigned later on with a new value in both paths of an
-if statement. The assignment is redundant, so remove it.
+On Wed, Nov 17, 2021 at 07:22:16PM -0800, Alexander Komrakov wrote:
+> -- 
+> This electronic communication and the information and any files transmitted 
+> with it, or attached to it, are confidential and are intended solely for 
+> the use of the individual or entity to whom it is addressed and may contain 
+> information that is confidential, legally privileged, protected by privacy 
+> laws, or otherwise restricted from disclosure to anyone else. If you are 
+> not the intended recipient or the person responsible for delivering the 
+> e-mail to the intended recipient, you are hereby notified that any use, 
+> copying, distributing, dissemination, forwarding, printing, or copying of 
+> this e-mail is strictly prohibited. If you received this e-mail in error, 
+> please return the e-mail to the sender, delete it from your computer, and 
+> destroy any printed copy of it.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/iio/adc/cpcap-adc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/adc/cpcap-adc.c b/drivers/iio/adc/cpcap-adc.c
-index 40e59f4c95bc..b6c4ef70484e 100644
---- a/drivers/iio/adc/cpcap-adc.c
-+++ b/drivers/iio/adc/cpcap-adc.c
-@@ -474,7 +474,7 @@ static int cpcap_adc_calibrate_one(struct cpcap_adc *ddata,
- 	for (i = 0; i < CPCAP_ADC_MAX_RETRIES; i++) {
- 		calibration_data[0]  = 0;
- 		calibration_data[1]  = 0;
--		cal_data_diff = 0;
-+
- 		cpcap_adc_setup_calibrate(ddata, channel);
- 		error = regmap_read(ddata->reg, calibration_register,
- 				    &calibration_data[0]);
--- 
-2.34.1
-
+Email is now deleted.  This is not compatible with Linux kernel
+development for the obvious reasons :(
