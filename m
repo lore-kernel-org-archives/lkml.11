@@ -2,172 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B93EC43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA45AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388787AbiBGNuZ (ORCPT
+        id S1388393AbiBGNuQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:50:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34028 "EHLO
+        Mon, 7 Feb 2022 08:50:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387139AbiBGNbB (ORCPT
+        with ESMTP id S1344368AbiBGNiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:31:01 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC614C043181;
-        Mon,  7 Feb 2022 05:31:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Y4BPg2UKSHvSGU0CdwH8Mpx1zWYK6Fo9bjYIFzss50c=; b=gO+MTd+cuCgmd2NhvLdFsRvNn0
-        akbAblQsskUvJ9vHv7dbfFYvvZxvaA7RsXU9uplrUQ/gx9JRWDyXTdesuAXL1d3887b0QH07Z1rr9
-        TN1Wdhp4iwncQs2yrHloAGxOfkt7Lc9Xk1Cpj7Sm1RL7QKNbKFX1qDSkFstqs+Uns7l6RoDX9LeiL
-        rw1sgmr6KyIYA3o7LWgRxqwV2B3Nmf24qgIULTi+GyC9fg+yEfmiozkituUB8Zpwf7Wwm+KLNsW84
-        CWLyggEyqT/jVS3/KkdKnZKoEVnT3ZVKVxVFFPYMSOpKp91/LzjjLUmmfGXjWgjAy6MWH9M4KTWQJ
-        kP7emuyQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nH46X-000vOy-3D; Mon, 07 Feb 2022 13:30:53 +0000
-Date:   Mon, 7 Feb 2022 13:30:53 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Ben Hutchings <ben@decadent.org.uk>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        efi@lists.einval.com,
-        debian-kernel <debian-kernel@lists.debian.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        David Howells <dhowells@redhat.com>, keyrings@vger.kernel.org
-Subject: Re: [PATCH v2] builddeb: Support signing kernels with the module
- signing key
-Message-ID: <YgEfDUh6R5A507QD@casper.infradead.org>
-References: <20211218031122.4117631-1-willy@infradead.org>
- <CAK7LNAQUChvX3NoukBnjBfJJGu+a96pfbM--xHEHOygWPgE9eA@mail.gmail.com>
- <YdSOV7LL0vWCMcWl@casper.infradead.org>
- <CAK7LNAQgixJSnDUMfjc+tg90oMdVoh+i5faEn-rqgmHR3Bk6dQ@mail.gmail.com>
+        Mon, 7 Feb 2022 08:38:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315BCC043181;
+        Mon,  7 Feb 2022 05:38:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C121961258;
+        Mon,  7 Feb 2022 13:38:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA267C340F5;
+        Mon,  7 Feb 2022 13:38:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644241100;
+        bh=pckcxANR31hSoBJ7CS3Tfcm617BRnX3Og809MDixEeU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qbJV0bSaAAPUvgIW7JVwfgqJXLwUETek0dyrM2yFdYP9klX4oAReMN6n8ZvBg4Wov
+         YDH5FBJTk/3oWTAcWs19D0oxv5Wd4tg2/2tDu8agigNGBGDEAu2rDpT2cFU9oufiDU
+         +pveXsElDpciuCurAvk/jBQ5jamyA9nmKK3AXaOs=
+Date:   Mon, 7 Feb 2022 14:38:17 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Arnd Bergmann <arnd@arndb.de>,
+        James Morse <james.morse@arm.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: Re: [PATCH 5.16 000/126] 5.16.8-rc1 review
+Message-ID: <YgEgybmgfR/DzNUZ@kroah.com>
+References: <20220207103804.053675072@linuxfoundation.org>
+ <CA+G9fYsd_kjuXOJx9umAhkaA7rRx40gVhY9ZBEe6xsMOZ2oTQg@mail.gmail.com>
+ <d4a766d90803e794985e8d693972c24e5fe1926f.camel@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <CAK7LNAQgixJSnDUMfjc+tg90oMdVoh+i5faEn-rqgmHR3Bk6dQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d4a766d90803e794985e8d693972c24e5fe1926f.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 09:33:46PM +0900, Masahiro Yamada wrote:
-> Added "Ben Hutchings <ben@decadent.org.uk>"
+On Mon, Feb 07, 2022 at 01:22:45PM +0100, Nicolas Saenz Julienne wrote:
+> On Mon, 2022-02-07 at 17:49 +0530, Naresh Kamboju wrote:
+> > > This is the start of the stable review cycle for the 5.16.8 release.
+> > > There are 126 patches in this series, all will be posted as a response
+> > > to this one.  If anyone has any issues with these being applied, please
+> > > let me know.
+> > > 
+> > > Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> > > Anything received after that time might be too late.
+> > > 
+> > > The whole patch series can be found in one patch at:
+> > >         
+> > > https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.8-rc1.gz
+> > > or in the git tree and branch at:
+> > >          git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+> > > linux-5.16.y
+> > > and the diffstat can be found below.
+> > > 
+> > > thanks,
+> > > 
+> > > greg k-h
+> > 
+> > 
+> > Linux stable-rc 5.16 arm64 builds failed due to below errors.
+> > 
+> >   kvm/arm64: rework guest entry logic
+> >   [ Upstream commit 8cfe148a7136bc60452a5c6b7ac2d9d15c36909b ]
+> > 
+> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> > 
+> > arch/arm64/kvm/arm.c: In function 'kvm_arm_vcpu_enter_exit':
+> > arch/arm64/kvm/arm.c:778:9: error: implicit declaration of function
+> > 'guest_state_enter_irqoff'; did you mean 'guest_enter_irqoff'?
+> > [-Werror=implicit-function-declaration]
+> >   778 |         guest_state_enter_irqoff();
+> >       |         ^~~~~~~~~~~~~~~~~~~~~~~~
+> >       |         guest_enter_irqoff
+> > arch/arm64/kvm/arm.c:780:9: error: implicit declaration of function
+> > 'guest_state_exit_irqoff'; did you mean 'guest_exit_irqoff'?
+> > [-Werror=implicit-function-declaration]
+> >   780 |         guest_state_exit_irqoff();
+> >       |         ^~~~~~~~~~~~~~~~~~~~~~~
+> >       |         guest_exit_irqoff
+> > arch/arm64/kvm/arm.c: In function 'kvm_arch_vcpu_ioctl_run':
+> > arch/arm64/kvm/arm.c:875:17: error: implicit declaration of function
+> > 'guest_timing_enter_irqoff'; did you mean 'guest_enter_irqoff'?
+> > [-Werror=implicit-function-declaration]
+> >   875 |                 guest_timing_enter_irqoff();
+> >       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~
+> >       |                 guest_enter_irqoff
+> > arch/arm64/kvm/arm.c:925:17: error: implicit declaration of function
+> > 'guest_timing_exit_irqoff'; did you mean 'guest_exit_irqoff'?
+> > [-Werror=implicit-function-declaration]
+> >   925 |                 guest_timing_exit_irqoff();
+> >       |                 ^~~~~~~~~~~~~~~~~~~~~~~~
+> >       |                 guest_exit_irqoff
+> > cc1: some warnings being treated as errors
+> > 
+> > 
+> > build link:
+> > -----------
 > 
-> On Wed, Jan 5, 2022 at 3:13 AM Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > On Wed, Jan 05, 2022 at 12:39:57AM +0900, Masahiro Yamada wrote:
-> > > > +vmlinux=$($MAKE -s -f $srctree/Makefile image_name)
-> > > > +key=
-> > > > +if is_enabled CONFIG_EFI_STUB && is_enabled CONFIG_MODULE_SIG; then
-> > > > +       cert=$(grep ^CONFIG_MODULE_SIG_KEY= include/config/auto.conf | cut -d\" -f2)
-> > > > +       if [ ! -f $cert ]; then
-> > > > +               cert=$srctree/$cert
-> > > > +       fi
-> > > > +
-> > > > +       key=${cert%pem}priv
-> > > > +       if [ ! -f $key ]; then
-> > > > +               key=$cert
-> > > > +       fi
-> > >
-> > >
-> > > I still do not understand this part.
-> > >
-> > > It is true that the Debian document you referred to creates separate files
-> > > for the key and the certificate:
-> > >   # openssl req -new -x509 -newkey rsa:2048 -keyout MOK.priv -outform
-> > > DER -out MOK.der -days 36500 -subj "/CN=My Name/" -nodes
-> > >
-> > > but, is such a use-case possible in Kbuild?
-> >
-> > If someone has followed the Debian instructions for creating a MOK,
-> > then they will have two separate files.  We should support both the case
-> > where someone has created a Debian MOK and the case where someone has
-> > used Kbuild to create this foolish blob with both private and public
-> > key in one file.
-> 
-> But, this patch is doing different things than the Debian document.
-> 
-> 
-> The Debian document you referred to says:
->   "Ubuntu puts its MOK key under /var/lib/shim-signed/mok/ and some
->    software such as Oracle's virtualbox package expect the key there
->    so we follow suit (see 989463 for reference) and put it at the same place"
+> I think this patch is missing:
+> https://lore.kernel.org/lkml/87czk65vhq.wl-maz@kernel.org/T/#m49f8ab674c269f14f57dae33f90af30617bc735f
 
-Uhh ... it does now.  It didn't when I originally wrote this patch.
-Apparently it was updated in November:
-https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=989463
 
-> In Debian, MOK is generated under /var/lib/shim-signed/mok/,
-> and its primary use is for signing the kernel.
-> Then, you can reuse it for signing modules as well.
-> 
-> 
-> This patch adopts the opposite direction:
->   Kbuild generates the module signing key, then
->   this patch reuses it for singing the kernel.
+Thanks, I'll go queue this up now and push out some -rc2 releases.
 
-The patch only does this because you asked it to be changed to do this!
-Look back at the version I originally sent out.  It didn't generate
-the module signing key at all.  I had no idea the kernel build was even
-capable of doing such a thing until you pointed it out.
-
-I followed the instructions in the Debian document *that existed at
-the time* (and now apparently we can't see because Debian uses an
-inept type of wiki that can't show old versions).  I generated a key
-and did not store it in the build tree.  I enrolled that key.
-And then I thought "It would be nice if I didn't have to do all this
-manual work after installing a new kernel so that my machine would
-boot".
-
-And here we are, months later, and you're complaining about ...
-something?
-
-> The key is located in the kernel build tree
-> (that is, the key is lost when you run "make mrproper").
-> 
-> You need to "mokutil --import path/to/module/sining/key"
-> every time Kbuild generates a new key.
-> 
-> 
-> 
-> So, another possible approach is:
-> 
-> builddeb signs the kernel with the key
-> in /var/lib/shim-signed/mok/.
-> 
-> I think this is more aligned with the debian documenation.
-> 
-> I added Ben Hutchings, who might give us insights.
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> > > In the old days, yes, the key and the certificate were stored in separate files.
-> > > (the key in *.priv and the certificate in *.x509)
-> > >
-> > >
-> > > Please read this commit:
-> >
-> > Yes, I did.
-> >
-> > > The motivation for this change is still questionable to me;
-> > > the commit description sounds like they merged *.priv and *.x509
-> > > into *.pem just because they could not write a correct Makefile.
-> > > (If requested, I can write a correct Makefile that works in parallel build)
-> >
-> > I think that would be preferable.  Putting the private and public keys
-> > in the same file cannot be good security practice!
-> 
-> 
-> 
-> -- 
-> Best Regards
-> Masahiro Yamada
+greg k-h
