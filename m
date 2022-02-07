@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C4CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7658CC43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384075AbiBGLYj (ORCPT
+        id S1384088AbiBGLYm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:24:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58424 "EHLO
+        Mon, 7 Feb 2022 06:24:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382356AbiBGLS5 (ORCPT
+        with ESMTP id S1382381AbiBGLTB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:18:57 -0500
+        Mon, 7 Feb 2022 06:19:01 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35F3C0401D0;
-        Mon,  7 Feb 2022 03:18:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2452FC043189;
+        Mon,  7 Feb 2022 03:18:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DE1A6077B;
-        Mon,  7 Feb 2022 11:18:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE03C004E1;
-        Mon,  7 Feb 2022 11:18:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A38EE6077B;
+        Mon,  7 Feb 2022 11:18:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 637FCC004E1;
+        Mon,  7 Feb 2022 11:18:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232725;
-        bh=R6xFvRSAhvFiOxBA1ZVRq5dVEm6iq07Plk0RDFwvnH4=;
+        s=korg; t=1644232738;
+        bh=bnZN1aHoxylN4NYTYgROFmfr0VuJRmqnUE7ch/T1o3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yVpmD4fFmmzI2ihvUMqdU85mbsFKFiP3C6q+uQlTPwGdMBgwQjuQ4QoPK84j1OfKc
-         2RiqsvOilJCjQ7FGLR6Hd7l2vS38WDOHYMaWLsFt8xulw8PRZLmxBQFTA3VCcVUzhs
-         7PdLT07G6Wa36oKQn8qBCxf0zn0bU1yXl30Y+zTs=
+        b=SRe8VQBT4BKyCf29wy1kNGX09jI715vq3zmbOiN8e7+ZNp8RzA50XafZ2xJZLM5Sv
+         h34LgIvbSXk5Vhjo5lNeChaXH3WZjeBYKT6s6Zzl1LFfT5uEcOA88hPdTMxP/lKEx+
+         IAR+5cvMFVfIbhmXe2g6jTzWZkIOzNQ30b9tCS1s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jared Holzman <jared.holzman@excelero.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.4 17/44] RDMA/siw: Fix broken RDMA Read Fence/Resume logic.
-Date:   Mon,  7 Feb 2022 12:06:33 +0100
-Message-Id: <20220207103753.714125859@linuxfoundation.org>
+        stable@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 5.4 20/44] iommu/amd: Fix loop timeout issue in iommu_ga_log_enable()
+Date:   Mon,  7 Feb 2022 12:06:36 +0100
+Message-Id: <20220207103753.809729816@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
 References: <20220207103753.155627314@linuxfoundation.org>
@@ -50,97 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bernard Metzler <bmt@zurich.ibm.com>
+From: Joerg Roedel <jroedel@suse.de>
 
-commit b43a76f423aa304037603fd6165c4a534d2c09a7 upstream.
+commit 9b45a7738eec52bf0f5d8d3d54e822962781c5f2 upstream.
 
-Code unconditionally resumed fenced SQ processing after next RDMA Read
-completion, even if other RDMA Read responses are still outstanding, or
-ORQ is full. Also adds comments for better readability of fence
-processing, and removes orq_get_tail() helper, which is not needed
-anymore.
+The polling loop for the register change in iommu_ga_log_enable() needs
+to have a udelay() in it.  Otherwise the CPU might be faster than the
+IOMMU hardware and wrongly trigger the WARN_ON() further down the code
+stream. Use a 10us for udelay(), has there is some hardware where
+activation of the GA log can take more than a 100ms.
 
-Fixes: 8b6a361b8c48 ("rdma/siw: receive path")
-Fixes: a531975279f3 ("rdma/siw: main include file")
-Link: https://lore.kernel.org/r/20220130170815.1940-1-bmt@zurich.ibm.com
-Reported-by: Jared Holzman <jared.holzman@excelero.com>
-Signed-off-by: Bernard Metzler <bmt@zurich.ibm.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+A future optimization should move the activation check of the GA log
+to the point where it gets used for the first time. But that is a
+bigger change and not suitable for a fix.
+
+Fixes: 8bda0cfbdc1a ("iommu/amd: Detect and initialize guest vAPIC log")
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Link: https://lore.kernel.org/r/20220204115537.3894-1-joro@8bytes.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/siw/siw.h       |    7 +------
- drivers/infiniband/sw/siw/siw_qp_rx.c |   20 +++++++++++---------
- 2 files changed, 12 insertions(+), 15 deletions(-)
+ drivers/iommu/amd_iommu_init.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/infiniband/sw/siw/siw.h
-+++ b/drivers/infiniband/sw/siw/siw.h
-@@ -658,14 +658,9 @@ static inline struct siw_sqe *orq_get_cu
- 	return &qp->orq[qp->orq_get % qp->attrs.orq_size];
- }
- 
--static inline struct siw_sqe *orq_get_tail(struct siw_qp *qp)
--{
--	return &qp->orq[qp->orq_put % qp->attrs.orq_size];
--}
--
- static inline struct siw_sqe *orq_get_free(struct siw_qp *qp)
- {
--	struct siw_sqe *orq_e = orq_get_tail(qp);
-+	struct siw_sqe *orq_e = &qp->orq[qp->orq_put % qp->attrs.orq_size];
- 
- 	if (READ_ONCE(orq_e->flags) == 0)
- 		return orq_e;
---- a/drivers/infiniband/sw/siw/siw_qp_rx.c
-+++ b/drivers/infiniband/sw/siw/siw_qp_rx.c
-@@ -1153,11 +1153,12 @@ static int siw_check_tx_fence(struct siw
- 
- 	spin_lock_irqsave(&qp->orq_lock, flags);
- 
--	rreq = orq_get_current(qp);
--
- 	/* free current orq entry */
-+	rreq = orq_get_current(qp);
- 	WRITE_ONCE(rreq->flags, 0);
- 
-+	qp->orq_get++;
-+
- 	if (qp->tx_ctx.orq_fence) {
- 		if (unlikely(tx_waiting->wr_status != SIW_WR_QUEUED)) {
- 			pr_warn("siw: [QP %u]: fence resume: bad status %d\n",
-@@ -1165,10 +1166,12 @@ static int siw_check_tx_fence(struct siw
- 			rv = -EPROTO;
- 			goto out;
- 		}
--		/* resume SQ processing */
-+		/* resume SQ processing, if possible */
- 		if (tx_waiting->sqe.opcode == SIW_OP_READ ||
- 		    tx_waiting->sqe.opcode == SIW_OP_READ_LOCAL_INV) {
--			rreq = orq_get_tail(qp);
-+
-+			/* SQ processing was stopped because of a full ORQ */
-+			rreq = orq_get_free(qp);
- 			if (unlikely(!rreq)) {
- 				pr_warn("siw: [QP %u]: no ORQE\n", qp_id(qp));
- 				rv = -EPROTO;
-@@ -1181,15 +1184,14 @@ static int siw_check_tx_fence(struct siw
- 			resume_tx = 1;
- 
- 		} else if (siw_orq_empty(qp)) {
-+			/*
-+			 * SQ processing was stopped by fenced work request.
-+			 * Resume since all previous Read's are now completed.
-+			 */
- 			qp->tx_ctx.orq_fence = 0;
- 			resume_tx = 1;
--		} else {
--			pr_warn("siw: [QP %u]: fence resume: orq idx: %d:%d\n",
--				qp_id(qp), qp->orq_get, qp->orq_put);
--			rv = -EPROTO;
- 		}
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -21,6 +21,7 @@
+ #include <linux/iommu.h>
+ #include <linux/kmemleak.h>
+ #include <linux/mem_encrypt.h>
++#include <linux/iopoll.h>
+ #include <asm/pci-direct.h>
+ #include <asm/iommu.h>
+ #include <asm/apic.h>
+@@ -759,6 +760,7 @@ static int iommu_ga_log_enable(struct am
+ 		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+ 		if (status & (MMIO_STATUS_GALOG_RUN_MASK))
+ 			break;
++		udelay(10);
  	}
--	qp->orq_get++;
- out:
- 	spin_unlock_irqrestore(&qp->orq_lock, flags);
  
+ 	if (i >= LOOP_TIMEOUT)
 
 
