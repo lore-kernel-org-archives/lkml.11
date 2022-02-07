@@ -2,60 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54423C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7457BC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355469AbiBGQ3o (ORCPT
+        id S1379628AbiBGQ3t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:29:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55816 "EHLO
+        Mon, 7 Feb 2022 11:29:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378450AbiBGQSQ (ORCPT
+        with ESMTP id S1382016AbiBGQZi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:18:16 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B73C0401CE;
-        Mon,  7 Feb 2022 08:18:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:To:From:Date:Sender:Reply-To:Cc:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=yoSKJ9Y5PsjWBGSNI/TFMdwBItW1u5exmmTOYSxThD8=; b=dh+OOMmjPt34uB61r8w1fBywg9
-        ctC5sqpN9WwEJcrz+fZs6kj1ze5ztZdXG78tnFIZeNLQ7FAH+L5EAlBUCA89YTxqfH0SWHxSjTEh1
-        ij4WtSU9jqteVHI1i8q6+pSepCm8tJ+LZ/7I+9TJYmk2M2ZTmDCrsY4fLKoOtsIdZBdfyouAiWwFg
-        YMyqcCzMCka8EHbSavKgrZcHM/Imo3+LjADQJFL1TcqG+PrAayIV3ECReVIaxWgivzy9WoBKwaKC9
-        RiKS/anY6Cx0d4ISIZ9r78djct1yKOO5VM+N6Tezqn7j4WrzGbrWwSKGtCdiWPJCpW1kA7WbiGmyz
-        8kUjFGeQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nH6iQ-001SOE-SQ; Mon, 07 Feb 2022 16:18:10 +0000
-Date:   Mon, 7 Feb 2022 16:18:10 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        linux-nfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Howells <dhowells@redhat.com>
-Subject: Re: [PATCH 1/2] Convert NFS from readpages to readahead
-Message-ID: <YgFGQi/1RRPSSQpA@casper.infradead.org>
-References: <20220122205453.3958181-1-willy@infradead.org>
- <Yff0la2VAOewGrhI@casper.infradead.org>
+        Mon, 7 Feb 2022 11:25:38 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AC85C0401CF;
+        Mon,  7 Feb 2022 08:25:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644251137; x=1675787137;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CuM7K8ToBJ7RKoIFBCQywAvEKq4J6OlP+754BZRgkAU=;
+  b=oItA286EQe7Jkk9QHqdsZfMVlBsFKEjA4CVSHFbFJSk938EKWirt/nUM
+   D4aZ/37drx6CA3xVLCdEMLmc5Sa7UM7Z8cunYuu5qnLtjC1Qok5J83tEu
+   9Nm8hrHbqGJoo0Y+Mucn5htfnvCCmHd6cfQ/omdY1VwOMmwr83OSDEz9+
+   E/Z6SD27XlyrbLMivplLnmOFZyPN8+0/vwEL3+lIVo3HQnATYwl1WnsJ9
+   Xlt9vOBAq0yyY+/HrYS3xpKtjpHfcbmWgDJBz5g01nsAVg4IYUD3iQ8bp
+   VLLbgFxMEfMMcBqk5EINch1QrLH7Q7JJPHda9JNOc4zMRjBW2oiiHYZH1
+   A==;
+IronPort-SDR: FarXgVfzZUWJWMuIpZC4lhp+B4sX0634GZiuR7Nh1iyvdXMCMfoH2k/hhIdCFf/PKwAIqJCmKE
+ Fzfk3ZfTKAh5AaryfTKCT+JEQRohJj5Hn71XlkDzQO3VKsHSBnX+zrBiobNW6UEvRgXDE3b27b
+ UtbbyT84FGGREdorJBTyI44rkEp0loGk0Ha4SJYd7zJNMgmzsda5jtIDPr2OBSm3gQZvAJCcg9
+ t0OTqfMrg67LPo5qDhFufz6d7852DGGYYcTcrnECorkV/AlAjC/iwmV6fQL/qRuBigngFtZbMB
+ MzwsqhKvLjWRyAFq6jEidBIo
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="84917904"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:24:32 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Feb 2022 09:24:32 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 7 Feb 2022 09:24:27 -0700
+From:   <conor.dooley@microchip.com>
+To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
+        <jassisinghbrar@gmail.com>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
+        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <geert@linux-m68k.org>,
+        <krzysztof.kozlowski@canonical.com>, <linux-gpio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+CC:     <bin.meng@windriver.com>, <heiko@sntech.de>,
+        <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
+        <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
+        <atishp@rivosinc.com>, Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH v6 08/12] riscv: dts: microchip: add fpga fabric section to icicle kit
+Date:   Mon, 7 Feb 2022 16:26:34 +0000
+Message-ID: <20220207162637.1658677-9-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207162637.1658677-1-conor.dooley@microchip.com>
+References: <20220207162637.1658677-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yff0la2VAOewGrhI@casper.infradead.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 02:39:17PM +0000, Matthew Wilcox wrote:
-> On Sat, Jan 22, 2022 at 08:54:52PM +0000, Matthew Wilcox (Oracle) wrote:
-> > NFS is one of the last two users of the deprecated ->readpages aop.
-> > This conversion looks straightforward, but I have only compile-tested
-> > it.
-> 
-> These patches still apply to -rc2.
+From: Conor Dooley <conor.dooley@microchip.com>
 
-And they still apply to rc3.
+Split the device tree for the Microchip MPFS into two sections by adding
+microchip-mpfs-fabric.dtsi, which contains peripherals contained in the
+FPGA fabric.
 
-I'm just going to send them to Linus as part of the general fs-folio
-work I'm doing during the next merge window.  If anybody would like to
-test them, I'm happy to stick a Tested-by on them.
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+ .../dts/microchip/microchip-mpfs-fabric.dtsi  | 25 +++++++++++++++++++
+ .../microchip/microchip-mpfs-icicle-kit.dts   |  8 ++++++
+ .../boot/dts/microchip/microchip-mpfs.dtsi    |  1 +
+ 3 files changed, 34 insertions(+)
+ create mode 100644 arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
+
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
+new file mode 100644
+index 000000000000..854320e17b28
+--- /dev/null
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
+@@ -0,0 +1,25 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/* Copyright (c) 2020-2021 Microchip Technology Inc */
++
++/ {
++	core_pwm0: pwm@41000000 {
++		compatible = "microchip,corepwm-rtl-v4";
++		reg = <0x0 0x41000000 0x0 0xF0>;
++		microchip,sync-update-mask = /bits/ 32 <0>;
++		#pwm-cells = <2>;
++		clocks = <&clkcfg CLK_FIC3>;
++		status = "disabled";
++	};
++
++	i2c2: i2c@44000000 {
++		compatible = "microchip,corei2c-rtl-v7";
++		reg = <0x0 0x44000000 0x0 0x1000>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		clocks = <&clkcfg CLK_FIC3>;
++		interrupt-parent = <&plic>;
++		interrupts = <122>;
++		clock-frequency = <100000>;
++		status = "disabled";
++	};
++};
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+index 6d19ba196f12..ab803f71626a 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+@@ -68,6 +68,10 @@ &mmc {
+ 	sd-uhs-sdr104;
+ };
+ 
++&i2c2 {
++	status = "okay";
++};
++
+ &emac0 {
+ 	phy-mode = "sgmii";
+ 	phy-handle = <&phy0>;
+@@ -86,3 +90,7 @@ phy1: ethernet-phy@9 {
+ 		ti,fifo-depth = <0x01>;
+ 	};
+ };
++
++&core_pwm0 {
++	status = "okay";
++};
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+index 717e39b30a15..c7d73756c9b8 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+@@ -3,6 +3,7 @@
+ 
+ /dts-v1/;
+ #include "dt-bindings/clock/microchip,mpfs-clock.h"
++#include "microchip-mpfs-fabric.dtsi"
+ 
+ / {
+ 	#address-cells = <2>;
+-- 
+2.35.1
+
