@@ -2,336 +2,422 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0C8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA7CC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385410AbiBGNKj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:10:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60204 "EHLO
+        id S240128AbiBGNKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 08:10:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382754AbiBGMYW (ORCPT
+        with ESMTP id S1442779AbiBGMVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:24:22 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0E2C002B4E;
-        Mon,  7 Feb 2022 04:18:14 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 262E8210FA;
-        Mon,  7 Feb 2022 12:18:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644236293; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WP6Xgo2ws98hPpXKeUU962VqHQ+2ksGNpkLhWTonht4=;
-        b=TGINR8F84BeIkQgoA51gSRY3TQArk02/ttVciZuSUTaE915VzbI2t5jJbBPIy7qcRntcI8
-        Y+Lgxh5qk9zh+ztIJwYwFqwMHqJpiQIC3MdiFPcJEZbx5mRbfsl2oS0DgxqXR76IRO88o/
-        14AYuFnOo3RVUkVt/oFbsuSTrFiN5g8=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0472B13BE6;
-        Mon,  7 Feb 2022 12:18:13 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id qGCSAAUOAWLMegAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Mon, 07 Feb 2022 12:18:13 +0000
-From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
-To:     Eric Biederman <ebiederm@xmission.com>,
-        Alexey Gladkov <legion@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>
-Subject: [RFC PATCH 5/6] selftests: Challenge RLIMIT_NPROC in user namespaces
-Date:   Mon,  7 Feb 2022 13:17:59 +0100
-Message-Id: <20220207121800.5079-6-mkoutny@suse.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220207121800.5079-1-mkoutny@suse.com>
-References: <20220207121800.5079-1-mkoutny@suse.com>
+        Mon, 7 Feb 2022 07:21:39 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6D1C03E942;
+        Mon,  7 Feb 2022 04:12:37 -0800 (PST)
+Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JslKY1fjjz6879s;
+        Mon,  7 Feb 2022 20:08:33 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 13:12:35 +0100
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
+ 2022 12:12:33 +0000
+Date:   Mon, 7 Feb 2022 12:12:32 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Yicong Yang <yangyicong@hisilicon.com>
+CC:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <daniel.thompson@linaro.org>, <joro@8bytes.org>,
+        <john.garry@huawei.com>, <shameerali.kolothum.thodi@huawei.com>,
+        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
+        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
+        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <linuxarm@huawei.com>, <song.bao.hua@hisilicon.com>
+Subject: Re: [PATCH v3 6/8] docs: Add HiSilicon PTT device driver
+ documentation
+Message-ID: <20220207121232.00000146@Huawei.com>
+In-Reply-To: <20220124131118.17887-7-yangyicong@hisilicon.com>
+References: <20220124131118.17887-1-yangyicong@hisilicon.com>
+        <20220124131118.17887-7-yangyicong@hisilicon.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The services are started in descendant user namepaces, each of them
-should honor the RLIMIT_NPROC that's passed during user namespace
-creation.
+On Mon, 24 Jan 2022 21:11:16 +0800
+Yicong Yang <yangyicong@hisilicon.com> wrote:
 
-	main [user_ns_0]
-	  ` service [user_ns_1]
-	    ` worker 1
-	    ` worker 2
-	    ...
-	    ` worker k
-	  ...
-	  ` service [user_ns_n]
-	    ` worker 1
-	    ` worker 2
-	    ...
-	    ` worker k
+> Document the introduction and usage of HiSilicon PTT device driver.
+> 
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+Nice document.  A few trivial typos inline.
+I would give a RB except I've suggested you change a part of the
+sysfs interface which will affect the relevant documentation.
 
-Test uses explicit synchronization, to make sure original parent's limit
-does not interfere with descendants.
+Thanks,
 
-Signed-off-by: Michal Koutný <mkoutny@suse.com>
----
- .../selftests/rlimits/rlimits-per-userns.c    | 154 ++++++++++++++----
- 1 file changed, 125 insertions(+), 29 deletions(-)
+Jonathan
 
-diff --git a/tools/testing/selftests/rlimits/rlimits-per-userns.c b/tools/testing/selftests/rlimits/rlimits-per-userns.c
-index 26dc949e93ea..54c1b345e42b 100644
---- a/tools/testing/selftests/rlimits/rlimits-per-userns.c
-+++ b/tools/testing/selftests/rlimits/rlimits-per-userns.c
-@@ -9,7 +9,9 @@
- #include <sys/resource.h>
- #include <sys/prctl.h>
- #include <sys/stat.h>
-+#include <sys/socket.h>
- 
-+#include <assert.h>
- #include <unistd.h>
- #include <stdlib.h>
- #include <stdio.h>
-@@ -21,38 +23,74 @@
- #include <errno.h>
- #include <err.h>
- 
--#define NR_CHILDS 2
-+#define THE_LIMIT 4
-+#define NR_CHILDREN 5
-+
-+static_assert(NR_CHILDREN >= THE_LIMIT-1, "Need slots for limit-1 children.");
- 
- static char *service_prog;
- static uid_t user   = 60000;
- static uid_t group  = 60000;
-+static struct rlimit saved_limit;
-+
-+/* Two uses: main and service */
-+static pid_t child[NR_CHILDREN];
-+static pid_t pid;
- 
- static void setrlimit_nproc(rlim_t n)
- {
--	pid_t pid = getpid();
- 	struct rlimit limit = {
- 		.rlim_cur = n,
- 		.rlim_max = n
- 	};
--
--	warnx("(pid=%d): Setting RLIMIT_NPROC=%ld", pid, n);
-+	if (getrlimit(RLIMIT_NPROC, &saved_limit) < 0)
-+		err(EXIT_FAILURE, "(pid=%d): getrlimit(RLIMIT_NPROC)", pid);
- 
- 	if (setrlimit(RLIMIT_NPROC, &limit) < 0)
- 		err(EXIT_FAILURE, "(pid=%d): setrlimit(RLIMIT_NPROC)", pid);
-+
-+	warnx("(pid=%d): Set RLIMIT_NPROC=%ld", pid, n);
-+}
-+
-+static void restore_rlimit_nproc(void)
-+{
-+	if (setrlimit(RLIMIT_NPROC, &saved_limit) < 0)
-+		err(EXIT_FAILURE, "(pid=%d): setrlimit(RLIMIT_NPROC, saved)", pid);
-+	warnx("(pid=%d) Restored RLIMIT_NPROC", pid);
- }
- 
--static pid_t fork_child(void)
-+enum msg_sync {
-+	UNSHARE,
-+	RLIMIT_RESTORE,
-+};
-+
-+static void sync_notify(int fd, enum msg_sync m)
- {
--	pid_t pid = fork();
-+	char tmp = m;
-+
-+	if (write(fd, &tmp, 1) < 0)
-+		warnx("(pid=%d): failed sync-write", pid);
-+}
- 
--	if (pid < 0)
-+static void sync_wait(int fd, enum msg_sync m)
-+{
-+	char tmp;
-+
-+	if (read(fd, &tmp, 1) < 0)
-+		warnx("(pid=%d): failed sync-read", pid);
-+}
-+
-+static pid_t fork_child(int control_fd)
-+{
-+	pid_t new_pid = fork();
-+
-+	if (new_pid < 0)
- 		err(EXIT_FAILURE, "fork");
- 
--	if (pid > 0)
--		return pid;
-+	if (new_pid > 0)
-+		return new_pid;
- 
- 	pid = getpid();
--
- 	warnx("(pid=%d): New process starting ...", pid);
- 
- 	if (prctl(PR_SET_PDEATHSIG, SIGKILL) < 0)
-@@ -73,6 +111,9 @@ static pid_t fork_child(void)
- 	if (unshare(CLONE_NEWUSER) < 0)
- 		err(EXIT_FAILURE, "unshare(CLONE_NEWUSER)");
- 
-+	sync_notify(control_fd, UNSHARE);
-+	sync_wait(control_fd, RLIMIT_RESTORE);
-+
- 	char *const argv[] = { "service", NULL };
- 	char *const envp[] = { "I_AM_SERVICE=1", NULL };
- 
-@@ -82,37 +123,92 @@ static pid_t fork_child(void)
- 	err(EXIT_FAILURE, "(pid=%d): execve", pid);
- }
- 
-+static void run_service(void)
-+{
-+	size_t i;
-+	int ret = EXIT_SUCCESS;
-+	struct rlimit limit;
-+	char user_ns[PATH_MAX];
-+
-+	if (getrlimit(RLIMIT_NPROC, &limit) < 0)
-+		err(EXIT_FAILURE, "(pid=%d) failed getrlimit", pid);
-+	if (readlink("/proc/self/ns/user", user_ns, PATH_MAX) < 0)
-+		err(EXIT_FAILURE, "(pid=%d) failed readlink", pid);
-+
-+	warnx("(pid=%d) Service instance attempts %i children, limit %lu:%lu, ns=%s",
-+	      pid, THE_LIMIT, limit.rlim_cur, limit.rlim_max, user_ns);
-+
-+	/* test rlimit inside the service, effectively THE_LIMIT-1 becaue of service itself */
-+	for (i = 0; i < THE_LIMIT; i++) {
-+		child[i] = fork();
-+		if (child[i] == 0) {
-+			/* service child */
-+			pause();
-+			exit(EXIT_SUCCESS);
-+		}
-+		if (child[i] < 0) {
-+			warnx("(pid=%d) service fork %lu failed, errno = %i", pid, i+1, errno);
-+			if (!(i == THE_LIMIT-1 && errno == EAGAIN))
-+				ret = EXIT_FAILURE;
-+		} else if (i == THE_LIMIT-1) {
-+			warnx("(pid=%d) RLIMIT_NPROC not honored", pid);
-+			ret = EXIT_FAILURE;
-+		}
-+	}
-+
-+	/* service cleanup */
-+	for (i = 0; i < THE_LIMIT; i++)
-+		if (child[i] > 0)
-+			kill(child[i], SIGUSR1);
-+
-+	for (i = 0; i < THE_LIMIT; i++)
-+		if (child[i] > 0)
-+			waitpid(child[i], NULL, WNOHANG);
-+
-+	if (ret)
-+		exit(ret);
-+	pause();
-+}
-+
- int main(int argc, char **argv)
- {
- 	size_t i;
--	pid_t child[NR_CHILDS];
--	int wstatus[NR_CHILDS];
--	int childs = NR_CHILDS;
--	pid_t pid;
-+	int control_fd[NR_CHILDREN];
-+	int wstatus[NR_CHILDREN];
-+	int children = NR_CHILDREN;
-+	int sockets[2];
-+
-+	pid = getpid();
- 
- 	if (getenv("I_AM_SERVICE")) {
--		pause();
--		exit(EXIT_SUCCESS);
-+		run_service();
-+		exit(EXIT_FAILURE);
- 	}
- 
- 	service_prog = argv[0];
--	pid = getpid();
- 
- 	warnx("(pid=%d) Starting testcase", pid);
- 
--	/*
--	 * This rlimit is not a problem for root because it can be exceeded.
--	 */
--	setrlimit_nproc(1);
--
--	for (i = 0; i < NR_CHILDS; i++) {
--		child[i] = fork_child();
-+	setrlimit_nproc(THE_LIMIT);
-+	for (i = 0; i < NR_CHILDREN; i++) {
-+		if (socketpair(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets) < 0)
-+			err(EXIT_FAILURE, "(pid=%d) socketpair failed", pid);
-+		control_fd[i] = sockets[0];
-+		child[i] = fork_child(sockets[1]);
- 		wstatus[i] = 0;
-+	}
-+
-+	for (i = 0; i < NR_CHILDREN; i++)
-+		sync_wait(control_fd[i], UNSHARE);
-+	restore_rlimit_nproc();
-+
-+	for (i = 0; i < NR_CHILDREN; i++) {
-+		sync_notify(control_fd[i], RLIMIT_RESTORE);
- 		usleep(250000);
- 	}
- 
- 	while (1) {
--		for (i = 0; i < NR_CHILDS; i++) {
-+		for (i = 0; i < NR_CHILDREN; i++) {
- 			if (child[i] <= 0)
- 				continue;
- 
-@@ -126,22 +222,22 @@ int main(int argc, char **argv)
- 				warn("(pid=%d): waitpid(%d)", pid, child[i]);
- 
- 			child[i] *= -1;
--			childs -= 1;
-+			children -= 1;
- 		}
- 
--		if (!childs)
-+		if (!children)
- 			break;
- 
- 		usleep(250000);
- 
--		for (i = 0; i < NR_CHILDS; i++) {
-+		for (i = 0; i < NR_CHILDREN; i++) {
- 			if (child[i] <= 0)
- 				continue;
- 			kill(child[i], SIGUSR1);
- 		}
- 	}
- 
--	for (i = 0; i < NR_CHILDS; i++) {
-+	for (i = 0; i < NR_CHILDREN; i++) {
- 		if (WIFEXITED(wstatus[i]))
- 			warnx("(pid=%d): pid %d exited, status=%d",
- 				pid, -child[i], WEXITSTATUS(wstatus[i]));
--- 
-2.34.1
+> ---
+>  Documentation/trace/hisi-ptt.rst | 304 +++++++++++++++++++++++++++++++
+>  1 file changed, 304 insertions(+)
+>  create mode 100644 Documentation/trace/hisi-ptt.rst
+> 
+> diff --git a/Documentation/trace/hisi-ptt.rst b/Documentation/trace/hisi-ptt.rst
+> new file mode 100644
+> index 000000000000..f3269b11a2f6
+> --- /dev/null
+> +++ b/Documentation/trace/hisi-ptt.rst
+> @@ -0,0 +1,304 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +
+> +======================================
+> +HiSilicon PCIe Tune and Trace device
+> +======================================
+> +
+> +Introduction
+> +============
+> +
+> +HiSilicon PCIe tune and trace device (PTT) is a PCIe Root Complex
+> +integrated Endpoint (RCiEP) device, providing the capability
+> +to dynamically monitor and tune the PCIe link's events (tune),
+> +and trace the TLP headers (trace). The two functions are independent,
+> +but is recommended to use them together to analyze and enhance the
+> +PCIe link's performance.
+> +
+> +On Kunpeng 930 SoC, the PCIe Root Complex is composed of several
+> +PCIe cores. Each PCIe core includes several Root Ports and a PTT
+> +RCiEP, like below. The PTT device is capable of tuning and
+> +tracing the link of the PCIe core.
+
+links
+
+> +::
+> +          +--------------Core 0-------+
+> +          |       |       [   PTT   ] |
+> +          |       |       [Root Port]---[Endpoint]
+> +          |       |       [Root Port]---[Endpoint]
+> +          |       |       [Root Port]---[Endpoint]
+> +    Root Complex  |------Core 1-------+
+> +          |       |       [   PTT   ] |
+> +          |       |       [Root Port]---[ Switch ]---[Endpoint]
+> +          |       |       [Root Port]---[Endpoint] `-[Endpoint]
+> +          |       |       [Root Port]---[Endpoint]
+> +          +---------------------------+
+> +
+> +The PTT device driver registers PMU device for each PTT device.
+
+registers one PMU device ..
+
+> +The name of each PTT device is composed of 'hisi_ptt' prefix with
+> +the id of the SICL and the Core where it locates. The Kunpeng 930
+> +SoC encapsulates multiple CPU dies (SCCL, Super CPU Cluster) and
+> +IO dies (SICL, Super I/O Cluster), where there's one PCIe Root
+> +Complex for each SICL.
+> +::
+> +    /sys/devices/hisi_ptt<sicl_id>_<core_id>
+> +
+> +Tune
+> +====
+> +
+> +PTT tune is designed for monitoring and adjusting PCIe link parameters (events).
+> +Currently we support events in 4 classes. The scope of the events
+> +covers the PCIe core to which the PTT device belongs.
+> +
+> +Each event is presented as a file under $(PTT PMU dir)/tune, and
+> +mostly a simple open/read/write/close cycle will be used to tune
+
+drop "mostly" as it doesn't add anything other than potential confusion.
+
+> +the event.
+> +::
+> +    $ cd /sys/devices/hisi_ptt<sicl_id>_<core_id>/tune
+> +    $ ls
+> +    qos_tx_cpl    qos_tx_np    qos_tx_p
+> +    tx_path_rx_req_alloc_buf_level
+> +    tx_path_tx_req_alloc_buf_level
+> +    $ cat qos_tx_dp
+> +    1
+> +    $ echo 2 > qos_tx_dp
+> +    $ cat qos_tx_dp
+> +    2
+> +
+> +Current value (numerical value) of the event can be simply read
+> +from the file, and the desired value written to the file to tune.
+> +
+> +1. Tx path QoS control
+> +------------------------
+> +
+> +The following files are provided to tune the QoS of the tx path of
+> +the PCIe core.
+> +
+> +- qos_tx_cpl: weight of Tx completion TLPs
+> +- qos_tx_np: weight of Tx non-posted TLPs
+> +- qos_tx_p: weight of Tx posted TLPs
+> +
+> +The weight influences the proportion of certain packets on the PCIe link.
+> +For example, for the storage scenario, increase the proportion
+> +of the completion packets on the link to enhance the performance as
+> +more completions are consumed.
+> +
+> +The available tune data of these events is [0, 1, 2].
+> +Writing a negative value will return an error, and out of range
+> +values will be converted to 2. Note that the event value just
+> +indicates a probable level, but is not precise.
+> +
+> +2. Tx path buffer control
+> +-------------------------
+> +
+> +Following files are provided to tune the buffer of tx path of the PCIe core.
+> +
+> +- tx_path_rx_req_alloc_buf_level: watermark of Rx requested
+> +- tx_path_tx_req_alloc_buf_level: watermark of Tx requested
+> +
+> +These events influence the watermark of the buffer allocated for each
+> +type. Rx means the inbound while Tx means outbound. The packets will
+> +be stored in the buffer first and then posted either when the watermark
+
+Change "posted" to "transmitted" as posted has a special meaning in PCI
+and I don't think that is what you mean here... (I could be wrong!)
+
+> +reached or when timed out. For a busy direction, you should increase
+> +the related buffer watermark to avoid frequently posting and thus
+> +enhance the performance. In most cases just keep the default value.
+> +
+> +The available tune data of above events is [0, 1, 2].
+> +Writing a negative value will return an error, and out of range
+> +values will be converted to 2. Note that the event value just
+> +indicates a probable level, but is not precise.
+> +
+> +Trace
+> +=====
+> +
+> +PTT trace is designed for dumping the TLP headers to the memory, which
+> +can be used to analyze the transactions and usage condition of the PCIe
+> +Link. You can choose to filter the traced headers by either requester ID,
+> +or those downstream of a set of Root Ports on the same core of the PTT
+> +device. It's also supported to trace the headers of certain type and of
+> +certain direction.
+> +
+> +You can use the perf command `perf record` to set the parameters, start
+> +trace and get the data. It's also supported to decode the trace
+> +data with `perf report`. The control parameters for trace is inputted
+> +as event code for each events, which will be further illustracted later.
+
+illustrated
+
+> +An example usage is like
+> +::
+> +    $ perf record -e hisi_ptt0_2/filter=0x80001,type=1,direction=1,
+> +      format=1/ -- sleep 5
+> +
+> +This will trace the TLP headers downstream root port 0000:00:10.1 (event
+> +code for event 'filter' is 0x80001) with type of posted TLP requests,
+> +direction of inbound and traced data format of 8DW.
+> +
+> +1. filter
+> +---------
+> +
+> +The TLP headers to trace can be filtered by the Root Ports or the requester
+> +ID of the endpoints, which are locates on the same core of the PTT device.
+
+located
+
+> +You can set the filter by spedifying the `filter` parameter which is required
+> +to start the trace. The parameter value is 20 bit. The supported filters and
+> +related values is outputted through `available_filters` sysfs attribute
+> +under related PTT PMU directory, classified as Root Ports and Requesters
+> +respectively.
+> +::
+> +    $ cat available_filters
+> +    #### Root Ports ####
+> +    0000:00:10.0	0x80001
+> +    0000:00:11.0	0x80004
+> +    #### Requesters ####
+> +    0000:01:00.0	0x00100
+> +    0000:01:00.1	0x00101
+> +
+> +Note that multiple Root Ports can be specified at one time, but only
+> +one Endpoint function can be specified in one trace. Specifying both
+> +Root Port and function at the same time is not supported.
+> +
+> +If no filter is available, reading the available_filters will get the hint.
+> +::
+> +    $ cat available_filters
+> +    #### No available filter ####
+
+If you take not of my earlier feedback this bit may change slightly.
+> +
+> +The available_filters can be dynamically updated, which means you can always
+> +get correct filter information when hotplug events happen, or when you manually
+> +remove/rescan the devices.
+> +
+> +2. type
+> +-------
+> +
+> +You can trace the TLP headers of certain types by specifying the `type`
+> +parameter, which is required to start the trace. The parameter value is
+> +8 bit. Current supported types and related values are shown below:
+> +
+> +8'b00000001: posted requests (P)
+> +8'b00000010: non-posted requests (NP)
+> +8'b00000100: completions (CPL)
+> +
+> +You can specify multiple types when tracing inbound TLP headers, but can only
+> +specify one when tracing outbound TLP headers.
+> +
+> +3. direction
+> +------------
+> +
+> +You can trace the TLP headers from certain direction, which is relative
+> +to the Root Port or the PCIe core, by specifying the `direction` parameter.
+> +This is optional and the default parameter is inbound. The parameter value
+> +is 4 bit. When the desired format is 4DW, directions and related values
+> +supported are shown below:
+> +
+> +4'b0000: inbound TLPs (P, NP, CPL)
+> +4'b0001: outbound TLPs (P, NP, CPL)
+> +4'b0010: outbound TLPs (P, NP, CPL) and inbound TLPs (P, NP, CPL B)
+> +4'b0011: outbound TLPs (P, NP, CPL) and inbound TLPs (CPL A)
+> +
+> +When the desired format is 8DW, directions and related values supported are
+> +shown below:
+> +
+> +4'b0000: reserved
+> +4'b0001: outbound TLPs (P, NP, CPL)
+> +4'b0010: inbound TLPs (P, NP, CPL B)
+> +4'b0011: inbound TLPs (CPL A)
+> +
+> +Inbound completions are classifed into two types:
+
+classified
+
+> +
+> +completion A (CPL A): completion of CHI/DMA/Native non-posted requests, except for CPL B
+> +completion B (CPL B): completion of DMA remote2local and P2P non-posted requests
+> +
+> +4. format
+> +--------------
+> +
+> +You can change the format of the traced TLP headers by specifying the
+> +`format` parameter. This is optional and the default format is 4DW.
+
+As there is a default, there is no need to also say it is optional.
+`format parameter. The default format is 4DW.
+
+> +The parameter value is 4 bit. Current supported formats and related
+> +values are shown below:
+> +
+> +4'b0000: 4DW length per TLP header
+> +4'b0001: 8DW length per TLP header
+> +
+> +The traced TLP header format is different from the PCIe standard.
+> +
+> +When using the 8DW data format, the entire TLP header is logged
+> +(Header DW0-3 shown below). For example, the TLP header for Memory
+> +Reads with 64-bit addresses is shown in PCIe r5.0, Figure 2-17;
+> +the header for Configuration Requests is shown in Figure 2.20, etc.
+> +
+> +In addition, 8DW trace buffer entries contain a timestamp and
+> +possibly a prefix for a PASID TLP prefix (see Figure 6-20, PCIe r5.0).
+> +Otherwise this field will be all 0.
+> +
+> +The bit[31:11] of DW0 is always 0x1fffff, which can be
+> +used to distinguish the data format. 8DW format is like
+> +::
+> +    bits [                 31:11                 ][       10:0       ]
+> +         |---------------------------------------|-------------------|
+> +     DW0 [                0x1fffff               ][ Reserved (0x7ff) ]
+> +     DW1 [                       Prefix                              ]
+> +     DW2 [                     Header DW0                            ]
+> +     DW3 [                     Header DW1                            ]
+> +     DW4 [                     Header DW2                            ]
+> +     DW5 [                     Header DW3                            ]
+> +     DW6 [                   Reserved (0x0)                          ]
+> +     DW7 [                        Time                               ]
+> +
+> +When using the 4DW data format, DW0 of the trace buffer entry
+> +contains selected fields of DW0 of the TLP, together with a
+> +timestamp.  DW1-DW3 of the trace buffer entry contain DW1-DW3
+> +directly from the TLP header.
+> +
+> +4DW format is like
+> +::
+> +    bits [31:30] [ 29:25 ][24][23][22][21][    20:11   ][    10:0    ]
+> +         |-----|---------|---|---|---|---|-------------|-------------|
+> +     DW0 [ Fmt ][  Type  ][T9][T8][TH][SO][   Length   ][    Time    ]
+> +     DW1 [                     Header DW1                            ]
+> +     DW2 [                     Header DW2                            ]
+> +     DW3 [                     Header DW3                            ]
+> +
+> +5. memory management
+> +--------------------
+> +
+> +The traced TLP headers will be written to the memory allocated
+> +by the driver. The hardware accepts 4 DMA address with same size,
+> +and writes the buffer sequentially like below. If DMA addr 3 is
+> +finished and the trace is still on, it will return to addr 0.
+> +::
+> +    +->[DMA addr 0]->[DMA addr 1]->[DMA addr 2]->[DMA addr 3]-+
+> +    +---------------------------------------------------------+
+> +
+> +Driver will allocate each DMA buffer of 4MiB. The finished buffer
+> +will be copied to the perf AUX buffer allocated by the perf core.
+> +Once the AUX buffer is full while the trace is still on, driver
+> +will commit the AUX buffer first and then apply for a new one with
+> +the same size. The size of AUX buffer is default to 16MiB. User can
+> +adjust the size by specifying the `-m` parameter of the perf command.
+> +
+> +Note that there is a gap between committing the old AUX buffer and
+> +applying a new one, which means the trace is stopped during the
+> +moment and TLPs transferred in the moment cannot be traced. To avoid
+> +this situation, you should begin the trace with large AUX buffer
+> +enough to avoid this gap.
+> +
+> +6. decoding
+> +-----------
+> +
+> +You can decode the traced data with `perf report -D` command (currently
+> +only support to dump the raw trace data). The traced data will be decoded
+> +according to the format described previously (take 8DW as an example):
+> +::
+> +    [...perf headers and other information]
+> +    . ... HISI PTT data: size 4194304 bytes
+> +    .  00000000: 00 00 00 00                                 Prefix
+> +    .  00000004: 01 00 00 60                                 Header DW0
+> +    .  00000008: 0f 1e 00 01                                 Header DW1
+> +    .  0000000c: 04 00 00 00                                 Header DW2
+> +    .  00000010: 40 00 81 02                                 Header DW3
+> +    .  00000014: 33 c0 04 00                                 Time
+> +    .  00000020: 00 00 00 00                                 Prefix
+> +    .  00000024: 01 00 00 60                                 Header DW0
+> +    .  00000028: 0f 1e 00 01                                 Header DW1
+> +    .  0000002c: 04 00 00 00                                 Header DW2
+> +    .  00000030: 40 00 81 02                                 Header DW3
+> +    .  00000034: 02 00 00 00                                 Time
+> +    .  00000040: 00 00 00 00                                 Prefix
+> +    .  00000044: 01 00 00 60                                 Header DW0
+> +    .  00000048: 0f 1e 00 01                                 Header DW1
+> +    .  0000004c: 04 00 00 00                                 Header DW2
+> +    .  00000050: 40 00 81 02                                 Header DW3
+> +    [...]
 
