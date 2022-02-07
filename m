@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C9AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC63C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356238AbiBGQnd (ORCPT
+        id S1356994AbiBGQne (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:43:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
+        Mon, 7 Feb 2022 11:43:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390538AbiBGQfA (ORCPT
+        with ESMTP id S244922AbiBGQfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:35:00 -0500
+        Mon, 7 Feb 2022 11:35:05 -0500
 Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EBD9DC0401EF
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:34:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2591EC0401DD
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:35:03 -0800 (PST)
 Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOedx014410;
-        Mon, 7 Feb 2022 17:24:40 +0100
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOfQI014419;
+        Mon, 7 Feb 2022 17:24:41 +0100
 From:   Willy Tarreau <w@1wt.eu>
 To:     "Paul E . McKenney" <paulmck@kernel.org>
 Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
         Willy Tarreau <w@1wt.eu>
-Subject: [PATCH 27/42] tools/nolibc/sys: make getpgrp(), getpid(), gettid() not set errno
-Date:   Mon,  7 Feb 2022 17:23:39 +0100
-Message-Id: <20220207162354.14293-28-w@1wt.eu>
+Subject: [PATCH 35/42] tools/nolibc/string: export memset() and memmove()
+Date:   Mon,  7 Feb 2022 17:23:47 +0100
+Message-Id: <20220207162354.14293-36-w@1wt.eu>
 X-Mailer: git-send-email 2.17.5
 In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
 References: <20220207162354.14293-1-w@1wt.eu>
@@ -33,63 +33,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These syscalls never fail so there is no need to extract and set errno
-for them.
+"clang -Os" and "gcc -Ofast" without -ffreestanding may ignore memset()
+and memmove(), hoping to provide their builtin equivalents, and finally
+not find them. Thus we must export these functions for these rare cases.
+Note that as they're set in their own sections, they will be eliminated
+by the linker if not used. In addition, they do not prevent gcc from
+identifying them and replacing them with the shorter "rep movsb" or
+"rep stosb" when relevant.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- tools/include/nolibc/sys.h | 24 +++---------------------
- 1 file changed, 3 insertions(+), 21 deletions(-)
+ tools/include/nolibc/string.h | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/tools/include/nolibc/sys.h b/tools/include/nolibc/sys.h
-index 539af457a91b..ef017cc0a580 100644
---- a/tools/include/nolibc/sys.h
-+++ b/tools/include/nolibc/sys.h
-@@ -458,13 +458,7 @@ pid_t sys_getpgrp(void)
- static __attribute__((unused))
- pid_t getpgrp(void)
- {
--	pid_t ret = sys_getpgrp();
--
--	if (ret < 0) {
--		SET_ERRNO(-ret);
--		ret = -1;
--	}
--	return ret;
-+	return sys_getpgrp();
+diff --git a/tools/include/nolibc/string.h b/tools/include/nolibc/string.h
+index c1661589cb3c..4554b6fcb400 100644
+--- a/tools/include/nolibc/string.h
++++ b/tools/include/nolibc/string.h
+@@ -47,7 +47,10 @@ void *_nolibc_memcpy_down(void *dst, const void *src, size_t len)
+ 	return dst;
  }
  
- 
-@@ -481,13 +475,7 @@ pid_t sys_getpid(void)
- static __attribute__((unused))
- pid_t getpid(void)
+-static __attribute__((unused))
++/* might be ignored by the compiler without -ffreestanding, then found as
++ * missing.
++ */
++__attribute__((weak,unused,section(".text.nolibc_memmove")))
+ void *memmove(void *dst, const void *src, size_t len)
  {
--	pid_t ret = sys_getpid();
--
--	if (ret < 0) {
--		SET_ERRNO(-ret);
--		ret = -1;
--	}
--	return ret;
-+	return sys_getpid();
+ 	size_t dir, pos;
+@@ -75,7 +78,10 @@ void *memcpy(void *dst, const void *src, size_t len)
+ 	return _nolibc_memcpy_up(dst, src, len);
  }
  
- 
-@@ -504,13 +492,7 @@ pid_t sys_gettid(void)
- static __attribute__((unused))
- pid_t gettid(void)
+-static __attribute__((unused))
++/* might be ignored by the compiler without -ffreestanding, then found as
++ * missing.
++ */
++__attribute__((weak,unused,section(".text.nolibc_memset")))
+ void *memset(void *dst, int b, size_t len)
  {
--	pid_t ret = sys_gettid();
--
--	if (ret < 0) {
--		SET_ERRNO(-ret);
--		ret = -1;
--	}
--	return ret;
-+	return sys_gettid();
- }
- 
- 
+ 	char *p = dst;
 -- 
 2.35.1
 
