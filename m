@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 916B5C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6F0C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359433AbiBGLOw (ORCPT
+        id S1358966AbiBGLOr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:14:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
+        Mon, 7 Feb 2022 06:14:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343595AbiBGLL0 (ORCPT
+        with ESMTP id S241733AbiBGLLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:11:26 -0500
+        Mon, 7 Feb 2022 06:11:19 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994D3C043181;
-        Mon,  7 Feb 2022 03:11:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7985BC0401C1;
+        Mon,  7 Feb 2022 03:11:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54CBDB80EC3;
-        Mon,  7 Feb 2022 11:11:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77227C004E1;
-        Mon,  7 Feb 2022 11:11:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AB91B80EE8;
+        Mon,  7 Feb 2022 11:11:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F04AC004E1;
+        Mon,  7 Feb 2022 11:11:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232283;
-        bh=vUVllwFVFBsSbxrgKrcpea+UkBuD/6BtF3/nSWDWPlQ=;
+        s=korg; t=1644232276;
+        bh=YsRx6WK12xvS86SkETnSzshMl+yodYOA2OdexcTU104=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rKOa0us9b+4DVWNAlZQFSJJm9h8a2nys09WHOq0GdjuldciughsUygZm1F98WKPYQ
-         IpZ0vvGmXxTIlYL6op2wYsYZmYT3v4IwZS7i8pc9rsAZ8ip0pVz1lVPogVnxK4Wduw
-         ldzF3dWHv2k4DjO3g7nq1jb1NX4M4H2udVUo2B8c=
+        b=jYLJH1HvHx9SBAG0Obw8aPv0Zyqxhc423jbEFR6Fbb/I8Lt6FhWI5pCW/guHGZnt9
+         DpJrusd1vNthFOu/hzIGbWgwZnNYOJifWqa8yDGWg3hgPmfzJ6R9DP/PsfYnnrrigi
+         5sW0McmizOOeQ8g3S8nWM8ifwCiUroMhwzs1X8fk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 28/69] hwmon: (lm90) Reduce maximum conversion rate for G781
-Date:   Mon,  7 Feb 2022 12:05:50 +0100
-Message-Id: <20220207103756.549415962@linuxfoundation.org>
+Subject: [PATCH 4.14 26/69] ping: fix the sk_bound_dev_if match in ping_lookup
+Date:   Mon,  7 Feb 2022 12:05:48 +0100
+Message-Id: <20220207103756.484887582@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -49,39 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit a66c5ed539277b9f2363bbace0dba88b85b36c26 ]
+commit 2afc3b5a31f9edf3ef0f374f5d70610c79c93a42 upstream.
 
-According to its datasheet, G781 supports a maximum conversion rate value
-of 8 (62.5 ms). However, chips labeled G781 and G780 were found to only
-support a maximum conversion rate value of 7 (125 ms). On the other side,
-chips labeled G781-1 and G784 were found to support a conversion rate value
-of 8. There is no known means to distinguish G780 from G781 or G784; all
-chips report the same manufacturer ID and chip revision.
-Setting the conversion rate register value to 8 on chips not supporting
-it causes unexpected behavior since the real conversion rate is set to 0
-(16 seconds) if a value of 8 is written into the conversion rate register.
-Limit the conversion rate register value to 7 for all G78x chips to avoid
-the problem.
+When 'ping' changes to use PING socket instead of RAW socket by:
 
-Fixes: ae544f64cc7b ("hwmon: (lm90) Add support for GMT G781")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+   # sysctl -w net.ipv4.ping_group_range="0 100"
+
+the selftests 'router_broadcast.sh' will fail, as such command
+
+  # ip vrf exec vrf-h1 ping -I veth0 198.51.100.255 -b
+
+can't receive the response skb by the PING socket. It's caused by mismatch
+of sk_bound_dev_if and dif in ping_rcv() when looking up the PING socket,
+as dif is vrf-h1 if dif's master was set to vrf-h1.
+
+This patch is to fix this regression by also checking the sk_bound_dev_if
+against sdif so that the packets can stil be received even if the socket
+is not bound to the vrf device but to the real iif.
+
+Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/lm90.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/ping.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/hwmon/lm90.c
-+++ b/drivers/hwmon/lm90.c
-@@ -359,7 +359,7 @@ static const struct lm90_params lm90_par
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
- 		  | LM90_HAVE_BROKEN_ALERT,
- 		.alert_alarms = 0x7c,
--		.max_convrate = 8,
-+		.max_convrate = 7,
- 	},
- 	[lm86] = {
- 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT,
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -225,7 +225,8 @@ static struct sock *ping_lookup(struct n
+ 			continue;
+ 		}
+ 
+-		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif)
++		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
++		    sk->sk_bound_dev_if != inet_sdif(skb))
+ 			continue;
+ 
+ 		sock_hold(sk);
 
 
