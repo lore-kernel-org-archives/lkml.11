@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABD7C4708C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC7EC38A06
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391384AbiBGMBi (ORCPT
+        id S1391427AbiBGMBt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:01:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
+        Mon, 7 Feb 2022 07:01:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386785AbiBGLgq (ORCPT
+        with ESMTP id S1386787AbiBGLgv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:36:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188F1C043181;
-        Mon,  7 Feb 2022 03:36:45 -0800 (PST)
+        Mon, 7 Feb 2022 06:36:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46D8C043181;
+        Mon,  7 Feb 2022 03:36:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0415B8112E;
-        Mon,  7 Feb 2022 11:36:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D55A6C004E1;
-        Mon,  7 Feb 2022 11:36:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 491B460A69;
+        Mon,  7 Feb 2022 11:36:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 645F1C004E1;
+        Mon,  7 Feb 2022 11:36:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233802;
-        bh=Bhdf+S29ZevkiMeS0rzmUpQEcBMlLRTwt6TQNWmKMNc=;
+        s=korg; t=1644233809;
+        bh=ugirauE7wsGqXb36nXK6gxIvb+7wGHj2bprs0GCSXLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WOgyTYF1ZRY+aRc9Dy9//oH1HNDjAO1LnHFmBRuFG5jcnCqEJSC3MVPEa0gjOK+z/
-         tSry8nGC+VYla98xNGcPRf8p1T+hhi5f4KcJkjz/LKVXy9Kj5kZzPTl7VIUAE56FoG
-         ok1P64yIA70by5o+U3kVoc2sZhUMd2UFC0bZkog4=
+        b=njsGotnMmV+snq/HyLqoPNzSLQnyztyPDzqvb6/c0IA+A1lPqF+vOHfUgYMQy+vNV
+         xRAQvNdSThVWNYZObGtrg1imdM7LFKoXsrPxHNhK8iCFksJuTUgegVEC5RkN5ySnLP
+         pMc+mIKOoW8kwh444wUcY0SpGdeM4N7kgygS4YhU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH 5.16 123/126] gpio: idt3243x: Fix an ignored error return from platform_get_irq()
-Date:   Mon,  7 Feb 2022 12:07:34 +0100
-Message-Id: <20220207103808.296043047@linuxfoundation.org>
+        stable@vger.kernel.org, Kane Chen <kane.chen@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Grace Kao <grace.kao@intel.com>
+Subject: [PATCH 5.16 094/126] pinctrl: intel: Fix a glitch when updating IRQ flags on a preconfigured line
+Date:   Mon,  7 Feb 2022 12:07:05 +0100
+Message-Id: <20220207103807.329696976@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,37 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Li <yang.lee@linux.alibaba.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-commit 7c1cf55577782725ea2bc24687767c8fe8e57486 upstream.
+commit e12963c453263d5321a2c610e98cbc731233b685 upstream.
 
-The return from the call to platform_get_irq() is int, it can be
-a negative error code, however this is being assigned to an unsigned
-int variable 'parent_irq', so making 'parent_irq' an int.
+The commit af7e3eeb84e2 ("pinctrl: intel: Disable input and output buffer
+when switching to GPIO") hadn't taken into account an update of the IRQ
+flags scenario.
 
-Eliminate the following coccicheck warning:
-./drivers/gpio/gpio-idt3243x.c:167:6-16: WARNING: Unsigned expression
-compared with zero: parent_irq < 0
+When updating the IRQ flags on the preconfigured line the ->irq_set_type()
+is called again. In such case the sequential Rx buffer configuration
+changes may trigger a falling or rising edge interrupt that may lead,
+on some platforms, to an undesired event.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Fixes: 30fee1d7462a ("gpio: idt3243x: Fix IRQ check in idt_gpio_probe")
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+This may happen because each of intel_gpio_set_gpio_mode() and
+__intel_gpio_set_direction() updates the pad configuration with a different
+value of the GPIORXDIS bit. Notable, that the intel_gpio_set_gpio_mode() is
+called only for the pads that are configured as an input. Due to this fact,
+integrate the logic of __intel_gpio_set_direction() call into the
+intel_gpio_set_gpio_mode() so that the Rx buffer won't be disabled and
+immediately re-enabled.
+
+Fixes: af7e3eeb84e2 ("pinctrl: intel: Disable input and output buffer when switching to GPIO")
+Reported-by: Kane Chen <kane.chen@intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Tested-by: Grace Kao <grace.kao@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpio-idt3243x.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/intel/pinctrl-intel.c |   10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
---- a/drivers/gpio/gpio-idt3243x.c
-+++ b/drivers/gpio/gpio-idt3243x.c
-@@ -132,7 +132,7 @@ static int idt_gpio_probe(struct platfor
- 	struct device *dev = &pdev->dev;
- 	struct gpio_irq_chip *girq;
- 	struct idt_gpio_ctrl *ctrl;
--	unsigned int parent_irq;
-+	int parent_irq;
- 	int ngpios;
- 	int ret;
+--- a/drivers/pinctrl/intel/pinctrl-intel.c
++++ b/drivers/pinctrl/intel/pinctrl-intel.c
+@@ -451,8 +451,8 @@ static void intel_gpio_set_gpio_mode(voi
+ 	value &= ~PADCFG0_PMODE_MASK;
+ 	value |= PADCFG0_PMODE_GPIO;
  
+-	/* Disable input and output buffers */
+-	value |= PADCFG0_GPIORXDIS;
++	/* Disable TX buffer and enable RX (this will be input) */
++	value &= ~PADCFG0_GPIORXDIS;
+ 	value |= PADCFG0_GPIOTXDIS;
+ 
+ 	/* Disable SCI/SMI/NMI generation */
+@@ -497,9 +497,6 @@ static int intel_gpio_request_enable(str
+ 
+ 	intel_gpio_set_gpio_mode(padcfg0);
+ 
+-	/* Disable TX buffer and enable RX (this will be input) */
+-	__intel_gpio_set_direction(padcfg0, true);
+-
+ 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
+ 
+ 	return 0;
+@@ -1115,9 +1112,6 @@ static int intel_gpio_irq_type(struct ir
+ 
+ 	intel_gpio_set_gpio_mode(reg);
+ 
+-	/* Disable TX buffer and enable RX (this will be input) */
+-	__intel_gpio_set_direction(reg, true);
+-
+ 	value = readl(reg);
+ 
+ 	value &= ~(PADCFG0_RXEVCFG_MASK | PADCFG0_RXINV);
 
 
