@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BABDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D76FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239870AbiBGToz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:44:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
+        id S240032AbiBGTo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:44:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240734AbiBGTne (ORCPT
+        with ESMTP id S240498AbiBGTnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:43:34 -0500
+        Mon, 7 Feb 2022 14:43:31 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C69C0401DA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:43:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC43C0401E2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:43:30 -0800 (PST)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644263010;
+        s=2020; t=1644263008;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=I/+tO1foi0Y2Jl4gBJOBBXHVMgC1lG8mZRnsEtx1+Ms=;
-        b=r6aim1QmJwP1Et76JlWvlODj8d9ZgKUCOagNmdgI965rmll3fNNo3Jy69m707YkjmPQbfR
-        EvjL3Gx8sO3iHfalDPDUXFq+4kZu7myu3U3yAclfnqa6iKLhFX9ZP8wODzl779WyT7xvxw
-        CZw8Qc5ench9WU9DZfS2wVpBTZweaQw99JAU5V3y9iauQPp5AdSUdfbG8Ayoxohu5cG6je
-        vtIYfDJU5x4O8y8I37Qv8CQGkRZtwyi/s6KEBXbCx0K43tpVifyiAp1qGpjyCAqYBniEcQ
-        m24bfBTotzPulMWFqJBolMSg1WXlZbmlHeFZpXypvBCMnGJsR8JKhXI1jpbWng==
+        bh=7hqu9l5kqJCuQTlbnhEqTk9n+e1ZXESo2zvx1X+Jm9U=;
+        b=KCEZ9QqCoglJ6rbCvkG2Lc4Ar8XzRF7VZjI4QZuptkHkDzaYQAEnjgTLYFZNAlbnz2/oVW
+        eBoYR16s+ED6bJSkfoLy08MNL6FOZ62lhkxWBkEtv41VcAfdPwNlv8d8nqIkfSpx4+jKgE
+        UBD+2Gf1n+d+YAZkHejYyErscW7yZqSRCRuIMh7rcFK9NexKuyJBMjZcK5MBuSHewNYKPP
+        c98/jQqwIZ17+pjVG5Dl5npTak+lHZYkoVLFWEO5gqNGkUR7xHAxAIC9nz6AuBqr8MMAWz
+        VaiTyMKi80a92MaLK/VD9E7aisaR6pt+FiSul3oWKOn3EY13u0oqMWLmk+vlNw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644263010;
+        s=2020e; t=1644263008;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=I/+tO1foi0Y2Jl4gBJOBBXHVMgC1lG8mZRnsEtx1+Ms=;
-        b=+X33JuijHrJU3oQTPQe1lBIS0HXGWwsg10GUeVDlZ19LG333SD6t4gHKBBQtW6st4qwUBD
-        zStNmidibGj1zWAA==
+        bh=7hqu9l5kqJCuQTlbnhEqTk9n+e1ZXESo2zvx1X+Jm9U=;
+        b=VVfxGjuen9ls0fccEf4kFtzhuyQPHueMvtv8Bjr1fNjthZWa5VvhCexTVADPGnizGOyLCM
+        vzUHA65jiZhZDABw==
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH printk v1 10/13] printk: add kthread console printers
-Date:   Mon,  7 Feb 2022 20:49:20 +0106
-Message-Id: <20220207194323.273637-11-john.ogness@linutronix.de>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH printk v1 07/13] printk: move buffer definitions into console_emit_next_record() caller
+Date:   Mon,  7 Feb 2022 20:49:17 +0106
+Message-Id: <20220207194323.273637-8-john.ogness@linutronix.de>
 In-Reply-To: <20220207194323.273637-1-john.ogness@linutronix.de>
 References: <20220207194323.273637-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -54,291 +53,181 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Create a kthread for each console to perform console printing. During
-normal operation (@system_state == SYSTEM_RUNNING), the kthread
-printers are responsible for all printing on their respective
-consoles.
+Extended consoles print extended messages and do not print messages about
+dropped records.
 
-During non-normal operation, console printing is done as it has been:
-within the context of the printk caller or within irq work triggered
-by the printk caller.
+Non-extended consoles print "normal" messages as well as extra messages
+about dropped records.
 
-Console printers synchronize against each other and against console
-lockers by taking the console lock for each message that is printed.
+Currently the buffers for these various message types are defined within
+the functions that might use them and their usage is based upon the
+CON_EXTENDED flag. This will be a problem when moving to kthread printers
+because each printer must be able to provide its own buffers.
+
+Move all the message buffer definitions outside of
+console_emit_next_record(). The caller knows if extended or dropped
+messages should be printed and can specify the appropriate buffers to
+use. The console_emit_next_record() and call_console_driver() functions
+can know what to print based on whether specified buffers are non-NULL.
+
+With this change, buffer definition/allocation/specification is separated
+from the code that does the various types of string printing.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- include/linux/console.h |   2 +
- kernel/printk/printk.c  | 159 +++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 159 insertions(+), 2 deletions(-)
+ kernel/printk/printk.c | 60 ++++++++++++++++++++++++++++++------------
+ 1 file changed, 43 insertions(+), 17 deletions(-)
 
-diff --git a/include/linux/console.h b/include/linux/console.h
-index 56a6669471a6..0f94b1771df8 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -153,6 +153,8 @@ struct console {
- 	uint	ospeed;
- 	u64	seq;
- 	unsigned long dropped;
-+	struct task_struct *thread;
-+
- 	void	*data;
- 	struct	 console *next;
- };
 diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 719b05e6ce3b..e182f31fec58 100644
+index 822b7b6ad6d1..02bde45c1149 100644
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -347,6 +347,13 @@ static int console_msg_format = MSG_FORMAT_DEFAULT;
- /* syslog_lock protects syslog_* variables and write access to clear_seq. */
- static DEFINE_MUTEX(syslog_lock);
+@@ -380,6 +380,9 @@ static struct latched_seq clear_seq = {
+ /* the maximum size of a formatted record (i.e. with prefix added per line) */
+ #define CONSOLE_LOG_MAX		1024
  
-+/*
-+ * A flag to signify if printk_late_init() has already started the kthread
-+ * printers. If true, any later registered consoles must start their own
-+ * kthread directly. The flag is write protected by the console_lock.
-+ */
-+static bool kthreads_started;
++/* the maximum size for a dropped text message */
++#define DROPPED_TEXT_MAX	64
 +
- #ifdef CONFIG_PRINTK
- static atomic_t printk_direct = ATOMIC_INIT(0);
+ /* the maximum size allowed to be reserved for a record */
+ #define LOG_LINE_MAX		(CONSOLE_LOG_MAX - PREFIX_MAX)
  
-@@ -373,6 +380,14 @@ void printk_direct_exit(void)
- 	atomic_dec(&printk_direct);
- }
+@@ -1877,18 +1880,18 @@ static int console_trylock_spinning(void)
  
-+static inline bool allow_direct_printing(void)
-+{
-+	return (!kthreads_started ||
-+		system_state != SYSTEM_RUNNING ||
-+		oops_in_progress ||
-+		atomic_read(&printk_direct));
-+}
-+
- DECLARE_WAIT_QUEUE_HEAD(log_wait);
- /* All 3 protected by @syslog_lock. */
- /* the next printk record to read by syslog(READ) or /proc/kmsg */
-@@ -2225,7 +2240,7 @@ asmlinkage int vprintk_emit(int facility, int level,
- 	printed_len = vprintk_store(facility, level, dev_info, fmt, args);
+ /*
+  * Call the specified console driver, asking it to write out the specified
+- * text and length. For non-extended consoles, if any records have been
++ * text and length. If @dropped_text is non-NULL and any records have been
+  * dropped, a dropped message will be written out first.
+  */
+-static void call_console_driver(struct console *con, const char *text, size_t len)
++static void call_console_driver(struct console *con, const char *text, size_t len,
++				char *dropped_text)
+ {
+-	static char dropped_text[64];
+ 	size_t dropped_len;
  
- 	/* If called from the scheduler, we can not call up(). */
--	if (!in_sched) {
-+	if (!in_sched && allow_direct_printing()) {
- 		/*
- 		 * Disable preemption to avoid being preempted while holding
- 		 * console_sem which would prevent anyone from printing to
-@@ -2266,6 +2281,8 @@ asmlinkage __visible int _printk(const char *fmt, ...)
- }
- EXPORT_SYMBOL(_printk);
+ 	trace_console_rcuidle(text, len);
  
-+static void start_printk_kthread(struct console *con);
-+
+-	if (con->dropped && !(con->flags & CON_EXTENDED)) {
+-		dropped_len = snprintf(dropped_text, sizeof(dropped_text),
++	if (con->dropped && dropped_text) {
++		dropped_len = snprintf(dropped_text, DROPPED_TEXT_MAX,
+ 				       "** %lu printk messages dropped **\n",
+ 				       con->dropped);
+ 		con->dropped = 0;
+@@ -2241,6 +2244,7 @@ EXPORT_SYMBOL(_printk);
  #else /* CONFIG_PRINTK */
  
  #define CONSOLE_LOG_MAX		0
-@@ -2299,6 +2316,8 @@ static void call_console_driver(struct console *con, const char *text, size_t le
- }
++#define DROPPED_TEXT_MAX	0
+ #define printk_time		false
+ 
+ #define prb_read_valid(rb, seq, r)	false
+@@ -2264,7 +2268,10 @@ static ssize_t msg_print_ext_body(char *buf, size_t size,
+ 				  struct dev_printk_info *dev_info) { return 0; }
+ static void console_lock_spinning_enable(void) { }
+ static int console_lock_spinning_disable_and_check(void) { return 0; }
+-static void call_console_driver(struct console *con, const char *text, size_t len) {}
++static void call_console_driver(struct console *con, const char *text, size_t len,
++				char *dropped_text)
++{
++}
  static bool suppress_message_printing(int level) { return false; }
  static void printk_delay(int level) {}
-+static void start_printk_kthread(struct console *con) {}
-+static bool allow_direct_printing(void) { return true; }
  
- #endif /* CONFIG_PRINTK */
+@@ -2560,6 +2567,14 @@ static void __console_unlock(void)
+  * Print one record for the given console. The record printed is whatever
+  * record is the next available record for the given console.
+  *
++ * @text is a buffer of size CONSOLE_LOG_MAX.
++ *
++ * If extended messages should be printed, @ext_text is a buffer of size
++ * CONSOLE_EXT_LOG_MAX. Otherwise @ext_text must be NULL.
++ *
++ * If dropped messages should be printed, @dropped_text is a buffer of size
++ * DROPPED_TEXT_MAX. Otherwise @dropped_text must be NULL.
++ *
+  * Requires the console_lock.
+  *
+  * Returns false if the given console has no next record to print, otherwise
+@@ -2569,17 +2584,16 @@ static void __console_unlock(void)
+  * console_lock, in which case the caller is no longer holding the
+  * console_lock. Otherwise it is set to false.
+  */
+-static bool console_emit_next_record(struct console *con, bool *handover)
++static bool console_emit_next_record(struct console *con, char *text, char *ext_text,
++				     char *dropped_text, bool *handover)
+ {
+-	static char ext_text[CONSOLE_EXT_LOG_MAX];
+-	static char text[CONSOLE_LOG_MAX];
+ 	struct printk_info info;
+ 	struct printk_record r;
+ 	unsigned long flags;
+ 	char *write_text;
+ 	size_t len;
  
-@@ -2487,6 +2506,10 @@ void resume_console(void)
- 	down_console_sem();
- 	console_suspended = 0;
- 	console_unlock();
-+
-+	/* Wake the kthread printers. */
-+	wake_up_klogd();
-+
- 	pr_flush(1000, true);
- }
+-	prb_rec_init_rd(&r, &info, text, sizeof(text));
++	prb_rec_init_rd(&r, &info, text, CONSOLE_LOG_MAX);
  
-@@ -2702,6 +2725,10 @@ static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handove
  	*handover = false;
  
- 	do {
-+		/* Let the kthread printers do the work if they can. */
-+		if (!allow_direct_printing())
-+			break;
-+
- 		any_progress = false;
- 
- 		for_each_console(con) {
-@@ -2910,6 +2937,10 @@ void console_start(struct console *console)
- 	console_lock();
- 	console->flags |= CON_ENABLED;
- 	console_unlock();
-+
-+	/* Wake the kthread printers. */
-+	wake_up_klogd();
-+
- 	pr_flush(1000, true);
- }
- EXPORT_SYMBOL(console_start);
-@@ -3114,6 +3145,8 @@ void register_console(struct console *newcon)
- 		/* Begin with next message. */
- 		newcon->seq = prb_next_seq(prb);
- 	}
-+	if (kthreads_started)
-+		start_printk_kthread(newcon);
- 	console_unlock();
- 	console_sysfs_notify();
- 
-@@ -3170,6 +3203,11 @@ int unregister_console(struct console *console)
- 		}
+@@ -2597,13 +2611,13 @@ static bool console_emit_next_record(struct console *con, bool *handover)
+ 		goto skip;
  	}
  
-+	if (console->thread) {
-+		kthread_stop(console->thread);
-+		console->thread = NULL;
-+	}
-+
- 	if (res)
- 		goto out_disable_unlock;
+-	if (con->flags & CON_EXTENDED) {
+-		write_text = &ext_text[0];
+-		len = info_print_ext_header(ext_text, sizeof(ext_text), r.info);
+-		len += msg_print_ext_body(ext_text + len, sizeof(ext_text) - len,
++	if (ext_text) {
++		write_text = ext_text;
++		len = info_print_ext_header(ext_text, CONSOLE_EXT_LOG_MAX, r.info);
++		len += msg_print_ext_body(ext_text + len, CONSOLE_EXT_LOG_MAX - len,
+ 					  &r.text_buf[0], r.info->text_len, &r.info->dev_info);
+ 	} else {
+-		write_text = &text[0];
++		write_text = text;
+ 		len = record_print_text(&r, console_msg_format & MSG_FORMAT_SYSLOG, printk_time);
+ 	}
  
-@@ -3275,6 +3313,13 @@ static int __init printk_late_init(void)
- 	ret = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN, "printk:online",
- 					console_cpu_notify, NULL);
- 	WARN_ON(ret < 0);
-+
-+	console_lock();
-+	for_each_console(con)
-+		start_printk_kthread(con);
-+	kthreads_started = true;
-+	console_unlock();
-+
- 	return 0;
- }
- late_initcall(printk_late_init);
-@@ -3345,6 +3390,116 @@ bool pr_flush(int timeout_ms, bool reset_on_progress)
- }
- EXPORT_SYMBOL(pr_flush);
+@@ -2621,7 +2635,7 @@ static bool console_emit_next_record(struct console *con, bool *handover)
+ 	console_lock_spinning_enable();
  
-+static bool printer_should_wake(struct console *con, u64 seq)
-+{
-+	short flags;
-+
-+	if (kthread_should_stop())
-+		return true;
-+
-+	if (console_suspended)
-+		return false;
-+
-+	/*
-+	 * This is an unsafe read to con->flags, but false positives
-+	 * are not an issue as long as they are rare.
-+	 */
-+	flags = data_race(READ_ONCE(con->flags));
-+	if (!(flags & CON_ENABLED))
-+		return false;
-+
-+	return prb_read_valid(prb, seq, NULL);
-+}
-+
-+static int printk_kthread_func(void *data)
-+{
-+	struct console *con = data;
-+	char *dropped_text = NULL;
-+	char *ext_text = NULL;
-+	bool progress;
-+	bool handover;
-+	u64 seq = 0;
-+	char *text;
-+	int error;
-+
-+	pr_info("%sconsole [%s%d]: printing thread started\n",
-+		(con->flags & CON_BOOT) ? "boot" : "",
-+		con->name, con->index);
-+
-+	text = kmalloc(CONSOLE_LOG_MAX, GFP_KERNEL);
-+	if (!text)
-+		goto out;
-+
-+	if (con->flags & CON_EXTENDED) {
-+		ext_text = kmalloc(CONSOLE_EXT_LOG_MAX, GFP_KERNEL);
-+		if (!ext_text)
-+			goto out;
-+	} else {
-+		dropped_text = kmalloc(DROPPED_TEXT_MAX, GFP_KERNEL);
-+		if (!dropped_text)
-+			goto out;
-+	}
-+
-+	for (;;) {
-+		error = wait_event_interruptible(log_wait, printer_should_wake(con, seq));
-+
-+		if (kthread_should_stop())
-+			break;
-+
-+		if (error)
-+			continue;
-+
-+		do {
-+			console_lock();
-+			if (console_suspended) {
-+				console_unlock();
-+				break;
-+			}
-+
-+			/*
-+			 * Even though the printk kthread is always preemptible, it is
-+			 * still not allowed to call cond_resched() from within
-+			 * console drivers. The task may become non-preemptible in the
-+			 * console driver call chain. For example, vt_console_print()
-+			 * takes a spinlock and then can call into fbcon_redraw(),
-+			 * which can conditionally invoke cond_resched().
-+			 */
-+			console_may_schedule = 0;
-+			progress = console_emit_next_record(con, text, ext_text,
-+							    dropped_text, &handover);
-+			if (handover)
-+				break;
-+
-+			seq = con->seq;
-+
-+			/* Unlock console without invoking direct printing. */
-+			__console_unlock();
-+		} while (progress);
-+	}
-+out:
-+	kfree(dropped_text);
-+	kfree(ext_text);
-+	kfree(text);
-+	pr_info("%sconsole [%s%d]: printing thread stopped\n",
-+		(con->flags & CON_BOOT) ? "boot" : "",
-+		con->name, con->index);
-+	return 0;
-+}
-+
-+/* Must be called within console_lock(). */
-+static void start_printk_kthread(struct console *con)
-+{
-+	con->thread = kthread_run(printk_kthread_func, con,
-+				  "pr/%s%d", con->name, con->index);
-+	if (IS_ERR(con->thread)) {
-+		con->thread = NULL;
-+		pr_err("%sconsole [%s%d]: unable to start printing thread\n",
-+			(con->flags & CON_BOOT) ? "boot" : "",
-+			con->name, con->index);
-+		return;
-+	}
-+}
-+
- /*
-  * Delayed printk version, for scheduler-internal messages:
+ 	stop_critical_timings();	/* don't trace print latency */
+-	call_console_driver(con, write_text, len);
++	call_console_driver(con, write_text, len, dropped_text);
+ 	start_critical_timings();
+ 
+ 	con->seq++;
+@@ -2650,6 +2664,9 @@ static bool console_emit_next_record(struct console *con, bool *handover)
   */
-@@ -3371,7 +3526,7 @@ static void wake_up_klogd_work_func(struct irq_work *irq_work)
- 	}
+ static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handover)
+ {
++	static char dropped_text[DROPPED_TEXT_MAX];
++	static char ext_text[CONSOLE_EXT_LOG_MAX];
++	static char text[CONSOLE_LOG_MAX];
+ 	bool any_usable = false;
+ 	struct console *con;
+ 	bool any_progress;
+@@ -2667,7 +2684,16 @@ static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handove
+ 				continue;
+ 			any_usable = true;
  
- 	if (pending & PRINTK_PENDING_WAKEUP)
--		wake_up_interruptible(&log_wait);
-+		wake_up_interruptible_all(&log_wait);
- }
+-			progress = console_emit_next_record(con, handover);
++			if (con->flags & CON_EXTENDED) {
++				/* Extended consoles do not print "dropped messages". */
++				progress = console_emit_next_record(con, &text[0],
++								    &ext_text[0], NULL,
++								    handover);
++			} else {
++				progress = console_emit_next_record(con, &text[0],
++								    NULL, &dropped_text[0],
++								    handover);
++			}
+ 			if (*handover)
+ 				return true;
  
- static DEFINE_PER_CPU(struct irq_work, wake_up_klogd_work) =
 -- 
 2.30.2
 
