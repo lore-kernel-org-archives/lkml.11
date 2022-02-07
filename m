@@ -2,89 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 957E3C352A7
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20242C47080
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345156AbiBHBEc (ORCPT
+        id S1344723AbiBHBDw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:04:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40334 "EHLO
+        Mon, 7 Feb 2022 20:03:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238617AbiBGXX5 (ORCPT
+        with ESMTP id S245472AbiBGXDb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:23:57 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4E3C061355;
-        Mon,  7 Feb 2022 15:23:56 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so806273pjh.3;
-        Mon, 07 Feb 2022 15:23:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Q4NGVfnZcTyTN7uyU45OoCJgZ8qSuaDFnbB0+R0yaoU=;
-        b=J9okMS8ibcD1d6kJ2AV43EegsSK00dpFoJfenatFVPg3mCkxf6l0+R3KeKcPlGYez+
-         vQgnpulyimR7MCNqt+YXLjIlKV4LHj03g6aGZoMAqs4bcns2qnl0gaUP59bcSVXBHzL/
-         tkWNYc/PKe/hrSnSZRyBEYR6Wee615vJTjgOERc241bmGaQY/4EwN6uvacVIbTKN0klS
-         5BhbvzJklY71KS1pj+/lXpLopOIyPTqGIH+/MK5NP9ySZANtgrTtCeOQa0+lcWicw2bl
-         loIsuUo2QSUSZEaofaom3wAidnQ0/QA2nR+U50syrh/GwTkTFBTgyzcIFCHW/RGcL2PE
-         asmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Q4NGVfnZcTyTN7uyU45OoCJgZ8qSuaDFnbB0+R0yaoU=;
-        b=qZ26S2aPK/BFav5nuPedhnca6DgASy6QdZEYR81n2BJcE1lyukuN6Bq6HqvBTUVdU+
-         87nqHZsi0gPzq0G9QYFKwyIHw7RPS7HHBm/Cjx//etupKbahJn5CaeiKFzSod5Kjzh1b
-         18RRHJqTD1GHF8Km8l66MB3iDyMDnmPKPbMadrrdCF2dX7+gH3bxn9d74aEkhCfWRYyy
-         ySjcuywNt/RFnoU3ZK1HSrXogfeCSqYzJAVhl0JWYbdlIU7aQRGajrhPvUkLEMRoSXnX
-         IvkrIdKuiNm6nyJQkKbnYmUq+drThEAuQhlCPN/dGf4LFaFiCjaespVO2DI25WlkTEAQ
-         FvGQ==
-X-Gm-Message-State: AOAM530nEOUT1JlKBTvmBSdLyS0LujuZqlXJKfPoFhrjvwsPbH5iEBaB
-        /ZvuJ01AsubpkZ3CIkfuS4A=
-X-Google-Smtp-Source: ABdhPJzPi+18QP61QkBD3QrQXZf2jGk9fBmgd2jZB23uHQUcVAWcdNe2AYk0ZeYIUsujebh3SGrVlQ==
-X-Received: by 2002:a17:902:e545:: with SMTP id n5mr1855955plf.129.1644276236236;
-        Mon, 07 Feb 2022 15:23:56 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id md9sm429343pjb.6.2022.02.07.15.23.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 15:23:55 -0800 (PST)
-Subject: Re: [PATCH v3] serial: 8250_bcm2835aux: Add ACPI support
-To:     Adrien Thierry <athierry@redhat.com>, linux-serial@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com
-References: <20220207232129.402882-1-athierry@redhat.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <8b19f824-cd4f-10fc-c13b-0b177324294c@gmail.com>
-Date:   Mon, 7 Feb 2022 15:23:51 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 7 Feb 2022 18:03:31 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0254C06109E
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:03:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644275010; x=1675811010;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ncFZ3GgiFenQLT9iFwTMGx9ZJmzYJBlebX18EhhOoaA=;
+  b=k5/Xj5dckNbdlxHhvR554H8HV0oJMNJo4BCJSVyWKuKyv6v7uZQr21vw
+   QIiNtk9O+gkSj59NS/guahtkY6U2FNaKWmsezBQxw93scfV9G1/dsK9Wh
+   AJXnMp6arGuMy4K4B/C/wTTwv3QSseaTb9h7BvtdYxiw9JMYEKg0/fTQO
+   cx4ZxI0yyXN00PYZv1xoSubrRlB/CcabQ81zQfLLeAnFHvhIx5Xh1BdSc
+   SEPKHaHHGp75v/KPl1VPkAq4OlnfCIHYKYLXZ5dqof952DF5dd2QELr/E
+   fKFs9oxj5GSjYbNlcMB3upR8Tj17j16PnsxaIjrfkoUj9P4gyHbyZ+K3p
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="229475024"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="229475024"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 15:03:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="540324104"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+  by orsmga008.jf.intel.com with ESMTP; 07 Feb 2022 15:03:07 -0800
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     "Thomas Gleixner" <tglx@linutronix.de>,
+        "Dave Hansen" <dave.hansen@linux.intel.com>,
+        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        "Tony Luck" <tony.luck@intel.com>,
+        "Lu Baolu" <baolu.lu@linux.intel.com>,
+        "Joerg Roedel" <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        "Jacob Pan" <jacob.jun.pan@linux.intel.com>,
+        "Ashok Raj" <ashok.raj@intel.com>,
+        "Ravi V Shankar" <ravi.v.shankar@intel.com>
+Cc:     iommu@lists.linux-foundation.org, "x86" <x86@kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        Fenghua Yu <fenghua.yu@intel.com>
+Subject: [PATCH v4 11/11] docs: x86: Change documentation for SVA (Shared Virtual Addressing)
+Date:   Mon,  7 Feb 2022 15:02:54 -0800
+Message-Id: <20220207230254.3342514-12-fenghua.yu@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207230254.3342514-1-fenghua.yu@intel.com>
+References: <20220207230254.3342514-1-fenghua.yu@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220207232129.402882-1-athierry@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 3:21 PM, Adrien Thierry wrote:
-> Add ACPI support to 8250_bcm2835aux driver. This makes it possible to
-> use the miniuart on the Raspberry Pi with the tianocore/edk2 UEFI
-> firmware.
-> 
-> Signed-off-by: Adrien Thierry <athierry@redhat.com>
+Since allocating, freeing and fixing up PASID are changed, the
+documentation is updated to reflect the changes.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Originally-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+---
+v3:
+- Remove PASID refcount description (Thomas).
 
-Looks a lot better, thanks!
+v2:
+- Update life cycle info (Tony and Thomas).
+- Update initial PASID value to INVALID_IOASID on fork().
+
+ Documentation/x86/sva.rst | 53 ++++++++++++++++++++++++++++++---------
+ 1 file changed, 41 insertions(+), 12 deletions(-)
+
+diff --git a/Documentation/x86/sva.rst b/Documentation/x86/sva.rst
+index 076efd51ef1f..1a22020735a3 100644
+--- a/Documentation/x86/sva.rst
++++ b/Documentation/x86/sva.rst
+@@ -104,18 +104,47 @@ The MSR must be configured on each logical CPU before any application
+ thread can interact with a device. Threads that belong to the same
+ process share the same page tables, thus the same MSR value.
+ 
+-PASID is cleared when a process is created. The PASID allocation and MSR
+-programming may occur long after a process and its threads have been created.
+-One thread must call iommu_sva_bind_device() to allocate the PASID for the
+-process. If a thread uses ENQCMD without the MSR first being populated, a #GP
+-will be raised. The kernel will update the PASID MSR with the PASID for all
+-threads in the process. A single process PASID can be used simultaneously
+-with multiple devices since they all share the same address space.
+-
+-One thread can call iommu_sva_unbind_device() to free the allocated PASID.
+-The kernel will clear the PASID MSR for all threads belonging to the process.
+-
+-New threads inherit the MSR value from the parent.
++PASID Life Cycle Management
++==========================
++
++PASID is initialized as INVALID_IOASID (-1) when a process is created.
++
++Only processes that access SVA-capable devices need to have a PASID
++allocated. This allocation happens when a process opens/binds an SVA-capable
++device but finds no PASID for this process. Subsequent binds of the same, or
++other devices will share the same PASID.
++
++Although the PASID is allocated to the process by opening a device,
++it is not active in any of the threads of that process. It's loaded to the
++IA32_PASID MSR lazily when a thread tries to submit a work descriptor
++to a device using the ENQCMD.
++
++That first access will trigger a #GP fault because the IA32_PASID MSR
++has not been initialized with the PASID value assigned to the process
++when the device was opened. The Linux #GP handler notes that a PASID has
++been allocated for the process, and so initializes the IA32_PASID MSR
++and returns so that the ENQCMD instruction is re-executed.
++
++On fork(2) or exec(2) the PASID is removed from the process as it no
++longer has the same address space that it had when the device was opened.
++
++On clone(2) the new task shares the same address space, so will be
++able to use the PASID allocated to the process. The IA32_PASID is not
++preemptively initialized as the PASID value might not be allocated yet or
++the kernel does not know whether this thread is going to access the device
++and the cleared IA32_PASID MSR reduces context switch overhead by xstate
++init optimization. Since #GP faults have to be handled on any threads that
++were created before the PASID was assigned to the mm of the process, newly
++created threads might as well be treated in a consistent way.
++
++Due to complexity of freeing the PASID and clearing all IA32_PASID MSRs in
++all threads in unbind, free the PASID lazily only on mm exit.
++
++If a process does a close(2) of the device file descriptor and munmap(2)
++of the device MMIO portal, then the driver will unbind the device. The
++PASID is still marked VALID in the PASID_MSR for any threads in the
++process that accessed the device. But this is harmless as without the
++MMIO portal they cannot submit new work to the device.
+ 
+ Relationships
+ =============
 -- 
-Florian
+2.35.1
+
