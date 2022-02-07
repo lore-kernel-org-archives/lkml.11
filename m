@@ -2,264 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB2C3C41535
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C08AC35273
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390009AbiBGOTI (ORCPT
+        id S1391064AbiBGOTO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:19:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
+        Mon, 7 Feb 2022 09:19:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390892AbiBGOFQ (ORCPT
+        with ESMTP id S1391016AbiBGOIf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:05:16 -0500
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84EC8C0401C1;
-        Mon,  7 Feb 2022 06:05:15 -0800 (PST)
-Received: by mail-qv1-xf2a.google.com with SMTP id n6so3090059qvk.13;
-        Mon, 07 Feb 2022 06:05:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4e57ECc88ObUFRE3T6xchOxT1G+E0Eq3NSVgXn5ZT9A=;
-        b=f9ef66wQqVwTbhz4xuq6dirYQq+SF+TQCowrRcLzq3CYSdARdCoBUNSvl8BEbGPNR4
-         cJm9f+L0UVAVvubvD61ABjvCMe72OY9mfBLzjEV6wRHp1EnxCmasKaB6kN9dWvvai4Qd
-         uaa1qKoTYk4pGT73uuVPAeq0p5wQaD8qDQrrz07j4sUBOEUNTcmXkrMO0tMUmNNR2nim
-         UHStwpSxePEiQptY46olQdwuq3L+9iFxz7MXocdIXFqU9UU91IktMXFV0kMNgPJcw+JU
-         RNT0tZA7we521r3OC3y4zdqFZ0k1QVW2pl3Nb2+nZfigtjfy3a2WZW6bF2YjaYbqjeh7
-         9ZWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4e57ECc88ObUFRE3T6xchOxT1G+E0Eq3NSVgXn5ZT9A=;
-        b=UJq+uNQ3k1DvvypGF8pyNbASoaw1ybN688zjd7E+Wys8rsQISUqBZntmlvgkLtnINk
-         +Navz24ynk+15V20XSMU4DKm5sMHzAc26Xho1sL4TMv+i196+F6BJyPqB/+ySG3oonIi
-         ZozjBQQmpPhld9mCDJCq5vManIhFYnfIbp2ml1eYsNNQbLUh9o+HM+DL8dLBoVArDoTY
-         Nb/IwtHEPSRnUAkinJZk1h+H+x02vzd4ra7C7bGaWQAYXiQXvAg2LeDo1YxIhPwhVn6h
-         yCFkd7rgpSD+G6UVXSbOAZMUG3dhkTzXQ6NpagloMYLmL51qU7DYisvfmr+bnIwekgiB
-         SwjA==
-X-Gm-Message-State: AOAM530EEWLdVPzPhs4rpXoVLffQasgiOidRpJP8gGNLZIyBaEs7IkJ2
-        s+zZFA6g+3icscm7TAVKboSVWtGqwgk=
-X-Google-Smtp-Source: ABdhPJwBCCN+sdjLo++glU5qaaaAa0ABffvILOenb3+RoGRXBsjVos9YCpoqu5m3iYwoy0pLPKVAWw==
-X-Received: by 2002:a05:6214:29ec:: with SMTP id jv12mr10364431qvb.87.1644242714404;
-        Mon, 07 Feb 2022 06:05:14 -0800 (PST)
-Received: from shaak (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id h5sm5630060qti.95.2022.02.07.06.05.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 06:05:13 -0800 (PST)
-Date:   Mon, 7 Feb 2022 09:05:11 -0500
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Peter Rosin <peda@axentia.se>, andy.shevchenko@gmail.com,
-        lars@metafoo.de, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org
-Subject: Re: [PATCH v13 06/11] iio: afe: rescale: make use of units.h
-Message-ID: <YgEnFw74CMXEnF+E@shaak>
-References: <20220130161101.1067691-1-liambeguin@gmail.com>
- <20220130161101.1067691-7-liambeguin@gmail.com>
- <5da96dc7-696b-1bc0-a111-f6108ecfa54c@axentia.se>
- <YfmJ3P1gYaEkVjlY@shaak>
- <20220205175404.451c5c56@jic23-huawei>
+        Mon, 7 Feb 2022 09:08:35 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2042.outbound.protection.outlook.com [40.107.96.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B961C0401F5
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:08:25 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LAGbmdjwLzOuEEUibP1iPBRso0z/Ef/9eYi96SwwzaP9Gr4a7Pf8zeDEf5OXT85VTXuYf5kO4conCDjJT5Ee8+9C3z8cye6HOMEER1Y6hjuh1S7q+8LGwzkqJClSYdK7TCD+vdIxhizU4i60Utn+AS9J/Uzh0iHb2JNp77aU8f5tJDyqlPl+GFnXOEoebbNZAZUV0U/CK1+enO/khh+CJdY3qNURhIS0nH9rs38iCHWQEYVCWBuU8ETjWV/GNAZX+djuNKV8Ayw5/QXqYVEObH9+/lZWstpZGIanEG8eDcMepqCzbpOaRRjBxLMdRUP7iBHoFXpTZbZ1IdchQ74XFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XYMfBfu3FYWtNzL30FI7HuisMpHBQE0rBdpzOve3j/M=;
+ b=aCPVQ3KE6pqOdGN6nrbqX/sWBZn+racRLTOilg4vQpbDsuP4Bes6brIzWi61aRlhaiXtxxjMxeYoOqmx1/Jima6mh+09xG/YrDTROT5wGQoOf7dYZrx9FA+Qn94k5JDg5zGn0Oe8L8XNH4Pi9qKUUFFKXHMSzMIZcSf9X/LdWe1mXCiocFccO00QV9ykPvhK1qrNoDC6DUOs+4b3x96OyvxGqdEKzZB4m2mbaF6GsmchZycTyHgSwKeKZ25GsuQRQuwDxtbAeuiTKYbcrKshQ6GS/wXVptncaN+EFDrg8Sh4/3qddP4g/Y3Z8hpkBLRsNuGxaifWHoSP5iUBtvafeg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XYMfBfu3FYWtNzL30FI7HuisMpHBQE0rBdpzOve3j/M=;
+ b=j50c/8HweS9yZYQGvJabCkyqw8BIGbvV4pOUPRs8iA4kK+F/Bj8Ewox8pF8eKor8MEYck5+LNpjhlMrpuJLWawLxvl9P6SRE8s2haDQuUyDF/NL4f9E8j0v95JBvEUuNyhD1TZREHDmEqWwDnyJTBce2qqWntpn3kfEa0Q3AjSo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL1PR12MB5221.namprd12.prod.outlook.com (2603:10b6:208:30b::9)
+ by MN2PR12MB4239.namprd12.prod.outlook.com (2603:10b6:208:1d2::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Mon, 7 Feb
+ 2022 14:08:19 +0000
+Received: from BL1PR12MB5221.namprd12.prod.outlook.com
+ ([fe80::b9af:8be3:36e5:1a13]) by BL1PR12MB5221.namprd12.prod.outlook.com
+ ([fe80::b9af:8be3:36e5:1a13%7]) with mapi id 15.20.4951.019; Mon, 7 Feb 2022
+ 14:08:19 +0000
+Message-ID: <95d1475e-fc30-89cf-19a7-4f125f5113d8@amd.com>
+Date:   Mon, 7 Feb 2022 08:08:15 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCHv2 26/29] x86/tdx: ioapic: Add shared bit for IOAPIC base
+ address
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        Isaku Yamahata <isaku.yamahata@intel.com>
+References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
+ <20220124150215.36893-27-kirill.shutemov@linux.intel.com>
+ <871r0mvyqr.ffs@tglx> <20220204223153.l2g3lpm4hxknwsof@black.fi.intel.com>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <20220204223153.l2g3lpm4hxknwsof@black.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR07CA0025.namprd07.prod.outlook.com
+ (2603:10b6:208:1a0::35) To BL1PR12MB5221.namprd12.prod.outlook.com
+ (2603:10b6:208:30b::9)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220205175404.451c5c56@jic23-huawei>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8450e3ec-7a77-4c7c-0b34-08d9ea434a8f
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4239:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB4239AE229EAC34DE7E6F767BEC2C9@MN2PR12MB4239.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2Lm2z/2wMXstqOXr1Pd81VB7WDHBbty2P8M/bCBtNb3wUUG8+NLUj+c+x8lbK6OM4HB6+O+CEfPw+z84fXbmShlL05H+yv/N/YukrHZIcwvoTorekkt/qc4Qk2p5bdboJwRUNff9xpaH6EiDuNOcbkDb1H0QOxJE4banvvMzWs1Z/qigTD89ZMxXBFurArqGjP9IrWhLzov13fihNzgEzEkBelPwnr2LyigHldT3xLzzzG6s/3uviKDJBK19O/PGLj5jcz31Zo/RdBj3rGdOatfPFv8gkod5njs20oQCcDWfLkenwbE3ojWRHBOLkeRojfhR5evMDAij/QEWL6YRc+Ks+ukpOHBXIxyGYSQqCcfEpFsc1ZBAsrquTveFtEf+M0uKwNxIxofhYg/UdHcGIi1fqh2N1aXv6O5Oelysl+ocXszXGEQkEQFn6xBgiphJfWUqtZzhnZr3woi+ak5c1OofPHOWI12wWBfws9/8NcEkMvh5nZjooOgX9ZorZ2pd8WDIhj80KPbwDIGW+/rFSSHcvlw8ayDANIFlqjUKl7ddIwSs3oSV7ZK9GnVvw+Vxq9GzqiKgT4veyGHPbaXI5/3qsa6N+sDlGFp9McnzKYaF8RoDiyNdRu8urEMpRFzjalxPEwakqbssE10s6UTVRjvZW3Vg7bFzYRbG4q6Q9m9hWCZ7RLZtVQ+4QDza7Dbw4H22Q/CLmgGAVJK534AEpNSCemH/grIJ4GuhYMebmsc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5221.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(53546011)(6512007)(86362001)(2906002)(2616005)(5660300002)(186003)(83380400001)(26005)(31696002)(7416002)(36756003)(6506007)(508600001)(8936002)(8676002)(66476007)(6486002)(38100700002)(6666004)(66946007)(31686004)(316002)(66556008)(4326008)(110136005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eXd5WXFza01OVXRrempKcEhZeGUrOVowS1U1VkRvRnJDejdyY3JoWG5lQ0Rp?=
+ =?utf-8?B?RFRrWjdiMTBRbUY2QURHOWhTYXdBYzlReEo5SDZPTVBZTTZ1dUxGOVlHMWdS?=
+ =?utf-8?B?Y2psWnQvYjltUFZGM0U1SjVtb1JzOU9kR2FHKzdISnNTZGQyVTF5cnRYZGFE?=
+ =?utf-8?B?Z1N1WnFIaHFjbFNFZU1FTVVML21md1lDUWh0UWxEZEJpalZQeW05VURkYURI?=
+ =?utf-8?B?MVFhdmJCb21HdkI1UGhMcHd3T3djbDJiUU5rMDBCNWI2U2JZcnA2b3VCZ1p2?=
+ =?utf-8?B?UXJCZ093UnVNOE1xL1kzV2xvWUNqL09UckpBdjZmZ2ZuOU5USVc0MllDZGF1?=
+ =?utf-8?B?NHhIaVVPU05YTVJXWnRHOW84dGdYYzMxQURnZFhpWFluY3RsaEhyTmt4NmtF?=
+ =?utf-8?B?TU1wYTlYVEM1RFVpbjQrSzA0MFJoWWl3ZXV0UnN3Ykt4RFd4V1dmVDB0cFc0?=
+ =?utf-8?B?THZHTlhpbXV4eDh5ZC9iMS9EMUZNTFgxV0xVNDJEMkwxUVFLRkFlMlk2c2FC?=
+ =?utf-8?B?Z0U0Y0pQbnRyRUIvZzV1VHorRDZSY1hZQzZiL3FDaDZVK1VOOU5pZGlFQWdl?=
+ =?utf-8?B?YnpObEo1SlA1aXl2RDVwQi9BTlZSOWNNT3pucTIrUTlYUmI3LzdvQ3QvZUxB?=
+ =?utf-8?B?b0hzajVaYmxCOEw0dTFBdGo3UmQ1RGpFN0lmM1NhMmR2S1NqRDA4cldQRHNw?=
+ =?utf-8?B?VEhjaUJxRXpOV2dkaXM0QkJ5cGdDb1pubVI5ZUc2Mi9tYmEwd3RvaDhXZXZO?=
+ =?utf-8?B?SzJaaEw3OE5CZUNUTXpuT3dvZEJENzBqd1JVQW1GeEQwMXZRWVIrTTNFbmxS?=
+ =?utf-8?B?eXltRzF0WDZBTTlaeS9QMGNaVTJ6MjJvWVFnbGxqdWFZSEhWWTNpa05ScnEw?=
+ =?utf-8?B?a2JaZHJYbi80Mm1JOW5qUk1sZk9rbHo1SUJJWGN6WjZENmprQndhc1labFVQ?=
+ =?utf-8?B?emo0dUtHS0ZLSkZOTXZzVHZhNTBLKzA1VmdlcGtmNnJFOFZ3RWhSZU1CZVJm?=
+ =?utf-8?B?MjRUa0xrU0VsZHFrdUt2TWxGN2NnSVpxYXNSais4TFVJQlZKZ05ZU3NYTnps?=
+ =?utf-8?B?eVlyS2VyQzhZSlcrTEVEb0QvSkRkZHI3ZDV5K0s1R25SUHZqaVF5d0c1UjJR?=
+ =?utf-8?B?ajhOdm5tNHRLQmFaTm9Fam5MVXZueUMzVU5IN21iRUNoNHRLUHNxK0JPT29w?=
+ =?utf-8?B?ZnNrRzg2K0RMd01QcXI0WUo3YWJUUXFZVTkrTWdwcUFVdlZiaU45QjRMQUdV?=
+ =?utf-8?B?UzZUdnFsaW5ITlhwWVozaS9ML3VJSkhTckdTRGZtYzVoOUhJZW5aMFBGSnpG?=
+ =?utf-8?B?NXpIb0U5cW5zVXNQenhEeU5tWXpCN0VKSllsMVRGaytUcGc0SUF5TUFsRTlE?=
+ =?utf-8?B?RjZ5OFZ4U2VSWWs3SXRqVUc4TGdRYy9xQS9JZW1HTjFiTXlhdHdxL3FYQ3Jx?=
+ =?utf-8?B?Y0hpekdSSCtITXdvai9aUENmS2IrNmJVSytGMG5QcHVaMHZDclhxUGRGL3Fa?=
+ =?utf-8?B?UTFaK2Erc0tMdm5MSjcrMmJYb0dhQklsZmw2MHNscEdzZklEQkNndlU3ek8w?=
+ =?utf-8?B?dWdVSGE3Tysvbm1QSmZSK3ljVEVPRFVicG5wcHQ5VUxvRExwWW1YM25pVG9h?=
+ =?utf-8?B?OWpWTnpWMnQxRGptR09oZkw0b0dqM21obHdteWh1ejJTUGtPa0JYeTJxZlRi?=
+ =?utf-8?B?MEVERkdTWFBtbCtSZ09LMi9pV0hxTE94VnNWeUJZNWIxK053NDFMd0dBK1lP?=
+ =?utf-8?B?VldxTUhLRXlGYXhycmk4czc1U3BKd3gvcnR6d29naWhPNS94OEN0WVA1Yk9o?=
+ =?utf-8?B?WVBaLzhIakZSVUZnNW1lak9sYXhpd1hQRmtUU0NBSEhIZlZTU0Y0S3F1akk4?=
+ =?utf-8?B?YmtMRzlTc3g1RXZLcVowVzhYbHRhK3RLUWdzUFh3Z0hjOGFVdE9ESVh2SUlw?=
+ =?utf-8?B?ZE1IdVlxamtFOVgydWhKMzg1ZVMrVUdraGJGaXJFMSt0WlU0dDZsdWV6ZUxa?=
+ =?utf-8?B?a1IwV05NLzVwUDJQT1U0WXZkQkRkcUJUeWltWEVkWVdqeHg5RGNGbjhLYXh4?=
+ =?utf-8?B?UVdEMDIyb0xrbUlidDhTbUdydFI1Q2xnNWtyNllCSWVaWWNreTVDNFZaWFE3?=
+ =?utf-8?B?WHRJOVJzbjhmRU9HOGNxR25NZ3JlME9STlZmUmZwRFE2Mi9iODlCa1J2ZUlT?=
+ =?utf-8?Q?qqWhKeR59zLLvt+NYIohR40=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8450e3ec-7a77-4c7c-0b34-08d9ea434a8f
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5221.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 14:08:18.8450
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: e3OBMyaqNVVQOVZuY/xaUXf08GqcLStnhqC0M253wNJ0hfFfdg7Kq/50A7y9J3kNBvP3n3dyig5gpD2cWFUFQQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4239
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 05:54:04PM +0000, Jonathan Cameron wrote:
-> On Tue, 1 Feb 2022 14:28:28 -0500
-> Liam Beguin <liambeguin@gmail.com> wrote:
+On 2/4/22 16:31, Kirill A. Shutemov wrote:
+> On Wed, Feb 02, 2022 at 02:33:16AM +0100, Thomas Gleixner wrote:
+>> On Mon, Jan 24 2022 at 18:02, Kirill A. Shutemov wrote:
+>>> ioremap()-created mappings such as virtio will be marked as
+>>> shared. However, the IOAPIC code does not use ioremap() and instead
+>>> uses the fixmap mechanism.
+>>>
+>>> Introduce a special fixmap helper just for the IOAPIC code.  Ensure
+>>> that it marks IOAPIC pages as "shared".  This replaces
+>>> set_fixmap_nocache() with __set_fixmap() since __set_fixmap()
+>>> allows custom 'prot' values.
+>>
+>> Why is this a TDX only issue and SEV does not suffer from that?
 > 
-> > Hi Peter,
-> > 
-> > On Mon, Jan 31, 2022 at 03:50:22PM +0100, Peter Rosin wrote:
-> > > Hi!
-> > > 
-> > > I noticed that I have not reviewed this patch. Sorry for my low
-> > > bandwidth.
-> > > 
-> > > On 2022-01-30 17:10, Liam Beguin wrote:  
-> > > > Make use of well-defined SI metric prefixes to improve code readability.
-> > > > 
-> > > > Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-> > > > ---
-> > > >  drivers/iio/afe/iio-rescale.c | 14 +++++++-------
-> > > >  1 file changed, 7 insertions(+), 7 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-> > > > index 67273de46843..27c6664915ff 100644
-> > > > --- a/drivers/iio/afe/iio-rescale.c
-> > > > +++ b/drivers/iio/afe/iio-rescale.c
-> > > > @@ -51,11 +51,11 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
-> > > >  		}
-> > > >  		fallthrough;
-> > > >  	case IIO_VAL_FRACTIONAL_LOG2:
-> > > > -		tmp = (s64)*val * 1000000000LL;
-> > > > +		tmp = (s64)*val * GIGA;
-> > > >  		tmp = div_s64(tmp, rescale->denominator);
-> > > >  		tmp *= rescale->numerator;
-> > > >  
-> > > > -		tmp = div_s64_rem(tmp, 1000000000LL, &rem);
-> > > > +		tmp = div_s64_rem(tmp, GIGA, &rem);  
-> > > 
-> > > It is NOT easy for me to say which of GIGA/NANO is most fitting.
-> > > There are a couple of considerations:  
-> > 
-> > I agree with you that the choice behind GIGA/NANO can be a bit
-> > confusing.
-> > 
-> > In my opinion, these defines makes the code easier to read if you
-> > consider them as multipliers with no physical meaning, basically a
-> > pretty name for a power of 10.
-> > 
-> > By this logic, we wouldn't ever use FEMTO to DECI.
+> Hm. Good question.
 > 
-> Not sure if it would help but maybe it's worth a local define
-> of something like
+> I think it is because FIXMAP_PAGE_NOCACHE does not have __ENC bit set so
+> the mapping is accessible to host. With TDX the logic is oposit:
+> everything is private if the bit is not set.
 > 
-> #define MULT9 1000000000LL
-> to loose the association with any particular SI basis and
-> just indicate it's a bit number being used to retain precision
-> in some maths?  Would need a comment to stop people sending
-> patches to replace it with GIGA though ;)
-> 
-> My ultimate preference here is for whatever works for Peter and
-> Liam as the people who are mostly likely to have to deal
-> with any changes to this driver in the future.
+> Tom, does it sound right?
 
-Hi Jonathan,
+Correct, FIXMAP_PAGE_NOCACHE => PAGE_KERNEL_IO_NOCACHE, which does not 
+have the encryption bit set, so it is mapped as shared under SEV.
 
-My preference here is to keep GIGA, if it makes everyone more
-comfortable, I can add a comment explaing the intention of the
-multiplication?
+Thanks,
+Tom
 
-Cheers,
-Liam
-
-> Jonathan
 > 
-> 
-> > 
-> > Cheers,
-> > Liam
-> > 
-> > > A) 1000000000 is just a big value (GIGA fits). Something big is
-> > >    needed to not lose too much precision.
-> > > B) 1000000000 is what the IIO core uses to print fractional-log
-> > >    values with nano precision (NANO fits). This is not really
-> > >    relevant in this context.
-> > > C) 1000000000 makes the int-plus-nano and fractional-log cases
-> > >    align (NANO fits). This last consideration is introduced with
-> > >    patch 4/11.
-> > > 
-> > > There is simply no correct define to use. And whichever define is
-> > > chosen makes the other interpretation less obvious. Which is not
-> > > desirable, obscures things and make both GIGA and NANO bad
-> > > options.
-> > > 
-> > > So, I stepped back to the description provided by Andy in the
-> > > comments of v11:
-> > > 
-> > > On 2021-12-22 19:59, Andy Shevchenko wrote:
-> > > | You should get the proper power after the operation.
-> > > | Write a formula (mathematically speaking) and check each of them for this.
-> > > | 
-> > > | 10^-5/10^-9 == 1*10^4 (Used NANO)
-> > > | 10^-5/10^9 == 1/10^-14 (Used GIGA)
-> > > | 
-> > > | See the difference?
-> > > 
-> > > No, I don't really see the difference, that just makes me totally
-> > > confused. Dividing by 10^-9 or multiplying by 10^9 is as we all
-> > > know exactly the same, and the kernel cannot deal directly with
-> > > 10^-9 so both will look the same in code (multiplying by 10^9). So,
-> > > you must be referring to the "real formula" behind the code. But
-> > > in that case, if the "real formula" behind the (then equivalent)
-> > > code had instead been
-> > > 
-> > > 	10^-5*10^9 == 1*10^4 (Used GIGA)
-> > > 	10^-5*10^-9 == 1/10^-14 (Used NANO)
-> > > 
-> > > the outcome is the opposite. NANO turns GIGA and vice versa.
-> > > 
-> > > Since you can express the same thing differently in math too, it
-> > > all crumbles for me. Because of this duality, it will be a matter
-> > > of taste if GIGA or NANO fits best in any given instance. Sometimes
-> > > (perhaps commonly) it will be decidedly easy to pick one of them,
-> > > but in other cases (see above) we will end up with a conflict.
-> > > 
-> > > What to do then? Or, what am I missing?
-> > > 
-> > > My taste says NANO in this case, since A) is just some big number
-> > > and not really about units and B) is as stated not really relevant.
-> > > Which makes C) win the argument for me.
-> > >   
-> > > >  		*val = tmp;
-> > > >  
-> > > >  		if (!rem)
-> > > > @@ -71,7 +71,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
-> > > >  
-> > > >  		*val2 = rem / (int)tmp;
-> > > >  		if (rem2)
-> > > > -			*val2 += div_s64((s64)rem2 * 1000000000LL, tmp);
-> > > > +			*val2 += div_s64((s64)rem2 * GIGA, tmp);  
-> > > 
-> > > Here, 1000000000 matches the above use. If we go with NANO above,
-> > > we should go with NANO here as well.
-> > >   
-> > > >  		return IIO_VAL_INT_PLUS_NANO;
-> > > >  	case IIO_VAL_INT_PLUS_NANO:
-> > > > @@ -332,8 +332,8 @@ static int rescale_current_sense_amplifier_props(struct device *dev,
-> > > >  	 * gain_div / (gain_mult * sense), while trying to keep the
-> > > >  	 * numerator/denominator from overflowing.
-> > > >  	 */
-> > > > -	factor = gcd(sense, 1000000);
-> > > > -	rescale->numerator = 1000000 / factor;
-> > > > +	factor = gcd(sense, MEGA);
-> > > > +	rescale->numerator = MEGA / factor;  
-> > > 
-> > > Here, the 1000000 number comes from the unit of the sense resistor
-> > > (micro-ohms), so I would have preferred MICRO. But who can tell
-> > > if we -mathematically speaking- have divided the given resistance
-> > > integer by 10^6 (MEGA) or multiplied it with 10^-6 (MICRO) to
-> > > account for the unit? Or if we divided the other values with
-> > > 10^6 (MEGA) (or multiplied by 10^-6, MICRO) to make them fit the
-> > > unit of the shunt resistance?
-> > > 
-> > > All of the above is of course equivalent so both MEGA and MICRO
-> > > are correct. But as stated, MICRO makes to most sense as that is
-> > > what connects the code to reality and hints at where the value
-> > > is coming from. For me anyway.
-> > >   
-> > > >  	rescale->denominator = sense / factor;
-> > > >  
-> > > >  	factor = gcd(rescale->numerator, gain_mult);
-> > > > @@ -361,8 +361,8 @@ static int rescale_current_sense_shunt_props(struct device *dev,
-> > > >  		return ret;
-> > > >  	}
-> > > >  
-> > > > -	factor = gcd(shunt, 1000000);
-> > > > -	rescale->numerator = 1000000 / factor;
-> > > > +	factor = gcd(shunt, MEGA);
-> > > > +	rescale->numerator = MEGA / factor;  
-> > > 
-> > > Same here, 1000000 comes from the micro-ohms unit of the shunt
-> > > resistor, so I would have preferred MICRO.
-> > > 
-> > > 
-> > > 
-> > > Sorry for the long mail. I blame the duality of these ambiguous
-> > > SI-defines that are a bit confusing to me.
-> > > 
-> > > Cheers,
-> > > Peter
-> > >   
-> > > >  	rescale->denominator = shunt / factor;
-> > > >  
-> > > >  	return 0;  
+> BTW, I will drop 'if (cc_platform_has(CC_ATTR_GUEST_TDX))'.
+> pgprot_decrypted() is nop on AMD in this case.
 > 
