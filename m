@@ -2,434 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C38AEC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:10:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:10:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234456AbiBGKJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:09:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
+        id S1350430AbiBGKJF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:09:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355916AbiBGJyn (ORCPT
+        with ESMTP id S230444AbiBGJ5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:54:43 -0500
-X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 01:54:42 PST
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D028C0401C0
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:54:41 -0800 (PST)
-X-UUID: fbd8fe33545e432ca6901605df860cca-20220207
-X-UUID: fbd8fe33545e432ca6901605df860cca-20220207
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 312939861; Mon, 07 Feb 2022 17:49:35 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 7 Feb 2022 17:49:34 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Feb
- 2022 17:49:34 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 7 Feb 2022 17:49:33 +0800
-Message-ID: <ae9937d21bf505c64f036e85475d4c56f1c4ab2e.camel@mediatek.com>
-Subject: Re: [PATCH v7 6/8] phy: phy-mtk-dp: Add driver for DP phy
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Guillaume Ranquet <granquet@baylibre.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        "Vinod Koul" <vkoul@kernel.org>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        "Markus Schneider-Pargmann" <msp@baylibre.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Date:   Mon, 7 Feb 2022 17:49:33 +0800
-In-Reply-To: <20211217150854.2081-7-granquet@baylibre.com>
-References: <20211217150854.2081-1-granquet@baylibre.com>
-         <20211217150854.2081-7-granquet@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 7 Feb 2022 04:57:04 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D719C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:57:02 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id s1so11387368qtw.9
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:57:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SUfOHJUcOIZKAiTlghKK/cym8CHoG90ZFze34gnYWYM=;
+        b=KzF7z2iKdp6Lo38PIjQ0l8r7o4uPEP+5U80HlLx6ZIXmOYjEn3tGfm0oJk7mOZTRge
+         HBnlAZtTE77JrB897+++EXVo80lZay0+7qhNY+NxWb1vHlsqLVxUOKqpgDL4eFS+Tpn0
+         F8acPz/KfuEBd3TD3MzzvdHHeWrZGJNffoVWI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SUfOHJUcOIZKAiTlghKK/cym8CHoG90ZFze34gnYWYM=;
+        b=fdHNMTmTVeE5UCSFagnY3wk7gVONzBM+IyJGKjCJSc+UuRorSmY6vfYm8/KkScDHZX
+         aFFcdfAoeHzPe5VjXG7huA7sXi7DDCtx4qUfL58ppM7UyjVLxSQGqI1YYYfwSQQOacde
+         hIvMgDjnYQ4aXwO8JkyUawi/4Z8930x1EVVLkIUAsl4606DGTSp8InY40G740C0nROZI
+         GjeBnDKHvb0yF9GKGoGrkvc2toveam4sSoryAumKwtk0BJkdF9QxCkOja6y6c2d0NKz2
+         7BI+ZpnoqAcI/e7OkkPS6el7wwkns4t3ZIUB+E6z/UQ/iWgk4VT8HzjvG/pH/doQoO1S
+         r0GA==
+X-Gm-Message-State: AOAM533RJy1OeZiWUO50qc3oNw+srEhYCzZ5f0LCWXR4N6hG6+PU9Vm2
+        ZYrjNd3B6M87Wnt8yQGjumLM1zBc/1kYwos4NUEAa3ua
+X-Google-Smtp-Source: ABdhPJzwpOKOH2YwxHOx2FAuGdJk32Iv/IUH+id0tJZirhy2zZC22HwR7udnpN/HAyzSewWDLuGTmqOf9UH/qffOs4I=
+X-Received: by 2002:ac8:5a93:: with SMTP id c19mr7277316qtc.58.1644227821379;
+ Mon, 07 Feb 2022 01:57:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+References: <20220110155827.13976-1-eajames@linux.ibm.com> <CACPK8XdgOYTwy5aOQgSuSJaQUjxnobN2c3ph=dkAcWYJDVbN+w@mail.gmail.com>
+ <3897c432-4365-7c54-b336-7331bb328350@linux.ibm.com>
+In-Reply-To: <3897c432-4365-7c54-b336-7331bb328350@linux.ibm.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Mon, 7 Feb 2022 09:56:49 +0000
+Message-ID: <CACPK8XcoJ2O=0RYZy0R=9xHCRne4F4f_3Q1hQYCAmiypepz7yw@mail.gmail.com>
+Subject: Re: [PATCH] fsi: occ: Improve response status checking
+To:     Eddie James <eajames@linux.ibm.com>
+Cc:     linux-fsi@lists.ozlabs.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alistair Popple <alistair@popple.id.au>,
+        Jeremy Kerr <jk@ozlabs.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Guillaume:
+On Mon, 31 Jan 2022 at 15:29, Eddie James <eajames@linux.ibm.com> wrote:
+>
+>
+> On 1/30/22 23:56, Joel Stanley wrote:
+> > On Mon, 10 Jan 2022 at 15:58, Eddie James <eajames@linux.ibm.com> wrote:
+> >> If the driver sequence number coincidentally equals the previous
+> >> command response sequence number, the driver may proceed with
+> >> fetching the entire buffer before the OCC has processed the current
+> >> command. To be sure the correct response is obtained, check the
+> >> command type and also retry if any of the response parameters have
+> >> changed when the rest of the buffer is fetched.
+> >>
+> >> Signed-off-by: Eddie James <eajames@linux.ibm.com>
+> >> ---
+> >>   drivers/fsi/fsi-occ.c | 63 ++++++++++++++++++++++++++++++-------------
+> >>   1 file changed, 44 insertions(+), 19 deletions(-)
+> >>
+> >> diff --git a/drivers/fsi/fsi-occ.c b/drivers/fsi/fsi-occ.c
+> >> index 7eaab1be0aa4..67569282dd69 100644
+> >> --- a/drivers/fsi/fsi-occ.c
+> >> +++ b/drivers/fsi/fsi-occ.c
+> >> @@ -451,6 +451,15 @@ static int occ_trigger_attn(struct occ *occ)
+> >>          return rc;
+> >>   }
+> >>
+> >> +static void fsi_occ_print_timeout(struct occ *occ, struct occ_response *resp,
+> >> +                                 u8 seq_no, u8 cmd_type)
+> >> +{
+> >> +       dev_err(occ->dev,
+> >> +               "resp timeout status=%02x seq=%d cmd=%d, our seq=%d cmd=%d\n",
+> >> +               resp->return_status, resp->seq_no, resp->cmd_type, seq_no,
+> >> +               cmd_type);
+> >> +}
+> >> +
+> >>   int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
+> >>                     void *response, size_t *resp_len)
+> >>   {
+> >> @@ -461,12 +470,14 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
+> >>          struct occ_response *resp = response;
+> >>          size_t user_resp_len = *resp_len;
+> >>          u8 seq_no;
+> >> +       u8 cmd_type;
+> >>          u16 checksum = 0;
+> >>          u16 resp_data_length;
+> >>          const u8 *byte_request = (const u8 *)request;
+> >> -       unsigned long start;
+> >> +       unsigned long end;
+> >>          int rc;
+> >>          size_t i;
+> >> +       bool retried = false;
+> >>
+> >>          *resp_len = 0;
+> >>
+> >> @@ -478,6 +489,8 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
+> >>                  return -EINVAL;
+> >>          }
+> >>
+> >> +       cmd_type = byte_request[1];
+> >> +
+> >>          /* Checksum the request, ignoring first byte (sequence number). */
+> >>          for (i = 1; i < req_len - 2; ++i)
+> >>                  checksum += byte_request[i];
+> >> @@ -509,30 +522,30 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
+> >>          if (rc)
+> >>                  goto done;
+> >>
+> >> -       /* Read occ response header */
+> >> -       start = jiffies;
+> >> +retry:
+> >> +       end = jiffies + timeout;
+> >>          do {
+> >> +               /* Read occ response header */
+> >>                  rc = occ_getsram(occ, 0, resp, 8);
+> >>                  if (rc)
+> >>                          goto done;
+> >>
+> >>                  if (resp->return_status == OCC_RESP_CMD_IN_PRG ||
+> >>                      resp->return_status == OCC_RESP_CRIT_INIT ||
+> >> -                   resp->seq_no != seq_no) {
+> >> -                       rc = -ETIMEDOUT;
+> >> -
+> >> -                       if (time_after(jiffies, start + timeout)) {
+> >> -                               dev_err(occ->dev, "resp timeout status=%02x "
+> >> -                                       "resp seq_no=%d our seq_no=%d\n",
+> >> -                                       resp->return_status, resp->seq_no,
+> >> -                                       seq_no);
+> >> +                   resp->seq_no != seq_no || resp->cmd_type != cmd_type) {
+> > You're testing for two different types of conditions. The first is
+> > when the SBE is busy doing something else:
+> >
+> >                  if (resp->return_status == OCC_RESP_CMD_IN_PRG ||
+> >                       resp->return_status == OCC_RESP_CRIT_INIT ||
+> >
+> > And the others are when the message is not for the current user:
+> >
+> >                        resp->seq_no != seq_no || resp->cmd_type != cmd_type) {
+> >
+> > Should we be separating them out? It makes sense that the first means
+> > we should keep trying. For the second case should we bail straight
+> > away, instead of waiting for the timeout?
+>
+>
+> They're really the same thing actually. If the sequence number or
+> command type is incorrect, it means the OCC is processing a different
+> command, and we need to wait for it to get to our command.
 
-On Fri, 2021-12-17 at 16:08 +0100, Guillaume Ranquet wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> This is a new driver that supports the integrated DisplayPort phy for
-> mediatek SoCs, especially the mt8195. The phy is integrated into the
-> DisplayPort controller and will be created by the mtk-dp driver. This
-> driver expects a struct regmap to be able to work on the same
-> registers
-> as the DisplayPort controller. It sets the device data to be the
-> struct
-> phy so that the DisplayPort controller can easily work with it.
-> 
-> The driver does not have any devicetree bindings because the
-> datasheet
-> does not list the controller and the phy as distinct units.
-> 
-> The interaction with the controller can be covered by the configure
-> callback of the phy framework and its displayport parameters.
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> ---
->  MAINTAINERS                       |   1 +
->  drivers/phy/mediatek/Kconfig      |   8 ++
->  drivers/phy/mediatek/Makefile     |   1 +
->  drivers/phy/mediatek/phy-mtk-dp.c | 219
-> ++++++++++++++++++++++++++++++
->  4 files changed, 229 insertions(+)
->  create mode 100644 drivers/phy/mediatek/phy-mtk-dp.c
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 8b7a98daf8e05..c44829d8a74df 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -6394,6 +6394,7 @@ L:	linux-mediatek@lists.infradead.org
-> (moderated for non-subscribers)
->  S:	Supported
->  F:	Documentation/devicetree/bindings/display/mediatek/
->  F:	drivers/gpu/drm/mediatek/
-> +F:	drivers/phy/mediatek/phy-mtk-dp.c
->  F:	drivers/phy/mediatek/phy-mtk-hdmi*
->  F:	drivers/phy/mediatek/phy-mtk-mipi*
->  
-> diff --git a/drivers/phy/mediatek/Kconfig
-> b/drivers/phy/mediatek/Kconfig
-> index 55f8e6c048ab3..f7ec860590492 100644
-> --- a/drivers/phy/mediatek/Kconfig
-> +++ b/drivers/phy/mediatek/Kconfig
-> @@ -55,3 +55,11 @@ config PHY_MTK_MIPI_DSI
->  	select GENERIC_PHY
->  	help
->  	  Support MIPI DSI for Mediatek SoCs.
-> +
-> +config PHY_MTK_DP
-> +	tristate "MediaTek DP-PHY Driver"
-> +	depends on ARCH_MEDIATEK || COMPILE_TEST
-> +	depends on OF
-> +	select GENERIC_PHY
-> +	help
-> +	  Support DisplayPort PHY for Mediatek SoCs.
-> diff --git a/drivers/phy/mediatek/Makefile
-> b/drivers/phy/mediatek/Makefile
-> index ace660fbed3a1..4ba1e06504346 100644
-> --- a/drivers/phy/mediatek/Makefile
-> +++ b/drivers/phy/mediatek/Makefile
-> @@ -3,6 +3,7 @@
->  # Makefile for the phy drivers.
->  #
->  
-> +obj-$(CONFIG_PHY_MTK_DP)		+= phy-mtk-dp.o
->  obj-$(CONFIG_PHY_MTK_TPHY)		+= phy-mtk-tphy.o
->  obj-$(CONFIG_PHY_MTK_UFS)		+= phy-mtk-ufs.o
->  obj-$(CONFIG_PHY_MTK_XSPHY)		+= phy-mtk-xsphy.o
-> diff --git a/drivers/phy/mediatek/phy-mtk-dp.c
-> b/drivers/phy/mediatek/phy-mtk-dp.c
-> new file mode 100644
-> index 0000000000000..e0de2a367e788
-> --- /dev/null
-> +++ b/drivers/phy/mediatek/phy-mtk-dp.c
-> @@ -0,0 +1,219 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2021 BayLibre
-> + * Author: Markus Schneider-Pargmann <msp@baylibre.com>
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/io.h>
-> +#include <linux/of.h>
-> +#include <linux/phy/phy.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-> +
-> +#define PHY_OFFSET 0x1000
-> +
-> +#define MTK_DP_PHY_DIG_PLL_CTL_1		(PHY_OFFSET + 0x014)
-> +# define TPLL_SSC_EN				BIT(3)
-> +
-> +#define MTK_DP_PHY_DIG_BIT_RATE			(PHY_OFFSET +
-> 0x03C)
-> +# define BIT_RATE_RBR				0
-> +# define BIT_RATE_HBR				1
-> +# define BIT_RATE_HBR2				2
-> +# define BIT_RATE_HBR3				3
-> +
+And we sometimes see one but not the other (ie, the return_status
+doesn't cover all cases)?
 
-I would like to align the indent style to Mediatek mipi dsi phy driver
-and Mediatek hdmi phy driver. That means the bitwise definition value
-has one more indent.
+>
+>
+> >
+> > How often do we see one vs the other?
+> >
+> >> +                       if (time_after(jiffies, end)) {
+> >> +                               fsi_occ_print_timeout(occ, resp, seq_no,
+> >> +                                                     cmd_type);
+> >> +                               rc = -ETIMEDOUT;
+> >>                                  goto done;
+> >>                          }
+> >>
+> >>                          set_current_state(TASK_UNINTERRUPTIBLE);
+> >>                          schedule_timeout(wait_time);
+> >> +               } else {
+> >> +                       break;
+> >>                  }
+> >> -       } while (rc);
+> >> +       } while (true);
+> > Use while (true) instead of do { } while (true) to make it clearer
+> > what's going on. Or refactor it to put the time_after in the while(),
+> > as this is what the loop is waiting on.
+>
+>
+> OK, I went in circles (pun intended) working on this loop, but I'll try
+> and make it look better.
+>
+>
+> >
+> >>          /* Extract size of response data */
+> >>          resp_data_length = get_unaligned_be16(&resp->data_length);
+> >> @@ -543,17 +556,29 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
+> >>                  goto done;
+> >>          }
+> >>
+> >> -       dev_dbg(dev, "resp_status=%02x resp_data_len=%d\n",
+> >> -               resp->return_status, resp_data_length);
+> >> -
+> >> -       /* Grab the rest */
+> >> +       /* Now get the entire response; get header again in case it changed */
+> >>          if (resp_data_length > 1) {
+> >> -               /* already got 3 bytes resp, also need 2 bytes checksum */
+> >> -               rc = occ_getsram(occ, 8, &resp->data[3], resp_data_length - 1);
+> >> +               rc = occ_getsram(occ, 0, resp, resp_data_length + 7);
+> >>                  if (rc)
+> >>                          goto done;
+> >> +
+> >> +               if (resp->return_status == OCC_RESP_CMD_IN_PRG ||
+> >> +                   resp->return_status == OCC_RESP_CRIT_INIT ||
+> >> +                   resp->seq_no != seq_no || resp->cmd_type != cmd_type) {
+> >> +                       if (!retried) {
+> >> +                               retried = true;
+> >> +                               goto retry;
+> > Not sure about this.
+> >
+> > How often did this situation come up?
+> >
+> > Did you consider instead returning an error here?
+>
+>
+> Well I can't say it's frequent, but hitting this condition was what
+> drove making this change in the first place. It needs to be handled.
 
-> +#define MTK_DP_PHY_DIG_SW_RST			(PHY_OFFSET +
-> 0x038)
-> +# define DP_GLB_SW_RST_PHYD			BIT(0)
-> +
-> +#define MTK_DP_LANE0_DRIVING_PARAM_3		(PHY_OFFSET + 0x138)
-> +#define MTK_DP_LANE1_DRIVING_PARAM_3		(PHY_OFFSET + 0x238)
-> +#define MTK_DP_LANE2_DRIVING_PARAM_3		(PHY_OFFSET + 0x338)
-> +#define MTK_DP_LANE3_DRIVING_PARAM_3		(PHY_OFFSET + 0x438)
-> +# define XTP_LN_TX_LCTXC0_SW0_PRE0_DEFAULT	0x10
-> +# define XTP_LN_TX_LCTXC0_SW0_PRE1_DEFAULT	(0x14 << 8)
-> +# define XTP_LN_TX_LCTXC0_SW0_PRE2_DEFAULT	(0x18 << 16)
-> +# define XTP_LN_TX_LCTXC0_SW0_PRE3_DEFAULT	(0x20 << 24)
-> +# define DRIVING_PARAM_3_DEFAULT		(XTP_LN_TX_LCTXC0_SW0_P
-> RE0_DEFAULT | \
-> +						 XTP_LN_TX_LCTXC0_SW0_P
-> RE1_DEFAULT | \
-> +						 XTP_LN_TX_LCTXC0_SW0_P
-> RE2_DEFAULT | \
-> +						 XTP_LN_TX_LCTXC0_SW0_P
-> RE3_DEFAULT)
-> +
-> +#define MTK_DP_LANE0_DRIVING_PARAM_4		(PHY_OFFSET + 0x13C)
-> +#define MTK_DP_LANE1_DRIVING_PARAM_4		(PHY_OFFSET + 0x23C)
-> +#define MTK_DP_LANE2_DRIVING_PARAM_4		(PHY_OFFSET + 0x33C)
-> +#define MTK_DP_LANE3_DRIVING_PARAM_4		(PHY_OFFSET + 0x43C)
+I was concerned about the pattern of using goto back up the function.
 
-Useless, so remove.
+Would it make more sense the have the caller retry, instead of adding
+retries in the sbefifo driver?
 
-> +# define XTP_LN_TX_LCTXC0_SW1_PRE0_DEFAULT	0x18
-> +# define XTP_LN_TX_LCTXC0_SW1_PRE1_DEFAULT	(0x1e << 8)
-> +# define XTP_LN_TX_LCTXC0_SW1_PRE2_DEFAULT	(0x24 << 16)
-> +# define XTP_LN_TX_LCTXC0_SW2_PRE0_DEFAULT	(0x20 << 24)
-> +# define DRIVING_PARAM_4_DEFAULT		(XTP_LN_TX_LCTXC0_SW1_P
-> RE0_DEFAULT | \
-> +						 XTP_LN_TX_LCTXC0_SW1_P
-> RE1_DEFAULT | \
-> +						 XTP_LN_TX_LCTXC0_SW1_P
-> RE2_DEFAULT | \
-> +						 XTP_LN_TX_LCTXC0_SW2_P
-> RE0_DEFAULT)
-> +
-> +#define MTK_DP_LANE0_DRIVING_PARAM_5		(PHY_OFFSET + 0x140)
-> +#define MTK_DP_LANE1_DRIVING_PARAM_5		(PHY_OFFSET + 0x240)
-> +#define MTK_DP_LANE2_DRIVING_PARAM_5		(PHY_OFFSET + 0x340)
-> +#define MTK_DP_LANE3_DRIVING_PARAM_5		(PHY_OFFSET + 0x440)
+>
+> Previously if this occurrred, we got a checksum error, so it effectively
+> already returned an error.
+>
+>
+> >
+> >> +                       }
+> >> +
+> >> +                       fsi_occ_print_timeout(occ, resp, seq_no, cmd_type);
+> >> +                       rc = -ETIMEDOUT;
+> >> +                       goto done;
+> >> +               }
+> >>          }
+> >>
+> >> +       dev_dbg(dev, "resp_status=%02x resp_data_len=%d\n",
+> >> +               resp->return_status, resp_data_length);
+> >> +
+> >>          occ->client_response_size = resp_data_length + 7;
+> >>          rc = occ_verify_checksum(occ, resp, resp_data_length);
+> >>
+> >> @@ -598,7 +623,7 @@ static int occ_probe(struct platform_device *pdev)
+> >>          occ->version = (uintptr_t)of_device_get_match_data(dev);
+> >>          occ->dev = dev;
+> >>          occ->sbefifo = dev->parent;
+> >> -       occ->sequence_number = 1;
+> >> +       occ->sequence_number = (u8)((jiffies % 0xff) + 1);
+> > This is interesting. You didn't mention this in the commit message;
+> > you're trying to get a random number for the sequence number?
+>
+>
+> Yea, this reduces the chances of hitting that retry above. If it's
+> always 1, then every time the driver is bound it tries the first command
+> with the same sequence number. This is a problem when FSI scanning with
+> the host already running, as the driver gets unbound/rebound several
+> times in a row, and we easily hit the checksum problem, since we proceed
+> to get the full response even though it's not for the latest command,
+> and then the buffer is updated at the same time. So using a non-zero
+> random number is very helpful.
 
-Ditto.
+Makes sense. Perhaps do something like this instead of hand rolling it?
 
-> +# define XTP_LN_TX_LCTXC0_SW2_PRE1_DEFAULT	0x28
-> +# define XTP_LN_TX_LCTXC0_SW3_PRE0_DEFAULT	(0x30 << 8)
-> +# define DRIVING_PARAM_5_DEFAULT		(XTP_LN_TX_LCTXC0_SW2_P
-> RE1_DEFAULT | \
-> +						 XTP_LN_TX_LCTXC0_SW3_P
-> RE0_DEFAULT)
-> +
-> +#define MTK_DP_LANE0_DRIVING_PARAM_6		(PHY_OFFSET + 0x144)
-> +#define MTK_DP_LANE1_DRIVING_PARAM_6		(PHY_OFFSET + 0x244)
-> +#define MTK_DP_LANE2_DRIVING_PARAM_6		(PHY_OFFSET + 0x344)
-> +#define MTK_DP_LANE3_DRIVING_PARAM_6		(PHY_OFFSET + 0x444)
+get_random_bytes(occ->sequence_number, 1);
 
-Ditto.
+If you could add some of your explanations to the commit message, I'd
+like to get this fix merged soon.
 
-> +# define XTP_LN_TX_LCTXCP1_SW0_PRE0_DEFAULT	0x00
-> +# define XTP_LN_TX_LCTXCP1_SW0_PRE1_DEFAULT	(0x04 << 8)
-> +# define XTP_LN_TX_LCTXCP1_SW0_PRE2_DEFAULT	(0x08 << 16)
-> +# define XTP_LN_TX_LCTXCP1_SW0_PRE3_DEFAULT	(0x10 << 24)
-> +# define DRIVING_PARAM_6_DEFAULT		(XTP_LN_TX_LCTXCP1_SW0_
-> PRE0_DEFAULT | \
-> +						 XTP_LN_TX_LCTXCP1_SW0_
-> PRE1_DEFAULT | \
-> +						 XTP_LN_TX_LCTXCP1_SW0_
-> PRE2_DEFAULT | \
-> +						 XTP_LN_TX_LCTXCP1_SW0_
-> PRE3_DEFAULT)
-> +
-> +#define MTK_DP_LANE0_DRIVING_PARAM_7		(PHY_OFFSET + 0x148)
-> +#define MTK_DP_LANE1_DRIVING_PARAM_7		(PHY_OFFSET + 0x248)
-> +#define MTK_DP_LANE2_DRIVING_PARAM_7		(PHY_OFFSET + 0x348)
-> +#define MTK_DP_LANE3_DRIVING_PARAM_7		(PHY_OFFSET + 0x448)
+Cheers,
 
-Ditto.
+Joel
 
-> +# define XTP_LN_TX_LCTXCP1_SW1_PRE0_DEFAULT	0x00
-> +# define XTP_LN_TX_LCTXCP1_SW1_PRE1_DEFAULT	(0x06 << 8)
-> +# define XTP_LN_TX_LCTXCP1_SW1_PRE2_DEFAULT	(0x0c << 16)
-> +# define XTP_LN_TX_LCTXCP1_SW2_PRE0_DEFAULT	(0x00 << 24)
-> +# define DRIVING_PARAM_7_DEFAULT		(XTP_LN_TX_LCTXCP1_SW1_
-> PRE0_DEFAULT | \
-> +						 XTP_LN_TX_LCTXCP1_SW1_
-> PRE1_DEFAULT | \
-> +						 XTP_LN_TX_LCTXCP1_SW1_
-> PRE2_DEFAULT | \
-> +						 XTP_LN_TX_LCTXCP1_SW2_
-> PRE0_DEFAULT)
-> +
-> +#define MTK_DP_LANE0_DRIVING_PARAM_8		(PHY_OFFSET + 0x14C)
-> +#define MTK_DP_LANE1_DRIVING_PARAM_8		(PHY_OFFSET + 0x24C)
-> +#define MTK_DP_LANE2_DRIVING_PARAM_8		(PHY_OFFSET + 0x34C)
-> +#define MTK_DP_LANE3_DRIVING_PARAM_8		(PHY_OFFSET + 0x44C)
 
-Ditto.
 
-> +# define XTP_LN_TX_LCTXCP1_SW2_PRE1_DEFAULT	0x08
-> +# define XTP_LN_TX_LCTXCP1_SW3_PRE0_DEFAULT	(0x00 << 8)
-> +# define DRIVING_PARAM_8_DEFAULT		(XTP_LN_TX_LCTXCP1_SW2_
-> PRE1_DEFAULT | \
-> +						 XTP_LN_TX_LCTXCP1_SW3_
-> PRE0_DEFAULT)
-> +
-> +struct mtk_dp_phy {
-> +	struct regmap *regs;
-> +};
-> +
-> +static int mtk_dp_phy_init(struct phy *phy)
-> +{
-> +	struct mtk_dp_phy *dp_phy = phy_get_drvdata(phy);
-> +	u32 driving_params[] = {
-> +		DRIVING_PARAM_3_DEFAULT,
-> +		DRIVING_PARAM_4_DEFAULT,
-> +		DRIVING_PARAM_5_DEFAULT,
-> +		DRIVING_PARAM_6_DEFAULT,
-> +		DRIVING_PARAM_7_DEFAULT,
-> +		DRIVING_PARAM_8_DEFAULT
-> +	};
-> +
-> +	regmap_bulk_write(dp_phy->regs, MTK_DP_LANE0_DRIVING_PARAM_3,
-> +			  driving_params, ARRAY_SIZE(driving_params));
-> +	regmap_bulk_write(dp_phy->regs, MTK_DP_LANE1_DRIVING_PARAM_3,
-> +			  driving_params, ARRAY_SIZE(driving_params));
-> +	regmap_bulk_write(dp_phy->regs, MTK_DP_LANE2_DRIVING_PARAM_3,
-> +			  driving_params, ARRAY_SIZE(driving_params));
-> +	regmap_bulk_write(dp_phy->regs, MTK_DP_LANE3_DRIVING_PARAM_3,
-> +			  driving_params, ARRAY_SIZE(driving_params));
-> +
-> +	return 0;
-> +}
-> +
-> +static int mtk_dp_phy_configure(struct phy *phy, union
-> phy_configure_opts *opts)
-> +{
-> +	struct mtk_dp_phy *dp_phy = phy_get_drvdata(phy);
-> +	u32 val;
-> +
-> +	if (opts->dp.set_rate) {
-> +		switch (opts->dp.link_rate) {
-> +		default:
-> +			dev_err(&phy->dev,
-> +				"Implementation error, unknown linkrate
-> %x\n",
-> +				opts->dp.link_rate);
-> +			return -EINVAL;
-> +		case 1620:
-> +			val = BIT_RATE_RBR;
-> +			break;
-> +		case 2700:
-> +			val = BIT_RATE_HBR;
-> +			break;
-> +		case 5400:
-> +			val = BIT_RATE_HBR2;
-> +			break;
-> +		case 8100:
-> +			val = BIT_RATE_HBR3;
-> +			break;
-> +		}
-> +		regmap_write(dp_phy->regs, MTK_DP_PHY_DIG_BIT_RATE,
-> val);
-> +	}
-> +
-> +	regmap_update_bits(dp_phy->regs, MTK_DP_PHY_DIG_PLL_CTL_1,
-> +			   TPLL_SSC_EN, opts->dp.ssc ? TPLL_SSC_EN :
-> 0);
-> +
-> +	return 0;
-> +}
-> +
-> +static int mtk_dp_phy_reset(struct phy *phy)
-> +{
-> +	struct mtk_dp_phy *dp_phy = phy_get_drvdata(phy);
-> +
-> +	regmap_update_bits(dp_phy->regs, MTK_DP_PHY_DIG_SW_RST,
-> +			   DP_GLB_SW_RST_PHYD, 0);
-> +	usleep_range(50, 200);
-> +	regmap_update_bits(dp_phy->regs, MTK_DP_PHY_DIG_SW_RST,
-> +			   DP_GLB_SW_RST_PHYD, 1);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct phy_ops mtk_dp_phy_dev_ops = {
-> +	.init = mtk_dp_phy_init,
-> +	.configure = mtk_dp_phy_configure,
-> +	.reset = mtk_dp_phy_reset,
-> 
-
-In Mediatek mipi dsi phy driver and Mediatek hdmi phy driver, implement
-power_on and power_off. I would like to align the behavior. If init is
-necessary for configure, would exit should be implement?
-
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static int mtk_dp_phy_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct mtk_dp_phy *dp_phy;
-> +	struct phy *phy;
-> +
-> +	dp_phy = devm_kzalloc(dev, sizeof(*dp_phy), GFP_KERNEL);
-> +	if (!dp_phy)
-> +		return -ENOMEM;
-> +
-> +	dp_phy->regs = *(struct regmap **)dev->platform_data;
-
-Why not
-
-	mtk_dp->phy_dev = platform_device_register_data(dev, "mediatek-
-dp-phy",
-							PLATFORM_DEVID_
-AUTO,
-							mtk_dp->regs,
-							sizeof(struct
-regmap *));
-
-And
-
-dp_phy->regs = (struct regmap *)dev->platform_data;
-
-Regards,
-CK
-
-> +	if (!dp_phy->regs) {
-> +		dev_err(dev, "No data passed, requires struct
-> regmap**\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	phy = devm_phy_create(dev, NULL, &mtk_dp_phy_dev_ops);
-> +	if (IS_ERR(phy)) {
-> +		dev_err(dev, "Failed to create DP PHY: %ld\n",
-> PTR_ERR(phy));
-> +		return PTR_ERR(phy);
-> +	}
-> +	phy_set_drvdata(phy, dp_phy);
-> +
-> +	if (!dev->of_node)
-> +		phy_create_lookup(phy, "dp", dev_name(dev));
-> +
-> +	return 0;
-> +}
-> +
-> +struct platform_driver mtk_dp_phy_driver = {
-> +	.probe = mtk_dp_phy_probe,
-> +	.driver = {
-> +		.name = "mediatek-dp-phy",
-> +	},
-> +};
-> +module_platform_driver(mtk_dp_phy_driver);
-> +
-> +MODULE_AUTHOR("Markus Schneider-Pargmann <msp@baylibre.com>");
-> +MODULE_DESCRIPTION("MediaTek DP PHY Driver");
-> +MODULE_LICENSE("GPL v2");
-
+>
+>
+> Thanks,
+>
+> Eddie
+>
+>
+> >
+> >>          mutex_init(&occ->occ_lock);
+> >>
+> >>          if (dev->of_node) {
+> >> --
+> >> 2.27.0
+> >>
