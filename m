@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B6EFC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5895AC3527A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390773AbiBGL5z (ORCPT
+        id S1390751AbiBGL5r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:57:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37762 "EHLO
+        Mon, 7 Feb 2022 06:57:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384715AbiBGL3l (ORCPT
+        with ESMTP id S1385175AbiBGLbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:29:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0E9C043188;
-        Mon,  7 Feb 2022 03:28:12 -0800 (PST)
+        Mon, 7 Feb 2022 06:31:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C331BC03E97A;
+        Mon,  7 Feb 2022 03:29:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93E12B81158;
-        Mon,  7 Feb 2022 11:28:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0604C004E1;
-        Mon,  7 Feb 2022 11:28:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DC3D6077B;
+        Mon,  7 Feb 2022 11:29:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24076C004E1;
+        Mon,  7 Feb 2022 11:29:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233290;
-        bh=mghb54hZFOF3Tf8Tw34fghEoY09mRRxhydg5x0NVEVE=;
+        s=korg; t=1644233369;
+        bh=6vj50r1AvP3r9OAXzpvy1MjM6N02vm1PiN84suqqwYY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U7YauR0KscXThr/XaJxanyUFWy8fjk6Gt/x+EkqeFjUYwhfJzCS924XyDaDvKSt98
-         uRIJPAkR1pZMXZAIVdr7y1kiMqMeFKKQgWiw9vgUCG6afTYA+bamNO27Nv65sAq7ru
-         peYhva8Me740YloGLJARO4vYRaMCnGhULi4mSxYc=
+        b=oH28ytEGmaJrIPdqGp08btMiWbK1iEIokFHwQD0pM7112YWsPSGZV17UHpWcSIs0R
+         U8OSUNaVhSyNMDAZDlzCyuNEq3oOuKLYVg7LMsC095QAObmnWEOnAFXg3HBys5WJKS
+         Xpl9m3gjtLMacjVe+VWO2N9NUBr4N8IxxZsXuLQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 076/110] ASoC: codecs: wcd938x: fix incorrect used of portid
-Date:   Mon,  7 Feb 2022 12:06:49 +0100
-Message-Id: <20220207103804.956829119@linuxfoundation.org>
+        stable@vger.kernel.org, luo penghao <luo.penghao@zte.com.cn>,
+        Lukas Czerner <lczerner@redhat.com>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 5.15 102/110] ext4: fix error handling in ext4_fc_record_modified_inode()
+Date:   Mon,  7 Feb 2022 12:07:15 +0100
+Message-Id: <20220207103805.845715864@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -50,104 +52,182 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Ritesh Harjani <riteshh@linux.ibm.com>
 
-commit c5c1546a654f613e291a7c5d6f3660fc1eb6d0c7 upstream.
+commit cdce59a1549190b66f8e3fe465c2b2f714b98a94 upstream.
 
-Mixer controls have the channel id in mixer->reg, which is not same
-as port id. port id should be derived from chan_info array.
-So fix this. Without this, its possible that we could corrupt
-struct wcd938x_sdw_priv by accessing port_map array out of range
-with channel id instead of port id.
+Current code does not fully takes care of krealloc() error case, which
+could lead to silent memory corruption or a kernel bug.  This patch
+fixes that.
 
-Fixes: e8ba1e05bdc0 ("ASoC: codecs: wcd938x: add basic controls")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220126113549.8853-2-srinivas.kandagatla@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Also it cleans up some duplicated error handling logic from various
+functions in fast_commit.c file.
+
+Reported-by: luo penghao <luo.penghao@zte.com.cn>
+Suggested-by: Lukas Czerner <lczerner@redhat.com>
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/62e8b6a1cce9359682051deb736a3c0953c9d1e9.1642416995.git.riteshh@linux.ibm.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/wcd938x.c |   25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+ fs/ext4/fast_commit.c |   64 ++++++++++++++++++++++----------------------------
+ 1 file changed, 29 insertions(+), 35 deletions(-)
 
---- a/sound/soc/codecs/wcd938x.c
-+++ b/sound/soc/codecs/wcd938x.c
-@@ -1432,14 +1432,10 @@ static int wcd938x_sdw_connect_port(stru
+--- a/fs/ext4/fast_commit.c
++++ b/fs/ext4/fast_commit.c
+@@ -1433,14 +1433,15 @@ static int ext4_fc_record_modified_inode
+ 		if (state->fc_modified_inodes[i] == ino)
+ 			return 0;
+ 	if (state->fc_modified_inodes_used == state->fc_modified_inodes_size) {
+-		state->fc_modified_inodes_size +=
+-			EXT4_FC_REPLAY_REALLOC_INCREMENT;
+ 		state->fc_modified_inodes = krealloc(
+-					state->fc_modified_inodes, sizeof(int) *
+-					state->fc_modified_inodes_size,
+-					GFP_KERNEL);
++				state->fc_modified_inodes,
++				sizeof(int) * (state->fc_modified_inodes_size +
++				EXT4_FC_REPLAY_REALLOC_INCREMENT),
++				GFP_KERNEL);
+ 		if (!state->fc_modified_inodes)
+ 			return -ENOMEM;
++		state->fc_modified_inodes_size +=
++			EXT4_FC_REPLAY_REALLOC_INCREMENT;
+ 	}
+ 	state->fc_modified_inodes[state->fc_modified_inodes_used++] = ino;
+ 	return 0;
+@@ -1472,7 +1473,9 @@ static int ext4_fc_replay_inode(struct s
+ 	}
+ 	inode = NULL;
+ 
+-	ext4_fc_record_modified_inode(sb, ino);
++	ret = ext4_fc_record_modified_inode(sb, ino);
++	if (ret)
++		goto out;
+ 
+ 	raw_fc_inode = (struct ext4_inode *)
+ 		(val + offsetof(struct ext4_fc_inode, fc_raw_inode));
+@@ -1671,6 +1674,8 @@ static int ext4_fc_replay_add_range(stru
+ 	}
+ 
+ 	ret = ext4_fc_record_modified_inode(sb, inode->i_ino);
++	if (ret)
++		goto out;
+ 
+ 	start = le32_to_cpu(ex->ee_block);
+ 	start_pblk = ext4_ext_pblock(ex);
+@@ -1688,18 +1693,14 @@ static int ext4_fc_replay_add_range(stru
+ 		map.m_pblk = 0;
+ 		ret = ext4_map_blocks(NULL, inode, &map, 0);
+ 
+-		if (ret < 0) {
+-			iput(inode);
+-			return 0;
+-		}
++		if (ret < 0)
++			goto out;
+ 
+ 		if (ret == 0) {
+ 			/* Range is not mapped */
+ 			path = ext4_find_extent(inode, cur, NULL, 0);
+-			if (IS_ERR(path)) {
+-				iput(inode);
+-				return 0;
+-			}
++			if (IS_ERR(path))
++				goto out;
+ 			memset(&newex, 0, sizeof(newex));
+ 			newex.ee_block = cpu_to_le32(cur);
+ 			ext4_ext_store_pblock(
+@@ -1713,10 +1714,8 @@ static int ext4_fc_replay_add_range(stru
+ 			up_write((&EXT4_I(inode)->i_data_sem));
+ 			ext4_ext_drop_refs(path);
+ 			kfree(path);
+-			if (ret) {
+-				iput(inode);
+-				return 0;
+-			}
++			if (ret)
++				goto out;
+ 			goto next;
+ 		}
+ 
+@@ -1729,10 +1728,8 @@ static int ext4_fc_replay_add_range(stru
+ 			ret = ext4_ext_replay_update_ex(inode, cur, map.m_len,
+ 					ext4_ext_is_unwritten(ex),
+ 					start_pblk + cur - start);
+-			if (ret) {
+-				iput(inode);
+-				return 0;
+-			}
++			if (ret)
++				goto out;
+ 			/*
+ 			 * Mark the old blocks as free since they aren't used
+ 			 * anymore. We maintain an array of all the modified
+@@ -1752,10 +1749,8 @@ static int ext4_fc_replay_add_range(stru
+ 			ext4_ext_is_unwritten(ex), map.m_pblk);
+ 		ret = ext4_ext_replay_update_ex(inode, cur, map.m_len,
+ 					ext4_ext_is_unwritten(ex), map.m_pblk);
+-		if (ret) {
+-			iput(inode);
+-			return 0;
+-		}
++		if (ret)
++			goto out;
+ 		/*
+ 		 * We may have split the extent tree while toggling the state.
+ 		 * Try to shrink the extent tree now.
+@@ -1767,6 +1762,7 @@ next:
+ 	}
+ 	ext4_ext_replay_shrink_inode(inode, i_size_read(inode) >>
+ 					sb->s_blocksize_bits);
++out:
+ 	iput(inode);
  	return 0;
  }
+@@ -1796,6 +1792,8 @@ ext4_fc_replay_del_range(struct super_bl
+ 	}
  
--static int wcd938x_connect_port(struct wcd938x_sdw_priv *wcd, u8 ch_id, u8 enable)
-+static int wcd938x_connect_port(struct wcd938x_sdw_priv *wcd, u8 port_num, u8 ch_id, u8 enable)
- {
--	u8 port_num;
+ 	ret = ext4_fc_record_modified_inode(sb, inode->i_ino);
++	if (ret)
++		goto out;
+ 
+ 	jbd_debug(1, "DEL_RANGE, inode %ld, lblk %d, len %d\n",
+ 			inode->i_ino, le32_to_cpu(lrange.fc_lblk),
+@@ -1805,10 +1803,8 @@ ext4_fc_replay_del_range(struct super_bl
+ 		map.m_len = remaining;
+ 
+ 		ret = ext4_map_blocks(NULL, inode, &map, 0);
+-		if (ret < 0) {
+-			iput(inode);
+-			return 0;
+-		}
++		if (ret < 0)
++			goto out;
+ 		if (ret > 0) {
+ 			remaining -= ret;
+ 			cur += ret;
+@@ -1823,15 +1819,13 @@ ext4_fc_replay_del_range(struct super_bl
+ 	ret = ext4_ext_remove_space(inode, lrange.fc_lblk,
+ 				lrange.fc_lblk + lrange.fc_len - 1);
+ 	up_write(&EXT4_I(inode)->i_data_sem);
+-	if (ret) {
+-		iput(inode);
+-		return 0;
+-	}
++	if (ret)
++		goto out;
+ 	ext4_ext_replay_shrink_inode(inode,
+ 		i_size_read(inode) >> sb->s_blocksize_bits);
+ 	ext4_mark_inode_dirty(NULL, inode);
++out:
+ 	iput(inode);
 -
--	port_num = wcd->ch_info[ch_id].port_num;
--
- 	return wcd938x_sdw_connect_port(&wcd->ch_info[ch_id],
--					&wcd->port_config[port_num],
-+					&wcd->port_config[port_num - 1],
- 					enable);
- }
- 
-@@ -2593,6 +2589,7 @@ static int wcd938x_set_compander(struct
- 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
- 	struct wcd938x_sdw_priv *wcd;
- 	int value = ucontrol->value.integer.value[0];
-+	int portidx;
- 	struct soc_mixer_control *mc;
- 	bool hphr;
- 
-@@ -2606,10 +2603,12 @@ static int wcd938x_set_compander(struct
- 	else
- 		wcd938x->comp1_enable = value;
- 
-+	portidx = wcd->ch_info[mc->reg].port_num;
-+
- 	if (value)
--		wcd938x_connect_port(wcd, mc->reg, true);
-+		wcd938x_connect_port(wcd, portidx, mc->reg, true);
- 	else
--		wcd938x_connect_port(wcd, mc->reg, false);
-+		wcd938x_connect_port(wcd, portidx, mc->reg, false);
- 
  	return 0;
  }
-@@ -2882,9 +2881,11 @@ static int wcd938x_get_swr_port(struct s
- 	struct wcd938x_sdw_priv *wcd;
- 	struct soc_mixer_control *mixer = (struct soc_mixer_control *)kcontrol->private_value;
- 	int dai_id = mixer->shift;
--	int portidx = mixer->reg;
-+	int portidx, ch_idx = mixer->reg;
-+
- 
- 	wcd = wcd938x->sdw_priv[dai_id];
-+	portidx = wcd->ch_info[ch_idx].port_num;
- 
- 	ucontrol->value.integer.value[0] = wcd->port_enable[portidx];
- 
-@@ -2899,12 +2900,14 @@ static int wcd938x_set_swr_port(struct s
- 	struct wcd938x_sdw_priv *wcd;
- 	struct soc_mixer_control *mixer =
- 		(struct soc_mixer_control *)kcontrol->private_value;
--	int portidx = mixer->reg;
-+	int ch_idx = mixer->reg;
-+	int portidx;
- 	int dai_id = mixer->shift;
- 	bool enable;
- 
- 	wcd = wcd938x->sdw_priv[dai_id];
- 
-+	portidx = wcd->ch_info[ch_idx].port_num;
- 	if (ucontrol->value.integer.value[0])
- 		enable = true;
- 	else
-@@ -2912,7 +2915,7 @@ static int wcd938x_set_swr_port(struct s
- 
- 	wcd->port_enable[portidx] = enable;
- 
--	wcd938x_connect_port(wcd, portidx, enable);
-+	wcd938x_connect_port(wcd, portidx, ch_idx, enable);
- 
- 	return 0;
  
 
 
