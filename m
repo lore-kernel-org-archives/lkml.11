@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E501C47088
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E81EC47087
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381985AbiBGMAj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:00:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
+        id S232621AbiBGMAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 07:00:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386730AbiBGLgX (ORCPT
+        with ESMTP id S1383937AbiBGLgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:36:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D89C03FECD;
-        Mon,  7 Feb 2022 03:36:22 -0800 (PST)
+        Mon, 7 Feb 2022 06:36:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA17C0401DB;
+        Mon,  7 Feb 2022 03:36:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 800BCB80EBD;
-        Mon,  7 Feb 2022 11:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6957C004E1;
-        Mon,  7 Feb 2022 11:36:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6C1CB811BB;
+        Mon,  7 Feb 2022 11:36:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD8E5C004E1;
+        Mon,  7 Feb 2022 11:36:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233780;
-        bh=CfF5WdTDKr8HJN9/b0LVxkEDlz1x+4lkrQSzwtW1+XQ=;
+        s=korg; t=1644233767;
+        bh=s67VpVP7MXMILns6SrqsrSdBqMFhRM8QKqe4wHf8zNk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YLNoFxxPvUd5BUSM5eKiDgMHpUeVHGGKR97mwM1dFfmsVFZStvQKQ2f1CvVCMHfmd
-         rOGaxP76d426LmdQbLZHP/CnoOxlQXKfwMU46EWv3HA7xqNak0i+FiPdfG9jp3YyEO
-         zV4ZgYOTj3/o/BnQ6yaamzh7sQ0FV67xoSRBlB60=
+        b=pu5knsQSiGi7JKEUAhUgpiIBJKfW9Up6J7cR0nlvY8OIrkN4q1bCiY7jHxeIvWoDy
+         bnMoi+0LnP//O9tYSvWNV5uNfyy+eSauLWWhosJopPC/luGhd1eQ49kuBcb/tyj4TT
+         Mqrk4dzuE8PMal0w3zjiX6IoWxf8pQablqpe48/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Whitney <enwlinux@gmail.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org
-Subject: [PATCH 5.16 117/126] ext4: fix error handling in ext4_restore_inline_data()
-Date:   Mon,  7 Feb 2022 12:07:28 +0100
-Message-Id: <20220207103808.102750557@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Borislav Petkov <bp@suse.de>, Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.16 113/126] EDAC/altera: Fix deferred probing
+Date:   Mon,  7 Feb 2022 12:07:24 +0100
+Message-Id: <20220207103807.958903019@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -51,60 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ritesh Harjani <riteshh@linux.ibm.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit 897026aaa73eb2517dfea8d147f20ddb0b813044 upstream.
+commit 279eb8575fdaa92c314a54c0d583c65e26229107 upstream.
 
-While running "./check -I 200 generic/475" it sometimes gives below
-kernel BUG(). Ideally we should not call ext4_write_inline_data() if
-ext4_create_inline_data() has failed.
+The driver overrides the error codes returned by platform_get_irq() to
+-ENODEV for some strange reason, so if it returns -EPROBE_DEFER, the
+driver will fail the probe permanently instead of the deferred probing.
+Switch to propagating the proper error codes to platform driver code
+upwards.
 
-<log snip>
-[73131.453234] kernel BUG at fs/ext4/inline.c:223!
+  [ bp: Massage commit message. ]
 
-<code snip>
- 212 static void ext4_write_inline_data(struct inode *inode, struct ext4_iloc *iloc,
- 213                                    void *buffer, loff_t pos, unsigned int len)
- 214 {
-<...>
- 223         BUG_ON(!EXT4_I(inode)->i_inline_off);
- 224         BUG_ON(pos + len > EXT4_I(inode)->i_inline_size);
-
-This patch handles the error and prints out a emergency msg saying potential
-data loss for the given inode (since we couldn't restore the original
-inline_data due to some previous error).
-
-[ 9571.070313] EXT4-fs (dm-0): error restoring inline_data for inode -- potential data loss! (inode 1703982, error -30)
-
-Reported-by: Eric Whitney <enwlinux@gmail.com>
-Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/9f4cd7dfd54fa58ff27270881823d94ddf78dd07.1642416995.git.riteshh@linux.ibm.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+Fixes: 71bcada88b0f ("edac: altera: Add Altera SDRAM EDAC support")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220124185503.6720-2-s.shtylyov@omp.ru
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inline.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/edac/altera_edac.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -1133,7 +1133,15 @@ static void ext4_restore_inline_data(han
- 				     struct ext4_iloc *iloc,
- 				     void *buf, int inline_size)
- {
--	ext4_create_inline_data(handle, inode, inline_size);
-+	int ret;
-+
-+	ret = ext4_create_inline_data(handle, inode, inline_size);
-+	if (ret) {
-+		ext4_msg(inode->i_sb, KERN_EMERG,
-+			"error restoring inline_data for inode -- potential data loss! (inode %lu, error %d)",
-+			inode->i_ino, ret);
-+		return;
-+	}
- 	ext4_write_inline_data(inode, iloc, buf, 0, inline_size);
- 	ext4_set_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
- }
+--- a/drivers/edac/altera_edac.c
++++ b/drivers/edac/altera_edac.c
+@@ -350,7 +350,7 @@ static int altr_sdram_probe(struct platf
+ 	if (irq < 0) {
+ 		edac_printk(KERN_ERR, EDAC_MC,
+ 			    "No irq %d in DT\n", irq);
+-		return -ENODEV;
++		return irq;
+ 	}
+ 
+ 	/* Arria10 has a 2nd IRQ */
 
 
