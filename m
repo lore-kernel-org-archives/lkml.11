@@ -2,98 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD75C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 880FEC47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385862AbiBGLcw (ORCPT
+        id S1385876AbiBGLcz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:32:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33572 "EHLO
+        Mon, 7 Feb 2022 06:32:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383001AbiBGLVX (ORCPT
+        with ESMTP id S1383137AbiBGLVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:21:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8E4C0401F6;
-        Mon,  7 Feb 2022 03:21:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0405EB811A6;
-        Mon,  7 Feb 2022 11:20:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A781C004E1;
-        Mon,  7 Feb 2022 11:20:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232849;
-        bh=vVdceyXEfR+rT7SfufXa4EHqMBTrDKZdT9JBResE4go=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x/a9/swCttZNdleNhadRqDOwum9+7RBVDMxHaKJefHTvV361CuGY4muSCn+Gc9xuQ
-         eHPJhXrVno8MH7pS6L00nJP7VecdOTOeKQl/OCPLA95aM0tVWgul6YQp3tUcIar6ym
-         /R1qaEuWg4Wtkoq8M54Q7SHvsGmvoYp58jTJSgAU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Lachner <gladiac@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 11/74] ALSA: hda/realtek: Fix silent output on Gigabyte X570S Aorus Master (newer chipset)
-Date:   Mon,  7 Feb 2022 12:06:09 +0100
-Message-Id: <20220207103757.601747900@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
-References: <20220207103757.232676988@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:21:40 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92422C0401E4;
+        Mon,  7 Feb 2022 03:21:26 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so2452677pjh.3;
+        Mon, 07 Feb 2022 03:21:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=u1SeK1c7GsxTi1KJRtX41+e8KV9bbkC6jBlAR+v8yco=;
+        b=qek10+XaY11auEJTZ6D2YUOXnJNC2jahYrh8WmWDjUshFRhDhJ9MUUpTlYEZ1NMIxk
+         OJK15B11YbOuuQSFH2zv3+M1qNHESwuLSwwDRnd8qF2BlKd0yf0etXtUzqwqgLzIWmxu
+         X5f/BuOsQtYFxvb+/AjXFs4g0VDQFUwHY2s5OvO570DzRPic/18rXaWBk4Eo/GteEX9M
+         7wQGacG4s4RUi5vg/uaOxIdhZZPotD6Z5dG/iqk3bh4DJqU58gi221g9puGL1MROSccY
+         3FMXdYR5NgOd/ii7X7VguVEijRWdC8skg5uriwOossgj6UvpMQA5KoRGeYMo/RchUYq7
+         jWeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=u1SeK1c7GsxTi1KJRtX41+e8KV9bbkC6jBlAR+v8yco=;
+        b=M47+xtL9mMQDHbnpNjL5mYrERhTYZ2+G3UgITKi9qmuLFaa56kIWV9vdpEtKUUCrK+
+         XIQZt3WkcLvkSMuSXxjgjAhDVLAfR6+JqHdZIwQVqFQoX1T78DRdnRRu05VvilqBSrNw
+         gZiy2QmSRrR3iSw24HcI70SJ3FyX441zZq+Na14vB8/tj67DJpwtQ7CIXYqogEP1smOg
+         cOUE2PXH99HhlFgTCAq9yKFBvMSzDlcS3eqp3XxRm9/XYRiVttIunTBgFtVtA31MT58E
+         a+RH+n/EDVn+z3MljPwhdzflTqZhR/6NiHvXPZUuIoczC29lvs2dxYdER4LQj/KmnHCh
+         VLEg==
+X-Gm-Message-State: AOAM530dhQQX7BzJh8Q4tx8P86v6KuI+yBFhONXA7YITqYJ0VP39sS0E
+        KmJOYhOOYmCJKsjYaIynnOc=
+X-Google-Smtp-Source: ABdhPJyyDGXxcAT+b6VN7v+g7nzcvVC6pBxqH3gvy90hhQbUrZ66KZpL9Y/MgLcgt8d+zNOrJd4/eQ==
+X-Received: by 2002:a17:90b:3802:: with SMTP id mq2mr13748921pjb.236.1644232886066;
+        Mon, 07 Feb 2022 03:21:26 -0800 (PST)
+Received: from localhost.localdomain ([2400:2410:93a3:bc00:d659:4e05:9b13:b711])
+        by smtp.gmail.com with ESMTPSA id w11sm11791400pfu.50.2022.02.07.03.21.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 03:21:25 -0800 (PST)
+From:   Akira Kawata <akirakawata1@gmail.com>
+To:     brendanhiggins@google.com
+Cc:     akirakawata1@gmail.com, Jonathan Corbet <corbet@lwn.net>,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1] Documentation: KUnit: Fix usage bug
+Date:   Mon,  7 Feb 2022 20:20:44 +0900
+Message-Id: <20220207112043.397074-1-akirakawata1@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Lachner <gladiac@gmail.com>
+Fix a bug of kunit documentation.
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=205773
 
-commit 41a8601302ecbe704ac970552c33dc942300fc37 upstream.
+: Quoting Steve Pfetsch:
+:
+: kunit documentation is incorrect:
+: https://kunit.dev/third_party/stable_kernel/docs/usage.html
+: struct rectangle *self = container_of(this, struct shape, parent);
+:
+:
+: Shouldn't it be:
+: struct rectangle *self = container_of(this, struct rectangle, parent);
+: ?
 
-Newer versions of the X570 Master come with a newer revision of the
-mainboard chipset - the X570S. These boards have the same ALC1220 codec
-but seem to initialize the codec with a different parameter in Coef 0x7
-which causes the output audio to be very low. We therefore write a
-known-good value to Coef 0x7 to fix that. As the value is the exact same
-as on the other X570(non-S) boards the same quirk-function can be shared
-between both generations.
-
-This commit adds the Gigabyte X570S Aorus Master to the list of boards
-using the ALC1220_FIXUP_GB_X570 quirk. This fixes both, the silent output
-and the no-audio after reboot from windows problems.
-
-This work has been tested by the folks over at the level1techs forum here:
-https://forum.level1techs.com/t/has-anybody-gotten-audio-working-in-linux-on-aorus-x570-master/154072
-
-Signed-off-by: Christian Lachner <gladiac@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220129113243.93068-3-gladiac@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
 ---
- sound/pci/hda/patch_realtek.c |    2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/dev-tools/kunit/usage.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -2171,6 +2171,7 @@ static void alc1220_fixup_gb_x570(struct
- {
- 	static const hda_nid_t conn1[] = { 0x0c };
- 	static const struct coef_fw gb_x570_coefs[] = {
-+		WRITE_COEF(0x07, 0x03c0),
- 		WRITE_COEF(0x1a, 0x01c1),
- 		WRITE_COEF(0x1b, 0x0202),
- 		WRITE_COEF(0x43, 0x3005),
-@@ -2598,6 +2599,7 @@ static const struct snd_pci_quirk alc882
- 	SND_PCI_QUIRK(0x1458, 0xa0b8, "Gigabyte AZ370-Gaming", ALC1220_FIXUP_GB_DUAL_CODECS),
- 	SND_PCI_QUIRK(0x1458, 0xa0cd, "Gigabyte X570 Aorus Master", ALC1220_FIXUP_GB_X570),
- 	SND_PCI_QUIRK(0x1458, 0xa0ce, "Gigabyte X570 Aorus Xtreme", ALC1220_FIXUP_CLEVO_P950),
-+	SND_PCI_QUIRK(0x1458, 0xa0d5, "Gigabyte X570S Aorus Master", ALC1220_FIXUP_GB_X570),
- 	SND_PCI_QUIRK(0x1462, 0x11f7, "MSI-GE63", ALC1220_FIXUP_CLEVO_P950),
- 	SND_PCI_QUIRK(0x1462, 0x1228, "MSI-GP63", ALC1220_FIXUP_CLEVO_P950),
- 	SND_PCI_QUIRK(0x1462, 0x1229, "MSI-GP73", ALC1220_FIXUP_CLEVO_P950),
-
+diff --git a/Documentation/dev-tools/kunit/usage.rst b/Documentation/dev-tools/kunit/usage.rst
+index 76af931a332c..1c83e7d60a8a 100644
+--- a/Documentation/dev-tools/kunit/usage.rst
++++ b/Documentation/dev-tools/kunit/usage.rst
+@@ -242,7 +242,7 @@ example:
+ 
+ 	int rectangle_area(struct shape *this)
+ 	{
+-		struct rectangle *self = container_of(this, struct shape, parent);
++		struct rectangle *self = container_of(this, struct rectangle, parent);
+ 
+ 		return self->length * self->width;
+ 	};
+-- 
+2.25.1
 
