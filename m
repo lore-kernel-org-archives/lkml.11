@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03468C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383247AbiBGLVz (ORCPT
+        id S1383259AbiBGLV4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54892 "EHLO
+        Mon, 7 Feb 2022 06:21:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380499AbiBGLQw (ORCPT
+        with ESMTP id S1381054AbiBGLQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:16:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C22C043188;
-        Mon,  7 Feb 2022 03:16:51 -0800 (PST)
+        Mon, 7 Feb 2022 06:16:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31C2C0401E1;
+        Mon,  7 Feb 2022 03:16:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DDCA6113B;
-        Mon,  7 Feb 2022 11:16:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDFB7C004E1;
-        Mon,  7 Feb 2022 11:16:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5BD561380;
+        Mon,  7 Feb 2022 11:16:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6B29C004E1;
+        Mon,  7 Feb 2022 11:16:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232610;
-        bh=DaGD0G2X0YExTtuIuMmfRFGlyWBa1FEMMdKEvocIJkQ=;
+        s=korg; t=1644232613;
+        bh=lTG3C07Wf8/sEI8hwYExwGyUXAy1bir6utVxXmpv+8c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IX249gItXwMwjhsAFll0733+LC9XvLw/gy78a2LV1fPFA5row4Ib2DdfKOG4Khjim
-         fVjlN0S8axv+L48YvXbTHPpfNPGEI1FydC87DAeP6zAAfPKy1uFOWjvL5DHp8GwI0Y
-         o165LbTGbf08QyfIILFLS1D4nCTjOZTaQanh130s=
+        b=T3Og4X4Za3O51jXNAlXv9dHR6h+zPVoGmUtHsJYKZTxxKG9/A4MpJgoqqLI2drWPB
+         CjAPwvtEYlH9iEDqglBFKtpahcyoc/5WLmms6QQYe8saRjyjN1ZAZrHTyX62QJRkib
+         oPV/6BV2jUP3N/l1CehrT1Ro187W2Xe1/5AKdsWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Lachner <gladiac@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.19 58/86] ALSA: hda/realtek: Add missing fixup-model entry for Gigabyte X570 ALC1220 quirks
-Date:   Mon,  7 Feb 2022 12:06:21 +0100
-Message-Id: <20220207103759.462395774@linuxfoundation.org>
+        stable@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.19 67/86] spi: bcm-qspi: check for valid cs before applying chip select
+Date:   Mon,  7 Feb 2022 12:06:30 +0100
+Message-Id: <20220207103759.756812412@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -49,32 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Lachner <gladiac@gmail.com>
+From: Kamal Dasu <kdasu.kdev@gmail.com>
 
-commit 63394a16086fc2152869d7902621e2525e14bc40 upstream.
+commit 2cbd27267ffe020af1442b95ec57f59a157ba85c upstream.
 
-The initial commit of the new Gigabyte X570 ALC1220 quirks lacked the
-fixup-model entry in alc882_fixup_models[]. It seemed not to cause any ill
-effects but for completeness sake this commit makes up for that.
+Apply only valid chip select value. This change fixes case where chip
+select is set to initial value of '-1' during probe and  PM supend and
+subsequent resume can try to use the value with undefined behaviour.
+Also in case where gpio based chip select, the check in
+bcm_qspi_chip_select() shall prevent undefined behaviour on resume.
 
-Signed-off-by: Christian Lachner <gladiac@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220129113243.93068-2-gladiac@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: fa236a7ef240 ("spi: bcm-qspi: Add Broadcom MSPI driver")
+Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220127185359.27322-1-kdasu.kdev@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/spi/spi-bcm-qspi.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -2607,6 +2607,7 @@ static const struct hda_model_fixup alc8
- 	{.id = ALC882_FIXUP_NO_PRIMARY_HP, .name = "no-primary-hp"},
- 	{.id = ALC887_FIXUP_ASUS_BASS, .name = "asus-bass"},
- 	{.id = ALC1220_FIXUP_GB_DUAL_CODECS, .name = "dual-codecs"},
-+	{.id = ALC1220_FIXUP_GB_X570, .name = "gb-x570"},
- 	{.id = ALC1220_FIXUP_CLEVO_P950, .name = "clevo-p950"},
- 	{}
- };
+--- a/drivers/spi/spi-bcm-qspi.c
++++ b/drivers/spi/spi-bcm-qspi.c
+@@ -520,7 +520,7 @@ static void bcm_qspi_chip_select(struct
+ 	u32 rd = 0;
+ 	u32 wr = 0;
+ 
+-	if (qspi->base[CHIP_SELECT]) {
++	if (cs >= 0 && qspi->base[CHIP_SELECT]) {
+ 		rd = bcm_qspi_read(qspi, CHIP_SELECT, 0);
+ 		wr = (rd & ~0xff) | (1 << cs);
+ 		if (rd == wr)
 
 
