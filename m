@@ -2,174 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17BF4C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E594C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354457AbiBGKK1 (ORCPT
+        id S1344988AbiBGKKt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:10:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45782 "EHLO
+        Mon, 7 Feb 2022 05:10:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244994AbiBGKIH (ORCPT
+        with ESMTP id S1352043AbiBGKJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:08:07 -0500
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29032C043181;
-        Mon,  7 Feb 2022 02:08:06 -0800 (PST)
-Received: by mail-lf1-x143.google.com with SMTP id x23so25894360lfc.0;
-        Mon, 07 Feb 2022 02:08:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=cEAT+Hy10Io/v/6MX2mvQJLKyjX37zLdKJy2cGs9ssg=;
-        b=VyAN6wJkNW7abvMrzl7SF3wzE97exy5eu7WmTzSN/TOxB5I/EWFzIYd7yfLAUu21Xu
-         BYgDBMggIiQ1lmLxYy0ZdfIkXc58GNd+CKyEvB7BCXkEWoQeRyxPI/jpCUcwMOow3JNB
-         gxoWkImounf5/SN0rcQHZBn0tri5gozybXcsJwayWGf3AtiY5c8bzX0YhjGn7e+TIdLE
-         tAhkQEEGaI0NmkuNjZarowcREP1UowuHaFpfBXbGCaAGxoML6WxJ4X5YIz2xz8vXBzX2
-         wE/3+A63YSnzIROSRsFCuaynNLRM1RQhhYSfaBL3UEfbaqtnJwvTNuz9+TqCLxfQyBrA
-         XBDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=cEAT+Hy10Io/v/6MX2mvQJLKyjX37zLdKJy2cGs9ssg=;
-        b=XjcxSrgGp/YoCtjwqJpX90eb8+K91D+zk3GIPaeMMJ+PdErEzux4hkxufCuaUoL/MS
-         abMPgxMyD7fLrQJtK3OVHl6jRjCoQTShVI6qjo+7dYCW8O3cqGss3ViAGxxralOB3rl2
-         7VP5alX3Tcjb+xtb2UlmAl6te2D1k5Da203h2rRlcD5wOKxcZJysRIU0JpdAdKK1F3zW
-         AiUebcPBVl6XeV+Sxzfz92rYfziOFEPRJByQ/W/hLVEOQZRXMLifRyTRkOKLAo/L4F/F
-         W4lR19ZzroZsGPegyyKM//3YUl1IpNUBaV3eqcasEq/w4QuNZrdIEFIIerx2N4jZzlfi
-         cOYw==
-X-Gm-Message-State: AOAM53376lCRxt+jvcqFBSjmXCI7FM3DTovIkUeXkM6j+4v5baJtsGX9
-        el4yHhZ3bZLSTELjyTYNU60=
-X-Google-Smtp-Source: ABdhPJyQW07MI6sMuY6Nkop9ESztUBKa8lVcQLLrm1lvEue2qyLWdRiRnAgkjYWXinKAN2kFkAibTw==
-X-Received: by 2002:ac2:54b7:: with SMTP id w23mr7704396lfk.6.1644228484590;
-        Mon, 07 Feb 2022 02:08:04 -0800 (PST)
-Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id k12sm1546034ljh.45.2022.02.07.02.08.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 02:08:04 -0800 (PST)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/4] net: dsa: mv88e6xxx: Add support for bridge port locked feature
-Date:   Mon,  7 Feb 2022 11:07:41 +0100
-Message-Id: <20220207100742.15087-4-schultz.hans+netdev@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220207100742.15087-1-schultz.hans+netdev@gmail.com>
-References: <20220207100742.15087-1-schultz.hans+netdev@gmail.com>
+        Mon, 7 Feb 2022 05:09:17 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D81C043181;
+        Mon,  7 Feb 2022 02:09:16 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2177IHdd021769;
+        Mon, 7 Feb 2022 10:09:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=tS9RbereTtPx/SOpjQ345ravp54SHFJ2d0zGKpElp0Q=;
+ b=JsdX3uD+WiCf75MIyFoqzDcZ/oid1qgju05+Ky+rMflvewuHsFjGaWqrE6w5Uo1Wj4/g
+ Q8aYC11BCQSyW8kwAbewuKNdX+ssXZGalU3qbR/Kzg0AQ+neGS6SHtUe4H/GFpPz6kdM
+ Nxt9kE3lRGq8J0iKFg8Z6vf3E4UW9/5PWU62+dryWUNPs/i/reDGh4i+dR22DBru3mTY
+ yftQWgs0KcrJx6t/yOIu/ZzvcrQWqteoGM1SRDcjIj8Ovm2tHDGtxeprc8F5rgk+bUag
+ Hy8y0Ax/z7K5Dhvr7Ri0W1ZPCWnX3WlURBIcyRK8YcgmiOvhsZLKkHZI9aeG1ZQU0lR/ kA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22u2quwc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 10:09:16 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217A0Slj016359;
+        Mon, 7 Feb 2022 10:09:15 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22u2quvn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 10:09:15 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217A7rmQ030871;
+        Mon, 7 Feb 2022 10:09:12 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggjjvge-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 10:09:12 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2179x6KX49676784
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 09:59:07 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 259114204B;
+        Mon,  7 Feb 2022 10:09:09 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BDD5142042;
+        Mon,  7 Feb 2022 10:09:08 +0000 (GMT)
+Received: from [9.145.9.42] (unknown [9.145.9.42])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Feb 2022 10:09:08 +0000 (GMT)
+Message-ID: <8f277bb3-e604-35d5-ed60-dc8824b223b5@linux.ibm.com>
+Date:   Mon, 7 Feb 2022 11:09:08 +0100
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v7 09/17] KVM: s390: pv: clear the state without memset
+Content-Language: en-US
+To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
+        david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
+References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
+ <20220204155349.63238-10-imbrenda@linux.ibm.com>
+From:   Janosch Frank <frankja@linux.ibm.com>
+In-Reply-To: <20220204155349.63238-10-imbrenda@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 7j-6IYFn636BvbRjr9uEYa20FeWGSY39
+X-Proofpoint-ORIG-GUID: pTRqlIumz4w7ZI-811p18R5RNVbAFHCS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_03,2022-02-07_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
+ malwarescore=0 adultscore=0 impostorscore=0 mlxscore=0 priorityscore=1501
+ suspectscore=0 bulkscore=0 lowpriorityscore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202070065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Supporting bridge port locked mode using the 802.1X mode in Marvell
-mv88e6xxx switchcores is described in the '88E6096/88E6097/88E6097F
-Datasheet', sections 4.4.6, 4.4.7 and 5.1.2.1 (Drop on Lock).
+On 2/4/22 16:53, Claudio Imbrenda wrote:
+> Do not use memset to clean the whole struct kvm_s390_pv; instead,
+> explicitly clear the fields that need to be cleared.
+> 
+> Upcoming patches will introduce new fields in the struct kvm_s390_pv
+> that will not need to be cleared.
+> 
+> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+> ---
+>   arch/s390/kvm/pv.c | 11 ++++++++++-
+>   1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
+> index 9e900ce7387d..f1e812a45acb 100644
+> --- a/arch/s390/kvm/pv.c
+> +++ b/arch/s390/kvm/pv.c
+> @@ -16,6 +16,15 @@
+>   #include <linux/sched/mm.h>
+>   #include "kvm-s390.h"
+>   
+> +static void kvm_s390_clear_pv_state(struct kvm *kvm)
+> +{
+> +	kvm->arch.pv.handle = 0;
+> +	kvm->arch.pv.guest_len = 0;
+> +	kvm->arch.pv.stor_base = 0;
+> +	kvm->arch.pv.stor_var = NULL;
+> +	kvm->arch.pv.handle = 0;
 
-This feature is implemented here facilitated by the locked port flag.
+You really want to make sure the handle is zero :)
 
-Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c |  9 ++++++++-
- drivers/net/dsa/mv88e6xxx/port.c | 33 ++++++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/port.h |  3 +++
- 3 files changed, 44 insertions(+), 1 deletion(-)
+With this fixed:
+Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 58ca684d73f7..eed3713b97ae 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5881,7 +5881,7 @@ static int mv88e6xxx_port_pre_bridge_flags(struct dsa_switch *ds, int port,
- 	const struct mv88e6xxx_ops *ops;
- 
- 	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
--			   BR_BCAST_FLOOD))
-+			   BR_BCAST_FLOOD | BR_PORT_LOCKED))
- 		return -EINVAL;
- 
- 	ops = chip->info->ops;
-@@ -5939,6 +5939,13 @@ static int mv88e6xxx_port_bridge_flags(struct dsa_switch *ds, int port,
- 			goto out;
- 	}
- 
-+	if (flags.mask & BR_PORT_LOCKED) {
-+		bool locked = !!(flags.val & BR_PORT_LOCKED);
-+
-+		err = mv88e6xxx_port_set_lock(chip, port, locked);
-+		if (err)
-+			goto out;
-+	}
- out:
- 	mv88e6xxx_reg_unlock(chip);
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index ab41619a809b..2279936429f9 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -1234,6 +1234,39 @@ int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
- 	return err;
- }
- 
-+int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
-+			    bool locked)
-+{
-+	u16 reg;
-+	int err;
-+
-+	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg);
-+	if (err)
-+		return err;
-+
-+	reg &= ~MV88E6XXX_PORT_CTL0_DROP_ON_LOCK;
-+	if (locked)
-+		reg |= MV88E6XXX_PORT_CTL0_DROP_ON_LOCK;
-+
-+	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
-+	if (err)
-+		return err;
-+
-+	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, &reg);
-+	if (err)
-+		return err;
-+
-+	reg &= ~MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
-+	if (locked)
-+		reg |= MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
-+
-+	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, reg);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
- int mv88e6xxx_port_set_8021q_mode(struct mv88e6xxx_chip *chip, int port,
- 				  u16 mode)
- {
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index 03382b66f800..655d942ac657 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -365,6 +365,9 @@ int mv88e6xxx_port_set_fid(struct mv88e6xxx_chip *chip, int port, u16 fid);
- int mv88e6xxx_port_get_pvid(struct mv88e6xxx_chip *chip, int port, u16 *pvid);
- int mv88e6xxx_port_set_pvid(struct mv88e6xxx_chip *chip, int port, u16 pvid);
- 
-+int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
-+			    bool locked);
-+
- int mv88e6xxx_port_set_8021q_mode(struct mv88e6xxx_chip *chip, int port,
- 				  u16 mode);
- int mv88e6095_port_tag_remap(struct mv88e6xxx_chip *chip, int port);
--- 
-2.30.2
+> +}
+> +
+>   int kvm_s390_pv_destroy_cpu(struct kvm_vcpu *vcpu, u16 *rc, u16 *rrc)
+>   {
+>   	int cc;
+> @@ -110,7 +119,7 @@ static void kvm_s390_pv_dealloc_vm(struct kvm *kvm)
+>   	vfree(kvm->arch.pv.stor_var);
+>   	free_pages(kvm->arch.pv.stor_base,
+>   		   get_order(uv_info.guest_base_stor_len));
+> -	memset(&kvm->arch.pv, 0, sizeof(kvm->arch.pv));
+> +	kvm_s390_clear_pv_state(kvm);
+>   }
+>   
+>   static int kvm_s390_pv_alloc_vm(struct kvm *kvm)
+> 
 
