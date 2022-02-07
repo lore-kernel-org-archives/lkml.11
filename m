@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1259C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAA2C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384944AbiBGLax (ORCPT
+        id S1384926AbiBGLao (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:30:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59180 "EHLO
+        Mon, 7 Feb 2022 06:30:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345294AbiBGLUA (ORCPT
+        with ESMTP id S1357487AbiBGLXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:20:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1878DC043189;
-        Mon,  7 Feb 2022 03:20:00 -0800 (PST)
+        Mon, 7 Feb 2022 06:23:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5C6C043181;
+        Mon,  7 Feb 2022 03:23:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A9C36146B;
-        Mon,  7 Feb 2022 11:19:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AB62C340F2;
-        Mon,  7 Feb 2022 11:19:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2496B81028;
+        Mon,  7 Feb 2022 11:23:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9594C004E1;
+        Mon,  7 Feb 2022 11:23:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232799;
-        bh=oockd+H0nbljZXJvxJaW8xs5secCp/bASldZOrm0rlE=;
+        s=korg; t=1644232987;
+        bh=YT8gsCAg7F7T3vjACjvYf0OXzG7CD0BJNhqoexsczrg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MqmTKVaSB2Wf+HErZ/Sj7bts0Hc6eFlDU0ajq541Xq1pj6G8AAXEfk0w4CLUwq+oi
-         0exJz6SpmzK8EW51oor93PQ88RNst3FJ4d8wjrFuoGLaA0hcsoIWNr/hiq96qUeKaV
-         xGcRiyk64h+Cjp037ZBU0y1agCoOglyqcl3ECXo0=
+        b=TJl7+4huupDfTjFMXEC15HFeQGYIb9E9yNdlJUQa+tvMQMQRDfCiatPM6eWNiGbwd
+         7lxnJ1nqkrrVn2P3wD6H4CYBMCbeQQaQ8/P96hFJ9Q02lXY/pRoaMCYhsSvRYIEFfT
+         rv1ty4LwXaqikOVil87ayX8+XTKc9rtFI2ezLXrc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.4 32/44] ASoC: fsl: Add missing error handling in pcm030_fabric_probe
-Date:   Mon,  7 Feb 2022 12:06:48 +0100
-Message-Id: <20220207103754.200555375@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
+        James Liao <jamesjj.liao@mediatek.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.10 23/74] Revert "ASoC: mediatek: Check for error clk pointer"
+Date:   Mon,  7 Feb 2022 12:06:21 +0100
+Message-Id: <20220207103757.999234038@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
-References: <20220207103753.155627314@linuxfoundation.org>
+In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
+References: <20220207103757.232676988@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,48 +54,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-commit fb25621da5702c104ce0a48de5b174ced09e5b4e upstream.
+This reverts commit d491a2c2cf96f9f3d855cf0bcd807d48ccb98e81 which is
+commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e upstream
 
-Add the missing platform_device_put() and platform_device_del()
-before return from pcm030_fabric_probe in the error handling case.
+With this patch in the tree, Chromebooks running the affected hardware
+no longer boot. Bisect points to this patch, and reverting it fixes
+the problem.
 
-Fixes: c912fa913446 ("ASoC: fsl: register the wm9712-codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220127131336.30214-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+An analysis of the code with this patch applied shows:
+
+        ret = init_clks(pdev, clk);
+        if (ret)
+                return ERR_PTR(ret);
+...
+                for (j = 0; j < MAX_CLKS && data->clk_id[j]; j++) {
+                        struct clk *c = clk[data->clk_id[j]];
+
+                        if (IS_ERR(c)) {
+                                dev_err(&pdev->dev, "%s: clk unavailable\n",
+                                        data->name);
+                                return ERR_CAST(c);
+                        }
+
+                        scpd->clk[j] = c;
+                }
+
+Not all clocks in the clk_names array have to be present. Only the clocks
+in the data->clk_id array are actually needed. The code already checks if
+the required clocks are available and bails out if not. The assumption that
+all clocks have to be present is wrong, and commit 9de2b9286a6d needs to be
+reverted.
+
+Fixes: 9de2b9286a6d ("ASoC: mediatek: Check for error clk pointer")
+Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: James Liao <jamesjj.liao@mediatek.com>
+Cc: Kevin Hilman <khilman@baylibre.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com
+Cc: Frank Wunderlich <frank-w@public-files.de>
+Cc: Daniel Golle <daniel@makrotopia.org>
+Link: https://lore.kernel.org/lkml/20220205014755.699603-1-linux@roeck-us.net/
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/fsl/pcm030-audio-fabric.c |   11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/soc/mediatek/mtk-scpsys.c |   15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
---- a/sound/soc/fsl/pcm030-audio-fabric.c
-+++ b/sound/soc/fsl/pcm030-audio-fabric.c
-@@ -93,16 +93,21 @@ static int pcm030_fabric_probe(struct pl
- 		dev_err(&op->dev, "platform_device_alloc() failed\n");
- 
- 	ret = platform_device_add(pdata->codec_device);
--	if (ret)
-+	if (ret) {
- 		dev_err(&op->dev, "platform_device_add() failed: %d\n", ret);
-+		platform_device_put(pdata->codec_device);
-+	}
- 
- 	ret = snd_soc_register_card(card);
--	if (ret)
-+	if (ret) {
- 		dev_err(&op->dev, "snd_soc_register_card() failed: %d\n", ret);
-+		platform_device_del(pdata->codec_device);
-+		platform_device_put(pdata->codec_device);
-+	}
- 
- 	platform_set_drvdata(op, pdata);
--
+--- a/drivers/soc/mediatek/mtk-scpsys.c
++++ b/drivers/soc/mediatek/mtk-scpsys.c
+@@ -411,17 +411,12 @@ out:
  	return ret;
-+
  }
  
- static int pcm030_fabric_remove(struct platform_device *op)
+-static int init_clks(struct platform_device *pdev, struct clk **clk)
++static void init_clks(struct platform_device *pdev, struct clk **clk)
+ {
+ 	int i;
+ 
+-	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
++	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
+ 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
+-		if (IS_ERR(clk[i]))
+-			return PTR_ERR(clk[i]);
+-	}
+-
+-	return 0;
+ }
+ 
+ static struct scp *init_scp(struct platform_device *pdev,
+@@ -431,7 +426,7 @@ static struct scp *init_scp(struct platf
+ {
+ 	struct genpd_onecell_data *pd_data;
+ 	struct resource *res;
+-	int i, j, ret;
++	int i, j;
+ 	struct scp *scp;
+ 	struct clk *clk[CLK_MAX];
+ 
+@@ -486,9 +481,7 @@ static struct scp *init_scp(struct platf
+ 
+ 	pd_data->num_domains = num;
+ 
+-	ret = init_clks(pdev, clk);
+-	if (ret)
+-		return ERR_PTR(ret);
++	init_clks(pdev, clk);
+ 
+ 	for (i = 0; i < num; i++) {
+ 		struct scp_domain *scpd = &scp->domains[i];
 
 
