@@ -2,313 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8456C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F9BC41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384616AbiBGQPL (ORCPT
+        id S1382691AbiBGQPJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:15:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40712 "EHLO
+        Mon, 7 Feb 2022 11:15:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350663AbiBGQB6 (ORCPT
+        with ESMTP id S1391863AbiBGQEN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:01:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 629E7C0401D3
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:01:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249716;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iV+sT7eBaIHlnSrQTGcmgC2l+6R2K6ll4jPmbZAHXmI=;
-        b=gcI7kwW+aczBX1abYRClLqe6YF8XVZujFcvH9dtUj+D+4rE6Vn+vFwDDT0LZQwsn9bSUD6
-        TniJP3c7HFRdG6Iox77zgbr/qN0Nya10LqQ9lVYLZONxGNr0S7vamXfxSweq4NmF7hYAic
-        QFemImNC2eJ2hrkAPoQBoV2qbsNGqAw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-197-Vy5h3DWeNXi5I40VW26cAA-1; Mon, 07 Feb 2022 11:01:52 -0500
-X-MC-Unique: Vy5h3DWeNXi5I40VW26cAA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 7 Feb 2022 11:04:13 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054E0C0401DC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:04:09 -0800 (PST)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0C38346860;
-        Mon,  7 Feb 2022 16:01:48 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B7A2B7DE38;
-        Mon,  7 Feb 2022 16:01:28 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Tony Luck <tony.luck@intel.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sean Christopherson <seanjc@google.com>,
-        David Airlie <airlied@linux.ie>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Jim Mattson <jmattson@google.com>, x86@kernel.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 28/30] KVM: SVM: implement force_intercept_exceptions_mask
-Date:   Mon,  7 Feb 2022 17:54:45 +0200
-Message-Id: <20220207155447.840194-29-mlevitsk@redhat.com>
-In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
-References: <20220207155447.840194-1-mlevitsk@redhat.com>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id CD8E24003E
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 16:04:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644249847;
+        bh=wWFN/kYmy9qogqxR7Mh7jeBKCVIaVeKo6j328DRFO5U=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=rhTkA/xBwPaz9wH/5KTJdDAmdUSp8XMvNoMNzIL62XYoWeINEtHNTjLNdfqr5jEpP
+         Pls4VsjFLC0iIG44HcwfegBgvioj5DM02xAxMiWMujTU6TYsM40N4FO9retiDd4Ba4
+         PqYwXYAmojvTGo8AatZMPKNqjmPjeQa96RraNJ11ppEXrOLe0m8Hb1Ei/q6fsO5os1
+         NQTBhUb5dX/Fy6D8xliAjPNSGRBOAGfSXRFhIAEkO2Va/K68KIMt7amNpSUoVcJLY6
+         229eBiZRkc4LqEVJT5wW2DGY6y9hj19ossY87yylGeRhst1dnrLbq8oxDLp3ED3cQN
+         D6vuMm/Nie2KQ==
+Received: by mail-ed1-f72.google.com with SMTP id f6-20020a0564021e8600b0040f662b99ffso2138332edf.7
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 08:04:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wWFN/kYmy9qogqxR7Mh7jeBKCVIaVeKo6j328DRFO5U=;
+        b=rRRoXzsERr/53VvNK0MNj3tr0E0vrVuQzUSoIugiRWBWCHwZG5YzxNJkV6XkLT3nMg
+         AejVzKfvjxt7Yq2ssi7vXAxBD8lx6tcPPc2OaJpZbi8cfRC65IVCDxmV8cOJxwslYgxF
+         ap1utCTAs9to/2SWdE2EU1yO/LUJtG4aE1qIJZ/KpOTDeHRslgYrwjxJU6GJcXjJitQC
+         MNIZL0dWV2Nrusahof4ZM/UwWr3uL/a0bUnldFMRiArlEnrtjoOxv7ybmgI7nsI8Bz5b
+         /Fx3aozA6PJmfR1+RLXxJv+akBI+GHytcCCOg/uVEvJ6QW5sFRy/RiXbiocKzWcYohQK
+         ogrQ==
+X-Gm-Message-State: AOAM533UiA+bNc2YzYorjow5R9r+L7qkq3vSJdkRuAPJVHFlmKc+UQJb
+        s3tZ0EjoZRClpv+0Il0cLZp8Bhsb1I1hcAL4Ic1Yf5AVB57JaOACkWruDOsrEJRro95cX7mB5ZR
+        MzJO0kar051mnUmgG82ZWIuc+iBcFafjglPy8bDWOMA==
+X-Received: by 2002:a17:907:7b85:: with SMTP id ne5mr329326ejc.572.1644249846682;
+        Mon, 07 Feb 2022 08:04:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzBm6rX0lrrq+gqVsXaiIiWLV1F3mitDpLqrcgHMbY6Jqelej9PiIrbQrRZpHU2vQlcmagUOw==
+X-Received: by 2002:a17:907:7b85:: with SMTP id ne5mr329281ejc.572.1644249846145;
+        Mon, 07 Feb 2022 08:04:06 -0800 (PST)
+Received: from [192.168.0.90] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id i1sm1602107ejv.183.2022.02.07.08.04.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 08:04:05 -0800 (PST)
+Message-ID: <c7e160b0-16fb-79ca-c291-05571bbe8341@canonical.com>
+Date:   Mon, 7 Feb 2022 17:04:04 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 2/3] dt-bindings: crypto: Convert Atmel TDES to yaml
+Content-Language: en-US
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        herbert@gondor.apana.org.au, robh+dt@kernel.org
+Cc:     davem@davemloft.net, nicolas.ferre@microchip.com,
+        claudiu.beznea@microchip.com, alexandre.belloni@bootlin.com,
+        linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220207032405.70733-1-tudor.ambarus@microchip.com>
+ <20220207032405.70733-3-tudor.ambarus@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220207032405.70733-3-tudor.ambarus@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently #TS interception is only done once.
-Also exception interception is not enabled for SEV guests.
+On 07/02/2022 04:24, Tudor Ambarus wrote:
+> Convert Atmel TDES documentation to yaml format. With the conversion the
+> clock and clock-names properties are made mandatory. The driver returns
+> -EINVAL if "tdes_clk" is not found, reflect that in the bindings and make
+> the clock and clock-names properties mandatory. Update the example to
+> better describe how one should define the dt node.
+> 
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> ---
+>  .../bindings/crypto/atmel,tdes.yaml           | 63 +++++++++++++++++++
+>  .../bindings/crypto/atmel-crypto.txt          | 23 -------
+>  2 files changed, 63 insertions(+), 23 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/crypto/atmel,tdes.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/crypto/atmel,tdes.yaml b/Documentation/devicetree/bindings/crypto/atmel,tdes.yaml
+> new file mode 100644
+> index 000000000000..7efa5e4acaa1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/crypto/atmel,tdes.yaml
+> @@ -0,0 +1,63 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/crypto/atmel,tdes.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Atmel Triple Data Encryption Standard (TDES) HW cryptographic accelerator
+> +
+> +maintainers:
+> +  - Tudor Ambarus <tudor.ambarus@microchip.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: atmel,at91sam9g46-tdes
+> +
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/include/asm/kvm_host.h |  2 +
- arch/x86/include/uapi/asm/kvm.h |  1 +
- arch/x86/kvm/svm/svm.c          | 92 ++++++++++++++++++++++++++++++++-
- arch/x86/kvm/svm/svm.h          |  5 +-
- arch/x86/kvm/svm/svm_onhyperv.c |  1 +
- arch/x86/kvm/x86.c              |  5 +-
- 6 files changed, 101 insertions(+), 5 deletions(-)
+Same comments as for patch 1 plus one new (also applying to previous
+one). You named the file quite generic "atmel,tdes" or "atmel,aes", but
+what if something newer comes for at91? Maybe name it instead
+"atmel,at91sam9-aes"?
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index fa498612839a0..446ee29e6cc99 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1750,6 +1750,8 @@ int kvm_emulate_rdpmc(struct kvm_vcpu *vcpu);
- void kvm_queue_exception(struct kvm_vcpu *vcpu, unsigned nr);
- void kvm_queue_exception_e(struct kvm_vcpu *vcpu, unsigned nr, u32 error_code);
- void kvm_queue_exception_p(struct kvm_vcpu *vcpu, unsigned nr, unsigned long payload);
-+void kvm_queue_exception_e_p(struct kvm_vcpu *vcpu, unsigned nr,
-+			     u32 error_code, unsigned long payload);
- void kvm_requeue_exception(struct kvm_vcpu *vcpu, unsigned nr);
- void kvm_requeue_exception_e(struct kvm_vcpu *vcpu, unsigned nr, u32 error_code);
- void kvm_inject_page_fault(struct kvm_vcpu *vcpu, struct x86_exception *fault);
-diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-index bf6e96011dfed..d462b4808e893 100644
---- a/arch/x86/include/uapi/asm/kvm.h
-+++ b/arch/x86/include/uapi/asm/kvm.h
-@@ -32,6 +32,7 @@
- #define MC_VECTOR 18
- #define XM_VECTOR 19
- #define VE_VECTOR 20
-+#define CP_VECTOR 21
- 
- /* Select x86 specific features in <linux/kvm.h> */
- #define __KVM_HAVE_PIT
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 1cf682d1553cc..afa4116ea938c 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -245,6 +245,8 @@ static const u32 msrpm_ranges[] = {0, 0xc0000000, 0xc0010000};
- #define MSRS_RANGE_SIZE 2048
- #define MSRS_IN_RANGE (MSRS_RANGE_SIZE * 8 / 2)
- 
-+static int svm_handle_invalid_exit(struct kvm_vcpu *vcpu, u64 exit_code);
-+
- u32 svm_msrpm_offset(u32 msr)
- {
- 	u32 offset;
-@@ -1035,6 +1037,16 @@ static void svm_recalc_instruction_intercepts(struct kvm_vcpu *vcpu,
- 	}
- }
- 
-+static void svm_init_force_exceptions_intercepts(struct kvm_vcpu *vcpu)
-+{
-+	int exc;
-+	struct vcpu_svm *svm = to_svm(vcpu);
-+
-+	for (exc = 0 ; exc < 32 ; ++exc)
-+		if (kvm_is_exception_force_intercepted(vcpu->kvm, exc))
-+			set_exception_intercept(svm, exc);
-+}
-+
- static inline void init_vmcb_after_set_cpuid(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -1235,6 +1247,8 @@ static void __svm_vcpu_reset(struct kvm_vcpu *vcpu)
- 
- 	if (sev_es_guest(vcpu->kvm))
- 		sev_es_vcpu_reset(svm);
-+	else
-+		svm_init_force_exceptions_intercepts(vcpu);
- }
- 
- static void svm_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
-@@ -1865,6 +1879,19 @@ static int pf_interception(struct kvm_vcpu *vcpu)
- 	u64 fault_address = svm->vmcb->control.exit_info_2;
- 	u64 error_code = svm->vmcb->control.exit_info_1;
- 
-+
-+	if (kvm_is_exception_force_intercepted(vcpu->kvm, PF_VECTOR)) {
-+		if (npt_enabled && !vcpu->arch.apf.host_apf_flags) {
-+			/* If the #PF was only intercepted for debug, inject
-+			 * it directly to the guest, since the kvm's mmu code
-+			 * is not ready to deal with such page faults.
-+			 */
-+			kvm_queue_exception_e_p(vcpu, PF_VECTOR,
-+						error_code, fault_address);
-+			return 1;
-+		}
-+	}
-+
- 	return kvm_handle_page_fault(vcpu, error_code, fault_address,
- 			static_cpu_has(X86_FEATURE_DECODEASSISTS) ?
- 			svm->vmcb->control.insn_bytes : NULL,
-@@ -1940,6 +1967,46 @@ static int ac_interception(struct kvm_vcpu *vcpu)
- 	return 1;
- }
- 
-+static int gen_exc_interception(struct kvm_vcpu *vcpu)
-+{
-+	/*
-+	 * Generic exception intercept handler which forwards a guest exception
-+	 * as-is to the guest.
-+	 * For exceptions that don't have a special intercept handler.
-+	 *
-+	 * Used only for 'force_intercept_exceptions_mask' KVM debug feature.
-+	 */
-+	struct vcpu_svm *svm = to_svm(vcpu);
-+	int exc = svm->vmcb->control.exit_code - SVM_EXIT_EXCP_BASE;
-+
-+	if (!kvm_is_exception_force_intercepted(vcpu->kvm, exc))
-+		return svm_handle_invalid_exit(vcpu, svm->vmcb->control.exit_code);
-+
-+	if (x86_exception_has_error_code(exc)) {
-+
-+		if (exc == TS_VECTOR) {
-+			/*
-+			 * SVM doesn't provide us with an error code to be able to
-+			 * re-inject the #TS exception, so just disable its
-+			 * intercept, and let the guest re-execute the instruction.
-+			 */
-+			vmcb_clr_intercept(&svm->vmcb01.ptr->control,
-+					   INTERCEPT_EXCEPTION_OFFSET + TS_VECTOR);
-+			recalc_intercepts(svm);
-+			return 1;
-+		} else if (exc == DF_VECTOR) {
-+			/*
-+			 * SVM doesn't provide the error code on #DF either
-+			 * but it is always 0
-+			 */
-+			svm->vmcb->control.exit_info_1 = 0;
-+		}
-+		kvm_queue_exception_e(vcpu, exc, svm->vmcb->control.exit_info_1);
-+	} else
-+		kvm_queue_exception(vcpu, exc);
-+	return 1;
-+}
-+
- static bool is_erratum_383(void)
- {
- 	int err, i;
-@@ -3050,13 +3117,34 @@ static int (*const svm_exit_handlers[])(struct kvm_vcpu *vcpu) = {
- 	[SVM_EXIT_WRITE_DR5]			= dr_interception,
- 	[SVM_EXIT_WRITE_DR6]			= dr_interception,
- 	[SVM_EXIT_WRITE_DR7]			= dr_interception,
-+
-+	/* 0 */
-+	[SVM_EXIT_EXCP_BASE + DE_VECTOR]	= gen_exc_interception,
- 	[SVM_EXIT_EXCP_BASE + DB_VECTOR]	= db_interception,
-+						  /* NMI*/
- 	[SVM_EXIT_EXCP_BASE + BP_VECTOR]	= bp_interception,
-+	[SVM_EXIT_EXCP_BASE + OF_VECTOR]	= gen_exc_interception,
-+	[SVM_EXIT_EXCP_BASE + BR_VECTOR]	= gen_exc_interception,
- 	[SVM_EXIT_EXCP_BASE + UD_VECTOR]	= ud_interception,
-+	[SVM_EXIT_EXCP_BASE + NM_VECTOR]	= gen_exc_interception,
-+	/* 8*/
-+	[SVM_EXIT_EXCP_BASE + DF_VECTOR]	= gen_exc_interception,
-+						  /* 9 is reserved*/
-+	[SVM_EXIT_EXCP_BASE + TS_VECTOR]	= gen_exc_interception,
-+	[SVM_EXIT_EXCP_BASE + NP_VECTOR]	= gen_exc_interception,
-+	[SVM_EXIT_EXCP_BASE + SS_VECTOR]	= gen_exc_interception,
-+	[SVM_EXIT_EXCP_BASE + GP_VECTOR]	= gp_interception,
- 	[SVM_EXIT_EXCP_BASE + PF_VECTOR]	= pf_interception,
--	[SVM_EXIT_EXCP_BASE + MC_VECTOR]	= mc_interception,
-+						  /* 15 is reserved*/
-+	/* 16 */
-+	[SVM_EXIT_EXCP_BASE + MF_VECTOR]	= gen_exc_interception,
- 	[SVM_EXIT_EXCP_BASE + AC_VECTOR]	= ac_interception,
--	[SVM_EXIT_EXCP_BASE + GP_VECTOR]	= gp_interception,
-+	[SVM_EXIT_EXCP_BASE + MC_VECTOR]	= mc_interception,
-+	[SVM_EXIT_EXCP_BASE + XM_VECTOR]	= gen_exc_interception,
-+						  /* 20 - #VE - reserved on AMD*/
-+	[SVM_EXIT_EXCP_BASE + CP_VECTOR]	= gen_exc_interception,
-+	/* TODO: exceptions 22-31 */
-+
- 	[SVM_EXIT_INTR]				= intr_interception,
- 	[SVM_EXIT_NMI]				= nmi_interception,
- 	[SVM_EXIT_SMI]				= smi_interception,
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 73cc9d3e784bd..dd3671d77258b 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -415,8 +415,11 @@ static inline void clr_exception_intercept(struct vcpu_svm *svm, u32 bit)
- 	struct vmcb *vmcb = svm->vmcb01.ptr;
- 
- 	WARN_ON_ONCE(bit >= 32);
--	vmcb_clr_intercept(&vmcb->control, INTERCEPT_EXCEPTION_OFFSET + bit);
- 
-+	if (kvm_is_exception_force_intercepted(svm->vcpu.kvm, bit))
-+		return;
-+
-+	vmcb_clr_intercept(&vmcb->control, INTERCEPT_EXCEPTION_OFFSET + bit);
- 	recalc_intercepts(svm);
- }
- 
-diff --git a/arch/x86/kvm/svm/svm_onhyperv.c b/arch/x86/kvm/svm/svm_onhyperv.c
-index 98aa981c04ec5..81be254e757b2 100644
---- a/arch/x86/kvm/svm/svm_onhyperv.c
-+++ b/arch/x86/kvm/svm/svm_onhyperv.c
-@@ -8,6 +8,7 @@
- 
- #include <asm/mshyperv.h>
- 
-+#include "x86.h"
- #include "svm.h"
- #include "svm_ops.h"
- 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 202c34697852f..0ee2fbb068b17 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -706,12 +706,13 @@ void kvm_queue_exception_p(struct kvm_vcpu *vcpu, unsigned nr,
- }
- EXPORT_SYMBOL_GPL(kvm_queue_exception_p);
- 
--static void kvm_queue_exception_e_p(struct kvm_vcpu *vcpu, unsigned nr,
--				    u32 error_code, unsigned long payload)
-+void kvm_queue_exception_e_p(struct kvm_vcpu *vcpu, unsigned nr,
-+			     u32 error_code, unsigned long payload)
- {
- 	kvm_multiple_exception(vcpu, nr, true, error_code,
- 			       true, payload, false);
- }
-+EXPORT_SYMBOL_GPL(kvm_queue_exception_e_p);
- 
- int kvm_complete_insn_gp(struct kvm_vcpu *vcpu, int err)
- {
--- 
-2.26.3
 
+Best regards,
+Krzysztof
