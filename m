@@ -2,108 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 560F6C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83DA3C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245350AbiBGJfs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:35:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60546 "EHLO
+        id S1351328AbiBGJfy (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 04:35:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245424AbiBGJeS (ORCPT
+        with ESMTP id S1350490AbiBGJ2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:34:18 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567BDC043185
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:34:17 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id v19so8669546wrv.6
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:34:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=fWbd6fo3Uh6elEYwWX8/n5Alsf0PAAp4oc4nuiJlc14=;
-        b=NEGgdpE0YteNXAqvAdCZywZx81JabuDYJhv5oKt9f/iVCIGIsiirS07sJdce/gAGSK
-         vApzqxaddW7a/eeUoyYxPsxj6KjShxKo49HmdjGUV3AQr/oo3SFPWcEUST2A4Gm7o7KA
-         qPapKDSzxjK6prAwWAugXRD41UMARf2LIprkIUqS0HbfGc7DYHJulfelAEHaj8AB6X92
-         uRz7KEZeiJrxWoz3VPKcLttwW9fJINur1acpAxMcUNCv7C0ejFEqZwBjeahUy4+JAVWs
-         7flAOM5AJi/kuo7jY0wL01ZpcfliP43NfgzzEa31Czza9hd/QG2vPAb91pBQ4A51Xx1M
-         sKGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=fWbd6fo3Uh6elEYwWX8/n5Alsf0PAAp4oc4nuiJlc14=;
-        b=j4MRu3obBvxrv6mRkrVJj6yT0RnAsvvo057XczzBUgDxf+aAYXp971VzKvZL1T4nDM
-         6lMbDkFZcn6XEWMqvhTy25U7PrEhX9oUZp6fmrYWD0b3/L+qckAWpssHVu5eESDFAUXr
-         NhPEfBPUNw/iTG/KaDy81Ej/BxiuxSQkOCz1JjHqvAepsFXqetK9wT5+cj1G1FdTcj8o
-         oRjrpRCExup3c4ufgt7m921OHqc0zeaxesJvk7JqpJRFMVwUDD+gik8b7S9s33yqfY3M
-         tCP4ozcwanPTrPyokfdQ6l13wGXah78lQmEWi7IdZrX1oL0a5lizsP78RPlnmqJc7ixW
-         7PEg==
-X-Gm-Message-State: AOAM533fg8n70qDCWZtH79EblS7MXFTMUMCxXqG83NuYF0p6QV1vZqu1
-        ZIBwtntpFEooRgag3OVX2JBnHQ==
-X-Google-Smtp-Source: ABdhPJxKYic4NgP+uSbi9g5JekP9iALy92JOn8u96jXpIjv5Zk/Edl8OT9URAawxFJPZynx6LI5wZw==
-X-Received: by 2002:a05:6000:114f:: with SMTP id d15mr7344108wrx.626.1644226455907;
-        Mon, 07 Feb 2022 01:34:15 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id p8sm3410443wro.106.2022.02.07.01.34.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 01:34:15 -0800 (PST)
-Date:   Mon, 7 Feb 2022 09:34:13 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Chanwoo Choi <cw00.choi@samsung.com>
-Subject: Re: [PATCH v2 0/4] mfd/power/regulators: dt-bindings: max14577:
- convert to dtschema
-Message-ID: <YgDnlWKO6/BTxZh2@google.com>
-References: <20220111174337.223320-1-krzysztof.kozlowski@canonical.com>
- <73bad620-97eb-a734-cbc8-6f001d04c18a@canonical.com>
+        Mon, 7 Feb 2022 04:28:03 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103F2C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:28:02 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nH0JP-0008FG-HX; Mon, 07 Feb 2022 10:27:55 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nH0JN-0004kE-R4; Mon, 07 Feb 2022 10:27:53 +0100
+Date:   Mon, 7 Feb 2022 10:27:53 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     alexandru.tachici@analog.com, davem@davemloft.net,
+        devicetree@vger.kernel.org, hkallweit1@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, robh+dt@kernel.org
+Subject: Re: [PATCH v4 4/7] net: phy: Add 10BASE-T1L support in phy-c45
+Message-ID: <20220207092753.GC23727@pengutronix.de>
+References: <20211210110509.20970-1-alexandru.tachici@analog.com>
+ <20211210110509.20970-5-alexandru.tachici@analog.com>
+ <YbUTJdKN9kQAJzqA@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <73bad620-97eb-a734-cbc8-6f001d04c18a@canonical.com>
+In-Reply-To: <YbUTJdKN9kQAJzqA@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:26:12 up 58 days, 18:11, 81 users,  load average: 0.28, 0.29,
+ 0.50
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 06 Feb 2022, Krzysztof Kozlowski wrote:
+Hi Alexandru,
 
-> On 11/01/2022 18:43, Krzysztof Kozlowski wrote:
-> > Hi,
-> > 
-> > Changes since v1
-> > ================
-> > 1. MFD: Use absolute path to schemas
-> > 2. Regulator: mention all allowed properties,
-> >    additionalProperties=false, add min/max values for voltages and
-> >    current, don't use patternProperties when not needed.
-> > 
-> > Dependencies
-> > ============
-> > 1. DTS patch 1/4: nothing depends on it, sending here so Rob's automatic
-> >    checker won't complain about DTS.
-> >    I will take it via Samsung SoC tree.
-> > 
-> > 2. Final MFD patch (4/4) depends on regulator and power, so the last
-> >    patches (2+3+4) should go via same tree.
-> > 
-> Dear Lee,
+On Sat, Dec 11, 2021 at 10:07:49PM +0100, Andrew Lunn wrote:
+> > +		ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
+> > +		if (ret < 0)
+> > +			return ret;
+> > +
+> > +		if (ret & MDIO_PMA_EXTABLE_BT1)
 > 
-> This patchset was reviewed and there are no outstanding issues. Could
-> you pick up patches 2-4 (skipping DTS patch) via MFD tree?
+> 
+> This pattern of reading the MDIO_PMA_EXTABLE register and then looking
+> for bit MDIO_PMA_EXTABLE_BT1 happens a lot. It is not something which
+> is expected to change is it? So i wounder if it should be read once
+> and stored away?
 
-Nothing from Mark?
+What is the state of this patches? Will you be able to make requested
+changes and send new version?
 
+Regards,
+Oleskij
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
