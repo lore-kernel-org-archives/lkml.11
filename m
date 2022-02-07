@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD216C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB874C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378798AbiBGLP4 (ORCPT
+        id S1379088AbiBGLQD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
+        Mon, 7 Feb 2022 06:16:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354429AbiBGLMV (ORCPT
+        with ESMTP id S1354815AbiBGLM0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:12:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19FEC043181;
-        Mon,  7 Feb 2022 03:12:20 -0800 (PST)
+        Mon, 7 Feb 2022 06:12:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC89C043188;
+        Mon,  7 Feb 2022 03:12:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D0A4B81028;
-        Mon,  7 Feb 2022 11:12:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4498C340EB;
-        Mon,  7 Feb 2022 11:12:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B462611AA;
+        Mon,  7 Feb 2022 11:12:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC7DC004E1;
+        Mon,  7 Feb 2022 11:12:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232338;
-        bh=AYafRmXmyRXCNqMdkz7flGgefQH/FAXI5WkNagMnnZQ=;
+        s=korg; t=1644232344;
+        bh=FE2h/zvvcUjsME01AwRtBtnb1+6moFaXnxKmjhwCs3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VsSazAiFSty20+didcZyvDfYVOYld+PhkE6OKGOdaEXM/mmNxawsnAjQLlh1I+suu
-         p7nR7iLYHhjqXLgSAexmJDellN6UEPEk8BDI87Dl1Fq+OBGS37+T23oXVU9LvK7UbT
-         1Lvb9vRerhmitT5bf+RuLsWmmIlwWANsjN5H3Vss=
+        b=d7/ngxnbVgbeCX6qVlzE8O9AH4ps0gtGp6nlrlGQs2YMcGT5zfFqnonfebWn1yj0U
+         sMjsyBmaxFVW1riW6xZT2ClV7wFswN6mTp6z4951DdVyS5+G+NFYMOeMQznijVTlem
+         +gsI/UCf2NbQCp50STInFUh3gLB3aGECndjVhu/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 44/69] rtnetlink: make sure to refresh master_dev/m_ops in __rtnl_newlink()
-Date:   Mon,  7 Feb 2022 12:06:06 +0100
-Message-Id: <20220207103757.078634102@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Badhri Jagan Sridharan <badhri@google.com>
+Subject: [PATCH 4.14 15/69] usb: typec: tcpm: Do not disconnect while receiving VBUS off
+Date:   Mon,  7 Feb 2022 12:05:37 +0100
+Message-Id: <20220207103756.117211011@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -49,48 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Badhri Jagan Sridharan <badhri@google.com>
 
-commit c6f6f2444bdbe0079e41914a35081530d0409963 upstream.
+commit 90b8aa9f5b09edae6928c0561f933fec9f7a9987 upstream.
 
-While looking at one unrelated syzbot bug, I found the replay logic
-in __rtnl_newlink() to potentially trigger use-after-free.
+With some chargers, vbus might momentarily raise above VSAFE5V and fall
+back to 0V before tcpm gets to read port->tcpc->get_vbus. This will
+will report a VBUS off event causing TCPM to transition to
+SNK_UNATTACHED where it should be waiting in either SNK_ATTACH_WAIT
+or SNK_DEBOUNCED state. This patch makes TCPM avoid vbus off events
+while in SNK_ATTACH_WAIT or SNK_DEBOUNCED state.
 
-It is better to clear master_dev and m_ops inside the loop,
-in case we have to replay it.
+Stub from the spec:
+    "4.5.2.2.4.2 Exiting from AttachWait.SNK State
+    A Sink shall transition to Unattached.SNK when the state of both
+    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce.
+    A DRP shall transition to Unattached.SRC when the state of both
+    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce."
 
-Fixes: ba7d49b1f0f8 ("rtnetlink: provide api for getting and setting slave info")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Jiri Pirko <jiri@nvidia.com>
-Link: https://lore.kernel.org/r/20220201012106.216495-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[23.194131] CC1: 0 -> 0, CC2: 0 -> 5 [state SNK_UNATTACHED, polarity 0, connected]
+[23.201777] state change SNK_UNATTACHED -> SNK_ATTACH_WAIT [rev3 NONE_AMS]
+[23.209949] pending state change SNK_ATTACH_WAIT -> SNK_DEBOUNCED @ 170 ms [rev3 NONE_AMS]
+[23.300579] VBUS off
+[23.300668] state change SNK_ATTACH_WAIT -> SNK_UNATTACHED [rev3 NONE_AMS]
+[23.301014] VBUS VSAFE0V
+[23.301111] Start toggling
+
+Fixes: f0690a25a140b8 ("staging: typec: USB Type-C Port Manager (tcpm)")
+Cc: stable@vger.kernel.org
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
+Link: https://lore.kernel.org/r/20220122015520.332507-1-badhri@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/rtnetlink.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/staging/typec/tcpm.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2523,9 +2523,9 @@ static int rtnl_newlink(struct sk_buff *
- {
- 	struct net *net = sock_net(skb->sk);
- 	const struct rtnl_link_ops *ops;
--	const struct rtnl_link_ops *m_ops = NULL;
-+	const struct rtnl_link_ops *m_ops;
- 	struct net_device *dev;
--	struct net_device *master_dev = NULL;
-+	struct net_device *master_dev;
- 	struct ifinfomsg *ifm;
- 	char kind[MODULE_NAME_LEN];
- 	char ifname[IFNAMSIZ];
-@@ -2556,6 +2556,8 @@ replay:
- 			dev = NULL;
- 	}
+--- a/drivers/staging/typec/tcpm.c
++++ b/drivers/staging/typec/tcpm.c
+@@ -3103,7 +3103,8 @@ static void _tcpm_pd_vbus_off(struct tcp
+ 	case SNK_TRYWAIT_DEBOUNCE:
+ 		break;
+ 	case SNK_ATTACH_WAIT:
+-		tcpm_set_state(port, SNK_UNATTACHED, 0);
++	case SNK_DEBOUNCED:
++		/* Do nothing, as TCPM is still waiting for vbus to reaach VSAFE5V to connect */
+ 		break;
  
-+	master_dev = NULL;
-+	m_ops = NULL;
- 	if (dev) {
- 		master_dev = netdev_master_upper_dev_get(dev);
- 		if (master_dev)
+ 	case SNK_NEGOTIATE_CAPABILITIES:
 
 
