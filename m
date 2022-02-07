@@ -2,93 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 896EAC35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF9BC35275
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389172AbiBGNvQ (ORCPT
+        id S1389098AbiBGNvH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:51:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41382 "EHLO
+        Mon, 7 Feb 2022 08:51:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388113AbiBGNqd (ORCPT
+        with ESMTP id S1380484AbiBGN2f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:46:33 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7CDC043189
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:46:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644241592; x=1675777592;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3wK53JgZhBniyCgBVdS0LybEWKQeh0TXcziRebU5F5g=;
-  b=boXQ3R9bPp1LomxTBJ00EenmeXGwhGBsvK1AXoFbz9ZZRq8l5Z5A2/UO
-   DRy7+0nLyRFlNFCq6f4dZQDaJBxOWaoQ7AnOwXuvF1IGW2kbG3SAH1eKU
-   0AzwHIxljpfaz7m3q7Blo8o1GcUvmokv0g/lI4xlRxagfmE5ytV8vSPFr
-   UgbgWhjcD49eI5bgs6PAMj4wmXgz1Rs0cNA/TUzygM26J1qOjr20McWQU
-   h9Y2ekEU5MYk+X7i4ad28/is5CO6r51tMn8WsKw/GlggGlCaOt+Z5lnYw
-   Ja4ntZlojykwc7fvb10+14lRjJcPwQZKNxxxrc/9z8FuZbcbCRUjYjSXx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="232280777"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="232280777"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 05:46:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="700468612"
-Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 07 Feb 2022 05:46:30 -0800
-Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nH4Ld-0000Zl-Rh; Mon, 07 Feb 2022 13:46:29 +0000
-Date:   Mon, 7 Feb 2022 21:46:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: Outline copy_overflow()
-Message-ID: <202202072148.OAzMGrDo-lkp@intel.com>
-References: <b9a31b025e729394e7081257870f0a0e73355a04.1644229010.git.christophe.leroy@csgroup.eu>
+        Mon, 7 Feb 2022 08:28:35 -0500
+X-Greylist: delayed 485 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 05:28:33 PST
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E05F5C043181;
+        Mon,  7 Feb 2022 05:28:33 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 73CC511D4;
+        Mon,  7 Feb 2022 05:20:28 -0800 (PST)
+Received: from [10.57.70.156] (unknown [10.57.70.156])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 223483F70D;
+        Mon,  7 Feb 2022 05:20:25 -0800 (PST)
+Message-ID: <65cde84a-8f8b-ac57-9b66-2b8d6378dbfa@arm.com>
+Date:   Mon, 7 Feb 2022 13:20:22 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b9a31b025e729394e7081257870f0a0e73355a04.1644229010.git.christophe.leroy@csgroup.eu>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2] add pmu to amlogic meson sm1
+Content-Language: en-GB
+To:     Neil Armstrong <narmstrong@baylibre.com>,
+        Benjamin Mordaunt <crawford.benjamin15@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220205234554.4403-1-crawford.benjamin15@gmail.com>
+ <20220206144343.2194-1-crawford.benjamin15@gmail.com>
+ <42c51f9d-d122-2d09-cdcd-f733cbc60d5b@baylibre.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <42c51f9d-d122-2d09-cdcd-f733cbc60d5b@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
+On 2022-02-07 08:14, Neil Armstrong wrote:
+> Hi,
+> 
+> On 06/02/2022 15:43, Benjamin Mordaunt wrote:
+>> ---
+>> The dts for meson sm1 appears to omit the SoC's PMU,
+>> which is essential for accessing perf events regarding
+>> e.g. cache on e.g. the Odroid C4 platform. Add it.
+>>
+>>   arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 13 ++++++++++++-
+>>   1 file changed, 12 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi 
+>> b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+>> index 3d8b1f4f2..4147eecd2 100644
+>> --- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+>> +++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+>> @@ -6,6 +6,8 @@
+>>   #include "meson-g12-common.dtsi"
+>>   #include <dt-bindings/clock/axg-audio-clkc.h>
+>> +#include <dt-bindings/interrupt-controller/irq.h>
+>> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+>>   #include <dt-bindings/power/meson-sm1-power.h>
+>>   #include <dt-bindings/reset/amlogic,meson-axg-audio-arb.h>
+>>   #include <dt-bindings/reset/amlogic,meson-g12a-audio-reset.h>
+>> @@ -90,7 +92,16 @@ l2: l2-cache0 {
+>>               compatible = "cache";
+>>           };
+>>       };
+>> -
+>> +
+>> +    arm-pmu {
+>> +        compatible = "arm,cortex-a55-pmu";
+>> +        interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>,
+>> +                 <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>,
+>> +                 <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>,
+>> +                 <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
+>> +        interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
+>> +    };
+>> +
+>>       cpu_opp_table: opp-table {
+>>           compatible = "operating-points-v2";
+>>           opp-shared;
+> 
+> Please see Marc's comments about PMU support:
+> http://lore.kernel.org/r/8735pcq63o.wl-maz@kernel.org
 
-I love your patch! Yet something to improve:
+If SM1 actually has distinct per-core interrupts as the patch implies 
+then it's fine - it's only G12B and anything else that combines multiple 
+PMU IRQs into a single SPI which are unsupportable.
 
-[auto build test ERROR on hnaz-mm/master]
-
-url:    https://github.com/0day-ci/linux/commits/Christophe-Leroy/mm-Outline-copy_overflow/20220207-190441
-base:   https://github.com/hnaz/linux-mm master
-config: i386-randconfig-a013-20220207 (https://download.01.org/0day-ci/archive/20220207/202202072148.OAzMGrDo-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/2ae7547d08e23e529db61b3de0cb93879630a102
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Christophe-Leroy/mm-Outline-copy_overflow/20220207-190441
-        git checkout 2ae7547d08e23e529db61b3de0cb93879630a102
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "copy_overflow" [drivers/usb/gadget/function/usb_f_fs.ko] undefined!
->> ERROR: modpost: "copy_overflow" [drivers/scsi/sg.ko] undefined!
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Robin.
