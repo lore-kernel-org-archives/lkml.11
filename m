@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A478C38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6D9C38A04
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391398AbiBGMBn (ORCPT
+        id S1391354AbiBGMBd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:01:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48658 "EHLO
+        Mon, 7 Feb 2022 07:01:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386786AbiBGLgs (ORCPT
+        with ESMTP id S1386782AbiBGLgo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:36:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612B4C043188;
-        Mon,  7 Feb 2022 03:36:48 -0800 (PST)
+        Mon, 7 Feb 2022 06:36:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67E4C03BFDF;
+        Mon,  7 Feb 2022 03:28:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25A07B80EBD;
-        Mon,  7 Feb 2022 11:36:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D4D2C004E1;
-        Mon,  7 Feb 2022 11:36:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F441B80EC3;
+        Mon,  7 Feb 2022 11:28:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B87CC004E1;
+        Mon,  7 Feb 2022 11:28:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233805;
-        bh=8QV6oXiFaB4PUA8JqIhf7y6Mx274xZaFC/RUXpTItBc=;
+        s=korg; t=1644233331;
+        bh=b13qAo4YSP2y+ta2ne27FSUAmi4yqSLi1KWG0FFTyEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fsxEVEihRELWBcOnRSCsR3mal7aBaDAOcKFbeyPMLjmSDOaDQ/gq5nPgwMtevj9CC
-         f8x1JoOjXTk1uxNW3fwSblZ5UapIHYQrZNfOB1wW8lnYb/sL2FioD9RzIHYDHJJuiY
-         ez6zOllcYjmyISOrPcqI87GWYbEP/66ZapRbr2nM=
+        b=fNonNAtlpt3AK8ztPbl8XnXo+qrNbfztlwe44olyKo92+tOn12w/BPQQq1euVFZGE
+         Wk5SEohr2NEbg5tt6nSqHf8Cf0N/e8aGCOz4nGATWDTNrVm5H6nOdk73Kj3MDTZ+Ci
+         VGcTvnPCuSagqjMAXVz7tcgRQR8MSTFUUFMvJ7Fs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, SASANO Takayoshi <uaa@mx5.nisiq.net>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.16 093/126] pinctrl: sunxi: Fix H616 I2S3 pin data
-Date:   Mon,  7 Feb 2022 12:07:04 +0100
-Message-Id: <20220207103807.297452660@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>
+Subject: [PATCH 5.15 057/110] net: ieee802154: mcr20a: Fix lifs/sifs periods
+Date:   Mon,  7 Feb 2022 12:06:30 +0100
+Message-Id: <20220207103804.213035605@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-References: <20220207103804.053675072@linuxfoundation.org>
+In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
+References: <20220207103802.280120990@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,51 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit 1fd6bb5b47a65eacb063b37e6fa6df2b8fa92959 upstream.
+commit d753c4004820a888ec007dd88b271fa9c3172c5c upstream.
 
-Two bugs have sneaked in the H616 pinctrl data:
-- PH9 uses the mux value of 0x3 twice (one should be 0x5 instead)
-- PH8 and PH9 use the "i2s3" function name twice in each pin
+These periods are expressed in time units (microseconds) while 40 and 12
+are the number of symbol durations these periods will last. We need to
+multiply them both with phy->symbol_duration in order to get these
+values in microseconds.
 
-For the double pin name we use the same trick we pulled for i2s0: append
-the pin function to the group name to designate the special function.
-
-Fixes: 25adc29407fb ("pinctrl: sunxi: Add support for the Allwinner H616 pin controller")
-Reported-by: SASANO Takayoshi <uaa@mx5.nisiq.net>
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Link: https://lore.kernel.org/r/20220105172952.23347-1-andre.przywara@arm.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 8c6ad9cc5157 ("ieee802154: Add NXP MCR20A IEEE 802.15.4 transceiver driver")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20220125121426.848337-3-miquel.raynal@bootlin.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/sunxi/pinctrl-sun50i-h616.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ieee802154/mcr20a.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/pinctrl/sunxi/pinctrl-sun50i-h616.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-sun50i-h616.c
-@@ -363,16 +363,16 @@ static const struct sunxi_desc_pin h616_
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
- 		  SUNXI_FUNCTION(0x2, "uart2"),		/* CTS */
--		  SUNXI_FUNCTION(0x3, "i2s3"),	/* DO0 */
-+		  SUNXI_FUNCTION(0x3, "i2s3_dout0"),	/* DO0 */
- 		  SUNXI_FUNCTION(0x4, "spi1"),		/* MISO */
--		  SUNXI_FUNCTION(0x5, "i2s3"),	/* DI1 */
-+		  SUNXI_FUNCTION(0x5, "i2s3_din1"),	/* DI1 */
- 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 6, 8)),	/* PH_EINT8 */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(H, 9),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
--		  SUNXI_FUNCTION(0x3, "i2s3"),	/* DI0 */
-+		  SUNXI_FUNCTION(0x3, "i2s3_din0"),	/* DI0 */
- 		  SUNXI_FUNCTION(0x4, "spi1"),		/* CS1 */
--		  SUNXI_FUNCTION(0x3, "i2s3"),	/* DO1 */
-+		  SUNXI_FUNCTION(0x5, "i2s3_dout1"),	/* DO1 */
- 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 6, 9)),	/* PH_EINT9 */
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(H, 10),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+--- a/drivers/net/ieee802154/mcr20a.c
++++ b/drivers/net/ieee802154/mcr20a.c
+@@ -976,8 +976,8 @@ static void mcr20a_hw_setup(struct mcr20
+ 	dev_dbg(printdev(lp), "%s\n", __func__);
+ 
+ 	phy->symbol_duration = 16;
+-	phy->lifs_period = 40;
+-	phy->sifs_period = 12;
++	phy->lifs_period = 40 * phy->symbol_duration;
++	phy->sifs_period = 12 * phy->symbol_duration;
+ 
+ 	hw->flags = IEEE802154_HW_TX_OMIT_CKSUM |
+ 			IEEE802154_HW_AFILT |
 
 
