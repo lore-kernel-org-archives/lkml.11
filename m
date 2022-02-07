@@ -2,125 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A71AC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7F5C35272
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442838AbiBGPJ7 (ORCPT
+        id S1442831AbiBGPJy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:09:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56026 "EHLO
+        Mon, 7 Feb 2022 10:09:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442467AbiBGOvD (ORCPT
+        with ESMTP id S1442465AbiBGOvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:51:03 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC84BC0401C1;
-        Mon,  7 Feb 2022 06:51:02 -0800 (PST)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 217Cm044006544;
-        Mon, 7 Feb 2022 08:15:35 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e1ky9n088-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 08:15:35 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 217DFYUX062636
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 7 Feb 2022 08:15:34 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 7 Feb 2022 08:15:33 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 7 Feb 2022 08:15:33 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 7 Feb 2022 08:15:33 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 217DFMUV004584;
-        Mon, 7 Feb 2022 08:15:29 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v6 3/4] Documentation:ABI:testing:admv1014: add ABI docs
-Date:   Mon, 7 Feb 2022 15:05:48 +0200
-Message-ID: <20220207130549.98415-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207130549.98415-1-antoniu.miclaus@analog.com>
-References: <20220207130549.98415-1-antoniu.miclaus@analog.com>
+        Mon, 7 Feb 2022 09:51:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1694C0401C3
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:50:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644245459;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zikTiAYNsW3FX50KxVFGIBWDk9jSNH8ecGKPu+J72PI=;
+        b=CGXyEX9VNN1hPtQbRgV87I1Dvp8irXNjulG+i5SU5yX8Q4JgdtduPRZWV1gAaYQaCLGO6Z
+        4eZ8r1n1A/zASTgqV6DvH3gdBEDFfhO+XG63hckMo7TSHwGbwdf2n4z4n7PVkzOrP2CMoJ
+        WhEleZD0Q5EF38H4em3kfsQJ4veee7c=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-622-7e8sX7e9NJmsyxEfDLYR4w-1; Mon, 07 Feb 2022 09:50:58 -0500
+X-MC-Unique: 7e8sX7e9NJmsyxEfDLYR4w-1
+Received: by mail-wm1-f71.google.com with SMTP id bg16-20020a05600c3c9000b0034bea12c043so12356943wmb.7
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 06:50:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=zikTiAYNsW3FX50KxVFGIBWDk9jSNH8ecGKPu+J72PI=;
+        b=uNK9u2oDZDDy0/dPRRopP+KYa8iWS21r0nnNnn/4t90ykpooLIhVFmzqM1EajuRuHw
+         FvWGRaVaV+dY0YlIR3GW+4VXA/BYgNSOdv9kqvdl5lmcFPswv/3s/15pm+JpByYv/Z22
+         AiGRuGiz4p097Ot/Ivrajd0pzTfNX8E4MXVu0Wh5ja/fxhbjoLLxymBlX0S3o1E9mIFe
+         7zMWN9Ex42+X+J1cxlZAPI1fJX4q4/JgVE3WA3BFxxFcCEKrc7vJ5U3KHZkxZ0B0CrG8
+         Xjdhbu9hghOFEGvyWrYZCOjLXICwQg39Y2fAc1j+moB/jRjM291IpiKJGVrxfZQ2nE4I
+         voyA==
+X-Gm-Message-State: AOAM532lPFQgr2KwZqnCpx9KAvDSfG5tJLuKfP5i86SQ1Bze+jdKn268
+        tRCYERBjrRAPfHqAjcaOnsHS1h8Hjuy6l0E34foHLHbrKsKR0gOGINenIPgAkmNL2LKLeBxKbVT
+        a1LtOmgETR5SW5gwsUUcBZ0D5
+X-Received: by 2002:a05:600c:28d2:: with SMTP id h18mr10299117wmd.56.1644245455841;
+        Mon, 07 Feb 2022 06:50:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyLpe2hgXZ2il+Wvv9VULju4pkFVV31oFWKYZl79U3Bxo66VYH7T4BN2SHO+24n0lcDktcc6g==
+X-Received: by 2002:a05:600c:28d2:: with SMTP id h18mr10299106wmd.56.1644245455667;
+        Mon, 07 Feb 2022 06:50:55 -0800 (PST)
+Received: from ?IPV6:2003:cb:c709:6300:a751:d742:1f76:8639? (p200300cbc7096300a751d7421f768639.dip0.t-ipconnect.de. [2003:cb:c709:6300:a751:d742:1f76:8639])
+        by smtp.gmail.com with ESMTPSA id l10sm11993306wry.79.2022.02.07.06.50.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 06:50:55 -0800 (PST)
+Message-ID: <c8d704f2-cc1c-52d2-3898-bf07dcb76e1a@redhat.com>
+Date:   Mon, 7 Feb 2022 15:50:54 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: cmZiIwa0rYwwF_CC0nG1EoM5H1SuwDpr
-X-Proofpoint-GUID: cmZiIwa0rYwwF_CC0nG1EoM5H1SuwDpr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
- mlxscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
- malwarescore=0 phishscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070086
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 2/4] mm/memory_hotplug: avoid calling zone_intersects()
+ for ZONE_NORMAL
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220207133643.23427-1-linmiaohe@huawei.com>
+ <20220207133643.23427-3-linmiaohe@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220207133643.23427-3-linmiaohe@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation for the use of the Digital Attenuator gain.
+On 07.02.22 14:36, Miaohe Lin wrote:
+> If zid reaches ZONE_NORMAL, the caller will always get the NORMAL zone no
+> matter what zone_intersects() returns. So we can save some possible cpu
+> cycles by avoid calling zone_intersects() for ZONE_NORMAL.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/memory_hotplug.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> index cbc67c27e0dd..140809e60e9a 100644
+> --- a/mm/memory_hotplug.c
+> +++ b/mm/memory_hotplug.c
+> @@ -826,7 +826,7 @@ static struct zone *default_kernel_zone_for_pfn(int nid, unsigned long start_pfn
+>  	struct pglist_data *pgdat = NODE_DATA(nid);
+>  	int zid;
+>  
+> -	for (zid = 0; zid <= ZONE_NORMAL; zid++) {
+> +	for (zid = 0; zid < ZONE_NORMAL; zid++) {
+>  		struct zone *zone = &pgdat->node_zones[zid];
+>  
+>  		if (zone_intersects(zone, start_pfn, nr_pages))
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-no changes in v6.
- Documentation/ABI/testing/sysfs-bus-iio       |  1 +
- .../testing/sysfs-bus-iio-frequency-admv1014  | 23 +++++++++++++++++++
- 2 files changed, 24 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index c551301b33f1..2b5770017a84 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -476,6 +476,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_i_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_q_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_i_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_q_calibscale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibscale
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
-new file mode 100644
-index 000000000000..395010a0ef8b
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
-@@ -0,0 +1,23 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_coarse
-+KernelVersion: 5.18
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write value for the digital attenuator gain (IF_I) with coarse steps.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_coarse
-+KernelVersion: 5.18
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write value for the digital attenuator gain (IF_Q) with coarse steps.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_fine
-+KernelVersion: 5.18
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write value for the digital attenuator gain (IF_I) with fine steps.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_fine
-+KernelVersion: 5.18
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write value for the digital attenuator gain (IF_Q) with fine steps.
+Makes sense, although we just don't care about the CPU cycles at that point.
+
+Reviewed-by: David Hildenbrand <david@redhat.com>
+
 -- 
-2.35.1
+Thanks,
+
+David / dhildenb
 
