@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10CEEC3527E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7942C35278
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386613AbiBGLfK (ORCPT
+        id S1386404AbiBGLee (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:35:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
+        Mon, 7 Feb 2022 06:34:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384012AbiBGLY0 (ORCPT
+        with ESMTP id S1383886AbiBGLX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:24:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23192C043188;
-        Mon,  7 Feb 2022 03:24:26 -0800 (PST)
+        Mon, 7 Feb 2022 06:23:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AF8C0401CF;
+        Mon,  7 Feb 2022 03:23:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB8CBB81028;
-        Mon,  7 Feb 2022 11:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28B36C004E1;
-        Mon,  7 Feb 2022 11:24:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7889B6077B;
+        Mon,  7 Feb 2022 11:23:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D1FC004E1;
+        Mon,  7 Feb 2022 11:23:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233063;
-        bh=Pf3Xbot02iSdkWxVTfYuvi1stNSsMt1hK7z/z6eHHA0=;
+        s=korg; t=1644233032;
+        bh=6R5EQEaS0/XQoxwQd9w6MGNpyaOaeu03ggOMPwlSSGY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A+Z0HeTAjWmybKeIwTgdVwHmBb52d+MAaKVZFqVl7WEvuH4mppbDBNSHZ+w3fkpHv
-         QUGp/4kHIZxSJREcZl159bdQj5JiMoLqjPOC8rbllsOZ62cl+q7cgn7g49IF5iIF2W
-         xzMvEYMAl0hECm7Ne/WsguHRRykPdGcJvX9b0tbE=
+        b=kk0DLfDcNZcb7RtnQny7U4ERGZ2rmFg0BoK/hBIQer1g2A+tST0JHSqPVHNqyXwD/
+         pvK2LMWNKsrQNAMsBU6WFXvUaOkPKbtsoQQza8wTraZJyvk+TUJs4jtYpK5hEw8fOu
+         56v8mch4A1dqiydjTPbrWhUhGMf+v+eJqTdNh4w4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com,
-        Hou Tao <houtao1@huawei.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: [PATCH 5.10 55/74] bpf: Use VM_MAP instead of VM_ALLOC for ringbuf
-Date:   Mon,  7 Feb 2022 12:06:53 +0100
-Message-Id: <20220207103759.023935529@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.10 51/74] pinctrl: bcm2835: Fix a few error paths
+Date:   Mon,  7 Feb 2022 12:06:49 +0100
+Message-Id: <20220207103758.890700743@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -51,42 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <hotforest@gmail.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-commit b293dcc473d22a62dc6d78de2b15e4f49515db56 upstream.
+commit 5297c693d8c8e08fa742e3112cf70723f7a04da2 upstream.
 
-After commit 2fd3fb0be1d1 ("kasan, vmalloc: unpoison VM_ALLOC pages
-after mapping"), non-VM_ALLOC mappings will be marked as accessible
-in __get_vm_area_node() when KASAN is enabled. But now the flag for
-ringbuf area is VM_ALLOC, so KASAN will complain out-of-bound access
-after vmap() returns. Because the ringbuf area is created by mapping
-allocated pages, so use VM_MAP instead.
+After commit 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio
+hogs") a few error paths would not unwind properly the registration of
+gpio ranges. Correct that by assigning a single error label and goto it
+whenever we encounter a fatal error.
 
-After the change, info in /proc/vmallocinfo also changes from
-  [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmalloc user
-to
-  [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmap user
-
-Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it")
-Reported-by: syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220202060158.6260-1-houtao1@huawei.com
+Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220127215033.267227-1-f.fainelli@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/ringbuf.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/bcm/pinctrl-bcm2835.c |   23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
---- a/kernel/bpf/ringbuf.c
-+++ b/kernel/bpf/ringbuf.c
-@@ -108,7 +108,7 @@ static struct bpf_ringbuf *bpf_ringbuf_a
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -1264,16 +1264,18 @@ static int bcm2835_pinctrl_probe(struct
+ 				     sizeof(*girq->parents),
+ 				     GFP_KERNEL);
+ 	if (!girq->parents) {
+-		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
+-		return -ENOMEM;
++		err = -ENOMEM;
++		goto out_remove;
  	}
  
- 	rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
--		  VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
-+		  VM_MAP | VM_USERMAP, PAGE_KERNEL);
- 	if (rb) {
- 		kmemleak_not_leak(pages);
- 		rb->pages = pages;
+ 	if (is_7211) {
+ 		pc->wake_irq = devm_kcalloc(dev, BCM2835_NUM_IRQS,
+ 					    sizeof(*pc->wake_irq),
+ 					    GFP_KERNEL);
+-		if (!pc->wake_irq)
+-			return -ENOMEM;
++		if (!pc->wake_irq) {
++			err = -ENOMEM;
++			goto out_remove;
++		}
+ 	}
+ 
+ 	/*
+@@ -1297,8 +1299,10 @@ static int bcm2835_pinctrl_probe(struct
+ 
+ 		len = strlen(dev_name(pc->dev)) + 16;
+ 		name = devm_kzalloc(pc->dev, len, GFP_KERNEL);
+-		if (!name)
+-			return -ENOMEM;
++		if (!name) {
++			err = -ENOMEM;
++			goto out_remove;
++		}
+ 
+ 		snprintf(name, len, "%s:bank%d", dev_name(pc->dev), i);
+ 
+@@ -1317,11 +1321,14 @@ static int bcm2835_pinctrl_probe(struct
+ 	err = gpiochip_add_data(&pc->gpio_chip, pc);
+ 	if (err) {
+ 		dev_err(dev, "could not add GPIO chip\n");
+-		pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
+-		return err;
++		goto out_remove;
+ 	}
+ 
+ 	return 0;
++
++out_remove:
++	pinctrl_remove_gpio_range(pc->pctl_dev, &pc->gpio_range);
++	return err;
+ }
+ 
+ static struct platform_driver bcm2835_pinctrl_driver = {
 
 
