@@ -2,114 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42688C35275
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69FB8C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352846AbiBGLMB (ORCPT
+        id S1353016AbiBGLMF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45724 "EHLO
+        Mon, 7 Feb 2022 06:12:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245739AbiBGLFg (ORCPT
+        with ESMTP id S236757AbiBGLJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:05:36 -0500
-X-Greylist: delayed 101 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 03:05:34 PST
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B84FC043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:05:34 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Jsjwr6tf9z9sSt;
-        Mon,  7 Feb 2022 12:05:32 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id aWLzZJ7pXfZT; Mon,  7 Feb 2022 12:05:32 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jsjwq2lyBz9sSs;
-        Mon,  7 Feb 2022 12:05:31 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4D3AD8B770;
-        Mon,  7 Feb 2022 12:05:31 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id QxPg5mPpH0pg; Mon,  7 Feb 2022 12:05:31 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 378C18B76C;
-        Mon,  7 Feb 2022 12:05:31 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 217B5LOA1027987
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 7 Feb 2022 12:05:21 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 217B5Lh61027986;
-        Mon, 7 Feb 2022 12:05:21 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Stephen Kitt <steve@sk2.org>, Kees Cook <keescook@chromium.org>
-Subject: [PATCH] mm: Remove usercopy_warn()
-Date:   Mon,  7 Feb 2022 12:05:20 +0100
-Message-Id: <5f26643fc70b05f8455b60b99c30c17d635fa640.1644231910.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.33.1
+        Mon, 7 Feb 2022 06:09:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8A7C043189;
+        Mon,  7 Feb 2022 03:09:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B5C6B80EC3;
+        Mon,  7 Feb 2022 11:09:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3590CC004E1;
+        Mon,  7 Feb 2022 11:09:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644232150;
+        bh=YzXaxA7SrWaX2UZWXji7oo0gOdanxIrfgqhjLwS/dug=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kEUiM/MYyIU3zvAT0GcCcKu2rsmNOZW1dmPRKDWJATUtb97Os9cUNIJIuefz13vc3
+         wNM6D1rOFFqnnrmHyqovZqW8KJKHcRtIPLaJh+aeHHYAskxUwIVOYCwlfYrtVYvD49
+         1ZmUE0fCR0PbANgkjD6FPgxTCcE95KbZp+s5CsRI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.9 32/48] af_packet: fix data-race in packet_setsockopt / packet_setsockopt
+Date:   Mon,  7 Feb 2022 12:06:05 +0100
+Message-Id: <20220207103753.387803621@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
+References: <20220207103752.341184175@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1644231919; l=1883; s=20211009; h=from:subject:message-id; bh=wIJyCP1PdT8iOVPkvJwg5OArPM4eZSb3XxPni92db5w=; b=nuqG4rtZ/oQJYKRVbabqXKW0MvZJNyKD5y3OL5BzTQXNpvgMfw2As5f1mWfBQRKn9TtZ1+CqhyL0 v0FG/1DCCf3LTYRTWGjQtGZ4FrBWle4ZaTv6W7/43Tx/tj8KmmuG
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Users of usercopy_warn() were removed by
-commit 53944f171a89 ("mm: remove HARDENED_USERCOPY_FALLBACK")
+From: Eric Dumazet <edumazet@google.com>
 
-Remote it.
+commit e42e70ad6ae2ae511a6143d2e8da929366e58bd9 upstream.
 
-Cc: Stephen Kitt <steve@sk2.org>
-Cc: Kees Cook <keescook@chromium.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+When packet_setsockopt( PACKET_FANOUT_DATA ) reads po->fanout,
+no lock is held, meaning that another thread can change po->fanout.
+
+Given that po->fanout can only be set once during the socket lifetime
+(it is only cleared from fanout_release()), we can use
+READ_ONCE()/WRITE_ONCE() to document the race.
+
+BUG: KCSAN: data-race in packet_setsockopt / packet_setsockopt
+
+write to 0xffff88813ae8e300 of 8 bytes by task 14653 on cpu 0:
+ fanout_add net/packet/af_packet.c:1791 [inline]
+ packet_setsockopt+0x22fe/0x24a0 net/packet/af_packet.c:3931
+ __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+read to 0xffff88813ae8e300 of 8 bytes by task 14654 on cpu 1:
+ packet_setsockopt+0x691/0x24a0 net/packet/af_packet.c:3935
+ __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0x0000000000000000 -> 0xffff888106f8c000
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 14654 Comm: syz-executor.3 Not tainted 5.16.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 47dceb8ecdc1 ("packet: add classic BPF fanout mode")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Link: https://lore.kernel.org/r/20220201022358.330621-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/uaccess.h |  2 --
- mm/usercopy.c           | 11 -----------
- 2 files changed, 13 deletions(-)
+ net/packet/af_packet.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
-index ac0394087f7d..bca27b4e5eb2 100644
---- a/include/linux/uaccess.h
-+++ b/include/linux/uaccess.h
-@@ -401,8 +401,6 @@ static inline void user_access_restore(unsigned long flags) { }
- #endif
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1719,7 +1719,10 @@ static int fanout_add(struct sock *sk, u
+ 		err = -ENOSPC;
+ 		if (atomic_read(&match->sk_ref) < PACKET_FANOUT_MAX) {
+ 			__dev_remove_pack(&po->prot_hook);
+-			po->fanout = match;
++
++			/* Paired with packet_setsockopt(PACKET_FANOUT_DATA) */
++			WRITE_ONCE(po->fanout, match);
++
+ 			po->rollover = rollover;
+ 			rollover = NULL;
+ 			atomic_inc(&match->sk_ref);
+@@ -3895,7 +3898,8 @@ packet_setsockopt(struct socket *sock, i
+ 	}
+ 	case PACKET_FANOUT_DATA:
+ 	{
+-		if (!po->fanout)
++		/* Paired with the WRITE_ONCE() in fanout_add() */
++		if (!READ_ONCE(po->fanout))
+ 			return -EINVAL;
  
- #ifdef CONFIG_HARDENED_USERCOPY
--void usercopy_warn(const char *name, const char *detail, bool to_user,
--		   unsigned long offset, unsigned long len);
- void __noreturn usercopy_abort(const char *name, const char *detail,
- 			       bool to_user, unsigned long offset,
- 			       unsigned long len);
-diff --git a/mm/usercopy.c b/mm/usercopy.c
-index d0d268135d96..e7b0cb49daa1 100644
---- a/mm/usercopy.c
-+++ b/mm/usercopy.c
-@@ -70,17 +70,6 @@ static noinline int check_stack_object(const void *obj, unsigned long len)
-  * kmem_cache_create_usercopy() function to create the cache (and
-  * carefully audit the whitelist range).
-  */
--void usercopy_warn(const char *name, const char *detail, bool to_user,
--		   unsigned long offset, unsigned long len)
--{
--	WARN_ONCE(1, "Bad or missing usercopy whitelist? Kernel memory %s attempt detected %s %s%s%s%s (offset %lu, size %lu)!\n",
--		 to_user ? "exposure" : "overwrite",
--		 to_user ? "from" : "to",
--		 name ? : "unknown?!",
--		 detail ? " '" : "", detail ? : "", detail ? "'" : "",
--		 offset, len);
--}
--
- void __noreturn usercopy_abort(const char *name, const char *detail,
- 			       bool to_user, unsigned long offset,
- 			       unsigned long len)
--- 
-2.33.1
+ 		return fanout_set_data(po, optval, optlen);
+
 
