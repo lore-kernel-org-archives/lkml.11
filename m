@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58994C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C1DC3527A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382801AbiBGLUu (ORCPT
+        id S1382844AbiBGLU6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:20:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53760 "EHLO
+        Mon, 7 Feb 2022 06:20:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377775AbiBGLPi (ORCPT
+        with ESMTP id S1378274AbiBGLPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:38 -0500
+        Mon, 7 Feb 2022 06:15:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1839EC03FEDC;
-        Mon,  7 Feb 2022 03:15:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25EEEC0401F4;
+        Mon,  7 Feb 2022 03:15:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1054613F8;
-        Mon,  7 Feb 2022 11:15:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F01C004E1;
-        Mon,  7 Feb 2022 11:15:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 121E661314;
+        Mon,  7 Feb 2022 11:15:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D56ACC004E1;
+        Mon,  7 Feb 2022 11:15:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232503;
-        bh=JTT6MLmBoO9BQYAvaddXI2YcFB4imTl5OxVLeNg4Aow=;
+        s=korg; t=1644232524;
+        bh=Nkw1yonictg+Vl5AIlRidS8URAZhjWZJs3TS6IUeap0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NbmqlW8wZhfVyiK+S9wwMnfhgRXR6CxzvxXbY7gsvBvl8hQgUoHcbC8ZeMXCRcNsA
-         sDPmLcSeXJ/S0V9cUy3VNDFsDu3ZWDicjD2CfWpUnjcX7AZHJYOWGwR5aqeFEtVTqM
-         BriccZaoXblPvlTQZxteLGksdyjaYJkvQuimRwaE=
+        b=Ge03sf56Aca+s5gZlHG3NhuRn3KedZ6yCuTgbV9qRlhLbHB9BtoWHBNClnl3LSAPA
+         snXEHkbxRaDOHxPYaex0WdunUefseBIvrDb/HIAxu3lCNGTiBEvSb4CTVf0fV/ggVC
+         N6AEN1KQga4So++stgGpoD07hdjLZSeosSdfZ/IQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Damato <jdamato@fastly.com>,
-        kernel test robot <lkp@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 4.19 23/86] i40e: fix unsigned stat widths
-Date:   Mon,  7 Feb 2022 12:05:46 +0100
-Message-Id: <20220207103758.305019922@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 38/86] NFS: Ensure the server has an up to date ctime before hardlinking
+Date:   Mon,  7 Feb 2022 12:06:01 +0100
+Message-Id: <20220207103758.783148819@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -51,70 +51,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Damato <jdamato@fastly.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 3b8428b84539c78fdc8006c17ebd25afd4722d51 upstream.
+[ Upstream commit 204975036b34f55237bc44c8a302a88468ef21b5 ]
 
-Change i40e_update_vsi_stats and struct i40e_vsi to use u64 fields to match
-the width of the stats counters in struct i40e_rx_queue_stats.
+Creating a hard link is required by POSIX to update the file ctime, so
+ensure that the file data is synced to disk so that we don't clobber the
+updated ctime by writing back after creating the hard link.
 
-Update debugfs code to use the correct format specifier for u64.
-
-Fixes: 41c445ff0f48 ("i40e: main driver core")
-Signed-off-by: Joe Damato <jdamato@fastly.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9f7682728728 ("NFS: Move the delegation return down into nfs4_proc_link()")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e.h         |    8 ++++----
- drivers/net/ethernet/intel/i40e/i40e_debugfs.c |    2 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c    |    4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ fs/nfs/dir.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -708,12 +708,12 @@ struct i40e_vsi {
- 	struct rtnl_link_stats64 net_stats_offsets;
- 	struct i40e_eth_stats eth_stats;
- 	struct i40e_eth_stats eth_stats_offsets;
--	u32 tx_restart;
--	u32 tx_busy;
-+	u64 tx_restart;
-+	u64 tx_busy;
- 	u64 tx_linearize;
- 	u64 tx_force_wb;
--	u32 rx_buf_failed;
--	u32 rx_page_failed;
-+	u64 rx_buf_failed;
-+	u64 rx_page_failed;
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -2033,6 +2033,8 @@ nfs_link(struct dentry *old_dentry, stru
  
- 	/* These are containers of ring pointers, allocated at run-time */
- 	struct i40e_ring **rx_rings;
---- a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-@@ -236,7 +236,7 @@ static void i40e_dbg_dump_vsi_seid(struc
- 		 (unsigned long int)vsi->net_stats_offsets.rx_compressed,
- 		 (unsigned long int)vsi->net_stats_offsets.tx_compressed);
- 	dev_info(&pf->pdev->dev,
--		 "    tx_restart = %d, tx_busy = %d, rx_buf_failed = %d, rx_page_failed = %d\n",
-+		 "    tx_restart = %llu, tx_busy = %llu, rx_buf_failed = %llu, rx_page_failed = %llu\n",
- 		 vsi->tx_restart, vsi->tx_busy,
- 		 vsi->rx_buf_failed, vsi->rx_page_failed);
- 	rcu_read_lock();
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -791,9 +791,9 @@ static void i40e_update_vsi_stats(struct
- 	struct rtnl_link_stats64 *ns;   /* netdev stats */
- 	struct i40e_eth_stats *oes;
- 	struct i40e_eth_stats *es;     /* device's eth stats */
--	u32 tx_restart, tx_busy;
-+	u64 tx_restart, tx_busy;
- 	struct i40e_ring *p;
--	u32 rx_page, rx_buf;
-+	u64 rx_page, rx_buf;
- 	u64 bytes, packets;
- 	unsigned int start;
- 	u64 tx_linearize;
+ 	trace_nfs_link_enter(inode, dir, dentry);
+ 	d_drop(dentry);
++	if (S_ISREG(inode->i_mode))
++		nfs_sync_inode(inode);
+ 	error = NFS_PROTO(dir)->link(inode, dir, &dentry->d_name);
+ 	if (error == 0) {
+ 		ihold(inode);
 
 
