@@ -2,181 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 472FFC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90713C35275
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383117AbiBGOoG (ORCPT
+        id S1382943AbiBGOnn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:44:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38860 "EHLO
+        Mon, 7 Feb 2022 09:43:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391910AbiBGOWp (ORCPT
+        with ESMTP id S232642AbiBGOh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:22:45 -0500
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A64C0401C5;
-        Mon,  7 Feb 2022 06:22:43 -0800 (PST)
-Received: by mail-oo1-f46.google.com with SMTP id f11-20020a4abb0b000000b002e9abf6bcbcso13792088oop.0;
-        Mon, 07 Feb 2022 06:22:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=QIbiP35GQSEEEaU8+SHxv92w3MHEG9bQFU7JRjEoZlY=;
-        b=brozXX9fSBUx2wiyZ45jMCF1zbhTF5Jiiiq/1qNhNEISHbW9idPfyEbk388ryHClRI
-         0nU/I8STgLK1hbT0plPcwny50flkQzxCjsi6LK1snw4iaT282uNMsVQYt3xavJMk9rR+
-         kmLWZYT/g1ay7JqscV/Nfdsh8TqmCQ+1myJ/rKWsopNPrpeC27KI6joXYQuFsXwZu+sJ
-         XrWEqu88NKNf1lc/JCcPGyDLtxIRNHMdEpBZeuDCCGdJbGc2jBn7tV0qeZt18snSUbkX
-         ZQOcuYijB/0aopkICz3ZKm+TMRcz7NFg64I+yiesfeDxG8Muf8DR/v4I4nZtVFv8udTA
-         NMxw==
-X-Gm-Message-State: AOAM532iigGs7hIrfCwwGBbQ6avAsAOcehmfXMqTJBdZFnra8h/l5REp
-        fW9LagM5g+a/gusyp1cm5Q==
-X-Google-Smtp-Source: ABdhPJxfXZdsGyfmTD5R1VDT1P4brg4JwOcmWmQsyw1NxMpW2nnJoH8Cy0v4BgETqUhZfQJQxbm3pg==
-X-Received: by 2002:a05:6870:44:: with SMTP id 4mr3436859oaz.68.1644243762896;
-        Mon, 07 Feb 2022 06:22:42 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id t31sm4334410oaa.9.2022.02.07.06.22.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 06:22:42 -0800 (PST)
-Received: (nullmailer pid 320510 invoked by uid 1000);
-        Mon, 07 Feb 2022 14:22:40 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Tyrone Ting <warp5tw@gmail.com>
-Cc:     Avi.Fishman@nuvoton.com, openbmc@lists.ozlabs.org,
-        lukas.bulwahn@gmail.com, bence98@sch.bme.hu, sven@svenpeter.dev,
-        devicetree@vger.kernel.org, tali.perry1@gmail.com,
-        krzysztof.kozlowski@canonical.com, arnd@arndb.de,
-        benjaminfair@google.com, tmaimon77@gmail.com, yuenn@google.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        semen.protsenko@linaro.org, olof@lixom.net, venture@google.com,
-        wsa@kernel.org, avifishman70@gmail.com, jie.deng@intel.com,
-        robh+dt@kernel.org, linux-i2c@vger.kernel.org, kfting@nuvoton.com,
-        tali.perry@nuvoton.com, yangyicong@hisilicon.com,
-        linux-kernel@vger.kernel.org, andriy.shevchenko@linux.intel.com
-In-Reply-To: <20220207063338.6570-2-warp5tw@gmail.com>
-References: <20220207063338.6570-1-warp5tw@gmail.com> <20220207063338.6570-2-warp5tw@gmail.com>
-Subject: Re: [PATCH v1 1/6] dt-bindings: i2c: npcm: support NPCM845
-Date:   Mon, 07 Feb 2022 08:22:40 -0600
-Message-Id: <1644243760.823059.320509.nullmailer@robh.at.kernel.org>
+        Mon, 7 Feb 2022 09:37:56 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AB8C0401C1;
+        Mon,  7 Feb 2022 06:37:56 -0800 (PST)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217DFGI9005118;
+        Mon, 7 Feb 2022 14:37:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=cTR9ZXIYcP+4BYSAj0LxosDzLtcKa4Wv2bJf1hsmYdU=;
+ b=G/R7uvcT4B/yw95xBJEruVikznP0SeGfPdptMNbo0KP+e+BlNe8uuYaY9gq+Li23t7Xb
+ JUrdHu68jm1Vlnh3kb4vby4wD/0aRGNqGywdPwsZLA3bwC0vBEdQ0mYQ3Q6bNiRwaokt
+ mhy/JMMfCqK45ga1RzjgM/GpBLCfVLcAR04OLr+tXsWds6qOnC3zgbESdHzFgnpenx+O
+ Oro1xogYLDzcv/irINP6NdJbeMC/cXHL9eUrnaZ4AVzF5C08bik5CpeFJxmIXMG1ZojB
+ MHi9UwlugfJYSksk4LzxeLduw13YqtzxQ1MCXcHa9n2x4ayxXV2JmJ17Elu276pXNGtS yw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22m5x8af-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 14:37:55 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217EHa5H025807;
+        Mon, 7 Feb 2022 14:37:54 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22m5x89q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 14:37:54 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217EW1kL025588;
+        Mon, 7 Feb 2022 14:37:52 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggjnsfn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 14:37:52 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217Ebn2h44499304
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 14:37:49 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5D03942041;
+        Mon,  7 Feb 2022 14:37:49 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E257D4203F;
+        Mon,  7 Feb 2022 14:37:48 +0000 (GMT)
+Received: from [9.145.9.42] (unknown [9.145.9.42])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Feb 2022 14:37:48 +0000 (GMT)
+Message-ID: <2b9b31bf-e45a-7006-c68e-6e143665640c@linux.ibm.com>
+Date:   Mon, 7 Feb 2022 15:37:48 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v7 16/17] KVM: s390: pv: add
+ KVM_CAP_S390_PROT_REBOOT_ASYNC
+Content-Language: en-US
+To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
+        david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
+References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
+ <20220204155349.63238-17-imbrenda@linux.ibm.com>
+From:   Janosch Frank <frankja@linux.ibm.com>
+In-Reply-To: <20220204155349.63238-17-imbrenda@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: AFt_8BGPlWKQ9vvRNpS2Ntgp1qpVLHtw
+X-Proofpoint-ORIG-GUID: jYXNpELGffd-tgqJv4YlgJiV-7N31ydl
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
+ suspectscore=0 phishscore=0 clxscore=1015 impostorscore=0
+ priorityscore=1501 malwarescore=0 mlxlogscore=999 lowpriorityscore=0
+ mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070093
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 07 Feb 2022 14:33:33 +0800, Tyrone Ting wrote:
-> From: Tyrone Ting <kfting@nuvoton.com>
+On 2/4/22 16:53, Claudio Imbrenda wrote:
+> Add KVM_CAP_S390_PROT_REBOOT_ASYNC to signal that the
+> KVM_PV_ASYNC_DISABLE and KVM_PV_ASYNC_DISABLE_PREPARE commands for the
+> KVM_S390_PV_COMMAND ioctl are available.
 > 
-> This commit adds compatible and syscon description for NPCM845 i2c module.
-> 
-> Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-> Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-> Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
 > ---
->  .../bindings/i2c/nuvoton,npcm7xx-i2c.yaml     | 21 ++++++++++++++-----
->  1 file changed, 16 insertions(+), 5 deletions(-)
+>   arch/s390/kvm/kvm-s390.c | 3 +++
+>   include/uapi/linux/kvm.h | 1 +
+>   2 files changed, 4 insertions(+)
 > 
+> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> index f7952cef1309..1e696202a569 100644
+> --- a/arch/s390/kvm/kvm-s390.c
+> +++ b/arch/s390/kvm/kvm-s390.c
+> @@ -608,6 +608,9 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+>   	case KVM_CAP_S390_BPB:
+>   		r = test_facility(82);
+>   		break;
+> +	case KVM_CAP_S390_PROT_REBOOT_ASYNC:
+> +		r = lazy_destroy && is_prot_virt_host();
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+While reboot might be the best use-case for the async disable I don't 
+think we should name the capability this way.
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+KVM_CAP_S390_PROTECTED_ASYNC_DESTR ?
 
-Full log is available here: https://patchwork.ozlabs.org/patch/1589171
+It's a bit long but the initial capability didn't abbreviate the 
+protected part so it is what it is.
 
 
-i2c@80000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-
-i2c@81000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@82000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@83000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@84000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@85000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@86000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@87000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@88000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@89000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@8a000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@8b000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@8c000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@8d000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-i2c@8e000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-
-i2c@8f000: 'syscon' is a required property
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
+> +		break;
+>   	case KVM_CAP_S390_PROTECTED:
+>   		r = is_prot_virt_host();
+>   		break;
+> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+> index 7f574c87a6ba..c41c108f6b14 100644
+> --- a/include/uapi/linux/kvm.h
+> +++ b/include/uapi/linux/kvm.h
+> @@ -1134,6 +1134,7 @@ struct kvm_ppc_resize_hpt {
+>   #define KVM_CAP_VM_GPA_BITS 207
+>   #define KVM_CAP_XSAVE2 208
+>   #define KVM_CAP_SYS_ATTRIBUTES 209
+> +#define KVM_CAP_S390_PROT_REBOOT_ASYNC 215
+>   
+>   #ifdef KVM_CAP_IRQ_ROUTING
+>   
+> 
 
