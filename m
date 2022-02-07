@@ -2,170 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E465DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:10:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 259BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348630AbiBGRI5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:08:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57672 "EHLO
+        id S237340AbiBGRHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 12:07:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358094AbiBGRAO (ORCPT
+        with ESMTP id S1344486AbiBGRDh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:00:14 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3536C0401D3;
-        Mon,  7 Feb 2022 09:00:13 -0800 (PST)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217GxKCg011938;
-        Mon, 7 Feb 2022 17:00:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=pcWmQo0q0FyBfonh7gvGQPT5hdRyaZwmFhTUu5etUGg=;
- b=HMH+I761bK3WwG8ni8oC30aLZedWM9YOl0nkTgQwfJ640aiI6mhdn14O+tlONYXAbBgy
- fEuz0h7weLfSllYoaATWtInkl4TGSiSQY1UayeuJRK/XmVXmdW4sU+xVE5emkfeEF8xx
- Lc3NWmuaz2gCpt3Lx+2vQk+NYU5WADJhX9Kcd10e7+bFUA0/t2eAetNxxakOkLjIvKn9
- eWIIOl/N0vYXPQS9zpsibVkd2IH7Xg9ZseS+ZNGBZ0RT+xNvZ5SmX7X0w6DU25J3FuEe
- /tyEhnsVwJsFcs/EFO0zuTBIkqJBDjggpN0tYEC3q2uvxnfe48FMYfg6i5Z7coOKlxLI cQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22nk9x65-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 17:00:11 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217H0B98019974;
-        Mon, 7 Feb 2022 17:00:11 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22nk9x50-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 17:00:11 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217Gs8ub001177;
-        Mon, 7 Feb 2022 17:00:09 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggjpvkh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 17:00:09 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217H03UT30278136
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 17:00:03 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2571FA405F;
-        Mon,  7 Feb 2022 17:00:03 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AC7C3A4053;
-        Mon,  7 Feb 2022 17:00:02 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 17:00:02 +0000 (GMT)
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>
-Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH v2 07/11] KVM: s390: Rename existing vcpu memop functions
-Date:   Mon,  7 Feb 2022 17:59:26 +0100
-Message-Id: <20220207165930.1608621-8-scgl@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220207165930.1608621-1-scgl@linux.ibm.com>
-References: <20220207165930.1608621-1-scgl@linux.ibm.com>
+        Mon, 7 Feb 2022 12:03:37 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6A4C0401D1;
+        Mon,  7 Feb 2022 09:03:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644253414; x=1675789414;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=pnrO5Plp1Sug3zd8Uyldl5o/laIPwZ454MnCGdKK9C0=;
+  b=Lzht4rsrtFtugZC0Rf6Y0V6BQNgoKmAy/sjDoaDBmGhl1QJpDgwlSg1j
+   ZRRZWM8gKs5WrXOsmG2US4irzvb3ibcq43/8LonY7iYUWp64iDbV63DKm
+   dYzGrFHje+psAR/OXvuFqlxUyRx24UhkEqywfJjh8Tj7d2QV+/ai3kNTJ
+   pQglyAWiAO7nxH2+LGejKtK1N4GJ0TnWxehy/rgA3zWHZP6cFIFtHqioe
+   AwCLjK4x7vQR4wICn8N+d742R0VO2k2E5q1bEehPrNfXnOFt8Ymb3UIF5
+   IrqcQoK59NLsbE9olp2p3MxPsAyhe4mPP9UE3EhUTK/HVYryBgeG6h6BQ
+   Q==;
+IronPort-SDR: ASOr3RrNRwTdUZYa3WxbUDfOgmuEVvbq9pKxD/chgXWMRHhWjHN2vEpYsADK29+Ufzo10XspCs
+ VbZQg3ez+ZqhJyCsvrGMoLvHLvOEozZPHCY0JaRPZXck9sIKGhM5FZJ4aCiOSUjGToQuDOQrNP
+ rtD9YbKZy1ohwJFr31lge+ulzLIueK5TvC4/0TRB9DV4Oav8w1MQTtQGfIgkGSwvvTcfPRteIk
+ HCDgH1TPdP+UGoWJ5f41lOOvn0lfglmuXEX60++rSFobwRetk0qgf6inDVSdoboJ5YAcwJ2h4g
+ H2hoPW/fG4rFPYMU7ljdQbB3
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="152733239"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 10:03:32 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Feb 2022 10:03:32 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Feb 2022 10:03:26 -0700
+Message-ID: <49878826c61a9fe556869710fecee615cf2a0c21.camel@microchip.com>
+Subject: Re: [PATCH v7 net-next 07/10] net: dsa: microchip: add support for
+ ethtool port counters
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <Woojung.Huh@microchip.com>, <hkallweit1@gmail.com>,
+        <linux@armlinux.org.uk>, <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Date:   Mon, 7 Feb 2022 22:33:25 +0530
+In-Reply-To: <20220204192721.21835705@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220204174500.72814-1-prasanna.vengateshan@microchip.com>
+         <20220204174500.72814-8-prasanna.vengateshan@microchip.com>
+         <20220204192721.21835705@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 9ewhXaf29fmT3tHYaeFig3y6tPlEK03O
-X-Proofpoint-ORIG-GUID: _pQGnTh7S_-TAibQZDj0ri88dFblmrGp
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_06,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- malwarescore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0
- mlxlogscore=999 clxscore=1015 phishscore=0 impostorscore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Makes the naming consistent, now that we also have a vm ioctl.
+On Fri, 2022-02-04 at 19:27 -0800, Jakub Kicinski wrote:
+> > +     for (i = 0; i < dev->mib_cnt; i++) {
+> > +             memcpy(buf + i * ETH_GSTRING_LEN, lan937x_mib_names[i].string,
+> > +                    ETH_GSTRING_LEN);
+> > +     }
+> 
+> parenthesis unnecessary around single expression
+> 
+> Also check out ethtool_sprintf(), although not strictly necessary since
+> you're not formatting
+Sure, thanks for the feedback.
 
-Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
----
- arch/s390/kvm/kvm-s390.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+Prasanna V
 
-diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-index be9092295d3f..befb30923c0e 100644
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -4745,8 +4745,8 @@ static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
- 	return r;
- }
- 
--static long kvm_s390_guest_sida_op(struct kvm_vcpu *vcpu,
--				   struct kvm_s390_mem_op *mop)
-+static long kvm_s390_vcpu_sida_op(struct kvm_vcpu *vcpu,
-+				  struct kvm_s390_mem_op *mop)
- {
- 	void __user *uaddr = (void __user *)mop->buf;
- 	int r = 0;
-@@ -4773,8 +4773,9 @@ static long kvm_s390_guest_sida_op(struct kvm_vcpu *vcpu,
- 	}
- 	return r;
- }
--static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
--				  struct kvm_s390_mem_op *mop)
-+
-+static long kvm_s390_vcpu_mem_op(struct kvm_vcpu *vcpu,
-+				 struct kvm_s390_mem_op *mop)
- {
- 	void __user *uaddr = (void __user *)mop->buf;
- 	u8 access_key = 0, ar = 0;
-@@ -4852,8 +4853,8 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
- 	return r;
- }
- 
--static long kvm_s390_guest_memsida_op(struct kvm_vcpu *vcpu,
--				      struct kvm_s390_mem_op *mop)
-+static long kvm_s390_vcpu_memsida_op(struct kvm_vcpu *vcpu,
-+				     struct kvm_s390_mem_op *mop)
- {
- 	int r, srcu_idx;
- 
-@@ -4862,12 +4863,12 @@ static long kvm_s390_guest_memsida_op(struct kvm_vcpu *vcpu,
- 	switch (mop->op) {
- 	case KVM_S390_MEMOP_LOGICAL_READ:
- 	case KVM_S390_MEMOP_LOGICAL_WRITE:
--		r = kvm_s390_guest_mem_op(vcpu, mop);
-+		r = kvm_s390_vcpu_mem_op(vcpu, mop);
- 		break;
- 	case KVM_S390_MEMOP_SIDA_READ:
- 	case KVM_S390_MEMOP_SIDA_WRITE:
- 		/* we are locked against sida going away by the vcpu->mutex */
--		r = kvm_s390_guest_sida_op(vcpu, mop);
-+		r = kvm_s390_vcpu_sida_op(vcpu, mop);
- 		break;
- 	default:
- 		r = -EINVAL;
-@@ -5030,7 +5031,7 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
- 		struct kvm_s390_mem_op mem_op;
- 
- 		if (copy_from_user(&mem_op, argp, sizeof(mem_op)) == 0)
--			r = kvm_s390_guest_memsida_op(vcpu, &mem_op);
-+			r = kvm_s390_vcpu_memsida_op(vcpu, &mem_op);
- 		else
- 			r = -EFAULT;
- 		break;
--- 
-2.32.0
 
