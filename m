@@ -2,208 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 299D9C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 072E0C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236354AbiBGSxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:53:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33376 "EHLO
+        id S236191AbiBGSxa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:53:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235289AbiBGSvQ (ORCPT
+        with ESMTP id S232506AbiBGSwW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:51:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7B14C0401DA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:51:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644259874;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4tMxQxcJ5rizEoS5UTJCaiSckKkfeW6Chcez0Web9VY=;
-        b=el7LP5E3u2JxKzZW0POVD9LtNxLgSrAQqrr7tkwZU3Q+6NAD9pNZIJUVie3ucLlFuezSGq
-        pb1h94HcG/LLOiiseFShecu6c7tK00NFEe92NR9RfM22evQNzVuCNK9t4M+Em8nUpE7JTi
-        pM7IKnPWKsG3R0caUdXwKHWOz6Lmv+U=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-101-4Snjwa9IPnyGDtBDoA5hhg-1; Mon, 07 Feb 2022 13:51:12 -0500
-X-MC-Unique: 4Snjwa9IPnyGDtBDoA5hhg-1
-Received: by mail-ed1-f69.google.com with SMTP id w15-20020a056402268f00b00408234dc1dfso8328670edd.16
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 10:51:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4tMxQxcJ5rizEoS5UTJCaiSckKkfeW6Chcez0Web9VY=;
-        b=Xp2zRdDPcIsUTuJ1JLZQxqQCDCnphQxweBgB05SS8FyQT7Yt8pNe2SIvjI6WAZviz8
-         4/tEiU6oyqmWDUMe+c3MS58oVtnktYJiLuX1tjDA1d5D+1omlszs9lH9ZRP8r8XHYUYG
-         X1M59PGeOU1N5O3Xb4Ew3q0bfSmMWrFyGXSzZa8yAPtc0TQZj0+E6n4l8fG2eo+kK6Mw
-         5khpSY5LTDduMjwJGTg59jnxd81Y7OOgoZEauIUJLIGJ3sz/Q2jrVoH93uTEwRVcKeSr
-         wEDVVcsSdOrF3LKnHv2tLanBykUEcEMCWN9FKgpUIzHUgzENEbWdby9TV7pKy5FAfIBw
-         616g==
-X-Gm-Message-State: AOAM531+MSYjWjE0zuMeuuT9WAYmivbF2e1snfqr+WPqv/guUUYMXts4
-        YRZXVXNap/23d5hB4LqmTYXAFHxZ0Lfle4wsoz7B0tE76ZncQrX1v2s37y7M15lfIoZSHQ5LT+5
-        qzwq2m62XVxPy7Q014MHKP/0s
-X-Received: by 2002:a17:906:2ed1:: with SMTP id s17mr869863eji.174.1644259871583;
-        Mon, 07 Feb 2022 10:51:11 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwZg/imwISIvk/tGi32MzWQSLQ+HCYDyUuOQuH46m+YuILwYJ63JRBI8JsIMyKkYrAEhfiE3w==
-X-Received: by 2002:a17:906:2ed1:: with SMTP id s17mr869857eji.174.1644259871386;
-        Mon, 07 Feb 2022 10:51:11 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id b17sm2491962ejd.34.2022.02.07.10.51.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 10:51:10 -0800 (PST)
-Message-ID: <43bfd6d9-58a3-6f9c-0848-4ef147552afb@redhat.com>
-Date:   Mon, 7 Feb 2022 19:51:10 +0100
+        Mon, 7 Feb 2022 13:52:22 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8FA07C0401DC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:52:20 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4E1AD11FB;
+        Mon,  7 Feb 2022 10:52:20 -0800 (PST)
+Received: from e120937-lin (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8BD513F70D;
+        Mon,  7 Feb 2022 10:52:18 -0800 (PST)
+Date:   Mon, 7 Feb 2022 18:52:16 +0000
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        sudeep.holla@arm.com, james.quinlan@broadcom.com,
+        Jonathan.Cameron@huawei.com, f.fainelli@gmail.com,
+        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
+        souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
+        igor.skalkin@opensynergy.com,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH v2 3/9] [RFC] virtio_ring: Embed a wrap counter in opaque
+ poll index value
+Message-ID: <20220207185216.GD2535@e120937-lin>
+References: <20220201171601.53316-1-cristian.marussi@arm.com>
+ <20220201171601.53316-4-cristian.marussi@arm.com>
+ <20220201131434-mutt-send-email-mst@kernel.org>
+ <20220203105105.GB2535@e120937-lin>
+ <20220203063115-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH 1/2] x86/Kconfig: move and modify CONFIG_I8K
-Content-Language: en-US
-To:     =?UTF-8?Q?Mateusz_Jo=c5=84czyk?= <mat.jonczyk@o2.pl>,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-hwmon@vger.kernel.org
-Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Mark Gross <markgross@kernel.org>
-References: <20220207182940.242838-1-mat.jonczyk@o2.pl>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220207182940.242838-1-mat.jonczyk@o2.pl>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220203063115-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Feb 03, 2022 at 06:32:29AM -0500, Michael S. Tsirkin wrote:
+> On Thu, Feb 03, 2022 at 10:51:19AM +0000, Cristian Marussi wrote:
+> > On Tue, Feb 01, 2022 at 01:27:38PM -0500, Michael S. Tsirkin wrote:
+> > > Looks correct, thanks. Some minor comments below:
+> > > 
+> > 
+> > Hi Michael,
+> > 
+> > thanks for the feedback.
+> > 
 
-On 2/7/22 19:29, Mateusz Jończyk wrote:
-> In Kconfig, inside the "Processor type and features" menu, there is
-> the CONFIG_I8K option: "Dell i8k legacy laptop support". This is
-> very confusing - enabling CONFIG_I8K is not required for the kernel to
-> support old Dell laptops. This option is specific to the dell-smm-hwmon
-> driver, which mostly exports some hardware monitoring information and
-> allows the user to change fan speed.
+Hi Michael,
+
+ 
+[snip]
+
+> > > > @@ -806,6 +821,8 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
+> > > >  	ret = vq->split.desc_state[i].data;
+> > > >  	detach_buf_split(vq, i, ctx);
+> > > >  	vq->last_used_idx++;
+> > > > +	if (unlikely(!vq->last_used_idx))
+> > > > +		vq->wraps++;
+> > > >  	/* If we expect an interrupt for the next entry, tell host
+> > > >  	 * by writing event index and flush out the write before
+> > > >  	 * the read in the next get_buf call. */
+> > > 
+> > > So most drivers don't call virtqueue_poll.
+> > > Concerned about the overhead here: another option is
+> > > with a flag that will have to be set whenever a driver
+> > > wants to use virtqueue_poll.
+> > 
+> > Do you mean a compile time flag/Kconfig to just remove the possible
+> > overhead instructions as a whole when not needed by the driver ?
+> > 
+> > Or do you mean at runtime since checking the flag evry time should be
+> > less costly than checking the wrpas each time AND counting when it
+> > happens ?
 > 
-> This option is misplaced, so move CONFIG_I8K to drivers/hwmon/Kconfig,
-> where it belongs.
+> The later.
 > 
-> Also, modify the dependency order - change
->         select SENSORS_DELL_SMM
-> to
->         depends on SENSORS_DELL_SMM
-> as it is just a configuration option of dell-smm-hwmon. This includes
-> changing the option type from tristate to bool. It was tristate because
-> it could select CONFIG_SENSORS_DELL_SMM=m .
+> > > Could you pls do a quick perf test e.g. using tools/virtio/
+> > > to see what's faster?
+> > 
+> > Yes I'll do, thanks for the hint, I have some compilation issues in
+> > tools/virtio due to my additions (missing mirrored hehaders) or to some
+> > recently added stuff (missing drv_to_virtio & friends for
+> > suppressed_used_validation thing)...anyway I fixed those now and I'll
+> > post related tools/virtio patches with next iteration.
+> > 
+> > Anyway, do you mean perf data about vringh_test and virtio_test/vhost
+> > right ? (ringtest/ excluded 'cause does not use any API is just
+> > prototyping)
 > 
-> When running "make oldconfig" on configurations with
-> CONFIG_SENSORS_DELL_SMM enabled , this change will result in an
-> additional question (which could be printed several times during
-> bisecting). I think that tidying up the configuration is worth it,
-> though.
+> can be either or both, virtio_test/vhost is a bit easier to use.
 > 
-> Next patch tweaks the description of CONFIG_I8K.
-> 
-> Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-> Cc: Pali Rohár <pali@kernel.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Borislav Petkov <bp@alien8.de>
-> Cc: Dave Hansen <dave.hansen@linux.intel.com>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Hans de Goede <hdegoede@redhat.com>
-> Cc: Mark Gross <markgross@kernel.org>
 
-For other reviewers, the only consumer of the CONFIG_I8K
-option is drivers/hwmon/dell-smm-hwmon.c
-which has a couple of:
-"#if IS_ENABLED(CONFIG_I8K)" checks to enable its old
-legacy /proc/i8k interface.
+After a number of round tests with tools/virtio/virtio_test, below you can find
+the most reliable results I had.
 
-So this move definitely makes sense.
+Using the flag as you suggested as in:
 
-I wonder if it would not be better to just completely drop
-the old  /proc/i8k interface though ?
-
-With that said, this series looks good to me, so:
-
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-
-for the series.
-
-Regards,
-
-Hans
+if (unlikely(vq->use_wrap_counter))
+	vq->wraps += !vq->last_used_idx;
 
 
+seems definitely better as per the result in virtio_test_flag_V1.
+
+The last run with virtio_test_flag_V1 --wrap-counters is the case in which
+the test code request to set the use_wrap_counter flag to true at start.
+
+Since such flag is nothig spec related, I added a new EXPORT API
+
+virtqueue_use_wrap_counter()
+
+to allow a driver willing to use polling to ask for wrap counting at
+probe time.
+
+Since all of this required a few build-fixes in tool/virtio both before
+and after my additions, I'm going to post the proposed change in a new series
+independent from this SCMI virtio series (and add later the call to
+virtqueue_use_wrap_counter() to the SCMI virtio driver.
+
+How does this sound ?
+
+Thanks,
+Cristian
+
+---
++ cset shield --exec -- perf stat --repeat 25 -- nice -n -20 /root/virtio_test_unpatched
+ Performance counter stats for 'nice -n -20 /root/virtio_test_unpatched' (25 runs):
+
+           6100.81 msec task-clock                #    1.002 CPUs utilized            ( +-  0.16% )
+                19      context-switches          #    3.126 /sec                     ( +-  2.08% )
+                 0      cpu-migrations            #    0.000 /sec                   
+               134      page-faults               #   22.049 /sec                     ( +-  0.03% )
+       18249525657      cycles                    #    3.003 GHz                      ( +-  0.07% )
+       45583397473      instructions              #    2.52  insn per cycle           ( +-  0.09% )
+       14009712668      branches                  #    2.305 G/sec                    ( +-  0.09% )
+          10075872      branch-misses             #    0.07% of all branches          ( +-  0.83% )
+
+            6.0908 +- 0.0107 seconds time elapsed  ( +-  0.18% )
 
 
-> ---
->  arch/x86/Kconfig      | 17 -----------------
->  drivers/hwmon/Kconfig | 15 +++++++++++++++
->  2 files changed, 15 insertions(+), 17 deletions(-)
-> 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 9f5bd41bf660..71d4ddd48c02 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -1275,23 +1275,6 @@ config TOSHIBA
->  	  Say Y if you intend to run this kernel on a Toshiba portable.
->  	  Say N otherwise.
->  
-> -config I8K
-> -	tristate "Dell i8k legacy laptop support"
-> -	depends on HWMON
-> -	depends on PROC_FS
-> -	select SENSORS_DELL_SMM
-> -	help
-> -	  This option enables legacy /proc/i8k userspace interface in hwmon
-> -	  dell-smm-hwmon driver. Character file /proc/i8k reports bios version,
-> -	  temperature and allows controlling fan speeds of Dell laptops via
-> -	  System Management Mode. For old Dell laptops (like Dell Inspiron 8000)
-> -	  it reports also power and hotkey status. For fan speed control is
-> -	  needed userspace package i8kutils.
-> -
-> -	  Say Y if you intend to run this kernel on old Dell laptops or want to
-> -	  use userspace package i8kutils.
-> -	  Say N otherwise.
-> -
->  config X86_REBOOTFIXUPS
->  	bool "Enable X86 board specific fixups for reboot"
->  	depends on X86_32
-> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-> index 8df25f1079ba..dd244aa747ad 100644
-> --- a/drivers/hwmon/Kconfig
-> +++ b/drivers/hwmon/Kconfig
-> @@ -505,6 +505,21 @@ config SENSORS_DELL_SMM
->  	  When option I8K is also enabled this driver provides legacy /proc/i8k
->  	  userspace interface for i8kutils package.
->  
-> +config I8K
-> +	bool "Dell i8k legacy laptop support"
-> +	depends on SENSORS_DELL_SMM
-> +	help
-> +	  This option enables legacy /proc/i8k userspace interface in hwmon
-> +	  dell-smm-hwmon driver. Character file /proc/i8k reports bios version,
-> +	  temperature and allows controlling fan speeds of Dell laptops via
-> +	  System Management Mode. For old Dell laptops (like Dell Inspiron 8000)
-> +	  it reports also power and hotkey status. For fan speed control is
-> +	  needed userspace package i8kutils.
-> +
-> +	  Say Y if you intend to run this kernel on old Dell laptops or want to
-> +	  use userspace package i8kutils.
-> +	  Say N otherwise.
-> +
->  config SENSORS_DA9052_ADC
->  	tristate "Dialog DA9052/DA9053 ADC"
->  	depends on PMIC_DA9052
-> 
++ cset shield --exec -- perf stat --repeat 25 -- nice -n -20 /root/virtio_test_wraps_noflag
+ Performance counter stats for 'nice -n -20 /root/virtio_test_wraps_noflag' (25 runs):
+
+           7982.99 msec task-clock                #    0.996 CPUs utilized            ( +-  0.14% )
+                16      context-switches          #    1.999 /sec                     ( +-  2.56% )
+                 0      cpu-migrations            #    0.000 /sec                   
+               134      page-faults               #   16.744 /sec                     ( +-  0.03% )
+       23691074946      cycles                    #    2.960 GHz                      ( +-  0.06% )
+       68176350359      instructions              #    2.88  insn per cycle           ( +-  0.09% )
+       21037768642      branches                  #    2.629 G/sec                    ( +-  0.09% )
+           9083084      branch-misses             #    0.04% of all branches          ( +-  0.74% )
+
+            8.0125 +- 0.0114 seconds time elapsed  ( +-  0.14% )
+
+
++ cset shield --exec -- perf stat --repeat 25 -- nice -n -20 /root/virtio_test_flag_V1
+ Performance counter stats for 'nice -n -20 /root/virtio_test_flag_V1' (25 runs):
+
+           6182.21 msec task-clock                #    1.007 CPUs utilized            ( +-  0.25% )
+                19      context-switches          #    3.104 /sec                     ( +-  1.68% )
+                 0      cpu-migrations            #    0.000 /sec                   
+               134      page-faults               #   21.889 /sec                     ( +-  0.03% )
+       18142274957      cycles                    #    2.963 GHz                      ( +-  0.13% )
+       48973010013      instructions              #    2.71  insn per cycle           ( +-  0.18% )
+       15064825126      branches                  #    2.461 G/sec                    ( +-  0.18% )
+           8697800      branch-misses             #    0.06% of all branches          ( +-  0.89% )
+
+            6.1382 +- 0.0172 seconds time elapsed  ( +-  0.28% )
+
++ cset shield --exec -- perf stat --repeat 25 -- nice -n -20 /root/virtio_test_flag_V1 --wrap-counters
+ Performance counter stats for 'nice -n -20 /root/virtio_test_flag_V1 --wrap-counters' (25 runs):
+
+           6051.58 msec task-clock                #    0.984 CPUs utilized            ( +-  0.22% )
+                21      context-switches          #    3.424 /sec                     ( +-  1.25% )
+                 0      cpu-migrations            #    0.000 /sec                   
+               134      page-faults               #   21.846 /sec                     ( +-  0.03% )
+       17928356478      cycles                    #    2.923 GHz                      ( +-  0.11% )
+       48147192304      instructions              #    2.67  insn per cycle           ( +-  0.14% )
+       14808798588      branches                  #    2.414 G/sec                    ( +-  0.15% )
+           9108899      branch-misses             #    0.06% of all branches          ( +-  1.22% )
+
+            6.1525 +- 0.0155 seconds time elapsed  ( +-  0.25% )
+
 
