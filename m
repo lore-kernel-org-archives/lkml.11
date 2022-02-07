@@ -2,196 +2,526 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 024D8C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C67C0C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245735AbiBGIb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:31:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59220 "EHLO
+        id S245104AbiBGIbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:31:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243691AbiBGIaw (ORCPT
+        with ESMTP id S244794AbiBGI10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:30:52 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8F9C043184;
-        Mon,  7 Feb 2022 00:30:47 -0800 (PST)
-X-UUID: 30dbd83bb10a4cb2acca31aa59954778-20220207
-X-UUID: 30dbd83bb10a4cb2acca31aa59954778-20220207
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 923001334; Mon, 07 Feb 2022 16:30:43 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 7 Feb 2022 16:30:42 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Feb
- 2022 16:30:42 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 7 Feb 2022 16:30:42 +0800
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     <robh+dt@kernel.org>, <matthias.bgg@gmail.com>
-CC:     <angelogioacchino.delregno@collabora.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Johnson Wang <johnson.wang@mediatek.com>
-Subject: [PATCH v3 1/2] soc: mediatek: pwrap: add pwrap driver for MT8186 SoC
-Date:   Mon, 7 Feb 2022 16:30:33 +0800
-Message-ID: <20220207083034.15327-2-johnson.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220207083034.15327-1-johnson.wang@mediatek.com>
-References: <20220207083034.15327-1-johnson.wang@mediatek.com>
+        Mon, 7 Feb 2022 03:27:26 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8E8C043184
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 00:27:25 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id a8so11714615pfa.6
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 00:27:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=FUgg4Equ2He9Zu5YgUnLDTuk24eDlugPiPqltuoxuSI=;
+        b=jsxJRPT5HrKdHN0aukhZ0jx5VsFJukcuO8DiaecEH3isCh7tmsxns7tJLrMewiBVI4
+         vdihfqxC3KiIFTQJUGNNwt7nqS5LqidMhjO++/PcnFQy3iQM7buSi9yUMg9+cfCQiVtT
+         zfW3kwOTkGcxTYTOCA9KFaNlrb5tJ4lfJo51Fqqknudnl1W1c4fhmWPvT0nKc7XKnmpm
+         /b+U6schCJi+xPqNqqSKenOH78L93ovKF/x0iCBQKLp68PjpKHpZDgdAFWWZwxYUYJKX
+         ZWNrvGOugVs4hlosEbQc1Y9sJTSpzsNgO+Vch10WLCm1QV78HR6Slj7AnRnvgHZe/akn
+         f7yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=FUgg4Equ2He9Zu5YgUnLDTuk24eDlugPiPqltuoxuSI=;
+        b=OPyUNOe1zMFrmMpe28UENG2rRhD1vrds8NT8jjg1evmO5iVXGgObrXgevw8id/p75p
+         TrsATYMJ+pMs6xhCJJgD3rbi34S4UFc+vfkEGUwrqfQfaLwGi4btu/H+ZElf/fKspDHI
+         FrQGtqT/aN9gzsP6y+QnejzrdUoWedty/XTo6sj3/CtKk/6mGCNKGBKcMYBtSMb73xf4
+         40SQ+37DnhmNF9/9R19zTZ+ccokaIZbVTyA74I6O2cVhCsiqef7Qd+ZzU8t0Q5dJPSzF
+         5V6e5QQov8Z3wttPpESLTULBA/zuMjCCby2Sa/Cge8xqSLYZxb1Xa7ozIkJuA27b7/zf
+         Ig5A==
+X-Gm-Message-State: AOAM5330GsiQFoDIBpLcAvkI/pigc3LUOjEtpW3fCicNFVl0xUReQ9KN
+        xFeZG1J9WROva2prZFI3QT9WL6KRBdTZdRLCGO9/qw==
+X-Google-Smtp-Source: ABdhPJx2eW3thz8UJ/xBubbYMDkStcxn24j3cGWJnzcGfETIdIlBkrOO9dGxLR3+mfZtG34i2txITFEvo/Jq56FzQ00=
+X-Received: by 2002:a63:d848:: with SMTP id k8mr8633728pgj.164.1644222444466;
+ Mon, 07 Feb 2022 00:27:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220120001621.705352-2-jsd@semihalf.com> <20220202144302.1438303-1-jsd@semihalf.com>
+ <20220202144302.1438303-2-jsd@semihalf.com> <YfqtkBIZZxp2Au2l@smile.fi.intel.com>
+In-Reply-To: <YfqtkBIZZxp2Au2l@smile.fi.intel.com>
+From:   =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
+Date:   Mon, 7 Feb 2022 09:27:12 +0100
+Message-ID: <CAOtMz3O_j5-0ZLJngQpzQSGduhZVnQ8awBvGkMdUQWAX8nN5Hw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] i2c: designware: Add AMD PSP I2C bus support
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Raul E Rangel <rrangel@chromium.org>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "Deucher, Alexander" <alexander.deucher@amd.com>,
+        "Easow, Nimesh" <Nimesh.Easow@amd.com>,
+        "Limonciello, Mario" <mario.limonciello@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MT8186 are highly integrated SoC and use PMIC_MT6366 for
-power management. This patch adds pwrap master driver to
-access PMIC_MT6366.
+Hi Andy,
 
-Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
----
- drivers/soc/mediatek/mtk-pmic-wrap.c | 71 ++++++++++++++++++++++++++++
- 1 file changed, 71 insertions(+)
+=C5=9Br., 2 lut 2022 o 17:16 Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
+>
+> On Wed, Feb 02, 2022 at 03:43:02PM +0100, Jan Dabros wrote:
+> > Implement an I2C controller sharing mechanism between the host (kernel)
+> > and PSP co-processor on some platforms equipped with AMD Cezanne SoC.
+> >
+> > On these platforms we need to implement "software" i2c arbitration.
+> > Default arbitration owner is PSP and kernel asks for acquire as well
+> > as inform about release of the i2c bus via mailbox mechanism.
+> >
+> >             +---------+
+> >  <- ACQUIRE |         |
+> >   +---------|   CPU   |\
+> >   |         |         | \      +----------+  SDA
+> >   |         +---------+  \     |          |-------
+> > MAILBOX                   +--> |  I2C-DW  |  SCL
+> >   |         +---------+        |          |-------
+> >   |         |         |        +----------+
+> >   +---------|   PSP   |
+> >    <- ACK   |         |
+> >             +---------+
+> >
+> >             +---------+
+> >  <- RELEASE |         |
+> >   +---------|   CPU   |
+> >   |         |         |        +----------+  SDA
+> >   |         +---------+        |          |-------
+> > MAILBOX                   +--> |  I2C-DW  |  SCL
+> >   |         +---------+  /     |          |-------
+> >   |         |         | /      +----------+
+> >   +---------|   PSP   |/
+> >    <- ACK   |         |
+> >             +---------+
+> >
+> > The solution is similar to i2c-designware-baytrail.c implementation, wh=
+ere
+> > we are using a generic i2c-designware-* driver with a small "wrapper".
+> >
+> > In contrary to baytrail semaphore implementation, beside internal
+> > acquire_lock() and release_lock() methods we are also applying quirks t=
+o
+> > lock_bus() and unlock_bus() global adapter methods. With this in place
+> > all i2c clients drivers may lock i2c bus for a desired number of i2c
+> > transactions (e.g. write-wait-read) without being aware of that such bu=
+s
+> > is shared with another entity.
+> >
+> > Modify i2c_dw_probe_lock_support() to select correct semaphore
+> > implementation at runtime, since now we have more than one available.
+> >
+> > Configure new matching ACPI ID "AMDI0019" and register
+> > ARBITRATION_SEMAPHORE flag in order to distinguish setup with PSP
+> > arbitration.
+> >
+> > Add myself as a reviewer for I2C DesignWare in order to help with revie=
+wing
+> > and testing possible changes touching new i2c-designware-amdpsp.c modul=
+e.
+>
+> Side note, please start a new email thread for new version of the series.
 
-diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c b/drivers/soc/mediatek/mtk-pmic-wrap.c
-index 952bc554f443..bf39a64f3ecc 100644
---- a/drivers/soc/mediatek/mtk-pmic-wrap.c
-+++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
-@@ -30,6 +30,7 @@
- #define PWRAP_GET_WACS_REQ(x)		(((x) >> 19) & 0x00000001)
- #define PWRAP_STATE_SYNC_IDLE0		BIT(20)
- #define PWRAP_STATE_INIT_DONE0		BIT(21)
-+#define PWRAP_STATE_INIT_DONE0_MT8186	BIT(22)
- #define PWRAP_STATE_INIT_DONE1		BIT(15)
- 
- /* macro for WACS FSM */
-@@ -77,6 +78,7 @@
- #define PWRAP_CAP_INT1_EN	BIT(3)
- #define PWRAP_CAP_WDT_SRC1	BIT(4)
- #define PWRAP_CAP_ARB		BIT(5)
-+#define PWRAP_CAP_ARB_MT8186	BIT(8)
- 
- /* defines for slave device wrapper registers */
- enum dew_regs {
-@@ -1063,6 +1065,55 @@ static int mt8516_regs[] = {
- 	[PWRAP_MSB_FIRST] =		0x170,
- };
- 
-+static int mt8186_regs[] = {
-+	[PWRAP_MUX_SEL] =		0x0,
-+	[PWRAP_WRAP_EN] =		0x4,
-+	[PWRAP_DIO_EN] =		0x8,
-+	[PWRAP_RDDMY] =			0x20,
-+	[PWRAP_CSHEXT_WRITE] =		0x24,
-+	[PWRAP_CSHEXT_READ] =		0x28,
-+	[PWRAP_CSLEXT_WRITE] =		0x2C,
-+	[PWRAP_CSLEXT_READ] =		0x30,
-+	[PWRAP_EXT_CK_WRITE] =		0x34,
-+	[PWRAP_STAUPD_CTRL] =		0x3C,
-+	[PWRAP_STAUPD_GRPEN] =		0x40,
-+	[PWRAP_EINT_STA0_ADR] =		0x44,
-+	[PWRAP_EINT_STA1_ADR] =		0x48,
-+	[PWRAP_INT_CLR] =		0xC8,
-+	[PWRAP_INT_FLG] =		0xC4,
-+	[PWRAP_MAN_EN] =		0x7C,
-+	[PWRAP_MAN_CMD] =		0x80,
-+	[PWRAP_WACS0_EN] =		0x8C,
-+	[PWRAP_WACS1_EN] =		0x94,
-+	[PWRAP_WACS2_EN] =		0x9C,
-+	[PWRAP_INIT_DONE0] =		0x90,
-+	[PWRAP_INIT_DONE1] =		0x98,
-+	[PWRAP_INIT_DONE2] =		0xA0,
-+	[PWRAP_INT_EN] =		0xBC,
-+	[PWRAP_INT1_EN] =		0xCC,
-+	[PWRAP_INT1_FLG] =		0xD4,
-+	[PWRAP_INT1_CLR] =		0xD8,
-+	[PWRAP_TIMER_EN] =		0xF0,
-+	[PWRAP_WDT_UNIT] =		0xF8,
-+	[PWRAP_WDT_SRC_EN] =		0xFC,
-+	[PWRAP_WDT_SRC_EN_1] =		0x100,
-+	[PWRAP_WDT_FLG] =		0x104,
-+	[PWRAP_SPMINF_STA] =		0x1B4,
-+	[PWRAP_DCM_EN] =		0x1EC,
-+	[PWRAP_DCM_DBC_PRD] =		0x1F0,
-+	[PWRAP_GPSINF_0_STA] =		0x204,
-+	[PWRAP_GPSINF_1_STA] =		0x208,
-+	[PWRAP_WACS0_CMD] =		0xC00,
-+	[PWRAP_WACS0_RDATA] =		0xC04,
-+	[PWRAP_WACS0_VLDCLR] =		0xC08,
-+	[PWRAP_WACS1_CMD] =		0xC10,
-+	[PWRAP_WACS1_RDATA] =		0xC14,
-+	[PWRAP_WACS1_VLDCLR] =		0xC18,
-+	[PWRAP_WACS2_CMD] =		0xC20,
-+	[PWRAP_WACS2_RDATA] =		0xC24,
-+	[PWRAP_WACS2_VLDCLR] =		0xC28,
-+};
-+
- enum pmic_type {
- 	PMIC_MT6323,
- 	PMIC_MT6351,
-@@ -1083,6 +1134,7 @@ enum pwrap_type {
- 	PWRAP_MT8135,
- 	PWRAP_MT8173,
- 	PWRAP_MT8183,
-+	PWRAP_MT8186,
- 	PWRAP_MT8195,
- 	PWRAP_MT8516,
- };
-@@ -1535,6 +1587,7 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
- 	case PWRAP_MT6779:
- 	case PWRAP_MT6797:
- 	case PWRAP_MT8173:
-+	case PWRAP_MT8186:
- 	case PWRAP_MT8516:
- 		pwrap_writel(wrp, 1, PWRAP_CIPHER_EN);
- 		break;
-@@ -2069,6 +2122,19 @@ static struct pmic_wrapper_type pwrap_mt8516 = {
- 	.init_soc_specific = NULL,
- };
- 
-+static struct pmic_wrapper_type pwrap_mt8186 = {
-+	.regs = mt8186_regs,
-+	.type = PWRAP_MT8186,
-+	.arb_en_all = 0xfb27f,
-+	.int_en_all = 0xfffffffe, /* disable WatchDog Timeout for bit 1 */
-+	.int1_en_all =  0x000017ff, /* disable Matching interrupt for bit 13 */
-+	.spi_w = PWRAP_MAN_CMD_SPI_WRITE,
-+	.wdt_src = PWRAP_WDT_SRC_MASK_ALL,
-+	.caps = PWRAP_CAP_INT1_EN | PWRAP_CAP_ARB_MT8186,
-+	.init_reg_clock = pwrap_common_init_reg_clock,
-+	.init_soc_specific = NULL,
-+};
-+
- static const struct of_device_id of_pwrap_match_tbl[] = {
- 	{
- 		.compatible = "mediatek,mt2701-pwrap",
-@@ -2097,6 +2163,9 @@ static const struct of_device_id of_pwrap_match_tbl[] = {
- 	}, {
- 		.compatible = "mediatek,mt8183-pwrap",
- 		.data = &pwrap_mt8183,
-+	}, {
-+		.compatible = "mediatek,mt8186-pwrap",
-+		.data = &pwrap_mt8186,
- 	}, {
- 		.compatible = "mediatek,mt8195-pwrap",
- 		.data = &pwrap_mt8195,
-@@ -2209,6 +2278,8 @@ static int pwrap_probe(struct platform_device *pdev)
- 
- 	if (HAS_CAP(wrp->master->caps, PWRAP_CAP_ARB))
- 		mask_done = PWRAP_STATE_INIT_DONE1;
-+	else if (HAS_CAP(wrp->master->caps, PWRAP_CAP_ARB_MT8186))
-+		mask_done = PWRAP_STATE_INIT_DONE0_MT8186;
- 	else
- 		mask_done = PWRAP_STATE_INIT_DONE0;
- 
--- 
-2.18.0
+Sure, will do so starting with v4.
 
+>
+> Looks good enough to me, although a few minor comments below.
+> Up to you to address them now or later.
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+Thanks a lot! I will address your comments and send v4.
+
+>
+> > Signed-off-by: Jan Dabros <jsd@semihalf.com>
+
+(...)
+
+> > --- /dev/null
+> > +++ b/drivers/i2c/busses/i2c-designware-amdpsp.c
+> > @@ -0,0 +1,389 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +
+> > +#include <linux/bitfield.h>
+>
+> IIRC this does not guarantee bits.h inclusion.
+
+That is correct. There is a comment in bitfield.h with example of
+GENMASK usage, but bits.h isn't actually included there.
+
+>
+> > +#include <linux/i2c.h>
+> > +#include <linux/io-64-nonatomic-lo-hi.h>
+> > +#include <linux/psp-sev.h>
+> > +#include <linux/types.h>
+> > +
+> > +#include <asm/msr.h>
+> > +
+> > +#include "i2c-designware-core.h"
+> > +
+> > +#define MSR_AMD_PSP_ADDR     0xc00110a2
+> > +#define PSP_MBOX_OFFSET              0x10570
+> > +#define PSP_CMD_TIMEOUT_MS   500
+> > +
+> > +#define PSP_I2C_REQ_BUS_CMD          0x64
+> > +#define PSP_I2C_REQ_RETRY_CNT                10
+> > +#define PSP_I2C_REQ_RETRY_DELAY_USEC (50 * 1000)
+>
+> _US is enough and possibly (50 * USEC_PER_MSEC).
+
+ACK.
+
+>
+> > +#define PSP_I2C_REQ_STS_OK           0x0
+> > +#define PSP_I2C_REQ_STS_BUS_BUSY     0x1
+> > +#define PSP_I2C_REQ_STS_INV_PARAM    0x3
+> > +
+> > +#define PSP_MBOX_FIELDS_STS          GENMASK(15, 0)
+> > +#define PSP_MBOX_FIELDS_CMD          GENMASK(23, 16)
+> > +#define PSP_MBOX_FIELDS_RESERVED     GENMASK(29, 24)
+> > +#define PSP_MBOX_FIELDS_RECOVERY     BIT(30)
+> > +#define PSP_MBOX_FIELDS_READY                BIT(31)
+> > +
+> > +struct psp_req_buffer_hdr {
+> > +     u32 total_size;
+> > +     u32 status;
+> > +};
+> > +
+> > +enum psp_i2c_req_type {
+> > +     PSP_I2C_REQ_ACQUIRE,
+> > +     PSP_I2C_REQ_RELEASE,
+> > +     PSP_I2C_REQ_MAX
+> > +};
+> > +
+> > +struct psp_i2c_req {
+> > +     struct psp_req_buffer_hdr hdr;
+> > +     enum psp_i2c_req_type type;
+> > +} __aligned(32);
+>
+> I forgot if this alignment is requirement due to DMA or so?
+> We may use ____cacheline_aligned in such case.
+
+I used some old code as a reference - this structure is mapped by PSP,
+thus alignment applied here. I'm checking this with AMD whether it is
+really needed or at least can be somehow limited - still waiting for
+their response.
+I propose to left this as is right now and eventually remove or make
+more liberal in the future.
+
+>
+> > +struct psp_mbox {
+> > +     u32 cmd_fields;
+> > +     u64 i2c_req_addr;
+> > +} __packed;
+> > +
+> > +static DEFINE_MUTEX(psp_i2c_access_mutex);
+> > +static unsigned long psp_i2c_sem_acquired;
+> > +static void __iomem *mbox_iomem;
+> > +static u32 psp_i2c_access_count;
+> > +static bool psp_i2c_mbox_fail;
+> > +static struct device *psp_i2c_dev;
+> > +
+> > +/*
+> > + * Implementation of PSP-x86 i2c-arbitration mailbox introduced for AM=
+D Cezanne
+> > + * family of SoCs.
+> > + */
+> > +
+> > +static int psp_get_mbox_addr(unsigned long *mbox_addr)
+> > +{
+> > +     unsigned long long psp_mmio;
+> > +
+> > +     if (rdmsrl_safe(MSR_AMD_PSP_ADDR, &psp_mmio))
+> > +             return -EIO;
+> > +
+> > +     *mbox_addr =3D (unsigned long)(psp_mmio + PSP_MBOX_OFFSET);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int psp_mbox_probe(void)
+> > +{
+> > +     unsigned long mbox_addr;
+> > +     int ret;
+> > +
+> > +     ret =3D psp_get_mbox_addr(&mbox_addr);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     mbox_iomem =3D ioremap(mbox_addr, sizeof(struct psp_mbox));
+> > +     if (!mbox_iomem)
+> > +             return -ENOMEM;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +
+> > +/* Recovery field should be equal 0 to start sending commands */
+> > +static int psp_check_mbox_recovery(struct psp_mbox __iomem *mbox)
+> > +{
+> > +     u32 tmp;
+> > +
+> > +     tmp =3D readl(&mbox->cmd_fields);
+> > +
+> > +     return FIELD_GET(PSP_MBOX_FIELDS_RECOVERY, tmp);
+> > +}
+> > +
+> > +static int psp_wait_cmd(struct psp_mbox __iomem *mbox)
+> > +{
+> > +     u32 tmp, expected;
+> > +
+> > +     /* Expect mbox_cmd to be cleared and ready bit to be set by PSP *=
+/
+> > +     expected =3D FIELD_PREP(PSP_MBOX_FIELDS_READY, 1);
+> > +
+> > +     return readl_poll_timeout(&mbox->cmd_fields, tmp, (tmp =3D=3D exp=
+ected),
+> > +                               0, 1000 * PSP_CMD_TIMEOUT_MS);
+>
+> 0?!
+
+Yes, we are checking for readiness of PSP mailbox in a tight loop. We
+would like to proceed further quickly as soon as this bit is set.
+Actually checking this twice per every ACQUIRE&RELEASE - once before
+sending command (to check whether PSP is ready to accept requests) and
+second time after sending it. Do you think we should increase
+@sleep_us value?
+
+>
+> > +}
+> > +
+> > +/* Status equal to 0 means that PSP succeed processing command */
+> > +static int psp_check_mbox_sts(struct psp_mbox __iomem *mbox)
+>
+>   static u32 ...
+>
+> So reader will know it won't return error codes.
+
+ACK/
+
+>
+> > +{
+> > +     u32 cmd_reg;
+> > +
+> > +     cmd_reg =3D readl(&mbox->cmd_fields);
+> > +
+> > +     return FIELD_GET(PSP_MBOX_FIELDS_STS, cmd_reg);
+> > +}
+> > +
+> > +static int psp_send_cmd(struct psp_i2c_req *req)
+> > +{
+> > +     struct psp_mbox __iomem *mbox =3D mbox_iomem;
+> > +     phys_addr_t req_addr;
+> > +     u32 cmd_reg;
+> > +
+> > +     if (psp_check_mbox_recovery(mbox))
+> > +             return -EIO;
+> > +
+> > +     if (psp_wait_cmd(mbox))
+> > +             return -EBUSY;
+> > +
+> > +     /*
+> > +      * Fill mailbox with address of command-response buffer, which wi=
+ll be
+> > +      * used for sending i2c requests as well as reading status return=
+ed by
+> > +      * PSP. Use physical address of buffer, since PSP will map this r=
+egion.
+> > +      */
+> > +     req_addr =3D __psp_pa((void *)req);
+> > +     writeq(req_addr, &mbox->i2c_req_addr);
+> > +
+> > +     /* Write command register to trigger processing */
+> > +     cmd_reg =3D FIELD_PREP(PSP_MBOX_FIELDS_CMD, PSP_I2C_REQ_BUS_CMD);
+> > +     writel(cmd_reg, &mbox->cmd_fields);
+> > +
+> > +     if (psp_wait_cmd(mbox))
+> > +             return -ETIMEDOUT;
+> > +
+> > +     if (psp_check_mbox_sts(mbox))
+> > +             return -EIO;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +/* Helper to verify status returned by PSP */
+> > +static int check_i2c_req_sts(struct psp_i2c_req *req)
+> > +{
+> > +     int status;
+> > +
+> > +     status =3D readl(&req->hdr.status);
+> > +
+> > +     switch (status) {
+> > +     case PSP_I2C_REQ_STS_OK:
+> > +             return 0;
+> > +     case PSP_I2C_REQ_STS_BUS_BUSY:
+> > +             return -EBUSY;
+> > +     case PSP_I2C_REQ_STS_INV_PARAM:
+> > +     default:
+> > +             return -EIO;
+> > +     };
+> > +}
+> > +
+> > +static int psp_send_check_i2c_req(struct psp_i2c_req *req)
+> > +{
+> > +     /*
+> > +      * Errors in x86-PSP i2c-arbitration protocol may occur at two le=
+vels:
+> > +      * 1. mailbox communication - PSP is not operational or some IO e=
+rrors
+> > +      * with basic communication had happened;
+> > +      * 2. i2c-requests - PSP refuses to grant i2c arbitration to x86 =
+for too
+> > +      * long.
+> > +      * In order to distinguish between these two in error handling co=
+de, all
+> > +      * errors on the first level (returned by psp_send_cmd) are shado=
+wed by
+> > +      * -EIO.
+> > +      */
+> > +     if (psp_send_cmd(req))
+> > +             return -EIO;
+> > +
+> > +     return check_i2c_req_sts(req);
+> > +}
+> > +
+> > +static int psp_send_i2c_req(enum psp_i2c_req_type i2c_req_type)
+> > +{
+> > +     struct psp_i2c_req *req;
+> > +     unsigned long start;
+> > +     int status, ret;
+> > +
+> > +     /* Allocate command-response buffer */
+> > +     req =3D kzalloc(sizeof(*req), GFP_KERNEL);
+> > +     if (!req)
+> > +             return -ENOMEM;
+> > +
+> > +     req->hdr.total_size =3D sizeof(*req);
+> > +     req->type =3D i2c_req_type;
+> > +
+> > +     start =3D jiffies;
+> > +     ret =3D read_poll_timeout(psp_send_check_i2c_req, status,
+> > +                             (status !=3D -EBUSY),
+> > +                             PSP_I2C_REQ_RETRY_DELAY_USEC,
+> > +                             PSP_I2C_REQ_RETRY_CNT * PSP_I2C_REQ_RETRY=
+_DELAY_USEC,
+> > +                             0, req);
+> > +     if (ret)
+> > +             goto cleanup;
+>
+> > +     if (status) {
+> > +             ret =3D status;
+> > +             goto cleanup;
+> > +     }
+>
+> I would write it in this form:
+>
+>         ret =3D status;
+>         if (ret)
+>                 goto cleanup;
+
+ACK.
+
+> > +     dev_dbg(psp_i2c_dev, "Request accepted by PSP after %ums\n",
+> > +             jiffies_to_msecs(jiffies - start));
+> > +
+> > +cleanup:
+> > +     kfree(req);
+> > +     return ret;
+> > +}
+> > +
+> > +static int psp_acquire_i2c_bus(void)
+> > +{
+> > +     int status;
+> > +
+> > +     mutex_lock(&psp_i2c_access_mutex);
+> > +
+> > +     /* Return early if mailbox malfunctioned */
+> > +     if (psp_i2c_mbox_fail)
+> > +             goto cleanup;
+> > +
+> > +     /*
+> > +      * Simply increment usage counter and return if PSP semaphore was
+> > +      * already taken by kernel.
+> > +      */
+> > +     if (psp_i2c_access_count > 0) {
+>
+> ' > 0' is redundant. It's unsigned.
+
+ACK.
+
+>
+> > +             psp_i2c_access_count++;
+> > +             goto cleanup;
+> > +     };
+> > +
+> > +     status =3D psp_send_i2c_req(PSP_I2C_REQ_ACQUIRE);
+> > +     if (status) {
+> > +             if (status =3D=3D -ETIMEDOUT)
+> > +                     dev_err(psp_i2c_dev, "Timed out waiting for PSP t=
+o release I2C bus\n");
+> > +             else
+> > +                     dev_err(psp_i2c_dev, "PSP communication error\n")=
+;
+> > +
+> > +             dev_err(psp_i2c_dev, "Assume i2c bus is for exclusive hos=
+t usage\n");
+> > +             psp_i2c_mbox_fail =3D true;
+> > +             goto cleanup;
+> > +     }
+> > +
+> > +     psp_i2c_sem_acquired =3D jiffies;
+> > +     psp_i2c_access_count++;
+> > +
+> > +     /*
+> > +      * In case of errors with PSP arbitrator psp_i2c_mbox_fail variab=
+le is
+> > +      * set above. As a consequence consecutive calls to acquire will =
+bypass
+> > +      * communication with PSP. At any case i2c bus is granted to the =
+caller,
+> > +      * thus always return success.
+> > +      */
+> > +cleanup:
+> > +     mutex_unlock(&psp_i2c_access_mutex);
+> > +     return 0;
+> > +}
+> > +
+> > +static void psp_release_i2c_bus(void)
+> > +{
+> > +     int status;
+> > +
+> > +     mutex_lock(&psp_i2c_access_mutex);
+> > +
+> > +     /* Return early if mailbox was malfunctional */
+> > +     if (psp_i2c_mbox_fail)
+> > +             goto cleanup;
+> > +
+> > +     /*
+> > +      * If we are last owner of PSP semaphore, need to release aribtra=
+tion
+> > +      * via mailbox.
+> > +      */
+> > +     psp_i2c_access_count--;
+>
+> > +     if (psp_i2c_access_count > 0)
+>
+> Ditto.
+
+ACK.
+
+Best Regards,
+Jan
