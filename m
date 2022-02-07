@@ -2,381 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D855BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 211DDC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:28:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242457AbiBGU1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:27:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48600 "EHLO
+        id S242774AbiBGU1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:27:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242771AbiBGUVp (ORCPT
+        with ESMTP id S233366AbiBGUY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:21:45 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C54EC0401E1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:21:44 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 07E483F1D9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 20:21:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644265303;
-        bh=mLspqjX0Lft2tr0TmPEsp3zZT5X5x66kwxd+5Lj4EV4=;
-        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-         In-Reply-To:Content-Type;
-        b=c07KuxbNoaNquQpXWR6CYIz736CiRAqzSCwpKskQw7ulpZIcIvx6cQsp38s3ZqzyF
-         kUf7zONk3E1jzYRtNCK1sI0dcaaa1TmWyekrVo4pGc439tyfHtzXnBLY1dpXVnoNR9
-         Kfj8YJnOqOB/jSjT/dHwok/MO6uHOUVSJY0HrSWTuket4kRbQR7abUg8AYe81t4gm4
-         dzM3c39PMYpHD01a6grqT9nkkvtJLIQpsaapSBeq52IVsMByNH6FaOwepnTiBivLiZ
-         J3YiStmmxGewV6S942yxxfJdzYlpelFxDeqHtENd8BXj+2DSAh8piKfPioGfrFtPhE
-         0JyGQwRRm/7bg==
-Received: by mail-ed1-f72.google.com with SMTP id w15-20020a056402268f00b00408234dc1dfso8442301edd.16
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 12:21:43 -0800 (PST)
+        Mon, 7 Feb 2022 15:24:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C72FC0401E1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:24:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644265465;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9T/OvHQML0n7t8483X0s9RB1P7k3PGxeDBNyGeKNXxg=;
+        b=gq1JiwiMhVRICsyRsLLPMuVjgxY3NuFaWNOyW3mIw1C3bCv7egaV8L8z1YeyRdPdG9TAQb
+        h15HpVxTIPRuJ9nWzPi3GKlhQHu5alQQw5exNpK8mf24IsMq3fIDWukQsAm7//3E1VVt2E
+        Bd65DYJYsIcjG+2BY6kE0Y+h+tei39k=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-503-QjTbS4zmPG-IIYEL_gW-WA-1; Mon, 07 Feb 2022 15:24:24 -0500
+X-MC-Unique: QjTbS4zmPG-IIYEL_gW-WA-1
+Received: by mail-lj1-f200.google.com with SMTP id c31-20020a2ebf1f000000b0022d87a28911so4919396ljr.1
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 12:24:24 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mLspqjX0Lft2tr0TmPEsp3zZT5X5x66kwxd+5Lj4EV4=;
-        b=VWum8AEd0Nk8Kq9L/N59PVH2NR4IEuf8clzcwRvrMsuXFpNWaMAieKG54hcKqL9puj
-         H0RkDG4VTdNYs05Dmi3R4SgQAqzEYdgIjxu9rXOpRc8jeyLlMQEQpx29VlCq0YFNZJDB
-         kY2lDO5iDGZRFoevzoL95nasdTzNlEifS0gi9CKbPhiLnwKzVgMCWeS122CIUN6RtZQd
-         nh+DFhsvD4iFa84dJ6xQzSDYBU0wYS8DXNHiRYs45TbfRZnKTkmYKeTjJgGqlfZAv7Bn
-         iLo+o0OJwIJT3j3pGycv5AWSeVAM0jq5X+kLKbk+GCWQj/1r30qaHS2iQqJTYARuHaqs
-         NT9A==
-X-Gm-Message-State: AOAM530GztarAjEwp7W+VFZIA+FtUpccGpRbIcv1F6daLpn3rALR/Orv
-        bHJ4OjBX6E8ZNAp62OaN9TvLcbS+nmhAQTNvYeoN3VjFAnuakNoxn6RdsEM1/5WECql94J3ewDR
-        YNYQBUuvzKBEUkAkUd5ULkKTsZ2l7Nx9FuCF6Y/mQkQ==
-X-Received: by 2002:a17:906:1291:: with SMTP id k17mr1041491ejb.451.1644265302517;
-        Mon, 07 Feb 2022 12:21:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy0kwnfPjxe+eAyvceLWpgxhJo4MLqyV51Bms0aKGMCeupSnVwj7sJw8ojqwojnfHrMwz89pw==
-X-Received: by 2002:a17:906:1291:: with SMTP id k17mr1041478ejb.451.1644265302212;
-        Mon, 07 Feb 2022 12:21:42 -0800 (PST)
-Received: from [192.168.0.91] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id n25sm3991526ejx.92.2022.02.07.12.21.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 12:21:41 -0800 (PST)
-Message-ID: <64f91b1a-93b9-941d-fdfa-271e198e1ab5@canonical.com>
-Date:   Mon, 7 Feb 2022 21:21:41 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9T/OvHQML0n7t8483X0s9RB1P7k3PGxeDBNyGeKNXxg=;
+        b=trMpr9zZItA2QVjTHq4+9y0TVSEEOTF+WfG0ACCrC6ce8RE3xfh/eG35ILmA9bF/u4
+         IwgnPbpzZHON4eZ4Z+c12FjL3UPJt5fYRlWWrRqbDU9aYWAI/BCu0IRD0Zp4nGBJ8FKX
+         +tNu6m6AX1gFkWLusJTj161aw0toMn6a+OJXUXt5FHeNV2y+3K8X6aqWjghPeg4BtSgu
+         y6pBb4PnnA8VHcm/2zqVLrwETcfZaPymuTjRWHoI4EKfCLyEQx68NJhz92AXDLUPwZg8
+         wMbbUGiZuRRonO/c0Tlzk/oMFFieN2fmzoeqlFfP9MZIhxHxZ6Ykl4DaBDbOs6WrQcM7
+         YYSw==
+X-Gm-Message-State: AOAM530aZZVzeG8WKbnyVxUGj0obF87FmCuLBIReUGlpN8N/mQV5nRM/
+        9WSjY61+tCXTcyzqQdl7Jox+DMjK8E1ubTgt3Mxtf1ccCRhZFhxex959V2+KCpArn3wKv/zdzTw
+        NWeERvEebVaJLZk45N6Hkqabau4xnUQUxgKFOkRUr
+X-Received: by 2002:a05:651c:1213:: with SMTP id i19mr745449lja.116.1644265463147;
+        Mon, 07 Feb 2022 12:24:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwuUh1S24KOapaXqUTbR/PE5isBkVVKCEATv0reBXJDNNQwUC3D72GSr/G+3NpnX4u042B4PjJAmEV12JsYe7E=
+X-Received: by 2002:a05:651c:1213:: with SMTP id i19mr745427lja.116.1644265462882;
+ Mon, 07 Feb 2022 12:24:22 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4] cpuidle: sunplus: Create cpuidle driver for sunplus
- sp7021
-Content-Language: en-US
-To:     Edwin Chiu <edwinchiu0505tw@gmail.com>, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rafael@kernel.org, daniel.lezcano@linaro.org,
-        linux-pm@vger.kernel.org, edwin.chiu@sunplus.com
-References: <cover.1644218105.git.edwinchiu0505tw@gmail.com>
- <957d882222d218b62fe3fb7a069e2f7952afc5be.1644218105.git.edwinchiu0505tw@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <957d882222d218b62fe3fb7a069e2f7952afc5be.1644218105.git.edwinchiu0505tw@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220205081658.562208-1-leobras@redhat.com> <20220205081658.562208-2-leobras@redhat.com>
+ <f2b0cac2-2f8a-60e8-616c-73825b3f62a6@redhat.com>
+In-Reply-To: <f2b0cac2-2f8a-60e8-616c-73825b3f62a6@redhat.com>
+From:   Leonardo Bras Soares Passos <leobras@redhat.com>
+Date:   Mon, 7 Feb 2022 17:24:11 -0300
+Message-ID: <CAJ6HWG7DV-AeWyXxGwMMV61BejcCdpTc=U+4U6eY4gx4hfhP-g@mail.gmail.com>
+Subject: Re: [PATCH v1 1/2] x86/kvm/fpu: Mask guest fpstate->xfeatures with guest_supported_xcr0
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/02/2022 09:11, Edwin Chiu wrote:
-> Create cpuidle driver for sunplus sp7021 chip
-> 
-> Signed-off-by: Edwin Chiu <edwinchiu0505tw@gmail.com>
-> ---
-> Changes in v3
->  - Rearrangement #include sequence
->  - Change remark style to /*~*/
->  - Align author email address to same as sob
->  - Optimal code
-> Changes in v4
->  - According Rob Herringrobh's comment
->    There is no need for this binding.
->    Just wanting a different driver is not a reason for a duplicate schema.
->    So remove yaml file and submit driver again.
-> 
->  MAINTAINERS                                   |   8 ++
->  drivers/cpuidle/Kconfig.arm                   |   7 ++
->  drivers/cpuidle/Makefile                      |   1 +
->  drivers/cpuidle/cpuidle-sunplus.c             | 167 ++++++++++++++++++++++++++
->  include/linux/platform_data/cpuidle-sunplus.h |  19 +++
->  5 files changed, 202 insertions(+)
->  create mode 100644 drivers/cpuidle/cpuidle-sunplus.c
->  create mode 100644 include/linux/platform_data/cpuidle-sunplus.h
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index e0dca8f..a938a58 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -18252,6 +18252,14 @@ L:	netdev@vger.kernel.org
->  S:	Maintained
->  F:	drivers/net/ethernet/dlink/sundance.c
->  
-> +SUNPLUS CPUIDLE DRIVER
-> +M:	Edwin Chiu <edwinchiu0505tw@gmail.com>
-> +S:	Maintained
-> +F:	drivers/cpuidle/Kconfig.arm
-> +F:	drivers/cpuidle/Makefile
+Hello Paolo,
 
-This does not belong here.
+On Mon, Feb 7, 2022 at 10:30 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>
+> On 2/5/22 09:16, Leonardo Bras wrote:
+> > During host/guest switch (like in kvm_arch_vcpu_ioctl_run()), the kernel
+> > swaps the fpu between host/guest contexts, by using fpu_swap_kvm_fpstate().
+> >
+> > When xsave feature is available, the fpu swap is done by:
+> > - xsave(s) instruction, with guest's fpstate->xfeatures as mask, is used
+> >    to store the current state of the fpu registers to a buffer.
+> > - xrstor(s) instruction, with (fpu_kernel_cfg.max_features &
+> >    XFEATURE_MASK_FPSTATE) as mask, is used to put the buffer into fpu regs.
+> >
+> > For xsave(s) the mask is used to limit what parts of the fpu regs will
+> > be copied to the buffer. Likewise on xrstor(s), the mask is used to
+> > limit what parts of the fpu regs will be changed.
+> >
+> > The mask for xsave(s), the guest's fpstate->xfeatures, is defined on
+> > kvm_arch_vcpu_create(), which (in summary) sets it to all features
+> > supported by the cpu which are enabled on kernel config.
+> >
+> > This means that xsave(s) will save to guest buffer all the fpu regs
+> > contents the cpu has enabled when the guest is paused, even if they
+> > are not used.
+> >
+> > This would not be an issue, if xrstor(s) would also do that.
+> >
+> > xrstor(s)'s mask for host/guest swap is basically every valid feature
+> > contained in kernel config, except XFEATURE_MASK_PKRU.
+> > According to kernel src, it is instead switched in switch_to() and
+> > flush_thread().
+>
+> Hi Leonardo, is this an issue when patch 2 is applied?
 
-> +F:	drivers/cpuidle/cpuidle-sunplus.c
-> +F:	include/linux/platform_data/cpuidle-sunplus.h
-> +
->  SUPERH
->  M:	Yoshinori Sato <ysato@users.sourceforge.jp>
->  M:	Rich Felker <dalias@libc.org>
-> diff --git a/drivers/cpuidle/Kconfig.arm b/drivers/cpuidle/Kconfig.arm
-> index 15d6c46..fd921c5 100644
-> --- a/drivers/cpuidle/Kconfig.arm
-> +++ b/drivers/cpuidle/Kconfig.arm
-> @@ -118,3 +118,10 @@ config ARM_QCOM_SPM_CPUIDLE
->  	  The Subsystem Power Manager (SPM) controls low power modes for the
->  	  CPU and L2 cores. It interface with various system drivers to put
->  	  the cores in low power modes.
-> +
-> +config ARM_SUNPLUS_CPUIDLE
-> +	bool "CPU Idle Driver For SUNPLUS SoCs"
-> +	depends on !ARM64
-> +	select DT_IDLE_STATES
-> +	help
-> +	  Select this to enable cpuidle on SP7021 processors.
-> diff --git a/drivers/cpuidle/Makefile b/drivers/cpuidle/Makefile
-> index 26bbc5e..0a020d1 100644
-> --- a/drivers/cpuidle/Makefile
-> +++ b/drivers/cpuidle/Makefile
-> @@ -25,6 +25,7 @@ obj-$(CONFIG_ARM_PSCI_CPUIDLE)		+= cpuidle-psci.o
->  obj-$(CONFIG_ARM_PSCI_CPUIDLE_DOMAIN)	+= cpuidle-psci-domain.o
->  obj-$(CONFIG_ARM_TEGRA_CPUIDLE)		+= cpuidle-tegra.o
->  obj-$(CONFIG_ARM_QCOM_SPM_CPUIDLE)	+= cpuidle-qcom-spm.o
-> +obj-$(CONFIG_ARM_SUNPLUS_CPUIDLE)		+= cpuidle-sunplus.o
->  
->  ###############################################################################
->  # MIPS drivers
-> diff --git a/drivers/cpuidle/cpuidle-sunplus.c b/drivers/cpuidle/cpuidle-sunplus.c
-> new file mode 100644
-> index 0000000..0e7bf43
-> --- /dev/null
-> +++ b/drivers/cpuidle/cpuidle-sunplus.c
-> @@ -0,0 +1,167 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
-> + * Copyright (c) 2014,2015, Linaro Ltd.
-> + *
-> + * SAW power controller driver
-> + */
-> +#define pr_fmt(fmt) "CPUidle arm: " fmt
-> +
-> +#include <asm/suspend.h>
-> +#include <linux/cpu_cooling.h>
-> +#include <linux/cpuidle.h>
-> +#include <linux/cpumask.h>
-> +#include <linux/cpu_pm.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/slab.h>
-> +#include <linux/platform_data/cpuidle-sunplus.h>
-> +
-> +#include "dt_idle_states.h"
-> +
-> +static int sp7021_wfi_finisher(unsigned long flags)
-> +{
-> +	cpu_v7_do_idle();   /* idle to WFI */
-> +
-> +	return -1;
-> +}
-> +
-> +static int sp7021_enter_idle_state(struct cpuidle_device *dev,
-> +				struct cpuidle_driver *drv, int idx)
-> +{
-> +	int ret;
-> +
-> +  /* if idx=0, call cpu_do_idle() */
+Yes.
+This issue happens on host/guest context switch, instead of KVM_{GET,SET}_XSAVE,
+so this bug will be triggered whenever the guest doesn't support PKRU
+but the host
+does, without any interference of above IOCTLs.
+In fact, IIUC,  even if we are able to fix the feature bit with
+KVM_SET_XSAVE, it would
+come back after another host/guest context switch if we don't fix
+vcpu->arch.guest_fpu.fpstate->xfeatures.
 
-Wrong indentation.
+> With this patch,
+> we have to reason about the effect of calling KVM_SET_CPUID2 twice calls
+> back to back.  I think an "&=" would be wrong in that case.
 
-> +	if (!idx) {
-> +		cpu_v7_do_idle();
-> +		return idx;
-> +	}
-> +
-> +	/* if idx>0, call cpu_suspend() */
-> +	ret = cpu_pm_enter();
-> +	if (!ret) {
-> +	/*
-> +	 * Pass idle state index to cpuidle_suspend which in turn
-> +	 * will call the CPU ops suspend protocol with idle index as a
-> +	 * parameter.
-> +	 */
+So, you suggest something like this ?
 
-The same.
-
-> +		ret = cpu_suspend(idx, sp7021_wfi_finisher);
-> +	}
-> +	cpu_pm_exit();
-> +
-> +	return ret ? -1:idx;
-> +}
-> +
-> +static struct cpuidle_driver sp7021_idle_driver = {
-> +	.name = "sp7021_idle",
-> +	.owner = THIS_MODULE,
-> +	/*
-> +	 * State at index 0 is standby wfi and considered standard
-> +	 * on all ARM platforms. If in some platforms simple wfi
-> +	 * can't be used as "state 0", DT bindings must be implemented
-> +	 * to work around this issue and allow installing a special
-> +	 * handler for idle state index 0.
-> +	 */
-> +	.states[0] = {
-> +		.enter                  = sp7021_enter_idle_state,
-> +		.exit_latency           = 1,
-> +		.target_residency       = 1,
-> +		.power_usage		= UINT_MAX,
-> +		.name                   = "WFI",
-> +		.desc                   = "ARM WFI",
-
-I have impression that there is no point in having custom driver with WFI...
-
-Still the main question from Daniel and Sudeep stays: why do you need
-this? You copied exactly cpuildle-arm driver, there is nothing different
-here. At least I could not spot differences. Maybe except that you use
-cpu_v7_do_idle explicitly.
-
-Unfortunately I cannot understand the explanation here:
-https://lore.kernel.org/all/0812c44f777d4026b79df2e3698294be@sphcmbx02.sunplus.com.tw/
-Why exactly cpuidle-arm does not work in your case?
+vcpu->arch.guest_fpu.fpstate->xfeatures =
+        fpu_user_cfg.default_features & vcpu->arch.guest_supported_xcr0;
 
 
-> +	}
-> +};
-> +
-> +static const struct of_device_id sp7021_idle_state_match[] = {
-> +	{ .compatible = "sunplus,sp7021-idle-state",
-> +		.data = sp7021_enter_idle_state },
-> +	{ },
-> +};
-> +
-> +/*
-> + * sp7021_idle_init - Initializes sp7021 cpuidle driver
-> + *
-> + * Initializes sp7021 cpuidle driver for all CPUs, if any CPU fails
-> + * to register cpuidle driver then rollback to cancel all CPUs
-> + * registration.
-> + */
-> +static int __init sp7021_idle_init(void)
-> +{
-> +	int cpu, ret;
-> +	struct cpuidle_driver *drv;
-> +	struct cpuidle_device *dev;
-> +
-> +	drv = kmemdup(&sp7021_idle_driver, sizeof(*drv), GFP_KERNEL);
-> +	if (!drv)
-> +		return -ENOMEM;
-> +
-> +	drv->cpumask = (struct cpumask *)cpumask_of(cpu);
-> +	/*
-> +	 * Initialize idle states data, starting at index 1.  This
-> +	 * driver is DT only, if no DT idle states are detected (ret
-> +	 * == 0) let the driver initialization fail accordingly since
-> +	 * there is no reason to initialize the idle driver if only
-> +	 * wfi is supported.
-> +	 */
-> +	ret = dt_init_idle_driver(drv, sp7021_idle_state_match, 1);
-> +	if (ret <= 0)
-> +		return ret ? : -ENODEV;
-> +
-> +	ret = cpuidle_register_driver(drv);
-> +	if (ret) {
-> +		pr_err("Failed to register cpuidle driver\n");
-> +		return ret;
-> +	}
-> +
-> +	for_each_possible_cpu(cpu) {
-> +		dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-> +		if (!dev) {
-> +			ret = -ENOMEM;
-> +			goto out_fail;
-> +		}
-> +		dev->cpu = cpu;
-> +
-> +		ret = cpuidle_register_device(dev);
-> +		if (ret) {
-> +			pr_err("Failed to register cpuidle device for CPU %d\n", cpu);
-> +			kfree(dev);
-> +			goto out_fail;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +
-> +out_fail:
-> +	while (--cpu >= 0) {
-> +		dev = per_cpu(cpuidle_devices, cpu);
-> +		cpuidle_unregister_device(dev);
-> +		kfree(dev);
-> +	}
-> +	cpuidle_unregister_driver(drv);
-> +
-> +	return ret;
-> +}
-> +
-> +static int __init idle_init(void)
-> +{
-> +	int ret;
-> +
-> +	if (of_machine_is_compatible("sunplus,sp7021-achip")) {
-> +		sp7021_idle_init();
-> +		ret = 0;
-> +	}	else
-> +		ret = -1;
-> +
-> +	if (ret) {
-> +		pr_err("failed to cpuidle init\n");
-> +		return ret;
-> +	}
-> +
-> +	return ret;
-> +}
-> +device_initcall(idle_init);
-> +
-> +MODULE_AUTHOR("Edwin Chiu <edwinchiu0505tw@gmail.com>");
-> +MODULE_DESCRIPTION("Sunplus sp7021 cpuidle driver");
-> +MODULE_LICENSE("GPL");
-> diff --git a/include/linux/platform_data/cpuidle-sunplus.h b/include/linux/platform_data/cpuidle-sunplus.h
-> new file mode 100644
-> index 0000000..bf87682
-> --- /dev/null
-> +++ b/include/linux/platform_data/cpuidle-sunplus.h
-> @@ -0,0 +1,19 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
+>
+> On the other hand, with patch 2 the change is only in the KVM_SET_XSAVE
+> output, which is much more self-contained.
 
-Do not duplicate SPDX.
+Agree, but they solve different sources of the same issue.
+Patch 2 will only address a bug that can happen if userspace mistakenly
+tries to set a feature the guest does not support.
 
-> + */
-> +
-> +#ifndef __CPUIDLE_SP7021_H
-> +#define __CPUIDLE_SP7021_H
-> +
-> +struct cpuidle_sp7021_data {
-> +	int (*cpu23_powerdown)(void);
-> +	void (*pre_enter_aftr)(void);
-> +	void (*post_enter_aftr)(void);
+>
+> Thanks,
 
-Where are these used?
-
-> +};
-> +
-> +extern int cpu_v7_do_idle(void);> +
-> +#endif
-
+Thank you!
 
 Best regards,
-Krzysztof
+Leo
+[...]
+
