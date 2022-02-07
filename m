@@ -2,156 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2AEC3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A71AC4707E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442813AbiBGPJo (ORCPT
+        id S1442838AbiBGPJ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:09:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
+        Mon, 7 Feb 2022 10:09:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238673AbiBGOwp (ORCPT
+        with ESMTP id S1442467AbiBGOvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:52:45 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB9FC0401C1;
-        Mon,  7 Feb 2022 06:52:44 -0800 (PST)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217EjPuT004111;
-        Mon, 7 Feb 2022 14:52:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=nSJRveDTKIUQUv2s4+BCEj7qNNSbeUEMunEcVn9C5jE=;
- b=evYVyMHZRKNzdJEEdz/SiJ/qBt79O9BNFRO+HEONURQG7uQ8EjaDAdqRjUKSnrop/zsE
- 3O40L4KHfOwWt3Gub7FnfhA4Inh0XRixKgIi+hQVanDix/Px4ci6DyNWYbddiSfWVmfP
- WiuvRlpCLKyug+YMRjlFZWNNaADvv9RaqdbGHi2+CK0pEymyodDWcsBEERFPMfvW4iAK
- aDExKmp+7fj45xFZhdyaBBjz9RZm9LDnyaTaK7jsCvOqLvnwFtiIiwyTb481XNQk1rxd
- JgqexNpoId8HGuRTG/SF5CgitTiZRezIdsVm1IdDO1FvojucoT0E2TRzWqnaU5egBSdd 4Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e1hux9mbh-1
+        Mon, 7 Feb 2022 09:51:03 -0500
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC84BC0401C1;
+        Mon,  7 Feb 2022 06:51:02 -0800 (PST)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 217Cm044006544;
+        Mon, 7 Feb 2022 08:15:35 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e1ky9n088-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 14:52:43 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217EjaOJ005493;
-        Mon, 7 Feb 2022 14:52:43 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e1hux9maw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 14:52:42 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217Elx1J016384;
-        Mon, 7 Feb 2022 14:52:41 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggjnw4h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 14:52:41 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217EqbJn45875668
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 14:52:38 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D0B224204C;
-        Mon,  7 Feb 2022 14:52:37 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 70D534204B;
-        Mon,  7 Feb 2022 14:52:37 +0000 (GMT)
-Received: from [9.145.9.42] (unknown [9.145.9.42])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 14:52:37 +0000 (GMT)
-Message-ID: <99296cad-5f74-d9ab-544c-b2d1a557b226@linux.ibm.com>
-Date:   Mon, 7 Feb 2022 15:52:37 +0100
+        Mon, 07 Feb 2022 08:15:35 -0500
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 217DFYUX062636
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 7 Feb 2022 08:15:34 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 7 Feb 2022 08:15:33 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 7 Feb 2022 08:15:33 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 7 Feb 2022 08:15:33 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 217DFMUV004584;
+        Mon, 7 Feb 2022 08:15:29 -0500
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v6 3/4] Documentation:ABI:testing:admv1014: add ABI docs
+Date:   Mon, 7 Feb 2022 15:05:48 +0200
+Message-ID: <20220207130549.98415-3-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207130549.98415-1-antoniu.miclaus@analog.com>
+References: <20220207130549.98415-1-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v7 15/17] KVM: s390: pv: api documentation for
- asynchronous destroy
-Content-Language: en-US
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
-        david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
-References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
- <20220204155349.63238-16-imbrenda@linux.ibm.com>
-From:   Janosch Frank <frankja@linux.ibm.com>
-In-Reply-To: <20220204155349.63238-16-imbrenda@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: cjmHCR0RFcQrOz_yfzusQWe8kMgjPWdz
-X-Proofpoint-GUID: ZrwNAgYQPUCXLFQTasoH-UqwAL_mFLz4
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: cmZiIwa0rYwwF_CC0nG1EoM5H1SuwDpr
+X-Proofpoint-GUID: cmZiIwa0rYwwF_CC0nG1EoM5H1SuwDpr
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- phishscore=0 impostorscore=0 bulkscore=0 adultscore=0 priorityscore=1501
- suspectscore=0 mlxscore=0 mlxlogscore=999 spamscore=0 malwarescore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070093
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
+ mlxscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
+ malwarescore=0 phishscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070086
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/4/22 16:53, Claudio Imbrenda wrote:
-> Add documentation for the new commands added to the KVM_S390_PV_COMMAND
-> ioctl.
-> 
-> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> ---
->   Documentation/virt/kvm/api.rst | 21 ++++++++++++++++++---
->   1 file changed, 18 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-> index a4267104db50..3b9068aceead 100644
-> --- a/Documentation/virt/kvm/api.rst
-> +++ b/Documentation/virt/kvm/api.rst
-> @@ -5010,11 +5010,13 @@ KVM_PV_ENABLE
->     =====      =============================
->   
->   KVM_PV_DISABLE
-> -
->     Deregister the VM from the Ultravisor and reclaim the memory that
->     had been donated to the Ultravisor, making it usable by the kernel
-> -  again.  All registered VCPUs are converted back to non-protected
-> -  ones.
-> +  again. All registered VCPUs are converted back to non-protected
-> +  ones. If a previous VM had been prepared for asynchonous teardown
-> +  with KVM_PV_ASYNC_DISABLE_PREPARE and not actually torn down with
-> +  KVM_PV_ASYNC_DISABLE, it will be torn down in this call together with
-> +  the current VM.
->   
->   KVM_PV_VM_SET_SEC_PARMS
->     Pass the image header from VM memory to the Ultravisor in
-> @@ -5027,6 +5029,19 @@ KVM_PV_VM_VERIFY
->     Verify the integrity of the unpacked image. Only if this succeeds,
->     KVM is allowed to start protected VCPUs.
->   
-> +KVM_PV_ASYNC_DISABLE_PREPARE
-> +  Prepare the current protected VM for asynchronous teardown. The current
+Add documentation for the use of the Digital Attenuator gain.
 
-I think the first sentence needs a few more examples of what we do so 
-the second sentence makes more sense.
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+no changes in v6.
+ Documentation/ABI/testing/sysfs-bus-iio       |  1 +
+ .../testing/sysfs-bus-iio-frequency-admv1014  | 23 +++++++++++++++++++
+ 2 files changed, 24 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
 
-...by setting aside the pointers to the donated storage, replacing the 
-top most page table, destroying the first 2GB of memory and zeroing the 
-KVM PV structs.
-
-
-Or something which sounds a bit nicer.
-
-> +  VM will then continue immediately as non-protected. If a protected VM had
-> +  already been set aside without starting the teardown process, this call
-> +  will fail. In this case the userspace process should issue a normal
-> +  KVM_PV_DISABLE.
-> +
-> +KVM_PV_ASYNC_DISABLE
-> +  Tear down the protected VM previously set aside for asynchronous teardown.
-> +  This PV command should ideally be issued by userspace from a separate
-> +  thread. If a fatal signal is received (or the process terminates
-> +  naturally), the command will terminate immediately without completing.
-> +
->   4.126 KVM_X86_SET_MSR_FILTER
->   ----------------------------
->   
-> 
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index c551301b33f1..2b5770017a84 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -476,6 +476,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_i_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_q_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_i_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_q_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibscale
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
+new file mode 100644
+index 000000000000..395010a0ef8b
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
+@@ -0,0 +1,23 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_coarse
++KernelVersion: 5.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read/write value for the digital attenuator gain (IF_I) with coarse steps.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_coarse
++KernelVersion: 5.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read/write value for the digital attenuator gain (IF_Q) with coarse steps.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_fine
++KernelVersion: 5.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read/write value for the digital attenuator gain (IF_I) with fine steps.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_fine
++KernelVersion: 5.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read/write value for the digital attenuator gain (IF_Q) with fine steps.
+-- 
+2.35.1
 
