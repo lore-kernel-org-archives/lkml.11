@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3139C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE1C4C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388331AbiBGLnd (ORCPT
+        id S1388346AbiBGLne (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45128 "EHLO
+        Mon, 7 Feb 2022 06:43:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385522AbiBGLb4 (ORCPT
+        with ESMTP id S1385685AbiBGLcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141FAC03E963;
-        Mon,  7 Feb 2022 03:30:38 -0800 (PST)
+        Mon, 7 Feb 2022 06:32:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B851BC0401D6;
+        Mon,  7 Feb 2022 03:32:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD4AAB80EC3;
-        Mon,  7 Feb 2022 11:30:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1FD8C004E1;
-        Mon,  7 Feb 2022 11:30:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 262C560B5B;
+        Mon,  7 Feb 2022 11:32:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAB6EC004E1;
+        Mon,  7 Feb 2022 11:32:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233436;
-        bh=ax9fryblx6QV7qJ+qvkUKsP1d+CzKmmJDTBUlRRYv54=;
+        s=korg; t=1644233521;
+        bh=4W2tn002ITYK63bmP9hov/JOOeTD9dndTF/zgZV7jQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SofHlcAEqJe1VyQvKZkohCeYA5SPsoCkK7fsWFRdQeVI+mQBJzxyPDukVH+x5V7X5
-         uhXnXbICSGI6BBK3LuudArPlfGOw8U+JSJmSTe1PYaYGKtY13Vhur93x5/CqMyWZWA
-         /38NsH1oEhiEykwR0McL+MJBw0daJUG+CGCDziGY=
+        b=NM9m2wmnnxuUSyF583pm1Uesbo0P054JKu+deh+Z4qCwlM9JNPxHrn6L4tMsoWi1B
+         gpPbdephUtgqh+O/L687oJKVk1FBxJzn/eM7FU8twefmNX+cpkw67lW94ISuaUlbnl
+         k1xcqtSPEAeoF5+nsakjnHLatG6D4UaRreuoIWj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Sergeyev <sergeev917@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 012/126] ALSA: hda: realtek: Fix race at concurrent COEF updates
-Date:   Mon,  7 Feb 2022 12:05:43 +0100
-Message-Id: <20220207103804.489874256@linuxfoundation.org>
+        stable@vger.kernel.org, ron minnich <rminnich@gmail.com>,
+        ng@0x80.stream, Dominique Martinet <asmadeus@codewreck.org>
+Subject: [PATCH 5.16 021/126] Revert "fs/9p: search open fids first"
+Date:   Mon,  7 Feb 2022 12:05:52 +0100
+Message-Id: <20220207103804.797485286@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -49,148 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Dominique Martinet <asmadeus@codewreck.org>
 
-commit b837a9f5ab3bdfab9233c9f98a6bef717673a3e5 upstream.
+commit 22e424feb6658c5d6789e45121830357809c59cb upstream.
 
-The COEF access is done with two steps: setting the index then read or
-write the data.  When multiple COEF accesses are performed
-concurrently, the index and data might be paired unexpectedly.
-In most cases, this isn't a big problem as the COEF setup is done at
-the initialization, but some dynamic changes like the mute LED may hit
-such a race.
+This reverts commit 478ba09edc1f2f2ee27180a06150cb2d1a686f9c.
 
-For avoiding the racy COEF accesses, this patch introduces a new
-mutex coef_mutex to alc_spec, and wrap the COEF accessing functions
-with it.
+That commit was meant as a fix for setattrs with by fd (e.g. ftruncate)
+to use an open fid instead of the first fid it found on lookup.
+The proper fix for that is to use the fid associated with the open file
+struct, available in iattr->ia_file for such operations, and was
+actually done just before in 66246641609b ("9p: retrieve fid from file
+when file instance exist.")
+As such, this commit is no longer required.
 
-Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220111195229.a77wrpjclqwrx4bx@localhost.localdomain
-Link: https://lore.kernel.org/r/20220131075738.24323-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Furthermore, changing lookup to return open fids first had unwanted side
+effects, as it turns out the protocol forbids the use of open fids for
+further walks (e.g. clone_fid) and we broke mounts for some servers
+enforcing this rule.
+
+Note this only reverts to the old working behaviour, but it's still
+possible for lookup to return open fids if dentry->d_fsdata is not set,
+so more work is needed to make sure we respect this rule in the future,
+for example by adding a flag to the lookup functions to only match
+certain fid open modes depending on caller requirements.
+
+Link: https://lkml.kernel.org/r/20220130130651.712293-1-asmadeus@codewreck.org
+Fixes: 478ba09edc1f ("fs/9p: search open fids first")
+Cc: stable@vger.kernel.org # v5.11+
+Reported-by: ron minnich <rminnich@gmail.com>
+Reported-by: ng@0x80.stream
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |   61 ++++++++++++++++++++++++++++++++++--------
- 1 file changed, 50 insertions(+), 11 deletions(-)
+ fs/9p/fid.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -97,6 +97,7 @@ struct alc_spec {
- 	unsigned int gpio_mic_led_mask;
- 	struct alc_coef_led mute_led_coef;
- 	struct alc_coef_led mic_led_coef;
-+	struct mutex coef_mutex;
+--- a/fs/9p/fid.c
++++ b/fs/9p/fid.c
+@@ -96,12 +96,8 @@ static struct p9_fid *v9fs_fid_find(stru
+ 		 dentry, dentry, from_kuid(&init_user_ns, uid),
+ 		 any);
+ 	ret = NULL;
+-
+-	if (d_inode(dentry))
+-		ret = v9fs_fid_find_inode(d_inode(dentry), uid);
+-
+ 	/* we'll recheck under lock if there's anything to look in */
+-	if (!ret && dentry->d_fsdata) {
++	if (dentry->d_fsdata) {
+ 		struct hlist_head *h = (struct hlist_head *)&dentry->d_fsdata;
  
- 	hda_nid_t headset_mic_pin;
- 	hda_nid_t headphone_mic_pin;
-@@ -132,8 +133,8 @@ struct alc_spec {
-  * COEF access helper functions
-  */
- 
--static int alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
--			       unsigned int coef_idx)
-+static int __alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
-+				 unsigned int coef_idx)
- {
- 	unsigned int val;
- 
-@@ -142,28 +143,61 @@ static int alc_read_coefex_idx(struct hd
- 	return val;
- }
- 
-+static int alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
-+			       unsigned int coef_idx)
-+{
-+	struct alc_spec *spec = codec->spec;
-+	unsigned int val;
-+
-+	mutex_lock(&spec->coef_mutex);
-+	val = __alc_read_coefex_idx(codec, nid, coef_idx);
-+	mutex_unlock(&spec->coef_mutex);
-+	return val;
-+}
-+
- #define alc_read_coef_idx(codec, coef_idx) \
- 	alc_read_coefex_idx(codec, 0x20, coef_idx)
- 
--static void alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
--				 unsigned int coef_idx, unsigned int coef_val)
-+static void __alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
-+				   unsigned int coef_idx, unsigned int coef_val)
- {
- 	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_COEF_INDEX, coef_idx);
- 	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_PROC_COEF, coef_val);
- }
- 
-+static void alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
-+				 unsigned int coef_idx, unsigned int coef_val)
-+{
-+	struct alc_spec *spec = codec->spec;
-+
-+	mutex_lock(&spec->coef_mutex);
-+	__alc_write_coefex_idx(codec, nid, coef_idx, coef_val);
-+	mutex_unlock(&spec->coef_mutex);
-+}
-+
- #define alc_write_coef_idx(codec, coef_idx, coef_val) \
- 	alc_write_coefex_idx(codec, 0x20, coef_idx, coef_val)
- 
-+static void __alc_update_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
-+				    unsigned int coef_idx, unsigned int mask,
-+				    unsigned int bits_set)
-+{
-+	unsigned int val = __alc_read_coefex_idx(codec, nid, coef_idx);
-+
-+	if (val != -1)
-+		__alc_write_coefex_idx(codec, nid, coef_idx,
-+				       (val & ~mask) | bits_set);
-+}
-+
- static void alc_update_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
- 				  unsigned int coef_idx, unsigned int mask,
- 				  unsigned int bits_set)
- {
--	unsigned int val = alc_read_coefex_idx(codec, nid, coef_idx);
-+	struct alc_spec *spec = codec->spec;
- 
--	if (val != -1)
--		alc_write_coefex_idx(codec, nid, coef_idx,
--				     (val & ~mask) | bits_set);
-+	mutex_lock(&spec->coef_mutex);
-+	__alc_update_coefex_idx(codec, nid, coef_idx, mask, bits_set);
-+	mutex_unlock(&spec->coef_mutex);
- }
- 
- #define alc_update_coef_idx(codec, coef_idx, mask, bits_set)	\
-@@ -196,13 +230,17 @@ struct coef_fw {
- static void alc_process_coef_fw(struct hda_codec *codec,
- 				const struct coef_fw *fw)
- {
-+	struct alc_spec *spec = codec->spec;
-+
-+	mutex_lock(&spec->coef_mutex);
- 	for (; fw->nid; fw++) {
- 		if (fw->mask == (unsigned short)-1)
--			alc_write_coefex_idx(codec, fw->nid, fw->idx, fw->val);
-+			__alc_write_coefex_idx(codec, fw->nid, fw->idx, fw->val);
- 		else
--			alc_update_coefex_idx(codec, fw->nid, fw->idx,
--					      fw->mask, fw->val);
-+			__alc_update_coefex_idx(codec, fw->nid, fw->idx,
-+						fw->mask, fw->val);
+ 		spin_lock(&dentry->d_lock);
+@@ -113,6 +109,9 @@ static struct p9_fid *v9fs_fid_find(stru
+ 			}
+ 		}
+ 		spin_unlock(&dentry->d_lock);
++	} else {
++		if (dentry->d_inode)
++			ret = v9fs_fid_find_inode(dentry->d_inode, uid);
  	}
-+	mutex_unlock(&spec->coef_mutex);
- }
  
- /*
-@@ -1148,6 +1186,7 @@ static int alc_alloc_spec(struct hda_cod
- 	codec->spdif_status_reset = 1;
- 	codec->forced_resume = 1;
- 	codec->patch_ops = alc_patch_ops;
-+	mutex_init(&spec->coef_mutex);
- 
- 	err = alc_codec_rename_from_preset(codec);
- 	if (err < 0) {
+ 	return ret;
 
 
