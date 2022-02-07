@@ -2,117 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 198C4C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 373A3C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356813AbiBGQ7X (ORCPT
+        id S1357105AbiBGQ72 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:59:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
+        Mon, 7 Feb 2022 11:59:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345050AbiBGQyn (ORCPT
+        with ESMTP id S1357152AbiBGQvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:54:43 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512CCC0401D1;
-        Mon,  7 Feb 2022 08:54:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644252883; x=1675788883;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+pqaVwVJuNphP//KjAHwk2bzB7Rnt6sfqu2yWGa2liU=;
-  b=njqZrRQGXCvD3RhPS48K1WNiegmEaV2Elg2xgAX9pP0zRBFKf3MbO6w7
-   8nxI0mbyA9HBluVmp7KLdRg0AEnZtQi+b5l0ePajmprGdo7844I09KjDh
-   d+pijiqtIRYYmffO/vfxPR2BPlYW5E2gmltpNQa2KPzXRhvQ9R7P9VDwZ
-   5R6x+NRKk6WWCQiEgpPNP7Ij5gjKHrCCQj4cyCusIxzRd+4CJnZ4E7zDf
-   csP2RCUnDW11tVStMNASpc9oEFqvYp5Stwksg1zUT2IA43sFf9XrASaen
-   5D64qdW/UKhGwgBfyi+4u+h+QiS84EWlLVTerigGaFrtraXPyBl8SHE/6
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273278949"
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="273278949"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 08:54:42 -0800
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="632519138"
-Received: from kscionea-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.130.139])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 08:54:42 -0800
-Message-ID: <0d11f34a98e720cb5cf0d37e67a3e130d8275e31.camel@linux.intel.com>
-Subject: Re: [PATCH] thermal: netlink: Fix parameter type of
- thermal_genl_cpu_capability_event() stub
-From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     Nathan Chancellor <nathan@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Amit Kucheria <amitk@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Date:   Mon, 07 Feb 2022 08:54:41 -0800
-In-Reply-To: <20220207163829.1025904-1-nathan@kernel.org>
-References: <20220207163829.1025904-1-nathan@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        Mon, 7 Feb 2022 11:51:02 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4C7C0401D3;
+        Mon,  7 Feb 2022 08:51:01 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: adalessandro)
+        with ESMTPSA id B17CF1F4304F
+From:   Apertis package maintainers <packagers@lists.apertis.org>
+To:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
+        linux-imx@nxp.com, linux-kernel@vger.kernel.org
+Cc:     ariel.dalessandro@collabora.com, broonie@kernel.org,
+        festevam@gmail.com, krzysztof.kozlowski@canonical.com,
+        lgirdwood@gmail.com, michael@amarulasolutions.com,
+        robh+dt@kernel.org, s.hauer@pengutronix.de, shawnguo@kernel.org
+Subject: [PATCH 1/2] ASoC: bindings: fsl-asoc-card: Add compatible for tlv320aic31xx codec
+Date:   Mon,  7 Feb 2022 13:49:45 -0300
+Message-Id: <20220207164946.558862-1-packagers@lists.apertis.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-07 at 09:38 -0700, Nathan Chancellor wrote:
-> When building with CONFIG_THERMAL_NETLINK=n, there is a spew of
-> warnings
-> along the lines of:
-> 
->   In file included from drivers/thermal/thermal_core.c:27:
->   In file included from drivers/thermal/thermal_core.h:15:
->   drivers/thermal/thermal_netlink.h:113:71: warning: declaration of
-> 'struct cpu_capability' will not be visible outside of this function
-> [-Wvisibility]
->   static inline int thermal_genl_cpu_capability_event(int count,
-> struct cpu_capability *caps)
->                                                                      
->    ^
->   1 warning generated.
-> 
-> 'struct cpu_capability' is not forward declared anywhere in the
-> header.
-> As it turns out, this should really be 'struct
-> thermal_genl_cpu_caps',
-> which silences the warning and makes the parameter types of the stub
-> match the full function.
-Thanks for sending the patch. I was about to send this change.
-Since this patch target only linux-next, don't we need prefix:
-"[PATCH -next]" instead of "[PATCH]"?
+From: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
 
-> 
-> Fixes: e4b1eb24ce5a ("thermal: netlink: Add a new event to notify CPU
-> capabilities change")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Commit 8c9b9cfb7724 ("ASoC: fsl-asoc-card: Support
+fsl,imx-audio-tlv320aic31xx codec")' added support for tlv320aic31xx
+codec to fsl-asoc-card, but missed the related device-tree compatible
+string documentation. Fix this.
 
-> ---
->  drivers/thermal/thermal_netlink.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/thermal/thermal_netlink.h
-> b/drivers/thermal/thermal_netlink.h
-> index 04d1adbbc012..1052f523188d 100644
-> --- a/drivers/thermal/thermal_netlink.h
-> +++ b/drivers/thermal/thermal_netlink.h
-> @@ -110,7 +110,7 @@ static inline int thermal_genl_sampling_temp(int
-> id, int temp)
->         return 0;
->  }
->  
-> -static inline int thermal_genl_cpu_capability_event(int count,
-> struct cpu_capability *caps)
-> +static inline int thermal_genl_cpu_capability_event(int count,
-> struct thermal_genl_cpu_caps *caps)
->  {
->         return 0;
->  }
-> 
-> base-commit: 08615cb8c0e1deeca5489d672213fb205fa53c3b
+Signed-off-by: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
+---
+ Documentation/devicetree/bindings/sound/fsl-asoc-card.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/fsl-asoc-card.txt b/Documentation/devicetree/bindings/sound/fsl-asoc-card.txt
+index b219626a5403..8b4f4015cfe4 100644
+--- a/Documentation/devicetree/bindings/sound/fsl-asoc-card.txt
++++ b/Documentation/devicetree/bindings/sound/fsl-asoc-card.txt
+@@ -40,6 +40,8 @@ The compatible list for this generic sound card currently:
+ 
+  "fsl,imx-audio-tlv320aic32x4"
+ 
++ "fsl,imx-audio-tlv320aic31xx"
++
+  "fsl,imx-audio-si476x"
+ 
+  "fsl,imx-audio-wm8958"
+-- 
+2.34.1
 
