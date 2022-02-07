@@ -2,123 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C777DC35275
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99AB3C47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382802AbiBGRdO (ORCPT
+        id S1381209AbiBGRcv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:33:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
+        Mon, 7 Feb 2022 12:32:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235952AbiBGR2G (ORCPT
+        with ESMTP id S1346605AbiBGRXu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:28:06 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BA9C0401DB;
-        Mon,  7 Feb 2022 09:28:04 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id d10so44301418eje.10;
-        Mon, 07 Feb 2022 09:28:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9KrCsNlSpMOXqBPHbtPt8EJlN8H5IGboWNo2QLZWHG4=;
-        b=fPDbjzdv2YQHbocYKzR7lKfakLSXETJtsbXyTcxWZFhabWDROG8JnTgMc3/iP1cXGp
-         Fuq4a1iEeisbuPYQiUCGJUv1bUa2+kwQH9fSM2CmziSQp5L4WpKYGQkCe3VFEXxJGote
-         YPIPGqxIruPyUdrcqf0NrlV30ccYqEIUQ3lq3UPG9V4NYkzaMJpkIzg5LmbphF0v5BM4
-         jwhZzZkUzbYGBL0v+ZJl7wxL3zwg3CTfuYIjS0d5aUGpgjGKhCo1dKd7QmB7IdcaM+aX
-         Uanepaysc9MhTe+iMn4IUw+WAQDqcmPofTzQXNQmmG0r5PUsUUE0xip6ZBIuRtNpDIVN
-         0Hxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9KrCsNlSpMOXqBPHbtPt8EJlN8H5IGboWNo2QLZWHG4=;
-        b=ngfnnXqajuBmcEFo1G8fiNPKVBkSYRVCbIOPcFRaUOtYSnoQLjNfcCYJp6S2wACQwO
-         W/swsIuXuZ0fzPjSbvsrckvvmnpqcarGsgc6z4rABiQperlA8d2I60cTVqiAEhZFlFVB
-         LhPuORLGCtGrzdqqLpN8DZ1CNhcOqVYns2nDZHcfnTFm27+L2nycXMSIs6T3nTebgX5K
-         soNxruD4MmflDZS97QDJuH6+3+fn3VxzIF6ls5BcW96uWDixEcQ74Gmwo9bBZF2AaRtF
-         7HurwKisnE2pUmo9b8aF/fSErzM2jN0rll1i485mclNTIY4RXZ4tdCpsT/GCrGkLZKe8
-         uzNg==
-X-Gm-Message-State: AOAM530sk05oyjgOAZCTbCwHUUj+Av3MFSE4jY6aLdlvHvykXdoPDVa5
-        iU/NTKS8h3zUu7g7/r+fFiw=
-X-Google-Smtp-Source: ABdhPJw2uPZZj1Ypr9pMKOVBG3hvveB9qsGwGfdZxHLXiKqevUi4nL24IpQDGuXHhzeLBmbqK2TH3w==
-X-Received: by 2002:a17:906:880f:: with SMTP id zh15mr550839ejb.709.1644254882795;
-        Mon, 07 Feb 2022 09:28:02 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id gh24sm2390074ejb.76.2022.02.07.09.28.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 09:28:02 -0800 (PST)
-Date:   Mon, 7 Feb 2022 19:28:00 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Cc:     andrew@lunn.ch, netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v8 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-Message-ID: <20220207172800.r35juho7vbdkf634@skbuf>
+        Mon, 7 Feb 2022 12:23:50 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646A0C0401D5;
+        Mon,  7 Feb 2022 09:23:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644254629; x=1675790629;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Dly94UPRszsxGbaHdq9AVuCztjMlsZQ9xuCw10WHMlQ=;
+  b=BhU4X8FwN0VPycpOc2pLw1QYN4ql0BMPgcYUd9ZNn7+9K0xy56UqcvKS
+   03ckLe2Z5sV8TyloteIOwt1voZqVGrPwaOdPnJKz40WBGGH/jp3bz47tL
+   IcZLW2XJxtdho32fIqzITwo3t8jsjWT1En+ts8ZqEtyCT8hrkRN7qTR/U
+   3cRa52+RL/SKLj9PKeG8/JgYMx6SBxHCXyChZfkDe0XWOVO0zEVUgHQei
+   thESvV4DyKDcfOpOuCjRwmeb76sYNcFNUN2p8a8vzL+bHrk4JzDW5/r+V
+   +7vRbhTXYzx+qU2r8vobFm8yAPUkrcA+u1Ehm/Dd7a+AH5m6W4koPH4Kq
+   Q==;
+IronPort-SDR: +8Kv2uL5mN3QehMXg/zb4TM48MsiQ/RKl20tOdeqYoIkYUIwROtpO70KtsLZFm4ezg8nAZ9AMN
+ WKMibkGgYeCk2v4iRzR1P7zO7kWEzb2DE+zYgi03rBNG6RWd8rKGrwFWAU8FoAP3WVEX2jODEX
+ Lec//HOoJZxde85GNi99solEk4xcI/VChQUVuoRz31SKKLIlTJcRLVKZsIR2qHQ4iDxKmP13cV
+ MZQrPImdVH/c13X6sMM31j/vAwJWMKHSASuldkit3VsbVSLJ2xlliM3yWwz5TZaHgMX5tx/yk+
+ JJvWJn9KDtAodGLMG+iXwCx3
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="145147772"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 10:22:44 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Feb 2022 10:22:44 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Feb 2022 10:22:38 -0700
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Subject: [PATCH v8 net-next 04/10] net: dsa: tag_ksz: add tag handling for Microchip LAN937x
+Date:   Mon, 7 Feb 2022 22:51:58 +0530
+Message-ID: <20220207172204.589190-5-prasanna.vengateshan@microchip.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
 References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
- <20220207172204.589190-6-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207172204.589190-6-prasanna.vengateshan@microchip.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 10:51:59PM +0530, Prasanna Vengateshan wrote:
-> +static int lan937x_parse_dt_rgmii_delay(struct ksz_device *dev)
-> +{
-> +	struct device_node *ports, *port;
-> +	int err, p;
-> +	u32 val;
-> +
-> +	ports = of_get_child_by_name(dev->dev->of_node, "ports");
-> +	if (!ports)
-> +		ports = of_get_child_by_name(dev->dev->of_node,
-> +					     "ethernet-ports");
-> +	if (!ports) {
-> +		dev_err(dev->dev, "no ports child node found\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	for_each_available_child_of_node(ports, port) {
-> +		err = of_property_read_u32(port, "reg", &p);
-> +		if (err) {
-> +			dev_err(dev->dev, "Port num not defined in the DT, \"reg\" property\n");
-> +			of_node_put(ports);
-> +			of_node_put(port);
-> +			return err;
-> +		}
-> +
-> +		/* skip for internal ports */
-> +		if (lan937x_is_internal_phy_port(dev, p))
-> +			continue;
-> +
-> +		if (of_property_read_u32(port, "rx-internal-delay-ps", &val))
-> +			val = 0;
-> +
-> +		err = lan937x_set_rgmii_delay(dev, p, val, false);
-> +		if (err)
+The Microchip LAN937X switches have a tagging protocol which is
+very similar to KSZ tagging. So that the implementation is added to
+tag_ksz.c and reused common APIs
 
-I think this call and the one below are missing calls to of_node_put()
-on error.
+Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ include/net/dsa.h |  2 ++
+ net/dsa/Kconfig   |  4 ++--
+ net/dsa/tag_ksz.c | 59 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 63 insertions(+), 2 deletions(-)
 
-> +			return err;
-> +
-> +		if (of_property_read_u32(port, "tx-internal-delay-ps", &val))
-> +			val = 0;
-> +
-> +		err = lan937x_set_rgmii_delay(dev, p, val, true);
-> +		if (err)
-> +			return err;
-> +	}
-> +
-> +	of_node_put(ports);
-> +	return 0;
-> +}
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index ca8c14b547b4..30b7274d8c45 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -52,6 +52,7 @@ struct phylink_link_state;
+ #define DSA_TAG_PROTO_BRCM_LEGACY_VALUE		22
+ #define DSA_TAG_PROTO_SJA1110_VALUE		23
+ #define DSA_TAG_PROTO_RTL8_4_VALUE		24
++#define DSA_TAG_PROTO_LAN937X_VALUE		25
+ 
+ enum dsa_tag_protocol {
+ 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
+@@ -79,6 +80,7 @@ enum dsa_tag_protocol {
+ 	DSA_TAG_PROTO_SEVILLE		= DSA_TAG_PROTO_SEVILLE_VALUE,
+ 	DSA_TAG_PROTO_SJA1110		= DSA_TAG_PROTO_SJA1110_VALUE,
+ 	DSA_TAG_PROTO_RTL8_4		= DSA_TAG_PROTO_RTL8_4_VALUE,
++	DSA_TAG_PROTO_LAN937X		= DSA_TAG_PROTO_LAN937X_VALUE,
+ };
+ 
+ struct dsa_switch;
+diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
+index 8cb87b5067ee..6d0414c9f7f4 100644
+--- a/net/dsa/Kconfig
++++ b/net/dsa/Kconfig
+@@ -87,10 +87,10 @@ config NET_DSA_TAG_MTK
+ 	  Mediatek switches.
+ 
+ config NET_DSA_TAG_KSZ
+-	tristate "Tag driver for Microchip 8795/9477/9893 families of switches"
++	tristate "Tag driver for Microchip 8795/937x/9477/9893 families of switches"
+ 	help
+ 	  Say Y if you want to enable support for tagging frames for the
+-	  Microchip 8795/9477/9893 families of switches.
++	  Microchip 8795/937x/9477/9893 families of switches.
+ 
+ config NET_DSA_TAG_OCELOT
+ 	tristate "Tag driver for Ocelot family of switches, using NPI port"
+diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+index 3509fc967ca9..38fa19c1e2d5 100644
+--- a/net/dsa/tag_ksz.c
++++ b/net/dsa/tag_ksz.c
+@@ -193,10 +193,69 @@ static const struct dsa_device_ops ksz9893_netdev_ops = {
+ DSA_TAG_DRIVER(ksz9893_netdev_ops);
+ MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ9893);
+ 
++/* For xmit, 2 bytes are added before FCS.
++ * ---------------------------------------------------------------------------
++ * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|tag1(1byte)|FCS(4bytes)
++ * ---------------------------------------------------------------------------
++ * tag0 : represents tag override, lookup and valid
++ * tag1 : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x80=port8)
++ *
++ * For rcv, 1 byte is added before FCS.
++ * ---------------------------------------------------------------------------
++ * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|FCS(4bytes)
++ * ---------------------------------------------------------------------------
++ * tag0 : zero-based value represents port
++ *	  (eg, 0x00=port1, 0x02=port3, 0x07=port8)
++ */
++#define LAN937X_EGRESS_TAG_LEN		2
++
++#define LAN937X_TAIL_TAG_BLOCKING_OVERRIDE	BIT(11)
++#define LAN937X_TAIL_TAG_LOOKUP			BIT(12)
++#define LAN937X_TAIL_TAG_VALID			BIT(13)
++#define LAN937X_TAIL_TAG_PORT_MASK		7
++
++static struct sk_buff *lan937x_xmit(struct sk_buff *skb,
++				    struct net_device *dev)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	const struct ethhdr *hdr = eth_hdr(skb);
++	__be16 *tag;
++	u16 val;
++
++	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
++		return NULL;
++
++	tag = skb_put(skb, LAN937X_EGRESS_TAG_LEN);
++
++	val = BIT(dp->index);
++
++	if (is_link_local_ether_addr(hdr->h_dest))
++		val |= LAN937X_TAIL_TAG_BLOCKING_OVERRIDE;
++
++	/* Tail tag valid bit - This bit should always be set by the CPU */
++	val |= LAN937X_TAIL_TAG_VALID;
++
++	put_unaligned_be16(val, tag);
++
++	return skb;
++}
++
++static const struct dsa_device_ops lan937x_netdev_ops = {
++	.name	= "lan937x",
++	.proto	= DSA_TAG_PROTO_LAN937X,
++	.xmit	= lan937x_xmit,
++	.rcv	= ksz9477_rcv,
++	.needed_tailroom = LAN937X_EGRESS_TAG_LEN,
++};
++
++DSA_TAG_DRIVER(lan937x_netdev_ops);
++MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_LAN937X);
++
+ static struct dsa_tag_driver *dsa_tag_driver_array[] = {
+ 	&DSA_TAG_DRIVER_NAME(ksz8795_netdev_ops),
+ 	&DSA_TAG_DRIVER_NAME(ksz9477_netdev_ops),
+ 	&DSA_TAG_DRIVER_NAME(ksz9893_netdev_ops),
++	&DSA_TAG_DRIVER_NAME(lan937x_netdev_ops),
+ };
+ 
+ module_dsa_tag_drivers(dsa_tag_driver_array);
+-- 
+2.30.2
+
