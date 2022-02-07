@@ -2,81 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4537BC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 181F4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388874AbiBGNui (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:50:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52660 "EHLO
+        id S238523AbiBGNum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 08:50:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449002AbiBGNOi (ORCPT
+        with ESMTP id S1387674AbiBGNiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:14:38 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95512C043181;
-        Mon,  7 Feb 2022 05:14:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644239677; x=1675775677;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Ugw6VHighrhQDjS9nDrgU6Gp603CM4GjJYcOJX8CFzo=;
-  b=VDGaXvBYSqBzJVX0LJP6acFFFBGCjchrZFDykJZLLUmjrb3XQasWHjPg
-   zklT+1HdArIzFg7pRA6Xsot/iJhIb6BvS3XWDs1SRX1V1TKPwVeknsrZm
-   dshMO6JqB29kgQ7u0Asq7vFxgwGZ7ZXFCZxuoW7JDUf9B1yyqYAsCY2ej
-   LEDRIcXbwrywd72+Qg4I9gVFdjZpuSNBp2NgDLd1A67lg3o9ZZWkRrg64
-   itFqdnP6FKFIzqOSugPihTwceIfSWs+KOLy+aDZiaFFq9cI5Ksk6qpB+0
-   iYJ9zRcRSL4CWcT0yu6TkK2RRe4ntKVU4fI2PtJFYUa2wLDg835NWrac7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="246301284"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="246301284"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 05:14:34 -0800
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="584828064"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 05:14:32 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nH3pl-001uYa-DZ;
-        Mon, 07 Feb 2022 15:13:33 +0200
-Date:   Mon, 7 Feb 2022 15:13:33 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org
-Cc:     Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Ajay Gupta <ajayg@nvidia.com>,
-        "Shah, Nehal-bakulchandra" <nehal-bakulchandra.shah@amd.com>
-Subject: Re: [PATCH v3 1/5] i2c: Introduce common module to instantiate CCGx
- UCSI
-Message-ID: <YgEa/blO2UMzztCq@smile.fi.intel.com>
-References: <20220105141935.24109-1-andriy.shevchenko@linux.intel.com>
- <Ye7AhqMsOkfvHOAg@smile.fi.intel.com>
+        Mon, 7 Feb 2022 08:38:02 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFFEC0401D6
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:37:25 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JsnDP0m57zdZRb;
+        Mon,  7 Feb 2022 21:34:13 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
+ 2022 21:37:22 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH 3/4] mm/memory_hotplug: clean up try_offline_node
+Date:   Mon, 7 Feb 2022 21:36:42 +0800
+Message-ID: <20220207133643.23427-4-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220207133643.23427-1-linmiaohe@huawei.com>
+References: <20220207133643.23427-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ye7AhqMsOkfvHOAg@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 05:06:47PM +0200, Andy Shevchenko wrote:
-> On Wed, Jan 05, 2022 at 04:19:31PM +0200, Andy Shevchenko wrote:
-> > Introduce a common module to provide an API to instantiate UCSI device
-> > for Cypress CCGx Type-C controller. Individual bus drivers need to select
-> > this one on demand.
-> 
-> Ajay, is it possible to get your tag on the series, please?
+We can use helper macro node_spanned_pages to check whether node spans
+pages. And we can change the parameter of check_cpu_on_node to nid as
+that's what it really cares. Thus we can further get rid of the local
+variable pgdat and improve the readability a bit.
 
-Wolfram, can you remind, please, what the process is, if there is
-a non-responsive (in a meaningful period of time) maintainer?
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/memory_hotplug.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
+diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+index 140809e60e9a..4b9eef861ee4 100644
+--- a/mm/memory_hotplug.c
++++ b/mm/memory_hotplug.c
+@@ -2008,12 +2008,12 @@ static int get_nr_vmemmap_pages_cb(struct memory_block *mem, void *arg)
+ 	return mem->nr_vmemmap_pages;
+ }
+ 
+-static int check_cpu_on_node(pg_data_t *pgdat)
++static int check_cpu_on_node(int nid)
+ {
+ 	int cpu;
+ 
+ 	for_each_present_cpu(cpu) {
+-		if (cpu_to_node(cpu) == pgdat->node_id)
++		if (cpu_to_node(cpu) == nid)
+ 			/*
+ 			 * the cpu on this node isn't removed, and we can't
+ 			 * offline this node.
+@@ -2047,7 +2047,6 @@ static int check_no_memblock_for_node_cb(struct memory_block *mem, void *arg)
+  */
+ void try_offline_node(int nid)
+ {
+-	pg_data_t *pgdat = NODE_DATA(nid);
+ 	int rc;
+ 
+ 	/*
+@@ -2055,7 +2054,7 @@ void try_offline_node(int nid)
+ 	 * offline it. A node spans memory after move_pfn_range_to_zone(),
+ 	 * e.g., after the memory block was onlined.
+ 	 */
+-	if (pgdat->node_spanned_pages)
++	if (node_spanned_pages(nid))
+ 		return;
+ 
+ 	/*
+@@ -2067,7 +2066,7 @@ void try_offline_node(int nid)
+ 	if (rc)
+ 		return;
+ 
+-	if (check_cpu_on_node(pgdat))
++	if (check_cpu_on_node(nid))
+ 		return;
+ 
+ 	/*
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.23.0
 
