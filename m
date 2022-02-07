@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE94C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB5EC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388671AbiBGLo2 (ORCPT
+        id S1388686AbiBGLoa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:44:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
+        Mon, 7 Feb 2022 06:44:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385861AbiBGLcw (ORCPT
+        with ESMTP id S1385880AbiBGLc4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A257C043188;
-        Mon,  7 Feb 2022 03:32:51 -0800 (PST)
+        Mon, 7 Feb 2022 06:32:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18079C043181;
+        Mon,  7 Feb 2022 03:32:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0077160A67;
-        Mon,  7 Feb 2022 11:32:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B77FFC340F0;
-        Mon,  7 Feb 2022 11:32:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ACFC1B80EBD;
+        Mon,  7 Feb 2022 11:32:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00017C004E1;
+        Mon,  7 Feb 2022 11:32:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233570;
-        bh=lV1mkuh7zyPWVcvLXzJOB2GkO6mowb3cwC8cFqZQMqI=;
+        s=korg; t=1644233573;
+        bh=0amyQrwO/l9Xpx9ZFXvom4ZEQ7XuUf/uQHAxWPyi1UE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H/bZJPj2Y9ph58jwNLPAf9NPLUmeVVT5Nj765uIEgedxjkIJo+8oBVtv+PG/nos1b
-         oy5YKNAO+C+UjiasiApBwLE7qlecButwf++mk6H9BgxSHGaRfIgi+G1udUgSL3CV9U
-         KkGuHJUHFdmhSUoN2RZukUWWMrGnEY0yalF+hNGg=
+        b=YfHfWlBKwAS5Gsa+mhhNu/97a0g/M81UrBz5H5KUfVtRKzyEm61b5cFdOcAfyOlhA
+         pEcIwXyF+PZQ2uyIi23OkTST9Eu6k3kojMj+E+5fo+GMSprHIW5XMPf2aIQ6dLHvvV
+         faMCYGpvl6GgQ6socJb6OZDm8CKoNPESv2but3fQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jared Holzman <jared.holzman@excelero.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
+        stable@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
+        =?UTF-8?q?H=C3=A5kon=20Bugge?= <haakon.bugge@oracle.com>,
         Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.16 052/126] RDMA/siw: Fix broken RDMA Read Fence/Resume logic.
-Date:   Mon,  7 Feb 2022 12:06:23 +0100
-Message-Id: <20220207103805.913090166@linuxfoundation.org>
+Subject: [PATCH 5.16 053/126] RDMA/mlx4: Dont continue event handler after memory allocation failure
+Date:   Mon,  7 Feb 2022 12:06:24 +0100
+Message-Id: <20220207103805.945560237@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,97 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bernard Metzler <bmt@zurich.ibm.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-commit b43a76f423aa304037603fd6165c4a534d2c09a7 upstream.
+commit f3136c4ce7acf64bee43135971ca52a880572e32 upstream.
 
-Code unconditionally resumed fenced SQ processing after next RDMA Read
-completion, even if other RDMA Read responses are still outstanding, or
-ORQ is full. Also adds comments for better readability of fence
-processing, and removes orq_get_tail() helper, which is not needed
-anymore.
+The failure to allocate memory during MLX4_DEV_EVENT_PORT_MGMT_CHANGE
+event handler will cause skip the assignment logic, but
+ib_dispatch_event() will be called anyway.
 
-Fixes: 8b6a361b8c48 ("rdma/siw: receive path")
-Fixes: a531975279f3 ("rdma/siw: main include file")
-Link: https://lore.kernel.org/r/20220130170815.1940-1-bmt@zurich.ibm.com
-Reported-by: Jared Holzman <jared.holzman@excelero.com>
-Signed-off-by: Bernard Metzler <bmt@zurich.ibm.com>
+Fix it by calling to return instead of break after memory allocation
+failure.
+
+Fixes: 00f5ce99dc6e ("mlx4: Use port management change event instead of smp_snoop")
+Link: https://lore.kernel.org/r/12a0e83f18cfad4b5f62654f141e240d04915e10.1643622264.git.leonro@nvidia.com
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/siw/siw.h       |    7 +------
- drivers/infiniband/sw/siw/siw_qp_rx.c |   20 +++++++++++---------
- 2 files changed, 12 insertions(+), 15 deletions(-)
+ drivers/infiniband/hw/mlx4/main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/infiniband/sw/siw/siw.h
-+++ b/drivers/infiniband/sw/siw/siw.h
-@@ -644,14 +644,9 @@ static inline struct siw_sqe *orq_get_cu
- 	return &qp->orq[qp->orq_get % qp->attrs.orq_size];
- }
+--- a/drivers/infiniband/hw/mlx4/main.c
++++ b/drivers/infiniband/hw/mlx4/main.c
+@@ -3247,7 +3247,7 @@ static void mlx4_ib_event(struct mlx4_de
+ 	case MLX4_DEV_EVENT_PORT_MGMT_CHANGE:
+ 		ew = kmalloc(sizeof *ew, GFP_ATOMIC);
+ 		if (!ew)
+-			break;
++			return;
  
--static inline struct siw_sqe *orq_get_tail(struct siw_qp *qp)
--{
--	return &qp->orq[qp->orq_put % qp->attrs.orq_size];
--}
--
- static inline struct siw_sqe *orq_get_free(struct siw_qp *qp)
- {
--	struct siw_sqe *orq_e = orq_get_tail(qp);
-+	struct siw_sqe *orq_e = &qp->orq[qp->orq_put % qp->attrs.orq_size];
- 
- 	if (READ_ONCE(orq_e->flags) == 0)
- 		return orq_e;
---- a/drivers/infiniband/sw/siw/siw_qp_rx.c
-+++ b/drivers/infiniband/sw/siw/siw_qp_rx.c
-@@ -1153,11 +1153,12 @@ static int siw_check_tx_fence(struct siw
- 
- 	spin_lock_irqsave(&qp->orq_lock, flags);
- 
--	rreq = orq_get_current(qp);
--
- 	/* free current orq entry */
-+	rreq = orq_get_current(qp);
- 	WRITE_ONCE(rreq->flags, 0);
- 
-+	qp->orq_get++;
-+
- 	if (qp->tx_ctx.orq_fence) {
- 		if (unlikely(tx_waiting->wr_status != SIW_WR_QUEUED)) {
- 			pr_warn("siw: [QP %u]: fence resume: bad status %d\n",
-@@ -1165,10 +1166,12 @@ static int siw_check_tx_fence(struct siw
- 			rv = -EPROTO;
- 			goto out;
- 		}
--		/* resume SQ processing */
-+		/* resume SQ processing, if possible */
- 		if (tx_waiting->sqe.opcode == SIW_OP_READ ||
- 		    tx_waiting->sqe.opcode == SIW_OP_READ_LOCAL_INV) {
--			rreq = orq_get_tail(qp);
-+
-+			/* SQ processing was stopped because of a full ORQ */
-+			rreq = orq_get_free(qp);
- 			if (unlikely(!rreq)) {
- 				pr_warn("siw: [QP %u]: no ORQE\n", qp_id(qp));
- 				rv = -EPROTO;
-@@ -1181,15 +1184,14 @@ static int siw_check_tx_fence(struct siw
- 			resume_tx = 1;
- 
- 		} else if (siw_orq_empty(qp)) {
-+			/*
-+			 * SQ processing was stopped by fenced work request.
-+			 * Resume since all previous Read's are now completed.
-+			 */
- 			qp->tx_ctx.orq_fence = 0;
- 			resume_tx = 1;
--		} else {
--			pr_warn("siw: [QP %u]: fence resume: orq idx: %d:%d\n",
--				qp_id(qp), qp->orq_get, qp->orq_put);
--			rv = -EPROTO;
- 		}
- 	}
--	qp->orq_get++;
- out:
- 	spin_unlock_irqrestore(&qp->orq_lock, flags);
- 
+ 		INIT_WORK(&ew->work, handle_port_mgmt_change_event);
+ 		memcpy(&ew->ib_eqe, eqe, sizeof *eqe);
 
 
