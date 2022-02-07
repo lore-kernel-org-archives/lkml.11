@@ -2,86 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EDF9C38161
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E09C35273
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382140AbiBGMAt (ORCPT
+        id S1391690AbiBGMCn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:00:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48512 "EHLO
+        Mon, 7 Feb 2022 07:02:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386757AbiBGLgf (ORCPT
+        with ESMTP id S1387859AbiBGLlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:36:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B29C043188;
-        Mon,  7 Feb 2022 03:36:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B4A9F60A69;
-        Mon,  7 Feb 2022 11:36:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DF9CC004E1;
-        Mon,  7 Feb 2022 11:36:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233793;
-        bh=q0nvyZV4sYkd7gzOHWgjUx1R62mGh98lgexTYH8IfgA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=auThh9oh5bknORGhf+fjUVvyhbsvzF+qVnZ09AytsynPao/IdPE42G3JdYvN6nDS8
-         hlc2aHSaWJAq5bFCnpIPIVQB6lK2ynH64+h6tQUoE0BbFqrK3ER2HbZGv/Huu6jXiq
-         7XQU0GRwXnRjvo6/1Yj/4UPpQPnakkGOCfQNUzKQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 120/126] net: dsa: mt7530: make NET_DSA_MT7530 select MEDIATEK_GE_PHY
-Date:   Mon,  7 Feb 2022 12:07:31 +0100
-Message-Id: <20220207103808.201468652@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-References: <20220207103804.053675072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:41:40 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33114C0401C1;
+        Mon,  7 Feb 2022 03:41:27 -0800 (PST)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217Apeok012378;
+        Mon, 7 Feb 2022 11:41:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : references : date : in-reply-to : message-id : mime-version :
+ content-type; s=pp1; bh=l4GRQfS6dt8KbwsIfRAoCLiv5GnoaDEu32gKAeieLAs=;
+ b=tMYBZbQ5uoALXShCqp6HByVPllh1Kvsr1LGK1z8CCnCMSqYqiXQWgp/XBppYyBXcDAv0
+ lCiUGYobeF8LUROFa5mplfD2sbiqwHKtzsXBLlD7mRtdHMay4lKJSBfWCQuQ6YfuqQxw
+ 8/D5M9EP9z0a02ib9a1CHpC2cWhHvxUwS2xlyQ0arWWoaA3UzTh9Zw69ngsQFZwXhy9E
+ lUVbTGFsYCzyiIqy2vpW0yIhicNq2e+WaQOKRfjfekQWjJ4doMN+P4g/F1YtKBz74J2P
+ PsZ7j2fIHL7bkYg5Hltfxy5ZwNwrzgrvun+xNqvkIleR/xvYPFFSOZ1cDrhywbIVtJzN Pw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22nk1vhr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 11:40:59 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217BUMdN010053;
+        Mon, 7 Feb 2022 11:40:59 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22nk1v8s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 11:40:59 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217BYQpC008045;
+        Mon, 7 Feb 2022 11:40:36 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3e1gv93kdy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 11:40:36 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217BeXt442467668
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 11:40:33 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1C8354C050;
+        Mon,  7 Feb 2022 11:40:33 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ABBCD4C04A;
+        Mon,  7 Feb 2022 11:40:32 +0000 (GMT)
+Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Mon,  7 Feb 2022 11:40:32 +0000 (GMT)
+From:   Sven Schnelle <svens@linux.ibm.com>
+To:     Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Oscar Shiang <oscar0225@livemail.tw>,
+        linux-s390@vger.kernel.org
+Subject: Re: [patch v11 01/13] s390: add support for TIF_TASK_ISOL
+References: <20220204173537.429902988@fedora.localdomain>
+        <20220204173554.491925589@fedora.localdomain>
+Date:   Mon, 07 Feb 2022 12:40:32 +0100
+In-Reply-To: <20220204173554.491925589@fedora.localdomain> (Marcelo Tosatti's
+        message of "Fri, 04 Feb 2022 14:35:38 -0300")
+Message-ID: <yt9dr18ec3bj.fsf@linux.ibm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: cdSfjdKU77sRKrlYxT3oyA8rYXlmk4TE
+X-Proofpoint-ORIG-GUID: bTTjUIYd2LzLfoOoHH7-L9S_VOucRtDI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_04,2022-02-07_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
+ malwarescore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0
+ mlxlogscore=883 clxscore=1011 phishscore=0 impostorscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070075
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+Marcelo Tosatti <mtosatti@redhat.com> writes:
 
-commit 4223f86512877b04c932e7203648b37eec931731 upstream.
+> Add TIF_TASK_ISOL handling for s390.
+>
+> Cc: linux-s390@vger.kernel.org
+> Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
 
-Make MediaTek MT753x DSA driver enable MediaTek Gigabit PHYs driver to
-properly control MT7530 and MT7531 switch PHYs.
+Acked-by: Sven Schnelle <svens@linux.ibm.com>
 
-A noticeable change is that the behaviour of switchport interfaces going
-up-down-up-down is no longer there.
-
-Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220129062703.595-1-arinc.unal@arinc9.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/dsa/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/drivers/net/dsa/Kconfig
-+++ b/drivers/net/dsa/Kconfig
-@@ -36,6 +36,7 @@ config NET_DSA_LANTIQ_GSWIP
- config NET_DSA_MT7530
- 	tristate "MediaTek MT753x and MT7621 Ethernet switch support"
- 	select NET_DSA_TAG_MTK
-+	select MEDIATEK_GE_PHY
- 	help
- 	  This enables support for the MediaTek MT7530, MT7531, and MT7621
- 	  Ethernet switch chips.
-
-
+> Index: linux-2.6/arch/s390/include/asm/thread_info.h
+> ===================================================================
+> --- linux-2.6.orig/arch/s390/include/asm/thread_info.h
+> +++ linux-2.6/arch/s390/include/asm/thread_info.h
+> @@ -73,6 +73,7 @@ void arch_setup_new_exec(void);
+>  #define TIF_ISOLATE_BP		8	/* Run process with isolated BP */
+>  #define TIF_ISOLATE_BP_GUEST	9	/* Run KVM guests with isolated BP */
+>  #define TIF_PER_TRAP		10	/* Need to handle PER trap on exit to usermode */
+> +#define TIF_TASK_ISOL		11	/* task isolation work pending */
+>  
+>  #define TIF_31BIT		16	/* 32bit process */
+>  #define TIF_MEMDIE		17	/* is terminating due to OOM killer */
+> @@ -97,6 +98,7 @@ void arch_setup_new_exec(void);
+>  #define _TIF_ISOLATE_BP		BIT(TIF_ISOLATE_BP)
+>  #define _TIF_ISOLATE_BP_GUEST	BIT(TIF_ISOLATE_BP_GUEST)
+>  #define _TIF_PER_TRAP		BIT(TIF_PER_TRAP)
+> +#define _TIF_TASK_ISOL		BIT(TIF_TASK_ISOL)
+>  
+>  #define _TIF_31BIT		BIT(TIF_31BIT)
+>  #define _TIF_SINGLE_STEP	BIT(TIF_SINGLE_STEP)
