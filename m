@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6D9C38A04
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C79C4708D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391354AbiBGMBd (ORCPT
+        id S1391543AbiBGMCL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:01:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
+        Mon, 7 Feb 2022 07:02:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386782AbiBGLgo (ORCPT
+        with ESMTP id S1386798AbiBGLhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:36:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67E4C03BFDF;
-        Mon,  7 Feb 2022 03:28:53 -0800 (PST)
+        Mon, 7 Feb 2022 06:37:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A8DC043181;
+        Mon,  7 Feb 2022 03:37:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F441B80EC3;
-        Mon,  7 Feb 2022 11:28:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B87CC004E1;
-        Mon,  7 Feb 2022 11:28:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D9456091A;
+        Mon,  7 Feb 2022 11:37:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C98CAC004E1;
+        Mon,  7 Feb 2022 11:37:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233331;
-        bh=b13qAo4YSP2y+ta2ne27FSUAmi4yqSLi1KWG0FFTyEU=;
+        s=korg; t=1644233829;
+        bh=MLFw33SBS/pqg+VfKau4wYtPr8pye3UBHws0wWK4l+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fNonNAtlpt3AK8ztPbl8XnXo+qrNbfztlwe44olyKo92+tOn12w/BPQQq1euVFZGE
-         Wk5SEohr2NEbg5tt6nSqHf8Cf0N/e8aGCOz4nGATWDTNrVm5H6nOdk73Kj3MDTZ+Ci
-         VGcTvnPCuSagqjMAXVz7tcgRQR8MSTFUUFMvJ7Fs=
+        b=lC37KSiNZZ3Eo+zA76rTPrLD+9L9jfE7GAphPivjiMbi0gBfsvPWBrl/Ll/j2quHv
+         Hn1MK3w8ADdClI3uaRCmZv/smT4ynw+nYK48YzRjYGPCSb7+yAlDrvPqubBK2VC4iG
+         jsXkqiHxoVZpXrVHUhocajoD7suAZZOpUbJ6K5UA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 5.15 057/110] net: ieee802154: mcr20a: Fix lifs/sifs periods
-Date:   Mon,  7 Feb 2022 12:06:30 +0100
-Message-Id: <20220207103804.213035605@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.16 125/126] selftests: nft_concat_range: add test for reload with no element add/del
+Date:   Mon,  7 Feb 2022 12:07:36 +0100
+Message-Id: <20220207103808.361008101@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
-References: <20220207103802.280120990@linuxfoundation.org>
+In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
+References: <20220207103804.053675072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +50,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit d753c4004820a888ec007dd88b271fa9c3172c5c upstream.
+commit eda0cf1202acf1ef47f93d8f92d4839213431424 upstream.
 
-These periods are expressed in time units (microseconds) while 40 and 12
-are the number of symbol durations these periods will last. We need to
-multiply them both with phy->symbol_duration in order to get these
-values in microseconds.
+Add a specific test for the reload issue fixed with
+commit 23c54263efd7cb ("netfilter: nft_set_pipapo: allocate pcpu scratch maps on clone").
 
-Fixes: 8c6ad9cc5157 ("ieee802154: Add NXP MCR20A IEEE 802.15.4 transceiver driver")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-3-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Add to set, then flush set content + restore without other add/remove in
+the transaction.
+
+On kernels before the fix, this test case fails:
+  net,mac with reload    [FAIL]
+
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ieee802154/mcr20a.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/netfilter/nft_concat_range.sh |   72 +++++++++++++++++-
+ 1 file changed, 71 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ieee802154/mcr20a.c
-+++ b/drivers/net/ieee802154/mcr20a.c
-@@ -976,8 +976,8 @@ static void mcr20a_hw_setup(struct mcr20
- 	dev_dbg(printdev(lp), "%s\n", __func__);
+--- a/tools/testing/selftests/netfilter/nft_concat_range.sh
++++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
+@@ -27,7 +27,7 @@ TYPES="net_port port_net net6_port port_
+        net6_port_net6_port net_port_mac_proto_net"
  
- 	phy->symbol_duration = 16;
--	phy->lifs_period = 40;
--	phy->sifs_period = 12;
-+	phy->lifs_period = 40 * phy->symbol_duration;
-+	phy->sifs_period = 12 * phy->symbol_duration;
+ # Reported bugs, also described by TYPE_ variables below
+-BUGS="flush_remove_add"
++BUGS="flush_remove_add reload"
  
- 	hw->flags = IEEE802154_HW_TX_OMIT_CKSUM |
- 			IEEE802154_HW_AFILT |
+ # List of possible paths to pktgen script from kernel tree for performance tests
+ PKTGEN_SCRIPT_PATHS="
+@@ -354,6 +354,23 @@ TYPE_flush_remove_add="
+ display		Add two elements, flush, re-add
+ "
+ 
++TYPE_reload="
++display		net,mac with reload
++type_spec	ipv4_addr . ether_addr
++chain_spec	ip daddr . ether saddr
++dst		addr4
++src		mac
++start		1
++count		1
++src_delta	2000
++tools		sendip nc bash
++proto		udp
++
++race_repeat	0
++
++perf_duration	0
++"
++
+ # Set template for all tests, types and rules are filled in depending on test
+ set_template='
+ flush ruleset
+@@ -1473,6 +1490,59 @@ test_bug_flush_remove_add() {
+ 	nft flush ruleset
+ }
+ 
++# - add ranged element, check that packets match it
++# - reload the set, check packets still match
++test_bug_reload() {
++	setup veth send_"${proto}" set || return ${KSELFTEST_SKIP}
++	rstart=${start}
++
++	range_size=1
++	for i in $(seq "${start}" $((start + count))); do
++		end=$((start + range_size))
++
++		# Avoid negative or zero-sized port ranges
++		if [ $((end / 65534)) -gt $((start / 65534)) ]; then
++			start=${end}
++			end=$((end + 1))
++		fi
++		srcstart=$((start + src_delta))
++		srcend=$((end + src_delta))
++
++		add "$(format)" || return 1
++		range_size=$((range_size + 1))
++		start=$((end + range_size))
++	done
++
++	# check kernel does allocate pcpu sctrach map
++	# for reload with no elemet add/delete
++	( echo flush set inet filter test ;
++	  nft list set inet filter test ) | nft -f -
++
++	start=${rstart}
++	range_size=1
++
++	for i in $(seq "${start}" $((start + count))); do
++		end=$((start + range_size))
++
++		# Avoid negative or zero-sized port ranges
++		if [ $((end / 65534)) -gt $((start / 65534)) ]; then
++			start=${end}
++			end=$((end + 1))
++		fi
++		srcstart=$((start + src_delta))
++		srcend=$((end + src_delta))
++
++		for j in $(seq ${start} $((range_size / 2 + 1)) ${end}); do
++			send_match "${j}" $((j + src_delta)) || return 1
++		done
++
++		range_size=$((range_size + 1))
++		start=$((end + range_size))
++	done
++
++	nft flush ruleset
++}
++
+ test_reported_issues() {
+ 	eval test_bug_"${subtest}"
+ }
 
 
