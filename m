@@ -2,75 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85558C35273
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:33:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 554DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381966AbiBGRcx (ORCPT
+        id S1382738AbiBGRdH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:32:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47726 "EHLO
+        Mon, 7 Feb 2022 12:33:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356919AbiBGR2R (ORCPT
+        with ESMTP id S1377034AbiBGR1T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:28:17 -0500
-Received: from relay.hostedemail.com (relay.a.hostedemail.com [64.99.140.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A9EC0401D8
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:28:16 -0800 (PST)
-Received: from omf07.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay11.hostedemail.com (Postfix) with ESMTP id E747180E12;
-        Mon,  7 Feb 2022 17:28:15 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf07.hostedemail.com (Postfix) with ESMTPA id CBDBC20033;
-        Mon,  7 Feb 2022 17:28:14 +0000 (UTC)
-Message-ID: <355c9305d74c666a976b526f3d80ce208c0ec927.camel@perches.com>
-Subject: Re: [PATCH] Staging: wfx: CHECK: usleep_range is preferred over
- udelay
-From:   Joe Perches <joe@perches.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Leonardo Araujo <leonardo.aa88@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Date:   Mon, 07 Feb 2022 09:28:13 -0800
-In-Reply-To: <YgFM1HHs7rSqp/0Q@kroah.com>
-References: <20220207160051.27829-1-leonardo.aa88@gmail.com>
-         <YgFM1HHs7rSqp/0Q@kroah.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Mon, 7 Feb 2022 12:27:19 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F59C0401D5;
+        Mon,  7 Feb 2022 09:27:18 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id cf2so15600654edb.9;
+        Mon, 07 Feb 2022 09:27:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pgxUaFOaYP/VF1UKbR3CFfO2LLqwxcytIuF5DRTGuyg=;
+        b=VkJsGQ5HdCahJ7rTPARn6Zpx0H9Gswx84AQDp47qqji95meZql8AF9u4Z7YrPZPETQ
+         QoAxBWvFeMOv+r3hz3ejvWKCE3KmR3oUtWh/KCro9fIAxcDpKjESBi7La2tP57CVQpSk
+         5iGihLVcyhaMso6tEmxJipRKJ2ccOMpjqGGLW1tkFaJhnJBHB5zJ7XAcTjd3xYTL9xwn
+         MUy93w0LfCn9gcY/XOH8PvUF+qkHkhWLWwVr33bbYu+hFPfHNqPzYxOsiOQ9nAM+QJ9Y
+         IXL/EsQl5cVbCQ3juTpV+xqJobvkn4EXpCcmIKWPAvdOSL5G4L54/gs9UiQ0r1k/H0Mj
+         WeoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pgxUaFOaYP/VF1UKbR3CFfO2LLqwxcytIuF5DRTGuyg=;
+        b=Cy8VPEVlPc0di+RO5DlSQq1i9MjNoMnvkpPKcGLnXxStsLgopbuoD4ye2G5n60YuJg
+         XAlCHpQQY++uzapfe+/BhP7X2GHiLeXGV6EGqnaKzNWMP+y+X/uFGrqMhjb4stnc3tHG
+         h6k8yAc8f2aklUgdBk/jywgy6lksOo3EzjySt7KKFLyhKJ+V0O86aGzpQfJooypuLGLn
+         Yk3piyGy8r24AmguzsaBtpflTWKN7G0DwK3xPmgjdKwY1ZvpkWMAWMuORvXfBBkWI8Dy
+         wVNa3AFm/nYmcAw5p7xoKNIROPIpO/lPQTnEDMOH/i+8GjpuclFvPytT5EmJt2REcVb5
+         xlJQ==
+X-Gm-Message-State: AOAM531pgpBmjwlrjJ07joeL0hQ9yVkfICl65TK/sVEeZ2nAfm2nFkLi
+        LUIJo7cGf71M/9jPt4992wE=
+X-Google-Smtp-Source: ABdhPJwlS6KnbE0GJO6PNJcPUf36QAcdY36Ydt1Q/k248onSpOffCg4lNAIsIbuVB1NWWNqiZEsQhg==
+X-Received: by 2002:a05:6402:35d4:: with SMTP id z20mr518464edc.13.1644254837145;
+        Mon, 07 Feb 2022 09:27:17 -0800 (PST)
+Received: from skbuf ([188.27.184.105])
+        by smtp.gmail.com with ESMTPSA id a11sm5606253edv.76.2022.02.07.09.27.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 09:27:15 -0800 (PST)
+Date:   Mon, 7 Feb 2022 19:27:13 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     andrew@lunn.ch, netdev@vger.kernel.org, robh+dt@kernel.org,
+        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v8 net-next 06/10] net: dsa: microchip: add support for
+ phylink management
+Message-ID: <20220207172713.efts4o7b7xor37uu@skbuf>
+References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
+ <20220207172204.589190-7-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: CBDBC20033
-X-Stat-Signature: zzama9ow5pq3kkmx1hjco5u56cx8pc77
-X-Rspamd-Server: rspamout07
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX195MAd3iiiDNQHmDE4VHCECmci3L2/s1PE=
-X-HE-Tag: 1644254894-989860
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207172204.589190-7-prasanna.vengateshan@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-07 at 17:46 +0100, Greg KH wrote:
-> On Mon, Feb 07, 2022 at 01:00:51PM -0300, Leonardo Araujo wrote:
-> > Fixes the checks reported by checkpatch.pl for usleep_range.
-[]
-> > diff --git a/drivers/staging/wfx/bh.c b/drivers/staging/wfx/bh.c
-[]
-> > @@ -312,7 +312,7 @@ void wfx_bh_poll_irq(struct wfx_dev *wdev)
-> >  			dev_err(wdev->dev, "time out while polling control register\n");
-> >  			return;
-> >  		}
-> > -		udelay(200);
-> > +		usleep_range(200, 200);
+On Mon, Feb 07, 2022 at 10:52:00PM +0530, Prasanna Vengateshan wrote:
+> +static void lan937x_apply_rgmii_delay(struct ksz_device *dev, int port,
+> +				      phy_interface_t interface, u8 val)
+> +{
+> +	struct ksz_port *p = &dev->ports[port];
+> +
+> +	/* Clear Ingress & Egress internal delay enabled bits */
+> +	val &= ~(PORT_RGMII_ID_EG_ENABLE | PORT_RGMII_ID_IG_ENABLE);
+> +
+> +	if (interface == PHY_INTERFACE_MODE_RGMII_TXID ||
+> +	    interface == PHY_INTERFACE_MODE_RGMII_ID) {
+> +		/* if the delay is 0, let us not enable DLL */
+> +		if (p->rgmii_tx_val) {
+> +			lan937x_update_rgmii_tx_rx_delay(dev, port, true);
+> +			dev_info(dev->dev, "Applied rgmii tx delay for the port %d\n",
+> +				 port);
+> +			val |= PORT_RGMII_ID_EG_ENABLE;
+> +		}
+> +	}
+> +
+> +	if (interface == PHY_INTERFACE_MODE_RGMII_RXID ||
+> +	    interface == PHY_INTERFACE_MODE_RGMII_ID) {
+> +		/* if the delay is 0, let us not enable DLL */
+> +		if (p->rgmii_rx_val) {
+> +			lan937x_update_rgmii_tx_rx_delay(dev, port, false);
+> +			dev_info(dev->dev, "Applied rgmii rx delay for the port %d\n",
+> +				 port);
+> +			val |= PORT_RGMII_ID_IG_ENABLE;
+> +		}
+> +	}
+> +
+> +	/* Enable RGMII internal delays */
+> +	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, val);
+> +}
+> +
+> +void lan937x_mac_config(struct ksz_device *dev, int port,
+> +			phy_interface_t interface)
+> +{
+> +	u8 data8;
+> +
+> +	lan937x_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
+> +
+> +	/* clear MII selection & set it based on interface later */
+> +	data8 &= ~PORT_MII_SEL_M;
+> +
+> +	/* configure MAC based on interface */
+> +	switch (interface) {
+> +	case PHY_INTERFACE_MODE_MII:
+> +		lan937x_config_gbit(dev, false, &data8);
+> +		data8 |= PORT_MII_SEL;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RMII:
+> +		lan937x_config_gbit(dev, false, &data8);
+> +		data8 |= PORT_RMII_SEL;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +		lan937x_config_gbit(dev, true, &data8);
+> +		data8 |= PORT_RGMII_SEL;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII_ID:
+> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> +		lan937x_config_gbit(dev, true, &data8);
+> +		data8 |= PORT_RGMII_SEL;
+> +
+> +		/* Apply rgmii internal delay for the mac */
+> +		lan937x_apply_rgmii_delay(dev, port, interface, data8);
 
-range with the same low/high values is pretty useless.
+I think the agreement from previous discussions was to apply RGMII delay
+_exclusively_ based on the 'rx-internal-delay-ps' and 'tx-internal-delay-ps'
+properties, at least for new drivers with no legacy. You are omitting to
+apply delays in phy-mode = "rgmii", which contradicts that agreement.
+I think you should treat all 4 RGMII cases the same, and remove the
+interface checks from lan937x_apply_rgmii_delay.
 
-And Leonardo, checkpatch should have warned you about this.
-You, as a novice kernel submitter, should always use it on patches
-you create before you send them out for review.
-
-> Do you have the hardware to verify that this is the correct fix for
-> this?
-> 
-> You can not just blindly make this type of change here, sorry, otherwise
-> we would have done so long ago with a simple search/replace :)
-
-Greg, you keep writing this but treewide search/replace is almost never done.
-
-
+> +
+> +		/* rgmii delay configuration is already applied above,
+> +		 * hence return from here as no changes required
+> +		 */
+> +		return;
+> +	default:
+> +		dev_err(dev->dev, "Unsupported interface '%s' for port %d\n",
+> +			phy_modes(interface), port);
+> +		return;
+> +	}
+> +
+> +	/* Write the updated value */
+> +	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, data8);
+> +}
