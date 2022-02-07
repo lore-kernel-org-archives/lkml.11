@@ -2,113 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57DD8C35278
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDCFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386758AbiBGLgf (ORCPT
+        id S1387136AbiBGLj1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:36:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
+        Mon, 7 Feb 2022 06:39:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380400AbiBGLZx (ORCPT
+        with ESMTP id S1384386AbiBGL2C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:25:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E87C03E946;
-        Mon,  7 Feb 2022 03:25:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7D7E6135A;
-        Mon,  7 Feb 2022 11:25:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A396BC340EB;
-        Mon,  7 Feb 2022 11:25:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233127;
-        bh=Wvu9U0FC7Jn2345zfBPmgze6YuQzHKCpO7jO646nQC4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=opbpBoAxS4VhIspCSbcwW6VjZSF5plrgY3DzWwYWb75j4c+LrOeEec3KPpQeWru7n
-         LEzncAWA0ShYpslJ7JVJLkm9dd3rXEdtAr7WGP0pT5tVwkN3MhD5+A65DbqFgmjg4h
-         6WTtUb2xc3epMycRNcyDR2R9PBYaS0Q22NpdFjDI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aun-Ali Zaidi <admin@kodeit.net>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Aditya Garg <gargaditya08@live.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 025/110] drm/amd/display: Force link_rate as LINK_RATE_RBR2 for 2018 15" Apple Retina panels
-Date:   Mon,  7 Feb 2022 12:05:58 +0100
-Message-Id: <20220207103803.101677250@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
-References: <20220207103802.280120990@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:28:02 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6049C03E947
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:26:09 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id q22so19047649ljh.7
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 03:26:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=77jDirKALASyuRe4H7SNos8+ceiZ5NwhVHAmzpu0zXA=;
+        b=YPG3HSxJDHKgSkLNtEZkTejuMRlS5t3d0YDL/GSegkBzscg/AzU0bbVAoAAIj2jYRj
+         aESr+4jgMaypMMIwM0Ho5vk5lfe7AUCINgESqbh1fjUuJHPGg3TszyV9MJG6Lsx9dlG3
+         lCaRevSAg68VQeJAGT8TYNZOWHv6gIYm98eYHsENIigae8mIHGqX3XT+TvMmFQm0D9fW
+         /EE7CB+EcTk3UXcfQR7OYRRuguM8pdwxYbFoHj/sP2ROwqrJ3r8MCdyqv+9f9NO1uHKL
+         /AqLLS18OjZzcg8UtTf+WhTvI7hSJ77JkNZ/92/dzIGYzYoMqlbKlUrJU0TXu15+UwRl
+         zg/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=77jDirKALASyuRe4H7SNos8+ceiZ5NwhVHAmzpu0zXA=;
+        b=W6eU0CxEMDK29JZtjz2ByK5pLwaCSPatD3U89Xh3Qc5kG9dKow57RyWpY0h7mx0jIC
+         SWrBYPA2teX2XKJ1L24yp8MyeCDbjUiIMKscNPZO1X19KxkE4AHKTJnk/aLRh/40aRfL
+         fOjqRdsorQpF0fUd+RbQDk4iYaU2Ho2JmCD19ygo/1h5uZuiz32EFdIZHUsoIR8XJTsr
+         yz+hhzpE1nEXErXYzrmVZfOauZktzDaaAAlVJ3NGMF0k/SoC4ap6+QqAMeXy4vWR2c27
+         iYbfzxkDrnsq7eJHDR1QEc0k07CiUpl3fcbp0lH+eHRh7oFBd3FQqHz/FxbzeRE/N2Sx
+         sHCg==
+X-Gm-Message-State: AOAM532F5NrEsuIGbussgzPkXlkkKgfEZ75QbS7cOVubGniWNgB7eAHm
+        EDvgXzQycGz1kvnhRWTN4ssYRQ==
+X-Google-Smtp-Source: ABdhPJx1YHEx8hiT2J0YS7cHvuzQ34b5CoCNxheFV1HDcYv0oDChcf6LpLrWcy+v2YVfAhzHSCjOWg==
+X-Received: by 2002:a05:651c:d4:: with SMTP id 20mr8530119ljr.132.1644233168232;
+        Mon, 07 Feb 2022 03:26:08 -0800 (PST)
+Received: from localhost.localdomain (h-155-4-129-21.NA.cust.bahnhof.se. [155.4.129.21])
+        by smtp.gmail.com with ESMTPSA id z20sm1530066ljj.103.2022.02.07.03.26.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 03:26:07 -0800 (PST)
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+To:     Linus <torvalds@linux-foundation.org>, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [GIT PULL] MMC fixes for v5.17-rc4
+Date:   Mon,  7 Feb 2022 12:26:05 +0100
+Message-Id: <20220207112605.246647-1-ulf.hansson@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aun-Ali Zaidi <admin@kodeit.net>
+Hi Linus,
 
-commit 30fbce374745a9c6af93c775a5ac49a97f822fda upstream.
+Here's a PR with a couple of MMC fixes intended for v5.17-rc4. Details about the
+highlights are as usual found in the signed tag.
 
-The eDP link rate reported by the DP_MAX_LINK_RATE dpcd register (0xa) is
-contradictory to the highest rate supported reported by
-EDID (0xc = LINK_RATE_RBR2). The effects of this compounded with commit
-'4a8ca46bae8a ("drm/amd/display: Default max bpc to 16 for eDP")' results
-in no display modes being found and a dark panel.
+Please pull this in!
 
-For now, simply force the maximum supported link rate for the eDP attached
-2018 15" Apple Retina panels.
-
-Additionally, we must also check the firmware revision since the device ID
-reported by the DPCD is identical to that of the more capable 16,1,
-incorrectly quirking it. We also use said firmware check to quirk the
-refreshed 15,1 models with Vega graphics as they use a slightly newer
-firmware version.
-
-Tested-by: Aun-Ali Zaidi <admin@kodeit.net>
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Aun-Ali Zaidi <admin@kodeit.net>
-Signed-off-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c |   20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-@@ -3913,6 +3913,26 @@ static bool retrieve_link_cap(struct dc_
- 		dp_hw_fw_revision.ieee_fw_rev,
- 		sizeof(dp_hw_fw_revision.ieee_fw_rev));
- 
-+	/* Quirk for Apple MBP 2018 15" Retina panels: wrong DP_MAX_LINK_RATE */
-+	{
-+		uint8_t str_mbp_2018[] = { 101, 68, 21, 103, 98, 97 };
-+		uint8_t fwrev_mbp_2018[] = { 7, 4 };
-+		uint8_t fwrev_mbp_2018_vega[] = { 8, 4 };
-+
-+		/* We also check for the firmware revision as 16,1 models have an
-+		 * identical device id and are incorrectly quirked otherwise.
-+		 */
-+		if ((link->dpcd_caps.sink_dev_id == 0x0010fa) &&
-+		    !memcmp(link->dpcd_caps.sink_dev_id_str, str_mbp_2018,
-+			     sizeof(str_mbp_2018)) &&
-+		    (!memcmp(link->dpcd_caps.sink_fw_revision, fwrev_mbp_2018,
-+			     sizeof(fwrev_mbp_2018)) ||
-+		    !memcmp(link->dpcd_caps.sink_fw_revision, fwrev_mbp_2018_vega,
-+			     sizeof(fwrev_mbp_2018_vega)))) {
-+			link->reported_link_cap.link_rate = LINK_RATE_RBR2;
-+		}
-+	}
-+
- 	memset(&link->dpcd_caps.dsc_caps, '\0',
- 			sizeof(link->dpcd_caps.dsc_caps));
- 	memset(&link->dpcd_caps.fec_cap, '\0', sizeof(link->dpcd_caps.fec_cap));
+Kind regards
+Ulf Hansson
 
 
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
+
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git tags/mmc-v5.17-rc1
+
+for you to fetch changes up to bd2db32e7c3e35bd4d9b8bbff689434a50893546:
+
+  moxart: fix potential use-after-free on remove path (2022-01-31 15:36:34 +0100)
+
+----------------------------------------------------------------
+MMC core:
+ - Fix support for SD Power off notification
+
+MMC host:
+ - moxart: Fix potential use-after-free on remove path
+ - sdhci-of-esdhc: Fix error path when setting dma mask
+ - sh_mmcif: Fix potential NULL pointer dereference
+
+----------------------------------------------------------------
+Andrey Skvortsov (1):
+      mmc: core: Wait for command setting 'Power Off Notification' bit to complete
+
+Greg Kroah-Hartman (1):
+      moxart: fix potential use-after-free on remove path
+
+Jiasheng Jiang (2):
+      mmc: sdhci-of-esdhc: Check for error num after setting mask
+      mmc: sh_mmcif: Check for null res pointer
+
+ drivers/mmc/core/sd.c             | 8 +++++++-
+ drivers/mmc/host/moxart-mmc.c     | 2 +-
+ drivers/mmc/host/sdhci-of-esdhc.c | 8 ++++++--
+ drivers/mmc/host/sh_mmcif.c       | 3 +++
+ 4 files changed, 17 insertions(+), 4 deletions(-)
