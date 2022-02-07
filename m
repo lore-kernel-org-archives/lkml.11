@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13183C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4573EC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345970AbiBGP7o (ORCPT
+        id S1352414AbiBGP7s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:59:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37562 "EHLO
+        Mon, 7 Feb 2022 10:59:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344651AbiBGP4p (ORCPT
+        with ESMTP id S1378790AbiBGPzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:56:45 -0500
+        Mon, 7 Feb 2022 10:55:12 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2504DC0401D3
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:56:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A987C0401CE
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:55:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249404;
+        s=mimecast20190719; t=1644249311;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7uKkJYp30pF3ErxkQlRiirr2VHEvcBthwFChel8Mbe4=;
-        b=Tb3ODZGX0HbJpDH1Zv12UbFmt5k4APu8S3mStqZDc/94WNW+0cpPYQvVWSnGW+lRimCzw3
-        /8mCYVQgTnEGjllfH2xqY1wOKAYcwYWgNcLg9mLJBQn0hvZxjU+bpYGKUHj/KUf+GlSJ7X
-        3xVhjqco7hDVyVyjCL2KMvJuoi0CBWo=
+        bh=EQ3ltiA1zD8GMi+gBPOuvalM+7bzpftE5TYI4/s1Kfw=;
+        b=asbIsE73BWKAuEWfASPwQhe8QdYbJJ++4CYIWqnGS6bT6nEUyJ6yQWuG2+L7CQIYntP2xC
+        tWhVPACuqoFxbe/HxL9fGSIP1H+lOsUYO0NYX6atHVE1o3+lFD9HPNsjQVB6mDq+eWryKT
+        gK/rwuH+DKekm0S/lGuxFo5m5UQ61LE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-139-qpyNhtRvOWyRLxQ07D8F3g-1; Mon, 07 Feb 2022 10:56:40 -0500
-X-MC-Unique: qpyNhtRvOWyRLxQ07D8F3g-1
+ us-mta-361-6tc-WsGFNY-HT2UZY1tsFQ-1; Mon, 07 Feb 2022 10:55:08 -0500
+X-MC-Unique: 6tc-WsGFNY-HT2UZY1tsFQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DA995874980;
-        Mon,  7 Feb 2022 15:56:37 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D8E0593923;
+        Mon,  7 Feb 2022 15:55:04 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 991677DE38;
-        Mon,  7 Feb 2022 15:56:30 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4DE7E7DE5F;
+        Mon,  7 Feb 2022 15:54:57 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>,
@@ -66,10 +66,10 @@ Cc:     Tony Luck <tony.luck@intel.com>,
         Zhenyu Wang <zhenyuw@linux.intel.com>,
         Kan Liang <kan.liang@linux.intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 11/30] KVM: x86: SVM: use vmcb01 in avic_init_vmcb
-Date:   Mon,  7 Feb 2022 17:54:28 +0200
-Message-Id: <20220207155447.840194-12-mlevitsk@redhat.com>
+        Maxim Levitsky <mlevitsk@redhat.com>, stable@vger.kernel.org
+Subject: [PATCH RESEND 01/30] KVM: x86: SVM: don't passthrough SMAP/SMEP/PKE bits in !NPT && !gCR0.PG case
+Date:   Mon,  7 Feb 2022 17:54:18 +0200
+Message-Id: <20220207155447.840194-2-mlevitsk@redhat.com>
 In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
 References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
@@ -79,28 +79,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Out of precation use vmcb01 when enabling host AVIC.
+When the guest doesn't enable paging, and NPT/EPT is disabled, we
+use guest't paging CR3's as KVM's shadow paging pointer and
+we are technically in direct mode as if we were to use NPT/EPT.
 
-No functional change intended.
+In direct mode we create SPTEs with user mode permissions
+because usually in the direct mode the NPT/EPT doesn't
+need to restrict access based on guest CPL
+(there are MBE/GMET extenstions for that but KVM doesn't use them).
+
+In this special "use guest paging as direct" mode however,
+and if CR4.SMAP/CR4.SMEP are enabled, that will make the CPU
+fault on each access and KVM will enter endless loop of page faults.
+
+Since page protection doesn't have any meaning in !PG case,
+just don't passthrough these bits.
+
+The fix is the same as was done for VMX in commit:
+commit 656ec4a4928a ("KVM: VMX: fix SMEP and SMAP without EPT")
+
+This fixes the boot of windows 10 without NPT for good.
+(Without this patch, BSP boots, but APs were stuck in endless
+loop of page faults, causing the VM boot with 1 CPU)
 
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Cc: stable@vger.kernel.org
 ---
- arch/x86/kvm/svm/avic.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/svm/svm.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 4c2d622b3b9f0..c6072245f7fbb 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -167,7 +167,7 @@ int avic_vm_init(struct kvm *kvm)
- 
- void avic_init_vmcb(struct vcpu_svm *svm)
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 975be872cd1a3..995c203a62fd9 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -1596,6 +1596,7 @@ void svm_set_cr0(struct kvm_vcpu *vcpu, unsigned long cr0)
  {
--	struct vmcb *vmcb = svm->vmcb;
-+	struct vmcb *vmcb = svm->vmcb01.ptr;
- 	struct kvm_svm *kvm_svm = to_kvm_svm(svm->vcpu.kvm);
- 	phys_addr_t bpa = __sme_set(page_to_phys(svm->avic_backing_page));
- 	phys_addr_t lpa = __sme_set(page_to_phys(kvm_svm->avic_logical_id_table_page));
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 	u64 hcr0 = cr0;
++	bool old_paging = is_paging(vcpu);
+ 
+ #ifdef CONFIG_X86_64
+ 	if (vcpu->arch.efer & EFER_LME && !vcpu->arch.guest_state_protected) {
+@@ -1612,8 +1613,11 @@ void svm_set_cr0(struct kvm_vcpu *vcpu, unsigned long cr0)
+ #endif
+ 	vcpu->arch.cr0 = cr0;
+ 
+-	if (!npt_enabled)
++	if (!npt_enabled) {
+ 		hcr0 |= X86_CR0_PG | X86_CR0_WP;
++		if (old_paging != is_paging(vcpu))
++			svm_set_cr4(vcpu, kvm_read_cr4(vcpu));
++	}
+ 
+ 	/*
+ 	 * re-enable caching here because the QEMU bios
+@@ -1657,8 +1661,12 @@ void svm_set_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
+ 		svm_flush_tlb_current(vcpu);
+ 
+ 	vcpu->arch.cr4 = cr4;
+-	if (!npt_enabled)
++	if (!npt_enabled) {
+ 		cr4 |= X86_CR4_PAE;
++
++		if (!is_paging(vcpu))
++			cr4 &= ~(X86_CR4_SMEP | X86_CR4_SMAP | X86_CR4_PKE);
++	}
+ 	cr4 |= host_cr4_mce;
+ 	to_svm(vcpu)->vmcb->save.cr4 = cr4;
+ 	vmcb_mark_dirty(to_svm(vcpu)->vmcb, VMCB_CR);
 -- 
 2.26.3
 
