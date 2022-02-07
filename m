@@ -2,111 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A78C2C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89855C35273
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442882AbiBGPKM (ORCPT
+        id S1442849AbiBGPKD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:10:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53456 "EHLO
+        Mon, 7 Feb 2022 10:10:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442174AbiBGOrf (ORCPT
+        with ESMTP id S1442461AbiBGOuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:47:35 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2F6C03FEC8
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:47:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644245254; x=1675781254;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NFLLMgHFBwJhXlvHAadZYGDnNUvR3br8H3+mEqUjtmU=;
-  b=letVqL7r5qDZWN5FA2kSPQjtJ609ua40T6/6oSIeVldElGad1PyThpTd
-   oin7uWk6HlLXO/aM5dKdP+EVk3txPdYIqAtLDaazJGjavAmsynO4w69Yv
-   bFBFfHzXlnjvjWV82QDjwo4ihQeZ/jQH46OtAE7Xy5duegwkHAjEgEGQV
-   du8IWPlc5kTKsLohMyZbgQCly2ylJQL4LQYY3Nx7lW84BI9eKciUDL5CN
-   vCxebE8vcjAG5FSvribO9dA8G7BmgcI4J25PVGcXY+GYGUFV5cdBs/Zfc
-   7B96qZ3K9Yqs+rmVpf5dcozyIbiPMh3BdsMCBwlFD1Dh+UcmnjJ0BsagG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="247564159"
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="247564159"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 06:47:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="677776693"
-Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 07 Feb 2022 06:47:32 -0800
-Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nH5Ih-0000d5-KG; Mon, 07 Feb 2022 14:47:31 +0000
-Date:   Mon, 7 Feb 2022 22:47:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Zhi Wang <zhi.wang.linux@gmail.com>, hch@lst.de, jgg@nvidia.com,
-        jani.nikula@linux.intel.com
-Cc:     kbuild-all@lists.01.org, Zhi Wang <zhi.wang.linux@gmail.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Terrence Xu <terrence.xu@intel.com>,
-        intel-gvt-dev@lists.freedesktop.org
-Subject: Re: [Intel-gfx] [PATCH 1/3] i915/gvt: Introduce the mmio_table.c to
- support VFIO new mdev API
-Message-ID: <202202072226.kzm2Qm5q-lkp@intel.com>
-References: <20220127120508.11330-1-zhi.a.wang@intel.com>
+        Mon, 7 Feb 2022 09:50:52 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8BEC0401C2;
+        Mon,  7 Feb 2022 06:50:51 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id B335A1F444B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644245449;
+        bh=13Pa/hRoL9bc6PMdKa7o3kW0gnpTZ/7yRWMBa7/cWug=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=E5nDpwdJ3WJeBqgA11hTJgycuzr9IolkDMGGw/W0GyDH6gtijdYhCrmKgT50mz2Bc
+         ZZWfgMuby4+E+/iGal0uerm3GAhl96/I61rhtkEAqVPDkJ+MgDbKItyIRozrlwGjy4
+         x+JCnRZiXFTma4kNRMrHqjJF5MxIwbFhxRzLHzdgtfKFGamelDdQYY55JKopBN4Gt6
+         kZpo/Wv17MvsU5RDVIteshi0UJzElRBd+0D8lNz9ZLPtZQjYR2EgwKYVKM4/mvn682
+         dy+SO74CcRhmj++OGIZ/zqUL3OPfTWMfOI/5DoxJzz8yOHzjhnbTH03juHvW0bzPVP
+         NUl8f8rHgCHoA==
+Message-ID: <d305aefa-7cdf-3221-2883-9381785e335d@collabora.com>
+Date:   Mon, 7 Feb 2022 15:50:46 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127120508.11330-1-zhi.a.wang@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH V1, 5/6] media: mtk-jpegdec: add output pic reorder
+ interface
+Content-Language: en-US
+To:     "kyrie.wu" <kyrie.wu@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, xia.jiang@mediatek.com,
+        maoguang.meng@mediatek.com, srv_heupstream@mediatek.com,
+        irui.wang@mediatek.com
+References: <1638509655-14296-1-git-send-email-kyrie.wu@mediatek.com>
+ <1638509655-14296-6-git-send-email-kyrie.wu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <1638509655-14296-6-git-send-email-kyrie.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zhi,
+Il 03/12/21 06:34, kyrie.wu ha scritto:
+> add output reorder func to reorder the output images
+> to ensure the output pic is consistent with the input images.
+> 
+> Signed-off-by: kyrie.wu <kyrie.wu@mediatek.com>
+> ---
+>   drivers/media/platform/mtk-jpeg/mtk_jpeg_dec_hw.c | 50 +++++++++++++++++++++--
+>   1 file changed, 46 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_dec_hw.c b/drivers/media/platform/mtk-jpeg/mtk_jpeg_dec_hw.c
+> index 9138ecb..fad5bf1c 100644
+> --- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_dec_hw.c
+> +++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_dec_hw.c
+> @@ -443,6 +443,49 @@ void mtk_jpeg_dec_set_config(void __iomem *base,
+>   	mtk_jpeg_dec_set_pause_mcu_idx(base, config->total_mcu);
+>   }
+>   
+> +void mtk_jpegdec_put_buf(struct mtk_jpegdec_comp_dev *jpeg)
 
-I love your patch! Perhaps something to improve:
+This function is used only in this file, hence it should be static.
 
-[auto build test WARNING on drm-tip/drm-tip]
-[also build test WARNING on next-20220207]
-[cannot apply to drm-intel/for-linux-next hch-configfs/for-next v5.17-rc3]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> +{
+> +	struct mtk_jpeg_src_buf *dst_done_buf, *tmp_dst_done_buf;
+> +	struct vb2_v4l2_buffer *dst_buffer;
+> +	struct list_head *temp_entry;
+> +	struct list_head *pos = NULL;
+> +	struct mtk_jpeg_ctx *ctx;
+> +	unsigned long flags;
+> +
+> +	ctx = jpeg->hw_param.curr_ctx;
+> +	if (!ctx) {
+> +		dev_err(jpeg->dev, "comp_jpeg ctx fail !!!\n");
 
-url:    https://github.com/0day-ci/linux/commits/Zhi-Wang/i915-gvt-Introduce-the-mmio_table-c-to-support-VFIO-new-mdev-API/20220127-200727
-base:   git://anongit.freedesktop.org/drm/drm-tip drm-tip
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220207/202202072226.kzm2Qm5q-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/0day-ci/linux/commit/533f92651a7a56481a053f1e04dc5a5ec024ffb9
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Zhi-Wang/i915-gvt-Introduce-the-mmio_table-c-to-support-VFIO-new-mdev-API/20220127-200727
-        git checkout 533f92651a7a56481a053f1e04dc5a5ec024ffb9
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/
+Since this is unlikely to happen (or should be unlikely anyway!!), this print
+should then be a dev_dbg()
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> +		return;
+> +	}
+> +
+> +	dst_buffer = jpeg->hw_param.dst_buffer;
+> +	if (!dst_buffer) {
+> +		dev_err(jpeg->dev, "comp_jpeg dst_buffer fail !!!\n");
+> +		return;
+> +	}
+> +
+> +	dst_done_buf = container_of(dst_buffer, struct mtk_jpeg_src_buf, b);
+> +
+> +	spin_lock_irqsave(&ctx->done_queue_lock, flags);
+> +	list_add_tail(&dst_done_buf->list, &ctx->dst_done_queue);
+> +	while (!list_empty(&ctx->dst_done_queue) &&
+> +		(pos != &ctx->dst_done_queue)) {
+> +		list_for_each_prev_safe(pos, temp_entry,
+> +			(&ctx->dst_done_queue)) {
+> +			tmp_dst_done_buf = list_entry(pos,
+> +				struct mtk_jpeg_src_buf, list);
+> +			if (tmp_dst_done_buf->frame_num ==
+> +				ctx->last_done_frame_num) {
+> +				list_del(&tmp_dst_done_buf->list);
+> +				v4l2_m2m_buf_done(&tmp_dst_done_buf->b,
+> +					VB2_BUF_STATE_DONE);
+> +				ctx->last_done_frame_num++;
+> +			}
+> +		}
+> +	}
+> +	spin_unlock_irqrestore(&ctx->done_queue_lock, flags);
+> +}
+> +
+>   static void mtk_jpegdec_timeout_work(struct work_struct *work)
+>   {
+>   	enum vb2_buffer_state buf_state = VB2_BUF_STATE_ERROR;
+> @@ -450,10 +493,9 @@ static void mtk_jpegdec_timeout_work(struct work_struct *work)
+>   		container_of(work, struct mtk_jpegdec_comp_dev,
+>   		job_timeout_work.work);
+>   	struct mtk_jpeg_dev *master_jpeg = cjpeg->master_dev;
+> -	struct vb2_v4l2_buffer *src_buf, *dst_buf;
+> +	struct vb2_v4l2_buffer *src_buf;
+>   
+>   	src_buf = cjpeg->hw_param.src_buffer;
+> -	dst_buf = cjpeg->hw_param.dst_buffer;
+>   
+>   	mtk_jpeg_dec_reset(cjpeg->reg_base);
+>   	clk_disable_unprepare(cjpeg->pm.dec_clk.clk_info->jpegdec_clk);
+> @@ -462,7 +504,7 @@ static void mtk_jpegdec_timeout_work(struct work_struct *work)
+>   	atomic_inc(&cjpeg->hw_rdy);
+>   	wake_up(&master_jpeg->dec_hw_wq);
+>   	v4l2_m2m_buf_done(src_buf, buf_state);
+> -	v4l2_m2m_buf_done(dst_buf, buf_state);
+> +	mtk_jpegdec_put_buf(cjpeg);
+>   }
+>   
+>   int mtk_jpegdec_init_pm(struct mtk_jpegdec_comp_dev *mtkdev)
+> @@ -559,7 +601,7 @@ static irqreturn_t mtk_jpegdec_hw_irq_handler(int irq, void *priv)
+>   
+>   dec_end:
+>   	v4l2_m2m_buf_done(src_buf, buf_state);
+> -	v4l2_m2m_buf_done(dst_buf, buf_state);
+> +	mtk_jpegdec_put_buf(jpeg);
+>   	v4l2_m2m_job_finish(master_jpeg->m2m_dev, ctx->fh.m2m_ctx);
+>   	clk_disable_unprepare(jpeg->pm.dec_clk.clk_info->jpegdec_clk);
+>   	pm_runtime_put(ctx->jpeg->dev);
 
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/gpu/drm/i915/gvt/handlers.c:45:6: sparse: sparse: symbol 'intel_gvt_match_device' was not declared. Should it be static?
-
-vim +/intel_gvt_match_device +45 drivers/gpu/drm/i915/gvt/handlers.c
-
-12d14cc43b3470 Zhi Wang 2016-08-30  44  
-12d14cc43b3470 Zhi Wang 2016-08-30 @45  bool intel_gvt_match_device(struct intel_gvt *gvt,
-12d14cc43b3470 Zhi Wang 2016-08-30  46  		unsigned long device)
-12d14cc43b3470 Zhi Wang 2016-08-30  47  {
-533f92651a7a56 Zhi Wang 2022-01-27  48  	return intel_gvt_get_device_type(gvt->gt->i915) & device;
-12d14cc43b3470 Zhi Wang 2016-08-30  49  }
-12d14cc43b3470 Zhi Wang 2016-08-30  50  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
