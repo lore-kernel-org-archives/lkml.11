@@ -2,159 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C48C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D4FC3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:37:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244132AbiBGGgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:36:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
+        id S244263AbiBGGgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:36:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357495AbiBGF6I (ORCPT
+        with ESMTP id S239618AbiBGGbh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 00:58:08 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE40CC0401DE;
-        Sun,  6 Feb 2022 21:57:52 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so12366987pjb.1;
-        Sun, 06 Feb 2022 21:57:52 -0800 (PST)
+        Mon, 7 Feb 2022 01:31:37 -0500
+X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 22:31:35 PST
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DA8C043181;
+        Sun,  6 Feb 2022 22:31:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=gJJl6zWjnYTAK0xTlfcSjoJKSlxcelJDvZmIajlJ8+s=;
-        b=IheDGIHjXcQPPBv/nVbkTyR/D69am//ID7NHIUze/VYmD+TDXndRY410ceEhgy2UBF
-         XwJjIoxPg+AdOp8x4FMSFS2hIpL5tlLQcTCPklSRmlDpbLja8YrGvvg1ulPCySrv8wMf
-         Q8BvWuY31Fp6/CrIjO/dQFo89V7cUdwQh4qXW0Tnt0Lw5Gke9e8Rrt2zbDsdxYVkvm5s
-         tsi/FMMukXobROLoKUXXNWbIpiT9Is2aJG+Tn9OuVmfGN1OUBiVgTECAQZhk++DvG8OT
-         mPOEL431lTGcnAPkYxXowNukvftPynwPGWJWDwhUOVMOvk8KeMaIcxWaPkc4sqUOdBV1
-         63QA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=gJJl6zWjnYTAK0xTlfcSjoJKSlxcelJDvZmIajlJ8+s=;
-        b=Sl8IJLXH+6R0aa71gyZgayc33hliywXYJ4NvZOb6RCd9qfeqkbiWl8hl6HmPnNWfNC
-         GM567T8Blx9eGDm5DKXAPiYCi03hpJggGn1eQUhmKBhwCEZMIk/Sd3gHQ/Jypr9M+nnu
-         BgKpG5ISHnhwKDAvISbVuBeR5NRFblhz6NBuS3s7/orRsKmYT6ZHWzMwMgfz8AosxXGt
-         l63Az5X6GdAhhM4y4RjbRIK1vx61Vs25fyRKHcS26kKaJxMVzfrQ75IVHfUBfWkyeV/3
-         dzjqxoIEyXH3pVhjrX9EW2uDvrMCFfObmKDhZR/pzWRYFyl82WYk/HL7h1aa7YynOIGM
-         YkGg==
-X-Gm-Message-State: AOAM531QHzGmYFlPuQHyNAHHPQByHNORG/Izt8u5jq9TrzX2HAvgLaZh
-        vD8fV0lCGgMtEyWNN2HNwMI=
-X-Google-Smtp-Source: ABdhPJy51aKwfjwlLv6pqXXmiwaPPRiyIWIRg8WQ+VRfoneGqhqzc2ADVgOiWcVb9BOn8P2ss7hBTQ==
-X-Received: by 2002:a17:90a:2c0a:: with SMTP id m10mr16741822pjd.183.1644213472269;
-        Sun, 06 Feb 2022 21:57:52 -0800 (PST)
-Received: from scdiu3.sunplus.com ([113.196.136.192])
-        by smtp.googlemail.com with ESMTPSA id g17sm10529264pfj.148.2022.02.06.21.57.50
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Feb 2022 21:57:52 -0800 (PST)
-From:   Hammer Hsieh <hammerh0314@gmail.com>
-To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
-        p.zabel@pengutronix.de
-Cc:     wells.lu@sunplus.com, hammer.hsieh@sunplus.com,
-        Hammer Hsieh <hammerh0314@gmail.com>
-Subject: [PATCH v7 1/2] dt-bindings:serial:Add bindings doc for Sunplus SoC UART Driver
-Date:   Mon,  7 Feb 2022 13:58:00 +0800
-Message-Id: <1644213481-20321-2-git-send-email-hammerh0314@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644213481-20321-1-git-send-email-hammerh0314@gmail.com>
-References: <1644213481-20321-1-git-send-email-hammerh0314@gmail.com>
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1644215495; x=1675751495;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Wq/xULOuP/jvk92XmnTa8NRyCBGFLagVj5mIPmhXCgg=;
+  b=KcmvVb4bNLLQtmC9DQEwxG3EYkMR5ZUqy1F+h6KHtqlfKng4Jqxoddz3
+   xISbzygx0HjRCqC+QRnw3NfS9fxfknMAoHIozm8giM0yE6DomIWlyHlz9
+   Dl/6eUXJ0CAJydJEeq1PCRyIQGcSQG9afA7tZI1gz8dx9KKFnF0yI5lt0
+   5ndt8clHeVHMygZwsmlD3fDkvf+DEfqabaOoh/FfwetomPia7VyNdY7v6
+   lD8xQxzQEjfH6YKydd2gPlWn030o3abTmd5GBT1pic1gncPogMm9ryqBP
+   X73t75lwNaSl6mXOV80dpWVdCCMhNHKgdDnUN/tgKpy+cPBt/yqUVrDiW
+   g==;
+X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
+   d="scan'208";a="21920108"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 07 Feb 2022 07:30:28 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Mon, 07 Feb 2022 07:30:28 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Mon, 07 Feb 2022 07:30:28 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1644215428; x=1675751428;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Wq/xULOuP/jvk92XmnTa8NRyCBGFLagVj5mIPmhXCgg=;
+  b=BE0+XcqqIwWe058GxcNFZCo42yRP3dWCit9o/vKc3X3X15RT+j+FU+Zr
+   8gK0oqDorM5nZjRBv5XA2kF1KL63x5LpgA/o+3ZWDhNtU7KmE8wPWefqw
+   AlWejtC8LwB8p1WUriQOIuiWxOdz/kIqFZgwVrIO3O12tu5hG4yLR+Ypy
+   k7xlJLG6qqEG2FxGa/4Qbw4eIyYhoPsq1eF8K4deBBnn7QlAnLXXrYdko
+   Ve1MfxW2h9gj4oqLCGxSrcIHhdyn+W5rGGF9y22rKtx5JxS2eOBmKKLeo
+   c1549qmR9KRNIQSrTDSgGSMPYH70F77GfP1IToZ4njAaic/kfUWPvKBnD
+   g==;
+X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
+   d="scan'208";a="21920107"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 07 Feb 2022 07:30:28 +0100
+Received: from steina-w.localnet (unknown [10.123.49.12])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 16B47280065;
+        Mon,  7 Feb 2022 07:30:28 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     jeanmichel.hautbois@ideasonboard.com,
+        linux-arm-kernel@lists.infradead.org,
+        dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
+        kernel-list@raspberrypi.com, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        lukasz@jany.st, mchehab@kernel.org, naush@raspberrypi.com,
+        robh@kernel.org, tomi.valkeinen@ideasonboard.com,
+        nsaenz@kernel.org, bcm-kernel-feedback-list@broadcom.com
+Subject: Re: (EXT) Re: (EXT) [RFC PATCH v4 03/12] dt-bindings: media: Add bindings for bcm2835-unicam
+Date:   Mon, 07 Feb 2022 07:30:25 +0100
+Message-ID: <5541132.DvuYhMxLoT@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <Yf3fe2F88SNcl2Jd@pendragon.ideasonboard.com>
+References: <20220203175009.558868-1-jeanmichel.hautbois@ideasonboard.com> <7954256.DvuYhMxLoT@steina-w> <Yf3fe2F88SNcl2Jd@pendragon.ideasonboard.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings doc for Sunplus SoC UART Driver
+Hi Laurent,
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Hammer Hsieh <hammerh0314@gmail.com>
----
-Changes in v7:
- - no change.
+Am Samstag, 5. Februar 2022, 03:22:51 CET schrieb Laurent Pinchart:
+> Hi Alexander,
+> 
+> On Fri, Feb 04, 2022 at 09:50:06AM +0100, Alexander Stein wrote:
+> > Am Donnerstag, 3. Februar 2022, 18:50:00 CET schrieb Jean-Michel Hautbois:
+> > > Introduce the dt-bindings documentation for bcm2835 CCP2/CSI2 Unicam
+> > > camera interface. Also add a MAINTAINERS entry for it.
+> > > 
+> > > Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+> > > Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+> > > Signed-off-by: Jean-Michel Hautbois
+> > > <jeanmichel.hautbois@ideasonboard.com>
+> > > 
+> > > ---
+> > > v4:
+> > > - make MAINTAINERS its own patch
+> > > - describe the reg and clocks correctly
+> > > - use a vendor entry for the number of data lanes
+> > > ---
+> > > 
+> > >  .../bindings/media/brcm,bcm2835-unicam.yaml   | 110 ++++++++++++++++++
+> > >  1 file changed, 110 insertions(+)
+> > >  create mode 100644
+> > > 
+> > > Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> > > 
+> > > diff --git
+> > > a/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> > > b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml new
+> > > file
+> > > mode 100644
+> > > index 000000000000..0725a0267c60
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> > > @@ -0,0 +1,110 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/media/brcm,bcm2835-unicam.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: Broadcom BCM283x Camera Interface (Unicam)
+> > > +
+> > > +maintainers:
+> > > +  - Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>
+> > > +
+> > > +description: |-
+> > > +  The Unicam block on BCM283x SoCs is the receiver for either
+> > > +  CSI-2 or CCP2 data from image sensors or similar devices.
+> > > +
+> > > +  The main platform using this SoC is the Raspberry Pi family of
+> > > boards.
+> > > +  On the Pi the VideoCore firmware can also control this hardware
+> > > block,
+> > > +  and driving it from two different processors will cause issues.
+> > > +  To avoid this, the firmware checks the device tree configuration
+> > > +  during boot. If it finds device tree nodes starting by csi then
+> > > +  it will stop the firmware accessing the block, and it can then
+> > > +  safely be used via the device tree binding.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    const: brcm,bcm2835-unicam
+> > > +
+> > > +  reg:
+> > > +    items:
+> > > +      - description: Unicam block.
+> > > +      - description: Clock Manager Image (CMI) block.
+> > > +
+> > > +  interrupts:
+> > > +    maxItems: 1
+> > > +
+> > > +  clocks:
+> > > +    items:
+> > > +      - description: Clock to drive the LP state machine of Unicam.
+> > > +      - description: Clock for the vpu (core clock).
+> > > +
+> > > +  clock-names:
+> > > +    items:
+> > > +      - const: lp
+> > > +      - const: vpu
+> > > +
+> > > +  power-domains:
+> > > +    items:
+> > > +      - description: Unicam power domain
+> > > +
+> > > +  brcm,num-data-lanes:
+> > > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > > +    enum: [ 2, 4 ]
+> > > +    description: Number of data lanes on the csi bus
+> > 
+> > There is already data-lanes in
+> > Documentation/devicetree/bindings/media/video- interfaces.yaml. AFAICS
+> > these two are identical. Can't the video-
+> > interface.yaml be used for this? I'm no expert TBH.
+> 
+> This is the number of data lanes that the Unicam instance supports.
+> There are two Unicam instances, and they can have 2 or 4 data lanes
+> depending on the SoC. The data-lanes endpoint property indicates the
+> number of lanes used on a particular board.
 
- .../bindings/serial/sunplus,sp7021-uart.yaml       | 56 ++++++++++++++++++++++
- MAINTAINERS                                        |  5 ++
- 2 files changed, 61 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+Thanks for the explanation. Isn't this something which could be derived from 
+the compatible, e.g. having 2 different ones for 2 and 4 lanes respectively?
+See [1] for a similar situation in the SPI subsystem.
+I don't have a strong opinion, just want to share my feedback.
 
-diff --git a/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml b/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
-new file mode 100644
-index 0000000..894324c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
-@@ -0,0 +1,56 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) Sunplus Co., Ltd. 2021
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/serial/sunplus,sp7021-uart.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Sunplus SoC SP7021 UART Controller Device Tree Bindings
-+
-+maintainers:
-+  - Hammer Hsieh <hammerh0314@gmail.com>
-+
-+allOf:
-+  - $ref: serial.yaml#
-+
-+properties:
-+  compatible:
-+    const: sunplus,sp7021-uart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - resets
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    aliases {
-+            serial0 = &uart0;
-+    };
-+
-+    uart0: serial@9c000900 {
-+        compatible = "sunplus,sp7021-uart";
-+        reg = <0x9c000900 0x80>;
-+        interrupt-parent = <&intc>;
-+        interrupts = <53 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&clkc 0x28>;
-+        resets = <&rstc 0x18>;
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3b79fd4..3c1362e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17945,6 +17945,11 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/dlink/sundance.c
- 
-+SUNPLUS UART DRIVER
-+M:	Hammer Hsieh <hammerh0314@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
-+
- SUPERH
- M:	Yoshinori Sato <ysato@users.sourceforge.jp>
- M:	Rich Felker <dalias@libc.org>
--- 
-2.7.4
+Regards,
+Alexander
+
+[1] https://patchwork.kernel.org/project/spi-devel-general/patch/
+20211207104114.2720764-1-alexander.stein@ew.tq-group.com/#24641405
+
 
