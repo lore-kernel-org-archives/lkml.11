@@ -2,147 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 211DDC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242774AbiBGU1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:27:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
+        id S240070AbiBGUa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:30:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233366AbiBGUY1 (ORCPT
+        with ESMTP id S243033AbiBGU1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:24:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C72FC0401E1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:24:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644265465;
+        Mon, 7 Feb 2022 15:27:55 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A7BC0401DA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:27:55 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 96C5D1EC01A8;
+        Mon,  7 Feb 2022 21:27:49 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644265669;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9T/OvHQML0n7t8483X0s9RB1P7k3PGxeDBNyGeKNXxg=;
-        b=gq1JiwiMhVRICsyRsLLPMuVjgxY3NuFaWNOyW3mIw1C3bCv7egaV8L8z1YeyRdPdG9TAQb
-        h15HpVxTIPRuJ9nWzPi3GKlhQHu5alQQw5exNpK8mf24IsMq3fIDWukQsAm7//3E1VVt2E
-        Bd65DYJYsIcjG+2BY6kE0Y+h+tei39k=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-503-QjTbS4zmPG-IIYEL_gW-WA-1; Mon, 07 Feb 2022 15:24:24 -0500
-X-MC-Unique: QjTbS4zmPG-IIYEL_gW-WA-1
-Received: by mail-lj1-f200.google.com with SMTP id c31-20020a2ebf1f000000b0022d87a28911so4919396ljr.1
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 12:24:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9T/OvHQML0n7t8483X0s9RB1P7k3PGxeDBNyGeKNXxg=;
-        b=trMpr9zZItA2QVjTHq4+9y0TVSEEOTF+WfG0ACCrC6ce8RE3xfh/eG35ILmA9bF/u4
-         IwgnPbpzZHON4eZ4Z+c12FjL3UPJt5fYRlWWrRqbDU9aYWAI/BCu0IRD0Zp4nGBJ8FKX
-         +tNu6m6AX1gFkWLusJTj161aw0toMn6a+OJXUXt5FHeNV2y+3K8X6aqWjghPeg4BtSgu
-         y6pBb4PnnA8VHcm/2zqVLrwETcfZaPymuTjRWHoI4EKfCLyEQx68NJhz92AXDLUPwZg8
-         wMbbUGiZuRRonO/c0Tlzk/oMFFieN2fmzoeqlFfP9MZIhxHxZ6Ykl4DaBDbOs6WrQcM7
-         YYSw==
-X-Gm-Message-State: AOAM530aZZVzeG8WKbnyVxUGj0obF87FmCuLBIReUGlpN8N/mQV5nRM/
-        9WSjY61+tCXTcyzqQdl7Jox+DMjK8E1ubTgt3Mxtf1ccCRhZFhxex959V2+KCpArn3wKv/zdzTw
-        NWeERvEebVaJLZk45N6Hkqabau4xnUQUxgKFOkRUr
-X-Received: by 2002:a05:651c:1213:: with SMTP id i19mr745449lja.116.1644265463147;
-        Mon, 07 Feb 2022 12:24:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwuUh1S24KOapaXqUTbR/PE5isBkVVKCEATv0reBXJDNNQwUC3D72GSr/G+3NpnX4u042B4PjJAmEV12JsYe7E=
-X-Received: by 2002:a05:651c:1213:: with SMTP id i19mr745427lja.116.1644265462882;
- Mon, 07 Feb 2022 12:24:22 -0800 (PST)
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=qfQlZszpnOZtjwDDKq/4Q/EBp4qQMckKH/pcJcQzPzs=;
+        b=KglyvPlrbWnAs+VFCQB/Cz/6r59ZcLUi4TwxC0XRBbddxh6K4TqoGW07crfq4t4qhyXbUa
+        Rn94p0mBx3gjF098KMMxieOpAZe2T5npYupxbl0Nb6v/xzpqjJExHP8QUeZs+X/TTW9l8U
+        SSQFSLdKzcrTUEagcoA9qJz5uW/lxec=
+Date:   Mon, 7 Feb 2022 21:27:43 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     Jue Wang <juew@google.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [RFC] x86/mce: Add workaround for SKX/CLX/CPX spurious machine
+ checks
+Message-ID: <YgGAv/aCVG+RDADI@zn.tnic>
+References: <20220207043640.2829295-1-juew@google.com>
+ <YgFqiJOU5tZsHbY6@zn.tnic>
+ <YgFyBRIOIquMI2ng@agluck-desk2.amr.corp.intel.com>
 MIME-Version: 1.0
-References: <20220205081658.562208-1-leobras@redhat.com> <20220205081658.562208-2-leobras@redhat.com>
- <f2b0cac2-2f8a-60e8-616c-73825b3f62a6@redhat.com>
-In-Reply-To: <f2b0cac2-2f8a-60e8-616c-73825b3f62a6@redhat.com>
-From:   Leonardo Bras Soares Passos <leobras@redhat.com>
-Date:   Mon, 7 Feb 2022 17:24:11 -0300
-Message-ID: <CAJ6HWG7DV-AeWyXxGwMMV61BejcCdpTc=U+4U6eY4gx4hfhP-g@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] x86/kvm/fpu: Mask guest fpstate->xfeatures with guest_supported_xcr0
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YgFyBRIOIquMI2ng@agluck-desk2.amr.corp.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Paolo,
+On Mon, Feb 07, 2022 at 11:24:53AM -0800, Luck, Tony wrote:
+> I suggested breaking it out as a helper to make the
+> code easier to read.
 
-On Mon, Feb 7, 2022 at 10:30 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
->
-> On 2/5/22 09:16, Leonardo Bras wrote:
-> > During host/guest switch (like in kvm_arch_vcpu_ioctl_run()), the kernel
-> > swaps the fpu between host/guest contexts, by using fpu_swap_kvm_fpstate().
-> >
-> > When xsave feature is available, the fpu swap is done by:
-> > - xsave(s) instruction, with guest's fpstate->xfeatures as mask, is used
-> >    to store the current state of the fpu registers to a buffer.
-> > - xrstor(s) instruction, with (fpu_kernel_cfg.max_features &
-> >    XFEATURE_MASK_FPSTATE) as mask, is used to put the buffer into fpu regs.
-> >
-> > For xsave(s) the mask is used to limit what parts of the fpu regs will
-> > be copied to the buffer. Likewise on xrstor(s), the mask is used to
-> > limit what parts of the fpu regs will be changed.
-> >
-> > The mask for xsave(s), the guest's fpstate->xfeatures, is defined on
-> > kvm_arch_vcpu_create(), which (in summary) sets it to all features
-> > supported by the cpu which are enabled on kernel config.
-> >
-> > This means that xsave(s) will save to guest buffer all the fpu regs
-> > contents the cpu has enabled when the guest is paused, even if they
-> > are not used.
-> >
-> > This would not be an issue, if xrstor(s) would also do that.
-> >
-> > xrstor(s)'s mask for host/guest swap is basically every valid feature
-> > contained in kernel config, except XFEATURE_MASK_PKRU.
-> > According to kernel src, it is instead switched in switch_to() and
-> > flush_thread().
->
-> Hi Leonardo, is this an issue when patch 2 is applied?
+We have waaay too many small helpers. I guess it is just as readable if
+you do in the function:
 
-Yes.
-This issue happens on host/guest context switch, instead of KVM_{GET,SET}_XSAVE,
-so this bug will be triggered whenever the guest doesn't support PKRU
-but the host
-does, without any interference of above IOCTLs.
-In fact, IIUC,  even if we are able to fix the feature bit with
-KVM_SET_XSAVE, it would
-come back after another host/guest context switch if we don't fix
-vcpu->arch.guest_fpu.fpstate->xfeatures.
+	bool is_intel_srar = mci_status &
+			(MCI_STATUS_VAL|MCI_STATUS_OVER|MCI_STATUS_UC|MCI_STATUS_EN|
+			(MCI_STATUS_ADDRV|MCI_STATUS_MISCV|MCI_STATUS_PCC|
+			 MCI_STATUS_AR|MCI_STATUS_S)) ==
+			(MCI_STATUS_VAL|MCI_STATUS_UC|MCI_STATUS_EN|MCI_STATUS_ADDRV|
+			 MCI_STATUS_MISCV|MCI_STATUS_AR|MCI_STATUS_S);
 
-> With this patch,
-> we have to reason about the effect of calling KVM_SET_CPUID2 twice calls
-> back to back.  I think an "&=" would be wrong in that case.
+> X86_FEATURE_FSRM is a different (but confusingly simlilar) feature.
+> 
+> The MSR is per-thread. So the write only disabled the fast string
+> operation on this one logical CPU. So the per-cpu srar_dcu_signaled
+> variable is just to avoid getting into a loop when this #MC isn't
+> because of a REP MOVS peeking at things it shouldn't.
 
-So, you suggest something like this ?
+In that case, you can just as well test the MSR bit directly
+MSR_IA32_MISC_ENABLE_FAST_STRING_BIT. If it set, you clear it, done.
 
-vcpu->arch.guest_fpu.fpstate->xfeatures =
-        fpu_user_cfg.default_features & vcpu->arch.guest_supported_xcr0;
+> Maybe this would be more human friendly?
+> 
+> 		pr_err("CPU%d: Performance now degraded after applying machine check workaround\n",
+> 			smp_processor_id());
 
+Well, is there an erratum you can refer to in it instead?
 
->
-> On the other hand, with patch 2 the change is only in the KVM_SET_XSAVE
-> output, which is much more self-contained.
+Explaining the whole deal in a single error message is hard and almost
+certainly insufficient.
 
-Agree, but they solve different sources of the same issue.
-Patch 2 will only address a bug that can happen if userspace mistakenly
-tries to set a feature the guest does not support.
+Also, what's the use of that message issuing once on every CPU? Instead
+of being a _once() message?
 
->
-> Thanks,
+Thx.
 
-Thank you!
+-- 
+Regards/Gruss,
+    Boris.
 
-Best regards,
-Leo
-[...]
-
+https://people.kernel.org/tglx/notes-about-netiquette
