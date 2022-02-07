@@ -2,145 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A009C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F2BC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234358AbiBGFtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:49:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
+        id S234769AbiBGFtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:49:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352029AbiBGErD (ORCPT
+        with ESMTP id S239587AbiBGD33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:47:03 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A78C043181;
-        Sun,  6 Feb 2022 20:47:02 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 39DA0210EA;
-        Mon,  7 Feb 2022 04:47:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644209221; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3r8zsBbPzlbUX6ihPzKY8ExxG48IN+l0THpUms1TqYM=;
-        b=UtZfd3blxXJDljhegPqUt1T8a0XNn86n8kcT10KrYnlGH5mPQ9EbVWk9J+FFYsJoeL3hGl
-        UD17NrMjxiyR2BQJTe+Iz7tXl4JNwmaVyVcPmskjhGF/6Siwd6+Bq9eMbymlMRm1hJDgzC
-        YeVz/60dCfGVtNKQud3BFbvUY8iIDlY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644209221;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3r8zsBbPzlbUX6ihPzKY8ExxG48IN+l0THpUms1TqYM=;
-        b=NUMtiBtL6cZig7Sxd4ypS7Jn0vCqv1VQV9qag2wwmvgvOS+6PR4aq/Pz9mKtlWCmqrcSOo
-        Axz4qktLGCHSLrDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AAA1F1330E;
-        Mon,  7 Feb 2022 04:46:57 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 0ALXGUGkAGIRNQAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:46:57 +0000
-Subject: [PATCH 02/21] MM: drop swap_set_page_dirty
-From:   NeilBrown <neilb@suse.de>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mark Hemment <markhemm@googlemail.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>
-Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 07 Feb 2022 15:46:01 +1100
-Message-ID: <164420916112.29374.16921074216162707434.stgit@noble.brown>
-In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-User-Agent: StGit/0.23
+        Sun, 6 Feb 2022 22:29:29 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B207C061A73;
+        Sun,  6 Feb 2022 19:29:27 -0800 (PST)
+Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JsWjl51mXzZfM0;
+        Mon,  7 Feb 2022 11:25:15 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500011.china.huawei.com (7.221.188.124) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 11:29:25 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 11:29:24 +0800
+From:   Peng Liu <liupeng256@huawei.com>
+To:     <glider@google.com>, <elver@google.com>, <dvyukov@google.com>,
+        <corbet@lwn.net>, <sumit.semwal@linaro.org>,
+        <christian.koenig@amd.com>, <akpm@linux-foundation.org>
+CC:     <kasan-dev@googlegroups.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linaro-mm-sig@lists.linaro.org>,
+        <linux-mm@kvack.org>, <liupeng256@huawei.com>
+Subject: [PATCH v3] kfence: Make test case compatible with run time set sample interval
+Date:   Mon, 7 Feb 2022 03:44:32 +0000
+Message-ID: <20220207034432.185532-1-liupeng256@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pages that are written to swap are owned by the MM subsystem - not any
-filesystem.
+The parameter kfence_sample_interval can be set via boot parameter
+and late shell command, which is convenient for automated tests and
+KFENCE parameter optimization. However, KFENCE test case just uses
+compile-time CONFIG_KFENCE_SAMPLE_INTERVAL, which will make KFENCE
+test case not run as users desired. Export kfence_sample_interval,
+so that KFENCE test case can use run-time-set sample interval.
 
-When such a page is passed to a filesystem to be written out to a
-swap-file, the filesystem handles the data, but the page itself does not
-belong to the filesystem.  So calling the filesystem's set_page_dirty
-address_space operation makes no sense.  This is for pages in the given
-address space, and a page to be written to swap does not exist in the
-given address space.
-
-So drop swap_set_page_dirty() which calls the address-space's
-set_page_dirty, and alway use __set_page_dirty_no_writeback, which is
-appropriate for pages being swapped out.
-
-Fixes-no-auto-backport: 62c230bc1790 ("mm: add support for a filesystem to activate swap files and use direct_IO for writing swap pages")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Peng Liu <liupeng256@huawei.com>
 ---
- include/linux/swap.h |    1 -
- mm/page_io.c         |   14 --------------
- mm/swap_state.c      |    2 +-
- 3 files changed, 1 insertion(+), 16 deletions(-)
+v2->v3:
+- Revise change log description
+v1->v2:
+- Use EXPORT_SYMBOL_GPL replace EXPORT_SYMBOL
 
-diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 3f54a8941c9d..a43929f7033e 100644
---- a/include/linux/swap.h
-+++ b/include/linux/swap.h
-@@ -419,7 +419,6 @@ extern void kswapd_stop(int nid);
- 
- #ifdef CONFIG_SWAP
- 
--extern int swap_set_page_dirty(struct page *page);
- int add_swap_extent(struct swap_info_struct *sis, unsigned long start_page,
- 		unsigned long nr_pages, sector_t start_block);
- int generic_swapfile_activate(struct swap_info_struct *, struct file *,
-diff --git a/mm/page_io.c b/mm/page_io.c
-index f8c26092e869..34b12d6f94d7 100644
---- a/mm/page_io.c
-+++ b/mm/page_io.c
-@@ -438,17 +438,3 @@ int swap_readpage(struct page *page, bool synchronous)
- 	delayacct_swapin_end();
- 	return ret;
- }
--
--int swap_set_page_dirty(struct page *page)
--{
--	struct swap_info_struct *sis = page_swap_info(page);
--
--	if (data_race(sis->flags & SWP_FS_OPS)) {
--		struct address_space *mapping = sis->swap_file->f_mapping;
--
--		VM_BUG_ON_PAGE(!PageSwapCache(page), page);
--		return mapping->a_ops->set_page_dirty(page);
--	} else {
--		return __set_page_dirty_no_writeback(page);
--	}
--}
-diff --git a/mm/swap_state.c b/mm/swap_state.c
-index bb38453425c7..514b86b05488 100644
---- a/mm/swap_state.c
-+++ b/mm/swap_state.c
-@@ -31,7 +31,7 @@
-  */
- static const struct address_space_operations swap_aops = {
- 	.writepage	= swap_writepage,
--	.set_page_dirty	= swap_set_page_dirty,
-+	.set_page_dirty	= __set_page_dirty_no_writeback,
- #ifdef CONFIG_MIGRATION
- 	.migratepage	= migrate_page,
- #endif
+ include/linux/kfence.h  | 2 ++
+ mm/kfence/core.c        | 3 ++-
+ mm/kfence/kfence_test.c | 8 ++++----
+ 3 files changed, 8 insertions(+), 5 deletions(-)
 
+diff --git a/include/linux/kfence.h b/include/linux/kfence.h
+index 4b5e3679a72c..f49e64222628 100644
+--- a/include/linux/kfence.h
++++ b/include/linux/kfence.h
+@@ -17,6 +17,8 @@
+ #include <linux/atomic.h>
+ #include <linux/static_key.h>
+ 
++extern unsigned long kfence_sample_interval;
++
+ /*
+  * We allocate an even number of pages, as it simplifies calculations to map
+  * address to metadata indices; effectively, the very first page serves as an
+diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+index 5ad40e3add45..13128fa13062 100644
+--- a/mm/kfence/core.c
++++ b/mm/kfence/core.c
+@@ -47,7 +47,8 @@
+ 
+ static bool kfence_enabled __read_mostly;
+ 
+-static unsigned long kfence_sample_interval __read_mostly = CONFIG_KFENCE_SAMPLE_INTERVAL;
++unsigned long kfence_sample_interval __read_mostly = CONFIG_KFENCE_SAMPLE_INTERVAL;
++EXPORT_SYMBOL_GPL(kfence_sample_interval); /* Export for test modules. */
+ 
+ #ifdef MODULE_PARAM_PREFIX
+ #undef MODULE_PARAM_PREFIX
+diff --git a/mm/kfence/kfence_test.c b/mm/kfence/kfence_test.c
+index a22b1af85577..50dbb815a2a8 100644
+--- a/mm/kfence/kfence_test.c
++++ b/mm/kfence/kfence_test.c
+@@ -268,13 +268,13 @@ static void *test_alloc(struct kunit *test, size_t size, gfp_t gfp, enum allocat
+ 	 * 100x the sample interval should be more than enough to ensure we get
+ 	 * a KFENCE allocation eventually.
+ 	 */
+-	timeout = jiffies + msecs_to_jiffies(100 * CONFIG_KFENCE_SAMPLE_INTERVAL);
++	timeout = jiffies + msecs_to_jiffies(100 * kfence_sample_interval);
+ 	/*
+ 	 * Especially for non-preemption kernels, ensure the allocation-gate
+ 	 * timer can catch up: after @resched_after, every failed allocation
+ 	 * attempt yields, to ensure the allocation-gate timer is scheduled.
+ 	 */
+-	resched_after = jiffies + msecs_to_jiffies(CONFIG_KFENCE_SAMPLE_INTERVAL);
++	resched_after = jiffies + msecs_to_jiffies(kfence_sample_interval);
+ 	do {
+ 		if (test_cache)
+ 			alloc = kmem_cache_alloc(test_cache, gfp);
+@@ -608,7 +608,7 @@ static void test_gfpzero(struct kunit *test)
+ 	int i;
+ 
+ 	/* Skip if we think it'd take too long. */
+-	KFENCE_TEST_REQUIRES(test, CONFIG_KFENCE_SAMPLE_INTERVAL <= 100);
++	KFENCE_TEST_REQUIRES(test, kfence_sample_interval <= 100);
+ 
+ 	setup_test_cache(test, size, 0, NULL);
+ 	buf1 = test_alloc(test, size, GFP_KERNEL, ALLOCATE_ANY);
+@@ -739,7 +739,7 @@ static void test_memcache_alloc_bulk(struct kunit *test)
+ 	 * 100x the sample interval should be more than enough to ensure we get
+ 	 * a KFENCE allocation eventually.
+ 	 */
+-	timeout = jiffies + msecs_to_jiffies(100 * CONFIG_KFENCE_SAMPLE_INTERVAL);
++	timeout = jiffies + msecs_to_jiffies(100 * kfence_sample_interval);
+ 	do {
+ 		void *objects[100];
+ 		int i, num = kmem_cache_alloc_bulk(test_cache, GFP_ATOMIC, ARRAY_SIZE(objects),
+-- 
+2.18.0.huawei.25
 
