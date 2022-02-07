@@ -2,83 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87255C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1ABBC35270
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389058AbiBGOTF (ORCPT
+        id S1390161AbiBGOTL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:19:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
+        Mon, 7 Feb 2022 09:19:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245404AbiBGOPV (ORCPT
+        with ESMTP id S1390596AbiBGN7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:15:21 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1BFC0401C2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:15:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644243320; x=1675779320;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=X/LK6sULWZKDmHlbv9YKIUivTejDy195l3r0gIsqar4=;
-  b=SnWNApXlfVKTildmfVpd8bhywHhGt6RwDsQ/LHbcE7ddXCmsCpx5J6vQ
-   15LcB0XQwfKWqimAriNPkemmSow19wDLCncKlfeYdubJpgYqFb+jEevHl
-   P8pYE51x6KKbV53n+ziFLShfV3x/xN1hrSv8JLvWGty3071SWvoC0G7Gw
-   +tgXOK169ciqIKPIYcAoH/2N7n4JRsSO+FqJAhhHNB4oUEExZosvEqwEx
-   KMkAW02/Am+e3F3vWWQq+0kPjTrAX+Tv1VG3yO6zM3yjwQQarl5w2NW3T
-   hvxmo8SW9jZkzHOYF6YxqcVWRaa9VDqkHo1MX7XNtMGAUqmQEGdVqu7W6
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="246313790"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="246313790"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 06:13:09 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="700477351"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 07 Feb 2022 06:13:07 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id B406A31D; Mon,  7 Feb 2022 16:13:22 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 1/1] iommu/dma: Use DMA ops setter instead of direct assignment
-Date:   Mon,  7 Feb 2022 16:13:21 +0200
-Message-Id: <20220207141321.8293-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Feb 2022 08:59:03 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F2FC043189;
+        Mon,  7 Feb 2022 05:59:02 -0800 (PST)
+Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JsnhL2S46z67wM9;
+        Mon,  7 Feb 2022 21:54:58 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 14:58:59 +0100
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
+ 2022 13:58:59 +0000
+Date:   Mon, 7 Feb 2022 13:58:58 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Massimo Toscanelli <massimo.toscanelli@leica-geosystems.com>
+CC:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
+        <lars@metafoo.de>, <linus.walleij@linaro.org>,
+        <caihuoqing@baidu.com>, <aardelean@deviqon.com>,
+        <andy.shevchenko@gmail.com>, <hdegoede@redhat.com>,
+        <Qing-wu.Li@leica-geosystems.com.cn>, <stephan@gerhold.net>,
+        <linux-iio@vger.kernel.org>,
+        <bsp-development.geo@leica-geosystems.com>
+Subject: Re: [PATCH RESEND 0/2] Solve data access delay of ST sensors
+Message-ID: <20220207135858.00000745@Huawei.com>
+In-Reply-To: <20220207090443.3710425-1-massimo.toscanelli@leica-geosystems.com>
+References: <20220204192552.428433-1-massimo.toscanelli@leica-geosystems.com>
+        <20220207090443.3710425-1-massimo.toscanelli@leica-geosystems.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use DMA ops setter instead of direct assignment. Even we know that
-this module doesn't perform access to the dma_ops member of struct device,
-it's better to use setter to avoid potential problems in the future.
+On Mon,  7 Feb 2022 09:04:41 +0000
+Massimo Toscanelli <massimo.toscanelli@leica-geosystems.com> wrote:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: rebased on top of the latest codebase
- drivers/iommu/dma-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Reading raw data from ST sensors implies enabling the device and
+> waiting for its activation.
+> This leads to significant delays every time the data is fetched,
+> especially if the operation has to be repeated.
+> 
+> The introduction of the 'always_on' flag as sysfs attribute can
+> solve this issue, by allowing the user to keep the device enabled
+> during the entire read session and therefore, to perform a much
+> faster data access.
+> 
+> This implementation has been already tested on a ST magnetometer.
+> 
+> I forgot to add maintainers as recepients, so I resend the patches.
+> 
+> Massimo Toscanelli (2):
+>   iio: st_sensors: add always_on flag
+>   iio: st_magn_core.c: activate always_on attribute
+> 
+>  .../iio/common/st_sensors/st_sensors_core.c   | 85 +++++++++++++++++--
+>  drivers/iio/magnetometer/st_magn_core.c       |  2 +
+>  include/linux/iio/common/st_sensors.h         | 14 +++
+>  3 files changed, 96 insertions(+), 5 deletions(-)
+> 
+> 
+> base-commit: dcb85f85fa6f142aae1fe86f399d4503d49f2b60
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d85d54f2b549..b585a3fdbc56 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1482,7 +1482,7 @@ void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit)
- 	if (iommu_is_dma_domain(domain)) {
- 		if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
- 			goto out_err;
--		dev->dma_ops = &iommu_dma_ops;
-+		set_dma_ops(dev, &iommu_dma_ops);
- 	}
- 
- 	return;
--- 
-2.34.1
+Hi Massimo,
 
+The standard approach to avoiding rapid power up and power down cycles
+is to use runtime_pm with autosuspend and a period set at a period
+of perhaps 1 second.  Would that work for you?  You'll pay the costs
+of power up only on the first read after a period of not reading.
+
+Exposing the control to userspace for this sort of thing is normally
+a bad idea because userspace generally has no idea if it should use it
+as there is no clean way of telling userspace the costs of not using
+it (as those will be device specific).
+
+If you have a usecase that requires regular reading you should also
+think about whether using the buffered interface is more appropriate.
+IIRC that will keep these devices powered up continuously whilst
+the buffer is enabled and will provide a lower overhead way of
+reading data than sysfs reads.
+
+Jonathan
