@@ -2,107 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D82C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243109AbiBGSB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:01:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
+        id S1347770AbiBGSBc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:01:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345594AbiBGR4Q (ORCPT
+        with ESMTP id S1345626AbiBGRzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:56:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8B4C0401DA;
-        Mon,  7 Feb 2022 09:56:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 558F8612BB;
-        Mon,  7 Feb 2022 17:56:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74A51C340ED;
-        Mon,  7 Feb 2022 17:56:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644256574;
-        bh=SANjoCEm5kIk2iYwDmF0EMyYaL+ckA+vB+vCWwoqZao=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=FoisBKdh4WEnfYjYijAslo2CpIoX0V+mvU5jDEKDuOgfA7XKAR5QCtbwj3KJIFQZZ
-         3dqFio0QV5hLS7gQTnl7dLRZa6of+rdIAhucU3AQc5VS0/8ktfwKXl3w1eG00F4R5T
-         XDbdmscu1sq9uItSj/Osncul+SwCDv+pd/14QZtC6JJJMoU1Dp1teWv4RpYtpAUhdA
-         M0kuls1+htEJC4MYnXddf/UfDQ/61W+5H5M+9rPDCIf5CmyF3/7vExwYnE7F5vWKde
-         GmSxUVwresGVIZp71Sx53f7O1U9X3Y1GXbOtvXi+8tivVG4FSxw3eLX/rGSsMhx5zF
-         DkyKIr7S6Kp5Q==
-Date:   Mon, 7 Feb 2022 11:56:13 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Li Chen <lchen.firstlove@zohomail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?utf-8?Q?=22Krzysztof_Wilczy=C5=84ski=22?= <kw@linux.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V6] misc: pci_endpoint_test: simplify endpoint test read
- and write operations
-Message-ID: <20220207175613.GA404082@bhelgaas>
+        Mon, 7 Feb 2022 12:55:00 -0500
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E8DC0401DC;
+        Mon,  7 Feb 2022 09:54:59 -0800 (PST)
+Received: by mail-wr1-f53.google.com with SMTP id u23so2481469wru.6;
+        Mon, 07 Feb 2022 09:54:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=MgMZtoimtxO2XWZhw1+iy1PmNLRHGLJ65lgwWFNnd+Q=;
+        b=4VzzEql7S1l92TGmwkbuxjVszJXPRFD0c4UnMj+53UNOqntXrn8KmKDW9OXsuAq6vP
+         ijgEFJy0FWuNXd84GGbyZOCA8F+T7FJw+JnVs/psuW7bB4akAoed/rqNf9Qnt/MASj3+
+         TYpEWFa406O9PMhrgsglET701bqWphm3BKqIORO5u4/yHWLFCad8GwCnMToQrtR2439C
+         NHTty2mOeVEUssntGWW4v09+lDAY87IFSTlgREjkrF2L0zWrSh4ceIVQh7fAx4yjgy/W
+         mFfcqLBqTD/vp4Alq+wJ5Xdpo2XSVE2ID9rjpkxHYzS/9pTpd+CE/mQeFbuitRVbB/gW
+         Wk5w==
+X-Gm-Message-State: AOAM530OvbysyFWKRPnZT8JdxsJ8zc0MVspl7fNlsIY/4QzdETczQs07
+        dQAMoEeLvVxeDQ+pUlTC4YY=
+X-Google-Smtp-Source: ABdhPJwqsSu5ejMKrQVUvMG1YdMFq6h2SGjkMEEsKCJSpOvIu+S6aF6URXu3esyaPcELlXwxm4lZxg==
+X-Received: by 2002:adf:8010:: with SMTP id 16mr450436wrk.708.1644256497887;
+        Mon, 07 Feb 2022 09:54:57 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id f13sm13358wmq.29.2022.02.07.09.54.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 09:54:57 -0800 (PST)
+Date:   Mon, 7 Feb 2022 17:54:55 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Juan Vazquez <juvazq@linux.microsoft.com>
+Cc:     Miaoqian Lin <linmq006@gmail.com>, decui@microsoft.com,
+        gregkh@linuxfoundation.org, haiyangz@microsoft.com,
+        kys@microsoft.com, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sthemmin@microsoft.com,
+        wei.liu@kernel.org
+Subject: Re: [PATCH v2] Drivers: hv: vmbus: Fix memory leak in
+ vmbus_add_channel_kobj
+Message-ID: <20220207175455.ftlpbzzuq5wqducc@liuwe-devbox-debian-v2>
+References: <20220128215604.xuqdpnnn4yjqfaoy@surface>
+ <20220203173008.43480-1-linmq006@gmail.com>
+ <20220206145556.72obb2qxbsktw3sc@surface>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <17ed3719e68.113a2df6350634.5087699168706664746@zohomail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220206145556.72obb2qxbsktw3sc@surface>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 04:09:05AM -0500, Li Chen wrote:
-> From: Li Chen <lchen@ambarella.com>
+On Sun, Feb 06, 2022 at 06:55:56AM -0800, Juan Vazquez wrote:
+> On Fri, Feb 04, 2022 at 01:30:08AM +0800, Miaoqian Lin wrote:
+> > kobject_init_and_add() takes reference even when it fails.
+> > According to the doc of kobject_init_and_add()：
+> > 
+> >    If this function returns an error, kobject_put() must be called to
+> >    properly clean up the memory associated with the object.
+> > 
+> > Fix memory leak by calling kobject_put().
+> > 
+> > Fixes: c2e5df616e1a ("vmbus: add per-channel sysfs info")
+> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> > ---
+> > Changes in v2:
+> > - Add cleanup when sysfs_create_group() fails
+> > 
+> > kobject_uevent() is used for notifying userspace by sending an uevent,
+> > I don't think we need to do error handling for it.
 > 
-> Introduce pci_endpoint_epf_transfer_data to simplify
-> read and write operations.
+> Thanks for the patch. It looks good to me.
 > 
-> Also tabify this file.
+> Reviewed-by: Juan Vazquez <juvazq@linux.microsoft.com>
 
-Thanks for the patch.
-
-This doesn't apply cleanly on v5.17-rc1.  Please make it apply cleanly
-there or at least mention where it *does* apply.
-
-Please separate the whitespace tabification changes and the
-pci_endpoint_epf_transfer_data() changes into two separate patches.
-When they're mixed together, it's harder to review the patch.
-
-> #define to_endpoint_test(priv) container_of((priv), struct pci_endpoint_test, \
-> -                     miscdev)
-> +                        miscdev)
-
-Always indent with tabs when possible:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/coding-style.rst?id=v5.16#n18
-
-Hmm, coding-style.rst is unfortunately not very explicit about that.
-
-But it's obvious from the existing code in this file that things
-should not be indented four spaces, as you did in
-pci_endpoint_test_transfer_data().
-
-Your patch should match the style of the existing code.
-
-> +static bool pci_endpoint_test_transfer_data(struct pci_endpoint_test *test,
-> +                unsigned long arg, const int operation)
-> +{
-> +    struct pci_endpoint_test_xfer_param param;
-> +    bool ret = false;
-> +    u32 flags = 0;
-
-
-> +    // if we ask rc to write to ep, then ep should do read operation, and vice versa.
-
-Please use /* */ comments to match the prevailing kernel comment
-style:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/coding-style.rst?id=v5.16#n598
-
-And spell out or at least capitalize "RC" and "EP" since they're not
-real words.
-
-Bjorn
+Applied to hyperv-fixes. Thanks.
