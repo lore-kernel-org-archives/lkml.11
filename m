@@ -2,93 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 165C6C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 252F5C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350042AbiBGK4L (ORCPT
+        id S1352400AbiBGK4N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:56:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
+        Mon, 7 Feb 2022 05:56:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352176AbiBGKuq (ORCPT
+        with ESMTP id S1345973AbiBGKtk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:50:46 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD94C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:50:45 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id m14so23891146wrg.12
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 02:50:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EZDSS2MYdieKNY+ptNKFPV1o4mbS/p6IjuUtTxEmOkI=;
-        b=duNxmxAdk7clYt7ndWPXMcPdSolXHBq4k1vpVSHdqeR3Y4OWFGyd1weIqSmOvwZb6S
-         Spl+lEN4s/4eqR+CV2VBUi31PwqNpLhu1spSm9qyFUZFnw96KF9rCAhnyUvDBEIf11z1
-         PSnr7JICxX6dz2N2SJiFNsqmL9hadf/eri3EZFXn1w2FkBwZdwQP/eyRjWS5wMaFGvdn
-         ZF0lDFr030L6E1u3lhpYKRKDd4tReFjacJB9q+g0p4uS1S2/apocHH72RqIDegc24uK8
-         2jrlj+s/8rx96MGL4wDFQmWS8/lusi4cE2hPx9vSkIyDaelQhP2a0llYAaxuDq8JyPit
-         J5CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EZDSS2MYdieKNY+ptNKFPV1o4mbS/p6IjuUtTxEmOkI=;
-        b=m0BHmCjtOm06RqsPr4H5MAMMo0udjYLBS9vSePYsPvD8LnF/EgK07C4+qyGbru0OSb
-         u0namIiMUlwCCu8fl5Pi0imLBjGfG4ZUyo4Zjo6+pRFYR3Cdj8WXY2oF02rDwosIaGaX
-         S2wgzx/7AWalPY9tpCVl/ls4LrBXAExojFr6zoeBwzitqywiUGuPrGJqaXuQTHQ/N6yV
-         oH+BwiZwKZ075PsW9GPOc+/zG6Y+EqyLXhZxs39zZtz7C9Am2kMXVwrPWTp8d96CJrWT
-         E0DnmD53oydnH7thnORslbRy0Fwf/pF6zKEToMJLIdLA8jHmnxKW1epsrJ+ycNlyhoiy
-         f/Cw==
-X-Gm-Message-State: AOAM530NQtB05/35uE76M7WSsnfKzn4V6stL5U1KitXStwVsUodJsNst
-        jPGvwCAuSwzYmZHVEkRB2MZuzg==
-X-Google-Smtp-Source: ABdhPJxLDom1n0BQAQA7DNHaMf3QjJwyZDXY+ENwGqJe57G5ZW9q1SeMh9v9S8yRdiIbSkPeP/Mi6A==
-X-Received: by 2002:a5d:6486:: with SMTP id o6mr8980127wri.454.1644231043764;
-        Mon, 07 Feb 2022 02:50:43 -0800 (PST)
-Received: from usaari01.cust.communityfibre.co.uk ([2a02:6b6d:f804:0:9277:27e1:ecf9:6ab6])
-        by smtp.gmail.com with ESMTPSA id a22sm112080wmq.45.2022.02.07.02.50.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 02:50:43 -0800 (PST)
-From:   Usama Arif <usama.arif@bytedance.com>
-To:     io-uring@vger.kernel.org, axboe@kernel.dk, asml.silence@gmail.com,
-        linux-kernel@vger.kernel.org
-Cc:     fam.zheng@bytedance.com, lkp@lists.01.org, lkp@intel.com,
-        Usama Arif <usama.arif@bytedance.com>,
-        kernel test robot <oliver.sang@intel.com>
-Subject: [PATCH] io_uring: unregister eventfd while holding lock when freeing ring ctx
-Date:   Mon,  7 Feb 2022 10:50:40 +0000
-Message-Id: <20220207105040.2662467-1-usama.arif@bytedance.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 7 Feb 2022 05:49:40 -0500
+X-Greylist: delayed 2922 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 02:49:39 PST
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6914C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:49:39 -0800 (PST)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2179CZSj016591;
+        Mon, 7 Feb 2022 11:00:37 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=veZo0P/JfQdRJDIli6sGt4ZGDkxpZF8WrXm4WgcbFDs=;
+ b=LyOM7OE32aQxV9zw7duuPrfrJldOPTSzvtdbO7khQHp6VH6nsQS/1nDO1hXbZLmJq3nw
+ 7PsdcbDW2DruY7hmskH5TenmUVY9yx7uJ5i1DaUsAgLg+HOCJUkGv7VGwAMsVAtu4F96
+ sCJ/nB5vp27U2qF3aQGMcKiyNcnqc+aDARpliHA9q4KtKmWvBpM2371vS0moSutXQlXv
+ JD7nJX3nfnuqtwSrLyWpVfNb7yZ7m865ES71jT5FzTN6K3vYc11iMh0Vob87hfDscjJB
+ 3OMPkL/dsoItJkdZBEb9HLlQ9rzsqz2u0jZF322OtUadHKol830UF6t/NX5nkfrXyXfN /w== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e30kg08hy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 11:00:37 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5343C10002A;
+        Mon,  7 Feb 2022 11:00:35 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3EFD9212FC5;
+        Mon,  7 Feb 2022 11:00:35 +0100 (CET)
+Received: from [10.129.7.146] (10.75.127.49) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 7 Feb
+ 2022 11:00:34 +0100
+Message-ID: <7bd0a0a9-4015-b54c-f745-f813496be61b@foss.st.com>
+Date:   Mon, 7 Feb 2022 11:00:34 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5/5] drm/stm: ltdc: add support of ycbcr pixel formats
+Content-Language: en-US
+To:     Nathan Chancellor <nathan@kernel.org>
+CC:     Philippe Cornu <philippe.cornu@foss.st.com>,
+        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20211215214843.20703-1-yannick.fertre@foss.st.com>
+ <Yfq3XwozrxYaFhgD@dev-arch.archlinux-ax161>
+From:   yannick Fertre <yannick.fertre@foss.st.com>
+In-Reply-To: <Yfq3XwozrxYaFhgD@dev-arch.archlinux-ax161>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_03,2022-02-07_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is because ctx->io_ev_fd is rcu_dereference_protected using
-ctx->uring_lock in io_eventfd_unregister. Not locking the function
-resulted in suspicious RCU usage reported by kernel test robot.
+Hi Nathan,
 
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Usama Arif <usama.arif@bytedance.com>
----
- fs/io_uring.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 2/2/22 17:54, Nathan Chancellor wrote:
+> Hi Yannick,
+> 
+> On Wed, Dec 15, 2021 at 10:48:43PM +0100, Yannick Fertre wrote:
+>> This patch adds the following YCbCr input pixel formats on the latest
+>> LTDC hardware version:
+>>
+>> 1 plane  (co-planar)  : YUYV, YVYU, UYVY, VYUY
+>> 2 planes (semi-planar): NV12, NV21
+>> 3 planes (full-planar): YU12=I420=DRM YUV420, YV12=DRM YVU420
+>>
+>> Signed-off-by: Yannick Fertre <yannick.fertre@foss.st.com>
+> 
+> <snip>
+> 
+>> +static inline void ltdc_set_ycbcr_config(struct drm_plane *plane, u32 drm_pix_fmt)
+>> +{
+>> +	struct ltdc_device *ldev = plane_to_ltdc(plane);
+>> +	struct drm_plane_state *state = plane->state;
+>> +	u32 lofs = plane->index * LAY_OFS;
+>> +	u32 val;
+>> +
+>> +	switch (drm_pix_fmt) {
+>> +	case DRM_FORMAT_YUYV:
+>> +		val = (YCM_I << 4) | LxPCR_YF | LxPCR_CBF;
+>> +		break;
+>> +	case DRM_FORMAT_YVYU:
+>> +		val = (YCM_I << 4) | LxPCR_YF;
+>> +		break;
+>> +	case DRM_FORMAT_UYVY:
+>> +		val = (YCM_I << 4) | LxPCR_CBF;
+>> +		break;
+>> +	case DRM_FORMAT_VYUY:
+>> +		val = (YCM_I << 4);
+>> +		break;
+>> +	case DRM_FORMAT_NV12:
+>> +		val = (YCM_SP << 4) | LxPCR_CBF;
+>> +		break;
+>> +	case DRM_FORMAT_NV21:
+>> +		val = (YCM_SP << 4);
+>> +		break;
+>> +	case DRM_FORMAT_YUV420:
+>> +	case DRM_FORMAT_YVU420:
+>> +		val = (YCM_FP << 4);
+>> +		break;
+>> +	default:
+>> +		/* RGB or not a YCbCr supported format */
+>> +		break;
+>> +	}
+>> +
+>> +	/* Enable limited range */
+>> +	if (state->color_range == DRM_COLOR_YCBCR_LIMITED_RANGE)
+>> +		val |= LxPCR_YREN;
+>> +
+>> +	/* enable ycbcr conversion */
+>> +	val |= LxPCR_YCEN;
+>> +
+>> +	regmap_write(ldev->regmap, LTDC_L1PCR + lofs, val);
+>> +}
+> 
+> This patch as commit 484e72d3146b ("drm/stm: ltdc: add support of ycbcr
+> pixel formats") in -next introduced the following clang warning:
+> 
+> drivers/gpu/drm/stm/ltdc.c:625:2: warning: variable 'val' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
+>          default:
+>          ^~~~~~~
+> drivers/gpu/drm/stm/ltdc.c:635:2: note: uninitialized use occurs here
+>          val |= LxPCR_YCEN;
+>          ^~~
+> drivers/gpu/drm/stm/ltdc.c:600:9: note: initialize the variable 'val' to silence this warning
+>          u32 val;
+>                 ^
+>                  = 0
+> 1 warning generated.
+> 
+> Would it be okay to just return in the default case (maybe with a
+> message about an unsupported format?) or should there be another fix?
+> 
+> Cheers,
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index ad8f84376955..dbc9d3f3f6c5 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -9471,8 +9471,8 @@ static __cold void io_ring_ctx_free(struct io_ring_ctx *ctx)
- 		__io_sqe_files_unregister(ctx);
- 	if (ctx->rings)
- 		__io_cqring_overflow_flush(ctx, true);
--	mutex_unlock(&ctx->uring_lock);
- 	io_eventfd_unregister(ctx);
-+	mutex_unlock(&ctx->uring_lock);
- 	io_destroy_buffers(ctx);
- 	if (ctx->sq_creds)
- 		put_cred(ctx->sq_creds);
--- 
-2.25.1
 
+Thanks for your help.
+It'okay for a message for unsupported format with a return in the 
+default case.
+Do you want create & push the patch?
+
+Best regards
