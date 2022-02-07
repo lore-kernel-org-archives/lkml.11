@@ -2,150 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A6B7C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D73EC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238198AbiBGP3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:29:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42832 "EHLO
+        id S1359044AbiBGP3w (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 10:29:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376744AbiBGPTt (ORCPT
+        with ESMTP id S1443868AbiBGPQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:19:49 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6096C0401C1;
-        Mon,  7 Feb 2022 07:19:48 -0800 (PST)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217F5nvg003653;
-        Mon, 7 Feb 2022 15:19:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=ce6wOVruo9bxswsAKOFe1ZmHBS/57n/eWuo6M6ErD/g=;
- b=HN7jY/vMR/n39qTnOmLvEeBnK6rHcyblHPgSzm8qqsBOC5IO+yZqPRFdY21VpowKPKD1
- Yrug/U/5pNzC8bAaytWGp24JfBcaBT+cv/TVdjYugR79yoUbtWLl97FzaQbjWTO+sK1b
- a808Uoenhu4XixLElyxwgFZKbxjcMdffzV2OaaOvSclPqwep2pCD6cihlry25pW8VroM
- X7vG5Lx4o57ZLi8PuszjFopfjTs5InhWNcnPdE43qyoWGrPY01fA71ZolJ8/NTZ/4ycw
- S7nHd8XgAgOjIk6nOsKtiSpl6i2jRhEMSLUrdbhKr+qgK4iwGWLYbt64msVFA4pLMaP0 7Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22qeqdgj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 15:19:48 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217EfunU026961;
-        Mon, 7 Feb 2022 15:19:47 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22qeqdfm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 15:19:47 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217FE49C006770;
-        Mon, 7 Feb 2022 15:19:45 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma01fra.de.ibm.com with ESMTP id 3e1gv9597g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 15:19:45 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217F9dLL49480162
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 15:09:39 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EDFD64C040;
-        Mon,  7 Feb 2022 15:19:41 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5FC924C052;
-        Mon,  7 Feb 2022 15:19:41 +0000 (GMT)
-Received: from p-imbrenda (unknown [9.145.11.12])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 15:19:41 +0000 (GMT)
-Date:   Mon, 7 Feb 2022 16:19:39 +0100
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     Janosch Frank <frankja@linux.ibm.com>
-Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
-Subject: Re: [PATCH v7 16/17] KVM: s390: pv: add
- KVM_CAP_S390_PROT_REBOOT_ASYNC
-Message-ID: <20220207161939.1d382a02@p-imbrenda>
-In-Reply-To: <2b9b31bf-e45a-7006-c68e-6e143665640c@linux.ibm.com>
-References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
-        <20220204155349.63238-17-imbrenda@linux.ibm.com>
-        <2b9b31bf-e45a-7006-c68e-6e143665640c@linux.ibm.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Mon, 7 Feb 2022 10:16:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 55C03C03E96D
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:15:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644246945;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=yRS0jwicXufc7zZ+ZjLAedvo4qD1/VIqyE355apXrv8=;
+        b=bbWNLUnN/+aOIdXG1SWJgPcKTauFo5YCyt0aZdXi18iyjqUN1UhkmHfmTQaP0x2CK7jF+b
+        zKV2Dm+6l+IYzapCGXW8mvWFNJY+A1Uugg08ApcuXvcoDJR8Y4IXq3YV+LVAL0k4CeIlAM
+        fsWErq2OjR6SnSU+UjabzclbZh74L3o=
+Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
+ [209.85.219.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-631-neyFT63nOFSBzSrThIra2Q-1; Mon, 07 Feb 2022 10:15:44 -0500
+X-MC-Unique: neyFT63nOFSBzSrThIra2Q-1
+Received: by mail-yb1-f198.google.com with SMTP id y4-20020a5b0f44000000b00611862e546dso28936959ybr.7
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 07:15:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=yRS0jwicXufc7zZ+ZjLAedvo4qD1/VIqyE355apXrv8=;
+        b=moJpIyCz1nySaZkEp7fbRGrsgsXyG0TFOmAs9VibSvIYrT/adAvJVpyliKXRszZCYg
+         zFNbtxPk92pblZrDAhv1zN6EnRzSh4mAVzB6paV4VIuyNtAquyDPMAG9PELdYMGHom5a
+         e1P5awx6fqRWJ9wOGgscZeQpTIJNz82a6rMJdmCrCOBH0wpxQPMjqKTuxeVS7zi5vCaf
+         YQfMZbh4VxtXlKbg3NMUxMFV+f9w666GyN9lszJigKk7/eF9CMbHMLBzj1sIiwWmVy27
+         ZwOMriFg81kGX+96cvFX3QUiNG8woOH+uRJld/md2q2CymsoAWfR7Vc1vN7LDKr0eaBN
+         2d6Q==
+X-Gm-Message-State: AOAM530BGCgNGSUSlgxs5B6VUX3Ux4++ky2XK2eGiu+h4IWCKIddIReB
+        zuOGifyFHsZhrI5RUgBHo+dhrwoSBJT3PqZOnYL1BPdU/+YAx+SQ5ZSLOjLjQUU929PyVSWobda
+        3JhhzAD7NLn15fjy87NRxXE2Dud8RZWNX8Wex63Ql
+X-Received: by 2002:a25:eb06:: with SMTP id d6mr154240ybs.318.1644246943914;
+        Mon, 07 Feb 2022 07:15:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwXeoD3ojnTOZwKa5lUfxhmIBl5fyP9msdolVbDq/zqr50MBXuutrVFsOhfOWyA9jOd9gjS0pyGenm4USUc87Y=
+X-Received: by 2002:a25:eb06:: with SMTP id d6mr154219ybs.318.1644246943702;
+ Mon, 07 Feb 2022 07:15:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 1XzClqEa8wVZtHBTZ3aYPFVmKWq9aIcN
-X-Proofpoint-GUID: KxN7VS6q_3bWEF7bOb-n9k-zUlZEC_1u
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
- adultscore=0 malwarescore=0 clxscore=1015 suspectscore=0 bulkscore=0
- lowpriorityscore=0 impostorscore=0 priorityscore=1501 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070097
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Mon, 7 Feb 2022 16:15:27 +0100
+Message-ID: <CAFqZXNt0Xp1j7+hTrV9XZ936Yz+H8Le0pqazhLr3drO0tEzB2w@mail.gmail.com>
+Subject: Semantics vs. usage of mutex_is_locked()
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>
+Cc:     Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        SElinux list <selinux@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 15:37:48 +0100
-Janosch Frank <frankja@linux.ibm.com> wrote:
+Hello,
 
-> On 2/4/22 16:53, Claudio Imbrenda wrote:
-> > Add KVM_CAP_S390_PROT_REBOOT_ASYNC to signal that the
-> > KVM_PV_ASYNC_DISABLE and KVM_PV_ASYNC_DISABLE_PREPARE commands for the
-> > KVM_S390_PV_COMMAND ioctl are available.
-> > 
-> > Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> > ---
-> >   arch/s390/kvm/kvm-s390.c | 3 +++
-> >   include/uapi/linux/kvm.h | 1 +
-> >   2 files changed, 4 insertions(+)
-> > 
-> > diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-> > index f7952cef1309..1e696202a569 100644
-> > --- a/arch/s390/kvm/kvm-s390.c
-> > +++ b/arch/s390/kvm/kvm-s390.c
-> > @@ -608,6 +608,9 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
-> >   	case KVM_CAP_S390_BPB:
-> >   		r = test_facility(82);
-> >   		break;
-> > +	case KVM_CAP_S390_PROT_REBOOT_ASYNC:
-> > +		r = lazy_destroy && is_prot_virt_host();  
-> 
-> While reboot might be the best use-case for the async disable I don't 
-> think we should name the capability this way.
-> 
-> KVM_CAP_S390_PROTECTED_ASYNC_DESTR ?
+(This is addressed mainly to the kernel/locking/ maintainers.)
 
-then maybe 
+In security/selinux/ima.c, we have two functions for which we want to
+assert the expected locking status of a mutex. In the first function
+we expect the caller to obtain the lock, so we have
+`WARN_ON(!mutex_is_locked(&state->policy_mutex));` there. The second
+one, on the contrary, takes the lock on its own, so there is an
+inverse assert (that the caller hasn't already taken the lock) -
+`WARN_ON(mutex_is_locked(&state->policy_mutex));`.
 
-KVM_CAP_S390_PROTECTED_ASYNC_DISABLE ?
+Recently, I got a report that the second WARN_ON() got triggered,
+while there was no function in the call chain that could have taken
+the lock. Looking into it, I realized that mutex_is_locked() actually
+doesn't check what we assumed ("Are we holding the lock?"), but
+instead answers the question "Is any task holding the lock?". So in
+theory it can happen that the second WARN_ON() gets hit randomly in an
+otherwise correct code simply because some other task happens to be
+holding the mutex. Similarly, the first assert might not catch all
+cases where taking the mutex was forgotten, because another task may
+be holding it, making the assert pass.
 
-> 
-> It's a bit long but the initial capability didn't abbreviate the 
-> protected part so it is what it is.
-> 
-> 
-> > +		break;
-> >   	case KVM_CAP_S390_PROTECTED:
-> >   		r = is_prot_virt_host();
-> >   		break;
-> > diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-> > index 7f574c87a6ba..c41c108f6b14 100644
-> > --- a/include/uapi/linux/kvm.h
-> > +++ b/include/uapi/linux/kvm.h
-> > @@ -1134,6 +1134,7 @@ struct kvm_ppc_resize_hpt {
-> >   #define KVM_CAP_VM_GPA_BITS 207
-> >   #define KVM_CAP_XSAVE2 208
-> >   #define KVM_CAP_SYS_ATTRIBUTES 209
-> > +#define KVM_CAP_S390_PROT_REBOOT_ASYNC 215
-> >   
-> >   #ifdef KVM_CAP_IRQ_ROUTING
-> >   
-> >   
-> 
+Grepping the whole tree for mutex_is_locked finds about 300 uses, the
+vast majority of which are variations of the
+warn-if-mutex-not-locked-by-us pattern. Then there are a handful of
+cases where the usage of mutex_is_locked() seems correct and a few
+cases of the inverse warn-if-mutex-already-locked-by-us pattern.
+
+It seems like introducing a new helper with the "is the mutex locked
+by current task?" semantics would be fairly straightforward, however
+fixing all the mutex_is_locked() misuses would be a rather big and
+noisy patch(set). That said, would it be okay if I send patches that
+introduce a new helper and only fix misuses that can lead to wrong
+behavior when the code is correct (e.g. can yield a false positive
+WARNING/BUG) and documentation? That should be a reasonably small set
+of changes, yet should take care of the most important issues. If
+anyone cares enough for the rest, they can always send further
+patches.
+
+Also, any opinions on the name of the new helper? Perhaps
+mutex_is_held()? Or mutex_is_locked_by_current()?
+
+Thanks,
+
+--
+Ondrej Mosnacek
+Software Engineer, Linux Security - SELinux kernel
+Red Hat, Inc.
 
