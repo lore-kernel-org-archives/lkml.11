@@ -2,78 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1CA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:53:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E01C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235185AbiBGFut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:50:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58466 "EHLO
+        id S238054AbiBGFuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350094AbiBGDSM (ORCPT
+        with ESMTP id S241073AbiBGCz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 22:18:12 -0500
-X-Greylist: delayed 301 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 19:18:04 PST
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D21C061A73
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 19:18:04 -0800 (PST)
-X-UUID: 5a4ab4f1b2964d9e9448fd94ad2d7066-20220207
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:CC:To:Subject; bh=YZZvR0t4dJmK+tzaa2+xl8XMxoD2nvg+7x/q6w/YaC0=;
-        b=fGSeHeV+NLZFKcpxYupzDcTsSu8bO0DC6EfTY2NiFElqw4ihy8cke9nJhFwnrmheaivOuo+8NCh+f9rabijaPUtFwtMd4i8YrnfDJ3jApEC4Fr1pgek4b+Ur4bYyaqVm4h1nYs/qT5MrvCl4cnlhCCSgRkL+eLytm696F83BBgU=;
-X-UUID: 5a4ab4f1b2964d9e9448fd94ad2d7066-20220207
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <macpaul.lin@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1598545706; Mon, 07 Feb 2022 11:12:59 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 7 Feb 2022 11:12:58 +0800
-Received: from [172.21.84.99] (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 7 Feb 2022 11:12:58 +0800
-Subject: Re: [PATCH] memory: mtk-smi: Enable sleep ctrl safety function for
- MT8195
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, <yong.wu@mediatek.com>
-CC:     <krzysztof.kozlowski@canonical.com>, <matthias.bgg@gmail.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20220204125543.1189151-1-angelogioacchino.delregno@collabora.com>
-From:   Macpaul Lin <macpaul.lin@mediatek.com>
-Message-ID: <6c360daa-151b-5bb3-5c93-17f90cb693a6@mediatek.com>
-Date:   Mon, 7 Feb 2022 11:12:58 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Sun, 6 Feb 2022 21:55:58 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0839C061A73
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 18:55:57 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id 192so10593291pfz.3
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 18:55:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2Pa0V6uNmqfY1ryqz8Euha/wH0C0Ls7fitkB4Pk5MqA=;
+        b=gRAy4PoGc6tworsSuNdh30bSZQIj9aWCyJMXg0AshOgRXWF3uHuOAwnvny2SfX5X9L
+         kZ0MQf0StanDgY9gtsakTJJlP0m+u6Klf4IYOPKO1rIjoD10FJjy9pjQaW7ROoUUrOC6
+         NPztgeTkHnfAGYppVDGgBG/GOze2NmDg+3Enw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2Pa0V6uNmqfY1ryqz8Euha/wH0C0Ls7fitkB4Pk5MqA=;
+        b=XGpKP2AvD60u+N0MhONkP5jAB4rDDLEJDlYkI2k848EAX6+jp1alaNUNzKrQVQ/Dwi
+         yuS7FLOgrHGWy9Kwyy06pzxa0au57O/8RHWMRXXtFuVR9n6UlFs/e6c6NhJlNGBqjTcp
+         9ji30bTuDFO0AbcZ0pt9HFEIibbFou4COTgIniHZ/wTZbj5dwGWIvbUpFl5lV5LsuOI+
+         QAOcZGbueMIx/Dre8HD6RcoeK5sPoeG6YifShiv7i0uC2QpsQkgjRfFN8m1+FoFIEhrf
+         IBvl1TTFvVEyzahqWA4p30uePee1aRhdeRST3/lbLPqxm+dcflM26Pri91UNs8L0uHrK
+         jhuQ==
+X-Gm-Message-State: AOAM530636lwtB751KRB0F+M4y7UgEzlpvJuZp6locdtpNtIC63+jqy1
+        5Je3RFlxcC9jNgOTVrsEgpIL3w==
+X-Google-Smtp-Source: ABdhPJwHPVPoUNs7X6rVF0qEiMM2Yz+rYinp0zhxBkrnP/OdvFlTr0vh4/W4vp+6BQZPaSJE/nM/WA==
+X-Received: by 2002:a65:48c5:: with SMTP id o5mr7729001pgs.284.1644202557293;
+        Sun, 06 Feb 2022 18:55:57 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id nv13sm9221650pjb.17.2022.02.06.18.55.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 18:55:56 -0800 (PST)
+Date:   Sun, 6 Feb 2022 18:55:56 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>, kvm@vger.kernel.org,
+        Will McVicker <willmcvicker@google.com>
+Subject: Re: [PATCH v4 09/17] perf/core: Use static_call to optimize
+ perf_guest_info_callbacks
+Message-ID: <202202061854.B5B11282@keescook>
+References: <20211111020738.2512932-1-seanjc@google.com>
+ <20211111020738.2512932-10-seanjc@google.com>
+ <YfrQzoIWyv9lNljh@google.com>
+ <CABCJKufg=ONNOvF8+BRXfLoTUfeiZZsdd8TnpV-GaNK_o-HuaA@mail.gmail.com>
+ <202202061011.A255DE55B@keescook>
+ <YgAvhG4wvnslbTqP@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-In-Reply-To: <20220204125543.1189151-1-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgAvhG4wvnslbTqP@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMi80LzIyIDg6NTUgUE0sIEFuZ2Vsb0dpb2FjY2hpbm8gRGVsIFJlZ25vIHdyb3RlOg0KPiBF
-bmFibGUgdGhlIHNsZWVwIGN0cmwgZnVuY3Rpb24gdG8gd2FpdCB1bnRpbCBhbGwgdGhlIHF1ZXVl
-ZCBjb21tYW5kcw0KPiBhcmUgZXhlY3V0ZWQgYmVmb3JlIHN1c3BlbmRpbmcgdGhlIExBUkJzLCBs
-aWtlIGRvbmUgZm9yIE1UODE4Ni4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEFuZ2Vsb0dpb2FjY2hp
-bm8gRGVsIFJlZ25vIDxhbmdlbG9naW9hY2NoaW5vLmRlbHJlZ25vQGNvbGxhYm9yYS5jb20+DQo+
-IC0tLQ0KPiAgIGRyaXZlcnMvbWVtb3J5L210ay1zbWkuYyB8IDMgKystDQo+ICAgMSBmaWxlIGNo
-YW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvbWVtb3J5L210ay1zbWkuYyBiL2RyaXZlcnMvbWVtb3J5L210ay1zbWkuYw0KPiBp
-bmRleCBjMjJhY2QzZGRkMTAuLjg2YTNkMzRmNDE4ZSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9t
-ZW1vcnkvbXRrLXNtaS5jDQo+ICsrKyBiL2RyaXZlcnMvbWVtb3J5L210ay1zbWkuYw0KPiBAQCAt
-MzUxLDcgKzM1MSw4IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgbXRrX3NtaV9sYXJiX2dlbiBtdGtf
-c21pX2xhcmJfbXQ4MTkyID0gew0KPiAgIA0KPiAgIHN0YXRpYyBjb25zdCBzdHJ1Y3QgbXRrX3Nt
-aV9sYXJiX2dlbiBtdGtfc21pX2xhcmJfbXQ4MTk1ID0gew0KPiAgIAkuY29uZmlnX3BvcnQgICAg
-ICAgICAgICAgICAgPSBtdGtfc21pX2xhcmJfY29uZmlnX3BvcnRfZ2VuMl9nZW5lcmFsLA0KPiAt
-CS5mbGFnc19nZW5lcmFsCSAgICAgICAgICAgID0gTVRLX1NNSV9GTEFHX1RIUlRfVVBEQVRFIHwg
-TVRLX1NNSV9GTEFHX1NXX0ZMQUcsDQo+ICsJLmZsYWdzX2dlbmVyYWwJICAgICAgICAgICAgPSBN
-VEtfU01JX0ZMQUdfVEhSVF9VUERBVEUgfCBNVEtfU01JX0ZMQUdfU1dfRkxBRyB8DQo+ICsJCQkJ
-ICAgICAgTVRLX1NNSV9GTEFHX1NMRUVQX0NUTCwNCj4gICAJLm9zdGQJCSAgICAgICAgICAgID0g
-bXRrX3NtaV9sYXJiX210ODE5NV9vc3RkLA0KPiAgIH07DQo+ICAgDQo+IA0KDQpSZXZpZXdlZC1i
-eTogTWFjcGF1bCBMaW4gPG1hY3BhdWwubGluQG1lZGlhdGVrLmNvbT4NCg0KUmVnYXJkcywNCk1h
-Y3BhdWwgTGlu
+On Sun, Feb 06, 2022 at 09:28:52PM +0100, Peter Zijlstra wrote:
+> On Sun, Feb 06, 2022 at 10:45:15AM -0800, Kees Cook wrote:
+> 
+> > I'm digging through the macros to sort this out, but IIUC, an example of
+> > the problem is:
+> > 
+> 
+> > so the caller is expecting "unsigned int (*)(void)" but the prototype
+> > of __static_call_return0 is "long (*)(void)":
+> > 
+> > long __static_call_return0(void);
+> > 
+> > Could we simply declare a type-matched ret0 trampoline too?
+> 
+> That'll work for this case, but the next case the function will have
+> arguments we'll need even more nonsense...
 
+Shouldn't the typeof() work there too, though? I.e. as long as the
+return value can hold a "0", it'd work.
+
+> And as stated in that other email, there's tb_stub_func() having the
+> exact same problem as well.
+
+Yeah, I'd need to go look at that again.
+
+> The x86_64 CFI patches had a work-around for this, that could trivially
+> be lifted I suppose.
+
+Yeah, I think it'd be similar. I haven't had a chance to go look at that
+again...
+
+-- 
+Kees Cook
