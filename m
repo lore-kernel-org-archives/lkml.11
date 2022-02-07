@@ -2,142 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4BACC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D0BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231447AbiBGIpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:45:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
+        id S243296AbiBGIoT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:44:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243028AbiBGInx (ORCPT
+        with ESMTP id S243871AbiBGIjP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:43:53 -0500
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CA1C043181;
-        Mon,  7 Feb 2022 00:43:50 -0800 (PST)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 7BAC8E000C;
-        Mon,  7 Feb 2022 08:43:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644223426;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aqtEkkE4CxAPCqiyjvQlRqA4fyM6M/H+WbMg+4em3bk=;
-        b=b/8uLavJfT0Pt7E5NoIji6JTEqyrnFW8AjRy2crSYjYa2+QxdwCGQc+rmkX8TpLU5/QH2B
-        uXn/ZDuogrQ6mrqVH7TXf8npZfUUAvpaAkd7mavWrTl8CLvuYVYlLmJiQLtaw8z3KSzzHh
-        0dClE6y7UCGqM1NJDXiyE8WDFc/dV6WZNEG7TJBNCL4fJmBdtmMsgNJEB/BHqTf5ryGxfR
-        3y7pKlclTbaRTjTWl94cEd38+jWj3JUtyi6B+JFfjXc/S9vXarXeekHfSn1K95ltQdwScI
-        KtNMhUPRgqM/sKC1j20xCDvOlzNXAmuXMF4bCE3bSsX+SdJGU3T7pWgvuBjZfA==
-Date:   Mon, 7 Feb 2022 09:43:43 +0100
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mon, 7 Feb 2022 03:39:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07ADDC043181;
+        Mon,  7 Feb 2022 00:39:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9767E61139;
+        Mon,  7 Feb 2022 08:39:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1805C004E1;
+        Mon,  7 Feb 2022 08:39:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644223154;
+        bh=oFz9BaL9e3pbQqoR3n99qyo4Z+yc7ZCLihiceMXEhio=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TRJSbI5hpLHhuYWzgyELmIHnfhZBdVIt2QJLm49vE5pRrMapIr1UjrzVDKOQG/JJ7
+         tBVe2TML5DFaRDzxEAm8YLAT+gMz4/3kWEF8X/KWcKvd+bKNsuLg3T3/DIAiJQm11f
+         fA8HTUWyOQ2lYR0oA9Xai/C9THo6UFJGa+qDVVoo=
+Date:   Mon, 7 Feb 2022 09:39:11 +0100
+From:   gregkh <gregkh@linuxfoundation.org>
+To:     Tony Huang =?utf-8?B?6buD5oe35Y6a?= <tony.huang@sunplus.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Tony Huang <tonyhuang.sunplus@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 02/66] dt-bindings: interconnect: sunxi: Add V3s mbus
- compatible
-Message-ID: <YgDbv8aQEOOjwTb0@aptenodytes>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-3-paul.kocialkowski@bootlin.com>
- <5386b1f5-9e75-4ce3-6641-bd7667c85d42@sholland.org>
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Derek Kiernan <derek.kiernan@xilinx.com>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>,
+        Wells Lu =?utf-8?B?5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+Subject: Re: [PATCH v8 2/2] misc: Add iop driver for Sunplus SP7021
+Message-ID: <YgDar1O/CeTM8w6J@kroah.com>
+References: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
+ <b96f039dc071b1d32bb52fa283fd8afc6d3349cc.1644212476.git.tonyhuang.sunplus@gmail.com>
+ <CAK8P3a0zNeaeOzC_tPb1KDbyktLpjUJCdEu=C6t_QX4pB9TKnQ@mail.gmail.com>
+ <b440dc1dbb044a8c81d083d52774ad6b@sphcmbx02.sunplus.com.tw>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="siWsic/QuhUMqNlN"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <5386b1f5-9e75-4ce3-6641-bd7667c85d42@sholland.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b440dc1dbb044a8c81d083d52774ad6b@sphcmbx02.sunplus.com.tw>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 07, 2022 at 08:29:40AM +0000, Tony Huang 黃懷厚 wrote:
+> Dear Arnd:
+> 
+> > -----Original Message-----
+> > From: Arnd Bergmann <arnd@arndb.de>
+> > Sent: Monday, February 7, 2022 3:48 PM
+> > To: Tony Huang <tonyhuang.sunplus@gmail.com>
+> > Cc: Rob Herring <robh+dt@kernel.org>; DTML <devicetree@vger.kernel.org>;
+> > Linux Kernel Mailing List <linux-kernel@vger.kernel.org>; Derek Kiernan
+> > <derek.kiernan@xilinx.com>; Dragan Cvetic <dragan.cvetic@xilinx.com>; Arnd
+> > Bergmann <arnd@arndb.de>; gregkh <gregkh@linuxfoundation.org>; Tony
+> > Huang 黃懷厚 <tony.huang@sunplus.com>; Wells Lu 呂芳騰
+> > <wells.lu@sunplus.com>
+> > Subject: Re: [PATCH v8 2/2] misc: Add iop driver for Sunplus SP7021
+> > 
+> > On Mon, Feb 7, 2022 at 7:30 AM Tony Huang
+> > <tonyhuang.sunplus@gmail.com> wrote:
+> > >
+> > > IOP(8051) embedded inside SP7021 which is used as Processor for I/O
+> > > control, monitor RTC interrupt and cooperation with CPU & PMC in power
+> > > management purpose.
+> > > The IOP core is DQ8051, so also named IOP8051, it supports dedicated
+> > > JTAG debug pins which share with SP7021.
+> > > In standby mode operation, the power spec reach 400uA.
+> > >
+> > > Signed-off-by: Tony Huang <tonyhuang.sunplus@gmail.com>
+> > > ---
+> > > Changes in v8:
+> > >  - Addressed comments from Greg KH.
+> > >
+> > >  Documentation/ABI/testing/sysfs-platform-soc@B |  28 ++
+> > >  MAINTAINERS                                    |   2 +
+> > >  drivers/misc/Kconfig                           |  20 ++
+> > >  drivers/misc/Makefile                          |   1 +
+> > >  drivers/misc/sunplus_iop.c                     | 463
+> > +++++++++++++++++++++++++
+> > >  5 files changed, 514 insertions(+)
+> > >  create mode 100644 Documentation/ABI/testing/sysfs-platform-soc@B
+> > >  create mode 100644 drivers/misc/sunplus_iop.c
+> > >
+> > > diff --git a/Documentation/ABI/testing/sysfs-platform-soc@B
+> > > b/Documentation/ABI/testing/sysfs-platform-soc@B
+> > > new file mode 100644
+> > > index 0000000..d26d6f5
+> > > --- /dev/null
+> > > +++ b/Documentation/ABI/testing/sysfs-platform-soc@B
+> > > @@ -0,0 +1,28 @@
+> > > +What:
+> > /sys/devices/platform/soc@B/9c000400.iop/sp_iop_mailbox
+> > > +Date:          January 2022
+> > > +KernelVersion: 5.16
+> > > +Contact:       Tony Huang <tonyhuang.sunplus@gmail.com>
+> > > +Description:
+> > > +               Show IOP's mailbox0 register data.
+> > > +               Format: %x
+> > > +
+> > > +What:
+> > /sys/devices/platform/soc@B/9c000400.iop/sp_iop_mode
+> > > +Date:          January 2022
+> > > +KernelVersion: 5.16
+> > > +Contact:       Tony Huang <tonyhuang.sunplus@gmail.com>
+> > > +Description:
+> > > +               Read-Write.
+> > > +
+> > > +               Write this file.
+> > > +               Operation mode of IOP is switched to standby mode by
+> > writing
+> > > +               "1" to sysfs.
+> > > +               Operation mode of IOP is switched to normal mode by
+> > writing
+> > > +               "0" to sysfs.
+> > > +               Writing of other values is invalid.
+> > > +
+> > > +               Read this file.
+> > > +               Show operation mode of IOP. "0" is normal mode. "1" is
+> > standby
+> > > +               mode.
+> > > +               Format: %x
+> > 
+> > As discussed before, I would suggest leaving out all custom attributes for now,
+> > and first hooking up the driver to all the in-kernel subsystems.
+> > 
+> > The mailbox0 register data definitely feels like an implementation detail, not
+> > something that should be exposed to user space as an interface.
+> > 
+> > For standby mode, this would normally be handled by the power management
+> > subsystem in the kernel. not a custom interface. From your earlier description,
+> > I assume this interface puts the main CPU into standby mode, not the IOP,
+> > right?
+> > 
+> > CPU standby is handled by the cpuidle subsystem, so you need a driver in
+> > drivers/cpuidle/ to replace your sysfs attribute.
+> > If you plan to hook up the driver to multiple subsystems, keeping a generic
+> > driver file is ok, so  you'll end up with two driver modules, with one of them
+> > calling into the other, using
+> > EXPORT_SYMBOL() to link between them.
+> > 
+> 
+> The purpose of adding sysfs is only for users to debug.
+> So this is not needed?
 
---siWsic/QuhUMqNlN
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+If this is only for debugging, please put it in debugfs and not sysfs.
 
-Hi,
+thanks,
 
-On Sat 05 Feb 22, 14:14, Samuel Holland wrote:
-> On 2/5/22 12:53 PM, Paul Kocialkowski wrote:
-> > Since the V3s uses the internal mbus, document its compatible.
-> >=20
-> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > ---
-> >  .../devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml  | 1 +
-> >  1 file changed, 1 insertion(+)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4=
-i-a10-mbus.yaml b/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun=
-4i-a10-mbus.yaml
-> > index 29c9961ee2d8..b67bf9261a6a 100644
-> > --- a/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-m=
-bus.yaml
-> > +++ b/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-m=
-bus.yaml
-> > @@ -31,6 +31,7 @@ properties:
-> >        - allwinner,sun5i-a13-mbus
-> >        - allwinner,sun8i-h3-mbus
-> >        - allwinner,sun8i-r40-mbus
-> > +      - allwinner,sun8i-v3s-mbus
->=20
-> Please enable the expanded binding added in commit 245578ba9f03 ("dt-bind=
-ings:
-> arm: sunxi: Expand MBUS binding")[1] by adding the new compatible to the =
-"if"
-> block lower in the file. That way we can add V3S devfreq support in the f=
-uture
-> without changing that binding.
-
-I had missed that new driver but surely I will expand the updated binding.
-
-By the way do you have an explanation about the cell index given to the
-interconnects (after &mbus)?
-
-Paul
-
-> Regards,
-> Samuel
->=20
-> [1]: https://git.kernel.org/torvalds/c/245578ba9f03
->=20
-> >        - allwinner,sun50i-a64-mbus
-> > =20
-> >    reg:
-> >=20
->=20
-
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
-
---siWsic/QuhUMqNlN
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmIA274ACgkQ3cLmz3+f
-v9Hedwf/dd7O5weguOH+OM1fWPM+D01os8bCMg2BVi/eJAzHIsTRwpzNVnuC5GkL
-jEPrckhWzLYI9QVdh9sxYGDe3WtMpG5L0mXxvfM0AruEZ8OA9Up1eZ/4a/pXtjmp
-ge2AkXEcmDd2BbtlMHe8obvpO9se0uDYHjA1MgApK8F5fVwRNn2dmu1zE5dAhufc
-GF3GDEPpS7MLe7ReDnGd9wAt109SEIxDgJ9XeiC1XdumNE5BAnT49+7Qq2Wy4zjf
-HDyDxIoHke+4+66Gf03JpeGikvOIW/8C/rwwh8AWLopLrcNVzyh1AM4BVI83Yaf2
-DMLRURk+Ae/bMrUUReDsYsgpsKZ42w==
-=B81B
------END PGP SIGNATURE-----
-
---siWsic/QuhUMqNlN--
+greg k-h
