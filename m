@@ -2,90 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D2FC352AA
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 687A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345225AbiBHBEg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:04:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
+        id S241795AbiBHBF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:05:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245715AbiBGX2R (ORCPT
+        with ESMTP id S236955AbiBGXst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:28:17 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBE6C061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:28:16 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id cz16so15320580edb.8
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 15:28:16 -0800 (PST)
+        Mon, 7 Feb 2022 18:48:49 -0500
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37DB0C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:48:46 -0800 (PST)
+Received: by mail-oo1-xc30.google.com with SMTP id o192-20020a4a2cc9000000b00300af40d795so15655490ooo.13
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 15:48:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=STukwnHLJ5JlQRTYdPROsCoSZDqNrbFLjrqiynzZIGo=;
-        b=V1LxTsspX/2KvteenHDf18lalZxHNEVBq4cfehyDGPcEMldBsF1aN+NyubcTrnYnZP
-         grCXV5UnY7xQB3Yf4Pbs77nsnZDwdkrh4g3rHHu7AFYi20uhNplepumFGBZa+phjsarp
-         Y+z9CZ9nxLRzdcqOq80GxU85D0BQTw5NaiCUXxhE70ABGJiPv8slPFiW0XA3opcK4Pm+
-         eoUs+lyeDd6OabER4VzIqTzv7h5UKHhnYCrWzSYkpTZVdI3UmnsBi5tYnbgT5RpDTfyx
-         yxRpg3fyXDz1likmSTgfNhK4gortG49lQ1p48V/9Kiq5qujXRLFoLg1Cfe4cdBCc/rPy
-         mY8w==
+        bh=6w59Lm+S9vTDMWvPIWW+WWqVExelOhv6n2kHObVwhbw=;
+        b=M9HKxXV66+sQsFok01Z8z37aiPmPfP4oMAcDwsAsTT6tAvFHw+vrKQ7S1r+LZYxS5o
+         sa9z6UKa7XIB8PcRpDtsJzdEMR0N3nzporGuqxWzbOF7RnuHvzS+a6K4jT9wNikdCC1l
+         VMQtwqpvSKXMTTEsnYu4I2Jztkq9DKMrAwvKH8XemO3IHj93f5UFZ2qP4qbUrNFbgISS
+         unSNzqrz9aEby7fiWIio47sBWT9pQF+S7+MrxJjH1GJobF3DBzPod4Z/7pxA9u6d2PjA
+         J8grum0WsVm2h1woWi4Kffhz5WqcwzqGRmIIirU2eAydEkxIlDCymrNQkWkitU/9rf3Q
+         pocg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=STukwnHLJ5JlQRTYdPROsCoSZDqNrbFLjrqiynzZIGo=;
-        b=YfuqjpTUP6Y3Ds5MhEi/9pOICmzrPLnJ/Lg+xzAY7aL6gNjBBF0Ovh0iwL8e4eXTxD
-         S9GpA4+NisTqB21DCdxFJdCcq2tCs5twBOlnCZpODtIC/HZkFD/jYPUgQvCB7AuuXMTR
-         Jb91cOfk7ePe6DzVI+5upbLH2Ql22Vtq7u/HfNZ233cctbdvXoaEwrn0TxkNpvLnsV8l
-         rnibPekGQrtIuUMQQN0MydBtRSyi5Iy/T4as+D79jj95nzSzSZ27/Og72lSUF5xjqqRG
-         c2Eq8+fO1GgDUlEH1p/iuQrSFF8p5bElr9TbPDnQMqmCVxkPRAngeY/o+JS+hw6P6lYn
-         sC3w==
-X-Gm-Message-State: AOAM532qmizyPS53z/nDa+0a7E9liCWYq45oj+6cEho0QuV3XUOIVJWQ
-        9+HjqLBYZPPsnerRHHd3SlM=
-X-Google-Smtp-Source: ABdhPJxFIkBlfI0ZUVxiZnz5qy93KNnZAceYCmxedK9MI9MRjx1vOEdwSVgvmh6jaNA4WY4bL0LTxw==
-X-Received: by 2002:aa7:dd15:: with SMTP id i21mr1759125edv.198.1644276495213;
-        Mon, 07 Feb 2022 15:28:15 -0800 (PST)
-Received: from ubuntu-laptop.speedport.ip (p200300c58721e9801b2c6bc4bf3c75fd.dip0.t-ipconnect.de. [2003:c5:8721:e980:1b2c:6bc4:bf3c:75fd])
-        by smtp.gmail.com with ESMTPSA id j12sm1776765ejc.83.2022.02.07.15.28.14
+        bh=6w59Lm+S9vTDMWvPIWW+WWqVExelOhv6n2kHObVwhbw=;
+        b=J501utzc4KpKRz9Bxjr//teC3QLUWYjDGKafwwNMa8BDj3zoouUY+mwYcvKxZlet71
+         yoTBGEwyvtA6SLC3/6S7jhypvzdEd7533KkF/TKh9/5lT0/gnWZS65JSbrxYhBPFH0Zh
+         nL7zYPwqA0cUQOQNJUwxCbAL/454Szj44uahbVqfLi34M96SwzMvRYovgS5nMJKSXcWX
+         men+A4L+xvABJvH9DzW4+2CctrFa97pHvC0O1X1J4owqp6EczWoiDERmYpZTF7R+M1Mc
+         nGePJbjkM0mVY85On0LfpMld9LFZoYS/EobLr62Qh15d4aJE2rfuti656PIIx6rxQ7X9
+         fY5w==
+X-Gm-Message-State: AOAM532/XNM8KG+SYQST+jKYTjzf/ZVSVRcwXltHTfgDXY+gGS9fsAYB
+        9n2S6w8oBzMc5vkxehflEl0=
+X-Google-Smtp-Source: ABdhPJxtupvU6YR52AZ3UhRA9Dd/HfxzaQDo2i0IxqbYlKti6NgdZntpMSVHsSdeiBr0IbXLygMmaA==
+X-Received: by 2002:a05:6870:6187:: with SMTP id a7mr427434oah.301.1644277725520;
+        Mon, 07 Feb 2022 15:48:45 -0800 (PST)
+Received: from localhost.localdomain ([2804:14d:4cd8:12bf:4134:806a:5a4a:2a88])
+        by smtp.gmail.com with ESMTPSA id r41sm3330805oap.2.2022.02.07.15.48.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 15:28:14 -0800 (PST)
-From:   Bean Huo <huobean@gmail.com>
-To:     kbusch@kernel.org, axboe@fb.com, hch@lst.de, sagi@grimberg.me,
-        linux-nvme@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, beanhuo@micron.com
-Subject: [PATCH] nvme: add nvme_complete_req tracepoint for batched completion
-Date:   Tue,  8 Feb 2022 00:28:06 +0100
-Message-Id: <20220207232806.411801-1-huobean@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 07 Feb 2022 15:48:45 -0800 (PST)
+From:   Leonardo Araujo <leonardo.aa88@gmail.com>
+To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        Leonardo Araujo <leonardo.aa88@gmail.com>
+Subject: [PATCH] Staging: r8188eu: core: alignment should match open parenthesis
+Date:   Mon,  7 Feb 2022 20:48:24 -0300
+Message-Id: <20220207234824.27893-1-leonardo.aa88@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bean Huo <beanhuo@micron.com>
+Fixed a coding style issue.
 
-Add NVMe request completion trace in nvme_complete_batch_req() because
-nvme:nvme_complete_req tracepoint is missing in case of request batched
-completion.
-
-Signed-off-by: Bean Huo <beanhuo@micron.com>
+Signed-off-by: Leonardo Araujo <leonardo.aa88@gmail.com>
 ---
- drivers/nvme/host/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/r8188eu/core/rtw_ap.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 5e0bfda04bd7..eaf0b18ff29e 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -368,6 +368,7 @@ EXPORT_SYMBOL_GPL(nvme_complete_rq);
+diff --git a/drivers/staging/r8188eu/core/rtw_ap.c b/drivers/staging/r8188eu/core/rtw_ap.c
+index e02dd8e11c95..c7803144355a 100644
+--- a/drivers/staging/r8188eu/core/rtw_ap.c
++++ b/drivers/staging/r8188eu/core/rtw_ap.c
+@@ -942,8 +942,8 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 				pmlmepriv->num_sta_ht_no_gf++;
+ 			}
+ 			DBG_88E("%s STA %pM - no greenfield, num of non-gf stations %d\n",
+-				   __func__, (psta->hwaddr),
+-				   pmlmepriv->num_sta_ht_no_gf);
++				__func__, (psta->hwaddr),
++				pmlmepriv->num_sta_ht_no_gf);
+ 		}
  
- void nvme_complete_batch_req(struct request *req)
- {
-+	trace_nvme_complete_rq(req);
- 	nvme_cleanup_cmd(req);
- 	nvme_end_req_zoned(req);
- }
+ 		if ((ht_capab & IEEE80211_HT_CAP_SUP_WIDTH_20_40) == 0) {
+@@ -952,8 +952,8 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 				pmlmepriv->num_sta_ht_20mhz++;
+ 			}
+ 			DBG_88E("%s STA %pM - 20 MHz HT, num of 20MHz HT STAs %d\n",
+-				   __func__, (psta->hwaddr),
+-				   pmlmepriv->num_sta_ht_20mhz);
++				__func__, (psta->hwaddr),
++				pmlmepriv->num_sta_ht_20mhz);
+ 		}
+ 	} else {
+ 		if (!psta->no_ht_set) {
 -- 
-2.25.1
+2.29.0
 
