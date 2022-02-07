@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 034EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3FFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388552AbiBGLn5 (ORCPT
+        id S1388585AbiBGLoB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
+        Mon, 7 Feb 2022 06:44:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384438AbiBGL2E (ORCPT
+        with ESMTP id S1384361AbiBGL2A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:28:04 -0500
+        Mon, 7 Feb 2022 06:28:00 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978B2C03C198;
-        Mon,  7 Feb 2022 03:26:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AC3C03FEFF;
+        Mon,  7 Feb 2022 03:26:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7417CB811B2;
-        Mon,  7 Feb 2022 11:26:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AED8C004E1;
-        Mon,  7 Feb 2022 11:26:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83E96B811B3;
+        Mon,  7 Feb 2022 11:26:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C95ECC004E1;
+        Mon,  7 Feb 2022 11:26:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233178;
-        bh=4jVbnwfVC3bF207Ch0FiydCtVRc8MucTpP3gbvg3VWc=;
+        s=korg; t=1644233166;
+        bh=tzgF2lLRVeO9JbCxJ6yO7uNVPTSA0/Rh2rbE1TmBoxs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tevySV0x6JfPleny8H+fp9yJlyehMcvxsjCQ+OwprlD6nr6poe+yvVztbadJeVa+e
-         6WTNFIJdngHxz3DB75DKaIHJwOnb0gTOG0sOLJDupQFDw7MFNBK2m034PJWQqqEHwr
-         BrFZClW4XSfCcDWgMTCqBsw5boiBVzaki3pM/wD8=
+        b=uX7ZnLp0r+ITwFkZPBvmyMgfN/ZG0pFX/kYkXIS60NYtUy31kPRIQ4pF4fttZw7kQ
+         AaGFcdQx9bu0lNERJRl22TINzxqkVZDQeglJ3qp5k+RF0ams6NmAEqNCG5PkDsOd5t
+         ngCHmCq+qr+k2jRdg0SJuaW3L+K39qMOIapdN2rU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.15 041/110] RDMA/siw: Fix refcounting leak in siw_create_qp()
-Date:   Mon,  7 Feb 2022 12:06:14 +0100
-Message-Id: <20220207103803.670073400@linuxfoundation.org>
+        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.15 037/110] KVM: arm64: Avoid consuming a stale esr value when SError occur
+Date:   Mon,  7 Feb 2022 12:06:10 +0100
+Message-Id: <20220207103803.530037238@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -51,35 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: James Morse <james.morse@arm.com>
 
-commit a75badebfdc0b3823054bedf112edb54d6357c75 upstream.
+commit 1c71dbc8a179d99dd9bb7e7fc1888db613cf85de upstream.
 
-The atomic_inc() needs to be paired with an atomic_dec() on the error
-path.
+When any exception other than an IRQ occurs, the CPU updates the ESR_EL2
+register with the exception syndrome. An SError may also become pending,
+and will be synchronised by KVM. KVM notes the exception type, and whether
+an SError was synchronised in exit_code.
 
-Fixes: 514aee660df4 ("RDMA: Globally allocate and release QP memory")
-Link: https://lore.kernel.org/r/20220118091104.GA11671@kili
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Bernard Metzler <bmt@zurich.ibm.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+When an exception other than an IRQ occurs, fixup_guest_exit() updates
+vcpu->arch.fault.esr_el2 from the hardware register. When an SError was
+synchronised, the vcpu esr value is used to determine if the exception
+was due to an HVC. If so, ELR_EL2 is moved back one instruction. This
+is so that KVM can process the SError first, and re-execute the HVC if
+the guest survives the SError.
+
+But if an IRQ synchronises an SError, the vcpu's esr value is stale.
+If the previous non-IRQ exception was an HVC, KVM will corrupt ELR_EL2,
+causing an unrelated guest instruction to be executed twice.
+
+Check ARM_EXCEPTION_CODE() before messing with ELR_EL2, IRQs don't
+update this register so don't need to check.
+
+Fixes: defe21f49bc9 ("KVM: arm64: Move PC rollback on SError to HYP")
+Cc: stable@vger.kernel.org
+Reported-by: Steven Price <steven.price@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220127122052.1584324-3-james.morse@arm.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/siw/siw_verbs.c |    3 ++-
+ arch/arm64/kvm/hyp/include/hyp/switch.h |    3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/infiniband/sw/siw/siw_verbs.c
-+++ b/drivers/infiniband/sw/siw/siw_verbs.c
-@@ -311,7 +311,8 @@ int siw_create_qp(struct ib_qp *ibqp, st
+--- a/arch/arm64/kvm/hyp/include/hyp/switch.h
++++ b/arch/arm64/kvm/hyp/include/hyp/switch.h
+@@ -425,7 +425,8 @@ static inline bool fixup_guest_exit(stru
+ 	if (ARM_EXCEPTION_CODE(*exit_code) != ARM_EXCEPTION_IRQ)
+ 		vcpu->arch.fault.esr_el2 = read_sysreg_el2(SYS_ESR);
  
- 	if (atomic_inc_return(&sdev->num_qp) > SIW_MAX_QP) {
- 		siw_dbg(base_dev, "too many QP's\n");
--		return -ENOMEM;
-+		rv = -ENOMEM;
-+		goto err_atomic;
- 	}
- 	if (attrs->qp_type != IB_QPT_RC) {
- 		siw_dbg(base_dev, "only RC QP's supported\n");
+-	if (ARM_SERROR_PENDING(*exit_code)) {
++	if (ARM_SERROR_PENDING(*exit_code) &&
++	    ARM_EXCEPTION_CODE(*exit_code) != ARM_EXCEPTION_IRQ) {
+ 		u8 esr_ec = kvm_vcpu_trap_get_class(vcpu);
+ 
+ 		/*
 
 
