@@ -2,287 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B1AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A271C35278
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389826AbiBGQar (ORCPT
+        id S1389818AbiBGQaq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:30:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
+        Mon, 7 Feb 2022 11:30:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378708AbiBGQRZ (ORCPT
+        with ESMTP id S1380060AbiBGQ03 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:17:25 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6D3C0401F0
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:17:14 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217FM5tp006777;
-        Mon, 7 Feb 2022 16:16:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=NdP/KVml5UAVIjivNvlz5bWTZh89/20zy0jE1C+VOZo=;
- b=iwEeuZuuRUpmBpIZWWjUXny6rshOMV7UlY+VOFmHgGVhJ60Hb5lCJ1xny8W0N/3dXyQH
- D7l4ISE/JmWvV9CtRNid6cSvTZEl261vDcpaN2/AKnMVJuIcq5RRlpQxU7uzl/Zj6TE7
- xVmUVr57WJ4DCw2qXWbOo4yGU3KMNBuJcsi9YruFTtb+Fd8jWoWma/ra4aQhFdyyZBKd
- /3sSWyEsbE85bj+mUquxRxaUdhAzgYZMjai17LkQ8lSUg9gwOQ3UraG3nrUCSL0BQ388
- ot+aW89waTB7+hs6jiLqZk4wyKL/46IGhZorOKkZoPbzh3rrQ8u/NS10ZXiXQNWbirWb OQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22st176f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 16:16:49 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217FplBh022294;
-        Mon, 7 Feb 2022 16:16:48 GMT
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22st175e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 16:16:48 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217G7eJ3026432;
-        Mon, 7 Feb 2022 16:16:47 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma01wdc.us.ibm.com with ESMTP id 3e1gv9ruus-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 16:16:47 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217GGjHa29819232
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 16:16:46 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D81286E04E;
-        Mon,  7 Feb 2022 16:16:45 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 50E3F6E052;
-        Mon,  7 Feb 2022 16:16:45 +0000 (GMT)
-Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.211.55.47])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 16:16:45 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     linux-fsi@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        jk@ozlabs.org, joel@jms.id.au, mingo@redhat.com,
-        alistair@popple.id.au, rostedt@goodmis.org,
-        Eddie James <eajames@linux.ibm.com>
-Subject: [PATCH] fsi: Add trace events in initialization path
-Date:   Mon,  7 Feb 2022 10:16:40 -0600
-Message-Id: <20220207161640.35605-1-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: DHPAjkvnzdhpJrx5Rm3il7roCQzTp9ZA
-X-Proofpoint-ORIG-GUID: Ziz0m5OQMAaJ-ONkcz6JBupq3eF6Cfk5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_06,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 spamscore=0 suspectscore=0 malwarescore=0 mlxscore=0
- mlxlogscore=999 impostorscore=0 bulkscore=0 adultscore=0 clxscore=1011
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070101
+        Mon, 7 Feb 2022 11:26:29 -0500
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12693C0401CF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:26:27 -0800 (PST)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOcV3014398;
+        Mon, 7 Feb 2022 17:24:38 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        Willy Tarreau <w@1wt.eu>
+Subject: [PATCH 15/42] tools/nolibc/stdlib: replace the ltoa() function with more efficient ones
+Date:   Mon,  7 Feb 2022 17:23:27 +0100
+Message-Id: <20220207162354.14293-16-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
+In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
+References: <20220207162354.14293-1-w@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add definitions for trace events to show the scanning flow.
+The original ltoa() function and the reentrant one ltoa_r() present a
+number of drawbacks. The divide by 10 generates calls to external code
+from libgcc_s, and the number does not necessarily start at the beginning
+of the buffer.
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
+Let's rewrite these functions so that they do not involve a divide and
+only use loops on powers of 10, and implement both signed and unsigned
+variants, always starting from the buffer's first character. Instead of
+using a static buffer for each function, we're now using a common one.
+
+In order to avoid confusion with the ltoa() name, the new functions are
+called itoa_r() and utoa_r() to distinguish the signed and unsigned
+versions, and for convenience for their callers, these functions now
+reutrn the number of characters emitted. The ltoa_r() function is just
+an inline mapping to the signed one and which returns the buffer.
+
+The functions are quite small (86 bytes on x86_64, 68 on armv7) and
+do not depend anymore on external code.
+
+Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- drivers/fsi/fsi-core.c                   | 11 ++-
- drivers/fsi/fsi-master-aspeed.c          |  2 +
- include/trace/events/fsi.h               | 86 ++++++++++++++++++++++++
- include/trace/events/fsi_master_aspeed.h | 12 ++++
- 4 files changed, 108 insertions(+), 3 deletions(-)
+ tools/include/nolibc/stdlib.h | 107 +++++++++++++++++++++++++++-------
+ 1 file changed, 87 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/fsi/fsi-core.c b/drivers/fsi/fsi-core.c
-index 59ddc9fd5bca..3a7b78e36701 100644
---- a/drivers/fsi/fsi-core.c
-+++ b/drivers/fsi/fsi-core.c
-@@ -24,9 +24,6 @@
+diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
+index 84fc4353fb01..dbb45631c7ca 100644
+--- a/tools/include/nolibc/stdlib.h
++++ b/tools/include/nolibc/stdlib.h
+@@ -12,6 +12,13 @@
+ #include "types.h"
+ #include "sys.h"
  
- #include "fsi-master.h"
- 
--#define CREATE_TRACE_POINTS
--#include <trace/events/fsi.h>
--
- #define FSI_SLAVE_CONF_NEXT_MASK	GENMASK(31, 31)
- #define FSI_SLAVE_CONF_SLOTS_MASK	GENMASK(23, 16)
- #define FSI_SLAVE_CONF_SLOTS_SHIFT	16
-@@ -95,6 +92,9 @@ struct fsi_slave {
- 	u8			t_echo_delay;
- };
- 
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/fsi.h>
 +
- #define to_fsi_master(d) container_of(d, struct fsi_master, dev)
- #define to_fsi_slave(d) container_of(d, struct fsi_slave, dev)
- 
-@@ -524,6 +524,8 @@ static int fsi_slave_scan(struct fsi_slave *slave)
- 			dev->addr = engine_addr;
- 			dev->size = slots * engine_page_size;
- 
-+			trace_fsi_dev_init(dev);
++/* Buffer used to store int-to-ASCII conversions. Will only be implemented if
++ * any of the related functions is implemented. The area is large enough to
++ * store "18446744073709551615" or "-9223372036854775808" and the final zero.
++ */
++static __attribute__((unused)) char itoa_buffer[21];
 +
- 			dev_dbg(&slave->dev,
- 			"engine[%i]: type %x, version %x, addr %x size %x\n",
- 					dev->unit, dev->engine_type, version,
-@@ -1006,6 +1008,7 @@ static int fsi_slave_init(struct fsi_master *master, int link, uint8_t id)
- 
- 	crc = crc4(0, cfam_id, 32);
- 	if (crc) {
-+		trace_fsi_slave_invalid_cfam(master, link, cfam_id);
- 		dev_warn(&master->dev, "slave %02x:%02x invalid cfam id CRC!\n",
- 				link, id);
- 		return -EIO;
-@@ -1080,6 +1083,8 @@ static int fsi_slave_init(struct fsi_master *master, int link, uint8_t id)
- 	if (rc)
- 		goto err_free;
- 
-+	trace_fsi_slave_init(slave);
-+
- 	/* Create chardev for userspace access */
- 	cdev_init(&slave->cdev, &cfam_fops);
- 	rc = cdev_device_add(&slave->cdev, &slave->dev);
-diff --git a/drivers/fsi/fsi-master-aspeed.c b/drivers/fsi/fsi-master-aspeed.c
-index 0bed2fab8055..7cec1772820d 100644
---- a/drivers/fsi/fsi-master-aspeed.c
-+++ b/drivers/fsi/fsi-master-aspeed.c
-@@ -449,11 +449,13 @@ static ssize_t cfam_reset_store(struct device *dev, struct device_attribute *att
- {
- 	struct fsi_master_aspeed *aspeed = dev_get_drvdata(dev);
- 
-+	trace_fsi_master_aspeed_cfam_reset(true);
- 	mutex_lock(&aspeed->lock);
- 	gpiod_set_value(aspeed->cfam_reset_gpio, 1);
- 	usleep_range(900, 1000);
- 	gpiod_set_value(aspeed->cfam_reset_gpio, 0);
- 	mutex_unlock(&aspeed->lock);
-+	trace_fsi_master_aspeed_cfam_reset(false);
- 
- 	return count;
+ /*
+  * As much as possible, please keep functions alphabetically sorted.
+  */
+@@ -45,36 +52,96 @@ int atoi(const char *s)
+ 	return atol(s);
  }
-diff --git a/include/trace/events/fsi.h b/include/trace/events/fsi.h
-index 9832cb8e0eb0..c9a72e8432b8 100644
---- a/include/trace/events/fsi.h
-+++ b/include/trace/events/fsi.h
-@@ -122,6 +122,92 @@ TRACE_EVENT(fsi_master_break,
- 	)
- );
  
-+TRACE_EVENT(fsi_slave_init,
-+	TP_PROTO(const struct fsi_slave *slave),
-+	TP_ARGS(slave),
-+	TP_STRUCT__entry(
-+		__field(int,	master_idx)
-+		__field(int,	master_n_links)
-+		__field(int,	idx)
-+		__field(int,	link)
-+		__field(int,	chip_id)
-+		__field(__u32,	cfam_id)
-+		__field(__u32,	size)
-+	),
-+	TP_fast_assign(
-+		__entry->master_idx = slave->master->idx;
-+		__entry->master_n_links = slave->master->n_links;
-+		__entry->idx = slave->cdev_idx;
-+		__entry->link = slave->link;
-+		__entry->chip_id = slave->chip_id;
-+		__entry->cfam_id = slave->cfam_id;
-+		__entry->size = slave->size;
-+	),
-+	TP_printk("fsi%d: idx:%d link:%d/%d cid:%d cfam:%08x %08x",
-+		__entry->master_idx,
-+		__entry->idx,
-+		__entry->link,
-+		__entry->master_n_links,
-+		__entry->chip_id,
-+		__entry->cfam_id,
-+		__entry->size
-+	)
-+);
+-/* performs the opposite of atol() using a user-fed buffer. The buffer must be
+- * at least 21 bytes long (large enough for "-9223372036854775808").
++/* Converts the unsigned long integer <in> to its string representation into
++ * buffer <buffer>, which must be long enough to store the number and the
++ * trailing zero (21 bytes for 18446744073709551615 in 64-bit, 11 for
++ * 4294967295 in 32-bit). The buffer is filled from the first byte, and the
++ * number of characters emitted (not counting the trailing zero) is returned.
++ * The function is constructed in a way to optimize the code size and avoid
++ * any divide that could add a dependency on large external functions.
+  */
+ static __attribute__((unused))
+-const char *ltoa_r(long in, char *buffer)
++int utoa_r(unsigned long in, char *buffer)
+ {
+-	char       *pos = buffer + 21 - 1;
+-	int         neg = in < 0;
+-	unsigned long n = neg ? -in : in;
++	unsigned long lim;
++	int digits = 0;
++	int pos = (~0UL > 0xfffffffful) ? 19 : 9;
++	int dig;
+ 
+-	*pos-- = '\0';
+ 	do {
+-		*pos-- = '0' + n % 10;
+-		n /= 10;
+-		if (pos < buffer)
+-			return pos + 1;
+-	} while (n);
++		for (dig = 0, lim = 1; dig < pos; dig++)
++			lim *= 10;
+ 
+-	if (neg)
+-		*pos-- = '-';
+-	return pos + 1;
++		if (digits || in >= lim || !pos) {
++			for (dig = 0; in >= lim; dig++)
++				in -= lim;
++			buffer[digits++] = '0' + dig;
++		}
++	} while (pos--);
 +
-+TRACE_EVENT(fsi_slave_invalid_cfam,
-+	TP_PROTO(const struct fsi_master *master, int link, uint32_t cfam_id),
-+	TP_ARGS(master, link, cfam_id),
-+	TP_STRUCT__entry(
-+		__field(int,	master_idx)
-+		__field(int,	master_n_links)
-+		__field(int,	link)
-+		__field(__u32,	cfam_id)
-+	),
-+	TP_fast_assign(
-+		__entry->master_idx = master->idx;
-+		__entry->master_n_links = master->n_links;
-+		__entry->link = link;
-+		__entry->cfam_id = cfam_id;
-+	),
-+	TP_printk("fsi%d: cfam:%08x link:%d/%d",
-+		__entry->master_idx,
-+		__entry->cfam_id,
-+		__entry->link,
-+		__entry->master_n_links
-+	)
-+);
++	buffer[digits] = 0;
++	return digits;
+ }
+ 
+-/* performs the opposite of atol() using a statically allocated buffer */
++/* Converts the signed long integer <in> to its string representation into
++ * buffer <buffer>, which must be long enough to store the number and the
++ * trailing zero (21 bytes for -9223372036854775808 in 64-bit, 12 for
++ * -2147483648 in 32-bit). The buffer is filled from the first byte, and the
++ * number of characters emitted (not counting the trailing zero) is returned.
++ */
+ static __attribute__((unused))
+-const char *ltoa(long in)
++int itoa_r(long in, char *buffer)
+ {
+-	/* large enough for -9223372036854775808 */
+-	static char buffer[21];
+-	return ltoa_r(in, buffer);
++	char *ptr = buffer;
++	int len = 0;
 +
-+TRACE_EVENT(fsi_dev_init,
-+	TP_PROTO(const struct fsi_device *dev),
-+	TP_ARGS(dev),
-+	TP_STRUCT__entry(
-+		__field(int,	master_idx)
-+		__field(int,	link)
-+		__field(int,	type)
-+		__field(int,	unit)
-+		__field(int,	version)
-+		__field(__u32,	addr)
-+		__field(__u32,	size)
-+	),
-+	TP_fast_assign(
-+		__entry->master_idx = dev->slave->master->idx;
-+		__entry->link = dev->slave->link;
-+		__entry->type = dev->engine_type;
-+		__entry->unit = dev->unit;
-+		__entry->version = dev->version;
-+		__entry->addr = dev->addr;
-+		__entry->size = dev->size;
-+	),
-+	TP_printk("fsi%d: slv%d: t:%02x u:%02x v:%02x %08x@%08x",
-+		__entry->master_idx,
-+		__entry->link,
-+		__entry->type,
-+		__entry->unit,
-+		__entry->version,
-+		__entry->size,
-+		__entry->addr
-+	)
-+);
- 
- #endif /* _TRACE_FSI_H */
- 
-diff --git a/include/trace/events/fsi_master_aspeed.h b/include/trace/events/fsi_master_aspeed.h
-index a355ceacc33f..0fff873775f1 100644
---- a/include/trace/events/fsi_master_aspeed.h
-+++ b/include/trace/events/fsi_master_aspeed.h
-@@ -72,6 +72,18 @@ TRACE_EVENT(fsi_master_aspeed_opb_error,
- 		)
- 	);
- 
-+TRACE_EVENT(fsi_master_aspeed_cfam_reset,
-+	TP_PROTO(bool start),
-+	TP_ARGS(start),
-+	TP_STRUCT__entry(
-+		__field(bool,	start)
-+	),
-+	TP_fast_assign(
-+		__entry->start = start;
-+	),
-+	TP_printk("%s", __entry->start ? "start" : "end")
-+);
++	if (in < 0) {
++		in = -in;
++		*(ptr++) = '-';
++		len++;
++	}
++	len += utoa_r(in, ptr);
++	return len;
++}
 +
- #endif
++/* for historical compatibility, same as above but returns the pointer to the
++ * buffer.
++ */
++static inline __attribute__((unused))
++char *ltoa_r(long in, char *buffer)
++{
++	itoa_r(in, buffer);
++	return buffer;
++}
++
++/* converts long integer <in> to a string using the static itoa_buffer and
++ * returns the pointer to that string.
++ */
++static inline __attribute__((unused))
++char *itoa(long in)
++{
++	itoa_r(in, itoa_buffer);
++	return itoa_buffer;
++}
++
++/* converts long integer <in> to a string using the static itoa_buffer and
++ * returns the pointer to that string. Same as above, for compatibility.
++ */
++static inline __attribute__((unused))
++char *ltoa(long in)
++{
++	itoa_r(in, itoa_buffer);
++	return itoa_buffer;
++}
++
++/* converts unsigned long integer <in> to a string using the static itoa_buffer
++ * and returns the pointer to that string.
++ */
++static inline __attribute__((unused))
++char *utoa(unsigned long in)
++{
++	utoa_r(in, itoa_buffer);
++	return itoa_buffer;
+ }
  
- #include <trace/define_trace.h>
+ static __attribute__((unused))
 -- 
-2.27.0
+2.35.1
 
