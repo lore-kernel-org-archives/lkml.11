@@ -2,150 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C39C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695E3C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443143AbiBGNJv (ORCPT
+        id S1443102AbiBGNJt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:09:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
+        Mon, 7 Feb 2022 08:09:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383705AbiBGMfA (ORCPT
+        with ESMTP id S1442248AbiBGMUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:35:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F09DC03BFDA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:22:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644236569;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QSBowbgf2vb90A9ABdZ9rYr8VIZn9VMzK+A/qJ0lcdg=;
-        b=XV/Q0JpjYNIIUARi4GmyBGonzgk319nrjqBilYfkxYCluiVfZKXLKDbdhRPazV3X1t1D++
-        wGKvYhFAE1WZqlaVyTnqdMN8Kmv5ew7d0VZRYPbi/zWsKexsqrhMqjzqwTZuFgPHKl95rS
-        bFXq7pG8pxK1Ehj/1NOIEZw8CrxMF8s=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-362-yRYj1BhhN7eiTwpaanSp0w-1; Mon, 07 Feb 2022 07:22:48 -0500
-X-MC-Unique: yRYj1BhhN7eiTwpaanSp0w-1
-Received: by mail-wm1-f71.google.com with SMTP id i8-20020a1c3b08000000b0037bb9f6feeeso3156268wma.5
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 04:22:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=QSBowbgf2vb90A9ABdZ9rYr8VIZn9VMzK+A/qJ0lcdg=;
-        b=E92YKy6d+FXiq+EsbFbHL9Hzh2xcVqzeSoP0DH3Sm6nLQsJ1MUwzAo/bn9hrnEnJVh
-         4UkGGpc8+z0vCuOaUm61YvDV9YJWSwDsqSu8lueOsH8THFGc+N2GZOGCeSTqQS/S/yc4
-         QcxbSGGj3ggQIS3ZtFLeRkw0YUuFhhp0dExY0lrzU/DSXzaCBjq2d5ku58qYKQHRglVp
-         tugu3hiIGxyyxsS5DwQAwoOzRCGISzCfbu97jyayMt5Wficf6jP4P8GhsrzdvxFGc1Du
-         Kuhu/3rCOj4tqpo6Alh73dfKoyD1AHNBEw/CVcb8Vo78XLYb5D+JX6lo1hX31/SNPq2o
-         wkvQ==
-X-Gm-Message-State: AOAM532q9m/FcoCTZPGZe32Yt4xUCL+sDOflpgsea1O+92spWAz9vcnR
-        d+WVNIJwAdjttMNhdxFGtbsdSQbxnahmfSzAboaut4QIls4jFQ2WW2CbIiwxbm3xxR2kJYDc6UY
-        G96tJXQYi3AHJj+o2+WKCHLN/
-X-Received: by 2002:a05:600c:4982:: with SMTP id h2mr4267640wmp.140.1644236566868;
-        Mon, 07 Feb 2022 04:22:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx91JTZSeZfXaf4e9dtm2LUw/crJMou26urFCvtQBIFE8q74IzQmEVn+9kPPM+Z3Luotfv8SQ==
-X-Received: by 2002:a05:600c:4982:: with SMTP id h2mr4267609wmp.140.1644236566681;
-        Mon, 07 Feb 2022 04:22:46 -0800 (PST)
-Received: from ?IPv6:2a0c:5a80:1204:1500:37e7:8150:d9df:36f? ([2a0c:5a80:1204:1500:37e7:8150:d9df:36f])
-        by smtp.gmail.com with ESMTPSA id j2sm9523231wms.2.2022.02.07.04.22.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 04:22:46 -0800 (PST)
-Message-ID: <d4a766d90803e794985e8d693972c24e5fe1926f.camel@redhat.com>
-Subject: Re: [PATCH 5.16 000/126] 5.16.8-rc1 review
-From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Arnd Bergmann <arnd@arndb.de>,
-        James Morse <james.morse@arm.com>,
-        Marc Zyngier <maz@kernel.org>
-Date:   Mon, 07 Feb 2022 13:22:45 +0100
-In-Reply-To: <CA+G9fYsd_kjuXOJx9umAhkaA7rRx40gVhY9ZBEe6xsMOZ2oTQg@mail.gmail.com>
-References: <20220207103804.053675072@linuxfoundation.org>
-         <CA+G9fYsd_kjuXOJx9umAhkaA7rRx40gVhY9ZBEe6xsMOZ2oTQg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        Mon, 7 Feb 2022 07:20:49 -0500
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC77DF8E3E5
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:06:52 -0800 (PST)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id B19FC68AA6; Mon,  7 Feb 2022 13:06:47 +0100 (CET)
+Date:   Mon, 7 Feb 2022 13:06:47 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     Zhi Wang <zhi.wang.linux@gmail.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Wang, Zhi A" <zhi.a.wang@intel.com>,
+        "jgg@nvidia.com" <jgg@nvidia.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        "Xu, Terrence" <terrence.xu@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: Re: [PATCH 1/3] i915/gvt: Introduce the mmio_table.c to support
+ VFIO new mdev API
+Message-ID: <20220207120647.GA28851@lst.de>
+References: <20220127120508.11330-1-zhi.a.wang@intel.com> <20220207073247.GA24327@lst.de> <DM4PR11MB5549FE45F8098368114ADE75CA2C9@DM4PR11MB5549.namprd11.prod.outlook.com> <20220207083535.GA25345@lst.de> <877da7rlzr.fsf@intel.com> <5c916187-8a8c-323a-adb4-8bce141180cc@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5c916187-8a8c-323a-adb4-8bce141180cc@gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-07 at 17:49 +0530, Naresh Kamboju wrote:
-> > This is the start of the stable review cycle for the 5.16.8 release.
-> > There are 126 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> > 
-> > Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
-> > Anything received after that time might be too late.
-> > 
-> > The whole patch series can be found in one patch at:
-> >         
-> > https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.8-rc1.gz
-> > or in the git tree and branch at:
-> >          git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-> > linux-5.16.y
-> > and the diffstat can be found below.
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> 
-> Linux stable-rc 5.16 arm64 builds failed due to below errors.
-> 
->   kvm/arm64: rework guest entry logic
->   [ Upstream commit 8cfe148a7136bc60452a5c6b7ac2d9d15c36909b ]
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> 
-> arch/arm64/kvm/arm.c: In function 'kvm_arm_vcpu_enter_exit':
-> arch/arm64/kvm/arm.c:778:9: error: implicit declaration of function
-> 'guest_state_enter_irqoff'; did you mean 'guest_enter_irqoff'?
-> [-Werror=implicit-function-declaration]
->   778 |         guest_state_enter_irqoff();
->       |         ^~~~~~~~~~~~~~~~~~~~~~~~
->       |         guest_enter_irqoff
-> arch/arm64/kvm/arm.c:780:9: error: implicit declaration of function
-> 'guest_state_exit_irqoff'; did you mean 'guest_exit_irqoff'?
-> [-Werror=implicit-function-declaration]
->   780 |         guest_state_exit_irqoff();
->       |         ^~~~~~~~~~~~~~~~~~~~~~~
->       |         guest_exit_irqoff
-> arch/arm64/kvm/arm.c: In function 'kvm_arch_vcpu_ioctl_run':
-> arch/arm64/kvm/arm.c:875:17: error: implicit declaration of function
-> 'guest_timing_enter_irqoff'; did you mean 'guest_enter_irqoff'?
-> [-Werror=implicit-function-declaration]
->   875 |                 guest_timing_enter_irqoff();
->       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~
->       |                 guest_enter_irqoff
-> arch/arm64/kvm/arm.c:925:17: error: implicit declaration of function
-> 'guest_timing_exit_irqoff'; did you mean 'guest_exit_irqoff'?
-> [-Werror=implicit-function-declaration]
->   925 |                 guest_timing_exit_irqoff();
->       |                 ^~~~~~~~~~~~~~~~~~~~~~~~
->       |                 guest_exit_irqoff
-> cc1: some warnings being treated as errors
-> 
-> 
-> build link:
-> -----------
+On Mon, Feb 07, 2022 at 06:57:13AM -0500, Zhi Wang wrote:
+> Hi Christoph and Jani:
+>
+> Thanks for the comments. It would be nice that people can achieve a 
+> agreement. I am OK with both of the options and also moving some files into 
+> different folders doesn't needs me to do the full test run again. :)
 
-I think this patch is missing:
-https://lore.kernel.org/lkml/87czk65vhq.wl-maz@kernel.org/T/#m49f8ab674c269f14f57dae33f90af30617bc735f
-
--- 
-Nicolás Sáenz
-
+The way I understood Jani he agrees that the mmio table, which needs to
+be part of the core i915 module should not be under the gvt/ subdiretory.
+I.e. it could be drivers/gpu/drm/i915/intel_gvt_mmio_table.c.  The
+declarations could then go either into drivers/gpu/drm/i915/intel_gvt.h
+or drivers/gpu/drm/i915/intel_gvt_mmio_table.h.
