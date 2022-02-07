@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00746C3527D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2039DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387398AbiBGLlP (ORCPT
+        id S1387511AbiBGLlU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:41:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38424 "EHLO
+        Mon, 7 Feb 2022 06:41:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346683AbiBGL2R (ORCPT
+        with ESMTP id S1359536AbiBGL2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:28:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F28C03648B;
-        Mon,  7 Feb 2022 03:26:43 -0800 (PST)
+        Mon, 7 Feb 2022 06:28:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61325C08E834;
+        Mon,  7 Feb 2022 03:26:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54A6160915;
-        Mon,  7 Feb 2022 11:26:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29522C004E1;
-        Mon,  7 Feb 2022 11:26:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AEA4B80EBD;
+        Mon,  7 Feb 2022 11:26:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8882EC004E1;
+        Mon,  7 Feb 2022 11:26:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233196;
-        bh=8eH1MdEVdu2hKNRuGIzmCqaimYky5xcS1WJ3g2iEc98=;
+        s=korg; t=1644233212;
+        bh=JE/jV0p/vLig4xTmzfQk4lQFfn7O51vh4mZW9DF20YE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pC67rC949IsYBDuKFWSGdVuBsMHRdxabNFOOmxgF9JTPyD1Vmvi2a3MmvvEfjELMx
-         FgtA0ikr+V4JnJRdsB44w1iP7EJDaM23MRg1Bsi4N/DPOK8qdAKBE2NkDYsZp7I55W
-         u78m7pHVNpmSUmqf8nL9JUTnm8zfpY1uLcNdjiQc=
+        b=BP7sXMhYgMS2DG8/uPFdX2hu/5CxNecOti5C+3D7ws6gK7Ku/EOwTbDhw/4u6Dt49
+         01RNpocPsuNhxpVZ+/hQtlz1r65OFtXeBEgji7dSqaXt3N8vsn8MymuQbSakHqIzZ4
+         J/lUGsTZqTPsHYXRSC42nuX6YK7fFIG/8ZzFOZFA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 046/110] ALSA: hda: Fix signedness of sscanf() arguments
-Date:   Mon,  7 Feb 2022 12:06:19 +0100
-Message-Id: <20220207103803.837857370@linuxfoundation.org>
+        stable@vger.kernel.org, Nick Lopez <github@glowingmonkey.org>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Karol Herbst <kherbst@redhat.com>
+Subject: [PATCH 5.15 021/110] drm/nouveau: fix off by one in BIOS boundary checking
+Date:   Mon,  7 Feb 2022 12:05:54 +0100
+Message-Id: <20220207103802.973694188@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -49,33 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Nick Lopez <github@glowingmonkey.org>
 
-commit 0444f82766f0b5b9c8302ad802dafa5dd0e722d0 upstream.
+commit 1b777d4d9e383d2744fc9b3a09af6ec1893c8b1a upstream.
 
-The %x format of sscanf() takes an unsigned int pointer, while we pass
-a signed int pointer.  Practically it's OK, but this may result in a
-compile warning.  Let's fix it.
+Bounds checking when parsing init scripts embedded in the BIOS reject
+access to the last byte. This causes driver initialization to fail on
+Apple eMac's with GeForce 2 MX GPUs, leaving the system with no working
+console.
 
-Fixes: a235d5b8e550 ("ALSA: hda: Allow model option to specify PCI SSID alias")
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/r/20220127135717.31751-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+This is probably only seen on OpenFirmware machines like PowerPC Macs
+because the BIOS image provided by OF is only the used parts of the ROM,
+not a power-of-two blocks read from PCI directly so PCs always have
+empty bytes at the end that are never accessed.
+
+Signed-off-by: Nick Lopez <github@glowingmonkey.org>
+Fixes: 4d4e9907ff572 ("drm/nouveau/bios: guard against out-of-bounds accesses to image")
+Cc: <stable@vger.kernel.org> # v4.10+
+Reviewed-by: Ilia Mirkin <imirkin@alum.mit.edu>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220122081906.2633061-1-github@glowingmonkey.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/hda_auto_parser.c |    2 +-
+ drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/hda/hda_auto_parser.c
-+++ b/sound/pci/hda/hda_auto_parser.c
-@@ -985,7 +985,7 @@ void snd_hda_pick_fixup(struct hda_codec
- 	int id = HDA_FIXUP_ID_NOT_SET;
- 	const char *name = NULL;
- 	const char *type = NULL;
--	int vendor, device;
-+	unsigned int vendor, device;
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c
+@@ -38,7 +38,7 @@ nvbios_addr(struct nvkm_bios *bios, u32
+ 		*addr += bios->imaged_addr;
+ 	}
  
- 	if (codec->fixup_id != HDA_FIXUP_ID_NOT_SET)
- 		return;
+-	if (unlikely(*addr + size >= bios->size)) {
++	if (unlikely(*addr + size > bios->size)) {
+ 		nvkm_error(&bios->subdev, "OOB %d %08x %08x\n", size, p, *addr);
+ 		return false;
+ 	}
 
 
