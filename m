@@ -2,178 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C24C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 420B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234683AbiBGSww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:52:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33506 "EHLO
+        id S235290AbiBGSxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:53:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235935AbiBGSvm (ORCPT
+        with ESMTP id S235927AbiBGSva (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:51:42 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D3AC0401DA;
-        Mon,  7 Feb 2022 10:51:40 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 19927210FA;
-        Mon,  7 Feb 2022 18:51:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644259899; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NOYjLS4N8vwfd3h4Lp9C/Ennm3oWf0c+XTehS9bJX24=;
-        b=xD7Cr2cOpWyJFdqWLn+fwhofVahSVhXmdPo56idG5sEwFbYiClzqPVLWBWRcb1Mu2tmNuU
-        eBlcaQcoZFvNCxqIn5ekPjrKgkKAvDwbsoby5+RH2Ym3YX23LrAYAMQLPTyjl3j3RNg7Ur
-        5j0MxhHbXCsgoNKv88jfUOZwq7fbAWg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644259899;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NOYjLS4N8vwfd3h4Lp9C/Ennm3oWf0c+XTehS9bJX24=;
-        b=XZ9d5JbQDs73N70sW61CO6zONLOYVpxPeUzOGcKXyNDBTFPsCbLl+dOc0vH286Yw3W8e+S
-        55xDWRh3IpqtqrCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9974513C61;
-        Mon,  7 Feb 2022 18:51:38 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id ZIAMJDpqAWI0QAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 07 Feb 2022 18:51:38 +0000
-Message-ID: <25166513-3074-f3b9-12cc-420ba74f153e@suse.cz>
-Date:   Mon, 7 Feb 2022 19:51:38 +0100
+        Mon, 7 Feb 2022 13:51:30 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FABC0401DA;
+        Mon,  7 Feb 2022 10:51:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=YjnxRU9OsPHWFPB45I1omyCSwPagOekaYsZVmBqtP5Y=; b=Bmva/cOPXrRluFmWOKioi5vMqp
+        DGjVCFFUfrcyOKSesEGKFY4bzyTtp+0K6F9jUhsCUgP7gzNOYDIysro5PeAcq30EsEl7tyC6l7FpE
+        HVrhcsBDkXyoWaJV5aD+fodgQ67U/bRDwGI9gXVtl2KwB1LFxoGPntTK5IJkS0G3vWM2kVC/y1gQE
+        T0qofu2kIQ5G+hLsQh0whyWK9MF+IZHCpWU4fw5tawKYtmctPczvOpmT0qD/xhhWNWnWj4RjZVvzr
+        uyFNfivxVVAlxvJZLzph92Ekss0THyo2svpr5S+4UWTbxB8caXw9hzN6CMzy1T1vI4eAdcjzmMJaw
+        7fDRj2Tw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nH96l-001nqs-SX; Mon, 07 Feb 2022 18:51:28 +0000
+Message-ID: <d38afc1a-331f-ff0e-be81-71bec617d85c@infradead.org>
+Date:   Mon, 7 Feb 2022 10:51:22 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v4 02/12] mm/memfd: Introduce MFD_INACCESSIBLE flag
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/2] x86/Kconfig: move and modify CONFIG_I8K
 Content-Language: en-US
-To:     Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, qemu-devel@nongnu.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
+To:     =?UTF-8?Q?Mateusz_Jo=c5=84czyk?= <mat.jonczyk@o2.pl>,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-hwmon@vger.kernel.org
+Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com,
-        Mike Rapoport <rppt@linux.ibm.com>
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
- <20220118132121.31388-3-chao.p.peng@linux.intel.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220118132121.31388-3-chao.p.peng@linux.intel.com>
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>
+References: <20220207182940.242838-1-mat.jonczyk@o2.pl>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220207182940.242838-1-mat.jonczyk@o2.pl>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 14:21, Chao Peng wrote:
-> Introduce a new memfd_create() flag indicating the content of the
-> created memfd is inaccessible from userspace. It does this by force
-> setting F_SEAL_INACCESSIBLE seal when the file is created. It also set
-> F_SEAL_SEAL to prevent future sealing, which means, it can not coexist
-> with MFD_ALLOW_SEALING.
+Hi--
+
+I like it. (I had a note to myself to do this also.)
+
+
+On 2/7/22 10:29, Mateusz Jończyk wrote:
+> In Kconfig, inside the "Processor type and features" menu, there is
+> the CONFIG_I8K option: "Dell i8k legacy laptop support". This is
+> very confusing - enabling CONFIG_I8K is not required for the kernel to
+> support old Dell laptops. This option is specific to the dell-smm-hwmon
+> driver, which mostly exports some hardware monitoring information and
+> allows the user to change fan speed.
 > 
-> The pages backed by such memfd will be used as guest private memory in
-> confidential computing environments such as Intel TDX/AMD SEV. Since
-> page migration/swapping is not yet supported for such usages so these
-> pages are currently marked as UNMOVABLE and UNEVICTABLE which makes
-> them behave like long-term pinned pages.
-
-Shouldn't the amount of such memory allocations be restricted? E.g. similar
-to secretmem_mmap() doing mlock_future_check().
-
-> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> This option is misplaced, so move CONFIG_I8K to drivers/hwmon/Kconfig,
+> where it belongs.
+> 
+> Also, modify the dependency order - change
+>         select SENSORS_DELL_SMM
+> to
+>         depends on SENSORS_DELL_SMM
+> as it is just a configuration option of dell-smm-hwmon. This includes
+> changing the option type from tristate to bool. It was tristate because
+> it could select CONFIG_SENSORS_DELL_SMM=m .
+> 
+> When running "make oldconfig" on configurations with
+> CONFIG_SENSORS_DELL_SMM enabled , this change will result in an
+> additional question (which could be printed several times during
+> bisecting). I think that tidying up the configuration is worth it,
+> though.
+> 
+> Next patch tweaks the description of CONFIG_I8K.
+> 
+> Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+> Cc: Pali Rohár <pali@kernel.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: Jean Delvare <jdelvare@suse.com>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Hans de Goede <hdegoede@redhat.com>
+> Cc: Mark Gross <markgross@kernel.org>
 > ---
->  include/uapi/linux/memfd.h |  1 +
->  mm/memfd.c                 | 20 +++++++++++++++++++-
->  2 files changed, 20 insertions(+), 1 deletion(-)
+>  arch/x86/Kconfig      | 17 -----------------
+>  drivers/hwmon/Kconfig | 15 +++++++++++++++
+>  2 files changed, 15 insertions(+), 17 deletions(-)
 > 
-> diff --git a/include/uapi/linux/memfd.h b/include/uapi/linux/memfd.h
-> index 7a8a26751c23..48750474b904 100644
-> --- a/include/uapi/linux/memfd.h
-> +++ b/include/uapi/linux/memfd.h
-> @@ -8,6 +8,7 @@
->  #define MFD_CLOEXEC		0x0001U
->  #define MFD_ALLOW_SEALING	0x0002U
->  #define MFD_HUGETLB		0x0004U
-> +#define MFD_INACCESSIBLE	0x0008U
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 9f5bd41bf660..71d4ddd48c02 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -1275,23 +1275,6 @@ config TOSHIBA
+>  	  Say Y if you intend to run this kernel on a Toshiba portable.
+>  	  Say N otherwise.
 >  
->  /*
->   * Huge page size encoding when MFD_HUGETLB is specified, and a huge page
-> diff --git a/mm/memfd.c b/mm/memfd.c
-> index 9f80f162791a..26998d96dc11 100644
-> --- a/mm/memfd.c
-> +++ b/mm/memfd.c
-> @@ -245,16 +245,19 @@ long memfd_fcntl(struct file *file, unsigned int cmd, unsigned long arg)
->  #define MFD_NAME_PREFIX_LEN (sizeof(MFD_NAME_PREFIX) - 1)
->  #define MFD_NAME_MAX_LEN (NAME_MAX - MFD_NAME_PREFIX_LEN)
+> -config I8K
+> -	tristate "Dell i8k legacy laptop support"
+> -	depends on HWMON
+> -	depends on PROC_FS
+> -	select SENSORS_DELL_SMM
+> -	help
+> -	  This option enables legacy /proc/i8k userspace interface in hwmon
+> -	  dell-smm-hwmon driver. Character file /proc/i8k reports bios version,
+> -	  temperature and allows controlling fan speeds of Dell laptops via
+> -	  System Management Mode. For old Dell laptops (like Dell Inspiron 8000)
+> -	  it reports also power and hotkey status. For fan speed control is
+> -	  needed userspace package i8kutils.
+> -
+> -	  Say Y if you intend to run this kernel on old Dell laptops or want to
+> -	  use userspace package i8kutils.
+> -	  Say N otherwise.
+> -
+>  config X86_REBOOTFIXUPS
+>  	bool "Enable X86 board specific fixups for reboot"
+>  	depends on X86_32
+> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+> index 8df25f1079ba..dd244aa747ad 100644
+> --- a/drivers/hwmon/Kconfig
+> +++ b/drivers/hwmon/Kconfig
+> @@ -505,6 +505,21 @@ config SENSORS_DELL_SMM
+>  	  When option I8K is also enabled this driver provides legacy /proc/i8k
+>  	  userspace interface for i8kutils package.
 >  
-> -#define MFD_ALL_FLAGS (MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_HUGETLB)
-> +#define MFD_ALL_FLAGS (MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_HUGETLB | \
-> +		       MFD_INACCESSIBLE)
->  
->  SYSCALL_DEFINE2(memfd_create,
->  		const char __user *, uname,
->  		unsigned int, flags)
->  {
-> +	struct address_space *mapping;
->  	unsigned int *file_seals;
->  	struct file *file;
->  	int fd, error;
->  	char *name;
-> +	gfp_t gfp;
->  	long len;
->  
->  	if (!(flags & MFD_HUGETLB)) {
-> @@ -267,6 +270,10 @@ SYSCALL_DEFINE2(memfd_create,
->  			return -EINVAL;
->  	}
->  
-> +	/* Disallow sealing when MFD_INACCESSIBLE is set. */
-> +	if (flags & MFD_INACCESSIBLE && flags & MFD_ALLOW_SEALING)
-> +		return -EINVAL;
-> +
->  	/* length includes terminating zero */
->  	len = strnlen_user(uname, MFD_NAME_MAX_LEN + 1);
->  	if (len <= 0)
-> @@ -315,6 +322,17 @@ SYSCALL_DEFINE2(memfd_create,
->  		*file_seals &= ~F_SEAL_SEAL;
->  	}
->  
-> +	if (flags & MFD_INACCESSIBLE) {
-> +		mapping = file_inode(file)->i_mapping;
-> +		gfp = mapping_gfp_mask(mapping);
-> +		gfp &= ~__GFP_MOVABLE;
-> +		mapping_set_gfp_mask(mapping, gfp);
-> +		mapping_set_unevictable(mapping);
-> +
-> +		file_seals = memfd_file_seals_ptr(file);
-> +		*file_seals &= F_SEAL_SEAL | F_SEAL_INACCESSIBLE;
-> +	}
-> +
->  	fd_install(fd, file);
->  	kfree(name);
->  	return fd;
+> +config I8K
+> +	bool "Dell i8k legacy laptop support"
+> +	depends on SENSORS_DELL_SMM
+> +	help
+> +	  This option enables legacy /proc/i8k userspace interface in hwmon
+> +	  dell-smm-hwmon driver. Character file /proc/i8k reports bios version,
 
+	                                                          BIOS
+
+> +	  temperature and allows controlling fan speeds of Dell laptops via
+> +	  System Management Mode. For old Dell laptops (like Dell Inspiron 8000)
+> +	  it reports also power and hotkey status. For fan speed control is
+> +	  needed userspace package i8kutils.
+
+Last sentence above is awkward. How about:
+
+	  it also reports power and hotkey status. For fan speed control, the
+	  i8kutils userspace package is needed.
+
+> +
+> +	  Say Y if you intend to run this kernel on old Dell laptops or want to
+> +	  use userspace package i8kutils.
+> +	  Say N otherwise.
+> +
+>  config SENSORS_DA9052_ADC
+>  	tristate "Dialog DA9052/DA9053 ADC"
+>  	depends on PMIC_DA9052
+
+
+Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+
+thanks.
+-- 
+~Randy
