@@ -2,94 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C57EAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D86B1C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237400AbiBGSbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:31:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50654 "EHLO
+        id S237775AbiBGSbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:31:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239636AbiBGSYr (ORCPT
+        with ESMTP id S236724AbiBGSaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:24:47 -0500
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 10:24:47 PST
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D8EC0401D9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:24:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644258287; x=1675794287;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iEthWzhLhgfla9mBgcMk3I3im8SSm2ybD3uCeC+OHOg=;
-  b=OtMqY5kNuqY1LJR4rRnx1fu94LZo54QwNyslFN8+zh+BXH5G5Wx+vdn9
-   JE3zxPDZD9yXrN8TqRRJZiWUWUIN+tkEahoOyG54njaJFMJhnbaRE1fg/
-   Iww7aU22VAr6Tpul7zLI0w6bAuhnO0J0aX+EtsapqYUE/xrTBBleRpYCL
-   bKkYup7mAblW9fLvQ47FsUQioQN7+14h7EXUh3Tz4XbOUAwpqnOnHxvut
-   +Zqa3zJRd8UoP2xwfxL8bYaTJ9P4JxkLyadWkqGvB8Q/KjUMnG85Y/xHE
-   69y9pM9KsZL2CVSBbuvZxIbYw0vHUly2LYvD77HcgaMdeaRlOpLrvEn2t
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="229427855"
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="229427855"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 10:23:44 -0800
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="484514992"
-Received: from agluck-desk2.sc.intel.com (HELO agluck-desk2.amr.corp.intel.com) ([10.3.52.146])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 10:23:43 -0800
-Date:   Mon, 7 Feb 2022 10:23:42 -0800
-From:   "Luck, Tony" <tony.luck@intel.com>
-To:     Jue Wang <juew@google.com>
-Cc:     Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev
-Subject: Re: [RFC] x86/mce: Add workaround for SKX/CLX/CPX spurious machine
- checks
-Message-ID: <YgFjrmFuc/b+0OCE@agluck-desk2.amr.corp.intel.com>
-References: <20220207043640.2829295-1-juew@google.com>
+        Mon, 7 Feb 2022 13:30:21 -0500
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0015BC0401D9;
+        Mon,  7 Feb 2022 10:30:19 -0800 (PST)
+Received: by mail-yb1-f179.google.com with SMTP id v186so42821365ybg.1;
+        Mon, 07 Feb 2022 10:30:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4IAhmP+T6jOpGNX9JETe6Tu8YD8CCasYVfZ4rkK45R8=;
+        b=aarYX4yFDYrt0N5Z6PY7UE/nyJiv5EiNXzKgk0kJedIb3o43oY5rLm4RJ0+pfoI15/
+         OJ0Dxqdh93Vxob9E1KUckXJCTo9IcbumkwNOFfeIWM9Rh7X75f/JU2VHohIbT7KDvF6D
+         LmE6zcsC0P8p3jnrsxB+vnexf8MSlYA8d6xh3LQJMowWrUPS2BIO56qdk/3DxWBKQ8Zc
+         0RoqsNVwI8xEaR9emY5aiiX4HsV8IZduUv/SEXHeUf+sZhOwRUT7V3ufAOKQuV0/rGwx
+         k+fhk9Aaww+VC5sJLFufBj87oUeRbOLYpoox6NgYM6brupIk24wB/k7SxleVmlPYegNz
+         xhDA==
+X-Gm-Message-State: AOAM531sKr5VhfyAT8R8mdItc3ORTRhuLyoyUNg9FflDL/xYfj7XaOp7
+        o3z2tr3/aAFOLJD/dBKCC9Ghd8gTHA9CHMRwTSOEdxuo
+X-Google-Smtp-Source: ABdhPJyu5/rAfWk6UIp8oq4UHYNADQTG73zJdmFAcr10aFmyNsCHRzdsCmYSPfp2ww578LGa8QjbWmGIrJISJ29AvvU=
+X-Received: by 2002:a81:5c82:: with SMTP id q124mr1139183ywb.326.1644258619139;
+ Mon, 07 Feb 2022 10:30:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207043640.2829295-1-juew@google.com>
+References: <20220207182134.2900362-1-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <20220207182134.2900362-1-srinivas.pandruvada@linux.intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Mon, 7 Feb 2022 19:30:08 +0100
+Message-ID: <CAJZ5v0i+ffre4YszWdjuebz98eDZTf2LioZTAQvOpEOT8RRB1A@mail.gmail.com>
+Subject: Re: [PATCH] Documentation: admin-guide: pm: Document uncore frequency scaling
+To:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 06, 2022 at 08:36:40PM -0800, Jue Wang wrote:
-> +static bool quirk_skylake_repmov(void)
-> +{
-> +	/*
-> +	 * State that represents if an SRAR MCE has already signaled on the DCU bank.
-> +	 */
-> +	static DEFINE_PER_CPU(bool, srar_dcu_signaled);
+CC: linux-pm, please!
+
+On Mon, Feb 7, 2022 at 7:21 PM Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+>
+> Added documentation to configure uncore frequency limits in Intel
+> Xeon processors.
+>
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> ---
+>  .../pm/intel_uncore_frequency_scaling.rst     | 56 +++++++++++++++++++
+>  .../admin-guide/pm/working-state.rst          |  1 +
+>  2 files changed, 57 insertions(+)
+>  create mode 100644 Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst
+>
+> diff --git a/Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst b/Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst
+> new file mode 100644
+> index 000000000000..b3519560594b
+> --- /dev/null
+> +++ b/Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst
+> @@ -0,0 +1,56 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +.. include:: <isonum.txt>
 > +
-> +	if (unlikely(!__this_cpu_read(srar_dcu_signaled))) {
-> +		u64 mc1_status = mce_rdmsrl(MSR_IA32_MCx_STATUS(1));
-
-Jue,
-
-When I reviewed this for you off-list, I didn't notice that you
-dropped the test for mcgstatus & MCG_STATUS_LMCES as part of
-moving to a helper function and expanding the test for more
-bits in mc1_status.
-
-I think that test still is still important ... knowing that this is
-a *local* machine check before making decision based on just what this
-CPU observes makes this a bit more robust.
-
+> +==============================
+> +Intel Uncore Frequency Scaling
+> +==============================
 > +
-> +		if (is_intel_srar(mc1_status)) {
-> +			__this_cpu_write(srar_dcu_signaled, true);
-> +			msr_clear_bit(MSR_IA32_MISC_ENABLE,
-> +				      MSR_IA32_MISC_ENABLE_FAST_STRING_BIT);
-> +			mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
-> +			mce_wrmsrl(MSR_IA32_MCx_STATUS(1), 0);
-> +			pr_err("First SRAR MCE on DCU, CPU: %d, disable fast string copy.\n",
-> +			       smp_processor_id());
-> +			return true;
-> +		}
-> +	}
-> +	return false;
-> +}
-
--Tony
+> +:Copyright: |copy| 2022 Intel Corporation
+> +
+> +:Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> +
+> +Introduction
+> +===========================================
+> +
+> +Uncore can consume significant amount of power in Intel's Xeon servers based
+> +on the workload characteristics. To optimize total power and improve overall
+> +performance, SoC has an internal algorithm for scaling uncore frequency. These
+> +algorithms monitor workload usage of uncore and set a desirable frequency.
+> +
+> +It is possible that users have different expectations of uncore performance and
+> +want to have control over it. The objective is similar to set scaling min/max
+> +frequencies using cpufreq sysfs to improve compute performance. Users may have
+> +some latency sensitive workload where they do not want any change to uncore
+> +frequency. Also, users may have workload which requires different core and
+> +uncore performance at distinct phases and they want to use both cpufreq and
+> +uncore scaling interface to distribute power and improve overall performance.
+> +
+> +To control uncore frequency, a sysfs interface is provided in the directory:
+> +`/sys/devices/system/cpu/intel_uncore_frequency/`.
+> +
+> +There is one directory for each package and die combination as the scope of
+> +uncore scaling control is per die in multiple dies/package SoC or per
+> +package for single die per package SoC. The name represents the
+> +scope of control. For example: 'package_00_die_00' is for package id 0 and
+> +die 0 in it.
+> +
+> +Each package_*_die_* contains following attributes:
+> +
+> +``initial_max_freq_khz``
+> +       Out of reset, this attribute represent the maximum possible frequency.
+> +       This is a read only attribute. If users adjust max_freq_khz,
+> +       they can always go back to maximum using the value from this attribute.
+> +
+> +``initial_min_freq_khz``
+> +       Out of reset, this attribute represent the minimum possible frequency.
+> +       This is a read only attribute. If users adjust min_freq_khz,
+> +       they can always go back to minimum using the value from this attribute.
+> +
+> +``max_freq_khz``
+> +       This attribute is used to set the maximum uncore frequency.
+> +
+> +``min_freq_khz``
+> +       This attribute is used to set the minimum uncore frequency.
+> +
+> +``current_freq_khz``
+> +       This attribute is used to get the current uncore frequency.
+> diff --git a/Documentation/admin-guide/pm/working-state.rst b/Documentation/admin-guide/pm/working-state.rst
+> index 5d2757e2de65..ee45887811ff 100644
+> --- a/Documentation/admin-guide/pm/working-state.rst
+> +++ b/Documentation/admin-guide/pm/working-state.rst
+> @@ -15,3 +15,4 @@ Working-State Power Management
+>     cpufreq_drivers
+>     intel_epb
+>     intel-speed-select
+> +   intel_uncore_frequency_scaling
+> --
+> 2.34.1
+>
