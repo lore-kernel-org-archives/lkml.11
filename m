@@ -2,163 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A54C35272
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CF8C35270
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354230AbiBGGiJ (ORCPT
+        id S1352698AbiBGGhe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:38:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33300 "EHLO
+        Mon, 7 Feb 2022 01:37:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241646AbiBGGdx (ORCPT
+        with ESMTP id S237929AbiBGGWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:33:53 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C400DC043187;
-        Sun,  6 Feb 2022 22:33:52 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id w1so833614plb.6;
-        Sun, 06 Feb 2022 22:33:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0TH+KvK70vqF4R3xRGxJlT+5PeKHKYQ4Msc0Pdr7t5o=;
-        b=iGQGr9yTud19lEw7Dzfe5qe038Er/9pvs3h8C7e0pWiTdPaUGN2IEVMolqlvz99+Y6
-         tK7qS1nMdqUQyNLrVdRrMnFqel0S3jLhmpVpUHBBb2dR05fkqnzBU/aM7w+9WR1tS7e0
-         KGMtPoortuyKjv+zYfywy21NoWucdf3Y8BGMoATM0kauUin7LrFTjqllS4lAPTV47Bx+
-         obA3zAzgjlvjQyZRkzO4aHpgLM3TFrdNyOnwxD/Z1nETDY7UzSvEd8NRWM5VCefEHaOE
-         Y+8ls8E5ujDrKHLlaewlDheGpptcJ+S0fsF2mSvkfFp6VlGHMYu/A8ONI8iAjJzWoVAx
-         kPWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=0TH+KvK70vqF4R3xRGxJlT+5PeKHKYQ4Msc0Pdr7t5o=;
-        b=ATaTBTPjBTUwoGMa60wFHlcizJl+qYmaRH9ANc77ZtB+4KVm896Fy62+Ad+WV3udnK
-         naU9KBcDmQVaaQRGIp09rmgLBOBMm6obUqHYFSghcTcd38TeTzmTXpWRFsdjdAFLrJeE
-         C5un2J2Gf/hVHvkE5jLZi5atGlWWnK4kZ9Nw3VNan/iNEFM8HEVsupN7YHX2qTeI5khR
-         sU9RpXh+DbEugnHjddI7c+Uy63DG8PPg/nTFQ1oy0cBrDxnUEoyvyOizhnsi0xWKqVX0
-         Z7LEuXH8/GSLQsI0q8YhYzHgaKJJpZgiXQpfapj8Pt6WdgtNhLuGxxgjRHbQGuas9NAX
-         qTXQ==
-X-Gm-Message-State: AOAM531LM1a0BChwDIdFQlMhwa5pkCOvcLy/tCaQ3STrf785Ac6jasoK
-        ZMRpTz9vwSbCDAn6V9k0EA==
-X-Google-Smtp-Source: ABdhPJzUhSzyUpEEAxtg0HDIK8h5MPdNrBH+uypOcMLHVjdwOPcOsEkbt23+dU/LCDKF6LYh4HwjqA==
-X-Received: by 2002:a17:903:404b:: with SMTP id n11mr14679060pla.129.1644215632267;
-        Sun, 06 Feb 2022 22:33:52 -0800 (PST)
-Received: from localhost ([2401:e180:8894:9737:7848:1ec7:b697:7d50])
-        by smtp.gmail.com with ESMTPSA id i12sm914768pjw.25.2022.02.06.22.33.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 06 Feb 2022 22:33:51 -0800 (PST)
-From:   Tyrone Ting <warp5tw@gmail.com>
-To:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
-        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
-        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
-        olof@lixom.net, andriy.shevchenko@linux.intel.com,
-        warp5tw@gmail.com, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com
-Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 2/6] i2c: npcm: Fix timeout calculation
-Date:   Mon,  7 Feb 2022 14:33:34 +0800
-Message-Id: <20220207063338.6570-3-warp5tw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220207063338.6570-1-warp5tw@gmail.com>
-References: <20220207063338.6570-1-warp5tw@gmail.com>
+        Mon, 7 Feb 2022 01:22:36 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2064.outbound.protection.outlook.com [40.107.243.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F810C043184
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:22:36 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ez8Kb8af7X0COMUk99TvC0zkis9L5Zkgy6Ja/sLcqB0xC4MjJZ1Fxcr+PWEpj947yXQlloGRd+aYSWsxbLPVhn6KeK8nd8cLGhELP6aSZUY+ZrgbtMh6ugFoKMjAr2aPDKhBCzal3MxhLII0UuJcExefD3on8wOaFCev/cQ4X5CAzIml7c4G3MoJqsGnQDUHnOnSJt8zPo38qRuuNWwiAezI94I4jLiDUMWxZnQhhnJHwcyymp2aAnlI4osnaH7uxd1A++sm3ySQq8aWZ/puCq6YcD97nLUrzTUgjVOQiqGFFpwTRj8GDYlHt3NTM2LVVFkEVqPqv2Cr+jsBidFJlw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EGv0z9ojEXOjWjpAU1jboDQlS+KHpuPMdtW9AZqOTRs=;
+ b=ZviEVtGNui/AxVnsrfyLba1cwGsNl2+IHP4JX9VUT3uuwhoBez4oqaKoJW1EN+nHjKlu3qP/ywDh4wtugm37x6uhGlmXzeTvU0+MlA67CtC+CuLowwNrrPuE7BASn0jbtGP2f2aPhOqivyto8LhmBM/ZDpnzcj8CWlvtdA/wujnV7yL+NGJjhQE/3MvFi1x4U5SDJqtQUscwGqzWG3z1OZhd1eiJLEcp14dN5TfqPVX/c5p8qbzUOfvGb7drKDVO3UD60Vp66zq+Pq/FyBJMw6zui3I8LFwybqjl5jniQ0dhk9pmLPhlIqs2sU5/xaC8NcKSq/id2Wf+Yc7TGP29/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EGv0z9ojEXOjWjpAU1jboDQlS+KHpuPMdtW9AZqOTRs=;
+ b=iz5kPco3rurWNhuvr43C/Yp1Z5SCPsAuoOTKa+k6AD8gyd4Ywp8AFhDCxhhCnrKO8faVERah7NMLPGFRjWK7XtD82R6Q0SBs1SjqkSfxWw9oTJmSjY3XoY2SZttAt8QnAje6RvxNjHjgavtm/UmC3wovZQJgp5dDi4qFZVro52HxeNnuIfI2ZGqy27BDuKrCDDj1rnjjvr3+nTXYzmRQbtSGeCtJRBdGC8ctcw7uph5pchCeuvsNfSODa45OLHGX27aF554IonV9XZGh/cGulon5gTggDig74WV/MVIvq1AmP4tr7ivUDC1c5SP6dymHg1Vq1LcuhHu9tBqh8rxu8A==
+Received: from MWHPR19CA0004.namprd19.prod.outlook.com (2603:10b6:300:d4::14)
+ by BYAPR12MB3318.namprd12.prod.outlook.com (2603:10b6:a03:df::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Mon, 7 Feb
+ 2022 06:22:34 +0000
+Received: from CO1NAM11FT033.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:d4:cafe::b3) by MWHPR19CA0004.outlook.office365.com
+ (2603:10b6:300:d4::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18 via Frontend
+ Transport; Mon, 7 Feb 2022 06:22:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ CO1NAM11FT033.mail.protection.outlook.com (10.13.174.247) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4951.12 via Frontend Transport; Mon, 7 Feb 2022 06:22:33 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 7 Feb
+ 2022 06:22:33 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Sun, 6 Feb 2022
+ 22:22:32 -0800
+Received: from sandstorm.attlocal.net (10.127.8.11) by mail.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server id 15.2.986.9 via Frontend
+ Transport; Sun, 6 Feb 2022 22:22:32 -0800
+From:   John Hubbard <jhubbard@nvidia.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>
+CC:     David Hildenbrand <david@redhat.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH v5 1/5] mm: Fix invalid page pointer returned with FOLL_PIN gups
+Date:   Sun, 6 Feb 2022 22:22:09 -0800
+Message-ID: <20220207062213.235127-2-jhubbard@nvidia.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207062213.235127-1-jhubbard@nvidia.com>
+References: <20220207062213.235127-1-jhubbard@nvidia.com>
+MIME-Version: 1.0
+X-NVConfidentiality: public
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 431e5ffb-99f7-4c34-791b-08d9ea023a5a
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3318:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB3318D1B87A62A83211F252FEA82C9@BYAPR12MB3318.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:264;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rfc0Al0IUxK/TjjI6sWjNayEfVG05xSMkepvzALNtXSe1jf+vxqEm4HpGO5lcKtalbFWxhTDPCDVR/rX5vc76dFaWru/iBseYVC+V5JmiTfI6tMYfslds6wyBQVVy2VmBpmgX7oFpA2o2Hy44kirwqORIV9GSghUZN3ZowKzwR0G9tMMq0RIJG4kyoxVyqFIIzN+SsivHJLmxuhnk/Qvk+AgXN9GMJmlgzkma8eBJJB8VEqCijKT1JMvrhPY/fS3qpj3dCbwjOqsRqV/hf+eY76LX3bYBKy+EfgE0Mhk7MLCmxCGeiJdyFZ4sVwGJiWAMKFG0kNMZrwqdwDNOxsy6kRwYEtkvrkJi1jyX9pybiWBMe+a4JIyQ+vZP/nwenWK9YABuOOR2ofHfy+qTpcWLCDuvoB462PPovVzdtpbhUs6UBCs115LJjtKimqAgpMPCWEdt0QnTomHDlwNnerTgk4Y72EK/6KqbsHZoUwT005KiSNdIfPSA+HiC47ncN95MESOZrMm1L8x2vvbY1Rt6etH6L/VU41JnVt7sU7hfAOR/y1+soC5x2eC/c7z/HcEywfhAKBk40ySLj7JCC10ovO+XWhEzEdJEywLY6JsE7rzrOU9a7BKZRhqElq4jS5mltdtQ2/LuR5dLQf1Li2tvRHZ9GN0Sfnf9D0VcWLX6RAAdb4fOjkVtgJiL3uezrK10e2NDtiZlZXdeYxTCFOwNg==
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(36756003)(26005)(186003)(316002)(54906003)(6666004)(336012)(81166007)(47076005)(1076003)(2616005)(2906002)(356005)(426003)(110136005)(40460700003)(86362001)(82310400004)(5660300002)(508600001)(7416002)(8676002)(36860700001)(8936002)(4326008)(70586007)(83380400001)(70206006)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 06:22:33.8384
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 431e5ffb-99f7-4c34-791b-08d9ea023a5a
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT033.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3318
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tali Perry <tali.perry1@gmail.com>
+From: Peter Xu <peterx@redhat.com>
 
-Use adap.timeout for timeout calculation instead of hard-coded
-value of 35ms.
-Use syscon to access gcr, instead of "compatible".
+Alex reported invalid page pointer returned with pin_user_pages_remote()
+from vfio after upstream commit 4b6c33b32296 ("vfio/type1: Prepare for
+batched pinning with struct vfio_batch").
 
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+It turns out that it's not the fault of the vfio commit; however after
+vfio switches to a full page buffer to store the page pointers it starts
+to expose the problem easier.
+
+The problem is for VM_PFNMAP vmas we should normally fail with an
+-EFAULT then vfio will carry on to handle the MMIO regions.  However
+when the bug triggered, follow_page_mask() returned -EEXIST for such a
+page, which will jump over the current page, leaving that entry in
+**pages untouched.  However the caller is not aware of it, hence the
+caller will reference the page as usual even if the pointer data can be
+anything.
+
+We had that -EEXIST logic since commit 1027e4436b6a ("mm: make GUP
+handle pfn mapping unless FOLL_GET is requested") which seems very
+reasonable.  It could be that when we reworked GUP with FOLL_PIN we
+could have overlooked that special path in commit 3faa52c03f44 ("mm/gup:
+track FOLL_PIN pages"), even if that commit rightfully touched up
+follow_devmap_pud() on checking FOLL_PIN when it needs to return an
+-EEXIST.
+
+Attaching the Fixes to the FOLL_PIN rework commit, as it happened later
+than 1027e4436b6a.
+
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Jan Kara <jack@suse.cz>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Fixes: 3faa52c03f44 ("mm/gup: track FOLL_PIN pages")
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reported-by: Alex Williamson <alex.williamson@redhat.com>
+Debugged-by: Alex Williamson <alex.williamson@redhat.com>
+Tested-by: Alex Williamson <alex.williamson@redhat.com>
+Signed-off-by: Peter Xu <peterx@redhat.com>
+[jhubbard: added some tags, removed a reference to an out of tree
+           module, and reflowed to 72 columns.]
+Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/i2c/busses/i2c-npcm7xx.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ mm/gup.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
-index 2ad166355ec9..ddeee6f53621 100644
---- a/drivers/i2c/busses/i2c-npcm7xx.c
-+++ b/drivers/i2c/busses/i2c-npcm7xx.c
-@@ -2047,7 +2047,7 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	u16 nwrite, nread;
- 	u8 *write_data, *read_data;
- 	u8 slave_addr;
--	int timeout;
-+	unsigned long timeout;
- 	int ret = 0;
- 	bool read_block = false;
- 	bool read_PEC = false;
-@@ -2099,13 +2099,13 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	 * 9: bits per transaction (including the ack/nack)
- 	 */
- 	timeout_usec = (2 * 9 * USEC_PER_SEC / bus->bus_freq) * (2 + nread + nwrite);
--	timeout = max(msecs_to_jiffies(35), usecs_to_jiffies(timeout_usec));
-+	timeout = max(bus->adap.timeout, usecs_to_jiffies(timeout_usec));
- 	if (nwrite >= 32 * 1024 || nread >= 32 * 1024) {
- 		dev_err(bus->dev, "i2c%d buffer too big\n", bus->num);
- 		return -EINVAL;
- 	}
+diff --git a/mm/gup.c b/mm/gup.c
+index a9d4d724aef7..80229ecf0114 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -465,7 +465,7 @@ static int follow_pfn_pte(struct vm_area_struct *vma, unsigned long address,
+ 		pte_t *pte, unsigned int flags)
+ {
+ 	/* No page to get reference */
+-	if (flags & FOLL_GET)
++	if (flags & (FOLL_GET | FOLL_PIN))
+ 		return -EFAULT;
  
--	time_left = jiffies + msecs_to_jiffies(DEFAULT_STALL_COUNT) + 1;
-+	time_left = jiffies + timeout + 1;
- 	do {
- 		/*
- 		 * we must clear slave address immediately when the bus is not
-@@ -2131,7 +2131,7 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	}
- 
- 	npcm_i2c_init_params(bus);
--	bus->dest_addr = slave_addr;
-+	bus->dest_addr = slave_addr << 1;
- 	bus->msgs = msgs;
- 	bus->msgs_num = num;
- 	bus->cmd_err = 0;
-@@ -2233,9 +2233,9 @@ static int npcm_i2c_probe_bus(struct platform_device *pdev)
- 	struct i2c_adapter *adap;
- 	struct clk *i2c_clk;
- 	static struct regmap *gcr_regmap;
--	static struct regmap *clk_regmap;
- 	int irq;
- 	int ret;
-+	struct device_node *np = pdev->dev.of_node;
- 
- 	bus = devm_kzalloc(&pdev->dev, sizeof(*bus), GFP_KERNEL);
- 	if (!bus)
-@@ -2250,15 +2250,11 @@ static int npcm_i2c_probe_bus(struct platform_device *pdev)
- 		return PTR_ERR(i2c_clk);
- 	bus->apb_clk = clk_get_rate(i2c_clk);
- 
--	gcr_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-gcr");
-+	gcr_regmap = syscon_regmap_lookup_by_phandle(np, "syscon");
- 	if (IS_ERR(gcr_regmap))
- 		return PTR_ERR(gcr_regmap);
- 	regmap_write(gcr_regmap, NPCM_I2CSEGCTL, NPCM_I2CSEGCTL_INIT_VAL);
- 
--	clk_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-clk");
--	if (IS_ERR(clk_regmap))
--		return PTR_ERR(clk_regmap);
--
- 	bus->reg = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(bus->reg))
- 		return PTR_ERR(bus->reg);
-@@ -2269,7 +2265,7 @@ static int npcm_i2c_probe_bus(struct platform_device *pdev)
- 	adap = &bus->adap;
- 	adap->owner = THIS_MODULE;
- 	adap->retries = 3;
--	adap->timeout = HZ;
-+	adap->timeout = msecs_to_jiffies(35);
- 	adap->algo = &npcm_i2c_algo;
- 	adap->quirks = &npcm_i2c_quirks;
- 	adap->algo_data = bus;
+ 	if (flags & FOLL_TOUCH) {
 -- 
-2.17.1
+2.35.1
 
