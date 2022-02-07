@@ -2,154 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 464FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:43:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244783AbiBGWmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 17:42:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56086 "EHLO
+        id S244807AbiBGWni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 17:43:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242105AbiBGWmU (ORCPT
+        with ESMTP id S238700AbiBGWne (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 17:42:20 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA029C061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 14:42:19 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so706086pjb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 14:42:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gVc/rSf8hc23i8BzLsnLzzxnzHxUect8vesEyQ0bjYQ=;
-        b=MLap6RMLL02SXvhnBx0wvmT2F2aV1wjKwPElYKitbKZAPZebylvQ6QlI1JoNlHkXb0
-         tvzYZtWSl5bGRdXPB/pr0Dj+XaVcJwI3TfKVnAX3zO4A53Gat1L3c8Qrq2FlwIPtRP2Q
-         u0ZISa51pSr3EpXKj1wm5r3O4T5XMViJck0tHXU3wtaLxsKz1isy4mOTdXZ7NFGtpTSj
-         Qc5txrvcRvFakKnTQVh0ikuIBtOCLS2P1R6REpZlnejbH05gTUnWPBa1LDXwTKsFIsop
-         t0MkwIgF9AJvf7e3pBoPzo6bxzRSYAsXmL+E3za/GfwW2E+AvsrohXL3YQFrR9TNgJ5d
-         vA1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gVc/rSf8hc23i8BzLsnLzzxnzHxUect8vesEyQ0bjYQ=;
-        b=TLNdIBlpB3nh78cvrCOlZVrIrSIfqyEpUf6hjMnebmhGeX5J1loAaHuTWomlIOBS4h
-         OraB9VVPSooVaQolX9PRP2DqgPaZu5QqF/n+HJ0Ypfl3GOTafJpcaXZNoexTLMFJDIva
-         +r85M8b6j+lCqVFQrD0b8/S9hHbt2tC/8JEc0thANo4U4feMPOM4ScUCHxfe4fhmmIA8
-         zWYusx7d0D4NoddSCaIUSml4O8i+Lg0dJqbTIaQl3Ji6QM29ghvemDqj5iQRXl2dNTo2
-         LFSADmKThwgc/OYpIw7Axl5MDi4uFoK0oPkhHIeDtED1t2SVkpb7LKRCASYlAuDsJmPL
-         2Z4w==
-X-Gm-Message-State: AOAM5316AT8/3COeyc59SWBfIBaBzmf2rGD7WcnK1N7A3tauyqinZsR0
-        Ibq1Wiwwuc38k+/4h4RI14MVDA==
-X-Google-Smtp-Source: ABdhPJzMYjbaLbphx31DbZWtfp6MdWr2uF1eeiUb9JpYVvgj7VltjPbnWheM7dxx9YcZ+xq5GF2nQg==
-X-Received: by 2002:a17:902:e84c:: with SMTP id t12mr1715065plg.63.1644273739162;
-        Mon, 07 Feb 2022 14:42:19 -0800 (PST)
-Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
-        by smtp.gmail.com with ESMTPSA id c7sm13039915pfp.164.2022.02.07.14.42.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 14:42:18 -0800 (PST)
-Date:   Mon, 7 Feb 2022 22:42:14 +0000
-From:   David Matlack <dmatlack@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        seanjc@google.com, vkuznets@redhat.com
-Subject: Re: [PATCH 20/23] KVM: MMU: pull CPU role computation to kvm_init_mmu
-Message-ID: <YgGgRm/QNbordgqi@google.com>
-References: <20220204115718.14934-1-pbonzini@redhat.com>
- <20220204115718.14934-21-pbonzini@redhat.com>
+        Mon, 7 Feb 2022 17:43:34 -0500
+X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 14:43:32 PST
+Received: from mail.namei.org (namei.org [65.99.196.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17ABC061355;
+        Mon,  7 Feb 2022 14:43:32 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.namei.org (Postfix) with ESMTPS id 7235C424;
+        Mon,  7 Feb 2022 22:24:49 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.namei.org 7235C424
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=namei.org; s=2;
+        t=1644272689; bh=0BY/V/NIgDIevFQdF+wBys4ty26sYhLszDEPcdK7lds=;
+        h=Date:From:To:cc:Subject:From;
+        b=1XdVNc4ggTblHTpzOBwW/SI45jMQCePu37bX4zNovZerTp2MOne46L47WP/LiNVcQ
+         421qWS3h/u+x/sEhDPYdUVx6j1/HOySQeMLRET18Vh6cPbgvFQVHx9SLn8H3N4ca4H
+         X2un323LTy/67B8EZaOPlHzv6fGuyaWcO3Gq0NjY=
+Date:   Tue, 8 Feb 2022 09:24:49 +1100 (AEDT)
+From:   James Morris <jmorris@namei.org>
+To:     linux-security-module@vger.kernel.org
+cc:     linux-kernel@vger.kernel.org, lwn@lwn.net,
+        fedora-selinux-list@redhat.com, linux-crypto@vger.kernel.org,
+        kernel-hardening@lists.openwall.com,
+        linux-integrity@vger.kernel.org, selinux@vger.kernel.org,
+        Audit-ML <linux-audit@redhat.com>, gentoo-hardened@gentoo.org,
+        keyrings@linux-nfs.org, tpmdd-devel@lists.sourceforge.net,
+        Linux Security Summit Program Committee 
+        <lss-pc@lists.linuxfoundation.org>
+Subject: [ANNOUNCE][CFP] Linux Security Summit North America 2022
+Message-ID: <3e5acc67-829-fafb-c82-833fc22b35a@namei.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220204115718.14934-21-pbonzini@redhat.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 06:57:15AM -0500, Paolo Bonzini wrote:
-> Do not lead init_kvm_*mmu into the temptation of poking
-> into struct kvm_mmu_role_regs, by passing to it directly
-> the CPU role.
-> 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 21 +++++++++------------
->  1 file changed, 9 insertions(+), 12 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 01027da82e23..6f9d876ce429 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -4721,11 +4721,9 @@ kvm_calc_tdp_mmu_root_page_role(struct kvm_vcpu *vcpu,
->  	return role;
->  }
->  
-> -static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
-> -			     const struct kvm_mmu_role_regs *regs)
-> +static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu, union kvm_mmu_role cpu_role)
->  {
->  	struct kvm_mmu *context = &vcpu->arch.root_mmu;
-> -	union kvm_mmu_role cpu_role = kvm_calc_cpu_role(vcpu, regs);
->  	union kvm_mmu_page_role mmu_role = kvm_calc_tdp_mmu_root_page_role(vcpu, cpu_role);
->  
->  	if (cpu_role.as_u64 == context->cpu_role.as_u64 &&
-> @@ -4779,10 +4777,9 @@ static void shadow_mmu_init_context(struct kvm_vcpu *vcpu, struct kvm_mmu *conte
->  }
->  
->  static void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu,
-> -				const struct kvm_mmu_role_regs *regs)
-> +				union kvm_mmu_role cpu_role)
->  {
->  	struct kvm_mmu *context = &vcpu->arch.root_mmu;
-> -	union kvm_mmu_role cpu_role = kvm_calc_cpu_role(vcpu, regs);
->  	union kvm_mmu_page_role mmu_role;
->  
->  	mmu_role = cpu_role.base;
-> @@ -4874,20 +4871,19 @@ void kvm_init_shadow_ept_mmu(struct kvm_vcpu *vcpu, bool execonly,
->  EXPORT_SYMBOL_GPL(kvm_init_shadow_ept_mmu);
->  
->  static void init_kvm_softmmu(struct kvm_vcpu *vcpu,
-> -			     const struct kvm_mmu_role_regs *regs)
-> +			     union kvm_mmu_role cpu_role)
->  {
->  	struct kvm_mmu *context = &vcpu->arch.root_mmu;
->  
-> -	kvm_init_shadow_mmu(vcpu, regs);
-> +	kvm_init_shadow_mmu(vcpu, cpu_role);
->  
->  	context->get_guest_pgd     = get_cr3;
->  	context->get_pdptr         = kvm_pdptr_read;
->  	context->inject_page_fault = kvm_inject_page_fault;
->  }
->  
-> -static void init_kvm_nested_mmu(struct kvm_vcpu *vcpu, const struct kvm_mmu_role_regs *regs)
-> +static void init_kvm_nested_mmu(struct kvm_vcpu *vcpu, union kvm_mmu_role new_role)
->  {
-> -	union kvm_mmu_role new_role = kvm_calc_cpu_role(vcpu, regs);
->  	struct kvm_mmu *g_context = &vcpu->arch.nested_mmu;
->  
->  	if (new_role.as_u64 == g_context->cpu_role.as_u64)
-> @@ -4928,13 +4924,14 @@ static void init_kvm_nested_mmu(struct kvm_vcpu *vcpu, const struct kvm_mmu_role
->  void kvm_init_mmu(struct kvm_vcpu *vcpu)
->  {
->  	struct kvm_mmu_role_regs regs = vcpu_to_role_regs(vcpu);
-> +	union kvm_mmu_role cpu_role = kvm_calc_cpu_role(vcpu, &regs);
+==============================================================================
+                   ANNOUNCEMENT AND CALL FOR PARTICIPATION
 
-WDYT about also inlining vcpu_to_role_regs() in kvm_calc_cpu_role()?
+                   LINUX SECURITY SUMMIT NORTH AMERICA 2022
+                             
+                                 23-24 June
+                           Austin, Texas & Virtual
+==============================================================================
 
->  
->  	if (mmu_is_nested(vcpu))
-> -		init_kvm_nested_mmu(vcpu, &regs);
-> +		init_kvm_nested_mmu(vcpu, cpu_role);
->  	else if (tdp_enabled)
-> -		init_kvm_tdp_mmu(vcpu, &regs);
-> +		init_kvm_tdp_mmu(vcpu, cpu_role);
->  	else
-> -		init_kvm_softmmu(vcpu, &regs);
-> +		init_kvm_softmmu(vcpu, cpu_role);
->  }
->  EXPORT_SYMBOL_GPL(kvm_init_mmu);
->  
-> -- 
-> 2.31.1
-> 
-> 
+DESCRIPTION
+ 
+Linux Security Summit North America (LSS-NA) is a technical forum for
+collaboration between Linux developers, researchers, and end-users.  Its
+primary aim is to foster community efforts in analyzing and solving Linux
+security challenges.
+
+ The program committee currently seeks proposals for:
+ 
+   * Refereed Presentations:
+     45 minutes in length.
+ 
+   * Panel Discussion Topics:
+     45 minutes in length.
+ 
+   * Short Topics:
+     30 minutes in total, including at least 10 minutes discussion.
+ 
+   * Tutorials
+     90 minutes in length.
+ 
+Tutorial sessions should be focused on advanced Linux security defense
+topics within areas such as the kernel, compiler, and security-related
+libraries.  Priority will be given to tutorials created for this conference,
+and those where the presenter a leading subject matter expert on the topic.
+ 
+Topic areas include, but are not limited to:
+ 
+   * Kernel self-protection
+   * Access control
+   * Cryptography and key management
+   * Integrity policy and enforcement
+   * Hardware Security
+   * IoT and embedded security
+   * Virtualization and containers
+   * System-specific system hardening
+   * Case studies
+   * Security tools
+   * Security UX
+   * Emerging technologies, threats & techniques
+
+  Proposals should be submitted via:
+    https://events.linuxfoundation.org/linux-security-summit-north-america/
+
+
+Note that for 2022, we are returning to having both North American and
+European events (LSS-EU will be held in September).
+ 
+
+LSS-NA DATES
+ 
+  * CFP close:            March 30
+  * CFP notifications:    April 15
+  * Schedule announced:   April 19
+  * Event:                September 23-24
+
+WHO SHOULD ATTEND
+ 
+We're seeking a diverse range of attendees and welcome participation by
+people involved in Linux security development, operations, and research.
+ 
+LSS is a unique global event that provides the opportunity to present and
+discuss your work or research with key Linux security community members and
+maintainers.  It's also useful for those who wish to keep up with the latest
+in Linux security development and to provide input to the development
+process.
+
+WEB SITE
+
+    https://events.linuxfoundation.org/linux-security-summit-north-america/
+
+TWITTER
+
+  For event updates and announcements, follow:
+
+    https://twitter.com/LinuxSecSummit
+  
+    #linuxsecuritysummit
+
+PROGRAM COMMITTEE
+
+  The program committee for LSS 2021 is:
+
+    * James Morris, Microsoft
+    * Serge Hallyn, Cisco
+    * Paul Moore, Microsoft
+    * Stephen Smalley, NSA
+    * Elena Reshetova, Intel
+    * John Johansen, Canonical
+    * Kees Cook, Google
+    * Casey Schaufler, Intel
+    * Mimi Zohar, IBM
+    * David A. Wheeler, Linux Foundation
+
+  The program committee may be contacted as a group via email:
+    lss-pc () lists.linuxfoundation.org
+
+-- 
+
+
