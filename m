@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F1B9C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165B2C4707E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378204AbiBGLPq (ORCPT
+        id S1379353AbiBGLQL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
+        Mon, 7 Feb 2022 06:16:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353415AbiBGLMM (ORCPT
+        with ESMTP id S1355151AbiBGLMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:12:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C631C043181;
-        Mon,  7 Feb 2022 03:12:11 -0800 (PST)
+        Mon, 7 Feb 2022 06:12:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA254C043189;
+        Mon,  7 Feb 2022 03:12:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 07092B80EC3;
-        Mon,  7 Feb 2022 11:12:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C6EC004E1;
-        Mon,  7 Feb 2022 11:12:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6817D6113B;
+        Mon,  7 Feb 2022 11:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45D1EC004E1;
+        Mon,  7 Feb 2022 11:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232328;
-        bh=X4zAEnAPt4ZfgCA3lUjOmtemiVM22+id6pT04M2vi+Y=;
+        s=korg; t=1644232352;
+        bh=hzkoA9RNpWPUPM85IJrLneKFeBBznv5bXMYnnru7KF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5gWCGaDOst3b7q1cdks+/bwwWc2vj8aS2mP0vl3TuqvARN0BvBfdcWy7mD9stn00
-         XW2drShBdmc+3ULFKPBvCwytcnJVXIvmku51n5GfeZUK/vO5OUB1OwROc/i2pqjTT/
-         zPCy4bPdUvM8BcBaVFbsCLsDKd7EQ8Ako4D1FNVs=
+        b=OSKoToU2iqZpcRe9o/seR6yfnKeNvooL9EZB7flpJUmO6SrfhGd7tMU3bC/Mg379Z
+         xu2g7MjoGBwXcDYNjSiY59dsGebNG339WQZGKqc/pUIBVqpxYKJenm0WCaDWr79+Am
+         H6v7AvHFQrSI1WiFHDV8FjcQuA+DZhtjwYiBxats=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Georgi Valkov <gvalkov@abv.bg>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 41/69] ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
-Date:   Mon,  7 Feb 2022 12:06:03 +0100
-Message-Id: <20220207103756.978764692@linuxfoundation.org>
+        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+Subject: [PATCH 4.14 18/69] lkdtm: Fix content of section containing lkdtm_rodata_do_nothing()
+Date:   Mon,  7 Feb 2022 12:05:40 +0100
+Message-Id: <20220207103756.217159399@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -50,57 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Georgi Valkov <gvalkov@abv.bg>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 63e4b45c82ed1bde979da7052229a4229ce9cabf upstream.
+commit bc93a22a19eb2b68a16ecf04cdf4b2ed65aaf398 upstream.
 
-When rx_buf is allocated we need to account for IPHETH_IP_ALIGN,
-which reduces the usable size by 2 bytes. Otherwise we have 1512
-bytes usable instead of 1514, and if we receive more than 1512
-bytes, ipheth_rcvbulk_callback is called with status -EOVERFLOW,
-after which the driver malfunctiones and all communication stops.
+On a kernel without CONFIG_STRICT_KERNEL_RWX, running EXEC_RODATA
+test leads to "Illegal instruction" failure.
 
-Resolves ipheth 2-1:4.2: ipheth_rcvbulk_callback: urb status: -75
+Looking at the content of rodata_objcopy.o, we see that the
+function content zeroes only:
 
-Fixes: f33d9e2b48a3 ("usbnet: ipheth: fix connectivity with iOS 14")
-Signed-off-by: Georgi Valkov <gvalkov@abv.bg>
-Tested-by: Jan Kiszka <jan.kiszka@siemens.com>
-Link: https://lore.kernel.org/all/B60B8A4B-92A0-49B3-805D-809A2433B46C@abv.bg/
-Link: https://lore.kernel.org/all/24851bd2769434a5fc24730dce8e8a984c5a4505.1643699778.git.jan.kiszka@siemens.com/
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+	Disassembly of section .rodata:
+
+	0000000000000000 <.lkdtm_rodata_do_nothing>:
+	   0:	00 00 00 00 	.long 0x0
+
+Add the contents flag in order to keep the content of the section
+while renaming it.
+
+	Disassembly of section .rodata:
+
+	0000000000000000 <.lkdtm_rodata_do_nothing>:
+	   0:	4e 80 00 20 	blr
+
+Fixes: e9e08a07385e ("lkdtm: support llvm-objcopy")
+Cc: stable@vger.kernel.org
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/8900731fbc05fb8b0de18af7133a8fc07c3c53a1.1633712176.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/ipheth.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/misc/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/usb/ipheth.c
-+++ b/drivers/net/usb/ipheth.c
-@@ -173,7 +173,7 @@ static int ipheth_alloc_urbs(struct iphe
- 	if (tx_buf == NULL)
- 		goto free_rx_urb;
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -69,7 +69,7 @@ KCOV_INSTRUMENT_lkdtm_rodata.o	:= n
  
--	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
-+	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN,
- 				    GFP_KERNEL, &rx_urb->transfer_dma);
- 	if (rx_buf == NULL)
- 		goto free_tx_buf;
-@@ -198,7 +198,7 @@ error_nomem:
- 
- static void ipheth_free_urbs(struct ipheth_device *iphone)
- {
--	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->rx_buf,
-+	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN, iphone->rx_buf,
- 			  iphone->rx_urb->transfer_dma);
- 	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->tx_buf,
- 			  iphone->tx_urb->transfer_dma);
-@@ -371,7 +371,7 @@ static int ipheth_rx_submit(struct iphet
- 
- 	usb_fill_bulk_urb(dev->rx_urb, udev,
- 			  usb_rcvbulkpipe(udev, dev->bulk_in),
--			  dev->rx_buf, IPHETH_BUF_SIZE,
-+			  dev->rx_buf, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN,
- 			  ipheth_rcvbulk_callback,
- 			  dev);
- 	dev->rx_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+ OBJCOPYFLAGS :=
+ OBJCOPYFLAGS_lkdtm_rodata_objcopy.o := \
+-	--rename-section .text=.rodata,alloc,readonly,load
++	--rename-section .text=.rodata,alloc,readonly,load,contents
+ targets += lkdtm_rodata.o lkdtm_rodata_objcopy.o
+ $(obj)/lkdtm_rodata_objcopy.o: $(obj)/lkdtm_rodata.o FORCE
+ 	$(call if_changed,objcopy)
 
 
