@@ -2,92 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A311C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50968C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388802AbiBGNu0 (ORCPT
+        id S1388814AbiBGNu1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:50:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38518 "EHLO
+        Mon, 7 Feb 2022 08:50:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345274AbiBGNkm (ORCPT
+        with ESMTP id S1387675AbiBGNiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:40:42 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CE0C043189;
-        Mon,  7 Feb 2022 05:40:42 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id e3so10897665wra.0;
-        Mon, 07 Feb 2022 05:40:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jjxTRl/c4nrLxVy+a0+jLX2ZtSQhFhV7DHi5h4ELxr4=;
-        b=E+DyHE87RmaOz/LO2EGtRzJ7qReSsX8GI2mSUXxCy4Jb9z8abBB9IjlvhYdkQvxS+d
-         R8Sx1RmFrP21229QcZMtsm6EnCbvzpvQ/858oNxuiJxJu0W7LSB/cEhYpk9aT3nMcYWp
-         Tqd4zsXOmbtwCbQw+9jJiDJ8mIGtW+1QDwtv29bkCbYPPC9fkqVqtA3MUNZn+OR/rcdu
-         bhpBbP24HBiKTqH9nIBcYp9NoGtYXHgqiGso2mxnR9/MIrGUktDn2Si4E1Kfnf3sBbVp
-         EVOm61pTbrlOGKDYe9W1xJy9g/tr8ACXWYnALNw2MqAF1oVdfM3lx0f/9FiI96wlgbAe
-         UW5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jjxTRl/c4nrLxVy+a0+jLX2ZtSQhFhV7DHi5h4ELxr4=;
-        b=wEQSSkhnC0Ek5Fi79F8i4jfkQccHBPQ52/PM07yt1VkadW8RefytzMi8jbV8NNlxoi
-         HNxf+P33U96Zb0gZLyPnKtn3ynVQ0Ztkx4q6BVgg7lVIkRRklTFVs1okxcjv3TBxxQPp
-         daswirRuJtwg5OCRHiAjDkHq5sZR6R/TqTMEcQoGb3qyBBcH+NDihNGV4zVvSpEHwrLq
-         0voGOYLyKR1RHeFoXS97wVETlhB5k7czO04aLc2N6DREY70DhY3mwQt7kfjv0PRcZQ3k
-         DqaXxueUQjU+atTTBJEdCYUCFglc1fjind0yKq7Br5+4bvHWXNIXpvC2WOf6FmIHG9X5
-         RI5Q==
-X-Gm-Message-State: AOAM531RHYbhf9P/FgYCQRlczdyjtTcLWca/s+/UqgHgPqJgHzo6IHq5
-        G/RsPPEgI9+M1li02TQRgmc=
-X-Google-Smtp-Source: ABdhPJxsup6qGXdvRsBdbwgeWEnB972cXcL5N67PKOnqUSoTorSOUP3oaLQaaGmhbM1OvqMP/UFcBQ==
-X-Received: by 2002:a5d:4528:: with SMTP id j8mr2904210wra.544.1644241240818;
-        Mon, 07 Feb 2022 05:40:40 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id 24sm1478380wmf.48.2022.02.07.05.40.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 05:40:40 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Jan Kara <jack@suse.com>, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        NeilBrown <neilb@suse.de>, linux-ext4@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] ext2: remove unused pointer bdi
-Date:   Mon,  7 Feb 2022 13:40:39 +0000
-Message-Id: <20220207134039.337197-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Feb 2022 08:38:02 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5329EC0401D7
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:37:25 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JsnGv5RHjzbkFL;
+        Mon,  7 Feb 2022 21:36:23 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
+ 2022 21:37:23 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH 4/4] mm/memory_hotplug: fix misplaced comment in offline_pages
+Date:   Mon, 7 Feb 2022 21:36:43 +0800
+Message-ID: <20220207133643.23427-5-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220207133643.23427-1-linmiaohe@huawei.com>
+References: <20220207133643.23427-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The call to bdi_congested has been removed and so the bdi pointer
-is no longer required. Remove it.
+It's misplaced since commit 7960509329c2 ("mm, memory_hotplug: print reason
+for the offlining failure"). Move it to the right place.
 
-Fixes: 9bbab3a63d49 ("mm/fs: remove bdi_congested() and wb_congested() and related functions")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- fs/ext2/ialloc.c | 3 ---
- 1 file changed, 3 deletions(-)
+ mm/memory_hotplug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ext2/ialloc.c b/fs/ext2/ialloc.c
-index d632764da240..998dd2ac8008 100644
---- a/fs/ext2/ialloc.c
-+++ b/fs/ext2/ialloc.c
-@@ -170,9 +170,6 @@ static void ext2_preread_inode(struct inode *inode)
- 	unsigned long offset;
- 	unsigned long block;
- 	struct ext2_group_desc * gdp;
--	struct backing_dev_info *bdi;
--
--	bdi = inode_to_bdi(inode);
+diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+index 4b9eef861ee4..7dc7e12302db 100644
+--- a/mm/memory_hotplug.c
++++ b/mm/memory_hotplug.c
+@@ -1966,6 +1966,7 @@ int __ref offline_pages(unsigned long start_pfn, unsigned long nr_pages,
+ 	return 0;
  
- 	block_group = (inode->i_ino - 1) / EXT2_INODES_PER_GROUP(inode->i_sb);
- 	gdp = ext2_get_group_desc(inode->i_sb, block_group, NULL);
+ failed_removal_isolated:
++	/* pushback to free area */
+ 	undo_isolate_page_range(start_pfn, end_pfn, MIGRATE_MOVABLE);
+ 	memory_notify(MEM_CANCEL_OFFLINE, &arg);
+ failed_removal_pcplists_disabled:
+@@ -1976,7 +1977,6 @@ int __ref offline_pages(unsigned long start_pfn, unsigned long nr_pages,
+ 		 (unsigned long long) start_pfn << PAGE_SHIFT,
+ 		 ((unsigned long long) end_pfn << PAGE_SHIFT) - 1,
+ 		 reason);
+-	/* pushback to free area */
+ 	mem_hotplug_done();
+ 	return ret;
+ }
 -- 
-2.34.1
+2.23.0
 
