@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB5FC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2846C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383413AbiBGLW0 (ORCPT
+        id S1383461AbiBGLWd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:22:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
+        Mon, 7 Feb 2022 06:22:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381923AbiBGLRk (ORCPT
+        with ESMTP id S245576AbiBGLSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:17:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E7EC03E95A;
-        Mon,  7 Feb 2022 03:17:36 -0800 (PST)
+        Mon, 7 Feb 2022 06:18:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5916C0401C0;
+        Mon,  7 Feb 2022 03:17:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B55166126D;
-        Mon,  7 Feb 2022 11:17:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A782C004E1;
-        Mon,  7 Feb 2022 11:17:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79345B8111C;
+        Mon,  7 Feb 2022 11:17:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8718C004E1;
+        Mon,  7 Feb 2022 11:17:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232655;
-        bh=VluB2J+kIM9oj76n7AMWSOUEqAaEMZUSLTxgMykkH/4=;
+        s=korg; t=1644232670;
+        bh=3BnQTiy1lYRjKYs33OvlOJ3AUlWRFB7XgubtblS7lzg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LHR6QKx+2J15ogZTLvG++lo3WNzE9NC0eW7F8Xpu5ibeGoMmaj/pbEPyYj3TR9uxV
-         Z3dnbPS/j1Ss4qXptr+1aXW8nOmcYfnDtRJVKFZFBiSaoFyi59WCS9NvWrYTuyRi7z
-         9aBP62DmrwTqZkTkzYG7F/dpuj5WWYsQg7M+0jyg=
+        b=FElPdqdnIcYnMPLMlWr7FwqBbKovSo+ogq6t3TfMvAx1/JSSNjsYbFvTTOYGEW9tN
+         Y7UgvDhWyllDf3hsymiK4sKDplAO2HkOoTPgwWE19RbpOJjasHdsm/ncHmn1W/J7rj
+         8CpbdR8W26wybXNsTdVU+x5gloMYz5lX8BtV/qA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guangwu Zhang <guazhang@redhat.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        John Meneghini <jmeneghi@redhat.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.19 80/86] scsi: bnx2fc: Make bnx2fc_recv_frame() mp safe
-Date:   Mon,  7 Feb 2022 12:06:43 +0100
-Message-Id: <20220207103800.300079572@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 4.19 85/86] EDAC/xgene: Fix deferred probing
+Date:   Mon,  7 Feb 2022 12:06:48 +0100
+Message-Id: <20220207103800.472179644@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -51,92 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Meneghini <jmeneghi@redhat.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit 936bd03405fc83ba039d42bc93ffd4b88418f1d3 upstream.
+commit dfd0dfb9a7cc04acf93435b440dd34c2ca7b4424 upstream.
 
-Running tests with a debug kernel shows that bnx2fc_recv_frame() is
-modifying the per_cpu lport stats counters in a non-mpsafe way.  Just boot
-a debug kernel and run the bnx2fc driver with the hardware enabled.
+The driver overrides error codes returned by platform_get_irq_optional()
+to -EINVAL for some strange reason, so if it returns -EPROBE_DEFER, the
+driver will fail the probe permanently instead of the deferred probing.
+Switch to propagating the proper error codes to platform driver code
+upwards.
 
-[ 1391.699147] BUG: using smp_processor_id() in preemptible [00000000] code: bnx2fc_
-[ 1391.699160] caller is bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
-[ 1391.699174] CPU: 2 PID: 4355 Comm: bnx2fc_l2_threa Kdump: loaded Tainted: G    B
-[ 1391.699180] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
-[ 1391.699183] Call Trace:
-[ 1391.699188]  dump_stack_lvl+0x57/0x7d
-[ 1391.699198]  check_preemption_disabled+0xc8/0xd0
-[ 1391.699205]  bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
-[ 1391.699215]  ? do_raw_spin_trylock+0xb5/0x180
-[ 1391.699221]  ? bnx2fc_npiv_create_vports.isra.0+0x4e0/0x4e0 [bnx2fc]
-[ 1391.699229]  ? bnx2fc_l2_rcv_thread+0xb7/0x3a0 [bnx2fc]
-[ 1391.699240]  bnx2fc_l2_rcv_thread+0x1af/0x3a0 [bnx2fc]
-[ 1391.699250]  ? bnx2fc_ulp_init+0xc0/0xc0 [bnx2fc]
-[ 1391.699258]  kthread+0x364/0x420
-[ 1391.699263]  ? _raw_spin_unlock_irq+0x24/0x50
-[ 1391.699268]  ? set_kthread_struct+0x100/0x100
-[ 1391.699273]  ret_from_fork+0x22/0x30
+  [ bp: Massage commit message. ]
 
-Restore the old get_cpu/put_cpu code with some modifications to reduce the
-size of the critical section.
-
-Link: https://lore.kernel.org/r/20220124145110.442335-1-jmeneghi@redhat.com
-Fixes: d576a5e80cd0 ("bnx2fc: Improve stats update mechanism")
-Tested-by: Guangwu Zhang <guazhang@redhat.com>
-Acked-by: Saurav Kashyap <skashyap@marvell.com>
-Signed-off-by: John Meneghini <jmeneghi@redhat.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 0d4429301c4a ("EDAC: Add APM X-Gene SoC EDAC driver")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220124185503.6720-3-s.shtylyov@omp.ru
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c |   21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ drivers/edac/xgene_edac.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-+++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-@@ -515,7 +515,8 @@ static int bnx2fc_l2_rcv_thread(void *ar
- 
- static void bnx2fc_recv_frame(struct sk_buff *skb)
- {
--	u32 fr_len;
-+	u64 crc_err;
-+	u32 fr_len, fr_crc;
- 	struct fc_lport *lport;
- 	struct fcoe_rcv_info *fr;
- 	struct fc_stats *stats;
-@@ -549,6 +550,11 @@ static void bnx2fc_recv_frame(struct sk_
- 	skb_pull(skb, sizeof(struct fcoe_hdr));
- 	fr_len = skb->len - sizeof(struct fcoe_crc_eof);
- 
-+	stats = per_cpu_ptr(lport->stats, get_cpu());
-+	stats->RxFrames++;
-+	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
-+	put_cpu();
-+
- 	fp = (struct fc_frame *)skb;
- 	fc_frame_init(fp);
- 	fr_dev(fp) = lport;
-@@ -631,16 +637,15 @@ static void bnx2fc_recv_frame(struct sk_
- 		return;
- 	}
- 
--	stats = per_cpu_ptr(lport->stats, smp_processor_id());
--	stats->RxFrames++;
--	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
-+	fr_crc = le32_to_cpu(fr_crc(fp));
- 
--	if (le32_to_cpu(fr_crc(fp)) !=
--			~crc32(~0, skb->data, fr_len)) {
--		if (stats->InvalidCRCCount < 5)
-+	if (unlikely(fr_crc != ~crc32(~0, skb->data, fr_len))) {
-+		stats = per_cpu_ptr(lport->stats, get_cpu());
-+		crc_err = (stats->InvalidCRCCount++);
-+		put_cpu();
-+		if (crc_err < 5)
- 			printk(KERN_WARNING PFX "dropping frame with "
- 			       "CRC error\n");
--		stats->InvalidCRCCount++;
- 		kfree_skb(skb);
- 		return;
- 	}
+--- a/drivers/edac/xgene_edac.c
++++ b/drivers/edac/xgene_edac.c
+@@ -1934,7 +1934,7 @@ static int xgene_edac_probe(struct platf
+ 			irq = platform_get_irq(pdev, i);
+ 			if (irq < 0) {
+ 				dev_err(&pdev->dev, "No IRQ resource\n");
+-				rc = -EINVAL;
++				rc = irq;
+ 				goto out_err;
+ 			}
+ 			rc = devm_request_irq(&pdev->dev, irq,
 
 
