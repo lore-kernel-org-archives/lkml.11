@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E7BC41535
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB2DC4707E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382303AbiBGLSs (ORCPT
+        id S1382394AbiBGLTD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:18:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
+        Mon, 7 Feb 2022 06:19:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356758AbiBGLNa (ORCPT
+        with ESMTP id S1356786AbiBGLNs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:13:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9507C043181;
-        Mon,  7 Feb 2022 03:13:29 -0800 (PST)
+        Mon, 7 Feb 2022 06:13:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F68C043181;
+        Mon,  7 Feb 2022 03:13:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70E86B80EC3;
-        Mon,  7 Feb 2022 11:13:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88423C004E1;
-        Mon,  7 Feb 2022 11:13:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A293CB80EC3;
+        Mon,  7 Feb 2022 11:13:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB078C004E1;
+        Mon,  7 Feb 2022 11:13:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232407;
-        bh=3BnQTiy1lYRjKYs33OvlOJ3AUlWRFB7XgubtblS7lzg=;
+        s=korg; t=1644232425;
+        bh=8RcvJ0iNpGXd9hhP8foxR5IlHZdwD/RWOBg4L/G1cj0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FOj69oZqfyWpAhx1IcEsX3ZStBSW2wL7cvzXvJP+svxfWoWnHWdZdZqkMmVv3zAfa
-         ezGVdbSjlJxiSBehOupKHR3oemnGMadhB0lDSXPi/Ap3j2Gs07xMiaqtjxcVDCasJ9
-         6q7Y54QVOWIdCk9tQNfaR7vlTW4jsl2udTciy+Q4=
+        b=unSfOZvWdfI7vcrAE+xWFPxD/RGcRJjHDRjNezuQ0js+ERbRI7rtkJFhdmOp9ZsC+
+         m6iUoJjyLhN7RgtdDnIK2zBc5CbnZEWZ2+JsV4p+NTX7rLgZGvCuRiUX/FH3Tb99Ty
+         1GGwSTSVycUXtFr1OqWrOQv2cGR0a/Gk81rLz3hg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 4.14 68/69] EDAC/xgene: Fix deferred probing
-Date:   Mon,  7 Feb 2022 12:06:30 +0100
-Message-Id: <20220207103757.869276090@linuxfoundation.org>
+        stable@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 4.14 53/69] iommu/vt-d: Fix potential memory leak in intel_setup_irq_remapping()
+Date:   Mon,  7 Feb 2022 12:06:15 +0100
+Message-Id: <20220207103757.363053239@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -49,38 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Guoqing Jiang <guoqing.jiang@linux.dev>
 
-commit dfd0dfb9a7cc04acf93435b440dd34c2ca7b4424 upstream.
+commit 99e675d473eb8cf2deac1376a0f840222fc1adcf upstream.
 
-The driver overrides error codes returned by platform_get_irq_optional()
-to -EINVAL for some strange reason, so if it returns -EPROBE_DEFER, the
-driver will fail the probe permanently instead of the deferred probing.
-Switch to propagating the proper error codes to platform driver code
-upwards.
+After commit e3beca48a45b ("irqdomain/treewide: Keep firmware node
+unconditionally allocated"). For tear down scenario, fn is only freed
+after fail to allocate ir_domain, though it also should be freed in case
+dmar_enable_qi returns error.
 
-  [ bp: Massage commit message. ]
+Besides free fn, irq_domain and ir_msi_domain need to be removed as well
+if intel_setup_irq_remapping fails to enable queued invalidation.
 
-Fixes: 0d4429301c4a ("EDAC: Add APM X-Gene SoC EDAC driver")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220124185503.6720-3-s.shtylyov@omp.ru
+Improve the rewinding path by add out_free_ir_domain and out_free_fwnode
+lables per Baolu's suggestion.
+
+Fixes: e3beca48a45b ("irqdomain/treewide: Keep firmware node unconditionally allocated")
+Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Link: https://lore.kernel.org/r/20220119063640.16864-1-guoqing.jiang@linux.dev
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Link: https://lore.kernel.org/r/20220128031002.2219155-3-baolu.lu@linux.intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/edac/xgene_edac.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel_irq_remapping.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
---- a/drivers/edac/xgene_edac.c
-+++ b/drivers/edac/xgene_edac.c
-@@ -1934,7 +1934,7 @@ static int xgene_edac_probe(struct platf
- 			irq = platform_get_irq(pdev, i);
- 			if (irq < 0) {
- 				dev_err(&pdev->dev, "No IRQ resource\n");
--				rc = -EINVAL;
-+				rc = irq;
- 				goto out_err;
- 			}
- 			rc = devm_request_irq(&pdev->dev, irq,
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -543,9 +543,8 @@ static int intel_setup_irq_remapping(str
+ 					    fn, &intel_ir_domain_ops,
+ 					    iommu);
+ 	if (!iommu->ir_domain) {
+-		irq_domain_free_fwnode(fn);
+ 		pr_err("IR%d: failed to allocate irqdomain\n", iommu->seq_id);
+-		goto out_free_bitmap;
++		goto out_free_fwnode;
+ 	}
+ 	iommu->ir_msi_domain =
+ 		arch_create_remap_msi_irq_domain(iommu->ir_domain,
+@@ -569,7 +568,7 @@ static int intel_setup_irq_remapping(str
+ 
+ 		if (dmar_enable_qi(iommu)) {
+ 			pr_err("Failed to enable queued invalidation\n");
+-			goto out_free_bitmap;
++			goto out_free_ir_domain;
+ 		}
+ 	}
+ 
+@@ -593,6 +592,14 @@ static int intel_setup_irq_remapping(str
+ 
+ 	return 0;
+ 
++out_free_ir_domain:
++	if (iommu->ir_msi_domain)
++		irq_domain_remove(iommu->ir_msi_domain);
++	iommu->ir_msi_domain = NULL;
++	irq_domain_remove(iommu->ir_domain);
++	iommu->ir_domain = NULL;
++out_free_fwnode:
++	irq_domain_free_fwnode(fn);
+ out_free_bitmap:
+ 	kfree(bitmap);
+ out_free_pages:
 
 
