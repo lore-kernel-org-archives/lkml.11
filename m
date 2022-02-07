@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D0CC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9BBC35271
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391055AbiBGL6Q (ORCPT
+        id S1351245AbiBGMA2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:58:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        Mon, 7 Feb 2022 07:00:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385407AbiBGLbt (ORCPT
+        with ESMTP id S1386714AbiBGLgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5DDC02B662;
-        Mon,  7 Feb 2022 03:30:15 -0800 (PST)
+        Mon, 7 Feb 2022 06:36:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32ED0C0401EB;
+        Mon,  7 Feb 2022 03:36:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73B8260AB0;
-        Mon,  7 Feb 2022 11:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B18CC004E1;
-        Mon,  7 Feb 2022 11:30:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C624A6091A;
+        Mon,  7 Feb 2022 11:36:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABBE3C004E1;
+        Mon,  7 Feb 2022 11:36:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233414;
-        bh=i2PB0zojxD9sz4cxUGlG2ch2e9HLN9jntYt4Vcfu+iA=;
+        s=korg; t=1644233777;
+        bh=R4imgKnV8m32j4qt81S3AnOiSUStzzwNsdj4QWnDjis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nIwY/NpH15AB/fa+yCdKHsDf1lY7JWeoIDEFkYBLxafQP0sXz0f2u225NXTYuOVM5
-         sVKgX0PcKJCcpHYIOmfvGKIQIIBYrUHB5PgUVlxlLzuOJOxFF+KvAInkuUahhULiOH
-         gyJzpvmQ43Lrxki4w7axv9WpNYOybj4PH+UVSx58=
+        b=Hxz/Ec2FZheIlL+dI7q0x/Cd3iV6Yxadd4rX43s5puD+WX8aqZAfkU/07nHW+cwP1
+         JjCMD1Zvm1zfO/H3Li97e9huYc1vqb8EKYHJygGvf7R68cSxv8kLF+v7maV7DnpueP
+         DDWKpu+tQ5ZpOsPmtf1y14s/QQ+a6zYHriFYjSjE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Nechama Kraus <nechamax.kraus@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 090/110] e1000e: Separate ADP board type from TGP
-Date:   Mon,  7 Feb 2022 12:07:03 +0100
-Message-Id: <20220207103805.451603316@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Yin <yinxin.x@bytedance.com>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.16 116/126] ext4: modify the logic of ext4_mb_new_blocks_simple
+Date:   Mon,  7 Feb 2022 12:07:27 +0100
+Message-Id: <20220207103808.065831948@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
-References: <20220207103802.280120990@linuxfoundation.org>
+In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
+References: <20220207103804.053675072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,120 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Xin Yin <yinxin.x@bytedance.com>
 
-commit 68defd528f94ed1cf11f49a75cc1875dccd781fa upstream.
+commit 31a074a0c62dc0d2bfb9b543142db4fe27f9e5eb upstream.
 
-We have the same LAN controller on different PCH's. Separate ADP board
-type from a TGP which will allow for specific fixes to be applied for
-ADP platforms.
+For now in ext4_mb_new_blocks_simple, if we found a block which
+should be excluded then will switch to next group, this may
+probably cause 'group' run out of range.
 
-Suggested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Change to check next block in the same group when get a block should
+be excluded. Also change the search range to EXT4_CLUSTERS_PER_GROUP
+and add error checking.
+
+Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Link: https://lore.kernel.org/r/20220110035141.1980-3-yinxin.x@bytedance.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/e1000e/e1000.h   |    4 ++-
- drivers/net/ethernet/intel/e1000e/ich8lan.c |   20 ++++++++++++++++
- drivers/net/ethernet/intel/e1000e/netdev.c  |   33 ++++++++++++++--------------
- 3 files changed, 40 insertions(+), 17 deletions(-)
+ fs/ext4/mballoc.c |   26 +++++++++++++++++---------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
 
---- a/drivers/net/ethernet/intel/e1000e/e1000.h
-+++ b/drivers/net/ethernet/intel/e1000e/e1000.h
-@@ -114,7 +114,8 @@ enum e1000_boards {
- 	board_pch_lpt,
- 	board_pch_spt,
- 	board_pch_cnp,
--	board_pch_tgp
-+	board_pch_tgp,
-+	board_pch_adp
- };
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -5753,7 +5753,8 @@ static ext4_fsblk_t ext4_mb_new_blocks_s
+ 	struct super_block *sb = ar->inode->i_sb;
+ 	ext4_group_t group;
+ 	ext4_grpblk_t blkoff;
+-	int i = sb->s_blocksize;
++	ext4_grpblk_t max = EXT4_CLUSTERS_PER_GROUP(sb);
++	ext4_grpblk_t i = 0;
+ 	ext4_fsblk_t goal, block;
+ 	struct ext4_super_block *es = EXT4_SB(sb)->s_es;
  
- struct e1000_ps_page {
-@@ -501,6 +502,7 @@ extern const struct e1000_info e1000_pch
- extern const struct e1000_info e1000_pch_spt_info;
- extern const struct e1000_info e1000_pch_cnp_info;
- extern const struct e1000_info e1000_pch_tgp_info;
-+extern const struct e1000_info e1000_pch_adp_info;
- extern const struct e1000_info e1000_es2_info;
+@@ -5775,19 +5776,26 @@ static ext4_fsblk_t ext4_mb_new_blocks_s
+ 		ext4_get_group_no_and_offset(sb,
+ 			max(ext4_group_first_block_no(sb, group), goal),
+ 			NULL, &blkoff);
+-		i = mb_find_next_zero_bit(bitmap_bh->b_data, sb->s_blocksize,
++		while (1) {
++			i = mb_find_next_zero_bit(bitmap_bh->b_data, max,
+ 						blkoff);
++			if (i >= max)
++				break;
++			if (ext4_fc_replay_check_excluded(sb,
++				ext4_group_first_block_no(sb, group) + i)) {
++				blkoff = i + 1;
++			} else
++				break;
++		}
+ 		brelse(bitmap_bh);
+-		if (i >= sb->s_blocksize)
+-			continue;
+-		if (ext4_fc_replay_check_excluded(sb,
+-			ext4_group_first_block_no(sb, group) + i))
+-			continue;
+-		break;
++		if (i < max)
++			break;
+ 	}
  
- void e1000e_ptp_init(struct e1000_adapter *adapter);
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -6021,3 +6021,23 @@ const struct e1000_info e1000_pch_tgp_in
- 	.phy_ops		= &ich8_phy_ops,
- 	.nvm_ops		= &spt_nvm_ops,
- };
-+
-+const struct e1000_info e1000_pch_adp_info = {
-+	.mac			= e1000_pch_adp,
-+	.flags			= FLAG_IS_ICH
-+				  | FLAG_HAS_WOL
-+				  | FLAG_HAS_HW_TIMESTAMP
-+				  | FLAG_HAS_CTRLEXT_ON_LOAD
-+				  | FLAG_HAS_AMT
-+				  | FLAG_HAS_FLASH
-+				  | FLAG_HAS_JUMBO_FRAMES
-+				  | FLAG_APME_IN_WUC,
-+	.flags2			= FLAG2_HAS_PHY_STATS
-+				  | FLAG2_HAS_EEE,
-+	.pba			= 26,
-+	.max_hw_frame_size	= 9022,
-+	.get_variants		= e1000_get_variants_ich8lan,
-+	.mac_ops		= &ich8_mac_ops,
-+	.phy_ops		= &ich8_phy_ops,
-+	.nvm_ops		= &spt_nvm_ops,
-+};
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -52,6 +52,7 @@ static const struct e1000_info *e1000_in
- 	[board_pch_spt]		= &e1000_pch_spt_info,
- 	[board_pch_cnp]		= &e1000_pch_cnp_info,
- 	[board_pch_tgp]		= &e1000_pch_tgp_info,
-+	[board_pch_adp]		= &e1000_pch_adp_info,
- };
+-	if (group >= ext4_get_groups_count(sb) && i >= sb->s_blocksize)
++	if (group >= ext4_get_groups_count(sb) || i >= max) {
++		*errp = -ENOSPC;
+ 		return 0;
++	}
  
- struct e1000_reg_info {
-@@ -7905,22 +7906,22 @@ static const struct pci_device_id e1000_
- 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V14), board_pch_tgp },
- 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM15), board_pch_tgp },
- 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V15), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_LM23), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_V23), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM16), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V16), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM17), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V17), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_LM22), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_V22), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM18), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V18), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM19), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V19), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_LM20), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_V20), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_LM21), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_V21), board_pch_tgp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_LM23), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_V23), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM16), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V16), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM17), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V17), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_LM22), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_V22), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM18), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V18), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM19), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V19), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_LM20), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_V20), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_LM21), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_V21), board_pch_adp },
- 
- 	{ 0, 0, 0, 0, 0, 0, 0 }	/* terminate list */
- };
+ 	block = ext4_group_first_block_no(sb, group) + i;
+ 	ext4_mb_mark_bb(sb, block, 1, 1);
 
 
