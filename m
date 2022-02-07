@@ -2,78 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC63C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0AF4C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356994AbiBGQne (ORCPT
+        id S1357121AbiBGQng (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:43:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40956 "EHLO
+        Mon, 7 Feb 2022 11:43:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244922AbiBGQfF (ORCPT
+        with ESMTP id S1382083AbiBGQcD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:35:05 -0500
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2591EC0401DD
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:35:03 -0800 (PST)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOfQI014419;
-        Mon, 7 Feb 2022 17:24:41 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     "Paul E . McKenney" <paulmck@kernel.org>
-Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        Willy Tarreau <w@1wt.eu>
-Subject: [PATCH 35/42] tools/nolibc/string: export memset() and memmove()
-Date:   Mon,  7 Feb 2022 17:23:47 +0100
-Message-Id: <20220207162354.14293-36-w@1wt.eu>
-X-Mailer: git-send-email 2.17.5
-In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
-References: <20220207162354.14293-1-w@1wt.eu>
+        Mon, 7 Feb 2022 11:32:03 -0500
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 08:31:57 PST
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28577C0401E8;
+        Mon,  7 Feb 2022 08:31:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644251517; x=1675787517;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=/KVSVa7sgjsVxefcYGnYLwrI2Vchw9qvwnAjpTnywCY=;
+  b=nfGJGU/w8RPiJAUoDgIgE5GRiayqDpC0pLvhcOQBB17LOJ17VbcuNbnS
+   4kMZfObRf/qt9UtmrhIxohADZ0tWvv69NIu7vFI7X7XTNXy2grYiXCUQY
+   gv1a5KxeeN3g+WOULH6ecpE8SEZUZOk2XN3zqWObjSO+vQt4B8Otq9MuZ
+   vSmYr2sTwQVv8FWp4hLb83YFdw8p0o08HcW167NyCaXmgC5PWxyF27on1
+   v9KeNsXoWg7zyk97kJ05mavsxuCwpDJzmfD9PDeI672B/AJkjsi99T5D7
+   WFZ2lXWkVOuCm4eKi7IBtr08lOBREN5Jbn1fK6SSe21wod1afTwmle8K2
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="232315628"
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="232315628"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 08:30:54 -0800
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="525193372"
+Received: from hgrunes-mobl1.amr.corp.intel.com (HELO [10.251.3.57]) ([10.251.3.57])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 08:30:53 -0800
+Message-ID: <8f96c2a6-9c03-f97a-df52-73ffc1d87957@intel.com>
+Date:   Mon, 7 Feb 2022 08:30:50 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Adrian Reber <adrian@lisas.de>, Mike Rapoport <rppt@kernel.org>
+Cc:     Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Balbir Singh <bsingharora@gmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Eugene Syromiatnikov <esyr@redhat.com>,
+        Florian Weimer <fweimer@redhat.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
+        Dave Martin <Dave.Martin@arm.com>,
+        Weijiang Yang <weijiang.yang@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
+        kcc@google.com, eranian@google.com,
+        Andrei Vagin <avagin@gmail.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <YgAWVSGQg8FPCeba@kernel.org> <YgDIIpCm3UITk896@lisas.de>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+In-Reply-To: <YgDIIpCm3UITk896@lisas.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"clang -Os" and "gcc -Ofast" without -ffreestanding may ignore memset()
-and memmove(), hoping to provide their builtin equivalents, and finally
-not find them. Thus we must export these functions for these rare cases.
-Note that as they're set in their own sections, they will be eliminated
-by the linker if not used. In addition, they do not prevent gcc from
-identifying them and replacing them with the shorter "rep movsb" or
-"rep stosb" when relevant.
+On 2/6/22 23:20, Adrian Reber wrote:
+>>> 	CRIU Support
+>>> 	------------
+>>> 	In the past there was some speculation on the mailing list about 
+>>> 	whether CRIU would need to be taught about CET. It turns out, it does. 
+>>> 	The first issue hit is that CRIU calls sigreturn directly from its 
+>>> 	“parasite code” that it injects into the dumper process. This violates
+>>> 	this shadow stack implementation’s protection that intends to prevent
+>>> 	attackers from doing this.
+...
+>>From the CRIU side I can say that I would definitely like to see this
+> resolved. CRIU just went through a similar exercise with rseq() being
+> enabled in glibc and CI broke all around for us and other projects
+> relying on CRIU. Although rseq() was around for a long time we were not
+> aware of it but luckily 5.13 introduced a way to handle it for CRIU with
+> ptrace. An environment variable existed but did not really help when
+> CRIU is called somewhere in the middle of the container software stack.
+> 
+>>From my point of view a solution not involving an environment variable
+> would definitely be preferred.
 
-Signed-off-by: Willy Tarreau <w@1wt.eu>
----
- tools/include/nolibc/string.h | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+Have there been things like this for CRIU in the past?  Something where
+CRIU needs control but that's also security-sensitive?
 
-diff --git a/tools/include/nolibc/string.h b/tools/include/nolibc/string.h
-index c1661589cb3c..4554b6fcb400 100644
---- a/tools/include/nolibc/string.h
-+++ b/tools/include/nolibc/string.h
-@@ -47,7 +47,10 @@ void *_nolibc_memcpy_down(void *dst, const void *src, size_t len)
- 	return dst;
- }
- 
--static __attribute__((unused))
-+/* might be ignored by the compiler without -ffreestanding, then found as
-+ * missing.
-+ */
-+__attribute__((weak,unused,section(".text.nolibc_memmove")))
- void *memmove(void *dst, const void *src, size_t len)
- {
- 	size_t dir, pos;
-@@ -75,7 +78,10 @@ void *memcpy(void *dst, const void *src, size_t len)
- 	return _nolibc_memcpy_up(dst, src, len);
- }
- 
--static __attribute__((unused))
-+/* might be ignored by the compiler without -ffreestanding, then found as
-+ * missing.
-+ */
-+__attribute__((weak,unused,section(".text.nolibc_memset")))
- void *memset(void *dst, int b, size_t len)
- {
- 	char *p = dst;
--- 
-2.35.1
-
+Any thoughts on how you would _like_ to see this resolved?
