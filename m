@@ -2,285 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84D66C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C9EC35275
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386861AbiBGQBd (ORCPT
+        id S1386901AbiBGQBl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:01:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
+        Mon, 7 Feb 2022 11:01:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344137AbiBGP7e (ORCPT
+        with ESMTP id S1344207AbiBGP7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:59:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22889C0401D5
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:59:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249573;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aV5jkqTeSUUXBrzTfKSBHIk3+2wrmrIK57QNIliC8wc=;
-        b=PjTc8H8nQ9WpI7gaXPVwUVFqm3AqCzBkj+I46KP2WvRrrK94j0jXd56NYhJ24bRwogTCS+
-        xvVKyj1HUR+XN2YuRTDKynhwjomakuQ5OQb2emeChqnkcm59/zacvu26cYt2SUxhJf0MSH
-        b9p0K9sEUlLMilgkI7zYLbcvryHvO8A=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-339-TDQxQXxnNtaAvtvuuWWbkg-1; Mon, 07 Feb 2022 10:59:30 -0500
-X-MC-Unique: TDQxQXxnNtaAvtvuuWWbkg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 7 Feb 2022 10:59:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC7FC0401D1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:59:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EB5C11842144;
-        Mon,  7 Feb 2022 15:59:26 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C192E7DE38;
-        Mon,  7 Feb 2022 15:59:19 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Tony Luck <tony.luck@intel.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EC02614F5
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:59:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC96BC340F3;
+        Mon,  7 Feb 2022 15:59:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644249576;
+        bh=iRj5pHdf6eWkZ1PAF3fLYv97Djo5eOJinCTnYYByUDw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XnCSdsPFJ5f44gKLTXUfECtabOQHR+4nOXU83UkyYaGQ5Ypy2H/dwHMu3PDyWQ6gf
+         3VQ2XJ+Qi0glfn/tgzeOkMC5EnpJossH5loLqo+jtv+1+DfrxyMpfSYIgSV3qIQnja
+         Kt1sS5XHziWA2NZD2D5YqQkrDElGQCzC46L+S+iNUhabzuPx857UmMVX/n7wXv6sgz
+         n8hRFrFvCeE8YYPA27MPglXLLGyN0yMedDkj/m4BEEjCJ/UQRPmKI9AsxwLbO/53cy
+         4hTibppB0jIJdOpYPkKCYuZNKCJNLC6hMbau8tRdh8Qid6LZhIll8Ivyx5xL2qlPNL
+         SQVLzqJRqHIXw==
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@gentwo.de>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nitesh Lal <nilal@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sean Christopherson <seanjc@google.com>,
-        David Airlie <airlied@linux.ie>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Jim Mattson <jmattson@google.com>, x86@kernel.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 22/30] KVM: x86: nSVM: correctly virtualize LBR msrs when L2 is running
-Date:   Mon,  7 Feb 2022 17:54:39 +0200
-Message-Id: <20220207155447.840194-23-mlevitsk@redhat.com>
-In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
-References: <20220207155447.840194-1-mlevitsk@redhat.com>
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Nicolas Saenz <nsaenzju@redhat.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Phil Auld <pauld@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>
+Subject: [PATCH 5/8] sched/isolation: Consolidate check for housekeeping minimum service
+Date:   Mon,  7 Feb 2022 16:59:07 +0100
+Message-Id: <20220207155910.527133-6-frederic@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220207155910.527133-1-frederic@kernel.org>
+References: <20220207155910.527133-1-frederic@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When L2 is running without LBR virtualization, we should ensure
-that L1's LBR msrs continue to update as usual.
+There can be two subsequent calls to housekeeping_setup() due to
+"nohz_full=" and "isolcpus=" that can mix up.  The two passes each have
+their own way to deal with an empty housekeeping set of CPUs.
+Consolidate this part and remove the awful "tmp" based naming.
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
+Reviewed-by: Phil Auld <pauld@redhat.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Nitesh Lal <nilal@redhat.com>
+Cc: Nicolas Saenz <nsaenzju@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Christoph Lameter <cl@gentwo.de>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Zefan Li <lizefan.x@bytedance.com>
+Cc: Alex Belits <abelits@marvell.com>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Paul E. McKenney  <paulmck@kernel.org>
 ---
- arch/x86/kvm/svm/nested.c | 11 +++++
- arch/x86/kvm/svm/svm.c    | 98 +++++++++++++++++++++++++++++++--------
- arch/x86/kvm/svm/svm.h    |  2 +
- 3 files changed, 92 insertions(+), 19 deletions(-)
+ kernel/sched/isolation.c | 35 +++++++++++++++++------------------
+ 1 file changed, 17 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index ac9159b0618c7..9f7bc7db08dd3 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -535,6 +535,9 @@ static void nested_vmcb02_prepare_save(struct vcpu_svm *svm, struct vmcb *vmcb12
- 		svm->vcpu.arch.dr6  = svm->nested.save.dr6 | DR6_ACTIVE_LOW;
- 		vmcb_mark_dirty(svm->vmcb, VMCB_DR);
- 	}
-+
-+	if (unlikely(svm->vmcb01.ptr->control.virt_ext & LBR_CTL_ENABLE_MASK))
-+		svm_copy_lbrs(svm->vmcb01.ptr, svm->vmcb);
- }
+diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
+index a735d9e229dd..23085e665faa 100644
+--- a/kernel/sched/isolation.c
++++ b/kernel/sched/isolation.c
+@@ -91,8 +91,7 @@ void __init housekeeping_init(void)
  
- static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
-@@ -587,6 +590,9 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
- 	svm->vmcb->control.event_inj           = svm->nested.ctl.event_inj;
- 	svm->vmcb->control.event_inj_err       = svm->nested.ctl.event_inj_err;
- 
-+	svm->vmcb->control.virt_ext            = svm->vmcb01.ptr->control.virt_ext &
-+						 LBR_CTL_ENABLE_MASK;
-+
- 	nested_svm_transition_tlb_flush(vcpu);
- 
- 	/* Enter Guest-Mode */
-@@ -852,6 +858,11 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
- 
- 	svm_switch_vmcb(svm, &svm->vmcb01);
- 
-+	if (unlikely(svm->vmcb->control.virt_ext & LBR_CTL_ENABLE_MASK)) {
-+		svm_copy_lbrs(svm->nested.vmcb02.ptr, svm->vmcb);
-+		svm_update_lbrv(vcpu);
-+	}
-+
- 	/*
- 	 * On vmexit the  GIF is set to false and
- 	 * no event can be injected in L1.
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index b88ca7f07a0fc..294e016f575a8 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -805,6 +805,17 @@ static void init_msrpm_offsets(void)
- 	}
- }
- 
-+void svm_copy_lbrs(struct vmcb *from_vmcb, struct vmcb *to_vmcb)
-+{
-+	to_vmcb->save.dbgctl		= from_vmcb->save.dbgctl;
-+	to_vmcb->save.br_from		= from_vmcb->save.br_from;
-+	to_vmcb->save.br_to		= from_vmcb->save.br_to;
-+	to_vmcb->save.last_excp_from	= from_vmcb->save.last_excp_from;
-+	to_vmcb->save.last_excp_to	= from_vmcb->save.last_excp_to;
-+
-+	vmcb_mark_dirty(to_vmcb, VMCB_LBR);
-+}
-+
- static void svm_enable_lbrv(struct kvm_vcpu *vcpu)
+ static int __init housekeeping_setup(char *str, enum hk_flags flags)
  {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -814,6 +825,10 @@ static void svm_enable_lbrv(struct kvm_vcpu *vcpu)
- 	set_msr_interception(vcpu, svm->msrpm, MSR_IA32_LASTBRANCHTOIP, 1, 1);
- 	set_msr_interception(vcpu, svm->msrpm, MSR_IA32_LASTINTFROMIP, 1, 1);
- 	set_msr_interception(vcpu, svm->msrpm, MSR_IA32_LASTINTTOIP, 1, 1);
-+
-+	/* Move the LBR msrs to the vmcb02 so that the guest can see them. */
-+	if (is_guest_mode(vcpu))
-+		svm_copy_lbrs(svm->vmcb01.ptr, svm->vmcb);
- }
+-	cpumask_var_t non_housekeeping_mask;
+-	cpumask_var_t tmp;
++	cpumask_var_t non_housekeeping_mask, housekeeping_staging;
  
- static void svm_disable_lbrv(struct kvm_vcpu *vcpu)
-@@ -825,6 +840,63 @@ static void svm_disable_lbrv(struct kvm_vcpu *vcpu)
- 	set_msr_interception(vcpu, svm->msrpm, MSR_IA32_LASTBRANCHTOIP, 0, 0);
- 	set_msr_interception(vcpu, svm->msrpm, MSR_IA32_LASTINTFROMIP, 0, 0);
- 	set_msr_interception(vcpu, svm->msrpm, MSR_IA32_LASTINTTOIP, 0, 0);
-+
-+	/*
-+	 * Move the LBR msrs back to the vmcb01 to avoid copying them
-+	 * on nested guest entries.
-+	 */
-+	if (is_guest_mode(vcpu))
-+		svm_copy_lbrs(svm->vmcb, svm->vmcb01.ptr);
-+}
-+
-+static int svm_get_lbr_msr(struct vcpu_svm *svm, u32 index)
-+{
-+	/*
-+	 * If the LBR virtualization is disabled, the LBR msrs are always
-+	 * kept in the vmcb01 to avoid copying them on nested guest entries.
-+	 *
-+	 * If nested, and the LBR virtualization is enabled/disabled, the msrs
-+	 * are moved between the vmcb01 and vmcb02 as needed.
-+	 */
-+	struct vmcb *vmcb =
-+		(svm->vmcb->control.virt_ext & LBR_CTL_ENABLE_MASK) ?
-+			svm->vmcb : svm->vmcb01.ptr;
-+
-+	switch (index) {
-+	case MSR_IA32_DEBUGCTLMSR:
-+		return vmcb->save.dbgctl;
-+	case MSR_IA32_LASTBRANCHFROMIP:
-+		return vmcb->save.br_from;
-+	case MSR_IA32_LASTBRANCHTOIP:
-+		return vmcb->save.br_to;
-+	case MSR_IA32_LASTINTFROMIP:
-+		return vmcb->save.last_excp_from;
-+	case MSR_IA32_LASTINTTOIP:
-+		return vmcb->save.last_excp_to;
-+	default:
-+		KVM_BUG(false, svm->vcpu.kvm,
-+			"%s: Unknown MSR 0x%x", __func__, index);
-+		return 0;
+ 	alloc_bootmem_cpumask_var(&non_housekeeping_mask);
+ 	if (cpulist_parse(str, non_housekeeping_mask) < 0) {
+@@ -101,32 +100,32 @@ static int __init housekeeping_setup(char *str, enum hk_flags flags)
+ 		return 0;
+ 	}
+ 
+-	alloc_bootmem_cpumask_var(&tmp);
+-	if (!housekeeping_flags) {
+-		alloc_bootmem_cpumask_var(&housekeeping_mask);
+-		cpumask_andnot(housekeeping_mask,
+-			       cpu_possible_mask, non_housekeeping_mask);
++	alloc_bootmem_cpumask_var(&housekeeping_staging);
++	cpumask_andnot(housekeeping_staging,
++		       cpu_possible_mask, non_housekeeping_mask);
+ 
+-		cpumask_andnot(tmp, cpu_present_mask, non_housekeeping_mask);
+-		if (cpumask_empty(tmp)) {
++	if (!cpumask_intersects(cpu_present_mask, housekeeping_staging)) {
++		__cpumask_set_cpu(smp_processor_id(), housekeeping_staging);
++		__cpumask_clear_cpu(smp_processor_id(), non_housekeeping_mask);
++		if (!housekeeping_flags) {
+ 			pr_warn("Housekeeping: must include one present CPU, "
+ 				"using boot CPU:%d\n", smp_processor_id());
+-			__cpumask_set_cpu(smp_processor_id(), housekeeping_mask);
+-			__cpumask_clear_cpu(smp_processor_id(), non_housekeeping_mask);
+ 		}
 +	}
-+}
 +
-+void svm_update_lbrv(struct kvm_vcpu *vcpu)
-+{
-+	struct vcpu_svm *svm = to_svm(vcpu);
++	if (!housekeeping_flags) {
++		alloc_bootmem_cpumask_var(&housekeeping_mask);
++		cpumask_copy(housekeeping_mask, housekeeping_staging);
+ 	} else {
+-		cpumask_andnot(tmp, cpu_present_mask, non_housekeeping_mask);
+-		if (cpumask_empty(tmp))
+-			__cpumask_clear_cpu(smp_processor_id(), non_housekeeping_mask);
+-		cpumask_andnot(tmp, cpu_possible_mask, non_housekeeping_mask);
+-		if (!cpumask_equal(tmp, housekeeping_mask)) {
++		if (!cpumask_equal(housekeeping_staging, housekeeping_mask)) {
+ 			pr_warn("Housekeeping: nohz_full= must match isolcpus=\n");
+-			free_bootmem_cpumask_var(tmp);
++			free_bootmem_cpumask_var(housekeeping_staging);
+ 			free_bootmem_cpumask_var(non_housekeeping_mask);
+ 			return 0;
+ 		}
+ 	}
+-	free_bootmem_cpumask_var(tmp);
 +
-+	bool enable_lbrv = svm_get_lbr_msr(svm, MSR_IA32_DEBUGCTLMSR) &
-+					   DEBUGCTLMSR_LBR;
-+
-+	bool current_enable_lbrv = !!(svm->vmcb->control.virt_ext &
-+				      LBR_CTL_ENABLE_MASK);
-+
-+	if (enable_lbrv == current_enable_lbrv)
-+		return;
-+
-+	if (enable_lbrv)
-+		svm_enable_lbrv(vcpu);
-+	else
-+		svm_disable_lbrv(vcpu);
- }
++	free_bootmem_cpumask_var(housekeeping_staging);
  
- void disable_nmi_singlestep(struct vcpu_svm *svm)
-@@ -2591,25 +2663,12 @@ static int svm_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case MSR_TSC_AUX:
- 		msr_info->data = svm->tsc_aux;
- 		break;
--	/*
--	 * Nobody will change the following 5 values in the VMCB so we can
--	 * safely return them on rdmsr. They will always be 0 until LBRV is
--	 * implemented.
--	 */
- 	case MSR_IA32_DEBUGCTLMSR:
--		msr_info->data = svm->vmcb->save.dbgctl;
--		break;
- 	case MSR_IA32_LASTBRANCHFROMIP:
--		msr_info->data = svm->vmcb->save.br_from;
--		break;
- 	case MSR_IA32_LASTBRANCHTOIP:
--		msr_info->data = svm->vmcb->save.br_to;
--		break;
- 	case MSR_IA32_LASTINTFROMIP:
--		msr_info->data = svm->vmcb->save.last_excp_from;
--		break;
- 	case MSR_IA32_LASTINTTOIP:
--		msr_info->data = svm->vmcb->save.last_excp_to;
-+		msr_info->data = svm_get_lbr_msr(svm, msr_info->index);
- 		break;
- 	case MSR_VM_HSAVE_PA:
- 		msr_info->data = svm->nested.hsave_msr;
-@@ -2840,12 +2899,13 @@ static int svm_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr)
- 		if (data & DEBUGCTL_RESERVED_BITS)
- 			return 1;
- 
--		svm->vmcb->save.dbgctl = data;
--		vmcb_mark_dirty(svm->vmcb, VMCB_LBR);
--		if (data & (1ULL<<0))
--			svm_enable_lbrv(vcpu);
-+		if (svm->vmcb->control.virt_ext & LBR_CTL_ENABLE_MASK)
-+			svm->vmcb->save.dbgctl = data;
- 		else
--			svm_disable_lbrv(vcpu);
-+			svm->vmcb01.ptr->save.dbgctl = data;
-+
-+		svm_update_lbrv(vcpu);
-+
- 		break;
- 	case MSR_VM_HSAVE_PA:
- 		/*
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index c02903641d13d..b83e06d5d942a 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -476,6 +476,8 @@ u32 svm_msrpm_offset(u32 msr);
- u32 *svm_vcpu_alloc_msrpm(void);
- void svm_vcpu_init_msrpm(struct kvm_vcpu *vcpu, u32 *msrpm);
- void svm_vcpu_free_msrpm(u32 *msrpm);
-+void svm_copy_lbrs(struct vmcb *from_vmcb, struct vmcb *to_vmcb);
-+void svm_update_lbrv(struct kvm_vcpu *vcpu);
- 
- int svm_set_efer(struct kvm_vcpu *vcpu, u64 efer);
- void svm_set_cr0(struct kvm_vcpu *vcpu, unsigned long cr0);
+ 	if ((flags & HK_FLAG_TICK) && !(housekeeping_flags & HK_FLAG_TICK)) {
+ 		if (IS_ENABLED(CONFIG_NO_HZ_FULL)) {
 -- 
-2.26.3
+2.25.1
 
