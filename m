@@ -2,95 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA2DC3526C
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:55:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348667AbiBGRqf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:46:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57316 "EHLO
+        id S240273AbiBGRyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 12:54:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346053AbiBGRjy (ORCPT
+        with ESMTP id S1358181AbiBGRt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:39:54 -0500
-Received: from server.lespinasse.org (server.lespinasse.org [IPv6:2001:470:82ab::100:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA100C0401D5
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:39:53 -0800 (PST)
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
- d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-54-ed;
- t=1644255593; h=date : from : to : cc : subject : message-id :
- references : mime-version : content-type : in-reply-to : from;
- bh=tmDPD28soEhWKnT4DxmAlJVsPBF7OE1oQKQpzgysMBQ=;
- b=JWSanQhlWOlcCshcpo0ZLiIFik09w09xx0LOoJpxqM/35WhVvLXux5ETCN/tYTwOPZOmH
- Sz+OEp1YBGocQSbDw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
- i=@lespinasse.org; q=dns/txt; s=srv-54-rsa; t=1644255593; h=date :
- from : to : cc : subject : message-id : references : mime-version :
- content-type : in-reply-to : from;
- bh=tmDPD28soEhWKnT4DxmAlJVsPBF7OE1oQKQpzgysMBQ=;
- b=azqVTrJC2t9aHb73Mc7K5JF3T+Ei7qWcPfKtwXIkOLCBlUKpwcUefS5+HLMknaaJNR7tX
- 09k3gRggYZbk6RtWhH4dLIy/iIqvJ1mtxDJYhJA0vrlg+DDxHMbSwE4oEQZGwu48sFU/O/H
- HKLYjp2GJkyyYBkNbcIspA33ASwU7aZ2YF7ilD7i05GCftosl6T4Gab299dyBrBjS89/M7Y
- ULbWqTUcGqS9ybPDUrMfFx/BhdL2OWcKqfx/Ru7gz73vplukNMscipuB9HYboK/J6I3Mkbm
- 8bMdrDEZgMi7U0O5ugo7YkWZPidtJ9w/Vt627tq3RR1wLfmtdri8qwpugHSw==
-Received: by server.lespinasse.org (Postfix, from userid 1000)
-        id 8910E160B2F; Mon,  7 Feb 2022 09:39:53 -0800 (PST)
-Date:   Mon, 7 Feb 2022 09:39:53 -0800
-From:   Michel Lespinasse <michel@lespinasse.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Michel Lespinasse <michel@lespinasse.org>,
-        Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com, Laurent Dufour <ldufour@linux.ibm.com>,
-        Jerome Glisse <jglisse@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Liam Howlett <liam.howlett@oracle.com>,
-        Rik van Riel <riel@surriel.com>,
-        Paul McKenney <paulmck@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Minchan Kim <minchan@google.com>,
-        Joel Fernandes <joelaf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v2 00/35] Speculative page faults
-Message-ID: <20220207173953.GD12302@lespinasse.org>
-References: <20220128131006.67712-1-michel@lespinasse.org>
- <20220131171434.89870a8f1ae294912e7ff19e@linux-foundation.org>
- <YfiY9zRm8BhSp7eA@casper.infradead.org>
+        Mon, 7 Feb 2022 12:49:58 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3B8C03FEDF;
+        Mon,  7 Feb 2022 09:49:55 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id e28so14265126pfj.5;
+        Mon, 07 Feb 2022 09:49:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=oP4sNWh8iR7KWN0kzeOWR8daIfqvnXiV6Uiu1fQgVnY=;
+        b=Uz/gTtwoKHvTP1Dj5BCTpmTjU9hsSTVEMf2aWbTpnoWQ11WMjMAL159OjrPKuB9MbT
+         3PFzmq8cWmFajJGy69t11cM8qFGao4QUE9S2Ov00q2NX7KBSl/CrsY2mbqQMNmFS95Fl
+         1GekIe0LSI8k+4RQK8XFhcn8RYaYG/Qcr6qqTUqvSEAgXyt9p/BLEQoYGcIzBq/YFjTP
+         6A/f/vVthM57ufBNg8Vx8cUQz+pwX/tS3ETrNGdyMzvVU0s817O5vgxQHokNFy08S2cO
+         Sut6WCyfcvfdfAvOByDF7sInyU4wJisr2k+h6L1mMV6rEpztFGVeScC/aRZqhHr6seCO
+         6P5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=oP4sNWh8iR7KWN0kzeOWR8daIfqvnXiV6Uiu1fQgVnY=;
+        b=P0uvTCU17fPdC+GsLoW0Zv8jf9tiGrZva0E2FWIuy+adpV4p3enIfhOa49mPzesYj7
+         x9we8NdGYILvgHg5yJhKa/SJNhTXGQRhpuJ2g/Cu0mLsmQlhRW9SMieYUv9zk0F3VWkw
+         eJfuQtMFy/yzC3BapZIIgSbZUR+bV9ciH7SCvRLNW79WceACwYqSuQorLpimtaKnXJiy
+         AmOLQL2bziurecl6sawhxinTKEsJVlR6uDo2WvOGQAwDYf321kN7F1RcHuBhHoNlmmni
+         125e3smJTdtTQ4AHj1Um9SlwD7fBoj/mqTEQE+/18XwEwJbqW0dBFnhM3P78j0vf4l8l
+         YirA==
+X-Gm-Message-State: AOAM533y4DuYmAaGRnWXq8RapJaPMQzxi3h3aRkf7QL8o/HFMR22r2RC
+        zYfl2KoqpI5gXOLRsdUKkAi8Pu2NyCHTMxll
+X-Google-Smtp-Source: ABdhPJxcje7J9TJHoslEMy9RgbrnEC80j5+R9Yvm6gQb/WKFjeGgPmnIdPe5EQEYHErrAW3vRpWNdA==
+X-Received: by 2002:aa7:94a9:: with SMTP id a9mr510130pfl.78.1644256195115;
+        Mon, 07 Feb 2022 09:49:55 -0800 (PST)
+Received: from localhost ([2405:201:2003:b021:6001:8ce1:3e29:705e])
+        by smtp.gmail.com with ESMTPSA id s19sm12541046pfu.34.2022.02.07.09.49.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Feb 2022 09:49:54 -0800 (PST)
+Date:   Mon, 7 Feb 2022 23:19:48 +0530
+From:   Raag Jadav <raagjadav@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
+Message-ID: <20220207174948.GA5183@localhost>
+References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
+ <Yf6QbbqaxZhZPUdC@lunn.ch>
+ <20220206171234.GA5778@localhost>
+ <YgANBQjsrmK+T/N+@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YfiY9zRm8BhSp7eA@casper.infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YgANBQjsrmK+T/N+@lunn.ch>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 02:20:39AM +0000, Matthew Wilcox wrote:
-> On Mon, Jan 31, 2022 at 05:14:34PM -0800, Andrew Morton wrote:
-> > On Fri, 28 Jan 2022 05:09:31 -0800 Michel Lespinasse <michel@lespinasse.org> wrote:
-> > > The next step is to walk down the existing page table tree to find the
-> > > current pte entry. This is done with interrupts disabled to avoid
-> > > races with munmap().
+On Sun, Feb 06, 2022 at 07:01:41PM +0100, Andrew Lunn wrote:
+> On Sun, Feb 06, 2022 at 10:42:34PM +0530, Raag Jadav wrote:
+> > On Sat, Feb 05, 2022 at 03:57:49PM +0100, Andrew Lunn wrote:
+> > > On Sat, Feb 05, 2022 at 12:14:52PM +0530, Raag Jadav wrote:
+> > > > Enable MAC SerDes autonegotiation to distinguish between
+> > > > 1000BASE-X, SGMII and QSGMII MAC.
+> > > 
+> > > How does autoneg help you here? It just tells you about duplex, pause
+> > > etc. It does not indicate 1000BaseX, SGMII etc. The PHY should be
+> > > using whatever mode it was passed in phydev->interface, which the MAC
+> > > sets when it calls the connection function. If the PHY dynamically
+> > > changes its host side mode as a result of what that line side is
+> > > doing, it should also change phydev->interface. However, as far as i
+> > > can see, the mscc does not do this.
+> > >
 > > 
-> > Sebastian, could you please comment on this from the CONFIG_PREEMPT_RT
-> > point of view?
+> > Once the PHY auto-negotiates parameters such as speed and duplex mode
+> > with its link partner over the copper link as per IEEE 802.3 Clause 27,
+> > the link partner’s capabilities are then transferred by PHY to MAC
+> > over 1000BASE-X or SGMII link using the auto-negotiation functionality
+> > defined in IEEE 802.3z Clause 37.
 > 
-> I am not a fan of this approach.  For other reasons, I think we want to
-> switch to RCU-freed page tables, and then we can walk the page tables
-> with the RCU lock held.  Some architectures already RCU-free the page
-> tables, so I think it's just a matter of converting the rest.
+> None of this allows you to distinguish between 1000BASE-X, SGMII and
+> QSGMII, which is what the commit message says.
+> 
 
-Note - I have no problem with switching to RCU-freed page tables
-everywhere when and if we end up needing to. I just don't see that
-this need comes from the SPF patchset, so I don't think this should
-be introduced as an artificial dependency.
+I agree, the current commit message is misleading.
 
---
-Michel "walken" Lespinasse
+> It does allow you to get duplex, pause, and maybe speed via in band
+> signalling. But you should also be getting the same information out of
+> band, via the phylib callback.
+> 
+> There are some MACs which don't seem to work correctly without the in
+> band signalling, so maybe that is your problem? Please could you give
+> more background about your problem, what MAC and PHY combination are
+> you using, what problem you are seeing, etc.
+> 
+
+MAC implementation[1] in a lot of NXP SoCs comes with in-band aneg enabled
+by default, and it does expect Clause 37 auto-negotiation to complete
+between MAC and PHY before the actual data transfer happens.
+
+[1] https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/t-series/3241/1/AN3869(1).pdf
+
+I faced such issue while integrating VSC85xx PHY
+with one of the recent NXP SoC having similar MAC implementation.
+Not sure if this is a problem on MAC side or PHY side,
+But having Clause 37 support should help in most cases I believe.
+
+Cheers,
+Raag
+
+>     Andrew
+> 
