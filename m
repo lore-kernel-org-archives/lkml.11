@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3109BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46990C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380423AbiBGLSE (ORCPT
+        id S1381982AbiBGLSJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:18:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
+        Mon, 7 Feb 2022 06:18:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241405AbiBGLNI (ORCPT
+        with ESMTP id S1355313AbiBGLNO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:13:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C694C0401C0;
-        Mon,  7 Feb 2022 03:13:05 -0800 (PST)
+        Mon, 7 Feb 2022 06:13:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0F2C0401C2;
+        Mon,  7 Feb 2022 03:13:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0838B80EC3;
-        Mon,  7 Feb 2022 11:13:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4110BC004E1;
-        Mon,  7 Feb 2022 11:13:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0DC23B81028;
+        Mon,  7 Feb 2022 11:13:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31AD7C004E1;
+        Mon,  7 Feb 2022 11:13:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232382;
-        bh=ij99Pji2hIjLQvYzmWEb7WMoAGwF9oR2PxtnVYAvycM=;
+        s=korg; t=1644232388;
+        bh=VluB2J+kIM9oj76n7AMWSOUEqAaEMZUSLTxgMykkH/4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=itk6Mbu/0Ll/+xavgu++2ahO+R+zJF6/Q98O8rz4AiJvPFtP0kkBOGCcYW6VtZ2iu
-         QJm4+oXUbNH9vT1sp4e6D8Bzixn1NdgfOBTZCjJhDhMsg7AHoc1U2zBe4jXcCfTmoq
-         eN7d1RzYJb9thsd933PD/BkGLpJLPEKspJ8WfXhk=
+        b=IB5+No0gWpwHES6b9B/pZ/24IyovExD18kLhyJH3ulU/zAdHB3CY2aFH0BGYf2SSx
+         Eh6Y4NoiQt2g/wkQRdXzKfGDHGdBaJ8iZuST/oKHzr6qWjC9N+tz45Y4HPqNssDdW3
+         euKVQn/2ajf/Z0CAHuZuORXbgDPXSIbDdokxy84o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 4.14 61/69] drm/i915/overlay: Prevent divide by zero bugs in scaling
-Date:   Mon,  7 Feb 2022 12:06:23 +0100
-Message-Id: <20220207103757.629393379@linuxfoundation.org>
+        stable@vger.kernel.org, Guangwu Zhang <guazhang@redhat.com>,
+        Saurav Kashyap <skashyap@marvell.com>,
+        John Meneghini <jmeneghi@redhat.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 4.14 63/69] scsi: bnx2fc: Make bnx2fc_recv_frame() mp safe
+Date:   Mon,  7 Feb 2022 12:06:25 +0100
+Message-Id: <20220207103757.692843408@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -51,41 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: John Meneghini <jmeneghi@redhat.com>
 
-commit 90a3d22ff02b196d5884e111f39271a1d4ee8e3e upstream.
+commit 936bd03405fc83ba039d42bc93ffd4b88418f1d3 upstream.
 
-Smatch detected a divide by zero bug in check_overlay_scaling().
+Running tests with a debug kernel shows that bnx2fc_recv_frame() is
+modifying the per_cpu lport stats counters in a non-mpsafe way.  Just boot
+a debug kernel and run the bnx2fc driver with the hardware enabled.
 
-    drivers/gpu/drm/i915/display/intel_overlay.c:976 check_overlay_scaling()
-    error: potential divide by zero bug '/ rec->dst_height'.
-    drivers/gpu/drm/i915/display/intel_overlay.c:980 check_overlay_scaling()
-    error: potential divide by zero bug '/ rec->dst_width'.
+[ 1391.699147] BUG: using smp_processor_id() in preemptible [00000000] code: bnx2fc_
+[ 1391.699160] caller is bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
+[ 1391.699174] CPU: 2 PID: 4355 Comm: bnx2fc_l2_threa Kdump: loaded Tainted: G    B
+[ 1391.699180] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
+[ 1391.699183] Call Trace:
+[ 1391.699188]  dump_stack_lvl+0x57/0x7d
+[ 1391.699198]  check_preemption_disabled+0xc8/0xd0
+[ 1391.699205]  bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
+[ 1391.699215]  ? do_raw_spin_trylock+0xb5/0x180
+[ 1391.699221]  ? bnx2fc_npiv_create_vports.isra.0+0x4e0/0x4e0 [bnx2fc]
+[ 1391.699229]  ? bnx2fc_l2_rcv_thread+0xb7/0x3a0 [bnx2fc]
+[ 1391.699240]  bnx2fc_l2_rcv_thread+0x1af/0x3a0 [bnx2fc]
+[ 1391.699250]  ? bnx2fc_ulp_init+0xc0/0xc0 [bnx2fc]
+[ 1391.699258]  kthread+0x364/0x420
+[ 1391.699263]  ? _raw_spin_unlock_irq+0x24/0x50
+[ 1391.699268]  ? set_kthread_struct+0x100/0x100
+[ 1391.699273]  ret_from_fork+0x22/0x30
 
-Prevent this by ensuring that the dst height and width are non-zero.
+Restore the old get_cpu/put_cpu code with some modifications to reduce the
+size of the critical section.
 
-Fixes: 02e792fbaadb ("drm/i915: implement drmmode overlay support v4")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220124122409.GA31673@kili
-(cherry picked from commit cf5b64f7f10b28bebb9b7c9d25e7aee5cbe43918)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Link: https://lore.kernel.org/r/20220124145110.442335-1-jmeneghi@redhat.com
+Fixes: d576a5e80cd0 ("bnx2fc: Improve stats update mechanism")
+Tested-by: Guangwu Zhang <guazhang@redhat.com>
+Acked-by: Saurav Kashyap <skashyap@marvell.com>
+Signed-off-by: John Meneghini <jmeneghi@redhat.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/intel_overlay.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/scsi/bnx2fc/bnx2fc_fcoe.c |   21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
---- a/drivers/gpu/drm/i915/intel_overlay.c
-+++ b/drivers/gpu/drm/i915/intel_overlay.c
-@@ -965,6 +965,9 @@ static int check_overlay_dst(struct inte
- 	const struct intel_crtc_state *pipe_config =
- 		overlay->crtc->config;
+--- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
++++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
+@@ -515,7 +515,8 @@ static int bnx2fc_l2_rcv_thread(void *ar
  
-+	if (rec->dst_height == 0 || rec->dst_width == 0)
-+		return -EINVAL;
+ static void bnx2fc_recv_frame(struct sk_buff *skb)
+ {
+-	u32 fr_len;
++	u64 crc_err;
++	u32 fr_len, fr_crc;
+ 	struct fc_lport *lport;
+ 	struct fcoe_rcv_info *fr;
+ 	struct fc_stats *stats;
+@@ -549,6 +550,11 @@ static void bnx2fc_recv_frame(struct sk_
+ 	skb_pull(skb, sizeof(struct fcoe_hdr));
+ 	fr_len = skb->len - sizeof(struct fcoe_crc_eof);
+ 
++	stats = per_cpu_ptr(lport->stats, get_cpu());
++	stats->RxFrames++;
++	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
++	put_cpu();
 +
- 	if (rec->dst_x < pipe_config->pipe_src_w &&
- 	    rec->dst_x + rec->dst_width <= pipe_config->pipe_src_w &&
- 	    rec->dst_y < pipe_config->pipe_src_h &&
+ 	fp = (struct fc_frame *)skb;
+ 	fc_frame_init(fp);
+ 	fr_dev(fp) = lport;
+@@ -631,16 +637,15 @@ static void bnx2fc_recv_frame(struct sk_
+ 		return;
+ 	}
+ 
+-	stats = per_cpu_ptr(lport->stats, smp_processor_id());
+-	stats->RxFrames++;
+-	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
++	fr_crc = le32_to_cpu(fr_crc(fp));
+ 
+-	if (le32_to_cpu(fr_crc(fp)) !=
+-			~crc32(~0, skb->data, fr_len)) {
+-		if (stats->InvalidCRCCount < 5)
++	if (unlikely(fr_crc != ~crc32(~0, skb->data, fr_len))) {
++		stats = per_cpu_ptr(lport->stats, get_cpu());
++		crc_err = (stats->InvalidCRCCount++);
++		put_cpu();
++		if (crc_err < 5)
+ 			printk(KERN_WARNING PFX "dropping frame with "
+ 			       "CRC error\n");
+-		stats->InvalidCRCCount++;
+ 		kfree_skb(skb);
+ 		return;
+ 	}
 
 
