@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE1C4C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0270C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388346AbiBGLne (ORCPT
+        id S1388470AbiBGLnp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45106 "EHLO
+        Mon, 7 Feb 2022 06:43:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385685AbiBGLcG (ORCPT
+        with ESMTP id S1385754AbiBGLc1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B851BC0401D6;
-        Mon,  7 Feb 2022 03:32:02 -0800 (PST)
+        Mon, 7 Feb 2022 06:32:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47ACC0401C2;
+        Mon,  7 Feb 2022 03:32:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 262C560B5B;
-        Mon,  7 Feb 2022 11:32:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAB6EC004E1;
-        Mon,  7 Feb 2022 11:32:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5EF4B80EC3;
+        Mon,  7 Feb 2022 11:32:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF268C004E1;
+        Mon,  7 Feb 2022 11:32:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233521;
-        bh=4W2tn002ITYK63bmP9hov/JOOeTD9dndTF/zgZV7jQ8=;
+        s=korg; t=1644233544;
+        bh=yXOodRqUYTtTkw1TE/eivAQOedKt74N5rdHbQhj10b0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NM9m2wmnnxuUSyF583pm1Uesbo0P054JKu+deh+Z4qCwlM9JNPxHrn6L4tMsoWi1B
-         gpPbdephUtgqh+O/L687oJKVk1FBxJzn/eM7FU8twefmNX+cpkw67lW94ISuaUlbnl
-         k1xcqtSPEAeoF5+nsakjnHLatG6D4UaRreuoIWj8=
+        b=1aeLTRz5CW7uScQNfnVmbne2QRbmRhBq0bJm3cpnwMcSiQmrNWAWAGgtJd2vszXG1
+         3eAo1SsMVlOvg0RPAFXedS3b9XFJxVYWgH+czJLMhgJoiYz0wfPhDpufenASrxbXcH
+         Inthf4/Z5KdezFpsLYpZHR+cujcG1b90BZVTbJ1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ron minnich <rminnich@gmail.com>,
-        ng@0x80.stream, Dominique Martinet <asmadeus@codewreck.org>
-Subject: [PATCH 5.16 021/126] Revert "fs/9p: search open fids first"
-Date:   Mon,  7 Feb 2022 12:05:52 +0100
-Message-Id: <20220207103804.797485286@linuxfoundation.org>
+        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.16 045/126] KVM: arm64: Avoid consuming a stale esr value when SError occur
+Date:   Mon,  7 Feb 2022 12:06:16 +0100
+Message-Id: <20220207103805.675591778@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -49,67 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominique Martinet <asmadeus@codewreck.org>
+From: James Morse <james.morse@arm.com>
 
-commit 22e424feb6658c5d6789e45121830357809c59cb upstream.
+commit 1c71dbc8a179d99dd9bb7e7fc1888db613cf85de upstream.
 
-This reverts commit 478ba09edc1f2f2ee27180a06150cb2d1a686f9c.
+When any exception other than an IRQ occurs, the CPU updates the ESR_EL2
+register with the exception syndrome. An SError may also become pending,
+and will be synchronised by KVM. KVM notes the exception type, and whether
+an SError was synchronised in exit_code.
 
-That commit was meant as a fix for setattrs with by fd (e.g. ftruncate)
-to use an open fid instead of the first fid it found on lookup.
-The proper fix for that is to use the fid associated with the open file
-struct, available in iattr->ia_file for such operations, and was
-actually done just before in 66246641609b ("9p: retrieve fid from file
-when file instance exist.")
-As such, this commit is no longer required.
+When an exception other than an IRQ occurs, fixup_guest_exit() updates
+vcpu->arch.fault.esr_el2 from the hardware register. When an SError was
+synchronised, the vcpu esr value is used to determine if the exception
+was due to an HVC. If so, ELR_EL2 is moved back one instruction. This
+is so that KVM can process the SError first, and re-execute the HVC if
+the guest survives the SError.
 
-Furthermore, changing lookup to return open fids first had unwanted side
-effects, as it turns out the protocol forbids the use of open fids for
-further walks (e.g. clone_fid) and we broke mounts for some servers
-enforcing this rule.
+But if an IRQ synchronises an SError, the vcpu's esr value is stale.
+If the previous non-IRQ exception was an HVC, KVM will corrupt ELR_EL2,
+causing an unrelated guest instruction to be executed twice.
 
-Note this only reverts to the old working behaviour, but it's still
-possible for lookup to return open fids if dentry->d_fsdata is not set,
-so more work is needed to make sure we respect this rule in the future,
-for example by adding a flag to the lookup functions to only match
-certain fid open modes depending on caller requirements.
+Check ARM_EXCEPTION_CODE() before messing with ELR_EL2, IRQs don't
+update this register so don't need to check.
 
-Link: https://lkml.kernel.org/r/20220130130651.712293-1-asmadeus@codewreck.org
-Fixes: 478ba09edc1f ("fs/9p: search open fids first")
-Cc: stable@vger.kernel.org # v5.11+
-Reported-by: ron minnich <rminnich@gmail.com>
-Reported-by: ng@0x80.stream
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+Fixes: defe21f49bc9 ("KVM: arm64: Move PC rollback on SError to HYP")
+Cc: stable@vger.kernel.org
+Reported-by: Steven Price <steven.price@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220127122052.1584324-3-james.morse@arm.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/9p/fid.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ arch/arm64/kvm/hyp/include/hyp/switch.h |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/fs/9p/fid.c
-+++ b/fs/9p/fid.c
-@@ -96,12 +96,8 @@ static struct p9_fid *v9fs_fid_find(stru
- 		 dentry, dentry, from_kuid(&init_user_ns, uid),
- 		 any);
- 	ret = NULL;
--
--	if (d_inode(dentry))
--		ret = v9fs_fid_find_inode(d_inode(dentry), uid);
--
- 	/* we'll recheck under lock if there's anything to look in */
--	if (!ret && dentry->d_fsdata) {
-+	if (dentry->d_fsdata) {
- 		struct hlist_head *h = (struct hlist_head *)&dentry->d_fsdata;
+--- a/arch/arm64/kvm/hyp/include/hyp/switch.h
++++ b/arch/arm64/kvm/hyp/include/hyp/switch.h
+@@ -446,7 +446,8 @@ static inline bool fixup_guest_exit(stru
+ 	if (ARM_EXCEPTION_CODE(*exit_code) != ARM_EXCEPTION_IRQ)
+ 		vcpu->arch.fault.esr_el2 = read_sysreg_el2(SYS_ESR);
  
- 		spin_lock(&dentry->d_lock);
-@@ -113,6 +109,9 @@ static struct p9_fid *v9fs_fid_find(stru
- 			}
- 		}
- 		spin_unlock(&dentry->d_lock);
-+	} else {
-+		if (dentry->d_inode)
-+			ret = v9fs_fid_find_inode(dentry->d_inode, uid);
- 	}
+-	if (ARM_SERROR_PENDING(*exit_code)) {
++	if (ARM_SERROR_PENDING(*exit_code) &&
++	    ARM_EXCEPTION_CODE(*exit_code) != ARM_EXCEPTION_IRQ) {
+ 		u8 esr_ec = kvm_vcpu_trap_get_class(vcpu);
  
- 	return ret;
+ 		/*
 
 
