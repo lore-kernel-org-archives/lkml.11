@@ -2,246 +2,313 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F2B4C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1516C3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:46:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382903AbiBGOnm (ORCPT
+        id S1383132AbiBGOoI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:43:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
+        Mon, 7 Feb 2022 09:44:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237782AbiBGO2q (ORCPT
+        with ESMTP id S1382638AbiBGOmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:28:46 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B547DC0401C2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:28:44 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nH507-0005mA-VU; Mon, 07 Feb 2022 15:28:19 +0100
-Message-ID: <b231b498-c8d2-28af-ce66-db8c168047f7@pengutronix.de>
-Date:   Mon, 7 Feb 2022 15:28:10 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [BUG] mtd: cfi_cmdset_0002: write regression since v4.17-rc1
-To:     Tokunori Ikegami <ikegami.t@gmail.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        linux-mtd@lists.infradead.org, Joakim.Tjernlund@infinera.com,
-        miquel.raynal@bootlin.com, vigneshr@ti.com, richard@nod.at,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Cc:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Brian Norris <computersforpeace@gmail.com>,
-        David Woodhouse <dwmw2@infradead.org>, marek.vasut@gmail.com,
-        cyrille.pitchen@wedev4u.fr,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linuxppc-dev@lists.ozlabs.org
-References: <b687c259-6413-26c9-d4c9-b3afa69ea124@pengutronix.de>
- <dff2abcc-5813-2f2c-35ba-f03cd1f35ac3@leemhuis.info>
- <e11b76dc-5539-fb7e-da1c-a5005713d6b0@gmail.com>
- <3dbbcee5-81fc-cdf5-9f8b-b6ccb95beddc@pengutronix.de>
- <0f2cfcac-83ca-51a9-f92c-ff6495dca1d7@gmail.com>
+        Mon, 7 Feb 2022 09:42:52 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8AFC0401C1;
+        Mon,  7 Feb 2022 06:42:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644244969; x=1675780969;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=J+woKeVye7JIhvINqlc/OIKV1ifW9OmKaWoC2Q2ff5Q=;
+  b=HRAUJaPydgStdzH23taYn6q24BZ/Wbw90cFXNv7hxssg7esK6tnVt4BE
+   ZOyoahnqfYTgKLU+lLrHe1tbcTotbk6KDeQzuHJuBIzx8fk4QNNeUrhbX
+   o+iXMKaYm6B/VVjn+DLle8xw3nGOlOMapMAhA0x8pHJKpEvch+g0O5tJU
+   +AB1NDWSa+KpuqhigmHP51ETbmDF7nLy97zo6fAkdr6akTx45c5hxcAjv
+   r5rLeu7pTUJMcwTTmk3ojCGiOkTuu62Ire1RUPH6dwGAOLS5Nm6afTjtq
+   /Iw6EvP4jsbgP2RIfbzwSxFtB7SqCn5jgie33x2w1dihaAEMZqWzDxGxV
+   Q==;
+IronPort-SDR: oXIWFrIjdeDEnnRgaXgpIHOamuiU6B1cFtLCwL1q4M1UsxJIkx4OugesZtemBQRh1f/EJAQ2sF
+ kYTRwn33k+5cWyYhdZ/JiE53tBnYjweGD3MMPRhvnLKNiUsHkGlNh+FzyDcM+hi7gGen2Iykis
+ 2kzCoQQYEGT6h/ZQ/KLaYhbgLydsvx795SCRi5YwVJUBefaozs0s7mdnyk8YFrEu0deg6yTKW5
+ Q9/bPupLhBfcMKn+h1Y0KMkKaquTniIRVtt6WixTpEQYzGvDyBr9Ywf5EwGrxStDRde/ST03lX
+ Oyfr1epNk4OYARIV1O6pUuhX
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="84902366"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 07:42:47 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Feb 2022 07:42:46 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Feb 2022 07:42:46 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HOpsUbKEWG3gvd2SAIf9lYzOPtVYe2LfiwNB4g7Q6ozh+dhf+Yurarxkrl9PRUeNtZcZ52m90wQtnW8QN4M69mk69/3Klicu367tHedG7lmP0s2pAo+0kdWBuxrPR3ZKGn7SlYpEEstKiJqzluUkYoHm67W/JGT68WIHeha1V12Yow2ZZaz/sKw4JqZFEvr5XuDMAArum6wP12f2ruVWoYNKSFfEUfv6Zg90tNJSgpJHIhUGTWvv3hTEz2R+xBfwEiqvagXWIOdx2XNcr7FcFtgoZcxL9xURxvQ2sJGITX6lgctR41qrg4nFaI+FnAwO6DxNDUP4qzkobbbmGJPl7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J+woKeVye7JIhvINqlc/OIKV1ifW9OmKaWoC2Q2ff5Q=;
+ b=TiNN+v40mFfQWDFZoCWPZE7w5Uf9TZT6u80CmNecTxoeRXyjiz8DQ5JexFBXZ8m1RxVMk8kaiOhWnawF51DTo8BlEUOs/XlM2UDHV8VjP6zJJ6VL8EUU1aYVSrec+Cz1sP3aWnFbfz1dR+nJrSYIrxce3q3EN0IQL9/ZvCFPiQOvyuwVs0hbHyolwiYx442YvrAOF2xBmNis72yj+NDHB1Tf6z2lSRsLk+J5ixAuwsuk3hciXtjUnueM1SpjBgVPxHu7Vui642WX8mbAmEtd3sjbLhNgAcws2JFigi0PPW5BqaI0w1a9MEZxJJQd+AyALLi6x8o5iT6fI38M6/Gu/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J+woKeVye7JIhvINqlc/OIKV1ifW9OmKaWoC2Q2ff5Q=;
+ b=SOvBwQh/VTh7F+z0OGM4pr4Gjd1l+UxI2JZPnhwH0Wl0FE2cmtwnDTMODvvzFHpt6vNu9Ig9XqHkWjaLKhBtVzlEwRlRrvgzSZjwYCEquUoTcEqDfaJAD4EXtbgXi4WBXWEgCX7QVPvcc/W9lPde/wNAj12oJWS/Ds0B7RHkAuw=
+Received: from CO1PR11MB4769.namprd11.prod.outlook.com (2603:10b6:303:91::21)
+ by PH0PR11MB5829.namprd11.prod.outlook.com (2603:10b6:510:140::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Mon, 7 Feb
+ 2022 14:42:41 +0000
+Received: from CO1PR11MB4769.namprd11.prod.outlook.com
+ ([fe80::5cae:e802:4a48:bd0f]) by CO1PR11MB4769.namprd11.prod.outlook.com
+ ([fe80::5cae:e802:4a48:bd0f%4]) with mapi id 15.20.4951.019; Mon, 7 Feb 2022
+ 14:42:40 +0000
+From:   <Claudiu.Beznea@microchip.com>
+To:     <Tudor.Ambarus@microchip.com>, <Nicolas.Ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <Ludovic.Desroches@microchip.com>,
+        <robh+dt@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: Re: [PATCH] ARM: dts: at91: remove status = "okay" from soc specific
+ dtsi
+Thread-Topic: [PATCH] ARM: dts: at91: remove status = "okay" from soc specific
+ dtsi
+Thread-Index: AQHYHDD18huFdb7hiEykGIxDvgy4TQ==
+Date:   Mon, 7 Feb 2022 14:42:40 +0000
+Message-ID: <c1d2b269-1bfa-ba41-8784-021edd00f91d@microchip.com>
+References: <20220207111523.575474-1-claudiu.beznea@microchip.com>
+ <1624ded8-d9ed-8a73-acde-2a6d8f57484b@microchip.com>
+In-Reply-To: <1624ded8-d9ed-8a73-acde-2a6d8f57484b@microchip.com>
+Accept-Language: en-US
 Content-Language: en-US
-In-Reply-To: <0f2cfcac-83ca-51a9-f92c-ff6495dca1d7@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ead01e20-1d3d-4403-c202-08d9ea4817e8
+x-ms-traffictypediagnostic: PH0PR11MB5829:EE_
+x-microsoft-antispam-prvs: <PH0PR11MB582931D25490CCB1F2829B4B872C9@PH0PR11MB5829.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: QKjSVcqJO8ksGYU5KFbPBm6yPL4gE2weXytMF0lrfIffuPaIYKZmj7XZD9kJIaWz+FDov0afJq6nDCfvoovhIzJXpU9flCLRt1AaFS+lUpIFigHMPGN8QjkglZroXxxMgDaa29rdpTRu2KjetDdU5+ZgSdZHQd/SIXyUfmI6Xtyfc1HUJBb+qczZ4iYc3544/zjqRBQJIGI9TkP0pt69iXSbVNQ7obORjrKJa/g10f0ohP/7kXjHDzbepkmbcHkt+xyCoWnJpMtblih3twOTvxvJEAbR175y97dKLguJnwO1o9i9xqfIhBLCByN+NcB7yXPLuGYTDtkEz5XoP0Eq+7fpxWQ3OFK9MAzOUyIV/0v5o6aU7WK1GPlX4qRXv+5yA5TlO1BbhaXCxDB9WF0k9Vf2CdD3D646GW+0TFJOxb/WLt/1uBo3m4t3rIvMcCCt7IZLf2R3LSfZXmC9VmkzsMj7MEuKuIoYSKLnR2IAuW649+aQke0ltQnGFaE+/4U74bqQSq1h3vtXKIjPy+KwjuzkUYTynABb08fQl4ajd+z5whswqOemnIDMgHmzZH47dpUZQYVdrN5CAwMyBw1DN4kXDUnj75jy8ZP94yvjlKw0z3kMnCuTy1NvNDJYkZQ+/TFAf+HwzMwOQMJm/VzQeF4Z22aR93SqDCoVxzzJaPdfSQDtPeVXXCU4FsnMbMbStANrAPHnWZ+JtcwZKUINo1IkYJW08J0ZJtAmx8D85ieDYy/tyg+gGtxzRzcHTmQXEuUOArDByZ39GLIKfZB7j8u7p/IPIsAO+dd7lyJYZ55li8GmFFi91AUAAmM5f343NkKa7X8n1SyH1ReslMCWAGa+SpG+wHf8/hOPKiFPqdM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4769.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6512007)(83380400001)(966005)(6486002)(31686004)(186003)(26005)(38100700002)(5660300002)(2616005)(36756003)(71200400001)(8936002)(8676002)(66476007)(6506007)(53546011)(4326008)(64756008)(66446008)(66556008)(76116006)(2906002)(91956017)(66946007)(38070700005)(54906003)(110136005)(508600001)(122000001)(316002)(31696002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NWI5bVNNSTQrczQrc2tmK0VBSmN5Y2NCYzBBSDV3bnVtbFR4cUNseU5OR1Ex?=
+ =?utf-8?B?MzFlbmVZSFh6M2FiT3ZydWN1NUZubVZxQ3UrVzhkekRUYWRpYmRtdHRsalNt?=
+ =?utf-8?B?WXBqQ0dKZTRKVWt5UTNOWEw2MUpvWUk5MUN6THJBUnJZdHhRSVliZ0YyaFky?=
+ =?utf-8?B?akl5Z1k1T05GcEdlOGpCU0pKWStjNjJReFFRMU5TaU9xYVhWU2tPTlVDTXB3?=
+ =?utf-8?B?YjE5Mml5dU1zcUd2L2d6a0V1eDlSWGQxOHZTeVpIWE5CYVBYdlIreHUzZUM1?=
+ =?utf-8?B?Z0NqTnBNeEZhQzRlR1FIYlAvZ21jMkkvbUIwYS95VTN1clEvQnlCVEoyWUZK?=
+ =?utf-8?B?U0xHakovaStndmU3SFFmemdQelZCTW5hb1JYbjljYTh2cUl4WmZ6QlFWek54?=
+ =?utf-8?B?OFQ1TEptK0VMR0NVWHdHdE1hdWREQk1VNDFhODc2Vlc5RmVzeVhwOEVuSDhy?=
+ =?utf-8?B?Rjc0OU5NK0RvcUxWd2hTdlY0S2huSFp1ZjV0WjZBd2J4N2duQUVQRFNDYURu?=
+ =?utf-8?B?U2g5Yk43dmtLbi9USXF6amVpUEc3UnpMNE96RUZscjBTZXRnbTFzZ1B6S2Nq?=
+ =?utf-8?B?ZmtZdDdjZVB5aERLS3V6OHl5TnFid3VWTGZVUnpjbW5HOWRWdnNDbUVMVFcv?=
+ =?utf-8?B?cEI4ajJSRXFTMlkxb2VWMngyNlcwakxXVTlmbWNZS1lhT2NTUWk1OFN5T3Rw?=
+ =?utf-8?B?ZXRDTU1md3hkV2ZjdEJTZ1pwTVhjTzdEdHozWDZyMll3MVJhT3BPdFQvRWJr?=
+ =?utf-8?B?QjNIZ25JSllMUjRocHhNZzQxd0dUQkJ6LzdEdHBUcXlFWmdqdmdra1EvTlp6?=
+ =?utf-8?B?M2l1Y2lSSFowMlI5bEJLYm44K25VTWhiSDkrVmY5QnpZQ2ZwRVBpTVExM093?=
+ =?utf-8?B?aGpTajVRb25yQzdOUU1jcmJCOUM5OVdoM0tEYm96TEpkbXVNbXc2a1lSYWV2?=
+ =?utf-8?B?cFZsVG1MMkVsREJCbWNtWFBRT1p4L2t5N1I3S2d4UmtzZmJXUUdmWkRVWkd6?=
+ =?utf-8?B?cDF2bzlPNWphbHpHNkxQc1BKdUpPYVhsekxCV2JSaGpYVjZlZzhUZ0NRYnlj?=
+ =?utf-8?B?a1B4eHBIa3ZLMmkySlJIWllJeW5kZnBCRDFmZk1MNkxVN2h4VTJUNTY5dEhq?=
+ =?utf-8?B?UWR6cHVkOWcydy9UTDFiK0J5d1l0QllyUmRMcDduUXhLbUl5azlUUUNDN21Y?=
+ =?utf-8?B?MGkwTTQ3SVBGeHJpWUcxUTNzdkM0bGwxV3R3aHF5akJwL2VCbThYTms2aGw3?=
+ =?utf-8?B?TE9TbzRBQjlOM2pWQVpTbVJhajJVUUt3cWlMRTNOQ29FbWNDM28wUGpIN3Zk?=
+ =?utf-8?B?Z0RDczc4bFJSKzNqZTZSbWVVZXc4U3puK1RJZmZ3WFhUZGZ1T081Zm9jbXpa?=
+ =?utf-8?B?STNNWHZscnhlREgzZTRZbTRPdEQxdXNTbDEyMmo1ZnRFNDBZblluQUdsekFj?=
+ =?utf-8?B?dWV6MldDTHo0bWpCdEZoVTVOSWsyRi9Gc2ZkMSs1YXFSVnlHQ2pEUkVobEtm?=
+ =?utf-8?B?RnJqdGdsd0JVYWNZRFdNRWYzUXQ5bGJ4Q0NxbnpZS3dVNG10ODZpQkd5K3h2?=
+ =?utf-8?B?Vno2cEEvTzdteFJLd1JrOE8xYzhUUkxNQkVJOGJ1b2hqdk14Y1hjSkkvdjVK?=
+ =?utf-8?B?MURZb3g3OUg5YUtSeWNNb1BhWk5zamVramE2dWtHdjY2N3RkSGVvN1c4WFZZ?=
+ =?utf-8?B?d3pjOHdBbzlySURLUnp2SjA5VDR6b1l5alh5S05YZDBrK0g1VGxGWWhpRzdF?=
+ =?utf-8?B?TnFnWHRrVmNobll0b1ZqaEhVcWZEQnl4ZkRmeTRzaWFuMTR6QmJiZ3VQdHc1?=
+ =?utf-8?B?eDhxd2VRVWYybUpIcEZ1eE45YXhER1h4a1ArRGg0S0VaTGFQWWpWSkdEak56?=
+ =?utf-8?B?bUowbm5RdGpxd081OUJsTUNQU2hMblNZbmh1S2lQZWhmMTJhK1NWenJrOGxG?=
+ =?utf-8?B?a1hJdVdiQmJKTVp2eVhVQTR5UC9UUlZCVnZNWVUxYnRrbmZoK1F1cC8vZ1hh?=
+ =?utf-8?B?dVBra2JqTlhkRW92emhCdHlhbi9xNGc2WEtaYzQxcmNsL1VveGhBcmpacGow?=
+ =?utf-8?B?UG8rYkFrbDJvTnpmTTZNTzlZV1NUbDhtbWp5VTRQSDYvSVpnSlc0Z0x1bUJq?=
+ =?utf-8?B?VTVLNTlwMG1ERW1PNXA0T0pPTXFrekNjaFRGZGFBeUpKVmVoZmY5ckl3UW81?=
+ =?utf-8?B?NzUyOFV4eGdTdGN0ZlJrQWxrSzc5aS9OTXJMb2lhT3h6QnNmcE50T2VpcE50?=
+ =?utf-8?B?Z3laL1F0U0kwbVdSbWdRNkdVeGZ3PT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <137A4C5715FE1544829E8C4711DC271A@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4769.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ead01e20-1d3d-4403-c202-08d9ea4817e8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Feb 2022 14:42:40.7904
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eqbby3wTD9dUhohKqlxzU75jkO6XTSRtUOP61k3e5V9BOLkvp4iXqwrt2+sIp51BrOLAguImO8U/whXXo1ZxtY1VYvGM0i6YnP/isTVKUDE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5829
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Tokunori-san,
-
-On 29.01.22 19:01, Tokunori Ikegami wrote:
-> Hi Ahmad-san,
-> 
-> Thanks for your investigation.
-> 
->> The issue is still there with #define FORCE_WORD_WRITE 1:
->>
->>    jffs2: Write clean marker to block at 0x000a0000 failed: -5
->>    MTD do_write_oneword_once(): software timeout
-> Which kernel version has been tested about this?
-
-I last tested with v5.10.30, but I had briefly tried v5.16-rc as well
-when first debugging this issue.
-
-I have rebased onto v5.17-rc2 now and will use that for further tests.
-The same issue with word write forcing is reproducible there as well.
-
-> Since the buffered writes disabled by 7e4404113686 for S29GL256N and tested on kernel 5.10.16.
-> So I would like to confirm if the issue depended on the CPU or kernel version, etc.
-> Note: The chips S29GL064N and S29GL256N seem different the flash Mb size basically.
-
-I see. To be extra sure, I have replaced 0x2201 with 0x0c01 to hit
-the same code paths, but no improvement.
-
->> Doesn't seem to be a buffered write issue here though as the writes
->> did work fine before dfeae1073583. Any other ideas?
-> At first I thought the issue is possible to be resolved by using the word write instead of the buffered writes.
-> Now I am thinking to disable the changes dfeae1073583 partially with any condition if possible.
-
-What seems to work for me is checking if chip_good or chip_ready
-and map_word is equal to 0xFF. I can't justify why this is ok though.
-(Worst case bus is floating at this point of time and Hi-Z is read
-as 0xff on CPU data lines...)
-
-> By the way could you please let me know the chip information for more detail? (For example model number, cycle and device ID, etc.)
-
-I can't read it off the chip, but vendor uses S29GL064N90FFI02 or S29GL964N11FFI02.
-Kernel reports it with:
-ff800000.flash: Found 1 x16 devices at 0x0 in 8-bit bank. Manufacturer ID 0x000001 Chip ID 0x000c01
-
-I am not sure what you mean with cycle. If you tell me what
-command to run, I can paste the output.
-
-Thanks,
-Ahmad
-
-
-
-> 
-> Regards,
-> Ikegami
-> 
-> 
-> On 2021/12/14 16:23, Thorsten Leemhuis wrote:
-> 
->>>> [TLDR: adding this regression to regzbot; most of this mail is compiled
->>>> from a few templates paragraphs some of you might have seen already.]
->>>>
->>>> Hi, this is your Linux kernel regression tracker speaking.
->>>>
->>>> Top-posting for once, to make this easy accessible to everyone.
->>>>
->>>> Thanks for the report.
->>>>
->>>> Adding the regression mailing list to the list of recipients, as it
->>>> should be in the loop for all regressions, as explained here:
->>>> https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
->>>>
->>>> To be sure this issue doesn't fall through the cracks unnoticed, I'm
->>>> adding it to regzbot, my Linux kernel regression tracking bot:
->>>>
->>>> #regzbot ^introduced dfeae1073583
->>>> #regzbot title mtd: cfi_cmdset_0002: flash write accesses on the
->>>> hardware fail on a PowerPC MPC8313 to a 8-bit-parallel S29GL064N flash
->>>> #regzbot ignore-activity
->>>>
->>>> Reminder: when fixing the issue, please add a 'Link:' tag with the URL
->>>> to the report (the parent of this mail), then regzbot will automatically
->>>> mark the regression as resolved once the fix lands in the appropriate
->>>> tree. For more details about regzbot see footer.
->>>>
->>>> Sending this to everyone that got the initial report, to make all aware
->>>> of the tracking. I also hope that messages like this motivate people to
->>>> directly get at least the regression mailing list and ideally even
->>>> regzbot involved when dealing with regressions, as messages like this
->>>> wouldn't be needed then.
->>>>
->>>> Don't worry, I'll send further messages wrt to this regression just to
->>>> the lists (with a tag in the subject so people can filter them away), as
->>>> long as they are intended just for regzbot. With a bit of luck no such
->>>> messages will be needed anyway.
->>>>
->>>> Ciao, Thorsten (wearing his 'Linux kernel regression tracker' hat).
->>>>
->>>> P.S.: As a Linux kernel regression tracker I'm getting a lot of reports
->>>> on my table. I can only look briefly into most of them. Unfortunately
->>>> therefore I sometimes will get things wrong or miss something important.
->>>> I hope that's not the case here; if you think it is, don't hesitate to
->>>> tell me about it in a public reply. That's in everyone's interest, as
->>>> what I wrote above might be misleading to everyone reading this; any
->>>> suggestion I gave thus might sent someone reading this down the wrong
->>>> rabbit hole, which none of us wants.
->>>>
->>>> BTW, I have no personal interest in this issue, which is tracked using
->>>> regzbot, my Linux kernel regression tracking bot
->>>> (https://linux-regtracking.leemhuis.info/regzbot/). I'm only posting
->>>> this mail to get things rolling again and hence don't need to be CC on
->>>> all further activities wrt to this regression.
->>>>
->>>> On 13.12.21 14:24, Ahmad Fatoum wrote:
->>>>> Hi,
->>>>>
->>>>> I've been investigating a breakage on a PowerPC MPC8313: The SoC is connected
->>>>> via the "Enhanced Local Bus Controller" to a 8-bit-parallel S29GL064N flash,
->>>>> which is represented as a memory-mapped cfi-flash.
->>>>>
->>>>> The regression began in v4.17-rc1 with
->>>>>
->>>>>     dfeae1073583 ("mtd: cfi_cmdset_0002: Change write buffer to check correct value")
->>>>>
->>>>> and causes all flash write accesses on the hardware to fail. Example output
->>>>> after v5.1-rc2[1]:
->>>>>
->>>>>     root@host:~# mount -t jffs2 /dev/mtdblock0 /mnt
->>>>>     MTD do_write_buffer_wait(): software timeout, address:0x000c000b.
->>>>>     jffs2: Write clean marker to block at 0x000c0000 failed: -5
->>>>>
->>>>> This issue still persists with v5.16-rc. Reverting aforementioned patch fixes
->>>>> it, but I am still looking for a change that keeps both Tokunori's and my
->>>>> hardware happy.
->>>>>
->>>>> What Tokunori's patch did is that it strengthened the success condition
->>>>> for flash writes:
->>>>>
->>>>>    - Prior to the patch, DQ polling was done until bits
->>>>>      stopped toggling. This was taken as an indicator that the write succeeded
->>>>>      and was reported up the stack. i.e. success condition is chip_ready()
->>>>>
->>>>>    - After the patch, polling continues until the just written data is
->>>>>      actually read back, i.e. success condition is chip_good()
->>>>>
->>>>> This new condition never holds for me, when DQ stabilizes, it reads 0xFF,
->>>>> never the just written data. The data is still written and can be read back
->>>>> on subsequent reads, just not at that point of time in the poll loop.
->>>>>
->>>>> We haven't had write issues for the years predating that patch. As the
->>>>> regression has been mainline for a while, I am wondering what about my setup
->>>>> that makes it pop up here, but not elsewhere?
->>>>>
->>>>> I consulted the data sheet[2] and found Figure 27, which describes DQ polling
->>>>> during embedded algorithms. DQ switches from status output to "True" (I assume
->>>>> True == all bits set == 0xFF) until CS# is reasserted.
->>>>>
->>>>> I compared with another chip's datasheet, and it (Figure 8.4) doesn't describe
->>>>> such an intermittent "True" state. In any case, the driver polls a few hundred
->>>>> times, however, before giving up, so there should be enough CS# toggles.
->>>>>
->>>>>
->>>>> Locally, I'll revert this patch for now. I think accepting 0xFF as a success
->>>>> condition may be appropriate, but I don't yet have the rationale to back it up.
->>>>>
->>>>> I am investigating this some more, probably with a logic trace, but I wanted
->>>>> to report this in case someone has pointers and in case other people run into
->>>>> the same issue.
->>>>>
->>>>>
->>>>> Cheers,
->>>>> Ahmad
->>>>>
->>>>> [1] Prior to d9b8a67b3b95 ("mtd: cfi: fix deadloop in cfi_cmdset_0002.c do_write_buffer")
->>>>>       first included with v5.1-rc2, failing writes just hung indefinitely in kernel space.
->>>>>       That's fixed, but the writes still fail.
->>>>>
->>>>> [2]: 001-98525 Rev. *B, https://www.infineon.com/dgdl/Infineon-S29GL064N_S29GL032N_64_Mbit_32_Mbit_3_V_Page_Mode_MirrorBit_Flash-DataSheet-v03_00-EN.pdf?fileId=8ac78c8c7d0d8da4017d0ed556fd548b
->>>>>
->>>>> [3]: https://www.mouser.com/datasheet/2/268/SST39VF1601C-SST39VF1602C-16-Mbit-x16-Multi-Purpos-709008.pdf
->>>>>        Note that "true data" means valid data here, not all bits one.
->>>>>
->>
-> 
-
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+T24gMDcuMDIuMjAyMiAxNToyNSwgVHVkb3IgQW1iYXJ1cyAtIE0xODA2NCB3cm90ZToNCj4gT24g
+Mi83LzIyIDEzOjE1LCBDbGF1ZGl1IEJlem5lYSB3cm90ZToNCj4+IEVYVEVSTkFMIEVNQUlMOiBE
+byBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3MgeW91IGtub3cgdGhl
+IGNvbnRlbnQgaXMgc2FmZQ0KPj4NCj4+IFJlbW92ZSBzdGF0dXMgPSAib2theSIgZnJvbSBTb0Mg
+c3BlY2lmaWMgZHRzaSBhcyB0aGlzIGlzIHRoZSBkZWZhdWx0DQo+PiBzdGF0ZS4NCj4+DQo+PiBT
+aWduZWQtb2ZmLWJ5OiBDbGF1ZGl1IEJlem5lYSA8Y2xhdWRpdS5iZXpuZWFAbWljcm9jaGlwLmNv
+bT4NCj4gDQo+IERvIHlvdSB3YW50IGRvIGJlIGNvbnNpc3RlbnQgYWNyb3NzIDVkMyBhcyB3ZWxs
+Pw0KPiANCj4gZ2l0IGdyZXAgb2theSAgYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVkKi5kdHNpDQo+
+IGFyY2gvYXJtL2Jvb3QvZHRzL3NhbWE1ZDN4Y20uZHRzaTogICAgICAgICAgICAgICAgICAgICAg
+c3RhdHVzID0gIm9rYXkiOw0KPiBhcmNoL2FybS9ib290L2R0cy9zYW1hNWQzeGNtLmR0c2k6ICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RhdHVzID0gIm9rYXkiOw0KPiBhcmNoL2FybS9i
+b290L2R0cy9zYW1hNWQzeGNtX2NtcC5kdHNpOiAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJv
+a2F5IjsNCj4gYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVkM3hjbV9jbXAuZHRzaTogICAgICAgICAg
+ICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4gYXJjaC9hcm0vYm9vdC9kdHMvc2Ft
+YTVkM3hkbS5kdHNpOiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5
+IjsNCj4gYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVkM3htYi5kdHNpOiAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4gYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVk
+M3htYi5kdHNpOiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsN
+Cj4gYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVkM3htYi5kdHNpOiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4gYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVkM3ht
+Yi5kdHNpOiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4g
+YXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVkM3htYi5kdHNpOiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4gYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVkM3htYi5k
+dHNpOiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4gYXJj
+aC9hcm0vYm9vdC9kdHMvc2FtYTVkM3htYi5kdHNpOiAgICAgICAgICAgICAgICAgICAgICBzdGF0
+dXMgPSAib2theSI7DQo+IGFyY2gvYXJtL2Jvb3QvZHRzL3NhbWE1ZDN4bWIuZHRzaTogICAgICAg
+ICAgICAgICAgICAgICAgc3RhdHVzID0gIm9rYXkiOw0KPiBhcmNoL2FybS9ib290L2R0cy9zYW1h
+NWQzeG1iLmR0c2k6ICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4gYXJj
+aC9hcm0vYm9vdC9kdHMvc2FtYTVkM3htYl9jbXAuZHRzaTogICAgICAgICAgICAgICAgICAgICAg
+ICAgIHN0YXR1cyA9ICJva2F5IjsNCj4gYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVkM3htYl9jbXAu
+ZHRzaTogICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4gYXJjaC9h
+cm0vYm9vdC9kdHMvc2FtYTVkM3htYl9jbXAuZHRzaTogICAgICAgICAgICAgICAgICAgICAgICAg
+IHN0YXR1cyA9ICJva2F5IjsNCj4gYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVkM3htYl9jbXAuZHRz
+aTogICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4gYXJjaC9hcm0v
+Ym9vdC9kdHMvc2FtYTVkM3htYl9jbXAuZHRzaTogICAgICAgICAgICAgICAgICAgICAgICAgIHN0
+YXR1cyA9ICJva2F5IjsNCj4gYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTVkM3htYl9jbXAuZHRzaTog
+ICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4gYXJjaC9hcm0vYm9v
+dC9kdHMvc2FtYTVkM3htYl9jbXAuZHRzaTogICAgICAgICAgICAgICAgICBzdGF0dXMgPSAib2th
+eSI7DQo+IGFyY2gvYXJtL2Jvb3QvZHRzL3NhbWE1ZDN4bWJfY21wLmR0c2k6ICAgICAgICAgIHN0
+YXR1cyA9ICJva2F5IjsNCg0KQWxsIHRoZXNlIGFyZSBmb3Igc29tZSBraW5kIG9mIFNvTXMgYXMg
+ZmFyIGFzIEkgY2FuIHRlbGwuIEkgb25seSB0cmVhdGVkDQpTb0NzIGFzIHRoZSBTb01zIGR0c2kg
+bWF5IGluY2x1ZGUgU29DIGR0c2kgYW5kIGRvIHN0YXR1cyA9ICJva2F5IiB0byBlbmFibGUNCmV4
+cGxpY2l0bHkgd2hhdCBoYXMgYmVlbiBkaXNhYmxlZCBpbiBTb0MgZHRzaS4NCg0KVGhhbmsgeW91
+LA0KQ2xhdWRpdSBCZXpuZWENCg0KPiANCj4gRWl0aGVyIHdheSwgZmVlbCBmcmVlIHRvIGFkZDoN
+Cj4gUmV2aWV3ZWQtYnk6IFR1ZG9yIEFtYmFydXMgPHR1ZG9yLmFtYmFydXNAbWljcm9jaGlwLmNv
+bT4NCj4gDQo+PiAtLS0NCj4+ICBhcmNoL2FybS9ib290L2R0cy9zYW05eDYwLmR0c2kgfCA0IC0t
+LS0NCj4+ICBhcmNoL2FybS9ib290L2R0cy9zYW1hNWQyLmR0c2kgfCAzIC0tLQ0KPj4gIGFyY2gv
+YXJtL2Jvb3QvZHRzL3NhbWE1ZDQuZHRzaSB8IDMgLS0tDQo+PiAgYXJjaC9hcm0vYm9vdC9kdHMv
+c2FtYTdnNS5kdHNpIHwgMyAtLS0NCj4+ICA0IGZpbGVzIGNoYW5nZWQsIDEzIGRlbGV0aW9ucygt
+KQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9zYW05eDYwLmR0c2kgYi9h
+cmNoL2FybS9ib290L2R0cy9zYW05eDYwLmR0c2kNCj4+IGluZGV4IGVjNDVjZWQzY2RlNi4uZTNh
+ZmExZGFlMjA3IDEwMDY0NA0KPj4gLS0tIGEvYXJjaC9hcm0vYm9vdC9kdHMvc2FtOXg2MC5kdHNp
+DQo+PiArKysgYi9hcmNoL2FybS9ib290L2R0cy9zYW05eDYwLmR0c2kNCj4+IEBAIC0yODAsNyAr
+MjgwLDYgQEAgc2hhOiBzaGFAZjAwMmMwMDAgew0KPj4gICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBkbWEtbmFtZXMgPSAidHgiOw0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBjbG9ja3MgPSA8JnBtYyBQTUNfVFlQRV9QRVJJUEhFUkFMIDQxPjsNCj4+ICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgY2xvY2stbmFtZXMgPSAic2hhX2NsayI7DQo+PiAtICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4+ICAgICAgICAg
+ICAgICAgICAgICAgICAgIH07DQo+Pg0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgdHJuZzog
+dHJuZ0BmMDAzMDAwMCB7DQo+PiBAQCAtMjg4LDcgKzI4Nyw2IEBAIHRybmc6IHRybmdAZjAwMzAw
+MDAgew0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZWcgPSA8MHhmMDAzMDAw
+MCAweDEwMD47DQo+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGludGVycnVwdHMg
+PSA8MzggSVJRX1RZUEVfTEVWRUxfSElHSCAwPjsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgY2xvY2tzID0gPCZwbWMgUE1DX1RZUEVfUEVSSVBIRVJBTCAzOD47DQo+PiAtICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4+ICAgICAgICAg
+ICAgICAgICAgICAgICAgIH07DQo+Pg0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgYWVzOiBh
+ZXNAZjAwMzQwMDAgew0KPj4gQEAgLTMwNCw3ICszMDIsNiBAQCBBVDkxX1hETUFDX0RUX1BFUklE
+KDMyKSk+LA0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBkbWEtbmFtZXMgPSAi
+dHgiLCAicngiOw0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjbG9ja3MgPSA8
+JnBtYyBQTUNfVFlQRV9QRVJJUEhFUkFMIDM5PjsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgY2xvY2stbmFtZXMgPSAiYWVzX2NsayI7DQo+PiAtICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAg
+IH07DQo+Pg0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgdGRlczogdGRlc0BmMDAzODAwMCB7
+DQo+PiBAQCAtMzIwLDcgKzMxNyw2IEBAIEFUOTFfWERNQUNfRFRfUEVSSUQoMzEpKT4sDQo+PiAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRtYS1uYW1lcyA9ICJ0eCIsICJyeCI7DQo+
+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNsb2NrcyA9IDwmcG1jIFBNQ19UWVBF
+X1BFUklQSEVSQUwgNDA+Ow0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjbG9j
+ay1uYW1lcyA9ICJ0ZGVzX2NsayI7DQo+PiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IHN0YXR1cyA9ICJva2F5IjsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgIH07DQo+Pg0KPj4g
+ICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3NkOiBjbGFzc2RAZjAwM2MwMDAgew0KPj4gZGlm
+ZiAtLWdpdCBhL2FyY2gvYXJtL2Jvb3QvZHRzL3NhbWE1ZDIuZHRzaSBiL2FyY2gvYXJtL2Jvb3Qv
+ZHRzL3NhbWE1ZDIuZHRzaQ0KPj4gaW5kZXggMDljNzQxZThlY2I4Li4wNWFiMTZmZmE4YmIgMTAw
+NjQ0DQo+PiAtLS0gYS9hcmNoL2FybS9ib290L2R0cy9zYW1hNWQyLmR0c2kNCj4+ICsrKyBiL2Fy
+Y2gvYXJtL2Jvb3QvZHRzL3NhbWE1ZDIuZHRzaQ0KPj4gQEAgLTMxNiw3ICszMTYsNiBAQCBzaGFA
+ZjAwMjgwMDAgew0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBkbWEtbmFtZXMg
+PSAidHgiOw0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjbG9ja3MgPSA8JnBt
+YyBQTUNfVFlQRV9QRVJJUEhFUkFMIDEyPjsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgY2xvY2stbmFtZXMgPSAic2hhX2NsayI7DQo+PiAtICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgIH07
+DQo+Pg0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgYWVzQGYwMDJjMDAwIHsNCj4+IEBAIC0z
+MzIsNyArMzMxLDYgQEAgQVQ5MV9YRE1BQ19EVF9QRVJJRCgyNikpPiwNCj4+ICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgZG1hLW5hbWVzID0gInR4IiwgInJ4IjsNCj4+ICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgY2xvY2tzID0gPCZwbWMgUE1DX1RZUEVfUEVSSVBIRVJB
+TCA5PjsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xvY2stbmFtZXMgPSAi
+YWVzX2NsayI7DQo+PiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJv
+a2F5IjsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgIH07DQo+Pg0KPj4gICAgICAgICAgICAg
+ICAgICAgICAgICAgc3BpMDogc3BpQGY4MDAwMDAwIHsNCj4+IEBAIC0xMDk3LDcgKzEwOTUsNiBA
+QCBBVDkxX1hETUFDX0RUX1BFUklEKDI4KSk+LA0KPj4gICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBkbWEtbmFtZXMgPSAidHgiLCAicngiOw0KPj4gICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBjbG9ja3MgPSA8JnBtYyBQTUNfVFlQRV9QRVJJUEhFUkFMIDExPjsNCj4+ICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xvY2stbmFtZXMgPSAidGRlc19jbGsiOw0K
+Pj4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdGF0dXMgPSAib2theSI7DQo+PiAg
+ICAgICAgICAgICAgICAgICAgICAgICB9Ow0KPj4NCj4+ICAgICAgICAgICAgICAgICAgICAgICAg
+IGNsYXNzZDogY2xhc3NkQGZjMDQ4MDAwIHsNCj4+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290
+L2R0cy9zYW1hNWQ0LmR0c2kgYi9hcmNoL2FybS9ib290L2R0cy9zYW1hNWQ0LmR0c2kNCj4+IGlu
+ZGV4IGY2ZTNlNmY1NzI1Mi4uNGRlMTY0OTA1ZTAzIDEwMDY0NA0KPj4gLS0tIGEvYXJjaC9hcm0v
+Ym9vdC9kdHMvc2FtYTVkNC5kdHNpDQo+PiArKysgYi9hcmNoL2FybS9ib290L2R0cy9zYW1hNWQ0
+LmR0c2kNCj4+IEBAIC02ODQsNyArNjg0LDYgQEAgYWVzQGZjMDQ0MDAwIHsNCj4+ICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgZG1hLW5hbWVzID0gInR4IiwgInJ4IjsNCj4+ICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xvY2tzID0gPCZwbWMgUE1DX1RZUEVfUEVSSVBI
+RVJBTCAxMj47DQo+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNsb2NrLW5hbWVz
+ID0gImFlc19jbGsiOw0KPj4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdGF0dXMg
+PSAib2theSI7DQo+PiAgICAgICAgICAgICAgICAgICAgICAgICB9Ow0KPj4NCj4+ICAgICAgICAg
+ICAgICAgICAgICAgICAgIHRkZXNAZmMwNGMwMDAgew0KPj4gQEAgLTY5OCw3ICs2OTcsNiBAQCB0
+ZGVzQGZjMDRjMDAwIHsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZG1hLW5h
+bWVzID0gInR4IiwgInJ4IjsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xv
+Y2tzID0gPCZwbWMgUE1DX1RZUEVfUEVSSVBIRVJBTCAxND47DQo+PiAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIGNsb2NrLW5hbWVzID0gInRkZXNfY2xrIjsNCj4+IC0gICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgc3RhdHVzID0gIm9rYXkiOw0KPj4gICAgICAgICAgICAgICAg
+ICAgICAgICAgfTsNCj4+DQo+PiAgICAgICAgICAgICAgICAgICAgICAgICBzaGFAZmMwNTAwMDAg
+ew0KPj4gQEAgLTcxMCw3ICs3MDgsNiBAQCBzaGFAZmMwNTAwMDAgew0KPj4gICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBkbWEtbmFtZXMgPSAidHgiOw0KPj4gICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICBjbG9ja3MgPSA8JnBtYyBQTUNfVFlQRV9QRVJJUEhFUkFMIDE1PjsN
+Cj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xvY2stbmFtZXMgPSAic2hhX2Ns
+ayI7DQo+PiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsN
+Cj4+ICAgICAgICAgICAgICAgICAgICAgICAgIH07DQo+Pg0KPj4gICAgICAgICAgICAgICAgICAg
+ICAgICAgaHNtYzogc21jQGZjMDVjMDAwIHsNCj4+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290
+L2R0cy9zYW1hN2c1LmR0c2kgYi9hcmNoL2FybS9ib290L2R0cy9zYW1hN2c1LmR0c2kNCj4+IGlu
+ZGV4IGFmZDNlMDY5YjM4Mi4uMGIxZTg1NTQxZjdmIDEwMDY0NA0KPj4gLS0tIGEvYXJjaC9hcm0v
+Ym9vdC9kdHMvc2FtYTdnNS5kdHNpDQo+PiArKysgYi9hcmNoL2FybS9ib290L2R0cy9zYW1hN2c1
+LmR0c2kNCj4+IEBAIC04Myw3ICs4Myw2IEBAIHNlY3VyYW06IHNlY3VyYW1AZTAwMDAwMDAgew0K
+Pj4gICAgICAgICAgICAgICAgICAgICAgICAgI3NpemUtY2VsbHMgPSA8MT47DQo+PiAgICAgICAg
+ICAgICAgICAgICAgICAgICByYW5nZXMgPSA8MCAweGUwMDAwMDAwIDB4NDAwMD47DQo+PiAgICAg
+ICAgICAgICAgICAgICAgICAgICBuby1tZW1vcnktd2M7DQo+PiAtICAgICAgICAgICAgICAgICAg
+ICAgICBzdGF0dXMgPSAib2theSI7DQo+PiAgICAgICAgICAgICAgICAgfTsNCj4+DQo+PiAgICAg
+ICAgICAgICAgICAgc2VjdW1vZDogc2VjdW1vZEBlMDAwNDAwMCB7DQo+PiBAQCAtNjUzLDEzICs2
+NTIsMTEgQEAgc3BpMTE6IHNwaUA0MDAgew0KPj4gICAgICAgICAgICAgICAgIHVkZHJjOiB1ZGRy
+Y0BlMzgwMDAwMCB7DQo+PiAgICAgICAgICAgICAgICAgICAgICAgICBjb21wYXRpYmxlID0gIm1p
+Y3JvY2hpcCxzYW1hN2c1LXVkZHJjIjsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgIHJlZyA9
+IDwweGUzODAwMDAwIDB4NDAwMD47DQo+PiAtICAgICAgICAgICAgICAgICAgICAgICBzdGF0dXMg
+PSAib2theSI7DQo+PiAgICAgICAgICAgICAgICAgfTsNCj4+DQo+PiAgICAgICAgICAgICAgICAg
+ZGRyM3BoeTogZGRyM3BoeUBlMzgwNDAwMCB7DQo+PiAgICAgICAgICAgICAgICAgICAgICAgICBj
+b21wYXRpYmxlID0gIm1pY3JvY2hpcCxzYW1hN2c1LWRkcjNwaHkiOw0KPj4gICAgICAgICAgICAg
+ICAgICAgICAgICAgcmVnID0gPDB4ZTM4MDQwMDAgMHgxMDAwPjsNCj4+IC0gICAgICAgICAgICAg
+ICAgICAgICAgIHN0YXR1cyA9ICJva2F5IjsNCj4+ICAgICAgICAgICAgICAgICB9Ow0KPj4NCj4+
+ICAgICAgICAgICAgICAgICBnaWM6IGludGVycnVwdC1jb250cm9sbGVyQGU4YzExMDAwIHsNCj4+
+IC0tDQo+PiAyLjMyLjANCj4+DQo+Pg0KPj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18NCj4+IGxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0DQo+PiBs
+aW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj4+IGh0dHA6Ly9saXN0cy5pbmZy
+YWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbA0KPiANCg0K
