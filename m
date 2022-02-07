@@ -2,143 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 320DAC43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354495AbiBGGiM (ORCPT
+        id S1352364AbiBGGhU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:38:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
+        Mon, 7 Feb 2022 01:37:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241645AbiBGGdw (ORCPT
+        with ESMTP id S234983AbiBGGdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:33:52 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5C2C043185;
-        Sun,  6 Feb 2022 22:33:49 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso2168771pjg.0;
-        Sun, 06 Feb 2022 22:33:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=QBjevVYgAFUaqu2ou5cnYl7E+U1e8F1wDuqgm7AMw48=;
-        b=LBn9w0cSUzERiY6ujaumE79mxBrkeyAje0CePw/59SYwNqP8/Vzp4jaG1rQQcB1lSO
-         b7e2Q2tysdOwBH3ZrXcnYHcpmKVORWxuFw/UQx6zUesXziUED8UOeKgAIcuk5UEW6xE0
-         L5EO/CU6H2aIvqh53wVzDen6K5qrcK33Hs5BB7wCqT0vSbWYIlTl2gtOPC2YFZtY8Mec
-         mSFErbcz+h2sIwLr50YE2rMZJ9SefQvEsCK03T42+m5xbnfJ1gOIGQU/q4E3+cuovEP3
-         RCvquvxvLIgLFqeWZImqOQ6qXCETok7U9akCecv0i1cQUjuM7p7oyCcJDHyMlmS2o1hy
-         qgcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=QBjevVYgAFUaqu2ou5cnYl7E+U1e8F1wDuqgm7AMw48=;
-        b=O68W3NwPOM6JcaB97VS+gJtr3UYcQdxW4BjeGdff4hb0fEKXuapfEn7U6+EMThNw7v
-         vybe0f/FtTFM8Fgu++xwxeTHYZSvibwYT1q4/IPm5FwZ9qQum0HnNgTvZ3jo8FrTFSTH
-         D3ERCtB9vCq+ZKl5jFXKioci10Icmq7ZT5x2pbmOe+mIzdzOYilN1NFN0XQNAyZCUD2a
-         cam3JsNowgSeKcQqz4D65TT5CmjGHEONorK2Kxx3LEYgxfBuX6MpbgzyuJ83mWJIVGMs
-         UkfBL56JPcblKNoh2x5fKdjVqTsOhBU8xoAAtYqpV7EQ+8VB1T/LEFyF/mqWbBrdQvIG
-         DR7A==
-X-Gm-Message-State: AOAM533GRbofSlgckTI0fTLHMZkWdMS4YqtPSgAhyARQT3CVGNlxWt+g
-        EKhs/FEB5R4xq7DXG+C0rw==
-X-Google-Smtp-Source: ABdhPJwHh6DxuukPHPzXF5UTpQFRyEmYEcTqkhT3otIl+T/man141s1iK/4Ndqw6yd0EMoacpqdoVg==
-X-Received: by 2002:a17:902:e54c:: with SMTP id n12mr14424plf.60.1644215629404;
-        Sun, 06 Feb 2022 22:33:49 -0800 (PST)
-Received: from localhost ([2401:e180:8894:9737:7848:1ec7:b697:7d50])
-        by smtp.gmail.com with ESMTPSA id g8sm10666389pfc.193.2022.02.06.22.33.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 06 Feb 2022 22:33:49 -0800 (PST)
-From:   Tyrone Ting <warp5tw@gmail.com>
-To:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
-        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
-        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
-        olof@lixom.net, andriy.shevchenko@linux.intel.com,
-        warp5tw@gmail.com, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com
-Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/6] dt-bindings: i2c: npcm: support NPCM845
-Date:   Mon,  7 Feb 2022 14:33:33 +0800
-Message-Id: <20220207063338.6570-2-warp5tw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220207063338.6570-1-warp5tw@gmail.com>
-References: <20220207063338.6570-1-warp5tw@gmail.com>
+        Mon, 7 Feb 2022 01:33:10 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D785C043187
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:33:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=wqaArwblmIFSHxUdNBNekbGuuQV19X++bRGa4XtI21U=; b=lxdZaX9HdECBxS8xbH3caitLbH
+        PgJ/rcSWAsPKp0w4j5ndf9woh4inxdIS2JIDFXPeAEbv6jdzH9Jo2ntSfHkuj6mUQ7HTrOAokh5qc
+        4is/Xb5dtZG07+ioaAog0Tey/v1edHRBpVlQ/9G50rLriinhvV/d9n8u3P6DkytAHoAIRzQrVcWVu
+        qUeK/m7kl6g5AO82aINiKwrYAOVXXo11IEJlHfxptb1ZQ4JeiUUJojms+atQUIJLsKgoZPQaQcKqS
+        Ppu19zrTCt3BV/fiLaL5lgHLtEmxSGihd4Tx+0ttgGEEJ7i2vxcU+OqN3HDnjubScKNcKlfoiC4Nm
+        uoHWy8CQ==;
+Received: from [2001:4bb8:188:3efc:2cbe:55d7:bb63:46d2] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nGxa4-0099Hh-Pj; Mon, 07 Feb 2022 06:32:57 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Dan Williams <dan.j.williams@intel.com>
+Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Alistair Popple <apopple@nvidia.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org
+Subject: [PATCH 2/8] mm: remove the __KERNEL__ guard from <linux/mm.h>
+Date:   Mon,  7 Feb 2022 07:32:43 +0100
+Message-Id: <20220207063249.1833066-3-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220207063249.1833066-1-hch@lst.de>
+References: <20220207063249.1833066-1-hch@lst.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyrone Ting <kfting@nuvoton.com>
+__KERNEL__ ifdefs don't make sense outside of include/uapi/.
 
-This commit adds compatible and syscon description for NPCM845 i2c module.
-
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- .../bindings/i2c/nuvoton,npcm7xx-i2c.yaml     | 21 ++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ include/linux/mm.h | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
-index 128444942aec..05e58f44b03a 100644
---- a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
-+++ b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
-@@ -7,17 +7,22 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: nuvoton NPCM7XX I2C Controller Device Tree Bindings
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 213cc569b19223..7b46174989b086 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3,9 +3,6 @@
+ #define _LINUX_MM_H
  
- description: |
--  The NPCM750x includes sixteen I2C bus controllers. All Controllers support
--  both master and slave mode. Each controller can switch between master and slave
--  at run time (i.e. IPMB mode). Each controller has two 16 byte HW FIFO for TX and
--  RX.
-+  The NPCM7XX includes sixteen I2C bus controllers and the NPCM8XX includes
-+  twenty-seven I2C bus controllers. NPCM8XX controllers 24-26 are connected on I2C
-+  pins in parallel to controllers 8-10.
-+  All controllers support both master and slave mode.
-+  Each controller can switch between master and slave at run time (i.e. IPMB mode).
-+  NPCM7XX I2C controller has two 16 byte HW FIFO for TX and RX and NPCM8XX I2C
-+  controller has two 32 byte HW FIFO for TX and RX.
+ #include <linux/errno.h>
+-
+-#ifdef __KERNEL__
+-
+ #include <linux/mmdebug.h>
+ #include <linux/gfp.h>
+ #include <linux/bug.h>
+@@ -3381,5 +3378,4 @@ madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
+ }
+ #endif
  
- maintainers:
-   - Tali Perry <tali.perry1@gmail.com>
- 
- properties:
-   compatible:
--    const: nuvoton,npcm750-i2c
-+    enum:
-+      - nuvoton,npcm750-i2c
-+      - nuvoton,npcm845-i2c
- 
-   reg:
-     maxItems: 1
-@@ -36,11 +41,16 @@ properties:
-     default: 100000
-     enum: [100000, 400000, 1000000]
- 
-+  syscon:
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+    description: The phandle of system manager register node.
-+
- required:
-   - compatible
-   - reg
-   - interrupts
-   - clocks
-+  - syscon
- 
- allOf:
-   - $ref: /schemas/i2c/i2c-controller.yaml#
-@@ -57,6 +67,7 @@ examples:
-         clock-frequency = <100000>;
-         interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
-         compatible = "nuvoton,npcm750-i2c";
-+        syscon = <&gcr>;
-     };
- 
- ...
+-#endif /* __KERNEL__ */
+ #endif /* _LINUX_MM_H */
 -- 
-2.17.1
+2.30.2
 
