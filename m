@@ -2,911 +2,1670 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50FFDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5324C35276
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443121AbiBGPKi (ORCPT
+        id S1443077AbiBGPKY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:10:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60652 "EHLO
+        Mon, 7 Feb 2022 10:10:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387710AbiBGPAo (ORCPT
+        with ESMTP id S1377482AbiBGPDL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:00:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F9AC0401C1;
-        Mon,  7 Feb 2022 07:00:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E60561456;
-        Mon,  7 Feb 2022 15:00:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1F10C004E1;
-        Mon,  7 Feb 2022 15:00:40 +0000 (UTC)
-From:   Clark Williams <williams@redhat.com>
-Subject: [ANNOUNCE] 4.19.227-rt102
-Date:   Mon, 07 Feb 2022 14:48:35 -0000
-Message-ID: <164424531552.532082.17938884309003706155@puck.lan>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Carsten Emde <C.Emde@osadl.org>,
-        John Kacur <jkacur@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Wagner <daniel.wagner@suse.com>,
-        Tom Zanussi <tom.zanussi@linux.intel.com>,
-        Clark Williams <williams@redhat.com>,
-        Pavel Machek <pavel@denx.de>
+        Mon, 7 Feb 2022 10:03:11 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on20605.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eae::605])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27444C0401C1;
+        Mon,  7 Feb 2022 07:03:08 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LhfVmFurXMu13Em4rJdC1ZuS51NpwZF9PWglhu8ObpizLcHzR50HuzxyQxlVS5EXsc1cnEMEldzkJX9dC+cAK1CcGH3ZS+AmWmU2f99C8WxcvjcgC+8AGLv51JSHy2KW4/qfHkeEymWno5PL10/z27NHJuRahLhV+q1WGL9buDsnodPDWKmMPkwIr5E8f0MtFqNbldXMwGCfMXLB48tEuEyYbq30zNX04OwOJe2Aw/L3UMJqsH/gsfA0dY9DMMjy9SubTtJ9k5R6RtJGieOnoVQxlpCG8Qt2/DxtA93ucXcPaanxrQfV98HWU8naB5kLqhhHQh2pi0kbqR+Lzw40kw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IFBxK/18VebpnbTrkR4pMqZYRZla/eX4dfMjpfSR8eM=;
+ b=cTM0LinF3uAUo4/lg2PdKkYRe2b81Erg77FuSihRgQW3j80973SuOgvRmen3QWG/D3cVhi3OAjqVsrg5hx2WQpsSxabPaJaxkjJ2D7NE9JIqDTSxIVOAfLiv4MeI1gvzStUsR2PgeCfzI61HcNczSqCW0Q99pfx5LiI10uWo8qe3fzJj5jgHd6v98Dx4kSJJvOcRuO5L7HOFNNkzfJE3N0hugN7m23oUBMKQvfUv51Rly3xLCAZJs5svxYuwVD3p9vL4zomCB5lWjqmPXKAMCvk6IpoQIC/r9jpmbYHQ0p2P0RUTY9hjHVCWjArIUmI7KSXOu2nK2kTCIBJDDzzMDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IFBxK/18VebpnbTrkR4pMqZYRZla/eX4dfMjpfSR8eM=;
+ b=NAlSA5EwxgycRDQOW6pGA3+j+YL8jrroK0bsRxENHV/9cKiS+YxTwAXto2B+AYa65o3txng69ATOig/scomSWEv599zpXK5R+lR3VY2PJC0/LuJKMzfBkSeKVDymfWmzKSAA4+siRG9vLeHl2LhAGJKhp5/+VsGJZr3dNllRCuEMvWZWsphHiFi3aVlfLZ+mwPk4jOfeoYz9jY6gqaEjHkmkeGkgtLNsqxGygDn49SSGZ/AxoQj0bHT4eLmQYq6pGchUI8H1KsqWOmgSNjU7H53dDV5lXF873GDGkj2Q9H1iZnmrdrHRTXzuCjeSaZTPK+GEhhE+ILm2V10hu+lZOw==
+Received: from BN0PR04CA0118.namprd04.prod.outlook.com (2603:10b6:408:ec::33)
+ by MWHPR12MB1760.namprd12.prod.outlook.com (2603:10b6:300:112::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.14; Mon, 7 Feb
+ 2022 15:03:03 +0000
+Received: from BN8NAM11FT042.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ec:cafe::5) by BN0PR04CA0118.outlook.office365.com
+ (2603:10b6:408:ec::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
+ Transport; Mon, 7 Feb 2022 15:03:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT042.mail.protection.outlook.com (10.13.177.85) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4951.12 via Frontend Transport; Mon, 7 Feb 2022 15:03:02 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 7 Feb
+ 2022 15:02:43 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 7 Feb 2022
+ 07:02:43 -0800
+Received: from kyarlagadda-linux.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server id 15.2.986.9 via Frontend
+ Transport; Mon, 7 Feb 2022 07:02:38 -0800
+From:   Akhil R <akhilrajeev@nvidia.com>
+To:     <devicetree@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <jonathanh@nvidia.com>, <kyarlagadda@nvidia.com>,
+        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <p.zabel@pengutronix.de>,
+        <rgumasta@nvidia.com>, <robh+dt@kernel.org>,
+        <thierry.reding@gmail.com>, <vkoul@kernel.org>
+CC:     <akhilrajeev@nvidia.com>, Pavan Kunapuli <pkunapuli@nvidia.com>
+Subject: [PATCH v19 2/4] dmaengine: tegra: Add tegra gpcdma driver
+Date:   Mon, 7 Feb 2022 20:31:32 +0530
+Message-ID: <1644246094-29423-3-git-send-email-akhilrajeev@nvidia.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644246094-29423-1-git-send-email-akhilrajeev@nvidia.com>
+References: <1644246094-29423-1-git-send-email-akhilrajeev@nvidia.com>
+X-NVConfidentiality: public
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ee40323f-217c-4605-0ae1-08d9ea4af03a
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1760:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR12MB1760F21047764B03373D17E3C02C9@MWHPR12MB1760.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: u25uB5gdFcRrsv6xblbonGKY5FvBITpHuhADyrr+eNPJ5GNedu7DVZOplmem9kDrGPoDoxSCWAlL0uNLOwXR0PN7wTmgqKYoqBsFASwjwP8ER03W/5yosSri4U/vI7inqU8fqEYKf+U7SsyUrNwGOhdiQMa5qDgVFWsOOI/nh6XNHBJs4GrhjjfF9ggSnniY/LltxIUOIC7wNJ08RyC1aSxSHBGNCFzXrdfwGVrBiu84wv2jYRF/CaAxuvidHojvZneS7ktSv1tG/hXQlfdRc9C+ixFViGpZSd0obSbruTH/QmB/xIcr4J3oERAJxIjww2cE/izmOV5iryirzZ8MnBQF9i26Y0BtN2XA24IBzSF5nnpa0O+4XO4q6K/mQw0u57bKFT5Q7mNZNY3OCppzLRdRk1nRe5Fb0FHWFV+bz6mIvAJ19QFiCewpQECHbch8KSjojkDu7WqIUia3iSFIM3MozXRQAg42DHar4fhwb76X+6ClXZ1jqVMu/O+RLypjI7phPzt6Gduyi3c8ezIZ6GRppHqoTlgJwo1zCwtX1vHRoTcZNv4TR5pEvUdejjyaBpoVny9r6W4K+ayRUGEWZ0pAOmT1J88XHdxie8VTlEnvOJCInPP6jTHyrGUpvLnEIE0OSfQsEQFD4qLX5DCqUijezcttOXXEFfJ3VHMqQ36YCLfwk1Nrc76BUayZpeZX9P663b73XPyvAwE3o8IbTLX+dCTHvz9SaKJVI+s5L0/u/Q7kbndeiW8/lKx86tKMgMTpZqATvzrQKo/J16WFtQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(47076005)(83380400001)(316002)(2906002)(26005)(356005)(921005)(81166007)(186003)(30864003)(336012)(107886003)(86362001)(426003)(36860700001)(2616005)(4326008)(508600001)(36756003)(8676002)(8936002)(5660300002)(70586007)(70206006)(54906003)(110136005)(82310400004)(6666004)(7696005)(40460700003)(83996005)(2101003)(36900700001)(579004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 15:03:02.6732
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee40323f-217c-4605-0ae1-08d9ea4af03a
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT042.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1760
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello RT-list!
+Adding GPC DMA controller driver for Tegra. The driver supports dma
+transfers between memory to memory, IO peripheral to memory and
+memory to IO peripheral.
 
-I'm pleased to announce the 4.19.227-rt102 stable release.
-
-In addition to a merge of the latest upstream stable release(s) this
-release contains two commits to fix merge and backport issues from
-previous releases:
-
-6d5eff0660b1 net: Add missing xmit_lock_owner hunks.
-67821680a2b8 rt: PREEMPT_RT safety net for backported patches
-
-The first is a fix for a mis-merge error where a hunk was dropped that
-caused compiler warnings.
-
-The second is a backport error where an upstream commit conditionalizing
-on CONFIG_PREEMPT_RT was unchanged (the v4.19 and previous PREEMPT_RT
-patchsets use CONFIG_PREEMPT_RT_FULL). Two blocks of code were affected:
-
-1) an early exit in mm/slub.c:alloc_lock_track() was not taken
-2) in net/core/dev:__napi_schedule_irqoff() __napi_schedule() was used
-   rather than ____napi_schedule().
-
-You can get this release via the git tree at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
-
-  branch: v4.19-rt
-  Head SHA1: da10a5f873c7876ca0f35a9b783695affdc84b50
-
-Or to build 4.19.227-rt102 directly, the following patches should be applied:
-
-  https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.19.tar.xz
-
-  https://www.kernel.org/pub/linux/kernel/v4.x/patch-4.19.227.xz
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/4.19/patch-4.19.227-rt102.patch.xz
-
-
-You can also build from 4.19.225-rt101 by applying the incremental patch:
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/4.19/incr/patch-4.19.225-rt101-rt102.patch.xz
-
-Enjoy!
-Clark
-
-Changes from v4.19.225-rt101:
+Co-developed-by: Pavan Kunapuli <pkunapuli@nvidia.com>
+Signed-off-by: Pavan Kunapuli <pkunapuli@nvidia.com>
+Co-developed-by: Rajesh Gumasta <rgumasta@nvidia.com>
+Signed-off-by: Rajesh Gumasta <rgumasta@nvidia.com>
+Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
+Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
 ---
+ drivers/dma/Kconfig            |   11 +
+ drivers/dma/Makefile           |    1 +
+ drivers/dma/tegra186-gpc-dma.c | 1505 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 1517 insertions(+)
+ create mode 100644 drivers/dma/tegra186-gpc-dma.c
+
+diff --git a/drivers/dma/Kconfig b/drivers/dma/Kconfig
+index 6bcdb4e..dbe7664 100644
+--- a/drivers/dma/Kconfig
++++ b/drivers/dma/Kconfig
+@@ -629,6 +629,17 @@ config TXX9_DMAC
+ 	  Support the TXx9 SoC internal DMA controller.  This can be
+ 	  integrated in chips such as the Toshiba TX4927/38/39.
+ 
++config TEGRA186_GPC_DMA
++	tristate "NVIDIA Tegra GPC DMA support"
++	depends on ARCH_TEGRA || COMPILE_TEST
++	select DMA_ENGINE
++	help
++	  Support for the NVIDIA Tegra General Purpose Central DMA controller.
++	  The DMA controller has multiple DMA channels which can be configured
++	  for different peripherals like UART, SPI, etc which are on APB bus.
++	  This DMA controller transfers data from memory to peripheral FIFO
++	  or vice versa. It also supports memory to memory data transfer.
++
+ config TEGRA20_APB_DMA
+ 	tristate "NVIDIA Tegra20 APB DMA support"
+ 	depends on ARCH_TEGRA || COMPILE_TEST
+diff --git a/drivers/dma/Makefile b/drivers/dma/Makefile
+index 616d926..2f1b87f 100644
+--- a/drivers/dma/Makefile
++++ b/drivers/dma/Makefile
+@@ -72,6 +72,7 @@ obj-$(CONFIG_STM32_MDMA) += stm32-mdma.o
+ obj-$(CONFIG_SPRD_DMA) += sprd-dma.o
+ obj-$(CONFIG_S3C24XX_DMAC) += s3c24xx-dma.o
+ obj-$(CONFIG_TXX9_DMAC) += txx9dmac.o
++obj-$(CONFIG_TEGRA186_GPC_DMA) += tegra186-gpc-dma.o
+ obj-$(CONFIG_TEGRA20_APB_DMA) += tegra20-apb-dma.o
+ obj-$(CONFIG_TEGRA210_ADMA) += tegra210-adma.o
+ obj-$(CONFIG_TIMB_DMA) += timb_dma.o
+diff --git a/drivers/dma/tegra186-gpc-dma.c b/drivers/dma/tegra186-gpc-dma.c
+new file mode 100644
+index 0000000..c6be1d6
+--- /dev/null
++++ b/drivers/dma/tegra186-gpc-dma.c
+@@ -0,0 +1,1505 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * DMA driver for NVIDIA Tegra GPC DMA controller.
++ *
++ * Copyright (c) 2014 - 2022, NVIDIA CORPORATION.  All rights reserved.
++ */
++
++#include <linux/bitfield.h>
++#include <linux/dmaengine.h>
++#include <linux/dma-mapping.h>
++#include <linux/interrupt.h>
++#include <linux/iommu.h>
++#include <linux/iopoll.h>
++#include <linux/minmax.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/of_dma.h>
++#include <linux/platform_device.h>
++#include <linux/reset.h>
++#include <linux/slab.h>
++#include <linux/version.h>
++#include <dt-bindings/memory/tegra186-mc.h>
++#include "virt-dma.h"
++
++/* CSR register */
++#define TEGRA_GPCDMA_CHAN_CSR			0x00
++#define TEGRA_GPCDMA_CSR_ENB			BIT(31)
++#define TEGRA_GPCDMA_CSR_IE_EOC			BIT(30)
++#define TEGRA_GPCDMA_CSR_ONCE			BIT(27)
++
++#define TEGRA_GPCDMA_CSR_FC_MODE		GENMASK(25, 24)
++#define TEGRA_GPCDMA_CSR_FC_MODE_NO_MMIO	\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_FC_MODE, 0)
++#define TEGRA_GPCDMA_CSR_FC_MODE_ONE_MMIO	\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_FC_MODE, 1)
++#define TEGRA_GPCDMA_CSR_FC_MODE_TWO_MMIO	\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_FC_MODE, 2)
++#define TEGRA_GPCDMA_CSR_FC_MODE_FOUR_MMIO	\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_FC_MODE, 3)
++
++#define TEGRA_GPCDMA_CSR_DMA			GENMASK(23, 21)
++#define TEGRA_GPCDMA_CSR_DMA_IO2MEM_NO_FC	\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 0)
++#define TEGRA_GPCDMA_CSR_DMA_IO2MEM_FC		\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 1)
++#define TEGRA_GPCDMA_CSR_DMA_MEM2IO_NO_FC	\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 2)
++#define TEGRA_GPCDMA_CSR_DMA_MEM2IO_FC		\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 3)
++#define TEGRA_GPCDMA_CSR_DMA_MEM2MEM		\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 4)
++#define TEGRA_GPCDMA_CSR_DMA_FIXED_PAT		\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_DMA, 6)
++
++#define TEGRA_GPCDMA_CSR_REQ_SEL_MASK		GENMASK(20, 16)
++#define TEGRA_GPCDMA_CSR_REQ_SEL_UNUSED		\
++					FIELD_PREP(TEGRA_GPCDMA_CSR_REQ_SEL_MASK, 4)
++#define TEGRA_GPCDMA_CSR_IRQ_MASK		BIT(15)
++#define TEGRA_GPCDMA_CSR_WEIGHT			GENMASK(13, 10)
++
++/* STATUS register */
++#define TEGRA_GPCDMA_CHAN_STATUS		0x004
++#define TEGRA_GPCDMA_STATUS_BUSY		BIT(31)
++#define TEGRA_GPCDMA_STATUS_ISE_EOC		BIT(30)
++#define TEGRA_GPCDMA_STATUS_PING_PONG		BIT(28)
++#define TEGRA_GPCDMA_STATUS_DMA_ACTIVITY	BIT(27)
++#define TEGRA_GPCDMA_STATUS_CHANNEL_PAUSE	BIT(26)
++#define TEGRA_GPCDMA_STATUS_CHANNEL_RX		BIT(25)
++#define TEGRA_GPCDMA_STATUS_CHANNEL_TX		BIT(24)
++#define TEGRA_GPCDMA_STATUS_IRQ_INTR_STA	BIT(23)
++#define TEGRA_GPCDMA_STATUS_IRQ_STA		BIT(21)
++#define TEGRA_GPCDMA_STATUS_IRQ_TRIG_STA	BIT(20)
++
++#define TEGRA_GPCDMA_CHAN_CSRE			0x008
++#define TEGRA_GPCDMA_CHAN_CSRE_PAUSE		BIT(31)
++
++/* Source address */
++#define TEGRA_GPCDMA_CHAN_SRC_PTR		0x00C
++
++/* Destination address */
++#define TEGRA_GPCDMA_CHAN_DST_PTR		0x010
++
++/* High address pointer */
++#define TEGRA_GPCDMA_CHAN_HIGH_ADDR_PTR		0x014
++#define TEGRA_GPCDMA_HIGH_ADDR_SRC_PTR		GENMASK(7, 0)
++#define TEGRA_GPCDMA_HIGH_ADDR_DST_PTR		GENMASK(23, 16)
++
++/* MC sequence register */
++#define TEGRA_GPCDMA_CHAN_MCSEQ			0x18
++#define TEGRA_GPCDMA_MCSEQ_DATA_SWAP		BIT(31)
++#define TEGRA_GPCDMA_MCSEQ_REQ_COUNT		GENMASK(30, 25)
++#define TEGRA_GPCDMA_MCSEQ_BURST		GENMASK(24, 23)
++#define TEGRA_GPCDMA_MCSEQ_BURST_2		\
++					FIELD_PREP(TEGRA_GPCDMA_MCSEQ_BURST, 0)
++#define TEGRA_GPCDMA_MCSEQ_BURST_16		\
++					FIELD_PREP(TEGRA_GPCDMA_MCSEQ_BURST, 3)
++#define TEGRA_GPCDMA_MCSEQ_WRAP1		GENMASK(22, 20)
++#define TEGRA_GPCDMA_MCSEQ_WRAP0		GENMASK(19, 17)
++#define TEGRA_GPCDMA_MCSEQ_WRAP_NONE		0
++
++#define TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK	GENMASK(13, 7)
++#define TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK	GENMASK(6, 0)
++
++/* MMIO sequence register */
++#define TEGRA_GPCDMA_CHAN_MMIOSEQ			0x01c
++#define TEGRA_GPCDMA_MMIOSEQ_DBL_BUF		BIT(31)
++#define TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH		GENMASK(30, 28)
++#define TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_8	\
++					FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH, 0)
++#define TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_16	\
++					FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH, 1)
++#define TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_32	\
++					FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH, 2)
++#define TEGRA_GPCDMA_MMIOSEQ_DATA_SWAP		BIT(27)
++#define TEGRA_GPCDMA_MMIOSEQ_BURST_SHIFT	23
++#define TEGRA_GPCDMA_MMIOSEQ_BURST_MIN		2U
++#define TEGRA_GPCDMA_MMIOSEQ_BURST_MAX		32U
++#define TEGRA_GPCDMA_MMIOSEQ_BURST(bs)	\
++		(GENMASK((fls(bs) - 2), 0) << TEGRA_GPCDMA_MMIOSEQ_BURST_SHIFT)
++#define TEGRA_GPCDMA_MMIOSEQ_MASTER_ID		GENMASK(22, 19)
++#define TEGRA_GPCDMA_MMIOSEQ_WRAP_WORD		GENMASK(18, 16)
++#define TEGRA_GPCDMA_MMIOSEQ_MMIO_PROT		GENMASK(8, 7)
++
++/* Channel WCOUNT */
++#define TEGRA_GPCDMA_CHAN_WCOUNT		0x20
++
++/* Transfer count */
++#define TEGRA_GPCDMA_CHAN_XFER_COUNT		0x24
++
++/* DMA byte count status */
++#define TEGRA_GPCDMA_CHAN_DMA_BYTE_STATUS	0x28
++
++/* Error Status Register */
++#define TEGRA_GPCDMA_CHAN_ERR_STATUS		0x30
++#define TEGRA_GPCDMA_CHAN_ERR_TYPE_SHIFT	8
++#define TEGRA_GPCDMA_CHAN_ERR_TYPE_MASK	0xF
++#define TEGRA_GPCDMA_CHAN_ERR_TYPE(err)	(			\
++		((err) >> TEGRA_GPCDMA_CHAN_ERR_TYPE_SHIFT) &	\
++		TEGRA_GPCDMA_CHAN_ERR_TYPE_MASK)
++#define TEGRA_DMA_BM_FIFO_FULL_ERR		0xF
++#define TEGRA_DMA_PERIPH_FIFO_FULL_ERR		0xE
++#define TEGRA_DMA_PERIPH_ID_ERR			0xD
++#define TEGRA_DMA_STREAM_ID_ERR			0xC
++#define TEGRA_DMA_MC_SLAVE_ERR			0xB
++#define TEGRA_DMA_MMIO_SLAVE_ERR		0xA
++
++/* Fixed Pattern */
++#define TEGRA_GPCDMA_CHAN_FIXED_PATTERN		0x34
++
++#define TEGRA_GPCDMA_CHAN_TZ			0x38
++#define TEGRA_GPCDMA_CHAN_TZ_MMIO_PROT_1	BIT(0)
++#define TEGRA_GPCDMA_CHAN_TZ_MC_PROT_1		BIT(1)
++
++#define TEGRA_GPCDMA_CHAN_SPARE			0x3c
++#define TEGRA_GPCDMA_CHAN_SPARE_EN_LEGACY_FC	BIT(16)
++
++/*
++ * If any burst is in flight and DMA paused then this is the time to complete
++ * on-flight burst and update DMA status register.
++ */
++#define TEGRA_GPCDMA_BURST_COMPLETE_TIME	20
++#define TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT	100
++
++/* Channel base address offset from GPCDMA base address */
++#define TEGRA_GPCDMA_CHANNEL_BASE_ADD_OFFSET	0x20000
++
++struct tegra_dma;
++struct tegra_dma_channel;
++
++/*
++ * tegra_dma_chip_data Tegra chip specific DMA data
++ * @nr_channels: Number of channels available in the controller.
++ * @channel_reg_size: Channel register size.
++ * @max_dma_count: Maximum DMA transfer count supported by DMA controller.
++ * @hw_support_pause: DMA HW engine support pause of the channel.
++ */
++struct tegra_dma_chip_data {
++	unsigned int nr_channels;
++	unsigned int channel_reg_size;
++	unsigned int max_dma_count;
++	bool hw_support_pause;
++	int (*terminate)(struct tegra_dma_channel *tdc);
++};
++
++/* DMA channel registers */
++struct tegra_dma_channel_regs {
++	unsigned long csr;
++	unsigned long src_ptr;
++	unsigned long dst_ptr;
++	unsigned long high_addr_ptr;
++	unsigned long mc_seq;
++	unsigned long mmio_seq;
++	unsigned long wcount;
++	unsigned long fixed_pattern;
++};
++
++/*
++ * tegra_dma_sg_req: Dma request details to configure hardware. This
++ * contains the details for one transfer to configure DMA hw.
++ * The client's request for data transfer can be broken into multiple
++ * sub-transfer as per requester details and hw support. This sub transfer
++ * get added as an array in Tegra DMA desc which manages the transfer details.
++ */
++struct tegra_dma_sg_req {
++	unsigned int len;
++	struct tegra_dma_channel_regs ch_regs;
++};
++
++/*
++ * tegra_dma_desc: Tegra DMA descriptors which uses virt_dma_desc to
++ * manage client request and keep track of transfer status, callbacks
++ * and request counts etc.
++ */
++struct tegra_dma_desc {
++	struct virt_dma_desc vd;
++	unsigned int bytes_req;
++	unsigned int bytes_xfer;
++	unsigned int sg_idx;
++	unsigned int sg_count;
++	bool cyclic;
++	struct tegra_dma_channel *tdc;
++	struct tegra_dma_sg_req sg_req[];
++};
++
++/*
++ * tegra_dma_channel: Channel specific information
++ */
++struct tegra_dma_channel {
++	struct virt_dma_chan vc;
++	struct tegra_dma_desc *dma_desc;
++	char name[30];
++	bool config_init;
++	int id;
++	int irq;
++	unsigned int stream_id;
++	unsigned long chan_base_offset;
++	struct tegra_dma *tdma;
++	int slave_id;
++	enum dma_transfer_direction sid_dir;
++	struct dma_slave_config dma_sconfig;
++};
++
++/*
++ * tegra_dma: Tegra DMA specific information
++ */
++struct tegra_dma {
++	struct dma_device dma_dev;
++	struct device *dev;
++	void __iomem *base_addr;
++	const struct tegra_dma_chip_data *chip_data;
++	struct reset_control *rst;
++	unsigned long sid_m2d_reserved;
++	unsigned long sid_d2m_reserved;
++	struct tegra_dma_channel channels[];
++};
++
++static inline void tdc_write(struct tegra_dma_channel *tdc,
++			     u32 reg, u32 val)
++{
++	writel_relaxed(val, tdc->tdma->base_addr + tdc->chan_base_offset + reg);
++}
++
++static inline u32 tdc_read(struct tegra_dma_channel *tdc, u32 reg)
++{
++	return readl_relaxed(tdc->tdma->base_addr + tdc->chan_base_offset + reg);
++}
++
++static inline struct tegra_dma_channel *to_tegra_dma_chan(struct dma_chan *dc)
++{
++	return container_of(dc, struct tegra_dma_channel, vc.chan);
++}
++
++static inline struct tegra_dma_desc *vd_to_tegra_dma_desc(struct virt_dma_desc *vd)
++{
++	return container_of(vd, struct tegra_dma_desc, vd);
++}
++
++static inline struct device *tdc2dev(struct tegra_dma_channel *tdc)
++{
++	return tdc->vc.chan.device->dev;
++}
++
++static void tegra_dma_dump_chan_regs(struct tegra_dma_channel *tdc)
++{
++	dev_dbg(tdc2dev(tdc), "DMA Channel %d name %s register dump:\n",
++		tdc->id, tdc->name);
++	dev_dbg(tdc2dev(tdc), "CSR %x STA %x CSRE %x SRC %x DST %x\n",
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSR),
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS),
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSRE),
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_SRC_PTR),
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_DST_PTR)
++	);
++	dev_dbg(tdc2dev(tdc), "MCSEQ %x IOSEQ %x WCNT %x XFER %x BSTA %x\n",
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ),
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_MMIOSEQ),
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_WCOUNT),
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_XFER_COUNT),
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_DMA_BYTE_STATUS)
++	);
++	dev_dbg(tdc2dev(tdc), "DMA ERR_STA %x\n",
++		tdc_read(tdc, TEGRA_GPCDMA_CHAN_ERR_STATUS));
++}
++
++static int tegra_dma_sid_reserve(struct tegra_dma_channel *tdc,
++				 enum dma_transfer_direction direction)
++{
++	struct tegra_dma *tdma = tdc->tdma;
++	unsigned int sid = tdc->slave_id;
++
++	if (!is_slave_direction(direction))
++		return 0;
++
++	switch (direction) {
++	case DMA_MEM_TO_DEV:
++		if (test_and_set_bit(sid, &tdma->sid_m2d_reserved)) {
++			dev_err(tdma->dev, "slave id already in use\n");
++			return -EINVAL;
++		}
++		break;
++	case DMA_DEV_TO_MEM:
++		if (test_and_set_bit(sid, &tdma->sid_d2m_reserved)) {
++			dev_err(tdma->dev, "slave id already in use\n");
++			return -EINVAL;
++		}
++		break;
++	default:
++		break;
++	}
++
++	tdc->sid_dir = direction;
++
++	return 0;
++}
++
++static void tegra_dma_sid_free(struct tegra_dma_channel *tdc)
++{
++	struct tegra_dma *tdma = tdc->tdma;
++	unsigned int sid = tdc->slave_id;
++
++	switch (tdc->sid_dir) {
++	case DMA_MEM_TO_DEV:
++		clear_bit(sid,  &tdma->sid_m2d_reserved);
++		break;
++	case DMA_DEV_TO_MEM:
++		clear_bit(sid,  &tdma->sid_d2m_reserved);
++		break;
++	default:
++		break;
++	}
++
++	tdc->sid_dir = DMA_TRANS_NONE;
++}
++
++static void tegra_dma_desc_free(struct virt_dma_desc *vd)
++{
++	kfree(container_of(vd, struct tegra_dma_desc, vd));
++}
++
++static int tegra_dma_slave_config(struct dma_chan *dc,
++				  struct dma_slave_config *sconfig)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++
++	memcpy(&tdc->dma_sconfig, sconfig, sizeof(*sconfig));
++	tdc->config_init = true;
++
++	return 0;
++}
++
++static int tegra_dma_pause(struct tegra_dma_channel *tdc)
++{
++	int ret;
++	u32 val;
++
++	val = tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSRE);
++	val |= TEGRA_GPCDMA_CHAN_CSRE_PAUSE;
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSRE, val);
++
++	/* Wait until busy bit is de-asserted */
++	ret = readl_relaxed_poll_timeout_atomic(tdc->tdma->base_addr +
++			tdc->chan_base_offset + TEGRA_GPCDMA_CHAN_STATUS,
++			val,
++			!(val & TEGRA_GPCDMA_STATUS_BUSY),
++			TEGRA_GPCDMA_BURST_COMPLETE_TIME,
++			TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT);
++
++	if (ret) {
++		dev_err(tdc2dev(tdc), "DMA pause timed out\n");
++		tegra_dma_dump_chan_regs(tdc);
++	}
++
++	return ret;
++}
++
++static int tegra_dma_device_pause(struct dma_chan *dc)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++	unsigned long flags;
++	int ret = 0;
++
++	if (!tdc->tdma->chip_data->hw_support_pause)
++		return -ENOSYS;
++
++	spin_lock_irqsave(&tdc->vc.lock, flags);
++	ret = tegra_dma_pause(tdc);
++	spin_unlock_irqrestore(&tdc->vc.lock, flags);
++
++	return ret;
++}
++
++static void tegra_dma_resume(struct tegra_dma_channel *tdc)
++{
++	u32 val;
++
++	val = tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSRE);
++	val &= ~TEGRA_GPCDMA_CHAN_CSRE_PAUSE;
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSRE, val);
++}
++
++static int tegra_dma_device_resume(struct dma_chan *dc)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++	unsigned long flags;
++
++	if (!tdc->tdma->chip_data->hw_support_pause)
++		return -ENOSYS;
++
++	spin_lock_irqsave(&tdc->vc.lock, flags);
++	tegra_dma_resume(tdc);
++	spin_unlock_irqrestore(&tdc->vc.lock, flags);
++
++	return 0;
++}
++
++static void tegra_dma_disable(struct tegra_dma_channel *tdc)
++{
++	u32 csr, status;
++
++	csr = tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSR);
++
++	/* Disable interrupts */
++	csr &= ~TEGRA_GPCDMA_CSR_IE_EOC;
++
++	/* Disable DMA */
++	csr &= ~TEGRA_GPCDMA_CSR_ENB;
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, csr);
++
++	/* Clear interrupt status if it is there */
++	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS);
++	if (status & TEGRA_GPCDMA_STATUS_ISE_EOC) {
++		dev_dbg(tdc2dev(tdc), "%s():clearing interrupt\n", __func__);
++		tdc_write(tdc, TEGRA_GPCDMA_CHAN_STATUS, status);
++	}
++}
++
++static void tegra_dma_configure_next_sg(struct tegra_dma_channel *tdc)
++{
++	struct tegra_dma_desc *dma_desc = tdc->dma_desc;
++	struct tegra_dma_channel_regs *ch_regs;
++	int err;
++	u32 val;
++
++	/* Configure next transfer immediately after DMA is busy */
++	err = readl_relaxed_poll_timeout_atomic(tdc->tdma->base_addr +
++			tdc->chan_base_offset + TEGRA_GPCDMA_CHAN_STATUS,
++			val,
++			(val & TEGRA_GPCDMA_STATUS_BUSY), 0,
++			TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT);
++	if (err)
++		return;
++
++	ch_regs = &dma_desc->sg_req[dma_desc->sg_idx].ch_regs;
++
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_WCOUNT, ch_regs->wcount);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_SRC_PTR, ch_regs->src_ptr);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_DST_PTR, ch_regs->dst_ptr);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_HIGH_ADDR_PTR, ch_regs->high_addr_ptr);
++
++	/* Start DMA */
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR,
++		  ch_regs->csr | TEGRA_GPCDMA_CSR_ENB);
++
++	dma_desc->sg_idx++;
++
++	/* Reset the sg index for cyclic transfers */
++	if (dma_desc->sg_idx == dma_desc->sg_count)
++		dma_desc->sg_idx = 0;
++}
++
++static void tegra_dma_start(struct tegra_dma_channel *tdc)
++{
++	struct tegra_dma_desc *dma_desc = tdc->dma_desc;
++	struct tegra_dma_channel_regs *ch_regs;
++	struct virt_dma_desc *vdesc;
++
++	if (!dma_desc) {
++		vdesc = vchan_next_desc(&tdc->vc);
++		if (!vdesc)
++			return;
++
++		dma_desc = vd_to_tegra_dma_desc(vdesc);
++		list_del(&vdesc->node);
++		dma_desc->tdc = tdc;
++		tdc->dma_desc = dma_desc;
++
++		tegra_dma_resume(tdc);
++	}
++
++	ch_regs = &dma_desc->sg_req[dma_desc->sg_idx].ch_regs;
++
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_WCOUNT, ch_regs->wcount);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, 0);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_SRC_PTR, ch_regs->src_ptr);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_DST_PTR, ch_regs->dst_ptr);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_HIGH_ADDR_PTR, ch_regs->high_addr_ptr);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_FIXED_PATTERN, ch_regs->fixed_pattern);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_MMIOSEQ, ch_regs->mmio_seq);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_MCSEQ, ch_regs->mc_seq);
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, ch_regs->csr);
++
++	/* Start DMA */
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR,
++		  ch_regs->csr | TEGRA_GPCDMA_CSR_ENB);
++
++	dma_desc->sg_idx++;
++}
++
++static void tegra_dma_xfer_complete(struct tegra_dma_channel *tdc)
++{
++	vchan_cookie_complete(&tdc->dma_desc->vd);
++
++	tegra_dma_sid_free(tdc);
++	tdc->dma_desc = NULL;
++}
++
++static void tegra_dma_chan_decode_error(struct tegra_dma_channel *tdc,
++					unsigned int err_status)
++{
++	switch (TEGRA_GPCDMA_CHAN_ERR_TYPE(err_status)) {
++	case TEGRA_DMA_BM_FIFO_FULL_ERR:
++		dev_err(tdc->tdma->dev,
++			"GPCDMA CH%d bm fifo full\n", tdc->id);
++		break;
++
++	case TEGRA_DMA_PERIPH_FIFO_FULL_ERR:
++		dev_err(tdc->tdma->dev,
++			"GPCDMA CH%d peripheral fifo full\n", tdc->id);
++		break;
++
++	case TEGRA_DMA_PERIPH_ID_ERR:
++		dev_err(tdc->tdma->dev,
++			"GPCDMA CH%d illegal peripheral id\n", tdc->id);
++		break;
++
++	case TEGRA_DMA_STREAM_ID_ERR:
++		dev_err(tdc->tdma->dev,
++			"GPCDMA CH%d illegal stream id\n", tdc->id);
++		break;
++
++	case TEGRA_DMA_MC_SLAVE_ERR:
++		dev_err(tdc->tdma->dev,
++			"GPCDMA CH%d mc slave error\n", tdc->id);
++		break;
++
++	case TEGRA_DMA_MMIO_SLAVE_ERR:
++		dev_err(tdc->tdma->dev,
++			"GPCDMA CH%d mmio slave error\n", tdc->id);
++		break;
++
++	default:
++		dev_err(tdc->tdma->dev,
++			"GPCDMA CH%d security violation %x\n", tdc->id,
++			err_status);
++	}
++}
++
++static irqreturn_t tegra_dma_isr(int irq, void *dev_id)
++{
++	struct tegra_dma_channel *tdc = dev_id;
++	struct tegra_dma_desc *dma_desc = tdc->dma_desc;
++	struct tegra_dma_sg_req *sg_req;
++	u32 status;
++
++	/* Check channel error status register */
++	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_ERR_STATUS);
++	if (status) {
++		tegra_dma_chan_decode_error(tdc, status);
++		tegra_dma_dump_chan_regs(tdc);
++		tdc_write(tdc, TEGRA_GPCDMA_CHAN_ERR_STATUS, 0xFFFFFFFF);
++	}
++
++	spin_lock(&tdc->vc.lock);
++	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS);
++	if (!(status & TEGRA_GPCDMA_STATUS_ISE_EOC))
++		goto irq_done;
++
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_STATUS,
++		  TEGRA_GPCDMA_STATUS_ISE_EOC);
++
++	if (!dma_desc)
++		goto irq_done;
++
++	sg_req = dma_desc->sg_req;
++	dma_desc->bytes_xfer += sg_req[dma_desc->sg_idx - 1].len;
++
++	if (dma_desc->sg_idx == dma_desc->sg_count) {
++		tegra_dma_xfer_complete(tdc);
++	} else if (dma_desc->cyclic) {
++		vchan_cyclic_callback(&dma_desc->vd);
++		tegra_dma_configure_next_sg(tdc);
++	} else {
++		tegra_dma_start(tdc);
++	}
++
++irq_done:
++	spin_unlock(&tdc->vc.lock);
++	return IRQ_HANDLED;
++}
++
++static void tegra_dma_issue_pending(struct dma_chan *dc)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++	unsigned long flags;
++
++	if (tdc->dma_desc)
++		return;
++
++	spin_lock_irqsave(&tdc->vc.lock, flags);
++	if (vchan_issue_pending(&tdc->vc))
++		tegra_dma_start(tdc);
++
++	/*
++	 * For cyclic dma transfers, program the second
++	 * transfer parameters as soon as the first dma
++	 * transfer is started inorder for the dma
++	 * controller to trigger the second transfer
++	 * with the correct parameters.
++	 */
++	if (tdc->dma_desc && tdc->dma_desc->cyclic)
++		tegra_dma_configure_next_sg(tdc);
++
++	spin_unlock_irqrestore(&tdc->vc.lock, flags);
++}
++
++static int tegra_dma_stop_client(struct tegra_dma_channel *tdc)
++{
++	int ret;
++	unsigned long status;
++	u32 csr = tdc_read(tdc, TEGRA_GPCDMA_CHAN_CSR);
++
++	/*
++	 * Change the client associated with the DMA channel
++	 * to stop DMA engine from starting any more bursts for
++	 * the given client and wait for in flight bursts to complete
++	 */
++	csr &= ~(TEGRA_GPCDMA_CSR_REQ_SEL_MASK);
++	csr |= TEGRA_GPCDMA_CSR_REQ_SEL_UNUSED;
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_CSR, csr);
++
++	/* Wait for in flight data transfer to finish */
++	udelay(TEGRA_GPCDMA_BURST_COMPLETE_TIME);
++
++	/* If TX/RX path is still active wait till it becomes
++	 * inactive
++	 */
++
++	ret = readl_relaxed_poll_timeout_atomic(tdc->tdma->base_addr +
++				tdc->chan_base_offset +
++				TEGRA_GPCDMA_CHAN_STATUS,
++				status,
++				!(status & (TEGRA_GPCDMA_STATUS_CHANNEL_TX |
++				TEGRA_GPCDMA_STATUS_CHANNEL_RX)),
++				5,
++				TEGRA_GPCDMA_BURST_COMPLETION_TIMEOUT);
++	if (ret) {
++		dev_err(tdc2dev(tdc), "Timeout waiting for DMA burst completion!\n");
++		tegra_dma_dump_chan_regs(tdc);
++	}
++
++	return ret;
++}
++
++static int tegra_dma_terminate_all(struct dma_chan *dc)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++	unsigned long flags;
++	LIST_HEAD(head);
++	int err;
++
++	spin_lock_irqsave(&tdc->vc.lock, flags);
++
++	if (tdc->dma_desc) {
++		err = tdc->tdma->chip_data->terminate(tdc);
++		if (err) {
++			spin_unlock_irqrestore(&tdc->vc.lock, flags);
++			return err;
++		}
++
++		tegra_dma_disable(tdc);
++		tdc->dma_desc = NULL;
++	}
++
++	tegra_dma_sid_free(tdc);
++	vchan_get_all_descriptors(&tdc->vc, &head);
++	spin_unlock_irqrestore(&tdc->vc.lock, flags);
++
++	vchan_dma_desc_free_list(&tdc->vc, &head);
++
++	return 0;
++}
++
++static int tegra_dma_get_residual(struct tegra_dma_channel *tdc)
++{
++	unsigned long wcount = 0, status;
++	unsigned int bytes_xfer, residual;
++	struct tegra_dma_desc *dma_desc = tdc->dma_desc;
++	struct tegra_dma_sg_req *sg_req = dma_desc->sg_req;
++
++	wcount = tdc_read(tdc, TEGRA_GPCDMA_CHAN_XFER_COUNT);
++
++	/*
++	 * Set wcount = 0 if EOC bit is set. The transfer would have
++	 * already completed and the CHAN_XFER_COUNT could have updated
++	 * for the next transfer, specifically in case of cyclic transfers.
++	 */
++	status = tdc_read(tdc, TEGRA_GPCDMA_CHAN_STATUS);
++	if (status & TEGRA_GPCDMA_STATUS_ISE_EOC)
++		wcount = 0;
++
++	bytes_xfer = dma_desc->bytes_xfer +
++		     sg_req[dma_desc->sg_idx - 1].len - (wcount * 4);
++
++	residual = dma_desc->bytes_req - (bytes_xfer % dma_desc->bytes_req);
++
++	return residual;
++}
++
++static enum dma_status tegra_dma_tx_status(struct dma_chan *dc,
++					   dma_cookie_t cookie,
++					   struct dma_tx_state *txstate)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++	struct tegra_dma_desc *dma_desc;
++	struct virt_dma_desc *vd;
++	unsigned int residual;
++	unsigned long flags;
++	enum dma_status ret;
++
++	ret = dma_cookie_status(dc, cookie, txstate);
++	if (ret == DMA_COMPLETE)
++		return ret;
++
++	spin_lock_irqsave(&tdc->vc.lock, flags);
++	vd = vchan_find_desc(&tdc->vc, cookie);
++	if (vd) {
++		dma_desc = vd_to_tegra_dma_desc(vd);
++		residual = dma_desc->bytes_req;
++		dma_set_residue(txstate, residual);
++	} else if (tdc->dma_desc && tdc->dma_desc->vd.tx.cookie == cookie) {
++		residual =  tegra_dma_get_residual(tdc);
++		dma_set_residue(txstate, residual);
++	} else {
++		dev_err(tdc2dev(tdc), "cookie %d is not found\n", cookie);
++	}
++	spin_unlock_irqrestore(&tdc->vc.lock, flags);
++
++	return ret;
++}
++
++static inline int get_bus_width(struct tegra_dma_channel *tdc,
++				enum dma_slave_buswidth slave_bw)
++{
++	switch (slave_bw) {
++	case DMA_SLAVE_BUSWIDTH_1_BYTE:
++		return TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_8;
++	case DMA_SLAVE_BUSWIDTH_2_BYTES:
++		return TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_16;
++	case DMA_SLAVE_BUSWIDTH_4_BYTES:
++		return TEGRA_GPCDMA_MMIOSEQ_BUS_WIDTH_32;
++	default:
++		dev_err(tdc2dev(tdc), "given slave bus width is not supported\n");
++		return -EINVAL;
++	}
++}
++
++static unsigned int get_burst_size(struct tegra_dma_channel *tdc,
++				   u32 burst_size, enum dma_slave_buswidth slave_bw,
++				   int len)
++{
++	unsigned int burst_mmio_width, burst_byte;
++
++	/*
++	 * burst_size from client is in terms of the bus_width.
++	 * convert that into words.
++	 * If burst_size is not specified from client, then use
++	 * len to calculate the optimum burst size
++	 */
++	burst_byte = burst_size ? burst_size * slave_bw : len;
++	burst_mmio_width = burst_byte / 4;
++
++	if (burst_mmio_width < TEGRA_GPCDMA_MMIOSEQ_BURST_MIN)
++		return 0;
++
++	burst_mmio_width = min(burst_mmio_width, TEGRA_GPCDMA_MMIOSEQ_BURST_MAX);
++
++	return TEGRA_GPCDMA_MMIOSEQ_BURST(burst_mmio_width);
++}
++
++static int get_transfer_param(struct tegra_dma_channel *tdc,
++			      enum dma_transfer_direction direction,
++			      unsigned long *apb_addr,
++			      unsigned long *mmio_seq,
++			      unsigned long *csr,
++			      unsigned int *burst_size,
++			      enum dma_slave_buswidth *slave_bw)
++{
++	switch (direction) {
++	case DMA_MEM_TO_DEV:
++		*apb_addr = tdc->dma_sconfig.dst_addr;
++		*mmio_seq = get_bus_width(tdc, tdc->dma_sconfig.dst_addr_width);
++		*burst_size = tdc->dma_sconfig.dst_maxburst;
++		*slave_bw = tdc->dma_sconfig.dst_addr_width;
++		*csr = TEGRA_GPCDMA_CSR_DMA_MEM2IO_FC;
++		return 0;
++	case DMA_DEV_TO_MEM:
++		*apb_addr = tdc->dma_sconfig.src_addr;
++		*mmio_seq = get_bus_width(tdc, tdc->dma_sconfig.src_addr_width);
++		*burst_size = tdc->dma_sconfig.src_maxburst;
++		*slave_bw = tdc->dma_sconfig.src_addr_width;
++		*csr = TEGRA_GPCDMA_CSR_DMA_IO2MEM_FC;
++		return 0;
++	case DMA_MEM_TO_MEM:
++		*burst_size = tdc->dma_sconfig.src_addr_width;
++		*csr = TEGRA_GPCDMA_CSR_DMA_MEM2MEM;
++		return 0;
++	default:
++		dev_err(tdc2dev(tdc), "DMA direction is not supported\n");
++	}
++
++	return -EINVAL;
++}
++
++static struct dma_async_tx_descriptor *
++tegra_dma_prep_dma_memset(struct dma_chan *dc, dma_addr_t dest, int value,
++			  size_t len, unsigned long flags)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++	unsigned int max_dma_count = tdc->tdma->chip_data->max_dma_count;
++	struct tegra_dma_sg_req *sg_req;
++	struct tegra_dma_desc *dma_desc;
++	unsigned long csr, mc_seq;
++
++	if ((len & 3) || (dest & 3) || len > max_dma_count) {
++		dev_err(tdc2dev(tdc),
++			"DMA length/memory address is not supported\n");
++		return NULL;
++	}
++
++	/* Set dma mode to fixed pattern */
++	csr = TEGRA_GPCDMA_CSR_DMA_FIXED_PAT;
++	/* Enable once or continuous mode */
++	csr |= TEGRA_GPCDMA_CSR_ONCE;
++	/* Enable IRQ mask */
++	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
++	/* Enable the dma interrupt */
++	if (flags & DMA_PREP_INTERRUPT)
++		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
++	/* Configure default priority weight for the channel */
++	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
++
++	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
++	/* retain stream-id and clean rest */
++	mc_seq &= TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK;
++
++	/* Set the address wrapping */
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
++						TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
++						TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
++
++	/* Program outstanding MC requests */
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
++	/* Set burst size */
++	mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
++
++	dma_desc = kzalloc(struct_size(dma_desc, sg_req, 1), GFP_NOWAIT);
++	if (!dma_desc)
++		return NULL;
++
++	dma_desc->bytes_req = len;
++	dma_desc->sg_count = 1;
++	sg_req = dma_desc->sg_req;
++
++	sg_req[0].ch_regs.src_ptr = 0;
++	sg_req[0].ch_regs.dst_ptr = dest;
++	sg_req[0].ch_regs.high_addr_ptr =
++			FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (dest >> 32));
++	sg_req[0].ch_regs.fixed_pattern = value;
++	/* Word count reg takes value as (N +1) words */
++	sg_req[0].ch_regs.wcount = ((len - 4) >> 2);
++	sg_req[0].ch_regs.csr = csr;
++	sg_req[0].ch_regs.mmio_seq = 0;
++	sg_req[0].ch_regs.mc_seq = mc_seq;
++	sg_req[0].len = len;
++
++	dma_desc->cyclic = false;
++	return vchan_tx_prep(&tdc->vc, &dma_desc->vd, flags);
++}
++
++static struct dma_async_tx_descriptor *
++tegra_dma_prep_dma_memcpy(struct dma_chan *dc, dma_addr_t dest,
++			  dma_addr_t src, size_t len, unsigned long flags)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++	unsigned int max_dma_count = tdc->tdma->chip_data->max_dma_count;
++	struct tegra_dma_sg_req *sg_req;
++	struct tegra_dma_desc *dma_desc;
++	unsigned long csr, mc_seq;
++
++	if ((len & 3) || (src & 3) || (dest & 3) || len > max_dma_count) {
++		dev_err(tdc2dev(tdc),
++			"DMA length/memory address is not supported\n");
++		return NULL;
++	}
++
++	/* Set dma mode to memory to memory transfer */
++	csr = TEGRA_GPCDMA_CSR_DMA_MEM2MEM;
++	/* Enable once or continuous mode */
++	csr |= TEGRA_GPCDMA_CSR_ONCE;
++	/* Enable IRQ mask */
++	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
++	/* Enable the dma interrupt */
++	if (flags & DMA_PREP_INTERRUPT)
++		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
++	/* Configure default priority weight for the channel */
++	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
++
++	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
++	/* retain stream-id and clean rest */
++	mc_seq &= (TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK) |
++		  (TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK);
++
++	/* Set the address wrapping */
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
++			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
++			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
++
++	/* Program outstanding MC requests */
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
++	/* Set burst size */
++	mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
++
++	dma_desc = kzalloc(struct_size(dma_desc, sg_req, 1), GFP_NOWAIT);
++	if (!dma_desc)
++		return NULL;
++
++	dma_desc->bytes_req = len;
++	dma_desc->sg_count = 1;
++	sg_req = dma_desc->sg_req;
++
++	sg_req[0].ch_regs.src_ptr = src;
++	sg_req[0].ch_regs.dst_ptr = dest;
++	sg_req[0].ch_regs.high_addr_ptr =
++		FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_SRC_PTR, (src >> 32));
++	sg_req[0].ch_regs.high_addr_ptr |=
++		FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (dest >> 32));
++	/* Word count reg takes value as (N +1) words */
++	sg_req[0].ch_regs.wcount = ((len - 4) >> 2);
++	sg_req[0].ch_regs.csr = csr;
++	sg_req[0].ch_regs.mmio_seq = 0;
++	sg_req[0].ch_regs.mc_seq = mc_seq;
++	sg_req[0].len = len;
++
++	dma_desc->cyclic = false;
++	return vchan_tx_prep(&tdc->vc, &dma_desc->vd, flags);
++}
++
++static struct dma_async_tx_descriptor *
++tegra_dma_prep_slave_sg(struct dma_chan *dc, struct scatterlist *sgl,
++			unsigned int sg_len, enum dma_transfer_direction direction,
++			unsigned long flags, void *context)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++	unsigned int max_dma_count = tdc->tdma->chip_data->max_dma_count;
++	unsigned long csr, mc_seq, apb_ptr = 0, mmio_seq = 0;
++	enum dma_slave_buswidth slave_bw;
++	struct tegra_dma_sg_req *sg_req;
++	struct tegra_dma_desc *dma_desc;
++	struct scatterlist *sg;
++	u32 burst_size;
++	unsigned int i;
++	int ret;
++
++	if (!tdc->config_init) {
++		dev_err(tdc2dev(tdc), "DMA channel is not configured\n");
++		return NULL;
++	}
++	if (sg_len < 1) {
++		dev_err(tdc2dev(tdc), "Invalid segment length %d\n", sg_len);
++		return NULL;
++	}
++
++	ret = tegra_dma_sid_reserve(tdc, direction);
++	if (ret)
++		return NULL;
++
++	ret = get_transfer_param(tdc, direction, &apb_ptr, &mmio_seq, &csr,
++				 &burst_size, &slave_bw);
++	if (ret < 0)
++		return NULL;
++
++	/* Enable once or continuous mode */
++	csr |= TEGRA_GPCDMA_CSR_ONCE;
++	/* Program the slave id in requestor select */
++	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_REQ_SEL_MASK, tdc->slave_id);
++	/* Enable IRQ mask */
++	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
++	/* Configure default priority weight for the channel*/
++	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
++
++	/* Enable the dma interrupt */
++	if (flags & DMA_PREP_INTERRUPT)
++		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
++
++	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
++	/* retain stream-id and clean rest */
++	mc_seq &= TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK;
++
++	/* Set the address wrapping on both MC and MMIO side */
++
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
++			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
++			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
++	mmio_seq |= FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_WRAP_WORD, 1);
++
++	/* Program 2 MC outstanding requests by default. */
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
++
++	/* Setting MC burst size depending on MMIO burst size */
++	if (burst_size == 64)
++		mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
++	else
++		mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_2;
++
++	dma_desc = kzalloc(struct_size(dma_desc, sg_req, 1), GFP_NOWAIT);
++	if (!dma_desc)
++		return NULL;
++
++	dma_desc->sg_count = sg_len;
++	sg_req = dma_desc->sg_req;
++
++	/* Make transfer requests */
++	for_each_sg(sgl, sg, sg_len, i) {
++		u32 len;
++		dma_addr_t mem;
++
++		mem = sg_dma_address(sg);
++		len = sg_dma_len(sg);
++
++		if ((len & 3) || (mem & 3) || len > max_dma_count) {
++			dev_err(tdc2dev(tdc),
++				"DMA length/memory address is not supported\n");
++			kfree(dma_desc);
++			return NULL;
++		}
++
++		mmio_seq |= get_burst_size(tdc, burst_size, slave_bw, len);
++		dma_desc->bytes_req += len;
++
++		if (direction == DMA_MEM_TO_DEV) {
++			sg_req[i].ch_regs.src_ptr = mem;
++			sg_req[i].ch_regs.dst_ptr = apb_ptr;
++			sg_req[i].ch_regs.high_addr_ptr =
++				FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_SRC_PTR, (mem >> 32));
++		} else if (direction == DMA_DEV_TO_MEM) {
++			sg_req[i].ch_regs.src_ptr = apb_ptr;
++			sg_req[i].ch_regs.dst_ptr = mem;
++			sg_req[i].ch_regs.high_addr_ptr =
++				FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (mem >> 32));
++		}
++
++		/*
++		 * Word count register takes input in words. Writing a value
++		 * of N into word count register means a req of (N+1) words.
++		 */
++		sg_req[i].ch_regs.wcount = ((len - 4) >> 2);
++		sg_req[i].ch_regs.csr = csr;
++		sg_req[i].ch_regs.mmio_seq = mmio_seq;
++		sg_req[i].ch_regs.mc_seq = mc_seq;
++		sg_req[i].len = len;
++	}
++
++	dma_desc->cyclic = false;
++	return vchan_tx_prep(&tdc->vc, &dma_desc->vd, flags);
++}
++
++static struct dma_async_tx_descriptor *
++tegra_dma_prep_dma_cyclic(struct dma_chan *dc, dma_addr_t buf_addr, size_t buf_len,
++			  size_t period_len, enum dma_transfer_direction direction,
++			  unsigned long flags)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++	unsigned int max_dma_count = tdc->tdma->chip_data->max_dma_count;
++	struct tegra_dma_desc *dma_desc;
++	struct tegra_dma_sg_req *sg_req;
++	unsigned long csr, mc_seq, apb_ptr = 0, mmio_seq = 0;
++	unsigned int len, period_count, i;
++	dma_addr_t mem = buf_addr;
++	u32 burst_size;
++	enum dma_slave_buswidth slave_bw;
++	int ret;
++
++	if (!buf_len || !period_len) {
++		dev_err(tdc2dev(tdc), "Invalid buffer/period len\n");
++		return NULL;
++	}
++
++	if (!tdc->config_init) {
++		dev_err(tdc2dev(tdc), "DMA slave is not configured\n");
++		return NULL;
++	}
++
++	ret = tegra_dma_sid_reserve(tdc, direction);
++	if (ret)
++		return NULL;
++
++	/*
++	 * We only support cycle transfer when buf_len is multiple of
++	 * period_len.
++	 */
++	if (buf_len % period_len) {
++		dev_err(tdc2dev(tdc), "buf_len is not multiple of period_len\n");
++		return NULL;
++	}
++
++	len = period_len;
++	if ((len & 3) || (buf_addr & 3) || len > max_dma_count) {
++		dev_err(tdc2dev(tdc), "Req len/mem address is not correct\n");
++		return NULL;
++	}
++
++	ret = get_transfer_param(tdc, direction, &apb_ptr, &mmio_seq, &csr,
++				 &burst_size, &slave_bw);
++	if (ret < 0)
++		return NULL;
++
++	/* Enable once or continuous mode */
++	csr &= ~TEGRA_GPCDMA_CSR_ONCE;
++	/* Program the slave id in requestor select */
++	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_REQ_SEL_MASK, tdc->slave_id);
++	/* Enable IRQ mask */
++	csr |= TEGRA_GPCDMA_CSR_IRQ_MASK;
++	/* Configure default priority weight for the channel*/
++	csr |= FIELD_PREP(TEGRA_GPCDMA_CSR_WEIGHT, 1);
++
++	/* Enable the dma interrupt */
++	if (flags & DMA_PREP_INTERRUPT)
++		csr |= TEGRA_GPCDMA_CSR_IE_EOC;
++
++	mmio_seq |= FIELD_PREP(TEGRA_GPCDMA_MMIOSEQ_WRAP_WORD, 1);
++
++	mc_seq =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
++	/* retain stream-id and clean rest */
++	mc_seq &= TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK;
++
++	/* Set the address wrapping on both MC and MMIO side */
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP0,
++			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_WRAP1,
++			     TEGRA_GPCDMA_MCSEQ_WRAP_NONE);
++
++	/* Program 2 MC outstanding requests by default. */
++	mc_seq |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_REQ_COUNT, 1);
++	/* Setting MC burst size depending on MMIO burst size */
++	if (burst_size == 64)
++		mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_16;
++	else
++		mc_seq |= TEGRA_GPCDMA_MCSEQ_BURST_2;
++
++	period_count = buf_len / period_len;
++	dma_desc = kzalloc(struct_size(dma_desc, sg_req, period_count),
++			   GFP_NOWAIT);
++	if (!dma_desc)
++		return NULL;
++
++	dma_desc->bytes_req = buf_len;
++	dma_desc->sg_count = period_count;
++
++	/* Split transfer equal to period size */
++	for (i = 0; i < period_count; i++) {
++		mmio_seq |= get_burst_size(tdc, burst_size, slave_bw, len);
++		if (direction == DMA_MEM_TO_DEV) {
++			sg_req[i].ch_regs.src_ptr = mem;
++			sg_req[i].ch_regs.dst_ptr = apb_ptr;
++			sg_req[i].ch_regs.high_addr_ptr =
++				FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_SRC_PTR, (mem >> 32));
++		} else if (direction == DMA_DEV_TO_MEM) {
++			sg_req[i].ch_regs.src_ptr = apb_ptr;
++			sg_req[i].ch_regs.dst_ptr = mem;
++			sg_req[i].ch_regs.high_addr_ptr =
++				FIELD_PREP(TEGRA_GPCDMA_HIGH_ADDR_DST_PTR, (mem >> 32));
++		}
++		/*
++		 * Word count register takes input in words. Writing a value
++		 * of N into word count register means a req of (N+1) words.
++		 */
++		sg_req[i].ch_regs.wcount = ((len - 4) >> 2);
++		sg_req[i].ch_regs.csr = csr;
++		sg_req[i].ch_regs.mmio_seq = mmio_seq;
++		sg_req[i].ch_regs.mc_seq = mc_seq;
++		sg_req[i].len = len;
++
++		mem += len;
++	}
++
++	dma_desc->cyclic = true;
++
++	return vchan_tx_prep(&tdc->vc, &dma_desc->vd, flags);
++}
++
++static int tegra_dma_alloc_chan_resources(struct dma_chan *dc)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++	int ret;
++
++	ret = request_irq(tdc->irq, tegra_dma_isr, 0, tdc->name, tdc);
++	if (ret) {
++		dev_err(tdc2dev(tdc), "request_irq failed for %s\n", tdc->name);
++		return ret;
++	}
++
++	dma_cookie_init(&tdc->vc.chan);
++	tdc->config_init = false;
++	return 0;
++}
++
++static void tegra_dma_chan_synchronize(struct dma_chan *dc)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++
++	synchronize_irq(tdc->irq);
++	vchan_synchronize(&tdc->vc);
++}
++
++static void tegra_dma_free_chan_resources(struct dma_chan *dc)
++{
++	struct tegra_dma_channel *tdc = to_tegra_dma_chan(dc);
++
++	dev_dbg(tdc2dev(tdc), "Freeing channel %d\n", tdc->id);
++
++	tegra_dma_terminate_all(dc);
++	synchronize_irq(tdc->irq);
++
++	tasklet_kill(&tdc->vc.task);
++	tdc->config_init = false;
++	tdc->slave_id = -1;
++	tdc->sid_dir = DMA_TRANS_NONE;
++	free_irq(tdc->irq, tdc);
++
++	vchan_free_chan_resources(&tdc->vc);
++}
++
++static struct dma_chan *tegra_dma_of_xlate(struct of_phandle_args *dma_spec,
++					   struct of_dma *ofdma)
++{
++	struct tegra_dma *tdma = ofdma->of_dma_data;
++	struct tegra_dma_channel *tdc;
++	struct dma_chan *chan;
++
++	chan = dma_get_any_slave_channel(&tdma->dma_dev);
++	if (!chan)
++		return NULL;
++
++	tdc = to_tegra_dma_chan(chan);
++	tdc->slave_id = dma_spec->args[0];
++
++	return chan;
++}
++
++static const struct tegra_dma_chip_data tegra186_dma_chip_data = {
++	.nr_channels = 31,
++	.channel_reg_size = SZ_64K,
++	.max_dma_count = SZ_1G,
++	.hw_support_pause = false,
++	.terminate = tegra_dma_stop_client,
++};
++
++static const struct tegra_dma_chip_data tegra194_dma_chip_data = {
++	.nr_channels = 31,
++	.channel_reg_size = SZ_64K,
++	.max_dma_count = SZ_1G,
++	.hw_support_pause = true,
++	.terminate = tegra_dma_pause,
++};
++
++static const struct of_device_id tegra_dma_of_match[] = {
++	{
++		.compatible = "nvidia,tegra186-gpcdma",
++		.data = &tegra186_dma_chip_data,
++	}, {
++		.compatible = "nvidia,tegra194-gpcdma",
++		.data = &tegra194_dma_chip_data,
++	}, {
++	},
++};
++MODULE_DEVICE_TABLE(of, tegra_dma_of_match);
++
++static int tegra_dma_program_sid(struct tegra_dma_channel *tdc, int stream_id)
++{
++	unsigned int reg_val =  tdc_read(tdc, TEGRA_GPCDMA_CHAN_MCSEQ);
++
++	reg_val &= ~(TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK);
++	reg_val &= ~(TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK);
++
++	reg_val |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_STREAM_ID0_MASK, stream_id);
++	reg_val |= FIELD_PREP(TEGRA_GPCDMA_MCSEQ_STREAM_ID1_MASK, stream_id);
++
++	tdc_write(tdc, TEGRA_GPCDMA_CHAN_MCSEQ, reg_val);
++	return 0;
++}
++
++static int tegra_dma_probe(struct platform_device *pdev)
++{
++	const struct tegra_dma_chip_data *cdata = NULL;
++	struct iommu_fwspec *iommu_spec;
++	unsigned int stream_id, i;
++	struct tegra_dma *tdma;
++	struct resource	*res;
++	int ret;
++
++	cdata = of_device_get_match_data(&pdev->dev);
++
++	tdma = devm_kzalloc(&pdev->dev, sizeof(*tdma) + cdata->nr_channels *
++			sizeof(struct tegra_dma_channel), GFP_KERNEL);
++	if (!tdma)
++		return -ENOMEM;
++
++	tdma->dev = &pdev->dev;
++	tdma->chip_data = cdata;
++	platform_set_drvdata(pdev, tdma);
++
++	tdma->base_addr = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(tdma->base_addr))
++		return PTR_ERR(tdma->base_addr);
++
++	tdma->rst = devm_reset_control_get_exclusive(&pdev->dev, "gpcdma");
++	if (IS_ERR(tdma->rst)) {
++		return dev_err_probe(&pdev->dev, PTR_ERR(tdma->rst),
++			      "Missing controller reset\n");
++	}
++	reset_control_reset(tdma->rst);
++
++	tdma->dma_dev.dev = &pdev->dev;
++
++	iommu_spec = dev_iommu_fwspec_get(&pdev->dev);
++	if (!iommu_spec) {
++		dev_err(&pdev->dev, "Missing iommu stream-id\n");
++		return -EINVAL;
++	}
++	stream_id = iommu_spec->ids[0] & 0xffff;
++
++	INIT_LIST_HEAD(&tdma->dma_dev.channels);
++	for (i = 0; i < cdata->nr_channels; i++) {
++		struct tegra_dma_channel *tdc = &tdma->channels[i];
++
++		tdc->chan_base_offset = TEGRA_GPCDMA_CHANNEL_BASE_ADD_OFFSET +
++					i * cdata->channel_reg_size;
++		res = platform_get_resource(pdev, IORESOURCE_IRQ, i);
++		if (!res) {
++			dev_err(&pdev->dev, "No irq resource for chan %d\n", i);
++			return -EINVAL;
++		}
++		tdc->irq = res->start;
++		snprintf(tdc->name, sizeof(tdc->name), "gpcdma.%d", i);
++
++		tdc->tdma = tdma;
++		tdc->id = i;
++		tdc->slave_id = -1;
++
++		vchan_init(&tdc->vc, &tdma->dma_dev);
++		tdc->vc.desc_free = tegra_dma_desc_free;
++
++		/* program stream-id for this channel */
++		tegra_dma_program_sid(tdc, stream_id);
++		tdc->stream_id = stream_id;
++	}
++
++	dma_cap_set(DMA_SLAVE, tdma->dma_dev.cap_mask);
++	dma_cap_set(DMA_PRIVATE, tdma->dma_dev.cap_mask);
++	dma_cap_set(DMA_MEMCPY, tdma->dma_dev.cap_mask);
++	dma_cap_set(DMA_MEMSET, tdma->dma_dev.cap_mask);
++	dma_cap_set(DMA_CYCLIC, tdma->dma_dev.cap_mask);
++
++	/*
++	 * Only word aligned transfers are supported. Set the copy
++	 * alignment shift.
++	 */
++	tdma->dma_dev.copy_align = 2;
++	tdma->dma_dev.fill_align = 2;
++	tdma->dma_dev.device_alloc_chan_resources =
++					tegra_dma_alloc_chan_resources;
++	tdma->dma_dev.device_free_chan_resources =
++					tegra_dma_free_chan_resources;
++	tdma->dma_dev.device_prep_slave_sg = tegra_dma_prep_slave_sg;
++	tdma->dma_dev.device_prep_dma_memcpy = tegra_dma_prep_dma_memcpy;
++	tdma->dma_dev.device_prep_dma_memset = tegra_dma_prep_dma_memset;
++	tdma->dma_dev.device_prep_dma_cyclic = tegra_dma_prep_dma_cyclic;
++	tdma->dma_dev.device_config = tegra_dma_slave_config;
++	tdma->dma_dev.device_terminate_all = tegra_dma_terminate_all;
++	tdma->dma_dev.device_tx_status = tegra_dma_tx_status;
++	tdma->dma_dev.device_issue_pending = tegra_dma_issue_pending;
++	tdma->dma_dev.device_pause = tegra_dma_device_pause;
++	tdma->dma_dev.device_resume = tegra_dma_device_resume;
++	tdma->dma_dev.device_synchronize = tegra_dma_chan_synchronize;
++	tdma->dma_dev.residue_granularity = DMA_RESIDUE_GRANULARITY_BURST;
++
++	ret = dma_async_device_register(&tdma->dma_dev);
++	if (ret < 0) {
++		dev_err_probe(&pdev->dev, ret,
++			      "GPC DMA driver registration failed\n");
++		return ret;
++	}
++
++	ret = of_dma_controller_register(pdev->dev.of_node,
++					 tegra_dma_of_xlate, tdma);
++	if (ret < 0) {
++		dev_err_probe(&pdev->dev, ret,
++			      "GPC DMA OF registration failed\n");
++
++		dma_async_device_unregister(&tdma->dma_dev);
++		return ret;
++	}
++
++	dev_info(&pdev->dev, "GPC DMA driver register %d channels\n",
++		 cdata->nr_channels);
++
++	return 0;
++}
++
++static int tegra_dma_remove(struct platform_device *pdev)
++{
++	struct tegra_dma *tdma = platform_get_drvdata(pdev);
++
++	of_dma_controller_free(pdev->dev.of_node);
++	dma_async_device_unregister(&tdma->dma_dev);
++
++	return 0;
++}
++
++static int __maybe_unused tegra_dma_pm_suspend(struct device *dev)
++{
++	struct tegra_dma *tdma = dev_get_drvdata(dev);
++	unsigned int i;
++
++	for (i = 0; i < tdma->chip_data->nr_channels; i++) {
++		struct tegra_dma_channel *tdc = &tdma->channels[i];
++
++		if (tdc->dma_desc) {
++			dev_err(tdma->dev, "channel %u busy\n", i);
++			return -EBUSY;
++		}
++	}
++
++	return 0;
++}
++
++static int __maybe_unused tegra_dma_pm_resume(struct device *dev)
++{
++	struct tegra_dma *tdma = dev_get_drvdata(dev);
++	unsigned int i;
++
++	reset_control_reset(tdma->rst);
++
++	for (i = 0; i < tdma->chip_data->nr_channels; i++) {
++		struct tegra_dma_channel *tdc = &tdma->channels[i];
++
++		tegra_dma_program_sid(tdc, tdc->stream_id);
++	}
++
++	return 0;
++}
++
++static const struct __maybe_unused dev_pm_ops tegra_dma_dev_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(tegra_dma_pm_suspend, tegra_dma_pm_resume)
++};
++
++static struct platform_driver tegra_dma_driver = {
++	.driver = {
++		.name	= "tegra-gpcdma",
++		.pm	= &tegra_dma_dev_pm_ops,
++		.of_match_table = tegra_dma_of_match,
++	},
++	.probe		= tegra_dma_probe,
++	.remove		= tegra_dma_remove,
++};
++
++module_platform_driver(tegra_dma_driver);
++
++MODULE_DESCRIPTION("NVIDIA Tegra GPC DMA Controller driver");
++MODULE_AUTHOR("Pavan Kunapuli <pkunapuli@nvidia.com>");
++MODULE_AUTHOR("Rajesh Gumasta <rgumasta@nvidia.com>");
++MODULE_LICENSE("GPL v2");
+-- 
+2.7.4
 
-Alan Stern (2):
-      USB: core: Fix bug in resuming hub's handling of wakeup requests
-      USB: Fix "slab-out-of-bounds Write" bug in usb_hcd_poll_rh_status
-
-Alexander Aring (1):
-      fs: dlm: filter user dlm messages for kernel locks
-
-Alexander Gordeev (1):
-      s390/mm: fix 2KB pgtable release race
-
-Alistair Francis (1):
-      HID: quirks: Allow inverting the absolute X/Y values
-
-Amelie Delaunay (1):
-      dmaengine: stm32-mdma: fix STM32_MDMA_CTBR_TSEL_MASK
-
-Amir Goldstein (1):
-      fuse: fix live lock in fuse_iget()
-
-Anders Roxell (1):
-      powerpc/cell: Fix clang -Wimplicit-fallthrough warning
-
-Andrey Ryabinin (1):
-      cputime, cpuacct: Include guest time in user time in cpuacct.stat
-
-Andy Shevchenko (1):
-      mfd: intel-lpss: Fix too early PM enablement in the ACPI ->probe()
-
-Antoine Tenart (1):
-      net-sysfs: update the queue counts in the unregistration path
-
-Anton Vasilyev (1):
-      media: dw2102: Fix use after free
-
-Antony Antony (2):
-      xfrm: interface with if_id 0 should return error
-      xfrm: state and policy should fail if XFRMA_IF_ID 0
-
-Arnaud Pouliquen (1):
-      rpmsg: core: Clean up resources on announce_create failure.
-
-Arnd Bergmann (1):
-      dmaengine: pxa/mmp: stop referencing config->slave_id
-
-Avihai Horon (1):
-      RDMA/core: Let ib_find_gid() continue search even after empty entry
-
-Bart Van Assche (1):
-      scsi: ufs: Fix race conditions related to driver data
-
-Ben Hutchings (2):
-      firmware: Update Kconfig help text for Google firmware
-      mips,s390,sh,sparc: gup: Work around the "COW can break either way" issue
-
-Ben Skeggs (1):
-      drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR
-
-Bixuan Cui (1):
-      ALSA: oss: fix compile error when OSS_DEBUG is enabled
-
-Borislav Petkov (3):
-      x86/mce: Mark mce_panic() noinstr
-      x86/mce: Mark mce_end() noinstr
-      x86/mce: Mark mce_read_aux() noinstr
-
-Brian Norris (1):
-      drm/panel: innolux-p079zca: Delete panel on attach() failure
-
-Brian Silverman (1):
-      can: gs_usb: gs_can_start_xmit(): zero-initialize hf->{flags,reserved}
-
-Bryan O'Donoghue (2):
-      wcn36xx: Indicate beacon not connection loss on MISSED_BEACON_IND
-      wcn36xx: Release DMA channel descriptor allocations
-
-Chao Yu (1):
-      f2fs: fix to do sanity check in is_alive()
-
-Chen Jun (1):
-      tpm: add request_locality before write TPM_INT_ENABLE
-
-Chengfeng Ye (2):
-      crypto: qce - fix uaf on qce_ahash_register_one
-      HSI: core: Fix return freed object in hsi_new_client
-
-Chengguang Xu (1):
-      RDMA/rxe: Fix a typo in opcode name
-
-Christian Hewitt (1):
-      arm64: dts: meson-gxbb-wetek: fix missing GPIO binding
-
-Christian König (1):
-      drm/radeon: fix error handling in radeon_driver_open_kms
-
-Christian Lachner (1):
-      ALSA: hda/realtek - Fix silent output on Gigabyte X570 Aorus Master after reboot from Windows
-
-Christoph Hellwig (1):
-      scsi: sr: Don't use GFP_DMA
-
-Christophe JAILLET (1):
-      orangefs: Fix the size of a memory allocation in orangefs_bufmap_alloc()
-
-Christophe Leroy (2):
-      lkdtm: Fix content of section containing lkdtm_rodata_do_nothing()
-      w1: Misuse of get_user()/put_user() reported by sparse
-
-Clark Williams (3):
-      rt: PREEMPT_RT safety net for backported patches
-      Merge tag 'v4.19.227' into v4.19-rt
-      Linux 4.19.227-rt102
-
-Dafna Hirschfeld (1):
-      media: mtk-vcodec: call v4l2_m2m_ctx_release first when file is released
-
-Daniel Borkmann (1):
-      veth: Do not record rx queue hint in veth_xmit
-
-Danielle Ratson (1):
-      mlxsw: pci: Add shutdown method in PCI driver
-
-Dillon Min (1):
-      media: videobuf2: Fix the size printk format
-
-Dmitry Baryshkov (2):
-      arm64: dts: qcom: msm8916: fix MMC controller aliases
-      drm/msm/dpu: fix safe status debugfs file
-
-Dominik Brodowski (1):
-      pcmcia: fix setting of kthread task states
-
-Dongliang Mu (1):
-      media: em28xx: fix memory leak in em28xx_init_dev
-
-Doyle, Patrick (1):
-      mtd: nand: bbt: Fix corner case in bad block table handling
-
-Eric Biggers (2):
-      random: fix data race on crng_node_pool
-      random: fix data race on crng init time
-
-Eric Dumazet (4):
-      xfrm: fix a small bug in xfrm_sa_len()
-      ppp: ensure minimum packet size in ppp_write()
-      af_unix: annote lockless accesses to unix_tot_inflight & gc_in_progress
-      netns: add schedule point in ops_exit_list()
-
-Eric Farman (1):
-      KVM: s390: Clarify SIGP orders versus STOP/RESTART
-
-Florian Fainelli (1):
-      net: mdio: Demote probed message to debug print
-
-Florian Westphal (1):
-      netfilter: bridge: add support for pppoe filtering
-
-Gang Li (1):
-      shmem: fix a race between shmem_unused_huge_shrink and shmem_evict_inode
-
-Greg Kroah-Hartman (2):
-      Linux 4.19.226
-      Linux 4.19.227
-
-Guillaume Nault (1):
-      libcxgb: Don't accidentally set RTO_ONLINK in cxgb_find_route()
-
-Hans de Goede (1):
-      gpiolib: acpi: Do not set the IRQ type if the IRQ is already in use
-
-Hari Bathini (1):
-      powerpc: handle kdump appropriately with crash_kexec_post_notifiers option
-
-Hector Martin (1):
-      iommu/io-pgtable-arm: Fix table descriptor paddr formatting
-
-Heiner Kallweit (1):
-      i2c: i801: Don't silently correct invalid transfer size
-
-Ilan Peer (2):
-      iwlwifi: mvm: Fix calculation of frame length
-      iwlwifi: mvm: Increase the scan timeout guard to 30 seconds
-
-James Hilliard (1):
-      media: uvcvideo: Increase UVC_CTRL_CONTROL_TIMEOUT to 5 seconds.
-
-Jan Kara (4):
-      ext4: avoid trim error on fs with small groups
-      ext4: make sure to reset inode lockdep class when quota enabling fails
-      ext4: make sure quota gets properly shutdown on error
-      select: Fix indefinitely sleeping task in poll_schedule_timeout()
-
-Jann Horn (1):
-      HID: uhid: Fix worker destroying device without any protection
-
-Jason Gerecke (3):
-      HID: wacom: Reset expected and received contact counts at the same time
-      HID: wacom: Ignore the confidence flag when a touch is removed
-      HID: wacom: Avoid using stale array indicies to read contact count
-
-Jens Wiklander (1):
-      tee: fix put order in teedev_close_context()
-
-Jiasheng Jiang (8):
-      media: coda/imx-vdoa: Handle dma_set_coherent_mask error codes
-      staging: greybus: audio: Check null pointer
-      fsl/fman: Check for null pointer after calling devm_ioremap
-      Bluetooth: hci_bcm: Check for error irq
-      can: xilinx_can: xcan_probe(): check for error irq
-      ASoC: rt5663: Handle device_property_read_u32_array error codes
-      ASoC: mediatek: Check for error clk pointer
-      ASoC: samsung: idma: Check of ioremap return value
-
-Joakim Tjernlund (1):
-      i2c: mpc: Correct I2C reset procedure
-
-Joe Thornber (2):
-      dm btree: add a defensive bounds check to insert_at()
-      dm space map common: add bounds check to sm_ll_lookup_bitmap()
-
-Johan Hovold (14):
-      Bluetooth: bfusb: fix division by zero in send path
-      media: uvcvideo: fix division by zero at stream start
-      firmware: qemu_fw_cfg: fix sysfs information leak
-      firmware: qemu_fw_cfg: fix NULL-pointer deref on duplicate entries
-      firmware: qemu_fw_cfg: fix kobject leak in probe error path
-      media: flexcop-usb: fix control-message timeouts
-      media: mceusb: fix control-message timeouts
-      media: em28xx: fix control-message timeouts
-      media: cpia2: fix control-message timeouts
-      media: s2255: fix control-message timeouts
-      media: redrat3: fix control-message timeouts
-      media: pvrusb2: fix control-message timeouts
-      media: stk1160: fix control-message timeouts
-      can: softing_cs: softingcs_probe(): fix memleak on registration failure
-
-Johannes Berg (3):
-      iwlwifi: mvm: synchronize with FW after multicast commands
-      iwlwifi: fix leaks/bad data after failed firmware load
-      iwlwifi: remove module loading failure message
-
-John David Anglin (1):
-      parisc: Avoid calling faulthandler_disabled() twice
-
-Josef Bacik (2):
-      btrfs: remove BUG_ON() in find_parent_nodes()
-      btrfs: remove BUG_ON(!eie) in find_parent_nodes
-
-José Expósito (1):
-      HID: apple: Do not reset quirks when the Fn key is not found
-
-Julia Lawall (4):
-      powerpc/6xx: add missing of_node_put
-      powerpc/powernv: add missing of_node_put
-      powerpc/cell: add missing of_node_put
-      powerpc/btext: add missing of_node_put
-
-Kai-Heng Feng (1):
-      usb: hub: Add delay for SuperSpeed hub resume to let links transit to U0
-
-KaiChieh Chuang (1):
-      ASoC: dpcm: prevent snd_soc_dpcm use after free
-
-Kamal Heib (2):
-      RDMA/hns: Validate the pkey index
-      RDMA/cxgb4: Set queue pair state when being queried
-
-Kees Cook (1):
-      char/mwave: Adjust io port register size
-
-Kevin Bracey (1):
-      net_sched: restore "mpu xxx" handling
-
-Kirill A. Shutemov (1):
-      ACPICA: Hardware: Do not flush CPU cache when entering S4 and S5
-
-Konrad Dybcio (1):
-      regulator: qcom_smd: Align probe function with rpmh-regulator
-
-Krzysztof Kozlowski (1):
-      nfc: llcp: fix NULL error pointer dereference on sendmsg() after failed bind()
-
-Kyeong Yoo (1):
-      jffs2: GC deadlock reading a page that is used in jffs2_write_begin()
-
-Lakshmi Sowjanya D (1):
-      i2c: designware-pci: Fix to change data types of hcnt and lcnt parameters
-
-Larry Finger (1):
-      rtlwifi: rtl8192cu: Fix WARNING when calling local_irq_restore() with interrupts enabled
-
-Laurence de Bruxelles (1):
-      rtc: pxa: fix null pointer dereference
-
-Li Hua (1):
-      sched/rt: Try to restart rt period timer when rt runtime exceeded
-
-Lino Sanfilippo (1):
-      serial: amba-pl011: do not request memory region twice
-
-Lizhi Hou (1):
-      tty: serial: uartlite: allow 64 bit address
-
-Lucas De Marchi (1):
-      x86/gpu: Reserve stolen memory for first integrated Intel GPU
-
-Lucas Stach (1):
-      drm/etnaviv: limit submit sizes
-
-Lukas Bulwahn (2):
-      ASoC: uniphier: drop selecting non-existing SND_SOC_UNIPHIER_AIO_DMA
-      Documentation: refer to config RANDOMIZE_BASE for kernel address-space randomization
-
-Lukas Wunner (3):
-      serial: pl010: Drop CR register reset on set_termios
-      serial: core: Keep mctrl register state and cached copy in sync
-      serial: Fix incorrect rs485 polarity on uart open
-
-Luís Henriques (1):
-      ext4: set csum seed in tmp inode while migrating to extents
-
-Marc Kleine-Budde (2):
-      can: gs_usb: fix use of uninitialized variable, detach device on reception of invalid USB data
-      can: softing: softing_startstop(): fix set but not used variable warning
-
-Marek Behún (1):
-      ARM: dts: armada-38x: Add generic compatible to UART nodes
-
-Marek Vasut (1):
-      crypto: stm32/crc32 - Fix kernel BUG triggered in probe()
-
-Mark Langsdorf (1):
-      ACPICA: actypes.h: Expand the ACPI_ACCESS_ definitions
-
-Martyn Welch (1):
-      drm/bridge: megachips: Ensure both bridges are probed before registration
-
-Mateusz Jończyk (1):
-      rtc: cmos: take rtc_lock while reading from CMOS
-
-Mathias Krause (1):
-      drm/vmwgfx: Fix stale file descriptors on failed usercopy
-
-Matthias Schiffer (1):
-      scripts/dtc: dtx_diff: remove broken example from help text
-
-Mauro Carvalho Chehab (1):
-      media: m920x: don't use stack on USB reads
-
-Maxime Ripard (2):
-      clk: bcm-2835: Pick the closest clock rate
-      clk: bcm-2835: Remove rounding up the dividers
-
-Miaoqian Lin (3):
-      spi: spi-meson-spifc: Add missing pm_runtime_disable() in meson_spifc_probe
-      parisc: pdc_stable: Fix memory leak in pdcs_register_pathentries
-      lib82596: Fix IRQ check in sni_82596_probe
-
-Michael Ellerman (1):
-      powerpc/smp: Move setup_profiling_timer() under CONFIG_PROFILING
-
-Michael Kuron (1):
-      media: dib0700: fix undefined behavior in tuner shutdown
-
-Miklos Szeredi (1):
-      fuse: fix bad inode
-
-Nathan Chancellor (3):
-      staging: wlan-ng: Avoid bitwise vs logical OR warning in hfa384x_usb_throttlefn()
-      drm/i915: Avoid bitwise vs logical OR warning in snb_wm_latency_quirk()
-      kbuild: Add $(KBUILD_HOSTLDFLAGS) to 'has_libelf' test
-
-Neal Liu (1):
-      usb: uhci: add aspeed ast2600 uhci support
-
-Nicholas Piggin (1):
-      powerpc/watchdog: Fix missed watchdog reset due to memory ordering race
-
-Nicolas Toromanoff (1):
-      crypto: stm32/cryp - fix double pm exit
-
-Nikolay Aleksandrov (1):
-      net: bridge: clear bridge's private skb space on xmit
-
-Paolo Abeni (1):
-      bpf: Do not WARN in bpf_warn_invalid_xdp_action()
-
-Pascal Paillet (1):
-      regulator: core: Let boot-on regulators be powered off
-
-Paul Moore (1):
-      audit: ensure userspace is penalized the same as the kernel when under pressure
-
-Pavankumar Kondeti (1):
-      usb: gadget: f_fs: Use stream_open() for endpoint files
-
-Pavel Skripkin (2):
-      Bluetooth: stop proccessing malicious adv data
-      net: mcs7830: handle usb read errors properly
-
-Peiwei Hu (1):
-      powerpc/prom_init: Fix improper check of prom_getprop()
-
-Petr Cvachoucek (1):
-      ubifs: Error path in ubifs_remount_rw() seems to wrongly free write buffers
-
-Ping-Ke Shih (1):
-      mac80211: allow non-standard VHT MCS-10/11
-
-Rafael J. Wysocki (2):
-      ACPICA: Utilities: Avoid deleting the same object twice in a row
-      ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
-
-Randy Dunlap (3):
-      mips: lantiq: add support for clk_set_parent()
-      mips: bcm63xx: add support for clk_set_parent()
-      um: registers: Rename function names to avoid conflicts and build problems
-
-Robert Hancock (2):
-      net: axienet: Wait for PhyRstCmplt after core reset
-      net: axienet: fix number of TX ring slots for available check
-
-Robert Schlabbach (1):
-      media: si2157: Fix "warm" tuner state detection
-
-Russell King (Oracle) (2):
-      net: phy: marvell: configure RGMII delays for 88E1118
-      net: gemini: allow any RGMII interface mode
-
-Sean Young (1):
-      media: igorplugusb: receiver overflow should be reported
-
-Sebastian Andrzej Siewior (1):
-      net: Add missing xmit_lock_owner hunks.
-
-Sebastian Gottschall (1):
-      ath10k: Fix tx hanging
-
-Sergey Shtylyov (2):
-      mmc: meson-mx-sdio: add IRQ check
-      bcmgenet: add WOL IRQ check
-
-Stefan Riedmueller (1):
-      mtd: rawnand: gpmi: Remove explicit default gpmi clock setting for i.MX6
-
-Suresh Kumar (1):
-      net: bonding: debug: avoid printing debug logs when bond is not notifying peers
-
-Suresh Udipi (2):
-      media: rcar-csi2: Correct the selection of hsfreqrange
-      media: rcar-csi2: Optimize the selection PHTW register
-
-Takashi Iwai (4):
-      ALSA: jack: Add missing rwsem around snd_ctl_remove() calls
-      ALSA: PCM: Add missing rwsem around snd_ctl_remove() calls
-      ALSA: hda: Add missing rwsem around snd_ctl_remove() calls
-      ALSA: seq: Set upper limit of processed events
-
-Tasos Sahanidis (1):
-      floppy: Fix hang in watchdog when disk is ejected
-
-Theodore Ts'o (1):
-      ext4: don't use the orphan list when migrating an inode
-
-Thierry Reding (1):
-      arm64: tegra: Adjust length of CCPLEX cluster MMIO region
-
-Thomas Gleixner (1):
-      can: bcm: switch timer to HRTIMER_MODE_SOFT and remove hrtimer_tasklet
-
-Thomas Weißschuh (1):
-      ACPI: battery: Add the ThinkPad "Not Charging" quirk
-
-Tianjia Zhang (1):
-      MIPS: Octeon: Fix build errors using clang
-
-Tobias Waldekranz (2):
-      powerpc/fsl/dts: Enable WA for erratum A-009885 on fman3l MDIO buses
-      net/fsl: xgmac_mdio: Fix incorrect iounmap when removing module
-
-Tony Lindgren (1):
-      ARM: dts: Fix vcsi regulator to be always-on for droid4 to prevent hangs
-
-Tudor Ambarus (6):
-      tty: serial: atmel: Check return code of dmaengine_submit()
-      tty: serial: atmel: Call dma_async_issue_pending()
-      dmaengine: at_xdmac: Don't start transactions at tx_submit level
-      dmaengine: at_xdmac: Print debug message after realeasing the lock
-      dmaengine: at_xdmac: Fix lld view setting
-      dmaengine: at_xdmac: Fix at_xdmac_lld struct definition
-
-Tvrtko Ursulin (1):
-      drm/i915: Flush TLBs before releasing backing store
-
-Tzung-Bi Shih (1):
-      ASoC: mediatek: mt8173: fix device_node leak
-
-Ulf Hansson (1):
-      mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
-
-Wang Hai (3):
-      Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
-      media: dmxdev: fix UAF when dvb_register_device() fails
-      media: msi001: fix possible null-ptr-deref in msi001_probe()
-
-Wei Yongjun (3):
-      usb: ftdi-elan: fix memory leak on device disconnect
-      misc: lattice-ecp3-config: Fix task hung when firmware load failed
-      Bluetooth: Fix debugfs entry leak in hci_register_dev()
-
-Xin Xiong (1):
-      netfilter: ipt_CLUSTERIP: fix refcount leak in clusterip_tg_check()
-
-Xiongfeng Wang (1):
-      iommu/iova: Fix race between FQ timeout and teardown
-
-Xiongwei Song (1):
-      floppy: Add max size check for user space request
-
-Yang Yingliang (1):
-      media: si470x-i2c: fix possible memory leak in si470x_i2c_probe()
-
-Yauhen Kharuzhy (1):
-      power: bq25890: Enable continuous conversion for ADC at charging
-
-Ye Bin (1):
-      ext4: Fix BUG_ON in ext4_bread when write quota data
-
-Ye Guojin (1):
-      MIPS: OCTEON: add put_device() after of_find_device_by_node()
-
-Yifeng Li (1):
-      PCI: Add function 1 DMA alias quirk for Marvell 88SE9125 SATA controller
-
-Yixing Liu (1):
-      RDMA/hns: Modify the mapping attribute of doorbell to device
-
-Zekun Shen (4):
-      ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
-      mwifiex: Fix skb_over_panic in mwifiex_usb_recv()
-      rsi: Fix out-of-bounds read in rsi_read_pkt()
-      ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
-
-Zhang Zixun (1):
-      x86/mce/inject: Avoid out-of-bounds write when setting flags
-
-Zheyu Ma (1):
-      media: b2c2: Add missing check in flexcop_pci_isr:
-
-Zhou Qingyang (8):
-      drm/amdgpu: Fix a NULL pointer dereference in amdgpu_connector_lcd_native_mode()
-      drm/radeon/radeon_kms: Fix a NULL pointer dereference in radeon_driver_open_kms()
-      media: dib8000: Fix a memleak in dib8000_init()
-      media: saa7146: mxb: Fix a NULL pointer dereference in mxb_attach()
-      pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in __nonstatic_find_io_region()
-      pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in nonstatic_find_mem_region()
-      media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
-      media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
-
-Zongmin Zhou (1):
-      drm/amdgpu: fixup bad vram size on gmc v8
----
-Documentation/admin-guide/hw-vuln/spectre.rst      |   2 +-
- Makefile                                           |   4 +-
- arch/arm/boot/dts/armada-38x.dtsi                  |   4 +-
- arch/arm/boot/dts/motorola-cpcap-mapphone.dtsi     |   4 +-
- arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi  |   1 +
- arch/arm64/boot/dts/nvidia/tegra186.dtsi           |   2 +-
- arch/arm64/boot/dts/qcom/msm8916.dtsi              |   4 +-
- arch/mips/bcm63xx/clk.c                            |   6 +
- arch/mips/cavium-octeon/octeon-platform.c          |   2 +
- arch/mips/cavium-octeon/octeon-usb.c               |   1 +
- arch/mips/include/asm/octeon/cvmx-bootinfo.h       |   4 +-
- arch/mips/lantiq/clk.c                             |   6 +
- arch/mips/mm/gup.c                                 |   9 +-
- arch/parisc/kernel/traps.c                         |   2 +-
- arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi      |   2 +
- arch/powerpc/kernel/btext.c                        |   4 +-
- arch/powerpc/kernel/prom_init.c                    |   2 +-
- arch/powerpc/kernel/smp.c                          |  32 ++
- arch/powerpc/kernel/watchdog.c                     |  41 ++-
- arch/powerpc/platforms/cell/iommu.c                |   1 +
- arch/powerpc/platforms/cell/pervasive.c            |   1 +
- arch/powerpc/platforms/embedded6xx/hlwd-pic.c      |   1 +
- arch/powerpc/platforms/powernv/opal-lpc.c          |   1 +
- arch/s390/kvm/interrupt.c                          |   7 +
- arch/s390/kvm/kvm-s390.c                           |   9 +-
- arch/s390/kvm/kvm-s390.h                           |   1 +
- arch/s390/kvm/sigp.c                               |  28 ++
- arch/s390/mm/gup.c                                 |   9 +-
- arch/s390/mm/pgalloc.c                             |   4 +-
- arch/sh/mm/gup.c                                   |   9 +-
- arch/sparc/mm/gup.c                                |   9 +-
- arch/um/include/shared/registers.h                 |   4 +-
- arch/um/os-Linux/registers.c                       |   4 +-
- arch/um/os-Linux/start_up.c                        |   2 +-
- arch/x86/kernel/cpu/mcheck/mce-inject.c            |   2 +-
- arch/x86/kernel/cpu/mcheck/mce.c                   |  31 +-
- arch/x86/kernel/early-quirks.c                     |  10 +-
- arch/x86/um/syscalls_64.c                          |   3 +-
- drivers/acpi/acpica/exoparg1.c                     |   3 +-
- drivers/acpi/acpica/hwesleep.c                     |   4 +-
- drivers/acpi/acpica/hwsleep.c                      |   4 +-
- drivers/acpi/acpica/hwxfsleep.c                    |   2 -
- drivers/acpi/acpica/utdelete.c                     |   1 +
- drivers/acpi/battery.c                             |  22 ++
- drivers/block/floppy.c                             |   6 +-
- drivers/bluetooth/bfusb.c                          |   3 +
- drivers/bluetooth/hci_bcm.c                        |   7 +-
- drivers/char/mwave/3780i.h                         |   2 +-
- drivers/char/random.c                              |  61 ++--
- drivers/char/tpm/tpm_tis_core.c                    |   8 +
- drivers/clk/bcm/clk-bcm2835.c                      |  13 +-
- drivers/crypto/qce/sha.c                           |   2 +-
- drivers/crypto/stm32/stm32-cryp.c                  |   2 -
- drivers/crypto/stm32/stm32_crc32.c                 |   4 +-
- drivers/dma/at_xdmac.c                             |  32 +-
- drivers/dma/mmp_pdma.c                             |   6 -
- drivers/dma/pxa_dma.c                              |   7 -
- drivers/dma/stm32-mdma.c                           |   2 +-
- drivers/firmware/google/Kconfig                    |   6 +-
- drivers/firmware/qemu_fw_cfg.c                     |  20 +-
- drivers/gpio/gpiolib-acpi.c                        |  15 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c     |   6 +
- drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c              |  13 +-
- .../drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c   |  40 ++-
- drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c       |   6 +
- drivers/gpu/drm/i915/i915_drv.h                    |   2 +
- drivers/gpu/drm/i915/i915_gem.c                    |  83 +++++
- drivers/gpu/drm/i915/i915_gem_object.h             |   1 +
- drivers/gpu/drm/i915/i915_reg.h                    |   6 +
- drivers/gpu/drm/i915/i915_vma.c                    |   4 +
- drivers/gpu/drm/i915/intel_pm.c                    |   6 +-
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   4 +-
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c     |  37 ++-
- drivers/gpu/drm/panel/panel-innolux-p079zca.c      |  10 +-
- drivers/gpu/drm/radeon/radeon_kms.c                |  42 +--
- drivers/gpu/drm/vmwgfx/vmwgfx_drv.h                |   5 +-
- drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c            |  34 +--
- drivers/gpu/drm/vmwgfx/vmwgfx_fence.c              |   2 +-
- drivers/gpu/drm/vmwgfx/vmwgfx_kms.c                |   2 +-
- drivers/hid/hid-apple.c                            |   2 +-
- drivers/hid/hid-input.c                            |   6 +
- drivers/hid/uhid.c                                 |  29 +-
- drivers/hid/wacom_wac.c                            |  39 ++-
- drivers/hsi/hsi_core.c                             |   1 +
- drivers/i2c/busses/i2c-designware-pcidrv.c         |   8 +-
- drivers/i2c/busses/i2c-i801.c                      |  15 +-
- drivers/i2c/busses/i2c-mpc.c                       |  23 +-
- drivers/infiniband/core/device.c                   |   3 +-
- drivers/infiniband/hw/cxgb4/qp.c                   |   1 +
- drivers/infiniband/hw/hns/hns_roce_main.c          |   5 +-
- drivers/infiniband/sw/rxe/rxe_opcode.c             |   2 +-
- drivers/iommu/io-pgtable-arm.c                     |   9 +-
- drivers/iommu/iova.c                               |   3 +-
- drivers/md/persistent-data/dm-btree.c              |   8 +-
- drivers/md/persistent-data/dm-space-map-common.c   |   5 +
- drivers/media/common/saa7146/saa7146_fops.c        |   2 +-
- .../media/common/videobuf2/videobuf2-dma-contig.c  |   8 +-
- drivers/media/dvb-core/dmxdev.c                    |  18 +-
- drivers/media/dvb-frontends/dib8000.c              |   4 +-
- drivers/media/pci/b2c2/flexcop-pci.c               |   3 +
- drivers/media/pci/saa7146/hexium_gemini.c          |   7 +-
- drivers/media/pci/saa7146/hexium_orion.c           |   8 +-
- drivers/media/pci/saa7146/mxb.c                    |   8 +-
- drivers/media/platform/coda/imx-vdoa.c             |   6 +-
- .../media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c |   2 +-
- drivers/media/platform/rcar-vin/rcar-csi2.c        |  18 +-
- drivers/media/radio/si470x/radio-si470x-i2c.c      |   3 +-
- drivers/media/rc/igorplugusb.c                     |   4 +-
- drivers/media/rc/mceusb.c                          |   8 +-
- drivers/media/rc/redrat3.c                         |  22 +-
- drivers/media/tuners/msi001.c                      |   7 +
- drivers/media/tuners/si2157.c                      |   2 +-
- drivers/media/usb/b2c2/flexcop-usb.c               |  10 +-
- drivers/media/usb/b2c2/flexcop-usb.h               |  12 +-
- drivers/media/usb/cpia2/cpia2_usb.c                |   4 +-
- drivers/media/usb/dvb-usb/dib0700_core.c           |   2 -
- drivers/media/usb/dvb-usb/dw2102.c                 | 338 +++++++++++++--------
- drivers/media/usb/dvb-usb/m920x.c                  |  12 +-
- drivers/media/usb/em28xx/em28xx-cards.c            |  18 +-
- drivers/media/usb/em28xx/em28xx-core.c             |   4 +-
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c            |   8 +-
- drivers/media/usb/s2255/s2255drv.c                 |   4 +-
- drivers/media/usb/stk1160/stk1160-core.c           |   4 +-
- drivers/media/usb/uvc/uvc_video.c                  |   4 +
- drivers/media/usb/uvc/uvcvideo.h                   |   2 +-
- drivers/mfd/intel-lpss-acpi.c                      |   7 +-
- drivers/misc/lattice-ecp3-config.c                 |  12 +-
- drivers/misc/lkdtm/Makefile                        |   2 +-
- drivers/mmc/core/sdio.c                            |   4 +-
- drivers/mmc/host/meson-mx-sdio.c                   |   5 +
- drivers/mtd/nand/bbt.c                             |   2 +-
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c         |   9 -
- drivers/net/bonding/bond_main.c                    |   6 +-
- drivers/net/can/softing/softing_cs.c               |   2 +-
- drivers/net/can/softing/softing_fw.c               |  11 +-
- drivers/net/can/usb/gs_usb.c                       |   5 +-
- drivers/net/can/xilinx_can.c                       |   7 +-
- drivers/net/ethernet/broadcom/genet/bcmgenet.c     |  10 +-
- drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c  |   3 +-
- drivers/net/ethernet/cortina/gemini.c              |   9 +-
- drivers/net/ethernet/freescale/fman/mac.c          |  21 +-
- drivers/net/ethernet/freescale/xgmac_mdio.c        |   3 +-
- drivers/net/ethernet/i825xx/sni_82596.c            |   3 +-
- drivers/net/ethernet/mellanox/mlxsw/pci.c          |   1 +
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c  |  14 +-
- drivers/net/phy/marvell.c                          |   6 +
- drivers/net/phy/mdio_bus.c                         |   2 +-
- drivers/net/ppp/ppp_generic.c                      |   7 +-
- drivers/net/usb/mcs7830.c                          |  12 +-
- drivers/net/veth.c                                 |   1 -
- drivers/net/wireless/ath/ar5523/ar5523.c           |   4 +
- drivers/net/wireless/ath/ath10k/htt_tx.c           |   3 +
- drivers/net/wireless/ath/ath10k/txrx.c             |   2 -
- drivers/net/wireless/ath/ath9k/hif_usb.c           |   7 +
- drivers/net/wireless/ath/wcn36xx/dxe.c             |   5 +
- drivers/net/wireless/ath/wcn36xx/smd.c             |   4 +-
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c       |  17 +-
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |  17 ++
- drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c      |  27 ++
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c      |   2 +-
- drivers/net/wireless/marvell/mwifiex/usb.c         |   3 +-
- .../net/wireless/realtek/rtlwifi/rtl8192cu/hw.c    |   1 +
- drivers/net/wireless/rsi/rsi_91x_main.c            |   4 +
- drivers/net/wireless/rsi/rsi_91x_usb.c             |   1 -
- drivers/net/wireless/rsi/rsi_usb.h                 |   2 +
- drivers/parisc/pdc_stable.c                        |   4 +-
- drivers/pci/quirks.c                               |   3 +
- drivers/pcmcia/cs.c                                |   8 +-
- drivers/pcmcia/rsrc_nonstatic.c                    |   6 +
- drivers/power/supply/bq25890_charger.c             |   4 +-
- drivers/regulator/core.c                           |   4 +-
- drivers/regulator/qcom_smd-regulator.c             | 100 ++++--
- drivers/rpmsg/rpmsg_core.c                         |  20 +-
- drivers/rtc/rtc-cmos.c                             |   3 +
- drivers/rtc/rtc-pxa.c                              |   4 +
- drivers/scsi/sr.c                                  |   2 +-
- drivers/scsi/sr_vendor.c                           |   4 +-
- drivers/scsi/ufs/tc-dwc-g210-pci.c                 |   1 -
- drivers/scsi/ufs/ufshcd-pltfrm.c                   |   2 -
- drivers/scsi/ufs/ufshcd.c                          |   7 +
- drivers/soc/mediatek/mtk-scpsys.c                  |  15 +-
- drivers/spi/spi-meson-spifc.c                      |   1 +
- drivers/staging/greybus/audio_topology.c           |  15 +
- drivers/staging/wlan-ng/hfa384x_usb.c              |  22 +-
- drivers/tee/tee_core.c                             |   4 +-
- drivers/tty/serial/amba-pl010.c                    |   3 -
- drivers/tty/serial/amba-pl011.c                    |  27 +-
- drivers/tty/serial/atmel_serial.c                  |  14 +
- drivers/tty/serial/serial_core.c                   |   7 +-
- drivers/tty/serial/uartlite.c                      |   2 +-
- drivers/usb/core/hcd.c                             |   9 +-
- drivers/usb/core/hub.c                             |   7 +-
- drivers/usb/gadget/function/f_fs.c                 |   4 +-
- drivers/usb/host/uhci-platform.c                   |   3 +-
- drivers/usb/misc/ftdi-elan.c                       |   1 +
- drivers/w1/slaves/w1_ds28e04.c                     |  26 +-
- fs/btrfs/backref.c                                 |  21 +-
- fs/dlm/lock.c                                      |   9 +
- fs/ext4/ioctl.c                                    |   2 -
- fs/ext4/mballoc.c                                  |   8 +
- fs/ext4/migrate.c                                  |  23 +-
- fs/ext4/super.c                                    |  25 +-
- fs/f2fs/gc.c                                       |   3 +
- fs/fuse/acl.c                                      |   6 +
- fs/fuse/dir.c                                      |  40 ++-
- fs/fuse/file.c                                     |  27 +-
- fs/fuse/fuse_i.h                                   |  13 +
- fs/fuse/inode.c                                    |   2 +-
- fs/fuse/xattr.c                                    |   9 +
- fs/jffs2/file.c                                    |  40 ++-
- fs/orangefs/orangefs-bufmap.c                      |   7 +-
- fs/select.c                                        |  63 ++--
- fs/ubifs/super.c                                   |   1 -
- include/acpi/actypes.h                             |  10 +-
- include/linux/hid.h                                |   2 +
- include/linux/netdevice.h                          |  29 +-
- include/net/sch_generic.h                          |   5 +
- include/sound/soc.h                                |   2 +
- kernel/Kconfig.preempt                             |   4 +
- kernel/audit.c                                     |  18 +-
- kernel/sched/cputime.c                             |   4 +-
- kernel/sched/rt.c                                  |  23 +-
- localversion-rt                                    |   2 +-
- mm/shmem.c                                         |  37 ++-
- net/bluetooth/cmtp/core.c                          |   4 +-
- net/bluetooth/hci_core.c                           |   1 +
- net/bluetooth/hci_event.c                          |   8 +-
- net/bridge/br_device.c                             |   2 +
- net/bridge/br_netfilter_hooks.c                    |   7 +-
- net/can/bcm.c                                      | 156 ++++------
- net/core/filter.c                                  |   6 +-
- net/core/net-sysfs.c                               |   3 +
- net/core/net_namespace.c                           |   4 +-
- net/ipv4/netfilter/ipt_CLUSTERIP.c                 |   5 +-
- net/mac80211/rx.c                                  |   2 +-
- net/nfc/llcp_sock.c                                |   5 +
- net/sched/sch_generic.c                            |   1 +
- net/unix/garbage.c                                 |  14 +-
- net/unix/scm.c                                     |   6 +-
- net/xfrm/xfrm_interface.c                          |  14 +-
- net/xfrm/xfrm_user.c                               |  23 +-
- scripts/dtc/dtx_diff                               |   8 +-
- sound/core/jack.c                                  |   3 +
- sound/core/oss/pcm_oss.c                           |   2 +-
- sound/core/pcm.c                                   |   6 +-
- sound/core/seq/seq_queue.c                         |  14 +-
- sound/pci/hda/hda_codec.c                          |   3 +
- sound/pci/hda/patch_realtek.c                      |  30 +-
- sound/soc/codecs/rt5663.c                          |  12 +-
- sound/soc/mediatek/mt8173/mt8173-max98090.c        |   3 +
- sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c   |   2 +
- sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c   |   2 +
- sound/soc/mediatek/mt8173/mt8173-rt5650.c          |   2 +
- sound/soc/samsung/idma.c                           |   2 +
- sound/soc/soc-core.c                               |   1 +
- sound/soc/soc-pcm.c                                |  40 ++-
- sound/soc/uniphier/Kconfig                         |   2 -
- 257 files changed, 2014 insertions(+), 923 deletions(-)
----
