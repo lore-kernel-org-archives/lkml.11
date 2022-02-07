@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53748C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E16C3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382382AbiBGLTB (ORCPT
+        id S1382318AbiBGLSu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:19:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50468 "EHLO
+        Mon, 7 Feb 2022 06:18:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356783AbiBGLNp (ORCPT
+        with ESMTP id S1356765AbiBGLNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:13:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01816C043181;
-        Mon,  7 Feb 2022 03:13:44 -0800 (PST)
+        Mon, 7 Feb 2022 06:13:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F930C043181;
+        Mon,  7 Feb 2022 03:13:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B012BB80EC3;
-        Mon,  7 Feb 2022 11:13:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA3ACC004E1;
-        Mon,  7 Feb 2022 11:13:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97A3D6113B;
+        Mon,  7 Feb 2022 11:13:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E14BC004E1;
+        Mon,  7 Feb 2022 11:13:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232422;
-        bh=3hXgbhO+YSOZhDR0x7tGN3e0CeUh1NYxSuTNjjlVmOA=;
+        s=korg; t=1644232410;
+        bh=F/QbNNqba+0/d9ALbVKqMbAb5lEPbTxyul6cv0u1oBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o8za7HjalpyErx3IVuSEbRpBXqAtcVln60hu3213ivzQgtecyoMEWNV2OE1LAZ3so
-         pAL4CUkcR/vBuj1pY3gsAvGVbn/9/PzwKW2xdUf4anUw8aFUs/vODmj3msvp9ZlTuy
-         TnNZzKVE2V0bUnIRPDv7IlmcShUOVyXC+aJOUfxg=
+        b=HIplAB+n4W5AryFsJUYSZdfut2Jm8K4yzThaXlUxZCvwvfmo7jTDW2Nqj9LU0WaNd
+         fDAJ7tkYpRjpFysTCVl4GL+SzocCcRhTD+I5uC0SXmsxXhYMgdeVKiD9xCUDfYuBSQ
+         cXx60vhmzI+cH4J1M+NqLnfNttupah/RZdx7Lef4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
-        =?UTF-8?q?H=C3=A5kon=20Bugge?= <haakon.bugge@oracle.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 4.14 52/69] RDMA/mlx4: Dont continue event handler after memory allocation failure
-Date:   Mon,  7 Feb 2022 12:06:14 +0100
-Message-Id: <20220207103757.332346102@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Whitney <enwlinux@gmail.com>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 4.14 69/69] ext4: fix error handling in ext4_restore_inline_data()
+Date:   Mon,  7 Feb 2022 12:06:31 +0100
+Message-Id: <20220207103757.901552040@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -50,37 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Ritesh Harjani <riteshh@linux.ibm.com>
 
-commit f3136c4ce7acf64bee43135971ca52a880572e32 upstream.
+commit 897026aaa73eb2517dfea8d147f20ddb0b813044 upstream.
 
-The failure to allocate memory during MLX4_DEV_EVENT_PORT_MGMT_CHANGE
-event handler will cause skip the assignment logic, but
-ib_dispatch_event() will be called anyway.
+While running "./check -I 200 generic/475" it sometimes gives below
+kernel BUG(). Ideally we should not call ext4_write_inline_data() if
+ext4_create_inline_data() has failed.
 
-Fix it by calling to return instead of break after memory allocation
-failure.
+<log snip>
+[73131.453234] kernel BUG at fs/ext4/inline.c:223!
 
-Fixes: 00f5ce99dc6e ("mlx4: Use port management change event instead of smp_snoop")
-Link: https://lore.kernel.org/r/12a0e83f18cfad4b5f62654f141e240d04915e10.1643622264.git.leonro@nvidia.com
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+<code snip>
+ 212 static void ext4_write_inline_data(struct inode *inode, struct ext4_iloc *iloc,
+ 213                                    void *buffer, loff_t pos, unsigned int len)
+ 214 {
+<...>
+ 223         BUG_ON(!EXT4_I(inode)->i_inline_off);
+ 224         BUG_ON(pos + len > EXT4_I(inode)->i_inline_size);
+
+This patch handles the error and prints out a emergency msg saying potential
+data loss for the given inode (since we couldn't restore the original
+inline_data due to some previous error).
+
+[ 9571.070313] EXT4-fs (dm-0): error restoring inline_data for inode -- potential data loss! (inode 1703982, error -30)
+
+Reported-by: Eric Whitney <enwlinux@gmail.com>
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/9f4cd7dfd54fa58ff27270881823d94ddf78dd07.1642416995.git.riteshh@linux.ibm.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/mlx4/main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/inline.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---- a/drivers/infiniband/hw/mlx4/main.c
-+++ b/drivers/infiniband/hw/mlx4/main.c
-@@ -3346,7 +3346,7 @@ static void mlx4_ib_event(struct mlx4_de
- 	case MLX4_DEV_EVENT_PORT_MGMT_CHANGE:
- 		ew = kmalloc(sizeof *ew, GFP_ATOMIC);
- 		if (!ew)
--			break;
-+			return;
- 
- 		INIT_WORK(&ew->work, handle_port_mgmt_change_event);
- 		memcpy(&ew->ib_eqe, eqe, sizeof *eqe);
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -1131,7 +1131,15 @@ static void ext4_restore_inline_data(han
+ 				     struct ext4_iloc *iloc,
+ 				     void *buf, int inline_size)
+ {
+-	ext4_create_inline_data(handle, inode, inline_size);
++	int ret;
++
++	ret = ext4_create_inline_data(handle, inode, inline_size);
++	if (ret) {
++		ext4_msg(inode->i_sb, KERN_EMERG,
++			"error restoring inline_data for inode -- potential data loss! (inode %lu, error %d)",
++			inode->i_ino, ret);
++		return;
++	}
+ 	ext4_write_inline_data(inode, iloc, buf, 0, inline_size);
+ 	ext4_set_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+ }
 
 
