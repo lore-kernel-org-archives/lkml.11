@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 988E1C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7314C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382134AbiBGLSW (ORCPT
+        id S1382249AbiBGLSl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:18:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
+        Mon, 7 Feb 2022 06:18:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356734AbiBGLNU (ORCPT
+        with ESMTP id S1356753AbiBGLN1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:13:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8088CC043189;
-        Mon,  7 Feb 2022 03:13:18 -0800 (PST)
+        Mon, 7 Feb 2022 06:13:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F57C0401C1;
+        Mon,  7 Feb 2022 03:13:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A565611AA;
-        Mon,  7 Feb 2022 11:13:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 591F4C004E1;
-        Mon,  7 Feb 2022 11:13:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28634B80EE8;
+        Mon,  7 Feb 2022 11:13:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60EF1C004E1;
+        Mon,  7 Feb 2022 11:13:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232397;
-        bh=pb9YFJqK6DzbsQ+nfYREskx+GD9DBVbjajIsy4tiFoo=;
+        s=korg; t=1644232404;
+        bh=+Nxyqn9HuoEQlzbKhHgVB+8w/+IoiYP/Q9se7acyhjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SK4/z2x0cWp6NpAkx0VBRybfIGsvgbZkI2tdzJCkelLlqLgPDHCmtXkROnCR7S1AJ
-         xMTDn/hakY7ZDGCiWSag/dOL2/iHDeTZhQD3nyWujFH1nmWaynK3XFaKzeAABp1CvI
-         5KgXrV+QJGFBtPHx0nhRg3OJAnyzUvHeef+s0rGk=
+        b=OO0YOA07XVGLndpJ+zoDEf6daFXhZoZPkeLQQRTeB4puZ09jPFD/Dk7kA3Lc4A3EJ
+         GmRdcyObjPVFyY1IQ0OF18RHkVSgADV/h0LDWYUkRv3bZc7EeHXw74KSrtG85p4B/N
+         0mwiV7gJEnPtgO5lTtzR2Q/QT3H2gMcixb4+yHfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.14 48/69] ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
-Date:   Mon,  7 Feb 2022 12:06:10 +0100
-Message-Id: <20220207103757.202568011@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Borislav Petkov <bp@suse.de>, Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 4.14 67/69] EDAC/altera: Fix deferred probing
+Date:   Mon,  7 Feb 2022 12:06:29 +0100
+Message-Id: <20220207103757.836504837@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -48,41 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit 4f1e50d6a9cf9c1b8c859d449b5031cacfa8404e upstream.
+commit 279eb8575fdaa92c314a54c0d583c65e26229107 upstream.
 
-We don't currently validate that the values being set are within the range
-we advertised to userspace as being valid, do so and reject any values
-that are out of range.
+The driver overrides the error codes returned by platform_get_irq() to
+-ENODEV for some strange reason, so if it returns -EPROBE_DEFER, the
+driver will fail the probe permanently instead of the deferred probing.
+Switch to propagating the proper error codes to platform driver code
+upwards.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220124153253.3548853-3-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+  [ bp: Massage commit message. ]
+
+Fixes: 71bcada88b0f ("edac: altera: Add Altera SDRAM EDAC support")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220124185503.6720-2-s.shtylyov@omp.ru
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-ops.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/edac/altera_edac.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -441,8 +441,15 @@ int snd_soc_put_volsw_sx(struct snd_kcon
- 	int err = 0;
- 	unsigned int val, val_mask, val2 = 0;
+--- a/drivers/edac/altera_edac.c
++++ b/drivers/edac/altera_edac.c
+@@ -357,7 +357,7 @@ static int altr_sdram_probe(struct platf
+ 	if (irq < 0) {
+ 		edac_printk(KERN_ERR, EDAC_MC,
+ 			    "No irq %d in DT\n", irq);
+-		return -ENODEV;
++		return irq;
+ 	}
  
-+	val = ucontrol->value.integer.value[0];
-+	if (mc->platform_max && val > mc->platform_max)
-+		return -EINVAL;
-+	if (val > max - min)
-+		return -EINVAL;
-+	if (val < 0)
-+		return -EINVAL;
- 	val_mask = mask << shift;
--	val = (ucontrol->value.integer.value[0] + min) & mask;
-+	val = (val + min) & mask;
- 	val = val << shift;
- 
- 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
+ 	/* Arria10 has a 2nd IRQ */
 
 
