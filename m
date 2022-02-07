@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE80DC4707E
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A073C4707F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344649AbiBHBDs (ORCPT
+        id S1344699AbiBHBDv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:03:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
+        Mon, 7 Feb 2022 20:03:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245458AbiBGXDa (ORCPT
+        with ESMTP id S245441AbiBGXD3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:03:30 -0500
+        Mon, 7 Feb 2022 18:03:29 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65761C043188
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAE8C043181
         for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:03:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1644275009; x=1675811009;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=exni2nSl44fcOYxYrJayxLKBv/TSBnKt2khR1kpp+yw=;
-  b=X4cSqdmE7Mae65zrv5Q39T37YcZ/FBfGhBCYVSLKx0Du8Kwq+lwMWgM9
-   z0Vx74FS2jBYMLig/TI1jIwSSKvDpbDdXrEXUBsavNLSiTCVFtBtT9sit
-   RPvUjUQfusXbVTYJkfd9bZxh1H3Y8BMzkyGNRksN7IqoSVQOYF6OTE+4u
-   5x2MuxLYl8SyCBNNHNwLYrvMJeNkb4/6hRk93mQCwH0+iBx55oiva86I/
-   Ijgwm9uZsAjdOzHUJb2mtGaoibaxD5kwM03n+ccQDQxOCc5pambyATuph
-   e5eSTvZHn2dHmyCP1L1z/fuhRvcwRj3MAPNm4y2WF0s19xJerNBOBy4DN
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="229475023"
+  bh=qAN6i2tcGpKHAdLmfykkJrrQYTFoSpMh8/ZHA7l/RSs=;
+  b=GpP7HVsV0ZT44Q5jMpLdlHIl/lreOIp502LymK7yz2L5lx8uTeLcNobf
+   FE2YGwq+yLLs7g0Y7mXF4QBSCF7whIi4u4tkwhOxn3LO7S0EtV73tq27k
+   p9UMKLvR56USnH13L286N7eqdmDqxMTh+aMPqSXOKksd5t3tinXW1LSNO
+   p4DJAhCWqLvYpziUD2R8XCrOy4cI/mQxnK2JJU044eq2mG48CLtLHzxrJ
+   4Pg4L8W7CUZXcO7eSZW62csizyxwZYQpFe9pO3sw39vkYFPSQDZXkhlrU
+   FiQuU4uwudCFlEnNQDa5sxsJjm7BBVpdNYzwQ2+/yPsvvXKGFKOAEFqk0
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="229475017"
 X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="229475023"
+   d="scan'208";a="229475017"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 15:03:07 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 15:03:06 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="540324097"
+   d="scan'208";a="540324076"
 Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
-  by orsmga008.jf.intel.com with ESMTP; 07 Feb 2022 15:03:06 -0800
+  by orsmga008.jf.intel.com with ESMTP; 07 Feb 2022 15:03:05 -0800
 From:   Fenghua Yu <fenghua.yu@intel.com>
 To:     "Thomas Gleixner" <tglx@linutronix.de>,
         "Dave Hansen" <dave.hansen@linux.intel.com>,
@@ -55,9 +55,9 @@ To:     "Thomas Gleixner" <tglx@linutronix.de>,
 Cc:     iommu@lists.linux-foundation.org, "x86" <x86@kernel.org>,
         "linux-kernel" <linux-kernel@vger.kernel.org>,
         Fenghua Yu <fenghua.yu@intel.com>
-Subject: [PATCH v4 10/11] tools/objtool: Check for use of the ENQCMD instruction in the kernel
-Date:   Mon,  7 Feb 2022 15:02:53 -0800
-Message-Id: <20220207230254.3342514-11-fenghua.yu@intel.com>
+Subject: [PATCH v4 07/11] sched: Define and initialize a flag to identify valid PASID in the task
+Date:   Mon,  7 Feb 2022 15:02:50 -0800
+Message-Id: <20220207230254.3342514-8-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207230254.3342514-1-fenghua.yu@intel.com>
 References: <20220207230254.3342514-1-fenghua.yu@intel.com>
@@ -67,66 +67,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ENQCMD implicitly accesses the PASID_MSR to fill in the pasid field
-of the descriptor being submitted to an accelerator. But there is no
-precise (and stable across kernel changes) point at which the PASID_MSR
-is updated from the value for one task to the next.
+From: Peter Zijlstra <peterz@infradead.org>
 
-Kernel code that uses accelerators must always use the ENQCMDS instruction
-which does not access the PASID_MSR.
+Add a new single bit field to the task structure to track whether this task
+has initialized the IA32_PASID MSR to the mm's PASID.
 
-Check for use of the ENQCMD instruction in the kernel and warn on its
-usage.
+Initialize the field to zero when creating a new task with fork/clone.
 
+Signed-off-by: Peter Zijlstra <peterz@infradead.org>
+Co-developed-by: Fenghua Yu <fenghua.yu@intel.com>
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
-v3:
-- Add Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+v4:
+- Add "Reviewed-by: Thomas Gleixner <tglx@linutronix.de>" (Thomas).
 
 v2:
-- Simplify handling ENQCMD (PeterZ and Josh)
+- Change condition to more accurate CONFIG_IOMMU_SVA (Jacob)
 
- tools/objtool/arch/x86/decode.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ include/linux/sched.h | 3 +++
+ kernel/fork.c         | 4 ++++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
-index c10ef78df050..479e769ca324 100644
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -112,7 +112,7 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 	const struct elf *elf = file->elf;
- 	struct insn insn;
- 	int x86_64, ret;
--	unsigned char op1, op2,
-+	unsigned char op1, op2, op3,
- 		      rex = 0, rex_b = 0, rex_r = 0, rex_w = 0, rex_x = 0,
- 		      modrm = 0, modrm_mod = 0, modrm_rm = 0, modrm_reg = 0,
- 		      sib = 0, /* sib_scale = 0, */ sib_index = 0, sib_base = 0;
-@@ -139,6 +139,7 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 75ba8aa60248..4e5de3aed410 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -938,6 +938,9 @@ struct task_struct {
+ 	/* Recursion prevention for eventfd_signal() */
+ 	unsigned			in_eventfd_signal:1;
+ #endif
++#ifdef CONFIG_IOMMU_SVA
++	unsigned			pasid_activated:1;
++#endif
  
- 	op1 = insn.opcode.bytes[0];
- 	op2 = insn.opcode.bytes[1];
-+	op3 = insn.opcode.bytes[2];
+ 	unsigned long			atomic_flags; /* Flags requiring atomic access. */
  
- 	if (insn.rex_prefix.nbytes) {
- 		rex = insn.rex_prefix.bytes[0];
-@@ -491,6 +492,14 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 			/* nopl/nopw */
- 			*type = INSN_NOP;
+diff --git a/kernel/fork.c b/kernel/fork.c
+index c03c6682464c..51fd1df994b7 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -968,6 +968,10 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
+ 	tsk->use_memdelay = 0;
+ #endif
  
-+		} else if (op2 == 0x38 && op3 == 0xf8) {
-+			if (insn.prefixes.nbytes == 1 &&
-+			    insn.prefixes.bytes[0] == 0xf2) {
-+				/* ENQCMD cannot be used in the kernel. */
-+				WARN("ENQCMD instruction at %s:%lx", sec->name,
-+				     offset);
-+			}
++#ifdef CONFIG_IOMMU_SVA
++	tsk->pasid_activated = 0;
++#endif
 +
- 		} else if (op2 == 0xa0 || op2 == 0xa8) {
- 
- 			/* push fs/gs */
+ #ifdef CONFIG_MEMCG
+ 	tsk->active_memcg = NULL;
+ #endif
 -- 
 2.35.1
 
