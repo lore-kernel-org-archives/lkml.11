@@ -2,72 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A659AC43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:01:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245104AbiBGIyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:54:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
+        id S238518AbiBGI7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:59:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245735AbiBGItq (ORCPT
+        with ESMTP id S1351276AbiBGI4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:49:46 -0500
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E654C043181;
-        Mon,  7 Feb 2022 00:49:45 -0800 (PST)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1644223781;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UBM1gIzU+01nrnh6VMwcHQq+WPbC6EDjF3CE0IODu/M=;
-        b=pUXVXhNysJC84kLT0rUQIoz5s6uL5zgEE0ilDsHMsfpJ2plPGtoh5WLKLthtnisror4520
-        9Ev3UeFVZ7ctZD8VB6OvlrIKsYybLUT+jkE/LCrdyIVzebbVM0y9PnMNVoEsiZH+oU1MkN
-        BEv2WVKdyjs9Ln0Sr9e+Jic8JZhAm0w=
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     cai.huoqing@linux.dev
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Cai Huoqing <caihuoqing@baidu.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ethernet: litex: Add the dependency on HAS_IOMEM
-Date:   Mon,  7 Feb 2022 16:49:12 +0800
-Message-Id: <20220207084912.9309-1-cai.huoqing@linux.dev>
+        Mon, 7 Feb 2022 03:56:01 -0500
+Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88C2C043187;
+        Mon,  7 Feb 2022 00:56:00 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 6CA2E580161;
+        Mon,  7 Feb 2022 03:46:24 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 07 Feb 2022 03:46:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; bh=06iDWhIMWF+GL+
+        4tV1ry3WHLDvx8sEGX8SCia4bLUlo=; b=SzyNoAzmVIrpysc1eyqHTcsbRZ33lG
+        kZioZV9XgeEStB5uEDLvkVS+XJNc18BEIMh3xfV5UCIlw5NUT1gIH6OTM8OT6t63
+        efaz9q0t4r3rUsAQFySCwe4JDTukdE39OxTMFAkNYebPDKWZZZuCPukDXOfVWXW3
+        voc7zDtotovPQHB6OeTtvT9sNavWKnsZAmeaJc5GHJxgY1CLrLj8u+8twZxo6skE
+        ncIOkGAHt5iAOq5SFszdPkWlHTOS54aNrdp0QWMvOfGkugfPHqFbrCKtFDuq03zp
+        uwoKSnF22vUn2lMMswRKNIhqzF1D8Vgc/+tg4ra2jv2rIw6+cz/S9S5g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=06iDWhIMWF+GL+4tV1ry3WHLDvx8sEGX8SCia4bLU
+        lo=; b=Gdy+GNNvCJjjAF8MZ/+bNLQL4iSm/u2ss9Lf0HTkZ1lGBEETWFMTR+KBo
+        JbEFEdbPEoKYhU6zhp6hPgA6NkHVRWSGhNbASWKiAAgqRj3JnjtpFGxR6CgerOZ5
+        2ppQ6LGU7HXcUDCmY8MJ1EFSl8+tn1hyhZGo6q7giSGUEbGDs4tjtnHDpwVZqPjc
+        n3F07jWlqbwXhrY2Cm++fh6dgWhHcbAGxRjPJ4zR8Jably9LaSORMWGcSImuNh7S
+        Y3FK/D6psNQu3j8koi5dsDjphpzqGvPFuDgsCO+l2BNzKxs1ei/c0S5SYYe7ya3/
+        m5C/1A2IDiFa1BgR13kqpf5XD46yg==
+X-ME-Sender: <xms:X9wAYnyoadC6crowfp6rSS1g_dZJJyZj0HJbNH4Fsz_YHqCWaT9u0g>
+    <xme:X9wAYvRAosyTp15LWmaagYVihilD-ACCq49PDWHSfE8Hj5ISZKeCtnWns09h_Ep-j
+    ca5e0qtAIxgWuubaJ0>
+X-ME-Received: <xmr:X9wAYhU4wVdLfn71BD3noSDT2ROADAh_MlBDHFABwQLaQ0RmWAD3_ORgTpeEekafKSObjUHVfrTrCLt60aT7W5cbkSVXpKuNxSocEng>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheeggdduudelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtugfgjgesthhqredttddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpefgjeettdejgffgffdvteeutdehtdehgeehueetkeefgefhtdetjeekledu
+    gedvudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:X9wAYhgr5yOXQMtplYYtze_ycHouRGRlqOM4hfQ7uT8buKsx3m3DVw>
+    <xmx:X9wAYpCtiMCGwFyE1NbyckGN18_nYOxMh0h9jllqSWSAisFh_WD41w>
+    <xmx:X9wAYqLixyckvrMMMAQ-PW9eACQAlrL-zrMFV9unpPM-g_XE05EIaA>
+    <xmx:YNwAYhxau4hnrYfLueK715S0kZ6KONWoSIyJmS1PYmeypzX5iZv_7A>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 7 Feb 2022 03:46:23 -0500 (EST)
+Date:   Mon, 7 Feb 2022 09:46:20 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-sunxi@lists.linux.dev,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 1/6] dt-bindings: rtc: sun6i: Clean up repetition
+Message-ID: <20220207084620.xajb5wx6bbgg4ugh@houat>
+References: <20220203021736.13434-1-samuel@sholland.org>
+ <20220203021736.13434-2-samuel@sholland.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220203021736.13434-2-samuel@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The helper function devm_platform_ioremap_resource_xxx()
-needs HAS_IOMEM enabled, so add the dependency on HAS_IOMEM.
+On Wed, Feb 02, 2022 at 08:17:31PM -0600, Samuel Holland wrote:
+> - Use "enum" for compatibles instead of several "const" alternatives.
+> - Merge the H6 clock-output-names minItems/maxItems constraint into the
+>   identical block above.
+>=20
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
 
-Fixes: 464a57281f29 ("net/mlxbf_gige: Make use of devm_platform_ioremap_resourcexxx()")
-Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
----
- drivers/net/ethernet/litex/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Maxime Ripard <maxime@cerno.tech>
 
-diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
-index f99adbf26ab4..04345b929d8e 100644
---- a/drivers/net/ethernet/litex/Kconfig
-+++ b/drivers/net/ethernet/litex/Kconfig
-@@ -17,7 +17,7 @@ if NET_VENDOR_LITEX
- 
- config LITEX_LITEETH
- 	tristate "LiteX Ethernet support"
--	depends on OF
-+	depends on OF && HAS_IOMEM
- 	help
- 	  If you wish to compile a kernel for hardware with a LiteX LiteEth
- 	  device then you should answer Y to this.
--- 
-2.25.1
-
+Maxime
