@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C23C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E86D2C3527C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353156AbiBGLMI (ORCPT
+        id S1354107AbiBGLMU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
+        Mon, 7 Feb 2022 06:12:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355245AbiBGLIH (ORCPT
+        with ESMTP id S243012AbiBGLJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:08:07 -0500
-X-Greylist: delayed 13060 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 03:08:06 PST
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 571CCC043181;
-        Mon,  7 Feb 2022 03:08:05 -0800 (PST)
+        Mon, 7 Feb 2022 06:09:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C63C0401C0;
+        Mon,  7 Feb 2022 03:09:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95D2CB80EE8;
-        Mon,  7 Feb 2022 11:08:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1664C004E1;
-        Mon,  7 Feb 2022 11:08:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA8E261370;
+        Mon,  7 Feb 2022 11:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9553FC004E1;
+        Mon,  7 Feb 2022 11:09:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232083;
-        bh=xDt/v0wjh/teTSvWU8FTJ+9zGVA5D8k7qvF/ziHbYYI=;
+        s=korg; t=1644232142;
+        bh=+4mZZHudvKT32dDGcBg2edq6nXoIttprgmSJJ8Y7vys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BWm2EyN0nkbFQNe2aJo9g23UHkkhuSk/J+/TWPj+RWUvCvufVZcttVZXCuQdOQNaB
-         OjVBzV/7cFvLWUfKeBl2JhPnCpq5hRQ2HEmDFNs1MoiVvOvKgEyBvbmkm65v5iGU67
-         gVAJJuQnlaqufrpxBXrsTxTwyYvtezrjYfjCLv4U=
+        b=CNHLzgzECmzhJ9J07vLVCZwnd+RZsIxWjuPzWGMPb+u5Ruwafg3fsCoeifnpzRud1
+         +Ra8hFYs28mobw9E4uYAWxA7zOEx7iPhsWziIpwHmDcn+XWN3vpNgVYhx2PBXzcR6A
+         qdW4FCDNlKFpalXO9jlDAMxXjQrITmnYQogy7y8A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 4.9 03/48] s390/hypfs: include z/VM guests with access control group set
-Date:   Mon,  7 Feb 2022 12:05:36 +0100
-Message-Id: <20220207103752.452958801@linuxfoundation.org>
+        stable@vger.kernel.org, Sudheesh Mavila <sudheesh.mavila@amd.com>,
+        Raju Rangoju <Raju.Rangoju@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.9 29/48] net: amd-xgbe: ensure to reset the tx_timer_active flag
+Date:   Mon,  7 Feb 2022 12:06:02 +0100
+Message-Id: <20220207103753.293439483@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -51,51 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vasily Gorbik <gor@linux.ibm.com>
+From: Raju Rangoju <Raju.Rangoju@amd.com>
 
-commit 663d34c8df98740f1e90241e78e456d00b3c6cad upstream.
+commit 7674b7b559b683478c3832527c59bceb169e701d upstream.
 
-Currently if z/VM guest is allowed to retrieve hypervisor performance
-data globally for all guests (privilege class B) the query is formed in a
-way to include all guests but the group name is left empty. This leads to
-that z/VM guests which have access control group set not being included
-in the results (even local vm).
+Ensure to reset the tx_timer_active flag in xgbe_stop(),
+otherwise a port restart may result in tx timeout due to
+uncleared flag.
 
-Change the query group identifier from empty to "any" to retrieve
-information about all guests from any groups (or without a group set).
-
-Cc: stable@vger.kernel.org
-Fixes: 31cb4bd31a48 ("[S390] Hypervisor filesystem (s390_hypfs) for z/VM")
-Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Fixes: c635eaacbf77 ("amd-xgbe: Remove Tx coalescing")
+Co-developed-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+Link: https://lore.kernel.org/r/20220127060222.453371-1-Raju.Rangoju@amd.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/hypfs/hypfs_vm.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/s390/hypfs/hypfs_vm.c
-+++ b/arch/s390/hypfs/hypfs_vm.c
-@@ -19,6 +19,7 @@
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+@@ -494,7 +494,9 @@ static void xgbe_stop_timers(struct xgbe
+ 		if (!channel->tx_ring)
+ 			break;
  
- static char local_guest[] = "        ";
- static char all_guests[] = "*       ";
-+static char *all_groups = all_guests;
- static char *guest_query;
++		/* Deactivate the Tx timer */
+ 		del_timer_sync(&channel->tx_timer);
++		channel->tx_timer_active = 0;
+ 	}
+ }
  
- struct diag2fc_data {
-@@ -61,10 +62,11 @@ static int diag2fc(int size, char* query
- 
- 	memcpy(parm_list.userid, query, NAME_LEN);
- 	ASCEBC(parm_list.userid, NAME_LEN);
--	parm_list.addr = (unsigned long) addr ;
-+	memcpy(parm_list.aci_grp, all_groups, NAME_LEN);
-+	ASCEBC(parm_list.aci_grp, NAME_LEN);
-+	parm_list.addr = (unsigned long)addr;
- 	parm_list.size = size;
- 	parm_list.fmt = 0x02;
--	memset(parm_list.aci_grp, 0x40, NAME_LEN);
- 	rc = -1;
- 
- 	diag_stat_inc(DIAG_STAT_X2FC);
 
 
