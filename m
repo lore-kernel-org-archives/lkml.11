@@ -2,167 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E52C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F41D1C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:10:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351991AbiBGKJO (ORCPT
+        id S1352074AbiBGKJU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:09:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43122 "EHLO
+        Mon, 7 Feb 2022 05:09:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352076AbiBGJ7h (ORCPT
+        with ESMTP id S1351034AbiBGJzm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:59:37 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2075.outbound.protection.outlook.com [40.107.21.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90491C043181;
-        Mon,  7 Feb 2022 01:59:36 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cgG0XU5YRIjPW5uw5vdzo+q5mwLFevUTAH4ub1xJiUdLI6Gjn7DZFKeVp6DKbSFLCljzXRM9GEhRhBp+IQul87trtBbbhjRVZDRV/Ql3doMLfo2Vo7S81GaC/Mpv9jQce5daOkAcLQErZ8MWB8wao6l8Ti6K9vT8ggYuGASIfrb8rWPq+++EI9t1Vq7bDcTK2FN6dpL8SLTOq/AmTyp5U6nPDjMBtIXcBRc47nba50U4NHZ4YjtkXI8iY/VThQ0CtiJHkFRThgiEHlQxzgM+t9YOE+GkziQwTiV+zHLZmia2Ms0YUVySlNyqkoMJd3LInPRyHQHRDSXSGX63LCEgvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oXlT6IrSGUSmZ+cQdsvQMg/H/ouJ1YxR2rVDnbBq2OA=;
- b=jOX27UMaU/iavgtcmFLxxsiH4mIE8wyaSpFd2DJpNwL1t2iJq6pE8hz/V1wMc/sxQwNdVZ4Fd9mJ67AXt/P7+8In9ncETpjJezmMZqKxqk7jJ9fh6XBX4TrtStXqFSgthAh3J6g8UlOEqUMK4tCwjj7nqLy2r3EuZ098T97MKLNWDjMNmFkB7GJ2QmwNp+tskv8eetBcmGvWfzSLYTJzCmoDS6sBwDv2Zcs3KrvrbBExrI4XYNbNep7s2ms7e+AemQI9TYYjmOmkYGOc+gyvWDgMnml8qPkTz/D1l47ilrzMd0oNQ6YDbbnzegxvoyNRuIpww8mubg1S6ityznyMGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oXlT6IrSGUSmZ+cQdsvQMg/H/ouJ1YxR2rVDnbBq2OA=;
- b=aJta+VIRweiZlJ807AcXUhoc/dfKKEjVafnJ45H3bztH/aCRbr/TzUlR3D6Z8VmCUfVBP1gGt7zMp/2DUg6myBY1lWDv7aOJg/FCevFZXl3JeRci5sT0yDbO1tpADu/s/HeNQU6Fn+EyPTR+A0Deukq/RCR2NMIgSBEdSgzWMXw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB7PR04MB5163.eurprd04.prod.outlook.com (2603:10a6:10:21::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Mon, 7 Feb
- 2022 09:59:33 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::d4dc:8c9a:55d0:81d8]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::d4dc:8c9a:55d0:81d8%3]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
- 09:59:33 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     jassisinghbrar@gmail.com, robh+dt@kernel.org, shawnguo@kernel.org
-Cc:     s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH 2/5] dt-bindings: mailbox: imx-mu: add i.MX93 S4 MU support
-Date:   Mon,  7 Feb 2022 17:58:29 +0800
-Message-Id: <20220207095832.1590225-3-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220207095832.1590225-1-peng.fan@oss.nxp.com>
-References: <20220207095832.1590225-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR03CA0090.apcprd03.prod.outlook.com
- (2603:1096:4:7c::18) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
+        Mon, 7 Feb 2022 04:55:42 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA1C6C043181;
+        Mon,  7 Feb 2022 01:55:40 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 3A1B65801B4;
+        Mon,  7 Feb 2022 04:55:40 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 07 Feb 2022 04:55:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=LzpW5U29/mV3TnArXep7XidAoi+6P2KaOjL2Uu
+        SGyY8=; b=MwrJLKGMyPYfjGSbDCS1Bf2SMrC4nOsXhJrjqKdZd8qTYTpfxFpND3
+        /gsSGltSjOBoQkC5J+m/YTzVMLI1mmXh+5+Q7mtXzUvgmm7t9V52tqKFcEbkw4O7
+        Q3N7WqUigvXrK/4VjQgdBAvxpcNzTRvBxF2csTyNz68ZthjZ/XEQTPwSXPvXJIQJ
+        vP3qaDy5m0exlpNtsVHI/m6tSUU6yHnYrggo5LX7AAc+Q+FmmNCKwuEWt2KBhEUs
+        9IZiCOxQp1WUR4fMwgFjBTLDbiUmezRa5+S/J/pC1Vh9PKGrplN9PmtuZtUOHz3u
+        LkzM/UkUdr40WIWgRTwBGIDlyoNBmcrg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=LzpW5U29/mV3TnArX
+        ep7XidAoi+6P2KaOjL2UuSGyY8=; b=Y1H9v6AU1pfVmn3nNPk08l9+B0J+9pnKa
+        ZdiHbNsx/uiyxDrhDBw7CzGOtP9+Kb5rwIZviATjfFSqLYnFsw4M1p0KNG0kF3cA
+        nIr35V2XkfxDylGVAmNHwoMXfREpbtbhsj5jJwdTOVj0nUj1p/vQ1RhvkJ8vtsRk
+        glIk5rqme0zB7Zo05AGElNuMItJyD3AWIXQ+IEDb9YqXayoD3ofbrY36N8q3Uxt0
+        afK9Mmb3Pies1SrH2FzMX9hmZ6hguz1aNUpRkh0hlO6ap0HcoRSIdT3Z6K1EODwm
+        74lLGaCBl3U1Os+F1fic0CaLmu0zQ+g9wQW3W0dDGQ4Gq8XxG2TOA==
+X-ME-Sender: <xms:muwAYnnfH21w3ZcYr9vUpgzcYUGx-F97VwZGwYnhXbtwy5sjkbjmlQ>
+    <xme:muwAYq342lI5EVIWLeSOgymB5EkMPpM83WSbTo2S1Ddf1QJ8YI4_vTvy-qqLcqMe5
+    25lNsFX3peeqlY8BSc>
+X-ME-Received: <xmr:muwAYtqngz_qQbtbcklfBTqPSDbjELfpHcmEOdPhIp7zo5lxGBSTdL6SPfFktGE0VAJqm1TRsBCVotVZouaprw9NlmTI9CDbtEgJupw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheehgddtjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
+    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
+    gvrhhnpeelkeeghefhuddtleejgfeljeffheffgfeijefhgfeufefhtdevteegheeiheeg
+    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
+    igihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:muwAYvm_t2Eh25_r1lKUHHTlvfu7vKe8Hy4YNn4zFvateXTN_9PEgg>
+    <xmx:muwAYl03htUu29oGMPledVUjxdmcSi0sIAWKVMU18XH9LVClhf96fw>
+    <xmx:muwAYuu8hbBa_2DGNEEwR7-AmlflacezEtyRO2ZJtIF__L1_t4yamQ>
+    <xmx:nOwAYsue7NANvZAY5nXD7ySAL8rq_35RGFbNNtBo5k9smbwHLxm1mg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 7 Feb 2022 04:55:38 -0500 (EST)
+Date:   Mon, 7 Feb 2022 10:55:35 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 23/66] media: sun6i-csi: Tidy up v4l2 code
+Message-ID: <20220207095535.bvkenjwnrawbh66j@houat>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-24-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e3369905-f3ff-4668-f197-08d9ea208a76
-X-MS-TrafficTypeDiagnostic: DB7PR04MB5163:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <DB7PR04MB51639117BB7498774A1212D3C92C9@DB7PR04MB5163.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1388;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gERdgj+pks12zT2NcNkOK4OKydxdsyOhpFoMvDCAGugrijIsZgqw1MeExwv7Gas2VSX+1KsaC9Tx6rGs04xKwY6S44MqAy2b75zVWD86pGod+4NeKC9O21dA7hTV8lYpsta8V7onAXss4VL9CjYV0w4zFEk2TySdvqI6Vj7zr9tvuH5Q47iETMH5SnUyzcwJocHSTpIWqkVaM4l6vcj09FYeZaEk7G5G2AcDMuDD96E/YDhUvlDhqorD+rhDGVBUi3XZquIm37+YWmvGG7F9usi1pSv9gsU1u/ReCwhSDLQQ7k+lfhTzPyjIBNL0+7NLRRJAEwaBBYsTbavBuraSQryFea/3QRUYFpcFLj6Ae9Y69HcMxxGOPiqSefQsPKiEwZn7lHFuXtTzf+04tuRVoTwkFcSvj7/yGbZgS88/g2GFRiDEbamY73F8/tPmXZchXi6pU3VS15XZ73JJ/SoM9eHpDEembX9yFozXskcZbQJTxWi9k4KQ6Y38qO5mxpybf9+E8+DLf5Ic7MdplGHbuSh2LlgskmYFspjMKc6jZZDdfaOajXIM0652CvdtnQhh5ChlL53r4030EqORJA64rhzgdxFqvdTTqAm/qN5iZdBpGwTyCWgekjOaWzuYXT3SFcEA8sz1puvdVFo5f3DsNMW6wWDRs7o5BLM7ChwrBwQYUBtQWMetEsr43wSd1lHDDjW25X4jHJj14ye5DkeorQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(66476007)(38100700002)(38350700002)(8936002)(8676002)(66556008)(66946007)(316002)(4326008)(83380400001)(2906002)(15650500001)(6486002)(5660300002)(508600001)(6506007)(2616005)(6666004)(6512007)(1076003)(26005)(186003)(52116002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0xMWPAiJry3jwgASVksX3rxEdj0kWx52LJxXx1c+r0LUsXU6r3iLfTN5E/yT?=
- =?us-ascii?Q?A0pQhStHWvrWCipUG3zyblXXwkYWSh+1q/Wo7zKqf1CtC+l/ML3pvbbYODv2?=
- =?us-ascii?Q?RPfOZdW8Gwdc63+stpkwQkXmUM4OGv29+xwfJANcPPnX8YK2ZRIH8OeZ8zMB?=
- =?us-ascii?Q?xCclzGocbyZdG4qSKLhuN0d1FsEtRWNEfdcTcCs1xmtY0sEoKNXKaqBOB03u?=
- =?us-ascii?Q?dd5D4iFcZmclEPQRKJEzEkAFUT/NKjaYbwZi3CqlgaRa8LyasIGsf4ipTT0O?=
- =?us-ascii?Q?9XP1tGO8B0L0EMLs9ue9qXc7rFJftDLZWmDE6zh6KF3DxHGmsN0W0Unggfth?=
- =?us-ascii?Q?Z1KlJTfa3HqaK99QFniPBvxs27ndGhBEOgIGchhVYdVjSviBkTm/X5H3a0k+?=
- =?us-ascii?Q?/4k2uRDwdtR9BixLpg6fDDwRAl0scPN9HG3p1MxgXLkdlp/prLqQ4WwW65vA?=
- =?us-ascii?Q?C82D1dwi+S+bSyVk9E64mLrRLh4hXxjijMaMXFvyHuOLE+tcrypx/lMRFKmr?=
- =?us-ascii?Q?rtE8j3zeCpPoM38Cdlez/R1HjTwd7KAg6QVUxv7pI+X+v0EN+NyRfnuCGlAL?=
- =?us-ascii?Q?ttqMiPnLSimokih2733DEdYzFuELgDYz9LnOr7eGLrRPm4MaCGbdKs8H6dIK?=
- =?us-ascii?Q?qKXrybgm6DormSCSfSdF6OU5Psoli5aUQ9vKEb2tckPMRtG6qSRR2VUbUHXX?=
- =?us-ascii?Q?VPl3r+nTk19jBvq+GVik6I4M+bhkDP7dK2xaO0snEMc942+jmy+eyZKTnBrm?=
- =?us-ascii?Q?CAKluw9ofyHc9LwafkMWWOs+Yb2JQdNtZbdijWxMfPGcX/CWyEMU+ZqcRDWi?=
- =?us-ascii?Q?PuLyapXacW92kryPyhCgQpDxwIV1C9e2rHKcij9z+8f+jRP2P5g+x0XRQyzQ?=
- =?us-ascii?Q?unxDYYCIg2JHfF1EHEfcwKh1/lfoZQUgD4s4YrbUVKYaN67fCWcFgV9i73aB?=
- =?us-ascii?Q?vREITglngRqs1Gh5Vsknu+Sx70IY5+TVtRZLdNgmLwb/VMZC0S3yhkMKqf/2?=
- =?us-ascii?Q?hKqFjc8IIQlvq57Ozn4jq2Q8qG+f6gF07/GqopYq/fUwBfQjpGnCBz6JPMUV?=
- =?us-ascii?Q?K8IOYifqVVvno6gTClYLwim44RtEp5Uk6YNoFknX9dsvRNCfXPX5wntZy88q?=
- =?us-ascii?Q?F5r4oAkY/VnXTw9poMknP3EWzwmeHDW5FcqAKcOpCR3B5aEPfeVdXcpdL1xi?=
- =?us-ascii?Q?P+K6isRNGCS1Opf8eRK2inpe7TmETZ2B10fne+bxt2v12zJXALFezywmnOGF?=
- =?us-ascii?Q?n/7b/oygba+Byi6vvCHHKPV5WOIGaIwz9xRUCUywTIg7s8qLNBN6L9SKPOky?=
- =?us-ascii?Q?AuLMRhDDp8f5lKFnlkakYHLClzBfKSG8TxsroVmBGk3JQFjR0YREfP1oYD7B?=
- =?us-ascii?Q?Vb0C2ACJ03YOAAhzlmVduiyh2iRFFW2N5vOoXc9KKDhD1RvjS1eiQTWWe+iS?=
- =?us-ascii?Q?cwZu+1C8rfMvlSfQnxv6KGdtfrIiqeU2PKt23d11njynOpL00WLwO6AdtxQP?=
- =?us-ascii?Q?ARpKQtZEW+IT2KsFlYpEBFgPkpGD3uf7P8QVqQvgdNdC4hixKdf+jb3OPhGY?=
- =?us-ascii?Q?QsMgde7shTTzJUh7BP7Ogi4mAmopOHJgQwC2Q9g+7hVbRxCUaBiD163/FTqZ?=
- =?us-ascii?Q?2dv91W0UsA+rlJ9zlYV469A=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3369905-f3ff-4668-f197-08d9ea208a76
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 09:59:33.4102
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lDHp7Ke1nLYXP16b4xqQ6Rhrob5TlrriPpZi2vxXaUkgMi1CXEQHsQ5mbdA63qUvT8cixTuNOzAmsexI+f4Hlw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5163
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="z2k626xkldr63pmc"
+Content-Disposition: inline
+In-Reply-To: <20220205185429.2278860-24-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
 
-Similar to i.MX8ULP S4 MU, i.MX93 MU is dedicated for communication
-between Sentinel and Cortex-A cores from hardware design, it could not be
-reused for other purpose.
+--z2k626xkldr63pmc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-However i.MX93 S4 MU use seperate tx/rx interrupt, so update
-interrupts and add interrupt-names property.
+On Sat, Feb 05, 2022 at 07:53:46PM +0100, Paul Kocialkowski wrote:
+> Various cosmetic improvements to the v4l2 registration code, with
+> renames, lowerings, etc. The cleanup function is moved down after
+> setup. No functional change intended.
+>=20
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- .../devicetree/bindings/mailbox/fsl,mu.yaml        | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+Reviewed-by: Maxime Ripard <maxime@cerno.tech>
 
-diff --git a/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml b/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
-index 713cb847cd8c..f99890ae1813 100644
---- a/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
-+++ b/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
-@@ -29,10 +29,11 @@ properties:
-       - const: fsl,imx8ulp-mu
-       - const: fsl,imx8-mu-scu
-       - const: fsl,imx8-mu-seco
-+      - const: fsl,imx93-mu-s4
-       - const: fsl,imx8ulp-mu-s4
-       - items:
--          const: fsl,imx93-mu
--          const: fsl,imx8ulp-mu
-+          - const: fsl,imx93-mu
-+          - const: fsl,imx8ulp-mu
-       - items:
-           - enum:
-               - fsl,imx7s-mu
-@@ -55,7 +56,14 @@ properties:
-     maxItems: 1
- 
-   interrupts:
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 2
-+
-+  interrupt-names:
-+    minItems: 1
-+    items:
-+      - const: txirq
-+      - const: rxirq
- 
-   "#mbox-cells":
-     description: |
--- 
-2.25.1
+Maxime
 
+--z2k626xkldr63pmc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgDslwAKCRDj7w1vZxhR
+xYUzAP0ej+2jY/iJRXJJW8CJHTu9z9F4r55daJfJr9TYHTjmzAD/T7cUtfZlL39G
+0syT9Uej1bcktNVjzCz1cIxmQn9AFAo=
+=3IsS
+-----END PGP SIGNATURE-----
+
+--z2k626xkldr63pmc--
