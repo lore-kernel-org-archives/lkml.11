@@ -2,150 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30230C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41110C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:46:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350013AbiBGOnS (ORCPT
+        id S1383025AbiBGOny (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:43:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35138 "EHLO
+        Mon, 7 Feb 2022 09:43:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388570AbiBGOSu (ORCPT
+        with ESMTP id S1356602AbiBGOUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:18:50 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDF4C0401C0
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:18:49 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id y6so25628465ybc.5
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 06:18:49 -0800 (PST)
+        Mon, 7 Feb 2022 09:20:23 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF73C0401C5;
+        Mon,  7 Feb 2022 06:20:22 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id i34so27238973lfv.2;
+        Mon, 07 Feb 2022 06:20:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zQXY/DFSzqSNiVJeW4YwRdZR282rLknOMgBOkiHlEuo=;
-        b=eqZySNxgAC+V7zE2YiRr2Y9mnP8lRJIrlS+tGhinaC15YHjOoTsGJwBnVsXf0B6NPx
-         YoWp47SjGQYVmjV8lABWJ8YqNaSpKrcTi/2vztpYX/wQroANiEtD856l4F2g+1JDSVrv
-         L0nf/aNHHx+EVI5VQUly+ostgLOm5beWcM4se/YujE4oM/L4wOPOUmQ0k4M95Pp8TX1L
-         u3yPO199MtLQmksfv+99T2WCa/ehY/y1k7AL9eNapnKJlKB3yeQnCvBcQBIM6pRI3YC/
-         bh1Noa0mAThMliVmAKLKxLZRchcLlmb6fZu3dQKO92z+u4yR5ht9g6gF+H4BtjYqlCkK
-         F3aw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=h3tbiA/lTi3RceFrCX7kiLbJf35Q7/dK3vulX9P+oDY=;
+        b=JW2DmgktGCtA3lWb39uboPmJ/rAOmziMI7D4FBMRu/JiWFb9Bc6bLr5fOzz9rFUAfJ
+         NK6wb12oDKAPKRhNZ/njTuhqH3rm2S+jbCUPptrfVJvn8Bh9pXKBZfHMjXjl0p95S50K
+         NNrKCnwFhWW81SOC1w3GvYNo4nEXMD87p0mGxYnboB44dBiB0ByLSCj0GZgs77XcvzyP
+         aIzQ9pxln+8wLs9D+DjrTuU8IKmK5Bd/hsPHf/c3vdguyYDc36ezSmZhb8eJOVDJKwOT
+         RdYOqBYM09vlVdcUbPMcjQWFdH/F1KPo3xWR51ptcNMmjXgu0DUVdnyJjBb/pVNZByL/
+         Y4Mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zQXY/DFSzqSNiVJeW4YwRdZR282rLknOMgBOkiHlEuo=;
-        b=e1RhRCKv3gspY9SzcfAbtYSOY97eNxPmZk5xoChAJFmd7NuH9/ImwaHmOHf6MSlq03
-         bp1t6FzNO+AV8KFHGllxhMCFq85bT6WFuOTa0YedcFsIop+oOVlunTNijaCvvzub3tTA
-         XKwZExsaN8jgNYJxi+Oo7yLtrCzBp3S6VFMlt7Kn8bUOO+Q057v1tWhB3PSPlYfr0LcC
-         A/QRZlFJ/8dICtDUypMKq8oPOeup87PX2h1aRud27yQ7YDjH7lxRbJzk1BvVLWNem9DF
-         g8Kx2X1weMzYreDl77XEg7jYXSf3ihzkz1KwGitxRLofIX/xKx/g5H4FbCRwWA7tU5ky
-         Cb8w==
-X-Gm-Message-State: AOAM532lcjllzY+sc+2dvxd8fV+QoMvvV6hA1GKkcHgjmFXYOUT8bFNM
-        lnzTlne5l3B8H8fyt8kifIg7FgPj4htkFtackAM=
-X-Google-Smtp-Source: ABdhPJxy2MlXd9a/hyL/9UP4akGZbizEHVkkHC+bD8k0rI38YcLVHvIGoctdFBk1N/JfyL+Aw2UCzknoksUVSEFofbA=
-X-Received: by 2002:a0d:f0c7:: with SMTP id z190mr11108005ywe.61.1644243528608;
- Mon, 07 Feb 2022 06:18:48 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=h3tbiA/lTi3RceFrCX7kiLbJf35Q7/dK3vulX9P+oDY=;
+        b=Un7EAI9H9/6pjJO3KcSFME2lTXYDOfiMuuypKFBQ8W8hBlFMVpR3eNaTrmxCbLIkxP
+         gWlEQF7/yPULlIFL2Yxe/MRCtUuMUp211YnZPKtqRleU29PG30OG2xpgoZiQnvHVwbXq
+         24hcyWYWJXaaNFJ0mzJmHGIylhUTfNhnuYIZG4yPI+yJhTSQdEHLFGkUqHsMXEOilahk
+         TfXf1VZ1UR3pFpmrjsn8dPZyhq2Jj0yxaiAYsQB+nbiwUn7xCYWlJALPdpnf2OhPthlU
+         U9BCD7w1/tcy/jHAm8qE9StPox3wM7Q+56lncSE3Hz7ezbFAfjjtOWgRiy05EPEdz5zM
+         tXqw==
+X-Gm-Message-State: AOAM532I8nvqqvxgZ4mhX4ZsM8WLN7I4KfkLbcCA2Oe0CLkwtK5Nz+9M
+        6XOEY/F2THJ8GWo6Rm6W1P8Jhad3WGU=
+X-Google-Smtp-Source: ABdhPJz2jRYtIQf+VDpFxEpPreJRl6beEed6w0QevCoUzi6YYmwUUYAO93liG/ahZTUzdPK/TXnA8Q==
+X-Received: by 2002:ac2:59ca:: with SMTP id x10mr8666478lfn.499.1644243620782;
+        Mon, 07 Feb 2022 06:20:20 -0800 (PST)
+Received: from localhost.localdomain (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
+        by smtp.gmail.com with ESMTPSA id t13sm1515599lfl.94.2022.02.07.06.20.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 06:20:20 -0800 (PST)
+From:   Dmitry Osipenko <digetx@gmail.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Cc:     linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/4] Add V4L stateless video decoder API support to NVIDIA Tegra driver
+Date:   Mon,  7 Feb 2022 17:19:33 +0300
+Message-Id: <20220207141937.13089-1-digetx@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <CAGj4m+4QPE7uHzbsQbG6Fp3Ke2eQRQQ2z2-1rsKDPtXqs-vpGg@mail.gmail.com>
- <a6916dea7c771b04d8c97d25214b6918524ab9ea.camel@redhat.com>
-In-Reply-To: <a6916dea7c771b04d8c97d25214b6918524ab9ea.camel@redhat.com>
-From:   Vasyl Vavrychuk <vvavrychuk@gmail.com>
-Date:   Mon, 7 Feb 2022 16:18:36 +0200
-Message-ID: <CAGj4m+6u=TvH-nOqf38Tz=8+FDOx57h2n8-ZumHDKa=hZ1AkAw@mail.gmail.com>
-Subject: Re: gdb switches to __sysvec_apic_timer_interrupt or
- __default_send_IPI_dest_field with KVM enabled
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     qemu-discuss@nongnu.org, linux-kernel@vger.kernel.org,
-        gdb@sourceware.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks a lot for these fixes which I can use, and for detailed explanation.
+Support V4L stateless video decoder API by NVIDIA Tegra decoder driver.
+Tested using GStreamer [1] and libvdpau-tegra [2][8].
 
-On Mon, Jan 31, 2022 at 12:42 PM Maxim Levitsky <mlevitsk@redhat.com> wrote:
-> I recently fixed that, and the code AFAIK is upstream, but probably, the qemu
-> side of it didn't yet made it to the release.
+[1] https://github.com/grate-driver/gstreamer/commit/b8509bdbb69b534e61419ea1798f32f9ad2f3597
+[2] https://github.com/grate-driver/libvdpau-tegra/commit/f822e95911e5e0c39f8ba19f843ddc1e0138d5ce
+[8] https://github.com/grate-driver/libvdpau-tegra/commit/80db4d02369f2a984ce3173d6bc305f32e9fdb97
 
-You are right, I have observed some unrelated gdb issue when debugging
-kernel under QEMU and prepared packaging backport:
-https://salsa.debian.org/gdb-team/gdb/-/merge_requests/9
+Changelog:
 
-> I patched the lx-symbols script to at least work with recent gdb, but this no doubt relies on at least some undefined
-> behavier in gdb, therefore I didn't push this futher.
->
-> https://patchwork.kernel.org/project/kvm/patch/20210811122927.900604-5-mlevitsk@redhat.com/
+v3: - Added new decode_params flags [7] instead of V4L2_BUF_FLAG_*FRAME flags,
+      as was suggested by Nicolas Dufresne.
 
-What a coincidence, I use lx-symbols with an external kernel module. I
-have noticed that it behaves strangely sometimes, but somehow I found
-a proper order of comments when it works for me.
+      [7] https://github.com/grate-driver/gstreamer/commit/c5cd847f9c26b7669720ae58f9058de2515f51a2
 
-On Mon, Jan 31, 2022 at 12:42 PM Maxim Levitsky <mlevitsk@redhat.com> wrote:
->
-> On Sat, 2022-01-29 at 23:06 +0200, Vasyl Vavrychuk wrote:
-> > Hello,
-> >
-> > I run Linux kernel under qemu-system-x86_64 via the "-kernel" option.
-> >
-> > Also, I added the "-s" option to accept the gdb connection.
-> >
-> > After Linux boot up I connect with gdb and set a breakpoint in some
-> > function, for example "device_del", does not matter really.
-> >
-> > The problem is if I also use "--enable-kvm", then after breakpoint
-> > triggered and sending "n" from gdb, it switches to
-> >
-> >     __sysvec_apic_timer_interrupt (regs=0xffffc90000297de8) at
-> > arch/x86/kernel/apic/apic.c:1102
-> >     1102            trace_local_timer_entry(LOCAL_TIMER_VECTOR);
-> >
-> > or to
-> >
-> >     __default_send_IPI_dest_field (mask=<optimized out>,
-> > vector=<optimized out>, dest=dest@entry=2048) at
-> > arch/x86/kernel/apic/ipi.c:161
-> >     161             cfg = __prepare_ICR2(mask);
-> >
-> > I am stepping over kernel code that does not perform any waiting or blocking.
-> >
-> > Everything works fine with "--enable-kvm" removed.
->
-> I recently fixed that, and the code AFAIK is upstream, but probably, the qemu
-> side of it didn't yet made it to the release.
->
-> The problem you are seeing is that every time you single step, an interrupt
-> occures because you are not as fast as computer is - timer interrupt happens
-> like 1000 times in a second, so after each single step you do it will be pending.
->
-> That makes GDB land you in the interrupt handler, which is correct
-> technically but makes single stepping pretty much impossible.
->
-> The solution is to tell kernel to mask interrupts regardless
-> if they are masked by the guest, something that qemu even does when TCCG
-> is used but was not implemented for KVM.
->
-> Best regards,
->         Maxim Levitsky
->
-> PS: you might also want to patch kernel's lx-symbols gdb script to fix loadable module support,
-> which currently doesn't work well - I run out of time to upstream it,  I'll get to it
-> someday.
->
-> There problem here is that kernel's gdb script uses a breakpoint in the function that
-> loads modules and when it hits, it reloads gdb symbols - that is frowned upon in gdb docs,
-> but pretty much the only way to do it.
->
-> I patched the lx-symbols script to at least work with recent gdb, but this no doubt relies on at least some undefined
-> behavier in gdb, therefore I didn't push this futher.
->
-> https://patchwork.kernel.org/project/kvm/patch/20210811122927.900604-5-mlevitsk@redhat.com/
->
->
->
-> >
-> > Thanks,
-> > Vasyl
-> >
->
->
+    - Added new patch that removes legacy UAPI.
+
+v2: - Made V4L2_BUF_FLAG_*FRAME flags mandatory [3] and dropped reading
+      of raw bitstream from the driver code, as was suggested by
+      Nicolas Dufresne.
+
+      [3] https://github.com/grate-driver/gstreamer/commit/aee292f0f2e84b7654a314dd7e63f916888ffaa5
+
+    - Ran v4l2-compliance [4] and fluster [5][6] tests, like was suggested by
+      Nicolas Dufresne. Fixed minor v4l2-compliance errors that were related
+      to a partial initialization of the coded format and were harmless in
+      practice, but made compliance checker unhappy.
+
+      [4] https://gist.github.com/digetx/5d6bcdab633488f1dcc7c141ab90d30e
+      [5] https://gist.github.com/digetx/b06c5d779e9d25afa41d9f46946fe399
+      [6] https://gist.github.com/digetx/ac4198bc340e5065aa8ec3288bb21356
+
+Dmitry Osipenko (4):
+  media: v4l2-ctrls: Add new V4L2_H264_DECODE_PARAM_FLAG_P/BFRAME flags
+  media: staging: tegra-vde: Factor out H.264 code
+  media: staging: tegra-vde: Support V4L stateless video decoder API
+  media: staging: tegra-vde: Remove legacy UAPI support
+
+ .../media/v4l/ext-ctrls-codec-stateless.rst   |    6 +
+ drivers/staging/media/tegra-vde/Kconfig       |    7 +
+ drivers/staging/media/tegra-vde/Makefile      |    2 +-
+ .../staging/media/tegra-vde/dmabuf-cache.c    |    2 +-
+ drivers/staging/media/tegra-vde/h264.c        |  946 +++++++++++++++
+ drivers/staging/media/tegra-vde/iommu.c       |    2 +-
+ drivers/staging/media/tegra-vde/uapi.h        |   73 --
+ drivers/staging/media/tegra-vde/v4l2.c        | 1018 +++++++++++++++++
+ drivers/staging/media/tegra-vde/vde.c         |  945 ++-------------
+ drivers/staging/media/tegra-vde/vde.h         |  121 +-
+ include/uapi/linux/v4l2-controls.h            |    2 +
+ 11 files changed, 2170 insertions(+), 954 deletions(-)
+ create mode 100644 drivers/staging/media/tegra-vde/h264.c
+ delete mode 100644 drivers/staging/media/tegra-vde/uapi.h
+ create mode 100644 drivers/staging/media/tegra-vde/v4l2.c
+
+-- 
+2.34.1
+
