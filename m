@@ -2,146 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9695C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BFBC35274
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389510AbiBGQal (ORCPT
+        id S1389790AbiBGQan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:30:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33076 "EHLO
+        Mon, 7 Feb 2022 11:30:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389775AbiBGQ1G (ORCPT
+        with ESMTP id S1380026AbiBGQ0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:27:06 -0500
-X-Greylist: delayed 311 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 08:27:04 PST
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F28C0401CC;
-        Mon,  7 Feb 2022 08:27:04 -0800 (PST)
-Received: from evilbit.green-communications.fr ([92.154.77.116]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.119]) with ESMTPSA (Nemesis)
- id 1MKbwg-1nbwVi0iyK-00L0Yj; Mon, 07 Feb 2022 17:21:38 +0100
-From:   Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     Amit Kucheria <amitk@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] imx_thermal: Fix temperature retrieval after overheat
-Date:   Mon,  7 Feb 2022 17:18:30 +0100
-Message-Id: <20220207161829.4807-1-nicolas.cavallari@green-communications.fr>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:nB1bTMwZBFWEuhylUis7rLw5EQ2337iNQATK8GFDRXIZ7yaAo/p
- zViD23GEZDiLLLdymY7ZtS9rODuTGylsdyaKoZB79ML/Z2+8UizghvoK42a8KJ8Tn06M/4j
- AFo4amFvwIIsyIsFNo+iZeTzpA5njJ5N0jNl6i2nFhqy92t9GRJNMK/KzQ+RUkbjxb5tjnD
- OFMPHJEHWe8qhJRaOwAfQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:DrdQU+NYlxo=:ZI9BjRW9eZMtiZ1FpJjbHp
- YZxmh/MqKo+wLu95PSRy/e7+58EAOV5H2v7N6n1YIJwMVO+Re1f0E2o4EEbpQoOdPirIJIrXh
- rkUN4LQGj0pRbCiGo4O9cbGbr6t4GK1IjCfkgVJkpFtjGPojf7yolu202n+GJn3KRRZ15grHW
- EvlOGKNGOmPXaH8U/iuy2Xh2decU44u4/VX+WxEiWyq7UgvNOTxKqmg2K2kPvgIijFScTJU+c
- IkFolc9rXr4kePFy936LnSMonyF0XShig3loZAvWjVVZ389EE2u2TPcnmT9uhLKbSzoyoHrSY
- EBHBBaU1t6Ksa27R2/TmTjyKicWbqBh+WWq0qMt1cy39cCCKwmsFVly1aZprxuvipPenNVXsL
- 0gNykysooh377d4oVg5fHdjj77Ry+QkBQYAp1ldcCbGpY6Acl5bse1nLwr1NIvZ/nFCcGLIqH
- mjj6q9HUyAZg2vDtB6dlwemQGkDCIq4J565fNoqF8xN2qO8oNktogCb4yC+kbQBUftsZFjIhr
- qChuXN96Wfasnvcwr14wXQDLcdRjnBGBCnrVaz/7dxvrZQeQTZJ5RNhKIoz1W9x7XguUR8kJV
- 9d6iTM9OvV752nu4PZdsDNBDfIIZ1l0JjNM3bPTEJjIrIHHznqLcDi8R3gzgYCk6JrZG9UnZv
- yIrJkS5f3YZLR4I5LhQTSdCY72OuJGyClxZxJnG7armMo1zoIqvtauQS2v9oqXQpGf88S8Bvd
- Yt9a9kpJumHqeo9s52H1Zi61KQSbtvOJsHvotA==
+        Mon, 7 Feb 2022 11:26:23 -0500
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21EE4C0401CF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:26:20 -0800 (PST)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOeRj014413;
+        Mon, 7 Feb 2022 17:24:40 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        Willy Tarreau <w@1wt.eu>
+Subject: [PATCH 30/42] tools/nolibc/string: add strncpy() and strlcpy()
+Date:   Mon,  7 Feb 2022 17:23:42 +0100
+Message-Id: <20220207162354.14293-31-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
+In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
+References: <20220207162354.14293-1-w@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the CPU temperature is above the passive trip point, reading the
-temperature would fail forever with EAGAIN.  Fortunately, the thermal
-core would continue to assume that the system is overheating, so would
-put all passive cooling devices to the max.  Unfortunately, it does
-this forever, even if the temperature returns to normal.
+These are minimal variants. strncpy() always fills the destination for
+<size> chars, while strlcpy() copies no more than <size> including the
+zero and returns the source's length. The respective sizes on various
+archs are:
 
-This can be easily tested by setting a very low trip point and crossing
-it with while(1) loops.
+  strncpy(): x86:0x1f mips:0x30 arm:0x20
+  strlcpy(): x86:0x17 mips:0x34 arm:0x1a
 
-The cause is commit d92ed2c9d3ff ("thermal: imx: Use driver's local data
-to decide whether to run a measurement"), which replaced a check for
-thermal_zone_device_is_enabled() by a check for irq_enabled, which
-tests if the passive trip interrupt is enabled.
-
-Normally, when the thermal zone is enabled, the temperature sensors
-are always enabled and the interrupt is used to detect overheating.
-When the interrupt fires, it must be disabled.
-In that case, the commit causes the measurements to be done
-manually (enable sensor, do measurement, disable sensor).
-If the thermal core successfully cools down the system below the trip
-point (which it typically does quickly), the irq is enabled again but
-the sensor is not enabled.
-
-To fix this without using thermal_zone_device_is_enabled(), use a
-separate variable to record if the thermal zone is enabled.
-
-Fixes: d92ed2c9d3ff ("thermal: imx: Use driver's local data to decide
-whether to run a measurement")
-
-Signed-off-by: Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- drivers/thermal/imx_thermal.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ tools/include/nolibc/string.h | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
-index 2c7473d86a59..5a6ad5bae238 100644
---- a/drivers/thermal/imx_thermal.c
-+++ b/drivers/thermal/imx_thermal.c
-@@ -205,6 +205,7 @@ struct imx_thermal_data {
- 	int alarm_temp;
- 	int last_temp;
- 	bool irq_enabled;
-+	bool tz_enabled;
- 	int irq;
- 	struct clk *thermal_clk;
- 	const struct thermal_soc_data *socdata;
-@@ -252,11 +253,10 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
- 	const struct thermal_soc_data *soc_data = data->socdata;
- 	struct regmap *map = data->tempmon;
- 	unsigned int n_meas;
--	bool wait, run_measurement;
-+	bool wait;
- 	u32 val;
+diff --git a/tools/include/nolibc/string.h b/tools/include/nolibc/string.h
+index b831a02de83f..7c274efcdfae 100644
+--- a/tools/include/nolibc/string.h
++++ b/tools/include/nolibc/string.h
+@@ -121,6 +121,34 @@ size_t nolibc_strlen(const char *str)
+ 		nolibc_strlen((str));           \
+ })
  
--	run_measurement = !data->irq_enabled;
--	if (!run_measurement) {
-+	if (data->tz_enabled) {
- 		/* Check if a measurement is currently in progress */
- 		regmap_read(map, soc_data->temp_data, &val);
- 		wait = !(val & soc_data->temp_valid_mask);
-@@ -283,7 +283,7 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
- 
- 	regmap_read(map, soc_data->temp_data, &val);
- 
--	if (run_measurement) {
-+	if (!data->tz_enabled) {
- 		regmap_write(map, soc_data->sensor_ctrl + REG_CLR,
- 			     soc_data->measure_temp_mask);
- 		regmap_write(map, soc_data->sensor_ctrl + REG_SET,
-@@ -339,6 +339,7 @@ static int imx_change_mode(struct thermal_zone_device *tz,
- 	const struct thermal_soc_data *soc_data = data->socdata;
- 
- 	if (mode == THERMAL_DEVICE_ENABLED) {
-+		data->tz_enabled = true;
- 		regmap_write(map, soc_data->sensor_ctrl + REG_CLR,
- 			     soc_data->power_down_mask);
- 		regmap_write(map, soc_data->sensor_ctrl + REG_SET,
-@@ -349,6 +350,7 @@ static int imx_change_mode(struct thermal_zone_device *tz,
- 			enable_irq(data->irq);
- 		}
- 	} else {
-+		data->tz_enabled = false;
- 		regmap_write(map, soc_data->sensor_ctrl + REG_CLR,
- 			     soc_data->measure_temp_mask);
- 		regmap_write(map, soc_data->sensor_ctrl + REG_SET,
++static __attribute__((unused))
++size_t strlcpy(char *dst, const char *src, size_t size)
++{
++	size_t len;
++	char c;
++
++	for (len = 0;;) {
++		c = src[len];
++		if (len < size)
++			dst[len] = c;
++		if (!c)
++			break;
++		len++;
++	}
++	return len;
++}
++
++static __attribute__((unused))
++char *strncpy(char *dst, const char *src, size_t size)
++{
++	size_t len;
++
++	for (len = 0; len < size; len++)
++		if ((dst[len] = *src))
++			src++;
++	return dst;
++}
++
+ static __attribute__((unused))
+ char *strrchr(const char *s, int c)
+ {
 -- 
-2.34.1
+2.35.1
 
