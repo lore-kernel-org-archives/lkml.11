@@ -2,182 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 113A6C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F042C47082
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344996AbiBHBEP (ORCPT
+        id S1345064AbiBHBEY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:04:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37210 "EHLO
+        Mon, 7 Feb 2022 20:04:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245565AbiBGXKF (ORCPT
+        with ESMTP id S240354AbiBGXM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:10:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF681C061355;
-        Mon,  7 Feb 2022 15:10:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D665B8172A;
-        Mon,  7 Feb 2022 23:10:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 269F4C36AE5;
-        Mon,  7 Feb 2022 23:10:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644275402;
-        bh=X55ltdzNwPy1g/p9q8Hmw02ExsfYSQ15IJvBXM3YtY0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=b35MZEt7F3ub1UmW59dP/jK1FHeinkHi47vnikF6f0tn/LYxYvBlTyxSaTnh48zsw
-         bj+LHNVU4kHEuS9oU7MqEOEbF9z3BTwYM0EbkbcyPMvVD/DV0DrdT35pzzpRNQcADu
-         Oy4/rEvaS0eLVeS86L7tF6GhJ91h/XYPGz9RK7QGv55ktzTlvSi1Yxhv9iw5hOsyWY
-         yYd5IgGp5w1C4rz4hX5sRzve4MfCRJnkiroZyRIynTp8e1riDW2zttvuWuOZbNDDn2
-         0RmzMaaEUj0DTUpU/v70SKTeU4fE4cOtOBpEgY7MUx7Dg0KzrNTqszT53CTqcxcJuP
-         vevjRA2C7EiJQ==
-Received: by mail-ej1-f53.google.com with SMTP id ka4so46527021ejc.11;
-        Mon, 07 Feb 2022 15:10:02 -0800 (PST)
-X-Gm-Message-State: AOAM531tlh9RyQOQbL/hg3TObEYti54yAyJDBk4mr5xUTTRhvW4sY50B
-        r5c7yc5oWV3V77LO1zoiXtqgg20/iLn5T6EmVQ==
-X-Google-Smtp-Source: ABdhPJzHug39pCeEURXinndAsC1Ag6qOi9HiunS1b6JUbZ+czMiULQBPsCGdREFSWexfLvxwtF92P+X+IxVE5/XVA1I=
-X-Received: by 2002:a17:906:c10f:: with SMTP id do15mr1461761ejc.638.1644275400392;
- Mon, 07 Feb 2022 15:10:00 -0800 (PST)
+        Mon, 7 Feb 2022 18:12:58 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD312C061355;
+        Mon,  7 Feb 2022 15:12:56 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id m6so44643795ybc.9;
+        Mon, 07 Feb 2022 15:12:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wQq+mHaX2NTw8edQ1piWfzulWZiGotWvejNP1a/WHXA=;
+        b=isfraitWhRGlMJU5yWGEFJjAgZ2h8hn2M0bv6WDAuftAolDZK9XA10xhcXKRl6rb94
+         Lu2YTxxxUFK9r4kVpKXZcDqHbNFXAq3M/NQtxWAxWU6Qfs3DCND/pp7uwO7sJosdY4ny
+         /9vBtqBd05H+DhwRfXZGfcCiFZKw95XpV45hry9I+TFnZSlDf6+IgPsn8XlxTLfWDuYP
+         xQ6LomxeYhe7kxPG7n0kLTv4KpJezzWcSd6u3OOBzs77fI1XZcFw61F5Ta2gwFw6PQS4
+         1xG1sL4x+soscQSUxGAPhLyCvhMH//JPqNEnuYqW3eCPFBtjrTbD/yJ/9Qn0kZU5YYtp
+         0JnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wQq+mHaX2NTw8edQ1piWfzulWZiGotWvejNP1a/WHXA=;
+        b=0Yt7C4eCX+dvddQORyOJi1Neojd8RbYgSbtVGciWbrO6eD3QbQ0t/XHwYSYX893GbW
+         JsYuwVrd5jlsG0HJPmBmJnqhQz6ukzbRxoHZ+MFBqo4C5TLmfm4JN02VbHJ7ad/KuLGD
+         TILz1rPjUQHXxUMKwHNdwjdEfroEdeNr0l3E1wKRSI96a+Rh+LiTpvqxE8fJ4A0tcFWK
+         K9iddeRkz4cvCFoHkBtMNcTgYZLvW29/l53276EUnELV91XxDiK5rtdc54N7udwWXQts
+         IE0CrPXQfsclvtaK8xgPor61zBTcQAiiCaYqVvgvB10h/Bh5vdd9FcZgaXEgTcvJO23I
+         9rAQ==
+X-Gm-Message-State: AOAM531Boi6YKFpXk83oLe5cIbDDWoGOW77f5lX41T/aKuevK4rF7zGl
+        kDz7Qdoww8Whbf88ry2pzIlQenEfbjkqKjXcNEBbnGS3i9kEE+vJ
+X-Google-Smtp-Source: ABdhPJzVIXzrcgHdMz3A3fRll57H1Ml4LaWjCW0LwWcIaltsCm6YZYIZwy7v3kDRz8E1y6o8uyz5xHiPiu0JAPcWoqE=
+X-Received: by 2002:a05:6902:4c2:: with SMTP id v2mr2126067ybs.429.1644275575771;
+ Mon, 07 Feb 2022 15:12:55 -0800 (PST)
 MIME-Version: 1.0
-References: <20220126071932.32615-1-jason-jh.lin@mediatek.com> <20220126071932.32615-6-jason-jh.lin@mediatek.com>
-In-Reply-To: <20220126071932.32615-6-jason-jh.lin@mediatek.com>
-From:   Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Date:   Tue, 8 Feb 2022 07:09:48 +0800
-X-Gmail-Original-Message-ID: <CAAOTY_8zd6QDs3om8-oGaLJuw9OjTmak_cqbkUpVjyqCUV_LLQ@mail.gmail.com>
-Message-ID: <CAAOTY_8zd6QDs3om8-oGaLJuw9OjTmak_cqbkUpVjyqCUV_LLQ@mail.gmail.com>
-Subject: Re: [PATCH v15 05/12] dt-bindings: display: mediatek: merge: add
- additional prop for mt8195
-To:     "jason-jh.lin" <jason-jh.lin@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fei Shao <fshao@chromium.org>,
-        Moudy Ho <moudy.ho@mediatek.com>, roy-cw.yeh@mediatek.com,
-        CK Hu <ck.hu@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Jitao shi <jitao.shi@mediatek.com>,
-        Nancy Lin <nancy.lin@mediatek.com>, singo.chang@mediatek.com,
-        DTML <devicetree@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20220204200342.48665-1-ztong0001@gmail.com> <a45010a4-2b86-aa22-d7bd-3c4839356cf1@pengutronix.de>
+In-Reply-To: <a45010a4-2b86-aa22-d7bd-3c4839356cf1@pengutronix.de>
+From:   Tong Zhang <ztong0001@gmail.com>
+Date:   Mon, 7 Feb 2022 15:12:45 -0800
+Message-ID: <CAA5qM4BtyFZJfwSjCfoAzMf5jZQNbi6jziPjOm+Z1_c98VEVYg@mail.gmail.com>
+Subject: Re: [PATCH] KEYS: trusted: fix crash when TPM/TEE are built as module
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
+Cc:     James Bottomley <jejb@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        Andreas Rammhold <andreas@rammhold.de>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Jason:
-
-jason-jh.lin <jason-jh.lin@mediatek.com> =E6=96=BC 2022=E5=B9=B41=E6=9C=882=
-6=E6=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=883:19=E5=AF=AB=E9=81=93=EF=
-=BC=9A
+On Sun, Feb 6, 2022 at 2:36 AM Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
 >
-> add MERGE additional properties description for mt8195:
-> 1. async clock
-> 2. fifo setting enable
-> 3. reset controller
-
-Applied to mediatek-drm-next [1], thanks.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/=
-log/?h=3Dmediatek-drm-next
-
-Regards,
-Chun-Kuang
-
+> Hello Tong,
 >
-> Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
-> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> ---
->  .../display/mediatek/mediatek,merge.yaml      | 38 +++++++++++++++++++
->  1 file changed, 38 insertions(+)
+> On 04.02.22 21:03, Tong Zhang wrote:
+> > when TCG_TPM and TEE are built as module, trusted_key_sources will be an
+> > empty array, loading it won't do what it is supposed to do and unloading
+> > it will cause kernel crash.
 >
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-merge.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,me=
-rge.yaml
-> index 7aa6974d509d..fae106cf1753 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.y=
-aml
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.y=
-aml
-> @@ -36,8 +36,28 @@ properties:
->        Documentation/devicetree/bindings/power/power-domain.yaml for deta=
-ils.
+> Jarkko reported picking up an equivalent fix two months ago:
+> https://lkml.kernel.org/keyrings/YadRAWbl2aiapf8l@iki.fi/
 >
->    clocks:
-> +    maxItems: 2
->      items:
->        - description: MERGE Clock
-> +      - description: MERGE Async Clock
-> +          Controlling the synchronous process between MERGE and other di=
-splay
-> +          function blocks cross clock domain.
-> +
-> +  clock-names:
-> +    maxItems: 2
-> +    items:
-> +      - const: merge
-> +      - const: merge_async
-> +
-> +  mediatek,merge-fifo-en:
-> +    description:
-> +      The setting of merge fifo is mainly provided for the display laten=
-cy
-> +      buffer to ensure that the back-end panel display data will not be
-> +      underrun, a little more data is needed in the fifo.
-> +      According to the merge fifo settings, when the water level is dete=
-cted
-> +      to be insufficient, it will trigger RDMA sending ultra and preulra
-> +      command to SMI to speed up the data rate.
-> +    type: boolean
+> But it seems to have never made it to Linus.
 >
->    mediatek,gce-client-reg:
->      description: The register of client driver can be configured by gce =
-with
-> @@ -47,6 +67,11 @@ properties:
->      $ref: /schemas/types.yaml#/definitions/phandle-array
->      maxItems: 1
+> Cheers,
+> Ahmad
 >
-> +  resets:
-> +    description: reset controller
-> +      See Documentation/devicetree/bindings/reset/reset.txt for details.
-> +    maxItems: 1
-> +
->  required:
->    - compatible
->    - reg
-> @@ -64,3 +89,16 @@ examples:
->          power-domains =3D <&spm MT8173_POWER_DOMAIN_MM>;
->          clocks =3D <&mmsys CLK_MM_DISP_MERGE>;
->      };
-> +
-> +    merge5: disp_vpp_merge5@1c110000 {
-> +        compatible =3D "mediatek,mt8195-disp-merge";
-> +        reg =3D <0 0x1c110000 0 0x1000>;
-> +        interrupts =3D <GIC_SPI 507 IRQ_TYPE_LEVEL_HIGH 0>;
-> +        clocks =3D <&vdosys1 CLK_VDO1_VPP_MERGE4>,
-> +                 <&vdosys1 CLK_VDO1_MERGE4_DL_ASYNC>;
-> +        clock-names =3D "merge","merge_async";
-> +        power-domains =3D <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-> +        mediatek,gce-client-reg =3D <&gce1 SUBSYS_1c11XXXX 0x0000 0x1000=
->;
-> +        mediatek,merge-fifo-en =3D <1>;
-> +        resets =3D <&vdosys1 MT8195_VDOSYS1_SW0_RST_B_MERGE4_DL_ASYNC>;
-> +    };
+> >
+> > To reproduce:
+> > $ modprobe trusted
+> > $ modprobe -r trusted
+> >
+> > [  173.749423] Unable to handle kernel NULL pointer dereference at virtual address 00000000
+> > [  173.755268] Backtrace:
+> > [  173.755378]  cleanup_trusted [trusted] from sys_delete_module+0x15c/0x22c
+> > [  173.755589]  sys_delete_module from ret_fast_syscall+0x0/0x1c
+> >
+> > To fix this issue, we also need to check CONFIG_TCG_TPM_MODULE and
+> > CONFIG_TEE_MODULE.
+> >
+> > Fixes: 5d0682be3189 ("KEYS: trusted: Add generic trusted keys framework")
+> > Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+> > ---
+> >  security/keys/trusted-keys/trusted_core.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/security/keys/trusted-keys/trusted_core.c b/security/keys/trusted-keys/trusted_core.c
+> > index d5c891d8d353..b3a3b2f2d4a4 100644
+> > --- a/security/keys/trusted-keys/trusted_core.c
+> > +++ b/security/keys/trusted-keys/trusted_core.c
+> > @@ -27,10 +27,10 @@ module_param_named(source, trusted_key_source, charp, 0);
+> >  MODULE_PARM_DESC(source, "Select trusted keys source (tpm or tee)");
+> >
+> >  static const struct trusted_key_source trusted_key_sources[] = {
+> > -#if defined(CONFIG_TCG_TPM)
+> > +#if defined(CONFIG_TCG_TPM) || defined(CONFIG_TCG_TPM_MODULE)
+> >       { "tpm", &trusted_key_tpm_ops },
+> >  #endif
+> > -#if defined(CONFIG_TEE)
+> > +#if defined(CONFIG_TEE) || defined(CONFIG_TEE_MODULE)
+> >       { "tee", &trusted_key_tee_ops },
+> >  #endif
+> >  };
+>
+>
 > --
-> 2.18.0
->
+> Pengutronix e.K.                           |                             |
+> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+Hi Ahmad,
+Thanks for letting me know.
+That fix looks good to me.
+- Tong
