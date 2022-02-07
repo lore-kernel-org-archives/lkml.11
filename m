@@ -2,125 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03918C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240973AbiBGTr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:47:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59770 "EHLO
+        id S234996AbiBGTvq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:51:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240575AbiBGTpI (ORCPT
+        with ESMTP id S240743AbiBGTr2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:45:08 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BDA6C0401E0
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:45:07 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id u7so19687180lji.2
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 11:45:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lZDpDADdfwq40jZPbE/sznh7Bnymle3eu2MsiKyAnHI=;
-        b=BdiDafPxAfgT1LadX6/qdSNo8n3l0Xa/GtCJEktDJMXEmp52SrE42F60zh+yNtgnej
-         uafnZUT8MJqOawyMYksVSqsD8w5zXATUGodDDaf2n0OSYIP77vOHkN1WwPFv0stLOa78
-         +4ATpfopW4dS5hdH2p54SyosNF1m7zjr8r+2YE4GWs0neqc92bzF3dIJD7hE8cA0PJPs
-         kQu1XjE348Lq3znmdTjfrSq9FD04iuxmobdD48LoM7k4xW51/uiPDMkZVxL359FVEki8
-         6hN3NzqdifRAShPzrX73QDVc8Pe4IH8JQaohdbJyNHzgPOa0p/tQFkgSdDhkiO0KiTmj
-         Kknw==
+        Mon, 7 Feb 2022 14:47:28 -0500
+Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C0CC03FEE0;
+        Mon,  7 Feb 2022 11:47:15 -0800 (PST)
+Received: by mail-yb1-f178.google.com with SMTP id p5so43184679ybd.13;
+        Mon, 07 Feb 2022 11:47:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lZDpDADdfwq40jZPbE/sznh7Bnymle3eu2MsiKyAnHI=;
-        b=7oGjJUIgFQyAcTPDXBuQpO1x+0P+4hMCtzxw6thuD+eNwkrKma++Uo5lX5QB9HjMwJ
-         a/UHy+llEnqUcHmmvvJ2NGMiSb78KhmS7iJYQOJ6drf6GFeHiR38CWa059p+LXOhy81W
-         eFjMSnJAOpchJurpkOvWmhr73YAqa/jVLZpZR8knAwUwavAHRLcEoZNWYSqkM5ZZGD5w
-         UMixDNpH4C8qPbG1BiAsDrIR3F0nwcyadgIbGsGOappwqfhsqT3wzUIdjTjLgx1rRjqn
-         KoVMWH7YGnFaMCCGKKUzqapGd/ge56WJuz1BovoQ7tm84/Jk3AF1RrCaFMcxdobkgGji
-         qwjA==
-X-Gm-Message-State: AOAM532VnRiJS2Y9hZEQn7F9Ddkmz2Ss6QRuYEBg/3gWC5Ul9p68LlQb
-        WZHUuv4fKw7j9AXMxjhmNFur1jt1FbYF7lL623wc5A==
-X-Google-Smtp-Source: ABdhPJwv1WF2F6ndc/bGUuNT+neSxWAOv6iXkCytc6pktYWRpfycPf6E/KpzZmQrd8aUu/NlJ8No19+iCvFMptVtXu4=
-X-Received: by 2002:a2e:7c0c:: with SMTP id x12mr648215ljc.526.1644263105665;
- Mon, 07 Feb 2022 11:45:05 -0800 (PST)
+        bh=wuRNuHNXZ73VDUS0YFtFTT31aQYm+MB2IbD5aGK6CEA=;
+        b=D8UOl53t8IcFGd1x/TM8N09U7/cI8gTG/YwBARd7rwxsyItIX21MQ+YYwhuLBtV/wC
+         FhsMN8dwMbasBYbKjLgylYM8X0uZjGhB8E5iV3QrKeEi+MK8q2gnNPQAnDz7BMzbkiVE
+         fgXGPSanDEjshW7A7S9tmkhFkNoyakFkjocos/tPFf3n3/HpN7/HHJXYlqt8Z1vOrYng
+         MbMquK5xfZKKTl3/UwoxCFzfio6JITWwmgh1WbwwIklCATYbsrze5RVIHHzEKQ00aVuG
+         MnYDAJJSaoyeSQpUBwPMObI6AOzmrswu3xdML2HoGRd8O1k9q+GeBcpwnCp3ArQeDIUC
+         8eDg==
+X-Gm-Message-State: AOAM531wI8B/mvwRPLDxLRJWBSL0QwbQxp22T/mWwXteQTUKLYBC9H2n
+        KDxEhxVI7j9SujfKeLO8/cphv1kOpC8TriUvh+k=
+X-Google-Smtp-Source: ABdhPJyzP29Oh6MTXKAjJHRSuLi+phXO76/VohY769b33mWTlzmTt9W6CUm0Y/8REwbK8ghJsb0vS9WEFL5YIcwNsL4=
+X-Received: by 2002:a05:690c:118:: with SMTP id bd24mr1600198ywb.515.1644263233894;
+ Mon, 07 Feb 2022 11:47:13 -0800 (PST)
 MIME-Version: 1.0
-References: <20220207165304.1046867-1-nathan@kernel.org>
-In-Reply-To: <20220207165304.1046867-1-nathan@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 7 Feb 2022 11:44:53 -0800
-Message-ID: <CAKwvOdkXe8CB3QGe2e6Fhz8_SLOsOpcMumoKBiAzGE_VTXCkVg@mail.gmail.com>
-Subject: Re: [PATCH] drm/stm: Avoid using val uninitialized in ltdc_set_ycbcr_config()
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Yannick Fertre <yannick.fertre@foss.st.com>,
-        Philippe Cornu <philippe.cornu@foss.st.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        dri-devel@lists.freedesktop.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
+References: <20220207163829.1025904-1-nathan@kernel.org> <0d11f34a98e720cb5cf0d37e67a3e130d8275e31.camel@linux.intel.com>
+ <YgFPrElA4O9P6U/l@dev-arch.archlinux-ax161>
+In-Reply-To: <YgFPrElA4O9P6U/l@dev-arch.archlinux-ax161>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Mon, 7 Feb 2022 20:47:03 +0100
+Message-ID: <CAJZ5v0j-FyFRwwfKk8Ohyutvde_aBkdu+_Ni7FBvtzT5oEuVzg@mail.gmail.com>
+Subject: Re: [PATCH] thermal: netlink: Fix parameter type of
+ thermal_genl_cpu_capability_event() stub
+To:     Nathan Chancellor <nathan@kernel.org>,
+        srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 8:53 AM Nathan Chancellor <nathan@kernel.org> wrote:
+On Mon, Feb 7, 2022 at 5:58 PM Nathan Chancellor <nathan@kernel.org> wrote:
 >
-> Clang warns:
+> On Mon, Feb 07, 2022 at 08:54:41AM -0800, srinivas pandruvada wrote:
+> > On Mon, 2022-02-07 at 09:38 -0700, Nathan Chancellor wrote:
+> > > When building with CONFIG_THERMAL_NETLINK=n, there is a spew of
+> > > warnings
+> > > along the lines of:
+> > >
+> > >   In file included from drivers/thermal/thermal_core.c:27:
+> > >   In file included from drivers/thermal/thermal_core.h:15:
+> > >   drivers/thermal/thermal_netlink.h:113:71: warning: declaration of
+> > > 'struct cpu_capability' will not be visible outside of this function
+> > > [-Wvisibility]
+> > >   static inline int thermal_genl_cpu_capability_event(int count,
+> > > struct cpu_capability *caps)
+> > >
+> > >    ^
+> > >   1 warning generated.
+> > >
+> > > 'struct cpu_capability' is not forward declared anywhere in the
+> > > header.
+> > > As it turns out, this should really be 'struct
+> > > thermal_genl_cpu_caps',
+> > > which silences the warning and makes the parameter types of the stub
+> > > match the full function.
+> > Thanks for sending the patch. I was about to send this change.
+> > Since this patch target only linux-next, don't we need prefix:
+> > "[PATCH -next]" instead of "[PATCH]"?
 >
->   drivers/gpu/drm/stm/ltdc.c:625:2: warning: variable 'val' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
->           default:
->           ^~~~~~~
->   drivers/gpu/drm/stm/ltdc.c:635:2: note: uninitialized use occurs here
->           val |= LxPCR_YCEN;
->           ^~~
->   drivers/gpu/drm/stm/ltdc.c:600:9: note: initialize the variable 'val' to silence this warning
->           u32 val;
->                  ^
->                   = 0
->   1 warning generated.
+> I could probably get better about adding "-next" to the subject prefix
+> to make it easier for maintainers but I do include the commit that the
+> patch was based on at the bottom of the patch to accomplish the same
+> thing.
 >
-> Use a return instead of break in the default case to fix the warning.
-> Add an error message so that this return is not silent, which could hide
-> issues in the future.
->
-> Fixes: 484e72d3146b ("drm/stm: ltdc: add support of ycbcr pixel formats")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1575
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> ---
->  drivers/gpu/drm/stm/ltdc.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/stm/ltdc.c b/drivers/gpu/drm/stm/ltdc.c
-> index 5eeb32c9c9ce..447ddde1786c 100644
-> --- a/drivers/gpu/drm/stm/ltdc.c
-> +++ b/drivers/gpu/drm/stm/ltdc.c
-> @@ -624,7 +624,8 @@ static inline void ltdc_set_ycbcr_config(struct drm_plane *plane, u32 drm_pix_fm
->                 break;
->         default:
->                 /* RGB or not a YCbCr supported format */
-> -               break;
-> +               drm_err(plane->dev, "Unsupported pixel format: %u\n", drm_pix_fmt);
+> Thank you for the review!
 
-This is fine, but in the future you should add an explicit
-#include <drm/drm_print.h>
-to avoid implicit header dependencies (like the ones that Mingo is
-trying to detangle) for the declaration of drm_err. `drm_vprintf`
-needs it, too.
-
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
-> +               return;
->         }
->
->         /* Enable limited range */
->
-> base-commit: 542898c5aa5c6a3179dffb1d1606884a63f75fed
-> --
-> 2.35.1
->
-
-
--- 
-Thanks,
-~Nick Desaulniers
+Patch applied, thanks!
