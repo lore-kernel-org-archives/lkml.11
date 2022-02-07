@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0270C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05870C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388470AbiBGLnp (ORCPT
+        id S1388485AbiBGLnq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
+        Mon, 7 Feb 2022 06:43:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385754AbiBGLc1 (ORCPT
+        with ESMTP id S1385729AbiBGLcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47ACC0401C2;
-        Mon,  7 Feb 2022 03:32:26 -0800 (PST)
+        Mon, 7 Feb 2022 06:32:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EF5C043189;
+        Mon,  7 Feb 2022 03:32:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5EF4B80EC3;
-        Mon,  7 Feb 2022 11:32:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF268C004E1;
-        Mon,  7 Feb 2022 11:32:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B4F660A67;
+        Mon,  7 Feb 2022 11:32:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 611B5C004E1;
+        Mon,  7 Feb 2022 11:32:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233544;
-        bh=yXOodRqUYTtTkw1TE/eivAQOedKt74N5rdHbQhj10b0=;
+        s=korg; t=1644233537;
+        bh=idzC9wTmQOAG07iR2RbTzqlDGaG9udT+X4x1GRMFd3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1aeLTRz5CW7uScQNfnVmbne2QRbmRhBq0bJm3cpnwMcSiQmrNWAWAGgtJd2vszXG1
-         3eAo1SsMVlOvg0RPAFXedS3b9XFJxVYWgH+czJLMhgJoiYz0wfPhDpufenASrxbXcH
-         Inthf4/Z5KdezFpsLYpZHR+cujcG1b90BZVTbJ1c=
+        b=pFDLn3ArROto2tlYpRvyyvibYk2eozmsvmRJ6dEO8G/QR51U0oDMrft2s3pTv2QIP
+         hvyFFWpoiJ3Fn5u9n7cYZWa+2bc5yxQoSAMAqNlxwSbwM2ZlUMKO0EqrvH3YOqJrbc
+         7dOB2YtvYlGla8t+wbSLjscrllnAgbcphp8f+bts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.16 045/126] KVM: arm64: Avoid consuming a stale esr value when SError occur
-Date:   Mon,  7 Feb 2022 12:06:16 +0100
-Message-Id: <20220207103805.675591778@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
+        James Liao <jamesjj.liao@mediatek.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.16 043/126] [PATCH] Revert "ASoC: mediatek: Check for error clk pointer"
+Date:   Mon,  7 Feb 2022 12:06:14 +0100
+Message-Id: <20220207103805.609153851@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,51 +54,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-commit 1c71dbc8a179d99dd9bb7e7fc1888db613cf85de upstream.
+This reverts commit e0bf3c9e05ca6837ac756ec7d9de70b44603da12 which is
+commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e upstream
 
-When any exception other than an IRQ occurs, the CPU updates the ESR_EL2
-register with the exception syndrome. An SError may also become pending,
-and will be synchronised by KVM. KVM notes the exception type, and whether
-an SError was synchronised in exit_code.
+With this patch in the tree, Chromebooks running the affected hardware
+no longer boot. Bisect points to this patch, and reverting it fixes
+the problem.
 
-When an exception other than an IRQ occurs, fixup_guest_exit() updates
-vcpu->arch.fault.esr_el2 from the hardware register. When an SError was
-synchronised, the vcpu esr value is used to determine if the exception
-was due to an HVC. If so, ELR_EL2 is moved back one instruction. This
-is so that KVM can process the SError first, and re-execute the HVC if
-the guest survives the SError.
+An analysis of the code with this patch applied shows:
 
-But if an IRQ synchronises an SError, the vcpu's esr value is stale.
-If the previous non-IRQ exception was an HVC, KVM will corrupt ELR_EL2,
-causing an unrelated guest instruction to be executed twice.
+        ret = init_clks(pdev, clk);
+        if (ret)
+                return ERR_PTR(ret);
+...
+                for (j = 0; j < MAX_CLKS && data->clk_id[j]; j++) {
+                        struct clk *c = clk[data->clk_id[j]];
 
-Check ARM_EXCEPTION_CODE() before messing with ELR_EL2, IRQs don't
-update this register so don't need to check.
+                        if (IS_ERR(c)) {
+                                dev_err(&pdev->dev, "%s: clk unavailable\n",
+                                        data->name);
+                                return ERR_CAST(c);
+                        }
 
-Fixes: defe21f49bc9 ("KVM: arm64: Move PC rollback on SError to HYP")
-Cc: stable@vger.kernel.org
-Reported-by: Steven Price <steven.price@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220127122052.1584324-3-james.morse@arm.com
+                        scpd->clk[j] = c;
+                }
+
+Not all clocks in the clk_names array have to be present. Only the clocks
+in the data->clk_id array are actually needed. The code already checks if
+the required clocks are available and bails out if not. The assumption that
+all clocks have to be present is wrong, and commit 9de2b9286a6d needs to be
+reverted.
+
+Fixes: 9de2b9286a6d ("ASoC: mediatek: Check for error clk pointer")
+Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: James Liao <jamesjj.liao@mediatek.com>
+Cc: Kevin Hilman <khilman@baylibre.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com
+Cc: Frank Wunderlich <frank-w@public-files.de>
+Cc: Daniel Golle <daniel@makrotopia.org>
+Link: https://lore.kernel.org/lkml/20220205014755.699603-1-linux@roeck-us.net/
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kvm/hyp/include/hyp/switch.h |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/soc/mediatek/mtk-scpsys.c |   15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
---- a/arch/arm64/kvm/hyp/include/hyp/switch.h
-+++ b/arch/arm64/kvm/hyp/include/hyp/switch.h
-@@ -446,7 +446,8 @@ static inline bool fixup_guest_exit(stru
- 	if (ARM_EXCEPTION_CODE(*exit_code) != ARM_EXCEPTION_IRQ)
- 		vcpu->arch.fault.esr_el2 = read_sysreg_el2(SYS_ESR);
+--- a/drivers/soc/mediatek/mtk-scpsys.c
++++ b/drivers/soc/mediatek/mtk-scpsys.c
+@@ -411,17 +411,12 @@ out:
+ 	return ret;
+ }
  
--	if (ARM_SERROR_PENDING(*exit_code)) {
-+	if (ARM_SERROR_PENDING(*exit_code) &&
-+	    ARM_EXCEPTION_CODE(*exit_code) != ARM_EXCEPTION_IRQ) {
- 		u8 esr_ec = kvm_vcpu_trap_get_class(vcpu);
+-static int init_clks(struct platform_device *pdev, struct clk **clk)
++static void init_clks(struct platform_device *pdev, struct clk **clk)
+ {
+ 	int i;
  
- 		/*
+-	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
++	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
+ 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
+-		if (IS_ERR(clk[i]))
+-			return PTR_ERR(clk[i]);
+-	}
+-
+-	return 0;
+ }
+ 
+ static struct scp *init_scp(struct platform_device *pdev,
+@@ -431,7 +426,7 @@ static struct scp *init_scp(struct platf
+ {
+ 	struct genpd_onecell_data *pd_data;
+ 	struct resource *res;
+-	int i, j, ret;
++	int i, j;
+ 	struct scp *scp;
+ 	struct clk *clk[CLK_MAX];
+ 
+@@ -486,9 +481,7 @@ static struct scp *init_scp(struct platf
+ 
+ 	pd_data->num_domains = num;
+ 
+-	ret = init_clks(pdev, clk);
+-	if (ret)
+-		return ERR_PTR(ret);
++	init_clks(pdev, clk);
+ 
+ 	for (i = 0; i < num; i++) {
+ 		struct scp_domain *scpd = &scp->domains[i];
 
 
