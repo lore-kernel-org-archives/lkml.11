@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C82E6C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00746C3527D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:55:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387264AbiBGLk6 (ORCPT
+        id S1387398AbiBGLlP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:40:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
+        Mon, 7 Feb 2022 06:41:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239674AbiBGL2R (ORCPT
+        with ESMTP id S1346683AbiBGL2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Feb 2022 06:28:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA486C036486;
-        Mon,  7 Feb 2022 03:26:42 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F28C03648B;
+        Mon,  7 Feb 2022 03:26:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D85EDB80EC3;
-        Mon,  7 Feb 2022 11:26:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0848C004E1;
-        Mon,  7 Feb 2022 11:26:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54A6160915;
+        Mon,  7 Feb 2022 11:26:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29522C004E1;
+        Mon,  7 Feb 2022 11:26:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233193;
-        bh=4tqbVWyD5n0NTZ+HZNk3x7FdAtAOGFRnc6tGhsbUSB4=;
+        s=korg; t=1644233196;
+        bh=8eH1MdEVdu2hKNRuGIzmCqaimYky5xcS1WJ3g2iEc98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gbNWbs7Vzm90zq3Muf6V2EU2t2BMAemqvuaoKJQOM28qHyKk3JgZyCVzEqnEG9Zu5
-         U2cpGE4A/U9+uH+KzAPkralBh688N9WMnK0Vs+TtJ96awAq1PshqKNrbNK+oZkONw2
-         CUnYEVBJHFmj0WhxjaqtrYEZnpwmu8KybRaDMDDw=
+        b=pC67rC949IsYBDuKFWSGdVuBsMHRdxabNFOOmxgF9JTPyD1Vmvi2a3MmvvEfjELMx
+         FgtA0ikr+V4JnJRdsB44w1iP7EJDaM23MRg1Bsi4N/DPOK8qdAKBE2NkDYsZp7I55W
+         u78m7pHVNpmSUmqf8nL9JUTnm8zfpY1uLcNdjiQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 045/110] ALSA: usb-audio: initialize variables that could ignore errors
-Date:   Mon,  7 Feb 2022 12:06:18 +0100
-Message-Id: <20220207103803.795364037@linuxfoundation.org>
+Subject: [PATCH 5.15 046/110] ALSA: hda: Fix signedness of sscanf() arguments
+Date:   Mon,  7 Feb 2022 12:06:19 +0100
+Message-Id: <20220207103803.837857370@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -49,40 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 3da4b7403db87d39bc2613cfd790de1de99a70ab upstream.
+commit 0444f82766f0b5b9c8302ad802dafa5dd0e722d0 upstream.
 
-clang static analysis reports this representative issue
-mixer.c:1548:35: warning: Assigned value is garbage or undefined
-        ucontrol->value.integer.value[0] = val;
-                                         ^ ~~~
+The %x format of sscanf() takes an unsigned int pointer, while we pass
+a signed int pointer.  Practically it's OK, but this may result in a
+compile warning.  Let's fix it.
 
-The filter_error() macro allows errors to be ignored.
-If errors can be ignored, initialize variables
-so garbage will not be used.
-
-Fixes: 48cc42973509 ("ALSA: usb-audio: Filter error from connector kctl ops, too")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Link: https://lore.kernel.org/r/20220126182142.1184819-1-trix@redhat.com
+Fixes: a235d5b8e550 ("ALSA: hda: Allow model option to specify PCI SSID alias")
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/r/20220127135717.31751-1-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/mixer.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ sound/pci/hda/hda_auto_parser.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/usb/mixer.c
-+++ b/sound/usb/mixer.c
-@@ -1496,6 +1496,10 @@ error:
- 		usb_audio_err(chip,
- 			"cannot get connectors status: req = %#x, wValue = %#x, wIndex = %#x, type = %d\n",
- 			UAC_GET_CUR, validx, idx, cval->val_type);
-+
-+		if (val)
-+			*val = 0;
-+
- 		return filter_error(cval, ret);
- 	}
+--- a/sound/pci/hda/hda_auto_parser.c
++++ b/sound/pci/hda/hda_auto_parser.c
+@@ -985,7 +985,7 @@ void snd_hda_pick_fixup(struct hda_codec
+ 	int id = HDA_FIXUP_ID_NOT_SET;
+ 	const char *name = NULL;
+ 	const char *type = NULL;
+-	int vendor, device;
++	unsigned int vendor, device;
  
+ 	if (codec->fixup_id != HDA_FIXUP_ID_NOT_SET)
+ 		return;
 
 
