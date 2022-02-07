@@ -2,95 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F05DC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD68C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384701AbiBGPnt (ORCPT
+        id S1384634AbiBGPno (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:43:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53920 "EHLO
+        Mon, 7 Feb 2022 10:43:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241112AbiBGPj3 (ORCPT
+        with ESMTP id S1379639AbiBGPea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:39:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A57C0401CA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:39:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E29FFB815C8
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:39:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29087C004E1;
-        Mon,  7 Feb 2022 15:39:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644248365;
-        bh=1DQ+ee9g1kPRpknTH9hCM9jJ9V2o/CPiuwSx/K5V5x4=;
+        Mon, 7 Feb 2022 10:34:30 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E8DC0401CE;
+        Mon,  7 Feb 2022 07:34:29 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 0227C1F43B76
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644248068;
+        bh=ol3XokBITXIfyab5chsBQWUULIoTBvY1DDSR5rejgvw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dIL+arbBgvnsxXrL9Zdz0tDdM0fM1KQIMILvSSA254Zf8aDJx0Ic/3o4oxVspdfVB
-         +DuZ9T30eNoE42XnVZek54hoj/UqqFHjsm9JiqL2lbZysDpqSWNSSZJNu1B0gNgprn
-         wxrmxR0yhc9zfv28Xi/PbzJRvfYfWIqGVR8CSZUuPrGe1Kmg1BJWyO+Rj4ezk3+zK2
-         Ayjr0IEywBbaluqIQqb7EXJ58AkzJGVbCZY+7eypPawZCywPq6J4zSdHn5W8T9gsrL
-         5ukcdahGpfqZTmkvQGYMYLpwXOJDWa4aJBST9UubwvfrMSUul7C7vru9mvfpNDJmPH
-         lp2Aq4Xes/4eg==
-Date:   Mon, 7 Feb 2022 23:31:41 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     ChangbinCONFIG_IRQSOFF_TRACER Du <changbin.du@gmail.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] riscv: fix oops caused by irq on/off tracer
-Message-ID: <YgE7XRE/Uc6gTCWd@xhacker>
-References: <20220129004226.32868-1-changbin.du@gmail.com>
- <YgAEb425uqy5/dw1@xhacker>
- <20220207123850.l4r5qjswaegwisbx@mail.google.com>
+        b=obxfamCW4cnL3wy0ug3PFGL3p+Tuo+giscjZZG7Gp8W3+dak1a5dMCLmxytjSi3Zu
+         +7qQH7krl7nFsswMvu2OmAanWP5sU1e3Qqi2/o+i+IrTiDsoE4OG5n6BMqW+1Oo5ER
+         dM8v4gJfJDhlam8krFoExNK0TRnvFIzcCGDMaA1+y6+BYDOHlXxFrkiCf9ptWVe3Gw
+         4o32biV2EuqM64q522rtN/Dq039d2I/CvSUOw4UwwMr9unwDv2QrtI5X92Wc9xUWPY
+         i1kUSi5T9U+91w0sW2LK+/dNk2NkACnPJaGoT0Y8035wIr+rUwx2uCtNFboIJB3wMj
+         4c5WiceFbJ4KQ==
+Date:   Mon, 7 Feb 2022 10:34:23 -0500
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Chun-Jie Chen <chun-jie.chen@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Nicolas Boichat <drinkcat@chromium.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        srv_heupstream@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Weiyi Lu <weiyi.lu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: Re: [v5] arm64: dts: mediatek: Add mt8192 power domains controller
+Message-ID: <20220207153423.smz3636wk3hjk3b5@notapiano>
+References: <20210825010426.30303-1-chun-jie.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220207123850.l4r5qjswaegwisbx@mail.google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210825010426.30303-1-chun-jie.chen@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 08:38:50PM +0800, ChangbinCONFIG_IRQSOFF_TRACER Du wrote:
-> On Mon, Feb 07, 2022 at 01:25:03AM +0800, Jisheng Zhang wrote:
-> > On Sat, Jan 29, 2022 at 08:42:26AM +0800, Changbin Du wrote:
-> > > The trace_hardirqs_on/off requires at least two parent call frames.
-> > > If not, the code generated by CALLER_ADDR1 (aka. ftrace_return_address(1))
-> > > could trigger memory access fault.
-> > > 
-> > > [    0.039615][    T0] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000f8
-> > > [    0.041925][    T0] Oops [#1]
-> > > [    0.042063][    T0] Modules linked in:
-> > > [    0.042864][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc1-00233-g9a20c48d1ed2 #29
-> > > [    0.043568][    T0] Hardware name: riscv-virtio,qemu (DT)
-> > > [    0.044343][    T0] epc : trace_hardirqs_on+0x56/0xe2
-> > > [    0.044601][    T0]  ra : restore_all+0x12/0x6e
-> > > [    0.044721][    T0] epc : ffffffff80126a5c ra : ffffffff80003b94 sp : ffffffff81403db0
-> > > [    0.044801][    T0]  gp : ffffffff8163acd8 tp : ffffffff81414880 t0 : 0000000000000020
-> > > [    0.044882][    T0]  t1 : 0098968000000000 t2 : 0000000000000000 s0 : ffffffff81403de0
-> > > [    0.044967][    T0]  s1 : 0000000000000000 a0 : 0000000000000001 a1 : 0000000000000100
-> > > [    0.045046][    T0]  a2 : 0000000000000000 a3 : 0000000000000000 a4 : 0000000000000000
-> > > [    0.045124][    T0]  a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000054494d45
-> > > [    0.045210][    T0]  s2 : ffffffff80003b94 s3 : ffffffff81a8f1b0 s4 : ffffffff80e27b50
-> > > [    0.045289][    T0]  s5 : ffffffff81414880 s6 : ffffffff8160fa00 s7 : 00000000800120e8
-> > > [    0.045389][    T0]  s8 : 0000000080013100 s9 : 000000000000007f s10: 0000000000000000
-> > > [    0.045474][    T0]  s11: 0000000000000000 t3 : 7fffffffffffffff t4 : 0000000000000000
-> > > [    0.045548][    T0]  t5 : 0000000000000000 t6 : ffffffff814aa368
-> > > [    0.045620][    T0] status: 0000000200000100 badaddr: 00000000000000f8 cause: 000000000000000d
-> > > [    0.046402][    T0] [<ffffffff80003b94>] restore_all+0x12/0x6e
-> > > 
-> > 
-> > Hi Changbin,
-> > 
-> > Could you please provide the reproduce steps? It looks a bit
-> > interesting.
-> >
-> Just enable CONFIG_IRQSOFF_TRACER and rebuild kernel with llvm. Then boot the
-> new kernel.
+Hi Chun-Jie,
 
-Thanks for the information. I tried IRQSOFF_TRACER with gcc+binutils,
-can't reproduce the issue. I forget to try clang+llvm. From another side
-The fact that gcc+bintuils can't reproduce it means this is a clang+llvm
-speicial case, no?
+thanks for the patch. Please see my comments below.
+
+On Wed, Aug 25, 2021 at 09:04:26AM +0800, Chun-Jie Chen wrote:
+> Add power domains controller node for SoC mt8192
+> 
+> Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
+> Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+> ---
+> This patch is base on v5.14-rc1,
+> series "Mediatek MT8192 clock support"[1] and [2].
+> No changes compare v4
+> 
+> [1] https://patchwork.kernel.org/project/linux-mediatek/list/?series=521127
+> [2] https://patchwork.kernel.org/project/linux-mediatek/patch/20210727023205.20319-2-chun-jie.chen@mediatek.com/
+
+Those two patches are already merged in mainline, so this patch applies
+cleanly on mainline without any other dependencies. Might be worth sending a new
+version removing this text to make that clearer to the maintainers.
+
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+
+Thanks,
+Nícolas
+
+> ---
+>  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 201 +++++++++++++++++++++++
+>  1 file changed, 201 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index c7c7d4e017ae..a0084a7a5bcd 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -9,6 +9,7 @@
+>  #include <dt-bindings/interrupt-controller/arm-gic.h>
+>  #include <dt-bindings/interrupt-controller/irq.h>
+>  #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
+> +#include <dt-bindings/power/mt8192-power.h>
+>  
+>  / {
+>  	compatible = "mediatek,mt8192";
+> @@ -301,6 +302,206 @@
+>  			#interrupt-cells = <2>;
+>  		};
+>  
+> +		scpsys: syscon@10006000 {
+> +			compatible = "syscon", "simple-mfd";
+> +			reg = <0 0x10006000 0 0x1000>;
+> +			#power-domain-cells = <1>;
+> +
+> +			/* System Power Manager */
+> +			spm: power-controller {
+> +				compatible = "mediatek,mt8192-power-controller";
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +				#power-domain-cells = <1>;
+> +
+> +				/* power domain of the SoC */
+> +				power-domain@MT8192_POWER_DOMAIN_AUDIO {
+> +					reg = <MT8192_POWER_DOMAIN_AUDIO>;
+> +					clocks = <&topckgen CLK_TOP_AUD_INTBUS_SEL>,
+> +						 <&infracfg CLK_INFRA_AUDIO_26M_B>,
+> +						 <&infracfg CLK_INFRA_AUDIO>;
+> +					clock-names = "audio", "audio1", "audio2";
+> +					mediatek,infracfg = <&infracfg>;
+> +					#power-domain-cells = <0>;
+> +				};
+> +
+> +				power-domain@MT8192_POWER_DOMAIN_CONN {
+> +					reg = <MT8192_POWER_DOMAIN_CONN>;
+> +					clocks = <&infracfg CLK_INFRA_PMIC_CONN>;
+> +					clock-names = "conn";
+> +					mediatek,infracfg = <&infracfg>;
+> +					#power-domain-cells = <0>;
+> +				};
+> +
+> +				power-domain@MT8192_POWER_DOMAIN_MFG0 {
+> +					reg = <MT8192_POWER_DOMAIN_MFG0>;
+> +					clocks = <&topckgen CLK_TOP_MFG_PLL_SEL>;
+> +					clock-names = "mfg";
+> +					#address-cells = <1>;
+> +					#size-cells = <0>;
+> +					#power-domain-cells = <1>;
+> +
+> +					power-domain@MT8192_POWER_DOMAIN_MFG1 {
+> +						reg = <MT8192_POWER_DOMAIN_MFG1>;
+> +						mediatek,infracfg = <&infracfg>;
+> +						#address-cells = <1>;
+> +						#size-cells = <0>;
+> +						#power-domain-cells = <1>;
+> +
+> +						power-domain@MT8192_POWER_DOMAIN_MFG2 {
+> +							reg = <MT8192_POWER_DOMAIN_MFG2>;
+> +							#power-domain-cells = <0>;
+> +						};
+> +
+> +						power-domain@MT8192_POWER_DOMAIN_MFG3 {
+> +							reg = <MT8192_POWER_DOMAIN_MFG3>;
+> +							#power-domain-cells = <0>;
+> +						};
+> +
+> +						power-domain@MT8192_POWER_DOMAIN_MFG4 {
+> +							reg = <MT8192_POWER_DOMAIN_MFG4>;
+> +							#power-domain-cells = <0>;
+> +						};
+> +
+> +						power-domain@MT8192_POWER_DOMAIN_MFG5 {
+> +							reg = <MT8192_POWER_DOMAIN_MFG5>;
+> +							#power-domain-cells = <0>;
+> +						};
+> +
+> +						power-domain@MT8192_POWER_DOMAIN_MFG6 {
+> +							reg = <MT8192_POWER_DOMAIN_MFG6>;
+> +							#power-domain-cells = <0>;
+> +						};
+> +					};
+> +				};
+> +
+> +				power-domain@MT8192_POWER_DOMAIN_DISP {
+> +					reg = <MT8192_POWER_DOMAIN_DISP>;
+> +					clocks = <&topckgen CLK_TOP_DISP_SEL>,
+> +						 <&mmsys CLK_MM_SMI_INFRA>,
+> +						 <&mmsys CLK_MM_SMI_COMMON>,
+> +						 <&mmsys CLK_MM_SMI_GALS>,
+> +						 <&mmsys CLK_MM_SMI_IOMMU>;
+> +					clock-names = "disp", "disp-0", "disp-1", "disp-2",
+> +						      "disp-3";
+> +					mediatek,infracfg = <&infracfg>;
+> +					#address-cells = <1>;
+> +					#size-cells = <0>;
+> +					#power-domain-cells = <1>;
+> +
+> +					power-domain@MT8192_POWER_DOMAIN_IPE {
+> +						reg = <MT8192_POWER_DOMAIN_IPE>;
+> +						clocks = <&topckgen CLK_TOP_IPE_SEL>,
+> +							 <&ipesys CLK_IPE_LARB19>,
+> +							 <&ipesys CLK_IPE_LARB20>,
+> +							 <&ipesys CLK_IPE_SMI_SUBCOM>,
+> +							 <&ipesys CLK_IPE_GALS>;
+> +						clock-names = "ipe", "ipe-0", "ipe-1", "ipe-2",
+> +							      "ipe-3";
+> +						mediatek,infracfg = <&infracfg>;
+> +						#power-domain-cells = <0>;
+> +					};
+> +
+> +					power-domain@MT8192_POWER_DOMAIN_ISP {
+> +						reg = <MT8192_POWER_DOMAIN_ISP>;
+> +						clocks = <&topckgen CLK_TOP_IMG1_SEL>,
+> +							 <&imgsys CLK_IMG_LARB9>,
+> +							 <&imgsys CLK_IMG_GALS>;
+> +						clock-names = "isp", "isp-0", "isp-1";
+> +						mediatek,infracfg = <&infracfg>;
+> +						#power-domain-cells = <0>;
+> +					};
+> +
+> +					power-domain@MT8192_POWER_DOMAIN_ISP2 {
+> +						reg = <MT8192_POWER_DOMAIN_ISP2>;
+> +						clocks = <&topckgen CLK_TOP_IMG2_SEL>,
+> +							 <&imgsys2 CLK_IMG2_LARB11>,
+> +							 <&imgsys2 CLK_IMG2_GALS>;
+> +						clock-names = "isp2", "isp2-0", "isp2-1";
+> +						mediatek,infracfg = <&infracfg>;
+> +						#power-domain-cells = <0>;
+> +					};
+> +
+> +					power-domain@MT8192_POWER_DOMAIN_MDP {
+> +						reg = <MT8192_POWER_DOMAIN_MDP>;
+> +						clocks = <&topckgen CLK_TOP_MDP_SEL>,
+> +							 <&mdpsys CLK_MDP_SMI0>;
+> +						clock-names = "mdp", "mdp-0";
+> +						mediatek,infracfg = <&infracfg>;
+> +						#power-domain-cells = <0>;
+> +					};
+> +
+> +					power-domain@MT8192_POWER_DOMAIN_VENC {
+> +						reg = <MT8192_POWER_DOMAIN_VENC>;
+> +						clocks = <&topckgen CLK_TOP_VENC_SEL>,
+> +							 <&vencsys CLK_VENC_SET1_VENC>;
+> +						clock-names = "venc", "venc-0";
+> +						mediatek,infracfg = <&infracfg>;
+> +						#power-domain-cells = <0>;
+> +					};
+> +
+> +					power-domain@MT8192_POWER_DOMAIN_VDEC {
+> +						reg = <MT8192_POWER_DOMAIN_VDEC>;
+> +						clocks = <&topckgen CLK_TOP_VDEC_SEL>,
+> +							 <&vdecsys_soc CLK_VDEC_SOC_VDEC>,
+> +							 <&vdecsys_soc CLK_VDEC_SOC_LAT>,
+> +							 <&vdecsys_soc CLK_VDEC_SOC_LARB1>;
+> +						clock-names = "vdec", "vdec-0", "vdec-1", "vdec-2";
+> +						mediatek,infracfg = <&infracfg>;
+> +						#address-cells = <1>;
+> +						#size-cells = <0>;
+> +						#power-domain-cells = <1>;
+> +
+> +						power-domain@MT8192_POWER_DOMAIN_VDEC2 {
+> +							reg = <MT8192_POWER_DOMAIN_VDEC2>;
+> +							clocks = <&vdecsys CLK_VDEC_VDEC>,
+> +								 <&vdecsys CLK_VDEC_LAT>,
+> +								 <&vdecsys CLK_VDEC_LARB1>;
+> +							clock-names = "vdec2-0", "vdec2-1",
+> +								      "vdec2-2";
+> +							#power-domain-cells = <0>;
+> +						};
+> +					};
+> +
+> +					power-domain@MT8192_POWER_DOMAIN_CAM {
+> +						reg = <MT8192_POWER_DOMAIN_CAM>;
+> +						clocks = <&topckgen CLK_TOP_CAM_SEL>,
+> +							 <&camsys CLK_CAM_LARB13>,
+> +							 <&camsys CLK_CAM_LARB14>,
+> +							 <&camsys CLK_CAM_CCU_GALS>,
+> +							 <&camsys CLK_CAM_CAM2MM_GALS>;
+> +						clock-names = "cam", "cam-0", "cam-1", "cam-2",
+> +							      "cam-3";
+> +						mediatek,infracfg = <&infracfg>;
+> +						#address-cells = <1>;
+> +						#size-cells = <0>;
+> +						#power-domain-cells = <1>;
+> +
+> +						power-domain@MT8192_POWER_DOMAIN_CAM_RAWA {
+> +							reg = <MT8192_POWER_DOMAIN_CAM_RAWA>;
+> +							clocks = <&camsys_rawa CLK_CAM_RAWA_LARBX>;
+> +							clock-names = "cam_rawa-0";
+> +							#power-domain-cells = <0>;
+> +						};
+> +
+> +						power-domain@MT8192_POWER_DOMAIN_CAM_RAWB {
+> +							reg = <MT8192_POWER_DOMAIN_CAM_RAWB>;
+> +							clocks = <&camsys_rawb CLK_CAM_RAWB_LARBX>;
+> +							clock-names = "cam_rawb-0";
+> +							#power-domain-cells = <0>;
+> +						};
+> +
+> +						power-domain@MT8192_POWER_DOMAIN_CAM_RAWC {
+> +							reg = <MT8192_POWER_DOMAIN_CAM_RAWC>;
+> +							clocks = <&camsys_rawc CLK_CAM_RAWC_LARBX>;
+> +							clock-names = "cam_rawc-0";
+> +							#power-domain-cells = <0>;
+> +						};
+> +					};
+> +				};
+> +			};
+> +		};
+> +
+>  		apmixedsys: syscon@1000c000 {
+>  			compatible = "mediatek,mt8192-apmixedsys", "syscon";
+>  			reg = <0 0x1000c000 0 0x1000>;
+> -- 
+> 2.18.0
+> 
+> 
