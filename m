@@ -2,79 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A4AC3A59F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87851C35276
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385784AbiBGLcf (ORCPT
+        id S1385752AbiBGLc1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:32:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
+        Mon, 7 Feb 2022 06:32:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383097AbiBGLVg (ORCPT
+        with ESMTP id S1383090AbiBGLVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:21:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54334C0401C8;
-        Mon,  7 Feb 2022 03:21:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 7 Feb 2022 06:21:35 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3811C03FEEB
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:21:18 -0800 (PST)
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com [209.85.167.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CC3761388;
-        Mon,  7 Feb 2022 11:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE7DBC004E1;
-        Mon,  7 Feb 2022 11:21:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232871;
-        bh=3Iw4+C7epksGrwi7zi0NVaXS+fJ2+w8mzoPqqhMRU+Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HHlDo0g4OPPsWn+tCzPfd+I8oIhplXNzw9E36P1axyxVWqxFV/iKBLaipsx7FIksu
-         TifgM9hRzHY7pe/18yAayHFNS7lFONI2M6Ty3mb9Phdq/vOcQneL6CBk2JRv2JAn7i
-         1ZW6Taig28vyJJ7t0NdA3zkcH/DOiM5v4Zt4FGmk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.10 05/74] ASoC: ops: Reject out of bounds values in snd_soc_put_xr_sx()
-Date:   Mon,  7 Feb 2022 12:06:03 +0100
-Message-Id: <20220207103757.412513163@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
-References: <20220207103757.232676988@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 7F2FD3F328
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:21:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644232877;
+        bh=8Y9yNV8EX7NTdignHPRQY252HgYt0mlpY9TRr3lWof4=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=F0F2Xr8uFPF/P72nYBy25C0XD37eYZqgWoyyoZWQ5cgL1bcVhDHIpPvv4z2STveJM
+         kcJg1Beoneg+P6T57TKe6YL25Iz2j0OlYh73LCjEazpO+ovAu0f0NpELYneoXh9lQ1
+         X/9QV4K0YYGjGJAk2qH6/22iZBDm92nQYWo4cZu2QBH5Tydrxbx36GqSgNdRrolAJc
+         waFbeFyuLewMO8LOKr82hg6O4M/Xiab7JoKPpfOqx9uLeuP329eyI4UkwwT0diiyPW
+         vNKjNSaUnnPKJKaM3aglBoNKH0dj/JauwVrZnhwWkn1YoScYcJaZk9oSI8FXvAcipa
+         byV309cZO40SA==
+Received: by mail-lf1-f69.google.com with SMTP id z24-20020a056512371800b0043ea4caa07cso4017729lfr.17
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 03:21:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8Y9yNV8EX7NTdignHPRQY252HgYt0mlpY9TRr3lWof4=;
+        b=FA8iEZeT/YYbIjXdDVcoKJkxFGI9XJZfn9F7QjZkRTjsoJiOGLZlVP8k71r+XF1q3X
+         4Lfn9D5km7Q79UqjSa2HEKRzyuyr40wNkYTGfU9Cx6RiLGDbjUkryb99zFTPHKrlWSVP
+         J8aO2zeFOhQBMKcpsTCyjouVQbtr/KzXnPifV8IgWUySKSKIlbkKxmeR30msQRHAL32b
+         KUEkyX8JWLJhUt6tb359vWiLjVeHrOZY3kyF2Wbek8T+v+3RuDG1jc6qW055GXn7c+pl
+         mZtRJGiOmii8dpvguLy1CRELv/5CsG68Q1xnGa7ywt4ssnc1jaeEdlZWCDEfZp475tEy
+         vgfA==
+X-Gm-Message-State: AOAM531slMMCzNRlSF3UfpkQaPF72j5x+HdzODl2D00k5BfquLH0QGQT
+        X5Wp9OKZIz3e5bDpbGwCGDkLpYIzqXJE01ySLlAUNyejjCh6LcP0Zx+NNW8vRDQksZMjlkGHO2v
+        1AO3poXEnSculHBqBdpvKbcxT9nnmyV0VsUjsAWtQYQ==
+X-Received: by 2002:a5d:6603:: with SMTP id n3mr9256732wru.20.1644232866048;
+        Mon, 07 Feb 2022 03:21:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz28bw0iWdum97UqccNObiTCl0E42zll9NAhEqs1JdVzu878pa6CnjxT2SeV0Ew8TU0VtcspA==
+X-Received: by 2002:a5d:6603:: with SMTP id n3mr9256693wru.20.1644232865857;
+        Mon, 07 Feb 2022 03:21:05 -0800 (PST)
+Received: from [192.168.0.87] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id b4sm2321525wrw.100.2022.02.07.03.21.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 03:21:05 -0800 (PST)
+Message-ID: <776e1b61-678d-6686-06fe-a74b7ff68b85@canonical.com>
+Date:   Mon, 7 Feb 2022 12:21:03 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 2/6] i2c: npcm: Fix timeout calculation
+Content-Language: en-US
+To:     Tyrone Ting <warp5tw@gmail.com>, avifishman70@gmail.com,
+        tmaimon77@gmail.com, tali.perry1@gmail.com, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
+        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
+        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
+        olof@lixom.net, andriy.shevchenko@linux.intel.com,
+        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com
+Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220207063338.6570-1-warp5tw@gmail.com>
+ <20220207063338.6570-3-warp5tw@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220207063338.6570-3-warp5tw@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+On 07/02/2022 07:33, Tyrone Ting wrote:
+> From: Tali Perry <tali.perry1@gmail.com>
+> 
+> Use adap.timeout for timeout calculation instead of hard-coded
+> value of 35ms.
+> Use syscon to access gcr, instead of "compatible".
 
-commit 4cf28e9ae6e2e11a044be1bcbcfa1b0d8675fe4d upstream.
-
-We don't currently validate that the values being set are within the range
-we advertised to userspace as being valid, do so and reject any values
-that are out of range.
-
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220124153253.3548853-4-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/soc/soc-ops.c |    2 ++
- 1 file changed, 2 insertions(+)
-
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -880,6 +880,8 @@ int snd_soc_put_xr_sx(struct snd_kcontro
- 	unsigned int i, regval, regmask;
- 	int err;
- 
-+	if (val < mc->min || val > mc->max)
-+		return -EINVAL;
- 	if (invert)
- 		val = max - val;
- 	val &= mask;
+One commit = one fix/feature/logical change, so requirement of syscon
+should be a separate commit.
 
 
+Best regards,
+Krzysztof
