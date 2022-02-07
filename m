@@ -2,112 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD9BC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD894C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344157AbiBGJtf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:49:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37196 "EHLO
+        id S244471AbiBGJtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 04:49:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245201AbiBGJqZ (ORCPT
+        with ESMTP id S245295AbiBGJkJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:46:25 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A7DC043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:46:23 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644227180;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0RBBdWwxOY62NA2K6sRnag/9lJllybBsMojcDW+50rk=;
-        b=HV1wjgSgsjwbeDPi0YnQN3LEcdv1qz24IToe/yCBydxfm06XXHdqNaGTA/HiCIBu+mIu/B
-        rxDhgaloIATE8eXsEkuu+65jz3h69nApK4JcYC0w5vTpiuo7Toz/zMxKyNkSHpnJEooZl8
-        e02lJKMO9vwPYABDtTbcGUGs0JFJpy7MU8MSDQdpDSlXlXer7Gx7k7r1P4RqHkhbXsPnug
-        EUr7ktJcNjnP4RLZ9ipLe9opuItpDvySWv4UT0wiCIEIgKcbxn9udfMrtAjUIhHdnGcBef
-        YEx3ysAw0fiYztw4wIZyuAR403mcQ8W2DQNWb2g7jlpNgBNu36DH8+r2xV29gw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644227180;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0RBBdWwxOY62NA2K6sRnag/9lJllybBsMojcDW+50rk=;
-        b=qsVkc5OmeGvljANWBOl7If1Ppr4DGAumqKZajU5D3tN4umJkFIBn1v3EeWPIDU6o3GoX+j
-        QtCi93fAr0a07nDQ==
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-kernel@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v2] printk: defer_console_output: use atomic update
-In-Reply-To: <YfzP50vDiJiaRVCr@google.com>
-References: <20220203112915.1350753-1-john.ogness@linutronix.de>
- <YfzP50vDiJiaRVCr@google.com>
-Date:   Mon, 07 Feb 2022 10:52:20 +0106
-Message-ID: <87bkzj3t77.fsf@jogness.linutronix.de>
+        Mon, 7 Feb 2022 04:40:09 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF46C0401C0
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:40:06 -0800 (PST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Jsh0V0MX8z9sL0;
+        Mon,  7 Feb 2022 17:38:34 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 17:40:03 +0800
+CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
+        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
+        <song.bao.hua@hisilicon.com>
+Subject: Re: [PATCH v3 0/8] Add support for HiSilicon PCIe Tune and Trace
+ device
+To:     Yicong Yang <yangyicong@hisilicon.com>,
+        <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
+        <joro@8bytes.org>, <john.garry@huawei.com>,
+        <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
+        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>
+References: <20220124131118.17887-1-yangyicong@hisilicon.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <5c1099b2-232f-2dc5-7c31-18fe3343955e@huawei.com>
+Date:   Mon, 7 Feb 2022 17:40:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20220124131118.17887-1-yangyicong@hisilicon.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The per-cpu @printk_pending variable can be updated from
-sleepable contexts, such as:
+Hi perf, ETM and PCI related experts,
 
-  get_random_bytes()
-    warn_unseeded_randomness()
-      printk_deferred()
-        defer_console_output()
+a gentle ping ... appreciate for the comments.
 
-and can be updated from interrupt contexts, such as:
+thanks.
 
-  handle_irq_event_percpu()
-    __irq_wake_thread()
-      wake_up_process()
-        try_to_wake_up()
-          select_task_rq()
-            select_fallback_rq()
-              printk_deferred()
-                defer_console_output()
-
-and can be updated from NMI contexts, such as:
-
-  vprintk()
-    if (in_nmi()) defer_console_output()
-
-Therefore this_cpu_or(), the atomic variant of __this_cpu_or(),
-should be used to update the variable.
-
-Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- Change from v1:
- 
- Sebastian comments made it clear that the v1 title and message were not
- correctly specifying the problem or the reason for the fix. I hope this
- text is clearer.
-
- kernel/printk/printk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 82abfaf3c2aa..164ccdb9423e 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -3262,7 +3262,7 @@ void defer_console_output(void)
- 		return;
- 
- 	preempt_disable();
--	__this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
-+	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
- 	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
- 	preempt_enable();
- }
-
-base-commit: dfd42facf1e4ada021b939b4e19c935dcdd55566
--- 
-2.30.2
+On 2022/1/24 21:11, Yicong Yang wrote:
+> HiSilicon PCIe tune and trace device (PTT) is a PCIe Root Complex
+> integrated Endpoint (RCiEP) device, providing the capability
+> to dynamically monitor and tune the PCIe traffic (tune),
+> and trace the TLP headers (trace).
+> 
+> PTT tune is designed for monitoring and adjusting PCIe link parameters.
+> We provide several parameters of the PCIe link. Through the driver,
+> user can adjust the value of certain parameter to affect the PCIe link
+> for the purpose of enhancing the performance in certian situation.
+> 
+> PTT trace is designed for dumping the TLP headers to the memory, which
+> can be used to analyze the transactions and usage condition of the PCIe
+> Link. Users can choose filters to trace headers, by either requester
+> ID, or those downstream of a set of Root Ports on the same core of the
+> PTT device. It's also supported to trace the headers of certain type and
+> of certain direction.
+> 
+> The driver registers a PMU device for each PTT device. The trace can
+> be used through `perf record` and the traced headers can be decoded
+> by `perf report`. The perf command support for the device is also
+> added in this patchset. The tune can be used through the sysfs
+> attributes of related PMU device. See the documentation for the
+> detailed usage.
+> 
+> Change since v2:
+> - address the comments from Mathieu
+>   - rename the directory to ptt to match the function of the device
+>   - spinoff the declarations to a separate header
+>   - split the trace function to several patches
+>   - some other comments.
+> - make default smmu domain type of PTT device to identity
+>   Drop the RMR as it's not recommended and use an iommu_def_domain_type
+>   quirk to passthrough the device DMA as suggested by Robin. 
+> Link: https://lore.kernel.org/linux-pci/20211116090625.53702-1-yangyicong@hisilicon.com/
+> 
+> Change since v1:
+> - switch the user interface of trace to perf from debugfs
+> - switch the user interface of tune to sysfs from debugfs
+> - add perf tool support to start trace and decode the trace data
+> - address the comments of documentation from Bjorn
+> - add RMR[1] support of the device as trace works in RMR mode or
+>   direct DMA mode. RMR support is achieved by common APIs rather
+>   than the APIs implemented in [1].
+> Link: https://lore.kernel.org/lkml/1618654631-42454-1-git-send-email-yangyicong@hisilicon.com/
+> 
+> [1] https://lore.kernel.org/linux-acpi/20210805080724.480-1-shameerali.kolothum.thodi@huawei.com/
+> 
+> Qi Liu (1):
+>   perf tool: Add support for HiSilicon PCIe Tune and Trace device driver
+> 
+> Yicong Yang (7):
+>   hwtracing: Add trace function support for HiSilicon PCIe Tune and
+>     Trace device
+>   hisi_ptt: Register PMU device for PTT trace
+>   hisi_ptt: Add support for dynamically updating the filter list
+>   hisi_ptt: Add tune function support for HiSilicon PCIe Tune and Trace
+>     device
+>   docs: Add HiSilicon PTT device driver documentation
+>   MAINTAINERS: Add maintainer for HiSilicon PTT driver
+>   iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to
+>     identity
+> 
+>  Documentation/trace/hisi-ptt.rst              |  304 +++++
+>  MAINTAINERS                                   |    7 +
+>  drivers/Makefile                              |    1 +
+>  drivers/hwtracing/Kconfig                     |    2 +
+>  drivers/hwtracing/ptt/Kconfig                 |   11 +
+>  drivers/hwtracing/ptt/Makefile                |    2 +
+>  drivers/hwtracing/ptt/hisi_ptt.c              | 1124 +++++++++++++++++
+>  drivers/hwtracing/ptt/hisi_ptt.h              |  239 ++++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   16 +
+>  tools/perf/arch/arm/util/auxtrace.c           |   56 +-
+>  tools/perf/arch/arm/util/pmu.c                |    3 +
+>  tools/perf/arch/arm64/util/Build              |    2 +-
+>  tools/perf/arch/arm64/util/hisi_ptt.c         |  195 +++
+>  tools/perf/util/Build                         |    2 +
+>  tools/perf/util/auxtrace.c                    |    4 +
+>  tools/perf/util/auxtrace.h                    |    1 +
+>  tools/perf/util/hisi-ptt-decoder/Build        |    1 +
+>  .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.c   |  170 +++
+>  .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.h   |   28 +
+>  tools/perf/util/hisi_ptt.c                    |  228 ++++
+>  tools/perf/util/hisi_ptt.h                    |   28 +
+>  21 files changed, 2420 insertions(+), 4 deletions(-)
+>  create mode 100644 Documentation/trace/hisi-ptt.rst
+>  create mode 100644 drivers/hwtracing/ptt/Kconfig
+>  create mode 100644 drivers/hwtracing/ptt/Makefile
+>  create mode 100644 drivers/hwtracing/ptt/hisi_ptt.c
+>  create mode 100644 drivers/hwtracing/ptt/hisi_ptt.h
+>  create mode 100644 tools/perf/arch/arm64/util/hisi_ptt.c
+>  create mode 100644 tools/perf/util/hisi-ptt-decoder/Build
+>  create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
+>  create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
+>  create mode 100644 tools/perf/util/hisi_ptt.c
+>  create mode 100644 tools/perf/util/hisi_ptt.h
+> 
