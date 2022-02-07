@@ -2,92 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D604BC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DE9C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391148AbiBGL6f (ORCPT
+        id S1390996AbiBGL6M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:58:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45044 "EHLO
+        Mon, 7 Feb 2022 06:58:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385577AbiBGLcA (ORCPT
+        with ESMTP id S1384694AbiBGL3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C866C03E900;
-        Mon,  7 Feb 2022 03:30:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D748260B20;
-        Mon,  7 Feb 2022 11:30:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 928EFC004E1;
-        Mon,  7 Feb 2022 11:30:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233458;
-        bh=CEnQ53IN8cOKxoel8rwqWyPAl4pA6ktgqF4J4Ryl9Jk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=slXwP7ydxJjdQt9SxgTnXORdEKAM4eipLco7soygARe9G+IwdIln5vevNyxrIe4Ut
-         FWJoY+dSqcdmv2hoY8XBR3lGUqzX/GmYcsem6e21DrrNT4Y97bV4bkm0tPfejpx0NQ
-         8eMtBAp0fnarL1Sihrjr84MkXwO2xrWgFutCqj8Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vratislav Bendel <vbendel@redhat.com>,
-        Paul Moore <paul@paul-moore.com>
-Subject: [PATCH 5.16 002/126] selinux: fix double free of cond_list on error paths
-Date:   Mon,  7 Feb 2022 12:05:33 +0100
-Message-Id: <20220207103804.140013578@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-References: <20220207103804.053675072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:29:36 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02D7C03FEDE;
+        Mon,  7 Feb 2022 03:28:00 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id 192so12698434ybd.10;
+        Mon, 07 Feb 2022 03:28:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=WxR2Iy/hInfRurGC4IqSW6zQNPBVhusP7UDER7Bropk=;
+        b=dM/Tj7tr2LUBDshsrOWdnnxklmal1W15fzaCMCTQao60SujrYlghFjzCZqhB+TbXPg
+         SNiOS8RZv7OSiyaTF5lQUgyXXzQ5qk7uzVO0FRedzzIzg+4TH7RbSMTNxlmZp6P+uWVL
+         VDLP7pEQ/S1P4B0O2raEMVLXjsaZlYgyDr81GJ6N8sozwIJEoB4X10TS5RwIxV2N1AiR
+         U98git0f+YOsHGF/WZ+ZG+fh6OCtO2xL+/n+aw8SCpvayTQ2NxZY+26jLKGL5ZnuTABM
+         wuCGy+k17X1+6muAZPANzXCoA+E661hCCnVsugwiE4H5KXJW2l8u+l5N9zRLo+EVUc9T
+         QhcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WxR2Iy/hInfRurGC4IqSW6zQNPBVhusP7UDER7Bropk=;
+        b=vZq03RefnM94OAbM4Q446MKPqNP3ZvecgHlXCpOfCe5x+Qft1iP6r4jU6AnIdox7hv
+         Zddo/KTQS3YxCQb7BfetCcHUtyualrug92fqd+5JxkbsA4PVG6pOxOEW9dfHbbEBytCM
+         YS4FZoHqphSfDqqmlowT/AqXwZ5dnn3mz8E9OTRiviGLuUP/0CfYw1/4EshKzwmLGr4J
+         Kz4H15U1DRoC8nlGYbh5+EaeqzfpGydkF4XOXqaDtFSY86BGmzfeTKFCIL9ug1KIj4TK
+         sZuyvAogU2oMdhpnF/fmDPBsSb5YlP+xWtG9EEe68HmhfWeWbvTn5YSkq4Q7k6EY9G7g
+         ggBw==
+X-Gm-Message-State: AOAM532SzYU2zleXDECEFrGak6OCZS6vfu+1Mza7nDORlYom3qgGqYw4
+        3MivUOVjfSdNtw1PSp9YeeV1rKeCHIJBZ2kP4hoqoC9qhFcYUg==
+X-Google-Smtp-Source: ABdhPJxrPoHymoNp9oAgOQoocWDdgId4VRyqnJQ7fnjIlGyC/SUXMPUZyDHFDRdUTKXD9oDRLRxiKidiAB5GKIuYBc4=
+X-Received: by 2002:a81:6f56:: with SMTP id k83mr10773035ywc.58.1644233279890;
+ Mon, 07 Feb 2022 03:27:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <1644213481-20321-1-git-send-email-hammerh0314@gmail.com>
+ <1644213481-20321-3-git-send-email-hammerh0314@gmail.com> <YgDHwgg0s6U3bFxF@kroah.com>
+In-Reply-To: <YgDHwgg0s6U3bFxF@kroah.com>
+From:   hammer hsieh <hammerh0314@gmail.com>
+Date:   Mon, 7 Feb 2022 19:28:13 +0800
+Message-ID: <CAOX-t55sbxd6rvkafnw-m1nYMuEZTsKOkBBftqSoKxocxSZbJQ@mail.gmail.com>
+Subject: Re: [PATCH v7 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     robh+dt@kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>, p.zabel@pengutronix.de,
+        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vratislav Bendel <vbendel@redhat.com>
+Greg KH <gregkh@linuxfoundation.org> =E6=96=BC 2022=E5=B9=B42=E6=9C=887=E6=
+=97=A5 =E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=883:18=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> On Mon, Feb 07, 2022 at 01:58:01PM +0800, Hammer Hsieh wrote:
+> > Add Sunplus SoC UART Driver
+> >
+>
+> We need more of a changelog comment here please.  Describe the hardware,
+> what the new tty name you are using, and other stuff.  Be descriptive.
+>
 
-commit 186edf7e368c40d06cf727a1ad14698ea67b74ad upstream.
+I will describe as below.
+Add Sunplus SoC UART Driver.
+SP7021 UART block contains 5 UARTs.
+There are UART0~4 that supported in SP7021, the features list as below.
+Support Full-duplex communication.
+Support data packet length configurable.
+Support stop bit number configurable.
+Support force break condition.
+Support baud rate configurable.
+Support error detection and report.
+Support RXD Noise Rejection Vote configurable.
 
-On error path from cond_read_list() and duplicate_policydb_cond_list()
-the cond_list_destroy() gets called a second time in caller functions,
-resulting in NULL pointer deref.  Fix this by resetting the
-cond_list_len to 0 in cond_list_destroy(), making subsequent calls a
-noop.
+UART0 pinout only support TX/RX two pins.
+UART1 to UART4 pinout support TX/RX/CTS/RTS four pins.
+Normally UART0 used for kernel console, also can be used for normal uart.
+Command line set "console=3DttySUP0,115200", SUP means Sunplus Uart Port.
+UART driver probe will create path named "/dev/ttySUPx".
 
-Also consistently reset the cond_list pointer to NULL after freeing.
+https://sunplus.atlassian.net/wiki/spaces/doc/pages/1873412290/13.+Universa=
+l+Asynchronous+Receiver+Transmitter+UART
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Vratislav Bendel <vbendel@redhat.com>
-[PM: fix line lengths in the description]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- security/selinux/ss/conditional.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> > --- a/include/uapi/linux/serial_core.h
+> > +++ b/include/uapi/linux/serial_core.h
+> > @@ -274,4 +274,7 @@
+> >  /* Freescale LINFlexD UART */
+> >  #define PORT_LINFLEXUART     122
+> >
+> > +/* Sunplus UART */
+> > +#define PORT_SUNPLUS 123
+>
+> Why is this needed?  Are you going to require this in some userspace
+> code?  If not, please do not add it.
+>
 
---- a/security/selinux/ss/conditional.c
-+++ b/security/selinux/ss/conditional.c
-@@ -152,6 +152,8 @@ static void cond_list_destroy(struct pol
- 	for (i = 0; i < p->cond_list_len; i++)
- 		cond_node_destroy(&p->cond_list[i]);
- 	kfree(p->cond_list);
-+	p->cond_list = NULL;
-+	p->cond_list_len = 0;
- }
- 
- void cond_policydb_destroy(struct policydb *p)
-@@ -441,7 +443,6 @@ int cond_read_list(struct policydb *p, v
- 	return 0;
- err:
- 	cond_list_destroy(p);
--	p->cond_list = NULL;
- 	return rc;
- }
- 
+In serial_core.c (line 3014) uart_add_one_port( )
+It will call uart_configure_port( ).
+In my uart driver probe set port->flags=3DUPF_BOOT_AUTOCONF.
+I try to remove port define and remove  sunplus_config_port( )
+ and just add a "sunplus_uart" for in sunplus_type( ).
+And my uart console not work with PuTTY tool.
 
+I try to do another test as below.
+static const char *sunplus_type(struct uart_port *port)
+{
+        return "sunplus_uart";
+}
+static void sunplus_config_port(struct uart_port *port, int type)
+{
+        if (type & UART_CONFIG_TYPE)
+                port->type =3D "sunplus_uart"; //type define is unsigned in=
+t
+}
+Uart console works, but port->type should be unsigned int , not string.
+So compile will warning " assignment makes integer from pointer
+without a cast [-Wint-conversion]".
 
+I think I should keep the current submit code.
+
+> thanks,
+>
+> greg k-h
