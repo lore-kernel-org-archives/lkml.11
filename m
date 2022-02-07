@@ -2,158 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49E2CC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 821EFC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381755AbiBGQO4 (ORCPT
+        id S1381871AbiBGQPD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:14:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50180 "EHLO
+        Mon, 7 Feb 2022 11:15:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343750AbiBGQJy (ORCPT
+        with ESMTP id S238283AbiBGQNE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:09:54 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E24C0401DF;
-        Mon,  7 Feb 2022 08:09:44 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id v15-20020a17090a4ecf00b001b82db48754so14044290pjl.2;
-        Mon, 07 Feb 2022 08:09:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Bc9AHRZR1pshNQdSUMPi4giKprTpkGNBEnF9JWPwt2E=;
-        b=JAfoiZ9t8GzKsMy000nAJS6NlGY4h0Fahz0vPp4DgANVACMUHAediTakMcUf2VUbQn
-         L4U46ZbxdSfCdqgTca9qs8DK/e59ANl6k6XGndSJTQGZkQfGzKYFxaH0Aa+NKx8y9kDc
-         ROnb3EJqAhPYk8fTVtkSq4fMazHidRwyIWpzzxmKpXQBeOt+8F6Njax/Ef7P/xBIhMX6
-         UM3+Xe+w5ebHtNlZmh7kDlteUh0+9x/xEAY1QSa0Flgr5eWMFx0X0qilvVSPHp6+G9LK
-         lfr4bUoVst/4kF43XMtL0sWdJo6uU/snm/oCBT4NNwwb4SaPO5bR4n3dVy4a2NBkB56x
-         0tNA==
+        Mon, 7 Feb 2022 11:13:04 -0500
+Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com [209.85.221.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A47C0401CC;
+        Mon,  7 Feb 2022 08:13:03 -0800 (PST)
+Received: by mail-vk1-f180.google.com with SMTP id n14so8085429vkk.6;
+        Mon, 07 Feb 2022 08:13:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Bc9AHRZR1pshNQdSUMPi4giKprTpkGNBEnF9JWPwt2E=;
-        b=H5FQYXf6TfE5Wxhpo/QOgBbqPos4zU1aNrf6dff/4ZTTNo2qgS75gHEFlZA+uxRKO8
-         me2wg249LYVmMrQearoKgUp0DX4TLG1wC2sPzj11WjnMhhZm26ewH/bCngfSDMhdnAcI
-         OedrdPlD/Mk9CqL91ci9XUAt5Rcbv8dtr7xfA/aK9nL4o9EpGb6qoHGJeDKk8vdxrUUe
-         ntlgJEz0q/NY5VFV2A2AlrOJMdTA8Naz0mLg4LAj1zpDu6QA4EGU2PnwsrBqt45qa8SC
-         MzjzVByx9Ad7/jG9ljKflKCsEdjARSJ8IJt/9rjlYio3yd0qEnMQ0Lg91eyjZBJHGmvu
-         E+Vg==
-X-Gm-Message-State: AOAM530Ptb5r7F13yiC4Bkunh/r1w7KwwBFJTMzODD59m/w9qVUQ0Y5G
-        7DcHIuhLMxDWfSiXlUDi5tg=
-X-Google-Smtp-Source: ABdhPJxvraa0Ez4eY9PIHd2rqE7xpEpvngaRaU3dzq0slx+I8MQ6gqMKshVGQWXwXnCvEpiNZqZuDw==
-X-Received: by 2002:a17:902:a413:: with SMTP id p19mr305861plq.35.1644250184070;
-        Mon, 07 Feb 2022 08:09:44 -0800 (PST)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:7:49ed:b358:ae30:a484])
-        by smtp.gmail.com with ESMTPSA id z14sm5958859pfh.173.2022.02.07.08.09.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 08:09:43 -0800 (PST)
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, brijesh.singh@amd.com,
-        michael.roth@amd.com, jroedel@suse.de, Tianyu.Lan@microsoft.com,
-        thomas.lendacky@amd.com, michael.h.kelley@microsoft.com
-Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC FATCH] x86/Hyper-V: Add SEV negotiate protocol support in Isolation VM.
-Date:   Mon,  7 Feb 2022 11:09:28 -0500
-Message-Id: <20220207160928.111718-1-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Tv1ZZY4U6OgiqoLVNvl9jUhYgfOvypYF9c1b+QKNGI=;
+        b=nIUqw1ANYtCdvWO8+oRmPK9LEwEbDr76/ps4XFz+MSeiWKMSeN7iGK+L4pNr3iUtVR
+         Mfv+EUmuFiEcoBfPz2i0JlwtahjcCDPau6eqzLWGYEKXkV4xcVzuLm7AzgJAomsQTtT7
+         a3G2wUTie/U3tJje0YiqSFomykmD4kbIpmhOSLZmtHtrlJUt7qOBrT/Y4n31Pl0l1giT
+         XSV3FlZ9JAoMAWj1AFFGXSDQl8jcVKEQM0+2hE2fs4Zc/4DF10/9Sps6C6NzsqbhmVD7
+         G29IdoDKq+apZ/Qy0/1Ge2Di0iOj5tHNzLKQq4nSWzRBC5SWNo2MwWso8EpXKCk9Ijc3
+         dGoQ==
+X-Gm-Message-State: AOAM530uI/YGvtQ6z2+lbqKbIOOd2qYg/NWkY/eJTr6lyFRa/UfaRxfQ
+        qAmFnKH9cTcNhwVik5sxBOVne82RSR7MvA==
+X-Google-Smtp-Source: ABdhPJwtfh5ZPD0SOLKjIkRROc+8QJ1zH1gOpivDeR531ZNl2j3KkjmdxhrsODIVBxtdcDhMgp/QGQ==
+X-Received: by 2002:a05:6122:550:: with SMTP id y16mr167028vko.31.1644250382797;
+        Mon, 07 Feb 2022 08:13:02 -0800 (PST)
+Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com. [209.85.221.179])
+        by smtp.gmail.com with ESMTPSA id d187sm2364269vke.14.2022.02.07.08.13.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 08:13:02 -0800 (PST)
+Received: by mail-vk1-f179.google.com with SMTP id 48so8159178vki.0;
+        Mon, 07 Feb 2022 08:13:02 -0800 (PST)
+X-Received: by 2002:a05:6122:c8f:: with SMTP id ba15mr162627vkb.39.1644250382198;
+ Mon, 07 Feb 2022 08:13:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220204161806.3126321-1-jjhiblot@traphandler.com> <20220204161806.3126321-5-jjhiblot@traphandler.com>
+In-Reply-To: <20220204161806.3126321-5-jjhiblot@traphandler.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 7 Feb 2022 17:12:51 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUU0AiMjP2fR4vYMbkBMqbj-v4L7DdzCDaZ9P8tS97h+g@mail.gmail.com>
+Message-ID: <CAMuHMdUU0AiMjP2fR4vYMbkBMqbj-v4L7DdzCDaZ9P8tS97h+g@mail.gmail.com>
+Subject: Re: [PATCH 4/6] ARM: dts: r9a06g032: Add the watchdog nodes
+To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+Hi Jean-Jacques,
 
-Hyper-V Isolation VM code uses sev_es_ghcb_hv_call() to read/write MSR
-via ghcb page. The SEV-ES guest should call the sev_es_negotiate_protocol()
-to negotiate the GHCB protocol version before establishing the GHCB. Call
-sev_es_negotiate_protocol() in the hyperv_init_ghcb().
+On Fri, Feb 4, 2022 at 5:18 PM Jean-Jacques Hiblot
+<jjhiblot@traphandler.com> wrote:
+> This SOC includes 2 watchdog controllers (one per A7 core).
+>
+> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
-This patch based on the "Add AMD Secure Nested Paging (SEV-SNP) Guest Support"
-patchset. https://lore.kernel.org/lkml/20220128171804.569796-1-brijesh.singh@amd.com/
+Thanks for your patch!
 
- arch/x86/hyperv/hv_init.c    | 6 ++++++
- arch/x86/include/asm/sev.h   | 2 ++
- arch/x86/kernel/sev-shared.c | 2 +-
- arch/x86/kernel/sev.c        | 4 ++--
- 4 files changed, 11 insertions(+), 3 deletions(-)
+> --- a/arch/arm/boot/dts/r9a06g032.dtsi
+> +++ b/arch/arm/boot/dts/r9a06g032.dtsi
+> @@ -184,6 +184,22 @@ gic: interrupt-controller@44101000 {
+>                         interrupts =
+>                                 <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
+>                 };
+> +
+> +               wdt0: watchdog@40008000 {
 
-diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-index 24f4a06ac46a..a22303fccf02 100644
---- a/arch/x86/hyperv/hv_init.c
-+++ b/arch/x86/hyperv/hv_init.c
-@@ -28,6 +28,7 @@
- #include <linux/syscore_ops.h>
- #include <clocksource/hyperv_timer.h>
- #include <linux/highmem.h>
-+#include <asm/sev.h>
- 
- int hyperv_init_cpuhp;
- u64 hv_current_partition_id = ~0ull;
-@@ -69,6 +70,11 @@ static int hyperv_init_ghcb(void)
- 	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
- 	*ghcb_base = ghcb_va;
- 
-+	sev_es_negotiate_protocol();
-+
-+	/* Write ghcb page back after negotiating protocol. */
-+	wrmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
-+	VMGEXIT();
- 	return 0;
- }
- 
-diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-index 7a5934af9d47..fc6b0c526492 100644
---- a/arch/x86/include/asm/sev.h
-+++ b/arch/x86/include/asm/sev.h
-@@ -120,6 +120,8 @@ extern enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
- 					  struct es_em_ctxt *ctxt,
- 					  u64 exit_code, u64 exit_info_1,
- 					  u64 exit_info_2);
-+extern bool sev_es_negotiate_protocol(void);
-+
- static inline int rmpadjust(unsigned long vaddr, bool rmp_psize, unsigned long attrs)
- {
- 	int rc;
-diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
-index ce06cb7c8ed0..8b8af5a8d402 100644
---- a/arch/x86/kernel/sev-shared.c
-+++ b/arch/x86/kernel/sev-shared.c
-@@ -145,7 +145,7 @@ static void snp_register_ghcb_early(unsigned long paddr)
- 		sev_es_terminate(SEV_TERM_SET_LINUX, GHCB_TERM_REGISTER);
- }
- 
--static bool sev_es_negotiate_protocol(void)
-+bool sev_es_negotiate_protocol(void)
- {
- 	u64 val;
- 
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index 3568b3303314..46c53c4885ee 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -167,12 +167,12 @@ void noinstr __sev_es_ist_exit(void)
- 	this_cpu_write(cpu_tss_rw.x86_tss.ist[IST_INDEX_VC], *(unsigned long *)ist);
- }
- 
--static inline u64 sev_es_rd_ghcb_msr(void)
-+inline u64 sev_es_rd_ghcb_msr(void)
- {
- 	return __rdmsr(MSR_AMD64_SEV_ES_GHCB);
- }
- 
--static __always_inline void sev_es_wr_ghcb_msr(u64 val)
-+__always_inline void sev_es_wr_ghcb_msr(u64 val)
- {
- 	u32 low, high;
- 
--- 
-2.25.1
+Please insert these nodes before the system-controller@4000c000
+node, to preserve sort order (by unit address).
 
+> +                       compatible = "renesas,rzn1-wdt";
+
+"renesas,r9a06g032-wdt", "renesas,rzn1-wdt"
+as per my comments on the DT bindings patch.
+
+> +                       reg = <0x40008000 0x1000>;
+> +                       interrupts = <GIC_SPI 73 IRQ_TYPE_EDGE_RISING>;
+> +                       clocks = <&sysctrl R9A06G032_CLK_WATCHDOG>;
+> +                       status = "disabled";
+> +               };
+> +
+> +               wdt1: watchdog@40009000 {
+> +                       compatible = "renesas,rzn1-wdt";
+> +                       reg = <0x40009000 0x1000>;
+> +                       interrupts = <GIC_SPI 74 IRQ_TYPE_EDGE_RISING>;
+> +                       clocks = <&sysctrl R9A06G032_CLK_WATCHDOG>;
+> +                       status = "disabled";
+> +               };
+>         };
+>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
