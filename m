@@ -2,229 +2,668 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC7B7C47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92F78C47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343591AbiBGQBv (ORCPT
+        id S1386874AbiBGQBe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:01:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
+        Mon, 7 Feb 2022 11:01:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385588AbiBGQA5 (ORCPT
+        with ESMTP id S1344215AbiBGP7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:00:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAC0EC0401CF
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:00:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249655;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0YZKFPfPAlzbRhVzmbaqcoTuZ3BdIzpFOausE6A/ZGI=;
-        b=XSUntx453+VZjjGXsn173/BO/GCCZiiUU3gLH1dZQFQ7ihYdGfQtIc1/FLlKr/7Bv7fSmJ
-        t2jch6QnC7Kn4GkiWmsY2OpqEmuuiXwwnxToBm8GcHbD41VmzqPyd5aQFuS6lYFHqVJEwI
-        QZbnIGF4fr82bqZ4NEZwe9RwYMx8fGQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-227-DItzqBf_Nx6qyRMfwq5ONQ-1; Mon, 07 Feb 2022 11:00:52 -0500
-X-MC-Unique: DItzqBf_Nx6qyRMfwq5ONQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 7 Feb 2022 10:59:38 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22ECC0401CF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:59:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 527A8100C611;
-        Mon,  7 Feb 2022 16:00:48 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D44AD7DE38;
-        Mon,  7 Feb 2022 16:00:12 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Tony Luck <tony.luck@intel.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        by sin.source.kernel.org (Postfix) with ESMTPS id E46DCCE1179
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:59:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 379C1C340F0;
+        Mon,  7 Feb 2022 15:59:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644249573;
+        bh=QrTuUdX4llf0VPNVCSmc3xe4XSL9EEyiW56M6T9nnmM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JEQ/p3cLouhQ/rcKOezlaSEtgIDJyFDrBJRZ0N6cvk5F9WHISHMjFz8WECxNg4tK7
+         rCTkHdRTMY96f1S8L1taMtgDUQrIEv9Tqqc8XmOLhfbtnRiUswdVUOoy0cJAkHOVcx
+         pgdEWz9Vi1fkybqxALJbTR+x0prfA8iUu7hpZUEAOcqMYcJQAMlHNG83L6YvYbzJxg
+         0BkMRPy3EZiapuMdNDWALhGJVk/UIqKvZxol85SkD71H4+aJ0ehdFxlOpim/FF/xAJ
+         WLEwDGugRisymc30da42VRniLOelacukcpbqx19BMesqF12y9Fu6ELLmk0BTttLSIU
+         E0TKAlIpYEv0Q==
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@gentwo.de>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nitesh Lal <nilal@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sean Christopherson <seanjc@google.com>,
-        David Airlie <airlied@linux.ie>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Jim Mattson <jmattson@google.com>, x86@kernel.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 26/30] KVM: x86: nSVM: implement nested vGIF
-Date:   Mon,  7 Feb 2022 17:54:43 +0200
-Message-Id: <20220207155447.840194-27-mlevitsk@redhat.com>
-In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
-References: <20220207155447.840194-1-mlevitsk@redhat.com>
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Nicolas Saenz <nsaenzju@redhat.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Phil Auld <pauld@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>
+Subject: [PATCH 4/8] sched/isolation: Use single feature type while referring to housekeeping cpumask
+Date:   Mon,  7 Feb 2022 16:59:06 +0100
+Message-Id: <20220207155910.527133-5-frederic@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220207155910.527133-1-frederic@kernel.org>
+References: <20220207155910.527133-1-frederic@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case L1 enables vGIF for L2, the L2 cannot affect L1's GIF, regardless
-of STGI/CLGI intercepts, and since VM entry enables GIF, this means
-that L1's GIF is always 1 while L2 is running.
+Refer to housekeeping APIs using single feature types instead of flags.
+This prevents from passing multiple isolation features at once to
+housekeeping interfaces, which soon won't be possible anymore as each
+isolation features will have their own cpumask.
 
-Thus in this case leave L1's vGIF in vmcb01, while letting L2
-control the vGIF thus implementing nested vGIF.
-
-Also allow KVM to toggle L1's GIF during nested entry/exit
-by always using vmcb01.
-
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
+Reviewed-by: Phil Auld <pauld@redhat.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Nitesh Lal <nilal@redhat.com>
+Cc: Nicolas Saenz <nsaenzju@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Christoph Lameter <cl@gentwo.de>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Zefan Li <lizefan.x@bytedance.com>
+Cc: Alex Belits <abelits@marvell.com>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Paul E. McKenney  <paulmck@kernel.org>
 ---
- arch/x86/kvm/svm/nested.c | 17 +++++++++++++----
- arch/x86/kvm/svm/svm.c    |  5 +++++
- arch/x86/kvm/svm/svm.h    | 25 +++++++++++++++++++++----
- 3 files changed, 39 insertions(+), 8 deletions(-)
+ arch/x86/kernel/cpu/aperfmperf.c |  6 ++---
+ arch/x86/kvm/x86.c               |  2 +-
+ drivers/base/cpu.c               |  2 +-
+ drivers/pci/pci-driver.c         |  4 +--
+ include/linux/sched/isolation.h  | 43 ++++++++++++++++----------------
+ kernel/cgroup/cpuset.c           |  6 ++---
+ kernel/cpu.c                     |  4 +--
+ kernel/irq/cpuhotplug.c          |  4 +--
+ kernel/irq/manage.c              |  4 +--
+ kernel/kthread.c                 |  4 +--
+ kernel/rcu/tasks.h               |  2 +-
+ kernel/rcu/tree_plugin.h         |  6 ++---
+ kernel/sched/core.c              | 12 ++++-----
+ kernel/sched/fair.c              | 10 ++++----
+ kernel/sched/isolation.c         | 32 ++++++++++++++++--------
+ kernel/sched/topology.c          |  8 +++---
+ kernel/watchdog.c                |  2 +-
+ kernel/workqueue.c               |  4 +--
+ net/core/net-sysfs.c             |  4 +--
+ 19 files changed, 86 insertions(+), 73 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 601d38ae05cc6..a426d4d3dcd82 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -408,6 +408,10 @@ void nested_sync_control_from_vmcb02(struct vcpu_svm *svm)
- 		 */
- 		mask &= ~V_IRQ_MASK;
+diff --git a/arch/x86/kernel/cpu/aperfmperf.c b/arch/x86/kernel/cpu/aperfmperf.c
+index 22911deacb6e..9ca008f9e9b1 100644
+--- a/arch/x86/kernel/cpu/aperfmperf.c
++++ b/arch/x86/kernel/cpu/aperfmperf.c
+@@ -91,7 +91,7 @@ unsigned int aperfmperf_get_khz(int cpu)
+ 	if (!boot_cpu_has(X86_FEATURE_APERFMPERF))
+ 		return 0;
+ 
+-	if (!housekeeping_cpu(cpu, HK_FLAG_MISC))
++	if (!housekeeping_cpu(cpu, HK_TYPE_MISC))
+ 		return 0;
+ 
+ 	if (rcu_is_idle_cpu(cpu))
+@@ -114,7 +114,7 @@ void arch_freq_prepare_all(void)
+ 		return;
+ 
+ 	for_each_online_cpu(cpu) {
+-		if (!housekeeping_cpu(cpu, HK_FLAG_MISC))
++		if (!housekeeping_cpu(cpu, HK_TYPE_MISC))
+ 			continue;
+ 		if (rcu_is_idle_cpu(cpu))
+ 			continue; /* Idle CPUs are completely uninteresting. */
+@@ -136,7 +136,7 @@ unsigned int arch_freq_get_on_cpu(int cpu)
+ 	if (!boot_cpu_has(X86_FEATURE_APERFMPERF))
+ 		return 0;
+ 
+-	if (!housekeeping_cpu(cpu, HK_FLAG_MISC))
++	if (!housekeeping_cpu(cpu, HK_TYPE_MISC))
+ 		return 0;
+ 
+ 	if (aperfmperf_snapshot_cpu(cpu, ktime_get(), true))
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 74b53a16f38a..c91cb0623a4b 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8838,7 +8838,7 @@ int kvm_arch_init(void *opaque)
  	}
-+
-+	if (nested_vgif_enabled(svm))
-+		mask |= V_GIF_MASK;
-+
- 	svm->nested.ctl.int_ctl        &= ~mask;
- 	svm->nested.ctl.int_ctl        |= svm->vmcb->control.int_ctl & mask;
- }
-@@ -573,10 +577,8 @@ static void nested_vmcb02_prepare_save(struct vcpu_svm *svm, struct vmcb *vmcb12
  
- static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
+ 	if (pi_inject_timer == -1)
+-		pi_inject_timer = housekeeping_enabled(HK_FLAG_TIMER);
++		pi_inject_timer = housekeeping_enabled(HK_TYPE_TIMER);
+ #ifdef CONFIG_X86_64
+ 	pvclock_gtod_register_notifier(&pvclock_gtod_notifier);
+ 
+diff --git a/drivers/base/cpu.c b/drivers/base/cpu.c
+index 5fc258073bc7..2ef23fce0860 100644
+--- a/drivers/base/cpu.c
++++ b/drivers/base/cpu.c
+@@ -275,7 +275,7 @@ static ssize_t print_cpus_isolated(struct device *dev,
+ 		return -ENOMEM;
+ 
+ 	cpumask_andnot(isolated, cpu_possible_mask,
+-		       housekeeping_cpumask(HK_FLAG_DOMAIN));
++		       housekeeping_cpumask(HK_TYPE_DOMAIN));
+ 	len = sysfs_emit(buf, "%*pbl\n", cpumask_pr_args(isolated));
+ 
+ 	free_cpumask_var(isolated);
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 4a5792c82d08..f61c40a47891 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -377,8 +377,8 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
+ 			goto out;
+ 		}
+ 		cpumask_and(wq_domain_mask,
+-			    housekeeping_cpumask(HK_FLAG_WQ),
+-			    housekeeping_cpumask(HK_FLAG_DOMAIN));
++			    housekeeping_cpumask(HK_TYPE_WQ),
++			    housekeeping_cpumask(HK_TYPE_DOMAIN));
+ 
+ 		cpu = cpumask_any_and(cpumask_of_node(node),
+ 				      wq_domain_mask);
+diff --git a/include/linux/sched/isolation.h b/include/linux/sched/isolation.h
+index cc9f393e2a70..8c15abd67aed 100644
+--- a/include/linux/sched/isolation.h
++++ b/include/linux/sched/isolation.h
+@@ -5,54 +5,55 @@
+ #include <linux/init.h>
+ #include <linux/tick.h>
+ 
+-enum hk_flags {
+-	HK_FLAG_TIMER		= 1,
+-	HK_FLAG_RCU		= (1 << 1),
+-	HK_FLAG_MISC		= (1 << 2),
+-	HK_FLAG_SCHED		= (1 << 3),
+-	HK_FLAG_TICK		= (1 << 4),
+-	HK_FLAG_DOMAIN		= (1 << 5),
+-	HK_FLAG_WQ		= (1 << 6),
+-	HK_FLAG_MANAGED_IRQ	= (1 << 7),
+-	HK_FLAG_KTHREAD		= (1 << 8),
++enum hk_type {
++	HK_TYPE_TIMER,
++	HK_TYPE_RCU,
++	HK_TYPE_MISC,
++	HK_TYPE_SCHED,
++	HK_TYPE_TICK,
++	HK_TYPE_DOMAIN,
++	HK_TYPE_WQ,
++	HK_TYPE_MANAGED_IRQ,
++	HK_TYPE_KTHREAD,
++	HK_TYPE_MAX
+ };
+ 
+ #ifdef CONFIG_CPU_ISOLATION
+ DECLARE_STATIC_KEY_FALSE(housekeeping_overridden);
+-extern int housekeeping_any_cpu(enum hk_flags flags);
+-extern const struct cpumask *housekeeping_cpumask(enum hk_flags flags);
+-extern bool housekeeping_enabled(enum hk_flags flags);
+-extern void housekeeping_affine(struct task_struct *t, enum hk_flags flags);
+-extern bool housekeeping_test_cpu(int cpu, enum hk_flags flags);
++extern int housekeeping_any_cpu(enum hk_type type);
++extern const struct cpumask *housekeeping_cpumask(enum hk_type type);
++extern bool housekeeping_enabled(enum hk_type type);
++extern void housekeeping_affine(struct task_struct *t, enum hk_type type);
++extern bool housekeeping_test_cpu(int cpu, enum hk_type type);
+ extern void __init housekeeping_init(void);
+ 
+ #else
+ 
+-static inline int housekeeping_any_cpu(enum hk_flags flags)
++static inline int housekeeping_any_cpu(enum hk_type type)
  {
--	const u32 int_ctl_vmcb01_bits =
--		V_INTR_MASKING_MASK | V_GIF_MASK | V_GIF_ENABLE_MASK;
--
--	const u32 int_ctl_vmcb12_bits = V_TPR_MASK | V_IRQ_INJECTION_BITS_MASK;
-+	u32 int_ctl_vmcb01_bits = V_INTR_MASKING_MASK;
-+	u32 int_ctl_vmcb12_bits = V_TPR_MASK | V_IRQ_INJECTION_BITS_MASK;
+ 	return smp_processor_id();
+ }
  
- 	struct kvm_vcpu *vcpu = &svm->vcpu;
+-static inline const struct cpumask *housekeeping_cpumask(enum hk_flags flags)
++static inline const struct cpumask *housekeeping_cpumask(enum hk_type type)
+ {
+ 	return cpu_possible_mask;
+ }
  
-@@ -586,6 +588,13 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
+-static inline bool housekeeping_enabled(enum hk_flags flags)
++static inline bool housekeeping_enabled(enum hk_type type)
+ {
+ 	return false;
+ }
+ 
+ static inline void housekeeping_affine(struct task_struct *t,
+-				       enum hk_flags flags) { }
++				       enum hk_type type) { }
+ static inline void housekeeping_init(void) { }
+ #endif /* CONFIG_CPU_ISOLATION */
+ 
+-static inline bool housekeeping_cpu(int cpu, enum hk_flags flags)
++static inline bool housekeeping_cpu(int cpu, enum hk_type type)
+ {
+ #ifdef CONFIG_CPU_ISOLATION
+ 	if (static_branch_unlikely(&housekeeping_overridden))
+-		return housekeeping_test_cpu(cpu, flags);
++		return housekeeping_test_cpu(cpu, type);
+ #endif
+ 	return true;
+ }
+diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
+index dc653ab26e50..e4e18a2cb404 100644
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -803,7 +803,7 @@ static int generate_sched_domains(cpumask_var_t **domains,
+ 			update_domain_attr_tree(dattr, &top_cpuset);
+ 		}
+ 		cpumask_and(doms[0], top_cpuset.effective_cpus,
+-			    housekeeping_cpumask(HK_FLAG_DOMAIN));
++			    housekeeping_cpumask(HK_TYPE_DOMAIN));
+ 
+ 		goto done;
+ 	}
+@@ -833,7 +833,7 @@ static int generate_sched_domains(cpumask_var_t **domains,
+ 		if (!cpumask_empty(cp->cpus_allowed) &&
+ 		    !(is_sched_load_balance(cp) &&
+ 		      cpumask_intersects(cp->cpus_allowed,
+-					 housekeeping_cpumask(HK_FLAG_DOMAIN))))
++					 housekeeping_cpumask(HK_TYPE_DOMAIN))))
+ 			continue;
+ 
+ 		if (root_load_balance &&
+@@ -922,7 +922,7 @@ static int generate_sched_domains(cpumask_var_t **domains,
+ 
+ 			if (apn == b->pn) {
+ 				cpumask_or(dp, dp, b->effective_cpus);
+-				cpumask_and(dp, dp, housekeeping_cpumask(HK_FLAG_DOMAIN));
++				cpumask_and(dp, dp, housekeeping_cpumask(HK_TYPE_DOMAIN));
+ 				if (dattr)
+ 					update_domain_attr_tree(dattr + nslot, b);
+ 
+diff --git a/kernel/cpu.c b/kernel/cpu.c
+index 407a2568f35e..f39eb0b52dfe 100644
+--- a/kernel/cpu.c
++++ b/kernel/cpu.c
+@@ -1488,8 +1488,8 @@ int freeze_secondary_cpus(int primary)
+ 	cpu_maps_update_begin();
+ 	if (primary == -1) {
+ 		primary = cpumask_first(cpu_online_mask);
+-		if (!housekeeping_cpu(primary, HK_FLAG_TIMER))
+-			primary = housekeeping_any_cpu(HK_FLAG_TIMER);
++		if (!housekeeping_cpu(primary, HK_TYPE_TIMER))
++			primary = housekeeping_any_cpu(HK_TYPE_TIMER);
+ 	} else {
+ 		if (!cpu_online(primary))
+ 			primary = cpumask_first(cpu_online_mask);
+diff --git a/kernel/irq/cpuhotplug.c b/kernel/irq/cpuhotplug.c
+index 39a41c56ad4f..1ed2b1739363 100644
+--- a/kernel/irq/cpuhotplug.c
++++ b/kernel/irq/cpuhotplug.c
+@@ -176,10 +176,10 @@ static bool hk_should_isolate(struct irq_data *data, unsigned int cpu)
+ {
+ 	const struct cpumask *hk_mask;
+ 
+-	if (!housekeeping_enabled(HK_FLAG_MANAGED_IRQ))
++	if (!housekeeping_enabled(HK_TYPE_MANAGED_IRQ))
+ 		return false;
+ 
+-	hk_mask = housekeeping_cpumask(HK_FLAG_MANAGED_IRQ);
++	hk_mask = housekeeping_cpumask(HK_TYPE_MANAGED_IRQ);
+ 	if (cpumask_subset(irq_data_get_effective_affinity_mask(data), hk_mask))
+ 		return false;
+ 
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index f23ffd30385b..c03f71d5ec10 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -247,13 +247,13 @@ int irq_do_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	 * online.
  	 */
+ 	if (irqd_affinity_is_managed(data) &&
+-	    housekeeping_enabled(HK_FLAG_MANAGED_IRQ)) {
++	    housekeeping_enabled(HK_TYPE_MANAGED_IRQ)) {
+ 		const struct cpumask *hk_mask, *prog_mask;
  
+ 		static DEFINE_RAW_SPINLOCK(tmp_mask_lock);
+ 		static struct cpumask tmp_mask;
  
-+
-+
-+	if (svm->vgif_enabled && (svm->nested.ctl.int_ctl & V_GIF_ENABLE_MASK))
-+		int_ctl_vmcb12_bits |= (V_GIF_MASK | V_GIF_ENABLE_MASK);
-+	else
-+		int_ctl_vmcb01_bits |= (V_GIF_MASK | V_GIF_ENABLE_MASK);
-+
- 	/* Copied from vmcb01.  msrpm_base can be overwritten later.  */
- 	svm->vmcb->control.nested_ctl = svm->vmcb01.ptr->control.nested_ctl;
- 	svm->vmcb->control.iopm_base_pa = svm->vmcb01.ptr->control.iopm_base_pa;
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index e49043807ec44..1cf682d1553cc 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4008,6 +4008,8 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 		svm->pause_threshold_enabled = false;
+-		hk_mask = housekeeping_cpumask(HK_FLAG_MANAGED_IRQ);
++		hk_mask = housekeeping_cpumask(HK_TYPE_MANAGED_IRQ);
+ 
+ 		raw_spin_lock(&tmp_mask_lock);
+ 		cpumask_and(&tmp_mask, mask, hk_mask);
+diff --git a/kernel/kthread.c b/kernel/kthread.c
+index 38c6dd822da8..d100d5a15b38 100644
+--- a/kernel/kthread.c
++++ b/kernel/kthread.c
+@@ -356,7 +356,7 @@ static int kthread(void *_create)
+ 	 * back to default in case they have been changed.
+ 	 */
+ 	sched_setscheduler_nocheck(current, SCHED_NORMAL, &param);
+-	set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_FLAG_KTHREAD));
++	set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_TYPE_KTHREAD));
+ 
+ 	/* OK, tell user we're spawned, wait for stop or wakeup */
+ 	__set_current_state(TASK_UNINTERRUPTIBLE);
+@@ -722,7 +722,7 @@ int kthreadd(void *unused)
+ 	/* Setup a clean context for our children to inherit. */
+ 	set_task_comm(tsk, "kthreadd");
+ 	ignore_signals(tsk);
+-	set_cpus_allowed_ptr(tsk, housekeeping_cpumask(HK_FLAG_KTHREAD));
++	set_cpus_allowed_ptr(tsk, housekeeping_cpumask(HK_TYPE_KTHREAD));
+ 	set_mems_allowed(node_states[N_MEMORY]);
+ 
+ 	current->flags |= PF_NOFREEZE;
+diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+index d64f0b1d8cd3..2c8d2fda55a8 100644
+--- a/kernel/rcu/tasks.h
++++ b/kernel/rcu/tasks.h
+@@ -496,7 +496,7 @@ static int __noreturn rcu_tasks_kthread(void *arg)
+ 	struct rcu_tasks *rtp = arg;
+ 
+ 	/* Run on housekeeping CPUs by default.  Sysadm can move if desired. */
+-	housekeeping_affine(current, HK_FLAG_RCU);
++	housekeeping_affine(current, HK_TYPE_RCU);
+ 	WRITE_ONCE(rtp->kthread_ptr, current); // Let GPs start!
+ 
+ 	/*
+diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+index c5b45c2f68a1..65f25a32f6d7 100644
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -1214,9 +1214,9 @@ static void rcu_boost_kthread_setaffinity(struct rcu_node *rnp, int outgoingcpu)
+ 		if ((mask & leaf_node_cpu_bit(rnp, cpu)) &&
+ 		    cpu != outgoingcpu)
+ 			cpumask_set_cpu(cpu, cm);
+-	cpumask_and(cm, cm, housekeeping_cpumask(HK_FLAG_RCU));
++	cpumask_and(cm, cm, housekeeping_cpumask(HK_TYPE_RCU));
+ 	if (cpumask_weight(cm) == 0)
+-		cpumask_copy(cm, housekeeping_cpumask(HK_FLAG_RCU));
++		cpumask_copy(cm, housekeeping_cpumask(HK_TYPE_RCU));
+ 	set_cpus_allowed_ptr(t, cm);
+ 	free_cpumask_var(cm);
+ }
+@@ -1291,7 +1291,7 @@ static void rcu_bind_gp_kthread(void)
+ {
+ 	if (!tick_nohz_full_enabled())
+ 		return;
+-	housekeeping_affine(current, HK_FLAG_RCU);
++	housekeeping_affine(current, HK_TYPE_RCU);
+ }
+ 
+ /* Record the current task on dyntick-idle entry. */
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 848eaa0efe0e..ed67c2b56064 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1024,13 +1024,13 @@ int get_nohz_timer_target(void)
+ 	struct sched_domain *sd;
+ 	const struct cpumask *hk_mask;
+ 
+-	if (housekeeping_cpu(cpu, HK_FLAG_TIMER)) {
++	if (housekeeping_cpu(cpu, HK_TYPE_TIMER)) {
+ 		if (!idle_cpu(cpu))
+ 			return cpu;
+ 		default_cpu = cpu;
  	}
  
-+	svm->vgif_enabled = vgif && guest_cpuid_has(vcpu, X86_FEATURE_VGIF);
-+
- 	svm_recalc_instruction_intercepts(vcpu, svm);
+-	hk_mask = housekeeping_cpumask(HK_FLAG_TIMER);
++	hk_mask = housekeeping_cpumask(HK_TYPE_TIMER);
  
- 	/* For sev guests, the memory encryption bit is not reserved in CR3.  */
-@@ -4823,6 +4825,9 @@ static __init void svm_set_cpu_caps(void)
- 		if (pause_filter_thresh)
- 			kvm_cpu_cap_set(X86_FEATURE_PFTHRESHOLD);
- 
-+		if (vgif)
-+			kvm_cpu_cap_set(X86_FEATURE_VGIF);
-+
- 		/* Nested VM can receive #VMEXIT instead of triggering #GP */
- 		kvm_cpu_cap_set(X86_FEATURE_SVME_ADDR_CHK);
+ 	rcu_read_lock();
+ 	for_each_domain(cpu, sd) {
+@@ -1046,7 +1046,7 @@ int get_nohz_timer_target(void)
  	}
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 297ec57f9941c..73cc9d3e784bd 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -224,6 +224,7 @@ struct vcpu_svm {
- 	bool v_vmload_vmsave_enabled      : 1;
- 	bool pause_filter_enabled         : 1;
- 	bool pause_threshold_enabled      : 1;
-+	bool vgif_enabled                 : 1;
  
- 	u32 ldr_reg;
- 	u32 dfr_reg;
-@@ -442,31 +443,47 @@ static inline bool svm_is_intercept(struct vcpu_svm *svm, int bit)
- 	return vmcb_is_intercept(&svm->vmcb->control, bit);
- }
+ 	if (default_cpu == -1)
+-		default_cpu = housekeeping_any_cpu(HK_FLAG_TIMER);
++		default_cpu = housekeeping_any_cpu(HK_TYPE_TIMER);
+ 	cpu = default_cpu;
+ unlock:
+ 	rcu_read_unlock();
+@@ -5370,7 +5370,7 @@ static void sched_tick_start(int cpu)
+ 	int os;
+ 	struct tick_work *twork;
  
-+static bool nested_vgif_enabled(struct vcpu_svm *svm)
-+{
-+	if (!is_guest_mode(&svm->vcpu) || !svm->vgif_enabled)
-+		return false;
-+	return svm->nested.ctl.int_ctl & V_GIF_ENABLE_MASK;
-+}
-+
- static inline bool vgif_enabled(struct vcpu_svm *svm)
+-	if (housekeeping_cpu(cpu, HK_FLAG_TICK))
++	if (housekeeping_cpu(cpu, HK_TYPE_TICK))
+ 		return;
+ 
+ 	WARN_ON_ONCE(!tick_work_cpu);
+@@ -5391,7 +5391,7 @@ static void sched_tick_stop(int cpu)
+ 	struct tick_work *twork;
+ 	int os;
+ 
+-	if (housekeeping_cpu(cpu, HK_FLAG_TICK))
++	if (housekeeping_cpu(cpu, HK_TYPE_TICK))
+ 		return;
+ 
+ 	WARN_ON_ONCE(!tick_work_cpu);
+@@ -9240,7 +9240,7 @@ void __init sched_init_smp(void)
+ 	mutex_unlock(&sched_domains_mutex);
+ 
+ 	/* Move init over to a non-isolated CPU */
+-	if (set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_FLAG_DOMAIN)) < 0)
++	if (set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_TYPE_DOMAIN)) < 0)
+ 		BUG();
+ 	current->flags &= ~PF_NO_SETAFFINITY;
+ 	sched_init_granularity();
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 5146163bfabb..0c842a5ad9df 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -10351,7 +10351,7 @@ static inline int on_null_domain(struct rq *rq)
+  * - When one of the busy CPUs notice that there may be an idle rebalancing
+  *   needed, they will kick the idle load balancer, which then does idle
+  *   load balancing for all the idle CPUs.
+- * - HK_FLAG_MISC CPUs are used for this task, because HK_FLAG_SCHED not set
++ * - HK_TYPE_MISC CPUs are used for this task, because HK_TYPE_SCHED not set
+  *   anywhere yet.
+  */
+ 
+@@ -10360,7 +10360,7 @@ static inline int find_new_ilb(void)
+ 	int ilb;
+ 	const struct cpumask *hk_mask;
+ 
+-	hk_mask = housekeeping_cpumask(HK_FLAG_MISC);
++	hk_mask = housekeeping_cpumask(HK_TYPE_MISC);
+ 
+ 	for_each_cpu_and(ilb, nohz.idle_cpus_mask, hk_mask) {
+ 
+@@ -10376,7 +10376,7 @@ static inline int find_new_ilb(void)
+ 
+ /*
+  * Kick a CPU to do the nohz balancing, if it is time for it. We pick any
+- * idle CPU in the HK_FLAG_MISC housekeeping set (if there is one).
++ * idle CPU in the HK_TYPE_MISC housekeeping set (if there is one).
+  */
+ static void kick_ilb(unsigned int flags)
  {
--	return !!(svm->vmcb->control.int_ctl & V_GIF_ENABLE_MASK);
-+	struct vmcb *vmcb = nested_vgif_enabled(svm) ? svm->vmcb01.ptr : svm->vmcb;
-+
-+	return !!(vmcb->control.int_ctl & V_GIF_ENABLE_MASK);
- }
+@@ -10589,7 +10589,7 @@ void nohz_balance_enter_idle(int cpu)
+ 		return;
  
- static inline void enable_gif(struct vcpu_svm *svm)
- {
-+	struct vmcb *vmcb = nested_vgif_enabled(svm) ? svm->vmcb01.ptr : svm->vmcb;
-+
- 	if (vgif_enabled(svm))
--		svm->vmcb->control.int_ctl |= V_GIF_MASK;
-+		vmcb->control.int_ctl |= V_GIF_MASK;
- 	else
- 		svm->vcpu.arch.hflags |= HF_GIF_MASK;
- }
+ 	/* Spare idle load balancing on CPUs that don't want to be disturbed: */
+-	if (!housekeeping_cpu(cpu, HK_FLAG_SCHED))
++	if (!housekeeping_cpu(cpu, HK_TYPE_SCHED))
+ 		return;
  
- static inline void disable_gif(struct vcpu_svm *svm)
- {
-+	struct vmcb *vmcb = nested_vgif_enabled(svm) ? svm->vmcb01.ptr : svm->vmcb;
-+
- 	if (vgif_enabled(svm))
--		svm->vmcb->control.int_ctl &= ~V_GIF_MASK;
-+		vmcb->control.int_ctl &= ~V_GIF_MASK;
- 	else
- 		svm->vcpu.arch.hflags &= ~HF_GIF_MASK;
-+
- }
+ 	/*
+@@ -10805,7 +10805,7 @@ static void nohz_newidle_balance(struct rq *this_rq)
+ 	 * This CPU doesn't want to be disturbed by scheduler
+ 	 * housekeeping
+ 	 */
+-	if (!housekeeping_cpu(this_cpu, HK_FLAG_SCHED))
++	if (!housekeeping_cpu(this_cpu, HK_TYPE_SCHED))
+ 		return;
  
- static inline bool gif_set(struct vcpu_svm *svm)
- {
-+	struct vmcb *vmcb = nested_vgif_enabled(svm) ? svm->vmcb01.ptr : svm->vmcb;
+ 	/* Will wake up very soon. No time for doing anything else*/
+diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
+index 7f06eaf12818..a735d9e229dd 100644
+--- a/kernel/sched/isolation.c
++++ b/kernel/sched/isolation.c
+@@ -9,23 +9,35 @@
+  */
+ #include "sched.h"
+ 
++enum hk_flags {
++	HK_FLAG_TIMER		= BIT(HK_TYPE_TIMER),
++	HK_FLAG_RCU		= BIT(HK_TYPE_RCU),
++	HK_FLAG_MISC		= BIT(HK_TYPE_MISC),
++	HK_FLAG_SCHED		= BIT(HK_TYPE_SCHED),
++	HK_FLAG_TICK		= BIT(HK_TYPE_TICK),
++	HK_FLAG_DOMAIN		= BIT(HK_TYPE_DOMAIN),
++	HK_FLAG_WQ		= BIT(HK_TYPE_WQ),
++	HK_FLAG_MANAGED_IRQ	= BIT(HK_TYPE_MANAGED_IRQ),
++	HK_FLAG_KTHREAD		= BIT(HK_TYPE_KTHREAD),
++};
 +
- 	if (vgif_enabled(svm))
--		return !!(svm->vmcb->control.int_ctl & V_GIF_MASK);
-+		return !!(vmcb->control.int_ctl & V_GIF_MASK);
- 	else
- 		return !!(svm->vcpu.arch.hflags & HF_GIF_MASK);
+ DEFINE_STATIC_KEY_FALSE(housekeeping_overridden);
+ EXPORT_SYMBOL_GPL(housekeeping_overridden);
+ static cpumask_var_t housekeeping_mask;
+ static unsigned int housekeeping_flags;
+ 
+-bool housekeeping_enabled(enum hk_flags flags)
++bool housekeeping_enabled(enum hk_type type)
+ {
+-	return !!(housekeeping_flags & flags);
++	return !!(housekeeping_flags & BIT(type));
  }
+ EXPORT_SYMBOL_GPL(housekeeping_enabled);
+ 
+-int housekeeping_any_cpu(enum hk_flags flags)
++int housekeeping_any_cpu(enum hk_type type)
+ {
+ 	int cpu;
+ 
+ 	if (static_branch_unlikely(&housekeeping_overridden)) {
+-		if (housekeeping_flags & flags) {
++		if (housekeeping_flags & BIT(type)) {
+ 			cpu = sched_numa_find_closest(housekeeping_mask, smp_processor_id());
+ 			if (cpu < nr_cpu_ids)
+ 				return cpu;
+@@ -37,27 +49,27 @@ int housekeeping_any_cpu(enum hk_flags flags)
+ }
+ EXPORT_SYMBOL_GPL(housekeeping_any_cpu);
+ 
+-const struct cpumask *housekeeping_cpumask(enum hk_flags flags)
++const struct cpumask *housekeeping_cpumask(enum hk_type type)
+ {
+ 	if (static_branch_unlikely(&housekeeping_overridden))
+-		if (housekeeping_flags & flags)
++		if (housekeeping_flags & BIT(type))
+ 			return housekeeping_mask;
+ 	return cpu_possible_mask;
+ }
+ EXPORT_SYMBOL_GPL(housekeeping_cpumask);
+ 
+-void housekeeping_affine(struct task_struct *t, enum hk_flags flags)
++void housekeeping_affine(struct task_struct *t, enum hk_type type)
+ {
+ 	if (static_branch_unlikely(&housekeeping_overridden))
+-		if (housekeeping_flags & flags)
++		if (housekeeping_flags & BIT(type))
+ 			set_cpus_allowed_ptr(t, housekeeping_mask);
+ }
+ EXPORT_SYMBOL_GPL(housekeeping_affine);
+ 
+-bool housekeeping_test_cpu(int cpu, enum hk_flags flags)
++bool housekeeping_test_cpu(int cpu, enum hk_type type)
+ {
+ 	if (static_branch_unlikely(&housekeeping_overridden))
+-		if (housekeeping_flags & flags)
++		if (housekeeping_flags & BIT(type))
+ 			return cpumask_test_cpu(cpu, housekeeping_mask);
+ 	return true;
+ }
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index d201a7052a29..5318940b0b76 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -1366,7 +1366,7 @@ static void asym_cpu_capacity_scan(void)
+ 	list_for_each_entry(entry, &asym_cap_list, link)
+ 		cpumask_clear(cpu_capacity_span(entry));
+ 
+-	for_each_cpu_and(cpu, cpu_possible_mask, housekeeping_cpumask(HK_FLAG_DOMAIN))
++	for_each_cpu_and(cpu, cpu_possible_mask, housekeeping_cpumask(HK_TYPE_DOMAIN))
+ 		asym_cpu_capacity_update_data(cpu);
+ 
+ 	list_for_each_entry_safe(entry, next, &asym_cap_list, link) {
+@@ -2351,7 +2351,7 @@ int sched_init_domains(const struct cpumask *cpu_map)
+ 	doms_cur = alloc_sched_domains(ndoms_cur);
+ 	if (!doms_cur)
+ 		doms_cur = &fallback_doms;
+-	cpumask_and(doms_cur[0], cpu_map, housekeeping_cpumask(HK_FLAG_DOMAIN));
++	cpumask_and(doms_cur[0], cpu_map, housekeeping_cpumask(HK_TYPE_DOMAIN));
+ 	err = build_sched_domains(doms_cur[0], NULL);
+ 
+ 	return err;
+@@ -2440,7 +2440,7 @@ void partition_sched_domains_locked(int ndoms_new, cpumask_var_t doms_new[],
+ 		if (doms_new) {
+ 			n = 1;
+ 			cpumask_and(doms_new[0], cpu_active_mask,
+-				    housekeeping_cpumask(HK_FLAG_DOMAIN));
++				    housekeeping_cpumask(HK_TYPE_DOMAIN));
+ 		}
+ 	} else {
+ 		n = ndoms_new;
+@@ -2475,7 +2475,7 @@ void partition_sched_domains_locked(int ndoms_new, cpumask_var_t doms_new[],
+ 		n = 0;
+ 		doms_new = &fallback_doms;
+ 		cpumask_and(doms_new[0], cpu_active_mask,
+-			    housekeeping_cpumask(HK_FLAG_DOMAIN));
++			    housekeeping_cpumask(HK_TYPE_DOMAIN));
+ 	}
+ 
+ 	/* Build new domains: */
+diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+index 99afb88d2e85..9166220457bc 100644
+--- a/kernel/watchdog.c
++++ b/kernel/watchdog.c
+@@ -848,7 +848,7 @@ void __init lockup_detector_init(void)
+ 		pr_info("Disabling watchdog on nohz_full cores by default\n");
+ 
+ 	cpumask_copy(&watchdog_cpumask,
+-		     housekeeping_cpumask(HK_FLAG_TIMER));
++		     housekeeping_cpumask(HK_TYPE_TIMER));
+ 
+ 	if (!watchdog_nmi_probe())
+ 		nmi_watchdog_available = true;
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 61ed310621ea..52e9abbb7759 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -6011,8 +6011,8 @@ void __init workqueue_init_early(void)
+ 	BUILD_BUG_ON(__alignof__(struct pool_workqueue) < __alignof__(long long));
+ 
+ 	BUG_ON(!alloc_cpumask_var(&wq_unbound_cpumask, GFP_KERNEL));
+-	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(HK_FLAG_WQ));
+-	cpumask_and(wq_unbound_cpumask, wq_unbound_cpumask, housekeeping_cpumask(HK_FLAG_DOMAIN));
++	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(HK_TYPE_WQ));
++	cpumask_and(wq_unbound_cpumask, wq_unbound_cpumask, housekeeping_cpumask(HK_TYPE_DOMAIN));
+ 
+ 	pwq_cache = KMEM_CACHE(pool_workqueue, SLAB_PANIC);
+ 
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index ed8da7b8d35b..7ceb3460161b 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -839,8 +839,8 @@ static ssize_t store_rps_map(struct netdev_rx_queue *queue,
+ 	}
+ 
+ 	if (!cpumask_empty(mask)) {
+-		cpumask_and(mask, mask, housekeeping_cpumask(HK_FLAG_DOMAIN));
+-		cpumask_and(mask, mask, housekeeping_cpumask(HK_FLAG_WQ));
++		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_DOMAIN));
++		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_WQ));
+ 		if (cpumask_empty(mask)) {
+ 			free_cpumask_var(mask);
+ 			return -EINVAL;
 -- 
-2.26.3
+2.25.1
 
