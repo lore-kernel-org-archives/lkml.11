@@ -2,87 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21AE0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A755C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381677AbiBGQOu (ORCPT
+        id S1381822AbiBGQPA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:14:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
+        Mon, 7 Feb 2022 11:15:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386002AbiBGQBH (ORCPT
+        with ESMTP id S1443857AbiBGQIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:01:07 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D568C0401D9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:01:06 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id m10so17503300oie.2
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 08:01:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wOnglUl1uAYKVVD35GZiXd9FDxbCo7pVui2xMN5ng2k=;
-        b=LJseETUvhhlpjfqgNVx4CkEqAukgFRYI+4hAvQuyuTMG1aluYNFiioHHhHs4YS6orY
-         QvLKeQ/tPRb+MH5WMnOc5QQQ/GeQgikPY4Q95JRgpEcS1avO/RpiWsWIQqo0xJ2tG5G/
-         xYyiZuW2V2dWr1wbRRR6AUoZQiqyIj9fiGWW0oCilwBHaHdHboG+hfT4HnpZ89ayd494
-         EGyFj3a2IlfCrcZSZzq1I/6SQJgsojXE6/bXZyMFmEXPtl7yofVPS7I1QBLTxFA6jeUB
-         2X481JyOAL+HWXKP1WW+Vuf6yIwzREwCk9Onf4KbDjkT/oSlLC/pomSsIAvyz0Jli+bY
-         pwcA==
+        Mon, 7 Feb 2022 11:08:02 -0500
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21508C0401E6;
+        Mon,  7 Feb 2022 08:07:56 -0800 (PST)
+Received: by mail-vs1-f50.google.com with SMTP id r20so138116vsn.0;
+        Mon, 07 Feb 2022 08:07:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wOnglUl1uAYKVVD35GZiXd9FDxbCo7pVui2xMN5ng2k=;
-        b=qWactqg/YVdSIZtA1pc02nz1aYhO2kPdSQPlh5NWim2L5FqUzs/yz0zcwdCQqunPAD
-         qsmcJdjk6XcST9r6dtKEim77VKLL+NvTzfnzhy28H0NUMO+FOdiSbA8XE0Jq7nsbKqOP
-         w8IXKjnpnrE/cDyaieOIB2xiuR+AcKiHG8LvbbqYTS9mzisqYM2oyoezpckBCCq4VyQI
-         U7F5GdJ6GXRLwRvm4YPek6zl7VyVN0a5zjeSnJlXGDP3hquqH9F++xkjZU9fH2mDlgWh
-         CxFIvgt8ThBt2kt3QhqoFMSZ6JE6YvrAmxk/jMFAvU5o03qadPwQdwSksPmFPx+QQ0tx
-         usGg==
-X-Gm-Message-State: AOAM533Dx1Re+Qh/7WRO0G8+kJt0BvA+EHMxFrpSpBkQZAX05SWvZdrg
-        PZ8LDZ46rjSIk++a+sEGJFU=
-X-Google-Smtp-Source: ABdhPJyD4UpToOvIQIFw9Irbe12rKVbwLrk8ws70xElXnFRMvNXDq7KX6BOTkKMWA9KfDBu0TUX8aA==
-X-Received: by 2002:aca:f06:: with SMTP id 6mr173415oip.70.1644249664127;
-        Mon, 07 Feb 2022 08:01:04 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:4cd8:12bf:4134:806a:5a4a:2a88])
-        by smtp.gmail.com with ESMTPSA id o144sm4157803ooo.25.2022.02.07.08.01.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 08:01:03 -0800 (PST)
-From:   Leonardo Araujo <leonardo.aa88@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Leonardo Araujo <leonardo.aa88@gmail.com>
-Subject: [PATCH] Staging: wfx: CHECK: usleep_range is preferred over udelay
-Date:   Mon,  7 Feb 2022 13:00:51 -0300
-Message-Id: <20220207160051.27829-1-leonardo.aa88@gmail.com>
-X-Mailer: git-send-email 2.29.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IH36XLf83w5u+4nl2DlHKSEzZJZ+m1Rf3raz8J+6Itg=;
+        b=1QzYjFazcmACfnMDQLrEufUJe9Y7DpWVdd6XmtQ9LJm9+m4a2EuFnno3gHAJ0Ld+bd
+         SK10tf12+ZClghoCVLL+sHNipj+f01NhMCgtzlIxvObDNeX6X2dNYZi+EZEoJjryMNIE
+         dKowQpS5N5JJrmHYMjaictmEq8yVWhjrz1aQfrvpmLKp/M4Kcdt+SBSsYTH22esV8Ce3
+         GJWj63tpLmnM9Ues2QhQ4o1TqpCx3615eXM6VyD71CgQB+U/Q47BGf38awEU4p0w6n5y
+         lxIq6vmGkj8Bo6FeOM4puRkLYqLA92DdkZMAQM2wDefHCjuoP530o3/bqXbrt6+S2s7r
+         FsKA==
+X-Gm-Message-State: AOAM532dy0vuW/jfUBWE/jGdCBJUzhBqgHfCv9Xv52OB3KAG4dxU2n1X
+        OTRZaSJCzkxJ5fupvKLKgkraRdcpvqwyDg==
+X-Google-Smtp-Source: ABdhPJyG+bsBR+XO8uk9FDGc3Q2JhjXtVGeLtOnf4iQNxV539yNPl1mNAbkFgkhdTD3tDub9YW3SOA==
+X-Received: by 2002:a67:ec15:: with SMTP id d21mr95557vso.79.1644250075179;
+        Mon, 07 Feb 2022 08:07:55 -0800 (PST)
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com. [209.85.217.50])
+        by smtp.gmail.com with ESMTPSA id g20sm1015104vkq.46.2022.02.07.08.07.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 08:07:55 -0800 (PST)
+Received: by mail-vs1-f50.google.com with SMTP id a7so138550vsc.6;
+        Mon, 07 Feb 2022 08:07:54 -0800 (PST)
+X-Received: by 2002:a67:b00e:: with SMTP id z14mr142941vse.57.1644250074734;
+ Mon, 07 Feb 2022 08:07:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220204161806.3126321-1-jjhiblot@traphandler.com> <20220204161806.3126321-3-jjhiblot@traphandler.com>
+In-Reply-To: <20220204161806.3126321-3-jjhiblot@traphandler.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 7 Feb 2022 17:07:43 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUFs_G0ZENwRttxBbnUMZZyJ5Nks12FvNJnaJjbrXYcNg@mail.gmail.com>
+Message-ID: <CAMuHMdUFs_G0ZENwRttxBbnUMZZyJ5Nks12FvNJnaJjbrXYcNg@mail.gmail.com>
+Subject: Re: [PATCH 2/6] dt-bindings: clock: r9a06g032: Add the definition of
+ the watchdog clock
+To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes the checks reported by checkpatch.pl for usleep_range.
+Hi Jean-Jacques,
 
-Signed-off-by: Leonardo Araujo <leonardo.aa88@gmail.com>
----
- drivers/staging/wfx/bh.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Fri, Feb 4, 2022 at 5:18 PM Jean-Jacques Hiblot
+<jjhiblot@traphandler.com> wrote:
+> This clock is actually the REF_SYNC_D8 clock.
+>
+> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
 
-diff --git a/drivers/staging/wfx/bh.c b/drivers/staging/wfx/bh.c
-index a0f9d1b53019..ebc7eaf93ef0 100644
---- a/drivers/staging/wfx/bh.c
-+++ b/drivers/staging/wfx/bh.c
-@@ -312,7 +312,7 @@ void wfx_bh_poll_irq(struct wfx_dev *wdev)
- 			dev_err(wdev->dev, "time out while polling control register\n");
- 			return;
- 		}
--		udelay(200);
-+		usleep_range(200, 200);
- 	}
- 	wfx_bh_request_rx(wdev);
- }
--- 
-2.29.0
+Thanks for your patch!
 
+> --- a/include/dt-bindings/clock/r9a06g032-sysctrl.h
+> +++ b/include/dt-bindings/clock/r9a06g032-sysctrl.h
+> @@ -74,6 +74,7 @@
+>  #define R9A06G032_CLK_DDRPHY_PCLK      81      /* AKA CLK_REF_SYNC_D4 */
+>  #define R9A06G032_CLK_FW               81      /* AKA CLK_REF_SYNC_D4 */
+>  #define R9A06G032_CLK_CRYPTO           81      /* AKA CLK_REF_SYNC_D4 */
+> +#define R9A06G032_CLK_WATCHDOG         82      /* AKA CLK_REF_SYNC_D8 */
+>  #define R9A06G032_CLK_A7MP             84      /* AKA DIV_CA7 */
+>  #define R9A06G032_HCLK_CAN0            85
+>  #define R9A06G032_HCLK_CAN1            86
+
+I couldn't find this in the documentation, so I have to trust you on this.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
