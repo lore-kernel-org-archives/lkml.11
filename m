@@ -2,75 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40135C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D19C3527C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389229AbiBGNvZ (ORCPT
+        id S1389208AbiBGNvW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:51:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41088 "EHLO
+        Mon, 7 Feb 2022 08:51:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355445AbiBGNqG (ORCPT
+        with ESMTP id S1388363AbiBGNqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:46:06 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C9FC043188
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:46:00 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id g8so3172654pfq.9
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 05:46:00 -0800 (PST)
+        Mon, 7 Feb 2022 08:46:50 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00E7C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:46:49 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id x4so3566277plb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 05:46:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kernel-dk.20210112.gappssmtp.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+fYYVy93BDFqw0cCdynsbSRegfY0xYWHIfwAqDxymeY=;
-        b=hp3MMQ8ZMedpHg9Nevp1XeEuuEA7IKnvKqo3RmIMgSgkNZVcw4jBrSu78B7Dx97yzi
-         ChG12kiPN5PHLwvGlce9A0y5Co7qoc5PD33ihFDc/g1bGg4tbNHvi4ffk8p1O6Ksm5My
-         8BtSs5gvT2LhokIb2C3tAO+hrK5GTuyzQrRXirbOgMOoWQh3fse1cb5JMHqHIXxI8Fre
-         uYUXkpw437r8QzNVs6c23wTMj6+Kfq6yj2oLsk7GzdQPcsInWy68JVklCfUL8CbW6oGC
-         7JMcutC1k+rlN6rp3tNzXDqgVacnpF5Doatrua7fNfYRD/YTFpNYv00gpZYUSBG4Ylf1
-         eI3w==
+        bh=8ug9KpH6bIvmPFydrBBlGOiV1ojuh4o4EvlAVOtW+r8=;
+        b=Ucb6NZccAO1goAXBmte2XO3+lvr0ZtNlsCU1niaB4QeCGfuaC+ZZ34xsjuiUZ34J8P
+         /PnDKyDwwKZuyRevYLH0cVu+uCxqEht+7er+qya2op6bjdApe9jED//PHeQR5KhnvRSi
+         o4CuIM7pIIeu74ADGEG1vVJsUXTxHgkEvPzxtrhogxoQg5Pgb1QV4Ds6kJhzGHEfj/Js
+         X18y8WlvaeZpnMJicsHItS4pA/ToBOt7PEBsnu43DqRWFYqgaSwsjHYfF7nC2ZYrqTz+
+         K3FGWynLI1LQBD2ydHoPIv4f5Q2OU5bpE28FB9kpldJ0ng8rn0wtSRR/4J+59QLHhwRw
+         8fKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=+fYYVy93BDFqw0cCdynsbSRegfY0xYWHIfwAqDxymeY=;
-        b=j//HtBR/J+Y/m7B79eg2sFYgrvfod3ANXXN3vym3GaQEaI7otjrOK9SvLTQHroDxnp
-         t84Ne4apCHkS9WkhRsHokCG31gVjLFN0CHZteEP/cTfceNFlgU4nNPsJz+jH65jcUHfr
-         zPEFEVgF+yfxzTpQGHxDosaHdHzyN29omD+mDQ0RrwDcBVLFPII3zyON7YKGjyRQQi/I
-         8ZXRd0Kqya6aV0hCG8ePDa+bMWZnv47t6pAL39QVKfg/7mBd5H5/fa4zZS1X4GsRyba9
-         +xvheg6zFd7Bdyn1joVb9c53urFx6ifUfXw6lSO71qhBIti4BZnlZBaxQPnWpSlqfTkV
-         Prkg==
-X-Gm-Message-State: AOAM530Kr5UEqWAk2V2zFdwOKVf+tTZnE8OqzfIc1UFojkWfFjL3mU0e
-        so+Q3JP2EDMUrktSRewfGGMAPQ==
-X-Google-Smtp-Source: ABdhPJy13wPQSgj1YQJzHPhdlM4opHdCLY6oe1/iBRCUm78RUTw3mK/LTWyJn4eAdyiaxbyeS+SOEw==
-X-Received: by 2002:a63:e647:: with SMTP id p7mr9358380pgj.23.1644241560350;
-        Mon, 07 Feb 2022 05:46:00 -0800 (PST)
+        bh=8ug9KpH6bIvmPFydrBBlGOiV1ojuh4o4EvlAVOtW+r8=;
+        b=LsGTOx2ekGcWpy8owWOSivSypBUmNRlzG1WrIXyoDi3J8HtRYfaYaVB0xOUH4xOCea
+         8/sRfQL9CDYPzHTRKiRxPC4PIKTVzQewj2uIXlyO9WaFMy/oMIT4t8cAuyKlBpGaLtt0
+         1g24UPS0b+9A24fmBX2pTm7IPzhPXsi9HjthWislQpe94tetN0OSSKtvhznu/O055km5
+         AKD6xQ8blKVflKeYFUarIw+PW0UbK+niv13MsOW4k8AsQuW9V1T99Fzvo3cfobqCx5r1
+         cPmZIe0dTrlkdEE9ju7RmfyT85v5Nog6G6U5iad7nwpZN+dTsRjsjiXpcuqrnB6gr2iS
+         Gq9g==
+X-Gm-Message-State: AOAM530DrFs4mVdhYcGYjypmzg/FMSHMgfRKnmpa5WP3z4u/anVVX6h1
+        HT8+c3yqKrNYCSH58jLHCQipFA==
+X-Google-Smtp-Source: ABdhPJy9dgozjBf35cBNjjoa6rNFAeIyMjWTFI96ymPkw8SlosV4+0d7/rydA66/7FD2PEhtZhWwFA==
+X-Received: by 2002:a17:90a:f414:: with SMTP id ch20mr8409368pjb.146.1644241609260;
+        Mon, 07 Feb 2022 05:46:49 -0800 (PST)
 Received: from [192.168.1.116] ([66.219.217.159])
-        by smtp.gmail.com with ESMTPSA id c11sm12279229pfv.76.2022.02.07.05.45.59
+        by smtp.gmail.com with ESMTPSA id 198sm8378636pgg.4.2022.02.07.05.46.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 05:45:59 -0800 (PST)
-Subject: Re: [PATCH io_uring-5.17] io_uring: Fix build error potential reading
- uninitialized value
-To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Cc:     GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        io-uring Mailing list <io-uring@vger.kernel.org>,
-        Tea Inside Mailing List <timl@vger.teainside.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Chen, Rong A" <rong.a.chen@intel.com>,
-        Pavel Begunkov <asml.silence@gmail.com>
-References: <d33bb5a9-8173-f65b-f653-51fc0681c6d6@intel.com>
- <20220207114315.555413-1-ammarfaizi2@gnuweeb.org>
+        Mon, 07 Feb 2022 05:46:48 -0800 (PST)
+Subject: Re: [PATCH] io_uring: unregister eventfd while holding lock when
+ freeing ring ctx
+To:     Usama Arif <usama.arif@bytedance.com>, io-uring@vger.kernel.org,
+        asml.silence@gmail.com, linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com, lkp@lists.01.org, lkp@intel.com,
+        kernel test robot <oliver.sang@intel.com>
+References: <20220207105040.2662467-1-usama.arif@bytedance.com>
 From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <91e8ca64-0670-d998-73d8-f75ec5264cb0@kernel.dk>
-Date:   Mon, 7 Feb 2022 06:45:57 -0700
+Message-ID: <696e49fe-3d2e-da6c-2fc6-5d69bc7a60f9@kernel.dk>
+Date:   Mon, 7 Feb 2022 06:46:46 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20220207114315.555413-1-ammarfaizi2@gnuweeb.org>
+In-Reply-To: <20220207105040.2662467-1-usama.arif@bytedance.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -78,28 +71,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 4:43 AM, Ammar Faizi wrote:
-> From: Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>
-> 
-> In io_recv() if import_single_range() fails, the @flags variable is
-> uninitialized, then it will goto out_free.
-> 
-> After the goto, the compiler doesn't know that (ret < min_ret) is
-> always true, so it thinks the "if ((flags & MSG_WAITALL) ..."  path
-> could be taken.
-> 
-> The complaint comes from gcc-9 (Debian 9.3.0-22) 9.3.0:
-> ```
->   fs/io_uring.c:5238 io_recvfrom() error: uninitialized symbol 'flags'
-> ```
-> Fix this by bypassing the @ret and @flags check when
-> import_single_range() fails.
+On 2/7/22 3:50 AM, Usama Arif wrote:
+> This is because ctx->io_ev_fd is rcu_dereference_protected using
+> ctx->uring_lock in io_eventfd_unregister. Not locking the function
+> resulted in suspicious RCU usage reported by kernel test robot.
 
-The compiler should be able to deduce this, and I guess newer compilers
-do which is why we haven't seen this warning before. I'm fine with doing
-this as a cleanup, but I think the commit title should be modified a
-bit. It sounds like there might be an issue reading uninitialized data,
-which isn't actually true.
+I'll fold this in with the change, thanks.
 
 -- 
 Jens Axboe
