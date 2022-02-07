@@ -2,81 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C14E4C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E29BC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345820AbiBGQOp (ORCPT
+        id S1378394AbiBGQOm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:14:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
+        Mon, 7 Feb 2022 11:14:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232706AbiBGQKE (ORCPT
+        with ESMTP id S1386102AbiBGQBI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:10:04 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7E1C0401CF
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:10:02 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id u12so4368942plq.10
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 08:10:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xiSBzPQnTG+yIHuJ7k7x6ADsNTF+1w12491gzVcMAFE=;
-        b=ZbB3crbAr+DzqHrDW5Wa8yEKGFB41seBarYw/+E5gPl3dirtURFGGzZ5zhYw3d1vg5
-         FdW1Gih98v5ar8dHJBsPRS7twDQgTBUtxRh3/aLC4PuerU5TfB9hvDDGxs+xE72BGbe8
-         vxo84b+Mkfy5EU/P6GHDHkw5M3Ukn9Kn1G8ZOlG4BGoNjSCXabmc0C3yMadA5vBZmddf
-         vU8HLzOLMQeRJTdxuj/Uzzqx62U4WyDC4oMoJM6mJEQ/NP2wOOiN/Q59NINXhQ0cdnJM
-         R4H9/dJBXlmZTjjEn/6KotsLQzQGNfMutC0lPaHyHoSpVj6AmKHbmSJVa2+pwlNVhEuQ
-         l6pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xiSBzPQnTG+yIHuJ7k7x6ADsNTF+1w12491gzVcMAFE=;
-        b=QHOg6gjOvBNbtSSMadPdjQYeabf+zDbcDN9EXQBJEFg/KixxxSOyaPoFPvv7KyAR0S
-         mDCI1wAtKAso0VA+j8iCZ8p5s2oON0eUdWpP2vVR3BCwqsRxrnu13CoHrVsNKYVqeD2j
-         /GxQr+upl+2gCpJQW3EP500qO7FbVar+tP5FzcQt/lG+LCCEVWpTli90TjRn20WuilL8
-         tmv36jAhdz8XGhEQq0EH/kTwLCzRIlKC0bnhBsiXLrNxnDgxmqQU6UQIBVwJVrUjyCuJ
-         pJ95HIWF+sv4LUSLXbD4Xy/xLzPM5r5jxLFeRo33F9SbEmL6IJmvev3zLkIBRpY5aRju
-         FmRw==
-X-Gm-Message-State: AOAM53345WE1UMbP2+VhjcfwLEVIn2hPYECJTq+QKyqEMbEh1kERiubq
-        haskA3HrpsvJphg1Nf8/lOt6FQ==
-X-Google-Smtp-Source: ABdhPJwRrTS8wrHCH7GEaOUas2bOM2kxOBaDos9y+CXKADhOyp3DgXUB0Ig+/gcWE2Wba/Q7POrZhw==
-X-Received: by 2002:a17:90b:2251:: with SMTP id hk17mr19523346pjb.210.1644250202261;
-        Mon, 07 Feb 2022 08:10:02 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id s32sm6788998pfw.80.2022.02.07.08.10.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 08:10:01 -0800 (PST)
-Date:   Mon, 7 Feb 2022 16:09:58 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     David Matlack <dmatlack@google.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, vkuznets@redhat.com
-Subject: Re: [PATCH 01/23] KVM: MMU: pass uses_nx directly to
- reset_shadow_zero_bits_mask
-Message-ID: <YgFEVr9NM1vXdexg@google.com>
-References: <20220204115718.14934-1-pbonzini@redhat.com>
- <20220204115718.14934-2-pbonzini@redhat.com>
- <Yf1pk1EEBXj0O0/p@google.com>
- <8081cbe5-6d12-9f99-9f0f-13c1d7617647@redhat.com>
+        Mon, 7 Feb 2022 11:01:08 -0500
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B05C0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:01:04 -0800 (PST)
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nH6Rp-000Efg-DF; Mon, 07 Feb 2022 16:01:01 +0000
+Date:   Mon, 7 Feb 2022 16:01:01 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Leonardo Araujo <leonardo.aa88@gmail.com>
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev
+Subject: Re: [PATCH] Staging : android: Struct file_operations should be const
+Message-ID: <YgFCPbnqs40wS+j1@zeniv-ca.linux.org.uk>
+References: <20220207031711.13644-1-leonardo.aa88@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8081cbe5-6d12-9f99-9f0f-13c1d7617647@redhat.com>
+In-Reply-To: <20220207031711.13644-1-leonardo.aa88@gmail.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022, Paolo Bonzini wrote:
-> On 2/4/22 18:59, David Matlack wrote:
-> > > +	reset_shadow_zero_bits_mask(vcpu, context, is_efer_nx(context));
-> > 
-> > Out of curiousity, how does KVM mitigate iTLB multi-hit when shadowing
-> > NPT and the guest has not enabled EFER.NX?
+On Mon, Feb 07, 2022 at 12:17:11AM -0300, Leonardo Araujo wrote:
+> From: "Leonardo Araujo" <leonardo.aa88@gmail.com>
 > 
-> You got me worried for a second but iTLB multihit is Intel-only, isn't it?
+> WARNING: struct file_operations should normally be const
+> 
+> Signed-off-by: Leonardo Araujo <leonardo.aa88@gmail.com>
+> ---
+>  drivers/staging/android/ashmem.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/android/ashmem.c b/drivers/staging/android/ashmem.c
+> index ddbde3f8430e..4c6b420fbf4d 100644
+> --- a/drivers/staging/android/ashmem.c
+> +++ b/drivers/staging/android/ashmem.c
+> @@ -377,7 +377,7 @@ ashmem_vmfile_get_unmapped_area(struct file *file, unsigned long addr,
+>  
+>  static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
+>  {
+> -	static struct file_operations vmfile_fops;
+> +	static const struct file_operations vmfile_fops;
+>  	struct ashmem_area *asma = file->private_data;
+>  	int ret = 0;
 
-AFAIK, yes, big Core only.  arch/x86/kernel/cpu/common.c sets NO_ITLB_MULTIHIT
-for all AMD, Hygon, and Atom CPUs.
+Wait a minute.  Why the hell would it possibly want a private instance
+of all-NULLs file_operations?  Odd...
+<checks>
+                if (!vmfile_fops.mmap) {
+                        vmfile_fops = *vmfile->f_op;
+                        vmfile_fops.mmap = ashmem_vmfile_mmap;
+                        vmfile_fops.get_unmapped_area =
+                                        ashmem_vmfile_get_unmapped_area;
+                }
+Er...  So it *is* modified down the road.  What, in your opinion, is signified
+by the const you are adding?
+
+Folks, could we please have the first "WARNING" in checkpatch.pl output replaced
+with
+"I'm a dumb script; this line looks like there might be something fishy in the
+area.  Somebody smarter than me might want to take a look and figure out if
+there's something wrong going on there.  From now on I'll mark all such places
+with 'WARNING' (with the summary of heuristics that pointed to them), to avoid
+repeating the above".
+
+Pretty please?  This exact trap keeps snagging newbies - folks misinterpret
+"this place might be worth looking into" for "great (s)tool says: this is
+what's wrong there; must propitiate the great (s)tool!"
+
+In this case the damage is minimal - the resulting change would be instantly
+caught by compiler, so it's just a matter of mild embarrassment for poster.
+In other cases results had been nowhere near as mild.
+
+Incidentally, the place those heuristics had pointed too _DOES_ look fishy,
+indeed.  What happens, AFAICS, is that the first time we hit that branch
+(asma->file being NULL) we stash a copy of whatever file_operations we get
+on file obtained by shmem_setup_file() (IOW, shmem_file_operations),
+with ->mmap and ->get_unmapped_area replaced with local functions.
+This is a bloody convoluted way to do things, not to mention being rather
+brittle...
