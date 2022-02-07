@@ -2,183 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F28C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF0BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344562AbiBHBDm (ORCPT
+        id S1344391AbiBHBDc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:03:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35624 "EHLO
+        Mon, 7 Feb 2022 20:03:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245434AbiBGXD3 (ORCPT
+        with ESMTP id S233614AbiBGW7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:03:29 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABCEC061A73
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:03:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644275008; x=1675811008;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=905JQ3YZKvuZYu7D1FVJXac593yX75ihm3basE87bLk=;
-  b=RxPGZAVnlTuKDuKMWh4piYMqWy32Ri5PMwox5lQcXvVApO1qKBb1M62d
-   Uf0K3DJlwc5OxdXiUmD9ZhvLie75BiKMN74lWEe8Nfmv9XFb1eb0pgFhA
-   vRTYAlBWKjkR91uMNwMZXI5PeoxxsMGpt7ACpb8ioX1abINi/JBBeMaVc
-   Muq99MJnkwsgo0AgR44fJZDpAqr9kpsXuoA1ZKQY0XWA4RlEqAcIeQXKx
-   Xs8HoR2kXpZsLTUUfZLLilnLAJDxZzqAKq0gK+JDNIV1/dsx4O+V2tN8E
-   jvVFahVyNMay5g4bHiRdo8iZhAhE2wN7e9tZgJ/s5cKXxricvACCFMK6b
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="229475012"
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="229475012"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 15:03:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="540324041"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
-  by orsmga008.jf.intel.com with ESMTP; 07 Feb 2022 15:03:03 -0800
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     "Thomas Gleixner" <tglx@linutronix.de>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        "Andy Lutomirski" <luto@kernel.org>,
-        "Tony Luck" <tony.luck@intel.com>,
-        "Lu Baolu" <baolu.lu@linux.intel.com>,
-        "Joerg Roedel" <joro@8bytes.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        "Jacob Pan" <jacob.jun.pan@linux.intel.com>,
-        "Ashok Raj" <ashok.raj@intel.com>,
-        "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Cc:     iommu@lists.linux-foundation.org, "x86" <x86@kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>
-Subject: [PATCH v4 04/11] kernel/fork: Initialize mm's PASID
-Date:   Mon,  7 Feb 2022 15:02:47 -0800
-Message-Id: <20220207230254.3342514-5-fenghua.yu@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207230254.3342514-1-fenghua.yu@intel.com>
-References: <20220207230254.3342514-1-fenghua.yu@intel.com>
+        Mon, 7 Feb 2022 17:59:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA325C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 14:59:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644274789;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bnau9CF87D4QKdmu69lAwZ00eJ3tC98GJMWAAtS2j3I=;
+        b=f6BH0r4C4f6VC4hTyeXCg+HO6s2D0wJcJmouQAoI6P3w23FPUDeuo+MT/mkzwGiuYcmAEw
+        iqyIV4yAMhgyf8Ot2Uf0pVWuXxKUdxNxJ3Us7eiYab8T/c6f6m9LNioCV+wVypouCnDKzN
+        CuOiPWLLrav8a4JaShiUS/tGaPgp6KI=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-623-kW419P1ZMaWwRRHYI5XK4g-1; Mon, 07 Feb 2022 17:59:48 -0500
+X-MC-Unique: kW419P1ZMaWwRRHYI5XK4g-1
+Received: by mail-ed1-f70.google.com with SMTP id 30-20020a508e5e000000b0040f6642e814so2649681edx.19
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 14:59:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Bnau9CF87D4QKdmu69lAwZ00eJ3tC98GJMWAAtS2j3I=;
+        b=mPdNlENwNJVwaML+BiE3l3JgB6xVjymrSsrqoi7BEpyGwOY7+0Fiqrd2mKKw2me90J
+         qhQptn6URqasF97WgbR1Co1iTHDfn7QfEQ6Y6wtmEYWLal3F4HOa94QPPDumlbw4zE2W
+         QkXWz5cOYBt8oCtzKCQzoiFkpktmAmric7X8TTqWxEQIJxM8bRK7uYFHumEHh3daKZEd
+         U6XrFA8Sf8uf2yNWOLmZEA9V0okWkT+fBIV0DDwtQrypg0rmnYMwUDDUFQnhm8gwKep6
+         JLX9mof/V2Hf0W2hnfK/NBG8SSf/9mfAlKZtpAtfCEuuCu4fiy47tgfRAm6VfpjAp7Zo
+         p/VA==
+X-Gm-Message-State: AOAM530tFR8KJWOKw+yF2VQ9TxdoQfkceOaEPY2he1OQ+VGh6Il6xHAf
+        VibcwcAalkacK4MujLPWFg3R3IacNw+WB74cPa451DhZ1se5EifuXU65nHSe3DjcVOJ7fQvU42W
+        uLCC0fm4QR6xCGZP5zN/tKK4B
+X-Received: by 2002:a17:906:9be4:: with SMTP id de36mr1454949ejc.228.1644274787601;
+        Mon, 07 Feb 2022 14:59:47 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy8MWWraIY8T3/LyKPGWgEowe7FNqRNvfwZuGjrKHYEhXBRtbBb3xXR2xxiJSYMAdjMBIKuSA==
+X-Received: by 2002:a17:906:9be4:: with SMTP id de36mr1454932ejc.228.1644274787439;
+        Mon, 07 Feb 2022 14:59:47 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id cz12sm833369edb.30.2022.02.07.14.59.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 14:59:46 -0800 (PST)
+Message-ID: <2b1d142e-e06c-3f38-32f5-d14de7dca289@redhat.com>
+Date:   Mon, 7 Feb 2022 23:59:45 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 1/2] x86/kvm/fpu: Mask guest fpstate->xfeatures with
+ guest_supported_xcr0
+Content-Language: en-US
+To:     Leonardo Bras Soares Passos <leobras@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220205081658.562208-1-leobras@redhat.com>
+ <20220205081658.562208-2-leobras@redhat.com>
+ <f2b0cac2-2f8a-60e8-616c-73825b3f62a6@redhat.com>
+ <CAJ6HWG7DV-AeWyXxGwMMV61BejcCdpTc=U+4U6eY4gx4hfhP-g@mail.gmail.com>
+ <8bf8ba96-94a8-663a-ccbf-ffeab087c370@redhat.com>
+ <CAJ6HWG5sD06=ZMtrcSJ+O3ZH0xVeR7gC8+9o5hq+evXh43Vn_w@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CAJ6HWG5sD06=ZMtrcSJ+O3ZH0xVeR7gC8+9o5hq+evXh43Vn_w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A new mm doesn't have a PASID yet when it's created. Initialize
-the mm's PASID on fork() or for init_mm to INVALID_IOASID (-1).
+On 2/7/22 23:45, Leonardo Bras Soares Passos wrote:
+> On Mon, Feb 7, 2022 at 6:00 PM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>>
+>> On 2/7/22 21:24, Leonardo Bras Soares Passos wrote:
+>>>> With this patch,
+>>>> we have to reason about the effect of calling KVM_SET_CPUID2 twice calls
+>>>> back to back.  I think an "&=" would be wrong in that case.
+>>>
+>>> So, you suggest something like this ?
+>>>
+>>> vcpu->arch.guest_fpu.fpstate->xfeatures =
+>>>          fpu_user_cfg.default_features & vcpu->arch.guest_supported_xcr0;
+>>>
+>>
+>> Yes, but you need to change user_xfeatures instead of xfeatures.
+>> KVM_GET_XSAVE and KVM_SET_XSAVE will take it into account automatically:
+>>
+>> - KVM_GET_XSAVE: fpu_copy_guest_fpstate_to_uabi -> __copy_xstate_to_uabi_buf
+>>
+>> - KVM_SET_XSAVE: fpu_copy_uabi_to_guest_fpstate ->
+>> copy_uabi_from_kernel_to_xstate -> copy_uabi_to_xstate ->
+>> validate_user_xstate_buffer
+> 
+> 
+> Ok, I understand how this replaces patch 2/2, so no issue on that.
+> 
+> About patch 1/2,  you suggest that instead of fixing what we save in
+> the regs buffer, we fix only what we want to return to the user when
+> they call KVM_GET_XSAVE, is that correct?
 
-INIT_PASID (0) is reserved for kernel legacy DMA PASID. It cannot be
-allocated to a user process. Initializing the process's PASID to 0 may
-cause confusion that why the process uses the reserved kernel legacy DMA
-PASID. Initializing the PASID to INVALID_IOASID (-1) explicitly
-tells the process doesn't have a valid PASID yet.
+Yes, exactly.
 
-Even though the only user of mm_pasid_init() is in fork.c, define it
-in <linux/sched/mm.h> as the first of three mm/pasid life cycle
-functions (init/set/drop) to keep these all together.
-
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
----
-v4:
-- Update the commit message to explain why init pasid to -1 and why
-  define mm_pasid_init() (Thomas)
-
-v2:
-- Change condition to more accurate CONFIG_IOMMU_SVA (Jacob)
-
- include/linux/sched/mm.h | 10 ++++++++++
- kernel/fork.c            | 10 ++--------
- mm/init-mm.c             |  4 ++++
- 3 files changed, 16 insertions(+), 8 deletions(-)
-
-diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index aa5f09ca5bcf..c74d1edbac2f 100644
---- a/include/linux/sched/mm.h
-+++ b/include/linux/sched/mm.h
-@@ -8,6 +8,7 @@
- #include <linux/mm_types.h>
- #include <linux/gfp.h>
- #include <linux/sync_core.h>
-+#include <linux/ioasid.h>
- 
- /*
-  * Routines for handling mm_structs
-@@ -433,4 +434,13 @@ static inline void membarrier_update_current_mm(struct mm_struct *next_mm)
- }
- #endif
- 
-+#ifdef CONFIG_IOMMU_SVA
-+static inline void mm_pasid_init(struct mm_struct *mm)
-+{
-+	mm->pasid = INVALID_IOASID;
-+}
-+#else
-+static inline void mm_pasid_init(struct mm_struct *mm) {}
-+#endif
-+
- #endif /* _LINUX_SCHED_MM_H */
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 6ee7551d3bd2..deacd2c17a7f 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -97,6 +97,7 @@
- #include <linux/scs.h>
- #include <linux/io_uring.h>
- #include <linux/bpf.h>
-+#include <linux/sched/mm.h>
- 
- #include <asm/pgalloc.h>
- #include <linux/uaccess.h>
-@@ -1019,13 +1020,6 @@ static void mm_init_owner(struct mm_struct *mm, struct task_struct *p)
- #endif
- }
- 
--static void mm_init_pasid(struct mm_struct *mm)
--{
--#ifdef CONFIG_IOMMU_SVA
--	mm->pasid = INIT_PASID;
--#endif
--}
--
- static void mm_init_uprobes_state(struct mm_struct *mm)
- {
- #ifdef CONFIG_UPROBES
-@@ -1054,7 +1048,7 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
- 	mm_init_cpumask(mm);
- 	mm_init_aio(mm);
- 	mm_init_owner(mm, p);
--	mm_init_pasid(mm);
-+	mm_pasid_init(mm);
- 	RCU_INIT_POINTER(mm->exe_file, NULL);
- 	mmu_notifier_subscriptions_init(mm);
- 	init_tlb_flush_pending(mm);
-diff --git a/mm/init-mm.c b/mm/init-mm.c
-index b4a6f38fb51d..fbe7844d0912 100644
---- a/mm/init-mm.c
-+++ b/mm/init-mm.c
-@@ -10,6 +10,7 @@
- 
- #include <linux/atomic.h>
- #include <linux/user_namespace.h>
-+#include <linux/ioasid.h>
- #include <asm/mmu.h>
- 
- #ifndef INIT_MM_CONTEXT
-@@ -38,6 +39,9 @@ struct mm_struct init_mm = {
- 	.mmlist		= LIST_HEAD_INIT(init_mm.mmlist),
- 	.user_ns	= &init_user_ns,
- 	.cpu_bitmap	= CPU_BITS_NONE,
-+#ifdef CONFIG_IOMMU_SVA
-+	.pasid		= INVALID_IOASID,
-+#endif
- 	INIT_MM_CONTEXT(init_mm)
- };
- 
--- 
-2.35.1
+Paolo
 
