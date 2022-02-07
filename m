@@ -2,93 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8841AC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97781C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:37:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344442AbiBGGgf (ORCPT
+        id S1346015AbiBGGgm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:36:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        Mon, 7 Feb 2022 01:36:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357454AbiBGF6H (ORCPT
+        with ESMTP id S236921AbiBGGbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 00:58:07 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD06C0401D9;
-        Sun,  6 Feb 2022 21:57:50 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id a8so11189159pfa.6;
-        Sun, 06 Feb 2022 21:57:50 -0800 (PST)
+        Mon, 7 Feb 2022 01:31:17 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2823C0401C4
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:30:57 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id 192so11310127pfz.3
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 22:30:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=y9bBJY7cXiMSLjJXu6FtT0/ZdOjOHaxztxJ2W6Z5PDY=;
-        b=SE/UvV4nuWEyJNCKqeFVG0LpaDXbJYRc2mBxsRKnE+46ojhus1bZcvgg89G1F97MHM
-         PgZR7+Ud/fiyEixebOhpSg6npVoluVyJHkUoPTCtKewhRtttRxVZwC3knqC2p4yhCJPV
-         gV9Wu+ON5uRH5miDOhgWCNlgKvYR1clS3pOuwZx6gio0u9eoJZl/11A5ibHg3jZJmMCD
-         MbQlG1cqO+79Y3JK6bpNwxOWafxAS2UOW8McK0e0jdND5DeYezx0zck4iBmfRbb4s90S
-         lg7Mm0bGYUN2rWrTPDQCRBdXYRIGztCoVqDY2N9FxhSRUAhwlEvK/FAVBYjuoQnEEnFu
-         zFNg==
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NsFZzRzWxi9SLwITfrc8E6h9ajUabmlo1GhXmJ+C3hc=;
+        b=WAlvS5EXiVRFIZe8CQYOYmWuBeX252Ah939fQC4xFyJiOgiQOqKLCEZ9w/rsR6+gi6
+         9ofS/fBv7QwPpn/VyFviNxUjm4OSgt5WaUQ38ohiXY8yU3zjlUJ1Yvbtqkq/Q0hEdem+
+         vOL4LBrdoiDalFZWuSYY69OLG3uLZfb1ktFR1Bo8AZaDqbbY/rsgggVvLIGRaCKEw8tO
+         M6ffn1560ArOL3Xpl5xg0EVvQnm6FsEePBN54U5qe7xAaGTB4ob9FbVdBbdf9fWl+Xe5
+         0rS+pkIIUcoKVFmz3iMt4cxeBgkdGefflHbs0Y4BJCec9H7Tu+D3zt+hkDIKrAumXmsr
+         epUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=y9bBJY7cXiMSLjJXu6FtT0/ZdOjOHaxztxJ2W6Z5PDY=;
-        b=bdJXp0V0ZrMgVuL8/Yaqt+6RRnNrKpA56vvR11Loyh6WF+mR7FS0BhCECuU8fNy6e4
-         rL3B1SwSECyh91epj1q2UsMAePoUGqjAm9PZDGJPeN67ifCYxdNEzY9aZnBeZ5j3ra6H
-         95A4IAWObyAazVx31wq7D/phgKUyKL9y/tRMnml3y+5AQFuu0Cc+jpIpbDsqVkAaZREr
-         h8kNNNItkjAISyuIL8u93SUqAmJR+Vx9HDT70pjfDw0CzrWcsS7WSwl5dk/it+7LEoTT
-         7ooGgyZ8f/Jsjnxv0z5I5KEAJyWfqZGA5Fe6UK094y4KgCjF3sgYt9KlhrI9h5lZK2LT
-         6NYg==
-X-Gm-Message-State: AOAM533F/MAdPEeWU46lGnpEtLlKAuta+vNcqYNM4fXKlicwYEBO6d1S
-        O/MzJTqFWVCMoGmitZ6Qw+w=
-X-Google-Smtp-Source: ABdhPJxS9pXgWqX26P+8yIm8vzdwU/pQTCkthp/tbV6esJrl3tIof3G3e+lqhkSI8EhqRiI6rHAmfw==
-X-Received: by 2002:a62:7bcf:: with SMTP id w198mr14203384pfc.12.1644213470284;
-        Sun, 06 Feb 2022 21:57:50 -0800 (PST)
-Received: from scdiu3.sunplus.com ([113.196.136.192])
-        by smtp.googlemail.com with ESMTPSA id g17sm10529264pfj.148.2022.02.06.21.57.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Feb 2022 21:57:50 -0800 (PST)
-From:   Hammer Hsieh <hammerh0314@gmail.com>
-To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
-        p.zabel@pengutronix.de
-Cc:     wells.lu@sunplus.com, hammer.hsieh@sunplus.com,
-        Hammer Hsieh <hammerh0314@gmail.com>
-Subject: [PATCH v7 0/2] Add UART driver for Suplus SP7021 SoC
-Date:   Mon,  7 Feb 2022 13:57:59 +0800
-Message-Id: <1644213481-20321-1-git-send-email-hammerh0314@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NsFZzRzWxi9SLwITfrc8E6h9ajUabmlo1GhXmJ+C3hc=;
+        b=PRF7ct7NG5lCPM+xysCnRRIbpO+oGvJbPg8UM2MhAp/P0UPeObZBUasXAaoScvCIk1
+         4XQKj8BMMNzy3AeV70irZnToSrS12dQIrtvebTVLGblhHBD90s+qPz7G4qcAzxn4sH8k
+         xBaux4hJ69xfvB9ZA4EElH+lJc9JsoUbHPJd2FEjjYN8nfq2+ASLgzuMQ4eCtoFcPUPs
+         Nwr1wgqFXK3R3daKWY/P/nscNrjqKkPM+yeyUEu/jhW8JLFYdRjeikJc5afVH/TOSJDk
+         4nAGGuiEBMnpeju1YLv1J9ODMI2Are/pEsPHQ8NpCJnHkHdA0kM09ccE80DvvctbxJXe
+         3pow==
+X-Gm-Message-State: AOAM531zyXz0cmySvvK2r/3k5z9vDd+77AxfjzbSrd78bNQ2czcZZrif
+        R61xjk4Sx6onxPDraFWQL87ywA==
+X-Google-Smtp-Source: ABdhPJztzK0ckN9GMQ0TxEmrpCSlWLQmxoXoG9PxqUVTiaqQJQd7I9kf9tGQI9fcbpFkt9zsEeErKA==
+X-Received: by 2002:aa7:84d5:: with SMTP id x21mr14270143pfn.72.1644215456964;
+        Sun, 06 Feb 2022 22:30:56 -0800 (PST)
+Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id i10sm5266634pjd.2.2022.02.06.22.30.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 22:30:56 -0800 (PST)
+From:   Zong Li <zong.li@sifive.com>
+To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
+        conor.dooley@microchip.com, geert@linux-m68k.org,
+        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc:     Zong Li <zong.li@sifive.com>
+Subject: [PATCH v5 3/3] dmaengine: sf-pdma: Get number of channel by device tree
+Date:   Mon,  7 Feb 2022 14:30:40 +0800
+Message-Id: <df6c8d1c701b33fa735dd072de3cb585dc60f2c9.1644215230.git.zong.li@sifive.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1644215230.git.zong.li@sifive.com>
+References: <cover.1644215230.git.zong.li@sifive.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a patch series for UART driver for Suplus SP7021 SoC.
+It currently assumes that there are always four channels, it would
+cause the error if there is actually less than four channels. Change
+that by getting number of channel from device tree.
 
-Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
-many peripherals (ex: UART. I2C, SPI, SDIO, eMMC, USB, SD card and
-etc.) into a single chip. It is designed for industrial control.
+For backwards-compatibility, it uses the default value (i.e. 4) when
+there is no 'dma-channels' information in dts.
 
-Refer to:
-https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
-https://tibbo.com/store/plus1.html
+Signed-off-by: Zong Li <zong.li@sifive.com>
+---
+ drivers/dma/sf-pdma/sf-pdma.c | 21 ++++++++++++++-------
+ drivers/dma/sf-pdma/sf-pdma.h |  8 ++------
+ 2 files changed, 16 insertions(+), 13 deletions(-)
 
-Refer to (UART):
-https://sunplus.atlassian.net/wiki/spaces/doc/pages/1873412290/13.+Universal+Asynchronous+Receiver+Transmitter+UART
-
-Hammer Hsieh (2):
-  dt-bindings:serial:Add bindings doc for Sunplus SoC UART Driver
-  serial:sunplus-uart:Add Sunplus SoC UART Driver
-
- .../bindings/serial/sunplus,sp7021-uart.yaml       |  56 ++
- MAINTAINERS                                        |   6 +
- drivers/tty/serial/Kconfig                         |  25 +
- drivers/tty/serial/Makefile                        |   1 +
- drivers/tty/serial/sunplus-uart.c                  | 762 +++++++++++++++++++++
- include/uapi/linux/serial_core.h                   |   3 +
- 6 files changed, 853 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
- create mode 100644 drivers/tty/serial/sunplus-uart.c
-
+diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
+index f12606aeff87..2ae10b61dfa1 100644
+--- a/drivers/dma/sf-pdma/sf-pdma.c
++++ b/drivers/dma/sf-pdma/sf-pdma.c
+@@ -482,9 +482,7 @@ static void sf_pdma_setup_chans(struct sf_pdma *pdma)
+ static int sf_pdma_probe(struct platform_device *pdev)
+ {
+ 	struct sf_pdma *pdma;
+-	struct sf_pdma_chan *chan;
+ 	struct resource *res;
+-	int len, chans;
+ 	int ret;
+ 	const enum dma_slave_buswidth widths =
+ 		DMA_SLAVE_BUSWIDTH_1_BYTE | DMA_SLAVE_BUSWIDTH_2_BYTES |
+@@ -492,13 +490,21 @@ static int sf_pdma_probe(struct platform_device *pdev)
+ 		DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES |
+ 		DMA_SLAVE_BUSWIDTH_64_BYTES;
+ 
+-	chans = PDMA_NR_CH;
+-	len = sizeof(*pdma) + sizeof(*chan) * chans;
+-	pdma = devm_kzalloc(&pdev->dev, len, GFP_KERNEL);
++	pdma = devm_kzalloc(&pdev->dev, sizeof(*pdma), GFP_KERNEL);
+ 	if (!pdma)
+ 		return -ENOMEM;
+ 
+-	pdma->n_chans = chans;
++	ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
++				   &pdma->n_chans);
++	if (ret) {
++		dev_notice(&pdev->dev, "set number of channels to default value: 4\n");
++		pdma->n_chans = PDMA_MAX_NR_CH;
++	}
++
++	if (pdma->n_chans > PDMA_MAX_NR_CH) {
++		dev_err(&pdev->dev, "the number of channels exceeds the maximum\n");
++		return -EINVAL;
++	}
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	pdma->membase = devm_ioremap_resource(&pdev->dev, res);
+@@ -556,7 +562,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
+ 	struct sf_pdma_chan *ch;
+ 	int i;
+ 
+-	for (i = 0; i < PDMA_NR_CH; i++) {
++	for (i = 0; i < pdma->n_chans; i++) {
+ 		ch = &pdma->chans[i];
+ 
+ 		devm_free_irq(&pdev->dev, ch->txirq, ch);
+@@ -574,6 +580,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
+ 
+ static const struct of_device_id sf_pdma_dt_ids[] = {
+ 	{ .compatible = "sifive,fu540-c000-pdma" },
++	{ .compatible = "sifive,pdma0" },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, sf_pdma_dt_ids);
+diff --git a/drivers/dma/sf-pdma/sf-pdma.h b/drivers/dma/sf-pdma/sf-pdma.h
+index 0c20167b097d..8127d792f639 100644
+--- a/drivers/dma/sf-pdma/sf-pdma.h
++++ b/drivers/dma/sf-pdma/sf-pdma.h
+@@ -22,11 +22,7 @@
+ #include "../dmaengine.h"
+ #include "../virt-dma.h"
+ 
+-#define PDMA_NR_CH					4
+-
+-#if (PDMA_NR_CH != 4)
+-#error "Please define PDMA_NR_CH to 4"
+-#endif
++#define PDMA_MAX_NR_CH					4
+ 
+ #define PDMA_BASE_ADDR					0x3000000
+ #define PDMA_CHAN_OFFSET				0x1000
+@@ -118,7 +114,7 @@ struct sf_pdma {
+ 	void __iomem            *membase;
+ 	void __iomem            *mappedbase;
+ 	u32			n_chans;
+-	struct sf_pdma_chan	chans[PDMA_NR_CH];
++	struct sf_pdma_chan	chans[PDMA_MAX_NR_CH];
+ };
+ 
+ #endif /* _SF_PDMA_H */
 -- 
-2.7.4
+2.31.1
 
