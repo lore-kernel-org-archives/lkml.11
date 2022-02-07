@@ -2,85 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 182D9C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D55C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243704AbiBGHRx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 02:17:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50624 "EHLO
+        id S243296AbiBGHRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 02:17:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244462AbiBGHD5 (ORCPT
+        with ESMTP id S239806AbiBGHOm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 02:03:57 -0500
-X-Greylist: delayed 556 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 23:03:56 PST
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5910C0401C0;
-        Sun,  6 Feb 2022 23:03:56 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 4FDBE80E1;
-        Mon,  7 Feb 2022 06:54:16 +0000 (UTC)
-Date:   Mon, 7 Feb 2022 08:54:37 +0200
-From:   Tony Lindgren <tony@atomide.com>
-To:     Nishanth Menon <nm@ti.com>
-Cc:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>, jan.kiszka@siemens.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] arm64: dts: ti: k3-am65: disable optional
- peripherals by default
-Message-ID: <YgDCLaBHA3DDQAUd@atomide.com>
-References: <20220203140240.973690-1-matthias.schiffer@ew.tq-group.com>
- <20220204143108.653qk2ihnlhsr5aa@prior>
+        Mon, 7 Feb 2022 02:14:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188ADC043181;
+        Sun,  6 Feb 2022 23:14:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8AD560F1C;
+        Mon,  7 Feb 2022 07:14:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 461A0C004E1;
+        Mon,  7 Feb 2022 07:14:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644218080;
+        bh=nniw70zMD1lKzi3bsESypvce1FBgSmU6hzhxOyTg6f4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jstWx8JddCSgvPIAV9wlSPQdIkMYIpz4LNBcEqkUl9QmFIRyUZ5PDBxeW1clz27ek
+         ZEG/1tHsXP6nGyN+a87Xes3hqV/h12a/XBnyEYIjLvly0Jq7C+wvp9pAFve1MQxcyl
+         EGG09eqc25QSDMecwnWoYiTIiKP2yg1HuKeQBeIU=
+Date:   Mon, 7 Feb 2022 08:14:34 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yu Xu <xuyu@linux.alibaba.com>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        arnd@arndb.de, viro@zeniv.linux.org.uk, dhowells@redhat.com
+Subject: Re: [PATCH] chardev: call tty_init() in real chrdev_init()
+Message-ID: <YgDG2sLEDfkTwpxh@kroah.com>
+References: <4e753e51d0516413fbf557cf861d654ca73486cc.1644164597.git.xuyu@linux.alibaba.com>
+ <Yf//U1s3DbTuSqo2@kroah.com>
+ <e4eb9000-e246-c01b-abde-de1535ff0374@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220204143108.653qk2ihnlhsr5aa@prior>
+In-Reply-To: <e4eb9000-e246-c01b-abde-de1535ff0374@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-* Nishanth Menon <nm@ti.com> [220204 14:30]:
-> Rob, Tony, Arnd, SoC maintainers,
+On Mon, Feb 07, 2022 at 02:37:46PM +0800, Yu Xu wrote:
+> On 2/7/22 1:03 AM, Greg KH wrote:
+> > On Mon, Feb 07, 2022 at 12:27:31AM +0800, Xu Yu wrote:
+> > > It is confusing that tty_init() in called in the initialization of
+> > > memdev, i.e., static chr_dev_init().
+> > > 
+> > > Through blame, it is introduced by commit 31d1d48e199e ("Fix init
+> > > ordering of /dev/console vs callers of modprobe"), which fixes the
+> > > initialization order of /dev/console driver. However, there seems
+> > > to be a typo in the patch, i.e., chrdev_init, instead of chr_dev_init.
+> > > 
+> > > This fixes the typo, IIUC.
+> > > 
+> > > Note that the return value of tty_init() is always 0, and thus no error
+> > > handling is provided in chrdev_init().
+> > > 
+> > > Fixes: 31d1d48e199e ("Fix init ordering of /dev/console vs callers of modprobe")
+> > > Signed-off-by: Xu Yu <xuyu@linux.alibaba.com>
+> > > ---
+> > >   drivers/char/mem.c | 2 +-
+> > >   fs/char_dev.c      | 1 +
+> > >   2 files changed, 2 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/char/mem.c b/drivers/char/mem.c
+> > > index cc296f0823bd..8c90881f8115 100644
+> > > --- a/drivers/char/mem.c
+> > > +++ b/drivers/char/mem.c
+> > > @@ -775,7 +775,7 @@ static int __init chr_dev_init(void)
+> > >   			      NULL, devlist[minor].name);
+> > >   	}
+> > > -	return tty_init();
+> > > +	return 0;
+> > >   }
+> > >   fs_initcall(chr_dev_init);
+> > > diff --git a/fs/char_dev.c b/fs/char_dev.c
+> > > index ba0ded7842a7..fc042a0a098f 100644
+> > > --- a/fs/char_dev.c
+> > > +++ b/fs/char_dev.c
+> > > @@ -667,6 +667,7 @@ static struct kobject *base_probe(dev_t dev, int *part, void *data)
+> > >   void __init chrdev_init(void)
+> > >   {
+> > >   	cdev_map = kobj_map_init(base_probe, &chrdevs_lock);
+> > > +	tty_init();
+> > >   }
+> > 
+> > You just changed the ordering sequence here, are you SURE this is
+> > correct?
 > 
-> On 15:02-20220203, Matthias Schiffer wrote:
-> > All peripherals that require pinmuxing or other configuration to work
-> > should be disabled by default. Dependent DTS are adjusted accordingly.
-
-Disabling SoC internal devices by default is not a good policy. The
-devices are available even if not pinned out. Disabling device by default
-causes runtime PM to not work as the kernel will completely ignore the
-disabled devices. And this means you add a dependency to some certain
-version of a bootloader for PM to work.
-
-Additionally tagging devices as disabled by default (and then again
-re-enabling them in the board specific dts files) is just pointless
-churn and bloat. See for example commit 12afc0cf8121 ("ARM: dts: Drop
-pointless status changing for am3 musb") :)
-
-If you really want to disable some devices for memory usage or other
-reasons, do it in the board specific dts files.
-
-> https://lore.kernel.org/linux-arm-kernel/20201112183538.6805-1-nm@ti.com/
-> reversal all over again.
+> To be honest, not 100% sure.
 > 
-> Is there a specific pattern we are intending to use here? Because, if we
-> are going down this path (which would be a major churn across multiple
-> downstream trees as well) - I'd rather have this as a documented
-> standard and not just a TI approach and will need to be done across all
-> K3 devices.
+> > 
+> > How was this tested?  Did you verify that the problem that the original
+> > commit here was fixing is now not happening again?
 > 
-> Are you aware of such a documented guideline, rather than "word of
-> mouth"? Maybe I have'nt looked deep enough, but checking..
+> I tried to reproduce the issue described in the original commit, and
+> failed. The issue does not appear, or my reproduction is wrong.
+>   1. revert 31d1d48e199e manually;
+>   2. request_module("xxx") anywhere before do_initcalls(), since
+>      tty_init() now is initialized by module_init();
+>   3. no warning on request_module is shown.
+> 
+> > 
+> > And what real problem is this solving?  How did you hit the issue that
+> > this solves?
+> 
+> No real problem actually. As described in the log, it is confusing that
+> tty_init() in called in the initialization of memdev. They don't have
+> strong dependencies. I found the issue when I read through codes of
+> drivers/char/mem.c.
 
-For SoCs that don't implement runtime PM the policy can be different
-without causing any harm. But for any SoCs implementing runtime PM, an
-unknown state from the bootloader is not going to work.
+It was added here as the linker order is what describes the init calls,
+and this call is probably needed before other code in the init call
+order, when things are built into the kernel.
 
-Regards,
+That might help in your debugging.
 
-Tony
+good luck!
+
+greg k-h
