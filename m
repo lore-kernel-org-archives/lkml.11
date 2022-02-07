@@ -2,134 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05279C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 319EDC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376465AbiBGPaI (ORCPT
+        id S1381054AbiBGPaR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:30:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
+        Mon, 7 Feb 2022 10:30:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240408AbiBGPWj (ORCPT
+        with ESMTP id S1443938AbiBGPQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:22:39 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15ADEC0401C8;
-        Mon,  7 Feb 2022 07:22:35 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C41E81EC0295;
-        Mon,  7 Feb 2022 16:22:29 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644247349;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=9kw2JUuU4tOJy7Y1YqOoL272nzWKEY2AY+xtiIohMEI=;
-        b=Z1hjKr7ZsdoSLPXWGCo9U0lVd0+sc+AZB3agyDxd+AJOlxIF2dL7NSX6pyRpok68cKRHwO
-        B2rQcdhqtLso+qJmn0PKiL3rW65d++y+9w83Aq7drNfxUiS92t/BWB1y0F1Qxjh30SkmUz
-        UE52d9BAbutNd15WBJMFn32ugNvJzVw=
-Date:   Mon, 7 Feb 2022 16:22:24 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v9 41/43] virt: Add SEV-SNP guest driver
-Message-ID: <YgE5MOJ+yi5ouGcb@zn.tnic>
-References: <20220128171804.569796-1-brijesh.singh@amd.com>
- <20220128171804.569796-42-brijesh.singh@amd.com>
- <YgBOKQKXEH5VqTO7@zn.tnic>
- <cb4aa4c4-11e9-163c-5101-8b0dea336fc1@amd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <cb4aa4c4-11e9-163c-5101-8b0dea336fc1@amd.com>
+        Mon, 7 Feb 2022 10:16:19 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E71C0401C5;
+        Mon,  7 Feb 2022 07:16:18 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id y9so5515773pjf.1;
+        Mon, 07 Feb 2022 07:16:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=3UF/9F8voePpBuq13dZu3EgVY3zNbO9hjbJPlJawoXE=;
+        b=SjNMaEiI/bHcioMCC0Nyx29bXJneEdEQKjS43Etv6vmX5yJJReYxm2Gct1aaVTWxkv
+         QCPT3iNtYZ4QYJYQoZy9QbZvtMUtd0zf5MvWhw7jjEn+nLhfoN4VLtHJ3HSkOKKRR2HL
+         xZZMxZ8RfFOgTUacQF2YCItvGv1Edwh4dLxm1V4RiCRkGMCqBOsHzdimETLo9w/t563J
+         2N8TCv1gj0VywTir7AnQ7rhmrnzMbvckYRUnk1axaUA62+uK2xQB1J/n9/qBEE2ngwQ4
+         krDwlW5xiKQH6INoTDV+JkKSNC6pkB6A5TksYGptsAZ/0JUP1DVxd42P2XGCiDLnTwp4
+         +tcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3UF/9F8voePpBuq13dZu3EgVY3zNbO9hjbJPlJawoXE=;
+        b=U87xTdt3cH6LY6a3zAXwEFUHyllN/dGcMN04WMgvBfGegZhC7tLZoqBQtxFOW0l/IY
+         rutyjoiE25qnI8H9a0TaHeZoQV6PWy73bj4+cDfcv/8RulKDBzPjHJuc4Je1S6SNN0dZ
+         7Ydot1uzcXHFzX3BPL02X3O2R4SXuoXz6jY7i0MRRMWIMQHzbmgazca5X1Xb9zcSlDeH
+         4JchsQLdm9sGG5UTKR+jxhn87CafLtS+78wVGJoaeSbwE+1ZAeZIyw0pEm2f/B310DcV
+         4imA0HlW0NyYKDuq2Xk6l/WXYSEe82mksIFodWOPdF+vsHfrBwsEun4BH+mJPrk8gTUI
+         LW/w==
+X-Gm-Message-State: AOAM53091WCcHkGCfYsRwf3TQ1Mh7ahD+J96Tb3w7ydw9xG9IkyaHRA9
+        ox13sK1Uwyx5LSjpFOlYIw7Xjfx3AJw=
+X-Google-Smtp-Source: ABdhPJyNXeJ7QsTD2peaZUIsoMCUFV6WD/3pQIRFjec4ID2wuEhHPStdg9XV18nTJTDx6RUy9ToZeQ==
+X-Received: by 2002:a17:902:710c:: with SMTP id a12mr16740868pll.13.1644246977804;
+        Mon, 07 Feb 2022 07:16:17 -0800 (PST)
+Received: from localhost.localdomain (1-171-11-6.dynamic-ip.hinet.net. [1.171.11.6])
+        by smtp.gmail.com with ESMTPSA id f2sm11896172pfj.6.2022.02.07.07.16.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Feb 2022 07:16:16 -0800 (PST)
+From:   cy_huang <u0084500@gmail.com>
+To:     robh+dt@kernel.org, heikki.krogerus@linux.intel.com
+Cc:     gregkh@linuxfoundation.org, devicetree@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        cy_huang@richtek.com, will_lin@richtek.com, th_chuang@richtek.com
+Subject: [PATCH v3 0/2] Add Richtek RT1719 USBPD controller support
+Date:   Mon,  7 Feb 2022 23:16:08 +0800
+Message-Id: <1644246970-18305-1-git-send-email-u0084500@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 08:41:47AM -0600, Brijesh Singh wrote:
-> Randy asked me similar question on v7, and here is my response to it.
-> 
-> https://lore.kernel.org/linux-mm/e6b412e4-f38e-d212-f52a-e7bdc9a26eff@infradead.org/
-> 
-> Let me know if you still think that we should make it 'n'. I am not dead
-> against it but I have feeling that once distro's starts building SNP aware
-> guest kernel, then we may get asked to enable it by default so that
-> attestation report can be obtained by the initial ramdisk.
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-Well, let's see:
+Since v3:
+1. Fix checkpatch.pl consistent space error in line 332.
+2. Refine some error codes to more appropriate one.
+3. In psy_set_property, except prop VOLTAGE_NOW, directly return -EINVAL.
+4. Use devm_kasprintf to replace devm_kzalloc and snprintf in psy_register function.
 
-$ make oldconfig
-...
+Since v2:
+1. Fix below kernel test robot build warning.
+>> drivers/usb/typec/rt1719.c:492:65: warning: suggest parentheses around arithmetic in operand of '|' [-Wparentheses]
+     492 |                                  RT1719_EVALMODE_MASK | src_sel + 1);
+         |                                                         ~~~~~~~~^~~
 
-#
-# No change to .config
-#
-$
 
-So it didn't even ask me. Because
+ChiYuan Huang (2):
+  dt-bindings: usb: rt1719: Add binding for Richtek RT1719
+  usb: typec: rt1719: Add support for Richtek RT1719
 
-# CONFIG_VIRT_DRIVERS is not set
-
-so what's the point of this "default y"?
-
-If the distros are your worry, then you probably will have to ask
-them to do so explicitly anyway because at least we edit our configs
-ourselves and decide what to enable or what not.
-
-> After this condition is met, a guest will no longer get the attestation
-> report. It's up to the userspace to reboot the guest or continue without
-> attestation.
-> 
-> The only thing that will reset the counter is re-launching the guest to go
-> through the entire PSP initialization sequence once again.
-
-Well, but you need to explain that somewhere to the guest owners.
-I guess either here in that error message or in some higher-level
-glue which will do the attestation. Just saying that some counter has
-overflown is not very user-friendly, I'd say.
-
-> Yep, it need to protect more stuff.
-> 
-> We allocate a shared buffers (request, response, cert-chain) that gets
-> populated before issuing the command, and then we copy the result from
-> reponse shared to callers buffer after the command completes. So, we also
-> want to ensure that the shared buffer is not touched before the previous
-> ioctl is finished.
-
-So you need to rename that mutex and slap a comment above it what it
-protects.
-
-Thx.
+ .../devicetree/bindings/usb/richtek,rt1719.yaml    |  85 ++
+ drivers/usb/typec/Kconfig                          |  12 +
+ drivers/usb/typec/Makefile                         |   1 +
+ drivers/usb/typec/rt1719.c                         | 970 +++++++++++++++++++++
+ 4 files changed, 1068 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/usb/richtek,rt1719.yaml
+ create mode 100644 drivers/usb/typec/rt1719.c
 
 -- 
-Regards/Gruss,
-    Boris.
+2.7.4
 
-https://people.kernel.org/tglx/notes-about-netiquette
