@@ -2,179 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C381C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B6D1C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345347AbiBGJ1M (ORCPT
+        id S1345863AbiBGJ1O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:27:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
+        Mon, 7 Feb 2022 04:27:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242710AbiBGJWm (ORCPT
+        with ESMTP id S236790AbiBGJRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:22:42 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3C5C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:22:37 -0800 (PST)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2177lSj5003588;
-        Mon, 7 Feb 2022 09:22:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=IVysGkHHqGOnIyhRzbyCbqePSQEOTLpdECc5Ws6ywd0=;
- b=qVqqU3Tqi873vVwx3RejAxzAGEtIw/UaKf8lf4HBjSMth6TJ4Dzc+/edfiC2jne11YOj
- +4mHj9tV2PjZp1AGi0HDv051Mnbh/yd8k6i572DI+ydagmgrraEkOuMZ07TbR3gGEtjX
- BOm770PqkMivGf3S1byLKtdcR5dild4PcvgnWtK8edh0Ga8wieKNw13ZG/JB2bVus5m7
- EqYRATUIs9+pZcMNQScm62OUb/EHkeIxetOD/qL0t3eH2LUXSM6zYCNssxVvahnhd387
- LZ993g1qB8Y95dtOp9hciaXRVm73q+F8JY7/PKqxYLMB896Cpp7I4x1h7FZ3y6vqcj+u mg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e1g13nn6q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 07 Feb 2022 09:22:05 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2179BUJD067773;
-        Mon, 7 Feb 2022 09:22:03 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2044.outbound.protection.outlook.com [104.47.66.44])
-        by aserp3020.oracle.com with ESMTP id 3e1h241rv9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 07 Feb 2022 09:22:03 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X8hpod0aDrGsEedyBgXuddjkbhSUj7wmlvVMDwu+KWVgGM5sQHFM94S67Wn7hrbEj004jZbkpqLO9A8303EXCnRDztqUUPp40VIfD5uKATLdMXd8rquw2Ts+iob/61rUsl4OkMZh9Df2KPVmrVGqc80R6CNC/8LB6fbzyK8/IGrz1dVbPb1kxW4mXR7lYC26UHreUx8UTgaD7t9PWGB34+wZfEMPT4CFQAj5p/P+/kC9/FxPCEeY4JzFuP3pNgyZjShVOHMdohYEbbDKXE4tEQZDvOCG98j0dm4xcvMFOGyEqsqs7izqL2EVw9XNO/o8QR9j3kmI52ARtj2Hf7rEqQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IVysGkHHqGOnIyhRzbyCbqePSQEOTLpdECc5Ws6ywd0=;
- b=DgG+kW4e+CJkxCoyJvFR3rWFRYE6RoanZkXIavXAB7SXM2xIQAd8YrOoYlLCKfOXdAtH7yg8zAQslbTMue2gRkbWcmz1Dj5E4IQOZNBxdT0/6BMmTK9WHrRYtAVbfXsSqR8M7DREvIjjPM/ct74yRypcAvpeUirqtrZseh3YyqWFpI3A2QtpUQ8lFjsvscMUwumSNHlgKp4fnMlA/qc6DYKiimVdzvmbNfadaTmcEYTuvgQF3I3J/GBnwkajtD6wfHxHVjk29I5g8Ft7/eaPfB940braJOUb9PSDldiG3J1kIcCMiJs4qrfgy9tzcRy7I3LrrUJwjJO9sOGH+oMnTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IVysGkHHqGOnIyhRzbyCbqePSQEOTLpdECc5Ws6ywd0=;
- b=A+sfRiq8911H17oLxPDkv7UPNEAhxJWXWSFoqPgc3ZQNhq/fDkOMvUqWCQvuuB+SBAK0BHViiludkcpqoiMT4ZeGBLzPJwIJTdQmQMG3RsW8kVGDbCTVTnXPLzKz/e1fMv/Uz52Th73UHeOYb3+pgIpOnhDImRv6bw4Hq94mIkg=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by DS7PR10MB4976.namprd10.prod.outlook.com
- (2603:10b6:5:3a5::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Mon, 7 Feb
- 2022 09:22:01 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::e5a5:8f49:7ec4:b7b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::e5a5:8f49:7ec4:b7b8%5]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
- 09:22:01 +0000
-Date:   Mon, 7 Feb 2022 12:21:33 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     linux-staging@lists.linux.dev, gregkh@linuxfoundation.org,
-        phil@philpotter.co.uk, larry.finger@lwfinger.net,
-        julia.lawall@inria.fr, linux-kernel@vger.kernel.org,
-        Michael Straube <michael.straube@stud.uni-goettingen.de>,
-        martin@kaiser.cx
-Subject: Re: [RFC] staging: r8188eu: Sleeping in atomic context (SAC) bugs
-Message-ID: <20220207092133.GE1951@kadam>
-References: <2111927.Icojqenx9y@leap>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2111927.Icojqenx9y@leap>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0063.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::21)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Mon, 7 Feb 2022 04:17:25 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C0AC043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:17:24 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nH090-0006MV-T6; Mon, 07 Feb 2022 10:17:10 +0100
+Received: from pengutronix.de (unknown [195.138.59.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5A8732D37D;
+        Mon,  7 Feb 2022 08:11:27 +0000 (UTC)
+Date:   Mon, 7 Feb 2022 09:11:23 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
+        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
+Message-ID: <20220207081123.sdmczptqffwr64al@pengutronix.de>
+References: <1fb4407a-1269-ec50-0ad5-074e49f91144@hartkopp.net>
+ <2aba02d4-0597-1d55-8b3e-2c67386f68cf@huawei.com>
+ <64695483-ff75-4872-db81-ca55763f95cf@hartkopp.net>
+ <d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com>
+ <97339463-b357-3e0e-1cbf-c66415c08129@hartkopp.net>
+ <24e6da96-a3e5-7b4e-102b-b5676770b80e@hartkopp.net>
+ <20220128080704.ns5fzbyn72wfoqmx@pengutronix.de>
+ <72419ca8-b0cb-1e9d-3fcc-655defb662df@hartkopp.net>
+ <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
+ <07c69ccd-dbc0-5c74-c68e-8636ec9179ef@hartkopp.net>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4803fa54-6204-46e5-d1b3-08d9ea1b4bc3
-X-MS-TrafficTypeDiagnostic: DS7PR10MB4976:EE_
-X-Microsoft-Antispam-PRVS: <DS7PR10MB49764CC6D7006BF62B4F22A78E2C9@DS7PR10MB4976.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8yXlB4NcvjJzbCDRxQ41NPGfJsKC+UJ/IC4R4T++Q5AWbRQYLCQ0Nxskd8mYIWWPrCMRGjMaHfdefceirkM+f758bb0kHKnrGpi40qHUdgfgkh1i72qT7KTQ4QslT/KmrS/Pv9fago2Rkk+m9npdd738matlVE7bNNkuov479KSDPTf3ZYsBBNs2wOSAJtO/E3my6mR/nvkkm1t0KtFtBB1W51jdZEdZXWJEdRmycOeWeZp/Y/2v2gns9cJFcDHSpflFOi0rVkFbV2+bipK/qA5Hrh4UvodNco4GKgHxGiXnnsk+zyE8UJqL49Fvxfae/gRvWxM8UCzs5qicVsFyfS8C4Wnu/sJ/rBK6BVIDbGK14Ve/YeDKqSMVw5mcgTajHt4w0NAi7THomvz0uf/gXVu0frfV7wwhjxHQMBmNF65Dur7dyJghTkcDFqvIBRpNLjheGznfGXKUNm0XK9dmDWtMEZlQFYob8GDqOWUyWeBG3K6xJGsQFtZmwHnbLkcLNzEw1yc0YhvSGtAipBsWwuZYDMl2DcLh7Yy/dKVpF3T0KNMneC+mbUTn7jVcqXLetJLhvsaCdVHeF8+FY4SvHQsVyx+o/dyWKklTTq8sGOTKW9cPPXYy9p9w4BuCjcFptPkFka0olWd1SdHsBe6l4VqPJ2EsDE24U3KYmSH4pnHJQ3E9aVGLuAgpF7IZuhVKZR/z2FK1ElYKvS3l0TSg5g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(186003)(2906002)(38350700002)(86362001)(6486002)(44832011)(38100700002)(83380400001)(26005)(33716001)(1076003)(5660300002)(66946007)(4326008)(8936002)(8676002)(66556008)(66476007)(9686003)(52116002)(6506007)(6916009)(6666004)(6512007)(33656002)(316002)(508600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?eg4K3KfbPXu11Lrdz92VSGVBT5nV8/JSvPApZGZexlT/sb1hK6LrBemKIFRh?=
- =?us-ascii?Q?v5D6Rq0a0L6vTU0VBfnL57JjR2h6EYHTnGoEaTbwWYJW5messtJzMdrMNwv8?=
- =?us-ascii?Q?gQgKJeu3Lxf8AR/FEVbfnTufpze1lxIlARIeOCLv0VFl9cxncIFIT/lNt/v6?=
- =?us-ascii?Q?Pd0D/e7c7S6Zkmr4iKosS+JVT4e0/QPwmRJKBN/n3axKBCljl5nuxn1WEgWM?=
- =?us-ascii?Q?/83+ZuQWlIEHs/c39G8k4QLnu+N1HkKSaklb8jLHj0bmcwUXumbWvCrUNmte?=
- =?us-ascii?Q?VEdFqDJ7rBvKiZ4ZGsTAzsIyj/ewzX1Il+7ukzuXMcJDSp/DzHEda3MXZOMP?=
- =?us-ascii?Q?Q1Rw3UKfr8qmaVsS19GEiQrqxu7SfTPocaeaBeubx1N7nFHqJVRrD3LbnPNp?=
- =?us-ascii?Q?stZt3LKn7kQOFfaXhrfo28MRSPoCObfqV1EtG62hyPHudLQkN3tDNS4OjWU7?=
- =?us-ascii?Q?2h+yYO5uDkJR+r/10t5Q/BLM/8iLSh6tX6LO1+1NmBERWLg1TMo4G22S6mcc?=
- =?us-ascii?Q?ko61zfFcW5VhU7vTByPRyEd1owhYtQLlDRWUE2SCePH8fOvDTLQLQq/wp5Nj?=
- =?us-ascii?Q?0l2GqnS2nosqnQ9vVsjiWWNwyTDvoGpmGPKH1sm9xnqDvleJ9KSjFSjYNMYY?=
- =?us-ascii?Q?yORfurWnK7Pabc528t878Lyrdl7jR0uQ+Dgr1h1xOd85VHW4Rh6rH6GFXByW?=
- =?us-ascii?Q?6FL+94jw+EJGR5OJjMibBmekz8wV3YsY9um12xw2XrN5217bb4IX5tJfZ1u+?=
- =?us-ascii?Q?0XgfK+6rXTPMY+qS3CbQmSw/xabdmFSc7Jm1/rwy6Z/U4oHDkJbqv7tC0Yn3?=
- =?us-ascii?Q?p9bb+g4AnP9pEm1dKcb43ocWszsi46YHC+dNJ8bqBYiXpeBXBftM2Lmu07VG?=
- =?us-ascii?Q?lWxReMbMyEF7Be/e0dH6aJf9EjPSZZpXwrC1iOvOQBaV5HWe/Bi9/ImOMLPB?=
- =?us-ascii?Q?53jEWEQZhgYLuKVrHHPDk7xJx5SpqaVKEWWSo5nHkOwrS0ZZlESfUz0pnALA?=
- =?us-ascii?Q?IKj1C2uZIFqD9HNtf3aOig+V20erYhS1kY2DRyeAAGV80+NQvWL5R4jO+0at?=
- =?us-ascii?Q?JYYj2Eh08hhhS2kb/v5BoD+EjfaFiIYiIsSObBsIB7s2E/vevVpu0y3tY2R/?=
- =?us-ascii?Q?UjKCl9UM//IoXITx8GzB8XlnLhxn+KsAC6Pmpt/n4NcwPjsJnFNHHXaixXlH?=
- =?us-ascii?Q?iIGnhyLa6/iYdYmNo+ns6/AsRfFtmOdQ+FBSDEqm+oyj10CiUBqQnlmc1Ovq?=
- =?us-ascii?Q?CFJj0L2ExoopzSH20noctREie9sNNywTG3Ncikdhh9wqAbQvWUetdgL4/ArT?=
- =?us-ascii?Q?ZRQ/UJlZ3pmF5BJMab80QIsN/kzBW+NwBs/iJ5gpt3cjXqRa7BXD/7Ey12kD?=
- =?us-ascii?Q?zLNkWLpXFZIeMN3wVXZeP/tRUp45/imGnkZcYF4Cx5L3KUcNYnfkW+pBL7nd?=
- =?us-ascii?Q?HAvbYKZGQUC3ls4iaZCYKxc3sg2VAWkM/1tndwU4NnREXQ2Zwtme0SR5QRnQ?=
- =?us-ascii?Q?3zz5veiFI+VErbnKTC1Jj3rd7cMhfBWD+AfWFRCgaXxLAdnEpYvrng/acBAg?=
- =?us-ascii?Q?VJiLmwz+vHXXwiTjousj3cBsETqJaZySH8cWVrN3IRg6DvM9zjzkSlHe6Zmf?=
- =?us-ascii?Q?uJ74PVtrqs1yUN63Ao2Dd60aaAnvez0M1vMDOcKFYOEKbl/mmokVhF35JJ0w?=
- =?us-ascii?Q?KT+fNQ=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4803fa54-6204-46e5-d1b3-08d9ea1b4bc3
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 09:22:01.1713
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WEMYA5yai5n85YncPpHoq5nZXt0XOpx1lzFjArGDXzFuh5AxwUTGqUQgebqKfK6amZ6frjfsAsRgWMnxYgRBbra5CPOlPGRYtbacvxs9KsI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR10MB4976
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10250 signatures=673430
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 bulkscore=0
- phishscore=0 malwarescore=0 mlxlogscore=999 adultscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202070060
-X-Proofpoint-GUID: X4GxM2JmMfIaq1Qn53VrLv5ucJa66ff5
-X-Proofpoint-ORIG-GUID: X4GxM2JmMfIaq1Qn53VrLv5ucJa66ff5
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jlbxuizszf7lp7c6"
+Content-Disposition: inline
+In-Reply-To: <07c69ccd-dbc0-5c74-c68e-8636ec9179ef@hartkopp.net>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 01:02:17AM +0100, Fabio M. De Francesco wrote:
-> My first question is whether or not msleep() can be called in atomic context.
 
-You are not allowed to call msleep() in atomic context.  The Smatch
-check for sleeping in atomic did not look for msleep so I will update
-it.
+--jlbxuizszf7lp7c6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> If
-> I understand its semantics and implementation it seems that it should be forbidden.
-> What about changing it to mdelay()? Again, it seems that mdelay() spins without 
-> sleeping so it should be safe. Isn't it?
+On 28.01.2022 15:48:05, Oliver Hartkopp wrote:
+> Hello Marc, hello William,
+>=20
+> On 28.01.22 09:46, Marc Kleine-Budde wrote:
+> > On 28.01.2022 09:32:40, Oliver Hartkopp wrote:
+> > >=20
+> > >=20
+> > > On 28.01.22 09:07, Marc Kleine-Budde wrote:
+> > > > On 28.01.2022 08:56:19, Oliver Hartkopp wrote:
+> > > > > I've seen the frame processing sometimes freezes for one second w=
+hen
+> > > > > stressing the isotp_rcv() from multiple sources. This finally fre=
+ezes
+> > > > > the entire softirq which is either not good and not needed as we =
+only
+> > > > > need to fix this race for stress tests - and not for real world u=
+sage
+> > > > > that does not create this case.
+> > > >=20
+> > > > Hmmm, this doesn't sound good. Can you test with LOCKDEP enabled?
+>=20
+>=20
+> > > #
+> > > # Lock Debugging (spinlocks, mutexes, etc...)
+> > > #
+> > > CONFIG_LOCK_DEBUGGING_SUPPORT=3Dy
+> > > # CONFIG_PROVE_LOCKING is not set
+> > CONFIG_PROVE_LOCKING=3Dy
+>=20
+> Now enabled even more locking (seen relevant kernel config at the end).
+>=20
+> It turns out that there is no visible difference when using spin_lock() or
+> spin_trylock().
+>=20
+> I only got some of these kernel log entries
+>=20
+> Jan 28 11:13:14 silver kernel: [ 2396.323211] perf: interrupt took too lo=
+ng
+> (2549 > 2500), lowering kernel.perf_event_max_sample_rate to 78250
+> Jan 28 11:25:49 silver kernel: [ 3151.172773] perf: interrupt took too lo=
+ng
+> (3188 > 3186), lowering kernel.perf_event_max_sample_rate to 62500
+> Jan 28 11:45:24 silver kernel: [ 4325.583328] perf: interrupt took too lo=
+ng
+> (4009 > 3985), lowering kernel.perf_event_max_sample_rate to 49750
+> Jan 28 12:15:46 silver kernel: [ 6148.238246] perf: interrupt took too lo=
+ng
+> (5021 > 5011), lowering kernel.perf_event_max_sample_rate to 39750
+> Jan 28 13:01:45 silver kernel: [ 8907.303715] perf: interrupt took too lo=
+ng
+> (6285 > 6276), lowering kernel.perf_event_max_sample_rate to 31750
+>=20
+> But I get these sporadically anyway. No other LOCKDEP splat.
+>=20
+> At least the issue reported by William should be fixed now - but I'm still
+> unclear whether spin_lock() or spin_trylock() is the best approach here in
+> the NET_RX softirq?!?
 
-mdelay() is does not sleep, but it's not necessarily a good idea to
-delay for a long time while holding a spinlock.
+With the !spin_trylock() -> return you are saying if something
+concurrent happens, drop it. This doesn't sound correct.
 
-> 
-> Furthermore, I noticed that _rtw_pwr_wakeup() calls ips_leave(). The latter 
-> acquires the "pwrpriv->lock" Mutex. Aren't we forbidden to call Mutexes while 
-> holding Spinlocks?
+Marc
 
-Correct.  You cannot take a mutex while holding a spinlock.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-Where is the spinlock in taken in the code you're talking about?  If
-it's rtw_set_802_11_disassociate() then that's fine.  The check for
-if (check_fwstate(pmlmepriv, _FW_LINKED)) { will prevent ips_leave()
-from being called.
+--jlbxuizszf7lp7c6
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> My second question is: should we substitute that Mutex with a Spinlock and use 
-> it everywhere else the struct "pwrctrl_priv" must be protected in the driver?
+-----BEGIN PGP SIGNATURE-----
 
-Changing mutexes to spinlocks is tricky.  I can't review your proposed
-patch before you send it.
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIA1CkACgkQrX5LkNig
+010zTgf/X9PxwtwpT8fCXmMEHsIdtSANGvXX8JQ6l7gzK39LKaAwSqgkD0k3Smp5
+8emrRja1pmf9sojVGyUpa/DcBCjR3CxblvyaWnsNbqGxRUB5uHXJsK455duJfGWg
+VNdCCHlP2b2Slb0VjZ0g5CXA/DPQElxhHmN3AHvizfflW/RDMV79O2RNqRL9WZBx
+x9wtHzjG6xH5XlO3ULplSD5TXH2GdU+7GYToR7qq7fD+XAarKTIAvdelCcITbfCY
+Wu3XmvtlukCqEwnB1ijF0L5mKGdODON78ykkvqjg3tFm7Rw+yrGQrT22ZiTQe9SN
+T7UFVAOKU7WcLXpa9jrDXJtxSHWjHw==
+=TDl5
+-----END PGP SIGNATURE-----
 
-regards,
-dan carpenter
-
+--jlbxuizszf7lp7c6--
