@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B13C35274
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F10C3527A
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384126AbiBGLYv (ORCPT
+        id S1384139AbiBGLYw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:24:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58718 "EHLO
+        Mon, 7 Feb 2022 06:24:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382432AbiBGLTJ (ORCPT
+        with ESMTP id S1382428AbiBGLTH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:19:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90294C0401C3;
-        Mon,  7 Feb 2022 03:19:08 -0800 (PST)
+        Mon, 7 Feb 2022 06:19:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3816EC043188;
+        Mon,  7 Feb 2022 03:19:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1909F6126D;
-        Mon,  7 Feb 2022 11:19:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA912C004E1;
-        Mon,  7 Feb 2022 11:19:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5984B811A6;
+        Mon,  7 Feb 2022 11:19:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C242EC004E1;
+        Mon,  7 Feb 2022 11:19:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232747;
-        bh=e2WfQygo6vzQk8haaAhfXiLEuZQLP60wId1L8LS97Y4=;
+        s=korg; t=1644232744;
+        bh=NQUJff4RCNmxW77nChu49io1Gz/BIHZGQ+D8eGMPd6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yt8hyfFlC7zOjM9LppLn6+MewC3Cutj8PQ8wBqGgR14x/707sPVockt28awzBMYvW
-         XlkCcUFeEJTeoNyRCWYRM+6bFrAt234nM3KswtLd+R/m1eXQe9np1XsOndfOUnlnyR
-         t6EKQNS5ZTIibmEVc/tb3NC3aXD9s9Otvu0xzBis=
+        b=TrWzmpQ9BgUY+iWg5JrPsvvIkTGGdLRT8Szezs3Slu8OA7GcXl4FettDOyChNeNk/
+         RyGOFfPMqxsEYHoGRUeKAj7dypaFVowdaKMzAtVc0dSyXWSVYZ0lcTttgtzX5gpMN8
+         pTUgmDu9WuOmdgZbc/6kJYnF1bZ+Fxg0I2TQFuNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
         Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.4 23/44] spi: meson-spicc: add IRQ check in meson_spicc_probe
-Date:   Mon,  7 Feb 2022 12:06:39 +0100
-Message-Id: <20220207103753.904594045@linuxfoundation.org>
+Subject: [PATCH 5.4 22/44] spi: mediatek: Avoid NULL pointer crash in interrupt
+Date:   Mon,  7 Feb 2022 12:06:38 +0100
+Message-Id: <20220207103753.875062330@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
 References: <20220207103753.155627314@linuxfoundation.org>
@@ -49,37 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 
-commit e937440f7fc444a3e3f1fb75ea65292d6f433a44 upstream.
+commit f83a96e5f033fbbd21764705cb9c04234b96218e upstream.
 
-This check misses checking for  platform_get_irq()'s call and may passes
-the negative error codes to devm_request_irq(), which takes unsigned IRQ #,
-causing it to fail with -EINVAL, overriding an original error code.
-Stop calling devm_request_irq() with invalid IRQ #s.
+In some case, like after a transfer timeout, master->cur_msg pointer
+is NULL which led to a kernel crash when trying to use master->cur_msg->spi.
+mtk_spi_can_dma(), pointed by master->can_dma, doesn't use this parameter
+avoid the problem by setting NULL as second parameter.
 
-Fixes: 454fa271bc4e ("spi: Add Meson SPICC driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220126110447.24549-1-linmq006@gmail.com
+Fixes: a568231f46322 ("spi: mediatek: Add spi bus for Mediatek MT8173")
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Link: https://lore.kernel.org/r/20220131141708.888710-1-benjamin.gaignard@collabora.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-meson-spicc.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/spi/spi-mt65xx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/spi/spi-meson-spicc.c
-+++ b/drivers/spi/spi-meson-spicc.c
-@@ -527,6 +527,11 @@ static int meson_spicc_probe(struct plat
- 	writel_relaxed(0, spicc->base + SPICC_INTREG);
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -533,7 +533,7 @@ static irqreturn_t mtk_spi_interrupt(int
+ 	else
+ 		mdata->state = MTK_SPI_IDLE;
  
- 	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		ret = irq;
-+		goto out_master;
-+	}
-+
- 	ret = devm_request_irq(&pdev->dev, irq, meson_spicc_irq,
- 			       0, NULL, spicc);
- 	if (ret) {
+-	if (!master->can_dma(master, master->cur_msg->spi, trans)) {
++	if (!master->can_dma(master, NULL, trans)) {
+ 		if (trans->rx_buf) {
+ 			cnt = mdata->xfer_len / 4;
+ 			ioread32_rep(mdata->base + SPI_RX_DATA_REG,
 
 
