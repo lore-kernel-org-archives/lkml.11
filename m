@@ -2,92 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE27BC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0B1C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351736AbiBGJgD (ORCPT
+        id S1351502AbiBGJf4 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:36:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        Mon, 7 Feb 2022 04:35:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351276AbiBGJ3B (ORCPT
+        with ESMTP id S235894AbiBGJd7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:29:01 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047C1C0401C2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:28:59 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id s7so1978699edd.3
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:28:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FLK2lp6TV74+ddpLQXtHe3jOczUqIhg5KCOPYjiimz0=;
-        b=W0nozGTs3WBmNHCv6hIDWxLGpDVfJILMUf2O7Q/U9PCKWMULtz2UcOLfcz//u2iceU
-         IoObxtwzO/To7yeAbTWa6r8Oi4yd7dHk8MwrAekAhX17xjmKepV9K4vOWiwoTm1TmVD0
-         eEGXAxCDM9LwgwWfUk+Fbuo7247yBhiHhW1/NgAwsRoprLDT6329unNOAaU8eYA4J1SA
-         ZvRkaqThsWYRMYFI2GRgQWRUHSeNQhUpdcoeXnRjmwmB6RefMjXwCJ0v5eux2BLm4Izq
-         e1b5OzXD76KGfSAdNASTO0nj+ilzpOsA6hGPS7Do+nWGs+FzATKtEetdHV6CN8KnjXrV
-         OIYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FLK2lp6TV74+ddpLQXtHe3jOczUqIhg5KCOPYjiimz0=;
-        b=j+i0+peWMrOvPqm3EHidno3l6RnI4EKRKHJ6orGE1rYUjMhRyw6pwq3lEGXLcQ/JoA
-         A4beYV6H8tfWmYwS+g1vxTNd2iZWC9N8ZMYOk3CeZ1et8bKqAbUjdk1ZmUxfX/Wy81ro
-         12p+inLPb6NnD1yhVsWcqODw0/NZjf1bU2i0jprdh+kDi1itO4P7t9VIYGFZAxpvc+Eq
-         FT20Xhgl3vxjE+Np+gu3JmZPBiyj/1vJw/SXEE397csTVpWGPhf9PrpbeAUlTl0vqIDR
-         r9dIHLwslvuP/I4EBCVSLDFlNQ7zzDNqlNOD+rg6TQaKNkUjy7gNVWIit2wGINLwd+ik
-         kpmA==
-X-Gm-Message-State: AOAM532xukkv6bn49T2Ag2xJvg5U3esxhHdD8//5h4Bb9i2Do10Z1ejS
-        C95QMOeTq3TWc1N4YhMaEQpH3g==
-X-Google-Smtp-Source: ABdhPJzq7Tl8lnhKa+CHP0KNKxJ+ynu8aSyKQT7YIPwHg7TUfcTAIjzGO4fZEHCM2sksJn/flRHBUQ==
-X-Received: by 2002:a05:6402:38e:: with SMTP id o14mr9121850edv.414.1644226137585;
-        Mon, 07 Feb 2022 01:28:57 -0800 (PST)
-Received: from fedora.. (ip-088-153-139-166.um27.pools.vodafone-ip.de. [88.153.139.166])
-        by smtp.gmail.com with ESMTPSA id g9sm3487059ejm.152.2022.02.07.01.28.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 01:28:57 -0800 (PST)
-From:   Patrick Rudolph <patrick.rudolph@9elements.com>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
-        devicetree@vger.kernel.org
-Subject: [v4 0/3] Add support for Maxim MAX735x/MAX736x variants
-Date:   Mon,  7 Feb 2022 10:28:23 +0100
-Message-Id: <20220207092827.104978-1-patrick.rudolph@9elements.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Feb 2022 04:33:59 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1E0C043185
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:33:58 -0800 (PST)
+Received: from mail-wr1-f54.google.com ([209.85.221.54]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M7sM0-1nLyDu3Ana-004xxj; Mon, 07 Feb 2022 10:33:56 +0100
+Received: by mail-wr1-f54.google.com with SMTP id i15so1171093wrb.3;
+        Mon, 07 Feb 2022 01:33:56 -0800 (PST)
+X-Gm-Message-State: AOAM531FVzFiYBe9oQoUjUVtdbeJA9dkRPw65ncxvITmdjOEmQMNpBFx
+        1mLTJlJS3oe/xYPJJVIVc/WOvUtmkVJ3INnKl9s=
+X-Google-Smtp-Source: ABdhPJxjtwwhO8HbrAZC+pe3xlqcwLMS67h5t8QPdUjoAiwcCe9JR65SOdpgzS7AoShpWThk/xsDFtoHfw7IoFK1OEg=
+X-Received: by 2002:a5d:500c:: with SMTP id e12mr9224078wrt.219.1644226436456;
+ Mon, 07 Feb 2022 01:33:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
+ <b96f039dc071b1d32bb52fa283fd8afc6d3349cc.1644212476.git.tonyhuang.sunplus@gmail.com>
+ <CAK8P3a0zNeaeOzC_tPb1KDbyktLpjUJCdEu=C6t_QX4pB9TKnQ@mail.gmail.com>
+ <b440dc1dbb044a8c81d083d52774ad6b@sphcmbx02.sunplus.com.tw> <YgDar1O/CeTM8w6J@kroah.com>
+In-Reply-To: <YgDar1O/CeTM8w6J@kroah.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 7 Feb 2022 10:33:40 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a12JMhEB=qxXqRB0WFyUwvJ_VgwqMi6oWfpcgBr9OWrqQ@mail.gmail.com>
+Message-ID: <CAK8P3a12JMhEB=qxXqRB0WFyUwvJ_VgwqMi6oWfpcgBr9OWrqQ@mail.gmail.com>
+Subject: Re: [PATCH v8 2/2] misc: Add iop driver for Sunplus SP7021
+To:     gregkh <gregkh@linuxfoundation.org>
+Cc:     =?UTF-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Tony Huang <tonyhuang.sunplus@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Derek Kiernan <derek.kiernan@xilinx.com>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>,
+        =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:0J6Mjirsw0E3IG/qh0q2nAbRKNTVtM37ZcVLZVIhufKdfYTwePb
+ ufaBmiVcfHThw1AX+PYgwnRQjrKJ3El1nMCbw7RfaILNYx/HAW8bUO7V3gsPkinRxt4yJzS
+ J1iwCkmmsr72BleWDG6EXvtIeI38vIGIaWFhtjxFz/Uc6AJ9z97IoEwdPjL4miUYQo0h2JB
+ IcVt6FjGFYyGKrmlOau6A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:nnk7vXobkyQ=:YU6oj9eTy74vHBOT95xtYq
+ +FEDSEshobDZ9YpqhrtWJGdXXQFCuVbTu0c3RSZEq64oN+MTqJ4P/5JyPgGl7OJ4EYQaJRZKO
+ h9cp1Nhg4duLBVM9Ezc/lYje0f1rDbg2eqxKGP0gb86r8XCsh5Q8kkO0rEdD2JRCLkQ+bvayW
+ yGAsjQl60JEZVSFSBSbnoFpXenR6q4Gzd1mDE6SFZQaafH+lee1pwrSKIjP7XVW0qK/9tbZEU
+ q6b48kp4NxYVG7fMfrqtcdZCUCKxEnwr8v4kAFNW7YanX9kAeDEA6EdQ3LOR6+lt23Ct7uNsr
+ ItgLmln55CpE/sJC2rf8+zZJEwDbDoKmCAPlVx8CDUSYZni0VRx1nO0pvHyG1aV3E4FbW/Nlo
+ sj6EGHgdW2bx9RriqfQ3x9SZ/tTuAnYD9108+jWi7qZMzYCDDRHDZIJH0hViGx1dOxdIWgVUh
+ l8wr3XFH5hRYZNUVCPnXOj8mHRkEXwdLnU7VvPWdGSTB9AH+jSgVWKpBAqbXj1zJiM+brY406
+ sfx0ePYWTWI3hI2fMv1nzvdyRV2s24NAu1+c7OQ0LYyCAtis/yPPT79ZRPVhj1LT8EBzoaLNa
+ W8tBM9ndLzQ9ghtnMbOTlf3BsRBKLxlnAVMn68ckkq16nNWU/sai4OJI5/+e5vN+nqyKYu796
+ /elIxYC44stT8pgPAn9nwJcKh/3xFEX7Tgiu9Iu0vmCWMvazY+f87LSeK0ywIUFK41UQ+cYWX
+ N5oqIqu8t1DToQPVc+jjClsh0XC8Cmb31TZ5bPJIZSWEWCOn3xLwWVurkvbnLP2taRugeGqC5
+ PjIpTiOQp3nkfpNqDcgfuqNyAtBa3VAXBqy36g8E7M4XYROeZk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v4:
-- Add missing maxitems dt-bindings property
+On Mon, Feb 7, 2022 at 9:39 AM gregkh <gregkh@linuxfoundation.org> wrote:
+> On Mon, Feb 07, 2022 at 08:29:40AM +0000, Tony Huang 黃懷厚 wrote:
+> > >
+> > > As discussed before, I would suggest leaving out all custom attributes for now,
+> > > and first hooking up the driver to all the in-kernel subsystems.
+> > >
+> > > The mailbox0 register data definitely feels like an implementation detail, not
+> > > something that should be exposed to user space as an interface.
+> > >
+> > > For standby mode, this would normally be handled by the power management
+> > > subsystem in the kernel. not a custom interface. From your earlier description,
+> > > I assume this interface puts the main CPU into standby mode, not the IOP,
+> > > right?
+> > >
+> > > CPU standby is handled by the cpuidle subsystem, so you need a driver in
+> > > drivers/cpuidle/ to replace your sysfs attribute.
+> > > If you plan to hook up the driver to multiple subsystems, keeping a generic
+> > > driver file is ok, so  you'll end up with two driver modules, with one of them
+> > > calling into the other, using
+> > > EXPORT_SYMBOL() to link between them.
+> > >
+> >
+> > The purpose of adding sysfs is only for users to debug.
+> > So this is not needed?
+>
+> If this is only for debugging, please put it in debugfs and not sysfs.
 
-v3:
-- Merge dt-bindings into i2c-mux-pca954x.yaml
+I don't think that works for the idle mode interface, as this is the only
+thing the driver really does at the moment.
 
-v2:
-- Move dt-bindings to separate file
-- Added support for MAX736x as they are very similar
-- Fixed an issue found by kernel test robot
-- Dropped max735x property and custom IRQ check
-- Added MAX7357 config register defines instead of magic values
-- Renamed vcc-supply to vdd-supply
+In a previous review round, I already asked for the driver to implement
+at least two in-kernel interfaces before any custom user interface
+is added.
 
-Patrick Rudolph (3):
-  dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
-  i2c: muxes: pca954x: Add MAX735x/MAX736x support
-  i2c: muxes: pca954x: Add regulator support
-
- .../bindings/i2c/i2c-mux-pca954x.yaml         |  44 +++++--
- drivers/i2c/muxes/Kconfig                     |   4 +-
- drivers/i2c/muxes/i2c-mux-pca954x.c           | 124 ++++++++++++++++--
- 3 files changed, 151 insertions(+), 21 deletions(-)
-
--- 
-2.34.1
-
+         Arnd
