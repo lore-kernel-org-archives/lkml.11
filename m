@@ -2,123 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 981F2C3A59E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE0AC3A59D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391586AbiBGMCX (ORCPT
+        id S1391572AbiBGMCS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:02:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54654 "EHLO
+        Mon, 7 Feb 2022 07:02:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388275AbiBGLnV (ORCPT
+        with ESMTP id S1386801AbiBGLhT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:43:21 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52E8C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:43:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644234200; x=1675770200;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=w6w2ccADFu4cgHqYIRIYRuBh3hLMbxfmsazq1+C6hWg=;
-  b=JX14QN5VjuHXYw9U3PEm5T7eJ8eEXg6Ul7wY1wFcOl7IlUvE+eZt03KZ
-   kDSZq2JTsFsTng/oqK5RnC+0Ysql+xqGuyim+KFkHKN/gdltUXA8NiDJw
-   E81Ytshbk3mU+moYbSLfE7juyeYaatY5nQF3VtlHXGDbKD/yhWgvSnOWB
-   Bs+qE57bTwxgKE67R0HD9JT/tyaAwO890hmI9rI0/3Xe9YlDEy9Y14nll
-   Kwylp2VnwdhWEu6LJbZXQI8P1uDq2xaR64CsMihfFJTajOL4Q8sdC2eFd
-   Q2JppkRJSt/7cpWiBYCz4nc+UXvJiPMFNzYKaabNtjYgKWVQ9sAlG46v1
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="246287263"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="246287263"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:42:15 -0800
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="700436349"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:42:12 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nH2OO-001ss2-Lg;
-        Mon, 07 Feb 2022 13:41:12 +0200
-Date:   Mon, 7 Feb 2022 13:41:12 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jan =?utf-8?B?RMSFYnJvxZs=?= <jsd@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Raul E Rangel <rrangel@chromium.org>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "Deucher, Alexander" <alexander.deucher@amd.com>,
-        "Easow, Nimesh" <Nimesh.Easow@amd.com>,
-        "Limonciello, Mario" <mario.limonciello@amd.com>
-Subject: Re: [PATCH v3 2/2] i2c: designware: Add AMD PSP I2C bus support
-Message-ID: <YgEFWN8K7Yh452GY@smile.fi.intel.com>
-References: <20220120001621.705352-2-jsd@semihalf.com>
- <20220202144302.1438303-1-jsd@semihalf.com>
- <20220202144302.1438303-2-jsd@semihalf.com>
- <YfqtkBIZZxp2Au2l@smile.fi.intel.com>
- <CAOtMz3O_j5-0ZLJngQpzQSGduhZVnQ8awBvGkMdUQWAX8nN5Hw@mail.gmail.com>
+        Mon, 7 Feb 2022 06:37:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB99FC043181;
+        Mon,  7 Feb 2022 03:37:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9683AB8112C;
+        Mon,  7 Feb 2022 11:37:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFACBC004E1;
+        Mon,  7 Feb 2022 11:37:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644233836;
+        bh=/caNl0v9RwhFS+XEpOgKYAUioaM4gZ0FnbqNGD2i7JI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0oe2GnF8jeJNv+Gvf67AU8NwenlZoN6gBWltIkiSIhenb9DSbEKVNykFG4tFpyADA
+         6ckzE2g4TdEEKHTa2iQLituZYnndmEtTI974HrE+iHsPX1iuhPuTlMBuGMaOi79XW/
+         uMTJa7TGZLsipOwDSveMdsOZN0k00ZhRRrXXOTWA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 5.16 124/126] gpio: mpc8xxx: Fix an ignored error return from platform_get_irq()
+Date:   Mon,  7 Feb 2022 12:07:35 +0100
+Message-Id: <20220207103808.328037387@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
+References: <20220207103804.053675072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOtMz3O_j5-0ZLJngQpzQSGduhZVnQ8awBvGkMdUQWAX8nN5Hw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 09:27:12AM +0100, Jan Dąbroś wrote:
-> śr., 2 lut 2022 o 17:16 Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> napisał(a):
-> > On Wed, Feb 02, 2022 at 03:43:02PM +0100, Jan Dabros wrote:
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-...
+commit 9f51ce0b9e73f83bab2442b36d5e247a81bd3401 upstream.
 
-> > > +struct psp_i2c_req {
-> > > +     struct psp_req_buffer_hdr hdr;
-> > > +     enum psp_i2c_req_type type;
-> > > +} __aligned(32);
-> >
-> > I forgot if this alignment is requirement due to DMA or so?
-> > We may use ____cacheline_aligned in such case.
-> 
-> I used some old code as a reference - this structure is mapped by PSP,
-> thus alignment applied here. I'm checking this with AMD whether it is
-> really needed or at least can be somehow limited - still waiting for
-> their response.
-> I propose to left this as is right now and eventually remove or make
-> more liberal in the future.
+The return from the call to platform_get_irq() is int, it can be
+a negative error code, however this is being assigned to an unsigned
+int variable 'irqn', so making 'irqn' an int.
 
-Would be nice to clarify sooner than later.
-In either case it needs a good comment.
+Eliminate the following coccicheck warning:
+./drivers/gpio/gpio-mpc8xxx.c:391:5-21: WARNING: Unsigned expression
+compared with zero: mpc8xxx_gc -> irqn < 0
 
-...
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Fixes: 0b39536cc699 ("gpio: mpc8xxx: Fix IRQ check in mpc8xxx_probe")
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpio/gpio-mpc8xxx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > > +     return readl_poll_timeout(&mbox->cmd_fields, tmp, (tmp == expected),
-> > > +                               0, 1000 * PSP_CMD_TIMEOUT_MS);
-> >
-> > 0?!
-> 
-> Yes, we are checking for readiness of PSP mailbox in a tight loop. We
-> would like to proceed further quickly as soon as this bit is set.
-> Actually checking this twice per every ACQUIRE&RELEASE - once before
-> sending command (to check whether PSP is ready to accept requests) and
-> second time after sending it. Do you think we should increase
-> @sleep_us value?
-
-It depends on what you have in mind about hardware. I'm fine with either way,
-but 0 has to be explained (in the comment).
-
--- 
-With Best Regards,
-Andy Shevchenko
+--- a/drivers/gpio/gpio-mpc8xxx.c
++++ b/drivers/gpio/gpio-mpc8xxx.c
+@@ -47,7 +47,7 @@ struct mpc8xxx_gpio_chip {
+ 				unsigned offset, int value);
+ 
+ 	struct irq_domain *irq;
+-	unsigned int irqn;
++	int irqn;
+ };
+ 
+ /*
 
 
