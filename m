@@ -2,97 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75559C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244729AbiBGIQj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:16:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51772 "EHLO
+        id S245407AbiBGIQn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:16:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244786AbiBGILG (ORCPT
+        with ESMTP id S241269AbiBGIOe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:11:06 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3767EC043181;
-        Mon,  7 Feb 2022 00:11:06 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso2387705pjg.0;
-        Mon, 07 Feb 2022 00:11:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=BPjSWbh9AJ/hwlVO5qE57HHwxamYnP4dP25AlKlaQB0=;
-        b=fljC4K8mp7UCV0YBMVphzhqbkGi6y6RWCT/EkUq7gpJt/RBphqFd0VUpS7a4gvGiDW
-         1MvVxMOi6quLAZr/sq6O7CTd3gp3/VjoxVkvmTbWD8NnKvx+rn421HNz3NY/LKozZEpu
-         hJ1Ur2sHlonWawIcw+hlDQXrtLmggy+NDPz/4Vt0i3z3lvj8svvcfQv4ktGcayPFHGiz
-         gVCf0CcYzzJdnNWmRiskoMF0yJKa8XFcLPrrW/mMD41M5Rm3gA32hiMMeU8qgzzm9L+v
-         8nZgnNQEi7yMvD14jvYfD0/i5KI0S8eOtZhms0MFY5iyczSAGkhvwXAoURKtXhHO5OV/
-         Ubmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=BPjSWbh9AJ/hwlVO5qE57HHwxamYnP4dP25AlKlaQB0=;
-        b=hjP1hNVCpT/ykeYdkTP4UZB/UE1m5YTN5gyXmgIPSni5H0VwHMjls9bzkoU1uSz0CZ
-         0W7Pggj0kx3awybOBgeHmo/aJpf5K0n5cxxAH+1bSBdax6Mi/WkZxWM1v1t70GEzY5sf
-         DdLQU7IPzav3nO6Ay28jPOFTa7FOG9JnxIvx1SgzH4U2nuShLlHu5NMmN0fBT5yD2uBh
-         nY1Vy6jK6jKmE2FBux6bQc6Z3ZY1ZYNuxSA+duJ0uatrtfs10pF32djNttyrF4uC5FWH
-         5ScNeIjRd53oehyYHfgQYePmCdfGrgw0JUXlRzq10PYDgZU0Tp/k+VN+/4hJV6s76f1e
-         HSQg==
-X-Gm-Message-State: AOAM530m2SFs7dMmlVwffDE5kK8WFyZNIXu9cZX/9DsLbO2qMNAykZvW
-        xPVejJfaFHHUyrIvVLTweq0=
-X-Google-Smtp-Source: ABdhPJx7GFGlv+foTQZ4ZI/MYmg/49E0npi4U0C71AkA+B/UvYbzmgsZo2CrJryGWKM/d/EyYTxXGA==
-X-Received: by 2002:a17:902:d2c2:: with SMTP id n2mr914582plc.76.1644221465677;
-        Mon, 07 Feb 2022 00:11:05 -0800 (PST)
-Received: from scdiu3.sunplus.com ([113.196.136.192])
-        by smtp.googlemail.com with ESMTPSA id h6sm11774502pfk.110.2022.02.07.00.11.03
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 07 Feb 2022 00:11:05 -0800 (PST)
-From:   Edwin Chiu <edwinchiu0505tw@gmail.com>
-To:     robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rafael@kernel.org,
-        daniel.lezcano@linaro.org, linux-pm@vger.kernel.org,
-        edwin.chiu@sunplus.com
-Cc:     Edwin Chiu <edwinchiu0505tw@gmail.com>
-Subject: [PATCH v4] Add cpuidle driver for Sunplus SP7021
-Date:   Mon,  7 Feb 2022 16:11:14 +0800
-Message-Id: <cover.1644218105.git.edwinchiu0505tw@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 7 Feb 2022 03:14:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47AAC043181;
+        Mon,  7 Feb 2022 00:14:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7935EB80CAF;
+        Mon,  7 Feb 2022 08:14:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF403C004E1;
+        Mon,  7 Feb 2022 08:14:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644221671;
+        bh=BLXainC3o4aEn0YdR91odXDlOiGAVQqi+j0LKRoNEwM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=1wmSaLz9UlPEYwprWbF8nMw7j8kAVlxfuzLzwlngEZCz0T85gTHLSEwRXKFxDNl+G
+         ndQ6n6Un7Hl7hsVE5WANNIBsu8rmGtn35e+oD2Uun/uw1Qy37Oryua2ckRrvUhBVf4
+         yGQQohVxAuRbSMn2E6riNtXwHEK36SBL9JK+49CA=
+Date:   Mon, 7 Feb 2022 09:14:23 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     luofei <luofei@unicloud.com>
+Cc:     stable@vger.kernel.org, tony.luck@intel.com, bp@alien8.de,
+        tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com,
+        x86@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] x86/mm, mm/hwpoison: fix unmap kernel 1:1 pages
+Message-ID: <YgDU3+KsiaQ54J5N@kroah.com>
+References: <20220207075242.830685-1-luofei@unicloud.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207075242.830685-1-luofei@unicloud.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a patch series for cpuidle driver for Sunplus SP7021 SoC.
+On Mon, Feb 07, 2022 at 02:52:42AM -0500, luofei wrote:
+> Only unmap the page when the memory error is properly handled
+> by calling memory_failure(), not the other way around.
+> 
+> Fixes: 26f8c38bb466("x86/mm, mm/hwpoison: Don't unconditionally unmap kernel 1:1 pages")
 
-Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
-many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and 
-etc.) into a single chip. It is designed for industrial control.
+This commit is not in Linus's tree.  Please use the correct commit id.
 
-Refer to:
-https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
-https://tibbo.com/store/plus1.html
+thanks,
 
-Changes in v3
- - Rearrangement #include sequence
- - Change remark style to /*~*/
- - Align author email address to same as sob
- - Optimal code
-Changes in v4
- - According Rob Herringrobh's comment
-   There is no need for this binding.
-   Just wanting a different driver is not a reason for a duplicate schema.
-   So remove yaml file and submit driver again.
-   
-Edwin Chiu (1):
-  cpuidle: sunplus: Create cpuidle driver for sunplus sp7021
-
- MAINTAINERS                                   |   8 ++
- drivers/cpuidle/Kconfig.arm                   |   7 ++
- drivers/cpuidle/Makefile                      |   1 +
- drivers/cpuidle/cpuidle-sunplus.c             | 167 ++++++++++++++++++++++++++
- include/linux/platform_data/cpuidle-sunplus.h |  19 +++
- 5 files changed, 202 insertions(+)
- create mode 100644 drivers/cpuidle/cpuidle-sunplus.c
- create mode 100644 include/linux/platform_data/cpuidle-sunplus.h
-
--- 
-2.7.4
-
+greg k-h
