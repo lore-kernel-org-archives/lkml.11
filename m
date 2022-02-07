@@ -2,64 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C35C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 963A1C3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350738AbiBGFwv (ORCPT
+        id S1350342AbiBGFwk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:52:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52458 "EHLO
+        Mon, 7 Feb 2022 00:52:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349318AbiBGCwC (ORCPT
+        with ESMTP id S1349441AbiBGC6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 21:52:02 -0500
-X-Greylist: delayed 267 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 18:51:57 PST
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769AFC061A73;
-        Sun,  6 Feb 2022 18:51:56 -0800 (PST)
-X-UUID: 7873f860d8cd4d9f9e66329a85ee3cfc-20220207
-X-UUID: 7873f860d8cd4d9f9e66329a85ee3cfc-20220207
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 995789319; Mon, 07 Feb 2022 10:51:51 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 7 Feb 2022 10:51:50 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 7 Feb 2022 10:51:50 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     <wenst@chromium.org>
-CC:     <chun-jie.chen@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <miles.chen@mediatek.com>, <mturquette@baylibre.com>,
-        <sboyd@kernel.org>
-Subject: Re: [PATCH v2 18/31] clk: mediatek: Implement mtk_clk_unregister_composites() API
-Date:   Mon, 7 Feb 2022 10:51:50 +0800
-Message-ID: <20220207025150.14725-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220202134834.690675-19-wenst@chromium.org>
-References: <20220202134834.690675-19-wenst@chromium.org>
+        Sun, 6 Feb 2022 21:58:02 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EBBC043180
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 18:58:01 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so12036308pjb.1
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 18:58:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FxExIV77Tn6LTPoKZIRsR52CbJyPFso/VdKEunHEkBw=;
+        b=S7jQ23s8oyEzwMduypPD3WabdNlC9spE9m3Kp9V+vzRoH/cm/FwunXNxpa1ssKTugi
+         qcIL8WI1Wc5t0QkN/MpKucZlCvlLRDQ13BBLq/ypDhwEO1gO0VwdwNUueWi0I4Z0hMhl
+         sN0+Z4irV0bTGVKeLxH1EPYrNFPxV/SA4kCXY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FxExIV77Tn6LTPoKZIRsR52CbJyPFso/VdKEunHEkBw=;
+        b=rLECX0/nsKrKd4mgTdHW1rsmRV1E6RqOpX0w6oHQHQdfiPni0Oo58HTeklR4DrxhJr
+         cR0X+xO+DejVANa7M0K1H04bieE5ylYXBRIBzo4f9RfnroThGVqQBe930nrDznnXAO2Z
+         V8sVf+mUCbH67nz0JrQ4kvxDL1P7DiS7vyqDPmUwRjiGFu5QOXjpTyR7gO42k1e/FUZr
+         a8JBxM42N2PJ579DDypfog0cFjDL8xnujvUhepqL27RgTzCK2lESAvn2uTHTybokimy0
+         CH/NmXAV3zw2y5MtxnR3eMtNNFi8ZuiCNG5bWou1jpp6LRShFOLZZCyo3NlosZjfbsRv
+         LvzA==
+X-Gm-Message-State: AOAM531B35jmy9+CMuIdXP6vSpbgPFxg9pIUHdh5d27NxIEa1HQkVwNX
+        M2JRH6ZNcTh1Iu5a5YZcf3nv77w3EBFikg==
+X-Google-Smtp-Source: ABdhPJxWKveza+zkkF09dV74hhKksjFAaFudcZ5ZAuZ08pfsZe1frMkRh60VirGM4nvUEKziJSRZNw==
+X-Received: by 2002:a17:903:32c6:: with SMTP id i6mr14627977plr.60.1644202680932;
+        Sun, 06 Feb 2022 18:58:00 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id kx5sm2167786pjb.16.2022.02.06.18.58.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 18:58:00 -0800 (PST)
+Date:   Sun, 6 Feb 2022 18:57:59 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexander Popov <alex.popov@linux.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] gcc-plugins/stackleak: Use noinstr in favor of notrace
+Message-ID: <202202061856.EBC48533B@keescook>
+References: <20220202001918.4104428-1-keescook@chromium.org>
+ <20220206115816.GA23216@worktop.programming.kicks-ass.net>
+ <202202060819.3C86C47DCA@keescook>
+ <YgAyL2D25nweODX3@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgAyL2D25nweODX3@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> mtk_clk_register_composites(), as the name suggests, is used to register
-> a given list of composite clks. However it is lacking a counterpart
-> unregister API.
+On Sun, Feb 06, 2022 at 09:40:15PM +0100, Peter Zijlstra wrote:
+> On Sun, Feb 06, 2022 at 08:46:47AM -0800, Kees Cook wrote:
+> > On Sun, Feb 06, 2022 at 12:58:16PM +0100, Peter Zijlstra wrote:
+> > > On Tue, Feb 01, 2022 at 04:19:18PM -0800, Kees Cook wrote:
+> > > > Is it correct to exclude .noinstr.text here? That means any functions called in
+> > > > there will have their stack utilization untracked. This doesn't seem right to me,
+> > > > though. Shouldn't stackleak_track_stack() just be marked noinstr instead?
+> > > 
+> > > This patch is right. stackleak_track_stack() cannot be marked noinstr
+> > > becaues it accesses things that might not be there.
+> > 
+> > Hmm, as in "current()" may not be available/sane?
 > 
-> Implement said unregister API so that the various clock platform drivers
-> can utilize it to do proper unregistration, cleanup and removal.
+> Exactly the case; if we lift the PTI address space swizzle, we start
+> with C without having the kernel mapped or even the per-cpu segment
+> offset set. So things like current will explode.
 > 
-> In the header file, the register function's declaration is also
-> reformatted to fit code style guidelines.
+> The whole noinstr thing was invented to get back to C as portable
+> Assembler, with the express purpose to lift a bunch of entry code to C.
 > 
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+> > > Consider what happens if we pull the PTI page-table swap into the
+> > > noinstr C part.
+> > 
+> > Yeah, I see your point. I suspect the reason this all currently works
+> > is because stackleak is supposed to only instrument leaf functions that
+> > have sufficiently large (default 100 bytes) stack usage.
+> > 
+> > What sorts of things may end up in .noinstr.text that are 100+ byte stack
+> > leaf functions that would be end up deeper in the call stack? (i.e. what
+> > could get missed from stack depth tracking?) Interrupt handling comes
+> > to mind, but I'd expect that to make further calls (i.e. not a leaf).
+> 
+> All the syscall/exception/interrupt entry stuff is noinstr; I don't
+> think we have huge stackframes, but with all that in C that's much
+> easier to do than with then in asm.
+> 
+> If you worry about this, it should be possible to have objtool warn
+> about excessive stack frames for noinstr code I suppose, it already
+> tracks the stack anyway.
 
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Yeah, I think we should be okay at least for now.
+
+Let me know what you think of
+https://lore.kernel.org/linux-hardening/20220206174508.2425076-1-keescook@chromium.org/
+and if you like it I can send a v2 Linus's way...
+
+-Kees
+
+-- 
+Kees Cook
