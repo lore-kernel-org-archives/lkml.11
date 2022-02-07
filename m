@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C71AAC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D714AC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:58:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387915AbiBGLmN (ORCPT
+        id S1387922AbiBGLmP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:42:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38424 "EHLO
+        Mon, 7 Feb 2022 06:42:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381426AbiBGL3P (ORCPT
+        with ESMTP id S1384615AbiBGL31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:29:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E1CC02B660;
-        Mon,  7 Feb 2022 03:27:17 -0800 (PST)
+        Mon, 7 Feb 2022 06:29:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD43BC02B5DD;
+        Mon,  7 Feb 2022 03:27:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0357BB811B3;
-        Mon,  7 Feb 2022 11:27:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF1FDC004E1;
-        Mon,  7 Feb 2022 11:27:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0DFC60915;
+        Mon,  7 Feb 2022 11:27:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6902DC004E1;
+        Mon,  7 Feb 2022 11:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233234;
-        bh=KWI6vSg9iJAy0sZw7ylDuPKoHk9LZwGvR0dTqATAMdo=;
+        s=korg; t=1644233258;
+        bh=l41qFpCCnF7zcx7W10sjE/r96IdLrzfLg4iNeaeKeis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m+SctpmGjyHAgYwpKIDM9IOb8HMeZD8Hsf9OmOS9+z0v+WHl/AQhMKUrhpJyWEP6p
-         1dyKPKNNBtcF/tuVM+Jv8WSkbFa4xdpa1iDMpa84DCZqiq0norXy7GB+LKgRIu+9vm
-         U8CCh3nz65A8k0YcV+OsvyKPxAUjRjdPpNoKBQB4=
+        b=D92+a2DAGjT8kRqS6/Vbt1VZyUwl3vbp9PhMdw6M2aGvlkBMDXqzuaWxmf8P3MwOT
+         nCPndXAqGTRxEraoUAsH/QeK29i0KYcfhGdUsWEZ18XtOc9pDIz0FPPvwHHWcMd4No
+         1+ppNO1IJ9ugakGBEGWGOSgDVIp4smd4mIZt424E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 5.15 060/110] net: ieee802154: Return meaningful error codes from the netlink helpers
-Date:   Mon,  7 Feb 2022 12:06:33 +0100
-Message-Id: <20220207103804.313182681@linuxfoundation.org>
+        stable@vger.kernel.org, Yannick Vignon <yannick.vignon@nxp.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 067/110] net: stmmac: ensure PTP time register reads are consistent
+Date:   Mon,  7 Feb 2022 12:06:40 +0100
+Message-Id: <20220207103804.548852976@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -50,61 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Yannick Vignon <yannick.vignon@nxp.com>
 
-commit 79c37ca73a6e9a33f7b2b7783ba6af07a448c8a9 upstream.
+commit 80d4609008e6d696a279e39ae7458c916fcd44c1 upstream.
 
-Returning -1 does not indicate anything useful.
+Even if protected from preemption and interrupts, a small time window
+remains when the 2 register reads could return inconsistent values,
+each time the "seconds" register changes. This could lead to an about
+1-second error in the reported time.
 
-Use a standard and meaningful error code instead.
+Add logic to ensure the "seconds" and "nanoseconds" values are consistent.
 
-Fixes: a26c5fd7622d ("nl802154: add support for security layer")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-6-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Fixes: 92ba6888510c ("stmmac: add the support for PTP hw clock driver")
+Signed-off-by: Yannick Vignon <yannick.vignon@nxp.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Link: https://lore.kernel.org/r/20220203160025.750632-1-yannick.vignon@oss.nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ieee802154/nl802154.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c |   17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -1441,7 +1441,7 @@ static int nl802154_send_key(struct sk_b
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+@@ -145,15 +145,20 @@ static int adjust_systime(void __iomem *
  
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
+ static void get_systime(void __iomem *ioaddr, u64 *systime)
+ {
+-	u64 ns;
++	u64 ns, sec0, sec1;
  
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
-@@ -1634,7 +1634,7 @@ static int nl802154_send_device(struct s
+-	/* Get the TSSS value */
+-	ns = readl(ioaddr + PTP_STNSR);
+-	/* Get the TSS and convert sec time value to nanosecond */
+-	ns += readl(ioaddr + PTP_STSR) * 1000000000ULL;
++	/* Get the TSS value */
++	sec1 = readl_relaxed(ioaddr + PTP_STSR);
++	do {
++		sec0 = sec1;
++		/* Get the TSSS value */
++		ns = readl_relaxed(ioaddr + PTP_STNSR);
++		/* Get the TSS value */
++		sec1 = readl_relaxed(ioaddr + PTP_STSR);
++	} while (sec0 != sec1);
  
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
+ 	if (systime)
+-		*systime = ns;
++		*systime = ns + (sec1 * 1000000000ULL);
+ }
  
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
-@@ -1812,7 +1812,7 @@ static int nl802154_send_devkey(struct s
- 
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
- 
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
-@@ -1988,7 +1988,7 @@ static int nl802154_send_seclevel(struct
- 
- 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
- 	if (!hdr)
--		return -1;
-+		return -ENOBUFS;
- 
- 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
- 		goto nla_put_failure;
+ static void get_ptptime(void __iomem *ptpaddr, u64 *ptp_time)
 
 
