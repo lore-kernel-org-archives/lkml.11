@@ -2,121 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DF2C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A05C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245546AbiBGKZD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:25:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
+        id S245751AbiBGKZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:25:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357381AbiBGKL6 (ORCPT
+        with ESMTP id S1354376AbiBGKQB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:11:58 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB416C043188
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:11:53 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id n8so9465981wmk.3
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 02:11:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=guHISOtMMO9Q0hH9tbWxwVMEC6CpTUnDrgqh7P8fsAo=;
-        b=QyaiYp4jthHY0ZF6FxY8Mu0vf/UB7rbeZv6CwkI2gb5aev8fH0DUT3WLb7qkJARCXu
-         eQmncuIRTLNMcqu0YHL6Ab6CNgdMrznVD75rgoHrn3kt/u3w9hn68ZEIAZWBawj/BKD9
-         pZ3tQefFeBjg0R/4ucv147qVd7rc4hJ8fY9lzpJAr2ASghvUS6RFvhr9fJnMELEXkzMG
-         NyuEYb/SJ7wiX5IKcRoBH31obVhiSixmubK+GMjJo8pwL89HuaVx5TqvGFlCLRjaabqE
-         2xu8/BdwAr1BYlbjKP2lVJ0+a6AEGgfP/SLXNcqFMcL31DzfMsRAw+w+Uc0VymhDQ6mn
-         XvEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=guHISOtMMO9Q0hH9tbWxwVMEC6CpTUnDrgqh7P8fsAo=;
-        b=aM7sVaYogmCGHy/aZFxmHpKQYvovCYi8Bzevf6rV58SwOzhmm1ljF88CsrcJr2Jqvk
-         /9yTsblg87d9L4XaMVbycfnxTkez3jGRWyt91wXeRp1ZRaJIhk9MnXYUE677aru63zvr
-         biIxuKbKKGQJD7P5EwgeB/Q3NyFg7BLD2EfyoSompIqv2oKLF0p/pDL+A/vuAVlamwf/
-         5pBxleS6w/IpaUSHqZwhviBxTiKV1EBP3B5BHeiC5T3oVfpXna4iOFG6n0MgBfdpxVlM
-         48/nsYsMwNnob/qpQw+fkYllqnXcE5HuYaVQwR7OHcBSsOxKZh6Vb0GD5jeNuo6EBwwJ
-         O2rg==
-X-Gm-Message-State: AOAM533gRZ5rIXc+0TXKd4f5YTpsetKaQ2OId57CEmFTxr1XxlYYZG9G
-        cwO7Zbbv05GXSHhDCWR7bM0gXQ==
-X-Google-Smtp-Source: ABdhPJy37cfI9ctBEfDiVSbCY7fy4ejXeLGzYhOD0a+pEgOKu0ccEi842Nj2bPmLvc3aD4m28muY8A==
-X-Received: by 2002:a05:600c:154f:: with SMTP id f15mr10537627wmg.111.1644228712372;
-        Mon, 07 Feb 2022 02:11:52 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id j2sm9155980wms.2.2022.02.07.02.11.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 02:11:51 -0800 (PST)
-Date:   Mon, 7 Feb 2022 10:11:49 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Chanwoo Choi <cw00.choi@samsung.com>
-Subject: Re: [PATCH v2 0/4] mfd/power/regulators: dt-bindings: max14577:
- convert to dtschema
-Message-ID: <YgDwZUtc+Ac7ByWk@google.com>
-References: <20220111174337.223320-1-krzysztof.kozlowski@canonical.com>
- <73bad620-97eb-a734-cbc8-6f001d04c18a@canonical.com>
- <YgDnlWKO6/BTxZh2@google.com>
- <68d1f184-bfc5-9d78-8c68-0c793b35adf4@canonical.com>
+        Mon, 7 Feb 2022 05:16:01 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E047C043181;
+        Mon,  7 Feb 2022 02:16:01 -0800 (PST)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2178G8Pq026648;
+        Mon, 7 Feb 2022 10:16:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=GVmtIGVHCzm2ry3MqZfYnDftYznvSRoRvkFIVQKihNU=;
+ b=LGnqJlz2HHAYDij+GW/zRV+lfwSQAh9R/slDu2rPTtVC6LQaWjQz2CG3Q3JSFpqcd3vI
+ sT0+8dW9BKHSCFsNVLoDM2V7Qt0c7JxeRNOcxGiyrCrYMU2wuz+1EuYPA2Hr1AwzfON+
+ /pcKHlaNUR2lBko5UjQN8wjaD1uIBQdYEhx60Ku8q58LNbxVgkkuD0VcXTAqKnCwrbRP
+ SkNRmny7IqiDVqhxF4q4+bgRk8GLu7bj0sZSlzq7D3aQfwcxinqeBKzmz557gnXUomos
+ W6S0VBt+TtwENwW3pBVJgZ6rFoPM5cXU3CJVynxbm8dgmNV3x7eU9/XBeH2p0kmki8fG sQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e23anqqrw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 10:16:00 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2179qmB2005532;
+        Mon, 7 Feb 2022 10:16:00 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e23anqqr8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 10:16:00 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217ACqt2009976;
+        Mon, 7 Feb 2022 10:15:58 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma05fra.de.ibm.com with ESMTP id 3e1gv9t6ct-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 10:15:58 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217AFrFD42926522
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 10:15:53 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 477F64204D;
+        Mon,  7 Feb 2022 10:15:53 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E9A8542064;
+        Mon,  7 Feb 2022 10:15:52 +0000 (GMT)
+Received: from [9.145.9.42] (unknown [9.145.9.42])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Feb 2022 10:15:52 +0000 (GMT)
+Message-ID: <bd2910bb-957f-f095-8650-b192f9d6f10f@linux.ibm.com>
+Date:   Mon, 7 Feb 2022 11:15:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <68d1f184-bfc5-9d78-8c68-0c793b35adf4@canonical.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v7 08/17] KVM: s390: pv: make kvm_s390_cpus_from_pv global
+Content-Language: en-US
+To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
+        david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
+References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
+ <20220204155349.63238-9-imbrenda@linux.ibm.com>
+From:   Janosch Frank <frankja@linux.ibm.com>
+In-Reply-To: <20220204155349.63238-9-imbrenda@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: r9PSXkx-F95A0wJQqOLBOsNa5NiiI52z
+X-Proofpoint-ORIG-GUID: sdGzUh6pHacxKBbd50pYomS15062ybZZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_03,2022-02-07_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 spamscore=0 priorityscore=1501 clxscore=1015
+ mlxlogscore=999 adultscore=0 bulkscore=0 suspectscore=0 impostorscore=0
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 07 Feb 2022, Krzysztof Kozlowski wrote:
+On 2/4/22 16:53, Claudio Imbrenda wrote:
+> The functions kvm_s390_cpus_from_pv needs to be called from pv.c, so
+> make it global.
 
-> On 07/02/2022 10:34, Lee Jones wrote:
-> > On Sun, 06 Feb 2022, Krzysztof Kozlowski wrote:
-> > 
-> >> On 11/01/2022 18:43, Krzysztof Kozlowski wrote:
-> >>> Hi,
-> >>>
-> >>> Changes since v1
-> >>> ================
-> >>> 1. MFD: Use absolute path to schemas
-> >>> 2. Regulator: mention all allowed properties,
-> >>>    additionalProperties=false, add min/max values for voltages and
-> >>>    current, don't use patternProperties when not needed.
-> >>>
-> >>> Dependencies
-> >>> ============
-> >>> 1. DTS patch 1/4: nothing depends on it, sending here so Rob's automatic
-> >>>    checker won't complain about DTS.
-> >>>    I will take it via Samsung SoC tree.
-> >>>
-> >>> 2. Final MFD patch (4/4) depends on regulator and power, so the last
-> >>>    patches (2+3+4) should go via same tree.
-> >>>
-> >> Dear Lee,
-> >>
-> >> This patchset was reviewed and there are no outstanding issues. Could
-> >> you pick up patches 2-4 (skipping DTS patch) via MFD tree?
-> > 
-> > Nothing from Mark?
+
+KVM: s390: pv: Add kvm_s390_cpus_from_pv to kvm-s390.h and provide 
+documentation
+
+Future changes make it necessary to call this function from pv.c.
+
+While we're add it let's properly document kvm_s390_cpus_from_pv() and 
+kvm_s390_cpus_to_pv().
+
+
+
+
+Also could you swap patches 8 and 9 so this one is closer to patch #10?
+
+Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+
 > 
-> No, nothing. There is no other simultaneous work on these files, so I
-> don't expect conflicts here. Important part is that I got review from Rob.
+> Take the opportunity to add documentation.
 > 
-> If lack of ack makes you hesitant, I can resend hoping it will help but
-> it is a bit of pain.
+> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+> ---
+>   arch/s390/kvm/kvm-s390.c | 26 +++++++++++++++++++++++++-
+>   arch/s390/kvm/kvm-s390.h |  1 +
+>   2 files changed, 26 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> index 1a788f45d691..0fc8d1aec396 100644
+> --- a/arch/s390/kvm/kvm-s390.c
+> +++ b/arch/s390/kvm/kvm-s390.c
+> @@ -2175,7 +2175,20 @@ static int kvm_s390_set_cmma_bits(struct kvm *kvm,
+>   	return r;
+>   }
+>   
+> -static int kvm_s390_cpus_from_pv(struct kvm *kvm, u16 *rcp, u16 *rrcp)
+> +/**
+> + * kvm_s390_cpus_from_pv - Convert all protected vCPUs in a protected VM to
+> + * non protected.
+> + * @kvm the VM whose protected vCPUs are to be converted
+> + * @rcp return value for the RC field of the UVC (in case of error)
+> + * @rrcp return value for the RRC field of the UVC (in case of error)
+> + *
+> + * Does not stop in case of error, tries to convert as many
+> + * CPUs as possible. In case of error, the RC and RRC of the last error are
+> + * returned.
+> + *
+> + * Return: 0 in case of success, otherwise -EIO
+> + */
+> +int kvm_s390_cpus_from_pv(struct kvm *kvm, u16 *rcp, u16 *rrcp)
+>   {
+>   	struct kvm_vcpu *vcpu;
+>   	u16 rc, rrc;
+> @@ -2202,6 +2215,17 @@ static int kvm_s390_cpus_from_pv(struct kvm *kvm, u16 *rcp, u16 *rrcp)
+>   	return ret;
+>   }
+>   
+> +/**
+> + * kvm_s390_cpus_to_pv - Convert all non-protected vCPUs in a protected VM
+> + * to protected.
+> + * @kvm the VM whose protected vCPUs are to be converted
+> + * @rcp return value for the RC field of the UVC (in case of error)
+> + * @rrcp return value for the RRC field of the UVC (in case of error)
+> + *
+> + * Tries to undo the conversion in case of error.
+> + *
+> + * Return: 0 in case of success, otherwise -EIO
+> + */
+>   static int kvm_s390_cpus_to_pv(struct kvm *kvm, u16 *rc, u16 *rrc)
+>   {
+>   	unsigned long i;
+> diff --git a/arch/s390/kvm/kvm-s390.h b/arch/s390/kvm/kvm-s390.h
+> index 098831e815e6..9276d910631b 100644
+> --- a/arch/s390/kvm/kvm-s390.h
+> +++ b/arch/s390/kvm/kvm-s390.h
+> @@ -365,6 +365,7 @@ int kvm_s390_vcpu_setup_cmma(struct kvm_vcpu *vcpu);
+>   void kvm_s390_vcpu_unsetup_cmma(struct kvm_vcpu *vcpu);
+>   void kvm_s390_set_cpu_timer(struct kvm_vcpu *vcpu, __u64 cputm);
+>   __u64 kvm_s390_get_cpu_timer(struct kvm_vcpu *vcpu);
+> +int kvm_s390_cpus_from_pv(struct kvm *kvm, u16 *rcp, u16 *rrcp);
+>   
+>   /* implemented in diag.c */
+>   int kvm_s390_handle_diag(struct kvm_vcpu *vcpu);
+> 
 
-No need.  I'll ping Mark privately to de-conflict.
-
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
