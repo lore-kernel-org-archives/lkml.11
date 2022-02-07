@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F128BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB864C47082
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381176AbiBGLRE (ORCPT
+        id S1381094AbiBGLQ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:17:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
+        Mon, 7 Feb 2022 06:16:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379885AbiBGLQ2 (ORCPT
+        with ESMTP id S1379788AbiBGLQY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:16:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6D5C043181;
-        Mon,  7 Feb 2022 03:16:27 -0800 (PST)
+        Mon, 7 Feb 2022 06:16:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D787C043181;
+        Mon,  7 Feb 2022 03:16:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B52CB80EC3;
-        Mon,  7 Feb 2022 11:16:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55234C004E1;
-        Mon,  7 Feb 2022 11:16:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A6AB6077B;
+        Mon,  7 Feb 2022 11:16:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A573C004E1;
+        Mon,  7 Feb 2022 11:16:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232585;
-        bh=V5zhYNZoU8n/q3yA/4X3J6GPtvrP5VLschKaveJCJQg=;
+        s=korg; t=1644232581;
+        bh=SeRPt0Q98nfh9FsG1mrvShNaWyOUqkOPAtPUaS5DPVE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zCBkWLvgYWX9IWwHEIlX492eEOnKY69/aRoWQBtfBH05zMEBxiKKvLu4Upk6m551Z
-         wt+Gd3puThWX02xmKb22STnBv8RkNNUX6Wn9/Exk4iAgvvTqp5FRMJ02aBJV8WSIjH
-         hIWO90eLDIsP/DoeHTSmLzu6MomAtbOIB9a/2pWo=
+        b=TmV2krPPFpE63GkETE13Stca2AR0A4v6FSAB/IMG3vjyBfU+Vkd0cHtSKIO/tq9l5
+         JStNQahFKStC6vnDzCVHfA0V7PNKmyPasJO1L5ApK1MtweM+ru+mYSDg8hAYGmfDZY
+         Oc4nuKHi+ArlH6nknAifFY5PpEK5mIlzaoBNufE0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.19 56/86] ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
-Date:   Mon,  7 Feb 2022 12:06:19 +0100
-Message-Id: <20220207103759.397178352@linuxfoundation.org>
+Subject: [PATCH 4.19 55/86] ASoC: ops: Reject out of bounds values in snd_soc_put_volsw()
+Date:   Mon,  7 Feb 2022 12:06:18 +0100
+Message-Id: <20220207103759.366006472@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -50,7 +50,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mark Brown <broonie@kernel.org>
 
-commit 4f1e50d6a9cf9c1b8c859d449b5031cacfa8404e upstream.
+commit 817f7c9335ec01e0f5e8caffc4f1dcd5e458a4c0 upstream.
 
 We don't currently validate that the values being set are within the range
 we advertised to userspace as being valid, do so and reject any values
@@ -58,19 +58,20 @@ that are out of range.
 
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220124153253.3548853-3-broonie@kernel.org
+Link: https://lore.kernel.org/r/20220124153253.3548853-2-broonie@kernel.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-ops.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ sound/soc/soc-ops.c |   18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
 --- a/sound/soc/soc-ops.c
 +++ b/sound/soc/soc-ops.c
-@@ -436,8 +436,15 @@ int snd_soc_put_volsw_sx(struct snd_kcon
- 	int err = 0;
- 	unsigned int val, val_mask, val2 = 0;
+@@ -322,13 +322,27 @@ int snd_soc_put_volsw(struct snd_kcontro
+ 	if (sign_bit)
+ 		mask = BIT(sign_bit + 1) - 1;
  
+-	val = ((ucontrol->value.integer.value[0] + min) & mask);
 +	val = ucontrol->value.integer.value[0];
 +	if (mc->platform_max && val > mc->platform_max)
 +		return -EINVAL;
@@ -78,11 +79,23 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +		return -EINVAL;
 +	if (val < 0)
 +		return -EINVAL;
- 	val_mask = mask << shift;
--	val = (ucontrol->value.integer.value[0] + min) & mask;
 +	val = (val + min) & mask;
+ 	if (invert)
+ 		val = max - val;
+ 	val_mask = mask << shift;
  	val = val << shift;
- 
- 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
+ 	if (snd_soc_volsw_is_stereo(mc)) {
+-		val2 = ((ucontrol->value.integer.value[1] + min) & mask);
++		val2 = ucontrol->value.integer.value[1];
++		if (mc->platform_max && val2 > mc->platform_max)
++			return -EINVAL;
++		if (val2 > max - min)
++			return -EINVAL;
++		if (val2 < 0)
++			return -EINVAL;
++		val2 = (val2 + min) & mask;
+ 		if (invert)
+ 			val2 = max - val2;
+ 		if (reg == reg2) {
 
 
