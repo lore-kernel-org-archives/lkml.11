@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D539C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C57FC3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343864AbiBGLLb (ORCPT
+        id S1345985AbiBGLLg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:11:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
+        Mon, 7 Feb 2022 06:11:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235129AbiBGLKA (ORCPT
+        with ESMTP id S237982AbiBGLKL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:10:00 -0500
+        Mon, 7 Feb 2022 06:10:11 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBB8C043181;
-        Mon,  7 Feb 2022 03:10:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D92C043181;
+        Mon,  7 Feb 2022 03:10:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE73D61261;
-        Mon,  7 Feb 2022 11:09:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FDC4C004E1;
-        Mon,  7 Feb 2022 11:09:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DEA761380;
+        Mon,  7 Feb 2022 11:10:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B4E6C004E1;
+        Mon,  7 Feb 2022 11:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232199;
-        bh=e33QsNjVU05DR+DPLHy/MjtwUMwEaty783dBJ63ogEM=;
+        s=korg; t=1644232207;
+        bh=ZeDUeqjVFY5hR5gcDoPLSCYZkaeoS06bacBxe8SFSYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oO7KNjcyQd62PLWYdLTyjzcz2FBYLjk+AvOGnY4GbtWNtH7FaQPF9skoOUDWef+Fs
-         LE+sV5JCkYjfS+J8J1vdyrkQb0Q/LPF57AgrT1jsUaRVJRDDjeezg5FjiL3GQa8uj8
-         d7JY44UfSKqX62ZYLOGCX6RaFrWDRydAuXQKUtY0=
+        b=GnBd8wn/P3XDO6N86wnGOyLlN6MDxaskKpXvDza+9OrsH+DQnGXic9jGI7g3VcAKF
+         sTK9gYwqloH5ae+OMN5qWVy9rpcghRZ9vCO3GraAhHsbek27k3JUFEFa0wYqBSoyZv
+         Frmq1Rj2xtzw1u+ztGbnVbnemFGQnyB5DTDToFV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.9 16/48] ipv6_tunnel: Rate limit warning messages
-Date:   Mon,  7 Feb 2022 12:05:49 +0100
-Message-Id: <20220207103752.872721609@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 4.9 09/48] tty: n_gsm: fix SW flow control encoding/handling
+Date:   Mon,  7 Feb 2022 12:05:42 +0100
+Message-Id: <20220207103752.643784889@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -51,44 +48,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: daniel.starke@siemens.com <daniel.starke@siemens.com>
 
-commit 6cee105e7f2ced596373951d9ea08dacc3883c68 upstream.
+commit 8838b2af23caf1ff0610caef2795d6668a013b2d upstream.
 
-The warning messages can be invoked from the data path for every packet
-transmitted through an ip6gre netdev, leading to high CPU utilization.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.2.7.3 states that DC1 (XON) and DC3 (XOFF)
+are the control characters defined in ISO/IEC 646. These shall be quoted if
+seen in the data stream to avoid interpretation as flow control characters.
 
-Fix that by rate limiting the messages.
+ISO/IEC 646 refers to the set of ISO standards described as the ISO
+7-bit coded character set for information interchange. Its final version
+is also known as ITU T.50.
+See https://www.itu.int/rec/T-REC-T.50-199209-I/en
 
-Fixes: 09c6bbf090ec ("[IPV6]: Do mandatory IPv6 tunnel endpoint checks in realtime")
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Tested-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+To abide the standard it is needed to quote DC1 and DC3 correctly if these
+are seen as data bytes and not as control characters. The current
+implementation already tries to enforce this but fails to catch all
+defined cases. 3GPP 27.010 chapter 5.2.7.3 clearly states that the most
+significant bit shall be ignored for DC1 and DC3 handling. The current
+implementation handles only the case with the most significant bit set 0.
+Cases in which DC1 and DC3 have the most significant bit set 1 are left
+unhandled.
+
+This patch fixes this by masking the data bytes with ISO_IEC_646_MASK (only
+the 7 least significant bits set 1) before comparing them with XON
+(a.k.a. DC1) and XOFF (a.k.a. DC3) when testing which byte values need
+quotation via byte stuffing.
+
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220120101857.2509-1-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/ip6_tunnel.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/n_gsm.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -1007,12 +1007,12 @@ int ip6_tnl_xmit_ctl(struct ip6_tnl *t,
- 			ldev = dev_get_by_index_rcu(net, p->link);
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -329,6 +329,7 @@ static struct tty_driver *gsm_tty_driver
+ #define GSM1_ESCAPE_BITS	0x20
+ #define XON			0x11
+ #define XOFF			0x13
++#define ISO_IEC_646_MASK	0x7F
  
- 		if (unlikely(!ipv6_chk_addr(net, laddr, ldev, 0)))
--			pr_warn("%s xmit: Local address not yet configured!\n",
--				p->name);
-+			pr_warn_ratelimited("%s xmit: Local address not yet configured!\n",
-+					    p->name);
- 		else if (!ipv6_addr_is_multicast(raddr) &&
- 			 unlikely(ipv6_chk_addr(net, raddr, NULL, 0)))
--			pr_warn("%s xmit: Routing loop! Remote address found on this node!\n",
--				p->name);
-+			pr_warn_ratelimited("%s xmit: Routing loop! Remote address found on this node!\n",
-+					    p->name);
- 		else
- 			ret = 1;
- 		rcu_read_unlock();
+ static const struct tty_port_operations gsm_port_ops;
+ 
+@@ -547,7 +548,8 @@ static int gsm_stuff_frame(const u8 *inp
+ 	int olen = 0;
+ 	while (len--) {
+ 		if (*input == GSM1_SOF || *input == GSM1_ESCAPE
+-		    || *input == XON || *input == XOFF) {
++		    || (*input & ISO_IEC_646_MASK) == XON
++		    || (*input & ISO_IEC_646_MASK) == XOFF) {
+ 			*output++ = GSM1_ESCAPE;
+ 			*output++ = *input++ ^ GSM1_ESCAPE_BITS;
+ 			olen++;
 
 
