@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CDAC47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D6BEC3527B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:55:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387224AbiBGLkb (ORCPT
+        id S1387239AbiBGLkm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:40:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37838 "EHLO
+        Mon, 7 Feb 2022 06:40:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384754AbiBGL37 (ORCPT
+        with ESMTP id S1384538AbiBGL2M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:29:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B18EC0401DC;
-        Mon,  7 Feb 2022 03:28:19 -0800 (PST)
+        Mon, 7 Feb 2022 06:28:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59D6C03BFD9;
+        Mon,  7 Feb 2022 03:26:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1736BB811BE;
-        Mon,  7 Feb 2022 11:28:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A233C34105;
-        Mon,  7 Feb 2022 11:28:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C54B060909;
+        Mon,  7 Feb 2022 11:26:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC48AC004E1;
+        Mon,  7 Feb 2022 11:26:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233296;
-        bh=UQXmFZvWzDM7T2wZ+gPuu+7zNQpmp5zPgxWJTNgyGXI=;
+        s=korg; t=1644233181;
+        bh=gn4OAdhu+hH8rfibNVVxX0yqlvsmy0BuWCaHNaM1xOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aq6IU9Ac0g28anXfaCl112u/WLMKHHtio1k8ya51ZrVKxXNmGaazTWehkv6LwAiY6
-         ExI02T1imwcIA5Z20EH3Kbv7VBy9TdF636ES182qjLDm7wvlhAcmDQO0denAyLperg
-         2OpKiGauxUXRRvjYmBHUmpAvoMIOnr/Nf9amGjro=
+        b=kJL0RC8XbVpPaTs9zJfOwpsU6XRRwtgIBswbI8M4xn67FouCJv0K+BzB4JGLqP5zN
+         dAFew134IAAYno2DJ/s0q92JAXIPUbZh4+GghQgCOf1KYVhSfkvhCBDrTo8vc3YHY3
+         P+SO41210E/myAOsXs1INv1CtiWHBsUAzYwP7/zI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 051/110] spi: mediatek: Avoid NULL pointer crash in interrupt
-Date:   Mon,  7 Feb 2022 12:06:24 +0100
-Message-Id: <20220207103804.007505010@linuxfoundation.org>
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.15 042/110] IB/rdmavt: Validate remote_addr during loopback atomic tests
+Date:   Mon,  7 Feb 2022 12:06:15 +0100
+Message-Id: <20220207103803.703835249@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -50,34 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+From: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
 
-commit f83a96e5f033fbbd21764705cb9c04234b96218e upstream.
+commit 4028bccb003cf67e46632dee7f97ddc5d7b6e685 upstream.
 
-In some case, like after a transfer timeout, master->cur_msg pointer
-is NULL which led to a kernel crash when trying to use master->cur_msg->spi.
-mtk_spi_can_dma(), pointed by master->can_dma, doesn't use this parameter
-avoid the problem by setting NULL as second parameter.
+The rdma-core test suite sends an unaligned remote address and expects a
+failure.
 
-Fixes: a568231f46322 ("spi: mediatek: Add spi bus for Mediatek MT8173")
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Link: https://lore.kernel.org/r/20220131141708.888710-1-benjamin.gaignard@collabora.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+ERROR: test_atomic_non_aligned_addr (tests.test_atomic.AtomicTest)
+
+The qib/hfi1 rc handling validates properly, but the test has the client
+and server on the same system.
+
+The loopback of these operations is a distinct code path.
+
+Fix by syntaxing the proposed remote address in the loopback code path.
+
+Fixes: 15703461533a ("IB/{hfi1, qib, rdmavt}: Move ruc_loopback to rdmavt")
+Link: https://lore.kernel.org/r/1642584489-141005-1-git-send-email-mike.marciniszyn@cornelisnetworks.com
+Reviewed-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-mt65xx.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/infiniband/sw/rdmavt/qp.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/spi/spi-mt65xx.c
-+++ b/drivers/spi/spi-mt65xx.c
-@@ -624,7 +624,7 @@ static irqreturn_t mtk_spi_interrupt(int
- 	else
- 		mdata->state = MTK_SPI_IDLE;
- 
--	if (!master->can_dma(master, master->cur_msg->spi, trans)) {
-+	if (!master->can_dma(master, NULL, trans)) {
- 		if (trans->rx_buf) {
- 			cnt = mdata->xfer_len / 4;
- 			ioread32_rep(mdata->base + SPI_RX_DATA_REG,
+--- a/drivers/infiniband/sw/rdmavt/qp.c
++++ b/drivers/infiniband/sw/rdmavt/qp.c
+@@ -3073,6 +3073,8 @@ do_write:
+ 	case IB_WR_ATOMIC_FETCH_AND_ADD:
+ 		if (unlikely(!(qp->qp_access_flags & IB_ACCESS_REMOTE_ATOMIC)))
+ 			goto inv_err;
++		if (unlikely(wqe->atomic_wr.remote_addr & (sizeof(u64) - 1)))
++			goto inv_err;
+ 		if (unlikely(!rvt_rkey_ok(qp, &qp->r_sge.sge, sizeof(u64),
+ 					  wqe->atomic_wr.remote_addr,
+ 					  wqe->atomic_wr.rkey,
 
 
