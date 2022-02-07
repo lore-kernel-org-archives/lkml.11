@@ -2,156 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67795C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26508C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386847AbiBGQBb (ORCPT
+        id S1386817AbiBGQB1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:01:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38624 "EHLO
+        Mon, 7 Feb 2022 11:01:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343591AbiBGP7e (ORCPT
+        with ESMTP id S245674AbiBGP7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:59:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74D8BC0401D2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:59:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249571;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=w984BAq0R1oM4sAFKCgHPFGUA43pzvjZKViTrxIXmwo=;
-        b=IJWwb1AufLCleVD3JQj1MiERfTFc2BS98u1YmsncVywy0/pKNftqX4xLzpRd2ENtua3jTj
-        VPqjjRztpS81uWPVnlN24oi4Mnm7Xka99ICAOVc3+ilO018C/nRvkLsnfeI8OgqkY4DjnD
-        AO0VmjnR8hcQbOYagdKwvlQ/wRj6nyQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-163-O5YhTrTkOROtuwBe0TEI_A-1; Mon, 07 Feb 2022 10:59:25 -0500
-X-MC-Unique: O5YhTrTkOROtuwBe0TEI_A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 7 Feb 2022 10:59:30 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C594C0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:59:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 74A9B1800D50;
-        Mon,  7 Feb 2022 15:59:19 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0DC207DE4D;
-        Mon,  7 Feb 2022 15:59:11 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Tony Luck <tony.luck@intel.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        by sin.source.kernel.org (Postfix) with ESMTPS id ED51CCE117B
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:59:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44E62C340F1;
+        Mon,  7 Feb 2022 15:59:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644249566;
+        bh=rRFnPno5dkJM7f0KqhuvvzKal926llCMJt1u2/5Gzcs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ht2+US44QjkwBGabQKfd+HQsGzSiDtUE6aGAel5GK5j2jPY0dxdnU+771HrqJWyp3
+         yMSgogoceiO+vkImpf+gAIqt+Kb1toFH+jVnfSySGJzsBluqyGZB0tVLEOo92gPezi
+         gEIF5itU/nfiYXnV1KfQIGPKbyyxJOKu9i4jd8nNjPtj1CfTA+57y1lvXSsR8PceER
+         Q/r6u1kk/hblG9lo5GgTVZfXWlxWfZaedhFcdrMSmc0UW9mp77z6RihgUY88WRxKkA
+         U1EYqZvd3eCfMuUr9TcnnkaxU5zk0WYSY9zTxZ8YaTgEd7+f6j+nFMVucCNYk2aqxv
+         S3PRkDqHeLjXA==
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@gentwo.de>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nitesh Lal <nilal@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sean Christopherson <seanjc@google.com>,
-        David Airlie <airlied@linux.ie>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Jim Mattson <jmattson@google.com>, x86@kernel.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 21/30] x86: KVMGT: use kvm_page_track_write_tracking_enable
-Date:   Mon,  7 Feb 2022 17:54:38 +0200
-Message-Id: <20220207155447.840194-22-mlevitsk@redhat.com>
-In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
-References: <20220207155447.840194-1-mlevitsk@redhat.com>
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Nicolas Saenz <nsaenzju@redhat.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Phil Auld <pauld@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>
+Subject: [PATCH 2/8] workqueue: Decouple HK_FLAG_WQ and HK_FLAG_DOMAIN cpumask fetch
+Date:   Mon,  7 Feb 2022 16:59:04 +0100
+Message-Id: <20220207155910.527133-3-frederic@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220207155910.527133-1-frederic@kernel.org>
+References: <20220207155910.527133-1-frederic@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This allows to enable the write tracking only when KVMGT is
-actually used and doesn't carry any penalty otherwise.
+To prepare for supporting each feature of the housekeeping cpumask
+toward cpuset, prepare each of the HK_FLAG_* entries to move to their
+own cpumask with enforcing to fetch them individually. The new
+constraint is that multiple HK_FLAG_* entries can't be mixed together
+anymore in a single call to housekeeping cpumask().
 
-Tested by booting a VM with a kvmgt mdev device.
+This will later allow, for example, to runtime modify the cpulist passed
+through "isolcpus=", "nohz_full=" and "rcu_nocbs=" kernel boot
+parameters.
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
+Reviewed-by: Phil Auld <pauld@redhat.com>
+Acked-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Nitesh Lal <nilal@redhat.com>
+Cc: Nicolas Saenz <nsaenzju@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Christoph Lameter <cl@gentwo.de>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Zefan Li <lizefan.x@bytedance.com>
+Cc: Alex Belits <abelits@marvell.com>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Paul E. McKenney  <paulmck@kernel.org>
 ---
- arch/x86/kvm/Kconfig             | 3 ---
- arch/x86/kvm/mmu/mmu.c           | 2 +-
- drivers/gpu/drm/i915/Kconfig     | 1 -
- drivers/gpu/drm/i915/gvt/kvmgt.c | 5 +++++
- 4 files changed, 6 insertions(+), 5 deletions(-)
+ kernel/workqueue.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
-index ebc8ce9ec9173..169f8833cd0d1 100644
---- a/arch/x86/kvm/Kconfig
-+++ b/arch/x86/kvm/Kconfig
-@@ -132,7 +132,4 @@ config KVM_MMU_AUDIT
- 	 This option adds a R/W kVM module parameter 'mmu_audit', which allows
- 	 auditing of KVM MMU events at runtime.
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 33f1106b4f99..61ed310621ea 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -6006,13 +6006,13 @@ static void __init wq_numa_init(void)
+ void __init workqueue_init_early(void)
+ {
+ 	int std_nice[NR_STD_WORKER_POOLS] = { 0, HIGHPRI_NICE_LEVEL };
+-	int hk_flags = HK_FLAG_DOMAIN | HK_FLAG_WQ;
+ 	int i, cpu;
  
--config KVM_EXTERNAL_WRITE_TRACKING
--	bool
--
- endif # VIRTUALIZATION
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 431e02ba73690..e4e2fc8e7d7a5 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -5712,7 +5712,7 @@ void kvm_mmu_init_vm(struct kvm *kvm)
- 	node->track_flush_slot = kvm_mmu_invalidate_zap_pages_in_memslot;
- 	kvm_page_track_register_notifier(kvm, node);
+ 	BUILD_BUG_ON(__alignof__(struct pool_workqueue) < __alignof__(long long));
  
--	if (IS_ENABLED(CONFIG_KVM_EXTERNAL_WRITE_TRACKING) || !tdp_enabled)
-+	if (!tdp_enabled)
- 		mmu_enable_write_tracking(kvm);
- }
+ 	BUG_ON(!alloc_cpumask_var(&wq_unbound_cpumask, GFP_KERNEL));
+-	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(hk_flags));
++	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(HK_FLAG_WQ));
++	cpumask_and(wq_unbound_cpumask, wq_unbound_cpumask, housekeeping_cpumask(HK_FLAG_DOMAIN));
  
-diff --git a/drivers/gpu/drm/i915/Kconfig b/drivers/gpu/drm/i915/Kconfig
-index 84b6fc70cbf52..bf041b26ffec3 100644
---- a/drivers/gpu/drm/i915/Kconfig
-+++ b/drivers/gpu/drm/i915/Kconfig
-@@ -126,7 +126,6 @@ config DRM_I915_GVT_KVMGT
- 	depends on DRM_I915_GVT
- 	depends on KVM
- 	depends on VFIO_MDEV
--	select KVM_EXTERNAL_WRITE_TRACKING
- 	default n
- 	help
- 	  Choose this option if you want to enable KVMGT support for
-diff --git a/drivers/gpu/drm/i915/gvt/kvmgt.c b/drivers/gpu/drm/i915/gvt/kvmgt.c
-index 20b82fb036f8c..64ced3c2bc550 100644
---- a/drivers/gpu/drm/i915/gvt/kvmgt.c
-+++ b/drivers/gpu/drm/i915/gvt/kvmgt.c
-@@ -1916,6 +1916,7 @@ static int kvmgt_guest_init(struct mdev_device *mdev)
- 	struct intel_vgpu *vgpu;
- 	struct kvmgt_vdev *vdev;
- 	struct kvm *kvm;
-+	int ret;
+ 	pwq_cache = KMEM_CACHE(pool_workqueue, SLAB_PANIC);
  
- 	vgpu = mdev_get_drvdata(mdev);
- 	if (handle_valid(vgpu->handle))
-@@ -1931,6 +1932,10 @@ static int kvmgt_guest_init(struct mdev_device *mdev)
- 	if (__kvmgt_vgpu_exist(vgpu, kvm))
- 		return -EEXIST;
- 
-+	ret = kvm_page_track_write_tracking_enable(kvm);
-+	if (ret)
-+		return ret;
-+
- 	info = vzalloc(sizeof(struct kvmgt_guest_info));
- 	if (!info)
- 		return -ENOMEM;
 -- 
-2.26.3
+2.25.1
 
