@@ -2,46 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB38BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 182D9C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242571AbiBGHRq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 02:17:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54156 "EHLO
+        id S243704AbiBGHRx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 02:17:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241383AbiBGHMM (ORCPT
+        with ESMTP id S244462AbiBGHD5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 02:12:12 -0500
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3553AC043181
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 23:12:12 -0800 (PST)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 72D1068BFE; Mon,  7 Feb 2022 08:12:09 +0100 (CET)
-Date:   Mon, 7 Feb 2022 08:12:09 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 06/10] iommu/vt-d: Remove DEFER_DEVICE_DOMAIN_INFO
-Message-ID: <20220207071209.GF23941@lst.de>
-References: <20220207064142.1092846-1-baolu.lu@linux.intel.com> <20220207064142.1092846-7-baolu.lu@linux.intel.com>
+        Mon, 7 Feb 2022 02:03:57 -0500
+X-Greylist: delayed 556 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 23:03:56 PST
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5910C0401C0;
+        Sun,  6 Feb 2022 23:03:56 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 4FDBE80E1;
+        Mon,  7 Feb 2022 06:54:16 +0000 (UTC)
+Date:   Mon, 7 Feb 2022 08:54:37 +0200
+From:   Tony Lindgren <tony@atomide.com>
+To:     Nishanth Menon <nm@ti.com>
+Cc:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>, jan.kiszka@siemens.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] arm64: dts: ti: k3-am65: disable optional
+ peripherals by default
+Message-ID: <YgDCLaBHA3DDQAUd@atomide.com>
+References: <20220203140240.973690-1-matthias.schiffer@ew.tq-group.com>
+ <20220204143108.653qk2ihnlhsr5aa@prior>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220207064142.1092846-7-baolu.lu@linux.intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20220204143108.653qk2ihnlhsr5aa@prior>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->  struct device_domain_info *get_domain_info(struct device *dev)
->  {
-> +	return dev_iommu_priv_get(dev);
->  }
+Hi,
 
-I'd remove this now pointles wrapper entirely.
+* Nishanth Menon <nm@ti.com> [220204 14:30]:
+> Rob, Tony, Arnd, SoC maintainers,
+> 
+> On 15:02-20220203, Matthias Schiffer wrote:
+> > All peripherals that require pinmuxing or other configuration to work
+> > should be disabled by default. Dependent DTS are adjusted accordingly.
+
+Disabling SoC internal devices by default is not a good policy. The
+devices are available even if not pinned out. Disabling device by default
+causes runtime PM to not work as the kernel will completely ignore the
+disabled devices. And this means you add a dependency to some certain
+version of a bootloader for PM to work.
+
+Additionally tagging devices as disabled by default (and then again
+re-enabling them in the board specific dts files) is just pointless
+churn and bloat. See for example commit 12afc0cf8121 ("ARM: dts: Drop
+pointless status changing for am3 musb") :)
+
+If you really want to disable some devices for memory usage or other
+reasons, do it in the board specific dts files.
+
+> https://lore.kernel.org/linux-arm-kernel/20201112183538.6805-1-nm@ti.com/
+> reversal all over again.
+> 
+> Is there a specific pattern we are intending to use here? Because, if we
+> are going down this path (which would be a major churn across multiple
+> downstream trees as well) - I'd rather have this as a documented
+> standard and not just a TI approach and will need to be done across all
+> K3 devices.
+> 
+> Are you aware of such a documented guideline, rather than "word of
+> mouth"? Maybe I have'nt looked deep enough, but checking..
+
+For SoCs that don't implement runtime PM the policy can be different
+without causing any harm. But for any SoCs implementing runtime PM, an
+unknown state from the bootloader is not going to work.
+
+Regards,
+
+Tony
