@@ -2,96 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A755C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92BE2C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381822AbiBGQPA (ORCPT
+        id S1381896AbiBGQPE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:15:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
+        Mon, 7 Feb 2022 11:15:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443857AbiBGQIC (ORCPT
+        with ESMTP id S1442087AbiBGQE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:08:02 -0500
-Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21508C0401E6;
-        Mon,  7 Feb 2022 08:07:56 -0800 (PST)
-Received: by mail-vs1-f50.google.com with SMTP id r20so138116vsn.0;
-        Mon, 07 Feb 2022 08:07:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IH36XLf83w5u+4nl2DlHKSEzZJZ+m1Rf3raz8J+6Itg=;
-        b=1QzYjFazcmACfnMDQLrEufUJe9Y7DpWVdd6XmtQ9LJm9+m4a2EuFnno3gHAJ0Ld+bd
-         SK10tf12+ZClghoCVLL+sHNipj+f01NhMCgtzlIxvObDNeX6X2dNYZi+EZEoJjryMNIE
-         dKowQpS5N5JJrmHYMjaictmEq8yVWhjrz1aQfrvpmLKp/M4Kcdt+SBSsYTH22esV8Ce3
-         GJWj63tpLmnM9Ues2QhQ4o1TqpCx3615eXM6VyD71CgQB+U/Q47BGf38awEU4p0w6n5y
-         lxIq6vmGkj8Bo6FeOM4puRkLYqLA92DdkZMAQM2wDefHCjuoP530o3/bqXbrt6+S2s7r
-         FsKA==
-X-Gm-Message-State: AOAM532dy0vuW/jfUBWE/jGdCBJUzhBqgHfCv9Xv52OB3KAG4dxU2n1X
-        OTRZaSJCzkxJ5fupvKLKgkraRdcpvqwyDg==
-X-Google-Smtp-Source: ABdhPJyG+bsBR+XO8uk9FDGc3Q2JhjXtVGeLtOnf4iQNxV539yNPl1mNAbkFgkhdTD3tDub9YW3SOA==
-X-Received: by 2002:a67:ec15:: with SMTP id d21mr95557vso.79.1644250075179;
-        Mon, 07 Feb 2022 08:07:55 -0800 (PST)
-Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com. [209.85.217.50])
-        by smtp.gmail.com with ESMTPSA id g20sm1015104vkq.46.2022.02.07.08.07.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 08:07:55 -0800 (PST)
-Received: by mail-vs1-f50.google.com with SMTP id a7so138550vsc.6;
-        Mon, 07 Feb 2022 08:07:54 -0800 (PST)
-X-Received: by 2002:a67:b00e:: with SMTP id z14mr142941vse.57.1644250074734;
- Mon, 07 Feb 2022 08:07:54 -0800 (PST)
+        Mon, 7 Feb 2022 11:04:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D1FC0401CE;
+        Mon,  7 Feb 2022 08:04:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA73361519;
+        Mon,  7 Feb 2022 16:04:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 969C3C004E1;
+        Mon,  7 Feb 2022 16:04:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644249865;
+        bh=0a6KWgDIwGsQreOTuboCpj+OcoV5SAHNcNpoKtW53vU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KBABG4X2nJFzGiunA/MeinaIyX+jf1x9+Lj/ewXDqgCgBzmmWGC4tXpjTRaK4dIrT
+         kKMMn93eUoDRqoEiO5Lk51OZBYijZRCkcbVKsdjo4H9/ET/K8bq5A8HBpnPdlhqntc
+         +vfU2c+xspZiCfSEg4k5CW1O16lG60UhkSvb9aHqpPiTXB4tQ6XIf256W5LloiJ8DP
+         BC3dHh/dCyw/FGF8atG9NZrftqKaR/y1dDrVz1iJeaISaUg1JsQoLBZG+Hem3NdssH
+         cQ0djSP2o+I1Cv0ae26rz+NkvD/gsz/NGHYORm+GmOw9j51QFcpoOlkPna4nU7MvIF
+         TR9wHc8HHRVHg==
+Date:   Mon, 7 Feb 2022 17:04:22 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+Cc:     linux-i2c@vger.kernel.org, Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] i2c: npcm7xx: Fix typos
+Message-ID: <YgFDBjNNcdZTxq2m@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        linux-i2c@vger.kernel.org, Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>, Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>, openbmc@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+References: <20220129093907.2196730-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-References: <20220204161806.3126321-1-jjhiblot@traphandler.com> <20220204161806.3126321-3-jjhiblot@traphandler.com>
-In-Reply-To: <20220204161806.3126321-3-jjhiblot@traphandler.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 7 Feb 2022 17:07:43 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUFs_G0ZENwRttxBbnUMZZyJ5Nks12FvNJnaJjbrXYcNg@mail.gmail.com>
-Message-ID: <CAMuHMdUFs_G0ZENwRttxBbnUMZZyJ5Nks12FvNJnaJjbrXYcNg@mail.gmail.com>
-Subject: Re: [PATCH 2/6] dt-bindings: clock: r9a06g032: Add the definition of
- the watchdog clock
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="+x8olvK+iClJ7JRj"
+Content-Disposition: inline
+In-Reply-To: <20220129093907.2196730-1-j.neuschaefer@gmx.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean-Jacques,
 
-On Fri, Feb 4, 2022 at 5:18 PM Jean-Jacques Hiblot
-<jjhiblot@traphandler.com> wrote:
-> This clock is actually the REF_SYNC_D8 clock.
->
-> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+--+x8olvK+iClJ7JRj
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for your patch!
+On Sat, Jan 29, 2022 at 10:39:07AM +0100, Jonathan Neusch=C3=A4fer wrote:
+> The comments in this driver have a few typos. Let's fix them.
+>=20
+> Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
 
-> --- a/include/dt-bindings/clock/r9a06g032-sysctrl.h
-> +++ b/include/dt-bindings/clock/r9a06g032-sysctrl.h
-> @@ -74,6 +74,7 @@
->  #define R9A06G032_CLK_DDRPHY_PCLK      81      /* AKA CLK_REF_SYNC_D4 */
->  #define R9A06G032_CLK_FW               81      /* AKA CLK_REF_SYNC_D4 */
->  #define R9A06G032_CLK_CRYPTO           81      /* AKA CLK_REF_SYNC_D4 */
-> +#define R9A06G032_CLK_WATCHDOG         82      /* AKA CLK_REF_SYNC_D8 */
->  #define R9A06G032_CLK_A7MP             84      /* AKA DIV_CA7 */
->  #define R9A06G032_HCLK_CAN0            85
->  #define R9A06G032_HCLK_CAN1            86
+Applied to for-next, thanks!
 
-I couldn't find this in the documentation, so I have to trust you on this.
 
-Gr{oetje,eeting}s,
+--+x8olvK+iClJ7JRj
+Content-Type: application/pgp-signature; name="signature.asc"
 
-                        Geert
+-----BEGIN PGP SIGNATURE-----
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIBQwUACgkQFA3kzBSg
+KbYPSBAAgW7246nTpjLJ3sAaS/G0HlCLxjizARTo6bM6o0ScAmbPP29jr05YRwCx
+cH7JuhDuaoGy5QIb6TD4AqtclHp0kDSZFkFNnkt8Y1R1SEWcNIIl2JyEQPe6HrQY
+9l2jjj/LDc0NVtkbt/6iJ9V66qEWBvGFjgs1GSQgI/K47vWI3eeThjYfNINQFVIe
+MsSAD8xOx65lxg9saxDGSqyKEwkohpo1qx2Z0DcR9Qt0uKSIuTPogJcPYCPO2AY5
+VdMSTqHrlQ36DDUqlw1VXO+WuG4WKhI60DrRxzPko2gMGtYMq0HuHdnYQtriP03L
+ofrJot6gE/PgcmYiAenAiQSJi1IgkgFTGRG/9frpkH0CAb6hkSOn/QGtQlmPJbwv
+QJuEBP6iOPbsDjcD8kU5793CMlh+FwnRX9XMhCTKJrv76b56qJnBi8N78I3dOPvK
+L0w4DTQyKe37dGJT5lfdMZYKRXxGv0v058+UZSpQSR1J9qdsAwTYHRpaPVwzkEyA
+su2W8eqATI+Yn3hMYtTq7qtZFVGXJcdHQfV2nArpJQmnIVFprR/7znO0x3TVPVC6
+ivkiTue/kcp2OJmOmN5OKxs0cccGuXaDy6ZmOgHQw6V+/ps9UB9bL05WLUMQEnK+
+YN1dObLNkYVe/Qx+yZvzGKXU/NXgRcmHCvkuawo7C0r8o5zE+3Y=
+=J/MV
+-----END PGP SIGNATURE-----
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--+x8olvK+iClJ7JRj--
