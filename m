@@ -2,85 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D152FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B120C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241854AbiBGUSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:18:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
+        id S242105AbiBGUSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:18:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243005AbiBGUMw (ORCPT
+        with ESMTP id S241877AbiBGUN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:12:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D0FC0401E7
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:12:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BCBCB81677
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 20:12:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB706C004E1;
-        Mon,  7 Feb 2022 20:12:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1644264768;
-        bh=kXoXRf04u+w4CWyQZgTAB7nm472L2Icz48OR33YGQt8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LwVI5+jid1TeZjul4yCBJPvxgfx8VsNnt38y2pEtRcCcSlZB3sIht3ghVWL+On82x
-         eRf/xbAuVah51N+riVadi+c6A/mKfFmMhopNVTB3MidzMPzdeI3BGk+UvpwjtnFssz
-         IHZsh1c+0oPHQcsqE5wcgyAsR6itraheauIdSK/A=
-Date:   Mon, 7 Feb 2022 12:12:47 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Miaohe Lin <linmiaohe@huawei.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] mm/memory_hotplug: remove obsolete comment of
- __add_pages
-Message-Id: <20220207121247.736ac7240836934247678477@linux-foundation.org>
-In-Reply-To: <21cec396-9d6a-03b7-716d-2a84c79eeb73@redhat.com>
-References: <20220207133643.23427-1-linmiaohe@huawei.com>
-        <20220207133643.23427-2-linmiaohe@huawei.com>
-        <21cec396-9d6a-03b7-716d-2a84c79eeb73@redhat.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 7 Feb 2022 15:13:58 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24877C0401E2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:13:57 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id 192so17323388ybd.10
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 12:13:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=nRc9Tqqq9fYDfHJKshSMoN+bDAjX+9kSEzcflRyBExg=;
+        b=gjrPNzzAMYoHyJvcEgNl1zceUp8sU8VR+2Gcw4fpIxLoeFsxodPJVAewDArz97bRx/
+         EEofiOzSThAi8K/KaXII8yHkyOb25AowdV8SDwCG+xpt5bxMz3t3QJPiP0YWr5T+uFAZ
+         ydG82vAaW9F7pGlI+dtC/YjBnarmYiUlXdKtU/OJ56oIqgzPe6rMUSe4tA6Y6uYpHWhu
+         yeufA+1X5VkzGc13i9hCOIDiOMl+mpqG3Z6U84RzuOa8fpW4yGAmjKZOzCiObepZWE5/
+         KQuOUrqeERcCPia8aupZccDJXdgsdhd8PKHjHQFdpnU8q6fWSrbzliIohhH0w57dV7bO
+         GKxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=nRc9Tqqq9fYDfHJKshSMoN+bDAjX+9kSEzcflRyBExg=;
+        b=B8z3tDSaiWCPSsmWC8tnGosscWjUn4NwYfnqi2QxftUWvFinMJum+TM2kdOkYX7/ow
+         6oBJuTp+SgKpJlBaqo3H7e3fOnCQg9hdxN2AS6MGNAn8dCRMny1cmRm0tpOl2KrZCabI
+         vyyr5Rz3u8eP5tJxTBOvITepCJeESHg7fSIatfykFYyImXr+KNp0VD8h5LI+00utdxYe
+         Ik2bVuADbhpBcMbFp6TqqN0Onz3IRvqD1b+zQtidc/8Z9V1pTrfeTyuO/4oO1HLZ+yeE
+         vwqgHldDsoG1jMg49eal1sZJU/AtNwT2CYbIZ3O2t1lxjrVZyy+99arBNhndVMbLW0AR
+         KzfA==
+X-Gm-Message-State: AOAM533RBTTckjxCYF7a+8sQdFYcK/1k0IadKNMrXpIqGTF7o2iFS5kB
+        JIsQ5O2cSMBpPGpkfTsbb7czBICgrg+P45FuVxUuKg==
+X-Google-Smtp-Source: ABdhPJyucK91UYiujQhpoNFj6jy7F3p2dUZ40tG1lxniwN3tAyuZDcSt1IAjz2DEOLDd8I8HqkU70fanVMaPd4Qddww=
+X-Received: by 2002:a81:ed10:: with SMTP id k16mr1741134ywm.166.1644264836076;
+ Mon, 07 Feb 2022 12:13:56 -0800 (PST)
+MIME-Version: 1.0
+References: <20220207133903.595766086@linuxfoundation.org>
+In-Reply-To: <20220207133903.595766086@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 8 Feb 2022 01:43:44 +0530
+Message-ID: <CA+G9fYswXgZsdVSg+q_76A6dvj2=8KpWKBqFCAUxC64y5JcQfQ@mail.gmail.com>
+Subject: Re: [PATCH 5.15 000/111] 5.15.22-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 15:41:21 +0100 David Hildenbrand <david@redhat.com> wrote:
+On Mon, 7 Feb 2022 at 19:34, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.22 release.
+> There are 111 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Feb 2022 13:38:43 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.22-rc2.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-> On 07.02.22 14:36, Miaohe Lin wrote:
-> > Since commit f1dd2cd13c4b ("mm, memory_hotplug: do not associate hotadded
-> > memory to zones until online"), there is no need to pass in the zone.
-> > 
-> > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> > ---
-> >  mm/memory_hotplug.c | 5 +----
-> >  1 file changed, 1 insertion(+), 4 deletions(-)
-> > 
-> > diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-> > index a4f69d399929..cbc67c27e0dd 100644
-> > --- a/mm/memory_hotplug.c
-> > +++ b/mm/memory_hotplug.c
-> > @@ -296,10 +296,7 @@ struct page *pfn_to_online_page(unsigned long pfn)
-> >  EXPORT_SYMBOL_GPL(pfn_to_online_page);
-> >  
-> >  /*
-> > - * Reasonably generic function for adding memory.  It is
-> > - * expected that archs that support memory hotplug will
-> > - * call this function after deciding the zone to which to
-> > - * add the new pages.
-> > + * Reasonably generic function for adding memory.
-> >   */
-> >  int __ref __add_pages(int nid, unsigned long pfn, unsigned long nr_pages,
-> >  		struct mhp_params *params)
-> 
-> I'd suggest just removing the comment completely.
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Thanks, I made that change.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-A better site for documentation is at add_memory().  Which, as a
-full-on exported-to-modules API function, should really have some
-docs...
+## Build
+* kernel: 5.15.22-rc2
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.15.y
+* git commit: 0472630a562104918269888a8b355d06c5060e98
+* git describe: v5.15.21-112-g0472630a5621
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
+.21-112-g0472630a5621
+
+## Test Regressions (compared to v5.15.21)
+No test regressions found.
+
+## Metric Regressions (compared to v5.15.21)
+No metric regressions found.
+
+## Test Fixes (compared to v5.15.21)
+No test fixes found.
+
+## Metric Fixes (compared to v5.15.21)
+No metric fixes found.
+
+## Test result summary
+total: 77350, pass: 66730, fail: 383, skip: 9670, xfail: 567
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 259 total, 259 passed, 0 failed
+* arm64: 37 total, 37 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 36 total, 36 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 34 total, 34 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 52 total, 48 passed, 4 failed
+* riscv: 24 total, 20 passed, 4 failed
+* s390: 18 total, 18 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 37 total, 37 passed, 0 failed
+
+## Test suites summary
+* fwts
+* kselftest-android
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-lkdtm
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* rcutorture
+* ssuite
+* v4l2-compliance
+
+--
+Linaro LKFT
+https://lkft.linaro.org
