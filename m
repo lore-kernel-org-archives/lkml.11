@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CFF6C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD40C3527A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381820AbiBGLRi (ORCPT
+        id S1381940AbiBGLRl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:17:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
+        Mon, 7 Feb 2022 06:17:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380400AbiBGLQj (ORCPT
+        with ESMTP id S1380461AbiBGLQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:16:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB134C043181;
-        Mon,  7 Feb 2022 03:16:38 -0800 (PST)
+        Mon, 7 Feb 2022 06:16:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5A2C043181;
+        Mon,  7 Feb 2022 03:16:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74D7D6126D;
-        Mon,  7 Feb 2022 11:16:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C69A8C004E1;
-        Mon,  7 Feb 2022 11:16:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54232B8107E;
+        Mon,  7 Feb 2022 11:16:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F2D5C004E1;
+        Mon,  7 Feb 2022 11:16:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232597;
-        bh=YsRx6WK12xvS86SkETnSzshMl+yodYOA2OdexcTU104=;
+        s=korg; t=1644232601;
+        bh=X2PmtcubdmBuKzfOIo3d1B6F6vjAA0MMayA++6lrPLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NNK/Zu5ly+wlMb+sEGuLJxbvGozVnTQcQXFGVmiL/arzpBIq8b51pz0/jpYH6im9W
-         lXe2dg5K0U95TXYL8wD0NqeBj8OlaPp3bNItt5E1STTplEYX0eeu+2RpLZGG4y1A6z
-         YvW++86A9EFfp9E2uC9gSzOzTqFH8U3cqgkWBVs4=
+        b=IOLfu02ft05vJpR2CcFL/E4CVXwYVTTG0c0PZqi1oIP2RFflca5oquX+5RIEqX6lP
+         cRak9p6xI/J9pdzEgePm7ib900705JQAfM1Nx3sWXqBGoJIxL97E7aJblNQK2vDT4r
+         DA+Lmvx90xfMGvE2pAH0vBLSNFci3XccOsUfMB90=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 29/86] ping: fix the sk_bound_dev_if match in ping_lookup
-Date:   Mon,  7 Feb 2022 12:05:52 +0100
-Message-Id: <20220207103758.491822413@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>, Ray Che <xijiache@gmail.com>,
+        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 30/86] ipv4: avoid using shared IP generator for connected sockets
+Date:   Mon,  7 Feb 2022 12:05:53 +0100
+Message-Id: <20220207103758.522973323@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -51,47 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 2afc3b5a31f9edf3ef0f374f5d70610c79c93a42 upstream.
+commit 23f57406b82de51809d5812afd96f210f8b627f3 upstream.
 
-When 'ping' changes to use PING socket instead of RAW socket by:
+ip_select_ident_segs() has been very conservative about using
+the connected socket private generator only for packets with IP_DF
+set, claiming it was needed for some VJ compression implementations.
 
-   # sysctl -w net.ipv4.ping_group_range="0 100"
+As mentioned in this referenced document, this can be abused.
+(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
 
-the selftests 'router_broadcast.sh' will fail, as such command
+Before switching to pure random IPID generation and possibly hurt
+some workloads, lets use the private inet socket generator.
 
-  # ip vrf exec vrf-h1 ping -I veth0 198.51.100.255 -b
+Not only this will remove one vulnerability, this will also
+improve performance of TCP flows using pmtudisc==IP_PMTUDISC_DONT
 
-can't receive the response skb by the PING socket. It's caused by mismatch
-of sk_bound_dev_if and dif in ping_rcv() when looking up the PING socket,
-as dif is vrf-h1 if dif's master was set to vrf-h1.
-
-This patch is to fix this regression by also checking the sk_bound_dev_if
-against sdif so that the packets can stil be received even if the socket
-is not bound to the vrf device but to the real iif.
-
-Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 73f156a6e8c1 ("inetpeer: get rid of ip_id_count")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Reported-by: Ray Che <xijiache@gmail.com>
+Cc: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ping.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/net/ip.h |   21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -225,7 +225,8 @@ static struct sock *ping_lookup(struct n
- 			continue;
- 		}
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -441,19 +441,18 @@ static inline void ip_select_ident_segs(
+ {
+ 	struct iphdr *iph = ip_hdr(skb);
  
--		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif)
-+		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
-+		    sk->sk_bound_dev_if != inet_sdif(skb))
- 			continue;
- 
- 		sock_hold(sk);
++	/* We had many attacks based on IPID, use the private
++	 * generator as much as we can.
++	 */
++	if (sk && inet_sk(sk)->inet_daddr) {
++		iph->id = htons(inet_sk(sk)->inet_id);
++		inet_sk(sk)->inet_id += segs;
++		return;
++	}
+ 	if ((iph->frag_off & htons(IP_DF)) && !skb->ignore_df) {
+-		/* This is only to work around buggy Windows95/2000
+-		 * VJ compression implementations.  If the ID field
+-		 * does not change, they drop every other packet in
+-		 * a TCP stream using header compression.
+-		 */
+-		if (sk && inet_sk(sk)->inet_daddr) {
+-			iph->id = htons(inet_sk(sk)->inet_id);
+-			inet_sk(sk)->inet_id += segs;
+-		} else {
+-			iph->id = 0;
+-		}
++		iph->id = 0;
+ 	} else {
++		/* Unfortunately we need the big hammer to get a suitable IPID */
+ 		__ip_select_ident(net, iph, segs);
+ 	}
+ }
 
 
