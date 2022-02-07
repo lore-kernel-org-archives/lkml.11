@@ -2,142 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 601ACC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C26C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384897AbiBGPv5 (ORCPT
+        id S1384871AbiBGPvw convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:51:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
+        Mon, 7 Feb 2022 10:51:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378595AbiBGPt5 (ORCPT
+        with ESMTP id S1386119AbiBGPqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:49:57 -0500
-X-Greylist: delayed 301 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 07:49:56 PST
-Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id CFF74C0401D2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:49:56 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1644248996; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=2yxEWoGWybWm+EWzW1VAE3C5MPy0zhkD2Pst4w6ox5s=;
- b=N+wOMipwJzrfFVCe21xKtVtaHiguBVGmgtNQebZAbkFzyorWpyF6ZWZMIINXB4/pjnLjB+im
- pJ7r1z3g/lNx818NYJPfaX+mVZG+FaOUctzbXUOEIDLyRifMnV0b9JpU4WsA16jvabrqVkXg
- bU3fvtlUfwVzq5tMzwR/paVpZ+Q=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 62013e7519d16b66a9ea982e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 07 Feb 2022 15:44:53
- GMT
-Sender: nitirawa=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9918DC43150; Mon,  7 Feb 2022 15:44:53 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: nitirawa)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id E43E8C43639;
-        Mon,  7 Feb 2022 15:44:49 +0000 (UTC)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Mon, 07 Feb 2022 21:14:49 +0530
-From:   nitirawa@codeaurora.org
-To:     Vidya Sagar <vidyas@nvidia.com>, Keith Busch <kbusch@kernel.org>
-Cc:     Keith Busch <kbusch@kernel.org>, rafael.j.wysocki@intel.com,
-        hch@lst.de, bhelgaas@google.com, mmaddireddy@nvidia.com,
-        kthota@nvidia.com, sagar.tv@gmail.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Query related to shutting down NVMe during system suspend
-In-Reply-To: <cc0b6768-5722-2277-6e51-75baf3311dc5@nvidia.com>
-References: <65b836cd-8d5d-b9c2-eb8f-2ee3ef46112b@nvidia.com>
- <20220201163054.GA2838889@dhcp-10-100-145-180.wdc.com>
- <0bd9fdc1-99d4-1c59-7343-3708b331b2b5@nvidia.com>
- <24710253b2e34dfdd81ebe1f46b84652@codeaurora.org>
- <cc0b6768-5722-2277-6e51-75baf3311dc5@nvidia.com>
-Message-ID: <c2255367927729ee00c42ae4148c1301@codeaurora.org>
-X-Sender: nitirawa@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+        Mon, 7 Feb 2022 10:46:07 -0500
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA0C5C0401C1;
+        Mon,  7 Feb 2022 07:46:06 -0800 (PST)
+Received: from smtpclient.apple (p4ff9f3e5.dip0.t-ipconnect.de [79.249.243.229])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 396FDCECF1;
+        Mon,  7 Feb 2022 16:39:45 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [PATCH v2] Bluetooth: btusb: Add a new quirk to skip
+ HCI_FLT_CLEAR_ALL on fake CSR controllers
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <4957ed07-36b8-58a0-2307-d2e6e2940527@gmail.com>
+Date:   Mon, 7 Feb 2022 16:39:44 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <71CA3E33-9498-4970-BE1A-6308D4AEE054@holtmann.org>
+References: <4957ed07-36b8-58a0-2307-d2e6e2940527@gmail.com>
+To:     Ismael Ferreras Morezuelas <swyterzone@gmail.com>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-07 17:41, Vidya Sagar wrote:
-> On 2/7/2022 4:27 PM, nitirawa@codeaurora.org wrote:
->> External email: Use caution opening links or attachments
->> 
->> 
->> On 2022-02-01 22:28, Vidya Sagar wrote:
->>> Thanks for the super quick reply and I couldn't agree more.
->>> 
->>> On 2/1/2022 10:00 PM, Keith Busch wrote:
->>>> External email: Use caution opening links or attachments
->>>> 
->>>> 
->>>> On Tue, Feb 01, 2022 at 09:52:28PM +0530, Vidya Sagar wrote:
->>>>> Hi Rafael & Christoph,
->>>>> My query is regarding the comment and the code that follows after 
->>>>> it
->>>>> at
->>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/nvme/host/pci.c?h=v5.17-rc2#n3243 
->>>>> What I understood from it is that, there is an underlying 
->>>>> assumption
->>>>> that the power to the devices is not removed during the suspend 
->>>>> call.
->>>>> In the case of device-tree based platforms like Tegra194, power is
->>>>> indeed removed to the devices during suspend-resume process. Hence,
->>>>> the
->>>>> NVMe devices need to be taken through the shutdown path 
->>>>> irrespective
->>>>> of
->>>>> whether the ASPM states are enabled or not.
->>>>> I would like to hear from you the best method to follow to achieve
->>>>> this.
->>>> 
->>>> Since platform makers can't converge on how to let a driver know 
->>>> what
->>>> it's supposed to do, I suggest we default to the simple shutdown
->>>> suspend
->>>> all the time. We can add a module parameter to let a user request 
->>>> nvme
->>>> power management if they really want it. No matter what we do here,
->>>> someone is going to complain, but at least simple shutdown is 
->>>> safe...
->>>> 
->> 
->> Hi Vidya,
->> 
->> Are you planning to add module parameter based on above discussion. I
->> see similar behaviour even with  qualcomm platform.
->> 
->> [  119.994092] nvme nvme0: I/O 9 QID 0 timeout, reset controller
->> [  120.006612] PM: dpm_run_callback(): pci_pm_resume+0x0/0xe4 returns
->> -16
->> [  120.013502] nvme 0001:01:00.0: PM: pci_pm_resume+0x0/0xe4 returned
->> -16 after 60059958 usecs
->> [  120.022239] nvme 0001:01:00.0: PM: failed to resume async: error 
->> -16
-> Not really.
-> Keith Busch has already pushed a patch to fix it in a different way
-> and issue is resolved (on Tegra platforms) with that patch.
-> https://lore.kernel.org/all/20220201165006.3074615-1-kbusch@kernel.org/
-> is that patch.
+Hi Ismael,
+
+> Another subset of the more recent batch of Chinese clones aren't
+> specs-compliant and seem to lock up whenever they receive a
+> HCI_OP_SET_EVENT_FLT with flt_type set to zero/HCI_FLT_CLEAR_ALL,
+> which on Linux happens right at BR/EDR setup.
 > 
-> Thanks & Regards,
-> Vidya Sagar
->> 
->> Regards,
->> Nitin
->> 
->> 
+> So, while all the previous efforts to wrangle the herd of fake CSRs
+> seem to be paying off (and these also get detected as such) we
+> still need to take care of this quirk; testers seem to agree
+> that these dongles tend to work well enough afterwards.
+> 
+> From some cursory USB packet capture on Windows it seems like
+> that driver doesn't appear to use this clear-all functionality at all.
+> 
+> This patch was tested on some really popular AliExpress-style
+> dongles, in my case marked as "V5.0". Chip markings: UG8413,
+> the backside of the PCB says "USB Dangel" (sic).
+> 
+> Here is the `hciconfig -a` output; for completeness:
+> 
+> hci0:	Type: Primary  Bus: USB
+> 	BD Address: 00:1A:7D:DA:7X:XX  ACL MTU: 679:8  SCO MTU: 48:16
+> 	UP RUNNING PSCAN ISCAN
+> 	Features: 0xbf 0x3e 0x4d 0xfa 0xdb 0x3d 0x7b 0xc7
+> 	Packet type: DM1 DM3 DM5 DH1 DH3 DH5 HV1 HV2 HV3
+> 	Link policy: RSWITCH SNIFF
+> 	Link mode: PERIPHERAL ACCEPT
+> 	Name: 'CSR8510 A10.'
+> 	Class: 0x7c0104
+> 	Service Classes: Rendering, Capturing, Object Transfer, Audio, Telephony
+> 	Device Class: Computer, Desktop workstation
+> 	HCI Version: 4.0 (0x6)  Revision: 0x3120
+> 	LMP Version: 4.0 (0x6)  Subversion: 0x22bb
+> 	Manufacturer: Cambridge Silicon Radio (10)
+> 
+> As well as the `lsusb -vv -d 0a12:0001`:
+> 
+> ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)
+> Device Descriptor:
+>  bLength                18
+>  bDescriptorType         1
+>  bcdUSB               2.00
+>  bDeviceClass          224 Wireless
+>  bDeviceSubClass         1 Radio Frequency
+>  bDeviceProtocol         1 Bluetooth
+>  bMaxPacketSize0        64
+>  idVendor           0x0a12 Cambridge Silicon Radio, Ltd
+>  idProduct          0x0001 Bluetooth Dongle (HCI mode)
+>  bcdDevice           88.91
+>  iManufacturer           0
+>  iProduct                2 BT DONGLE10
+>  iSerial                 0
+>  bNumConfigurations      1
+> 
+> Also, changed the benign dmesg print that shows up whenever the
+> generic force-suspend fails from bt_dev_err to bt_dev_warn;
+> it's okay and done on a best-effort basis, not a problem
+> if that does not work.
+> 
+> Also, swapped the HCI subver and LMP subver numbers for the Barrot
+> in the comment, which I copied wrong the last time around.
+> 
+> Fixes: 81cac64ba258a ("Bluetooth: Deal with USB devices that are faking CSR vendor")
+> Fixes: cde1a8a992875 ("Bluetooth: btusb: Fix and detect most of the Chinese Bluetooth controllers")
+> Fixes: d74e0ae7e0303 ("Bluetooth: btusb: Fix detection of some fake CSR controllers with a bcdDevice val of 0x0134")
+> Fixes: 0671c0662383e ("Bluetooth: btusb: Add workaround for remote-wakeup issues with Barrot 8041a02 fake CSR controllers")
+> Fixes: f4292e2faf522 ("Bluetooth: btusb: Make the CSR clone chip force-suspend workaround more generic")
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=60824
+> https://gist.github.com/nevack/6b36b82d715dc025163d9e9124840a07
+> 
+> Cc: stable@vger.kernel.org
+> Cc: Hans de Goede <hdegoede@redhat.com>
+> Tested-by: Gonzalo Tornaría <tornaria@cmat.edu.uy>
+> Tested-by: Mateus Lemos <lemonsmateus@gmail.com>
+> Tested-by: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
+> Signed-off-by: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
+> ---
+> 
+> Changes for v2:
+>  * Added HCI_QUIRK_NO_SUSPEND_NOTIFIER to btusb_setup_csr().
+>    In theory we already disable runtime suspend in btusb, button
+>    better safe than sorry. Doesn't hurt to explicitly avoid the
+>    hci_suspend_dev() codepath, it also works as example.
+>  * Improved the quirk description in hci.h, as suggested by Hans
+>    de Goede. Explain the need to disable runtime suspend.
+>  * Also check for the quirk in hci_req_set_event_filter();
+>    mirror its hci_req_clear_event_filter() counterpart.
+>  * The struct hci_dev *hdev variables always go first.
+>  * Removed some misc formatting changes.
+> 
+> The dongles still seem all peachy after the v2 changes. :)
+> 
+> drivers/bluetooth/btusb.c   |  6 ++++--
+> include/net/bluetooth/hci.h | 10 ++++++++++
+> net/bluetooth/hci_core.c    | 11 ++++++++---
+> net/bluetooth/hci_request.c | 13 ++++++++++---
+> 4 files changed, 32 insertions(+), 8 deletions(-)
 
-Thanks Vidya for pointing out the patch . This patch worked for us as 
-well.
-@keith - Please can we get this merged .
+the patch no longer applies cleanly against bluetooth-next tree. Please send an updated version.
 
-Regards,
-Nitin
+Regards
+
+Marcel
+
