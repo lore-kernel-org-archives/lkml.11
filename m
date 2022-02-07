@@ -2,78 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F6BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC626C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235242AbiBGUsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:48:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55718 "EHLO
+        id S234491AbiBGUsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:48:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242685AbiBGUm7 (ORCPT
+        with ESMTP id S242637AbiBGUkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:42:59 -0500
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D884C0401DA;
-        Mon,  7 Feb 2022 12:42:58 -0800 (PST)
-Received: by mail-oi1-f171.google.com with SMTP id u3so2486827oiv.12;
-        Mon, 07 Feb 2022 12:42:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rlE1V9OTk6BkuyItKfJDtXE3hovJxZT5HEVCUsaARlc=;
-        b=FbXej2qIduulG9djnqrz0rVXQndYbVTxSPxMKKg3HSh4RYdCeHy05ocM7wg4WQo7w+
-         Bf4JnfY9MfM1pXnm65SU4HXk/FN6LTpPflCAGQxBvzESdZRFIjiafUbILMm3tEUqCTAj
-         xtcOFxu9h9zxvNwXqkS1s47p18IXPkbWP+0Dy7VjM3bmP5tzjVbvS1b3IiptLEToEzsW
-         HMQn7qG7TAai+aXG7W4ZF9m/IdqNdIrqCKf6Lh6k5rRDmjPSQ0t8SS4KJMZ9T/WXvjsC
-         RrPIQKkkoxlrCX6sNKb5Y/CjVDsmztpFrK2zaPmaJLRClevoosADJgkxuPRwV3PA/c7g
-         V5Hw==
-X-Gm-Message-State: AOAM530h6smyg8IxjK3ovONBuKcrUSNUacYzLX/fAOjqDd0wQINsmfTG
-        4xvNHETJaN/tly/wJuKuaw==
-X-Google-Smtp-Source: ABdhPJzdEby2HALFZLU6QZB+I9qAgJ2rlgPsbx8QFyIGftJZxHXR/0k5XwciVAIo5f+eoTkU8xhLMA==
-X-Received: by 2002:a05:6808:99b:: with SMTP id a27mr354523oic.299.1644266577999;
-        Mon, 07 Feb 2022 12:42:57 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id g4sm4317453otl.1.2022.02.07.12.42.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 12:42:56 -0800 (PST)
-Received: (nullmailer pid 883752 invoked by uid 1000);
-        Mon, 07 Feb 2022 20:42:55 -0000
-Date:   Mon, 7 Feb 2022 14:42:55 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Alim Akhtar <alim.akhtar@samsung.com>
-Cc:     linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
-        andi@etezian.org, linux-spi@vger.kernel.org, linux-fsd@tesla.com,
-        robh+dt@kernel.org, linus.walleij@linaro.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        krzysztof.kozlowski@canonical.com, broonie@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Adithya K V <adithya.kv@samsung.com>
-Subject: Re: [PATCH v3 1/3] spi: dt-bindings: samsung: Add fsd spi compatible
-Message-ID: <YgGET9UVDCxDA621@robh.at.kernel.org>
-References: <20220125031604.76009-1-alim.akhtar@samsung.com>
- <CGME20220125032821epcas5p128c99ca3654fce0ec046943c90211849@epcas5p1.samsung.com>
- <20220125031604.76009-2-alim.akhtar@samsung.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125031604.76009-2-alim.akhtar@samsung.com>
+        Mon, 7 Feb 2022 15:40:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D92C0401DA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 12:40:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05270B81157
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 20:40:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A39B2C340EE;
+        Mon,  7 Feb 2022 20:40:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1644266402;
+        bh=rf8gPOUN5xstVP7dA1npNbWM8q6AFZtBXiHOYtQg9Cc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZmMoxaILZCQ1Z8+Rw+tECtxqVH+UqOhIRSjRZsplt0uiPd/zUNiEtdFt4AvBx8OAa
+         6epZplVOVDsfv9ZR9+RP18fVCUjnqHkJtiG6s220QyxssWrhTw4ahDBoN6v4HkHjwY
+         P63xwfuMhcFEYQZQpWATVU/wtKSkiQsuW8ErMmQ4=
+Date:   Mon, 7 Feb 2022 12:40:02 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH] mm: Outline copy_overflow()
+Message-Id: <20220207124002.edd04bf6d2abac8a01e35144@linux-foundation.org>
+In-Reply-To: <b9a31b025e729394e7081257870f0a0e73355a04.1644229010.git.christophe.leroy@csgroup.eu>
+References: <b9a31b025e729394e7081257870f0a0e73355a04.1644229010.git.christophe.leroy@csgroup.eu>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 08:46:02 +0530, Alim Akhtar wrote:
-> Adds spi controller dt-binding compatible information for
-> Tesla Full Self-Driving (FSD) SoC.
-> 
-> Cc: linux-fsd@tesla.com
-> Signed-off-by: Adithya K V <adithya.kv@samsung.com>
-> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Reviewed-by: Andi Shyti <andi@etezian.org>
-> ---
->  Documentation/devicetree/bindings/spi/samsung,spi.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+On Mon,  7 Feb 2022 11:55:18 +0100 Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
 
-Acked-by: Rob Herring <robh@kernel.org>
+> While building a small config with CONFIG_CC_OPTIMISE_FOR_SIZE,
+> I ended up with more than 50 times the following function in vmlinux:
+> 
+> 	c00243bc <copy_overflow>:
+> 	c00243bc:	94 21 ff f0 	stwu    r1,-16(r1)
+> 	c00243c0:	7c 85 23 78 	mr      r5,r4
+> 	c00243c4:	7c 64 1b 78 	mr      r4,r3
+> 	c00243c8:	3c 60 c0 62 	lis     r3,-16286
+> 	c00243cc:	7c 08 02 a6 	mflr    r0
+> 	c00243d0:	38 63 5e e5 	addi    r3,r3,24293
+> 	c00243d4:	90 01 00 14 	stw     r0,20(r1)
+> 	c00243d8:	4b ff 82 45 	bl      c001c61c <__warn_printk>
+> 	c00243dc:	0f e0 00 00 	twui    r0,0
+> 	c00243e0:	80 01 00 14 	lwz     r0,20(r1)
+> 	c00243e4:	38 21 00 10 	addi    r1,r1,16
+> 	c00243e8:	7c 08 03 a6 	mtlr    r0
+> 	c00243ec:	4e 80 00 20 	blr
+> 
+> That function being a non conditional warning on an error path,
+> it is not worth inlining.
+> 
+> Outline it.
+
+"uninline" is the conventional term for this.
+
+> This reduces the size of vmlinux by almost 4kbytes.
+
+Did you consider uninlining check_copy_size() instead?
+
+
