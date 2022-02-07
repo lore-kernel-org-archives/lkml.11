@@ -2,106 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E021C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F05DC46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384662AbiBGPnr (ORCPT
+        id S1384701AbiBGPnt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:43:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52138 "EHLO
+        Mon, 7 Feb 2022 10:43:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382915AbiBGPfh (ORCPT
+        with ESMTP id S241112AbiBGPj3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:35:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1D6C0401C1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:35:36 -0800 (PST)
+        Mon, 7 Feb 2022 10:39:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A57C0401CA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:39:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 895BCB815AD
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:35:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19BB4C004E1;
-        Mon,  7 Feb 2022 15:35:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E29FFB815C8
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:39:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29087C004E1;
+        Mon,  7 Feb 2022 15:39:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644248134;
-        bh=U53gZ+l/kdaaJyvWD/b5EEP8osDkf04QBB3k8cFqnJU=;
+        s=k20201202; t=1644248365;
+        bh=1DQ+ee9g1kPRpknTH9hCM9jJ9V2o/CPiuwSx/K5V5x4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EMvYcc4JNP+7zcm/GA8wH76cRCamoeL9hklxByyHqVwmPvWQTVfb7Aw57sPbo6DcR
-         FcaclsyfDyir6g3P2u4b+Q1gF4gOifVf6+nS2m9OPE/LgH1A3o5/iyaUkoF8oYITvb
-         ccA2A8bm3BEfLCkZ3bxKBIW8PEefrWM4KY84+jDlmBbhWT38/fMutqQcTbFy2FZ9At
-         3F7HpBjoxQS+gVLMv3mqKvVJDQM41ETvbyUOGEKzV0TiGUlmVP2SXAtC/sS0ChlOyg
-         my/CWmpKykQe518DVWWLVUKMADOZwAw4mm/pI3gYc1kKbfxIc3gBRbxcrTo9oCVNhn
-         LebOMYeGZR+5g==
-Date:   Mon, 7 Feb 2022 23:27:46 +0800
+        b=dIL+arbBgvnsxXrL9Zdz0tDdM0fM1KQIMILvSSA254Zf8aDJx0Ic/3o4oxVspdfVB
+         +DuZ9T30eNoE42XnVZek54hoj/UqqFHjsm9JiqL2lbZysDpqSWNSSZJNu1B0gNgprn
+         wxrmxR0yhc9zfv28Xi/PbzJRvfYfWIqGVR8CSZUuPrGe1Kmg1BJWyO+Rj4ezk3+zK2
+         Ayjr0IEywBbaluqIQqb7EXJ58AkzJGVbCZY+7eypPawZCywPq6J4zSdHn5W8T9gsrL
+         5ukcdahGpfqZTmkvQGYMYLpwXOJDWa4aJBST9UubwvfrMSUul7C7vru9mvfpNDJmPH
+         lp2Aq4Xes/4eg==
+Date:   Mon, 7 Feb 2022 23:31:41 +0800
 From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
+To:     ChangbinCONFIG_IRQSOFF_TRACER Du <changbin.du@gmail.com>
 Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH] riscv: reduce THREAD_SIZE from 16KB to 8KB for RV64
-Message-ID: <YgE6co0GR93s1LTQ@xhacker>
-References: <20220206174359.2986-1-jszhang@kernel.org>
- <CAK8P3a3Nnw5gfPAYx5UGdW8Om16GDcBi1-SS9Bs+CyLzssgVbA@mail.gmail.com>
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] riscv: fix oops caused by irq on/off tracer
+Message-ID: <YgE7XRE/Uc6gTCWd@xhacker>
+References: <20220129004226.32868-1-changbin.du@gmail.com>
+ <YgAEb425uqy5/dw1@xhacker>
+ <20220207123850.l4r5qjswaegwisbx@mail.google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a3Nnw5gfPAYx5UGdW8Om16GDcBi1-SS9Bs+CyLzssgVbA@mail.gmail.com>
+In-Reply-To: <20220207123850.l4r5qjswaegwisbx@mail.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 08:35:54AM +0100, Arnd Bergmann wrote:
-> On Sun, Feb 6, 2022 at 6:43 PM Jisheng Zhang <jszhang@kernel.org> wrote:
+On Mon, Feb 07, 2022 at 08:38:50PM +0800, ChangbinCONFIG_IRQSOFF_TRACER Du wrote:
+> On Mon, Feb 07, 2022 at 01:25:03AM +0800, Jisheng Zhang wrote:
+> > On Sat, Jan 29, 2022 at 08:42:26AM +0800, Changbin Du wrote:
+> > > The trace_hardirqs_on/off requires at least two parent call frames.
+> > > If not, the code generated by CALLER_ADDR1 (aka. ftrace_return_address(1))
+> > > could trigger memory access fault.
+> > > 
+> > > [    0.039615][    T0] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000f8
+> > > [    0.041925][    T0] Oops [#1]
+> > > [    0.042063][    T0] Modules linked in:
+> > > [    0.042864][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc1-00233-g9a20c48d1ed2 #29
+> > > [    0.043568][    T0] Hardware name: riscv-virtio,qemu (DT)
+> > > [    0.044343][    T0] epc : trace_hardirqs_on+0x56/0xe2
+> > > [    0.044601][    T0]  ra : restore_all+0x12/0x6e
+> > > [    0.044721][    T0] epc : ffffffff80126a5c ra : ffffffff80003b94 sp : ffffffff81403db0
+> > > [    0.044801][    T0]  gp : ffffffff8163acd8 tp : ffffffff81414880 t0 : 0000000000000020
+> > > [    0.044882][    T0]  t1 : 0098968000000000 t2 : 0000000000000000 s0 : ffffffff81403de0
+> > > [    0.044967][    T0]  s1 : 0000000000000000 a0 : 0000000000000001 a1 : 0000000000000100
+> > > [    0.045046][    T0]  a2 : 0000000000000000 a3 : 0000000000000000 a4 : 0000000000000000
+> > > [    0.045124][    T0]  a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000054494d45
+> > > [    0.045210][    T0]  s2 : ffffffff80003b94 s3 : ffffffff81a8f1b0 s4 : ffffffff80e27b50
+> > > [    0.045289][    T0]  s5 : ffffffff81414880 s6 : ffffffff8160fa00 s7 : 00000000800120e8
+> > > [    0.045389][    T0]  s8 : 0000000080013100 s9 : 000000000000007f s10: 0000000000000000
+> > > [    0.045474][    T0]  s11: 0000000000000000 t3 : 7fffffffffffffff t4 : 0000000000000000
+> > > [    0.045548][    T0]  t5 : 0000000000000000 t6 : ffffffff814aa368
+> > > [    0.045620][    T0] status: 0000000200000100 badaddr: 00000000000000f8 cause: 000000000000000d
+> > > [    0.046402][    T0] [<ffffffff80003b94>] restore_all+0x12/0x6e
+> > > 
+> > 
+> > Hi Changbin,
+> > 
+> > Could you please provide the reproduce steps? It looks a bit
+> > interesting.
 > >
-> > After irq stack is supported, it's possible to use small THREAD_SIZE.
-> > In fact, I tested this patch on a Lichee RV board, looks good so far.
-> >
-> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> 
-> I can definitely see the value in this, in particular when you get hardware with
-> small RAM configurations that would run a 32-bit kernel on other architectures.
-> 
-> However, it's worth pointing out that all other 64-bit architectures use 16KB or
-> more, so it is rather dangerous to be the first architecture to try this out in
-> a long time. Some on-stack structures have a lot of pointers and 'unsigned long'
-> members, so they need twice the space, while other structures are the
-> same size either way.
-> 
-> IRQ stacks obviously help here, but I don't think the 8KB size can be made
-> the default without a lot of testing of some of the more rarely used code paths.
-> 
-> Here are a few things that would be worth doing on the way to a smaller
-> kernel stack:
-> 
-> - do more compile-time testing with a lower CONFIG_FRAME_WARN value.
->   Historically, this defaults to 2048 bytes on 64-bit architectures. This is
->   much higher than we really want, but it takes work to find and eliminate
->   the outliers. I previously had a series to reduce the limit to 1280 bytes on
->   arm64 and still build all 'randconfig' configurations.
-> 
-> - Use a much lower limit during regression testing. There is already a config
->    option to randomize the start of the thread stack, but you can also try
->    adding a configurable offset to see how far you can push it for a given
->    workload before you run into the guard page.
-> 
-> - With vmap stacks, using 12KB may be an option as well, giving you
->    three pages for the stack plus one guard page, instead of 4 pages
->    stack plus four guard pages.
-> 
-> - If you can make a convincing case for using a lower THREAD_SIZE,
->   make this a compile-time option across all 64-bit architectures that
->   support both IRQ stacks and VMAP stacks. The actual frame size
->   does depend on the ISA a bit, and we know that parisc and ia64 are
->   particularly, possibly s390 as well, but I would expect risc-v to be
->   not much different from arm64 and x86 here.
-> 
+> Just enable CONFIG_IRQSOFF_TRACER and rebuild kernel with llvm. Then boot the
+> new kernel.
 
-Hi Arnd
-
-Thanks so much for all the suggestions. Item3 and Item4 look more
-interesting to me.
-
-Thanks a lot
+Thanks for the information. I tried IRQSOFF_TRACER with gcc+binutils,
+can't reproduce the issue. I forget to try clang+llvm. From another side
+The fact that gcc+bintuils can't reproduce it means this is a clang+llvm
+speicial case, no?
