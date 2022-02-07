@@ -2,111 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC28BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E09CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244927AbiBGWpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 17:45:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        id S244989AbiBGWpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 17:45:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241061AbiBGWpi (ORCPT
+        with ESMTP id S241061AbiBGWps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 17:45:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D3575C043180
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 14:45:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644273937;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q/wrQ+osy4G0NVymDBiDXHWgi4vpZ0kJJPM2q4QWu1k=;
-        b=dVyQeFLedNu3o7JlgFn2bYsVjqj1GqYQRGvrAhQCqivOZbl8xswf6QOt+rOKwPMXhfWqpf
-        XI06hGHiD4hplXY0qtEb6gKjbClk7dxAZbFVqZJeyA5EwEuPPVHmsLeSB2VaU90dRm7zGi
-        CAwobhrpxe5wj7IJI1Otu1E8dOq4U44=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-335-kwcZtPbKNNqD-yVCPH1fWw-1; Mon, 07 Feb 2022 17:45:35 -0500
-X-MC-Unique: kwcZtPbKNNqD-yVCPH1fWw-1
-Received: by mail-lj1-f197.google.com with SMTP id q17-20020a2e7511000000b0023c95987502so5117962ljc.16
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 14:45:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q/wrQ+osy4G0NVymDBiDXHWgi4vpZ0kJJPM2q4QWu1k=;
-        b=zbwtOr4P/QywUU2Ixt1sXu4DcVqBRiaFmpkvdff4Di9jo4M2ghNwaLyywJvVD0Vq0J
-         XUWdT3ytR1OdWlxlot03XviHySQi4hK0oj6W+vNs3o4Wdtp+bx+Hd3bSnKRGMF0VrcaS
-         CSoOaJWleYAEVeFLG8U8GpjYKXaTXgaxkGPVFUFNSme+DR2qNMEugoVQZVPNeXl11rwd
-         90NUG29XifSUk0rBGe2MpVxpE4sjriOf/VP4M6wkCi4aBuOgkvrWgeNfG/5InKUGlmJc
-         CNTBPsEx8u6mV45Z2nfofqYtq6MH+LRfah0QVnpv9QNwWV/hI/manUN8THvvB4SSrftN
-         lxIQ==
-X-Gm-Message-State: AOAM532E5XH8aVHMmyfLV/wJiA9sTB3JYndKHkb3pCliYI/9rNmcwQ0F
-        CiMap63zto5xjGypWGBUbdC9V2oZ41yx9icFJc/xOoCGh5z0jjJP6fMU06Tu65WCjN1CL91KCgc
-        AnnjRtWsdpNFjCvKlAbidvjwYN7UubfXNZ3nXKKvO
-X-Received: by 2002:a2e:a5c9:: with SMTP id n9mr1046845ljp.434.1644273934317;
-        Mon, 07 Feb 2022 14:45:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzVkc0ayHC7DxmygvPan9/xdOTQhtbIeMz7lBPggMKIPvy0NWKl22rhHwOENNlmkVy1lgqfxjGC3IJa4QbmvkU=
-X-Received: by 2002:a2e:a5c9:: with SMTP id n9mr1046836ljp.434.1644273934167;
- Mon, 07 Feb 2022 14:45:34 -0800 (PST)
-MIME-Version: 1.0
-References: <20220205081658.562208-1-leobras@redhat.com> <20220205081658.562208-2-leobras@redhat.com>
- <f2b0cac2-2f8a-60e8-616c-73825b3f62a6@redhat.com> <CAJ6HWG7DV-AeWyXxGwMMV61BejcCdpTc=U+4U6eY4gx4hfhP-g@mail.gmail.com>
- <8bf8ba96-94a8-663a-ccbf-ffeab087c370@redhat.com>
-In-Reply-To: <8bf8ba96-94a8-663a-ccbf-ffeab087c370@redhat.com>
-From:   Leonardo Bras Soares Passos <leobras@redhat.com>
-Date:   Mon, 7 Feb 2022 19:45:23 -0300
-Message-ID: <CAJ6HWG5sD06=ZMtrcSJ+O3ZH0xVeR7gC8+9o5hq+evXh43Vn_w@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] x86/kvm/fpu: Mask guest fpstate->xfeatures with guest_supported_xcr0
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
+        Mon, 7 Feb 2022 17:45:48 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C7FC061355;
+        Mon,  7 Feb 2022 14:45:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 23A69CE12FB;
+        Mon,  7 Feb 2022 22:45:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF302C340F0;
+        Mon,  7 Feb 2022 22:45:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644273942;
+        bh=qkq40yCflGjOJ7y7JTzQbQGfwF6s4zzKqH433+KJ92U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=EP7em8vg/cCJr5iKdH/kyYQXa1Da0wtpS6sxh0EW2W5/Zi2G2gDehBQoES1B722EY
+         863M9KTi5IyMdpjVrzSXZRfe+FAaV2BsqwWJh44tv2mpUBkMDfc3WDAwv+uAuo2bZY
+         lDQpt4AmDKX/N8k9ia9Kd6nRFHSe24+/6zW8TGYKc5HPwcdcIr93Xmo69B7ianvdf8
+         P/4emvsuvRHisUm02S69R5PBKLSPGnhjn4c8L330+yQrM7/w0Wk5brMWCnpKUb3Bwp
+         51tk43LFbP2hTF3+cigGAcaZMZXF6Gi+yTQVDOe89Bej8fFpaxnRGtxND0vPbKgg/Z
+         z7n9llszolzqw==
+Date:   Mon, 7 Feb 2022 16:45:40 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     linux-pci@vger.kernel.org
+Cc:     joey.corleone@mail.ru, Jan Kiszka <jan.kiszka@siemens.com>,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Bug 215533] [BISECTED][REGRESSION] UI becomes unresponsive
+ every couple of seconds
+Message-ID: <20220207224540.GA425996@bhelgaas>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220126121250.GA1694509@bhelgaas>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 6:00 PM Paolo Bonzini <pbonzini@redhat.com> wrote:
->
-> On 2/7/22 21:24, Leonardo Bras Soares Passos wrote:
-> >> With this patch,
-> >> we have to reason about the effect of calling KVM_SET_CPUID2 twice calls
-> >> back to back.  I think an "&=" would be wrong in that case.
-> >
-> > So, you suggest something like this ?
-> >
-> > vcpu->arch.guest_fpu.fpstate->xfeatures =
-> >         fpu_user_cfg.default_features & vcpu->arch.guest_supported_xcr0;
-> >
->
-> Yes, but you need to change user_xfeatures instead of xfeatures.
-> KVM_GET_XSAVE and KVM_SET_XSAVE will take it into account automatically:
->
-> - KVM_GET_XSAVE: fpu_copy_guest_fpstate_to_uabi -> __copy_xstate_to_uabi_buf
->
-> - KVM_SET_XSAVE: fpu_copy_uabi_to_guest_fpstate ->
-> copy_uabi_from_kernel_to_xstate -> copy_uabi_to_xstate ->
-> validate_user_xstate_buffer
+[+cc linux-kernel for visibility]
 
+On Wed, Jan 26, 2022 at 06:12:50AM -0600, Bjorn Helgaas wrote:
+> On Wed, Jan 26, 2022 at 08:18:12AM +0000, bugzilla-daemon@bugzilla.kernel.org wrote:
+> > https://bugzilla.kernel.org/show_bug.cgi?id=215533
+> > 
+> > --- Comment #1 from joey.corleone@mail.ru ---
+> > I accidentally sent the report prematurely. So here come my findings:
+> > 
+> > Since 5.16
+> > (1) my system becomes unresponsive every couple of seconds (micro lags), which
+> > makes it more or less unusable.
+> > (2) wrong(?) CPU frequencies are reported. 
+> > 
+> > - 5.15 works fine.
+> > - Starting from some commit in 5.17, it seems (1) is fixed (unsure), but
+> > definitely not (2).
+> > 
+> > I have bisected the kernel between 5.15 and 5.16, and found that the offending
+> > commit is 0e8ae5a6ff5952253cd7cc0260df838ab4c21009 ("PCI/portdrv: Do not setup
+> > up IRQs if there are no users"). Bisection log attached.
+> > 
+> > Reverting this commit on linux-git[1] fixes both (1) and (2).
+> > 
+> > Important notes:
+> > - This regression was reported on a DELL XPS 9550 laptop by two users [2], so
+> > it might be related strictly to that model. 
+> > - According to user mallocman, the issue can also be fixed by reverting the
+> > BIOS version of the laptop to v1.12.
+> > - The issue ONLY occurs when AC is plugged in (and stays there even when I
+> > unplug it).
+> > - When booting on battery power, there is no issue at all.
+> > 
+> > You can easily observe the regression via: 
+> > 
+> > watch cat /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_cur_fre
+> > 
+> > As soon as I plug in AC, all frequencies go up to values around 3248338 and
+> > stay there even if I unplug AC. This does not happen at all when booted on
+> > battery power. 
+> > 
+> > Also note: 
+> > - the laptop's fans are not really affected by the high frequencies.
+> > - setting the governor to "powersave" has no effect on the frequencies (as
+> > compared to when on battery power).
+> > - lowering the maximum frequency manually works, but does not fix (1).
+> > 
+> > [1] https://aur.archlinux.org/pkgbase/linux-git/ (pulled commits up to
+> > 0280e3c58f92b2fe0e8fbbdf8d386449168de4a8).
+> > [2] https://bbs.archlinux.org/viewtopic.php?id=273330
 
-Ok, I understand how this replaces patch 2/2, so no issue on that.
+I hope we can find a better solution, but since the responsiveness
+issue is a significant regression, I queued up a revert of
+0e8ae5a6ff59 ("PCI/portdrv: Do not setup up IRQs if there are no
+users") in case we don't find one.
 
-About patch 1/2,  you suggest that instead of fixing what we save in
-the regs buffer, we fix only what we want to return to the user when
-they call KVM_GET_XSAVE, is that correct?
+If/when we get to the bottom of this, I'll replace the revert with the
+solution.  0e8ae5a6ff59 appeared in v5.16, so we'll have to make sure
+we fix that as well.
 
-
-
->
-> Paolo
->
-
+Bjorn
