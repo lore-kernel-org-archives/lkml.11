@@ -2,104 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317F3C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343964AbiBGQQg (ORCPT
+        id S1350709AbiBGQ3l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:16:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52248 "EHLO
+        Mon, 7 Feb 2022 11:29:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385851AbiBGQPR (ORCPT
+        with ESMTP id S1389692AbiBGQ0I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:15:17 -0500
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com [209.85.222.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E53AC0401CC;
-        Mon,  7 Feb 2022 08:15:17 -0800 (PST)
-Received: by mail-ua1-f52.google.com with SMTP id b37so23465513uad.12;
-        Mon, 07 Feb 2022 08:15:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eVSjaW0Us1eT+X5Ib/YRElv3mU0go0SgAeSCTVz31wY=;
-        b=4QP9/1CAsQ2p59BKZcTbKkHSG8AlzOao/oXfpGFFTvKm5LM0ne/2lAZ7kdoZP4f+nj
-         9dMBbXaoanevqNssBzYGbbC2DktsKUHnHx71Na4e2RgEcWEF1vEaSUpMgf6A6mCGBeYW
-         h1kD6/0YZ/ehBcqjWhTnhYOK4/JlFImO4YESTXEG1V7QdbjIAFoiwCiPxtwNqRw9g7CW
-         0tgjHwPmxgDpMnxNbBdadIBThazhzWrPwVpXnxeokDObw9fsMlCfOvStWkA1ZQUiGPM4
-         vQGz42ypZ5aw7oZnDQxakqi8pvJYB6vuyWg09asBu7xTA9gZDpcWEfTcI9Od99Y9i0Oo
-         H68A==
-X-Gm-Message-State: AOAM530j18g5OX9EFvJYbM9UY1NJCl8DZDyC0K/LLsszqxlLwD1uV19u
-        cKgiCK0l/HfJoT3nqBM5l1+YzIwVo0Skww==
-X-Google-Smtp-Source: ABdhPJyB0wxpAgCqZ1gyHqQpudLR5onBuOtVu9FH3JQwPAs4y6H8SmNaNPuj71MJbTBQ870uOO1WVQ==
-X-Received: by 2002:ab0:3c86:: with SMTP id a6mr171191uax.6.1644250516393;
-        Mon, 07 Feb 2022 08:15:16 -0800 (PST)
-Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com. [209.85.221.179])
-        by smtp.gmail.com with ESMTPSA id k20sm2190317vsg.14.2022.02.07.08.15.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 08:15:16 -0800 (PST)
-Received: by mail-vk1-f179.google.com with SMTP id l14so8095714vko.12;
-        Mon, 07 Feb 2022 08:15:15 -0800 (PST)
-X-Received: by 2002:a05:6122:1254:: with SMTP id b20mr197626vkp.0.1644250515772;
- Mon, 07 Feb 2022 08:15:15 -0800 (PST)
-MIME-Version: 1.0
-References: <20220204161806.3126321-1-jjhiblot@traphandler.com> <20220204161806.3126321-6-jjhiblot@traphandler.com>
-In-Reply-To: <20220204161806.3126321-6-jjhiblot@traphandler.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 7 Feb 2022 17:15:04 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWSxdjvWnZ9wC4uejBsiEauTeioij66W2uOODRv-FwnPg@mail.gmail.com>
-Message-ID: <CAMuHMdWSxdjvWnZ9wC4uejBsiEauTeioij66W2uOODRv-FwnPg@mail.gmail.com>
-Subject: Re: [PATCH 5/6] ARM: dts: r9a06g032-rzn1d400-db: Enable watchdog0
- with a 10s timeout
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 7 Feb 2022 11:26:08 -0500
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BFDCC0401CE
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:26:07 -0800 (PST)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOg9S014427;
+        Mon, 7 Feb 2022 17:24:42 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        Willy Tarreau <w@1wt.eu>
+Subject: [PATCH 41/42] tools/nolibc: also mention how to build by just setting the include path
+Date:   Mon,  7 Feb 2022 17:23:53 +0100
+Message-Id: <20220207162354.14293-42-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
+In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
+References: <20220207162354.14293-1-w@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean-Jacques,
+Now that a few basic include files are provided, some simple portable
+programs may build, which will save them from having to surround their
+includes with #ifndef NOLIBC. This patch mentions how to proceed, and
+enumerates the list of files that are covered.
 
-Thanks for your patch!
+A comprehensive list of required include files is available here:
 
-On Fri, Feb 4, 2022 at 5:18 PM Jean-Jacques Hiblot
-<jjhiblot@traphandler.com> wrote:
-> 10s seems a reasonable value for a watchdog.
+  https://en.cppreference.com/w/c/header
 
-All other Renesas DTS files use 60s. Would 60s be OK for you?
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+---
+ tools/include/nolibc/nolibc.h | 30 ++++++++++++++++++++----------
+ 1 file changed, 20 insertions(+), 10 deletions(-)
 
-> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+diff --git a/tools/include/nolibc/nolibc.h b/tools/include/nolibc/nolibc.h
+index 561dcdb83cee..b2bc48d3cfe4 100644
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -57,22 +57,32 @@
+  * having to specify anything.
+  *
+  * Finally some very common libc-level functions are provided. It is the case
+- * for a few functions usually found in string.h, ctype.h, or stdlib.h. Nothing
+- * is currently provided regarding stdio emulation.
++ * for a few functions usually found in string.h, ctype.h, or stdlib.h.
+  *
+- * The macro NOLIBC is always defined, so that it is possible for a program to
+- * check this macro to know if it is being built against and decide to disable
+- * some features or simply not to include some standard libc files.
+- *
+- * Ideally this file should be split in multiple files for easier long term
+- * maintenance, but provided as a single file as it is now, it's quite
+- * convenient to use. Maybe some variations involving a set of includes at the
+- * top could work.
++ * The nolibc.h file is only a convenient entry point which includes all other
++ * files. It also defines the NOLIBC macro, so that it is possible for a
++ * program to check this macro to know if it is being built against and decide
++ * to disable some features or simply not to include some standard libc files.
+  *
+  * A simple static executable may be built this way :
+  *      $ gcc -fno-asynchronous-unwind-tables -fno-ident -s -Os -nostdlib \
+  *            -static -include nolibc.h -o hello hello.c -lgcc
+  *
++ * Simple programs meant to be reasonably portable to various libc and using
++ * only a few common includes, may also be built by simply making the include
++ * path point to the nolibc directory:
++ *      $ gcc -fno-asynchronous-unwind-tables -fno-ident -s -Os -nostdlib \
++ *            -I../nolibc -o hello hello.c -lgcc
++ *
++ * The available standard (but limited) include files are:
++ *   ctype.h, errno.h, signal.h, stdio.h, stdlib.h, string.h, time.h
++ *
++ * In addition, the following ones are expected to be provided by the compiler:
++ *   float.h, stdarg.h, stddef.h
++ *
++ * The following ones which are part to the C standard are not provided:
++ *   assert.h, locale.h, math.h, setjmp.h, limits.h
++ *
+  * A very useful calling convention table may be found here :
+  *      http://man7.org/linux/man-pages/man2/syscall.2.html
+  *
+-- 
+2.35.1
 
-> --- a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
-> +++ b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
-> @@ -23,6 +23,11 @@ aliases {
->         };
->  };
->
-> +&wdt0 {
-
-Please insert below "uart0", to preserve sort order (alphabetically).
-
-> +       timeout-sec = <10>;
-> +       status = "okay";
-> +};
-> +
->  &uart0 {
->         status = "okay";
->  };
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
