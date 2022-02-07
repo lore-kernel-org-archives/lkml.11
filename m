@@ -2,104 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE33C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B27EC35271
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347158AbiBGLLi (ORCPT
+        id S1347730AbiBGLLm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:11:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48234 "EHLO
+        Mon, 7 Feb 2022 06:11:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240553AbiBGLJB (ORCPT
+        with ESMTP id S243672AbiBGLFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:09:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCCEC043181;
-        Mon,  7 Feb 2022 03:09:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3723611AA;
-        Mon,  7 Feb 2022 11:08:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A58C004E1;
-        Mon,  7 Feb 2022 11:08:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232139;
-        bh=0QW7+GCZDYh9fPwQDA+Rn5HB0hc2alUnHw19nBfPscY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a23hQ0izfl3fKEYx15ET/hZ1rlSMEt5XtfztI7NjldsrayI69UslkV2Rqpq/OXAtM
-         StvXGTSDRdzMe3QYiTILsnEV7q2xv3YvVIIEVpUe6frXomwtPNAZXzPccQDRT/T3tg
-         P+XZyUKz5PUUEULcZcB1zkwacTmi5Q6M3ErGzIhg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, DocMAX <mail@vacharakis.de>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Subject: [PATCH 4.9 11/48] usb-storage: Add unusual-devs entry for VL817 USB-SATA bridge
-Date:   Mon,  7 Feb 2022 12:05:44 +0100
-Message-Id: <20220207103752.706563657@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
-References: <20220207103752.341184175@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:05:07 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 627A2C043188;
+        Mon,  7 Feb 2022 03:05:06 -0800 (PST)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2178LT1j001365;
+        Mon, 7 Feb 2022 11:05:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : to : cc : references : from : subject : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=RD64Ji/IfEP734Rh2SZfk6LYte1PyTzLo0Dg4ga3DHA=;
+ b=gqGRvgQEuQQjsMp7o4jDCmAUcws/3KeLI7LgrSlu961khy/4oKEKInmj1RVPjVA34Yic
+ n/Oo02fX5szgxRWqsbox0Hdh6w2JKPgsl6lJVoxFkJzeN/MpUnoGoYfsqMvBMSEAHEex
+ 2CA0x1PdGGIzuWtruCgR1HFL8aUqiLASOGQmJGHUABgupsd95q0JPsuJV1TmDoMfUiRt
+ L+aXEkWDKN33mw6FVbwE9KPydXRvFcSZ/EBSG3p5MCY03V55Ovxj8M9hq30CJ9kGj2ZT
+ DaskVpxV4kJho8yLFxoJ6uP3Eih0GM2+Mi0YFOc96SHQquyZIYMa8z8ThwVSfrh8CiYw Sw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22u78y8d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 11:05:05 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217AZjJx012205;
+        Mon, 7 Feb 2022 11:05:05 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22u78y7e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 11:05:05 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217B2VFI028113;
+        Mon, 7 Feb 2022 11:05:02 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3e1gv93ahk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 11:05:02 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217B4vVk47710616
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 11:04:57 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 220D44208B;
+        Mon,  7 Feb 2022 11:04:57 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B7EF842049;
+        Mon,  7 Feb 2022 11:04:56 +0000 (GMT)
+Received: from [9.145.9.42] (unknown [9.145.9.42])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Feb 2022 11:04:56 +0000 (GMT)
+Message-ID: <28955238-1fac-ad9a-f2bb-2c6c0c2ed894@linux.ibm.com>
+Date:   Mon, 7 Feb 2022 12:04:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Content-Language: en-US
+To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
+        david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
+References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
+ <20220204155349.63238-11-imbrenda@linux.ibm.com>
+From:   Janosch Frank <frankja@linux.ibm.com>
+Subject: Re: [PATCH v7 10/17] KVM: s390: pv: add mmu_notifier
+In-Reply-To: <20220204155349.63238-11-imbrenda@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: bSvq6_uLlqeSZg-Xb77eu3LWPqNWRtHG
+X-Proofpoint-GUID: K7kBAmbTB-296jSLZIZKMXN3UUOs5wJL
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_03,2022-02-07_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
+ bulkscore=0 lowpriorityscore=0 mlxscore=0 mlxlogscore=999
+ priorityscore=1501 spamscore=0 phishscore=0 suspectscore=0 malwarescore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070072
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+On 2/4/22 16:53, Claudio Imbrenda wrote:
+> Add an mmu_notifier for protected VMs. The callback function is
+> triggered when the mm is torn down, and will attempt to convert all
+> protected vCPUs to non-protected. This allows the mm teardown to use
+> the destroy page UVC instead of export.
+> 
+> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+> ---
+>   arch/s390/include/asm/kvm_host.h |  2 ++
+>   arch/s390/kvm/pv.c               | 20 ++++++++++++++++++++
+>   2 files changed, 22 insertions(+)
+> 
+> diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+> index a22c9266ea05..1bccb8561ba9 100644
+> --- a/arch/s390/include/asm/kvm_host.h
+> +++ b/arch/s390/include/asm/kvm_host.h
+> @@ -19,6 +19,7 @@
+>   #include <linux/kvm.h>
+>   #include <linux/seqlock.h>
+>   #include <linux/module.h>
+> +#include <linux/mmu_notifier.h>
+>   #include <asm/debug.h>
+>   #include <asm/cpu.h>
+>   #include <asm/fpu/api.h>
+> @@ -921,6 +922,7 @@ struct kvm_s390_pv {
+>   	u64 guest_len;
+>   	unsigned long stor_base;
+>   	void *stor_var;
+> +	struct mmu_notifier mmu_notifier;
+>   };
+>   
+>   struct kvm_arch{
+> diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
+> index f1e812a45acb..d3b8fd9b5b3e 100644
+> --- a/arch/s390/kvm/pv.c
+> +++ b/arch/s390/kvm/pv.c
+> @@ -193,6 +193,21 @@ int kvm_s390_pv_deinit_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
+>   	return -EIO;
+>   }
+>   
+> +static void kvm_s390_pv_mmu_notifier_release(struct mmu_notifier *subscription,
+> +					     struct mm_struct *mm)
+> +{
+> +	struct kvm *kvm = container_of(subscription, struct kvm, arch.pv.mmu_notifier);
 
-commit 5b67b315037250a61861119683e7fcb509deea25 upstream.
+Are we sure that the kvm pointer is still valid at this point?
 
-Two people have reported (and mentioned numerous other reports on the
-web) that VIA's VL817 USB-SATA bridge does not work with the uas
-driver.  Typical log messages are:
+> +	u16 dummy;
+> +
+> +	mutex_lock(&kvm->lock);
 
-[ 3606.232149] sd 14:0:0:0: [sdg] tag#2 uas_zap_pending 0 uas-tag 1 inflight: CMD
-[ 3606.232154] sd 14:0:0:0: [sdg] tag#2 CDB: Write(16) 8a 00 00 00 00 00 18 0c c9 80 00 00 00 80 00 00
-[ 3606.306257] usb 4-4.4: reset SuperSpeed Plus Gen 2x1 USB device number 11 using xhci_hcd
-[ 3606.328584] scsi host14: uas_eh_device_reset_handler success
+Against what are we locking here?
 
-Surprisingly, the devices do seem to work okay for some other people.
-The cause of the differing behaviors is not known.
+> +	kvm_s390_cpus_from_pv(kvm, &dummy, &dummy);
 
-In the hope of getting the devices to work for the most users, even at
-the possible cost of degraded performance for some, this patch adds an
-unusual_devs entry for the VL817 to block it from binding to the uas
-driver by default.  Users will be able to override this entry by means
-of a module parameter, if they want.
+I'd guess that we can't really have a second kvm_s390_cpus_from_pv() 
+call in flight, right? If the mm is being torn down there would be no 
+code left that can execute the IOCTL.
 
-CC: <stable@vger.kernel.org>
-Reported-by: DocMAX <mail@vacharakis.de>
-Reported-and-tested-by: Thomas Weißschuh <linux@weissschuh.net>
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/Ye8IsK2sjlEv1rqU@rowland.harvard.edu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/storage/unusual_devs.h |   10 ++++++++++
- 1 file changed, 10 insertions(+)
-
---- a/drivers/usb/storage/unusual_devs.h
-+++ b/drivers/usb/storage/unusual_devs.h
-@@ -2308,6 +2308,16 @@ UNUSUAL_DEV(  0x2027, 0xa001, 0x0000, 0x
- 		USB_SC_DEVICE, USB_PR_DEVICE, usb_stor_euscsi_init,
- 		US_FL_SCM_MULT_TARG ),
- 
-+/*
-+ * Reported by DocMAX <mail@vacharakis.de>
-+ * and Thomas Weißschuh <linux@weissschuh.net>
-+ */
-+UNUSUAL_DEV( 0x2109, 0x0715, 0x9999, 0x9999,
-+		"VIA Labs, Inc.",
-+		"VL817 SATA Bridge",
-+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
-+		US_FL_IGNORE_UAS),
-+
- UNUSUAL_DEV( 0x2116, 0x0320, 0x0001, 0x0001,
- 		"ST",
- 		"2A",
-
+> +	mutex_unlock(&kvm->lock);
+> +}
+> +
+> +static const struct mmu_notifier_ops kvm_s390_pv_mmu_notifier_ops = {
+> +	.release = kvm_s390_pv_mmu_notifier_release,
+> +};
+> +
+>   int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
+>   {
+>   	struct uv_cb_cgc uvcb = {
+> @@ -234,6 +249,11 @@ int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
+>   		return -EIO;
+>   	}
+>   	kvm->arch.gmap->guest_handle = uvcb.guest_handle;
+> +	/* Add the notifier only once. No races because we hold kvm->lock */
+> +	if (kvm->arch.pv.mmu_notifier.ops != &kvm_s390_pv_mmu_notifier_ops) {
+> +		kvm->arch.pv.mmu_notifier.ops = &kvm_s390_pv_mmu_notifier_ops;
+> +		mmu_notifier_register(&kvm->arch.pv.mmu_notifier, kvm->mm);
+> +	}
+>   	return 0;
+>   }
+>   
+> 
 
