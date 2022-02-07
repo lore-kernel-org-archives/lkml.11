@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4604C3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1238BC47086
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382869AbiBGLVC (ORCPT
+        id S1382942AbiBGLVN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54012 "EHLO
+        Mon, 7 Feb 2022 06:21:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378374AbiBGLPu (ORCPT
+        with ESMTP id S1378442AbiBGLPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0748CC03FEE4;
-        Mon,  7 Feb 2022 03:15:29 -0800 (PST)
+        Mon, 7 Feb 2022 06:15:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280AAC043189;
+        Mon,  7 Feb 2022 03:15:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 125F661261;
-        Mon,  7 Feb 2022 11:15:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1385C004E1;
-        Mon,  7 Feb 2022 11:15:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD925B811B2;
+        Mon,  7 Feb 2022 11:15:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6F12C340EB;
+        Mon,  7 Feb 2022 11:15:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232527;
-        bh=JMahfiX//lp0cOousyhIrX++kALvABEYKu4qvkRO6Vs=;
+        s=korg; t=1644232539;
+        bh=E0xTipUhEAeAm5xcpIQ8metjaYJRYHp/n2HOtYfDQ3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TndUlk9THPEgzMOO0/6VyRSZSFDPeuPXzB0HK5wJ/ulKNCs2q0VLw6yH7g67z298y
-         FYfMwmd6GXhzeFTnM6yeNfglMyLnOp4WsCP3m7Fz9bit2PANP/8RNmflQ/2NvNQQ/+
-         A2MC10wf63yfg7kW9oXfGyl+HXA/7/IbyY99YrEk=
+        b=wsehwxyncqkKA+iXlYg+rgtjnOtZTjIE5SK8gx8t1uDl4MuRkSEjz5KnjWrm7Hlo1
+         HSmttPr1seWZsoEZo8xjkDTmFynhqndEpd4tZohYURFezbE2Ye0vL82/uzt0bi0391
+         9MtZPZ2nmGZ8PmxYEVCNwWo4fpYHi3kWWBsPGTkg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Dany Madden <drt@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 39/86] NFS: Ensure the server has an up to date ctime before renaming
-Date:   Mon,  7 Feb 2022 12:06:02 +0100
-Message-Id: <20220207103758.813501892@linuxfoundation.org>
+Subject: [PATCH 4.19 42/86] ibmvnic: dont spin in tasklet
+Date:   Mon,  7 Feb 2022 12:06:05 +0100
+Message-Id: <20220207103758.918290613@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -51,32 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-[ Upstream commit 6ff9d99bb88faebf134ca668842349d9718e5464 ]
+[ Upstream commit 48079e7fdd0269d66b1d7d66ae88bd03162464ad ]
 
-Renaming a file is required by POSIX to update the file ctime, so
-ensure that the file data is synced to disk so that we don't clobber the
-updated ctime by writing back after creating the hard link.
+ibmvnic_tasklet() continuously spins waiting for responses to all
+capability requests. It does this to avoid encountering an error
+during initialization of the vnic. However if there is a bug in the
+VIOS and we do not receive a response to one or more queries the
+tasklet ends up spinning continuously leading to hard lock ups.
 
-Fixes: f2c2c552f119 ("NFS: Move delegation recall into the NFSv4 callback for rename_setup()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+If we fail to receive a message from the VIOS it is reasonable to
+timeout the login attempt rather than spin indefinitely in the tasklet.
+
+Fixes: 249168ad07cd ("ibmvnic: Make CRQ interrupt tasklet wait for all capabilities crqs")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/dir.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/ibm/ibmvnic.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -2123,6 +2123,8 @@ int nfs_rename(struct inode *old_dir, st
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 9174eccfd9329..ffea634e03e8a 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -4493,12 +4493,6 @@ static void ibmvnic_tasklet(void *data)
+ 			ibmvnic_handle_crq(crq, adapter);
+ 			crq->generic.first = 0;
  		}
+-
+-		/* remain in tasklet until all
+-		 * capabilities responses are received
+-		 */
+-		if (!adapter->wait_capability)
+-			done = true;
  	}
- 
-+	if (S_ISREG(old_inode->i_mode))
-+		nfs_sync_inode(old_inode);
- 	task = nfs_async_rename(old_dir, new_dir, old_dentry, new_dentry, NULL);
- 	if (IS_ERR(task)) {
- 		error = PTR_ERR(task);
+ 	/* if capabilities CRQ's were sent in this tasklet, the following
+ 	 * tasklet must wait until all responses are received
+-- 
+2.34.1
+
 
 
