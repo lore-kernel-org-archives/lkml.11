@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E6D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:45:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A737C3526C
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234229AbiBGLfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:35:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36502 "EHLO
+        id S1359202AbiBGLfg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:35:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384110AbiBGLYs (ORCPT
+        with ESMTP id S1384116AbiBGLYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:24:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D00C043181;
-        Mon,  7 Feb 2022 03:24:47 -0800 (PST)
+        Mon, 7 Feb 2022 06:24:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C07C043188;
+        Mon,  7 Feb 2022 03:24:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A21CB81158;
-        Mon,  7 Feb 2022 11:24:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D367C340EB;
-        Mon,  7 Feb 2022 11:24:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9308F6077B;
+        Mon,  7 Feb 2022 11:24:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 760B5C004E1;
+        Mon,  7 Feb 2022 11:24:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233085;
-        bh=5OlD3dhXOCojKO3N7H+U3aupk719bOzjvga7rhxB4wA=;
+        s=korg; t=1644233088;
+        bh=ax9fryblx6QV7qJ+qvkUKsP1d+CzKmmJDTBUlRRYv54=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J7vJegfj6srU1+87YVha1YzPNd+/7wHTjp+MiZZPZeI9gxXaNEretC31ilQmK8xRJ
-         ZZBp9q/pQvGGlIfVlXlvjQPdfqinR3mT/Zlk0hBrXbcGj3/2zpA1wPY6uv5Cl9+k2z
-         XwM/kicc2ADS6HO2rp3shf65N7yG5eUHuLTjrPnM=
+        b=PPx9L1x7LRw6VORMg+hH5UbCS0mpDm3AfUio4zRGgbCLXfqWAkbp1PKH8easVOLJr
+         P0H3xtG7sy/oS3hM4tA9lJDSQTxFtmDG6hL9Ct6vYe+FkWgFjKIFvBCbpazrPCeyE2
+         bY/COp5Tg2APrK3wsHvUtQAe3E5Bx2quB8Qhv42E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Alexander Sergeyev <sergeev917@gmail.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 011/110] ALSA: hda: Fix UAF of leds class devs at unbinding
-Date:   Mon,  7 Feb 2022 12:05:44 +0100
-Message-Id: <20220207103802.657532100@linuxfoundation.org>
+Subject: [PATCH 5.15 012/110] ALSA: hda: realtek: Fix race at concurrent COEF updates
+Date:   Mon,  7 Feb 2022 12:05:45 +0100
+Message-Id: <20220207103802.687712648@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -50,84 +51,146 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit 549f8ffc7b2f7561bea7f90930b6c5104318e87b upstream.
+commit b837a9f5ab3bdfab9233c9f98a6bef717673a3e5 upstream.
 
-The LED class devices that are created by HD-audio codec drivers are
-registered via devm_led_classdev_register() and associated with the
-HD-audio codec device.  Unfortunately, it turned out that the devres
-release doesn't work for this case; namely, since the codec resource
-release happens before the devm call chain, it triggers a NULL
-dereference or a UAF for a stale set_brightness_delay callback.
+The COEF access is done with two steps: setting the index then read or
+write the data.  When multiple COEF accesses are performed
+concurrently, the index and data might be paired unexpectedly.
+In most cases, this isn't a big problem as the COEF setup is done at
+the initialization, but some dynamic changes like the mute LED may hit
+such a race.
 
-For fixing the bug, this patch changes the LED class device register
-and unregister in a manual manner without devres, keeping the
-instances in hda_gen_spec.
+For avoiding the racy COEF accesses, this patch introduces a new
+mutex coef_mutex to alc_spec, and wrap the COEF accessing functions
+with it.
 
 Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
 Cc: <stable@vger.kernel.org>
 Link: https://lore.kernel.org/r/20220111195229.a77wrpjclqwrx4bx@localhost.localdomain
-Link: https://lore.kernel.org/r/20220126145011.16728-1-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220131075738.24323-1-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/hda_generic.c |   17 +++++++++++++++--
- sound/pci/hda/hda_generic.h |    3 +++
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ sound/pci/hda/patch_realtek.c |   61 ++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 50 insertions(+), 11 deletions(-)
 
---- a/sound/pci/hda/hda_generic.c
-+++ b/sound/pci/hda/hda_generic.c
-@@ -91,6 +91,12 @@ static void snd_hda_gen_spec_free(struct
- 	free_kctls(spec);
- 	snd_array_free(&spec->paths);
- 	snd_array_free(&spec->loopback_list);
-+#ifdef CONFIG_SND_HDA_GENERIC_LEDS
-+	if (spec->led_cdevs[LED_AUDIO_MUTE])
-+		led_classdev_unregister(spec->led_cdevs[LED_AUDIO_MUTE]);
-+	if (spec->led_cdevs[LED_AUDIO_MICMUTE])
-+		led_classdev_unregister(spec->led_cdevs[LED_AUDIO_MICMUTE]);
-+#endif
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -97,6 +97,7 @@ struct alc_spec {
+ 	unsigned int gpio_mic_led_mask;
+ 	struct alc_coef_led mute_led_coef;
+ 	struct alc_coef_led mic_led_coef;
++	struct mutex coef_mutex;
+ 
+ 	hda_nid_t headset_mic_pin;
+ 	hda_nid_t headphone_mic_pin;
+@@ -132,8 +133,8 @@ struct alc_spec {
+  * COEF access helper functions
+  */
+ 
+-static int alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
+-			       unsigned int coef_idx)
++static int __alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
++				 unsigned int coef_idx)
+ {
+ 	unsigned int val;
+ 
+@@ -142,28 +143,61 @@ static int alc_read_coefex_idx(struct hd
+ 	return val;
+ }
+ 
++static int alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
++			       unsigned int coef_idx)
++{
++	struct alc_spec *spec = codec->spec;
++	unsigned int val;
++
++	mutex_lock(&spec->coef_mutex);
++	val = __alc_read_coefex_idx(codec, nid, coef_idx);
++	mutex_unlock(&spec->coef_mutex);
++	return val;
++}
++
+ #define alc_read_coef_idx(codec, coef_idx) \
+ 	alc_read_coefex_idx(codec, 0x20, coef_idx)
+ 
+-static void alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
+-				 unsigned int coef_idx, unsigned int coef_val)
++static void __alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
++				   unsigned int coef_idx, unsigned int coef_val)
+ {
+ 	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_COEF_INDEX, coef_idx);
+ 	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_PROC_COEF, coef_val);
+ }
+ 
++static void alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
++				 unsigned int coef_idx, unsigned int coef_val)
++{
++	struct alc_spec *spec = codec->spec;
++
++	mutex_lock(&spec->coef_mutex);
++	__alc_write_coefex_idx(codec, nid, coef_idx, coef_val);
++	mutex_unlock(&spec->coef_mutex);
++}
++
+ #define alc_write_coef_idx(codec, coef_idx, coef_val) \
+ 	alc_write_coefex_idx(codec, 0x20, coef_idx, coef_val)
+ 
++static void __alc_update_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
++				    unsigned int coef_idx, unsigned int mask,
++				    unsigned int bits_set)
++{
++	unsigned int val = __alc_read_coefex_idx(codec, nid, coef_idx);
++
++	if (val != -1)
++		__alc_write_coefex_idx(codec, nid, coef_idx,
++				       (val & ~mask) | bits_set);
++}
++
+ static void alc_update_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
+ 				  unsigned int coef_idx, unsigned int mask,
+ 				  unsigned int bits_set)
+ {
+-	unsigned int val = alc_read_coefex_idx(codec, nid, coef_idx);
++	struct alc_spec *spec = codec->spec;
+ 
+-	if (val != -1)
+-		alc_write_coefex_idx(codec, nid, coef_idx,
+-				     (val & ~mask) | bits_set);
++	mutex_lock(&spec->coef_mutex);
++	__alc_update_coefex_idx(codec, nid, coef_idx, mask, bits_set);
++	mutex_unlock(&spec->coef_mutex);
+ }
+ 
+ #define alc_update_coef_idx(codec, coef_idx, mask, bits_set)	\
+@@ -196,13 +230,17 @@ struct coef_fw {
+ static void alc_process_coef_fw(struct hda_codec *codec,
+ 				const struct coef_fw *fw)
+ {
++	struct alc_spec *spec = codec->spec;
++
++	mutex_lock(&spec->coef_mutex);
+ 	for (; fw->nid; fw++) {
+ 		if (fw->mask == (unsigned short)-1)
+-			alc_write_coefex_idx(codec, fw->nid, fw->idx, fw->val);
++			__alc_write_coefex_idx(codec, fw->nid, fw->idx, fw->val);
+ 		else
+-			alc_update_coefex_idx(codec, fw->nid, fw->idx,
+-					      fw->mask, fw->val);
++			__alc_update_coefex_idx(codec, fw->nid, fw->idx,
++						fw->mask, fw->val);
+ 	}
++	mutex_unlock(&spec->coef_mutex);
  }
  
  /*
-@@ -3922,7 +3928,10 @@ static int create_mute_led_cdev(struct h
- 						enum led_brightness),
- 				bool micmute)
- {
-+	struct hda_gen_spec *spec = codec->spec;
- 	struct led_classdev *cdev;
-+	int idx = micmute ? LED_AUDIO_MICMUTE : LED_AUDIO_MUTE;
-+	int err;
+@@ -1148,6 +1186,7 @@ static int alc_alloc_spec(struct hda_cod
+ 	codec->spdif_status_reset = 1;
+ 	codec->forced_resume = 1;
+ 	codec->patch_ops = alc_patch_ops;
++	mutex_init(&spec->coef_mutex);
  
- 	cdev = devm_kzalloc(&codec->core.dev, sizeof(*cdev), GFP_KERNEL);
- 	if (!cdev)
-@@ -3932,10 +3941,14 @@ static int create_mute_led_cdev(struct h
- 	cdev->max_brightness = 1;
- 	cdev->default_trigger = micmute ? "audio-micmute" : "audio-mute";
- 	cdev->brightness_set_blocking = callback;
--	cdev->brightness = ledtrig_audio_get(micmute ? LED_AUDIO_MICMUTE : LED_AUDIO_MUTE);
-+	cdev->brightness = ledtrig_audio_get(idx);
- 	cdev->flags = LED_CORE_SUSPENDRESUME;
- 
--	return devm_led_classdev_register(&codec->core.dev, cdev);
-+	err = led_classdev_register(&codec->core.dev, cdev);
-+	if (err < 0)
-+		return err;
-+	spec->led_cdevs[idx] = cdev;
-+	return 0;
- }
- 
- /**
---- a/sound/pci/hda/hda_generic.h
-+++ b/sound/pci/hda/hda_generic.h
-@@ -294,6 +294,9 @@ struct hda_gen_spec {
- 				   struct hda_jack_callback *cb);
- 	void (*mic_autoswitch_hook)(struct hda_codec *codec,
- 				    struct hda_jack_callback *cb);
-+
-+	/* leds */
-+	struct led_classdev *led_cdevs[NUM_AUDIO_LEDS];
- };
- 
- /* values for add_stereo_mix_input flag */
+ 	err = alc_codec_rename_from_preset(codec);
+ 	if (err < 0) {
 
 
