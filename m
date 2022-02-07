@@ -2,102 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B203C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C14E4C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357204AbiBGQOh (ORCPT
+        id S1345820AbiBGQOp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:14:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
+        Mon, 7 Feb 2022 11:14:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386896AbiBGQBk (ORCPT
+        with ESMTP id S232706AbiBGQKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:01:40 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94431C0401D1;
-        Mon,  7 Feb 2022 08:01:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CCB0CCE112B;
-        Mon,  7 Feb 2022 16:01:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F7FAC004E1;
-        Mon,  7 Feb 2022 16:01:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644249694;
-        bh=PWwSvTHrKik+WHkFYTy4105egats4siq+txQzN9k8F4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qbld5TRvdN3JK2qBA/enz1wOCB2gKXQpDexQEKA0I2oGPR/w/XQnzeJpaLue5P6eN
-         pM6pQQFDCFKUEiFf28DxJ2NETNCKs07CGHmblczmM2dQOhAdgv3qSe4DK0NDr+T40F
-         xvn1YnHqr+eZ6NSYhjrNDagleMKiHaMjz5mJ0EiYTEDsSmcKpROSnenFoUS8WheatQ
-         ZU980LBUk8YVbLekOWx6ENkIqiySkTx8lZIhvrWswvRY3OwBH/esSsREKCcb5xvFLz
-         c5EUeqCb/zuokfJesm06e6DWxWJFlL6e/t5CUWe4j0egzymjBj4ng88RPZEtX3CKu7
-         H+xcbalp7/A9g==
-Date:   Mon, 7 Feb 2022 17:01:30 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-i2c@vger.kernel.org
-Subject: Re: [PATCH] i2c: ACPI: Replace acpi_bus_get_device()
-Message-ID: <YgFCWq3mMQkv8UMY@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-i2c@vger.kernel.org
-References: <4374434.LvFx2qVVIh@kreacher>
+        Mon, 7 Feb 2022 11:10:04 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7E1C0401CF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:10:02 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id u12so4368942plq.10
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 08:10:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xiSBzPQnTG+yIHuJ7k7x6ADsNTF+1w12491gzVcMAFE=;
+        b=ZbB3crbAr+DzqHrDW5Wa8yEKGFB41seBarYw/+E5gPl3dirtURFGGzZ5zhYw3d1vg5
+         FdW1Gih98v5ar8dHJBsPRS7twDQgTBUtxRh3/aLC4PuerU5TfB9hvDDGxs+xE72BGbe8
+         vxo84b+Mkfy5EU/P6GHDHkw5M3Ukn9Kn1G8ZOlG4BGoNjSCXabmc0C3yMadA5vBZmddf
+         vU8HLzOLMQeRJTdxuj/Uzzqx62U4WyDC4oMoJM6mJEQ/NP2wOOiN/Q59NINXhQ0cdnJM
+         R4H9/dJBXlmZTjjEn/6KotsLQzQGNfMutC0lPaHyHoSpVj6AmKHbmSJVa2+pwlNVhEuQ
+         l6pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xiSBzPQnTG+yIHuJ7k7x6ADsNTF+1w12491gzVcMAFE=;
+        b=QHOg6gjOvBNbtSSMadPdjQYeabf+zDbcDN9EXQBJEFg/KixxxSOyaPoFPvv7KyAR0S
+         mDCI1wAtKAso0VA+j8iCZ8p5s2oON0eUdWpP2vVR3BCwqsRxrnu13CoHrVsNKYVqeD2j
+         /GxQr+upl+2gCpJQW3EP500qO7FbVar+tP5FzcQt/lG+LCCEVWpTli90TjRn20WuilL8
+         tmv36jAhdz8XGhEQq0EH/kTwLCzRIlKC0bnhBsiXLrNxnDgxmqQU6UQIBVwJVrUjyCuJ
+         pJ95HIWF+sv4LUSLXbD4Xy/xLzPM5r5jxLFeRo33F9SbEmL6IJmvev3zLkIBRpY5aRju
+         FmRw==
+X-Gm-Message-State: AOAM53345WE1UMbP2+VhjcfwLEVIn2hPYECJTq+QKyqEMbEh1kERiubq
+        haskA3HrpsvJphg1Nf8/lOt6FQ==
+X-Google-Smtp-Source: ABdhPJwRrTS8wrHCH7GEaOUas2bOM2kxOBaDos9y+CXKADhOyp3DgXUB0Ig+/gcWE2Wba/Q7POrZhw==
+X-Received: by 2002:a17:90b:2251:: with SMTP id hk17mr19523346pjb.210.1644250202261;
+        Mon, 07 Feb 2022 08:10:02 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id s32sm6788998pfw.80.2022.02.07.08.10.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 08:10:01 -0800 (PST)
+Date:   Mon, 7 Feb 2022 16:09:58 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     David Matlack <dmatlack@google.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, vkuznets@redhat.com
+Subject: Re: [PATCH 01/23] KVM: MMU: pass uses_nx directly to
+ reset_shadow_zero_bits_mask
+Message-ID: <YgFEVr9NM1vXdexg@google.com>
+References: <20220204115718.14934-1-pbonzini@redhat.com>
+ <20220204115718.14934-2-pbonzini@redhat.com>
+ <Yf1pk1EEBXj0O0/p@google.com>
+ <8081cbe5-6d12-9f99-9f0f-13c1d7617647@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="fA8vdV3lkfQ9XeqW"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4374434.LvFx2qVVIh@kreacher>
+In-Reply-To: <8081cbe5-6d12-9f99-9f0f-13c1d7617647@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sat, Feb 05, 2022, Paolo Bonzini wrote:
+> On 2/4/22 18:59, David Matlack wrote:
+> > > +	reset_shadow_zero_bits_mask(vcpu, context, is_efer_nx(context));
+> > 
+> > Out of curiousity, how does KVM mitigate iTLB multi-hit when shadowing
+> > NPT and the guest has not enabled EFER.NX?
+> 
+> You got me worried for a second but iTLB multihit is Intel-only, isn't it?
 
---fA8vdV3lkfQ9XeqW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Feb 01, 2022 at 07:00:42PM +0100, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
->=20
-> Replace acpi_bus_get_device() that is going to be dropped with
-> acpi_fetch_acpi_dev().
->=20
-> No intentional functional impact.
->=20
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-
-Applied to for-next, thanks! Let me know if you need it in for-current
-instead to get rid of the to-be-deprecated function earlier.
-
-
---fA8vdV3lkfQ9XeqW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIBQlYACgkQFA3kzBSg
-KbYFHRAAjCNtHwASK/9YtSoj9aaDnmw082YXj89IHSSkNj02vkjJhvljsYJrz9EU
-KOVIhQUJRSkmWO/5FsQCNGzqtb8tfdPgeRPV0JtMQDUcEI7Z5CSnmnvBAUXItj/C
-FkSE8DfBykr7z/47LOj5tXUn+yet/mevpojDYgz2meo6++bqEVdZjMVaZYSjt7rU
-GTLJFjMzlaZBDEzfh/Rz8tS5zPsYteQijT2x8yujo89qaZ+jRqnw/YgawFRXN5Mx
-e1Wj5wdXWGrYTiHlWC/B/9InZ4sFtcebOIKzkz8nFNCFdmEXelJ5MM3B+owZV5nN
-/J5nuV94umPntEoFmd1nHYfxD9rLeoyhkX1muSRa9O6PPy+BAt+zr6Laq6rbj7eM
-bZVOdbuevrUYRP5Tz2UIDr1sArFoTeqTdQ38AKTfyM2LTxWJ8DaeBdtiuVak95Jh
-y5RWRzoNp/vSNaypF2qSsHUrozai83o5WqejVmPThs1NblKOTNAVGh9tQqOcK5Je
-WMNG2U2bOIRqQBH0Z1yN/jcAa2EWDs0UY+Mq5A5+Bq6PQgicyCtIShZeyAawPAic
-yOwaRye8QU85RK1O4RPSNN9Yska+A3a4wYQB8HY/SbdDM3igpw5H9+/rnTP2PQkk
-tuMQYoyEb9QoYFBgqHO2Or45jMKtNiPrfpmaf3OihhDCYPy2Wqg=
-=X+Sc
------END PGP SIGNATURE-----
-
---fA8vdV3lkfQ9XeqW--
+AFAIK, yes, big Core only.  arch/x86/kernel/cpu/common.c sets NO_ITLB_MULTIHIT
+for all AMD, Hygon, and Atom CPUs.
