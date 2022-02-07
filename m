@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F04CC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B13C35274
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384115AbiBGLYt (ORCPT
+        id S1384126AbiBGLYv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:24:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
+        Mon, 7 Feb 2022 06:24:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382420AbiBGLTF (ORCPT
+        with ESMTP id S1382432AbiBGLTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:19:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D1CC043181;
-        Mon,  7 Feb 2022 03:19:03 -0800 (PST)
+        Mon, 7 Feb 2022 06:19:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90294C0401C3;
+        Mon,  7 Feb 2022 03:19:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 782B3B81028;
-        Mon,  7 Feb 2022 11:19:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94EE7C004E1;
-        Mon,  7 Feb 2022 11:19:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1909F6126D;
+        Mon,  7 Feb 2022 11:19:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA912C004E1;
+        Mon,  7 Feb 2022 11:19:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232741;
-        bh=XBaQoyU9Gn/uFmh11tRhdToBtsSitNApPt/xeAZ2kdg=;
+        s=korg; t=1644232747;
+        bh=e2WfQygo6vzQk8haaAhfXiLEuZQLP60wId1L8LS97Y4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Pg76pc21m6nvCGiOU0TMg39mdzzMzJkDgynDbelvyPUOXxhY3xXGfBki/3kQd9VH
-         Lky6Nhm7X14wEOaexVLrtvA1jIJOgtXA3l0Piih0DF0KppT5EnUbwzvpEggdw0pMwP
-         Ek2VV4qi9EktMsOIIaI8UZQdwqeEqv1pA9BvG+H0=
+        b=yt8hyfFlC7zOjM9LppLn6+MewC3Cutj8PQ8wBqGgR14x/707sPVockt28awzBMYvW
+         XlkCcUFeEJTeoNyRCWYRM+6bFrAt234nM3KswtLd+R/m1eXQe9np1XsOndfOUnlnyR
+         t6EKQNS5ZTIibmEVc/tb3NC3aXD9s9Otvu0xzBis=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.4 21/44] spi: bcm-qspi: check for valid cs before applying chip select
-Date:   Mon,  7 Feb 2022 12:06:37 +0100
-Message-Id: <20220207103753.843606198@linuxfoundation.org>
+Subject: [PATCH 5.4 23/44] spi: meson-spicc: add IRQ check in meson_spicc_probe
+Date:   Mon,  7 Feb 2022 12:06:39 +0100
+Message-Id: <20220207103753.904594045@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
 References: <20220207103753.155627314@linuxfoundation.org>
@@ -50,36 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Dasu <kdasu.kdev@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 2cbd27267ffe020af1442b95ec57f59a157ba85c upstream.
+commit e937440f7fc444a3e3f1fb75ea65292d6f433a44 upstream.
 
-Apply only valid chip select value. This change fixes case where chip
-select is set to initial value of '-1' during probe and  PM supend and
-subsequent resume can try to use the value with undefined behaviour.
-Also in case where gpio based chip select, the check in
-bcm_qspi_chip_select() shall prevent undefined behaviour on resume.
+This check misses checking for  platform_get_irq()'s call and may passes
+the negative error codes to devm_request_irq(), which takes unsigned IRQ #,
+causing it to fail with -EINVAL, overriding an original error code.
+Stop calling devm_request_irq() with invalid IRQ #s.
 
-Fixes: fa236a7ef240 ("spi: bcm-qspi: Add Broadcom MSPI driver")
-Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220127185359.27322-1-kdasu.kdev@gmail.com
+Fixes: 454fa271bc4e ("spi: Add Meson SPICC driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220126110447.24549-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-bcm-qspi.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-meson-spicc.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/spi/spi-bcm-qspi.c
-+++ b/drivers/spi/spi-bcm-qspi.c
-@@ -509,7 +509,7 @@ static void bcm_qspi_chip_select(struct
- 	u32 rd = 0;
- 	u32 wr = 0;
+--- a/drivers/spi/spi-meson-spicc.c
++++ b/drivers/spi/spi-meson-spicc.c
+@@ -527,6 +527,11 @@ static int meson_spicc_probe(struct plat
+ 	writel_relaxed(0, spicc->base + SPICC_INTREG);
  
--	if (qspi->base[CHIP_SELECT]) {
-+	if (cs >= 0 && qspi->base[CHIP_SELECT]) {
- 		rd = bcm_qspi_read(qspi, CHIP_SELECT, 0);
- 		wr = (rd & ~0xff) | (1 << cs);
- 		if (rd == wr)
+ 	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		ret = irq;
++		goto out_master;
++	}
++
+ 	ret = devm_request_irq(&pdev->dev, irq, meson_spicc_irq,
+ 			       0, NULL, spicc);
+ 	if (ret) {
 
 
