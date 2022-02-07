@@ -2,110 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C62C35275
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94EA5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391731AbiBGMC4 (ORCPT
+        id S1391774AbiBGMDB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:02:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
+        Mon, 7 Feb 2022 07:03:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387650AbiBGLl1 (ORCPT
+        with ESMTP id S1385880AbiBGLpB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:41:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B167C03E93D;
-        Mon,  7 Feb 2022 03:40:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DF4160DBF;
-        Mon,  7 Feb 2022 11:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B98DAC340F0;
-        Mon,  7 Feb 2022 11:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644234010;
-        bh=LurCH/FgOiyF5tRrbMdN+klo1M8jNPBO4OqOYHEWz0k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mYdEQ5TF4K7TDhfDM0t+ipH+GXJwozzx0b4HKEOm8Z/3jLqExCl+JPAeTL4j2PQRk
-         x8saaTkchxeQDBGwtUh65hlYDWvYkhYAhj+PHdVZNzRIaY+15cLzK3Asv6p5uIGiRG
-         mY9zSav585jh+RV2u+Hijtn5/2UREuxXG3DwS8StLuBQHEo7XhWA411IJiiAUJPYml
-         +cRQimmc5+FIAmTJaNlQTEx7hcdDlTuL49rn8Dn0/cEaPjTwEnQK6JUPZFAhRWWCru
-         E6xFayawpyctWduU1zQtfo5m3xqOY2+S5beS8Bj3VrQJj6CWW4VToyVD7chq/vduE9
-         t/WTmeyG25Y2w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9E069E6BB3D;
-        Mon,  7 Feb 2022 11:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 7 Feb 2022 06:45:01 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB145C0401ED;
+        Mon,  7 Feb 2022 03:44:48 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 258F911B3;
+        Mon,  7 Feb 2022 03:44:48 -0800 (PST)
+Received: from [10.57.15.201] (unknown [10.57.15.201])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 31D9B3F70D;
+        Mon,  7 Feb 2022 03:44:45 -0800 (PST)
+Subject: Re: [PATCH 0/2] Ignore Energy Model with abstract scale in IPA and
+ DTPM
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     amit.kachhap@gmail.com, viresh.kumar@linaro.org, rafael@kernel.org,
+        amitk@kernel.org, rui.zhang@intel.com, dietmar.eggemann@arm.com,
+        Pierre.Gondois@arm.com, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org
+References: <20220207073036.14901-1-lukasz.luba@arm.com>
+ <0d2217e0-44f7-8587-3e1f-a73d301ab166@linaro.org>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+Message-ID: <616307f7-b419-8e36-6879-6cf6f4e02d5a@arm.com>
+Date:   Mon, 7 Feb 2022 11:44:44 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 net-next 0/7] net: use kfree_skb_reason() for ip/udp packet
- receive
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164423401064.10014.14060566984987490532.git-patchwork-notify@kernel.org>
-Date:   Mon, 07 Feb 2022 11:40:10 +0000
-References: <20220205074739.543606-1-imagedong@tencent.com>
-In-Reply-To: <20220205074739.543606-1-imagedong@tencent.com>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     dsahern@kernel.org, kuba@kernel.org, rostedt@goodmis.org,
-        mingo@redhat.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        edumazet@google.com, alobakin@pm.me, ast@kernel.org,
-        imagedong@tencent.com, pabeni@redhat.com, keescook@chromium.org,
-        talalahmad@google.com, haokexin@gmail.com,
-        ilias.apalodimas@linaro.org, memxor@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        paulb@nvidia.com, cong.wang@bytedance.com, mengensun@tencent.com
+In-Reply-To: <0d2217e0-44f7-8587-3e1f-a73d301ab166@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
 
-On Sat,  5 Feb 2022 15:47:32 +0800 you wrote:
-> From: Menglong Dong <imagedong@tencent.com>
+On 2/7/22 10:41 AM, Daniel Lezcano wrote:
+> On 07/02/2022 08:30, Lukasz Luba wrote:
+>> Hi all,
+>>
+>> The Energy Model supports abstract scale power values. This might cause
+>> issues for some mechanisms like thermal governor IPA or DTPM, which
+>> expect that all devices provide sane power values. This patch set 
+>> prevents
+>> from registering such devices for IPA and DTPM.
 > 
-> In this series patches, kfree_skb() is replaced with kfree_skb_reason()
-> during ipv4 and udp4 packet receiving path, and following drop reasons
-> are introduced:
 > 
-> SKB_DROP_REASON_SOCKET_FILTER
-> SKB_DROP_REASON_NETFILTER_DROP
-> SKB_DROP_REASON_OTHERHOST
-> SKB_DROP_REASON_IP_CSUM
-> SKB_DROP_REASON_IP_INHDR
-> SKB_DROP_REASON_IP_RPFILTER
-> SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST
-> SKB_DROP_REASON_XFRM_POLICY
-> SKB_DROP_REASON_IP_NOPROTO
-> SKB_DROP_REASON_SOCKET_RCVBUFF
-> SKB_DROP_REASON_PROTO_MEM
+> Does it mean for example big and little have both 0-100 ?
 > 
-> [...]
+> 
 
-Here is the summary with links:
-  - [v4,net-next,1/7] net: skb_drop_reason: add document for drop reasons
-    https://git.kernel.org/netdev/net-next/c/88590b369354
-  - [v4,net-next,2/7] net: netfilter: use kfree_drop_reason() for NF_DROP
-    https://git.kernel.org/netdev/net-next/c/2df3041ba3be
-  - [v4,net-next,3/7] net: ipv4: use kfree_skb_reason() in ip_rcv_core()
-    https://git.kernel.org/netdev/net-next/c/33cba42985c8
-  - [v4,net-next,4/7] net: ipv4: use kfree_skb_reason() in ip_rcv_finish_core()
-    https://git.kernel.org/netdev/net-next/c/c1f166d1f7ee
-  - [v4,net-next,5/7] net: ipv4: use kfree_skb_reason() in ip_protocol_deliver_rcu()
-    https://git.kernel.org/netdev/net-next/c/10580c479190
-  - [v4,net-next,6/7] net: udp: use kfree_skb_reason() in udp_queue_rcv_one_skb()
-    https://git.kernel.org/netdev/net-next/c/1379a92d38e3
-  - [v4,net-next,7/7] net: udp: use kfree_skb_reason() in __udp_queue_rcv_skb()
-    https://git.kernel.org/netdev/net-next/c/08d4c0370c40
+Unfortunately, these can be any numbers. I hope at least the CPUs
+Big and Little power have sense: Little power is not higher
+than Big power. The purpose of EM is to enable EAS, so this power
+relation between Big and Little should have sense. Someone
+who is not willing to or cannot expose real power values, still
+wants the EAS to operate (my assumption and hope). The SCMI FW can
+provide abstract power values. It's in the SCMI spec. Thus,
+creating these abstract scale power values for big.LITTLE the right
+way should result in properly working EAS.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+I can also have hope for GPU vs. Big power, but it is a weaker hope.
+The second is more tricky to distinguish even if you have a domain
+knowledge, but not the real measurements with you. The GPU power
+values is also a 'sensitive' knowledge to share. Open source guys can do
+that (after measurements), but some vendor's engineers probably can't.
