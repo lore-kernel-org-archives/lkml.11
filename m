@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD10C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388084AbiBGLmy (ORCPT
+        id S1388099AbiBGLm6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:42:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
+        Mon, 7 Feb 2022 06:42:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385632AbiBGLcD (ORCPT
+        with ESMTP id S1385657AbiBGLcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A7CC03E97B;
-        Mon,  7 Feb 2022 03:31:17 -0800 (PST)
+        Mon, 7 Feb 2022 06:32:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876C6C03E903;
+        Mon,  7 Feb 2022 03:31:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E06A60A67;
-        Mon,  7 Feb 2022 11:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D906C004E1;
-        Mon,  7 Feb 2022 11:31:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4508BB80EBD;
+        Mon,  7 Feb 2022 11:31:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64EE4C340F0;
+        Mon,  7 Feb 2022 11:31:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233476;
-        bh=u4UjAcFF1Zp7pNCg0/6sdayjl3EP4O06VFNJH8ux4dM=;
+        s=korg; t=1644233489;
+        bh=A2S0A4K151GBnvxQG7aw3dDzjm91yV1nf3hlhXkSIF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WCAusrYktKQ8Qrf5q/uFB54nitZyNWBjM3ha7v6/5G8PhdSFZg2RJH0TSmBOwZL/D
-         VyxEdmDrpAyv+r12zzqmbhwE3JqvxQuALCDFdmKHtZY5P1ToZn+nJeSte1VxO97S30
-         9vFo/9pGfTQfKp/d3TVdVCHv6GExtTfolCUBh6KA=
+        b=L3ntiaDnFaHb/ArPFfUwQ++YH0jy5aDey17EqgxdDTNd2uhxFHtMwaCRIbTmTV+3R
+         RykrFTeIu5S1wTTy1tLCVXSNTOqPen4pfj0V5QJImkbaHL1SVkblKvfadRz6DKW8e6
+         9aj/fvcKH29gUQjIY3sJGsA7HN5WBx+/LO+59WEM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.16 008/126] ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
-Date:   Mon,  7 Feb 2022 12:05:39 +0100
-Message-Id: <20220207103804.346066525@linuxfoundation.org>
+        stable@vger.kernel.org, Uday Shankar <ushankar@purestorage.com>,
+        James Smart <jsmart2021@gmail.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5.16 029/126] nvme-fabrics: fix state check in nvmf_ctlr_matches_baseopts()
+Date:   Mon,  7 Feb 2022 12:06:00 +0100
+Message-Id: <20220207103805.152074287@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -48,41 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Uday Shankar <ushankar@purestorage.com>
 
-commit 4f1e50d6a9cf9c1b8c859d449b5031cacfa8404e upstream.
+commit 6a51abdeb259a56d95f13cc67e3a0838bcda0377 upstream.
 
-We don't currently validate that the values being set are within the range
-we advertised to userspace as being valid, do so and reject any values
-that are out of range.
+Controller deletion/reset, immediately followed by or concurrent with
+a reconnect, is hard failing the connect attempt resulting in a
+complete loss of connectivity to the controller.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220124153253.3548853-3-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+In the connect request, fabrics looks for an existing controller with
+the same address components and aborts the connect if a controller
+already exists and the duplicate connect option isn't set. The match
+routine filters out controllers that are dead or dying, so they don't
+interfere with the new connect request.
+
+When NVME_CTRL_DELETING_NOIO was added, it missed updating the state
+filters in the nvmf_ctlr_matches_baseopts() routine. Thus, when in this
+new state, it's seen as a live controller and fails the connect request.
+
+Correct by adding the DELETING_NIO state to the match checks.
+
+Fixes: ecca390e8056 ("nvme: fix deadlock in disconnect during scan_work and/or ana_work")
+Cc: <stable@vger.kernel.org> # v5.7+
+Signed-off-by: Uday Shankar <ushankar@purestorage.com>
+Reviewed-by: James Smart <jsmart2021@gmail.com>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-ops.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/nvme/host/fabrics.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -423,8 +423,15 @@ int snd_soc_put_volsw_sx(struct snd_kcon
- 	int err = 0;
- 	unsigned int val, val_mask;
- 
-+	val = ucontrol->value.integer.value[0];
-+	if (mc->platform_max && val > mc->platform_max)
-+		return -EINVAL;
-+	if (val > max - min)
-+		return -EINVAL;
-+	if (val < 0)
-+		return -EINVAL;
- 	val_mask = mask << shift;
--	val = (ucontrol->value.integer.value[0] + min) & mask;
-+	val = (val + min) & mask;
- 	val = val << shift;
- 
- 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
+--- a/drivers/nvme/host/fabrics.h
++++ b/drivers/nvme/host/fabrics.h
+@@ -170,6 +170,7 @@ nvmf_ctlr_matches_baseopts(struct nvme_c
+ 			struct nvmf_ctrl_options *opts)
+ {
+ 	if (ctrl->state == NVME_CTRL_DELETING ||
++	    ctrl->state == NVME_CTRL_DELETING_NOIO ||
+ 	    ctrl->state == NVME_CTRL_DEAD ||
+ 	    strcmp(opts->subsysnqn, ctrl->opts->subsysnqn) ||
+ 	    strcmp(opts->host->nqn, ctrl->opts->host->nqn) ||
 
 
