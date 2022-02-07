@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E81EC47087
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2428C47086
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232621AbiBGMAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:00:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
+        id S1350081AbiBGL71 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:59:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383937AbiBGLgK (ORCPT
+        with ESMTP id S1382918AbiBGLf7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:36:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA17C0401DB;
-        Mon,  7 Feb 2022 03:36:10 -0800 (PST)
+        Mon, 7 Feb 2022 06:35:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 166C6C03FEC0;
+        Mon,  7 Feb 2022 03:35:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6C1CB811BB;
-        Mon,  7 Feb 2022 11:36:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD8E5C004E1;
-        Mon,  7 Feb 2022 11:36:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C24A3B8102E;
+        Mon,  7 Feb 2022 11:35:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7EBEC004E1;
+        Mon,  7 Feb 2022 11:35:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233767;
-        bh=s67VpVP7MXMILns6SrqsrSdBqMFhRM8QKqe4wHf8zNk=;
+        s=korg; t=1644233753;
+        bh=fkBbCu26Q7qpm8psYy59pDkbehGMf3egVEF0vTplVJk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pu5knsQSiGi7JKEUAhUgpiIBJKfW9Up6J7cR0nlvY8OIrkN4q1bCiY7jHxeIvWoDy
-         bnMoi+0LnP//O9tYSvWNV5uNfyy+eSauLWWhosJopPC/luGhd1eQ49kuBcb/tyj4TT
-         Mqrk4dzuE8PMal0w3zjiX6IoWxf8pQablqpe48/0=
+        b=HE0mrW9W8MeA9Wpe8m4c9iwVZwlql/IFrUq69jQGFai0AnO4/A04Bxs9UPgsZzHev
+         vYh0AvM2gL8ST8DKZkVBqI/QSvEauKEH7UAPk/Uo6TQuzlkAZ1Vz8o3YYeYgrF+3PN
+         fDsZS99gnSQ9yM5+9AyS3xNMEf9kJiZJU6SFfkYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Borislav Petkov <bp@suse.de>, Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.16 113/126] EDAC/altera: Fix deferred probing
-Date:   Mon,  7 Feb 2022 12:07:24 +0100
-Message-Id: <20220207103807.958903019@linuxfoundation.org>
+        stable@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
+        Marco Elver <elver@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 109/126] perf: Copy perf_event_attr::sig_data on modification
+Date:   Mon,  7 Feb 2022 12:07:20 +0100
+Message-Id: <20220207103807.824862640@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -48,39 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Marco Elver <elver@google.com>
 
-commit 279eb8575fdaa92c314a54c0d583c65e26229107 upstream.
+[ Upstream commit 3c25fc97f5590060464cabfa25710970ecddbc96 ]
 
-The driver overrides the error codes returned by platform_get_irq() to
--ENODEV for some strange reason, so if it returns -EPROBE_DEFER, the
-driver will fail the probe permanently instead of the deferred probing.
-Switch to propagating the proper error codes to platform driver code
-upwards.
+The intent has always been that perf_event_attr::sig_data should also be
+modifiable along with PERF_EVENT_IOC_MODIFY_ATTRIBUTES, because it is
+observable by user space if SIGTRAP on events is requested.
 
-  [ bp: Massage commit message. ]
+Currently only PERF_TYPE_BREAKPOINT is modifiable, and explicitly copies
+relevant breakpoint-related attributes in hw_breakpoint_copy_attr().
+This misses copying perf_event_attr::sig_data.
 
-Fixes: 71bcada88b0f ("edac: altera: Add Altera SDRAM EDAC support")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220124185503.6720-2-s.shtylyov@omp.ru
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Since sig_data is not specific to PERF_TYPE_BREAKPOINT, introduce a
+helper to copy generic event-type-independent attributes on
+modification.
+
+Fixes: 97ba62b27867 ("perf: Add support for SIGTRAP on perf events")
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Marco Elver <elver@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Link: https://lore.kernel.org/r/20220131103407.1971678-1-elver@google.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/edac/altera_edac.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/events/core.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
---- a/drivers/edac/altera_edac.c
-+++ b/drivers/edac/altera_edac.c
-@@ -350,7 +350,7 @@ static int altr_sdram_probe(struct platf
- 	if (irq < 0) {
- 		edac_printk(KERN_ERR, EDAC_MC,
- 			    "No irq %d in DT\n", irq);
--		return -ENODEV;
-+		return irq;
- 	}
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 6ed890480c4aa..04e6e2dae60e4 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -3234,6 +3234,15 @@ static int perf_event_modify_breakpoint(struct perf_event *bp,
+ 	return err;
+ }
  
- 	/* Arria10 has a 2nd IRQ */
++/*
++ * Copy event-type-independent attributes that may be modified.
++ */
++static void perf_event_modify_copy_attr(struct perf_event_attr *to,
++					const struct perf_event_attr *from)
++{
++	to->sig_data = from->sig_data;
++}
++
+ static int perf_event_modify_attr(struct perf_event *event,
+ 				  struct perf_event_attr *attr)
+ {
+@@ -3256,10 +3265,17 @@ static int perf_event_modify_attr(struct perf_event *event,
+ 	WARN_ON_ONCE(event->ctx->parent_ctx);
+ 
+ 	mutex_lock(&event->child_mutex);
++	/*
++	 * Event-type-independent attributes must be copied before event-type
++	 * modification, which will validate that final attributes match the
++	 * source attributes after all relevant attributes have been copied.
++	 */
++	perf_event_modify_copy_attr(&event->attr, attr);
+ 	err = func(event, attr);
+ 	if (err)
+ 		goto out;
+ 	list_for_each_entry(child, &event->child_list, child_list) {
++		perf_event_modify_copy_attr(&child->attr, attr);
+ 		err = func(child, attr);
+ 		if (err)
+ 			goto out;
+-- 
+2.34.1
+
 
 
