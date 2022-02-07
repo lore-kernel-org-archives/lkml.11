@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4426DC3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A33C46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382192AbiBGQnv (ORCPT
+        id S1381615AbiBGQnu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:43:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40514 "EHLO
+        Mon, 7 Feb 2022 11:43:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390467AbiBGQes (ORCPT
+        with ESMTP id S1390557AbiBGQfK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:34:48 -0500
+        Mon, 7 Feb 2022 11:35:10 -0500
 Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1C83C0401D5
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:34:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8907EC0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:35:08 -0800 (PST)
 Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOeTa014409;
-        Mon, 7 Feb 2022 17:24:40 +0100
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOdq6014403;
+        Mon, 7 Feb 2022 17:24:39 +0100
 From:   Willy Tarreau <w@1wt.eu>
 To:     "Paul E . McKenney" <paulmck@kernel.org>
 Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
         Willy Tarreau <w@1wt.eu>
-Subject: [PATCH 26/42] tools/nolibc/stdlib: make raise() use the lower level syscalls only
-Date:   Mon,  7 Feb 2022 17:23:38 +0100
-Message-Id: <20220207162354.14293-27-w@1wt.eu>
+Subject: [PATCH 20/42] tools/nolibc/stdio: add fwrite() to stdio
+Date:   Mon,  7 Feb 2022 17:23:32 +0100
+Message-Id: <20220207162354.14293-21-w@1wt.eu>
 X-Mailer: git-send-email 2.17.5
 In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
 References: <20220207162354.14293-1-w@1wt.eu>
@@ -33,27 +33,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-raise() doesn't set errno, so there's no point calling kill(), better
-call sys_kill(), which also reduces the function's size.
+We'll use it to write substrings. It relies on a simpler _fwrite() that
+only takes one size. fputs() was also modified to rely on it.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- tools/include/nolibc/stdlib.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/include/nolibc/stdio.h | 35 ++++++++++++++++++++++++++++-------
+ 1 file changed, 28 insertions(+), 7 deletions(-)
 
-diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
-index db47362a750f..4cc1fdf6791e 100644
---- a/tools/include/nolibc/stdlib.h
-+++ b/tools/include/nolibc/stdlib.h
-@@ -317,7 +317,7 @@ int msleep(unsigned int msecs)
- __attribute__((weak,unused))
- int raise(int signal)
- {
--	return kill(getpid(), signal);
-+	return sys_kill(sys_getpid(), signal);
+diff --git a/tools/include/nolibc/stdio.h b/tools/include/nolibc/stdio.h
+index 149c5ca59aad..996bf89a30d2 100644
+--- a/tools/include/nolibc/stdio.h
++++ b/tools/include/nolibc/stdio.h
+@@ -84,12 +84,14 @@ int putchar(int c)
  }
  
+ 
+-/* puts(), fputs(). Note that puts() emits '\n' but not fputs(). */
++/* fwrite(), puts(), fputs(). Note that puts() emits '\n' but not fputs(). */
+ 
++/* internal fwrite()-like function which only takes a size and returns 0 on
++ * success or EOF on error. It automatically retries on short writes.
++ */
  static __attribute__((unused))
+-int fputs(const char *s, FILE *stream)
++int _fwrite(const void *buf, size_t size, FILE *stream)
+ {
+-	size_t len = strlen(s);
+ 	ssize_t ret;
+ 	int fd;
+ 
+@@ -98,16 +100,35 @@ int fputs(const char *s, FILE *stream)
+ 
+ 	fd = 3 + (long)stream;
+ 
+-	while (len > 0) {
+-		ret = write(fd, s, len);
++	while (size) {
++		ret = write(fd, buf, size);
+ 		if (ret <= 0)
+ 			return EOF;
+-		s += ret;
+-		len -= ret;
++		size -= ret;
++		buf += ret;
+ 	}
+ 	return 0;
+ }
+ 
++static __attribute__((unused))
++size_t fwrite(const void *s, size_t size, size_t nmemb, FILE *stream)
++{
++	size_t written;
++
++	for (written = 0; written < nmemb; written++) {
++		if (_fwrite(s, size, stream) != 0)
++			break;
++		s += size;
++	}
++	return written;
++}
++
++static __attribute__((unused))
++int fputs(const char *s, FILE *stream)
++{
++	return _fwrite(s, strlen(s), stream);
++}
++
+ static __attribute__((unused))
+ int puts(const char *s)
+ {
 -- 
 2.35.1
 
