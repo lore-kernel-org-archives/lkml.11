@@ -2,124 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF69C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:26:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 048B0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239158AbiBGV0v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 16:26:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
+        id S239306AbiBGV1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 16:27:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239234AbiBGV0G (ORCPT
+        with ESMTP id S239169AbiBGV1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 16:26:06 -0500
-X-Greylist: delayed 122 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 13:26:05 PST
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD76CC0612A4;
-        Mon,  7 Feb 2022 13:26:05 -0800 (PST)
+        Mon, 7 Feb 2022 16:27:42 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D86AC06173B;
+        Mon,  7 Feb 2022 13:27:41 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id o12so45963995eju.13;
+        Mon, 07 Feb 2022 13:27:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644269165; x=1675805165;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=NELx/Iw2FPlY+9g0WgjmwMdN02QQW6LQoTyTGWg6qA4=;
-  b=HXNBrsLfmxWvuJ88vagMCObdwufcUC2uzM/iXuBwiADR7jOZWV+bXpiJ
-   RyrlTz+I6unCWoG/rOvLUq9AEcvhwq1iQ5mgrVfuj7ZMYbKhHKRHevmdd
-   nZORieBT6jF7v023UNhVEQlc8hw6WgTjlGeaLjie+OGYCTsH75LKojmNr
-   0=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 07 Feb 2022 13:24:02 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 13:24:02 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Mon, 7 Feb 2022 13:24:02 -0800
-Received: from [10.48.246.62] (10.49.16.6) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 7 Feb 2022
- 13:24:01 -0800
-Message-ID: <258ac12b-9ca3-9b24-30df-148f9df51582@quicinc.com>
-Date:   Mon, 7 Feb 2022 13:24:01 -0800
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gyoX70viWcISJKTm1q/6fX8AdMTRX67Z6K886m2paA4=;
+        b=bxZD76ydAG36dw8EHhlZJK0pOS8dKpyktaZj7qpkYRim7yRlyjbKy9aqNygVZ+pJIp
+         8rMJM6w2STI6yyA9rdM+du/pypvNUOJc9ObmqwMc6+8AQlOfjTSpHjwCsBqKEu4z2qTG
+         9IoKVn/TwWyPfF7BDPor8RmpNXE85SoBMy6F1lpOTN1onRH+tBRGZDSQ6Aj3BWIz79JU
+         QDgb5WEt1fpeNnizIHM/QDxB0R9F2NugskJfVFskrmLQmu9MFhyrE7+Jd2EFjNIWi5iA
+         gVLaSDlllAtRab6ELriV3pnpYpFHAw/rWgcba9xuaIeSokCxTJBbyXHACYGQ/ucSRpq0
+         dP0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gyoX70viWcISJKTm1q/6fX8AdMTRX67Z6K886m2paA4=;
+        b=MMiOOYG+oE9r0IwPZSg3ygAIOhHyNtHLlbzg2h56cTNUuRpGo0BzYRgdIVzAGzLIEz
+         Lme2AD4AzGoUMKe2bzN1RvTPD7kQVU0BesGwiy+a6UnZUm5fzU6RGY01jeOVXMaBQK5F
+         NyS/P1O6ADMyRewI68KGIwrs0LdowW97+hdExEQlIgJ5+b7e+S8qwO9T/tBRrmy387IQ
+         C9GxkZnzQBzf20neY59tzjmK2m/Gj1J6PZRG86trHgX5sj4Km0r4yZbmS1nGNXrtRa0F
+         yvJy+BRAQp3yq0N/3s29yGVUVs7jKDyehH7qs1IUUIo0i52ieTudgBisU2/YNomtJk0G
+         5EaA==
+X-Gm-Message-State: AOAM530FpPYZSzhuddkoie/SbVvn3IdFpSRtpb/zA0wrg14BBWl0cQZV
+        LXjPCVU6kE0gtdgicfOFCJ0=
+X-Google-Smtp-Source: ABdhPJyRjBcXCnHm986FOfpo04veZN5uaGA9kjkDf7xRhASkRNj08RR2GTpAn9kg/KEwJZ2t3/AI7g==
+X-Received: by 2002:a17:906:cede:: with SMTP id si30mr1233209ejb.669.1644269259720;
+        Mon, 07 Feb 2022 13:27:39 -0800 (PST)
+Received: from localhost.localdomain ([178.94.5.59])
+        by smtp.gmail.com with ESMTPSA id c20sm3968086edy.41.2022.02.07.13.27.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 13:27:39 -0800 (PST)
+From:   Denis Pauk <pauk.denis@gmail.com>
+Cc:     pauk.denis@gmail.com, eugene.shalygin@gmail.com,
+        Per Melin <kernel@melin.net>,
+        Jaap de Haan <jaap.dehaan@freenet.de>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] hwmon: (nct6775) add ASUS ROG STRIX Z390/Z490/X570-* / PRIME X570-P
+Date:   Mon,  7 Feb 2022 23:27:28 +0200
+Message-Id: <20220207212728.9749-1-pauk.denis@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v3 2/2] ath9k: htc: clean up *STAT_* macros
-Content-Language: en-US
-To:     Pavel Skripkin <paskripkin@gmail.com>,
-        <ath9k-devel@qca.qualcomm.com>, <kvalo@kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <toke@toke.dk>,
-        <linville@tuxdriver.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
- <28c83b99b8fea0115ad7fbda7cc93a86468ec50d.1644265120.git.paskripkin@gmail.com>
-From:   Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <28c83b99b8fea0115ad7fbda7cc93a86468ec50d.1644265120.git.paskripkin@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/2022 12:24 PM, Pavel Skripkin wrote:
-> I've changed *STAT_* macros a bit in previous patch and I seems like
-> they become really unreadable. Align these macros definitions to make
-> code cleaner.
-> 
-> Also fixed following checkpatch warning
-> 
-> ERROR: Macros with complex values should be enclosed in parentheses
-> 
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
-> 
-> Changes since v2:
-> 	- My send-email script forgot, that mailing lists exist.
-> 	  Added back all related lists
-> 	- Fixed checkpatch warning
-> 
-> Changes since v1:
-> 	- Added this patch
-> 
-> ---
->   drivers/net/wireless/ath/ath9k/htc.h | 16 ++++++++--------
->   1 file changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
-> index 141642e5e00d..b4755e21a501 100644
-> --- a/drivers/net/wireless/ath/ath9k/htc.h
-> +++ b/drivers/net/wireless/ath/ath9k/htc.h
-> @@ -327,14 +327,14 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
->   }
->   
->   #ifdef CONFIG_ATH9K_HTC_DEBUGFS
-> -#define __STAT_SAVE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
-> -#define TX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
-> -#define TX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
-> -#define RX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
-> -#define RX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
-> -#define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
-> -
-> -#define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
-> +#define __STAT_SAVE(expr)	(hif_dev->htc_handle->drv_priv ? (expr) : 0)
-> +#define TX_STAT_INC(c)		__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
-> +#define TX_STAT_ADD(c, a)	__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
-> +#define RX_STAT_INC(c)		__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
-> +#define RX_STAT_ADD(c, a)	__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
-> +#define CAB_STAT_INC		(priv->debug.tx_stats.cab_queued++)
-> +
-> +#define TX_QSTAT_INC(q)		(priv->debug.tx_stats.queue_stats[q]++)
->   
->   void ath9k_htc_err_stat_rx(struct ath9k_htc_priv *priv,
->   			   struct ath_rx_status *rs);
+Boards such as
+* PRIME X570-P,
+* ROG STRIX X570-E GAMING,
+* ROG STRIX Z390-F GAMING,
+* ROG STRIX Z390-H GAMING,
+* ROG STRIX Z390-I GAMING,
+* ROG STRIX Z490-A GAMING,
+* ROG STRIX Z490-E GAMING,
+* ROG STRIX Z490-F GAMING,
+* ROG STRIX Z490-G GAMING,
+* ROG STRIX Z490-G GAMING (WI-FI),
+* ROG STRIX Z490-H GAMING
+boards have got a nct6775 chip, but by default there's no use of it
+because of resource conflict with WMI method.
 
-It seems that these macros (both the original and the new) aren't 
-following the guidance from the Coding Style which tells us under 
-"Things to avoid when using macros" that we should avoid "macros that 
-depend on having a local variable with a magic name". Wouldn't these 
-macros be "better" is they included the hif_dev/priv as arguments rather 
-than being "magic"?
+This commit adds such boards to the WMI monitoring list.
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=204807
+Signed-off-by: Denis Pauk <pauk.denis@gmail.com>
+Tested-by: Per Melin <kernel@melin.net>
+Tested-by: Jaap de Haan <jaap.dehaan@freenet.de>
+
+---
+
+I have rechecked all the boards by extracting[1] all DSDT files from UEFI 
+CAP files that can be downloaded from asus.com site. And all boards have
+fully same WMI methods implementation. I have saved dumps to [2].
+
+[1]: https://github.com/theopolis/uefi-firmware-parser
+[2]: https://github.com/asus-wmi-boards-sensors/asus-board-dsdt
+
+PRIME X570-P and ROG STRIX Z390-F GAMING are checked with real boards.
+
+---
+ drivers/hwmon/nct6775.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/hwmon/nct6775.c b/drivers/hwmon/nct6775.c
+index fbf6266c7ba7..1d63ad363658 100644
+--- a/drivers/hwmon/nct6775.c
++++ b/drivers/hwmon/nct6775.c
+@@ -5109,6 +5109,7 @@ static const char * const asus_wmi_boards[] = {
+ 	"PRIME B550-PLUS",
+ 	"PRIME B550M-A",
+ 	"PRIME B550M-A (WI-FI)",
++	"PRIME X570-P",
+ 	"PRIME X570-PRO",
+ 	"ROG CROSSHAIR VIII DARK HERO",
+ 	"ROG CROSSHAIR VIII FORMULA",
+@@ -5119,9 +5120,19 @@ static const char * const asus_wmi_boards[] = {
+ 	"ROG STRIX B550-F GAMING",
+ 	"ROG STRIX B550-F GAMING (WI-FI)",
+ 	"ROG STRIX B550-I GAMING",
++	"ROG STRIX X570-E GAMING",
+ 	"ROG STRIX X570-F GAMING",
+ 	"ROG STRIX X570-I GAMING",
+ 	"ROG STRIX Z390-E GAMING",
++	"ROG STRIX Z390-F GAMING",
++	"ROG STRIX Z390-H GAMING",
++	"ROG STRIX Z390-I GAMING",
++	"ROG STRIX Z490-A GAMING",
++	"ROG STRIX Z490-E GAMING",
++	"ROG STRIX Z490-F GAMING",
++	"ROG STRIX Z490-G GAMING",
++	"ROG STRIX Z490-G GAMING (WI-FI)",
++	"ROG STRIX Z490-H GAMING",
+ 	"ROG STRIX Z490-I GAMING",
+ 	"TUF GAMING B550M-PLUS",
+ 	"TUF GAMING B550M-PLUS (WI-FI)",
+
+base-commit: 74fa97c35a74d62a34e120343520e74c50329372
+-- 
+2.34.1
+
