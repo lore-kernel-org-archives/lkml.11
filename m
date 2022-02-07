@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69FB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D840DC4707E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353016AbiBGLMF (ORCPT
+        id S1352273AbiBGLLy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48348 "EHLO
+        Mon, 7 Feb 2022 06:11:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236757AbiBGLJO (ORCPT
+        with ESMTP id S1355277AbiBGLIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:09:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8A7C043189;
-        Mon,  7 Feb 2022 03:09:13 -0800 (PST)
+        Mon, 7 Feb 2022 06:08:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5E2C043181;
+        Mon,  7 Feb 2022 03:08:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B5C6B80EC3;
-        Mon,  7 Feb 2022 11:09:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3590CC004E1;
-        Mon,  7 Feb 2022 11:09:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19CBB61261;
+        Mon,  7 Feb 2022 11:08:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF30BC004E1;
+        Mon,  7 Feb 2022 11:08:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232150;
-        bh=YzXaxA7SrWaX2UZWXji7oo0gOdanxIrfgqhjLwS/dug=;
+        s=korg; t=1644232095;
+        bh=i4kxKJp73ZiiAxDUVelR4/cBG+CtNNOMx/SDUQqHhAs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kEUiM/MYyIU3zvAT0GcCcKu2rsmNOZW1dmPRKDWJATUtb97Os9cUNIJIuefz13vc3
-         wNM6D1rOFFqnnrmHyqovZqW8KJKHcRtIPLaJh+aeHHYAskxUwIVOYCwlfYrtVYvD49
-         1ZmUE0fCR0PbANgkjD6FPgxTCcE95KbZp+s5CsRI=
+        b=hisNyPet+uc9ucP7DHfMAylgnaAljy9RczUD/IDl9HDADHHZThSTE0y57LHFj/pSF
+         5JyXP/AtyD+yP6SAUa/EkVBLT5H2z236suBN7Bsvklj8xqMW/CKDP3b0ktIjGIxZUi
+         OgPJeLSAyTcYgf5dVHo8YWV4WJexYdYFGatc7018=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 32/48] af_packet: fix data-race in packet_setsockopt / packet_setsockopt
-Date:   Mon,  7 Feb 2022 12:06:05 +0100
-Message-Id: <20220207103753.387803621@linuxfoundation.org>
+        stable@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 4.9 07/48] PM: wakeup: simplify the output logic of pm_show_wakelocks()
+Date:   Mon,  7 Feb 2022 12:05:40 +0100
+Message-Id: <20220207103752.579589466@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -51,80 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit e42e70ad6ae2ae511a6143d2e8da929366e58bd9 upstream.
+commit c9d967b2ce40d71e968eb839f36c936b8a9cf1ea upstream.
 
-When packet_setsockopt( PACKET_FANOUT_DATA ) reads po->fanout,
-no lock is held, meaning that another thread can change po->fanout.
+The buffer handling in pm_show_wakelocks() is tricky, and hopefully
+correct.  Ensure it really is correct by using sysfs_emit_at() which
+handles all of the tricky string handling logic in a PAGE_SIZE buffer
+for us automatically as this is a sysfs file being read from.
 
-Given that po->fanout can only be set once during the socket lifetime
-(it is only cleared from fanout_release()), we can use
-READ_ONCE()/WRITE_ONCE() to document the race.
-
-BUG: KCSAN: data-race in packet_setsockopt / packet_setsockopt
-
-write to 0xffff88813ae8e300 of 8 bytes by task 14653 on cpu 0:
- fanout_add net/packet/af_packet.c:1791 [inline]
- packet_setsockopt+0x22fe/0x24a0 net/packet/af_packet.c:3931
- __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
- __do_sys_setsockopt net/socket.c:2191 [inline]
- __se_sys_setsockopt net/socket.c:2188 [inline]
- __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff88813ae8e300 of 8 bytes by task 14654 on cpu 1:
- packet_setsockopt+0x691/0x24a0 net/packet/af_packet.c:3935
- __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
- __do_sys_setsockopt net/socket.c:2191 [inline]
- __se_sys_setsockopt net/socket.c:2188 [inline]
- __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x0000000000000000 -> 0xffff888106f8c000
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 14654 Comm: syz-executor.3 Not tainted 5.16.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 47dceb8ecdc1 ("packet: add classic BPF fanout mode")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220201022358.330621-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/packet/af_packet.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ kernel/power/wakelock.c |   12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -1719,7 +1719,10 @@ static int fanout_add(struct sock *sk, u
- 		err = -ENOSPC;
- 		if (atomic_read(&match->sk_ref) < PACKET_FANOUT_MAX) {
- 			__dev_remove_pack(&po->prot_hook);
--			po->fanout = match;
-+
-+			/* Paired with packet_setsockopt(PACKET_FANOUT_DATA) */
-+			WRITE_ONCE(po->fanout, match);
-+
- 			po->rollover = rollover;
- 			rollover = NULL;
- 			atomic_inc(&match->sk_ref);
-@@ -3895,7 +3898,8 @@ packet_setsockopt(struct socket *sock, i
- 	}
- 	case PACKET_FANOUT_DATA:
- 	{
--		if (!po->fanout)
-+		/* Paired with the WRITE_ONCE() in fanout_add() */
-+		if (!READ_ONCE(po->fanout))
- 			return -EINVAL;
+--- a/kernel/power/wakelock.c
++++ b/kernel/power/wakelock.c
+@@ -38,23 +38,19 @@ ssize_t pm_show_wakelocks(char *buf, boo
+ {
+ 	struct rb_node *node;
+ 	struct wakelock *wl;
+-	char *str = buf;
+-	char *end = buf + PAGE_SIZE;
++	int len = 0;
  
- 		return fanout_set_data(po, optval, optlen);
+ 	mutex_lock(&wakelocks_lock);
+ 
+ 	for (node = rb_first(&wakelocks_tree); node; node = rb_next(node)) {
+ 		wl = rb_entry(node, struct wakelock, node);
+ 		if (wl->ws.active == show_active)
+-			str += scnprintf(str, end - str, "%s ", wl->name);
++			len += sysfs_emit_at(buf, len, "%s ", wl->name);
+ 	}
+-	if (str > buf)
+-		str--;
+-
+-	str += scnprintf(str, end - str, "\n");
++	len += sysfs_emit_at(buf, len, "\n");
+ 
+ 	mutex_unlock(&wakelocks_lock);
+-	return (str - buf);
++	return len;
+ }
+ 
+ #if CONFIG_PM_WAKELOCKS_LIMIT > 0
 
 
