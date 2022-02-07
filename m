@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A15C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A399C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386597AbiBGLfE (ORCPT
+        id S1386532AbiBGLew (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:35:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        Mon, 7 Feb 2022 06:34:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384001AbiBGLYY (ORCPT
+        with ESMTP id S1383953AbiBGLYN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:24:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79961C043188;
-        Mon,  7 Feb 2022 03:24:23 -0800 (PST)
+        Mon, 7 Feb 2022 06:24:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A9DC0401C5;
+        Mon,  7 Feb 2022 03:24:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0CB30B81158;
-        Mon,  7 Feb 2022 11:24:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F74DC004E1;
-        Mon,  7 Feb 2022 11:24:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E71E361388;
+        Mon,  7 Feb 2022 11:24:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF106C004E1;
+        Mon,  7 Feb 2022 11:24:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233060;
-        bh=2kK5sbq3cpZ3QtSC6O0CqOyEdKdVWKxpE+KMJ3HVuHI=;
+        s=korg; t=1644233051;
+        bh=IzGcumH0UBveEX4Z1EvcBvjQJNsagxoSQnbTgSwJPG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QWZ8u266EFvHsaQwtxPwp1Zq6G2GUfjlgDKVsH1sc9Tex6H4soAZwPt+2Uzx3I9qr
-         GIcmD/goROb2vUTqf7+rsk+r+6OiG/xVqQTUZ/she87TnlTTsWU1yv/LeoEkq1HFXM
-         Ol/KoWf1SI/35GajjcM/OQkiN/xEGgkAkrdGbL3M=
+        b=jz+L1go58bydpJpivBJC/EkCTjLXU9wwQOlHvYMnTrsDr7hYqjKrYHhYknaLG9DuP
+         CPM71/g4xg891yI23wkwPkl1KayzOVKzit4GeC6bMZ4vi816TrjVXsaw3xxYUfQDwx
+         YlASy4TkXoU/J/RKI6MdFAW+urUYMF6JFQ26vzrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haiyue Wang <haiyue.wang@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 54/74] gve: fix the wrong AdminQ buffer queue index check
-Date:   Mon,  7 Feb 2022 12:06:52 +0100
-Message-Id: <20220207103758.983776899@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.10 74/74] selftests: nft_concat_range: add test for reload with no element add/del
+Date:   Mon,  7 Feb 2022 12:07:12 +0100
+Message-Id: <20220207103759.651707296@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -49,62 +50,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haiyue Wang <haiyue.wang@intel.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 1f84a9450d75e08af70d9e2f2d5e1c0ac0c881d2 upstream.
+commit eda0cf1202acf1ef47f93d8f92d4839213431424 upstream.
 
-The 'tail' and 'head' are 'unsigned int' type free-running count, when
-'head' is overflow, the 'int i (= tail) < u32 head' will be false:
+Add a specific test for the reload issue fixed with
+commit 23c54263efd7cb ("netfilter: nft_set_pipapo: allocate pcpu scratch maps on clone").
 
-Only '- loop 0: idx = 63' result is shown, so it needs to use 'int' type
-to compare, it can handle the overflow correctly.
+Add to set, then flush set content + restore without other add/remove in
+the transaction.
 
-typedef uint32_t u32;
+On kernels before the fix, this test case fails:
+  net,mac with reload    [FAIL]
 
-int main()
-{
-        u32 tail, head;
-        int stail, shead;
-        int i, loop;
-
-        tail = 0xffffffff;
-        head = 0x00000000;
-
-        for (i = tail, loop = 0; i < head; i++) {
-                unsigned int idx = i & 63;
-
-                printf("+ loop %d: idx = %u\n", loop++, idx);
-        }
-
-        stail = tail;
-        shead = head;
-        for (i = stail, loop = 0; i < shead; i++) {
-                unsigned int idx = i & 63;
-
-                printf("- loop %d: idx = %u\n", loop++, idx);
-        }
-
-        return 0;
-}
-
-Fixes: 5cdad90de62c ("gve: Batch AQ commands for creating and destroying queues.")
-Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/google/gve/gve_adminq.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/netfilter/nft_concat_range.sh |   72 +++++++++++++++++-
+ 1 file changed, 71 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/google/gve/gve_adminq.c
-+++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-@@ -141,7 +141,7 @@ static int gve_adminq_parse_err(struct g
-  */
- static int gve_adminq_kick_and_wait(struct gve_priv *priv)
- {
--	u32 tail, head;
-+	int tail, head;
- 	int i;
+--- a/tools/testing/selftests/netfilter/nft_concat_range.sh
++++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
+@@ -27,7 +27,7 @@ TYPES="net_port port_net net6_port port_
+        net_port_mac_proto_net"
  
- 	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
+ # Reported bugs, also described by TYPE_ variables below
+-BUGS="flush_remove_add"
++BUGS="flush_remove_add reload"
+ 
+ # List of possible paths to pktgen script from kernel tree for performance tests
+ PKTGEN_SCRIPT_PATHS="
+@@ -337,6 +337,23 @@ TYPE_flush_remove_add="
+ display		Add two elements, flush, re-add
+ "
+ 
++TYPE_reload="
++display		net,mac with reload
++type_spec	ipv4_addr . ether_addr
++chain_spec	ip daddr . ether saddr
++dst		addr4
++src		mac
++start		1
++count		1
++src_delta	2000
++tools		sendip nc bash
++proto		udp
++
++race_repeat	0
++
++perf_duration	0
++"
++
+ # Set template for all tests, types and rules are filled in depending on test
+ set_template='
+ flush ruleset
+@@ -1455,6 +1472,59 @@ test_bug_flush_remove_add() {
+ 	nft flush ruleset
+ }
+ 
++# - add ranged element, check that packets match it
++# - reload the set, check packets still match
++test_bug_reload() {
++	setup veth send_"${proto}" set || return ${KSELFTEST_SKIP}
++	rstart=${start}
++
++	range_size=1
++	for i in $(seq "${start}" $((start + count))); do
++		end=$((start + range_size))
++
++		# Avoid negative or zero-sized port ranges
++		if [ $((end / 65534)) -gt $((start / 65534)) ]; then
++			start=${end}
++			end=$((end + 1))
++		fi
++		srcstart=$((start + src_delta))
++		srcend=$((end + src_delta))
++
++		add "$(format)" || return 1
++		range_size=$((range_size + 1))
++		start=$((end + range_size))
++	done
++
++	# check kernel does allocate pcpu sctrach map
++	# for reload with no elemet add/delete
++	( echo flush set inet filter test ;
++	  nft list set inet filter test ) | nft -f -
++
++	start=${rstart}
++	range_size=1
++
++	for i in $(seq "${start}" $((start + count))); do
++		end=$((start + range_size))
++
++		# Avoid negative or zero-sized port ranges
++		if [ $((end / 65534)) -gt $((start / 65534)) ]; then
++			start=${end}
++			end=$((end + 1))
++		fi
++		srcstart=$((start + src_delta))
++		srcend=$((end + src_delta))
++
++		for j in $(seq ${start} $((range_size / 2 + 1)) ${end}); do
++			send_match "${j}" $((j + src_delta)) || return 1
++		done
++
++		range_size=$((range_size + 1))
++		start=$((end + range_size))
++	done
++
++	nft flush ruleset
++}
++
+ test_reported_issues() {
+ 	eval test_bug_"${subtest}"
+ }
 
 
