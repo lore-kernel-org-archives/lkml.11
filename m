@@ -2,85 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A593C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B984EC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235462AbiBGLEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:04:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42132 "EHLO
+        id S244877AbiBGLFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:05:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352978AbiBGK5S (ORCPT
+        with ESMTP id S1352919AbiBGK44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:57:18 -0500
-X-Greylist: delayed 1026 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 02:57:17 PST
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EE6C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:57:17 -0800 (PST)
-Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JsjGv00YNz67yfJ;
-        Mon,  7 Feb 2022 18:36:06 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Feb 2022 11:40:08 +0100
-Received: from [10.47.86.164] (10.47.86.164) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
- 2022 10:40:02 +0000
-Message-ID: <ce1183f5-cec1-9438-4b5d-a4a99b046ab6@huawei.com>
-Date:   Mon, 7 Feb 2022 10:39:58 +0000
+        Mon, 7 Feb 2022 05:56:56 -0500
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657C8C043181;
+        Mon,  7 Feb 2022 02:56:55 -0800 (PST)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2178w9x3026801;
+        Mon, 7 Feb 2022 11:54:46 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=fKhm3MzBX58/rjslTyH107YUk+1mSMLnBpiwn/M6efQ=;
+ b=4PrXwlafbQ7zCJEyWjLUPCdGPfVUYzIVhXXoo/5z8zqp+vebRl12OeE9IgVJzeuYT1/J
+ p+d5D5Fsl3SKMs62IZrr63VIbUvzfhUCu7PFI5Lv3AYiqI4z54kpz/78AqKPPyKhnlv3
+ 49AHoGrUXov0dNy/2UINkKqSKi6nYfakO6E1NQdMRXAUhoeEKig59KNMSuHlPIOfwZ8K
+ eX41txqCCTGmoF32HanEWJHYft/Ntt8nT0qBqA5lNE7w3TKWaBpXxFPMfRPdhq86JDaH
+ pnnZUMtikl5Kq3pAdeZ8jniRqCngI81PA6ItecQDDJRnTJ6gUujUnl/bwr0p9o0Kdn8y /A== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e2nfyay1x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 11:54:46 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id A8A12100034;
+        Mon,  7 Feb 2022 11:54:45 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 97972216ED4;
+        Mon,  7 Feb 2022 11:54:45 +0100 (CET)
+Received: from [10.48.0.252] (10.75.127.45) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 7 Feb
+ 2022 11:54:45 +0100
+Message-ID: <38a9ce0a-b63e-8321-bd85-c42638f31d39@foss.st.com>
+Date:   Mon, 7 Feb 2022 11:54:44 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v1 04/10] iommu/vt-d: Remove iova_cache_get/put()
-To:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "Kevin Tian" <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>
-CC:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
-        "Jason Gunthorpe" <jgg@nvidia.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "Christoph Hellwig" <hch@lst.de>
-References: <20220207064142.1092846-1-baolu.lu@linux.intel.com>
- <20220207064142.1092846-5-baolu.lu@linux.intel.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220207064142.1092846-5-baolu.lu@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/1] ARM: dts: stm32: fix AV96 board SAI2 pin muxing on
+ stm32mp15
+Content-Language: en-US
+To:     Olivier Moysan <olivier.moysan@foss.st.com>,
+        Marek Vasut <marex@denx.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+References: <20220124153525.17314-1-olivier.moysan@foss.st.com>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <20220124153525.17314-1-olivier.moysan@foss.st.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.86.164]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_04,2022-02-07_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/02/2022 06:41, Lu Baolu wrote:
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 583ec0fa4ac1..e8d58654361c 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -3348,9 +3348,6 @@ static inline int iommu_devinfo_cache_init(void)
->   static int __init iommu_init_mempool(void)
->   {
->   	int ret;
-> -	ret = iova_cache_get();
-> -	if (ret)
-> -		return ret;
+Hi Olivier
+
+On 1/24/22 16:35, Olivier Moysan wrote:
+> Replace sai2a-2 node name by sai2a-sleep-2, to avoid name
+> duplication.
+> 
+> Fixes: 1a9a9d226f0f ("ARM: dts: stm32: fix AV96 board SAI2 pin muxing on stm32mp15")
+> 
+> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+> ---
+>   arch/arm/boot/dts/stm32mp15-pinctrl.dtsi | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+> index 3b65130affec..6161f5906ec1 100644
+> --- a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+> +++ b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+> @@ -1190,7 +1190,7 @@
+>   		};
+>   	};
 >   
->   	ret = iommu_domain_cache_init();
->   	if (ret)
-> @@ -3362,7 +3359,6 @@ static int __init iommu_init_mempool(void)
->   
->   	kmem_cache_destroy(iommu_domain_cache);
->   domain_error:
+> -	sai2a_sleep_pins_c: sai2a-2 {
+> +	sai2a_sleep_pins_c: sai2a-sleep-2 {
+>   		pins {
+>   			pinmux = <STM32_PINMUX('D', 13, ANALOG)>, /* SAI2_SCK_A */
+>   				 <STM32_PINMUX('D', 11, ANALOG)>, /* SAI2_SD_A */
 
-nit: is this label still really required? only failures in 
-iommu_domain_cache_init() jump to it, and that can return directly now.
 
-Thanks,
-John
 
-> -	iova_cache_put();
+Applied on stm32-next.
 
+Thanks
+Alex
