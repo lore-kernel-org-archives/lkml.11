@@ -2,120 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF1F7C35273
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B62C4707E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384832AbiBGL47 (ORCPT
+        id S1390644AbiBGL5J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:56:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        Mon, 7 Feb 2022 06:57:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385218AbiBGLbX (ORCPT
+        with ESMTP id S1385234AbiBGLb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:23 -0500
-Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7924EC02C451
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:29:42 -0800 (PST)
-Received: by mail-oo1-xc29.google.com with SMTP id b15-20020a4a878f000000b002dccc412166so13216479ooi.11
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 03:29:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GdrAEtpSp9knE3dG4N9tmiah7mkkROzWWe9VwwtgIEE=;
-        b=hm9BqMPBVXryDOYxjtgkzshKUBUyISC+PQUo9JZc0hU2pX+klK/9GoBimwmV4SbPbs
-         Cqktu28LyobNhdW4hSKY5KtDI2UWmSNcgeBjPTEd7B4KB0hv2NV+qWzvuHN6+SkOtFu5
-         TiwDUyoGDQxMO8KHFSZQJ2fIbs8XY6z6xtTOFXXwph0LDKis4tf2aBVt2bTqxORAi41k
-         0mvxrR6ZwQGJIQ4JCZ1rPHseamYb5bXnm/00ermwgNFOxidmOYZNjcSWxwjAfipHHjP3
-         5kb+IMCddLCjqQ0SjILaVak/wEXI3KPC55ZNGDUEu9H22th2mZrQCZFD6FlRu9EAsZ9l
-         NCiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GdrAEtpSp9knE3dG4N9tmiah7mkkROzWWe9VwwtgIEE=;
-        b=QItJaengzk2efCYw9uRCn5+QMJ0OQZBQJx53/CTh55KoFBulFuSayTE6Ut0AIwrYCe
-         t46xBqesoAlZhLMFvay5Jb4sJl53xDLc8yf+Sw43K9tE0CjSrgUF0S7x8Tg8k5XWCCj6
-         F4Ans+LQ2GiV+LKB9cZY+39okXIO5YEuKBFxCQEnaZ9whVSFbVKV3cBgRiLvdidkUNzD
-         NJrmVGph5nWsVy5Bo+MmHTn079pSAibejqHdklQrzLiSsZiu8HVFYDPkKmaSKZC+X5ys
-         kFOeR0209FfDBIcjGlYNGZc5HdxvADYHDpDrkVlQj3ZA0spDYhMMHv13ZtuOeHPfFemM
-         N2Bw==
-X-Gm-Message-State: AOAM532yitkYqwPuEbfwo/3r/CPkGNx02dXSpS1p0Kec0vVPqguYLxBy
-        ej9GXBaOEmYm9iktfpDMpK+HW2Veq2ncTWLUhcILug==
-X-Google-Smtp-Source: ABdhPJyznrMFFiZoDqOMDlGRTRqArtq67oollYysU5ym1cWQLUvuAwYKu1pUfSpdvfjbXzTs/4WO2obpDRUITFEc+0s=
-X-Received: by 2002:a05:6870:7715:: with SMTP id dw21mr3643420oab.38.1644233381454;
- Mon, 07 Feb 2022 03:29:41 -0800 (PST)
+        Mon, 7 Feb 2022 06:31:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8297C02B750;
+        Mon,  7 Feb 2022 03:29:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 768E960A67;
+        Mon,  7 Feb 2022 11:29:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3809CC004E1;
+        Mon,  7 Feb 2022 11:29:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644233385;
+        bh=OtP5r+gyCFy9t1qM39CdxkthGbobIllUleGvZdo9M9s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hZ5F2WKF/P2sC563mjfEDcQa/whNZgOR+dvNvmGELRP1vEKFJHrTzU4BYLRRuIqQU
+         YSL3aPDCQX5Dvycw+fzkIlMYfeXbOTRF/CqCExyv9xgW242CScEuHIP/8eQ0/56XI9
+         UHWD7nbbJ4K33Lm2ztNzuhMe1LUJZfKImAtds0o8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.de>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 106/110] tools include UAPI: Sync sound/asound.h copy with the kernel sources
+Date:   Mon,  7 Feb 2022 12:07:19 +0100
+Message-Id: <20220207103805.980470477@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
+References: <20220207103802.280120990@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <0000000000001e0ba105d5c2dede@google.com> <000000000000fbf22d05d74d08fb@google.com>
- <20220207103009.id72sr4dtghgzp5f@work>
-In-Reply-To: <20220207103009.id72sr4dtghgzp5f@work>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 7 Feb 2022 12:29:30 +0100
-Message-ID: <CACT4Y+Z-R1swsyGrdgy89zHvmAa8tsBVE=mLngsapr5qPre9ZQ@mail.gmail.com>
-Subject: Re: [syzbot] general protection fault in ext4_fill_super
-To:     Lukas Czerner <lczerner@redhat.com>
-Cc:     syzbot <syzbot+138c9e58e3cb22eae3b4@syzkaller.appspotmail.com>,
-        adilger.kernel@dilger.ca, cmaiolino@redhat.com,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, nathan@kernel.org, ndesaulniers@google.com,
-        syzkaller-bugs@googlegroups.com, tytso@mit.edu
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 at 11:30, Lukas Czerner <lczerner@redhat.com> wrote:
->
-> On Sat, Feb 05, 2022 at 02:39:06PM -0800, syzbot wrote:
-> > syzbot has bisected this issue to:
-> >
-> > commit cebe85d570cf84804e848332d6721bc9e5300e07
-> > Author: Lukas Czerner <lczerner@redhat.com>
-> > Date:   Wed Oct 27 14:18:56 2021 +0000
-> >
-> >     ext4: switch to the new mount api
-> >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14902978700000
-> > start commit:   0457e5153e0e Merge tag 'for-linus' of git://git.kernel.org..
-> > git tree:       upstream
-> > final oops:     https://syzkaller.appspot.com/x/report.txt?x=16902978700000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=12902978700000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=cd57c0f940a9a1ec
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=138c9e58e3cb22eae3b4
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17f7004fb00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=178cf108700000
-> >
-> > Reported-by: syzbot+138c9e58e3cb22eae3b4@syzkaller.appspotmail.com
-> > Fixes: cebe85d570cf ("ext4: switch to the new mount api")
-> >
-> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> >
->
-> I believe that this has been fixed with upstream commit
->
-> commit 7c268d4ce2d3761f666a9950b029c8902bfab710
-> Author: Lukas Czerner <lczerner@redhat.com>
-> Date:   Wed Jan 19 14:02:09 2022 +0100
->
->     ext4: fix potential NULL pointer dereference in ext4_fill_super()
->
->     By mistake we fail to return an error from ext4_fill_super() in case
->     that ext4_alloc_sbi() fails to allocate a new sbi. Instead we just set
->     the ret variable and allow the function to continue which will later
->     lead to a NULL pointer dereference. Fix it by returning -ENOMEM in the
->     case ext4_alloc_sbi() fails.
->
->     Fixes: cebe85d570cf ("ext4: switch to the new mount api")
->     Reported-by: kernel test robot <lkp@intel.com>
->     Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->     Signed-off-by: Lukas Czerner <lczerner@redhat.com>
->     Link: https://lore.kernel.org/r/20220119130209.40112-1-lczerner@redhat.com
->     Signed-off-by: Theodore Ts'o <tytso@mit.edu>
->     Cc: stable@kernel.org
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+
+commit 4f2492731ada9d702ffdfaa6ec1ff64820a1664c upstream.
+
+Picking the changes from:
+
+  06feec6005c9d950 ("ASoC: hdmi-codec: Fix OOB memory accesses")
+
+Which entails no changes in the tooling side as it doesn't introduce new
+SNDRV_PCM_IOCTL_ ioctls.
+
+To silence this perf tools build warning:
+
+  Warning: Kernel ABI header at 'tools/include/uapi/sound/asound.h' differs from latest version at 'include/uapi/sound/asound.h'
+  diff -u tools/include/uapi/sound/asound.h include/uapi/sound/asound.h
+
+Cc: Dmitry Osipenko <digetx@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Takashi Iwai <tiwai@suse.de>
+Link: https://lore.kernel.org/lkml/Yf+6OT+2eMrYDEeX@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ tools/include/uapi/sound/asound.h |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/tools/include/uapi/sound/asound.h
++++ b/tools/include/uapi/sound/asound.h
+@@ -56,8 +56,10 @@
+  *                                                                          *
+  ****************************************************************************/
+ 
++#define AES_IEC958_STATUS_SIZE		24
++
+ struct snd_aes_iec958 {
+-	unsigned char status[24];	/* AES/IEC958 channel status bits */
++	unsigned char status[AES_IEC958_STATUS_SIZE]; /* AES/IEC958 channel status bits */
+ 	unsigned char subcode[147];	/* AES/IEC958 subcode bits */
+ 	unsigned char pad;		/* nothing */
+ 	unsigned char dig_subframe[4];	/* AES/IEC958 subframe bits */
 
 
-Let's tell syzbot then:
-
-#syz fix: ext4: fix potential NULL pointer dereference in ext4_fill_super()
-
-Thanks
