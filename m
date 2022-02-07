@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A399C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CB6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386532AbiBGLew (ORCPT
+        id S1386420AbiBGLeg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:34:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        Mon, 7 Feb 2022 06:34:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383953AbiBGLYN (ORCPT
+        with ESMTP id S1383881AbiBGLXy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:24:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A9DC0401C5;
-        Mon,  7 Feb 2022 03:24:12 -0800 (PST)
+        Mon, 7 Feb 2022 06:23:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147EEC0401C5;
+        Mon,  7 Feb 2022 03:23:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E71E361388;
-        Mon,  7 Feb 2022 11:24:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF106C004E1;
-        Mon,  7 Feb 2022 11:24:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6311B8111C;
+        Mon,  7 Feb 2022 11:23:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D062C004E1;
+        Mon,  7 Feb 2022 11:23:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233051;
-        bh=IzGcumH0UBveEX4Z1EvcBvjQJNsagxoSQnbTgSwJPG0=;
+        s=korg; t=1644233028;
+        bh=/tGzveDzfTBR4qxgZ0fj0VvGpTMLFFUP9H5ABeVidT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jz+L1go58bydpJpivBJC/EkCTjLXU9wwQOlHvYMnTrsDr7hYqjKrYHhYknaLG9DuP
-         CPM71/g4xg891yI23wkwPkl1KayzOVKzit4GeC6bMZ4vi816TrjVXsaw3xxYUfQDwx
-         YlASy4TkXoU/J/RKI6MdFAW+urUYMF6JFQ26vzrA=
+        b=hzBb6oTzslXsmzBvC8y06E+A8SLrVur7SzMqx7Wee/KLHmX/iKXi0ghHy5Eo9KPgh
+         +Aca4TwAqf/j8yHIPD3D+KPkX13SJYoXYv8YNHl5iADJMjL2wVGVX5Maf7DNrzf0Xm
+         A44O1hgzZXfMYLBOfa0MqXZ7QD2njRDjNCP3RraU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.10 74/74] selftests: nft_concat_range: add test for reload with no element add/del
-Date:   Mon,  7 Feb 2022 12:07:12 +0100
-Message-Id: <20220207103759.651707296@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Yin <yinxin.x@bytedance.com>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.10 68/74] ext4: modify the logic of ext4_mb_new_blocks_simple
+Date:   Mon,  7 Feb 2022 12:07:06 +0100
+Message-Id: <20220207103759.457691273@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -50,121 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Xin Yin <yinxin.x@bytedance.com>
 
-commit eda0cf1202acf1ef47f93d8f92d4839213431424 upstream.
+commit 31a074a0c62dc0d2bfb9b543142db4fe27f9e5eb upstream.
 
-Add a specific test for the reload issue fixed with
-commit 23c54263efd7cb ("netfilter: nft_set_pipapo: allocate pcpu scratch maps on clone").
+For now in ext4_mb_new_blocks_simple, if we found a block which
+should be excluded then will switch to next group, this may
+probably cause 'group' run out of range.
 
-Add to set, then flush set content + restore without other add/remove in
-the transaction.
+Change to check next block in the same group when get a block should
+be excluded. Also change the search range to EXT4_CLUSTERS_PER_GROUP
+and add error checking.
 
-On kernels before the fix, this test case fails:
-  net,mac with reload    [FAIL]
-
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Link: https://lore.kernel.org/r/20220110035141.1980-3-yinxin.x@bytedance.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/netfilter/nft_concat_range.sh |   72 +++++++++++++++++-
- 1 file changed, 71 insertions(+), 1 deletion(-)
+ fs/ext4/mballoc.c |   26 +++++++++++++++++---------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
 
---- a/tools/testing/selftests/netfilter/nft_concat_range.sh
-+++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
-@@ -27,7 +27,7 @@ TYPES="net_port port_net net6_port port_
-        net_port_mac_proto_net"
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -5173,7 +5173,8 @@ static ext4_fsblk_t ext4_mb_new_blocks_s
+ 	struct super_block *sb = ar->inode->i_sb;
+ 	ext4_group_t group;
+ 	ext4_grpblk_t blkoff;
+-	int i = sb->s_blocksize;
++	ext4_grpblk_t max = EXT4_CLUSTERS_PER_GROUP(sb);
++	ext4_grpblk_t i = 0;
+ 	ext4_fsblk_t goal, block;
+ 	struct ext4_super_block *es = EXT4_SB(sb)->s_es;
  
- # Reported bugs, also described by TYPE_ variables below
--BUGS="flush_remove_add"
-+BUGS="flush_remove_add reload"
+@@ -5195,19 +5196,26 @@ static ext4_fsblk_t ext4_mb_new_blocks_s
+ 		ext4_get_group_no_and_offset(sb,
+ 			max(ext4_group_first_block_no(sb, group), goal),
+ 			NULL, &blkoff);
+-		i = mb_find_next_zero_bit(bitmap_bh->b_data, sb->s_blocksize,
++		while (1) {
++			i = mb_find_next_zero_bit(bitmap_bh->b_data, max,
+ 						blkoff);
++			if (i >= max)
++				break;
++			if (ext4_fc_replay_check_excluded(sb,
++				ext4_group_first_block_no(sb, group) + i)) {
++				blkoff = i + 1;
++			} else
++				break;
++		}
+ 		brelse(bitmap_bh);
+-		if (i >= sb->s_blocksize)
+-			continue;
+-		if (ext4_fc_replay_check_excluded(sb,
+-			ext4_group_first_block_no(sb, group) + i))
+-			continue;
+-		break;
++		if (i < max)
++			break;
+ 	}
  
- # List of possible paths to pktgen script from kernel tree for performance tests
- PKTGEN_SCRIPT_PATHS="
-@@ -337,6 +337,23 @@ TYPE_flush_remove_add="
- display		Add two elements, flush, re-add
- "
+-	if (group >= ext4_get_groups_count(sb) && i >= sb->s_blocksize)
++	if (group >= ext4_get_groups_count(sb) || i >= max) {
++		*errp = -ENOSPC;
+ 		return 0;
++	}
  
-+TYPE_reload="
-+display		net,mac with reload
-+type_spec	ipv4_addr . ether_addr
-+chain_spec	ip daddr . ether saddr
-+dst		addr4
-+src		mac
-+start		1
-+count		1
-+src_delta	2000
-+tools		sendip nc bash
-+proto		udp
-+
-+race_repeat	0
-+
-+perf_duration	0
-+"
-+
- # Set template for all tests, types and rules are filled in depending on test
- set_template='
- flush ruleset
-@@ -1455,6 +1472,59 @@ test_bug_flush_remove_add() {
- 	nft flush ruleset
- }
- 
-+# - add ranged element, check that packets match it
-+# - reload the set, check packets still match
-+test_bug_reload() {
-+	setup veth send_"${proto}" set || return ${KSELFTEST_SKIP}
-+	rstart=${start}
-+
-+	range_size=1
-+	for i in $(seq "${start}" $((start + count))); do
-+		end=$((start + range_size))
-+
-+		# Avoid negative or zero-sized port ranges
-+		if [ $((end / 65534)) -gt $((start / 65534)) ]; then
-+			start=${end}
-+			end=$((end + 1))
-+		fi
-+		srcstart=$((start + src_delta))
-+		srcend=$((end + src_delta))
-+
-+		add "$(format)" || return 1
-+		range_size=$((range_size + 1))
-+		start=$((end + range_size))
-+	done
-+
-+	# check kernel does allocate pcpu sctrach map
-+	# for reload with no elemet add/delete
-+	( echo flush set inet filter test ;
-+	  nft list set inet filter test ) | nft -f -
-+
-+	start=${rstart}
-+	range_size=1
-+
-+	for i in $(seq "${start}" $((start + count))); do
-+		end=$((start + range_size))
-+
-+		# Avoid negative or zero-sized port ranges
-+		if [ $((end / 65534)) -gt $((start / 65534)) ]; then
-+			start=${end}
-+			end=$((end + 1))
-+		fi
-+		srcstart=$((start + src_delta))
-+		srcend=$((end + src_delta))
-+
-+		for j in $(seq ${start} $((range_size / 2 + 1)) ${end}); do
-+			send_match "${j}" $((j + src_delta)) || return 1
-+		done
-+
-+		range_size=$((range_size + 1))
-+		start=$((end + range_size))
-+	done
-+
-+	nft flush ruleset
-+}
-+
- test_reported_issues() {
- 	eval test_bug_"${subtest}"
- }
+ 	block = ext4_group_first_block_no(sb, group) + i;
+ 	ext4_mb_mark_bb(sb, block, 1, 1);
 
 
