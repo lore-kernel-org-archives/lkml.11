@@ -2,223 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8834BC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A15C46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357175AbiBGP7x (ORCPT
+        id S1376337AbiBGP75 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:59:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33818 "EHLO
+        Mon, 7 Feb 2022 10:59:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244086AbiBGPva (ORCPT
+        with ESMTP id S1385489AbiBGPz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:51:30 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6D3C0401C1;
-        Mon,  7 Feb 2022 07:51:29 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 54D34340;
-        Mon,  7 Feb 2022 16:51:23 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1644249083;
-        bh=Kg8KkyXqodwxnkoOUnTFgILuDislMphNhCMp4Cyt3k0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d+p/yyLLVWoFHaQMa3PKOYne2f5NsLX/aSXsN5whwh5fbgyeQpYs8XdYey0+Cmdzm
-         wzUhiqC1tH8lsKZPl6Eninn4/oSoKEz/NKHoSjt3wcCtb6Np67rcbw0PDyekIXy8+L
-         kBpaesRvFQGudsLOVg3bNSdwSx4HeFms+1kyhIT4=
-Date:   Mon, 7 Feb 2022 17:51:21 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 61/66] dt-bindings: media: Add Allwinner A31 ISP
- bindings documentation
-Message-ID: <YgE/+UmP4nJVxtRT@pendragon.ideasonboard.com>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-62-paul.kocialkowski@bootlin.com>
+        Mon, 7 Feb 2022 10:55:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52FFFC0401D5
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:55:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644249325;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I4R9ip16BNHzOCMyjNW2i8e6oOdWXHYHkd2se90F0XI=;
+        b=K1qvILtcstiUQRby6iK6P//2ZxXiOK5sb5MYIRYAYyI/GEXgU7Xct4IFWBjWIwyBNgJQ4i
+        3VS3gr4AXZm+/FzdWGtXOyO47N1ZNHJzY+eP0QuuzCYE+DiyPA+cGeGRLmmiF5s2IxCYnx
+        Jz/Y8ZTrSRoxxKPdHkCwEPdxYNvUWMo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-661-wKwVbDHBNS-GatSourBQzg-1; Mon, 07 Feb 2022 10:55:24 -0500
+X-MC-Unique: wKwVbDHBNS-GatSourBQzg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E010293922;
+        Mon,  7 Feb 2022 15:55:20 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.192.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 739AF7DE56;
+        Mon,  7 Feb 2022 15:55:13 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sean Christopherson <seanjc@google.com>,
+        David Airlie <airlied@linux.ie>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Jim Mattson <jmattson@google.com>, x86@kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>, stable@vger.kernel.org
+Subject: [PATCH RESEND 03/30] KVM: x86: nSVM: mark vmcb01 as dirty when restoring SMM saved state
+Date:   Mon,  7 Feb 2022 17:54:20 +0200
+Message-Id: <20220207155447.840194-4-mlevitsk@redhat.com>
+In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
+References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220205185429.2278860-62-paul.kocialkowski@bootlin.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+While usually, restoring the smm state makes the KVM enter
+the nested guest thus a different vmcb (vmcb02 vs vmcb01),
+KVM should still mark it as dirty, since hardware
+can in theory cache multiple vmcbs.
 
-Thank you for the patch.
+Failure to do so, combined with lack of setting the
+nested_run_pending (which is fixed in the next patch),
+might make KVM re-enter vmcb01, which was just exited from,
+with completely different set of guest state registers
+(SMM vs non SMM) and without proper dirty bits set,
+which results in the CPU reusing stale IDTR pointer
+which leads to a guest shutdown on any interrupt.
 
-On Sat, Feb 05, 2022 at 07:54:24PM +0100, Paul Kocialkowski wrote:
-> This introduces YAML bindings documentation for the Allwinner A31 Image
-> Signal Processor (ISP).
-> 
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> ---
->  .../media/allwinner,sun6i-a31-isp.yaml        | 117 ++++++++++++++++++
->  1 file changed, 117 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> new file mode 100644
-> index 000000000000..2d87022c43ce
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> @@ -0,0 +1,117 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-isp.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Allwinner A31 Image Signal Processor Driver (ISP) Device Tree Bindings
-> +
-> +maintainers:
-> +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - allwinner,sun6i-a31-isp
-> +      - allwinner,sun8i-v3s-isp
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: Bus Clock
-> +      - description: Module Clock
-> +      - description: DRAM Clock
+On the real hardware this usually doesn't happen,
+but when running nested, L0's KVM does check and
+honour few dirty bits, causing this issue to happen.
 
-That's interesting, does the ISP have a dedicated DRAM ?
+This patch fixes boot of hyperv and SMM enabled
+windows VM running nested on KVM.
 
-> +
-> +  clock-names:
-> +    items:
-> +      - const: bus
-> +      - const: mod
-> +      - const: ram
-> +
-> +  resets:
-> +    maxItems: 1
-> +
-> +  ports:
-> +    $ref: /schemas/graph.yaml#/properties/ports
-> +
-> +    properties:
-> +      port@0:
-> +        $ref: /schemas/graph.yaml#/$defs/port-base
-> +        description: CSI0 input port
-> +
-> +        properties:
-> +          reg:
-> +            const: 0
-> +
-> +          endpoint:
-> +            $ref: video-interfaces.yaml#
-> +            unevaluatedProperties: false
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Cc: stable@vger.kernel.org
+---
+ arch/x86/kvm/svm/svm.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-If no other property than remote-endpoint are allowed, I'd write
-
-          endpoint:
-            $ref: video-interfaces.yaml#
-	    remote-endpoint: true
-            additionalProperties: false
-
-Same below.
-
-> +
-> +        additionalProperties: false
-> +
-> +      port@1:
-> +        $ref: /schemas/graph.yaml#/$defs/port-base
-> +        description: CSI1 input port
-> +
-> +        properties:
-> +          reg:
-> +            const: 0
-
-This should be 1.
-
-> +
-> +          endpoint:
-> +            $ref: video-interfaces.yaml#
-> +            unevaluatedProperties: false
-> +
-> +        additionalProperties: false
-> +
-> +    anyOf:
-> +      - required:
-> +        - port@0
-> +      - required:
-> +        - port@1
-
-As ports are an intrinsic property of the ISP, both should be required,
-but they don't have to be connected.
-
-By the way, how do you select at runtime which CSI-2 RX the ISP gets its
-image stream from ? Is it configured through registers of the ISP ?
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +  - resets
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
-> +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
-> +
-> +    isp: isp@1cb8000 {
-> +        compatible = "allwinner,sun8i-v3s-isp";
-> +        reg = <0x01cb8000 0x1000>;
-> +        interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&ccu CLK_BUS_CSI>,
-> +             <&ccu CLK_CSI1_SCLK>,
-> +             <&ccu CLK_DRAM_CSI>;
-> +        clock-names = "bus", "mod", "ram";
-> +        resets = <&ccu RST_BUS_CSI>;
-> +
-> +        ports {
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            port@0 {
-> +                reg = <0>;
-> +
-> +                isp_in_csi0: endpoint {
-> +                    remote-endpoint = <&csi0_out_isp>;
-> +                };
-> +            };
-> +        };
-> +    };
-> +
-> +...
-
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 995c203a62fd9..3f1d11e652123 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4267,6 +4267,8 @@ static int svm_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
+ 	 * Enter the nested guest now
+ 	 */
+ 
++	vmcb_mark_all_dirty(svm->vmcb01.ptr);
++
+ 	vmcb12 = map.hva;
+ 	nested_copy_vmcb_control_to_cache(svm, &vmcb12->control);
+ 	nested_copy_vmcb_save_to_cache(svm, &vmcb12->save);
 -- 
-Regards,
+2.26.3
 
-Laurent Pinchart
