@@ -2,96 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3C3C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E0DFC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386131AbiBGLdq (ORCPT
+        id S1386176AbiBGLdv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:33:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
+        Mon, 7 Feb 2022 06:33:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383447AbiBGLWa (ORCPT
+        with ESMTP id S234936AbiBGLZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:22:30 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B59C043188
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:22:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644232949; x=1675768949;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tR1hNw1mTA0fikhf9oODDgaBc6sgUTEIP2iw28TLVvU=;
-  b=iVB6tbXnK+7c3uHKWhfZwZsEQpuXEplp4RCf5LWrzEsMvpwXyBLrg8et
-   /rTuZxtlHA7OolMYcsml9RY/IQhSyaXkPV5xYqcOaipGbY6GQrDuTv+xV
-   TM4DIRDsO3nhlR8xApU1iTVJ6gtqMda92YbiZSeotJn1SV5giv0WY4Yz7
-   JK2GipizIQvKoFBNnVMivqODhpyO7UVMwFLgmISoUxyBIliRPMJzsqnSX
-   OjLCHxsX08ZT+Pt3mTkQ7r4fd/3kz860OzUJ3IoJttV0G5+KgIm97I0m4
-   qPisVIDPFkGWQukH6pSTXxB+eG1/3bf2v8S/rSBtL49q6lgf2usI8CDcV
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="248644607"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="248644607"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:21:26 -0800
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="481554308"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:21:24 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nH24H-001sW2-7O;
-        Mon, 07 Feb 2022 13:20:25 +0200
-Date:   Mon, 7 Feb 2022 13:20:24 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Yicong Yang <yangyicong@hisilicon.com>
-Cc:     jarkko.nikula@linux.intel.com, mika.westerberg@linux.intel.com,
-        wsa@kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, prime.zeng@hisilicon.com,
-        linuxarm@huawei.com
-Subject: Re: [PATCH 1/2] i2c: hisi: Add generic GPIO bus recovery support
-Message-ID: <YgEAeOmobDhqRMGx@smile.fi.intel.com>
-References: <20220125124930.50369-1-yangyicong@hisilicon.com>
- <20220125124930.50369-2-yangyicong@hisilicon.com>
- <YgD/3Xi0yLPHCu+L@smile.fi.intel.com>
+        Mon, 7 Feb 2022 06:25:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32FCEC043189;
+        Mon,  7 Feb 2022 03:25:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCDE76077B;
+        Mon,  7 Feb 2022 11:25:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69A43C004E1;
+        Mon,  7 Feb 2022 11:24:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644233100;
+        bh=UBUGUaJZe93yLz+nk7Ton8WJCc+VGhP2Z/SUcF67TSE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=D1QCKwMvqrqOY0PBmIDwvsgpmfBWF561OZJGbdMc+oizXCQ/u/1+F/GKaVoqbI2VB
+         Z5WGPTW8JfAp+GA9nrVU9z4Ai28ziNIDvL6IFZ+oWrQueZuwplzPzJzG5ykmS2sJEd
+         MGrZQV7D45NGNmhtx8xUC8YbdneSCOX2cH46DXMQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Shakeel Butt <shakeelb@google.com>,
+        Manfred Spraul <manfred@colorfullife.com>,
+        Arnd Bergmann <arnd@arndb.de>, Yang Guang <cgel.zte@gmail.com>,
+        Davidlohr Bueso <dbueso@suse.de>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 004/110] ipc/sem: do not sleep with a spin lock held
+Date:   Mon,  7 Feb 2022 12:05:37 +0100
+Message-Id: <20220207103802.427673715@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
+References: <20220207103802.280120990@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgD/3Xi0yLPHCu+L@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 01:17:49PM +0200, Andy Shevchenko wrote:
-> On Tue, Jan 25, 2022 at 08:49:29PM +0800, Yicong Yang wrote:
-> > Add generic GPIO bus recovery support for i2c-hisi driver
-> > by registering the recovery information with core provided
-> > i2c_generic_scl_recovery() method.
-> > 
-> > As the SCL/SDA pins are multiplexed with GPIO, we need to
-> > switch the pins mux to GPIO before recovery and switch back
-> > after recovery. It's implemented by the ACPI method in
-> > the i2c_bus_recovery_info->{prepare,unprepare}_recovery()
-> > method.
-> 
-> NAK.
-> 
-> ACPI has its own resources for that. What is missed is the layer between ACPI
-> and pin control.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-To be more precise,
+commit 520ba724061cef59763e2b6f5b26e8387c2e5822 upstream.
 
-https://uefi.org/specs/ACPI/6.4/19_ASL_Reference/ACPI_Source_Language_Reference.html?highlight=pinfunction#pinconfig-pin-configuration-descriptor-macro
+We can't call kvfree() with a spin lock held, so defer it.
 
-https://uefi.org/specs/ACPI/6.4/19_ASL_Reference/ACPI_Source_Language_Reference.html?highlight=pinfunction#pinfunction-pin-function-descriptor-macro
+Link: https://lkml.kernel.org/r/20211223031207.556189-1-chi.minghao@zte.com.cn
+Fixes: fc37a3b8b438 ("[PATCH] ipc sem: use kvmalloc for sem_undo allocation")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Reviewed-by: Manfred Spraul <manfred@colorfullife.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Yang Guang <cgel.zte@gmail.com>
+Cc: Davidlohr Bueso <dbueso@suse.de>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Cc: Vasily Averin <vvs@virtuozzo.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ ipc/sem.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-https://uefi.org/specs/ACPI/6.4/19_ASL_Reference/ACPI_Source_Language_Reference.html?highlight=pinfunction#pingroup-pin-group-descriptor-macro
-
-https://uefi.org/specs/ACPI/6.4/19_ASL_Reference/ACPI_Source_Language_Reference.html?highlight=pinfunction#pingroupconfig-pin-group-configuration-descriptor-macro
-
--- 
-With Best Regards,
-Andy Shevchenko
+--- a/ipc/sem.c
++++ b/ipc/sem.c
+@@ -1964,6 +1964,7 @@ static struct sem_undo *find_alloc_undo(
+ 	 */
+ 	un = lookup_undo(ulp, semid);
+ 	if (un) {
++		spin_unlock(&ulp->lock);
+ 		kvfree(new);
+ 		goto success;
+ 	}
+@@ -1976,9 +1977,8 @@ static struct sem_undo *find_alloc_undo(
+ 	ipc_assert_locked_object(&sma->sem_perm);
+ 	list_add(&new->list_id, &sma->list_id);
+ 	un = new;
+-
+-success:
+ 	spin_unlock(&ulp->lock);
++success:
+ 	sem_unlock(sma, -1);
+ out:
+ 	return un;
 
 
