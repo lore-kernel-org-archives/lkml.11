@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F486C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1580C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391260AbiBGL6w (ORCPT
+        id S1355836AbiBGLzz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:58:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
+        Mon, 7 Feb 2022 06:55:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377754AbiBGLfr (ORCPT
+        with ESMTP id S1385061AbiBGLbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:35:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 638DEC03FEC8;
-        Mon,  7 Feb 2022 03:35:40 -0800 (PST)
+        Mon, 7 Feb 2022 06:31:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9ED8C0354AB;
+        Mon,  7 Feb 2022 03:29:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D62E260180;
-        Mon,  7 Feb 2022 11:35:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96E11C004E1;
-        Mon,  7 Feb 2022 11:35:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 686D1B811A6;
+        Mon,  7 Feb 2022 11:29:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86BADC004E1;
+        Mon,  7 Feb 2022 11:29:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233739;
-        bh=DFsm60ujwlq6xrmRluf3V0gZYV+0uKA4KIhEf3z/2VY=;
+        s=korg; t=1644233347;
+        bh=f1ORtPDAHpcxACauP0gFG5EboxWBRvFWuxzNa3VLo2w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ODjv018DgL4WC527PwuUfriM21P3W+DY7QmWol6Nv8tcIKGfRw7XMhztC4ewTrqry
-         64dPLMpyuND8FDRAnMIddDMGjnqjpkYRsXEuCniR8PkNu/QPhRJK+E6YtgqhThLbGx
-         jxTHPHEAp0N//JuKPATpbGTgMWan9LToxGwZtez4=
+        b=G4riBLUO5ZxbwBMIaeO+6onlM2ZWK1ZtMZSE+yYOnwuIW63PStueCngwRIhM8qikb
+         q5+tCI/iQtAR/1IlPgaalQFNrByvdukSrZi6HMOBYemCWfdvE63IGVMoEFwU8hvUMm
+         IqtuwJU3mUCAcOD5i7HewESv5HOL9KWrYga96Jz4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Riwen Lu <luriwen@kylinos.cn>,
-        Eric Wong <e@80x24.org>,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.16 106/126] rtc: cmos: Evaluate century appropriate
-Date:   Mon,  7 Feb 2022 12:07:17 +0100
-Message-Id: <20220207103807.720623227@linuxfoundation.org>
+        stable@vger.kernel.org, Tristan Hume <tristan@thume.ca>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Adrian Hunter <adrian.hunter@intel.com>, stable@kernel.org
+Subject: [PATCH 5.15 095/110] perf/x86/intel/pt: Fix crash with stop filters in single-range mode
+Date:   Mon,  7 Feb 2022 12:07:08 +0100
+Message-Id: <20220207103805.612059303@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-References: <20220207103804.053675072@linuxfoundation.org>
+In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
+References: <20220207103802.280120990@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,43 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Riwen Lu <luriwen@kylinos.cn>
+From: Tristan Hume <tristan@thume.ca>
 
-commit ff164ae39b82ee483b24579c8e22a13a8ce5bd04 upstream.
+commit 1d9093457b243061a9bba23543c38726e864a643 upstream.
 
-There's limiting the year to 2069. When setting the rtc year to 2070,
-reading it returns 1970. Evaluate century starting from 19 to count the
-correct year.
+Add a check for !buf->single before calling pt_buffer_region_size in a
+place where a missing check can cause a kernel crash.
 
-$ sudo date -s 20700106
-Mon 06 Jan 2070 12:00:00 AM CST
-$ sudo hwclock -w
-$ sudo hwclock -r
-1970-01-06 12:00:49.604968+08:00
+Fixes a bug introduced by commit 670638477aed ("perf/x86/intel/pt:
+Opportunistically use single range output mode"), which added a
+support for PT single-range output mode. Since that commit if a PT
+stop filter range is hit while tracing, the kernel will crash because
+of a null pointer dereference in pt_handle_status due to calling
+pt_buffer_region_size without a ToPA configured.
 
-Fixes: 2a4daadd4d3e5071 ("rtc: cmos: ignore bogus century byte")
+The commit which introduced single-range mode guarded almost all uses of
+the ToPA buffer variables with checks of the buf->single variable, but
+missed the case where tracing was stopped by the PT hardware, which
+happens when execution hits a configured stop filter.
 
-Signed-off-by: Riwen Lu <luriwen@kylinos.cn>
-Acked-by: Eric Wong <e@80x24.org>
-Reviewed-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220106084609.1223688-1-luriwen@kylinos.cn
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl> # preparation for stable
+Tested that hitting a stop filter while PT recording successfully
+records a trace with this patch but crashes without this patch.
+
+Fixes: 670638477aed ("perf/x86/intel/pt: Opportunistically use single range output mode")
+Signed-off-by: Tristan Hume <tristan@thume.ca>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: stable@kernel.org
+Link: https://lkml.kernel.org/r/20220127220806.73664-1-tristan@thume.ca
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rtc/rtc-mc146818-lib.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/events/intel/pt.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/rtc/rtc-mc146818-lib.c
-+++ b/drivers/rtc/rtc-mc146818-lib.c
-@@ -104,7 +104,7 @@ again:
- 	time->tm_year += real_year - 72;
- #endif
- 
--	if (century > 20)
-+	if (century > 19)
- 		time->tm_year += (century - 19) * 100;
- 
- 	/*
+--- a/arch/x86/events/intel/pt.c
++++ b/arch/x86/events/intel/pt.c
+@@ -897,8 +897,9 @@ static void pt_handle_status(struct pt *
+ 		 * means we are already losing data; need to let the decoder
+ 		 * know.
+ 		 */
+-		if (!intel_pt_validate_hw_cap(PT_CAP_topa_multiple_entries) ||
+-		    buf->output_off == pt_buffer_region_size(buf)) {
++		if (!buf->single &&
++		    (!intel_pt_validate_hw_cap(PT_CAP_topa_multiple_entries) ||
++		     buf->output_off == pt_buffer_region_size(buf))) {
+ 			perf_aux_output_flag(&pt->handle,
+ 			                     PERF_AUX_FLAG_TRUNCATED);
+ 			advance++;
 
 
