@@ -2,113 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 548FCC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74CA3C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346394AbiBGSI1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:08:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
+        id S235961AbiBGSI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:08:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344764AbiBGSAT (ORCPT
+        with ESMTP id S1344937AbiBGSIN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:00:19 -0500
-X-Greylist: delayed 339 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 10:00:16 PST
-Received: from fwd1.porkbun.com (fwd1.porkbun.com [52.10.174.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43ED9C0401D9;
-        Mon,  7 Feb 2022 10:00:16 -0800 (PST)
-Received: by fwd1.porkbun.com (Postfix, from userid 497)
-        id E276741D09; Mon,  7 Feb 2022 17:49:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ansari.sh;
-        s=default; t=1644256477;
-        bh=WgWSC1IOBKQNEaPKc/yuujz/f2ZwdXMi8BgaxzlEwSc=;
-        h=From:To:Cc:Subject:Date;
-        b=bZkiW7qxwSd1k0xDaVddX2Tk+1rI1P9NjCWXzvxS8z2g/f3lS5lCO3TOJ+9QtIKBN
-         kcwqYqWWTurFN2sOUNKYbldSCYZrRbTh5mxGeEVPOMLIHMqTrG5IfGibqvkkddsBKm
-         YVNto8jd+Qaqk4f6y/3A2p0rqd6qo8GU5VmXBMSc=
-Received: from rayyan-pc.broadband (unknown [90.242.138.108])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: rayyan@ansari.sh)
-        by fwd1.porkbun.com (Postfix) with ESMTPSA id 91D7B43726;
-        Mon,  7 Feb 2022 17:49:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ansari.sh;
-        s=default; t=1644256189;
-        bh=WgWSC1IOBKQNEaPKc/yuujz/f2ZwdXMi8BgaxzlEwSc=;
-        h=From:To:Cc:Subject:Date;
-        b=J14q/+x9mBBTBYPjjvrMpK/SRO55KDxwG+mHiLf7IBPB1URuD9fc3rQdFKSXGcbSx
-         7XIkIX18mC4m2VLDQ3AsgjOLxBVgBZ+Vn3v8xvuNtNfnUAfgLj7Q63+/Twn7KYd8os
-         MHmO4hCdmqvkA3+Kt1+/twuN6B4aeiqkhsxuEZ5I=
-From:   Rayyan Ansari <rayyan@ansari.sh>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Rayyan Ansari <rayyan@ansari.sh>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: dts: qcom: pm8226: Add VADC node
-Date:   Mon,  7 Feb 2022 17:49:33 +0000
-Message-Id: <20220207174933.20909-1-rayyan@ansari.sh>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Feb 2022 13:08:13 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34FAC0401D9
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:08:12 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id u12so4635341plq.10
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 10:08:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nxHF7bigQnfZfNGCQpq6EtXcG8/j6GHHAEIHGHy2fyU=;
+        b=W2DDXQJis+1qeQfXY6E/rxnSkSH+QKQccGw4pZqh3cKQQ7Ll28D21ZTANWBpjdTXkB
+         +oBg0dRp7zXiF2K9fvNxjOnqLQ0NU4tSCX/uoDUgYXiPcW3lrnrEZ8WrBiPWSBgY4/tx
+         9wQBgc3U+/16XX6zr1IGWZp+OTMhC+7AmHWl4HQOtmJdf1TDvqV9PwZseP44xIAvTKTJ
+         lY9+rCsDVlGtJn+K+JfRbJQJUoxEyKL8bHmbimQ1ptdoTfcpwUfxMxs8lIMS2tr1n+Up
+         0WNvMspuYRbKnLIowW6FPQwT66Mrqlup7UTEmGoUmJqEmINAArubT4xrd5hjAe0QVo24
+         gEeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nxHF7bigQnfZfNGCQpq6EtXcG8/j6GHHAEIHGHy2fyU=;
+        b=co/3FWB2EGd01nA5PaQyTRt5r/ASHBFNpfwGOHrgEmE4HvQMIlQagMKudlE8H75Xom
+         9IK7FFteqhCm30bzxFwdva22B0fjAGW0wxT8i4/9biYpGcBoSNB4Vy2g7L/aPZP/TdXo
+         aNxUBwafM14H3BkH7bl2Dge4IK3H8IgVdvw1ebN1PzHdTzdHvj5U9rS056xpssAEiZjU
+         qWOyYu2ymM+N4HrptW9wIGQwuGpcBqjZSsnh+RSx7hl1/IL11MdZwyhEsTzyej5yxSUA
+         sUZ0QYcqrzZ0lCG6/uVb4E/vhgeTc2pR/MXceTM0W0WeUU0Z48HfJfrZy3KykZn1cBax
+         PbaA==
+X-Gm-Message-State: AOAM530Q1Zw59PNFjifFWzdlZ0YnONBUS7j4J77imtpvzOCUlyBi5WKl
+        wGQ0zFH7+uKaVKBRQKQucFMPw0uIGzmKlh5mCmKquw==
+X-Google-Smtp-Source: ABdhPJxbjfLp1vymzfVN/rUSu7NFfwM27TjFOxcEJErT+R82ivD+XXC3ZWylDTpvE/Ebzm6hUwz4bOsdTAqXcC6BA2A=
+X-Received: by 2002:a17:902:ccce:: with SMTP id z14mr815477ple.34.1644257292200;
+ Mon, 07 Feb 2022 10:08:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220207063249.1833066-1-hch@lst.de> <20220207063249.1833066-2-hch@lst.de>
+In-Reply-To: <20220207063249.1833066-2-hch@lst.de>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Mon, 7 Feb 2022 10:08:01 -0800
+Message-ID: <CAPcyv4iKLXJftFL+jdAXFXt6-fjwSdK9D2un9PywfXDT0W7HzQ@mail.gmail.com>
+Subject: Re: [PATCH 1/8] mm: remove a pointless CONFIG_ZONE_DEVICE check in memremap_pages
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Alistair Popple <apopple@nvidia.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>, nouveau@lists.freedesktop.org,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a node for the voltage ADC (VADC) found in PM8226.
+On Sun, Feb 6, 2022 at 10:33 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> memremap.c is only built when CONFIG_ZONE_DEVICE is set, so remove
+> the superflous extra check.
 
-Signed-off-by: Rayyan Ansari <rayyan@ansari.sh>
----
- arch/arm/boot/dts/qcom-pm8226.dtsi | 33 ++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+Looks good to me.
 
-diff --git a/arch/arm/boot/dts/qcom-pm8226.dtsi b/arch/arm/boot/dts/qcom-pm8226.dtsi
-index b3d0f7b5874d..a651b4c941b8 100644
---- a/arch/arm/boot/dts/qcom-pm8226.dtsi
-+++ b/arch/arm/boot/dts/qcom-pm8226.dtsi
-@@ -40,6 +40,39 @@ smbb: charger@1000 {
- 			chg_otg: otg-vbus { };
- 		};
- 
-+		pm8226_vadc: adc@3100 {
-+			compatible = "qcom,spmi-vadc";
-+			reg = <0x3100>;
-+			interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			#io-channel-cells = <1>;
-+
-+			adc-chan@7 {
-+				reg = <VADC_VSYS>;
-+				qcom,pre-scaling = <1 3>;
-+				label = "vph_pwr";
-+			};
-+			adc-chan@8 {
-+				reg = <VADC_DIE_TEMP>;
-+				label = "die_temp";
-+			};
-+			adc-chan@9 {
-+				reg = <VADC_REF_625MV>;
-+				label = "ref_625mv";
-+			};
-+			adc-chan@a {
-+				reg = <VADC_REF_1250MV>;
-+				label = "ref_1250mv";
-+			};
-+			adc-chan@e {
-+				reg = <VADC_GND_REF>;
-+			};
-+			adc-chan@f {
-+				reg = <VADC_VDD_VADC>;
-+			};
-+		};
-+
- 		pm8226_mpps: mpps@a000 {
- 			compatible = "qcom,pm8226-mpp", "qcom,spmi-mpp";
- 			reg = <0xa000>;
--- 
-2.34.1
-
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
