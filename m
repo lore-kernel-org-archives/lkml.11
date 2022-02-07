@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A737C3526C
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CB3C3527D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359202AbiBGLfg (ORCPT
+        id S1377711AbiBGLfq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:35:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36516 "EHLO
+        Mon, 7 Feb 2022 06:35:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384116AbiBGLYt (ORCPT
+        with ESMTP id S1384136AbiBGLYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:24:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C07C043188;
-        Mon,  7 Feb 2022 03:24:49 -0800 (PST)
+        Mon, 7 Feb 2022 06:24:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108F1C043181;
+        Mon,  7 Feb 2022 03:24:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9308F6077B;
-        Mon,  7 Feb 2022 11:24:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 760B5C004E1;
-        Mon,  7 Feb 2022 11:24:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0EE461388;
+        Mon,  7 Feb 2022 11:24:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F19DC004E1;
+        Mon,  7 Feb 2022 11:24:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233088;
-        bh=ax9fryblx6QV7qJ+qvkUKsP1d+CzKmmJDTBUlRRYv54=;
+        s=korg; t=1644233091;
+        bh=IEgE565Gtb1btIQogTZvSJuRAGwhj+7xF4Okv16Im2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PPx9L1x7LRw6VORMg+hH5UbCS0mpDm3AfUio4zRGgbCLXfqWAkbp1PKH8easVOLJr
-         P0H3xtG7sy/oS3hM4tA9lJDSQTxFtmDG6hL9Ct6vYe+FkWgFjKIFvBCbpazrPCeyE2
-         bY/COp5Tg2APrK3wsHvUtQAe3E5Bx2quB8Qhv42E=
+        b=egtWY0ngQD5vYuIcFRlTjU6jsQtn2JhjJ2rkJRBhrWmFuN159ERWefPwRbdWUq5jp
+         T2ofMIcbrz2LGXrYJ72INJTkKwX6+gZ7Hx2iIUawKyrNZvP1/LtIdGU/JWH2nE28Ho
+         RYVbb99Klzq8aRhX5drLvw+t66LyBK15UaZfy4BQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Sergeyev <sergeev917@gmail.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Albert=20Geant=C4=83?= <albertgeanta@gmail.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 012/110] ALSA: hda: realtek: Fix race at concurrent COEF updates
-Date:   Mon,  7 Feb 2022 12:05:45 +0100
-Message-Id: <20220207103802.687712648@linuxfoundation.org>
+Subject: [PATCH 5.15 013/110] ALSA: hda/realtek: Add quirk for ASUS GU603
+Date:   Mon,  7 Feb 2022 12:05:46 +0100
+Message-Id: <20220207103802.718911808@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -49,148 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Albert Geantă <albertgeanta@gmail.com>
 
-commit b837a9f5ab3bdfab9233c9f98a6bef717673a3e5 upstream.
+commit 94db9cc8f8fa2d5426ce79ec4ca16028f7084224 upstream.
 
-The COEF access is done with two steps: setting the index then read or
-write the data.  When multiple COEF accesses are performed
-concurrently, the index and data might be paired unexpectedly.
-In most cases, this isn't a big problem as the COEF setup is done at
-the initialization, but some dynamic changes like the mute LED may hit
-such a race.
+The ASUS GU603 (Zephyrus M16 - SSID 1043:16b2) requires a quirk similar to
+other ASUS devices for correctly routing the 4 integrated speakers. This
+fixes it by adding a corresponding quirk entry, which connects the bass
+speakers to the proper DAC.
 
-For avoiding the racy COEF accesses, this patch introduces a new
-mutex coef_mutex to alc_spec, and wrap the COEF accessing functions
-with it.
-
-Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
+Signed-off-by: Albert Geantă <albertgeanta@gmail.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220111195229.a77wrpjclqwrx4bx@localhost.localdomain
-Link: https://lore.kernel.org/r/20220131075738.24323-1-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220131010523.546386-1-albertgeanta@gmail.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |   61 ++++++++++++++++++++++++++++++++++--------
- 1 file changed, 50 insertions(+), 11 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -97,6 +97,7 @@ struct alc_spec {
- 	unsigned int gpio_mic_led_mask;
- 	struct alc_coef_led mute_led_coef;
- 	struct alc_coef_led mic_led_coef;
-+	struct mutex coef_mutex;
- 
- 	hda_nid_t headset_mic_pin;
- 	hda_nid_t headphone_mic_pin;
-@@ -132,8 +133,8 @@ struct alc_spec {
-  * COEF access helper functions
-  */
- 
--static int alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
--			       unsigned int coef_idx)
-+static int __alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
-+				 unsigned int coef_idx)
- {
- 	unsigned int val;
- 
-@@ -142,28 +143,61 @@ static int alc_read_coefex_idx(struct hd
- 	return val;
- }
- 
-+static int alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
-+			       unsigned int coef_idx)
-+{
-+	struct alc_spec *spec = codec->spec;
-+	unsigned int val;
-+
-+	mutex_lock(&spec->coef_mutex);
-+	val = __alc_read_coefex_idx(codec, nid, coef_idx);
-+	mutex_unlock(&spec->coef_mutex);
-+	return val;
-+}
-+
- #define alc_read_coef_idx(codec, coef_idx) \
- 	alc_read_coefex_idx(codec, 0x20, coef_idx)
- 
--static void alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
--				 unsigned int coef_idx, unsigned int coef_val)
-+static void __alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
-+				   unsigned int coef_idx, unsigned int coef_val)
- {
- 	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_COEF_INDEX, coef_idx);
- 	snd_hda_codec_write(codec, nid, 0, AC_VERB_SET_PROC_COEF, coef_val);
- }
- 
-+static void alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
-+				 unsigned int coef_idx, unsigned int coef_val)
-+{
-+	struct alc_spec *spec = codec->spec;
-+
-+	mutex_lock(&spec->coef_mutex);
-+	__alc_write_coefex_idx(codec, nid, coef_idx, coef_val);
-+	mutex_unlock(&spec->coef_mutex);
-+}
-+
- #define alc_write_coef_idx(codec, coef_idx, coef_val) \
- 	alc_write_coefex_idx(codec, 0x20, coef_idx, coef_val)
- 
-+static void __alc_update_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
-+				    unsigned int coef_idx, unsigned int mask,
-+				    unsigned int bits_set)
-+{
-+	unsigned int val = __alc_read_coefex_idx(codec, nid, coef_idx);
-+
-+	if (val != -1)
-+		__alc_write_coefex_idx(codec, nid, coef_idx,
-+				       (val & ~mask) | bits_set);
-+}
-+
- static void alc_update_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
- 				  unsigned int coef_idx, unsigned int mask,
- 				  unsigned int bits_set)
- {
--	unsigned int val = alc_read_coefex_idx(codec, nid, coef_idx);
-+	struct alc_spec *spec = codec->spec;
- 
--	if (val != -1)
--		alc_write_coefex_idx(codec, nid, coef_idx,
--				     (val & ~mask) | bits_set);
-+	mutex_lock(&spec->coef_mutex);
-+	__alc_update_coefex_idx(codec, nid, coef_idx, mask, bits_set);
-+	mutex_unlock(&spec->coef_mutex);
- }
- 
- #define alc_update_coef_idx(codec, coef_idx, mask, bits_set)	\
-@@ -196,13 +230,17 @@ struct coef_fw {
- static void alc_process_coef_fw(struct hda_codec *codec,
- 				const struct coef_fw *fw)
- {
-+	struct alc_spec *spec = codec->spec;
-+
-+	mutex_lock(&spec->coef_mutex);
- 	for (; fw->nid; fw++) {
- 		if (fw->mask == (unsigned short)-1)
--			alc_write_coefex_idx(codec, fw->nid, fw->idx, fw->val);
-+			__alc_write_coefex_idx(codec, fw->nid, fw->idx, fw->val);
- 		else
--			alc_update_coefex_idx(codec, fw->nid, fw->idx,
--					      fw->mask, fw->val);
-+			__alc_update_coefex_idx(codec, fw->nid, fw->idx,
-+						fw->mask, fw->val);
- 	}
-+	mutex_unlock(&spec->coef_mutex);
- }
- 
- /*
-@@ -1148,6 +1186,7 @@ static int alc_alloc_spec(struct hda_cod
- 	codec->spdif_status_reset = 1;
- 	codec->forced_resume = 1;
- 	codec->patch_ops = alc_patch_ops;
-+	mutex_init(&spec->coef_mutex);
- 
- 	err = alc_codec_rename_from_preset(codec);
- 	if (err < 0) {
+@@ -8854,6 +8854,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1043, 0x1e51, "ASUS Zephyrus M15", ALC294_FIXUP_ASUS_GU502_PINS),
+ 	SND_PCI_QUIRK(0x1043, 0x1e8e, "ASUS Zephyrus G15", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x1f11, "ASUS Zephyrus G14", ALC289_FIXUP_ASUS_GA401),
++	SND_PCI_QUIRK(0x1043, 0x16b2, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x3030, "ASUS ZN270IE", ALC256_FIXUP_ASUS_AIO_GPIO2),
+ 	SND_PCI_QUIRK(0x1043, 0x831a, "ASUS P901", ALC269_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x1043, 0x834a, "ASUS S101", ALC269_FIXUP_STEREO_DMIC),
 
 
