@@ -2,141 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E594C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E59C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344988AbiBGKKt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:10:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46172 "EHLO
+        id S245521AbiBGKY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:24:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352043AbiBGKJR (ORCPT
+        with ESMTP id S237462AbiBGKS4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:09:17 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D81C043181;
-        Mon,  7 Feb 2022 02:09:16 -0800 (PST)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2177IHdd021769;
-        Mon, 7 Feb 2022 10:09:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=tS9RbereTtPx/SOpjQ345ravp54SHFJ2d0zGKpElp0Q=;
- b=JsdX3uD+WiCf75MIyFoqzDcZ/oid1qgju05+Ky+rMflvewuHsFjGaWqrE6w5Uo1Wj4/g
- Q8aYC11BCQSyW8kwAbewuKNdX+ssXZGalU3qbR/Kzg0AQ+neGS6SHtUe4H/GFpPz6kdM
- Nxt9kE3lRGq8J0iKFg8Z6vf3E4UW9/5PWU62+dryWUNPs/i/reDGh4i+dR22DBru3mTY
- yftQWgs0KcrJx6t/yOIu/ZzvcrQWqteoGM1SRDcjIj8Ovm2tHDGtxeprc8F5rgk+bUag
- Hy8y0Ax/z7K5Dhvr7Ri0W1ZPCWnX3WlURBIcyRK8YcgmiOvhsZLKkHZI9aeG1ZQU0lR/ kA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22u2quwc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 10:09:16 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217A0Slj016359;
-        Mon, 7 Feb 2022 10:09:15 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22u2quvn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 10:09:15 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217A7rmQ030871;
-        Mon, 7 Feb 2022 10:09:12 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggjjvge-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 10:09:12 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2179x6KX49676784
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 09:59:07 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 259114204B;
-        Mon,  7 Feb 2022 10:09:09 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BDD5142042;
-        Mon,  7 Feb 2022 10:09:08 +0000 (GMT)
-Received: from [9.145.9.42] (unknown [9.145.9.42])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 10:09:08 +0000 (GMT)
-Message-ID: <8f277bb3-e604-35d5-ed60-dc8824b223b5@linux.ibm.com>
-Date:   Mon, 7 Feb 2022 11:09:08 +0100
+        Mon, 7 Feb 2022 05:18:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B339BC043181;
+        Mon,  7 Feb 2022 02:18:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D37261297;
+        Mon,  7 Feb 2022 10:18:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6E65C004E1;
+        Mon,  7 Feb 2022 10:18:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644229134;
+        bh=5ldiobl7gosz7YWwdwT3byG6YkZL6Tnfq+gbfeJhlUA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UQm7hMFL0uFUzmJUAL4jkDCy/+B5DeaaldeK1PH7aTnzFnYMDKnLTtbVivvJsyyf4
+         XU2e9HyLROB41Loltr3JkxyGIWX7CirRQNQbfTHDdMhPzSrMao9ydNycTYR5vCaruY
+         KacETv/NQNZClWaHOyfOZNFGeVbBNwE8t1Zyb5/U=
+Date:   Mon, 7 Feb 2022 11:18:51 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     =?utf-8?B?572X6aOe?= <luofei@unicloud.com>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>,
+        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: =?utf-8?B?562U5aSN?= =?utf-8?Q?=3A?= [PATCH] x86/mm,
+ mm/hwpoison: fix unmap kernel 1:1 pages
+Message-ID: <YgDyCwOtt8+UfBMN@kroah.com>
+References: <20220207075242.830685-1-luofei@unicloud.com>
+ <YgDU3+KsiaQ54J5N@kroah.com>
+ <YgDn7WWdcD5xaprX@zn.tnic>
+ <2a4b69472f034fc995a047c7ec945cd3@unicloud.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v7 09/17] KVM: s390: pv: clear the state without memset
-Content-Language: en-US
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
-        david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
-References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
- <20220204155349.63238-10-imbrenda@linux.ibm.com>
-From:   Janosch Frank <frankja@linux.ibm.com>
-In-Reply-To: <20220204155349.63238-10-imbrenda@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 7j-6IYFn636BvbRjr9uEYa20FeWGSY39
-X-Proofpoint-ORIG-GUID: pTRqlIumz4w7ZI-811p18R5RNVbAFHCS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_03,2022-02-07_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
- malwarescore=0 adultscore=0 impostorscore=0 mlxscore=0 priorityscore=1501
- suspectscore=0 bulkscore=0 lowpriorityscore=0 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202070065
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2a4b69472f034fc995a047c7ec945cd3@unicloud.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/4/22 16:53, Claudio Imbrenda wrote:
-> Do not use memset to clean the whole struct kvm_s390_pv; instead,
-> explicitly clear the fields that need to be cleared.
+On Mon, Feb 07, 2022 at 10:03:29AM +0000, 罗飞 wrote:
+> >I think he's trying to fix the backport:
+> >
+> >see 26f8c38bb466c1a2d232d7609fb4bfb4bc121678 which is the stable tree backport:
+> >
+> >@@ -582,7 +586,8 @@ static int srao_decode_notifier(struct notifier_block *nb, unsigned long val,
+> >
+> >       if (mce_usable_address(mce) && (mce->severity == MCE_AO_SEVERITY)) {
+> >               pfn = mce->addr >> PAGE_SHIFT;
+> >-               memory_failure(pfn, MCE_VECTOR, 0);
+> >+               if (memory_failure(pfn, MCE_VECTOR, 0))
+> >+                       mce_unmap_kpfn(pfn);
+>  >       }
+> >
+> >
+> >vs the upstream commit:
+> >
+> >fd0e786d9d09024f67bd71ec094b110237dc3840
+> >
+> >@@ -590,7 +594,8 @@ static int srao_decode_notifier(struct notifier_block *nb, unsigned long val,
+> >
+> >        if (mce_usable_address(mce) && (mce->severity == MCE_AO_SEVERITY)) {
+> >               pfn = mce->addr >> PAGE_SHIFT;
+> >-               memory_failure(pfn, 0);
+> >+               if (!memory_failure(pfn, 0))
+> >+                       mce_unmap_kpfn(pfn);
+> >       }
+> >
+> >        return NOTIFY_OK;
 > 
-> Upcoming patches will introduce new fields in the struct kvm_s390_pv
-> that will not need to be cleared.
 > 
-> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> ---
->   arch/s390/kvm/pv.c | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-> index 9e900ce7387d..f1e812a45acb 100644
-> --- a/arch/s390/kvm/pv.c
-> +++ b/arch/s390/kvm/pv.c
-> @@ -16,6 +16,15 @@
->   #include <linux/sched/mm.h>
->   #include "kvm-s390.h"
->   
-> +static void kvm_s390_clear_pv_state(struct kvm *kvm)
-> +{
-> +	kvm->arch.pv.handle = 0;
-> +	kvm->arch.pv.guest_len = 0;
-> +	kvm->arch.pv.stor_base = 0;
-> +	kvm->arch.pv.stor_var = NULL;
-> +	kvm->arch.pv.handle = 0;
+> Sorry for my not familiar with submitting patches to stable kernel tree, and here Borislav Petkov said exactly what I meant
 
-You really want to make sure the handle is zero :)
+Great, can you please resend this and document what this patch is doing
+and why it is not in upstream and why is it needed only in this one
+branch?
 
-With this fixed:
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+thanks,
 
-> +}
-> +
->   int kvm_s390_pv_destroy_cpu(struct kvm_vcpu *vcpu, u16 *rc, u16 *rrc)
->   {
->   	int cc;
-> @@ -110,7 +119,7 @@ static void kvm_s390_pv_dealloc_vm(struct kvm *kvm)
->   	vfree(kvm->arch.pv.stor_var);
->   	free_pages(kvm->arch.pv.stor_base,
->   		   get_order(uv_info.guest_base_stor_len));
-> -	memset(&kvm->arch.pv, 0, sizeof(kvm->arch.pv));
-> +	kvm_s390_clear_pv_state(kvm);
->   }
->   
->   static int kvm_s390_pv_alloc_vm(struct kvm *kvm)
-> 
-
+greg k-h
