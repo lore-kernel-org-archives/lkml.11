@@ -2,124 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED62FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0987FC43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245508AbiBGJt2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:49:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
+        id S245560AbiBGJta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 04:49:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236246AbiBGJnY (ORCPT
+        with ESMTP id S1350465AbiBGJfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:43:24 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177D0C043188
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:43:22 -0800 (PST)
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 7 Feb 2022 04:35:53 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71292C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:35:52 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 67D714025B
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:43:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644227001;
-        bh=+L6E+uDCjSN479CYKJ9gYlHkAuXqDhEQEWmjUAJvDhE=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=EehYkJpXRPjeAfAUTRGoah5C5hB5d++bxbE1a40LKh8POiNt+tO5eh6ap0osKBRWg
-         cKSIG/g2/cZXW6PCMMFChioiSThT0TPCHhL4B3wWp/jFig1blGEEY4yndBQo/4RzRY
-         LtsK1DmqdVPELoHgeOXjB02l+sukNVpO61UeNI+QR2gxOo3I4fvolhp3KlDNRlcK3o
-         o1MV/7QUYB6lqKwE4j9DyPHzCkPjZhxYheAc7+Xdqt4BC8meRNivB0tP5AA3tHQ/6l
-         7ssxN5dStQ3s+twKlXN+z/z/fKDZoczA/nNYHZftSjJgvthsMyGrREqogB7SMhLP2G
-         5U0R3UcJFZ4bQ==
-Received: by mail-wm1-f72.google.com with SMTP id n3-20020a05600c294300b0037bc685b717so1326640wmd.8
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:43:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+L6E+uDCjSN479CYKJ9gYlHkAuXqDhEQEWmjUAJvDhE=;
-        b=IfwnzFGCHoO2kL10xGb01PJ+k/tLBwxi1DeXcvWMiKv0VaC5eYJJDKwzhNbeWQayHj
-         bcBS1jY+xQFW0XE5f0ah+KQ9PKcrJO2THGpktZjSCKAygDyYYwIS2W+Suzu9Zzs6HKMb
-         hE3PuWzmidLkTSJcB0jVp4jXuIbVC2LRMExeTJfF4vm9FPlAc5bWnn4Th4eei890e5cm
-         fJYljBlh6QwpaXlX+F3AIe+tmjb7lf/NXJzgRiWMugwsabV8Lowl9c/HT0F+zhfaBV8S
-         Vkt8fQJQndq43+caXFsXjchwWJvZrOEdJgGLzgRWXKjSZDX4eULGJkV1zApqD/elozNx
-         J4Rw==
-X-Gm-Message-State: AOAM532K27LD0GtkZbuWwJxGq05lGQjRjZiN05ma0y5fT28mitIdXKg0
-        L2UKZOK5kKhxqPbPv9mET9AqEFyfU/ifpuzCf7CBqmfZSwXVi3RzagbaJaHdylm1BFzguCkFVsQ
-        xf6xq65DcvQMEMDkyxMn/0ah5bCNfVi2F17uGPMQwMw==
-X-Received: by 2002:a05:600c:3516:: with SMTP id h22mr13431084wmq.143.1644227000969;
-        Mon, 07 Feb 2022 01:43:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwHF7dm2ZsoEJJ5VPAil3jjFNgC2lqhi4OrFY5B5qRigsPvDSfxiXW8PeX3gyanY9lg95hK0Q==
-X-Received: by 2002:a05:600c:3516:: with SMTP id h22mr13431067wmq.143.1644227000728;
-        Mon, 07 Feb 2022 01:43:20 -0800 (PST)
-Received: from [192.168.0.86] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id v5sm10694902wrx.114.2022.02.07.01.43.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 01:43:19 -0800 (PST)
-Message-ID: <68d1f184-bfc5-9d78-8c68-0c793b35adf4@canonical.com>
-Date:   Mon, 7 Feb 2022 10:43:19 +0100
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D93221EC032C;
+        Mon,  7 Feb 2022 10:35:46 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644226547;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=rDiVcxjeYIchdVruDF/dh+Lsn2pxySfwdTEN8yKfdeQ=;
+        b=nnRw/Rwp2ohjKTUmnH9MBlX89ad3H/Y7vIsogbPEB2l6ApAnSms33M5oDEXH8rc92vQOFg
+        PraSmUxtkbAd1G9jq0L51/yfllCBdkkq+nvvzspcZkcwGSbPtRBpsPNFrN8OkU0+JnqzTh
+        F7ttl1pHCVXr19Tft2Dt548YWOGBeaU=
+Date:   Mon, 7 Feb 2022 10:35:41 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     luofei <luofei@unicloud.com>, stable@vger.kernel.org,
+        tony.luck@intel.com, tglx@linutronix.de, mingo@redhat.com,
+        hpa@zytor.com, x86@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] x86/mm, mm/hwpoison: fix unmap kernel 1:1 pages
+Message-ID: <YgDn7WWdcD5xaprX@zn.tnic>
+References: <20220207075242.830685-1-luofei@unicloud.com>
+ <YgDU3+KsiaQ54J5N@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 0/4] mfd/power/regulators: dt-bindings: max14577:
- convert to dtschema
-Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Chanwoo Choi <cw00.choi@samsung.com>
-References: <20220111174337.223320-1-krzysztof.kozlowski@canonical.com>
- <73bad620-97eb-a734-cbc8-6f001d04c18a@canonical.com>
- <YgDnlWKO6/BTxZh2@google.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <YgDnlWKO6/BTxZh2@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YgDU3+KsiaQ54J5N@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/02/2022 10:34, Lee Jones wrote:
-> On Sun, 06 Feb 2022, Krzysztof Kozlowski wrote:
+On Mon, Feb 07, 2022 at 09:14:23AM +0100, Greg KH wrote:
+> On Mon, Feb 07, 2022 at 02:52:42AM -0500, luofei wrote:
+> > Only unmap the page when the memory error is properly handled
+> > by calling memory_failure(), not the other way around.
+> > 
+> > Fixes: 26f8c38bb466("x86/mm, mm/hwpoison: Don't unconditionally unmap kernel 1:1 pages")
 > 
->> On 11/01/2022 18:43, Krzysztof Kozlowski wrote:
->>> Hi,
->>>
->>> Changes since v1
->>> ================
->>> 1. MFD: Use absolute path to schemas
->>> 2. Regulator: mention all allowed properties,
->>>    additionalProperties=false, add min/max values for voltages and
->>>    current, don't use patternProperties when not needed.
->>>
->>> Dependencies
->>> ============
->>> 1. DTS patch 1/4: nothing depends on it, sending here so Rob's automatic
->>>    checker won't complain about DTS.
->>>    I will take it via Samsung SoC tree.
->>>
->>> 2. Final MFD patch (4/4) depends on regulator and power, so the last
->>>    patches (2+3+4) should go via same tree.
->>>
->> Dear Lee,
->>
->> This patchset was reviewed and there are no outstanding issues. Could
->> you pick up patches 2-4 (skipping DTS patch) via MFD tree?
-> 
-> Nothing from Mark?
+> This commit is not in Linus's tree.  Please use the correct commit id.
 
-No, nothing. There is no other simultaneous work on these files, so I
-don't expect conflicts here. Important part is that I got review from Rob.
+I think he's trying to fix the backport:
 
-If lack of ack makes you hesitant, I can resend hoping it will help but
-it is a bit of pain.
+see 26f8c38bb466c1a2d232d7609fb4bfb4bc121678 which is the stable tree backport:
 
-Best regards,
-Krzysztof
+@@ -582,7 +586,8 @@ static int srao_decode_notifier(struct notifier_block *nb, unsigned long val,
+ 
+        if (mce_usable_address(mce) && (mce->severity == MCE_AO_SEVERITY)) {
+                pfn = mce->addr >> PAGE_SHIFT;
+-               memory_failure(pfn, MCE_VECTOR, 0);
++               if (memory_failure(pfn, MCE_VECTOR, 0))
++                       mce_unmap_kpfn(pfn);
+        }
+
+
+vs the upstream commit:
+
+fd0e786d9d09024f67bd71ec094b110237dc3840
+
+@@ -590,7 +594,8 @@ static int srao_decode_notifier(struct notifier_block *nb, unsigned long val,
+ 
+        if (mce_usable_address(mce) && (mce->severity == MCE_AO_SEVERITY)) {
+                pfn = mce->addr >> PAGE_SHIFT;
+-               memory_failure(pfn, 0);
++               if (!memory_failure(pfn, 0))
++                       mce_unmap_kpfn(pfn);
+        }
+ 
+        return NOTIFY_OK;
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
