@@ -2,100 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C50EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA6FC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241011AbiBGG6S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:58:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42614 "EHLO
+        id S241125AbiBGG6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:58:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240072AbiBGGpU (ORCPT
+        with ESMTP id S1353653AbiBGGhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:45:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80572C043185;
-        Sun,  6 Feb 2022 22:45:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB62EB80D83;
-        Mon,  7 Feb 2022 06:45:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9391FC004E1;
-        Mon,  7 Feb 2022 06:45:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644216315;
-        bh=iZXpNhr0N3akH/Sjy44hlofDVMLAqUl7QsOwcgUX2zs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UDEBiKMGPEXlEdwQnsw7Z7trJhc6ITA+Rz8zvxvviECIo+3EeSJWZDi8pNHQ1x7Jp
-         baaeb95V7jMHPKiUTL8Jcq7oFCYSYZ4OWLCEG8bJfUWXgptuT+aT5vtst/HsfkoKLh
-         PdQkuvX1EADhbd38ndP/Z6REcliGKLrsLOAtrsG70q4ACjSUi82INxQ/JY6SpxrDiq
-         YoWOlxL5+EjzzUQa0IfZpLaS1EeIREt8qyrxmhVllf35mmgGPxttra1Tje3CpSn25O
-         h8mQc+31Z+nNKq8wKmJskBmHdOa9k/iGUf1rv0VnNzYeiw6ozqL+EseJw8wBRo7xAe
-         5oNBaUINBpUNw==
-Date:   Mon, 7 Feb 2022 12:15:04 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Daniel Thompson <daniel.thompson@linaro.org>
-Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>, hemantk@codeaurora.org,
-        bbhatt@codeaurora.org, loic.poulain@linaro.org,
-        jhugo@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [BUG] bus: mhi: possible deadlock in mhi_pm_disable_transition()
- and mhi_async_power_up()
-Message-ID: <20220207064504.GC1905@thinkpad>
-References: <d3a94b53-0d77-dafe-ce45-f9ab23278616@gmail.com>
- <20220201171540.2udq3x6r2swctzau@maple.lan>
+        Mon, 7 Feb 2022 01:37:52 -0500
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A44AAC043181;
+        Sun,  6 Feb 2022 22:37:50 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuyu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V3mOTeH_1644215867;
+Received: from 30.225.28.93(mailfrom:xuyu@linux.alibaba.com fp:SMTPD_---0V3mOTeH_1644215867)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 07 Feb 2022 14:37:47 +0800
+Message-ID: <e4eb9000-e246-c01b-abde-de1535ff0374@linux.alibaba.com>
+Date:   Mon, 7 Feb 2022 14:37:46 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220201171540.2udq3x6r2swctzau@maple.lan>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH] chardev: call tty_init() in real chrdev_init()
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        arnd@arndb.de, viro@zeniv.linux.org.uk, dhowells@redhat.com
+References: <4e753e51d0516413fbf557cf861d654ca73486cc.1644164597.git.xuyu@linux.alibaba.com>
+ <Yf//U1s3DbTuSqo2@kroah.com>
+From:   Yu Xu <xuyu@linux.alibaba.com>
+In-Reply-To: <Yf//U1s3DbTuSqo2@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 01, 2022 at 05:15:40PM +0000, Daniel Thompson wrote:
-> On Sat, Jan 29, 2022 at 10:56:30AM +0800, Jia-Ju Bai wrote:
-> > Hello,
-> > 
-> > My static analysis tool reports a possible deadlock in the mhi driver in
-> > Linux 5.10:
-> > 
-> > mhi_async_power_up()
-> >   mutex_lock(&mhi_cntrl->pm_mutex); --> Line 933 (Lock A)
-> >   wait_event_timeout(mhi_cntrl->state_event, ...) --> Line 985 (Wait X)
-> >   mutex_unlock(&mhi_cntrl->pm_mutex); --> Line 1040 (Unlock A)
-> > 
-> > mhi_pm_disable_transition()
-> >   mutex_lock(&mhi_cntrl->pm_mutex); --> Line 463 (Lock A)
-> >   wake_up_all(&mhi_cntrl->state_event); --> Line 474 (Wake X)
-> >   mutex_unlock(&mhi_cntrl->pm_mutex); --> Line 524 (Unlock A)
-> >   wake_up_all(&mhi_cntrl->state_event); --> Line 526 (Wake X)
-> > 
-> > When mhi_async_power_up() is executed, "Wait X" is performed by holding
-> > "Lock A". If mhi_pm_disable_transition() is concurrently executed at this
-> > time, "Wake X" cannot be performed to wake up "Wait X" in
-> > mhi_async_power_up(), because "Lock A" is already hold by
-> > mhi_async_power_up(), causing a possible deadlock.
-> > I find that "Wait X" is performed with a timeout, to relieve the possible
-> > deadlock; but I think this timeout can cause inefficient execution.
-> > 
-> > I am not quite sure whether this possible problem is real and how to fix it
-> > if it is real.
-> > Any feedback would be appreciated, thanks :)
+On 2/7/22 1:03 AM, Greg KH wrote:
+> On Mon, Feb 07, 2022 at 12:27:31AM +0800, Xu Yu wrote:
+>> It is confusing that tty_init() in called in the initialization of
+>> memdev, i.e., static chr_dev_init().
+>>
+>> Through blame, it is introduced by commit 31d1d48e199e ("Fix init
+>> ordering of /dev/console vs callers of modprobe"), which fixes the
+>> initialization order of /dev/console driver. However, there seems
+>> to be a typo in the patch, i.e., chrdev_init, instead of chr_dev_init.
+>>
+>> This fixes the typo, IIUC.
+>>
+>> Note that the return value of tty_init() is always 0, and thus no error
+>> handling is provided in chrdev_init().
+>>
+>> Fixes: 31d1d48e199e ("Fix init ordering of /dev/console vs callers of modprobe")
+>> Signed-off-by: Xu Yu <xuyu@linux.alibaba.com>
+>> ---
+>>   drivers/char/mem.c | 2 +-
+>>   fs/char_dev.c      | 1 +
+>>   2 files changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/char/mem.c b/drivers/char/mem.c
+>> index cc296f0823bd..8c90881f8115 100644
+>> --- a/drivers/char/mem.c
+>> +++ b/drivers/char/mem.c
+>> @@ -775,7 +775,7 @@ static int __init chr_dev_init(void)
+>>   			      NULL, devlist[minor].name);
+>>   	}
+>>   
+>> -	return tty_init();
+>> +	return 0;
+>>   }
+>>   
+>>   fs_initcall(chr_dev_init);
+>> diff --git a/fs/char_dev.c b/fs/char_dev.c
+>> index ba0ded7842a7..fc042a0a098f 100644
+>> --- a/fs/char_dev.c
+>> +++ b/fs/char_dev.c
+>> @@ -667,6 +667,7 @@ static struct kobject *base_probe(dev_t dev, int *part, void *data)
+>>   void __init chrdev_init(void)
+>>   {
+>>   	cdev_map = kobj_map_init(base_probe, &chrdevs_lock);
+>> +	tty_init();
+>>   }
+>>   
 > 
-> Interesting find but I think it would be better to run your tool
-> against more recent kernels to confirm any problem reports. In this
-> case the code you mention looks like it was removed in v5.17-rc1
-> (and should eventually make its way to the stable kernels too).
+> You just changed the ordering sequence here, are you SURE this is
+> correct?
+
+To be honest, not 100% sure.
+
 > 
+> How was this tested?  Did you verify that the problem that the original
+> commit here was fixing is now not happening again?
 
-Hmm, looks like the commit didn't apply cleanly to 5.10:
-https://www.spinics.net/lists/stable/msg526754.html
+I tried to reproduce the issue described in the original commit, and
+failed. The issue does not appear, or my reproduction is wrong.
+   1. revert 31d1d48e199e manually;
+   2. request_module("xxx") anywhere before do_initcalls(), since
+      tty_init() now is initialized by module_init();
+   3. no warning on request_module is shown.
 
-Let send the fix up version.
+> 
+> And what real problem is this solving?  How did you hit the issue that
+> this solves?
 
+No real problem actually. As described in the log, it is confusing that
+tty_init() in called in the initialization of memdev. They don't have
+strong dependencies. I found the issue when I read through codes of
+drivers/char/mem.c.
+
+> 
+> And finally, yes, it is not good to throw away the return value of
+> tty_init().  If it really can not return anything but 0, then let us
+> make it a void function first.
+
+Got it. But I will first try to figure out whether this patch is a real
+issue.
+
+> 
+> thanks,
+> 
+> greg k-h
+
+-- 
 Thanks,
-Mani
-
-> 
-> Daniel.
+Yu
