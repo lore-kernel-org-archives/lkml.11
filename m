@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EB4FC35275
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E02C3527A
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384008AbiBGLYZ (ORCPT
+        id S1384027AbiBGLYa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:24:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
+        Mon, 7 Feb 2022 06:24:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382326AbiBGLSw (ORCPT
+        with ESMTP id S1382312AbiBGLSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:18:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE66C0401C1;
-        Mon,  7 Feb 2022 03:18:37 -0800 (PST)
+        Mon, 7 Feb 2022 06:18:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F76C03F938;
+        Mon,  7 Feb 2022 03:18:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED9FC61426;
-        Mon,  7 Feb 2022 11:18:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D04EEC004E1;
-        Mon,  7 Feb 2022 11:18:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D06DB81028;
+        Mon,  7 Feb 2022 11:18:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBD03C004E1;
+        Mon,  7 Feb 2022 11:18:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232716;
-        bh=f0y3q7bWN+Cd31ROBfKgbkOcO5BctI8JgsO6LElPB+k=;
+        s=korg; t=1644232713;
+        bh=dAmIPYQVBvWgi3bxIbj5YMAmI6/YT3+3J/UdfZNiyYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1MT6tMHIPbTdHKiojKFPbwA+V1xvcNlAOJIQG1tFGK7dt6HVDRnx8F7SKc4CPYadO
-         DDUtpwEfcNSR/cZ44dpVe0KsGVO9Ue/buUG5XB9AseAWXVXB60AMdL9/hldSK/dtdf
-         JT9E1KLX1R3EUv3nRZxjOVWdRDlshDzwa4JtDczM=
+        b=WwzF9fXHt9YIvvhM+9FPtkNqIsivO7K4bw7Ena6iFyTAQvdaqUwaWJ5CvKfSynLM7
+         WIk5c8SGkVq9DrthDektx1v3dWE9JbxisvzA55Bbs0t1pHuxqOwuvDnfTnikCbysxj
+         fYN/k/m8A+PXpbtzGAUNsqu9oRObTcSuZuDo9Oek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
-        James Liao <jamesjj.liao@mediatek.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 5.4 14/44] Revert "ASoC: mediatek: Check for error clk pointer"
-Date:   Mon,  7 Feb 2022 12:06:30 +0100
-Message-Id: <20220207103753.620758555@linuxfoundation.org>
+        stable@vger.kernel.org, Dmitry Monakhov <dmonakhov@openvz.org>,
+        Dmitry Ivanov <dmitry.ivanov2@hpe.com>,
+        Alexey Lyashkov <alexey.lyashkov@hpe.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.4 13/44] block: bio-integrity: Advance seed correctly for larger interval sizes
+Date:   Mon,  7 Feb 2022 12:06:29 +0100
+Message-Id: <20220207103753.586711165@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
 References: <20220207103753.155627314@linuxfoundation.org>
@@ -54,95 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Martin K. Petersen <martin.petersen@oracle.com>
 
-This reverts commit 8b894d503ed79c3e1a96eab50a69ff29e5aade34 which is
-commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e upstream
+commit b13e0c71856817fca67159b11abac350e41289f5 upstream.
 
-With this patch in the tree, Chromebooks running the affected hardware
-no longer boot. Bisect points to this patch, and reverting it fixes
-the problem.
+Commit 309a62fa3a9e ("bio-integrity: bio_integrity_advance must update
+integrity seed") added code to update the integrity seed value when
+advancing a bio. However, it failed to take into account that the
+integrity interval might be larger than the 512-byte block layer
+sector size. This broke bio splitting on PI devices with 4KB logical
+blocks.
 
-An analysis of the code with this patch applied shows:
+The seed value should be advanced by bio_integrity_intervals() and not
+the number of sectors.
 
-        ret = init_clks(pdev, clk);
-        if (ret)
-                return ERR_PTR(ret);
-...
-                for (j = 0; j < MAX_CLKS && data->clk_id[j]; j++) {
-                        struct clk *c = clk[data->clk_id[j]];
-
-                        if (IS_ERR(c)) {
-                                dev_err(&pdev->dev, "%s: clk unavailable\n",
-                                        data->name);
-                                return ERR_CAST(c);
-                        }
-
-                        scpd->clk[j] = c;
-                }
-
-Not all clocks in the clk_names array have to be present. Only the clocks
-in the data->clk_id array are actually needed. The code already checks if
-the required clocks are available and bails out if not. The assumption that
-all clocks have to be present is wrong, and commit 9de2b9286a6d needs to be
-reverted.
-
-Fixes: 9de2b9286a6d ("ASoC: mediatek: Check for error clk pointer")
-Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: James Liao <jamesjj.liao@mediatek.com>
-Cc: Kevin Hilman <khilman@baylibre.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com
-Cc: Frank Wunderlich <frank-w@public-files.de>
-Cc: Daniel Golle <daniel@makrotopia.org>
-Link: https://lore.kernel.org/lkml/20220205014755.699603-1-linux@roeck-us.net/
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Cc: Dmitry Monakhov <dmonakhov@openvz.org>
+Cc: stable@vger.kernel.org
+Fixes: 309a62fa3a9e ("bio-integrity: bio_integrity_advance must update integrity seed")
+Tested-by: Dmitry Ivanov <dmitry.ivanov2@hpe.com>
+Reported-by: Alexey Lyashkov <alexey.lyashkov@hpe.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Link: https://lore.kernel.org/r/20220204034209.4193-1-martin.petersen@oracle.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soc/mediatek/mtk-scpsys.c |   15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
+ block/bio-integrity.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/soc/mediatek/mtk-scpsys.c
-+++ b/drivers/soc/mediatek/mtk-scpsys.c
-@@ -333,17 +333,12 @@ out:
- 	return ret;
+--- a/block/bio-integrity.c
++++ b/block/bio-integrity.c
+@@ -380,7 +380,7 @@ void bio_integrity_advance(struct bio *b
+ 	struct blk_integrity *bi = blk_get_integrity(bio->bi_disk);
+ 	unsigned bytes = bio_integrity_bytes(bi, bytes_done >> 9);
+ 
+-	bip->bip_iter.bi_sector += bytes_done >> 9;
++	bip->bip_iter.bi_sector += bio_integrity_intervals(bi, bytes_done >> 9);
+ 	bvec_iter_advance(bip->bip_vec, &bip->bip_iter, bytes);
  }
  
--static int init_clks(struct platform_device *pdev, struct clk **clk)
-+static void init_clks(struct platform_device *pdev, struct clk **clk)
- {
- 	int i;
- 
--	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
-+	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
- 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
--		if (IS_ERR(clk[i]))
--			return PTR_ERR(clk[i]);
--	}
--
--	return 0;
- }
- 
- static struct scp *init_scp(struct platform_device *pdev,
-@@ -353,7 +348,7 @@ static struct scp *init_scp(struct platf
- {
- 	struct genpd_onecell_data *pd_data;
- 	struct resource *res;
--	int i, j, ret;
-+	int i, j;
- 	struct scp *scp;
- 	struct clk *clk[CLK_MAX];
- 
-@@ -408,9 +403,7 @@ static struct scp *init_scp(struct platf
- 
- 	pd_data->num_domains = num;
- 
--	ret = init_clks(pdev, clk);
--	if (ret)
--		return ERR_PTR(ret);
-+	init_clks(pdev, clk);
- 
- 	for (i = 0; i < num; i++) {
- 		struct scp_domain *scpd = &scp->domains[i];
 
 
