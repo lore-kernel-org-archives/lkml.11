@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 391A1C47085
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382572AbiBGLTs (ORCPT
+        id S1383356AbiBGLWS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:19:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53060 "EHLO
+        Mon, 7 Feb 2022 06:22:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376383AbiBGLPH (ORCPT
+        with ESMTP id S1381889AbiBGLRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:07 -0500
+        Mon, 7 Feb 2022 06:17:40 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11642C03FEC3;
-        Mon,  7 Feb 2022 03:14:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8962CC03E954;
+        Mon,  7 Feb 2022 03:17:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5F86B811BC;
-        Mon,  7 Feb 2022 11:14:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04E04C004E1;
-        Mon,  7 Feb 2022 11:14:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E87DB811B2;
+        Mon,  7 Feb 2022 11:17:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 782D5C004E1;
+        Mon,  7 Feb 2022 11:17:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232485;
-        bh=djhrL4rw+Ch721ysSBP7ZmkRuMo00a3GMzPeylgxBT4=;
+        s=korg; t=1644232651;
+        bh=07DXET1mUt27c2qdzB5vxavcElMoUr/eGhq3NzQRh/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R3Im7JHZ/gsOhG2r/qXK4bo5zS2OLpncv/uDc3J5/gH/ZPyaNrC+WD1CquIV+9anY
-         ypQAz+NVa4RT8fmLSefyz3J7FiZBhB+hJfKahws6GjaU+iaBFjn3K448wqb9RUA8eX
-         LFSX6egsQzwQwe9UxbCdXNrGb/dJVWZ8b2s04USE=
+        b=iY1OjOFF4YA5B+SONB8+tptLHI7OgN7LAZRW4d/Szyc9267Hhw+Ipgz6vT8gjuITB
+         BeDtUGAqdTgoMNVza0GaY9hJ0OnIgVK6kLqwYlouxbEhv1Yn0DO6xdWQAV/GthilDA
+         FzWWZkyq+zQt6xKBg5a4dKon6PCKAp4Cg4cW8b3w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, butt3rflyh4ck <butterflyhuangxx@gmail.com>,
-        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>
-Subject: [PATCH 4.19 05/86] udf: Fix NULL ptr deref when converting from inline format
-Date:   Mon,  7 Feb 2022 12:05:28 +0100
-Message-Id: <20220207103757.733237983@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.19 79/86] ASoC: max9759: fix underflow in speaker_gain_control_put()
+Date:   Mon,  7 Feb 2022 12:06:42 +0100
+Message-Id: <20220207103800.258553455@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -49,64 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 7fc3b7c2981bbd1047916ade327beccb90994eee upstream.
+commit 4c907bcd9dcd233da6707059d777ab389dcbd964 upstream.
 
-udf_expand_file_adinicb() calls directly ->writepage to write data
-expanded into a page. This however misses to setup inode for writeback
-properly and so we can crash on inode->i_wb dereference when submitting
-page for IO like:
+Check for negative values of "priv->gain" to prevent an out of bounds
+access.  The concern is that these might come from the user via:
+  -> snd_ctl_elem_write_user()
+    -> snd_ctl_elem_write()
+      -> kctl->put()
 
-  BUG: kernel NULL pointer dereference, address: 0000000000000158
-  #PF: supervisor read access in kernel mode
-...
-  <TASK>
-  __folio_start_writeback+0x2ac/0x350
-  __block_write_full_page+0x37d/0x490
-  udf_expand_file_adinicb+0x255/0x400 [udf]
-  udf_file_write_iter+0xbe/0x1b0 [udf]
-  new_sync_write+0x125/0x1c0
-  vfs_write+0x28e/0x400
-
-Fix the problem by marking the page dirty and going through the standard
-writeback path to write the page. Strictly speaking we would not even
-have to write the page but we want to catch e.g. ENOSPC errors early.
-
-Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
-CC: stable@vger.kernel.org
-Fixes: 52ebea749aae ("writeback: make backing_dev_info host cgroup-specific bdi_writebacks")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jan Kara <jack@suse.cz>
+Fixes: fa8d915172b8 ("ASoC: max9759: Add Amplifier Driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20220119123101.GA9509@kili
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/udf/inode.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ sound/soc/codecs/max9759.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/fs/udf/inode.c
-+++ b/fs/udf/inode.c
-@@ -251,10 +251,6 @@ int udf_expand_file_adinicb(struct inode
- 	char *kaddr;
- 	struct udf_inode_info *iinfo = UDF_I(inode);
- 	int err;
--	struct writeback_control udf_wbc = {
--		.sync_mode = WB_SYNC_NONE,
--		.nr_to_write = 1,
--	};
+--- a/sound/soc/codecs/max9759.c
++++ b/sound/soc/codecs/max9759.c
+@@ -64,7 +64,8 @@ static int speaker_gain_control_put(stru
+ 	struct snd_soc_component *c = snd_soc_kcontrol_component(kcontrol);
+ 	struct max9759 *priv = snd_soc_component_get_drvdata(c);
  
- 	WARN_ON_ONCE(!inode_is_locked(inode));
- 	if (!iinfo->i_lenAlloc) {
-@@ -298,8 +294,10 @@ int udf_expand_file_adinicb(struct inode
- 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_LONG;
- 	/* from now on we have normal address_space methods */
- 	inode->i_data.a_ops = &udf_aops;
-+	set_page_dirty(page);
-+	unlock_page(page);
- 	up_write(&iinfo->i_data_sem);
--	err = inode->i_data.a_ops->writepage(page, &udf_wbc);
-+	err = filemap_fdatawrite(inode->i_mapping);
- 	if (err) {
- 		/* Restore everything back so that we don't lose data... */
- 		lock_page(page);
+-	if (ucontrol->value.integer.value[0] > 3)
++	if (ucontrol->value.integer.value[0] < 0 ||
++	    ucontrol->value.integer.value[0] > 3)
+ 		return -EINVAL;
+ 
+ 	priv->gain = ucontrol->value.integer.value[0];
 
 
