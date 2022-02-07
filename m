@@ -2,71 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAAAC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9AAC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383808AbiBGRJS (ORCPT
+        id S1383799AbiBGRJQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:09:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59832 "EHLO
+        Mon, 7 Feb 2022 12:09:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbiBGRCl (ORCPT
+        with ESMTP id S1381003AbiBGRF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:02:41 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8DD8C0401D3;
-        Mon,  7 Feb 2022 09:02:40 -0800 (PST)
-Received: from [192.168.0.175] ([151.127.53.97]) by mrelayeu.kundenserver.de
- (mreue108 [213.165.67.119]) with ESMTPSA (Nemesis) id
- 1MGz9p-1nUc431LzX-00E51x; Mon, 07 Feb 2022 18:02:24 +0100
-Message-ID: <eed40b17-9db7-ff97-822d-535eaeb73c65@green-communications.fr>
-Date:   Mon, 7 Feb 2022 18:02:09 +0100
+        Mon, 7 Feb 2022 12:05:27 -0500
+X-Greylist: delayed 2118 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 09:05:25 PST
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B23CC0401D1;
+        Mon,  7 Feb 2022 09:05:25 -0800 (PST)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nH6tm-0004ET-2l; Mon, 07 Feb 2022 17:29:54 +0100
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     Rob Herring <robh@kernel.org>
+Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wefu@redhat.com, liush@allwinnertech.com, guoren@kernel.org,
+        atishp@atishpatra.org, anup@brainfault.org, drew@beagleboard.org,
+        hch@lst.de, arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
+        dlustig@nvidia.com, gfavor@ventanamicro.com,
+        andrea.mondelli@huawei.com, behrensj@mit.edu, xinhaoqu@huawei.com,
+        huffman@cadence.com, mick@ics.forth.gr,
+        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
+        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
+        philipp.tomsich@vrull.eu
+Subject: Re: [PATCH v5 11/14] dt-bindings: riscv: add MMU Standard Extensions support for Svpbmt
+Date:   Mon, 07 Feb 2022 14:39:31 +0100
+Message-ID: <2446197.JSQJs4Nv0J@phil>
+In-Reply-To: <Yf2pxvmG0t6eugOz@robh.at.kernel.org>
+References: <20220121163618.351934-1-heiko@sntech.de> <20220121163618.351934-12-heiko@sntech.de> <Yf2pxvmG0t6eugOz@robh.at.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] imx_thermal: Fix temperature retrieval after overheat
-Content-Language: fr
-From:   Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     Amit Kucheria <amitk@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220207161829.4807-1-nicolas.cavallari@green-communications.fr>
-In-Reply-To: <20220207161829.4807-1-nicolas.cavallari@green-communications.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:xG18oAhepxkOh6DIWJZDPXfxyrJin2ryIuz9EgSKE8xitq0xGB4
- m3KXUYXo7y7h+2T7QQH0qDtGihiuNeS8oyltyF769cqNY77cyfuR1sUhA2hzdFdcu1agIEd
- NGZd68CXgu6W5JN5X4SlsbFRp22q9eKAUjVdGaR5EY5KUhBiVzkRujSJlbtcKj3m5QgqsB0
- TMKhB233qM/Wfom0PyX7g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:zQ+TzyCXroE=:0ov39CnpbAPHJWiUTCYNMf
- 1J3MQxS26dikqcsPQQTw+ygTGo8pI4d424GUONgKiXEprgN/hTge0LWaq7/P0OOC9cf+r/n9N
- efnTJefrV+iYqIyS45U464PblBEaiA4pfLEOkhaI9ryqWQVwovxgFqV3tYwb6hXkvMUVlQtXS
- onQNl4KV68n8zy9t9KrFyoP6WCtPFPAemMNEzY5Dz6ViDcFPrByEKRjuPt5rgliKjh5tB8oxq
- xsiJ4Fr5Ul83qmO6pp41NLH3Teycdq9LuzOMXBlNV7eGFOwtrRh4Vw5/17IgsjetXJwIfS+ko
- NfFBbPD6/j6hXG1i2cGdEEIV/3TGPTk6WOEdE0mIdHv922bbVhv6DYS3rBBFwGsyiyLMRfLvH
- nadq9luuqH7yfyZQP4e2jtaYLRmP80dtlsQIjCDVdJg2kvcaf0Mmr728eafxrUuZx0qPTcg+a
- HrEixYiy5fvmJ3AJc+AZTqL1YQkpsoT7lGYRDGPa6xU2Z9hPgYK/2GUP5ITgBx+5hzLNM2ytS
- s+9v0EE32OJC6VfphPhs+pj/lpJEJR2i7dzgzkpAbqAjmqbYWaeNLTPsKHmvixitQC2qMCCHt
- lhgnKWhm8jVWJgquRUUnVtPo6xEEW/Y/1vWZOE+q5yCfwGaw9jkYg/W6TKOibL/RZc0PV/5ku
- 30vCeiEiBxbYvuM+SJcCFOSsS4qUZT+wLb3mj5J2RQGVFGN3PM2P2PJa5ADdLCvEsQ2lTOvsY
- ml18Lu2V94BRPRAPoEHoWlIvLkcGF7gw/5jw2A==
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/02/2022 17:18, Nicolas Cavallari wrote:
-> When the CPU temperature is above the passive trip point, reading the
-> temperature would fail forever with EAGAIN.  Fortunately, the thermal
-> core would continue to assume that the system is overheating, so would
-> put all passive cooling devices to the max.  Unfortunately, it does
-> this forever, even if the temperature returns to normal.
+Am Freitag, 4. Februar 2022, 23:33:42 CET schrieb Rob Herring:
+> On Fri, Jan 21, 2022 at 05:36:15PM +0100, Heiko Stuebner wrote:
+> > From: Wei Fu <wefu@redhat.com>
+> > 
+> > Previous patch has added svpbmt in arch/riscv and add "riscv,svpmbt"
+> > in the DT mmu node. Update dt-bindings related property here.
+> > 
+> > Signed-off-by: Wei Fu <wefu@redhat.com>
+> > Co-developed-by: Guo Ren <guoren@kernel.org>
+> > Signed-off-by: Guo Ren <guoren@kernel.org>
+> > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> > Cc: Anup Patel <anup@brainfault.org>
+> > Cc: Palmer Dabbelt <palmer@dabbelt.com>
+> > Cc: Rob Herring <robh+dt@kernel.org>
+> > ---
+> >  Documentation/devicetree/bindings/riscv/cpus.yaml | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > index aa5fb64d57eb..3ad2593f1400 100644
+> > --- a/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > +++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > @@ -63,6 +63,16 @@ properties:
+> >        - riscv,sv48
+> >        - riscv,none
+> >  
+> > +  mmu:
+> 
+> riscv,mmu
+> 
+> > +    description:
+> > +      Describes the CPU's MMU Standard Extensions support.
+> > +      These values originate from the RISC-V Privileged
+> > +      Specification document, available from
+> > +      https://riscv.org/specifications/
+> > +    $ref: '/schemas/types.yaml#/definitions/string'
+> > +    enum:
+> > +      - riscv,svpbmt
+> 
+> Are there per vendor MMU extensions? If not, drop the 'riscv,' part. 
 
-Please drop this patch, apparently this was already fixed. Sorry for the 
-noise.
+Judging by the somewhat wild-west nature, I guess there might already
+be non-riscv extensions existing somewhere, or at least the probability
+is quite high that there will be in the future ;-)
+
+> 
+> > +
+> >    riscv,isa:
+> >      description:
+> >        Identifies the specific RISC-V instruction set architecture
+> 
+
+
+
+
