@@ -2,20 +2,20 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC89C47081
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:16:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0739DC35276
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448877AbiBGNN5 (ORCPT
+        id S1448962AbiBGNOC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:13:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49436 "EHLO
+        Mon, 7 Feb 2022 08:14:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448531AbiBGNLs (ORCPT
+        with ESMTP id S1448428AbiBGNLe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:11:48 -0500
+        Mon, 7 Feb 2022 08:11:34 -0500
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914C2C043188;
-        Mon,  7 Feb 2022 05:11:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6E5C03E958;
+        Mon,  7 Feb 2022 05:11:20 -0800 (PST)
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -26,12 +26,10 @@ Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
         Alexandru Ardelean <ardeleanalex@gmail.com>,
         dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 06/12] iio: buffer-dma: split iio_dma_buffer_fileio_free() function
-Date:   Mon,  7 Feb 2022 12:59:27 +0000
-Message-Id: <20220207125933.81634-7-paul@crapouillou.net>
+        linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 10/12] iio: core: Add support for cyclic buffers
+Date:   Mon,  7 Feb 2022 12:59:31 +0000
+Message-Id: <20220207125933.81634-11-paul@crapouillou.net>
 In-Reply-To: <20220207125933.81634-1-paul@crapouillou.net>
 References: <20220207125933.81634-1-paul@crapouillou.net>
 MIME-Version: 1.0
@@ -40,83 +38,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Introduce a new flag IIO_BUFFER_DMABUF_CYCLIC in the "flags" field of
+the iio_dmabuf uapi structure.
 
-A part of the logic in the iio_dma_buffer_exit() is required for the change
-to add mmap support to IIO buffers.
-This change splits the logic into a separate function, which will be
-re-used later.
+When set, the DMABUF enqueued with the enqueue ioctl will be endlessly
+repeated on the TX output, until the buffer is disabled.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: Alexandru Ardelean <ardeleanalex@gmail.com>
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
 ---
- drivers/iio/buffer/industrialio-buffer-dma.c | 43 +++++++++++---------
- 1 file changed, 24 insertions(+), 19 deletions(-)
+ drivers/iio/industrialio-buffer.c | 5 +++++
+ include/uapi/linux/iio/buffer.h   | 3 ++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
-index a9f1b673374f..15ea7bc3ac08 100644
---- a/drivers/iio/buffer/industrialio-buffer-dma.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dma.c
-@@ -374,6 +374,29 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 72f333a519bc..85331cedaad8 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -1535,6 +1535,11 @@ static int iio_buffer_enqueue_dmabuf(struct iio_buffer *buffer,
+ 	if (dmabuf.flags & ~IIO_BUFFER_DMABUF_SUPPORTED_FLAGS)
+ 		return -EINVAL;
+ 
++	/* Cyclic flag is only supported on output buffers */
++	if ((dmabuf.flags & IIO_BUFFER_DMABUF_CYCLIC) &&
++	    buffer->direction != IIO_BUFFER_DIRECTION_OUT)
++		return -EINVAL;
++
+ 	return buffer->access->enqueue_dmabuf(buffer, &dmabuf);
  }
- EXPORT_SYMBOL_GPL(iio_dma_buffer_request_update);
  
-+static void iio_dma_buffer_fileio_free(struct iio_dma_buffer_queue *queue)
-+{
-+	unsigned int i;
-+
-+	spin_lock_irq(&queue->list_lock);
-+	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
-+		if (!queue->fileio.blocks[i])
-+			continue;
-+		queue->fileio.blocks[i]->state = IIO_BLOCK_STATE_DEAD;
-+	}
-+	spin_unlock_irq(&queue->list_lock);
-+
-+	INIT_LIST_HEAD(&queue->incoming);
-+
-+	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
-+		if (!queue->fileio.blocks[i])
-+			continue;
-+		iio_buffer_block_put(queue->fileio.blocks[i]);
-+		queue->fileio.blocks[i] = NULL;
-+	}
-+	queue->fileio.active_block = NULL;
-+}
-+
- static void iio_dma_buffer_submit_block(struct iio_dma_buffer_queue *queue,
- 	struct iio_dma_buffer_block *block)
- {
-@@ -694,27 +717,9 @@ EXPORT_SYMBOL_GPL(iio_dma_buffer_init);
-  */
- void iio_dma_buffer_exit(struct iio_dma_buffer_queue *queue)
- {
--	unsigned int i;
--
- 	mutex_lock(&queue->lock);
+diff --git a/include/uapi/linux/iio/buffer.h b/include/uapi/linux/iio/buffer.h
+index e4621b926262..2d541d038c02 100644
+--- a/include/uapi/linux/iio/buffer.h
++++ b/include/uapi/linux/iio/buffer.h
+@@ -7,7 +7,8 @@
  
--	spin_lock_irq(&queue->list_lock);
--	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
--		if (!queue->fileio.blocks[i])
--			continue;
--		queue->fileio.blocks[i]->state = IIO_BLOCK_STATE_DEAD;
--	}
--	spin_unlock_irq(&queue->list_lock);
--
--	INIT_LIST_HEAD(&queue->incoming);
--
--	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
--		if (!queue->fileio.blocks[i])
--			continue;
--		iio_buffer_block_put(queue->fileio.blocks[i]);
--		queue->fileio.blocks[i] = NULL;
--	}
--	queue->fileio.active_block = NULL;
-+	iio_dma_buffer_fileio_free(queue);
- 	queue->ops = NULL;
+ #include <linux/types.h>
  
- 	mutex_unlock(&queue->lock);
+-#define IIO_BUFFER_DMABUF_SUPPORTED_FLAGS	0x00000000
++#define IIO_BUFFER_DMABUF_CYCLIC		(1 << 0)
++#define IIO_BUFFER_DMABUF_SUPPORTED_FLAGS	0x00000001
+ 
+ /**
+  * struct iio_dmabuf_alloc_req - Descriptor for allocating IIO DMABUFs
 -- 
 2.34.1
 
