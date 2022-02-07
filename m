@@ -2,118 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53465C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:47:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233992AbiBGSrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:47:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
+        id S233169AbiBGSts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:49:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232506AbiBGSnO (ORCPT
+        with ESMTP id S233351AbiBGSql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:43:14 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1835AC0401DC;
-        Mon,  7 Feb 2022 10:43:13 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 24AE01EC02B9;
-        Mon,  7 Feb 2022 19:43:07 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644259387;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=SZEc3K4WUssJFPuRZM4cYUdq0EX2pDa+Q3YePuI1VGc=;
-        b=qmClInz1dKwfOZbiO2QrY2gZK/xZolImE900/WaPmxRFwwOa2cp3K4OMeOEJsTi80Hu4Qp
-        G43sMx+xX8AUxdLvcgTvewjlRnNRSbTkdwsgOZ6e9vtHFY+GtTdk9DIq09oCjIgK1EE+5Z
-        CRyqtdz0t/QXSU+RToQpc+wZ3krqc2c=
-Date:   Mon, 7 Feb 2022 19:43:01 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Michael Roth <michael.roth@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>, brijesh.singh@amd.com,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v9 38/43] x86/sev: Use firmware-validated CPUID for
- SEV-SNP guests
-Message-ID: <YgFoNeASrXizWMIa@zn.tnic>
-References: <20220128171804.569796-1-brijesh.singh@amd.com>
- <20220128171804.569796-39-brijesh.singh@amd.com>
- <20220205171901.kt47bahdmh64b45x@amd.com>
- <Yf/tQPqbP97lrVpg@zn.tnic>
- <20220207170018.sg37idc6nzlzgj6p@amd.com>
+        Mon, 7 Feb 2022 13:46:41 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D340C0401E2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:46:40 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id i5so18068737oih.1
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 10:46:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=+wPgud2Zc9iDtR4LrtVArCP3c0J7sHpVkjRO1rtdEVU=;
+        b=rxWhrueR31kHGt5dQf3osmpofGeWeGByme6ZPm8EUcT3J4f6Tt7sZFDjp3K3NWw5xH
+         8Q1bqeu5wxsLEaOnMXoYGsN18mPQPBVEdebmXxcTrmHR4vjG9GvvLPipaLPDmOKzH7aj
+         Cdzf/bIYd4a5aj3X4T3ka4qzRYjIcrTUAB+esqdC0HX2K/9qN1hY4zdajr+McQK9lZyy
+         l1g+gbV4gNJFdGxMHJdQlzQ1xSm/xy9VcYiN/7FRNQu5KB2Qao/Sm3jLVITIvrAJE0Uh
+         +9o31+ivZbFMykFT9pylTUVqpND/2S6NCCWPd7wd6ZtmMsl3h/NikAsa1aNMGAWcA2Sh
+         ZAOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=+wPgud2Zc9iDtR4LrtVArCP3c0J7sHpVkjRO1rtdEVU=;
+        b=YelXH+d7sA2F43be+ftGtT2Ze4UavLGztgKC/+RJIoRIpqcw9++u8KUSuBzWRX6Tzj
+         iW0Iw/ytLd4Pml6z3hNOI9lIC/20GzB3uooLv0MPN8GgjjGcugCXhj+b61L9vxlReH0v
+         ENgDiEDKDoirTXZP3QQAqWCLpu6nXST3b2znLyV7Gx7pn2KapCjMForSkBzQ5nE/wGH+
+         b34QUCnqLBbKa6K9fyCxBhRzddIkaa57ZZ2u4adS8D7+lCdhLovEzCIzW7Xbp6Pqd6H8
+         3SBYfl7eiqEPLOH5NyV98K4CTGQ/sDXKfXkKN3l+aE4ojCRRf1V5wjLCkcmpNofc0U7z
+         39vQ==
+X-Gm-Message-State: AOAM533wkvopbbwGRReQywEh9NoKaz/9N2/Qlhp+zvnFgoIQa3zPnPlc
+        ZM0IkQnhHFJR8dWSnO3cj6IsQg==
+X-Google-Smtp-Source: ABdhPJw+Tl5CzTDCc96VpocDvJbBxdd6ZINurZIdPIxVJUtMyioGW9CzMnzgbCq3WPYRTDAhM0mHJg==
+X-Received: by 2002:a05:6808:1b26:: with SMTP id bx38mr134447oib.267.1644259599649;
+        Mon, 07 Feb 2022 10:46:39 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id l38sm4414090otl.45.2022.02.07.10.46.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 10:46:38 -0800 (PST)
+Date:   Mon, 7 Feb 2022 10:46:36 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.attlocal.net
+To:     Hillf Danton <hdanton@sina.com>
+cc:     Hugh Dickins <hughd@google.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH 07/13] mm/munlock: mlock_pte_range() when mlocking or
+ munlocking
+In-Reply-To: <20220207033518.2602-1-hdanton@sina.com>
+Message-ID: <203c549d-ad8-948d-1a3a-13be026864e@google.com>
+References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com> <20220207033518.2602-1-hdanton@sina.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220207170018.sg37idc6nzlzgj6p@amd.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 11:00:18AM -0600, Michael Roth wrote:
-> this is more a statement that an out-of-spec hypervisor should not
-> expect that their guests will continue working in future firmware
-> versions, and what's being determined here is whether to break
-> those out-of-spec hypervisor now, or later when/if we actually
-> make use of the fields in the guest code,
+On Mon, 7 Feb 2022, Hillf Danton wrote:
+> On Sun, 6 Feb 2022 13:42:09 -0800 (PST) Hugh Dickins wrote:
+> > +static void mlock_vma_pages_range(struct vm_area_struct *vma,
+> > +	unsigned long start, unsigned long end, vm_flags_t newflags)
+> >  {
+> > -	/* Reimplementation to follow in later commit */
+> > +	static const struct mm_walk_ops mlock_walk_ops = {
+> > +		.pmd_entry = mlock_pte_range,
+> > +	};
+> > +
+> > +	/*
+> > +	 * There is a slight chance that concurrent page migration,
+> > +	 * or page reclaim finding a page of this now-VM_LOCKED vma,
+> > +	 * will call mlock_vma_page() and raise page's mlock_count:
+> > +	 * double counting, leaving the page unevictable indefinitely.
+> > +	 * Communicate this danger to mlock_vma_page() with VM_IO,
+> > +	 * which is a VM_SPECIAL flag not allowed on VM_LOCKED vmas.
+> > +	 * mmap_lock is held in write mode here, so this weird
+> > +	 * combination should not be visible to others.
+> > +	 */
+> > +	if (newflags & VM_LOCKED)
+> > +		newflags |= VM_IO;
+> > +	WRITE_ONCE(vma->vm_flags, newflags);
+> 
+> Nit
+> 
+> The WRITE_ONCE is not needed, given the certainty of invisibility to
+> others - it will quiesce syzbot reporting the case of visibility.
 
-I think you're missing a very important aspect here called reality.
+Ah, maybe I can rewrite that comment better: when I said "visible to
+others", I meant visible to "the outside world", those participating in
+the usual mmap_lock'ed access, syscalls and /proc/pid/maps and smaps etc.
 
-Let's say that HV is a huge cloud vendor who means a lot of $ and a
-huge use case for SEV tech. And let's say that same HV is doing those
-incompatible things.
+The point here is that some kernel low-level internals (page migration
+and page reclaim) peek at vma->vm_flags without mmap_lock (but with
+anon_vma lock or i_mmap_rwsem).
 
-Now imagine you break it with the spec change. But they already have
-a gazillion of deployments on real hw which they can't simply update
-just like that. Hell, cloud vendors are even trying to dictate how CPU
-vendors should do microcode updates on a live system, without rebooting,
-and we're talking about some wimpy fields in some table.
+Originally I had VM_LOCKED set in vma->vm_flags before calling
+mlock_vma_pages_range(), no need for a newflags parameter.  Then
+realized that left a tiny window in which VM_LOCKED was visible to
+migration and reclaim without the safening VM_IO, so changed it to pass
+in newflags, then "newflags |= VM_IO", then "vma->vm_flags = newflags"
+there.   Then realized that perhaps an uncooperative compiler might be
+inspired to mutate that into "vma->vm_flags = newflags" followed by
+"vma->vm_flags |= VM_IO".  I hope it would not, but can I be sure
+that it would not?  That's why I ended up with WRITE_ONCE() there.
 
-Now imagine your business unit calls your engineering and says, you need
-to fix this because a very persuasive chunk of money.
+Maybe all rather overkill: but trying to ensure that we undercount
+mmap_locked rather than risk overcounting it.
 
-What you most likely will end up with is an ugly ugly workaround after a
-lot of managers screaming at each other and you won't even think about
-breaking that HV.
-
-Now imagine you've designed it the right and unambiguous way from the
-getgo. You wake up and realize, it was all just a bad dream...
-
-> Ok, I'll follow up with the firmware team on this. But just to be clear,
-> what they're suggesting is that the firmware could enforce the MBZ checks
-> on the CPUID page, so out-of-spec hypervisors will fail immediately,
-> rather than in some future version of the spec/cpuid page, and guests
-> can continue ignoring them in the meantime.
-
-Yes, exactly. Fail immediately.
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Hugh
