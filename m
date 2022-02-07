@@ -2,73 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAD1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:10:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243646AbiBGWIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 17:08:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41666 "EHLO
+        id S243684AbiBGWKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 17:10:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243625AbiBGWIC (ORCPT
+        with ESMTP id S241144AbiBGWKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 17:08:02 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B41AC0612A4
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 14:08:02 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id d187so15397489pfa.10
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 14:08:02 -0800 (PST)
+        Mon, 7 Feb 2022 17:10:44 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520BAC0612A4
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 14:10:44 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id y7so6952944plp.2
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 14:10:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=google.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=tWrUH0/2WksDBWa18gtzsMkaDJc90addPmZE3/A1VQs=;
-        b=Z2KHWsSlYbT//VOpYTnsnCI4+qhPgIK3t46x31rkFoO5ONCFeKMB0eBS8wfxLY/rHH
-         DDbbHdNF8IDkq8l2KB7GWf6f87zyM2JbhposV61iCOirtJgTuA2qicPr1czJfliHIbY2
-         S3Ez++GqAIK0YbE8VZFaswNcQ5OATUtK2scAw=
+        bh=G6eyJKmfFUAf01J78dlSIW81WrqdXWXhBcO7ghlDcmA=;
+        b=sKkGLjPzG0ZdullIrSblfCWKuBIrej5PizLx1i2qsH980wbmqxt87m/yEzS8GwLs1r
+         GpBtXo/uBEMAQWFyNhPUTJHGjK1BXW6BhmIpgOlyY7lg0VqBmCNP+FmDvYSobG6QKC7h
+         EyAbVBAfrarGbvoAxWACbeFf2ire1Wjo+L4d9dHlNFdRBDF9ymnK473SClAzMFMMYSaK
+         RaOSlWQZoQBVw6y2uZcLQsrAHEtfoj1BJr+/fn7H4gmWBGST+mtyzPX10xJexfKJ70/8
+         lsJNUUxI3VCqNoqmFvtAt6VCmXD70qbFQTRDmPly42D/kpiC+nLBc+WzwW1ss4RbgCTa
+         iIWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=tWrUH0/2WksDBWa18gtzsMkaDJc90addPmZE3/A1VQs=;
-        b=aiel7b+/eSD4lwPHvANEQnaVQ2IW2h5OCHUGuIzfHZ2HY5T/t3SM8NpWAM6ycyIrJf
-         gN1/ipx2FZHWHSvrDHA2OX8ZfJWmarT1AE+Y2fy9d8gH5lC64dj15cpr5aubSN47Vh1O
-         jEQE44eDBWHH7pEQJxsN6/Cmbd40qoyw/0QF2gOB09VVV9wcJBngRfeNN1PiJyuZzuyH
-         7W7L8HPVsSCg3VFl4UsKAQqrSob4/k6/PICssuE0DW40KX4qRW+jq9suqoSzCvvVmYk5
-         aJQk4l6FLYnPqz5DLL92t9p5DLfSYMtRI+0HqzFEvZPaOY6S2JZcxqvYrjV9mSEvtxh8
-         NeAg==
-X-Gm-Message-State: AOAM531jwAzFKnRHSM4YhSVKR7N43Thn3C7rfEkm0ZQIauiVrc6EIq7D
-        W7WlaYifS6vzMzceenaRTFm634HJOXQ2oQ==
-X-Google-Smtp-Source: ABdhPJwt1VK44ImLNBUFQZ5ofmSi8ahLthLH5mh0+UjMF0vB3tsRE2HKk/VedZZ1we9FF4YvN78UmA==
-X-Received: by 2002:a63:9245:: with SMTP id s5mr1111836pgn.277.1644271681885;
-        Mon, 07 Feb 2022 14:08:01 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id nl12sm351392pjb.1.2022.02.07.14.08.01
+        bh=G6eyJKmfFUAf01J78dlSIW81WrqdXWXhBcO7ghlDcmA=;
+        b=wBRGxz8Y97SkiHT9e2SShh6ese9LRUzMMq32JK0z51jC9WZp27uHt2iMkbH5JZagKZ
+         XL8rJvrhUGHvxndDPMia+hM/v+pl2sqa04gjcSTClLPpkB1OR6SAYN8nvZfA7+s10g0u
+         vIp7Sfs8STCUcE+j1YHAGGK+z8DHG09luDkFjsnbXt1UDUgTVnN9LOJH7gN+SLmeMMYa
+         /FothCcjTTUoqE69eMpgfbTsqToqOtupogKNiTjZLf8eT0vyg9lpeg7x89tOT5CdJXMq
+         uiAXqgembTL3jJUSpPkj1ZZKrpLtDk2I8Rqf44nTTxCWZCFM7WFAmibYWbIlDDfsFmGA
+         2/lg==
+X-Gm-Message-State: AOAM531bPdHnvUhYErvQDGigBsGUxQ9uUhDRWdQ1iLWV0WmW5tLDJj/f
+        UUCTLPgOxVXXCHswmaxuGoIkqVnQ+E5hEA==
+X-Google-Smtp-Source: ABdhPJxB51iuOhrkdmc8x9jKC4OFpA+BCdGplAtgiK5P5F4x8sDSnX4s5Ux5HHNw1ECYAALxgHakVw==
+X-Received: by 2002:a17:90b:2251:: with SMTP id hk17mr1096502pjb.210.1644271843558;
+        Mon, 07 Feb 2022 14:10:43 -0800 (PST)
+Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
+        by smtp.gmail.com with ESMTPSA id p21sm207825pfo.97.2022.02.07.14.10.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 14:08:01 -0800 (PST)
-Date:   Mon, 7 Feb 2022 14:08:01 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 6/6] x86/cpu: Remove "noclflush"
-Message-ID: <202202071408.60A31586@keescook>
-References: <20220127115626.14179-1-bp@alien8.de>
- <20220127115626.14179-7-bp@alien8.de>
+        Mon, 07 Feb 2022 14:10:42 -0800 (PST)
+Date:   Mon, 7 Feb 2022 22:10:39 +0000
+From:   David Matlack <dmatlack@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        seanjc@google.com, vkuznets@redhat.com
+Subject: Re: [PATCH 11/23] KVM: MMU: do not recompute root level from
+ kvm_mmu_role_regs
+Message-ID: <YgGY31hso29mbQ2E@google.com>
+References: <20220204115718.14934-1-pbonzini@redhat.com>
+ <20220204115718.14934-12-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220127115626.14179-7-bp@alien8.de>
+In-Reply-To: <20220204115718.14934-12-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 12:56:26PM +0100, Borislav Petkov wrote:
-> From: Borislav Petkov <bp@suse.de>
+On Fri, Feb 04, 2022 at 06:57:06AM -0500, Paolo Bonzini wrote:
+> The root_level can be found in the cpu_role (in fact the field
+> is superfluous and could be removed, but one thing at a time).
+> Since there is only one usage left of role_regs_to_root_level,
+> inline it into kvm_calc_cpu_role.
 > 
-> Not really needed anymore and there's clearcpuid=.
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
+>  arch/x86/kvm/mmu/mmu.c | 23 ++++++++---------------
+>  1 file changed, 8 insertions(+), 15 deletions(-)
 > 
-> Signed-off-by: Borislav Petkov <bp@suse.de>
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index f98444e1d834..74789295f922 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -253,19 +253,6 @@ static struct kvm_mmu_role_regs vcpu_to_role_regs(struct kvm_vcpu *vcpu)
+>  	return regs;
+>  }
+>  
+> -static int role_regs_to_root_level(const struct kvm_mmu_role_regs *regs)
+> -{
+> -	if (!____is_cr0_pg(regs))
+> -		return 0;
+> -	else if (____is_efer_lma(regs))
+> -		return ____is_cr4_la57(regs) ? PT64_ROOT_5LEVEL :
+> -					       PT64_ROOT_4LEVEL;
+> -	else if (____is_cr4_pae(regs))
+> -		return PT32E_ROOT_LEVEL;
+> -	else
+> -		return PT32_ROOT_LEVEL;
+> -}
+> -
+>  static inline bool kvm_available_flush_tlb_with_range(void)
+>  {
+>  	return kvm_x86_ops.tlb_remote_flush_with_range;
+> @@ -4673,7 +4660,13 @@ kvm_calc_cpu_role(struct kvm_vcpu *vcpu, const struct kvm_mmu_role_regs *regs)
+>  		role.base.smep_andnot_wp = ____is_cr4_smep(regs) && !____is_cr0_wp(regs);
+>  		role.base.smap_andnot_wp = ____is_cr4_smap(regs) && !____is_cr0_wp(regs);
+>  		role.base.has_4_byte_gpte = !____is_cr4_pae(regs);
+> -		role.base.level = role_regs_to_root_level(regs);
+> +
+> +		if (____is_efer_lma(regs))
+> +			role.base.level = ____is_cr4_la57(regs) ? PT64_ROOT_5LEVEL : PT64_ROOT_4LEVEL;
+> +		else if (____is_cr4_pae(regs))
+> +			role.base.level = PT32E_ROOT_LEVEL;
+> +		else
+> +			role.base.level = PT32_ROOT_LEVEL;
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Did you mean to drop the !CR0.PG case?
 
--- 
-Kees Cook
+>  
+>  		role.ext.cr0_pg = 1;
+>  		role.ext.cr4_pae = ____is_cr4_pae(regs);
+> @@ -4766,7 +4759,7 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
+>  	context->get_guest_pgd = get_cr3;
+>  	context->get_pdptr = kvm_pdptr_read;
+>  	context->inject_page_fault = kvm_inject_page_fault;
+> -	context->root_level = role_regs_to_root_level(regs);
+> +	context->root_level = cpu_role.base.level;
+>  
+>  	if (!is_cr0_pg(context))
+>  		context->gva_to_gpa = nonpaging_gva_to_gpa;
+> -- 
+> 2.31.1
+> 
+> 
