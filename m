@@ -2,65 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2BE9C35272
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 496D0C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390499AbiBGOTM (ORCPT
+        id S1391221AbiBGOTb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:19:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
+        Mon, 7 Feb 2022 09:19:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390936AbiBGOF2 (ORCPT
+        with ESMTP id S1389764AbiBGNxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:05:28 -0500
+        Mon, 7 Feb 2022 08:53:46 -0500
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4914EC043189;
-        Mon,  7 Feb 2022 06:05:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A2CC043181;
+        Mon,  7 Feb 2022 05:53:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=bZkPt3tJIWdpwN+WGfn+8VumHQlVZ74e44nHdwfLHi0=; b=zJxPWUxjtl0SxNUn8gsA7U4fGZ
-        xOycPFeDc3quhnDYqGWc3uwL8tL8zZuPkypOUHRB+CK9gRf+j8YthUEy9jcegnBL6/NAuuTPUqQt7
-        Fx+qbSB+dFbz43ikBSYn/MtGDvYqE6quuWGdULOvni2qxMoYZwgwRwLdiVtlCloH6nPg=;
+        bh=ZCBQfIgsaaqGa9NdTBKby2K4luKCO2x9ltO+P32Dy1E=; b=ZQvMoWmrRru7q2T1QO7Q5DY945
+        INsEvCnlxHc53LgeQB7iZK2L/tRVPegucijhvHQqRM0tcryCYciDk5ehjRhxBTgklPMWc1M1hwcep
+        J6001389zlRq0WJ1gXvPebIKhQm+OxtecXRCxDHiEZS10LnSSwLo+bjo6Wl58ueAV0Qc=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1nH4du-004e27-Mv; Mon, 07 Feb 2022 15:05:22 +0100
-Date:   Mon, 7 Feb 2022 15:05:22 +0100
+        id 1nH4SS-004dvH-6g; Mon, 07 Feb 2022 14:53:32 +0100
+Date:   Mon, 7 Feb 2022 14:53:32 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
         Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/4] net: dsa: mv88e6xxx: Add support for bridge
- port locked feature
-Message-ID: <YgEnIksFSHaRZtK7@lunn.ch>
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 1/4] net: bridge: Add support for bridge port in
+ locked mode
+Message-ID: <YgEkXARS160I9Ooe@lunn.ch>
 References: <20220207100742.15087-1-schultz.hans+netdev@gmail.com>
- <20220207100742.15087-4-schultz.hans+netdev@gmail.com>
+ <20220207100742.15087-2-schultz.hans+netdev@gmail.com>
+ <YgD5MglBy/UbN0uX@shredder>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220207100742.15087-4-schultz.hans+netdev@gmail.com>
+In-Reply-To: <YgD5MglBy/UbN0uX@shredder>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 11:07:41AM +0100, Hans Schultz wrote:
-> Supporting bridge port locked mode using the 802.1X mode in Marvell
-> mv88e6xxx switchcores is described in the '88E6096/88E6097/88E6097F
-> Datasheet', sections 4.4.6, 4.4.7 and 5.1.2.1 (Drop on Lock).
+> > +	if (p->flags & BR_PORT_LOCKED) {
+> > +		fdb_entry = br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+> > +		if (!(fdb_entry && fdb_entry->dst == p))
+> > +			goto drop;
+> 
+> I'm not familiar with 802.1X so I have some questions:
 
-This implementation seems to be incorrect for 6390X, and maybe
-others. I just picked a modern devices at random, and it is different,
-so didn't check any other devices.  The 6390X uses bits 14 and 15, not
-just bit 14.
+Me neither.
 
-So either you need to narrow down support to just those devices this
-actually works for, or you need to add implementations for all
-generations, via an op in mv88e6xxx_ops.
+> 
+> 1. Do we need to differentiate between no FDB entry and an FDB entry
+> pointing to a different port than we expect?
+
+And extending that question, a static vs a dynamic entry?
 
     Andrew
