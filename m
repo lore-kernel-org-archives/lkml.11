@@ -2,97 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29CD8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:26:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF69C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239112AbiBGV0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 16:26:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
+        id S239158AbiBGV0v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 16:26:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231300AbiBGV0K (ORCPT
+        with ESMTP id S239234AbiBGV0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 16:26:10 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108CAC061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:26:10 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id e79so18592125iof.13
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 13:26:10 -0800 (PST)
+        Mon, 7 Feb 2022 16:26:06 -0500
+X-Greylist: delayed 122 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 13:26:05 PST
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD76CC0612A4;
+        Mon,  7 Feb 2022 13:26:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7EoFUgOgWrG5ECK0ratgBPQfrtcQ8+zDvDGtD3h4kLs=;
-        b=Wh47ewf5v2c0r0u1dUoerKcQVLzeRHIxoUgAjEVWUpOwQc024QhiHZyEV9F99kQ8jS
-         MEGixfZ+qzZOMzjsbkZeTySGGvnIBW8vgyJdXmLy2+LCfvYZEp9Xhgo9PiVBpPTF2BIG
-         QMu1sSMsZqe+JAUJ0Dfop76rX1b7IlSQf8bY0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7EoFUgOgWrG5ECK0ratgBPQfrtcQ8+zDvDGtD3h4kLs=;
-        b=TsgA2SDCrShsEUCeCmeAn1L2vXU3q0BmP6lGTWtSIZEQ43Zs2i3UU2s7tfC3jf8wqV
-         Ldl2Cz44JpIpjGHTBb6RcUXXchr5r8B30+PF5K9xtxFaYyrn6jmlbRCiObgysadNOh5v
-         2mrTCmkW3PQ4laalXVx1n3FzVVPVrcg5Ihtj5XOri480lQj26z7mTPjp/1QtTNU+wj8p
-         hvZzkZCaOnVaLMUZy9NfoUBVQNWde1LMgxPdAygfDY9uSUENPYjXqjJcfP323NQ0jXi9
-         MIc+Q9kSW4fVo8+0xqeztfQMfRvxEtx2bVFedeg7KyIrPp2GgptXJJ0J7UuYt004bbSV
-         ygfg==
-X-Gm-Message-State: AOAM532ulODWTPddUFgib7+dpnC+nfQJNcN1AP2AJrokqmBXR7PkdCyz
-        KLvpZgFLKGGEOPFUI6egYYDodw==
-X-Google-Smtp-Source: ABdhPJx23gpPSXFy2gfipTdevsv055tCHx6Dig6RRO0hSk6L965mGHz3uYIqozArCFAV5a+usKFbdA==
-X-Received: by 2002:a5e:c20b:: with SMTP id v11mr673361iop.197.1644269169467;
-        Mon, 07 Feb 2022 13:26:09 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id a4sm5943980ili.80.2022.02.07.13.26.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 13:26:09 -0800 (PST)
-Subject: Re: [PATCH 4.19 00/86] 4.19.228-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220207103757.550973048@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <8ff351cc-5cbe-44fd-a339-d9febf8d5ced@linuxfoundation.org>
-Date:   Mon, 7 Feb 2022 14:26:08 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644269165; x=1675805165;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=NELx/Iw2FPlY+9g0WgjmwMdN02QQW6LQoTyTGWg6qA4=;
+  b=HXNBrsLfmxWvuJ88vagMCObdwufcUC2uzM/iXuBwiADR7jOZWV+bXpiJ
+   RyrlTz+I6unCWoG/rOvLUq9AEcvhwq1iQ5mgrVfuj7ZMYbKhHKRHevmdd
+   nZORieBT6jF7v023UNhVEQlc8hw6WgTjlGeaLjie+OGYCTsH75LKojmNr
+   0=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 07 Feb 2022 13:24:02 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 13:24:02 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 7 Feb 2022 13:24:02 -0800
+Received: from [10.48.246.62] (10.49.16.6) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 7 Feb 2022
+ 13:24:01 -0800
+Message-ID: <258ac12b-9ca3-9b24-30df-148f9df51582@quicinc.com>
+Date:   Mon, 7 Feb 2022 13:24:01 -0800
 MIME-Version: 1.0
-In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v3 2/2] ath9k: htc: clean up *STAT_* macros
 Content-Language: en-US
+To:     Pavel Skripkin <paskripkin@gmail.com>,
+        <ath9k-devel@qca.qualcomm.com>, <kvalo@kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <toke@toke.dk>,
+        <linville@tuxdriver.com>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+ <28c83b99b8fea0115ad7fbda7cc93a86468ec50d.1644265120.git.paskripkin@gmail.com>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <28c83b99b8fea0115ad7fbda7cc93a86468ec50d.1644265120.git.paskripkin@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 4:05 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.19.228 release.
-> There are 86 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 2/7/2022 12:24 PM, Pavel Skripkin wrote:
+> I've changed *STAT_* macros a bit in previous patch and I seems like
+> they become really unreadable. Align these macros definitions to make
+> code cleaner.
 > 
-> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
-> Anything received after that time might be too late.
+> Also fixed following checkpatch warning
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.228-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
+> ERROR: Macros with complex values should be enclosed in parentheses
 > 
-> thanks,
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
 > 
-> greg k-h
+> Changes since v2:
+> 	- My send-email script forgot, that mailing lists exist.
+> 	  Added back all related lists
+> 	- Fixed checkpatch warning
 > 
+> Changes since v1:
+> 	- Added this patch
+> 
+> ---
+>   drivers/net/wireless/ath/ath9k/htc.h | 16 ++++++++--------
+>   1 file changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+> index 141642e5e00d..b4755e21a501 100644
+> --- a/drivers/net/wireless/ath/ath9k/htc.h
+> +++ b/drivers/net/wireless/ath/ath9k/htc.h
+> @@ -327,14 +327,14 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
+>   }
+>   
+>   #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+> -#define __STAT_SAVE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
+> -#define TX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+> -#define TX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+> -#define RX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+> -#define RX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+> -#define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
+> -
+> -#define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
+> +#define __STAT_SAVE(expr)	(hif_dev->htc_handle->drv_priv ? (expr) : 0)
+> +#define TX_STAT_INC(c)		__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+> +#define TX_STAT_ADD(c, a)	__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+> +#define RX_STAT_INC(c)		__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+> +#define RX_STAT_ADD(c, a)	__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+> +#define CAB_STAT_INC		(priv->debug.tx_stats.cab_queued++)
+> +
+> +#define TX_QSTAT_INC(q)		(priv->debug.tx_stats.queue_stats[q]++)
+>   
+>   void ath9k_htc_err_stat_rx(struct ath9k_htc_priv *priv,
+>   			   struct ath_rx_status *rs);
 
-Compiled and booted on my test system. No dmesg regressions.
-
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
-
-thanks,
--- Shuah
+It seems that these macros (both the original and the new) aren't 
+following the guidance from the Coding Style which tells us under 
+"Things to avoid when using macros" that we should avoid "macros that 
+depend on having a local variable with a magic name". Wouldn't these 
+macros be "better" is they included the hif_dev/priv as arguments rather 
+than being "magic"?
