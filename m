@@ -2,63 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E0C5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:44:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 640AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235579AbiBGHnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 02:43:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36436 "EHLO
+        id S233936AbiBGHtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 02:49:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244572AbiBGHie (ORCPT
+        with ESMTP id S243691AbiBGHpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 02:38:34 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C40F5C043184;
-        Sun,  6 Feb 2022 23:38:33 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 184751396;
-        Sun,  6 Feb 2022 23:30:52 -0800 (PST)
-Received: from e123648.arm.com (unknown [10.57.15.201])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id F2C1A3F73B;
-        Sun,  6 Feb 2022 23:30:49 -0800 (PST)
-From:   Lukasz Luba <lukasz.luba@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Cc:     amit.kachhap@gmail.com, daniel.lezcano@linaro.org,
-        viresh.kumar@linaro.org, rafael@kernel.org, amitk@kernel.org,
-        rui.zhang@intel.com, dietmar.eggemann@arm.com, lukasz.luba@arm.com,
-        Pierre.Gondois@arm.com
-Subject: [PATCH 2/2] powercap: DTPM: Check Energy Model type for power values scale
-Date:   Mon,  7 Feb 2022 07:30:36 +0000
-Message-Id: <20220207073036.14901-3-lukasz.luba@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220207073036.14901-1-lukasz.luba@arm.com>
-References: <20220207073036.14901-1-lukasz.luba@arm.com>
+        Mon, 7 Feb 2022 02:45:08 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8A7C043184
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 23:45:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=4wjflueM8ZxFsGabuOWEEICNS8QYe+tDJqLNJwgixxc=; b=hy+zYlYCOm9blMxjDZQZH8braN
+        s5UlUGUVavCb/E3sVFGWcBMX6Eizl1fx5KbkRymZ8w28heQ3hPG9GC3yBticfY+rQSRvJY7v9IK73
+        hndZxI5eJObIinpJORhfvMbvZWN/3EBrzIAyqRK5Cbpo/ytG+KlO7cEYoZqtlvHP1n7KvNttX6sXl
+        1tOiwjSrHMqWyDmMUH53gDimq1rfqp27azvJQecfz6sVdYUKfPwUvzPNu5TIzIw428VVq+xL/sU0S
+        JLCkEXfbaZbc6fNC5jl2jc8nFO898Jq0xfKrDdncLA1fjPsc+dCC/Wl5JQ8eW/yJzuYOxiuhNRuU7
+        hmfuANtQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nGyhs-009FYO-40; Mon, 07 Feb 2022 07:45:04 +0000
+Date:   Sun, 6 Feb 2022 23:45:04 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/75] mm/gup: Increment the page refcount before the
+ pincount
+Message-ID: <YgDOAAArz+RG3VTn@infradead.org>
+References: <20220204195852.1751729-1-willy@infradead.org>
+ <20220204195852.1751729-2-willy@infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204195852.1751729-2-willy@infradead.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Energy Model power values might be in an abstract scale. In such case
-it's safe to bail out during the registration, since the PowerCap
-framework supports only micro-Watts.
+Looks good, modulo the refs fixup:
 
-Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
----
- drivers/powercap/dtpm_cpu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
-index b740866b228d..e6bcde081de4 100644
---- a/drivers/powercap/dtpm_cpu.c
-+++ b/drivers/powercap/dtpm_cpu.c
-@@ -188,7 +188,7 @@ static int cpuhp_dtpm_cpu_online(unsigned int cpu)
- 		return 0;
- 
- 	pd = em_cpu_get(cpu);
--	if (!pd)
-+	if (!pd || !(pd->flags & EM_PERF_DOMAIN_MILLIWATTS))
- 		return -EINVAL;
- 
- 	dtpm_cpu = per_cpu(dtpm_per_cpu, cpu);
--- 
-2.17.1
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
