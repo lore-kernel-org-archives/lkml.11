@@ -2,116 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB80C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DF2C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245382AbiBGKZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:25:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53270 "EHLO
+        id S245546AbiBGKZD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:25:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355437AbiBGKSg (ORCPT
+        with ESMTP id S1357381AbiBGKL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:18:36 -0500
-X-Greylist: delayed 440 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 02:18:33 PST
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88D5AC0401C0
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:18:33 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BE3846D;
-        Mon,  7 Feb 2022 02:11:12 -0800 (PST)
-Received: from bogus (unknown [10.57.41.150])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9A3223F718;
-        Mon,  7 Feb 2022 02:11:11 -0800 (PST)
-Date:   Mon, 7 Feb 2022 10:10:24 +0000
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Wojciech Bartczak <wbartczak@marvell.com>
-Cc:     cristian.marussi@arm.com, linux-arm-kernel@lists.infradead.org,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        linux-kernel@vger.kernel.org, sbalcerak@marvell.com
-Subject: Re: Mixing SCMI and ACPI?
-Message-ID: <20220207101024.rpcbbhtd6y6g7ykc@bogus>
-References: <20220204142150.glsu6ujjtqpcktjp@bogus>
- <20220204181641.28176-1-wbartczak@marvell.com>
+        Mon, 7 Feb 2022 05:11:58 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB416C043188
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:11:53 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id n8so9465981wmk.3
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 02:11:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=guHISOtMMO9Q0hH9tbWxwVMEC6CpTUnDrgqh7P8fsAo=;
+        b=QyaiYp4jthHY0ZF6FxY8Mu0vf/UB7rbeZv6CwkI2gb5aev8fH0DUT3WLb7qkJARCXu
+         eQmncuIRTLNMcqu0YHL6Ab6CNgdMrznVD75rgoHrn3kt/u3w9hn68ZEIAZWBawj/BKD9
+         pZ3tQefFeBjg0R/4ucv147qVd7rc4hJ8fY9lzpJAr2ASghvUS6RFvhr9fJnMELEXkzMG
+         NyuEYb/SJ7wiX5IKcRoBH31obVhiSixmubK+GMjJo8pwL89HuaVx5TqvGFlCLRjaabqE
+         2xu8/BdwAr1BYlbjKP2lVJ0+a6AEGgfP/SLXNcqFMcL31DzfMsRAw+w+Uc0VymhDQ6mn
+         XvEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=guHISOtMMO9Q0hH9tbWxwVMEC6CpTUnDrgqh7P8fsAo=;
+        b=aM7sVaYogmCGHy/aZFxmHpKQYvovCYi8Bzevf6rV58SwOzhmm1ljF88CsrcJr2Jqvk
+         /9yTsblg87d9L4XaMVbycfnxTkez3jGRWyt91wXeRp1ZRaJIhk9MnXYUE677aru63zvr
+         biIxuKbKKGQJD7P5EwgeB/Q3NyFg7BLD2EfyoSompIqv2oKLF0p/pDL+A/vuAVlamwf/
+         5pBxleS6w/IpaUSHqZwhviBxTiKV1EBP3B5BHeiC5T3oVfpXna4iOFG6n0MgBfdpxVlM
+         48/nsYsMwNnob/qpQw+fkYllqnXcE5HuYaVQwR7OHcBSsOxKZh6Vb0GD5jeNuo6EBwwJ
+         O2rg==
+X-Gm-Message-State: AOAM533gRZ5rIXc+0TXKd4f5YTpsetKaQ2OId57CEmFTxr1XxlYYZG9G
+        cwO7Zbbv05GXSHhDCWR7bM0gXQ==
+X-Google-Smtp-Source: ABdhPJy37cfI9ctBEfDiVSbCY7fy4ejXeLGzYhOD0a+pEgOKu0ccEi842Nj2bPmLvc3aD4m28muY8A==
+X-Received: by 2002:a05:600c:154f:: with SMTP id f15mr10537627wmg.111.1644228712372;
+        Mon, 07 Feb 2022 02:11:52 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id j2sm9155980wms.2.2022.02.07.02.11.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 02:11:51 -0800 (PST)
+Date:   Mon, 7 Feb 2022 10:11:49 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Chanwoo Choi <cw00.choi@samsung.com>
+Subject: Re: [PATCH v2 0/4] mfd/power/regulators: dt-bindings: max14577:
+ convert to dtschema
+Message-ID: <YgDwZUtc+Ac7ByWk@google.com>
+References: <20220111174337.223320-1-krzysztof.kozlowski@canonical.com>
+ <73bad620-97eb-a734-cbc8-6f001d04c18a@canonical.com>
+ <YgDnlWKO6/BTxZh2@google.com>
+ <68d1f184-bfc5-9d78-8c68-0c793b35adf4@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220204181641.28176-1-wbartczak@marvell.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <68d1f184-bfc5-9d78-8c68-0c793b35adf4@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 10:16:41AM -0800, Wojciech Bartczak wrote:
->
-> I should've explained it slightly better. Of course SCMI does great work
-> when managing the clocks. However, what the intent here is the SCMI
-> clocks register itself nicely into common clk framework.
-> I don't intend to change the clock. SCP in my case is invariant source.
-> Hence, no need for ASL methods. I just want to read given clock and have it
-> registered in clk framework.
-> Reason for that is simple, there's a good code in SCMI. I don't
-> want to create own driver for that. I just have to be able to start SCMI
-> when only source of hardware information is ACPI/UEFI.
->
+On Mon, 07 Feb 2022, Krzysztof Kozlowski wrote:
 
-I don't agree, more details below.
+> On 07/02/2022 10:34, Lee Jones wrote:
+> > On Sun, 06 Feb 2022, Krzysztof Kozlowski wrote:
+> > 
+> >> On 11/01/2022 18:43, Krzysztof Kozlowski wrote:
+> >>> Hi,
+> >>>
+> >>> Changes since v1
+> >>> ================
+> >>> 1. MFD: Use absolute path to schemas
+> >>> 2. Regulator: mention all allowed properties,
+> >>>    additionalProperties=false, add min/max values for voltages and
+> >>>    current, don't use patternProperties when not needed.
+> >>>
+> >>> Dependencies
+> >>> ============
+> >>> 1. DTS patch 1/4: nothing depends on it, sending here so Rob's automatic
+> >>>    checker won't complain about DTS.
+> >>>    I will take it via Samsung SoC tree.
+> >>>
+> >>> 2. Final MFD patch (4/4) depends on regulator and power, so the last
+> >>>    patches (2+3+4) should go via same tree.
+> >>>
+> >> Dear Lee,
+> >>
+> >> This patchset was reviewed and there are no outstanding issues. Could
+> >> you pick up patches 2-4 (skipping DTS patch) via MFD tree?
+> > 
+> > Nothing from Mark?
+> 
+> No, nothing. There is no other simultaneous work on these files, so I
+> don't expect conflicts here. Important part is that I got review from Rob.
+> 
+> If lack of ack makes you hesitant, I can resend hoping it will help but
+> it is a bit of pain.
 
-> This is still most specific thing I could have found on the internet.
-> So, to clear up the clouds about my idea.
->
-> I have platform with UEFI/ACPI only. I want my clocks to be registered.
+No need.  I'll ping Mark privately to de-conflict.
 
-Just to read clock rates ?
-
-> So, I use SCMI. The framework needs bindings for proper registration.
-> Instead using DT approach:
->
-> firmware {
-> 	scmi {
-> 		compatible = "arm-scmi";
-> 		/* ... */
->
-> 		clks: protocol@14 {
-> 			reg = <0x14>;
-> 			#clock-cells = <1>;
-> 		}
-> 	}
-> }
->
-> I add ACPI match table to SCMI code and present it with matching ACPI
-> tables. It might look like this:
->
-> Scope (_SB) {
-> 	Device (ARMSCMI) {
-> 		Name (_HID, "ASCM0001")
-> 		Name (_UID, 0)
->
-> 		Method (_STA) {
-> 			Return (0xF)
-> 		}
->
-> 		Device (CLKS) {
-> 			Name (_ADR, 0x14)
-> 			Name (_UID, 0)
->
-> 			Method (_STA) {
-> 				Return (0xF)
-> 			}
-> 		}
-> 	}
-> }
->
-
-A *BIG FAT NACK* for this approach. SCMI is not intended to be used like
-this on ACPI. Since ACPI has not support for clocks, you can't just do
-something like above for clocks and rest of the SCMI support in the standard
-ACPI methods. 
-
-> Then SCMI registers the clocks protocol and does remaining magic.
->
-
-Sure, but what is the issue if you don't have this SCMI clock support
-in ACPI system ? Can you provide details as what is failing ?
-
---
-Regards,
-Sudeep
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
