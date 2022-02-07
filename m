@@ -2,85 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14A02C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4426DC3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378108AbiBGQnp (ORCPT
+        id S1382192AbiBGQnv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:43:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43062 "EHLO
+        Mon, 7 Feb 2022 11:43:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243111AbiBGQiA (ORCPT
+        with ESMTP id S1390467AbiBGQes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:38:00 -0500
-Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D89EC0401CC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:37:59 -0800 (PST)
-Received: from omf01.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay12.hostedemail.com (Postfix) with ESMTP id 08EB3120242;
-        Mon,  7 Feb 2022 16:37:57 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf01.hostedemail.com (Postfix) with ESMTPA id CA6F36000C;
-        Mon,  7 Feb 2022 16:37:41 +0000 (UTC)
-Message-ID: <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
-Subject: Re: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code
- defined constants in messages
-From:   Joe Perches <joe@perches.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Date:   Mon, 07 Feb 2022 08:37:55 -0800
-In-Reply-To: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
-References: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: CA6F36000C
-X-Stat-Signature: kteytq1t4m7ks8uegmowbi3jhcaufp7z
-X-Rspamd-Server: rspamout07
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18PmfyryuwvxUexaIDlJ1cTu6itrewLoEA=
-X-HE-Tag: 1644251861-121208
+        Mon, 7 Feb 2022 11:34:48 -0500
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1C83C0401D5
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:34:46 -0800 (PST)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOeTa014409;
+        Mon, 7 Feb 2022 17:24:40 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        Willy Tarreau <w@1wt.eu>
+Subject: [PATCH 26/42] tools/nolibc/stdlib: make raise() use the lower level syscalls only
+Date:   Mon,  7 Feb 2022 17:23:38 +0100
+Message-Id: <20220207162354.14293-27-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
+In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
+References: <20220207162354.14293-1-w@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-07 at 12:48 +0200, Andy Shevchenko wrote:
-> In a couple of messages the constants, which have their definitions,
-> are hard coded into the message text. Unhardcode them.
+raise() doesn't set errno, so there's no point calling kill(), better
+call sys_kill(), which also reduces the function's size.
 
-Found by inspection or tool?
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+---
+ tools/include/nolibc/stdlib.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-[]
-> @@ -409,8 +409,8 @@ static struct ltc2983_custom_sensor *__ltc2983_custom_sensor_new(
->  	new_custom->size = n_entries * n_size;
->  	/* check Steinhart size */
->  	if (is_steinhart && new_custom->size != LTC2983_CUSTOM_STEINHART_SIZE) {
-> -		dev_err(dev, "Steinhart sensors size(%zu) must be 24",
-> -							new_custom->size);
-> +		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
-> +			LTC2983_CUSTOM_STEINHART_SIZE);
-
-probably better using "%u" and not "%d"
-
-and better with a \n termination too.
-
->  		return ERR_PTR(-EINVAL);
->  	}
->  	/* Check space on the table. */
-> @@ -1299,8 +1299,8 @@ static int ltc2983_parse_dt(struct ltc2983_data *st)
->  		if (sensor.chan < LTC2983_MIN_CHANNELS_NR ||
->  		    sensor.chan > LTC2983_MAX_CHANNELS_NR) {
->  			ret = -EINVAL;
-> -			dev_err(dev,
-> -				"chan:%d must be from 1 to 20\n", sensor.chan);
-> +			dev_err(dev, "chan:%d must be from %d to %d\n", sensor.chan,
-> +				LTC2983_MIN_CHANNELS_NR, LTC2983_MAX_CHANNELS_NR);
->  			goto put_child;
->  		} else if (channel_avail_mask & BIT(sensor.chan)) {
->  			ret = -EINVAL;
-
+diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
+index db47362a750f..4cc1fdf6791e 100644
+--- a/tools/include/nolibc/stdlib.h
++++ b/tools/include/nolibc/stdlib.h
+@@ -317,7 +317,7 @@ int msleep(unsigned int msecs)
+ __attribute__((weak,unused))
+ int raise(int signal)
+ {
+-	return kill(getpid(), signal);
++	return sys_kill(sys_getpid(), signal);
+ }
+ 
+ static __attribute__((unused))
+-- 
+2.35.1
 
