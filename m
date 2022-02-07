@@ -2,138 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2991BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 758F0C35275
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448606AbiBGNMK (ORCPT
+        id S1448599AbiBGNMI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:12:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46174 "EHLO
+        Mon, 7 Feb 2022 08:12:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388936AbiBGMjN (ORCPT
+        with ESMTP id S1445593AbiBGMmS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:39:13 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41ACCC001F74
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:29:47 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id e145so19311769yba.12
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 04:29:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zFqQ4IUhh5vrztnUr/w/RGdaRcKDiZgiBwmvAthyBgg=;
-        b=VN+FcB+RSvt9TStrknBTJ9/6bBJGnhDmxvWrAUS8ukTM3V8TQy0ZgdfR1JkLwgNB3V
-         YskmmsD3gir3pMGVQpb1dsfRUT1M4w6JljiA67SFvXWGHfYCva42QhHgnQYyfrTbWz4v
-         t46BA05XelyzFpcBHUd9c5VpyweixV+Z6qN5m2EnRUiirmu/wuUcIB+YEOlY9pCNLgcr
-         /Q6LIclFHwUP0iQm2QRVsFyVJQ0paCUzBwxh7T60uJCHm6j2q9YNkmmTISRWtGJ7szPV
-         B6nsE0NZXlRo50QV6N4KtvmM86OcE6ZSH6hTYpwYE0OmkMpbNv3C8zkbKMh+HtEi3JC8
-         FEoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zFqQ4IUhh5vrztnUr/w/RGdaRcKDiZgiBwmvAthyBgg=;
-        b=t++6rfVmLZHVZzVjU2WADKxK6xqkGLwzpLuSMxlEU8E2r+NV4A4fyBMUu0bP+6Lo3C
-         ITVrpRWQSC8/fT1izTj6ftgehviF7hywJBl9UrvXaXg3PGksITjinYMmLYyK3PTvOeOT
-         6YRJ+hkiaCY/Mxmkct3yrmeHGL8gRC3KW5/GM1PJS7Nnf4p+kLl89ghoVKpBaAE9FhK8
-         evtRBrTb4LfUoXSmNyOvQ31mzLDxLutqq80mNANY2cF/K6dZTAHdi8f/guMwtrT8Kl3O
-         CZWN6X6Zj9TqvuvJwnX5xrdERfmxb9g2QzAqUcej6HpErxR4dRW16Sz79Tc3ptQq4KQ9
-         c/sg==
-X-Gm-Message-State: AOAM530w55NtM65kkdCu3McAzrzrOywiz0UfNagjs4s2L1+nj0Kls1EN
-        pAqNE5McU7ledzQHZy03lH7QxKeI+Ze8yvhhSd6yvg==
-X-Google-Smtp-Source: ABdhPJzrRE2p9LRRkBiCf1z3sq4PCL4vokQUZAyBx14AqSX+BLjiHW9TChxVT7HaWTtBHB6TmmWZIX2APyxubPvxA64=
-X-Received: by 2002:a25:1402:: with SMTP id 2mr9338333ybu.684.1644236986311;
- Mon, 07 Feb 2022 04:29:46 -0800 (PST)
+        Mon, 7 Feb 2022 07:42:18 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D33BE033DB2;
+        Mon,  7 Feb 2022 04:33:57 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 84DE11F37E;
+        Mon,  7 Feb 2022 12:18:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644236292; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=QzKGUR8l2ANJZZ33siPyM5ZbfG1iAsiLZfA06Eklo2s=;
+        b=t4tem1l8nL6PTmdZ+KQ4TZfGehFe/oB+t+9GgFdng1NUQhi+1jlTKMBMHSdpTLeu3wkInk
+        Le/Dz3WF5awnyQQynQfzCqGdSQgj1lV3Yz95XfP7yHip1fyy9NNH7VNG/ercZMPDt2HPd/
+        JiWKNEsych/QP66n8tcndCK5NjNoLFg=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 592D713BBC;
+        Mon,  7 Feb 2022 12:18:12 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +7w4FQQOAWLMegAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Mon, 07 Feb 2022 12:18:12 +0000
+From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
+To:     Eric Biederman <ebiederm@xmission.com>,
+        Alexey Gladkov <legion@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Solar Designer <solar@openwall.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Linux Containers <containers@lists.linux-foundation.org>
+Subject: [RFC PATCH 0/6] RLIMIT_NPROC in ucounts fixups
+Date:   Mon,  7 Feb 2022 13:17:54 +0100
+Message-Id: <20220207121800.5079-1-mkoutny@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220207103802.280120990@linuxfoundation.org>
-In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 7 Feb 2022 17:59:34 +0530
-Message-ID: <CA+G9fYtLmasiEHvfTw+PSabJCfJR2d8yiVyhn1nd4TcKfZ7bOw@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/110] 5.15.22-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Marc Zyngier <maz@kernel.org>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 at 16:55, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.22 release.
-> There are 110 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.22-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+This series is a result of looking deeper into breakage of
+tools/testing/selftests/rlimits/rlimits-per-userns.c after 
+https://lore.kernel.org/r/20220204181144.24462-1-mkoutny@suse.com/
+is applied.
 
+The description of the original problem that lead to RLIMIT_NPROC et al.
+ucounts rewrite could be ambiguously interpretted as supporting either
+the case of:
+- never-fork service or
+- fork (RLIMIT_NPROC-1) times service.
 
-Linux stable-rc 5.15 and 5.16 arm64 builds failed due to below errors.
+The scenario is weird anyway given existence of pids controller.
 
-  kvm/arm64: rework guest entry logic
-  [ Upstream commit 8cfe148a7136bc60452a5c6b7ac2d9d15c36909b ]
+The realization of that scenario relies not only on tracking number of
+processes per user_ns but also newly allows the root to override limit through
+set*uid. The commit message didn't mention that, so it's unclear if it
+was the intention too.
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+I also noticed that the RLIMIT_NPROC enforcing in fork seems subject to TOCTOU
+race (check(nr_tasks),...,nr_tasks++) so the limit is rather advisory (but
+that's not a new thing related to ucounts rewrite).
 
-arch/arm64/kvm/arm.c: In function 'kvm_arm_vcpu_enter_exit':
-arch/arm64/kvm/arm.c:769:9: error: implicit declaration of function
-'guest_state_enter_irqoff'; did you mean 'guest_enter_irqoff'?
-[-Werror=implicit-function-declaration]
-  769 |         guest_state_enter_irqoff();
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~
-      |         guest_enter_irqoff
-arch/arm64/kvm/arm.c:771:9: error: implicit declaration of function
-'guest_state_exit_irqoff'; did you mean 'guest_exit_irqoff'?
-[-Werror=implicit-function-declaration]
-  771 |         guest_state_exit_irqoff();
-      |         ^~~~~~~~~~~~~~~~~~~~~~~
-      |         guest_exit_irqoff
-arch/arm64/kvm/arm.c: In function 'kvm_arch_vcpu_ioctl_run':
-arch/arm64/kvm/arm.c:866:17: error: implicit declaration of function
-'guest_timing_enter_irqoff'; did you mean 'guest_enter_irqoff'?
-[-Werror=implicit-function-declaration]
-  866 |                 guest_timing_enter_irqoff();
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~
-      |                 guest_enter_irqoff
-arch/arm64/kvm/arm.c:916:17: error: implicit declaration of function
-'guest_timing_exit_irqoff'; did you mean 'guest_exit_irqoff'?
-[-Werror=implicit-function-declaration]
-  916 |                 guest_timing_exit_irqoff();
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~
-      |                 guest_exit_irqoff
-cc1: some warnings being treated as errors
+This series is RFC to discuss relevance of the subtle changes RLIMIT_NPROC to
+ucounts rewrite introduced.
 
+Michal Koutný (6):
+  set_user: Perform RLIMIT_NPROC capability check against new user
+    credentials
+  set*uid: Check RLIMIT_PROC against new credentials
+  cred: Count tasks by their real uid into RLIMIT_NPROC
+  ucounts: Allow root to override RLIMIT_NPROC
+  selftests: Challenge RLIMIT_NPROC in user namespaces
+  selftests: Test RLIMIT_NPROC in clone-created user namespaces
 
-build link:
------------
-https://builds.tuxbuild.com/24mNSY65SpZIASD4qYSPgMWIVqH/
+ fs/exec.c                                     |   2 +-
+ include/linux/cred.h                          |   2 +-
+ kernel/cred.c                                 |  29 ++-
+ kernel/fork.c                                 |   2 +-
+ kernel/sys.c                                  |  20 +-
+ kernel/ucount.c                               |   3 +
+ kernel/user_namespace.c                       |   2 +-
+ .../selftests/rlimits/rlimits-per-userns.c    | 233 +++++++++++++++---
+ 8 files changed, 229 insertions(+), 64 deletions(-)
 
-steps to reproduce:
-tuxmake --runtime podman --target-arch arm64 --toolchain gcc-11
---kconfig https://builds.tuxbuild.com/24mNSY65SpZIASD4qYSPgMWIVqH/config
+-- 
+2.34.1
 
---
-Linaro LKFT
-https://lkft.linaro.org
