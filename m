@@ -2,166 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88181C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAB6C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348653AbiBGJ1X (ORCPT
+        id S1349644AbiBGJ1X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
         Mon, 7 Feb 2022 04:27:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52704 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353674AbiBGJQl (ORCPT
+        with ESMTP id S1351434AbiBGJUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:16:41 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A983CC0401DE;
-        Mon,  7 Feb 2022 01:16:39 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 934AB1EC0354;
-        Mon,  7 Feb 2022 10:16:33 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644225393;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=RhZCvESkq4uv/MnXkVCgST7XyZ/TXxrvV+qyZmcFnNo=;
-        b=eAKkrWkC+wccOlnhlbQ0D0g7WmKJasDAmaBpYzOdvOmVRMP0ZaG1AwvCvcMmCdqGiXFPhB
-        mDdy3SsIbwarUgR8GGZzsL3BbYqfAh1nXlT2ZSnFtaxZcLh1lIS3GFFk2oPLpdP7wfNDOf
-        Y74CWeSnp3mCrLoztWbkxIjH5UWMU8I=
-Date:   Mon, 7 Feb 2022 10:16:27 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v9 43/43] virt: sevguest: Add support to get extended
- report
-Message-ID: <YgDjayeFRpzh1xEu@zn.tnic>
-References: <20220128171804.569796-1-brijesh.singh@amd.com>
- <20220128171804.569796-44-brijesh.singh@amd.com>
+        Mon, 7 Feb 2022 04:20:52 -0500
+X-Greylist: delayed 455 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 01:20:51 PST
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77626C0401C1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:20:51 -0800 (PST)
+Received: from mail-wr1-f44.google.com ([209.85.221.44]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N7AAk-1oO5HL39Wm-017Wqs for <linux-kernel@vger.kernel.org>; Mon, 07 Feb
+ 2022 10:08:11 +0100
+Received: by mail-wr1-f44.google.com with SMTP id m14so23389943wrg.12
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:08:11 -0800 (PST)
+X-Gm-Message-State: AOAM5311qF47p1TGDXgeksQ/KBI0+XQA9TGqAFyA4/EYLxkzrji0gGwU
+        yQutwXKag0tiey6KkCmbKwKzBFh3TCU7JaGmOpE=
+X-Google-Smtp-Source: ABdhPJy2OAsF40cRhp1hQ7PY7Unl0deCaPSYBDIEWOpw8v3CO2PPO1fqgQT5QBnVuSRSgX6rbfXRrkb7Q4LqWG3ZD10=
+X-Received: by 2002:a5d:500c:: with SMTP id e12mr9133772wrt.219.1644224891245;
+ Mon, 07 Feb 2022 01:08:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220128171804.569796-44-brijesh.singh@amd.com>
+References: <20220206174359.2986-1-jszhang@kernel.org> <CAEn-LTrZwq1-6F8PWScGPp1TRk1eaB-7qOrvPjyLhK=OzDTQBQ@mail.gmail.com>
+ <87bkzjvzpt.fsf@igel.home>
+In-Reply-To: <87bkzjvzpt.fsf@igel.home>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 7 Feb 2022 10:07:54 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3ncwMz-yngiv_waYYNBydveLrhX=kEfWC_hfonHZ7k4w@mail.gmail.com>
+Message-ID: <CAK8P3a3ncwMz-yngiv_waYYNBydveLrhX=kEfWC_hfonHZ7k4w@mail.gmail.com>
+Subject: Re: [RFC PATCH] riscv: reduce THREAD_SIZE from 16KB to 8KB for RV64
+To:     Andreas Schwab <schwab@linux-m68k.org>
+Cc:     David Abdurachmanov <david.abdurachmanov@gmail.com>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:1r0L1CA9uxaUQDsE8nw5v0TvvyodMgrjp4YXx522bOwZ6tbI93B
+ SG5a5onUFRg2oUr4ZzhKDDT4Jd8ECp6tfMaRfnprgntIzfdJAF/UO1sTwomi2TLeb8ViPFU
+ jZsXO/qX7O0qY0hkcVflhO3eBopu5uEmS1UIZgxkaVXhogB/dRupeaYaT6FR4hVMsDXiOEf
+ MdGF6419WUTyKkjG4rB9Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:oAtlLQrS464=:+Nj6Kiq4ePMXwy2W6WnOvj
+ 9C4M+KVM52vn1C1SLF56g9VaFPwu0mfSpAvHeZBL/2LJVEQ7uU1MTYuzmv+vU4M8MqigeWZva
+ Pi1TXZg1GMzj4IvwMpze49nX9l/4bVChDJBlRI1myvXIeWieJxtEex6ljUQaWqROiTCaijw54
+ GuMDQSyBBlq/HpRz+q9hHDZx6+GjEygswj65TcMPRfS70vMblm1bfdtgVgL9SGlhWRPir8B1l
+ rfWduAqMaOBXZ6ARt+5Qp/Gk2irwFxEL2kojwgejcbAJYeebr8EXGcja+6GlpNWMtx0kot/E+
+ O/zYAIHtC78Tp54pUWiyXd+vAVgdPBTIrW4HjzgCznd9B7tgjTr98e+Y2ioP7uq5XFPiyX4KB
+ z/JOv8cwhV3XZQBvUx9JZ+zAaFzceSwgUJ02+enirJghdCV073CyhxKzrJOJvN/Sh/TMlFoCl
+ FWbq8uyEAhs2CPWuVd3Fb/g7UqqhvbTd9hEyt0lTXMJ7AYGDIKu7k9BFkZwHmJtZriMydbaTX
+ 4rY8M3VLgFxdmVDuPrbvrACaIcdyVVii3g0cALk46EFh1KyAui9j0nusETbtgSUiY5F085reB
+ XjwCNvF62pWEUDOwMaJDkV3efJt1mCDkKO5lSdaENNZ1rqPjMH+q1FE1jp3wDAiW/caCj/n8L
+ Oifl7di+7h9mkmzxyVC35513rpMeU5wlvVNPgVaRAUWSrmyi6VbW3mgRgIrsNGDnXuRM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 11:18:04AM -0600, Brijesh Singh wrote:
-> +static int get_ext_report(struct snp_guest_dev *snp_dev, struct snp_guest_request_ioctl *arg)
-> +{
-> +	struct snp_guest_crypto *crypto = snp_dev->crypto;
-> +	struct snp_ext_report_req req = {0};
-> +	struct snp_report_resp *resp;
-> +	int ret, npages = 0, resp_len;
-> +
-> +	if (!arg->req_data || !arg->resp_data)
-> +		return -EINVAL;
-> +
-> +	/* Copy the request payload from userspace */
+On Mon, Feb 7, 2022 at 9:38 AM Andreas Schwab <schwab@linux-m68k.org> wrote:
+>
+> On Feb 07 2022, David Abdurachmanov wrote:
+>
+> > On Sun, Feb 6, 2022 at 7:53 PM Jisheng Zhang <jszhang@kernel.org> wrote:
+> >>
+> >> After irq stack is supported, it's possible to use small THREAD_SIZE.
+> >> In fact, I tested this patch on a Lichee RV board, looks good so far.
+> >
+> > We went from 8K to 16K somewhere in mid-2020 on riscv64 because we
+> > were seeing some random crashes in various distributions (Debian,
+> > Fedora, OpenSUSE). Thus we matched what other popular arches do, i.e.
+> > 16K.
 
-Useless comment.
+It sounds like 2020 predates both HAVE_ARCH_VMAP_STACK and
+IRQ stacks, so I would say that it was necessary back then because the
+crashes were too hard to debug, but it's worth trying again now at least
+as a compile-time option under CONFIG_EXPERT.
 
-> +	if (copy_from_user(&req, (void __user *)arg->req_data, sizeof(req)))
-> +		return -EFAULT;
-> +
-> +	if (req.certs_len) {
-> +		if (req.certs_len > SEV_FW_BLOB_MAX_SIZE ||
-> +		    !IS_ALIGNED(req.certs_len, PAGE_SIZE))
-> +			return -EINVAL;
-> +	}
-> +
-> +	if (req.certs_address && req.certs_len) {
-> +		if (!access_ok(req.certs_address, req.certs_len))
-> +			return -EFAULT;
-> +
-> +		/*
-> +		 * Initialize the intermediate buffer with all zero's. This buffer
+You need VMAP stacks to reliably get a backtrace out, and you need
+IRQ stacks to make overflows happen reproducibly (and less often).
 
-"zeros"
+> I think NFS is one of the worst offenders.  I'm running an Unleashed
+> with NFS root, which probably amplifies this.
 
-> +		 * is used in the guest request message to get the certs blob from
-> +		 * the host. If host does not supply any certs in it, then copy
-> +		 * zeros to indicate that certificate data was not provided.
-> +		 */
-> +		memset(snp_dev->certs_data, 0, req.certs_len);
-> +
-> +		npages = req.certs_len >> PAGE_SHIFT;
-> +	}
-> +
-> +	/*
-> +	 * The intermediate response buffer is used while decrypting the
-> +	 * response payload. Make sure that it has enough space to cover the
-> +	 * authtag.
-> +	 */
-> +	resp_len = sizeof(resp->data) + crypto->a_len;
-> +	resp = kzalloc(resp_len, GFP_KERNEL_ACCOUNT);
-> +	if (!resp)
-> +		return -ENOMEM;
-> +
-> +	snp_dev->input.data_npages = npages;
-> +	ret = handle_guest_request(snp_dev, SVM_VMGEXIT_EXT_GUEST_REQUEST, arg->msg_version,
-> +				   SNP_MSG_REPORT_REQ, &req.data,
-> +				   sizeof(req.data), resp->data, resp_len, &arg->fw_err);
-> +
-> +	/* If certs length is invalid then copy the returned length */
-> +	if (arg->fw_err == SNP_GUEST_REQ_INVALID_LEN) {
-> +		req.certs_len = snp_dev->input.data_npages << PAGE_SHIFT;
-> +
-> +		if (copy_to_user((void __user *)arg->req_data, &req, sizeof(req)))
-> +			ret = -EFAULT;
-> +	}
-> +
-> +	if (ret)
-> +		goto e_free;
-> +
-> +	/* Copy the certificate data blob to userspace */
-> +	if (req.certs_address && req.certs_len &&
-> +	    copy_to_user((void __user *)req.certs_address, snp_dev->certs_data,
-> +			 req.certs_len)) {
-> +		ret = -EFAULT;
-> +		goto e_free;
-> +	}
-> +
-> +	/* Copy the response payload to userspace */
+I think there are a few others that can be equally bad, and some of them
+might stack on top of others, such as swap over ecryptfs over nfs over
+an encrypted network tunnel over infiniband. In the end, you just need
+one badly written driver, or a compile bug to trigger it, and we have
+plenty of both.
 
-Both comments are not needed.
-
-> +	if (copy_to_user((void __user *)arg->resp_data, resp, sizeof(*resp)))
-> +		ret = -EFAULT;
-> +
-> +e_free:
-> +	kfree(resp);
-> +	return ret;
-> +}
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+      Arnd
