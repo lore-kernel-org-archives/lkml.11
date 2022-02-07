@@ -2,87 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D82C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 041C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347770AbiBGSBc (ORCPT
+        id S1351864AbiBGSBj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:01:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36368 "EHLO
+        Mon, 7 Feb 2022 13:01:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345626AbiBGRzA (ORCPT
+        with ESMTP id S235179AbiBGR7O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:55:00 -0500
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E8DC0401DC;
-        Mon,  7 Feb 2022 09:54:59 -0800 (PST)
-Received: by mail-wr1-f53.google.com with SMTP id u23so2481469wru.6;
-        Mon, 07 Feb 2022 09:54:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=MgMZtoimtxO2XWZhw1+iy1PmNLRHGLJ65lgwWFNnd+Q=;
-        b=4VzzEql7S1l92TGmwkbuxjVszJXPRFD0c4UnMj+53UNOqntXrn8KmKDW9OXsuAq6vP
-         ijgEFJy0FWuNXd84GGbyZOCA8F+T7FJw+JnVs/psuW7bB4akAoed/rqNf9Qnt/MASj3+
-         TYpEWFa406O9PMhrgsglET701bqWphm3BKqIORO5u4/yHWLFCad8GwCnMToQrtR2439C
-         NHTty2mOeVEUssntGWW4v09+lDAY87IFSTlgREjkrF2L0zWrSh4ceIVQh7fAx4yjgy/W
-         mFfcqLBqTD/vp4Alq+wJ5Xdpo2XSVE2ID9rjpkxHYzS/9pTpd+CE/mQeFbuitRVbB/gW
-         Wk5w==
-X-Gm-Message-State: AOAM530OvbysyFWKRPnZT8JdxsJ8zc0MVspl7fNlsIY/4QzdETczQs07
-        dQAMoEeLvVxeDQ+pUlTC4YY=
-X-Google-Smtp-Source: ABdhPJwqsSu5ejMKrQVUvMG1YdMFq6h2SGjkMEEsKCJSpOvIu+S6aF6URXu3esyaPcELlXwxm4lZxg==
-X-Received: by 2002:adf:8010:: with SMTP id 16mr450436wrk.708.1644256497887;
-        Mon, 07 Feb 2022 09:54:57 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id f13sm13358wmq.29.2022.02.07.09.54.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 09:54:57 -0800 (PST)
-Date:   Mon, 7 Feb 2022 17:54:55 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Juan Vazquez <juvazq@linux.microsoft.com>
-Cc:     Miaoqian Lin <linmq006@gmail.com>, decui@microsoft.com,
-        gregkh@linuxfoundation.org, haiyangz@microsoft.com,
-        kys@microsoft.com, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sthemmin@microsoft.com,
-        wei.liu@kernel.org
-Subject: Re: [PATCH v2] Drivers: hv: vmbus: Fix memory leak in
- vmbus_add_channel_kobj
-Message-ID: <20220207175455.ftlpbzzuq5wqducc@liuwe-devbox-debian-v2>
-References: <20220128215604.xuqdpnnn4yjqfaoy@surface>
- <20220203173008.43480-1-linmq006@gmail.com>
- <20220206145556.72obb2qxbsktw3sc@surface>
+        Mon, 7 Feb 2022 12:59:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE3CC0401D9;
+        Mon,  7 Feb 2022 09:59:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78A56B8165D;
+        Mon,  7 Feb 2022 17:59:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D10E6C004E1;
+        Mon,  7 Feb 2022 17:59:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644256751;
+        bh=5Fqi/UtD0xGTUGfiJ1s3twBfT8A8QZEg585SBGwHpXQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=aWtmiju5E1LDC4Y1jOlEKsy8UW7LbEs0eK6/TA8aLgreC6XgMGc8vlYyvKI1Np0Bh
+         HcP+TAAI73eKJJrRhLE3bSls5ZS6EuOuJFbcSET+o1cxA2UgMfUoYIFrFzQJs7KV1M
+         vpjcbj9YYwXCyUxJ4E4Q7ygeeDWs0gnDd/S4nj55O3oUynt2fIp7vFaX424prYPvDO
+         D1LuiKkWgLjZ5ugcpfn4vKRtsLqj8NbAtHMtOS1SKEyoKV+rcYC/SMn4jv6KDoZS05
+         IuXdyUSqX8PdAHbji2IdGE85Q9fV6twDrr7ZieGcEYSJnEX1SXiDF9zPkNwX/Qo70t
+         dNWNS8UD7MObA==
+Date:   Mon, 7 Feb 2022 11:59:09 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH v8 00/10] vgaarb: Rework default VGA device selection
+Message-ID: <20220207175909.GA406079@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220206145556.72obb2qxbsktw3sc@surface>
+In-Reply-To: <b0a06a30-f479-df9f-980c-b789f0f26ce9@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 06, 2022 at 06:55:56AM -0800, Juan Vazquez wrote:
-> On Fri, Feb 04, 2022 at 01:30:08AM +0800, Miaoqian Lin wrote:
-> > kobject_init_and_add() takes reference even when it fails.
-> > According to the doc of kobject_init_and_add()：
-> > 
-> >    If this function returns an error, kobject_put() must be called to
-> >    properly clean up the memory associated with the object.
-> > 
-> > Fix memory leak by calling kobject_put().
-> > 
-> > Fixes: c2e5df616e1a ("vmbus: add per-channel sysfs info")
-> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> > ---
-> > Changes in v2:
-> > - Add cleanup when sysfs_create_group() fails
-> > 
-> > kobject_uevent() is used for notifying userspace by sending an uevent,
-> > I don't think we need to do error handling for it.
+On Tue, Feb 01, 2022 at 04:46:33PM +0100, Maarten Lankhorst wrote:
+> Op 31-01-2022 om 23:23 schreef Bjorn Helgaas:
+> > [+to Maarten, Maxime, Thomas; beginning of thread:
+> > https://lore.kernel.org/r/20220106000658.243509-1-helgaas@kernel.org]
+> >
+> > On Wed, Jan 05, 2022 at 06:06:48PM -0600, Bjorn Helgaas wrote:
+> >> From: Bjorn Helgaas <bhelgaas@google.com>
+> >>
+> >> Current default VGA device selection fails in some cases because part of it
+> >> is done in the vga_arb_device_init() subsys_initcall, and some arches
+> >> enumerate PCI devices in pcibios_init(), which runs *after* that.
+> > Where are we at with this series?  Is there anything I can do to move
+> > it forward?
 > 
-> Thanks for the patch. It looks good to me.
+> I'm afraid that I don't understand the vga arbiter or the vga code
+> well enough to review.
 > 
-> Reviewed-by: Juan Vazquez <juvazq@linux.microsoft.com>
+> Could you perhaps find someone who could review?
+> 
+> I see Chen wrote some patches and tested, so perhaps they could?
 
-Applied to hyperv-fixes. Thanks.
+Huacai, any chance you could review this?  I'm worried that this
+series isn't going to go anywhere unless we can find somebody to
+review it.
+
+Bjorn
