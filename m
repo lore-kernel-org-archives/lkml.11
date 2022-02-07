@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59331C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3109BC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382066AbiBGLSN (ORCPT
+        id S1380423AbiBGLSE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:18:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50138 "EHLO
+        Mon, 7 Feb 2022 06:18:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355058AbiBGLNO (ORCPT
+        with ESMTP id S241405AbiBGLNI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:13:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DB6C043189;
-        Mon,  7 Feb 2022 03:13:12 -0800 (PST)
+        Mon, 7 Feb 2022 06:13:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C694C0401C0;
+        Mon,  7 Feb 2022 03:13:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A7006113B;
-        Mon,  7 Feb 2022 11:13:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36A75C004E1;
-        Mon,  7 Feb 2022 11:13:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0838B80EC3;
+        Mon,  7 Feb 2022 11:13:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4110BC004E1;
+        Mon,  7 Feb 2022 11:13:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232391;
-        bh=2Q1dbn0eLfIe61aVuyBIXRjIkZTDLb8UPYbVbrGLcCY=;
+        s=korg; t=1644232382;
+        bh=ij99Pji2hIjLQvYzmWEb7WMoAGwF9oR2PxtnVYAvycM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KXWuJwPpR6etHoPS1pSoBS2DhzrXfXMxUDs+AecCIMIJUZouz39Bv5zgtEE5EY6W1
-         MIFFfk4CqfPVGbkMvFGl/+3qXAJFOGWtuvF7Omiv2HWgO7IZM9ur3tkpMGWDk/5Qs7
-         IgIrKKtgBGgeMkBygjpjziRliskd0EtpYVs40HSg=
+        b=itk6Mbu/0Ll/+xavgu++2ahO+R+zJF6/Q98O8rz4AiJvPFtP0kkBOGCcYW6VtZ2iu
+         QJm4+oXUbNH9vT1sp4e6D8Bzixn1NdgfOBTZCjJhDhMsg7AHoc1U2zBe4jXcCfTmoq
+         eN7d1RzYJb9thsd933PD/BkGLpJLPEKspJ8WfXhk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Bruce Fields <bfields@fieldses.org>
-Subject: [PATCH 4.14 64/69] nfsd: nfsd4_setclientid_confirm mistakenly expires confirmed client.
-Date:   Mon,  7 Feb 2022 12:06:26 +0100
-Message-Id: <20220207103757.728793877@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 4.14 61/69] drm/i915/overlay: Prevent divide by zero bugs in scaling
+Date:   Mon,  7 Feb 2022 12:06:23 +0100
+Message-Id: <20220207103757.629393379@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -50,45 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dai Ngo <dai.ngo@oracle.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit ab451ea952fe9d7afefae55ddb28943a148247fe upstream.
+commit 90a3d22ff02b196d5884e111f39271a1d4ee8e3e upstream.
 
->From RFC 7530 Section 16.34.5:
+Smatch detected a divide by zero bug in check_overlay_scaling().
 
-o  The server has not recorded an unconfirmed { v, x, c, *, * } and
-   has recorded a confirmed { v, x, c, *, s }.  If the principals of
-   the record and of SETCLIENTID_CONFIRM do not match, the server
-   returns NFS4ERR_CLID_INUSE without removing any relevant leased
-   client state, and without changing recorded callback and
-   callback_ident values for client { x }.
+    drivers/gpu/drm/i915/display/intel_overlay.c:976 check_overlay_scaling()
+    error: potential divide by zero bug '/ rec->dst_height'.
+    drivers/gpu/drm/i915/display/intel_overlay.c:980 check_overlay_scaling()
+    error: potential divide by zero bug '/ rec->dst_width'.
 
-The current code intends to do what the spec describes above but
-it forgot to set 'old' to NULL resulting to the confirmed client
-to be expired.
+Prevent this by ensuring that the dst height and width are non-zero.
 
-Fixes: 2b63482185e6 ("nfsd: fix clid_inuse on mount with security change")
-Signed-off-by: Dai Ngo <dai.ngo@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Reviewed-by: Bruce Fields <bfields@fieldses.org>
+Fixes: 02e792fbaadb ("drm/i915: implement drmmode overlay support v4")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220124122409.GA31673@kili
+(cherry picked from commit cf5b64f7f10b28bebb9b7c9d25e7aee5cbe43918)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/nfs4state.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/intel_overlay.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/nfsd/nfs4state.c
-+++ b/fs/nfsd/nfs4state.c
-@@ -3423,8 +3423,10 @@ nfsd4_setclientid_confirm(struct svc_rqs
- 			status = nfserr_clid_inuse;
- 			if (client_has_state(old)
- 					&& !same_creds(&unconf->cl_cred,
--							&old->cl_cred))
-+							&old->cl_cred)) {
-+				old = NULL;
- 				goto out;
-+			}
- 			status = mark_client_expired_locked(old);
- 			if (status) {
- 				old = NULL;
+--- a/drivers/gpu/drm/i915/intel_overlay.c
++++ b/drivers/gpu/drm/i915/intel_overlay.c
+@@ -965,6 +965,9 @@ static int check_overlay_dst(struct inte
+ 	const struct intel_crtc_state *pipe_config =
+ 		overlay->crtc->config;
+ 
++	if (rec->dst_height == 0 || rec->dst_width == 0)
++		return -EINVAL;
++
+ 	if (rec->dst_x < pipe_config->pipe_src_w &&
+ 	    rec->dst_x + rec->dst_width <= pipe_config->pipe_src_w &&
+ 	    rec->dst_y < pipe_config->pipe_src_h &&
 
 
