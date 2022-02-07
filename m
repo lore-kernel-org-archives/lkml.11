@@ -2,152 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6DEC35276
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D35C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389834AbiBGQat (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:30:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
+        id S239664AbiBGQmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:42:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244795AbiBGQ2Y (ORCPT
+        with ESMTP id S1390521AbiBGQfA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:28:24 -0500
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C164BC0401DC;
-        Mon,  7 Feb 2022 08:28:22 -0800 (PST)
-Received: by mail-qt1-x82a.google.com with SMTP id o3so12290991qtm.12;
-        Mon, 07 Feb 2022 08:28:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xjuYbPqGlUU+uIXv13zUv8IJB7OPzzTg6ohYTp3I1lU=;
-        b=IU3HAqftGzdEiHLQ5P3E0wX8ENgnTWKRN+2SAH5KdWQHa5um85ch2zDilFcHkt6olY
-         uVg+a+2brsJewG6N0oIibftvqH13FjygO6/WXAQIwfdE+5hqV/FDwt3XSQUUUHhHDKgz
-         wGlyn9KJxmxaBfNtlVTbHNgyMwmljNL1iJ7CB6eOAPTh5XZoYKUk18i9Qt7N1Tv6hLQw
-         jt7mWG+YNV5CT7VLzkAxiIeAM14IHhaxOJd1hMZon2LpYLfoyLLTqRQQ2FBKA/faoPca
-         U/dGpcspb1MZGoGmxSYxeLuEonVuw4QI1i3aZMOrdxsKwq6YcLDPJY/UEGcmv71Nv+TF
-         aJkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xjuYbPqGlUU+uIXv13zUv8IJB7OPzzTg6ohYTp3I1lU=;
-        b=c5T1TZ74NzY4koLR7ZYMSeDWh0MajACw4LjNNvBhwo9bEVvJJtzi3Xq0DzkkKfI4Lv
-         5va99ATQvtB3daefXxgARL4TD4qph9P55daebpl6yx7g8Wd2HslQR0Q0P5RvI6KahI79
-         hLGyLCnrwA9Vdi0zhh4Qc1T5s9M7ik8u7ONy8qbE8XsfswONIqi9ASoEuuXD/OWD+3/B
-         vPO0qaVwiWPPVOlPdqis1J2KA/l9jL+qnSeqTO8ESmkWIsQHYVX6PjU0qe2lBrFDGgw4
-         geYfEZBEXChypmVGK+S47F3jy6w/g7ik+KuVYibm6CP34M5VtGwBRxavfoVj2pbqPNYz
-         7F7w==
-X-Gm-Message-State: AOAM531n7EgF/wqWevPwNb4wDznNcVlUNNh89a5SzkLzxwhHF0raJbIV
-        MFF3Y9ORmGh6fopxVCPby2U=
-X-Google-Smtp-Source: ABdhPJwX1a1/fFvnULl6HaYsf119iOikOAO7Z7I1JhSJceT872zBsey2kuDqr/eSFqF5a3bgKRPLyA==
-X-Received: by 2002:ac8:7f48:: with SMTP id g8mr199849qtk.622.1644251301886;
-        Mon, 07 Feb 2022 08:28:21 -0800 (PST)
-Received: from localhost.localdomain (c-67-187-90-124.hsd1.ky.comcast.net. [67.187.90.124])
-        by smtp.gmail.com with ESMTPSA id w3sm6175253qta.13.2022.02.07.08.28.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 08:28:21 -0800 (PST)
-From:   frowand.list@gmail.com
-To:     Jonathan Corbet <corbet@lwn.net>, David Gow <davidgow@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Kees Cook <keescook@chromium.org>, Rae Moar <rmoar@google.com>,
-        Tim.Bird@sony.com, Brendan Higgins <brendanhiggins@google.com>
-Cc:     rmr167@gmail.com, guillaume.tucker@collabora.com,
-        dlatypov@google.com, kernelci@groups.io,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/1] Documentation: dev-tools: clarify KTAP specification wording
-Date:   Mon,  7 Feb 2022 10:28:13 -0600
-Message-Id: <20220207162813.3091899-1-frowand.list@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 7 Feb 2022 11:35:00 -0500
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8C75C0401E4
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:34:53 -0800 (PST)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOgET014428;
+        Mon, 7 Feb 2022 17:24:42 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        Willy Tarreau <w@1wt.eu>
+Subject: [PATCH 42/42] tools/nolibc/stdlib: implement abort()
+Date:   Mon,  7 Feb 2022 17:23:54 +0100
+Message-Id: <20220207162354.14293-43-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
+In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
+References: <20220207162354.14293-1-w@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Rowand <frank.rowand@sony.com>
+libgcc uses it for certain divide functions, so it must be exported. Like
+for memset() we do that in its own section so that the linker can strip
+it when not needed.
 
-Add the spec version to the title line.
-
-Explain likely source of "Unknown lines".
-
-"Unknown lines" in nested tests are optionally indented.
-
-Add "Unknown lines" items to differences between TAP & KTAP list
-
-Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
+ tools/include/nolibc/stdlib.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Changes since version 1
-  - Explain likely source of "Unknown lines"
-  - "Unknown line" in nested tests are optionally indented
-  - Add "Unknown lines" items to differences between TAP & KTAP list
-
- Documentation/dev-tools/ktap.rst | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
-
-diff --git a/Documentation/dev-tools/ktap.rst b/Documentation/dev-tools/ktap.rst
-index 878530cb9c27..9c40c94d3f12 100644
---- a/Documentation/dev-tools/ktap.rst
-+++ b/Documentation/dev-tools/ktap.rst
-@@ -1,8 +1,8 @@
- .. SPDX-License-Identifier: GPL-2.0
+diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
+index b46bebd48ba2..733105c574ee 100644
+--- a/tools/include/nolibc/stdlib.h
++++ b/tools/include/nolibc/stdlib.h
+@@ -23,6 +23,14 @@ static __attribute__((unused)) char itoa_buffer[21];
+  * As much as possible, please keep functions alphabetically sorted.
+  */
  
--========================================
--The Kernel Test Anything Protocol (KTAP)
--========================================
-+===================================================
-+The Kernel Test Anything Protocol (KTAP), version 1
-+===================================================
- 
- TAP, or the Test Anything Protocol is a format for specifying test results used
- by a number of projects. It's website and specification are found at this `link
-@@ -174,6 +174,13 @@ There may be lines within KTAP output that do not follow the format of one of
- the four formats for lines described above. This is allowed, however, they will
- not influence the status of the tests.
- 
-+This is an important difference from TAP.  Kernel tests may print messages
-+to the system console or a log file.  Both of these destinations may contain
-+messages either from unrelated kernel or userspace activity, or kernel
-+messages from non-test code that is invoked by the test.  The kernel code
-+invoked by the test likely is not aware that a test is in progress and
-+thus can not print the message as a diagnostic message.
++/* must be exported, as it's used by libgcc for various divide functions */
++__attribute__((weak,unused,noreturn,section(".text.nolibc_abort")))
++void abort(void)
++{
++	sys_kill(sys_getpid(), SIGABRT);
++	for (;;);
++}
 +
- Nested tests
- ------------
- 
-@@ -186,10 +193,13 @@ starting with another KTAP version line and test plan, and end with the overall
- result. If one of the subtests fail, for example, the parent test should also
- fail.
- 
--Additionally, all result lines in a subtest should be indented. One level of
-+Additionally, all lines in a subtest should be indented. One level of
- indentation is two spaces: "  ". The indentation should begin at the version
- line and should end before the parent test's result line.
- 
-+"Unknown lines" are not considered to be lines in a subtest and thus are
-+allowed to be either indented or not indented.
-+
- An example of a test with two nested subtests:
- 
- .. code-block::
-@@ -225,9 +235,11 @@ Major differences between TAP and KTAP
- --------------------------------------
- 
- Note the major differences between the TAP and KTAP specification:
--- yaml and json are not recommended in diagnostic messages
--- TODO directive not recognized
-+- yaml and json are not recommended in KTAP diagnostic messages
-+- TODO directive not recognized in KTAP
- - KTAP allows for an arbitrary number of tests to be nested
-+- TAP includes "Unknown lines" in the category of "Anything else"
-+- TAP says "Unknown lines" are "incorrect; KTAP allows "Unknown lines"
- 
- The TAP14 specification does permit nested tests, but instead of using another
- nested version line, uses a line of the form
+ static __attribute__((unused))
+ long atol(const char *s)
+ {
 -- 
-Frank Rowand <frank.rowand@sony.com>
+2.35.1
 
