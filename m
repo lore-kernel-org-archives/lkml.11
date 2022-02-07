@@ -2,87 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 507E3C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 836F8C35276
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237919AbiBGFuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:50:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
+        id S238266AbiBGFuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352002AbiBGEmt (ORCPT
+        with ESMTP id S1352072AbiBGEsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:42:49 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA3CC043181
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 20:42:48 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id i5so15798196oih.1
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 20:42:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9B7hEs0KWcQeTdm4T9H3BJwl4p0pXjpU9Q2BlklK5nw=;
-        b=ogHtHZj5pYia9KG+9lnOx+hJUMVnASvfP2FaPZEG2F1hARL0ApwxjQ9fYXzFhdXe+w
-         34eaBy8AGjbXUWPk7izMMi5b6gTWfr4/dJxp5rzqd/3maLLnmDXsUoEtgi/Bv67F3/E4
-         qA68/1GFCvE5S9vQNq+E+noZH8k3MDZLsn+nXeprmVzS0tXxi3Ft1zSb/GRJa/SiYMyX
-         BlEqtHX7AbkvcmLfkvrliCn039B9Q4pXQ+FAzMiDWx8TLD5H7rPZ3f3b6PlHcj6CctNP
-         gQbUbYO8QNa+VUU2ar6zZrlQ0R3tcFTG1z8P7IkYaHPoGSn52swUTZCKEr/MSGEOVG7Q
-         9OEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9B7hEs0KWcQeTdm4T9H3BJwl4p0pXjpU9Q2BlklK5nw=;
-        b=QotZ0IRB8vOQ2cROYfq3oqhzxVIFvdvMooT0cgvlwVSO7xym7IWNSCYvKaGtLsNanS
-         PpgwkAHaQp0ZtTLltc07MRcLgew/lryF+HfXtTJlC4Q1pOLvUvwoW1iKEKHVfgolgdXQ
-         gxdgW+OoXEqGDF0/dckNCa9CAA5JmQsIb32fTAtZTPFVCBpqExafogXGVPsRRSBJ03cG
-         wlLLedqg40ZycsRUN2oUgnN52IEUf04WMEon6IW+3YWTtgIqFfENruABYlDg19MkGdeS
-         BoykKbd9iINYzjIvLUFheioKUNgqGK1fGTfPKRbpyyGViVGKNbqjEBkHwThvBOvOuEVq
-         o05g==
-X-Gm-Message-State: AOAM533vkZvTJsHmAY0SuPaPcWLsnFUNzqazsAMljRGoCgxSGXHM1Z2c
-        CFP1VaQGz8IUUct+qut+5sY=
-X-Google-Smtp-Source: ABdhPJxu2M2k7b/YsVOzH6NSYTjv7KOW6x56V4qPUAjyREt2tF9FM+ULRbOweDMT/chJW/bYqeQsiA==
-X-Received: by 2002:a05:6808:2188:: with SMTP id be8mr4597474oib.63.1644208967876;
-        Sun, 06 Feb 2022 20:42:47 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:4cd8:12bf:4134:806a:5a4a:2a88])
-        by smtp.gmail.com with ESMTPSA id f21sm3515752otq.4.2022.02.06.20.42.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 20:42:47 -0800 (PST)
-From:   Leonardo Araujo <leonardo.aa88@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        sparmaintainer@unisys.com,
-        Leonardo Araujo <leonardo.aa88@gmail.com>
-Subject: [PATCH] Staging: unisys: visorhba: alignment should match open parenthesis
-Date:   Mon,  7 Feb 2022 01:42:30 -0300
-Message-Id: <20220207044230.19918-1-leonardo.aa88@gmail.com>
-X-Mailer: git-send-email 2.29.0
+        Sun, 6 Feb 2022 23:48:15 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22607C043181;
+        Sun,  6 Feb 2022 20:48:14 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D2BA6210E8;
+        Mon,  7 Feb 2022 04:48:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644209292; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ViWGm/depDGf235ykZcrvlwHPhzYZ1IOzNywgeuJlCs=;
+        b=dEj/ZECgQzPmVNNwNtLhRwIK+t+7MZfIgofMU57KXuIxPsebs5TmJ+yBisbfSkJ1Lthv13
+        WGxGwr5R4TqIlYYAhIz1CsdYyp+aE9q3/2eQvTm0XbIF4xjDADjB0h2337rxl00eMcgeg/
+        EywU58RZdtc7KMmvbgUOuYuHFQJUK2Q=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644209292;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ViWGm/depDGf235ykZcrvlwHPhzYZ1IOzNywgeuJlCs=;
+        b=LB4uxgey7EDf4HC0h1f45bTAwNW+UouWDbatH0XJLCUd1qURVb63ibV21W/iR7wynleyiL
+        nIOTeQVWLnjvIqCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F0D7B1330E;
+        Mon,  7 Feb 2022 04:48:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id O2hbK4mkAGJiNQAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:48:09 +0000
+Subject: [PATCH 12/21] SUNRPC/call_alloc: async tasks mustn't block waiting
+ for memory
+From:   NeilBrown <neilb@suse.de>
+To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Hemment <markhemm@googlemail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        David Howells <dhowells@redhat.com>
+Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 07 Feb 2022 15:46:01 +1100
+Message-ID: <164420916119.29374.4983888648335050333.stgit@noble.brown>
+In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixed a coding style issue.
+When memory is short, new worker threads cannot be created and we depend
+on the minimum one rpciod thread to be able to handle everything.
+So it must not block waiting for memory.
 
-Signed-off-by: Leonardo Araujo <leonardo.aa88@gmail.com>
+mempools are particularly a problem as memory can only be released back
+to the mempool by an async rpc task running.  If all available
+workqueue threads are waiting on the mempool, no thread is available to
+return anything.
+
+rpc_malloc() can block, and this might cause deadlocks.
+So check RPC_IS_ASYNC(), rather than RPC_IS_SWAPPER() to determine if
+blocking is acceptable.
+
+Signed-off-by: NeilBrown <neilb@suse.de>
 ---
- drivers/staging/unisys/visorhba/visorhba_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sunrpc/sched.c              |    4 +++-
+ net/sunrpc/xprtrdma/transport.c |    4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/unisys/visorhba/visorhba_main.c b/drivers/staging/unisys/visorhba/visorhba_main.c
-index 8eee131e834d..48aa18f8b984 100644
---- a/drivers/staging/unisys/visorhba/visorhba_main.c
-+++ b/drivers/staging/unisys/visorhba/visorhba_main.c
-@@ -192,7 +192,7 @@ static struct uiscmdrsp *get_scsipending_cmdrsp(struct visorhba_devdata *ddata,
-  * @result:   The location to place the result of the event handle into
-  */
- static int setup_scsitaskmgmt_handles(struct xarray *xa, struct uiscmdrsp *cmdrsp,
--				       wait_queue_head_t *event, int *result)
-+				      wait_queue_head_t *event, int *result)
- {
- 	int ret;
- 	u32 id;
--- 
-2.29.0
+diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
+index e2c835482791..d5b6e897f5a5 100644
+--- a/net/sunrpc/sched.c
++++ b/net/sunrpc/sched.c
+@@ -1023,8 +1023,10 @@ int rpc_malloc(struct rpc_task *task)
+ 	struct rpc_buffer *buf;
+ 	gfp_t gfp = GFP_NOFS;
+ 
++	if (RPC_IS_ASYNC(task))
++		gfp = GFP_NOWAIT | __GFP_NOWARN;
+ 	if (RPC_IS_SWAPPER(task))
+-		gfp = __GFP_MEMALLOC | GFP_NOWAIT | __GFP_NOWARN;
++		gfp |= __GFP_MEMALLOC;
+ 
+ 	size += sizeof(struct rpc_buffer);
+ 	if (size <= RPC_BUFFER_MAXSIZE)
+diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
+index 42e375dbdadb..5714bf880e95 100644
+--- a/net/sunrpc/xprtrdma/transport.c
++++ b/net/sunrpc/xprtrdma/transport.c
+@@ -570,8 +570,10 @@ xprt_rdma_allocate(struct rpc_task *task)
+ 	gfp_t flags;
+ 
+ 	flags = RPCRDMA_DEF_GFP;
++	if (RPC_IS_ASYNC(task))
++		flags = GFP_NOWAIT | __GFP_NOWARN;
+ 	if (RPC_IS_SWAPPER(task))
+-		flags = __GFP_MEMALLOC | GFP_NOWAIT | __GFP_NOWARN;
++		flags |= __GFP_MEMALLOC;
+ 
+ 	if (!rpcrdma_check_regbuf(r_xprt, req->rl_sendbuf, rqst->rq_callsize,
+ 				  flags))
+
 
