@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C62C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D60C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389528AbiBGLt6 (ORCPT
+        id S1389516AbiBGLtu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:49:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
+        Mon, 7 Feb 2022 06:49:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377058AbiBGLf2 (ORCPT
+        with ESMTP id S1386696AbiBGLfZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:35:28 -0500
+        Mon, 7 Feb 2022 06:35:25 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8465CC043188;
-        Mon,  7 Feb 2022 03:35:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F07C043188;
+        Mon,  7 Feb 2022 03:35:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2276360DBF;
-        Mon,  7 Feb 2022 11:35:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03BB3C004E1;
-        Mon,  7 Feb 2022 11:35:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 189E360180;
+        Mon,  7 Feb 2022 11:35:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56BEC004E1;
+        Mon,  7 Feb 2022 11:35:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233726;
-        bh=+nRe8g/tE2F5FU0y+dnQVbMd4p5XFCbxsci5pHSsjd4=;
+        s=korg; t=1644233723;
+        bh=FaEL32L8jTCbwx8zIa5szTEouuCoK0lO5+KhZu49YAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SLTGvaF2+Ia63l5vsb5kLATfzRw1NAGbj2MDCGwUH1QMnOsO1UKjvPVKQ3shoTj8q
-         vvoyKVZ7sGPgZZ2H3V1Bf2oYEmAH1xgoDWELVARoyZr2aI9Z4LOfsoTspeKxvhOXcY
-         uJ05GFa1WcrZboBrip/s6UQaP9vihZusdzHmwzRw=
+        b=1/krfcy1K2hqBrDEZ5O75BE8zWMFiSWf7yB/ip/zYBnJImyk+O80tnwX5tFFMWrJY
+         NeG9BjqQMq2Bc1gG1YhOB8RxQhtfAVxbN7xMf7r2NHYsUBB36atMcpmwws1KbZGVaQ
+         YPjZZwaq+nm+jrerNBhZIAXkC6btzJp/SJ8tOZWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH 5.16 102/126] selftests/exec: Remove pipe from TEST_GEN_FILES
-Date:   Mon,  7 Feb 2022 12:07:13 +0100
-Message-Id: <20220207103807.598278314@linuxfoundation.org>
+        syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com,
+        Hou Tao <houtao1@huawei.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: [PATCH 5.16 101/126] bpf: Use VM_MAP instead of VM_ALLOC for ringbuf
+Date:   Mon,  7 Feb 2022 12:07:12 +0100
+Message-Id: <20220207103807.566411893@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,41 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+From: Hou Tao <hotforest@gmail.com>
 
-commit 908a26e139e8cf21093acc56d8e90ddad2ad1eff upstream.
+commit b293dcc473d22a62dc6d78de2b15e4f49515db56 upstream.
 
-pipe named FIFO special file is being created in execveat.c to perform
-some tests. Makefile doesn't need to do anything with the pipe. When it
-isn't found, Makefile generates the following build error:
+After commit 2fd3fb0be1d1 ("kasan, vmalloc: unpoison VM_ALLOC pages
+after mapping"), non-VM_ALLOC mappings will be marked as accessible
+in __get_vm_area_node() when KASAN is enabled. But now the flag for
+ringbuf area is VM_ALLOC, so KASAN will complain out-of-bound access
+after vmap() returns. Because the ringbuf area is created by mapping
+allocated pages, so use VM_MAP instead.
 
-make: *** No rule to make target
-'../tools/testing/selftests/exec/pipe', needed by 'all'.  Stop.
+After the change, info in /proc/vmallocinfo also changes from
+  [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmalloc user
+to
+  [start]-[end]   24576 ringbuf_map_alloc+0x171/0x290 vmap user
 
-pipe is created and removed during test run-time.
-
-Amended change log to add pipe remove info:
-Shuah Khan <skhan@linuxfoundation.org>
-
-Fixes: 61016db15b8e ("selftests/exec: Verify execve of non-regular files fail")
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it")
+Reported-by: syzbot+5ad567a418794b9b5983@syzkaller.appspotmail.com
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220202060158.6260-1-houtao1@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/exec/Makefile |    2 +-
+ kernel/bpf/ringbuf.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/testing/selftests/exec/Makefile
-+++ b/tools/testing/selftests/exec/Makefile
-@@ -5,7 +5,7 @@ CFLAGS += -D_GNU_SOURCE
+--- a/kernel/bpf/ringbuf.c
++++ b/kernel/bpf/ringbuf.c
+@@ -104,7 +104,7 @@ static struct bpf_ringbuf *bpf_ringbuf_a
+ 	}
  
- TEST_PROGS := binfmt_script non-regular
- TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216
--TEST_GEN_FILES := execveat.symlink execveat.denatured script subdir pipe
-+TEST_GEN_FILES := execveat.symlink execveat.denatured script subdir
- # Makefile is a run-time dependency, since it's accessed by the execveat test
- TEST_FILES := Makefile
- 
+ 	rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
+-		  VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
++		  VM_MAP | VM_USERMAP, PAGE_KERNEL);
+ 	if (rb) {
+ 		kmemleak_not_leak(pages);
+ 		rb->pages = pages;
 
 
