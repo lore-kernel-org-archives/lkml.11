@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38164C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E736C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388422AbiBGLnl (ORCPT
+        id S1388536AbiBGLny (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45042 "EHLO
+        Mon, 7 Feb 2022 06:43:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385490AbiBGLbz (ORCPT
+        with ESMTP id S1385786AbiBGLcf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:55 -0500
+        Mon, 7 Feb 2022 06:32:35 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55260C03E952;
-        Mon,  7 Feb 2022 03:30:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C24C043188;
+        Mon,  7 Feb 2022 03:32:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9F346077B;
-        Mon,  7 Feb 2022 11:30:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE2DC004E1;
-        Mon,  7 Feb 2022 11:30:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D870960B20;
+        Mon,  7 Feb 2022 11:32:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDF29C004E1;
+        Mon,  7 Feb 2022 11:32:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233433;
-        bh=5OlD3dhXOCojKO3N7H+U3aupk719bOzjvga7rhxB4wA=;
+        s=korg; t=1644233554;
+        bh=c1+xPpj9w6ih7bgu3DWcQoQVtxFuv7Z/aEH2fqPUAlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQlkwCeQH2nm+ActBsIL3oOEctHfOKCEpl504jYoNdbarnRLpTWZxBdPHJnsVzJbg
-         Bn8zQWCzoTXvsJy/DbgKvojJvFvxybGsW86rexdbHrEnh+Khdw/ItsIKF42DCF4Dcs
-         eUimsYSBk51YU72ZgbkX/2hNMUUs/MU9aPS5e58g=
+        b=Wuy6jr3/sYTq5hdluXS7r3O7xi2F1+qaAabUoG5eqh+A1bu7938fHhh0WZ6kHNHU4
+         /gcLCB9FH9hK4Vum7sCl62jjhpmrOCDEoOrthUWR0+qaLMh+i0fDGEP6vDMKNXwbdo
+         sGjAyIpT9YxPr3kq4Ext9+KiqEUs67fNjOe2gIpU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Sergeyev <sergeev917@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 011/126] ALSA: hda: Fix UAF of leds class devs at unbinding
-Date:   Mon,  7 Feb 2022 12:05:42 +0100
-Message-Id: <20220207103804.452290450@linuxfoundation.org>
+        stable@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.16 048/126] RDMA/cma: Use correct address when leaving multicast group
+Date:   Mon,  7 Feb 2022 12:06:19 +0100
+Message-Id: <20220207103805.779925636@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -49,86 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Maor Gottlieb <maorg@nvidia.com>
 
-commit 549f8ffc7b2f7561bea7f90930b6c5104318e87b upstream.
+commit d9e410ebbed9d091b97bdf45b8a3792e2878dc48 upstream.
 
-The LED class devices that are created by HD-audio codec drivers are
-registered via devm_led_classdev_register() and associated with the
-HD-audio codec device.  Unfortunately, it turned out that the devres
-release doesn't work for this case; namely, since the codec resource
-release happens before the devm call chain, it triggers a NULL
-dereference or a UAF for a stale set_brightness_delay callback.
+In RoCE we should use cma_iboe_set_mgid() and not cma_set_mgid to generate
+the mgid, otherwise we will generate an IGMP for an incorrect address.
 
-For fixing the bug, this patch changes the LED class device register
-and unregister in a manual manner without devres, keeping the
-instances in hda_gen_spec.
-
-Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220111195229.a77wrpjclqwrx4bx@localhost.localdomain
-Link: https://lore.kernel.org/r/20220126145011.16728-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: b5de0c60cc30 ("RDMA/cma: Fix use after free race in roce multicast join")
+Link: https://lore.kernel.org/r/913bc6783fd7a95fe71ad9454e01653ee6fb4a9a.1642491047.git.leonro@nvidia.com
+Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/hda_generic.c |   17 +++++++++++++++--
- sound/pci/hda/hda_generic.h |    3 +++
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ drivers/infiniband/core/cma.c |   22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
---- a/sound/pci/hda/hda_generic.c
-+++ b/sound/pci/hda/hda_generic.c
-@@ -91,6 +91,12 @@ static void snd_hda_gen_spec_free(struct
- 	free_kctls(spec);
- 	snd_array_free(&spec->paths);
- 	snd_array_free(&spec->loopback_list);
-+#ifdef CONFIG_SND_HDA_GENERIC_LEDS
-+	if (spec->led_cdevs[LED_AUDIO_MUTE])
-+		led_classdev_unregister(spec->led_cdevs[LED_AUDIO_MUTE]);
-+	if (spec->led_cdevs[LED_AUDIO_MICMUTE])
-+		led_classdev_unregister(spec->led_cdevs[LED_AUDIO_MICMUTE]);
-+#endif
- }
- 
- /*
-@@ -3922,7 +3928,10 @@ static int create_mute_led_cdev(struct h
- 						enum led_brightness),
- 				bool micmute)
- {
-+	struct hda_gen_spec *spec = codec->spec;
- 	struct led_classdev *cdev;
-+	int idx = micmute ? LED_AUDIO_MICMUTE : LED_AUDIO_MUTE;
-+	int err;
- 
- 	cdev = devm_kzalloc(&codec->core.dev, sizeof(*cdev), GFP_KERNEL);
- 	if (!cdev)
-@@ -3932,10 +3941,14 @@ static int create_mute_led_cdev(struct h
- 	cdev->max_brightness = 1;
- 	cdev->default_trigger = micmute ? "audio-micmute" : "audio-mute";
- 	cdev->brightness_set_blocking = callback;
--	cdev->brightness = ledtrig_audio_get(micmute ? LED_AUDIO_MICMUTE : LED_AUDIO_MUTE);
-+	cdev->brightness = ledtrig_audio_get(idx);
- 	cdev->flags = LED_CORE_SUSPENDRESUME;
- 
--	return devm_led_classdev_register(&codec->core.dev, cdev);
-+	err = led_classdev_register(&codec->core.dev, cdev);
-+	if (err < 0)
-+		return err;
-+	spec->led_cdevs[idx] = cdev;
-+	return 0;
- }
- 
- /**
---- a/sound/pci/hda/hda_generic.h
-+++ b/sound/pci/hda/hda_generic.h
-@@ -294,6 +294,9 @@ struct hda_gen_spec {
- 				   struct hda_jack_callback *cb);
- 	void (*mic_autoswitch_hook)(struct hda_codec *codec,
- 				    struct hda_jack_callback *cb);
-+
-+	/* leds */
-+	struct led_classdev *led_cdevs[NUM_AUDIO_LEDS];
+--- a/drivers/infiniband/core/cma.c
++++ b/drivers/infiniband/core/cma.c
+@@ -67,8 +67,8 @@ static const char * const cma_events[] =
+ 	[RDMA_CM_EVENT_TIMEWAIT_EXIT]	 = "timewait exit",
  };
  
- /* values for add_stereo_mix_input flag */
+-static void cma_set_mgid(struct rdma_id_private *id_priv, struct sockaddr *addr,
+-			 union ib_gid *mgid);
++static void cma_iboe_set_mgid(struct sockaddr *addr, union ib_gid *mgid,
++			      enum ib_gid_type gid_type);
+ 
+ const char *__attribute_const__ rdma_event_msg(enum rdma_cm_event_type event)
+ {
+@@ -1846,17 +1846,19 @@ static void destroy_mc(struct rdma_id_pr
+ 		if (dev_addr->bound_dev_if)
+ 			ndev = dev_get_by_index(dev_addr->net,
+ 						dev_addr->bound_dev_if);
+-		if (ndev) {
++		if (ndev && !send_only) {
++			enum ib_gid_type gid_type;
+ 			union ib_gid mgid;
+ 
+-			cma_set_mgid(id_priv, (struct sockaddr *)&mc->addr,
+-				     &mgid);
+-
+-			if (!send_only)
+-				cma_igmp_send(ndev, &mgid, false);
+-
+-			dev_put(ndev);
++			gid_type = id_priv->cma_dev->default_gid_type
++					   [id_priv->id.port_num -
++					    rdma_start_port(
++						    id_priv->cma_dev->device)];
++			cma_iboe_set_mgid((struct sockaddr *)&mc->addr, &mgid,
++					  gid_type);
++			cma_igmp_send(ndev, &mgid, false);
+ 		}
++		dev_put(ndev);
+ 
+ 		cancel_work_sync(&mc->iboe_join.work);
+ 	}
 
 
