@@ -2,124 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 947DEC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D99ACC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344147AbiBGIQr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:16:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52908 "EHLO
+        id S236729AbiBGISB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:18:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241772AbiBGIPA (ORCPT
+        with ESMTP id S243699AbiBGIP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:15:00 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930A9C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 00:14:58 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id y6-20020a7bc186000000b0037bdc5a531eso64006wmi.0
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 00:14:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=fczIWa54IaZDc4T1CWGAuqTrmTb2eOKwrkRnh84PvKY=;
-        b=7DQlnj++q+oWqpt0+suM56O/9jbGYLBVZ9uG389OK4Z14l6csp4EzWcanXR+trSHGW
-         B4WZ7GlfBYkC0hu3irlq/aSadsOLk581sk427DrgitunJVRUx9upQNOsS3nFBmAWK1kH
-         LRVNTpYViSIHQ7FUdCntexsSOnZPguuYS3ycpDA83CPjHHh863fgGnlFIt5Czll35dXT
-         y5CA/S6q00nfwTA6cYjeNRPqS6ubRF1hOkXM/5nY+6gNdE8uxAeBYJlQ7rY5Lb0Wab2w
-         81hcBoCIeiSvq5WMBaPebyRazK2K0x9Q1zI6oNCBvaJ1eXCBHZhg/GnbnpiIUTvW/JmO
-         UbMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=fczIWa54IaZDc4T1CWGAuqTrmTb2eOKwrkRnh84PvKY=;
-        b=F+9gehg0hFSVYoDJMvfSR3y/p2xMu020ioXdLu5CcTmsWnXX2t3BKbwzavpnMi70hb
-         mGCYSoMV87WtfVV2xRBSENw/Hpw7I2sbi418xfuCpro6hyVsgrWUbSiLuFvO0/TSgrxg
-         oMoZBqfaLgr21+59JIRopaMJRD4DrS/3cEx8pGXBU4eWbcXtJKgDBD+4DbjiAkSO8F0N
-         9ZrJIC36JqICTxrAzt8ib4o12brBHfp/CcFCWsp0ArOpn3IR9KIgNw0wOfegThUOCmE+
-         M83oIBti+a53Fn9uBUGmJsT1VBYPT1NHf8CvWnqm2IXGSk3CuKxZ83iCS0lM4g6VcQEX
-         i0Uw==
-X-Gm-Message-State: AOAM532IXk0TokNRByVfaNWZTwXtBYDsOxo5rFKYFvV+u5ZosJV6gK+i
-        ZEwEOTM38u7uzif9smVCFPrhgA==
-X-Google-Smtp-Source: ABdhPJyp3Dsj/2D1xPD5Qeeh8DKBvGDfrGuqnqvdGnd5qSAnPA2vA2jzi7lVA+gJhKbpWfAEfBP4Ow==
-X-Received: by 2002:a05:600c:34c6:: with SMTP id d6mr13602354wmq.103.1644221697111;
-        Mon, 07 Feb 2022 00:14:57 -0800 (PST)
-Received: from ?IPV6:2001:861:44c0:66c0:b2bb:1b67:73da:334d? ([2001:861:44c0:66c0:b2bb:1b67:73da:334d])
-        by smtp.gmail.com with ESMTPSA id u19sm8286068wmm.39.2022.02.07.00.14.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 00:14:56 -0800 (PST)
-Message-ID: <42c51f9d-d122-2d09-cdcd-f733cbc60d5b@baylibre.com>
-Date:   Mon, 7 Feb 2022 09:14:59 +0100
+        Mon, 7 Feb 2022 03:15:29 -0500
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F283AC043185;
+        Mon,  7 Feb 2022 00:15:27 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V3nfmXb_1644221724;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V3nfmXb_1644221724)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 07 Feb 2022 16:15:24 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     damien.lemoal@opensource.wdc.com, jejb@linux.ibm.com
+Cc:     jinpu.wang@cloud.ionos.com, martin.petersen@oracle.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next v2] scsi: pm8001: clean up some inconsistent indenting
+Date:   Mon,  7 Feb 2022 16:15:22 +0800
+Message-Id: <20220207081522.12111-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] add pmu to amlogic meson sm1
-Content-Language: en-US
-To:     Benjamin Mordaunt <crawford.benjamin15@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220205234554.4403-1-crawford.benjamin15@gmail.com>
- <20220206144343.2194-1-crawford.benjamin15@gmail.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220206144343.2194-1-crawford.benjamin15@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Eliminate the follow smatch warning:
+drivers/scsi/pm8001/pm8001_ctl.c:760 pm8001_update_flash() warn:
+inconsistent indenting
 
-On 06/02/2022 15:43, Benjamin Mordaunt wrote:
-> ---
-> The dts for meson sm1 appears to omit the SoC's PMU,
-> which is essential for accessing perf events regarding
-> e.g. cache on e.g. the Odroid C4 platform. Add it.
-> 
->   arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 13 ++++++++++++-
->   1 file changed, 12 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-> index 3d8b1f4f2..4147eecd2 100644
-> --- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-> +++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-> @@ -6,6 +6,8 @@
->   
->   #include "meson-g12-common.dtsi"
->   #include <dt-bindings/clock/axg-audio-clkc.h>
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
->   #include <dt-bindings/power/meson-sm1-power.h>
->   #include <dt-bindings/reset/amlogic,meson-axg-audio-arb.h>
->   #include <dt-bindings/reset/amlogic,meson-g12a-audio-reset.h>
-> @@ -90,7 +92,16 @@ l2: l2-cache0 {
->   			compatible = "cache";
->   		};
->   	};
-> -
-> +	
-> +	arm-pmu {
-> +		compatible = "arm,cortex-a55-pmu";
-> +		interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>,
-> +			     <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>,
-> +			     <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>,
-> +			     <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
-> +		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
-> +	};
-> +	
->   	cpu_opp_table: opp-table {
->   		compatible = "operating-points-v2";
->   		opp-shared;
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
 
-Please see Marc's comments about PMU support:
-http://lore.kernel.org/r/8735pcq63o.wl-maz@kernel.org
+  Changes in v2:
+--According to Damien's suggestion
+  1) Start multi-line comments with a line that has only "/*".
+  2) Align the conditions together to make this code more readable.
+  3) Using a local variable for value which is calculated too many times.
 
-Neil
+ drivers/scsi/pm8001/pm8001_ctl.c | 61 ++++++++++++++++----------------
+ 1 file changed, 31 insertions(+), 30 deletions(-)
+
+diff --git a/drivers/scsi/pm8001/pm8001_ctl.c b/drivers/scsi/pm8001/pm8001_ctl.c
+index 41a63c9b719b..0d9533ba8d27 100644
+--- a/drivers/scsi/pm8001/pm8001_ctl.c
++++ b/drivers/scsi/pm8001/pm8001_ctl.c
+@@ -727,6 +727,8 @@ static int pm8001_update_flash(struct pm8001_hba_info *pm8001_ha)
+ 	u32		sizeRead = 0;
+ 	u32		ret = 0;
+ 	u32		length = 1024 * 16 + sizeof(*payload) - 1;
++	u32		fc_len = 0;
++	u8		*read_buf;
+ 
+ 	if (pm8001_ha->fw_image->size < 28) {
+ 		pm8001_ha->fw_status = FAIL_FILE_SIZE;
+@@ -755,36 +757,35 @@ static int pm8001_update_flash(struct pm8001_hba_info *pm8001_ha)
+ 			fwControl->retcode = 0;/* OUT */
+ 			fwControl->offset = loopNumber * IOCTL_BUF_SIZE;/*OUT */
+ 
+-		/* for the last chunk of data in case file size is not even with
+-		4k, load only the rest*/
+-		if (((loopcount-loopNumber) == 1) &&
+-			((partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE)) {
+-			fwControl->len =
+-				(partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE;
+-			memcpy((u8 *)fwControl->buffer,
+-				(u8 *)pm8001_ha->fw_image->data + sizeRead,
+-				(partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE);
+-			sizeRead +=
+-				(partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE;
+-		} else {
+-			memcpy((u8 *)fwControl->buffer,
+-				(u8 *)pm8001_ha->fw_image->data + sizeRead,
+-				IOCTL_BUF_SIZE);
+-			sizeRead += IOCTL_BUF_SIZE;
+-		}
+-
+-		pm8001_ha->nvmd_completion = &completion;
+-		ret = PM8001_CHIP_DISP->fw_flash_update_req(pm8001_ha, payload);
+-		if (ret) {
+-			pm8001_ha->fw_status = FAIL_OUT_MEMORY;
+-			goto out;
+-		}
+-		wait_for_completion(&completion);
+-		if (fwControl->retcode > FLASH_UPDATE_IN_PROGRESS) {
+-			pm8001_ha->fw_status = fwControl->retcode;
+-			ret = -EFAULT;
+-			goto out;
+-		}
++			/*
++			 * for the last chunk of data in case file size is
++			 * not even with 4k, load only the rest
++			 */
++
++			fc_len = (partitionSize + HEADER_LEN) % IOCTL_BUF_SIZE;
++			read_buf  = (u8 *)pm8001_ha->fw_image->data + sizeRead;
++
++			if (((loopcount-loopNumber) == 1) && fc_len) {
++				fwControl->len = fc_len;
++				memcpy((u8 *)fwControl->buffer, read_buf, fc_len);
++				sizeRead += fc_len;
++			} else {
++				memcpy((u8 *)fwControl->buffer, read_buf, IOCTL_BUF_SIZE);
++				sizeRead += IOCTL_BUF_SIZE;
++			}
++
++			pm8001_ha->nvmd_completion = &completion;
++			ret = PM8001_CHIP_DISP->fw_flash_update_req(pm8001_ha, payload);
++			if (ret) {
++				pm8001_ha->fw_status = FAIL_OUT_MEMORY;
++				goto out;
++			}
++			wait_for_completion(&completion);
++			if (fwControl->retcode > FLASH_UPDATE_IN_PROGRESS) {
++				pm8001_ha->fw_status = fwControl->retcode;
++				ret = -EFAULT;
++				goto out;
++			}
+ 		}
+ 	}
+ out:
+-- 
+2.20.1.7.g153144c
+
