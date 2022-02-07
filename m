@@ -2,89 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8AF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:28:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA510C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236609AbiBGJ1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:27:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55656 "EHLO
+        id S241052AbiBGJ0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 04:26:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344934AbiBGJYh (ORCPT
+        with ESMTP id S241177AbiBGJWm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:24:37 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAE2C043181;
-        Mon,  7 Feb 2022 01:24:36 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id F0CBB5801A4;
-        Mon,  7 Feb 2022 04:24:35 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 07 Feb 2022 04:24:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; bh=iSknFfgihoz9cY
-        jsB49tquH7M9oK6rXonBcNar0/E6w=; b=g06c28B6jZMt5BHIajzts1tMVOsqxC
-        jd9VJqjCvqxWawTL04UEtBO402ejuO2BSppxfhK7mVpZDtWDHwYjSljNfJuEM7Nz
-        ROEPvsrFj/y9Nj+RS6owvposXMs92XTRrEUNTgF7XA7zUxkZ4V9LlUFbA/cne7xE
-        wFknzRrCOYNbooIIefbVEYPmFAiCtEphcDFpcfEqxu6Lb7hAkdidGxczqKui24LF
-        jpYRaCPNqnSJUIfOKutuAwvXw3Rl8NSwLtKu0KxIl/y+HnA5WaPKFRMvoEQMCpCP
-        HEmzcfJTGzKjduBVl+G6D7/lITGlLmm//A1I1YEHxBdOSbmnF7CgYdvA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=iSknFfgihoz9cYjsB49tquH7M9oK6rXonBcNar0/E
-        6w=; b=U1NT+MWLZ02mQOf8kBE+uK6kts+S3hxLpE3s9F/l9KARcbtBnkX24Dze9
-        0nLSgthgM4jwzWQeg2ceeqN98JQmIgTwmAUeN3kuUsLsbC9ytF+8+zIP7aNZcoXr
-        7rdrkMpLbm3lPxGj58ChTfGU1UH+wsAKRu3bJu5+/O3qbRMcK1Nt5xBqyf6tgQay
-        nMbvZ11ZjtA8eTkwk8dMzEdc6Yaa9xcR2+v9Ok52pNSzeL1J1u8GdsdYoY1KyKoH
-        zwrM8UW4grEHLGxcB5p43jwDT6LvU5XlsDI7A3MPGUciSmAmK+cza/GCH49KgNEq
-        F1/H/vKq9TjZOse52afHeqLbTAVKg==
-X-ME-Sender: <xms:U-UAYrtIwQgHFPDLxj7aSE8LhyJCOSMRhFSXzMak2ZkkS38Q2AnZLw>
-    <xme:U-UAYscV_t-YFP4sAMikMj1PTrODEkbNC_71S2rCWe7mt3r8muudddDli-aZnLb-R
-    agRmGjSfcJzjIxCZrs>
-X-ME-Received: <xmr:U-UAYuxnlEN7l3AOzw-FLDOYfanDql-QHmgM4P3C1Vux9JVwKZsIHeCarqW12AnZ0GJR4srNMjFiaTWhrIc7oLhxZeiVFPUbFsIT2PQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheehgddtudcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenog
-    fuohhrthgvugftvggtihhpvdculdegtddmnecujfgurhephffvufffkffojghfgggtgfes
-    thekredtredtjeenucfhrhhomhepofgrgihimhgvucftihhprghrugcuoehmrgigihhmvg
-    estggvrhhnohdrthgvtghhqeenucggtffrrghtthgvrhhnpeejuefggeekfffgueevtddv
-    udffhfejffejjedvvdduudethefhfefhfeegieekkeenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:U-UAYqOzAdYqqOUabPejPK6EimsjHVm5IoKEm3U65YxSM92QgGQXbg>
-    <xmx:U-UAYr-ypdbGSOKY6fGtF9fOWZgG6FvEfpbpe7CtxfgQncI4cD5axA>
-    <xmx:U-UAYqVRHy5_7nEa8vahYdXNkEwxhxcQgzsTDUixHv96wQJzPVVz6w>
-    <xmx:U-UAYmf9k2mUC6x-QrtJd2Lhz-x1iKtyulTQ34erSqwk9rkJCiGSXg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 7 Feb 2022 04:24:34 -0500 (EST)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     linux-sunxi@lists.linux.dev, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        devicetree@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Maxime Ripard <maxime@cerno.tech>, Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Helen Koike <helen.koike@collabora.com>,
-        Yong Deng <yong.deng@magewell.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: Re: (subset) [PATCH v2 01/66] ARM: dts: sun8i: v3s: Move the csi1 block to follow address order
-Date:   Mon,  7 Feb 2022 10:24:31 +0100
-Message-Id: <164422586926.25686.14643523821893289727.b4-ty@cerno.tech>
+        Mon, 7 Feb 2022 04:22:42 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D2DC043188;
+        Mon,  7 Feb 2022 01:22:39 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id s18so23499289wrv.7;
+        Mon, 07 Feb 2022 01:22:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nZXczi6C0VGVtmz89xEAfWTFn3tEw4CtQGzJll0eCx4=;
+        b=C2zZvx93c1YXMt79tE8s8Jb3PihXIjoInyAK1MvgNVVXGccfgn9/SllQZRW1jKrZYF
+         2ho9PDLah+3FbqS4d+l2VEvYjavolvmDhi7cQagujQbESdY84abjGgqJOJ9tRhv2Sje0
+         z76oNUH8LHs6e1CKpGldvwzh1XJdncNUFItMfL39LtF2/mo1DOxg53yamVyv6+Fl/Dxx
+         y10C8NXFT4bhLLwn/aiVMwMGx+Bpx2Wc5xz5KwJ4kv9U36R/cnQYpZlGvw2FyEnGFcw1
+         xlaqEbaA3oEIq1xE3oXXoME6BghM8oQoINGDpGqRrd59yNJ4uIVYcKzv0DtC4LjeWffG
+         UkWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nZXczi6C0VGVtmz89xEAfWTFn3tEw4CtQGzJll0eCx4=;
+        b=eBCNdKzaLBVow+DZo2tV3y2mX39O5NxKR1By5Cpbn4pliYsrTR/c6KTp/kycCdvEWH
+         wbBmauwmoWs1v5NugKzCOGDZfZBIaVdjb9IRFYbS/NQJjIr+c5tFAND3V04VjxRpC4e7
+         qO54iKMhWCteJMo32R0em+17CRMn+sNV9DHKSpuY5vnZesSBJNqS2uMgQSmLypckYjck
+         g1vqgxyBeRvkXXpuui6szgHMiz7VZyuksThmHry5TWSJsFcWT/F1btGdDtLchmlJAWFf
+         qNQAKFZYzbRMrIy5ODvgJJqeEKsaNLe+EeAg5Yxos48qza6OVJkoL7TCIxXNKTa31b/V
+         YdBQ==
+X-Gm-Message-State: AOAM5312V/0rXY1vu9JlI/cX/JC+ivWu1PkRKs6QDv1wEEkZsEZvpVXL
+        u87Yj2emsDCqkIr7wGFt0bY=
+X-Google-Smtp-Source: ABdhPJybMsIXGUh1RzkJaVESTlrR03bfCQ5VzIOs1f03/DoZiXQy4UAlySTzfi0iky0Us5HZSHJx8Q==
+X-Received: by 2002:adf:f690:: with SMTP id v16mr510766wrp.707.1644225758361;
+        Mon, 07 Feb 2022 01:22:38 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id g7sm9866205wmq.3.2022.02.07.01.22.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 01:22:37 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Shuah Khan <shuah@kernel.org>,
+        alsa-devel@alsa-project.org, linux-kselftest@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] kselftest: alsa: fix spelling mistake "desciptor" -> "descriptor"
+Date:   Mon,  7 Feb 2022 09:22:35 +0000
+Message-Id: <20220207092235.240284-1-colin.i.king@gmail.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220205185429.2278860-2-paul.kocialkowski@bootlin.com>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com> <20220205185429.2278860-2-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -92,14 +64,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 5 Feb 2022 19:53:24 +0100, Paul Kocialkowski wrote:
-> The csi1 block node was mistakenly added before the gic node, although
-> its address comes after the gic's. Move the node to its correct
-> position.
-> 
-> 
+There are some spelling mistakes in some ksft messages. Fix them.
 
-Applied to sunxi/linux.git (sunxi/dt-for-5.18).
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ tools/testing/selftests/alsa/mixer-test.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Thanks!
-Maxime
+diff --git a/tools/testing/selftests/alsa/mixer-test.c b/tools/testing/selftests/alsa/mixer-test.c
+index d0b788b8d287..eb2213540fe3 100644
+--- a/tools/testing/selftests/alsa/mixer-test.c
++++ b/tools/testing/selftests/alsa/mixer-test.c
+@@ -198,7 +198,7 @@ static void find_controls(void)
+ 
+ 		err = snd_ctl_poll_descriptors_count(card_data->handle);
+ 		if (err != 1) {
+-			ksft_exit_fail_msg("Unexpected desciptor count %d for card %d\n",
++			ksft_exit_fail_msg("Unexpected descriptor count %d for card %d\n",
+ 					   err, card);
+ 		}
+ 
+@@ -248,12 +248,12 @@ static int wait_for_event(struct ctl_data *ctl, int timeout)
+ 						       &(ctl->card->pollfd),
+ 						       1, &revents);
+ 		if (err < 0) {
+-			ksft_print_msg("snd_ctl_poll_desciptors_revents() failed for %s: %d\n",
++			ksft_print_msg("snd_ctl_poll_descriptors_revents() failed for %s: %d\n",
+ 				       ctl->name, err);
+ 			return err;
+ 		}
+ 		if (revents & POLLERR) {
+-			ksft_print_msg("snd_ctl_poll_desciptors_revents() reported POLLERR for %s\n",
++			ksft_print_msg("snd_ctl_poll_descriptors_revents() reported POLLERR for %s\n",
+ 				       ctl->name);
+ 			return -1;
+ 		}
+-- 
+2.34.1
+
