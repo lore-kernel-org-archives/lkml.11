@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4CC8C35271
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2F5C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359769AbiBGLPA (ORCPT
+        id S1376709AbiBGLPO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49434 "EHLO
+        Mon, 7 Feb 2022 06:15:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345973AbiBGLLg (ORCPT
+        with ESMTP id S1347959AbiBGLLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:11:36 -0500
+        Mon, 7 Feb 2022 06:11:42 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B60C0401C0;
-        Mon,  7 Feb 2022 03:11:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66578C043181;
+        Mon,  7 Feb 2022 03:11:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFDA0B80EE8;
-        Mon,  7 Feb 2022 11:11:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10280C004E1;
-        Mon,  7 Feb 2022 11:11:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1ED38B80EE8;
+        Mon,  7 Feb 2022 11:11:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22E0EC004E1;
+        Mon,  7 Feb 2022 11:11:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232292;
-        bh=sQAKYqwJSmKj6ZF2oZqmaAeGNkm8va4f8ABQg75aHic=;
+        s=korg; t=1644232298;
+        bh=KpkVFOA124n7z4s6OxCkRoPCUJoOZOoncbjtNPXpGG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iJNw19jWVPVs1cptEaDUYc6VL1dC15MeXv2I7nWXeSWWJmicrXk7FmD1ZJaWIx/5J
-         lFAoqsg3YxZ9XKEfsY2S0Ukfvbv26X0G1YvdXxV+H3LtR92tuqP3aGYCsj5mm72+33
-         /iGtRcfvf0guHAJ8pkCE24rItJzoo9VvCnjfJgoo=
+        b=wCOwA5m3B6gHwb/CLZpIjNPwvZv13I3frqmqJWGT5AekCjS2FEHT7PZMuCGxABSSu
+         pdKy3JKGupIGgyRuvjVp9APr3U+33CARDSC8MQopj0PBfMMaFWZF63X6jAJ7ewFuc6
+         hgWSbNiuOqTPrYgRQzqYNKCl5U13+hVndKvlD1vM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Subject: [PATCH 4.14 13/69] usb: gadget: f_sourcesink: Fix isoc transfer for USB_SPEED_SUPER_PLUS
-Date:   Mon,  7 Feb 2022 12:05:35 +0100
-Message-Id: <20220207103756.052722060@linuxfoundation.org>
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 32/69] drm/msm: Fix wrong size calculation
+Date:   Mon,  7 Feb 2022 12:05:54 +0100
+Message-Id: <20220207103756.685426698@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -49,33 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-commit 904edf8aeb459697129be5fde847e2a502f41fd9 upstream.
+commit 0a727b459ee39bd4c5ced19d6024258ac87b6b2e upstream.
 
-Currently when gadget enumerates in super speed plus, the isoc
-endpoint request buffer size is not calculated correctly. Fix
-this by checking the gadget speed against USB_SPEED_SUPER_PLUS
-and update the request buffer size.
+For example, memory-region in .dts as below,
+	reg = <0x0 0x50000000 0x0 0x20000000>
 
-Fixes: 90c4d05780d4 ("usb: fix various gadgets null ptr deref on 10gbps cabling.")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Link: https://lore.kernel.org/r/1642820602-20619-1-git-send-email-quic_pkondeti@quicinc.com
+We can get below values,
+struct resource r;
+r.start = 0x50000000;
+r.end	= 0x6fffffff;
+
+So the size should be:
+size = r.end - r.start + 1 = 0x20000000
+
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Fixes: 072f1f9168ed ("drm/msm: add support for "stolen" mem")
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220112123334.749776-1-xianting.tian@linux.alibaba.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/f_sourcesink.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/msm/msm_drv.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/gadget/function/f_sourcesink.c
-+++ b/drivers/usb/gadget/function/f_sourcesink.c
-@@ -587,6 +587,7 @@ static int source_sink_start_ep(struct f
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -321,7 +321,7 @@ static int msm_init_vram(struct drm_devi
+ 		of_node_put(node);
+ 		if (ret)
+ 			return ret;
+-		size = r.end - r.start;
++		size = r.end - r.start + 1;
+ 		DRM_INFO("using VRAM carveout: %lx@%pa\n", size, &r.start);
  
- 	if (is_iso) {
- 		switch (speed) {
-+		case USB_SPEED_SUPER_PLUS:
- 		case USB_SPEED_SUPER:
- 			size = ss->isoc_maxpacket *
- 					(ss->isoc_mult + 1) *
+ 		/* if we have no IOMMU, then we need to use carveout allocator.
 
 
