@@ -2,96 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5E5C3A59F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D45F8C4708A
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391600AbiBGMCZ (ORCPT
+        id S1385250AbiBGMBM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:02:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
+        Mon, 7 Feb 2022 07:01:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388522AbiBGLnx (ORCPT
+        with ESMTP id S1384022AbiBGLgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:43:53 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C73C043188
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:43:52 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id p5so38883897ybd.13
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 03:43:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=DqWgmzwxtL264zlQQi/aWGo5dgkPVyz0CHwO9F0ARvI=;
-        b=ZAikxu6W0Tse6pSUT3PJpXsbcq5ghw55uIWE0umxyXZEov02vMAXWebaGqeBOBgn56
-         1Ha7T/JXuYFUlO62olgXb4gI02cv2zI720VybXH7rTrhWTBUAWHZ0eqruQ/fT3laLs2m
-         8xgr98g8CCxRpqF6yQM70NsJIvRyh0tiu4PzuAhMG1fQ5TnCE+K2YpSjIv0HSRPbvolC
-         dSL5QjqZ7/EKycgejQkK04Ol4o2V9r0x1MBrSnexX4x/L5LxY2olpuQHEfhCNnPBek5c
-         gnOQ/9kW1rge0Fii1i9jjtMDIhLyhKfNm83PewOARZF4Q4wlL7RCg02SEhj8UL1HBC/S
-         e25g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=DqWgmzwxtL264zlQQi/aWGo5dgkPVyz0CHwO9F0ARvI=;
-        b=hMqJ+7Ln3szNB8sma17G1RSgD6MkVbF/l3K2T8KtvDEZiIH5MUnZVq8305v1t1Kr83
-         eX/N7HqXITkvczN70FQcAWQKBnOLDOBohknoYCxQTBjidgWx3786iWoUJVbthfXtrqoK
-         oBQ8PtnOLfr83uJ7n529c5sZUOYhqLZvzll84mijEaG5JCOBNBGKNyabd+MIlR1k8uRG
-         n1u3ZRGceJwc4J/XTUV3VA4q1SQKtTmiOShHuPzS9xic8ZjPCH6y6TGMO98ZqPOUPH8V
-         6U6Wn0/aLPRKtjHKuKfQGRVbNMh2wntBgR2IOgA0nmdG0/PeQWnAgVyJzZtaHUPoW097
-         /G0A==
-X-Gm-Message-State: AOAM530h0KNtmqctgy+Yagf5uSzewe4zMsM+Mujdcu2fa/ezPvMyG0IT
-        iRP67WYcBKk8/tsMCFGSxTPuDfPAnJcsHX7b6NFDwf0Ol6Y=
-X-Google-Smtp-Source: ABdhPJw/wYJhy6Xitu0IqzKj85on6zJBb6VfDZyyxSheyccof0ONf81+HJUrXnY2Ll7yMc9fC0rcJahUmQTUQMqcTTA=
-X-Received: by 2002:a81:b662:: with SMTP id h34mr10605194ywk.366.1644234230804;
- Mon, 07 Feb 2022 03:43:50 -0800 (PST)
+        Mon, 7 Feb 2022 06:36:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5666CC0401DF;
+        Mon,  7 Feb 2022 03:36:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE175B8102E;
+        Mon,  7 Feb 2022 11:36:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 251B4C004E1;
+        Mon,  7 Feb 2022 11:36:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644233770;
+        bh=3+OdnXHnwYipTw8qEI909/tZBBwnRXIhertLR4aPfWo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=yn4IoS0TXkfnN8WsmQB3AwU6QV0on7QW+JGjgwf5qVdjw0G8BdYIbIKCMzS5nE+/8
+         7B5oeMjwKx4N9sQEq+2b0m4RbJAHzrk4lCaPvpQGW+XQ7qjB/z3rzAfAe8AHQSSGJG
+         ID8CVnzLQlXU4NSRMI7iOsyksWrGHnLkVsFH/TEE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.16 114/126] EDAC/xgene: Fix deferred probing
+Date:   Mon,  7 Feb 2022 12:07:25 +0100
+Message-Id: <20220207103808.000129286@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
+References: <20220207103804.053675072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 7 Feb 2022 17:13:39 +0530
-Message-ID: <CA+G9fYsZuC=36zJoj2UPNhF3hQTf-osgs-m59Zey3TB_E0wZUg@mail.gmail.com>
-Subject: [next] fs/proc/task_mmu.c:1444:14: warning: unused variable 'migration'
-To:     open list <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org
-Cc:     Yang Shi <shy828301@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Hildenbrand <david@redhat.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Jann Horn <jannh@google.com>,
-        Matthew Wilcox <willy@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While building Linux next-20220207 for arm architecture the following
-error was noticed.
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-make --silent --keep-going --jobs=8  \
-     ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- \
-     'CC=sccache arm-linux-gnueabihf-gcc' \
-     'HOSTCC=sccache gcc' \
-     vexpress_defconfig
+commit dfd0dfb9a7cc04acf93435b440dd34c2ca7b4424 upstream.
 
-fs/proc/task_mmu.c: In function 'pagemap_pmd_range':
-fs/proc/task_mmu.c:1444:14: warning: unused variable 'migration'
-[-Wunused-variable]
- 1444 |         bool migration = false;
-      |              ^~~~~~~~~
+The driver overrides error codes returned by platform_get_irq_optional()
+to -EINVAL for some strange reason, so if it returns -EPROBE_DEFER, the
+driver will fail the probe permanently instead of the deferred probing.
+Switch to propagating the proper error codes to platform driver code
+upwards.
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+  [ bp: Massage commit message. ]
 
-Build log:
-https://builds.tuxbuild.com/24lg0EnsbEf6deWnMXwXiwh8oVi/
+Fixes: 0d4429301c4a ("EDAC: Add APM X-Gene SoC EDAC driver")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220124185503.6720-3-s.shtylyov@omp.ru
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/edac/xgene_edac.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-metadata:
-    git_describe: next-20220207
-    git_repo: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-    git_short_log: b3c0a155ef77 (\"Add linux-next specific files for 20220207\")
-    target_arch: arm
-    toolchain: gcc-10
+--- a/drivers/edac/xgene_edac.c
++++ b/drivers/edac/xgene_edac.c
+@@ -1919,7 +1919,7 @@ static int xgene_edac_probe(struct platf
+ 			irq = platform_get_irq_optional(pdev, i);
+ 			if (irq < 0) {
+ 				dev_err(&pdev->dev, "No IRQ resource\n");
+-				rc = -EINVAL;
++				rc = irq;
+ 				goto out_err;
+ 			}
+ 			rc = devm_request_irq(&pdev->dev, irq,
 
 
---
-Linaro LKFT
-https://lkft.linaro.org
