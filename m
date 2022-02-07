@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CEC8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF009C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391248AbiBGL6t (ORCPT
+        id S1391272AbiBGL6y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:58:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47672 "EHLO
+        Mon, 7 Feb 2022 06:58:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377733AbiBGLfq (ORCPT
+        with ESMTP id S1378322AbiBGLfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:35:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AA2C0401F6;
-        Mon,  7 Feb 2022 03:35:37 -0800 (PST)
+        Mon, 7 Feb 2022 06:35:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66ED9C0401C3;
+        Mon,  7 Feb 2022 03:35:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A887B60B20;
-        Mon,  7 Feb 2022 11:35:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69D16C004E1;
-        Mon,  7 Feb 2022 11:35:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 042A060B5B;
+        Mon,  7 Feb 2022 11:35:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCDE2C004E1;
+        Mon,  7 Feb 2022 11:35:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233736;
-        bh=KaEEvikqmO26oxdyVGpMjrHrH9qyqqylOufY9OgAjLg=;
+        s=korg; t=1644233742;
+        bh=Z7H7oZrmQOOS5dhXt+kfnsPedSGfqT1i5+pCQHO2n5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C5Ro1r8Who5MF/UvYIxjxEWBob1BNUcYZ4a53aIZLo7oI5Tn9a0iYexpRpS1VuAE8
-         1B3lq0vGJJZfECEe9qzH9lJWj10ZReZbWYP7qMiaBl/sZoG4NFE66hbHV/IYybuctm
-         W5E51rTUwYw5sq/AQLnsN2lK70kkxA1i8BVU3hxs=
+        b=QT4Km53LWiJ+Bg3Evq/VAcdYGefZvDoDtkhEs2JagNk8vVcFDbt3XKHGhFs6Phy69
+         Z6hgqrurdgpQdeQxmk9m+Ax5s9lrf5Z3gC8aUx3ttehbB7xqStJV95lyT4UqlFnf/t
+         NXyxf40NuQDRHwe5xzKfgEJfBbasYrZRUgCNNKhk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Nechama Kraus <nechamax.kraus@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.16 105/126] e1000e: Separate ADP board type from TGP
-Date:   Mon,  7 Feb 2022 12:07:16 +0100
-Message-Id: <20220207103807.690836971@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Borowski <kilobyte@angband.pl>,
+        =?UTF-8?q?Martin=20Li=C5=A1ka?= <mliska@suse.cz>,
+        Sergei Trofimovich <slyich@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 107/126] objtool: Fix truncated string warning
+Date:   Mon,  7 Feb 2022 12:07:18 +0100
+Message-Id: <20220207103807.759609312@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -53,120 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Sergei Trofimovich <slyich@gmail.com>
 
-commit 68defd528f94ed1cf11f49a75cc1875dccd781fa upstream.
+[ Upstream commit 82880283d7fcd0a1d20964a56d6d1a5cc0df0713 ]
 
-We have the same LAN controller on different PCH's. Separate ADP board
-type from a TGP which will allow for specific fixes to be applied for
-ADP platforms.
+On GCC 12, the build fails due to a possible truncated string:
 
-Suggested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    check.c: In function 'validate_call':
+    check.c:2865:58: error: '%d' directive output may be truncated writing between 1 and 10 bytes into a region of size 9 [-Werror=format-truncation=]
+     2865 |                 snprintf(pvname, sizeof(pvname), "pv_ops[%d]", idx);
+          |                                                          ^~
+
+In theory it's a valid bug:
+
+    static char pvname[16];
+    int idx;
+    ...
+    idx = (rel->addend / sizeof(void *));
+    snprintf(pvname, sizeof(pvname), "pv_ops[%d]", idx);
+
+There are only 7 chars for %d while it could take up to 9, so the
+printed "pv_ops[%d]" string could get truncated.
+
+In reality the bug should never happen, because pv_ops only has ~80
+entries, so 7 chars for the integer is more than enough.  Still, it's
+worth fixing.  Bump the buffer size by 2 bytes to silence the warning.
+
+[ jpoimboe: changed size to 19; massaged changelog ]
+
+Fixes: db2b0c5d7b6f ("objtool: Support pv_opsindirect calls for noinstr")
+Reported-by: Adam Borowski <kilobyte@angband.pl>
+Reported-by: Martin Liška <mliska@suse.cz>
+Signed-off-by: Sergei Trofimovich <slyich@gmail.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lore.kernel.org/r/20220120233748.2062559-1-slyich@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/e1000e/e1000.h   |    4 ++-
- drivers/net/ethernet/intel/e1000e/ich8lan.c |   20 ++++++++++++++++
- drivers/net/ethernet/intel/e1000e/netdev.c  |   33 ++++++++++++++--------------
- 3 files changed, 40 insertions(+), 17 deletions(-)
+ tools/objtool/check.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/e1000e/e1000.h
-+++ b/drivers/net/ethernet/intel/e1000e/e1000.h
-@@ -115,7 +115,8 @@ enum e1000_boards {
- 	board_pch_lpt,
- 	board_pch_spt,
- 	board_pch_cnp,
--	board_pch_tgp
-+	board_pch_tgp,
-+	board_pch_adp
- };
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 21735829b860c..750ef1c446c8a 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -2823,7 +2823,7 @@ static inline bool func_uaccess_safe(struct symbol *func)
  
- struct e1000_ps_page {
-@@ -502,6 +503,7 @@ extern const struct e1000_info e1000_pch
- extern const struct e1000_info e1000_pch_spt_info;
- extern const struct e1000_info e1000_pch_cnp_info;
- extern const struct e1000_info e1000_pch_tgp_info;
-+extern const struct e1000_info e1000_pch_adp_info;
- extern const struct e1000_info e1000_es2_info;
+ static inline const char *call_dest_name(struct instruction *insn)
+ {
+-	static char pvname[16];
++	static char pvname[19];
+ 	struct reloc *rel;
+ 	int idx;
  
- void e1000e_ptp_init(struct e1000_adapter *adapter);
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -6021,3 +6021,23 @@ const struct e1000_info e1000_pch_tgp_in
- 	.phy_ops		= &ich8_phy_ops,
- 	.nvm_ops		= &spt_nvm_ops,
- };
-+
-+const struct e1000_info e1000_pch_adp_info = {
-+	.mac			= e1000_pch_adp,
-+	.flags			= FLAG_IS_ICH
-+				  | FLAG_HAS_WOL
-+				  | FLAG_HAS_HW_TIMESTAMP
-+				  | FLAG_HAS_CTRLEXT_ON_LOAD
-+				  | FLAG_HAS_AMT
-+				  | FLAG_HAS_FLASH
-+				  | FLAG_HAS_JUMBO_FRAMES
-+				  | FLAG_APME_IN_WUC,
-+	.flags2			= FLAG2_HAS_PHY_STATS
-+				  | FLAG2_HAS_EEE,
-+	.pba			= 26,
-+	.max_hw_frame_size	= 9022,
-+	.get_variants		= e1000_get_variants_ich8lan,
-+	.mac_ops		= &ich8_mac_ops,
-+	.phy_ops		= &ich8_phy_ops,
-+	.nvm_ops		= &spt_nvm_ops,
-+};
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -52,6 +52,7 @@ static const struct e1000_info *e1000_in
- 	[board_pch_spt]		= &e1000_pch_spt_info,
- 	[board_pch_cnp]		= &e1000_pch_cnp_info,
- 	[board_pch_tgp]		= &e1000_pch_tgp_info,
-+	[board_pch_adp]		= &e1000_pch_adp_info,
- };
- 
- struct e1000_reg_info {
-@@ -7904,22 +7905,22 @@ static const struct pci_device_id e1000_
- 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V14), board_pch_tgp },
- 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM15), board_pch_tgp },
- 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V15), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_LM23), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_V23), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM16), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V16), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM17), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V17), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_LM22), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_V22), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM18), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V18), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM19), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V19), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_LM20), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_V20), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_LM21), board_pch_tgp },
--	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_V21), board_pch_tgp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_LM23), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_V23), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM16), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V16), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM17), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V17), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_LM22), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_RPL_I219_V22), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM18), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V18), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_LM19), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_MTP_I219_V19), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_LM20), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_V20), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_LM21), board_pch_adp },
-+	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_LNP_I219_V21), board_pch_adp },
- 
- 	{ 0, 0, 0, 0, 0, 0, 0 }	/* terminate list */
- };
+-- 
+2.34.1
+
 
 
