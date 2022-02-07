@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F0CC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03468C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383236AbiBGLVx (ORCPT
+        id S1383247AbiBGLVz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
+        Mon, 7 Feb 2022 06:21:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343793AbiBGLRt (ORCPT
+        with ESMTP id S1380499AbiBGLQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:17:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D946C043181;
-        Mon,  7 Feb 2022 03:17:48 -0800 (PST)
+        Mon, 7 Feb 2022 06:16:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C22C043188;
+        Mon,  7 Feb 2022 03:16:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C46F96126D;
-        Mon,  7 Feb 2022 11:17:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A72F7C004E1;
-        Mon,  7 Feb 2022 11:17:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DDCA6113B;
+        Mon,  7 Feb 2022 11:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDFB7C004E1;
+        Mon,  7 Feb 2022 11:16:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232667;
-        bh=PiGBZXdjY/SB2inqOMtj1xoLWCcJsIJ0c2iNpkaf9ls=;
+        s=korg; t=1644232610;
+        bh=DaGD0G2X0YExTtuIuMmfRFGlyWBa1FEMMdKEvocIJkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2LB7J/inOBpcXQ9wvzN1I9+Xh7pTDd7zl2WIk4EpACXjCBBQjriq++JfsBYWnATl3
-         BH7g2cnwLElsazI+4q+MB/PtXCkdg686cDGjdiCG4OHqc0psurltV/fvYr0zRzTrw2
-         Jk9x8za2rtgnlaltKb276koyLZEH92EkWJmLNML4=
+        b=IX249gItXwMwjhsAFll0733+LC9XvLw/gy78a2LV1fPFA5row4Ib2DdfKOG4Khjim
+         fVjlN0S8axv+L48YvXbTHPpfNPGEI1FydC87DAeP6zAAfPKy1uFOWjvL5DHp8GwI0Y
+         o165LbTGbf08QyfIILFLS1D4nCTjOZTaQanh130s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Borislav Petkov <bp@suse.de>, Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 4.19 84/86] EDAC/altera: Fix deferred probing
-Date:   Mon,  7 Feb 2022 12:06:47 +0100
-Message-Id: <20220207103800.440455083@linuxfoundation.org>
+        stable@vger.kernel.org, Christian Lachner <gladiac@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 58/86] ALSA: hda/realtek: Add missing fixup-model entry for Gigabyte X570 ALC1220 quirks
+Date:   Mon,  7 Feb 2022 12:06:21 +0100
+Message-Id: <20220207103759.462395774@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -49,39 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Christian Lachner <gladiac@gmail.com>
 
-commit 279eb8575fdaa92c314a54c0d583c65e26229107 upstream.
+commit 63394a16086fc2152869d7902621e2525e14bc40 upstream.
 
-The driver overrides the error codes returned by platform_get_irq() to
--ENODEV for some strange reason, so if it returns -EPROBE_DEFER, the
-driver will fail the probe permanently instead of the deferred probing.
-Switch to propagating the proper error codes to platform driver code
-upwards.
+The initial commit of the new Gigabyte X570 ALC1220 quirks lacked the
+fixup-model entry in alc882_fixup_models[]. It seemed not to cause any ill
+effects but for completeness sake this commit makes up for that.
 
-  [ bp: Massage commit message. ]
-
-Fixes: 71bcada88b0f ("edac: altera: Add Altera SDRAM EDAC support")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Christian Lachner <gladiac@gmail.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220124185503.6720-2-s.shtylyov@omp.ru
+Link: https://lore.kernel.org/r/20220129113243.93068-2-gladiac@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/edac/altera_edac.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/edac/altera_edac.c
-+++ b/drivers/edac/altera_edac.c
-@@ -366,7 +366,7 @@ static int altr_sdram_probe(struct platf
- 	if (irq < 0) {
- 		edac_printk(KERN_ERR, EDAC_MC,
- 			    "No irq %d in DT\n", irq);
--		return -ENODEV;
-+		return irq;
- 	}
- 
- 	/* Arria10 has a 2nd IRQ */
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -2607,6 +2607,7 @@ static const struct hda_model_fixup alc8
+ 	{.id = ALC882_FIXUP_NO_PRIMARY_HP, .name = "no-primary-hp"},
+ 	{.id = ALC887_FIXUP_ASUS_BASS, .name = "asus-bass"},
+ 	{.id = ALC1220_FIXUP_GB_DUAL_CODECS, .name = "dual-codecs"},
++	{.id = ALC1220_FIXUP_GB_X570, .name = "gb-x570"},
+ 	{.id = ALC1220_FIXUP_CLEVO_P950, .name = "clevo-p950"},
+ 	{}
+ };
 
 
