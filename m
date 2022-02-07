@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7B7C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D539C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343715AbiBGLL2 (ORCPT
+        id S1343864AbiBGLLb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:11:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        Mon, 7 Feb 2022 06:11:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240329AbiBGLI7 (ORCPT
+        with ESMTP id S235129AbiBGLKA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:08:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3236C043181;
-        Mon,  7 Feb 2022 03:08:58 -0800 (PST)
+        Mon, 7 Feb 2022 06:10:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBB8C043181;
+        Mon,  7 Feb 2022 03:10:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71679B81028;
-        Mon,  7 Feb 2022 11:08:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0412C004E1;
-        Mon,  7 Feb 2022 11:08:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE73D61261;
+        Mon,  7 Feb 2022 11:09:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FDC4C004E1;
+        Mon,  7 Feb 2022 11:09:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232136;
-        bh=X4zAEnAPt4ZfgCA3lUjOmtemiVM22+id6pT04M2vi+Y=;
+        s=korg; t=1644232199;
+        bh=e33QsNjVU05DR+DPLHy/MjtwUMwEaty783dBJ63ogEM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n/zVeAoTKZOt85E3bLt4C4FJdhceWSQlJu9XYx6JeixTJclkDAkQMDiD0+gZk4nhJ
-         2s3fHQsdL9MyK1qF9avVEvmUSNp3zIlkjECsIFp7jvIvGKas0iyxnqJymqRFXczGxG
-         hWJRMh0Ha+udbIy/PkehMP4+FnfJKucAj/2tzJr8=
+        b=oO7KNjcyQd62PLWYdLTyjzcz2FBYLjk+AvOGnY4GbtWNtH7FaQPF9skoOUDWef+Fs
+         LE+sV5JCkYjfS+J8J1vdyrkQb0Q/LPF57AgrT1jsUaRVJRDDjeezg5FjiL3GQa8uj8
+         d7JY44UfSKqX62ZYLOGCX6RaFrWDRydAuXQKUtY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Georgi Valkov <gvalkov@abv.bg>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 28/48] ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
-Date:   Mon,  7 Feb 2022 12:06:01 +0100
-Message-Id: <20220207103753.262088019@linuxfoundation.org>
+        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 16/48] ipv6_tunnel: Rate limit warning messages
+Date:   Mon,  7 Feb 2022 12:05:49 +0100
+Message-Id: <20220207103752.872721609@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -50,57 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Georgi Valkov <gvalkov@abv.bg>
+From: Ido Schimmel <idosch@nvidia.com>
 
-commit 63e4b45c82ed1bde979da7052229a4229ce9cabf upstream.
+commit 6cee105e7f2ced596373951d9ea08dacc3883c68 upstream.
 
-When rx_buf is allocated we need to account for IPHETH_IP_ALIGN,
-which reduces the usable size by 2 bytes. Otherwise we have 1512
-bytes usable instead of 1514, and if we receive more than 1512
-bytes, ipheth_rcvbulk_callback is called with status -EOVERFLOW,
-after which the driver malfunctiones and all communication stops.
+The warning messages can be invoked from the data path for every packet
+transmitted through an ip6gre netdev, leading to high CPU utilization.
 
-Resolves ipheth 2-1:4.2: ipheth_rcvbulk_callback: urb status: -75
+Fix that by rate limiting the messages.
 
-Fixes: f33d9e2b48a3 ("usbnet: ipheth: fix connectivity with iOS 14")
-Signed-off-by: Georgi Valkov <gvalkov@abv.bg>
-Tested-by: Jan Kiszka <jan.kiszka@siemens.com>
-Link: https://lore.kernel.org/all/B60B8A4B-92A0-49B3-805D-809A2433B46C@abv.bg/
-Link: https://lore.kernel.org/all/24851bd2769434a5fc24730dce8e8a984c5a4505.1643699778.git.jan.kiszka@siemens.com/
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 09c6bbf090ec ("[IPV6]: Do mandatory IPv6 tunnel endpoint checks in realtime")
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Tested-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/ipheth.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/ipv6/ip6_tunnel.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/net/usb/ipheth.c
-+++ b/drivers/net/usb/ipheth.c
-@@ -173,7 +173,7 @@ static int ipheth_alloc_urbs(struct iphe
- 	if (tx_buf == NULL)
- 		goto free_rx_urb;
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -1007,12 +1007,12 @@ int ip6_tnl_xmit_ctl(struct ip6_tnl *t,
+ 			ldev = dev_get_by_index_rcu(net, p->link);
  
--	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
-+	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN,
- 				    GFP_KERNEL, &rx_urb->transfer_dma);
- 	if (rx_buf == NULL)
- 		goto free_tx_buf;
-@@ -198,7 +198,7 @@ error_nomem:
- 
- static void ipheth_free_urbs(struct ipheth_device *iphone)
- {
--	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->rx_buf,
-+	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN, iphone->rx_buf,
- 			  iphone->rx_urb->transfer_dma);
- 	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->tx_buf,
- 			  iphone->tx_urb->transfer_dma);
-@@ -371,7 +371,7 @@ static int ipheth_rx_submit(struct iphet
- 
- 	usb_fill_bulk_urb(dev->rx_urb, udev,
- 			  usb_rcvbulkpipe(udev, dev->bulk_in),
--			  dev->rx_buf, IPHETH_BUF_SIZE,
-+			  dev->rx_buf, IPHETH_BUF_SIZE + IPHETH_IP_ALIGN,
- 			  ipheth_rcvbulk_callback,
- 			  dev);
- 	dev->rx_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+ 		if (unlikely(!ipv6_chk_addr(net, laddr, ldev, 0)))
+-			pr_warn("%s xmit: Local address not yet configured!\n",
+-				p->name);
++			pr_warn_ratelimited("%s xmit: Local address not yet configured!\n",
++					    p->name);
+ 		else if (!ipv6_addr_is_multicast(raddr) &&
+ 			 unlikely(ipv6_chk_addr(net, raddr, NULL, 0)))
+-			pr_warn("%s xmit: Routing loop! Remote address found on this node!\n",
+-				p->name);
++			pr_warn_ratelimited("%s xmit: Routing loop! Remote address found on this node!\n",
++					    p->name);
+ 		else
+ 			ret = 1;
+ 		rcu_read_unlock();
 
 
