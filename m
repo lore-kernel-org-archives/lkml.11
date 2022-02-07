@@ -2,106 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E85D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB51C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237029AbiBGTSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:18:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46690 "EHLO
+        id S238915AbiBGTSz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:18:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238377AbiBGTQH (ORCPT
+        with ESMTP id S239313AbiBGTOz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:16:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939D8C0401DA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:16:06 -0800 (PST)
+        Mon, 7 Feb 2022 14:14:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00921C0401DC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:14:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAE1161029
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 19:16:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03219C004E1;
-        Mon,  7 Feb 2022 19:16:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB551B80EF6
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 19:14:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 440D8C004E1;
+        Mon,  7 Feb 2022 19:14:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644261365;
-        bh=FX8ZhpIlZF+4RHH0iTaQPztnxFU3gZjZlumdpdlOJzg=;
+        s=k20201202; t=1644261292;
+        bh=HJoLZayjw9d/gTYyeZLWOIyycJnicgl+gCOYbWkZsXU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nH2L/yXFXkWChhV3VCclL8E2NfMRs46hGDZfdUS+NeLk26ueq9blVUKofZcMxyJuv
-         4XSqNwJkk+WwgY36/WpUrWh4l08REKDiDGmOkITBFVgrOU1hLnvfQu6XYh5Y7pTpyB
-         F7wIc2ybYsHimr8PEUjZt4aB44qTn40Bx2yZ9IUZxFYfx/kbZv+BR3SDHq9ZQ4c+rg
-         4+Y613Qu9HMtCaNlXYe/hQ+VIyrmoglIWRABM9RlbME4zgJ926w4K3T6Tg6OEyI8CX
-         RlGyGXC6RTViKQ3aj80lNq4WqY8wlPQpNvTw9TU4oENNPiHPRf70MUg5/Em7N818wr
-         PfXLlO3vAFlKg==
-Date:   Mon, 7 Feb 2022 11:16:03 -0800
+        b=mtOs0UFvLFkypBmJJ4xlwyKBYH+C3cuBhr2TXU4kpDV9+q1LF8W1t++Gwl4Ejy9//
+         xbD6K6t+PhFRAo0E9bK7c63F1EadKKIfN678kYPxoxlCKz/M++a5b1hdQU6q56lPQf
+         A/G+HyzTi+1QQoBU0/VhUOx3ja68Klh4Yx9BHryHm6RE99SZvhzVQ9aS0ED7pwNVYA
+         LAaA67j2ip7+Oop90XwqyRjxNe6N3/HPmvLTj94CBSZ/tXh8BjuGhhrIB1oeliy/TT
+         6D3quwBsbKKrzomk2Lf/xp41Lbm0i4EB4eth6qu7VpDbCL+xHcS7N/N3jdZFEhjALr
+         7BZMFQ5tFiuSA==
+Date:   Mon, 7 Feb 2022 11:14:50 -0800
 From:   Jaegeuk Kim <jaegeuk@kernel.org>
 To:     Chao Yu <chao@kernel.org>
 Cc:     linux-f2fs-devel@lists.sourceforge.net,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] f2fs: skip f2fs_preallocate_blocks() for overwrite
- case
-Message-ID: <YgFv85dH0dWFTZBx@google.com>
-References: <20220204091005.49407-1-chao@kernel.org>
+Subject: Re: [PATCH] f2fs: avoid unneeded preflush during checkpoint()
+Message-ID: <YgFvqnoa61BspqmW@google.com>
+References: <20220207113516.9489-1-chao@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220204091005.49407-1-chao@kernel.org>
+In-Reply-To: <20220207113516.9489-1-chao@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/04, Chao Yu wrote:
-> There is potential hangtask happened during swapfile's writeback:
-> 
-> - loop_kthread_worker_fn		- do_checkpoint
->   - kthread_worker_fn
->    - loop_queue_work
->     - lo_rw_aio
->      - f2fs_file_write_iter
->       - f2fs_preallocate_blocks
->        - f2fs_map_blocks
-> 					 - down_write
->         - down_read
->          - rwsem_down_read_slowpath
->           - schedule
-> 
-> One cause is f2fs_preallocate_blocks() will always be called no matter
-> the physical block addresses are allocated or not.
-> 
-> This patch tries to check whether block addresses are all allocated with
-> i_size and i_blocks of inode, it's rough because blocks can be allocated
-> beyond i_size, however, we can afford skipping block preallocation in this
-> condition since it's not necessary to do preallocation all the time.
+On 02/07, Chao Yu wrote:
+> During checkpoint, we have committed preflush command via f2fs_flush_device_cache()
+
+ 787 int f2fs_flush_device_cache(struct f2fs_sb_info *sbi)
+ 788 {
+ 789         int ret = 0, i;
+ 790 
+ 791         if (!f2fs_is_multi_device(sbi))
+ 792                 return 0;
+
+Seems a wrong assumption.
+
+> to persist all metadata pages except last #2 CP pack page, so we don't need to
+> commit another preflush command in commit_checkpoint(), remove it to avoid unneeded
+> write cache overhead.
 > 
 > Signed-off-by: Chao Yu <chao@kernel.org>
 > ---
-> v2:
-> - check overwrite case with i_size and i_blocks roughly.
->  fs/f2fs/file.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+>  fs/f2fs/data.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-> index cfdc41f87f5d..09565d10611d 100644
-> --- a/fs/f2fs/file.c
-> +++ b/fs/f2fs/file.c
-> @@ -4390,6 +4390,16 @@ static int f2fs_preallocate_blocks(struct kiocb *iocb, struct iov_iter *iter,
->  	int flag;
->  	int ret;
->  
-> +	/*
-> +	 * It tries to check whether block addresses are all allocated,
-> +	 * it's rough because blocks can be allocated beyond i_size,
-> +	 * however, we can afford skipping block preallocation since
-> +	 * it's not necessary all the time.
-> +	 */
-> +	if (F2FS_BLK_ALIGN(i_size_read(inode)) ==
-> +			SECTOR_TO_BLOCK(inode->i_blocks))
-
-Do we count i_blocks only for data?
-
-> +		return 0;
-> +
->  	/* If it will be an out-of-place direct write, don't bother. */
->  	if (dio && f2fs_lfs_mode(sbi))
->  		return 0;
+> diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+> index 8c417864c66a..15ac18bbbc8e 100644
+> --- a/fs/f2fs/data.c
+> +++ b/fs/f2fs/data.c
+> @@ -598,7 +598,7 @@ static void __f2fs_submit_merged_write(struct f2fs_sb_info *sbi,
+>  		io->fio.op = REQ_OP_WRITE;
+>  		io->fio.op_flags = REQ_META | REQ_PRIO | REQ_SYNC;
+>  		if (!test_opt(sbi, NOBARRIER))
+> -			io->fio.op_flags |= REQ_PREFLUSH | REQ_FUA;
+> +			io->fio.op_flags |= REQ_FUA;
+>  	}
+>  	__submit_merged_bio(io);
+>  	up_write(&io->io_rwsem);
 > -- 
 > 2.32.0
