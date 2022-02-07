@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B45C35295
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:55:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E728C47087
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387865AbiBGLln (ORCPT
+        id S1387887AbiBGLmD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:41:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
+        Mon, 7 Feb 2022 06:42:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382159AbiBGL3R (ORCPT
+        with ESMTP id S1384594AbiBGL3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:29:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ECD4C02B667;
-        Mon,  7 Feb 2022 03:27:22 -0800 (PST)
+        Mon, 7 Feb 2022 06:29:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86168C02B5D1;
+        Mon,  7 Feb 2022 03:27:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 731C46006F;
-        Mon,  7 Feb 2022 11:27:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F639C340EB;
-        Mon,  7 Feb 2022 11:27:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E522B80EBD;
+        Mon,  7 Feb 2022 11:27:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47739C004E1;
+        Mon,  7 Feb 2022 11:27:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233227;
-        bh=0G4mg7JrTwEv++ARZxUJpNZ1oLOwrJ8UNREcb0ZZ/f8=;
+        s=korg; t=1644233247;
+        bh=a/ZBpKbDDQqi+MpGt1DElsti8XZTAvY6yZ+reuerCY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vl+ow5r63hLe8mibBlDKEtZ+gAEMCt4rq+cTwmL54S/4HdtU8CixprRmn63SE+1NQ
-         piP/m2yasGdOCydmHBesT8QT7q873Y17W5nORwNN4wNKPd9a/auTWaBvyvkvXAgUbn
-         ZtDYYuKTTvD2LF6sAripFtyeiVG2TasIkU1Ke+ok=
+        b=p5o0Zh5Mf7NzRn4EdtNdw7rNkieDEJ8Y4Tgtt/87MbaOjnKiNDOdzHkQOjxmlTvZR
+         bp980SrQoklv1Tfqo9lhSh02VnXi6e5tmmoxkoAidKZvow0zG5DiG7pdbqMTOXR31l
+         6cr8EPKtk85Cg2FyCHdSIcp36HXOM950Zr7C/ieM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 5.15 058/110] net: ieee802154: ca8210: Stop leaking skbs
-Date:   Mon,  7 Feb 2022 12:06:31 +0100
-Message-Id: <20220207103804.247225937@linuxfoundation.org>
+        stable@vger.kernel.org, Lior Nahmanson <liorna@nvidia.com>,
+        Raed Salem <raeds@nvidia.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 064/110] net: macsec: Fix offload support for NETDEV_UNREGISTER event
+Date:   Mon,  7 Feb 2022 12:06:37 +0100
+Message-Id: <20220207103804.446898871@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -50,35 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Lior Nahmanson <liorna@nvidia.com>
 
-commit 621b24b09eb61c63f262da0c9c5f0e93348897e5 upstream.
+commit 9cef24c8b76c1f6effe499d2f131807c90f7ce9a upstream.
 
-Upon error the ieee802154_xmit_complete() helper is not called. Only
-ieee802154_wake_queue() is called manually. We then leak the skb
-structure.
+Current macsec netdev notify handler handles NETDEV_UNREGISTER event by
+releasing relevant SW resources only, this causes resources leak in case
+of macsec HW offload, as the underlay driver was not notified to clean
+it's macsec offload resources.
 
-Free the skb structure upon error before returning.
+Fix by calling the underlay driver to clean it's relevant resources
+by moving offload handling from macsec_dellink() to macsec_common_dellink()
+when handling NETDEV_UNREGISTER event.
 
-Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-5-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Fixes: 3cf3227a21d1 ("net: macsec: hardware offloading infrastructure")
+Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Raed Salem <raeds@nvidia.com>
+Reviewed-by: Antoine Tenart <atenart@kernel.org>
+Link: https://lore.kernel.org/r/1643542141-28956-1-git-send-email-raeds@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ieee802154/ca8210.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/macsec.c |   24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -1771,6 +1771,7 @@ static int ca8210_async_xmit_complete(
- 			status
- 		);
- 		if (status != MAC_TRANSACTION_OVERFLOW) {
-+			dev_kfree_skb_any(priv->tx_skb);
- 			ieee802154_wake_queue(priv->hw);
- 			return 0;
- 		}
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -3870,6 +3870,18 @@ static void macsec_common_dellink(struct
+ 	struct macsec_dev *macsec = macsec_priv(dev);
+ 	struct net_device *real_dev = macsec->real_dev;
+ 
++	/* If h/w offloading is available, propagate to the device */
++	if (macsec_is_offloaded(macsec)) {
++		const struct macsec_ops *ops;
++		struct macsec_context ctx;
++
++		ops = macsec_get_ops(netdev_priv(dev), &ctx);
++		if (ops) {
++			ctx.secy = &macsec->secy;
++			macsec_offload(ops->mdo_del_secy, &ctx);
++		}
++	}
++
+ 	unregister_netdevice_queue(dev, head);
+ 	list_del_rcu(&macsec->secys);
+ 	macsec_del_dev(macsec);
+@@ -3884,18 +3896,6 @@ static void macsec_dellink(struct net_de
+ 	struct net_device *real_dev = macsec->real_dev;
+ 	struct macsec_rxh_data *rxd = macsec_data_rtnl(real_dev);
+ 
+-	/* If h/w offloading is available, propagate to the device */
+-	if (macsec_is_offloaded(macsec)) {
+-		const struct macsec_ops *ops;
+-		struct macsec_context ctx;
+-
+-		ops = macsec_get_ops(netdev_priv(dev), &ctx);
+-		if (ops) {
+-			ctx.secy = &macsec->secy;
+-			macsec_offload(ops->mdo_del_secy, &ctx);
+-		}
+-	}
+-
+ 	macsec_common_dellink(dev, head);
+ 
+ 	if (list_empty(&rxd->secys)) {
 
 
