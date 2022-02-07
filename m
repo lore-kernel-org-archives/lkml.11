@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F130C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D903C3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378299AbiBGLPt (ORCPT
+        id S1378462AbiBGLPw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49682 "EHLO
+        Mon, 7 Feb 2022 06:15:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353438AbiBGLMN (ORCPT
+        with ESMTP id S1354078AbiBGLMS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:12:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0447BC043181;
-        Mon,  7 Feb 2022 03:12:12 -0800 (PST)
+        Mon, 7 Feb 2022 06:12:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B70C043181;
+        Mon,  7 Feb 2022 03:12:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BEF261261;
-        Mon,  7 Feb 2022 11:12:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D8EC004E1;
-        Mon,  7 Feb 2022 11:12:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 513F6B80EE8;
+        Mon,  7 Feb 2022 11:12:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DF2DC340EB;
+        Mon,  7 Feb 2022 11:12:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232332;
-        bh=D4HgBqFSauzWnvviuzxEObdZ74nhubp33ocUfuSYRzw=;
+        s=korg; t=1644232335;
+        bh=t1mDbYUz5ncUHrgoorpW5ZuOdFGpnnHi3xKn5xv1gsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I1QE0ZtHyMstXyY7dF/DNjFqyBASjh1DcGJ95akvO6FUC431XI0z4pZIbthAoqVXL
-         Z4Z4GS5lXUr76lR7YO8mWfV4kdknxq+hgc5ksEAY0fNIkWhRhHuQq9IHjtU6XBkrp9
-         Bl/Q2bVmGG0ad7C/B0LQaPm1HVCKKdSuq6GQ1eL4=
+        b=Ndk2yByGpknPOtX9p3VTcsNfkizELBPmkhGzeuqFFDGWB9qfXjMP8phwI1JLY29yj
+         utO1enj46KOyvSIQhUkLT3UKz4CINQ+gLvgHTfGCAzcn1SJAfxttHb9+qneAGukuC4
+         8zjBFdcZQW1N0JvcCT5W3Gw5/ziZw8iErfbGYhh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudheesh Mavila <sudheesh.mavila@amd.com>,
-        Raju Rangoju <Raju.Rangoju@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
+        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 42/69] net: amd-xgbe: ensure to reset the tx_timer_active flag
-Date:   Mon,  7 Feb 2022 12:06:04 +0100
-Message-Id: <20220207103757.008711261@linuxfoundation.org>
+Subject: [PATCH 4.14 43/69] net: amd-xgbe: Fix skb data length underflow
+Date:   Mon,  7 Feb 2022 12:06:05 +0100
+Message-Id: <20220207103757.041725409@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -51,37 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Raju Rangoju <Raju.Rangoju@amd.com>
+From: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
 
-commit 7674b7b559b683478c3832527c59bceb169e701d upstream.
+commit 5aac9108a180fc06e28d4e7fb00247ce603b72ee upstream.
 
-Ensure to reset the tx_timer_active flag in xgbe_stop(),
-otherwise a port restart may result in tx timeout due to
-uncleared flag.
+There will be BUG_ON() triggered in include/linux/skbuff.h leading to
+intermittent kernel panic, when the skb length underflow is detected.
 
-Fixes: c635eaacbf77 ("amd-xgbe: Remove Tx coalescing")
-Co-developed-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
-Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
-Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+Fix this by dropping the packet if such length underflows are seen
+because of inconsistencies in the hardware descriptors.
+
+Fixes: 622c36f143fc ("amd-xgbe: Fix jumbo MTU processing on newer hardware")
+Suggested-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
 Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
-Link: https://lore.kernel.org/r/20220127060222.453371-1-Raju.Rangoju@amd.com
+Link: https://lore.kernel.org/r/20220127092003.2812745-1-Shyam-sundar.S-k@amd.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
 --- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
 +++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-@@ -724,7 +724,9 @@ static void xgbe_stop_timers(struct xgbe
- 		if (!channel->tx_ring)
- 			break;
+@@ -2722,6 +2722,14 @@ read_again:
+ 			buf2_len = xgbe_rx_buf2_len(rdata, packet, len);
+ 			len += buf2_len;
  
-+		/* Deactivate the Tx timer */
- 		del_timer_sync(&channel->tx_timer);
-+		channel->tx_timer_active = 0;
- 	}
- }
++			if (buf2_len > rdata->rx.buf.dma_len) {
++				/* Hardware inconsistency within the descriptors
++				 * that has resulted in a length underflow.
++				 */
++				error = 1;
++				goto skip_data;
++			}
++
+ 			if (!skb) {
+ 				skb = xgbe_create_skb(pdata, napi, rdata,
+ 						      buf1_len);
+@@ -2751,8 +2759,10 @@ skip_data:
+ 		if (!last || context_next)
+ 			goto read_again;
  
+-		if (!skb)
++		if (!skb || error) {
++			dev_kfree_skb(skb);
+ 			goto next_packet;
++		}
+ 
+ 		/* Be sure we don't exceed the configured MTU */
+ 		max_len = netdev->mtu + ETH_HLEN;
 
 
