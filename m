@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B4CC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C62C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386484AbiBGLtr (ORCPT
+        id S1389528AbiBGLt6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:49:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
+        Mon, 7 Feb 2022 06:49:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386692AbiBGLfY (ORCPT
+        with ESMTP id S1377058AbiBGLf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:35:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14237C043181;
-        Mon,  7 Feb 2022 03:35:22 -0800 (PST)
+        Mon, 7 Feb 2022 06:35:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8465CC043188;
+        Mon,  7 Feb 2022 03:35:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98659B8112C;
-        Mon,  7 Feb 2022 11:35:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDEBEC004E1;
-        Mon,  7 Feb 2022 11:35:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2276360DBF;
+        Mon,  7 Feb 2022 11:35:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03BB3C004E1;
+        Mon,  7 Feb 2022 11:35:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233720;
-        bh=ltgwrwtKt8xHd3CXYRwUOLL0p3DAs3UWKiWzsRUVJi0=;
+        s=korg; t=1644233726;
+        bh=+nRe8g/tE2F5FU0y+dnQVbMd4p5XFCbxsci5pHSsjd4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xkUbl18pbkIbI+wYslySfQ06iNueEAuDHHucBzeWTdgqP/iW0QWTtUuf429dsNyHc
-         FSbQCFj9wdKZCwIUvZ3bf3h/yuzHlp2aBG13KfwQRYCMGVj+6K4RxCBIpN/nVnS13r
-         BlNGQpOYvKMopKCy0udvqV59ftgoEbb7f8Pn7LnM=
+        b=SLTGvaF2+Ia63l5vsb5kLATfzRw1NAGbj2MDCGwUH1QMnOsO1UKjvPVKQ3shoTj8q
+         vvoyKVZ7sGPgZZ2H3V1Bf2oYEmAH1xgoDWELVARoyZr2aI9Z4LOfsoTspeKxvhOXcY
+         uJ05GFa1WcrZboBrip/s6UQaP9vihZusdzHmwzRw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haiyue Wang <haiyue.wang@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 100/126] gve: fix the wrong AdminQ buffer queue index check
-Date:   Mon,  7 Feb 2022 12:07:11 +0100
-Message-Id: <20220207103807.532064652@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: [PATCH 5.16 102/126] selftests/exec: Remove pipe from TEST_GEN_FILES
+Date:   Mon,  7 Feb 2022 12:07:13 +0100
+Message-Id: <20220207103807.598278314@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -49,62 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haiyue Wang <haiyue.wang@intel.com>
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-commit 1f84a9450d75e08af70d9e2f2d5e1c0ac0c881d2 upstream.
+commit 908a26e139e8cf21093acc56d8e90ddad2ad1eff upstream.
 
-The 'tail' and 'head' are 'unsigned int' type free-running count, when
-'head' is overflow, the 'int i (= tail) < u32 head' will be false:
+pipe named FIFO special file is being created in execveat.c to perform
+some tests. Makefile doesn't need to do anything with the pipe. When it
+isn't found, Makefile generates the following build error:
 
-Only '- loop 0: idx = 63' result is shown, so it needs to use 'int' type
-to compare, it can handle the overflow correctly.
+make: *** No rule to make target
+'../tools/testing/selftests/exec/pipe', needed by 'all'.  Stop.
 
-typedef uint32_t u32;
+pipe is created and removed during test run-time.
 
-int main()
-{
-        u32 tail, head;
-        int stail, shead;
-        int i, loop;
+Amended change log to add pipe remove info:
+Shuah Khan <skhan@linuxfoundation.org>
 
-        tail = 0xffffffff;
-        head = 0x00000000;
-
-        for (i = tail, loop = 0; i < head; i++) {
-                unsigned int idx = i & 63;
-
-                printf("+ loop %d: idx = %u\n", loop++, idx);
-        }
-
-        stail = tail;
-        shead = head;
-        for (i = stail, loop = 0; i < shead; i++) {
-                unsigned int idx = i & 63;
-
-                printf("- loop %d: idx = %u\n", loop++, idx);
-        }
-
-        return 0;
-}
-
-Fixes: 5cdad90de62c ("gve: Batch AQ commands for creating and destroying queues.")
-Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 61016db15b8e ("selftests/exec: Verify execve of non-regular files fail")
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/google/gve/gve_adminq.c |    2 +-
+ tools/testing/selftests/exec/Makefile |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/google/gve/gve_adminq.c
-+++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-@@ -301,7 +301,7 @@ static int gve_adminq_parse_err(struct g
-  */
- static int gve_adminq_kick_and_wait(struct gve_priv *priv)
- {
--	u32 tail, head;
-+	int tail, head;
- 	int i;
+--- a/tools/testing/selftests/exec/Makefile
++++ b/tools/testing/selftests/exec/Makefile
+@@ -5,7 +5,7 @@ CFLAGS += -D_GNU_SOURCE
  
- 	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
+ TEST_PROGS := binfmt_script non-regular
+ TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216
+-TEST_GEN_FILES := execveat.symlink execveat.denatured script subdir pipe
++TEST_GEN_FILES := execveat.symlink execveat.denatured script subdir
+ # Makefile is a run-time dependency, since it's accessed by the execveat test
+ TEST_FILES := Makefile
+ 
 
 
