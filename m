@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18EEDC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A4AC3A59F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385769AbiBGLca (ORCPT
+        id S1385784AbiBGLcf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:32:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
+        Mon, 7 Feb 2022 06:32:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383088AbiBGLVe (ORCPT
+        with ESMTP id S1383097AbiBGLVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:21:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C063C0401D6;
-        Mon,  7 Feb 2022 03:21:17 -0800 (PST)
+        Mon, 7 Feb 2022 06:21:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54334C0401C8;
+        Mon,  7 Feb 2022 03:21:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 870D5B811B2;
-        Mon,  7 Feb 2022 11:21:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC339C004E1;
-        Mon,  7 Feb 2022 11:21:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CC3761388;
+        Mon,  7 Feb 2022 11:21:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE7DBC004E1;
+        Mon,  7 Feb 2022 11:21:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232874;
-        bh=xjkRWAuO6sjuAxBcS+6c7kSyPv7Q3Yfk0x1pK5sdx1M=;
+        s=korg; t=1644232871;
+        bh=3Iw4+C7epksGrwi7zi0NVaXS+fJ2+w8mzoPqqhMRU+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZGoYXE4TdDwZq6xkP+HyZrRcVwxor1/AAJn99NCbAVGgrYT22AWTHX8UbNeREivGg
-         H2CNcU+qCuF7O5P6pv2eIOsKjOaToiGlgG7LH6ITY+YpbYcrBRJEZRtdmrBZDwRRwK
-         LegH4vHt263UPQGnf6vy0ox5e+rn67CukVqcRlRY=
+        b=HHlDo0g4OPPsWn+tCzPfd+I8oIhplXNzw9E36P1axyxVWqxFV/iKBLaipsx7FIksu
+         TifgM9hRzHY7pe/18yAayHFNS7lFONI2M6Ty3mb9Phdq/vOcQneL6CBk2JRv2JAn7i
+         1ZW6Taig28vyJJ7t0NdA3zkcH/DOiM5v4Zt4FGmk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jukka Heikintalo <heikintalo.jukka@gmail.com>,
-        =?UTF-8?q?Pawe=C5=82=20Susicki?= <pawel.susicki@gmail.com>,
-        Jonas Hahnfeld <hahnjo@hahnjo.de>, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 06/74] ALSA: usb-audio: Correct quirk for VF0770
-Date:   Mon,  7 Feb 2022 12:06:04 +0100
-Message-Id: <20220207103757.449235329@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.10 05/74] ASoC: ops: Reject out of bounds values in snd_soc_put_xr_sx()
+Date:   Mon,  7 Feb 2022 12:06:03 +0100
+Message-Id: <20220207103757.412513163@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -51,41 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonas Hahnfeld <hahnjo@hahnjo.de>
+From: Mark Brown <broonie@kernel.org>
 
-commit 4ee02e20893d2f9e951c7888f2284fa608ddaa35 upstream.
+commit 4cf28e9ae6e2e11a044be1bcbcfa1b0d8675fe4d upstream.
 
-This device provides both audio and video. The original quirk added in
-commit 48827e1d6af5 ("ALSA: usb-audio: Add quirk for VF0770") used
-USB_DEVICE to match the vendor and product ID. Depending on module order,
-if snd-usb-audio was asked first, it would match the entire device and
-uvcvideo wouldn't get to see it. Change the matching to USB_AUDIO_DEVICE
-to restore uvcvideo matching in all cases.
+We don't currently validate that the values being set are within the range
+we advertised to userspace as being valid, do so and reject any values
+that are out of range.
 
-Fixes: 48827e1d6af5 ("ALSA: usb-audio: Add quirk for VF0770")
-Reported-by: Jukka Heikintalo <heikintalo.jukka@gmail.com>
-Tested-by: Jukka Heikintalo <heikintalo.jukka@gmail.com>
-Reported-by: Paweł Susicki <pawel.susicki@gmail.com>
-Tested-by: Paweł Susicki <pawel.susicki@gmail.com>
-Cc: <stable@vger.kernel.org> # 5.4, 5.10, 5.14, 5.15
-Signed-off-by: Jonas Hahnfeld <hahnjo@hahnjo.de>
-Link: https://lore.kernel.org/r/20220131183516.61191-1-hahnjo@hahnjo.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220124153253.3548853-4-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/quirks-table.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/soc-ops.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/sound/usb/quirks-table.h
-+++ b/sound/usb/quirks-table.h
-@@ -84,7 +84,7 @@
-  * combination.
-  */
- {
--	USB_DEVICE(0x041e, 0x4095),
-+	USB_AUDIO_DEVICE(0x041e, 0x4095),
- 	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
- 		.ifnum = QUIRK_ANY_INTERFACE,
- 		.type = QUIRK_COMPOSITE,
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -880,6 +880,8 @@ int snd_soc_put_xr_sx(struct snd_kcontro
+ 	unsigned int i, regval, regmask;
+ 	int err;
+ 
++	if (val < mc->min || val > mc->max)
++		return -EINVAL;
+ 	if (invert)
+ 		val = max - val;
+ 	val &= mask;
 
 
