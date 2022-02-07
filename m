@@ -2,156 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF3EC3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F2CCC3526C
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233796AbiBGFxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:53:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        id S241927AbiBGGe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:34:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232158AbiBGFsS (ORCPT
+        with ESMTP id S241080AbiBGG3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 00:48:18 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2067.outbound.protection.outlook.com [40.107.22.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7689C043181
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 21:48:16 -0800 (PST)
+        Mon, 7 Feb 2022 01:29:45 -0500
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10088.outbound.protection.outlook.com [40.107.1.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A85C043181;
+        Sun,  6 Feb 2022 22:29:43 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MtniYe6SJlSf7x1YX6oYMsJNFPm+a3XW0AEIY0mKignDC+Y+ejZwotvjk8HW2pY/GN1Zpo65PiLmb132Q4C8HWgpJ9cKVVFkQHm0Xzmbfs8qzLFFr9zlppojMnK9iADOyOOguvGmZajY0xk8f2Ci5b8HPGWGbTaRHCdCb8J5SApPiQWCpDzVvAyMezrkTk0sLVsBUbdJc+Wv+PKsDjjC+zriob009Ir/37hTyGAIr7ygFNwIXjfBdmFwfIlgiKCqbsc8FntCJox+nxNifjZJ1ch0Q5G087Cegl5GB+RvCEhpcSSO2EeNbHa1a/ZxwKGdVw2hnFb90LvG7a/uP7T+nA==
+ b=hh2hhvq8+ICs2RhO1yrYJg1BYrJHP1sGPY2riEkX7/vMi2A1biTNOP2C8hRr6E6OFkTf+Y4djPr+nuLHPGarwUb9FpSg7REoEHyg7CHMK091PAzrWLa7RcvGIZQEPE+4Ewm2tu+e3SbaH5fBADaLssemI6jb41AGpiMBkkr9otWcT5Dn8vsrpX6IUT/qvlDfeSUFXIXEWzJ/5g8rgnmRlnA0FI77s3jIDQN35moZRVdzSV3hPNB0M9p0AvMZZ2FXXGlqGIeJ1LLhjy/z15CyjG7PSbCqgoRPCHvr2SxYh3aqdegsS0RXbrUXtwCfj3HmnbGrsfPEiUtryEkNH2YnFQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hB5atL2VuGp3Qf6sMCeO5bZAGkMi3ZnjjV7jIvHF4Jg=;
- b=E5PECWJHo03gUP6yjXb6B1nCrgh9M0eRVfK9Q4krrFmNHCKaYMPduilZZQmLNv6A40pk3XIzNAK3ay0ALncpcuusNwc3gSMh7LL1keysGVRfBFIJonafIjWVn03kWUEBI1UUZWvJQyQtn6JmL/+l7zKhDkp9SELJu/yezxSnXiRJsOXa8pC8LItXswGKBAcH406ql1ZMD1z8VZcq43MtQvczIYr66ZzLFfr4glRpmV6g87nIhjDwlcvCquQZFv83cL91bPxenZHF9nvjaBy317lfZdaAJsVzqxS23ZgxF4pYiz9YnVQmggpTrjTldgW+NxWcF8CUVypA9YGNN84yAQ==
+ bh=lcBq9rBqhKlkg0kWWxpsPQTZV0OTdpYq0gd4i25noqw=;
+ b=kNlVOYuZkIi/YAUYRM5uRrVYuOz+hTBEhqoQSPV9X2XLGwU+IoIqenK68f8HdRqxUlRrLRDODNzCGQIoL+iELrMwvhKDjTztVP3gu64VAiCGsXDrpFeDulkkTvVnre995QLYncoXcJjBXQ1kOxgFNSbCU45UjUvbauUjmWWEjWvQ4+H0zaePU8lfzuAir8uLtTHFaFFrAlkSDwpdE4KOW54sAi2RYb0MtHlLhXEXRGvfP6xoSNOPWw4QVWz4kj49ZeuEEbXUmRLX3gczNsudsMcahrHmvzDhquf2go3hoVThVk8xEtlUWdoV5+1wyctLlUKGnwaay48jDVuL/yugjw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hB5atL2VuGp3Qf6sMCeO5bZAGkMi3ZnjjV7jIvHF4Jg=;
- b=Mp77vT5DFh6Ton9HA51okX1CMBAt7Qb8j5qKz22QcaX/K3LmLbz0ldP68r+g3yY3D9Pbmz+PvtpM8bAYgqLSmjJc1L29IxZUcAx+GZwePsrxTyV8PKmWFWd+vhSW+6x59twxIASyr9NeBVE520GKATkzu8vPUoyh7teQtyWvU60=
+ bh=lcBq9rBqhKlkg0kWWxpsPQTZV0OTdpYq0gd4i25noqw=;
+ b=TkV8r0jZlajxri4cvivnVdbwhuX1k1IvDKBm/2CKTkeMpg1CvKvzrBt4/7NDFMkEXf6HCy9T1v1Q0WK/R2x3UCq8uOf70L4MhwZ8k4qLXGrVa0eChlWTomn/Wi539QjiYBFWXVFuwoEUNJpqk8kLLX+nehVTbWBrVSreDoZ/BsA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM7PR04MB7046.eurprd04.prod.outlook.com (2603:10a6:20b:113::22)
- by VI1PR0402MB3677.eurprd04.prod.outlook.com (2603:10a6:803:26::14) with
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by AM6PR04MB6744.eurprd04.prod.outlook.com (2603:10a6:20b:f6::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17; Mon, 7 Feb
- 2022 05:48:12 +0000
-Received: from AM7PR04MB7046.eurprd04.prod.outlook.com
- ([fe80::ddca:beb1:95b0:1ae1]) by AM7PR04MB7046.eurprd04.prod.outlook.com
- ([fe80::ddca:beb1:95b0:1ae1%4]) with mapi id 15.20.4951.019; Mon, 7 Feb 2022
- 05:48:12 +0000
-From:   Liu Ying <victor.liu@nxp.com>
-To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Cc:     linux-imx@nxp.com, Rob Clark <robdclark@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Zain Wang <wzz@rock-chips.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Subject: [PATCH RESEND] drm/self_refresh: Don't trigger the entry timer for self refresh work if CRTC state is inactive
-Date:   Mon,  7 Feb 2022 13:46:17 +0800
-Message-Id: <20220207054617.987811-1-victor.liu@nxp.com>
-X-Mailer: git-send-email 2.25.1
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.19; Mon, 7 Feb
+ 2022 06:29:41 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::3d7e:6627:fdd0:9d13]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::3d7e:6627:fdd0:9d13%5]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
+ 06:29:41 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        mirela.rabulea@oss.nxp.com
+Cc:     hverkuil-cisco@xs4all.nl, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v1] media: imx-jpeg: fix a bug of accessing array out of bounds
+Date:   Mon,  7 Feb 2022 14:28:43 +0800
+Message-Id: <20220207062843.15562-1-ming.qian@nxp.com>
+X-Mailer: git-send-email 2.33.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: SI2PR02CA0044.apcprd02.prod.outlook.com
- (2603:1096:4:196::17) To AM7PR04MB7046.eurprd04.prod.outlook.com
- (2603:10a6:20b:113::22)
+X-ClientProxiedBy: SG2PR03CA0106.apcprd03.prod.outlook.com
+ (2603:1096:4:7c::34) To AM6PR04MB6341.eurprd04.prod.outlook.com
+ (2603:10a6:20b:d8::14)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7d4529e6-b338-4393-81a3-08d9e9fd6d39
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB3677:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3677BC9EBE7B43C1E5D50D45982C9@VI1PR0402MB3677.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:758;
+X-MS-Office365-Filtering-Correlation-Id: 2edb385e-b2ad-4379-6e56-08d9ea0338b1
+X-MS-TrafficTypeDiagnostic: AM6PR04MB6744:EE_
+X-Microsoft-Antispam-PRVS: <AM6PR04MB674456EF48B6A7AA21857883E72C9@AM6PR04MB6744.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vZv2VFCoIQnX+CU08Kg+StfguTGvKll38WHNBsteeU7VVqBwTZBUdqk00TT1oHuGP96K+Rub6MSH9wtOz7K9cf8HndLynehNggvaht62z9bBiLPVnuzyv4npGM37L9O5KvUN/uAksCxjlB3MkAlc8D1aQ0gJu+gdLA/SKv+AfZNFsaq3OgavHxjkclGA8+5VY/haJGmyf/FgGbJLKvJV2g5uOQ3hCaEcxQbkCLhaVJL0XouX86wb26iz8vSWDnA2fRbBm2g2lObaqUfD1UeZZ27UvPp/1USRrAI3X6HU+ZnmNDwJBpQdz0tyiWtzKtFDEYDlByw4PL4D71V+BXzqehiAYevOWUE4+WCUrkBsL2HMnUMXrMIOcq8xe+eoHT1YEocODemOaa6iKAEoHmjv7bXTvP7h6FmM51g6ZVKwOmn7iziboFJedg78xP3MHkrsPnQAIFvr6esJ63c+dIzK2oBms0boMs5kqJglNGQTdNcNVk4ehkIsG8BW4gDIFd8irRahob05tkKl4jAPXSUP/GgVZpWs3pxDO4W96tK7nv8GmZwoj/CGIUSvUW0ImeJqyNBN6huF6rUC24vQLyPKDviVEVmtK/s3l7Ws0GyuhPFKK0JnJz44qFTueGi52ARj4bWl93L3OMhK31rZuTLjrIFKydF7FNKmdVg31Js9sLrTiB1Zuw5Fy5PidCJcu8oQZg0QowlUVjd05pRJCC4SLQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB7046.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(6486002)(2906002)(1076003)(186003)(6512007)(316002)(54906003)(52116002)(508600001)(36756003)(6506007)(2616005)(86362001)(8936002)(66476007)(66556008)(66946007)(83380400001)(8676002)(5660300002)(7416002)(38350700002)(38100700002)(4326008);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: mbzgelYCYFOZTyMIAb0i+VNXvAn5W9AZHq3m8rgW1EpZJyr36SH5UWWgYVfDQJGoO21RJqX2kzeUZ5IYi8GKdch1/531/poIvxTcm+eKqfc+0Y6+9B7XrM+sF72blVq9Cklqt+qyz4haYMOG7tIq79mxsI6loQetn1M9yngQcOyAtBhof5MhKC8/bj+p2JXTRmWC0gsewQni/Yrai7oUJ+Yk9fIKUTfJlEhyN0PiXxQV1R3ynAiXNo0k+NrV5PpgnNCYlIMw+HHdcgaojd28gpDNy3BlFZ2VMVPaTp6msaYc7RzSW6hrpdEj4o1N3tyn5Q7cqmIeDlJf/g7mcgsaL8ecmkmSt5hCLE+yWLr8Do+9SwWT6BLMNABN+UyKsrGP6AJduE9TrhB75XGczDQwdCDogcCaTPa5dRMM/GMlXUbFOal54UZzD+XB9g10tXOW8oiGtnbm8VTKRrQi8ADir5Bb792PVabLwLoBO3vfWwkfgkXnkESlYPydjG+b4mNIlrMkf609FGoJRkjoKG9YNeTjM+LNDex5pwRDMbHX+Qi/OXRWvMvyW+mDQcnTLxnvaEIa0icAvYCQbR98b5SNfpd/3GHHplcxENCtGRV5nU2aOQ7jjWO4LWk8P1UzkIEplUeJ5xn1Hi6c0tgBr0minVF34OrbulRw1hvs/SCHKzkEr9dxe7I+/B7BCmpn5TUBJ0c4JnNzX/pWUxkQGEIM2g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(2906002)(52116002)(5660300002)(8936002)(508600001)(316002)(66476007)(66946007)(44832011)(36756003)(7416002)(6486002)(6506007)(6512007)(2616005)(1076003)(186003)(66556008)(26005)(4326008)(38350700002)(38100700002)(86362001)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?07Mma4LV3rTFyXi3t6dGsYlP0i9yEPAfy4q2dZqwBpTCmOgLT/nw6PzZnu+G?=
- =?us-ascii?Q?hNFhkVL6wLx/uMbt8uZ0YLKC/EzLQMFqvR9khf9N7kctc6ZZI/ISKOS8F5Px?=
- =?us-ascii?Q?IOYzr1ygmdRgg9FVISCSKcU5ijUb/Wt8sHI48cl3quL8+y0zys6W1YZpE3RW?=
- =?us-ascii?Q?mPmD4WQKme2aXfac9F5mZ1WyojPYrHhUT5omtkUrTmwgS2CfWddM7H7LonhH?=
- =?us-ascii?Q?LKKUf0+l6UismnSZ6jGUQCQnhLNdP3pAVJ90psRtx9VT+e/EijxEDdJ6BoCC?=
- =?us-ascii?Q?Luy4wvXIP71WcmdBv0jU7yoAHeJlM/+Iz6wW1TF8ut7Y1hQyooJlnRpxVT19?=
- =?us-ascii?Q?RS4pyHCM/0dqSuFcDotwqi2aUW5b6xjTW68BhFLpxGirWck1gMGDxoZ2PHVm?=
- =?us-ascii?Q?87QXGwCxHzc8KUiltQlUn6MD+VU1o5kkylaPM3OiXXCxn72FeuY/DDWvV/Xd?=
- =?us-ascii?Q?em41Bm0WpjTz5/FrzeKF5RiuJTXJXnjpGp9MP9G6UeiFEsZ2g4qSH38w6xja?=
- =?us-ascii?Q?BSpsYRKmx6RUDhhPkSBiuXe+C/BRTjGei0dqgrLUN3tNuuQZxqHztY9bdWGD?=
- =?us-ascii?Q?WC1S8mS/y5PyhL1mQrKYvG+kr250054x0O8tmjLCn3+BhQOSZbp+DGJtOv4B?=
- =?us-ascii?Q?+3y40EGX1WWRGHvIn+MBb+6UzplB9tNCiUDcTuuvGX9H1hmk+O7z4G9Hv5XH?=
- =?us-ascii?Q?OUXYUyo2O9Wcb/ixxbMA96Vq3CQodKtb296M5lBA5QmOBCntG0UOKXcOrNnZ?=
- =?us-ascii?Q?+vE6Ymb53Uwyidnzy72IBy3UrRoj2AZTGznZ8ScXbW36DlaSPRq1g8ypxLRm?=
- =?us-ascii?Q?tJdMIRCvbujfLbknA33lJnhUsXAXwL/8Ux3J+IGfchJJN6lBqglp8Qi9ZnDy?=
- =?us-ascii?Q?XDpXGxvPW7v9W0o2H6VqoiXbOjliBhe7Y6SQ50KIzjCWzfc9yZP8mwypEb+8?=
- =?us-ascii?Q?gII/xiZUo/MOh7Om9EHfTtvEqFwLlhAkpKmQtJow1ZYLNCGWudGwWmsJ5x5l?=
- =?us-ascii?Q?QVmkhyEAb7WqTfN7x4tU47SobrQteETjhS5k90z2iDSMvPFw1o5Rzh0dSmPY?=
- =?us-ascii?Q?E9mulynRS+KonQ0Y1B+eewXqUQK3lEcGW01UIj2+sYmDbRfJnAqNtBFwAZV9?=
- =?us-ascii?Q?ctsraN0hI4qEzLKZ99pMET8sUNO32xEZ0EvFiHCC8O4fhtLI0nY9AvgcGMiW?=
- =?us-ascii?Q?KVhm4OYw6GkDMYZXyhHUTCVOM+4yefWyn7SfhN1SP37NYfrVG0CJ78MbIROV?=
- =?us-ascii?Q?FuwRvJYqZuDl8Pf0SxsrhhIKi9el+y5hmMQ23v/WinEoqthVIkRkj5FtVhYI?=
- =?us-ascii?Q?Q3WG8Ivi6UFMYsYXzwTVGbVYGvM+UvpaunVmXmBUXgeW3x7wp2y7uOIiQqPs?=
- =?us-ascii?Q?TS0/QpU9c+zpJkowe82B0mfFT2EUKukUcRZZ0dljq6W35vfMVTxivDc2or0W?=
- =?us-ascii?Q?em8X8CChPJqBLfmZ6r5jswlZxgcZHyYcy0yoSt1q7Mo09e6lzt3/UxLiQgZ2?=
- =?us-ascii?Q?aqzZVcjtChY2bkKe8DMbgeoBEZrx2sM5sEWbzfq/mRijLAC29IgfcuYpbnA0?=
- =?us-ascii?Q?jUeVez4rJCGU4lWjYRVCH34MRMdBJNgZ6HccYXYHquVQmXdJzqGSJIdV7DsY?=
- =?us-ascii?Q?4kkj+vlqYTtFcgG5PhlzIjw=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XKHo+e4yGgTageSfcxHbCtrnSo4hREYybDQOFnPyorH4YiynU6nPM0XNhpKP?=
+ =?us-ascii?Q?fQnoChZiIgcceMqAUIrdZ6zfRroSjXUZzo4A1C6l9U21u4vua/Tn7TxltqZ5?=
+ =?us-ascii?Q?KJ53/Apc7l2u1daViyZM+REF6xAZNga/jBQKNRICwHtknyPpGCT7ohz5QMb3?=
+ =?us-ascii?Q?VMtSZfJFG6G4nkTyUXDHCkVJtR1f7qoDw9+3PSL0MEvEm4N6KZs0VzTjLT94?=
+ =?us-ascii?Q?j17tk0DuMnNb/kBQbG8nPTBp1eL6cB7fScvzfEwlmcxMOjRMwzgl5Lr1juQD?=
+ =?us-ascii?Q?wqOGt/Tx6VFlvwzWAw5gEGYjiBjAibX65nV8p5uxBpClxQDyrQOoRwWDpye5?=
+ =?us-ascii?Q?/AIikIvKITy7Yabtp/f1ozBft7+DSfSMTEKvWZnlwOJ7eJNe6h4A+qRZACsX?=
+ =?us-ascii?Q?AquklXagAu2zunBWNPZa0E8M12RcMgxhDUFfIasE9RryOT3jU7BP+HLi/zk1?=
+ =?us-ascii?Q?oKYOIEYMhDG2W/OenCbbOBw/HARta+z4Yswmd9bIXDDUNRMWFleAa/eDHX9U?=
+ =?us-ascii?Q?GfsjXLSb3neKw4Aottfwsq9S/qYFPFJwhSIpyemqAjkMbJPO/TIFu7BS5lqs?=
+ =?us-ascii?Q?5WGOLVtnokIfBW+Z7wEjRoj307yHP7qMWC/QBfT/JiULCzdxsSxknh1vZJP1?=
+ =?us-ascii?Q?K5BcP+Ax7+ckMsnKcn5LZrBZ5cAXmthkzRNT9Si7K7v7bG2WFuAm6FBXGFri?=
+ =?us-ascii?Q?WduVBmbi7IiODf0UwVdbFg4z07C0HU9QFTTXYHImLpijLP67m2yEWjqliz5g?=
+ =?us-ascii?Q?3GN+sijySwzOoFrw5RPFDIcPtaSnwZrijBdtbq8aZ4B+6IWMXpJBkEIWCxQu?=
+ =?us-ascii?Q?pkpTMEnmUXV+1D1S/f7gy0x/6ZlMB4Ah4KeJprQUm3laZTYt1J8lm7UYP0Le?=
+ =?us-ascii?Q?NUL7EaBNh0FC+eYmxuIZgxW6IfzuVjt2x0ubta49MU0HrhaZOeiWCMqKov/3?=
+ =?us-ascii?Q?r6HA0wC8+KzJQTt7XUcuY0Fm87V9xvmZM7MEoTXQ3bYpjh5OKfjasps7I2c0?=
+ =?us-ascii?Q?Fuhei0xt/8Hf7Xm4ZpYIrdgrvABTeOOYZLZiZPgAIwLdcWMQjmTLH3xsoiZp?=
+ =?us-ascii?Q?Zct+cTLGjn6mxSSAUvIBFEq3EoN+oqSJwyqjxN/BZnZIF1ozBT/UXo6vT/IM?=
+ =?us-ascii?Q?uL8sF3ZAHCGSQe9ZjS2isNcRJZ1fojOOOEiRELCTSptVudRfh/ymvVZYSlBf?=
+ =?us-ascii?Q?tO8gzfCjKOJNywoDSplLu4eV/vRl6ldw5vcwxoohXzi+vHoW0lwQ/0Fxxm+3?=
+ =?us-ascii?Q?ndoKNOLGfFlubG/V493h2bIEzhh5uQ8T0VqpR1b568wwmVriTcWzmBoVjQnq?=
+ =?us-ascii?Q?NXyE8hEtwGGY2XnjJpKncbx02wNcwZpQTFspYmn8WkV6rlZMf4S23mONoczp?=
+ =?us-ascii?Q?4JoT+SfaYZ97x1KbBm3f1hFr+F19z87GfPyP37BgN3tVV+iOshgcchyFGIuv?=
+ =?us-ascii?Q?gQJpi1xuY0IL5MGGjhyOfIqbndjHiOrH+ggDclQ5UK5XQR/Yo6gvN6rUyy7u?=
+ =?us-ascii?Q?jjFKFnXSvN0LIGIJ1D9m2MxDCrVI+0Q1dxd5mHV+IjI1+UXRxogpwLGf5Bjp?=
+ =?us-ascii?Q?eSvfX3qHQ2c7MBaGCgyuiN8OEMqTx3NzRcqYB/4ycEjyfqDkcEWvteACgvvg?=
+ =?us-ascii?Q?Taotz83MRxifhPQDVvRUYrU=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d4529e6-b338-4393-81a3-08d9e9fd6d39
-X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB7046.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2edb385e-b2ad-4379-6e56-08d9ea0338b1
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 05:48:12.0774
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 06:29:41.0339
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1MtbMF5brazWkRvV0ips1iDyk/KucxgWuTB6Nm0gPcKM3p6iltu17GFCOCFIKYnRualcxud7tNodaM5PceM3uA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3677
+X-MS-Exchange-CrossTenant-UserPrincipalName: 86NkletwKZwQa5O3xu3ZOrOhw/W/1TfpRx3h+g4Cfiw7+avZcI2RcqWqikNhgzlgEfVZwnVAY8txTSIHCI3vCw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6744
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the CRTC state is already inactive, it doesn't make sense to trigger
-the entry timer for self refresh work to make the display enter self
-refresh mode, because the disabled CRTC hints that either the entire
-display pipeline is disabled or the previous atomic commit is triggered
-by the self refresh work(the CRTC is disabled, while the relevant encoder
-and bridges could be disabled or not depending on the drivers).
+When error occurs in parsing jpeg, the slot isn't acquired yet, it may
+be the default value MXC_MAX_SLOTS.
+If the driver access the slot using the incorrect slot number, it will
+access array out of bounds.
+The result is the driver will change num_domains, which follows
+slot_data in struct mxc_jpeg_dev.
+Then the driver won't detach the pm domain at rmmod, which will lead to
+kernel panic when trying to insmod again.
 
-Cc: Rob Clark <robdclark@chromium.org>
-Cc: Sean Paul <seanpaul@chromium.org>
-Cc: Zain Wang <wzz@rock-chips.com>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
 ---
- drivers/gpu/drm/drm_self_refresh_helper.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/media/platform/imx-jpeg/mxc-jpeg.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/drm_self_refresh_helper.c b/drivers/gpu/drm/drm_self_refresh_helper.c
-index dd33fec5aabd..e76eb3cd22c7 100644
---- a/drivers/gpu/drm/drm_self_refresh_helper.c
-+++ b/drivers/gpu/drm/drm_self_refresh_helper.c
-@@ -204,8 +204,12 @@ void drm_self_refresh_helper_alter_state(struct drm_atomic_state *state)
- 		struct drm_self_refresh_data *sr_data;
- 		unsigned int delay;
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+index 7c0366f5f801..86d37d14cfe2 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+@@ -948,7 +948,6 @@ static void mxc_jpeg_device_run(void *priv)
  
--		/* Don't trigger the entry timer when we're already in SR */
--		if (crtc_state->self_refresh_active)
-+		/*
-+		 * Don't trigger the entry timer when we're already inactive.
-+		 * Note that the inactive state hints that either we're already
-+		 * in SR or the entire display pipeline is already disabled.
-+		 */
-+		if (!crtc_state->active)
- 			continue;
- 
- 		sr_data = crtc->self_refresh_data;
+ 	jpeg_src_buf = vb2_to_mxc_buf(&src_buf->vb2_buf);
+ 	if (jpeg_src_buf->jpeg_parse_error) {
+-		jpeg->slot_data[ctx->slot].used = false;
+ 		v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
+ 		v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
+ 		v4l2_m2m_buf_done(src_buf, VB2_BUF_STATE_ERROR);
 -- 
-2.25.1
+2.33.0
 
