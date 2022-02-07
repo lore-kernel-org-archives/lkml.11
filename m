@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A222FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA4EC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376891AbiBGLPQ (ORCPT
+        id S1377251AbiBGLPZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:15:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49502 "EHLO
+        Mon, 7 Feb 2022 06:15:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352055AbiBGLLs (ORCPT
+        with ESMTP id S1352312AbiBGLLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:11:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50558C043181;
-        Mon,  7 Feb 2022 03:11:47 -0800 (PST)
+        Mon, 7 Feb 2022 06:11:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DEABC043181;
+        Mon,  7 Feb 2022 03:11:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2FE2B80EC3;
-        Mon,  7 Feb 2022 11:11:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B46AC004E1;
-        Mon,  7 Feb 2022 11:11:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AA4F61261;
+        Mon,  7 Feb 2022 11:11:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72027C004E1;
+        Mon,  7 Feb 2022 11:11:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232304;
-        bh=XlE85Z5zOnoqCqnlZdZMCtne7tKQO+tuwpoBNZgBrK0=;
+        s=korg; t=1644232314;
+        bh=U+c9K6WdzIVH2IfFgZxIiSIM4vFtt9G9/lsDaGV6npA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iFXLyhXNNbkH4etQXY2ZiCSa0mK1Lq2gD7d1qCWQ0XncyiJbxLW4m22n8gK/Z5p45
-         dSDRbGyo/M8xkzDwSedkwKBVjjzt6aOWpDF8sdtGSrVQUrFjw93HH8ej/HO8HjZQya
-         NzTJG3GEC4dFARmP0S2gSUjjHwn6CyfruFc18YT0=
+        b=xpI1Wu8/JKwPHbIU/B+ezkbKNJUD8pb5Z1Tv792mBg+hKRuXt+fmKjzog0BwDY06r
+         pa845pk2dxyHoINpIPch3iHTAATBil6ekQ4ZigopKg9MgcCD0w771E549fKF8RTPbD
+         IuUVVGXxj5aVn7imCLsbyBk2SM+CnUbcE95QhEHc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Ray Che <xijiache@gmail.com>, David Ahern <dsahern@kernel.org>,
+        Geoff Alexander <alexandg@cs.unm.edu>,
+        Willy Tarreau <w@1wt.eu>, Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 34/69] ibmvnic: dont spin in tasklet
-Date:   Mon,  7 Feb 2022 12:05:56 +0100
-Message-Id: <20220207103756.750226254@linuxfoundation.org>
+Subject: [PATCH 4.14 37/69] ipv4: tcp: send zero IPID in SYNACK messages
+Date:   Mon,  7 Feb 2022 12:05:59 +0100
+Message-Id: <20220207103756.844768923@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -52,47 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 48079e7fdd0269d66b1d7d66ae88bd03162464ad ]
+[ Upstream commit 970a5a3ea86da637471d3cd04d513a0755aba4bf ]
 
-ibmvnic_tasklet() continuously spins waiting for responses to all
-capability requests. It does this to avoid encountering an error
-during initialization of the vnic. However if there is a bug in the
-VIOS and we do not receive a response to one or more queries the
-tasklet ends up spinning continuously leading to hard lock ups.
+In commit 431280eebed9 ("ipv4: tcp: send zero IPID for RST and
+ACK sent in SYN-RECV and TIME-WAIT state") we took care of some
+ctl packets sent by TCP.
 
-If we fail to receive a message from the VIOS it is reasonable to
-timeout the login attempt rather than spin indefinitely in the tasklet.
+It turns out we need to use a similar strategy for SYNACK packets.
 
-Fixes: 249168ad07cd ("ibmvnic: Make CRQ interrupt tasklet wait for all capabilities crqs")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Reviewed-by: Dany Madden <drt@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+By default, they carry IP_DF and IPID==0, but there are ways
+to ask them to use the hashed IP ident generator and thus
+be used to build off-path attacks.
+(Ref: Off-Path TCP Exploits of the Mixed IPID Assignment)
+
+One of this way is to force (before listener is started)
+echo 1 >/proc/sys/net/ipv4/ip_no_pmtu_disc
+
+Another way is using forged ICMP ICMP_FRAG_NEEDED
+with a very small MTU (like 68) to force a false return from
+ip_dont_fragment()
+
+In this patch, ip_build_and_send_pkt() uses the following
+heuristics.
+
+1) Most SYNACK packets are smaller than IPV4_MIN_MTU and therefore
+can use IP_DF regardless of the listener or route pmtu setting.
+
+2) In case the SYNACK packet is bigger than IPV4_MIN_MTU,
+we use prandom_u32() generator instead of the IPv4 hashed ident one.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Ray Che <xijiache@gmail.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Cc: Geoff Alexander <alexandg@cs.unm.edu>
+Cc: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 6 ------
- 1 file changed, 6 deletions(-)
+ net/ipv4/ip_output.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 4befc885efb8d..8d8eb9e2465ff 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -3691,12 +3691,6 @@ static void ibmvnic_tasklet(void *data)
- 			ibmvnic_handle_crq(crq, adapter);
- 			crq->generic.first = 0;
- 		}
--
--		/* remain in tasklet until all
--		 * capabilities responses are received
--		 */
--		if (!adapter->wait_capability)
--			done = true;
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -160,12 +160,19 @@ int ip_build_and_send_pkt(struct sk_buff
+ 	iph->daddr    = (opt && opt->opt.srr ? opt->opt.faddr : daddr);
+ 	iph->saddr    = saddr;
+ 	iph->protocol = sk->sk_protocol;
+-	if (ip_dont_fragment(sk, &rt->dst)) {
++	/* Do not bother generating IPID for small packets (eg SYNACK) */
++	if (skb->len <= IPV4_MIN_MTU || ip_dont_fragment(sk, &rt->dst)) {
+ 		iph->frag_off = htons(IP_DF);
+ 		iph->id = 0;
+ 	} else {
+ 		iph->frag_off = 0;
+-		__ip_select_ident(net, iph, 1);
++		/* TCP packets here are SYNACK with fat IPv4/TCP options.
++		 * Avoid using the hashed IP ident generator.
++		 */
++		if (sk->sk_protocol == IPPROTO_TCP)
++			iph->id = (__force __be16)prandom_u32();
++		else
++			__ip_select_ident(net, iph, 1);
  	}
- 	/* if capabilities CRQ's were sent in this tasklet, the following
- 	 * tasklet must wait until all responses are received
--- 
-2.34.1
-
+ 
+ 	if (opt && opt->opt.optlen) {
 
 
