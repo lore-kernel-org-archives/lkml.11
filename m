@@ -2,88 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C863C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:46:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D31ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242986AbiBGUbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:31:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51758 "EHLO
+        id S232975AbiBGUrv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:47:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244067AbiBGU2u (ORCPT
+        with ESMTP id S239826AbiBGUcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:28:50 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5024EC0401E4;
-        Mon,  7 Feb 2022 12:28:50 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        Mon, 7 Feb 2022 15:32:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42420C0401DA;
+        Mon,  7 Feb 2022 12:32:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id CD8721EC01A8;
-        Mon,  7 Feb 2022 21:28:44 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644265725;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=lsALf0mo+v2UYmS1+2QBtB8DaKBuaxhZCLFlo0oeTIQ=;
-        b=k7oaKTuyKJ87lCuFeqZIkMqyWz8IEMcy+2QTNjOgl1ghLsooBTa98Qbu+mhy6AIBb8kcPK
-        yJrOvR4ku+S1hY0YSV6AkFUDf6xlH6JRVj9e1pR754abzO+lEdJks2btya5uLOiduJRhlH
-        VRuKqBHTMrlMuX4gYR0QMFera0OrpGs=
-Date:   Mon, 7 Feb 2022 21:28:43 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     Dov Murik <dovmurik@linux.ibm.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        Liam Merwick <liam.merwick@oracle.com>
-Subject: Re: [PATCH v9 42/43] virt: sevguest: Add support to derive key
-Message-ID: <YgGA+wiyqPZD0YTj@zn.tnic>
-References: <20220128171804.569796-1-brijesh.singh@amd.com>
- <20220128171804.569796-43-brijesh.singh@amd.com>
- <YgDduR0mrptX5arB@zn.tnic>
- <1cb4fdf5-7c1e-6c8f-1db6-8c976d6437c2@amd.com>
- <ae1644a3-bd2c-6966-4ae3-e26abd77b77b@linux.ibm.com>
- <20ba1ac2-83d1-6766-7821-c9c8184fb59b@amd.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 075F8B816F3;
+        Mon,  7 Feb 2022 20:32:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC8BCC004E1;
+        Mon,  7 Feb 2022 20:32:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644265957;
+        bh=qA17gMhLSyJTGkg5IG50iMqfuUUw7uCTxGT40buJCL4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KK+IljrjgG5EfwFp52wkU7rrpkEVMmErHv0ovxwMWKJBsekOrkdiXT/F5dglBKU2i
+         s3Ycx7lGx3IutqVVivrp3g303jjVDYr1rJ6yLN3kTV/4A6HLsYxM1Nk59zIZYvxpAL
+         ByygAUgvH2cG/SXBVs/+pRtMbJ5Ku3nHFEPo6BSb6vS9rQFRQpo6jYRlBwI294KcR1
+         jp2WNrRr/vWfkVaeruLBKTC+eArD+rSJHVlRRCqWaQH1b3t99EitB9f24ESgEOnzyb
+         9l1oBAETt8kgRlmNnqQG7hv+/K+5P7YQAGJKbqvEG96XRjbZfmLaGyiak3nvH2eMEI
+         i/UP9AJapKKqQ==
+Date:   Mon, 7 Feb 2022 20:39:10 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     lars@metafoo.de, valek@2n.cz, gwendal@chromium.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [BUG] iio: light: opt3001: possible deadlock in
+ opt3001_read_raw() and opt3001_irq()
+Message-ID: <20220207203910.76ba3f2e@jic23-huawei>
+In-Reply-To: <f04b6000-f128-f928-0e3e-e3acc206d2d1@gmail.com>
+References: <f04b6000-f128-f928-0e3e-e3acc206d2d1@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20ba1ac2-83d1-6766-7821-c9c8184fb59b@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 02:08:17PM -0600, Brijesh Singh wrote:
-> Boris, let me know if you are okay with it?
+On Mon, 7 Feb 2022 23:41:49 +0800
+Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
 
-Yes, most definitely as long as there's a comment explaining why.
+> Hello,
+>=20
+> My static analysis tool reports a possible deadlock in the opt3001=20
+> driver in Linux 5.16:
+>=20
+> opt3001_read_raw()
+>  =C2=A0 mutex_lock(&opt->lock); --> Line 399 (Lock A)
+>  =C2=A0 opt3001_get_lux()
+>  =C2=A0=C2=A0=C2=A0 wait_event_timeout(opt->result_ready_queue, ...) --> =
+Line 276 (Wait X)
+>  =C2=A0 mutex_lock(&opt->lock); --> Line 412 (Unlock A)
+>=20
+> opt3001_irq()
+>  =C2=A0 mutex_lock(&opt->lock); --> Line 693 (Lock A)
+>  =C2=A0 mutex_unlock(&opt->lock); --> Line 730 (Unlock A)
+>  =C2=A0 wake_up(&opt->result_ready_queue); --> Line 733 (Wake X)
+>=20
+> When opt3001_read_raw() is executed, "Wait X" is performed by holding=20
+> "Lock A". If opt3001_irq() is executed at this time, "Wake X" cannot be=20
+> performed to wake up "Wait X" in opt3001_read_raw(), because "Lock A"=20
+> has been already hold by opt3001_read_raw(), causing a possible deadlock.
+> I find that "Wait X" is performed with a timeout, to relieve the=20
+> possible deadlock; but I think this timeout can cause inefficient executi=
+on.
+Hi Jia-Ju Bai,
 
-Thx.
+There is a quirk in here thatyou haven't mentioned.  The "magic"
+opt->ok_to_ignore_lock.
 
--- 
-Regards/Gruss,
-    Boris.
+So there are two cases:
+1) No irq in use.  In that case the opt3001_irq() will never run and we
+   just sleep + check a status flag. That's the best we can do without
+   an interrupt.
+2) irq in use, the ok_to_ignore_lock =3D true statement occurs and
+   in the opt3001_irq() the locks are never taken hence no deadlock.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+It is a very odd bit of code though so I'd be surprised if a static
+analyser hadn't highlighted it as a possible deadlock!
+
+Now, I'm not immediately sure why the driver is done like this as opposed
+to a more complete wait_for_completion() in read_raw(), complete() in the i=
+rq
+handler and do the actual read of the data back in read_raw().
+It's probably related to the other interrupt sources that we need to
+differentiate from in the interrupt handler.
+
+The lock definition is missing an documentation of exactly what it's scope
+is which definitely doesn't help us understand this unusual structure.
+
+Thanks,
+
+Jonathan
+
+
+>=20
+> I am not quite sure whether this possible problem is real and how to fix=
+=20
+> it if it is real.
+> Any feedback would be appreciated, thanks :)
+>=20
+>=20
+> Best wishes,
+> Jia-Ju Bai
+
