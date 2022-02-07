@@ -2,90 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB09C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8436C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353848AbiBGNMY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:12:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
+        id S233378AbiBGNNO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 08:13:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445378AbiBGMmC (ORCPT
+        with ESMTP id S1444387AbiBGNJ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:42:02 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40597E0321DD
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:33:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644237211; x=1675773211;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=x6kFVrzT05XFotdvtiT0qifyAXqqSEHdTPezDSU7rR8=;
-  b=IA3ugXAmGTNY+s33704DvbybAOE4u7SFDXBSSy6J4RbFtRdGukYN5Zhi
-   dc5JVkLKVPw+qblq6ac8h4qkBe/m7sooZFPKvSgRLJFZVDKJ09DE2kY/c
-   ht5P5HAhs5lWeA7JYT/VmxXbqgXfopqary0wkevQiNcbXWL0mG20pddl4
-   lAhxeQIs6BMeD64skdRuEEF/Rj97JROIVZ3DBhyXZCJHIVyQCmjaoNwXA
-   RIr8vR3Q9ShumJ9khH0+ZJB/wBA2Y8FtgInZvi6iUsYlDslBpRUA461Ti
-   rFLcmwJhZHkLnjhItMH+FowAOvj90T6WCzcTe2cMBcLZFDjRJfX+t6Fe6
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="247538984"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="247538984"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:33:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="484406335"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 07 Feb 2022 04:33:28 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 57F393ED; Mon,  7 Feb 2022 14:33:43 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Jan=20D=C4=85bro=C5=9B?= <jsd@semihalf.com>
-Subject: [PATCH v2 1/1] bitfield: Add explicit inclusions to the example
-Date:   Mon,  7 Feb 2022 14:33:41 +0200
-Message-Id: <20220207123341.47533-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Feb 2022 08:09:59 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD8DC043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:09:57 -0800 (PST)
+Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jsmbj5fqSz6GCbt;
+        Mon,  7 Feb 2022 21:05:53 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 14:09:55 +0100
+Received: from [10.47.86.164] (10.47.86.164) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
+ 2022 13:09:48 +0000
+Message-ID: <1114e27f-e6b3-e9b9-a892-f543f4636c4e@huawei.com>
+Date:   Mon, 7 Feb 2022 13:09:43 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 00/16] scsi: libsas and users: Factor out LLDD TMF code
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <artur.paszkiewicz@intel.com>, <jinpu.wang@cloud.ionos.com>,
+        <chenxiang66@hisilicon.com>, <Ajish.Koshy@microchip.com>
+CC:     <yanaijie@huawei.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <linuxarm@huawei.com>, <liuqi115@huawei.com>,
+        <Viswas.G@microchip.com>
+References: <1643110372-85470-1-git-send-email-john.garry@huawei.com>
+ <1893d9ef-042b-af3b-74ea-dd4d0210c493@opensource.wdc.com>
+ <14df160f-c0f2-cc9f-56d4-8eda67969e0b@huawei.com>
+ <a8fae323-1877-058a-b03e-d175a725213f@opensource.wdc.com>
+ <a2de1656-b1ec-2fb7-caab-657e27dacb48@huawei.com>
+ <49da4d80-5cc3-35c3-ccaa-6def8165eb65@huawei.com>
+ <59a198a8-1d87-bc09-d2d8-2d495ed74c16@opensource.wdc.com>
+ <098f988e-1f12-c412-3111-60393dfe0f0b@huawei.com>
+ <f3362c6f-b4b6-2914-0652-d786e19b6b03@opensource.wdc.com>
+ <62e56609-7026-93a1-a446-a6fd68328653@opensource.wdc.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <62e56609-7026-93a1-a446-a6fd68328653@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.86.164]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's not obvious that bitfield.h doesn't guarantee the bits.h
-inclusion and the example in the former is confusing. Some
-developers think that it's okay to just include bitfield.h to
-get it working. Change example to explicitly include necessary
-headers in order to avoid confusion.
+Hi Damien,
 
-Fixes: 3e9b3112ec74 ("add basic register-field manipulation macros")
-Depends-on: 8bd9cb51daac ("locking/atomics, asm-generic: Move some macros from <linux/bitops.h> to a new <linux/bits.h> file")
-Reported-by: Jan Dąbroś <jsd@semihalf.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: used full paths
- include/linux/bitfield.h | 3 +++
- 1 file changed, 3 insertions(+)
+On 04/02/2022 03:02, Damien Le Moal wrote:
+> This is the submission path, not completion. The code is:
+> 
+> (gdb) list *(pm8001_queue_command+0x842)
+> 0x3d42 is in pm8001_queue_command (drivers/scsi/pm8001/pm8001_sas.c:491).
+> 486				atomic_dec(&pm8001_dev->running_req);
+> 487				goto err_out_tag;
+> 488			}
+> 489			/* TODO: select normal or high priority */
+> 490			spin_lock(&t->task_state_lock);
+> 491			t->task_state_flags |= SAS_TASK_AT_INITIATOR;
+> 492			spin_unlock(&t->task_state_lock);
+> 493		} while (0);
+> 494		rc = 0;
+> 495		goto out_done;
+> 
+> So the task is already completed when the submission path tries to set
+> the state flag ? Debugging...
 
-diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
-index 6093fa6db260..c9be1657f03d 100644
---- a/include/linux/bitfield.h
-+++ b/include/linux/bitfield.h
-@@ -19,6 +19,9 @@
-  *
-  * Example:
-  *
-+ *  #include <linux/bitfield.h>
-+ *  #include <linux/bits.h>
-+ *
-  *  #define REG_FIELD_A  GENMASK(6, 0)
-  *  #define REG_FIELD_B  BIT(7)
-  *  #define REG_FIELD_C  GENMASK(15, 8)
--- 
-2.34.1
+JFYI, I am putting together a patch to drop SAS_TASK_AT_INITIATOR 
+altogether. I just need to ensure that the logic in the isci code is 
+correct.
 
+Thanks,
+John
