@@ -2,67 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6E7C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A78C35273
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380003AbiBGRcq (ORCPT
+        id S1381003AbiBGRcu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:32:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
+        Mon, 7 Feb 2022 12:32:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382647AbiBGR3z (ORCPT
+        with ESMTP id S1346187AbiBGRXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:29:55 -0500
-Received: from relay.hostedemail.com (relay.hostedemail.com [64.99.140.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D88C0401DD;
-        Mon,  7 Feb 2022 09:29:55 -0800 (PST)
-Received: from omf12.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay13.hostedemail.com (Postfix) with ESMTP id 6FC3460537;
-        Mon,  7 Feb 2022 17:29:54 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf12.hostedemail.com (Postfix) with ESMTPA id 21E852D;
-        Mon,  7 Feb 2022 17:29:37 +0000 (UTC)
-Message-ID: <6937d748bb04b53b88d2f4363db31bed2ae7550a.camel@perches.com>
-Subject: Re: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code
- defined constants in messages
-From:   Joe Perches <joe@perches.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Date:   Mon, 07 Feb 2022 09:29:52 -0800
-In-Reply-To: <YgFVFceYQtWq4Hww@smile.fi.intel.com>
-References: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
-         <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
-         <YgFVFceYQtWq4Hww@smile.fi.intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Mon, 7 Feb 2022 12:23:36 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC13C0401D8;
+        Mon,  7 Feb 2022 09:23:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644254616; x=1675790616;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=M5RUw9aInzvMr/cEGUCrZ6Um3TAA0XPSudFDktRPWxc=;
+  b=t8O1J8xnCD7oP0n6KyZELv8p00Tw/bORcgV5ZiMlCta+HSwGc4g+VUkX
+   QIh8YiolWUbg4EB+p9sCNuQSm4CoE7m6110YbnbAadk1bn+1sI0uSq27U
+   JK6YAmHxmflRBi8uSdQjJcXyR8/hCbs4hu7g7eGHw3SaxPwJu7qGIFMPB
+   cHbpgT9nf7iUB0wYOeaBouh2/nDaU2068hNApKklx1GxPMcwr4bSIodY4
+   CPb/YcU3gpl/jMNmokIoLsF64cNSskKcLkv90EHlmY3zN2Wy75CHDUIXm
+   JMMCFqGyxTEB6TGJy/uv2rs6zCM6hL9y3JzwVjr0H9pv/lTS689mmCXRV
+   w==;
+IronPort-SDR: 62TR9QcmVvCj++gip/XlOvuNjlF3kWQCUrK/cDOiCybD0eGQG4shPZnORH0nfGsci5dzuhfxDl
+ VHgoL7HW4KybsDk2mU8OLXw6AKCn9O1ZNsXjBhtV2MdLwv1j97LIGtqEtgXnk3nVm8rZNkQlnR
+ EBb1St6pf/LUnmdkK5WsSbt4qX2bdc6q9Tm0VGHOJd10U2AYxTc0k458iksV07tqVc3TNzsiTO
+ i4cJ2TfV1xXWgiPpehjlppI7QfBPdMknRuH6GUR4SUBqeNFM1lEXFWGmKFSvV3Dl4Qn+fgm6hm
+ qeoSgd5D2EOsn2nhXgwSqmB8
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="147879263"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 10:22:32 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Feb 2022 10:22:32 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Feb 2022 10:22:26 -0700
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Subject: [PATCH v8 net-next 02/10] net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+Date:   Mon, 7 Feb 2022 22:51:56 +0530
+Message-ID: <20220207172204.589190-3-prasanna.vengateshan@microchip.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
+References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: zthdfaupqco63iopoeg9ccn1hhrkrtnm
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 21E852D
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18eMtJCweLA/Yw0AFlxD4LnBj6lbsvJ8rU=
-X-HE-Tag: 1644254977-164573
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-07 at 19:21 +0200, Andy Shevchenko wrote:
-> On Mon, Feb 07, 2022 at 08:37:55AM -0800, Joe Perches wrote:
-> > On Mon, 2022-02-07 at 12:48 +0200, Andy Shevchenko wrote:
-> > > In a couple of messages the constants, which have their definitions,
-> > > are hard coded into the message text. Unhardcode them.
-> > 
-> > Found by inspection or tool?
-> 
-> Does it matter?
+mib->cnt_ptr resetting is handled in multiple places as part of
+port_init_cnt(). Hence moved mib->cnt_ptr code to ksz common layer
+and removed from individual product files.
 
-Yes.  If it was done using a tool, then it could used treewide.
+Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ drivers/net/dsa/microchip/ksz8795.c    | 2 --
+ drivers/net/dsa/microchip/ksz9477.c    | 3 ---
+ drivers/net/dsa/microchip/ksz_common.c | 8 +++++++-
+ 3 files changed, 7 insertions(+), 6 deletions(-)
 
-> No, a side effect of the following patch.
-
-k
-
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index 5dc9899bc0a6..2de2302b9a50 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -448,8 +448,6 @@ static void ksz8_port_init_cnt(struct ksz_device *dev, int port)
+ 					dropped, &mib->counters[mib->cnt_ptr]);
+ 		++mib->cnt_ptr;
+ 	}
+-	mib->cnt_ptr = 0;
+-	memset(mib->counters, 0, dev->mib_cnt * sizeof(u64));
+ }
+ 
+ static void ksz8_r_table(struct ksz_device *dev, int table, u16 addr, u64 *data)
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index a85d990896b0..21900cab96b3 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -292,9 +292,6 @@ static void ksz9477_port_init_cnt(struct ksz_device *dev, int port)
+ 	ksz_write8(dev, REG_SW_MAC_CTRL_6, SW_MIB_COUNTER_FLUSH);
+ 	ksz_pwrite32(dev, port, REG_PORT_MIB_CTRL_STAT__4, 0);
+ 	mutex_unlock(&mib->cnt_mutex);
+-
+-	mib->cnt_ptr = 0;
+-	memset(mib->counters, 0, dev->mib_cnt * sizeof(u64));
+ }
+ 
+ static enum dsa_tag_protocol ksz9477_get_tag_protocol(struct dsa_switch *ds,
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 7e33ec73f803..196aa4fc1100 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -122,8 +122,14 @@ void ksz_init_mib_timer(struct ksz_device *dev)
+ 
+ 	INIT_DELAYED_WORK(&dev->mib_read, ksz_mib_read_work);
+ 
+-	for (i = 0; i < dev->port_cnt; i++)
++	for (i = 0; i < dev->port_cnt; i++) {
++		struct ksz_port_mib *mib = &dev->ports[i].mib;
++
+ 		dev->dev_ops->port_init_cnt(dev, i);
++
++		mib->cnt_ptr = 0;
++		memset(mib->counters, 0, dev->mib_cnt * sizeof(u64));
++	}
+ }
+ EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
+ 
+-- 
+2.30.2
 
