@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF75C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D32C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382762AbiBGPay (ORCPT
+        id S1353234AbiBGPm4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:30:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46886 "EHLO
+        Mon, 7 Feb 2022 10:42:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354705AbiBGP3r (ORCPT
+        with ESMTP id S235077AbiBGPgL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:29:47 -0500
+        Mon, 7 Feb 2022 10:36:11 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC9EC0401C1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:29:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FC5C0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:36:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DA07614A8
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:29:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5479C340F2;
-        Mon,  7 Feb 2022 15:29:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F280614C1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:36:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21450C004E1;
+        Mon,  7 Feb 2022 15:36:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644247786;
-        bh=dMUyMU0LHN0r8PSbqN8lbB9OEvUmTIGKuewXXeRUhoU=;
+        s=k20201202; t=1644248169;
+        bh=BLkm1GdmzHsOVnabP/GWrS29PbIl8CqAmJZiVXAFXBE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Dh32CDGo444hv7mPC3cu9ZAwCvu/rWBHD3KcxtU57xIaLFdHOXQc0hhau/pDU0idz
-         +LV28k1SKGdqB87lM7K9VjkwPVFrNIWe5NFf0YDPuNBu5e+fdggeEof3JP0Nw6Iye6
-         07CpraT3XF1Zaibtg3cWIjB9kHuxQQtIoHBZuDDgjuXqQeGKeNSrL1VyFjxN+tzvKs
-         7wBL+WbtrgplpeZBoFHqMvCe2qSSatnySrzoh9gHVlyoNHnqrR0ivU+L6S1O4PgKx/
-         x/tpC6lAQ55OKVk7X1LpxxffE0LJjc3FPxyclOurKvsRDrfHfp+4PSFsSrgMONnd8F
-         tpxFGDWSTQAOg==
-Date:   Mon, 7 Feb 2022 16:29:43 +0100
+        b=aJeWWIQzxVCSSZmZ2qfvZ6IO0oKpUlBXIpPfsO05Q0HFf+VDLBBSSMC10WlDEF1Oj
+         FITGcsuineVMuowgdjDwPRIrrLXz0h8t6MV1gYJV6luh6TNveMs+ZCZ5MY8uwwzYPw
+         +9b5Qs6YPKCDqPG0zOHBdhcWsOiHA0HUW40OuE123gltqd2mfScJ2hP45m2nptXuBn
+         GdrhEgKFr2HUJ507Na2+0N8pS+0A6i8N7prpketY5LTzorubkR7q1ERa9gOhnU5YOA
+         JnTZ2De7SIHHEYvU1ccQFcvjy1zXL+dwaZBLYC1hFedo7Q2xAjqXDcwoV2I9UzZPMI
+         4f/Xa3zgPhfOw==
+Date:   Mon, 7 Feb 2022 16:36:07 +0100
 From:   Frederic Weisbecker <frederic@kernel.org>
 To:     Marcelo Tosatti <mtosatti@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
@@ -45,84 +45,50 @@ Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Daniel Bristot de Oliveira <bristot@redhat.com>,
         Oscar Shiang <oscar0225@livemail.tw>
-Subject: Re: [patch v11 07/13] task isolation: sync vmstats conditional on
- changes
-Message-ID: <20220207152943.GB526112@lothringen>
+Subject: Re: [patch v11 09/13] task isolation: add preempt notifier to sync
+ per-CPU vmstat dirty info to thread info
+Message-ID: <20220207153607.GA526451@lothringen>
 References: <20220204173537.429902988@fedora.localdomain>
- <20220204173554.763888172@fedora.localdomain>
+ <20220204173554.854482726@fedora.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220204173554.763888172@fedora.localdomain>
+In-Reply-To: <20220204173554.854482726@fedora.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 02:35:44PM -0300, Marcelo Tosatti wrote:
-> Rather than syncing VM-stats on every return to userspace
-> (or VM-entry), keep track of changes through a per-CPU bool.
+On Fri, Feb 04, 2022 at 02:35:46PM -0300, Marcelo Tosatti wrote:
+> If a thread has task isolation activated, is preempted by thread B,
+> which marks vmstat information dirty, and is preempted back in,
+> one might return to userspace with vmstat dirty information on the 
+> CPU in question.
 > 
-> This improves performance when enabling task isolated
-> for vcpu VMs.
-> 
-> Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
-> 
-> ---
-> v11:
-> - Add TIF_TASK_ISOL bit to thread info flags and use it
->   to decide whether to perform task isolation work on
->   return to userspace     
-> 
->  include/linux/vmstat.h |   13 ++++++++++++-
->  mm/vmstat.c            |   29 ++++++++++++++++++++++++++++-
->  2 files changed, 40 insertions(+), 2 deletions(-)
-> 
-> Index: linux-2.6/include/linux/vmstat.h
-> ===================================================================
-> --- linux-2.6.orig/include/linux/vmstat.h
-> +++ linux-2.6/include/linux/vmstat.h
-> @@ -22,7 +22,18 @@ int sysctl_vm_numa_stat_handler(struct c
->  #endif
->  
->  #if defined(CONFIG_SMP) && defined(CONFIG_TASK_ISOLATION)
-> -void sync_vmstat(void);
-> +DECLARE_PER_CPU_ALIGNED(bool, vmstat_dirty);
-> +
-> +extern struct static_key vmstat_sync_enabled;
-> +
-> +void __sync_vmstat(void);
-> +static inline void sync_vmstat(void)
-> +{
-> +	if (static_key_false(&vmstat_sync_enabled))
-> +		__sync_vmstat();
-> +}
-> +
-> +void init_sync_vmstat(void);
->  #else
->  static inline void sync_vmstat(void)
->  {
+> To address this problem, add a preempt notifier that transfers vmstat dirty
+> information to TIF_TASK_ISOL thread flag.
+
+Ah ok that answers my previous question :)
+
 > Index: linux-2.6/mm/vmstat.c
 > ===================================================================
 > --- linux-2.6.orig/mm/vmstat.c
 > +++ linux-2.6/mm/vmstat.c
-> @@ -334,6 +334,31 @@ void set_pgdat_percpu_threshold(pg_data_
->  	}
+> @@ -353,6 +353,13 @@ void init_sync_vmstat(void)
+>  	set_thread_flag(TIF_TASK_ISOL);
 >  }
->  
-> +#ifdef CONFIG_TASK_ISOLATION
-> +struct static_key vmstat_sync_enabled;
-> +DEFINE_PER_CPU_ALIGNED(bool, vmstat_dirty);
+>  EXPORT_SYMBOL_GPL(vmstat_dirty);
 > +
-> +static inline void mark_vmstat_dirty(void)
+> +void vmstat_dirty_to_thread_flag(void)
 > +{
-> +	if (!static_key_false(&vmstat_sync_enabled))
-> +		return;
-> +
-> +	raw_cpu_write(vmstat_dirty, true);
-> +	set_thread_flag(TIF_TASK_ISOL);
+> +	if (raw_cpu_read(vmstat_dirty) == true)
 
-This will force the return-to-user slow path on all CPUs,
-whether the current task is isolated or not, right?
+__this_cpu_read()?
 
-Also if we context switch to an isolated TASK B with a dirty vmstat,
-we miss the TIF_TASK_ISOL.
+> +		set_thread_flag(TIF_TASK_ISOL);
+> +}
+> +EXPORT_SYMBOL_GPL(vmstat_dirty_to_thread_flag);
+>  #else
+>  static inline void mark_vmstat_dirty(void)
+>  {
+> 
+> 
