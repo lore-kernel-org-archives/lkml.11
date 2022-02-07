@@ -2,117 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51FA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233169AbiBGSts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:49:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59734 "EHLO
+        id S233600AbiBGSuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:50:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233351AbiBGSql (ORCPT
+        with ESMTP id S235259AbiBGSra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:46:41 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D340C0401E2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:46:40 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id i5so18068737oih.1
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 10:46:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=+wPgud2Zc9iDtR4LrtVArCP3c0J7sHpVkjRO1rtdEVU=;
-        b=rxWhrueR31kHGt5dQf3osmpofGeWeGByme6ZPm8EUcT3J4f6Tt7sZFDjp3K3NWw5xH
-         8Q1bqeu5wxsLEaOnMXoYGsN18mPQPBVEdebmXxcTrmHR4vjG9GvvLPipaLPDmOKzH7aj
-         Cdzf/bIYd4a5aj3X4T3ka4qzRYjIcrTUAB+esqdC0HX2K/9qN1hY4zdajr+McQK9lZyy
-         l1g+gbV4gNJFdGxMHJdQlzQ1xSm/xy9VcYiN/7FRNQu5KB2Qao/Sm3jLVITIvrAJE0Uh
-         +9o31+ivZbFMykFT9pylTUVqpND/2S6NCCWPd7wd6ZtmMsl3h/NikAsa1aNMGAWcA2Sh
-         ZAOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=+wPgud2Zc9iDtR4LrtVArCP3c0J7sHpVkjRO1rtdEVU=;
-        b=YelXH+d7sA2F43be+ftGtT2Ze4UavLGztgKC/+RJIoRIpqcw9++u8KUSuBzWRX6Tzj
-         iW0Iw/ytLd4Pml6z3hNOI9lIC/20GzB3uooLv0MPN8GgjjGcugCXhj+b61L9vxlReH0v
-         ENgDiEDKDoirTXZP3QQAqWCLpu6nXST3b2znLyV7Gx7pn2KapCjMForSkBzQ5nE/wGH+
-         b34QUCnqLBbKa6K9fyCxBhRzddIkaa57ZZ2u4adS8D7+lCdhLovEzCIzW7Xbp6Pqd6H8
-         3SBYfl7eiqEPLOH5NyV98K4CTGQ/sDXKfXkKN3l+aE4ojCRRf1V5wjLCkcmpNofc0U7z
-         39vQ==
-X-Gm-Message-State: AOAM533wkvopbbwGRReQywEh9NoKaz/9N2/Qlhp+zvnFgoIQa3zPnPlc
-        ZM0IkQnhHFJR8dWSnO3cj6IsQg==
-X-Google-Smtp-Source: ABdhPJw+Tl5CzTDCc96VpocDvJbBxdd6ZINurZIdPIxVJUtMyioGW9CzMnzgbCq3WPYRTDAhM0mHJg==
-X-Received: by 2002:a05:6808:1b26:: with SMTP id bx38mr134447oib.267.1644259599649;
-        Mon, 07 Feb 2022 10:46:39 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id l38sm4414090otl.45.2022.02.07.10.46.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 10:46:38 -0800 (PST)
-Date:   Mon, 7 Feb 2022 10:46:36 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.attlocal.net
-To:     Hillf Danton <hdanton@sina.com>
-cc:     Hugh Dickins <hughd@google.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 07/13] mm/munlock: mlock_pte_range() when mlocking or
- munlocking
-In-Reply-To: <20220207033518.2602-1-hdanton@sina.com>
-Message-ID: <203c549d-ad8-948d-1a3a-13be026864e@google.com>
-References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com> <20220207033518.2602-1-hdanton@sina.com>
+        Mon, 7 Feb 2022 13:47:30 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CFDC0401DA;
+        Mon,  7 Feb 2022 10:47:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=QN6yfdo8RIWM0BFuvlpHBuhEA39RjktPtMeJoHOPZ3k=; b=FhiBYuqQqKT3nv9OEbw64uUrre
+        dkZnveEyOXp6nG2wEHaxtG8QUm2SiisUAuMu3Z6EjbybxnyNV/gJYFQ/q5RjcaIiMsVTc0nSBm5ZW
+        z0gr5pT0cFtRc1bDQxNO7e+aKjIU80WgSlcXdNGIpGmTFZJf0Cny5Z+0NoqGKkmaNA6YZDQuHq5ui
+        XIpkEh2CIRhp0jcpduFORv1lBxpEnJB8dYfRSqg2QPO+ZyV/Yni5ke903nRPZRADlKI2fE/dPUEmP
+        sCHBND9foCAEYyzQGNRnWJFegsszhRKXLPb+wXfVwOXFmx7AQyvIjDzatos2kzr0JbNuNzctfqHXt
+        Re+MJDWQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nH92s-001mkC-AN; Mon, 07 Feb 2022 18:47:26 +0000
+Message-ID: <7753c65a-ce16-eb4f-395b-bc5e54c647c6@infradead.org>
+Date:   Mon, 7 Feb 2022 10:47:21 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 2/2] dell-smm-hwmon: rewrite CONFIG_I8K description
+Content-Language: en-US
+To:     =?UTF-8?Q?Mateusz_Jo=c5=84czyk?= <mat.jonczyk@o2.pl>,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-hwmon@vger.kernel.org
+Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>
+References: <20220207182940.242838-1-mat.jonczyk@o2.pl>
+ <20220207182940.242838-2-mat.jonczyk@o2.pl>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220207182940.242838-2-mat.jonczyk@o2.pl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022, Hillf Danton wrote:
-> On Sun, 6 Feb 2022 13:42:09 -0800 (PST) Hugh Dickins wrote:
-> > +static void mlock_vma_pages_range(struct vm_area_struct *vma,
-> > +	unsigned long start, unsigned long end, vm_flags_t newflags)
-> >  {
-> > -	/* Reimplementation to follow in later commit */
-> > +	static const struct mm_walk_ops mlock_walk_ops = {
-> > +		.pmd_entry = mlock_pte_range,
-> > +	};
-> > +
-> > +	/*
-> > +	 * There is a slight chance that concurrent page migration,
-> > +	 * or page reclaim finding a page of this now-VM_LOCKED vma,
-> > +	 * will call mlock_vma_page() and raise page's mlock_count:
-> > +	 * double counting, leaving the page unevictable indefinitely.
-> > +	 * Communicate this danger to mlock_vma_page() with VM_IO,
-> > +	 * which is a VM_SPECIAL flag not allowed on VM_LOCKED vmas.
-> > +	 * mmap_lock is held in write mode here, so this weird
-> > +	 * combination should not be visible to others.
-> > +	 */
-> > +	if (newflags & VM_LOCKED)
-> > +		newflags |= VM_IO;
-> > +	WRITE_ONCE(vma->vm_flags, newflags);
+Hi--
+
+On 2/7/22 10:29, Mateusz Jończyk wrote:
+> It is not the laptops, but the /proc/i8k interface that is legacy. The
+> old description was confusing, fix this.
 > 
-> Nit
+> I'm not a native English speaker, so I'd like that someone proofread
+> this description.
 > 
-> The WRITE_ONCE is not needed, given the certainty of invisibility to
-> others - it will quiesce syzbot reporting the case of visibility.
+> Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+> Cc: Pali Rohár <pali@kernel.org>
+> Cc: Jean Delvare <jdelvare@suse.com>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Hans de Goede <hdegoede@redhat.com>
+> Cc: Mark Gross <markgross@kernel.org>
+> ---
+>  drivers/hwmon/Kconfig | 17 ++++++++---------
+>  1 file changed, 8 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+> index dd244aa747ad..8f9f41a9ef70 100644
+> --- a/drivers/hwmon/Kconfig
+> +++ b/drivers/hwmon/Kconfig
+> @@ -506,18 +506,17 @@ config SENSORS_DELL_SMM
+>  	  userspace interface for i8kutils package.
+>  
+>  config I8K
+> -	bool "Dell i8k legacy laptop support"
+> +	bool "Legacy /proc/i8k interface of Dell laptop SMM BIOS hwmon driver"
+>  	depends on SENSORS_DELL_SMM
+>  	help
+> -	  This option enables legacy /proc/i8k userspace interface in hwmon
+> -	  dell-smm-hwmon driver. Character file /proc/i8k reports bios version,
+> -	  temperature and allows controlling fan speeds of Dell laptops via
+> -	  System Management Mode. For old Dell laptops (like Dell Inspiron 8000)
+> -	  it reports also power and hotkey status. For fan speed control is
+> -	  needed userspace package i8kutils.
+> +	  This option enables the legacy /proc/i8k userspace interface of the
+> +	  dell-smm-hwmon driver. The character file /proc/i8k exposes the BIOS
+> +	  version, temperatures and allows control of fan speeds of some Dell
+> +	  laptops. Sometimes, it reports also power and hotkey status.
 
-Ah, maybe I can rewrite that comment better: when I said "visible to
-others", I meant visible to "the outside world", those participating in
-the usual mmap_lock'ed access, syscalls and /proc/pid/maps and smaps etc.
+	  Comma not needed ^^^; "it also reports ..." would be more common.
 
-The point here is that some kernel low-level internals (page migration
-and page reclaim) peek at vma->vm_flags without mmap_lock (but with
-anon_vma lock or i_mmap_rwsem).
+>  
+> -	  Say Y if you intend to run this kernel on old Dell laptops or want to
+> -	  use userspace package i8kutils.
+> +	  This interface is required to run programs from the i8kutils package.
+> +
+> +	  Say Y if you intend to run userspace programs that use this interface.
+>  	  Say N otherwise.
+>  
+>  config SENSORS_DA9052_ADC
 
-Originally I had VM_LOCKED set in vma->vm_flags before calling
-mlock_vma_pages_range(), no need for a newflags parameter.  Then
-realized that left a tiny window in which VM_LOCKED was visible to
-migration and reclaim without the safening VM_IO, so changed it to pass
-in newflags, then "newflags |= VM_IO", then "vma->vm_flags = newflags"
-there.   Then realized that perhaps an uncooperative compiler might be
-inspired to mutate that into "vma->vm_flags = newflags" followed by
-"vma->vm_flags |= VM_IO".  I hope it would not, but can I be sure
-that it would not?  That's why I ended up with WRITE_ONCE() there.
+thanks.
 
-Maybe all rather overkill: but trying to ensure that we undercount
-mmap_locked rather than risk overcounting it.
-
-Hugh
+-- 
+~Randy
