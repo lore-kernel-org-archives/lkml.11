@@ -2,668 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92F78C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDDBBC35276
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386874AbiBGQBe (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:01:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38676 "EHLO
+        id S243368AbiBGQBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:01:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344215AbiBGP7i (ORCPT
+        with ESMTP id S1384530AbiBGQAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:59:38 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22ECC0401CF
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:59:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E46DCCE1179
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:59:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 379C1C340F0;
-        Mon,  7 Feb 2022 15:59:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644249573;
-        bh=QrTuUdX4llf0VPNVCSmc3xe4XSL9EEyiW56M6T9nnmM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JEQ/p3cLouhQ/rcKOezlaSEtgIDJyFDrBJRZ0N6cvk5F9WHISHMjFz8WECxNg4tK7
-         rCTkHdRTMY96f1S8L1taMtgDUQrIEv9Tqqc8XmOLhfbtnRiUswdVUOoy0cJAkHOVcx
-         pgdEWz9Vi1fkybqxALJbTR+x0prfA8iUu7hpZUEAOcqMYcJQAMlHNG83L6YvYbzJxg
-         0BkMRPy3EZiapuMdNDWALhGJVk/UIqKvZxol85SkD71H4+aJ0ehdFxlOpim/FF/xAJ
-         WLEwDGugRisymc30da42VRniLOelacukcpbqx19BMesqF12y9Fu6ELLmk0BTttLSIU
-         E0TKAlIpYEv0Q==
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@gentwo.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nitesh Lal <nilal@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Nicolas Saenz <nsaenzju@redhat.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Phil Auld <pauld@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>
-Subject: [PATCH 4/8] sched/isolation: Use single feature type while referring to housekeeping cpumask
-Date:   Mon,  7 Feb 2022 16:59:06 +0100
-Message-Id: <20220207155910.527133-5-frederic@kernel.org>
+        Mon, 7 Feb 2022 11:00:49 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2077.outbound.protection.outlook.com [40.107.94.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7793C0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:00:48 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CkyYCnAhH+Ileiwx7szXf/V1zoPqdu1TPqYVz5Za4yj4XYbw/bxPCKOMMUGDaOLUOfYTOnk5OYQKN2c0v3oAZ973MAxthgXssMAXU6FHyqzqNx6Ro2GKZDMdJbaxN4fUtCEe5GaYx6f8pQ9wQSIAWsrsYdP0jGQKM1PJlT1mLWr5h77nVzU6xSCAWGA277PzKRh1uv82MsBwElQ9yklGWe40ZgDdZ9V9KZbH48mvBjGd44bbmj/R+iPTPL/dF3QLV2+kreCJeVE6HzVp9iMLicuw3w8+iWbkf445IFRr+ULuBdqIFJ3CXX6ho3A/Lg6EX+yEbcMb03uBTvVdiJuN/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=24nxa10g4gma+53eO2vWWN01muFAXWU5dLm6s0yzvI4=;
+ b=mC/TP5HlaQqhRt+Al5uBAPN/J8KqN0GE0dbtWkxeAnxHsFIwuoEnngkn9QdkAy1ynyKCuyQu+YhqFRH7bWpNNzpTPMSm4nspJrgyETTPKlxCeW7vT+LGliJzXzfWXnZoI1mHHBHDHrLz5dUp0QGg9LKf64IpDL32GUqv1ToyTVNyKWPpbsq2EGVPo74pHA8Zh2N8WgjHXyDr3jWJbR6UbRFFO3acuGHcEwAfw8COyDIQAtl5iHLAKZUFPJcAo2zrjAZh7L7ZvXBMVILM1pzyfaZQBm588am/LlmZf1/DuQJRai79Ps6Qm2rABvCcvmdNh/X8MjMln3Fwc5lIoGUnJw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=24nxa10g4gma+53eO2vWWN01muFAXWU5dLm6s0yzvI4=;
+ b=VsG5ohk0KzZLS76S4gHGyN7gZ6FogWs6gXuHvtz32JR/CyBVqniU7ufl4qJiZbo+t3PYAQENqiCuiVKdwzMriUcRba5INnA4XZ/Z2G+YRaG5AegWJoKnGwJo1ichzx3rCYQEW0tVXpo/1NsKZbLAyLHY5vZmx/nfPNL37EBlqss=
+Received: from DM6PR07CA0063.namprd07.prod.outlook.com (2603:10b6:5:74::40) by
+ MW3PR12MB4522.namprd12.prod.outlook.com (2603:10b6:303:5f::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4951.17; Mon, 7 Feb 2022 16:00:46 +0000
+Received: from DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:74:cafe::8) by DM6PR07CA0063.outlook.office365.com
+ (2603:10b6:5:74::40) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
+ Transport; Mon, 7 Feb 2022 16:00:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT046.mail.protection.outlook.com (10.13.172.121) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4951.12 via Frontend Transport; Mon, 7 Feb 2022 16:00:46 +0000
+Received: from BLR5CG134614W.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 7 Feb
+ 2022 10:00:39 -0600
+From:   K Prateek Nayak <kprateek.nayak@amd.com>
+To:     <peterz@infradead.org>
+CC:     <aubrey.li@linux.intel.com>, <efault@gmx.de>,
+        <gautham.shenoy@amd.com>, <linux-kernel@vger.kernel.org>,
+        <mgorman@techsingularity.net>, <mingo@kernel.org>,
+        <song.bao.hua@hisilicon.com>, <srikar@linux.vnet.ibm.com>,
+        <valentin.schneider@arm.com>, <vincent.guittot@linaro.org>,
+        K Prateek Nayak <kprateek.nayak@amd.com>
+Subject: [PATCH] sched/fair: Consider cpu affinity when allowing NUMA imbalance in find_idlest_group
+Date:   Mon, 7 Feb 2022 21:29:21 +0530
+Message-ID: <20220207155921.21321-1-kprateek.nayak@amd.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220207155910.527133-1-frederic@kernel.org>
-References: <20220207155910.527133-1-frederic@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b7fa0e85-ddd1-4481-875e-08d9ea5300d5
+X-MS-TrafficTypeDiagnostic: MW3PR12MB4522:EE_
+X-Microsoft-Antispam-PRVS: <MW3PR12MB45228D85A7D00C23F5A3CF4A982C9@MW3PR12MB4522.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: aPEamAFeVKTBiO2v6D6Uq/sdxrTXQjbJSuvKQYDnSs5vvkW4ygoie0/DQbhgPKiWbYLcq9hRAtX/49fhASF4QwaKx1Q/xuq99iQypgnOj3PRi0tYBOVNTRHhhWUBkL2le8BLzMquOWphiQzePLB89fbkKUc2CkT3/lpKVQGtmQdxck9mYN7yCvWH9qjRjM3kapj8QiqWw2Iz6McMCF6kN2O36D5caSLFWqdGggg7A9ytdKBhrz8qWAAbxipKCjyDj5EJpwzE7YBgHIHOpXabL8QHXUWJRvIEKe/di6EgsFQbVwaLLCiDGU2DEcttuiycDZGJmC9NydRMRWWDexHIINiTHxd5QlYW1wGZY9EUF65AwNrFFW6gDoqz/yRYHApBQ/I6GolFhsFcD4ZssFwoqEadRJ5fIGk9dIhd7YtBFmyRAWAeRQmQsUcgKy8Ta6dfNkWL9yATGMQNlY5vqDDdiEld1Lp2F0ISN3YseBvbGL4A9YafVy24DAbgUOdN5pO7u1H9Z3FdYkj0xWafjxjLpLPUn0S/ifROlG24/JMh0zP6egA1TRTzeWaHmr5n8+CKh4gcq+7r4LOyBSh83JSQ7S9L1SX95ZlvFkDX6Y1LlnR874mWbk8OwhxCy+l4AOn46x5VZHpDzAGBgQZTZn5fGMVtbo3Gak0D814GgbE5Eph4dpwZaJnC/23gRr6B+FPFBuGawlvr1xzqwVUjqtF0TlRQ6CRUjJGqRNduq+LadTz11eWI9uvAXIg5QHmYbIIbwJqrGM4d7w3QvgQ1kJBKFgbMMqE8L/OoWmf4FhCbt08=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(4326008)(6916009)(82310400004)(8936002)(36860700001)(8676002)(70206006)(316002)(86362001)(70586007)(54906003)(2906002)(47076005)(7696005)(2616005)(508600001)(83380400001)(6666004)(36756003)(81166007)(26005)(356005)(16526019)(40460700003)(186003)(1076003)(7416002)(5660300002)(426003)(966005)(336012)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 16:00:46.5721
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7fa0e85-ddd1-4481-875e-08d9ea5300d5
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4522
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refer to housekeeping APIs using single feature types instead of flags.
-This prevents from passing multiple isolation features at once to
-housekeeping interfaces, which soon won't be possible anymore as each
-isolation features will have their own cpumask.
+Neither the sched/tip nor Mel's v5 patchset [1] provides an optimal
+new-task wakeup strategy when the tasks are affined to a subset of cpus
+which can result in piling of tasks on the same set of CPU in a NUMA
+group despite there being other cpus in a different NUMA group where the
+task could have run in. A good placement makes a difference especially
+in case of short lived task where the delay in load balancer kicking in
+can cause degradation in perfromance.
 
-Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
-Reviewed-by: Phil Auld <pauld@redhat.com>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: Nitesh Lal <nilal@redhat.com>
-Cc: Nicolas Saenz <nsaenzju@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Christoph Lameter <cl@gentwo.de>
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Zefan Li <lizefan.x@bytedance.com>
-Cc: Alex Belits <abelits@marvell.com>
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Paul E. McKenney  <paulmck@kernel.org>
+Benchmark is performed using pinned run of STREAM, parallelized with OMP,
+on a Zen3 machine. STREAM is configured to run 8 threads with CPU affinity
+set to cpus 0,16,32,48,64,80,96,112.
+This ensures an even distribution of allowed cpus across the NUMA groups
+in NPS1, NPS2 and NPS4 modes.
+The script running the stream itself is pinned to cpus 8-15 to maintain
+consistency across runs and to make sure the script runs on an LLC
+not part of stream cpulist so as to not interfere with the benchmark.
+
+Changes are based on top of v5 of Mel's patchset
+"Adjust NUMA imbalance for multiple LLCs" [1]
+
+Following are the results:
+
+	 5.17.0-rc1              5.17.0-rc1              5.17.0-rc1
+	 tip sched/core          tip sched/core          tip sched/core
+				 + mel-v5                + mel-v5
+							 + this-fix
+
+NPS Mode - NPS1
+
+ Copy:	 92133.36 (0.00 pct)	 117595.57 (27.63 pct)	 150655.69 (63.51 pct)
+Scale:	 90847.82 (0.00 pct)	 114525.59 (26.06 pct)	 148939.47 (63.94 pct)
+  Add:	 103585.04 (0.00 pct)	 137548.40 (32.78 pct)	 186323.75 (79.87 pct)
+Triad:	 100060.42 (0.00 pct)	 133695.34 (33.61 pct)	 184203.97 (84.09 pct)
+
+NPS Mode - NPS 2
+
+ Copy:	 52969.12 (0.00 pct)	 76969.90 (45.31 pct)	 165892.91 (213.18 pct)
+Scale:	 49209.91 (0.00 pct)	 69200.05 (40.62 pct)	 152210.69 (209.30 pct)
+  Add:	 60106.69 (0.00 pct)	 92049.47 (53.14 pct)	 195135.02 (224.64 pct)
+Triad:	 60052.66 (0.00 pct)	 88323.03 (47.07 pct)	 193672.59 (222.50 pct)
+
+NPS Mode - NPS4
+
+ Copy:	 44122.00 (0.00 pct)	 157154.70 (256.18 pct)	 169755.52 (284.74 pct)
+Scale:	 41730.68 (0.00 pct)	 172303.88 (312.89 pct)	 170247.06 (307.96 pct)
+  Add:	 51666.98 (0.00 pct)	 214293.71 (314.75 pct)	 213560.61 (313.34 pct)
+Triad:	 50489.87 (0.00 pct)	 212242.49 (320.36 pct)	 210844.58 (317.59 pct)
+
+The following sched_wakeup_new tracepoint output shows the initial
+placement of tasks in mel-v5 in NPS2 mode:
+
+stream-4578    [016] d..2.    81.970702: sched_wakeup_new: comm=stream pid=4580 prio=120 target_cpu=000
+stream-4578    [016] d..2.    81.970760: sched_wakeup_new: comm=stream pid=4581 prio=120 target_cpu=016
+stream-4578    [016] d..2.    81.970823: sched_wakeup_new: comm=stream pid=4582 prio=120 target_cpu=048
+stream-4578    [016] d..2.    81.970875: sched_wakeup_new: comm=stream pid=4583 prio=120 target_cpu=032
+stream-4578    [016] d..2.    81.970920: sched_wakeup_new: comm=stream pid=4584 prio=120 target_cpu=016
+stream-4578    [016] d..2.    81.970961: sched_wakeup_new: comm=stream pid=4585 prio=120 target_cpu=016
+stream-4578    [016] d..2.    81.971039: sched_wakeup_new: comm=stream pid=4586 prio=120 target_cpu=112
+
+Three stream threads pile up on cpu 16 initially and in case of
+short runs, where the load balancer doesn't have enough time to kick in
+to migrate task, performance might suffer. This pattern is observed
+consistently where tasks pile on one cpu of the group where the
+runner script is pinned to.
+
+The following sched_wakeup_new tracepoint output shows the initial
+placement of tasks with this fix in NPS2 mode:
+
+stream-4639    [032] d..2.   102.903581: sched_wakeup_new: comm=stream pid=4641 prio=120 target_cpu=016
+stream-4639    [032] d..2.   102.903698: sched_wakeup_new: comm=stream pid=4642 prio=120 target_cpu=048
+stream-4639    [032] d..2.   102.903762: sched_wakeup_new: comm=stream pid=4643 prio=120 target_cpu=080
+stream-4639    [032] d..2.   102.903823: sched_wakeup_new: comm=stream pid=4644 prio=120 target_cpu=112
+stream-4639    [032] d..2.   102.903879: sched_wakeup_new: comm=stream pid=4645 prio=120 target_cpu=096
+stream-4639    [032] d..2.   102.903938: sched_wakeup_new: comm=stream pid=4646 prio=120 target_cpu=000
+stream-4639    [032] d..2.   102.903991: sched_wakeup_new: comm=stream pid=4647 prio=120 target_cpu=064
+
+The tasks have been distributed evenly across all the allowed cpus
+and no pile up can be seen.
+
+Aggressive NUMA balancing is only done when needed. We select the
+minimum of number of allowed cpus in sched group and the calculated
+sd.imb_numa_nr as our imbalance threshold and the default behavior
+of mel-v5 is only modified when the former is smaller than
+the latter.
+
+This can help is case of embarrassingly parallel programs with tight
+cpus affinity set.
+
+[1] https://lore.kernel.org/lkml/20220203144652.12540-1-mgorman@techsingularity.net/
+
+Signed-off-by: K Prateek Nayak <kprateek.nayak@amd.com>
 ---
- arch/x86/kernel/cpu/aperfmperf.c |  6 ++---
- arch/x86/kvm/x86.c               |  2 +-
- drivers/base/cpu.c               |  2 +-
- drivers/pci/pci-driver.c         |  4 +--
- include/linux/sched/isolation.h  | 43 ++++++++++++++++----------------
- kernel/cgroup/cpuset.c           |  6 ++---
- kernel/cpu.c                     |  4 +--
- kernel/irq/cpuhotplug.c          |  4 +--
- kernel/irq/manage.c              |  4 +--
- kernel/kthread.c                 |  4 +--
- kernel/rcu/tasks.h               |  2 +-
- kernel/rcu/tree_plugin.h         |  6 ++---
- kernel/sched/core.c              | 12 ++++-----
- kernel/sched/fair.c              | 10 ++++----
- kernel/sched/isolation.c         | 32 ++++++++++++++++--------
- kernel/sched/topology.c          |  8 +++---
- kernel/watchdog.c                |  2 +-
- kernel/workqueue.c               |  4 +--
- net/core/net-sysfs.c             |  4 +--
- 19 files changed, 86 insertions(+), 73 deletions(-)
+ kernel/sched/core.c | 3 +++
+ kernel/sched/fair.c | 7 ++++++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cpu/aperfmperf.c b/arch/x86/kernel/cpu/aperfmperf.c
-index 22911deacb6e..9ca008f9e9b1 100644
---- a/arch/x86/kernel/cpu/aperfmperf.c
-+++ b/arch/x86/kernel/cpu/aperfmperf.c
-@@ -91,7 +91,7 @@ unsigned int aperfmperf_get_khz(int cpu)
- 	if (!boot_cpu_has(X86_FEATURE_APERFMPERF))
- 		return 0;
- 
--	if (!housekeeping_cpu(cpu, HK_FLAG_MISC))
-+	if (!housekeeping_cpu(cpu, HK_TYPE_MISC))
- 		return 0;
- 
- 	if (rcu_is_idle_cpu(cpu))
-@@ -114,7 +114,7 @@ void arch_freq_prepare_all(void)
- 		return;
- 
- 	for_each_online_cpu(cpu) {
--		if (!housekeeping_cpu(cpu, HK_FLAG_MISC))
-+		if (!housekeeping_cpu(cpu, HK_TYPE_MISC))
- 			continue;
- 		if (rcu_is_idle_cpu(cpu))
- 			continue; /* Idle CPUs are completely uninteresting. */
-@@ -136,7 +136,7 @@ unsigned int arch_freq_get_on_cpu(int cpu)
- 	if (!boot_cpu_has(X86_FEATURE_APERFMPERF))
- 		return 0;
- 
--	if (!housekeeping_cpu(cpu, HK_FLAG_MISC))
-+	if (!housekeeping_cpu(cpu, HK_TYPE_MISC))
- 		return 0;
- 
- 	if (aperfmperf_snapshot_cpu(cpu, ktime_get(), true))
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 74b53a16f38a..c91cb0623a4b 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -8838,7 +8838,7 @@ int kvm_arch_init(void *opaque)
- 	}
- 
- 	if (pi_inject_timer == -1)
--		pi_inject_timer = housekeeping_enabled(HK_FLAG_TIMER);
-+		pi_inject_timer = housekeeping_enabled(HK_TYPE_TIMER);
- #ifdef CONFIG_X86_64
- 	pvclock_gtod_register_notifier(&pvclock_gtod_notifier);
- 
-diff --git a/drivers/base/cpu.c b/drivers/base/cpu.c
-index 5fc258073bc7..2ef23fce0860 100644
---- a/drivers/base/cpu.c
-+++ b/drivers/base/cpu.c
-@@ -275,7 +275,7 @@ static ssize_t print_cpus_isolated(struct device *dev,
- 		return -ENOMEM;
- 
- 	cpumask_andnot(isolated, cpu_possible_mask,
--		       housekeeping_cpumask(HK_FLAG_DOMAIN));
-+		       housekeeping_cpumask(HK_TYPE_DOMAIN));
- 	len = sysfs_emit(buf, "%*pbl\n", cpumask_pr_args(isolated));
- 
- 	free_cpumask_var(isolated);
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 4a5792c82d08..f61c40a47891 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -377,8 +377,8 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
- 			goto out;
- 		}
- 		cpumask_and(wq_domain_mask,
--			    housekeeping_cpumask(HK_FLAG_WQ),
--			    housekeeping_cpumask(HK_FLAG_DOMAIN));
-+			    housekeeping_cpumask(HK_TYPE_WQ),
-+			    housekeeping_cpumask(HK_TYPE_DOMAIN));
- 
- 		cpu = cpumask_any_and(cpumask_of_node(node),
- 				      wq_domain_mask);
-diff --git a/include/linux/sched/isolation.h b/include/linux/sched/isolation.h
-index cc9f393e2a70..8c15abd67aed 100644
---- a/include/linux/sched/isolation.h
-+++ b/include/linux/sched/isolation.h
-@@ -5,54 +5,55 @@
- #include <linux/init.h>
- #include <linux/tick.h>
- 
--enum hk_flags {
--	HK_FLAG_TIMER		= 1,
--	HK_FLAG_RCU		= (1 << 1),
--	HK_FLAG_MISC		= (1 << 2),
--	HK_FLAG_SCHED		= (1 << 3),
--	HK_FLAG_TICK		= (1 << 4),
--	HK_FLAG_DOMAIN		= (1 << 5),
--	HK_FLAG_WQ		= (1 << 6),
--	HK_FLAG_MANAGED_IRQ	= (1 << 7),
--	HK_FLAG_KTHREAD		= (1 << 8),
-+enum hk_type {
-+	HK_TYPE_TIMER,
-+	HK_TYPE_RCU,
-+	HK_TYPE_MISC,
-+	HK_TYPE_SCHED,
-+	HK_TYPE_TICK,
-+	HK_TYPE_DOMAIN,
-+	HK_TYPE_WQ,
-+	HK_TYPE_MANAGED_IRQ,
-+	HK_TYPE_KTHREAD,
-+	HK_TYPE_MAX
- };
- 
- #ifdef CONFIG_CPU_ISOLATION
- DECLARE_STATIC_KEY_FALSE(housekeeping_overridden);
--extern int housekeeping_any_cpu(enum hk_flags flags);
--extern const struct cpumask *housekeeping_cpumask(enum hk_flags flags);
--extern bool housekeeping_enabled(enum hk_flags flags);
--extern void housekeeping_affine(struct task_struct *t, enum hk_flags flags);
--extern bool housekeeping_test_cpu(int cpu, enum hk_flags flags);
-+extern int housekeeping_any_cpu(enum hk_type type);
-+extern const struct cpumask *housekeeping_cpumask(enum hk_type type);
-+extern bool housekeeping_enabled(enum hk_type type);
-+extern void housekeeping_affine(struct task_struct *t, enum hk_type type);
-+extern bool housekeeping_test_cpu(int cpu, enum hk_type type);
- extern void __init housekeeping_init(void);
- 
- #else
- 
--static inline int housekeeping_any_cpu(enum hk_flags flags)
-+static inline int housekeeping_any_cpu(enum hk_type type)
- {
- 	return smp_processor_id();
- }
- 
--static inline const struct cpumask *housekeeping_cpumask(enum hk_flags flags)
-+static inline const struct cpumask *housekeeping_cpumask(enum hk_type type)
- {
- 	return cpu_possible_mask;
- }
- 
--static inline bool housekeeping_enabled(enum hk_flags flags)
-+static inline bool housekeeping_enabled(enum hk_type type)
- {
- 	return false;
- }
- 
- static inline void housekeeping_affine(struct task_struct *t,
--				       enum hk_flags flags) { }
-+				       enum hk_type type) { }
- static inline void housekeeping_init(void) { }
- #endif /* CONFIG_CPU_ISOLATION */
- 
--static inline bool housekeeping_cpu(int cpu, enum hk_flags flags)
-+static inline bool housekeeping_cpu(int cpu, enum hk_type type)
- {
- #ifdef CONFIG_CPU_ISOLATION
- 	if (static_branch_unlikely(&housekeeping_overridden))
--		return housekeeping_test_cpu(cpu, flags);
-+		return housekeeping_test_cpu(cpu, type);
- #endif
- 	return true;
- }
-diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
-index dc653ab26e50..e4e18a2cb404 100644
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -803,7 +803,7 @@ static int generate_sched_domains(cpumask_var_t **domains,
- 			update_domain_attr_tree(dattr, &top_cpuset);
- 		}
- 		cpumask_and(doms[0], top_cpuset.effective_cpus,
--			    housekeeping_cpumask(HK_FLAG_DOMAIN));
-+			    housekeeping_cpumask(HK_TYPE_DOMAIN));
- 
- 		goto done;
- 	}
-@@ -833,7 +833,7 @@ static int generate_sched_domains(cpumask_var_t **domains,
- 		if (!cpumask_empty(cp->cpus_allowed) &&
- 		    !(is_sched_load_balance(cp) &&
- 		      cpumask_intersects(cp->cpus_allowed,
--					 housekeeping_cpumask(HK_FLAG_DOMAIN))))
-+					 housekeeping_cpumask(HK_TYPE_DOMAIN))))
- 			continue;
- 
- 		if (root_load_balance &&
-@@ -922,7 +922,7 @@ static int generate_sched_domains(cpumask_var_t **domains,
- 
- 			if (apn == b->pn) {
- 				cpumask_or(dp, dp, b->effective_cpus);
--				cpumask_and(dp, dp, housekeeping_cpumask(HK_FLAG_DOMAIN));
-+				cpumask_and(dp, dp, housekeeping_cpumask(HK_TYPE_DOMAIN));
- 				if (dattr)
- 					update_domain_attr_tree(dattr + nslot, b);
- 
-diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 407a2568f35e..f39eb0b52dfe 100644
---- a/kernel/cpu.c
-+++ b/kernel/cpu.c
-@@ -1488,8 +1488,8 @@ int freeze_secondary_cpus(int primary)
- 	cpu_maps_update_begin();
- 	if (primary == -1) {
- 		primary = cpumask_first(cpu_online_mask);
--		if (!housekeeping_cpu(primary, HK_FLAG_TIMER))
--			primary = housekeeping_any_cpu(HK_FLAG_TIMER);
-+		if (!housekeeping_cpu(primary, HK_TYPE_TIMER))
-+			primary = housekeeping_any_cpu(HK_TYPE_TIMER);
- 	} else {
- 		if (!cpu_online(primary))
- 			primary = cpumask_first(cpu_online_mask);
-diff --git a/kernel/irq/cpuhotplug.c b/kernel/irq/cpuhotplug.c
-index 39a41c56ad4f..1ed2b1739363 100644
---- a/kernel/irq/cpuhotplug.c
-+++ b/kernel/irq/cpuhotplug.c
-@@ -176,10 +176,10 @@ static bool hk_should_isolate(struct irq_data *data, unsigned int cpu)
- {
- 	const struct cpumask *hk_mask;
- 
--	if (!housekeeping_enabled(HK_FLAG_MANAGED_IRQ))
-+	if (!housekeeping_enabled(HK_TYPE_MANAGED_IRQ))
- 		return false;
- 
--	hk_mask = housekeeping_cpumask(HK_FLAG_MANAGED_IRQ);
-+	hk_mask = housekeeping_cpumask(HK_TYPE_MANAGED_IRQ);
- 	if (cpumask_subset(irq_data_get_effective_affinity_mask(data), hk_mask))
- 		return false;
- 
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index f23ffd30385b..c03f71d5ec10 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -247,13 +247,13 @@ int irq_do_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 	 * online.
- 	 */
- 	if (irqd_affinity_is_managed(data) &&
--	    housekeeping_enabled(HK_FLAG_MANAGED_IRQ)) {
-+	    housekeeping_enabled(HK_TYPE_MANAGED_IRQ)) {
- 		const struct cpumask *hk_mask, *prog_mask;
- 
- 		static DEFINE_RAW_SPINLOCK(tmp_mask_lock);
- 		static struct cpumask tmp_mask;
- 
--		hk_mask = housekeeping_cpumask(HK_FLAG_MANAGED_IRQ);
-+		hk_mask = housekeeping_cpumask(HK_TYPE_MANAGED_IRQ);
- 
- 		raw_spin_lock(&tmp_mask_lock);
- 		cpumask_and(&tmp_mask, mask, hk_mask);
-diff --git a/kernel/kthread.c b/kernel/kthread.c
-index 38c6dd822da8..d100d5a15b38 100644
---- a/kernel/kthread.c
-+++ b/kernel/kthread.c
-@@ -356,7 +356,7 @@ static int kthread(void *_create)
- 	 * back to default in case they have been changed.
- 	 */
- 	sched_setscheduler_nocheck(current, SCHED_NORMAL, &param);
--	set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_FLAG_KTHREAD));
-+	set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_TYPE_KTHREAD));
- 
- 	/* OK, tell user we're spawned, wait for stop or wakeup */
- 	__set_current_state(TASK_UNINTERRUPTIBLE);
-@@ -722,7 +722,7 @@ int kthreadd(void *unused)
- 	/* Setup a clean context for our children to inherit. */
- 	set_task_comm(tsk, "kthreadd");
- 	ignore_signals(tsk);
--	set_cpus_allowed_ptr(tsk, housekeeping_cpumask(HK_FLAG_KTHREAD));
-+	set_cpus_allowed_ptr(tsk, housekeeping_cpumask(HK_TYPE_KTHREAD));
- 	set_mems_allowed(node_states[N_MEMORY]);
- 
- 	current->flags |= PF_NOFREEZE;
-diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
-index d64f0b1d8cd3..2c8d2fda55a8 100644
---- a/kernel/rcu/tasks.h
-+++ b/kernel/rcu/tasks.h
-@@ -496,7 +496,7 @@ static int __noreturn rcu_tasks_kthread(void *arg)
- 	struct rcu_tasks *rtp = arg;
- 
- 	/* Run on housekeeping CPUs by default.  Sysadm can move if desired. */
--	housekeeping_affine(current, HK_FLAG_RCU);
-+	housekeeping_affine(current, HK_TYPE_RCU);
- 	WRITE_ONCE(rtp->kthread_ptr, current); // Let GPs start!
- 
- 	/*
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index c5b45c2f68a1..65f25a32f6d7 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -1214,9 +1214,9 @@ static void rcu_boost_kthread_setaffinity(struct rcu_node *rnp, int outgoingcpu)
- 		if ((mask & leaf_node_cpu_bit(rnp, cpu)) &&
- 		    cpu != outgoingcpu)
- 			cpumask_set_cpu(cpu, cm);
--	cpumask_and(cm, cm, housekeeping_cpumask(HK_FLAG_RCU));
-+	cpumask_and(cm, cm, housekeeping_cpumask(HK_TYPE_RCU));
- 	if (cpumask_weight(cm) == 0)
--		cpumask_copy(cm, housekeeping_cpumask(HK_FLAG_RCU));
-+		cpumask_copy(cm, housekeeping_cpumask(HK_TYPE_RCU));
- 	set_cpus_allowed_ptr(t, cm);
- 	free_cpumask_var(cm);
- }
-@@ -1291,7 +1291,7 @@ static void rcu_bind_gp_kthread(void)
- {
- 	if (!tick_nohz_full_enabled())
- 		return;
--	housekeeping_affine(current, HK_FLAG_RCU);
-+	housekeeping_affine(current, HK_TYPE_RCU);
- }
- 
- /* Record the current task on dyntick-idle entry. */
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 848eaa0efe0e..ed67c2b56064 100644
+index 1d863d7f6ad7..9a92ac42bb24 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -1024,13 +1024,13 @@ int get_nohz_timer_target(void)
- 	struct sched_domain *sd;
- 	const struct cpumask *hk_mask;
+@@ -9294,6 +9294,7 @@ static struct kmem_cache *task_group_cache __read_mostly;
  
--	if (housekeeping_cpu(cpu, HK_FLAG_TIMER)) {
-+	if (housekeeping_cpu(cpu, HK_TYPE_TIMER)) {
- 		if (!idle_cpu(cpu))
- 			return cpu;
- 		default_cpu = cpu;
+ DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
+ DECLARE_PER_CPU(cpumask_var_t, select_idle_mask);
++DECLARE_PER_CPU(cpumask_var_t, find_idlest_group_mask);
+ 
+ void __init sched_init(void)
+ {
+@@ -9344,6 +9345,8 @@ void __init sched_init(void)
+ 			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+ 		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
+ 			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
++		per_cpu(find_idlest_group_mask, i) = (cpumask_var_t)kzalloc_node(
++			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
  	}
+ #endif /* CONFIG_CPUMASK_OFFSTACK */
  
--	hk_mask = housekeeping_cpumask(HK_FLAG_TIMER);
-+	hk_mask = housekeeping_cpumask(HK_TYPE_TIMER);
- 
- 	rcu_read_lock();
- 	for_each_domain(cpu, sd) {
-@@ -1046,7 +1046,7 @@ int get_nohz_timer_target(void)
- 	}
- 
- 	if (default_cpu == -1)
--		default_cpu = housekeeping_any_cpu(HK_FLAG_TIMER);
-+		default_cpu = housekeeping_any_cpu(HK_TYPE_TIMER);
- 	cpu = default_cpu;
- unlock:
- 	rcu_read_unlock();
-@@ -5370,7 +5370,7 @@ static void sched_tick_start(int cpu)
- 	int os;
- 	struct tick_work *twork;
- 
--	if (housekeeping_cpu(cpu, HK_FLAG_TICK))
-+	if (housekeeping_cpu(cpu, HK_TYPE_TICK))
- 		return;
- 
- 	WARN_ON_ONCE(!tick_work_cpu);
-@@ -5391,7 +5391,7 @@ static void sched_tick_stop(int cpu)
- 	struct tick_work *twork;
- 	int os;
- 
--	if (housekeeping_cpu(cpu, HK_FLAG_TICK))
-+	if (housekeeping_cpu(cpu, HK_TYPE_TICK))
- 		return;
- 
- 	WARN_ON_ONCE(!tick_work_cpu);
-@@ -9240,7 +9240,7 @@ void __init sched_init_smp(void)
- 	mutex_unlock(&sched_domains_mutex);
- 
- 	/* Move init over to a non-isolated CPU */
--	if (set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_FLAG_DOMAIN)) < 0)
-+	if (set_cpus_allowed_ptr(current, housekeeping_cpumask(HK_TYPE_DOMAIN)) < 0)
- 		BUG();
- 	current->flags &= ~PF_NO_SETAFFINITY;
- 	sched_init_granularity();
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 5146163bfabb..0c842a5ad9df 100644
+index babf3b65db38..ffced741b244 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -10351,7 +10351,7 @@ static inline int on_null_domain(struct rq *rq)
-  * - When one of the busy CPUs notice that there may be an idle rebalancing
-  *   needed, they will kick the idle load balancer, which then does idle
-  *   load balancing for all the idle CPUs.
-- * - HK_FLAG_MISC CPUs are used for this task, because HK_FLAG_SCHED not set
-+ * - HK_TYPE_MISC CPUs are used for this task, because HK_TYPE_SCHED not set
-  *   anywhere yet.
-  */
+@@ -5751,6 +5751,7 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+ /* Working cpumask for: load_balance, load_balance_newidle. */
+ DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
+ DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
++DEFINE_PER_CPU(cpumask_var_t, find_idlest_group_mask);
  
-@@ -10360,7 +10360,7 @@ static inline int find_new_ilb(void)
- 	int ilb;
- 	const struct cpumask *hk_mask;
+ #ifdef CONFIG_NO_HZ_COMMON
  
--	hk_mask = housekeeping_cpumask(HK_FLAG_MISC);
-+	hk_mask = housekeeping_cpumask(HK_TYPE_MISC);
- 
- 	for_each_cpu_and(ilb, nohz.idle_cpus_mask, hk_mask) {
- 
-@@ -10376,7 +10376,7 @@ static inline int find_new_ilb(void)
- 
- /*
-  * Kick a CPU to do the nohz balancing, if it is time for it. We pick any
-- * idle CPU in the HK_FLAG_MISC housekeeping set (if there is one).
-+ * idle CPU in the HK_TYPE_MISC housekeeping set (if there is one).
-  */
- static void kick_ilb(unsigned int flags)
+@@ -9022,6 +9023,7 @@ static inline bool allow_numa_imbalance(int running, int imb_numa_nr)
+ static struct sched_group *
+ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
  {
-@@ -10589,7 +10589,7 @@ void nohz_balance_enter_idle(int cpu)
- 		return;
++	struct cpumask *cpus = this_cpu_cpumask_var_ptr(find_idlest_group_mask);
+ 	struct sched_group *idlest = NULL, *local = NULL, *group = sd->groups;
+ 	struct sg_lb_stats local_sgs, tmp_sgs;
+ 	struct sg_lb_stats *sgs;
+@@ -9130,6 +9132,7 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
  
- 	/* Spare idle load balancing on CPUs that don't want to be disturbed: */
--	if (!housekeeping_cpu(cpu, HK_FLAG_SCHED))
-+	if (!housekeeping_cpu(cpu, HK_TYPE_SCHED))
- 		return;
- 
- 	/*
-@@ -10805,7 +10805,7 @@ static void nohz_newidle_balance(struct rq *this_rq)
- 	 * This CPU doesn't want to be disturbed by scheduler
- 	 * housekeeping
- 	 */
--	if (!housekeeping_cpu(this_cpu, HK_FLAG_SCHED))
-+	if (!housekeeping_cpu(this_cpu, HK_TYPE_SCHED))
- 		return;
- 
- 	/* Will wake up very soon. No time for doing anything else*/
-diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
-index 7f06eaf12818..a735d9e229dd 100644
---- a/kernel/sched/isolation.c
-+++ b/kernel/sched/isolation.c
-@@ -9,23 +9,35 @@
-  */
- #include "sched.h"
- 
-+enum hk_flags {
-+	HK_FLAG_TIMER		= BIT(HK_TYPE_TIMER),
-+	HK_FLAG_RCU		= BIT(HK_TYPE_RCU),
-+	HK_FLAG_MISC		= BIT(HK_TYPE_MISC),
-+	HK_FLAG_SCHED		= BIT(HK_TYPE_SCHED),
-+	HK_FLAG_TICK		= BIT(HK_TYPE_TICK),
-+	HK_FLAG_DOMAIN		= BIT(HK_TYPE_DOMAIN),
-+	HK_FLAG_WQ		= BIT(HK_TYPE_WQ),
-+	HK_FLAG_MANAGED_IRQ	= BIT(HK_TYPE_MANAGED_IRQ),
-+	HK_FLAG_KTHREAD		= BIT(HK_TYPE_KTHREAD),
-+};
-+
- DEFINE_STATIC_KEY_FALSE(housekeeping_overridden);
- EXPORT_SYMBOL_GPL(housekeeping_overridden);
- static cpumask_var_t housekeeping_mask;
- static unsigned int housekeeping_flags;
- 
--bool housekeeping_enabled(enum hk_flags flags)
-+bool housekeeping_enabled(enum hk_type type)
- {
--	return !!(housekeeping_flags & flags);
-+	return !!(housekeeping_flags & BIT(type));
- }
- EXPORT_SYMBOL_GPL(housekeeping_enabled);
- 
--int housekeeping_any_cpu(enum hk_flags flags)
-+int housekeeping_any_cpu(enum hk_type type)
- {
- 	int cpu;
- 
- 	if (static_branch_unlikely(&housekeeping_overridden)) {
--		if (housekeeping_flags & flags) {
-+		if (housekeeping_flags & BIT(type)) {
- 			cpu = sched_numa_find_closest(housekeeping_mask, smp_processor_id());
- 			if (cpu < nr_cpu_ids)
- 				return cpu;
-@@ -37,27 +49,27 @@ int housekeeping_any_cpu(enum hk_flags flags)
- }
- EXPORT_SYMBOL_GPL(housekeeping_any_cpu);
- 
--const struct cpumask *housekeeping_cpumask(enum hk_flags flags)
-+const struct cpumask *housekeeping_cpumask(enum hk_type type)
- {
- 	if (static_branch_unlikely(&housekeeping_overridden))
--		if (housekeeping_flags & flags)
-+		if (housekeeping_flags & BIT(type))
- 			return housekeeping_mask;
- 	return cpu_possible_mask;
- }
- EXPORT_SYMBOL_GPL(housekeeping_cpumask);
- 
--void housekeeping_affine(struct task_struct *t, enum hk_flags flags)
-+void housekeeping_affine(struct task_struct *t, enum hk_type type)
- {
- 	if (static_branch_unlikely(&housekeeping_overridden))
--		if (housekeeping_flags & flags)
-+		if (housekeeping_flags & BIT(type))
- 			set_cpus_allowed_ptr(t, housekeeping_mask);
- }
- EXPORT_SYMBOL_GPL(housekeeping_affine);
- 
--bool housekeeping_test_cpu(int cpu, enum hk_flags flags)
-+bool housekeeping_test_cpu(int cpu, enum hk_type type)
- {
- 	if (static_branch_unlikely(&housekeeping_overridden))
--		if (housekeeping_flags & flags)
-+		if (housekeeping_flags & BIT(type))
- 			return cpumask_test_cpu(cpu, housekeeping_mask);
- 	return true;
- }
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index d201a7052a29..5318940b0b76 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -1366,7 +1366,7 @@ static void asym_cpu_capacity_scan(void)
- 	list_for_each_entry(entry, &asym_cap_list, link)
- 		cpumask_clear(cpu_capacity_span(entry));
- 
--	for_each_cpu_and(cpu, cpu_possible_mask, housekeeping_cpumask(HK_FLAG_DOMAIN))
-+	for_each_cpu_and(cpu, cpu_possible_mask, housekeeping_cpumask(HK_TYPE_DOMAIN))
- 		asym_cpu_capacity_update_data(cpu);
- 
- 	list_for_each_entry_safe(entry, next, &asym_cap_list, link) {
-@@ -2351,7 +2351,7 @@ int sched_init_domains(const struct cpumask *cpu_map)
- 	doms_cur = alloc_sched_domains(ndoms_cur);
- 	if (!doms_cur)
- 		doms_cur = &fallback_doms;
--	cpumask_and(doms_cur[0], cpu_map, housekeeping_cpumask(HK_FLAG_DOMAIN));
-+	cpumask_and(doms_cur[0], cpu_map, housekeeping_cpumask(HK_TYPE_DOMAIN));
- 	err = build_sched_domains(doms_cur[0], NULL);
- 
- 	return err;
-@@ -2440,7 +2440,7 @@ void partition_sched_domains_locked(int ndoms_new, cpumask_var_t doms_new[],
- 		if (doms_new) {
- 			n = 1;
- 			cpumask_and(doms_new[0], cpu_active_mask,
--				    housekeeping_cpumask(HK_FLAG_DOMAIN));
-+				    housekeeping_cpumask(HK_TYPE_DOMAIN));
+ 	case group_has_spare:
+ 		if (sd->flags & SD_NUMA) {
++			int imb;
+ #ifdef CONFIG_NUMA_BALANCING
+ 			int idlest_cpu;
+ 			/*
+@@ -9150,7 +9153,9 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
+ 			 * allowed. If there is a real need of migration,
+ 			 * periodic load balance will take care of it.
+ 			 */
+-			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, sd->imb_numa_nr))
++			cpumask_and(cpus, sched_group_span(local), p->cpus_ptr);
++			imb = min(cpumask_weight(cpus), sd->imb_numa_nr);
++			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, imb))
+ 				return NULL;
  		}
- 	} else {
- 		n = ndoms_new;
-@@ -2475,7 +2475,7 @@ void partition_sched_domains_locked(int ndoms_new, cpumask_var_t doms_new[],
- 		n = 0;
- 		doms_new = &fallback_doms;
- 		cpumask_and(doms_new[0], cpu_active_mask,
--			    housekeeping_cpumask(HK_FLAG_DOMAIN));
-+			    housekeeping_cpumask(HK_TYPE_DOMAIN));
- 	}
  
- 	/* Build new domains: */
-diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index 99afb88d2e85..9166220457bc 100644
---- a/kernel/watchdog.c
-+++ b/kernel/watchdog.c
-@@ -848,7 +848,7 @@ void __init lockup_detector_init(void)
- 		pr_info("Disabling watchdog on nohz_full cores by default\n");
- 
- 	cpumask_copy(&watchdog_cpumask,
--		     housekeeping_cpumask(HK_FLAG_TIMER));
-+		     housekeeping_cpumask(HK_TYPE_TIMER));
- 
- 	if (!watchdog_nmi_probe())
- 		nmi_watchdog_available = true;
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 61ed310621ea..52e9abbb7759 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -6011,8 +6011,8 @@ void __init workqueue_init_early(void)
- 	BUILD_BUG_ON(__alignof__(struct pool_workqueue) < __alignof__(long long));
- 
- 	BUG_ON(!alloc_cpumask_var(&wq_unbound_cpumask, GFP_KERNEL));
--	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(HK_FLAG_WQ));
--	cpumask_and(wq_unbound_cpumask, wq_unbound_cpumask, housekeeping_cpumask(HK_FLAG_DOMAIN));
-+	cpumask_copy(wq_unbound_cpumask, housekeeping_cpumask(HK_TYPE_WQ));
-+	cpumask_and(wq_unbound_cpumask, wq_unbound_cpumask, housekeeping_cpumask(HK_TYPE_DOMAIN));
- 
- 	pwq_cache = KMEM_CACHE(pool_workqueue, SLAB_PANIC);
- 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index ed8da7b8d35b..7ceb3460161b 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -839,8 +839,8 @@ static ssize_t store_rps_map(struct netdev_rx_queue *queue,
- 	}
- 
- 	if (!cpumask_empty(mask)) {
--		cpumask_and(mask, mask, housekeeping_cpumask(HK_FLAG_DOMAIN));
--		cpumask_and(mask, mask, housekeeping_cpumask(HK_FLAG_WQ));
-+		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_DOMAIN));
-+		cpumask_and(mask, mask, housekeeping_cpumask(HK_TYPE_WQ));
- 		if (cpumask_empty(mask)) {
- 			free_cpumask_var(mask);
- 			return -EINVAL;
 -- 
 2.25.1
 
