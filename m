@@ -2,97 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC4CBC3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8D9C35270
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448139AbiBGNKK (ORCPT
+        id S1448192AbiBGNKL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:10:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
+        Mon, 7 Feb 2022 08:10:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442952AbiBGMVy (ORCPT
+        with ESMTP id S1382905AbiBGM3x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:21:54 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E37C0423D2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:14:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644236041; x=1675772041;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=TgpvuJ0R1lB2H8FhHzTp6Ej42dRZzsbIJPbNKhwWF1s=;
-  b=KZ9vv96jzpJ8FjOqk9TIVTGDquBcEH6fZof/qWEf1jHbC6YlmVjymzQF
-   wzbWVj/aH3aLt0zqnjHHV7gtY6SQIWsUSUJe9PcijiP9uh3pibyhoUu1z
-   fT8Ykj1+C8+fEu/i5IdPc/b+SlLqs7sevwjbi9mR++CTntsGBBnXA5NQN
-   QTXkkFAk4rpR6Aol3DJc5PoZkzGmRIQX999N9ph8gQpKjSI/6jA+r2AsP
-   MFtKAHgKJbwC8onmY5d0DH8CfDAN1kk4JDBDwsb9hxb/l4Vx0rf66bWgz
-   f8piZKZmgqWEMJuMHhvBX/qASR9Sc+51mb6NKS9PfKRKcq5ahvdDi0Vet
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="312000577"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="312000577"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:14:00 -0800
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="484401961"
-Received: from nbaca1-mobl.ger.corp.intel.com (HELO localhost) ([10.252.18.25])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:13:56 -0800
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Christoph Hellwig <hch@lst.de>, Zhi Wang <zhi.wang.linux@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        "Wang, Zhi A" <zhi.a.wang@intel.com>,
-        "jgg@nvidia.com" <jgg@nvidia.com>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "Xu, Terrence" <terrence.xu@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: Re: [PATCH 1/3] i915/gvt: Introduce the mmio_table.c to support
- VFIO new mdev API
-In-Reply-To: <20220207120647.GA28851@lst.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220127120508.11330-1-zhi.a.wang@intel.com>
- <20220207073247.GA24327@lst.de>
- <DM4PR11MB5549FE45F8098368114ADE75CA2C9@DM4PR11MB5549.namprd11.prod.outlook.com>
- <20220207083535.GA25345@lst.de> <877da7rlzr.fsf@intel.com>
- <5c916187-8a8c-323a-adb4-8bce141180cc@gmail.com>
- <20220207120647.GA28851@lst.de>
-Date:   Mon, 07 Feb 2022 14:13:50 +0200
-Message-ID: <87v8xqri0x.fsf@intel.com>
+        Mon, 7 Feb 2022 07:29:53 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD7FC1DF3F0
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:20:00 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id z62so27084124ybc.11
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 04:20:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VHNFlCmigziJYsY7QoVzu5haHaeukfsTdmobb9TO3j8=;
+        b=LQLjBYiLGL4wmygWsQlLUjGwQvJXBVwTdEL2M8BH3Gx4jP/fVduLt/LdMM8rh9jIsB
+         F6FfGIslomU1jb2TotoJFA14x24mnEVt7VXgqPFYjo8h5OaVXWu0SSsUxOkiVc16ME3p
+         +30xfdeNKunJBoByaSCH1Fa6REk9vLcNcI+UT/hF9wlynoIf8wKUgRWO0rz4qzyrIN8T
+         +0AhV3xDPIm/D15znH2TDto0nd1a9AHCMbsPTDVyhd6ulVrCM/tBPKS1iQolGacdq7EQ
+         fjZ+pykwq4cDZAWzf56aI1pgRr/aVcDpcQ0NsS93UMqQQikZC3XzyTxUpSnLRUBnvsXP
+         XgVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VHNFlCmigziJYsY7QoVzu5haHaeukfsTdmobb9TO3j8=;
+        b=HQClPxVA50oxPYJ8/tanNXz4QQ5awmUmQEoliLEJBHoV2pIK1Edm6G3Lew9XJ6u3fo
+         ckCJPYeghK8hu0suleVpbL61rADmyVru9Gf/piyezA25JWDzsV6l1FYo2XRP0lNX+BX4
+         E2NFjhGZlC47WDrO0IXwRq+jFUlUG6k0JJEWYe1Owm/nLdYajVABmGrh0hrDJIXzyeNW
+         U23HTh417NsGiteqAleOytNEEPpk9t9C+uPeFtBV2QxOsq2yZcwgMp4IACg2W+ONWdvm
+         K64GRPwiTifTRSi2eM5z+iaKROQRsHilp2GoaKxxa1iaNm4XebYQ/4zRULKm1CiP9BBi
+         5RLg==
+X-Gm-Message-State: AOAM530cmN6dlp/P1rMEdtll+Z9Gc1rOB/CZg8u1Pc5ijIVWOauHnjW/
+        Ywo4dH2AHry5lQyCgkgUmA6PEPAtWN4LFebI8nu8kA==
+X-Google-Smtp-Source: ABdhPJyrWjotRFPL1k46j6tfUbmGvI5LdgYUvJ+NC6Opl84UW0tcgzx6coW5EgUf03fwKzLZHrnowYgYGBhbBULA4ME=
+X-Received: by 2002:a25:1402:: with SMTP id 2mr9304845ybu.684.1644236399245;
+ Mon, 07 Feb 2022 04:19:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220207103804.053675072@linuxfoundation.org>
+In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 7 Feb 2022 17:49:48 +0530
+Message-ID: <CA+G9fYsd_kjuXOJx9umAhkaA7rRx40gVhY9ZBEe6xsMOZ2oTQg@mail.gmail.com>
+Subject: Re: [PATCH 5.16 000/126] 5.16.8-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Arnd Bergmann <arnd@arndb.de>,
+        James Morse <james.morse@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 07 Feb 2022, Christoph Hellwig <hch@lst.de> wrote:
-> On Mon, Feb 07, 2022 at 06:57:13AM -0500, Zhi Wang wrote:
->> Hi Christoph and Jani:
->>
->> Thanks for the comments. It would be nice that people can achieve a 
->> agreement. I am OK with both of the options and also moving some files into 
->> different folders doesn't needs me to do the full test run again. :)
+On Mon, 7 Feb 2022 at 17:01, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> The way I understood Jani he agrees that the mmio table, which needs to
-> be part of the core i915 module should not be under the gvt/ subdiretory.
-> I.e. it could be drivers/gpu/drm/i915/intel_gvt_mmio_table.c.  The
-> declarations could then go either into drivers/gpu/drm/i915/intel_gvt.h
-> or drivers/gpu/drm/i915/intel_gvt_mmio_table.h.
+> This is the start of the stable review cycle for the 5.16.8 release.
+> There are 126 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.8-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Correct.
 
-Generally I prefer to have the declarations for stuff in intel_foo.c to
-be placed in intel_foo.h, and named intel_foo_*.
+Linux stable-rc 5.16 arm64 builds failed due to below errors.
+
+  kvm/arm64: rework guest entry logic
+  [ Upstream commit 8cfe148a7136bc60452a5c6b7ac2d9d15c36909b ]
+
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+arch/arm64/kvm/arm.c: In function 'kvm_arm_vcpu_enter_exit':
+arch/arm64/kvm/arm.c:778:9: error: implicit declaration of function
+'guest_state_enter_irqoff'; did you mean 'guest_enter_irqoff'?
+[-Werror=implicit-function-declaration]
+  778 |         guest_state_enter_irqoff();
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~
+      |         guest_enter_irqoff
+arch/arm64/kvm/arm.c:780:9: error: implicit declaration of function
+'guest_state_exit_irqoff'; did you mean 'guest_exit_irqoff'?
+[-Werror=implicit-function-declaration]
+  780 |         guest_state_exit_irqoff();
+      |         ^~~~~~~~~~~~~~~~~~~~~~~
+      |         guest_exit_irqoff
+arch/arm64/kvm/arm.c: In function 'kvm_arch_vcpu_ioctl_run':
+arch/arm64/kvm/arm.c:875:17: error: implicit declaration of function
+'guest_timing_enter_irqoff'; did you mean 'guest_enter_irqoff'?
+[-Werror=implicit-function-declaration]
+  875 |                 guest_timing_enter_irqoff();
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~
+      |                 guest_enter_irqoff
+arch/arm64/kvm/arm.c:925:17: error: implicit declaration of function
+'guest_timing_exit_irqoff'; did you mean 'guest_exit_irqoff'?
+[-Werror=implicit-function-declaration]
+  925 |                 guest_timing_exit_irqoff();
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                 guest_exit_irqoff
+cc1: some warnings being treated as errors
 
 
-BR,
-Jani.
+build link:
+-----------
+https://builds.tuxbuild.com/24mSvZ8HXKXM8ToJvie1FaTpCz0/
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+
+--
+Linaro LKFT
+https://lkft.linaro.org
