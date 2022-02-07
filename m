@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C439DC47085
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4010C35274
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382886AbiBGLVF (ORCPT
+        id S1356974AbiBGLUM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54072 "EHLO
+        Mon, 7 Feb 2022 06:20:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378427AbiBGLPv (ORCPT
+        with ESMTP id S1377062AbiBGLPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCDDC0401DE;
-        Mon,  7 Feb 2022 03:15:35 -0800 (PST)
+        Mon, 7 Feb 2022 06:15:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51B0C0401DA;
+        Mon,  7 Feb 2022 03:14:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64A1EB81158;
-        Mon,  7 Feb 2022 11:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF40BC004E1;
-        Mon,  7 Feb 2022 11:15:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2635E61314;
+        Mon,  7 Feb 2022 11:14:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3702C340EB;
+        Mon,  7 Feb 2022 11:14:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232533;
-        bh=CWA4LIo3mdc9eZZZ3MZMB6dzL3dr46qJxgYeqKWz9JE=;
+        s=korg; t=1644232494;
+        bh=rVzw4I1cQMNBrWV6J20Z9Clp0NL/SBYy8ZU4O+vPCvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H6EKM3cWzDpdQviuRvbbUg/9j9H4jcVHv1duDHibx6/yquDcEbPBFEU1JLK4jc8uf
-         bHGkgJihZvOo4BpQsdZeo4KbIDOb7t4dGc0yvXQqF3pN7TRRH4m9gO8MtNH5lSAtKl
-         uCl7eF10e96XlEreclQMicLy5Nrb9UbWzrMy/drs=
+        b=knBu6+A1HOedYEsS4JD5ukPO6E7EjQ0reLWyahQeQ7Z2Y0mbyacPhQCrto/BIciMC
+         qP35V3+imRVfQVEsbUgkTIikO3TjnP7NyUTtPHEI1T2svE+qqhCp26+jjasCExrZf7
+         hCZ44jQinWbgpE/2gCzJM1EYpXLLY8/h9kKpj57s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 41/86] ibmvnic: init ->running_cap_crqs early
-Date:   Mon,  7 Feb 2022 12:06:04 +0100
-Message-Id: <20220207103758.879474001@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Steffen Weinreich <steve@weinreich.org>
+Subject: [PATCH 4.19 08/86] netfilter: nft_payload: do not update layer 4 checksum when mangling fragments
+Date:   Mon,  7 Feb 2022 12:05:31 +0100
+Message-Id: <20220207103757.830383880@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -52,327 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 151b6a5c06b678687f64f2d9a99fd04d5cd32b72 ]
+commit 4e1860a3863707e8177329c006d10f9e37e097a8 upstream.
 
-We use ->running_cap_crqs to determine when the ibmvnic_tasklet() should
-send out the next protocol message type. i.e when we get back responses
-to all our QUERY_CAPABILITY CRQs we send out REQUEST_CAPABILITY crqs.
-Similiary, when we get responses to all the REQUEST_CAPABILITY crqs, we
-send out the QUERY_IP_OFFLOAD CRQ.
+IP fragments do not come with the transport header, hence skip bogus
+layer 4 checksum updates.
 
-We currently increment ->running_cap_crqs as we send out each CRQ and
-have the ibmvnic_tasklet() send out the next message type, when this
-running_cap_crqs count drops to 0.
-
-This assumes that all the CRQs of the current type were sent out before
-the count drops to 0. However it is possible that we send out say 6 CRQs,
-get preempted and receive all the 6 responses before we send out the
-remaining CRQs. This can result in ->running_cap_crqs count dropping to
-zero before all messages of the current type were sent and we end up
-sending the next protocol message too early.
-
-Instead initialize the ->running_cap_crqs upfront so the tasklet will
-only send the next protocol message after all responses are received.
-
-Use the cap_reqs local variable to also detect any discrepancy (either
-now or in future) in the number of capability requests we actually send.
-
-Currently only send_query_cap() is affected by this behavior (of sending
-next message early) since it is called from the worker thread (during
-reset) and from application thread (during ->ndo_open()) and they can be
-preempted. send_request_cap() is only called from the tasklet  which
-processes CRQ responses sequentially, is not be affected.  But to
-maintain the existing symmtery with send_query_capability() we update
-send_request_capability() also.
-
-Fixes: 249168ad07cd ("ibmvnic: Make CRQ interrupt tasklet wait for all capabilities crqs")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Reviewed-by: Dany Madden <drt@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1814096980bb ("netfilter: nft_payload: layer 4 checksum adjustment for pseudoheader fields")
+Reported-and-tested-by: Steffen Weinreich <steve@weinreich.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 106 +++++++++++++++++++----------
- 1 file changed, 71 insertions(+), 35 deletions(-)
+ net/netfilter/nft_payload.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index c52c26fc44e59..9174eccfd9329 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -3044,11 +3044,25 @@ static void ibmvnic_send_req_caps(struct ibmvnic_adapter *adapter, int retry)
- 	struct device *dev = &adapter->vdev->dev;
- 	union ibmvnic_crq crq;
- 	int max_entries;
-+	int cap_reqs;
-+
-+	/* We send out 6 or 7 REQUEST_CAPABILITY CRQs below (depending on
-+	 * the PROMISC flag). Initialize this count upfront. When the tasklet
-+	 * receives a response to all of these, it will send the next protocol
-+	 * message (QUERY_IP_OFFLOAD).
-+	 */
-+	if (!(adapter->netdev->flags & IFF_PROMISC) ||
-+	    adapter->promisc_supported)
-+		cap_reqs = 7;
-+	else
-+		cap_reqs = 6;
- 
- 	if (!retry) {
- 		/* Sub-CRQ entries are 32 byte long */
- 		int entries_page = 4 * PAGE_SIZE / (sizeof(u64) * 4);
- 
-+		atomic_set(&adapter->running_cap_crqs, cap_reqs);
-+
- 		if (adapter->min_tx_entries_per_subcrq > entries_page ||
- 		    adapter->min_rx_add_entries_per_subcrq > entries_page) {
- 			dev_err(dev, "Fatal, invalid entries per sub-crq\n");
-@@ -3109,44 +3123,45 @@ static void ibmvnic_send_req_caps(struct ibmvnic_adapter *adapter, int retry)
- 					adapter->opt_rx_comp_queues;
- 
- 		adapter->req_rx_add_queues = adapter->max_rx_add_queues;
-+	} else {
-+		atomic_add(cap_reqs, &adapter->running_cap_crqs);
- 	}
--
- 	memset(&crq, 0, sizeof(crq));
- 	crq.request_capability.first = IBMVNIC_CRQ_CMD;
- 	crq.request_capability.cmd = REQUEST_CAPABILITY;
- 
- 	crq.request_capability.capability = cpu_to_be16(REQ_TX_QUEUES);
- 	crq.request_capability.number = cpu_to_be64(adapter->req_tx_queues);
--	atomic_inc(&adapter->running_cap_crqs);
-+	cap_reqs--;
- 	ibmvnic_send_crq(adapter, &crq);
- 
- 	crq.request_capability.capability = cpu_to_be16(REQ_RX_QUEUES);
- 	crq.request_capability.number = cpu_to_be64(adapter->req_rx_queues);
--	atomic_inc(&adapter->running_cap_crqs);
-+	cap_reqs--;
- 	ibmvnic_send_crq(adapter, &crq);
- 
- 	crq.request_capability.capability = cpu_to_be16(REQ_RX_ADD_QUEUES);
- 	crq.request_capability.number = cpu_to_be64(adapter->req_rx_add_queues);
--	atomic_inc(&adapter->running_cap_crqs);
-+	cap_reqs--;
- 	ibmvnic_send_crq(adapter, &crq);
- 
- 	crq.request_capability.capability =
- 	    cpu_to_be16(REQ_TX_ENTRIES_PER_SUBCRQ);
- 	crq.request_capability.number =
- 	    cpu_to_be64(adapter->req_tx_entries_per_subcrq);
--	atomic_inc(&adapter->running_cap_crqs);
-+	cap_reqs--;
- 	ibmvnic_send_crq(adapter, &crq);
- 
- 	crq.request_capability.capability =
- 	    cpu_to_be16(REQ_RX_ADD_ENTRIES_PER_SUBCRQ);
- 	crq.request_capability.number =
- 	    cpu_to_be64(adapter->req_rx_add_entries_per_subcrq);
--	atomic_inc(&adapter->running_cap_crqs);
-+	cap_reqs--;
- 	ibmvnic_send_crq(adapter, &crq);
- 
- 	crq.request_capability.capability = cpu_to_be16(REQ_MTU);
- 	crq.request_capability.number = cpu_to_be64(adapter->req_mtu);
--	atomic_inc(&adapter->running_cap_crqs);
-+	cap_reqs--;
- 	ibmvnic_send_crq(adapter, &crq);
- 
- 	if (adapter->netdev->flags & IFF_PROMISC) {
-@@ -3154,16 +3169,21 @@ static void ibmvnic_send_req_caps(struct ibmvnic_adapter *adapter, int retry)
- 			crq.request_capability.capability =
- 			    cpu_to_be16(PROMISC_REQUESTED);
- 			crq.request_capability.number = cpu_to_be64(1);
--			atomic_inc(&adapter->running_cap_crqs);
-+			cap_reqs--;
- 			ibmvnic_send_crq(adapter, &crq);
- 		}
- 	} else {
- 		crq.request_capability.capability =
- 		    cpu_to_be16(PROMISC_REQUESTED);
- 		crq.request_capability.number = cpu_to_be64(0);
--		atomic_inc(&adapter->running_cap_crqs);
-+		cap_reqs--;
- 		ibmvnic_send_crq(adapter, &crq);
- 	}
-+
-+	/* Keep at end to catch any discrepancy between expected and actual
-+	 * CRQs sent.
-+	 */
-+	WARN_ON(cap_reqs != 0);
- }
- 
- static int pending_scrq(struct ibmvnic_adapter *adapter,
-@@ -3568,118 +3588,132 @@ static void send_map_query(struct ibmvnic_adapter *adapter)
- static void send_cap_queries(struct ibmvnic_adapter *adapter)
+--- a/net/netfilter/nft_payload.c
++++ b/net/netfilter/nft_payload.c
+@@ -194,6 +194,9 @@ static int nft_payload_l4csum_offset(con
+ 				     struct sk_buff *skb,
+ 				     unsigned int *l4csum_offset)
  {
- 	union ibmvnic_crq crq;
-+	int cap_reqs;
++	if (pkt->xt.fragoff)
++		return -1;
 +
-+	/* We send out 25 QUERY_CAPABILITY CRQs below.  Initialize this count
-+	 * upfront. When the tasklet receives a response to all of these, it
-+	 * can send out the next protocol messaage (REQUEST_CAPABILITY).
-+	 */
-+	cap_reqs = 25;
-+
-+	atomic_set(&adapter->running_cap_crqs, cap_reqs);
- 
--	atomic_set(&adapter->running_cap_crqs, 0);
- 	memset(&crq, 0, sizeof(crq));
- 	crq.query_capability.first = IBMVNIC_CRQ_CMD;
- 	crq.query_capability.cmd = QUERY_CAPABILITY;
- 
- 	crq.query_capability.capability = cpu_to_be16(MIN_TX_QUEUES);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(MIN_RX_QUEUES);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(MIN_RX_ADD_QUEUES);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(MAX_TX_QUEUES);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(MAX_RX_QUEUES);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(MAX_RX_ADD_QUEUES);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability =
- 	    cpu_to_be16(MIN_TX_ENTRIES_PER_SUBCRQ);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability =
- 	    cpu_to_be16(MIN_RX_ADD_ENTRIES_PER_SUBCRQ);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability =
- 	    cpu_to_be16(MAX_TX_ENTRIES_PER_SUBCRQ);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability =
- 	    cpu_to_be16(MAX_RX_ADD_ENTRIES_PER_SUBCRQ);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(TCP_IP_OFFLOAD);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(PROMISC_SUPPORTED);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(MIN_MTU);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(MAX_MTU);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(MAX_MULTICAST_FILTERS);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(VLAN_HEADER_INSERTION);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(RX_VLAN_HEADER_INSERTION);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(MAX_TX_SG_ENTRIES);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(RX_SG_SUPPORTED);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(OPT_TX_COMP_SUB_QUEUES);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(OPT_RX_COMP_QUEUES);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability =
- 			cpu_to_be16(OPT_RX_BUFADD_Q_PER_RX_COMP_Q);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability =
- 			cpu_to_be16(OPT_TX_ENTRIES_PER_SUBCRQ);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability =
- 			cpu_to_be16(OPT_RXBA_ENTRIES_PER_SUBCRQ);
--	atomic_inc(&adapter->running_cap_crqs);
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
- 
- 	crq.query_capability.capability = cpu_to_be16(TX_RX_DESC_REQ);
--	atomic_inc(&adapter->running_cap_crqs);
-+
- 	ibmvnic_send_crq(adapter, &crq);
-+	cap_reqs--;
-+
-+	/* Keep at end to catch any discrepancy between expected and actual
-+	 * CRQs sent.
-+	 */
-+	WARN_ON(cap_reqs != 0);
- }
- 
- static void handle_vpd_size_rsp(union ibmvnic_crq *crq,
-@@ -3923,6 +3957,8 @@ static void handle_request_cap_rsp(union ibmvnic_crq *crq,
- 	char *name;
- 
- 	atomic_dec(&adapter->running_cap_crqs);
-+	netdev_dbg(adapter->netdev, "Outstanding request-caps: %d\n",
-+		   atomic_read(&adapter->running_cap_crqs));
- 	switch (be16_to_cpu(crq->request_capability_rsp.capability)) {
- 	case REQ_TX_QUEUES:
- 		req_value = &adapter->req_tx_queues;
--- 
-2.34.1
-
+ 	switch (pkt->tprot) {
+ 	case IPPROTO_TCP:
+ 		*l4csum_offset = offsetof(struct tcphdr, check);
 
 
