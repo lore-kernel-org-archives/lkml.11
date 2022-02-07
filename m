@@ -2,96 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 267D1C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC37C3527C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383180AbiBGOoT (ORCPT
+        id S1383153AbiBGOoM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:44:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45410 "EHLO
+        Mon, 7 Feb 2022 09:44:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441837AbiBGOd1 (ORCPT
+        with ESMTP id S1392210AbiBGOYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:33:27 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DCAC0401C1;
-        Mon,  7 Feb 2022 06:33:26 -0800 (PST)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217DnQIs003511;
-        Mon, 7 Feb 2022 14:33:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=aCZXhcVXSPv1P9tobnQfMHdpYQnynrNHE8D3Hvg84Ro=;
- b=g3HAMExKodEqeYA8+lS83FmnojJ+UJSRrEQAw7jOPxg2B2sKuzdRV/xrpHilZJ7BNUzT
- egz22dE3KNQjC0j2L3AqGH8Bhgnq0ywC6ni1IcriwNhbNVjKBC/qLBOhEQrmBBCsOV8Z
- RdYovBpqsp8hDsYiwGMZWatvYH4zkOy9FtPps4CDR2k1lqCBttxoZR7bfIMWm3Ag9U58
- L2XhoxY8VSP7YCw7JniWFqUDByKdYyv2Yxaxf8dkXWgsfciVA4RaoWY2QUeV8mSiCj+o
- 33xOXaWrG7gamLYUShgkWuWf7ejYoDlWre2nAfoEg37fJ2EpcJ/E2lXX25ww7co3HdzV EQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22qep77g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 14:33:26 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217ETKgb007027;
-        Mon, 7 Feb 2022 14:33:26 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22qep76g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 14:33:25 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217EW9kw000827;
-        Mon, 7 Feb 2022 14:33:23 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03fra.de.ibm.com with ESMTP id 3e1gv94w08-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 14:33:23 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217EXHt923921000
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 14:33:17 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 58FFB52057;
-        Mon,  7 Feb 2022 14:33:17 +0000 (GMT)
-Received: from osiris (unknown [9.145.87.217])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id E60A452050;
-        Mon,  7 Feb 2022 14:33:16 +0000 (GMT)
-Date:   Mon, 7 Feb 2022 15:33:15 +0100
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Janosch Frank <frankja@linux.ibm.com>
-Cc:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org,
-        borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
-        david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
-Subject: Re: [PATCH v7 01/17] KVM: s390: pv: leak the topmost page table when
- destroy fails
-Message-ID: <YgEtq1i3K3ZkPpEX@osiris>
-References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
- <20220204155349.63238-2-imbrenda@linux.ibm.com>
- <0939aac3-9427-ed04-17e4-3c1e4195d509@linux.ibm.com>
+        Mon, 7 Feb 2022 09:24:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE0BC0401C2;
+        Mon,  7 Feb 2022 06:24:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3C17B8136F;
+        Mon,  7 Feb 2022 14:24:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5159CC340F2;
+        Mon,  7 Feb 2022 14:24:28 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="EJptf/Rh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644243865;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Sat8E1tiLvvQuV2M3dRQ4694vndy92NxnxVuIgUTXSc=;
+        b=EJptf/RhjGMCdfLndkTh9BWEo1yaVHQLl1dbMCOOrXfx3iHwPorpgBFQ9oiHhtRf9wQw7Z
+        XLj+Nk2l0fsdTK6ybx1+pnzksfgnkNO37yWTdB/pfY0/jngXKOgrghme08PCmw22+L5nF4
+        ixQhsy5m5zEhNl7MSwTMd6EHnaejtRM=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f3059567 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 7 Feb 2022 14:24:24 +0000 (UTC)
+Received: by mail-yb1-f176.google.com with SMTP id c6so40468845ybk.3;
+        Mon, 07 Feb 2022 06:24:24 -0800 (PST)
+X-Gm-Message-State: AOAM5326qtY9y41DMqlHX/wquVfTbxTF3opwO6t2OqjFjrq1s4VeX6p5
+        GIaxVHNx8EuqDIISRapI5xitD5hdlFdgv5y8tG0=
+X-Google-Smtp-Source: ABdhPJxAjn/rrKuByy78SS8kJGQwbNV9PXyg238aFeegpeUk+TR0DXSdKE+I6jzCEEx8VFLKmMWCbH7vhOMa2/KS16U=
+X-Received: by 2002:a81:c646:: with SMTP id q6mr5732607ywj.485.1644243863259;
+ Mon, 07 Feb 2022 06:24:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0939aac3-9427-ed04-17e4-3c1e4195d509@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 9ET2utHlInBuupsodJsb4ISe87Ns56WD
-X-Proofpoint-GUID: fC4jLNtkByYpueAS_0s5-3sGam0RN0AG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
- adultscore=0 malwarescore=0 clxscore=1011 suspectscore=0 bulkscore=0
- lowpriorityscore=0 impostorscore=0 priorityscore=1501 spamscore=0
- mlxlogscore=991 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070093
+References: <20220204135325.8327-1-Jason@zx2c4.com> <20220204135325.8327-2-Jason@zx2c4.com>
+ <Yf4z+Rc+69siZ0/N@owl.dominikbrodowski.net> <CAHmME9pTDCUb7pAMeCMnU=jiAQd=ctrWN4K7s=8DqCtiOqbkrg@mail.gmail.com>
+ <CAHmME9q-hfSRegD0azEX0Z+5uNGCyS3N4VhMPqp206zP+WjZtg@mail.gmail.com>
+In-Reply-To: <CAHmME9q-hfSRegD0azEX0Z+5uNGCyS3N4VhMPqp206zP+WjZtg@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 7 Feb 2022 15:24:11 +0100
+X-Gmail-Original-Message-ID: <CAHmME9po1ybEsM6G7=2o73cVV5ESdrwcNO6QW+CdOSmorbQq_Q@mail.gmail.com>
+Message-ID: <CAHmME9po1ybEsM6G7=2o73cVV5ESdrwcNO6QW+CdOSmorbQq_Q@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] random: use computational hash for entropy extraction
+To:     Dominik Brodowski <linux@dominikbrodowski.net>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > +	asce = (gmap->asce & ~PAGE_MASK) | __pa(table);
-> 
-> Please add a comment:
-> Set the new table origin while preserving ASCE control bits like table type
-> and length.
+Hey Dominik,
 
-And while touching this anyway, please make use of _ASCE_ORIGIN
-instead of PAGE_MASK.
+I just noticed that we use RDSEED in crng_reseed(). I would think we
+could remove that and stick to having RDSEED used in extract entropy
+as you suggested. I'm now pretty sure the older decision boiled down
+to the 10 bytes vs 5 minutes thing, as discussed before. So please
+feel free to send a patch doing just this.
+
+Jason
