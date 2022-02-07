@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E72BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CBD2C3527E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382549AbiBGLTo (ORCPT
+        id S1382580AbiBGLTu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:19:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52666 "EHLO
+        Mon, 7 Feb 2022 06:19:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359470AbiBGLOy (ORCPT
+        with ESMTP id S1376406AbiBGLPH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:14:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B906C0401D0;
-        Mon,  7 Feb 2022 03:14:42 -0800 (PST)
+        Mon, 7 Feb 2022 06:15:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC570C0401E4;
+        Mon,  7 Feb 2022 03:14:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1700B80EC3;
-        Mon,  7 Feb 2022 11:14:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2752C004E1;
-        Mon,  7 Feb 2022 11:14:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4CE5B81028;
+        Mon,  7 Feb 2022 11:14:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05AC3C004E1;
+        Mon,  7 Feb 2022 11:14:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232479;
-        bh=73BdNz4Hg5qLRQTfuS4+6Pt09s5QMlox2v1WqQLxkag=;
+        s=korg; t=1644232467;
+        bh=XGWLjLU68ZbceAndK89yy5Ot2TUFaEqJAD5v5ebQOPI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rk6WYqUlwfWbDvcdDzXXeWxSltA+LwoFCHcvWBddE7E0gwb8uTFb0zRlBIe6BIGTN
-         KewHlPfqfpT5J1OZ0qv9SG2ahOZjSTsTvjKuP/h/T5vIBfOuXUs0UaveiGw8nUzlSU
-         4NvSni4UMIrF+fsZoImLDcgHlpxRX6wBs9xUoV9c=
+        b=mupFd7Lt051bjNbWKSIw0y2kCJSPQZsip31N3tyntPjZjdbctcd7+XNs/UyuVVm/U
+         Lb3mkhTPQCG2mOId8enYCNXM2nAWkh3CtUPgRTT/aNWFoLZqkUZ+YYqyAjt17PcCpm
+         VTO0484Wz8SukMlKmND941MmEWq67mcTYqNQTLNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Benjamin Block <bblock@linux.ibm.com>,
-        Steffen Maier <maier@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.19 03/86] scsi: zfcp: Fix failed recovery on gone remote port with non-NPIV FCP devices
-Date:   Mon,  7 Feb 2022 12:05:26 +0100
-Message-Id: <20220207103757.662639283@linuxfoundation.org>
+        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.19 19/86] powerpc/32: Fix boot failure with GCC latent entropy plugin
+Date:   Mon,  7 Feb 2022 12:05:42 +0100
+Message-Id: <20220207103758.182352841@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -50,111 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steffen Maier <maier@linux.ibm.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 8c9db6679be4348b8aae108e11d4be2f83976e30 upstream.
+commit bba496656a73fc1d1330b49c7f82843836e9feb1 upstream.
 
-Suppose we have an environment with a number of non-NPIV FCP devices
-(virtual HBAs / FCP devices / zfcp "adapter"s) sharing the same physical
-FCP channel (HBA port) and its I_T nexus. Plus a number of storage target
-ports zoned to such shared channel. Now one target port logs out of the
-fabric causing an RSCN. Zfcp reacts with an ADISC ELS and subsequent port
-recovery depending on the ADISC result. This happens on all such FCP
-devices (in different Linux images) concurrently as they all receive a copy
-of this RSCN. In the following we look at one of those FCP devices.
+Boot fails with GCC latent entropy plugin enabled.
 
-Requests other than FSF_QTCB_FCP_CMND can be slow until they get a
-response.
+This is due to early boot functions trying to access 'latent_entropy'
+global data while the kernel is not relocated at its final
+destination yet.
 
-Depending on which requests are affected by slow responses, there are
-different recovery outcomes. Here we want to fix failed recoveries on port
-or adapter level by avoiding recovery requests that can be slow.
+As there is no way to tell GCC to use PTRRELOC() to access it,
+disable latent entropy plugin in early_32.o and feature-fixups.o and
+code-patching.o
 
-We need the cached N_Port_ID for the remote port "link" test with ADISC.
-Just before sending the ADISC, we now intentionally forget the old cached
-N_Port_ID. The idea is that on receiving an RSCN for a port, we have to
-assume that any cached information about this port is stale.  This forces a
-fresh new GID_PN [FC-GS] nameserver lookup on any subsequent recovery for
-the same port. Since we typically can still communicate with the nameserver
-efficiently, we now reach steady state quicker: Either the nameserver still
-does not know about the port so we stop recovery, or the nameserver already
-knows the port potentially with a new N_Port_ID and we can successfully and
-quickly perform open port recovery.  For the one case, where ADISC returns
-successfully, we re-initialize port->d_id because that case does not
-involve any port recovery.
-
-This also solves a problem if the storage WWPN quickly logs into the fabric
-again but with a different N_Port_ID. Such as on virtual WWPN takeover
-during target NPIV failover.
-[https://www.redbooks.ibm.com/abstracts/redp5477.html] In that case the
-RSCN from the storage FDISC was ignored by zfcp and we could not
-successfully recover the failover. On some later failback on the storage,
-we could have been lucky if the virtual WWPN got the same old N_Port_ID
-from the SAN switch as we still had cached.  Then the related RSCN
-triggered a successful port reopen recovery.  However, there is no
-guarantee to get the same N_Port_ID on NPIV FDISC.
-
-Even though NPIV-enabled FCP devices are not affected by this problem, this
-code change optimizes recovery time for gone remote ports as a side effect.
-The timely drop of cached N_Port_IDs prevents unnecessary slow open port
-attempts.
-
-While the problem might have been in code before v2.6.32 commit
-799b76d09aee ("[SCSI] zfcp: Decouple gid_pn requests from erp") this fix
-depends on the gid_pn_work introduced with that commit, so we mark it as
-culprit to satisfy fix dependencies.
-
-Note: Point-to-point remote port is already handled separately and gets its
-N_Port_ID from the cached peer_d_id. So resetting port->d_id in general
-does not affect PtP.
-
-Link: https://lore.kernel.org/r/20220118165803.3667947-1-maier@linux.ibm.com
-Fixes: 799b76d09aee ("[SCSI] zfcp: Decouple gid_pn requests from erp")
-Cc: <stable@vger.kernel.org> #2.6.32+
-Suggested-by: Benjamin Block <bblock@linux.ibm.com>
-Reviewed-by: Benjamin Block <bblock@linux.ibm.com>
-Signed-off-by: Steffen Maier <maier@linux.ibm.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
+Cc: stable@vger.kernel.org # v4.9+
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215217
+Link: https://lore.kernel.org/r/2bac55483b8daf5b1caa163a45fa5f9cdbe18be4.1640178426.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/s390/scsi/zfcp_fc.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ arch/powerpc/kernel/Makefile |    1 +
+ arch/powerpc/lib/Makefile    |    3 +++
+ 2 files changed, 4 insertions(+)
 
---- a/drivers/s390/scsi/zfcp_fc.c
-+++ b/drivers/s390/scsi/zfcp_fc.c
-@@ -521,6 +521,8 @@ static void zfcp_fc_adisc_handler(void *
- 		goto out;
- 	}
+--- a/arch/powerpc/kernel/Makefile
++++ b/arch/powerpc/kernel/Makefile
+@@ -15,6 +15,7 @@ CFLAGS_prom_init.o      += -fPIC
+ CFLAGS_btext.o		+= -fPIC
+ endif
  
-+	/* re-init to undo drop from zfcp_fc_adisc() */
-+	port->d_id = ntoh24(adisc_resp->adisc_port_id);
- 	/* port is good, unblock rport without going through erp */
- 	zfcp_scsi_schedule_rport_register(port);
-  out:
-@@ -534,6 +536,7 @@ static int zfcp_fc_adisc(struct zfcp_por
- 	struct zfcp_fc_req *fc_req;
- 	struct zfcp_adapter *adapter = port->adapter;
- 	struct Scsi_Host *shost = adapter->scsi_host;
-+	u32 d_id;
- 	int ret;
++CFLAGS_setup_32.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
+ CFLAGS_cputable.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
+ CFLAGS_prom_init.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
+ CFLAGS_btext.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
+--- a/arch/powerpc/lib/Makefile
++++ b/arch/powerpc/lib/Makefile
+@@ -10,6 +10,9 @@ ccflags-$(CONFIG_PPC64)	:= $(NO_MINIMAL_
+ CFLAGS_REMOVE_code-patching.o = $(CC_FLAGS_FTRACE)
+ CFLAGS_REMOVE_feature-fixups.o = $(CC_FLAGS_FTRACE)
  
- 	fc_req = kmem_cache_zalloc(zfcp_fc_req_cache, GFP_ATOMIC);
-@@ -558,7 +561,15 @@ static int zfcp_fc_adisc(struct zfcp_por
- 	fc_req->u.adisc.req.adisc_cmd = ELS_ADISC;
- 	hton24(fc_req->u.adisc.req.adisc_port_id, fc_host_port_id(shost));
- 
--	ret = zfcp_fsf_send_els(adapter, port->d_id, &fc_req->ct_els,
-+	d_id = port->d_id; /* remember as destination for send els below */
-+	/*
-+	 * Force fresh GID_PN lookup on next port recovery.
-+	 * Must happen after request setup and before sending request,
-+	 * to prevent race with port->d_id re-init in zfcp_fc_adisc_handler().
-+	 */
-+	port->d_id = 0;
++CFLAGS_code-patching.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
++CFLAGS_feature-fixups.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
 +
-+	ret = zfcp_fsf_send_els(adapter, d_id, &fc_req->ct_els,
- 				ZFCP_FC_CTELS_TMO);
- 	if (ret)
- 		kmem_cache_free(zfcp_fc_req_cache, fc_req);
+ obj-y += string.o alloc.o code-patching.o feature-fixups.o
+ 
+ obj-$(CONFIG_PPC32)	+= div64.o copy_32.o crtsavres.o strlen_32.o
 
 
