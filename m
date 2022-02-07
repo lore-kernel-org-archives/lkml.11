@@ -2,108 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F2C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E2CC3527E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351094AbiBGFw6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:52:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
+        id S236330AbiBGFy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:54:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239061AbiBGFiW (ORCPT
+        with ESMTP id S242065AbiBGFvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 00:38:22 -0500
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9C5C043181;
-        Sun,  6 Feb 2022 21:38:21 -0800 (PST)
-Received: by mail-wr1-f49.google.com with SMTP id k18so22618586wrg.11;
-        Sun, 06 Feb 2022 21:38:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=byr958ymnG7EGtbbRHy8FEsvmnA+OZjvX3uXRPh6Z4E=;
-        b=xWqxHPzWfiPnCRWqMX0G6nt9K63YEHMlaBJcreR7keWoEHD6lSiv6awVPqd4pJ0qCe
-         W2x50WA2xEAyPlRDIWz4fLCwvHhXiVTL5af2TxBKrfTDnaiyn3k1VFkbivInnHdQoCgG
-         hoYQMb4tN+lgoXs+wCsCWIxQqedEdi6kLntDz3mMwoKocuvxtkkS5kzkUao1xTDkhpRC
-         EEwIDc7f0hz+a9E10R32pV3K591aB+EOVFTXIZKQwF9qvvsRZaTdmMkr5BnL7kOeG0nR
-         ZHwgU4ouzdxx6vBpNGAGzkIyVEu+zCWvS2OmeXNwySP94WLWifeLjXg545u09mBuMtM6
-         UdXQ==
-X-Gm-Message-State: AOAM533OjWGYDqkxFfHGpPwHdf0tfpLoK/fS3ax+bLKS0jjOfIXqSDZk
-        2LHuRrgKfZ1VEwmWDfYOEnlkAukmZLV4ag==
-X-Google-Smtp-Source: ABdhPJwPLsGKwDunoy8I0Myez3SxQ6VYLq3bfG33of6vYqoVy/EKGY4dAvht6XnNrJZEz+OnSQ488A==
-X-Received: by 2002:adf:d1c6:: with SMTP id b6mr8399158wrd.669.1644212299712;
-        Sun, 06 Feb 2022 21:38:19 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id f14sm8693006wmq.40.2022.02.06.21.38.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Feb 2022 21:38:18 -0800 (PST)
-Message-ID: <35f29dbd-04ec-037e-007c-7a079caf0d5b@kernel.org>
-Date:   Mon, 7 Feb 2022 06:38:16 +0100
+        Mon, 7 Feb 2022 00:51:39 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B5AEFC0401D8
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 21:51:22 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6C40ED6E;
+        Sun,  6 Feb 2022 21:51:22 -0800 (PST)
+Received: from [10.163.45.31] (unknown [10.163.45.31])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6CEE43F718;
+        Sun,  6 Feb 2022 21:51:19 -0800 (PST)
+Subject: Re: [PATCH v2 00/15] Make ETM register accesses consistent with
+ sysreg.h
+To:     James Clark <james.clark@arm.com>, suzuki.poulose@arm.com,
+        mathieu.poirier@linaro.org, coresight@lists.linaro.org
+Cc:     leo.yan@linaro.com, mike.leach@linaro.org,
+        Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220203120604.128396-1-james.clark@arm.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <609d9678-e8c7-163f-86cf-0207c59db2c3@arm.com>
+Date:   Mon, 7 Feb 2022 11:21:18 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 3/3] vstatus: Display an informational message when the
- VSTATUS character is pressed or TIOCSTAT ioctl is called.
+In-Reply-To: <20220203120604.128396-1-james.clark@arm.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Walt Drummond <walt@drummond.us>, agordeev@linux.ibm.com,
-        arnd@arndb.de, benh@kernel.crashing.org, borntraeger@de.ibm.com,
-        chris@zankel.net, davem@davemloft.net, gregkh@linuxfoundation.org,
-        hca@linux.ibm.com, deller@gmx.de, ink@jurassic.park.msu.ru,
-        James.Bottomley@HansenPartnership.com, mattst88@gmail.com,
-        jcmvbkbc@gmail.com, mpe@ellerman.id.au, paulus@samba.org,
-        rth@twiddle.net, dalias@libc.org, tsbogend@alpha.franken.de,
-        gor@linux.ibm.com, ysato@users.osdn.me
-Cc:     linux-kernel@vger.kernel.org, ar@cs.msu.ru,
-        linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        linux-xtensa@linux-xtensa.org, sparclinux@vger.kernel.org
-References: <20220206154856.2355838-1-walt@drummond.us>
- <20220206154856.2355838-4-walt@drummond.us>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220206154856.2355838-4-walt@drummond.us>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06. 02. 22, 16:48, Walt Drummond wrote:
-> When triggered by pressing the VSTATUS key or calling the TIOCSTAT
-> ioctl, the n_tty line discipline will display a message on the user's
-> tty that provides basic information about the system and an
-> 'interesting' process in the current foreground process group, eg:
-> 
->    load: 0.58  cmd: sleep 744474 [sleeping] 0.36r 0.00u 0.00s 0% 772k
-> 
-> The status message provides:
->   - System load average
->   - Command name and process id (from the perspective of the session)
->   - Scheduler state
->   - Total wall-clock run time
->   - User space run time
->   - System space run time
->   - Percentage of on-cpu time
->   - Resident set size
-> 
-> The message is only displayed when the tty has the VSTATUS character
-> set, the local flags ICANON and IEXTEN are enabled and NOKERNINFO is
-> disabled; it is always displayed when TIOCSTAT is called regardless of
-> tty settings.
-> 
-> Signed-off-by: Walt Drummond <walt@drummond.us>
-> ---
+Hi James,
 
-It looks like my comments were addressed. However you did not document 
-the chances since v1 here. IOW, [v2] tag missing here.
+On 2/3/22 5:35 PM, James Clark wrote:
+> James Clark (15):
+>   coresight: Make ETM4x TRCIDR0 register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCIDR2 register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCIDR3 register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCIDR4 register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCIDR5 register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCCONFIGR register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCEVENTCTL1R register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCSTALLCTLR register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCVICTLR register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM3x ETMTECR1 register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCACATRn register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCSSCCRn and TRCSSCSRn register accesses
+>     consistent with sysreg.h
+>   coresight: Make ETM4x TRCSSPCICRn register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCBBCTLR register accesses consistent with
+>     sysreg.h
+>   coresight: Make ETM4x TRCRSCTLRn register accesses consistent with
+>     sysreg.h
 
-And please add the CCs I added last time, so that relevant people still 
-can comment.
+The changes here are very similar to each other. But they are split
+into different patches according to register names just for better
+review process ? OR is there any other rationale ?
 
-thanks,
--- 
-js
-suse labs
+- Anshuman
