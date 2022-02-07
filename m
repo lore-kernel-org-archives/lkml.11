@@ -2,101 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D1BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC4FC35271
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388500AbiBGLnt (ORCPT
+        id S1388437AbiBGLnm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:43:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
+        Mon, 7 Feb 2022 06:43:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385760AbiBGLc3 (ORCPT
+        with ESMTP id S1385755AbiBGLc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF456C043181;
-        Mon,  7 Feb 2022 03:32:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7290460C99;
-        Mon,  7 Feb 2022 11:32:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F1F7C004E1;
-        Mon,  7 Feb 2022 11:32:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233547;
-        bh=pejCLm/dhWAINZ/EwhvHtPsSwaQldnRAQnd2fBpHpUA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A9hWeim76AJ8AxFR+JuDdCbICabx/yEa0DJVRJ6hk4e+uN1oAPLJ0aUYsEW3+IoPi
-         5neydjqRmgYNRYX/J+w74Ip9hzbP9EULMLqANiRKnNj6ZGglZK1bR1lsLw7+2CWLLM
-         xfY5dt4qluHWwaYloXEA7UhXDduQuPiUmu9AmoBA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Morse <james.morse@arm.com>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.16 046/126] KVM: arm64: Stop handle_exit() from handling HVC twice when an SError occurs
-Date:   Mon,  7 Feb 2022 12:06:17 +0100
-Message-Id: <20220207103805.706627373@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-References: <20220207103804.053675072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:32:28 -0500
+X-Greylist: delayed 301 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 03:32:22 PST
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8717CC0401C1;
+        Mon,  7 Feb 2022 03:32:22 -0800 (PST)
+X-UUID: 7db079af9470467e90622a5f580fced8-20220207
+X-UUID: 7db079af9470467e90622a5f580fced8-20220207
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1657494342; Mon, 07 Feb 2022 19:27:01 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 7 Feb 2022 19:26:59 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Feb
+ 2022 19:26:59 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 7 Feb 2022 19:26:59 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, <linux-pwm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+Subject: [PATCH] dt-bindings: pwm: mtk-disp: add compatible string for MT8183 SoC
+Date:   Mon, 7 Feb 2022 19:26:57 +0800
+Message-ID: <20220207112657.18246-1-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
 
-commit 1229630af88620f6e3a621a1ebd1ca14d9340df7 upstream.
+Add compatible string for MT8183 SoC in device tree binding.
 
-Prior to commit defe21f49bc9 ("KVM: arm64: Move PC rollback on SError to
-HYP"), when an SError is synchronised due to another exception, KVM
-handles the SError first. If the guest survives, the instruction that
-triggered the original exception is re-exectued to handle the first
-exception. HVC is treated as a special case as the instruction wouldn't
-normally be re-exectued, as its not a trap.
-
-Commit defe21f49bc9 didn't preserve the behaviour of the 'return 1'
-that skips the rest of handle_exit().
-
-Since commit defe21f49bc9, KVM will try to handle the SError and the
-original exception at the same time. When the exception was an HVC,
-fixup_guest_exit() has already rolled back ELR_EL2, meaning if the
-guest has virtual SError masked, it will execute and handle the HVC
-twice.
-
-Restore the original behaviour.
-
-Fixes: defe21f49bc9 ("KVM: arm64: Move PC rollback on SError to HYP")
-Cc: stable@vger.kernel.org
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220127122052.1584324-4-james.morse@arm.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
 ---
- arch/arm64/kvm/handle_exit.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm64/kvm/handle_exit.c
-+++ b/arch/arm64/kvm/handle_exit.c
-@@ -226,6 +226,14 @@ int handle_exit(struct kvm_vcpu *vcpu, i
- {
- 	struct kvm_run *run = vcpu->run;
- 
-+	if (ARM_SERROR_PENDING(exception_index)) {
-+		/*
-+		 * The SError is handled by handle_exit_early(). If the guest
-+		 * survives it will re-execute the original instruction.
-+		 */
-+		return 1;
-+	}
-+
- 	exception_index = ARM_EXCEPTION_CODE(exception_index);
- 
- 	switch (exception_index) {
-
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+index 902b271891ae..691e58b6c223 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+@@ -6,6 +6,7 @@ Required properties:
+    - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
+    - "mediatek,mt8167-disp-pwm", "mediatek,mt8173-disp-pwm": found on mt8167 SoC.
+    - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
++   - "mediatek,mt8183-disp-pwm": found on mt8183 SoC.$
+  - reg: physical base address and length of the controller's registers.
+  - #pwm-cells: must be 2. See pwm.yaml in this directory for a description of
+    the cell format.
+-- 
+2.18.0
 
