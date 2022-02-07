@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 250A7C352A1
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5231BC38162
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391169AbiBGL6j (ORCPT
+        id S1382047AbiBGMAn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:58:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
+        Mon, 7 Feb 2022 07:00:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385679AbiBGLcG (ORCPT
+        with ESMTP id S1386748AbiBGLgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27452C0401D1;
-        Mon,  7 Feb 2022 03:31:46 -0800 (PST)
+        Mon, 7 Feb 2022 06:36:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026E9C043181;
+        Mon,  7 Feb 2022 03:36:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B774160A67;
-        Mon,  7 Feb 2022 11:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1232C004E1;
-        Mon,  7 Feb 2022 11:31:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8208A60A69;
+        Mon,  7 Feb 2022 11:36:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4948FC004E1;
+        Mon,  7 Feb 2022 11:36:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233505;
-        bh=F68DvOu11U/2Izi/Om2gsPqtu/mO84SiK259QUL0IZk=;
+        s=korg; t=1644233790;
+        bh=rrCuu477wj4X6lM0wC9UJqAp+SzH0iPa855DMsGM5eA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eF9j0nENq4C7nqbR1fLvWKTxfu31z4UzteH2CfdwLVKyi6UbKmO1McZ4MENy8UGbk
-         FgMOFoctl/W3AAOtnKfS+3hbDKUAzxZPE9sQe7OLT0TxEKqqN3c1fCEMSRWubcQrzF
-         1D0hZ0LKN1tzkBkbEwgjYpb/6P9/3Ch8dh3NAxNQ=
+        b=vG77KdU+pylEYjlWOPzMxMSbX14SwUoD5v7P5xZOLe/pWjKIHyCcXzjAAtITeRoGa
+         X0c2tLjZ5MMEwWj8YHKKaWxNMZ3afwq8huyP6jLe8oPlxvEAhVrbNbVCsdujIvcBFd
+         JI8OoSDS2Nk9KLPb+KutkijQ+6D6AWYBsA/AYKKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Ryan Bair <ryandbair@gmail.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.16 034/126] cifs: fix workstation_name for multiuser mounts
-Date:   Mon,  7 Feb 2022 12:06:05 +0100
-Message-Id: <20220207103805.320263296@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        stable@kernel.org, Xin Yin <yinxin.x@bytedance.com>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.16 119/126] ext4: fix incorrect type issue during replay_del_range
+Date:   Mon,  7 Feb 2022 12:07:30 +0100
+Message-Id: <20220207103808.170434877@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,61 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ryan Bair <ryandbair@gmail.com>
+From: Xin Yin <yinxin.x@bytedance.com>
 
-commit d3b331fb51f326d5b5326010bf2b5841bb86cdc6 upstream.
+commit 8fca8a2b0a822f7936130af7299d2fd7f0a66714 upstream.
 
-Set workstation_name from the master_tcon for multiuser mounts.
+should not use fast commit log data directly, add le32_to_cpu().
 
-Just in case, protect size_of_ntlmssp_blob against a NULL workstation_name.
-
-Fixes: 49bd49f983b5 ("cifs: send workstation name during ntlmssp session setup")
-Cc: stable@vger.kernel.org # 5.16
-Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Ryan Bair <ryandbair@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 0b5b5a62b945 ("ext4: use ext4_ext_remove_space() for fast commit replay delete range")
+Cc: stable@kernel.org
+Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220126063146.2302-1-yinxin.x@bytedance.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/connect.c |   13 +++++++++++++
- fs/cifs/sess.c    |    6 +++++-
- 2 files changed, 18 insertions(+), 1 deletion(-)
+ fs/ext4/fast_commit.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -1945,6 +1945,19 @@ cifs_set_cifscreds(struct smb3_fs_contex
- 		}
+--- a/fs/ext4/fast_commit.c
++++ b/fs/ext4/fast_commit.c
+@@ -1819,8 +1819,9 @@ ext4_fc_replay_del_range(struct super_bl
  	}
  
-+	ctx->workstation_name = kstrdup(ses->workstation_name, GFP_KERNEL);
-+	if (!ctx->workstation_name) {
-+		cifs_dbg(FYI, "Unable to allocate memory for workstation_name\n");
-+		rc = -ENOMEM;
-+		kfree(ctx->username);
-+		ctx->username = NULL;
-+		kfree_sensitive(ctx->password);
-+		ctx->password = NULL;
-+		kfree(ctx->domainname);
-+		ctx->domainname = NULL;
-+		goto out_key_put;
-+	}
-+
- out_key_put:
- 	up_read(&key->sem);
- 	key_put(key);
---- a/fs/cifs/sess.c
-+++ b/fs/cifs/sess.c
-@@ -675,7 +675,11 @@ static int size_of_ntlmssp_blob(struct c
- 	else
- 		sz += sizeof(__le16);
- 
--	sz += sizeof(__le16) * strnlen(ses->workstation_name, CIFS_MAX_WORKSTATION_LEN);
-+	if (ses->workstation_name)
-+		sz += sizeof(__le16) * strnlen(ses->workstation_name,
-+			CIFS_MAX_WORKSTATION_LEN);
-+	else
-+		sz += sizeof(__le16);
- 
- 	return sz;
- }
+ 	down_write(&EXT4_I(inode)->i_data_sem);
+-	ret = ext4_ext_remove_space(inode, lrange.fc_lblk,
+-				lrange.fc_lblk + lrange.fc_len - 1);
++	ret = ext4_ext_remove_space(inode, le32_to_cpu(lrange.fc_lblk),
++				le32_to_cpu(lrange.fc_lblk) +
++				le32_to_cpu(lrange.fc_len) - 1);
+ 	up_write(&EXT4_I(inode)->i_data_sem);
+ 	if (ret)
+ 		goto out;
 
 
