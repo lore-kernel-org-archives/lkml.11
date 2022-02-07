@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F56C47087
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0664C47085
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355551AbiBGLMj (ORCPT
+        id S1355155AbiBGLMf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
+        Mon, 7 Feb 2022 06:12:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239309AbiBGLJU (ORCPT
+        with ESMTP id S1355426AbiBGLIn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:09:20 -0500
+        Mon, 7 Feb 2022 06:08:43 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32761C043188;
-        Mon,  7 Feb 2022 03:09:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BA9C043188;
+        Mon,  7 Feb 2022 03:08:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3EA4B80EE8;
-        Mon,  7 Feb 2022 11:09:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36188C004E1;
-        Mon,  7 Feb 2022 11:09:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2CAEB80EE8;
+        Mon,  7 Feb 2022 11:08:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 046B1C004E1;
+        Mon,  7 Feb 2022 11:08:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232156;
-        bh=pb9YFJqK6DzbsQ+nfYREskx+GD9DBVbjajIsy4tiFoo=;
+        s=korg; t=1644232120;
+        bh=FEAT7l9x+7KvGDPUocdsPfmPdgHE8Ix6axfzoqheMkY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Te+ZXUy2K/YFq6IwrgIktcY8WhNUjfZU880twzuByF7u7HN2RWtbkphOPbLe4w9BX
-         WqNPr7F6B13r2YvtBqhSBvGE2Bhz3nelSAhKg0NyGgaD3TL0v3By1hq86LMJes7Wjj
-         7GuP8BDJBThXbR1Rcx6GCVRmnvvxt8DwZKfln8/0=
+        b=PqjBMeTSlWm54kMJCwJOLni3phNemep7xKaa+nI8y/DQaO7tYcJetIAUHONhG82Vu
+         X6NA733JwrJ/rg0Q6YbAwC08WgS4ti+5hh/ouVzSOaTWKtGbJy8SIHBsjHgmT26WhA
+         EIC9cWaqd7FpQNgc9gQjAp+FkL9jZlbWKmMjfzrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.9 34/48] ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
-Date:   Mon,  7 Feb 2022 12:06:07 +0100
-Message-Id: <20220207103753.450763414@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 23/48] hwmon: (lm90) Reduce maximum conversion rate for G781
+Date:   Mon,  7 Feb 2022 12:05:56 +0100
+Message-Id: <20220207103753.091978621@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -48,41 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Guenter Roeck <linux@roeck-us.net>
 
-commit 4f1e50d6a9cf9c1b8c859d449b5031cacfa8404e upstream.
+[ Upstream commit a66c5ed539277b9f2363bbace0dba88b85b36c26 ]
 
-We don't currently validate that the values being set are within the range
-we advertised to userspace as being valid, do so and reject any values
-that are out of range.
+According to its datasheet, G781 supports a maximum conversion rate value
+of 8 (62.5 ms). However, chips labeled G781 and G780 were found to only
+support a maximum conversion rate value of 7 (125 ms). On the other side,
+chips labeled G781-1 and G784 were found to support a conversion rate value
+of 8. There is no known means to distinguish G780 from G781 or G784; all
+chips report the same manufacturer ID and chip revision.
+Setting the conversion rate register value to 8 on chips not supporting
+it causes unexpected behavior since the real conversion rate is set to 0
+(16 seconds) if a value of 8 is written into the conversion rate register.
+Limit the conversion rate register value to 7 for all G78x chips to avoid
+the problem.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220124153253.3548853-3-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ae544f64cc7b ("hwmon: (lm90) Add support for GMT G781")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-ops.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/hwmon/lm90.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -441,8 +441,15 @@ int snd_soc_put_volsw_sx(struct snd_kcon
- 	int err = 0;
- 	unsigned int val, val_mask, val2 = 0;
- 
-+	val = ucontrol->value.integer.value[0];
-+	if (mc->platform_max && val > mc->platform_max)
-+		return -EINVAL;
-+	if (val > max - min)
-+		return -EINVAL;
-+	if (val < 0)
-+		return -EINVAL;
- 	val_mask = mask << shift;
--	val = (ucontrol->value.integer.value[0] + min) & mask;
-+	val = (val + min) & mask;
- 	val = val << shift;
- 
- 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
+diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
+index 1e9f029a328a6..d899ae5470fa2 100644
+--- a/drivers/hwmon/lm90.c
++++ b/drivers/hwmon/lm90.c
+@@ -265,7 +265,7 @@ static const struct lm90_params lm90_params[] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT
+ 		  | LM90_HAVE_BROKEN_ALERT,
+ 		.alert_alarms = 0x7c,
+-		.max_convrate = 8,
++		.max_convrate = 7,
+ 	},
+ 	[lm86] = {
+ 		.flags = LM90_HAVE_OFFSET | LM90_HAVE_REM_LIMIT_EXT,
+-- 
+2.34.1
+
 
 
