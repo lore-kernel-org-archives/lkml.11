@@ -2,50 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3306FC3527E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384926AbiBGLao (ORCPT
+        id S1384990AbiBGLa4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:30:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
+        Mon, 7 Feb 2022 06:30:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357487AbiBGLXL (ORCPT
+        with ESMTP id S1356968AbiBGLUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:23:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5C6C043181;
-        Mon,  7 Feb 2022 03:23:10 -0800 (PST)
+        Mon, 7 Feb 2022 06:20:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B584C0401E2;
+        Mon,  7 Feb 2022 03:20:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2496B81028;
-        Mon,  7 Feb 2022 11:23:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9594C004E1;
-        Mon,  7 Feb 2022 11:23:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF13561388;
+        Mon,  7 Feb 2022 11:20:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D26DC004E1;
+        Mon,  7 Feb 2022 11:20:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232987;
-        bh=YT8gsCAg7F7T3vjACjvYf0OXzG7CD0BJNhqoexsczrg=;
+        s=korg; t=1644232802;
+        bh=ea+hcjM0+kOavuGX3yikwa9yDCSL8uxSQ/4hJSNZOyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TJl7+4huupDfTjFMXEC15HFeQGYIb9E9yNdlJUQa+tvMQMQRDfCiatPM6eWNiGbwd
-         7lxnJ1nqkrrVn2P3wD6H4CYBMCbeQQaQ8/P96hFJ9Q02lXY/pRoaMCYhsSvRYIEFfT
-         rv1ty4LwXaqikOVil87ayX8+XTKc9rtFI2ezLXrc=
+        b=GzDWOB6OkBYfTlfTwtWSzWbuCtRicCAfn+K8NFqgwBLcZytgYZR0Tz32xQFzv4A93
+         TBm8wux878KbJg4z0U3I1qgLK6Xx0QbAFGiR9XewipI/W7pHaBloFSOM9BRW01rnU7
+         h5r6JPuKc7g5/5cal7kUIBhVhhxj6KkF1BdYjsdA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
-        James Liao <jamesjj.liao@mediatek.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 5.10 23/74] Revert "ASoC: mediatek: Check for error clk pointer"
-Date:   Mon,  7 Feb 2022 12:06:21 +0100
-Message-Id: <20220207103757.999234038@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Borislav Petkov <bp@suse.de>, Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.4 41/44] EDAC/altera: Fix deferred probing
+Date:   Mon,  7 Feb 2022 12:06:57 +0100
+Message-Id: <20220207103754.491070360@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
-References: <20220207103757.232676988@linuxfoundation.org>
+In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
+References: <20220207103753.155627314@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,95 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-This reverts commit d491a2c2cf96f9f3d855cf0bcd807d48ccb98e81 which is
-commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e upstream
+commit 279eb8575fdaa92c314a54c0d583c65e26229107 upstream.
 
-With this patch in the tree, Chromebooks running the affected hardware
-no longer boot. Bisect points to this patch, and reverting it fixes
-the problem.
+The driver overrides the error codes returned by platform_get_irq() to
+-ENODEV for some strange reason, so if it returns -EPROBE_DEFER, the
+driver will fail the probe permanently instead of the deferred probing.
+Switch to propagating the proper error codes to platform driver code
+upwards.
 
-An analysis of the code with this patch applied shows:
+  [ bp: Massage commit message. ]
 
-        ret = init_clks(pdev, clk);
-        if (ret)
-                return ERR_PTR(ret);
-...
-                for (j = 0; j < MAX_CLKS && data->clk_id[j]; j++) {
-                        struct clk *c = clk[data->clk_id[j]];
-
-                        if (IS_ERR(c)) {
-                                dev_err(&pdev->dev, "%s: clk unavailable\n",
-                                        data->name);
-                                return ERR_CAST(c);
-                        }
-
-                        scpd->clk[j] = c;
-                }
-
-Not all clocks in the clk_names array have to be present. Only the clocks
-in the data->clk_id array are actually needed. The code already checks if
-the required clocks are available and bails out if not. The assumption that
-all clocks have to be present is wrong, and commit 9de2b9286a6d needs to be
-reverted.
-
-Fixes: 9de2b9286a6d ("ASoC: mediatek: Check for error clk pointer")
-Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: James Liao <jamesjj.liao@mediatek.com>
-Cc: Kevin Hilman <khilman@baylibre.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com
-Cc: Frank Wunderlich <frank-w@public-files.de>
-Cc: Daniel Golle <daniel@makrotopia.org>
-Link: https://lore.kernel.org/lkml/20220205014755.699603-1-linux@roeck-us.net/
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: 71bcada88b0f ("edac: altera: Add Altera SDRAM EDAC support")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220124185503.6720-2-s.shtylyov@omp.ru
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soc/mediatek/mtk-scpsys.c |   15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
+ drivers/edac/altera_edac.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/soc/mediatek/mtk-scpsys.c
-+++ b/drivers/soc/mediatek/mtk-scpsys.c
-@@ -411,17 +411,12 @@ out:
- 	return ret;
- }
+--- a/drivers/edac/altera_edac.c
++++ b/drivers/edac/altera_edac.c
+@@ -349,7 +349,7 @@ static int altr_sdram_probe(struct platf
+ 	if (irq < 0) {
+ 		edac_printk(KERN_ERR, EDAC_MC,
+ 			    "No irq %d in DT\n", irq);
+-		return -ENODEV;
++		return irq;
+ 	}
  
--static int init_clks(struct platform_device *pdev, struct clk **clk)
-+static void init_clks(struct platform_device *pdev, struct clk **clk)
- {
- 	int i;
- 
--	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
-+	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
- 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
--		if (IS_ERR(clk[i]))
--			return PTR_ERR(clk[i]);
--	}
--
--	return 0;
- }
- 
- static struct scp *init_scp(struct platform_device *pdev,
-@@ -431,7 +426,7 @@ static struct scp *init_scp(struct platf
- {
- 	struct genpd_onecell_data *pd_data;
- 	struct resource *res;
--	int i, j, ret;
-+	int i, j;
- 	struct scp *scp;
- 	struct clk *clk[CLK_MAX];
- 
-@@ -486,9 +481,7 @@ static struct scp *init_scp(struct platf
- 
- 	pd_data->num_domains = num;
- 
--	ret = init_clks(pdev, clk);
--	if (ret)
--		return ERR_PTR(ret);
-+	init_clks(pdev, clk);
- 
- 	for (i = 0; i < num; i++) {
- 		struct scp_domain *scpd = &scp->domains[i];
+ 	/* Arria10 has a 2nd IRQ */
 
 
