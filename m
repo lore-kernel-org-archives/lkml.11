@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 044E5C35276
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 346FDC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386436AbiBGLei (ORCPT
+        id S1386469AbiBGLem (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:34:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
+        Mon, 7 Feb 2022 06:34:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383871AbiBGLXu (ORCPT
+        with ESMTP id S234232AbiBGLXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:23:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1170FC0401C4;
-        Mon,  7 Feb 2022 03:23:47 -0800 (PST)
+        Mon, 7 Feb 2022 06:23:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB94C0401C0;
+        Mon,  7 Feb 2022 03:23:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AAA01B8111C;
-        Mon,  7 Feb 2022 11:23:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40B5CC004E1;
-        Mon,  7 Feb 2022 11:23:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEC3EB80EC3;
+        Mon,  7 Feb 2022 11:23:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F557C004E1;
+        Mon,  7 Feb 2022 11:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233025;
-        bh=+0N3nRukO1GQN2mvogj92JZma4Oi/VLjvAT+GztctPg=;
+        s=korg; t=1644232990;
+        bh=yyjs4xP38S6pltTHny3dYs+0bVDofK7LasEUo8BHNSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wmGWbHw20WH2Khw9EPB//I847mxUuO+VcSWAdQvxZNv6Ix99M1hGiUji3aY6nMxTZ
-         WIEGLbVo6TJcjchGIpnTsh3/hHpc/0VS9akKzsCfnqwAamtXVSWo+gor41TuVnrex+
-         m83D9WMYlbFR10uvu7KmiSQmiq+9ADM0wlmlbDCo=
+        b=h3acLb4Y1Y4KaUHsqnjDaDsdzkPgeJKoPIF+GAT6WP+qxUtHUii4rtOnbwr3klhAr
+         tq81Eal7AJwX2p5puRDoHcKfzihDAV4Jixg5FKJtwxnKrcNsJmQR6RQVpksF32pGtr
+         mxvp4hLq4pJewQPF/uGzfDyj3/f58Xd5raVLN2u8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Yin <yinxin.x@bytedance.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.10 67/74] ext4: prevent used blocks from being allocated during fast commit replay
-Date:   Mon,  7 Feb 2022 12:07:05 +0100
-Message-Id: <20220207103759.426782898@linuxfoundation.org>
+        stable@vger.kernel.org, Yutian Yang <nglaive@gmail.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        shenwenbo@zju.edu.cn, Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 24/74] memcg: charge fs_context and legacy_fs_context
+Date:   Mon,  7 Feb 2022 12:06:22 +0100
+Message-Id: <20220207103758.031431111@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -49,107 +54,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Yin <yinxin.x@bytedance.com>
+From: Yutian Yang <nglaive@gmail.com>
 
-commit 599ea31d13617c5484c40cdf50d88301dc351cfc upstream.
+commit bb902cb47cf93b33cd92b3b7a4019330a03ef57f upstream.
 
-During fast commit replay procedure, we clear inode blocks bitmap in
-ext4_ext_clear_bb(), this may cause ext4_mb_new_blocks_simple() allocate
-blocks still in use.
+This patch adds accounting flags to fs_context and legacy_fs_context
+allocation sites so that kernel could correctly charge these objects.
 
-Make ext4_fc_record_regions() also record physical disk regions used by
-inodes during replay procedure. Then ext4_mb_new_blocks_simple() can
-excludes these blocks in use.
+We have written a PoC to demonstrate the effect of the missing-charging
+bugs.  The PoC takes around 1,200MB unaccounted memory, while it is
+charged for only 362MB memory usage.  We evaluate the PoC on QEMU x86_64
+v5.2.90 + Linux kernel v5.10.19 + Debian buster.  All the limitations
+including ulimits and sysctl variables are set as default.  Specifically,
+the hard NOFILE limit and nr_open in sysctl are both 1,048,576.
 
-Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
-Link: https://lore.kernel.org/r/20220110035141.1980-2-yinxin.x@bytedance.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+/*------------------------- POC code ----------------------------*/
+
+#define _GNU_SOURCE
+#include <sys/types.h>
+#include <sys/file.h>
+#include <time.h>
+#include <sys/wait.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <signal.h>
+#include <sched.h>
+#include <fcntl.h>
+#include <linux/mount.h>
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+#define STACK_SIZE (8 * 1024)
+#ifndef __NR_fsopen
+#define __NR_fsopen 430
+#endif
+static inline int fsopen(const char *fs_name, unsigned int flags)
+{
+        return syscall(__NR_fsopen, fs_name, flags);
+}
+
+static char thread_stack[512][STACK_SIZE];
+
+int thread_fn(void* arg)
+{
+  for (int i = 0; i< 800000; ++i) {
+    int fsfd = fsopen("nfs", FSOPEN_CLOEXEC);
+    if (fsfd == -1) {
+      errExit("fsopen");
+    }
+  }
+  while(1);
+  return 0;
+}
+
+int main(int argc, char *argv[]) {
+  int thread_pid;
+  for (int i = 0; i < 1; ++i) {
+    thread_pid = clone(thread_fn, thread_stack[i] + STACK_SIZE, \
+      SIGCHLD, NULL);
+  }
+  while(1);
+  return 0;
+}
+
+/*-------------------------- end --------------------------------*/
+
+Link: https://lkml.kernel.org/r/1626517201-24086-1-git-send-email-nglaive@gmail.com
+Signed-off-by: Yutian Yang <nglaive@gmail.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: <shenwenbo@zju.edu.cn>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/ext4.h        |    3 +++
- fs/ext4/extents.c     |    4 ++++
- fs/ext4/fast_commit.c |   20 +++++++++++++++-----
- 3 files changed, 22 insertions(+), 5 deletions(-)
+ fs/fs_context.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -2779,6 +2779,9 @@ void ext4_fc_replay_cleanup(struct super
- int ext4_fc_commit(journal_t *journal, tid_t commit_tid);
- int __init ext4_fc_init_dentry_cache(void);
- void ext4_fc_destroy_dentry_cache(void);
-+int ext4_fc_record_regions(struct super_block *sb, int ino,
-+			   ext4_lblk_t lblk, ext4_fsblk_t pblk,
-+			   int len, int replay);
+--- a/fs/fs_context.c
++++ b/fs/fs_context.c
+@@ -231,7 +231,7 @@ static struct fs_context *alloc_fs_conte
+ 	struct fs_context *fc;
+ 	int ret = -ENOMEM;
  
- /* mballoc.c */
- extern const struct seq_operations ext4_mb_seq_groups_ops;
---- a/fs/ext4/extents.c
-+++ b/fs/ext4/extents.c
-@@ -6088,11 +6088,15 @@ int ext4_ext_clear_bb(struct inode *inod
+-	fc = kzalloc(sizeof(struct fs_context), GFP_KERNEL);
++	fc = kzalloc(sizeof(struct fs_context), GFP_KERNEL_ACCOUNT);
+ 	if (!fc)
+ 		return ERR_PTR(-ENOMEM);
  
- 					ext4_mb_mark_bb(inode->i_sb,
- 							path[j].p_block, 1, 0);
-+					ext4_fc_record_regions(inode->i_sb, inode->i_ino,
-+							0, path[j].p_block, 1, 1);
- 				}
- 				ext4_ext_drop_refs(path);
- 				kfree(path);
- 			}
- 			ext4_mb_mark_bb(inode->i_sb, map.m_pblk, map.m_len, 0);
-+			ext4_fc_record_regions(inode->i_sb, inode->i_ino,
-+					map.m_lblk, map.m_pblk, map.m_len, 1);
- 		}
- 		cur = cur + map.m_len;
- 	}
---- a/fs/ext4/fast_commit.c
-+++ b/fs/ext4/fast_commit.c
-@@ -1558,16 +1558,23 @@ out:
- }
- 
- /*
-- * Record physical disk regions which are in use as per fast commit area. Our
-- * simple replay phase allocator excludes these regions from allocation.
-+ * Record physical disk regions which are in use as per fast commit area,
-+ * and used by inodes during replay phase. Our simple replay phase
-+ * allocator excludes these regions from allocation.
+@@ -631,7 +631,7 @@ const struct fs_context_operations legac
   */
--static int ext4_fc_record_regions(struct super_block *sb, int ino,
--		ext4_lblk_t lblk, ext4_fsblk_t pblk, int len)
-+int ext4_fc_record_regions(struct super_block *sb, int ino,
-+		ext4_lblk_t lblk, ext4_fsblk_t pblk, int len, int replay)
+ static int legacy_init_fs_context(struct fs_context *fc)
  {
- 	struct ext4_fc_replay_state *state;
- 	struct ext4_fc_alloc_region *region;
- 
- 	state = &EXT4_SB(sb)->s_fc_replay_state;
-+	/*
-+	 * during replay phase, the fc_regions_valid may not same as
-+	 * fc_regions_used, update it when do new additions.
-+	 */
-+	if (replay && state->fc_regions_used != state->fc_regions_valid)
-+		state->fc_regions_used = state->fc_regions_valid;
- 	if (state->fc_regions_used == state->fc_regions_size) {
- 		state->fc_regions_size +=
- 			EXT4_FC_REPLAY_REALLOC_INCREMENT;
-@@ -1585,6 +1592,9 @@ static int ext4_fc_record_regions(struct
- 	region->pblk = pblk;
- 	region->len = len;
- 
-+	if (replay)
-+		state->fc_regions_valid++;
-+
- 	return 0;
- }
- 
-@@ -1954,7 +1964,7 @@ static int ext4_fc_replay_scan(journal_t
- 			ret = ext4_fc_record_regions(sb,
- 				le32_to_cpu(ext.fc_ino),
- 				le32_to_cpu(ex->ee_block), ext4_ext_pblock(ex),
--				ext4_ext_get_actual_len(ex));
-+				ext4_ext_get_actual_len(ex), 0);
- 			if (ret < 0)
- 				break;
- 			ret = JBD2_FC_REPLAY_CONTINUE;
+-	fc->fs_private = kzalloc(sizeof(struct legacy_fs_context), GFP_KERNEL);
++	fc->fs_private = kzalloc(sizeof(struct legacy_fs_context), GFP_KERNEL_ACCOUNT);
+ 	if (!fc->fs_private)
+ 		return -ENOMEM;
+ 	fc->ops = &legacy_fs_context_ops;
 
 
