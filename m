@@ -2,167 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE952C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA20C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345685AbiBGQOn (ORCPT
+        id S1380408AbiBGQOs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:14:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
+        Mon, 7 Feb 2022 11:14:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239482AbiBGQJ2 (ORCPT
+        with ESMTP id S237064AbiBGQKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:09:28 -0500
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BB8C0401CE
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:09:28 -0800 (PST)
-Received: by mail-oi1-x236.google.com with SMTP id ay7so3548398oib.8
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 08:09:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mAu8pWBtSchKstM5A3tZ7ZHtLl/tvNz8Fm6ONHkwe4s=;
-        b=RepKa8SkJ2TUQ+K6b0KJbqwAyCDaePxYPDwzGUi5nkwciUGr7ZHZwqZSinG1w3s0kL
-         sLiR9veBA3jd0qenLNT+DSxpEaG+a3C9xFLEiyEiVZFN6iw9sX9cQcB+Ci8/2ZvfLe/K
-         ZpsYBGA9k1vB/B0xqULtFLKF05ylVJt9j6+PdearCLo4dpboS53DnpP4NAfjOHyaeAdg
-         CsAuUYoWSbqSLQSewLJlxguOw26cO50JBNKZa4+jzPKxPtC8/W5/hDhTWwufqFEq4LjR
-         IS76TyW8Dkw+glmy8zymXFRYwbAlkmo6nlpgDGYH9tCbJm3Mpi7EYoQ9kCXDWBTaiXgf
-         I6BA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=mAu8pWBtSchKstM5A3tZ7ZHtLl/tvNz8Fm6ONHkwe4s=;
-        b=Qmu0ZS8s73t6AC599HlyTWREEhDecYDG6qHeZ2CWQUsHIWZtDIkk9FeZKc+0F9ZzlA
-         AQVMMXTBCJminYP5z6lW3OOot7t7Oy6JKTv8dLo1nsbzktnqdJR+u/bn8kukBSwNE+HX
-         v+KM0wKnsoLQ66GFibZYwTt5SHUGk4CFikd9LEH5yOp7E3xXe22JKR1RhvEmSIQPfhRc
-         03MolIxKywB7heTY4GOi67qx5kgyJV14iPh5e8v+EtYq+pvXVLvIvV+CIYeRS2XBZaYx
-         hZbkcumWhVH4HvQ/feglQlTTanM5qkssFgArvyFg0peEWzBOtNgtrjSuQ52dtZxA51cm
-         xx7A==
-X-Gm-Message-State: AOAM531YMdROiXn+i0f/60ViOrzSqHLhWSxbMyDzdCiA6x8t6pi2GPjW
-        ekaRO6XPzBkJccX5fQ/7ysc=
-X-Google-Smtp-Source: ABdhPJw70VbtPo9y5hLiH62QDpTkOmxvHJ7SHRLlMlw8o8xatBkWtLmjbLHOaoeqGjSilgv5GKiwlw==
-X-Received: by 2002:a05:6808:1647:: with SMTP id az7mr7522062oib.335.1644250167222;
-        Mon, 07 Feb 2022 08:09:27 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 31sm4089019otr.13.2022.02.07.08.09.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 08:09:26 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
-        James Liao <jamesjj.liao@mediatek.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Daniel Golle <daniel@makrotopia.org>
-Subject: [PATCH v2] ASoC: Revert "ASoC: mediatek: Check for error clk pointer"
-Date:   Mon,  7 Feb 2022 08:09:23 -0800
-Message-Id: <20220207160923.3911501-1-linux@roeck-us.net>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 7 Feb 2022 11:10:24 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5847C0401D8;
+        Mon,  7 Feb 2022 08:10:20 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 92DA91F37E;
+        Mon,  7 Feb 2022 16:10:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644250219; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dVOa8XGIp5DLIL4tTlJLbaMRsQatnR/OajkKQCMIv8U=;
+        b=i8IRCgVhiupXohd6nYjhcDJUvvrcp2XSHParhS+S7TfdC3jpgm/y+24HuywhNi1AmEzKZt
+        Z0iVoFCBfo9QqquI90ElG+zB6aLQnxBRIHzxOfnetNHiIB+7gKODbTWG6zlDANP87yVxJr
+        qb+v8QItTT0Kotabn2cI8lRrlFK5Hf8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644250219;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dVOa8XGIp5DLIL4tTlJLbaMRsQatnR/OajkKQCMIv8U=;
+        b=jlYuTVoyoBavi0rBZBvHmXcBmnGSrWbV04t0gJrGclpL8WyBzV9nqLEczhKrIRYzJVyBnA
+        Dhj5Estxdal8w3Ag==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 76A16A3B83;
+        Mon,  7 Feb 2022 16:10:19 +0000 (UTC)
+Date:   Mon, 07 Feb 2022 17:10:19 +0100
+Message-ID: <s5hsfsuu07o.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: usb-audio: remove redundant assignment to variable c
+In-Reply-To: <20220207140617.341172-1-colin.i.king@gmail.com>
+References: <20220207140617.341172-1-colin.i.king@gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 9de2b9286a6d ("ASoC: mediatek: Check for error clk
-pointer").
+On Mon, 07 Feb 2022 15:06:17 +0100,
+Colin Ian King wrote:
+> 
+> The variable c is being initialized in an outer for-loop and also
+> re-initialized inside an inner for-loop. The first initialization
+> is redundant and can be removed.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-With this patch in the tree, Chromebooks running the affected hardware
-no longer boot. Bisect points to this patch, and reverting it fixes
-the problem.
+The code change looks OK, but when I apply your patch now, git-am
+converts the Author address to your new @intel.com, and this
+mismatches with the address in Signed-off-by.  Should I keep the
+original gmail address, or would you fix up your Signed-off-by (and
+From) for avoiding those inconsistency?
 
-An analysis of the code with this patch applied shows:
 
-        ret = init_clks(pdev, clk);
-        if (ret)
-                return ERR_PTR(ret);
-...
-                for (j = 0; j < MAX_CLKS && data->clk_id[j]; j++) {
-                        struct clk *c = clk[data->clk_id[j]];
+thanks,
 
-                        if (IS_ERR(c)) {
-                                dev_err(&pdev->dev, "%s: clk unavailable\n",
-                                        data->name);
-                                return ERR_CAST(c);
-                        }
-
-                        scpd->clk[j] = c;
-                }
-
-Not all clocks in the clk_names array have to be present. Only the clocks
-in the data->clk_id array are actually needed. The code already checks if
-the required clocks are available and bails out if not. The assumption that
-all clocks have to be present is wrong, and commit 9de2b9286a6d ("ASoC:
-mediatek: Check for error clk pointer") needs to be reverted.
-
-Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: James Liao <jamesjj.liao@mediatek.com>
-Cc: Kevin Hilman <khilman@baylibre.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Reported-by: Frank Wunderlich <frank-w@public-files.de>
-Reported-by: Daniel Golle <daniel@makrotopia.org>
-Fixes: 9de2b9286a6d ("ASoC: mediatek: Check for error clk pointer")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-v2: Updated subject and description, trying to match expected subsystem
-    style.
-    Replaced two Cc: tags with Reported-by: to give proper credit.
-
- drivers/soc/mediatek/mtk-scpsys.c | 15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/soc/mediatek/mtk-scpsys.c b/drivers/soc/mediatek/mtk-scpsys.c
-index 670cc82d17dc..ca75b14931ec 100644
---- a/drivers/soc/mediatek/mtk-scpsys.c
-+++ b/drivers/soc/mediatek/mtk-scpsys.c
-@@ -411,17 +411,12 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
- 	return ret;
- }
- 
--static int init_clks(struct platform_device *pdev, struct clk **clk)
-+static void init_clks(struct platform_device *pdev, struct clk **clk)
- {
- 	int i;
- 
--	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
-+	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
- 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
--		if (IS_ERR(clk[i]))
--			return PTR_ERR(clk[i]);
--	}
--
--	return 0;
- }
- 
- static struct scp *init_scp(struct platform_device *pdev,
-@@ -431,7 +426,7 @@ static struct scp *init_scp(struct platform_device *pdev,
- {
- 	struct genpd_onecell_data *pd_data;
- 	struct resource *res;
--	int i, j, ret;
-+	int i, j;
- 	struct scp *scp;
- 	struct clk *clk[CLK_MAX];
- 
-@@ -486,9 +481,7 @@ static struct scp *init_scp(struct platform_device *pdev,
- 
- 	pd_data->num_domains = num;
- 
--	ret = init_clks(pdev, clk);
--	if (ret)
--		return ERR_PTR(ret);
-+	init_clks(pdev, clk);
- 
- 	for (i = 0; i < num; i++) {
- 		struct scp_domain *scpd = &scp->domains[i];
--- 
-2.35.1
-
+Takashi
