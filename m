@@ -2,117 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A5B3C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B412C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343626AbiBGJfw (ORCPT
+        id S1351372AbiBGJfz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:35:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60050 "EHLO
+        Mon, 7 Feb 2022 04:35:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245282AbiBGJdP (ORCPT
+        with ESMTP id S1351407AbiBGJ3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:33:15 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63538C0401C0
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:33:08 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id i15so1167316wrb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:33:08 -0800 (PST)
+        Mon, 7 Feb 2022 04:29:08 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24057C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:29:08 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id cz16so10350092edb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:29:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=rBjYYVDfPJSH1BVq77LHmUbf5zvWji8qdpdwUm64Pcg=;
-        b=NhD4MFPycqIBpOhwd8+jvRql2upsyK034+tQKBWW1HDFvOTTuQu0lom4xl1l/YGYdR
-         NS1mJLu0MwwG2vZFKOi4k1tQe0gWQyfu6+frcfpc8aZn02P2FBH/i7fTXAcTqybXMdyY
-         M9y0VZCQTuVie/Ex71UrKktMQgwYKAkbLftxT16PBRxcpAKqo1gu/MqVsEX+SpExYs4w
-         9nw25Jry6zgct9e81Q/BH4tpx3K5mk1/MNcc3hugjKLMTIXSXzAWlj2QOUs6GFzEXo0+
-         VkZZ6LFjm6JdVv3KcHaIxJJlugJq4i/iRM77D/PWhnDYVSn6ObiL7Xt4VoqS2tQl3/zQ
-         aL8Q==
+        d=9elements.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=esc1uJ/1b1Bl5sIRdBGqAaIciPpRZPZmuwi/GvPIASI=;
+        b=Kq7bxOK0EXnru4hWpt1BGbQD5x4elFR7kZIzwLbqjeBN3yWqt4iBQOeArytKJZQpf9
+         E4N7dJ0mOWMz9kp2XDwsxS/1K2k7ZpoqR+3BH/1md8ux2ayeH0kt4WHInqwdSbfJfSY5
+         6JWSfLb99OPJZyawEm11RCO/iLITTvYRylyRwd8ELCXeDnMf749ux5AvqPvofnRaI0eQ
+         3Ca13gb8SNaecWc+CHEgW4BwLibXanZR5CgtdLC6hnTipxW3Hy61ZJ9fTjhZ4Tn1wrPo
+         oCy+FzSPRhxKqYKPrxO8pY7moA2slRp3//1BpaZUfgqSBpgwUClZlXEToOK2mdznQBtp
+         q46A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=rBjYYVDfPJSH1BVq77LHmUbf5zvWji8qdpdwUm64Pcg=;
-        b=dDhmBmm5ypBPFR6X0XGenlnvYQxG6mZf3zjfq0Arx90rSSH3u2PNbBMtSdOx2s1tXg
-         v6uCzcIZK4YNtsWmSAfa6Silo0suivymGcNlTYSqtJMaelsXqoUmV6RIYTS+fTO0rmr3
-         DI2N9f9PfP8UHKtvS8AVmsmQvmnPP+sN2XdTaUbBgi2TbydX/N4b+KtHI2hqzv50dR2G
-         QWWcxHYR+CWGNQmb9Fb1l6pfd8xE2IwhZ/hPlL6u2RfO1RheHUIs1IvekKgqTP6/8CMV
-         lBuGvNi1C46FFZXkWByT60q0xIG90ItlCW7cSJNGTECkR5fo1CM9C1uqbxj6ua8PcwTN
-         6Raw==
-X-Gm-Message-State: AOAM530+1uyEBw20Ws9bo+omvoHooPnMMh4tiV5sfmBuBbGRMPwCHpxs
-        9FYBAPuXmGFQxQHA+wNqTeIlQA==
-X-Google-Smtp-Source: ABdhPJxh2mvqeGHI9VwpCnxoxf60eD/D/VwhohJSXRkLkwKmdyolRzDLR+7kmAJg4PiqtpZcypaOOQ==
-X-Received: by 2002:adf:e4c4:: with SMTP id v4mr9166828wrm.332.1644226386982;
-        Mon, 07 Feb 2022 01:33:06 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id 5sm10359004wrb.113.2022.02.07.01.33.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=esc1uJ/1b1Bl5sIRdBGqAaIciPpRZPZmuwi/GvPIASI=;
+        b=AhPc8mXqYqUfRMCTawIjZ548wUE4VZIxnjAo90hhzPQcPeAVzMAkKqfGDDckF9pF1L
+         Qa5dYlFpqYPeNx2T7D1XLdhcx/I23pZ28ZojqjjEpvLKgj9qirEMVtdT60xuJCbg2Mde
+         DAJ7DzC6+BL+h2vA5mCQZkqCq3GyomSr6mCR/MztPH70g4B6z+EPReon1ngvPmMfr5lZ
+         na4fjMIPNlznsiFHbZj4sz45mvzQvJYTdalbZaZfVSytgDYybQJ1OCdIPUcUakPt75l8
+         +/J4i8QM0K9aiKzj9aWVotvaOFBhRz/+vqj1DTZIYCNZVubOpzkqPNwEIogNxfI50uA5
+         Cm5w==
+X-Gm-Message-State: AOAM530RBs6D0blwyMfABzZAoU0qi46LaPrOmWbe2trCpQtfmlHCXb6E
+        2i6litzxsi1Z2A2veIb446rM8w==
+X-Google-Smtp-Source: ABdhPJz6ga72M9Fh/6kWosxb2MY91mI/eDTayZjisNyDXZdtus2V/AVbaeSGGoDuxA4tsjwqhiy16g==
+X-Received: by 2002:a50:ee16:: with SMTP id g22mr5850857eds.434.1644226146737;
+        Mon, 07 Feb 2022 01:29:06 -0800 (PST)
+Received: from fedora.. (ip-088-153-139-166.um27.pools.vodafone-ip.de. [88.153.139.166])
+        by smtp.gmail.com with ESMTPSA id g9sm3487059ejm.152.2022.02.07.01.29.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 01:33:06 -0800 (PST)
-Date:   Mon, 7 Feb 2022 09:33:04 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Chanwoo Choi <cw00.choi@samsung.com>
-Subject: Re: [PATCH v2 0/5] mfd/extcon/regulators: max77843: add
- dtschema/bindings
-Message-ID: <YgDnUNCNCO+JLyHU@google.com>
-References: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
- <1bebedb9-644f-783d-492c-84a5de91720d@canonical.com>
+        Mon, 07 Feb 2022 01:29:06 -0800 (PST)
+From:   Patrick Rudolph <patrick.rudolph@9elements.com>
+To:     Peter Rosin <peda@axentia.se>, Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [v4 3/3] i2c: muxes: pca954x: Add regulator support
+Date:   Mon,  7 Feb 2022 10:28:26 +0100
+Message-Id: <20220207092827.104978-4-patrick.rudolph@9elements.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220207092827.104978-1-patrick.rudolph@9elements.com>
+References: <20220207092827.104978-1-patrick.rudolph@9elements.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <1bebedb9-644f-783d-492c-84a5de91720d@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 06 Feb 2022, Krzysztof Kozlowski wrote:
+Add an optional vdd regulator and enable it when found for devices
+that are powered off by default.
 
-> On 11/01/2022 18:48, Krzysztof Kozlowski wrote:
-> > Hi,
-> > 
-> > The max77843 shares some parts with max77693 but it lacked bindings.  All
-> > its compatibles were undocumented.  Add basic bindings for max77843,
-> > matching existing devicetree.  These are not complete bindings, but
-> > rather reverse-engineered to match current state.
-> > 
-> > I do not have access to device with MAX77843, so if anyone else
-> > volunteers to be the bindings maintainer, please join.
-> > 
-> > Changes since v1
-> > ================
-> > 1. MFD: Use absolute path to schemas.
-> > 2. Regulator: mention all allowed properties,
-> >    additionalProperties=false, add min/max values for voltages and
-> >    current, don't use patternProperties when not needed.
-> > 3. extcon: Use absolute path to schemas.
-> > 
-> > Dependencies
-> > ============
-> > 1. Patch 1/5 (dts): nothing depends on it, sending here so Rob's automatic
-> >    checker won't complain about DTS.
-> >    I will take it via Samsung SoC tree.
-> > 
-> > 2. The patch 4/5 (mfd bindings) depends on regulator and extcon, so they
-> >    should come together (2+3+4+5).
-> > 
-> Dear Lee,
-> 
-> This patchset was reviewed and there are no outstanding issues. Could
-> you pick up patches 2-5 (skipping DTS patch) via MFD tree?
+Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+---
+ drivers/i2c/muxes/i2c-mux-pca954x.c | 32 ++++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 5 deletions(-)
 
-Are the subsystem maintainers not going to review/ack?
-
+diff --git a/drivers/i2c/muxes/i2c-mux-pca954x.c b/drivers/i2c/muxes/i2c-mux-pca954x.c
+index 33b9a6a1fffa..086647193ea9 100644
+--- a/drivers/i2c/muxes/i2c-mux-pca954x.c
++++ b/drivers/i2c/muxes/i2c-mux-pca954x.c
+@@ -49,6 +49,7 @@
+ #include <linux/module.h>
+ #include <linux/pm.h>
+ #include <linux/property.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <dt-bindings/mux/mux.h>
+@@ -119,6 +120,7 @@ struct pca954x {
+ 	struct irq_domain *irq;
+ 	unsigned int irq_mask;
+ 	raw_spinlock_t lock;
++	struct regulator *supply;
+ };
+ 
+ /* Provide specs for the PCA954x and MAX735x types we know about */
+@@ -459,6 +461,9 @@ static void pca954x_cleanup(struct i2c_mux_core *muxc)
+ 	struct pca954x *data = i2c_mux_priv(muxc);
+ 	int c, irq;
+ 
++	if (!IS_ERR_OR_NULL(data->supply))
++		regulator_disable(data->supply);
++
+ 	if (data->irq) {
+ 		for (c = 0; c < data->chip->nchans; c++) {
+ 			irq = irq_find_mapping(data->irq, c);
+@@ -513,15 +518,30 @@ static int pca954x_probe(struct i2c_client *client,
+ 			     pca954x_select_chan, pca954x_deselect_mux);
+ 	if (!muxc)
+ 		return -ENOMEM;
++
+ 	data = i2c_mux_priv(muxc);
+ 
+ 	i2c_set_clientdata(client, muxc);
+ 	data->client = client;
+ 
++	data->supply = devm_regulator_get_optional(dev, "vdd");
++	if (IS_ERR(data->supply)) {
++		if ((PTR_ERR(data->supply) == -EPROBE_DEFER))
++			return -EPROBE_DEFER;
++	} else {
++		ret = regulator_enable(data->supply);
++		if (ret) {
++			dev_err(dev, "Failed to enable regulator vdd: %d\n", ret);
++			return ret;
++		}
++	}
++
+ 	/* Reset the mux if a reset GPIO is specified. */
+ 	gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+-	if (IS_ERR(gpio))
+-		return PTR_ERR(gpio);
++	if (IS_ERR(gpio)) {
++		ret = PTR_ERR(gpio);
++		goto fail_cleanup;
++	}
+ 	if (gpio) {
+ 		udelay(1);
+ 		gpiod_set_value_cansleep(gpio, 0);
+@@ -538,7 +558,7 @@ static int pca954x_probe(struct i2c_client *client,
+ 
+ 		ret = i2c_get_device_id(client, &id);
+ 		if (ret && ret != -EOPNOTSUPP)
+-			return ret;
++			goto fail_cleanup;
+ 
+ 		if (!ret &&
+ 		    (id.manufacturer_id != data->chip->id.manufacturer_id ||
+@@ -546,7 +566,8 @@ static int pca954x_probe(struct i2c_client *client,
+ 			dev_warn(dev, "unexpected device id %03x-%03x-%x\n",
+ 				 id.manufacturer_id, id.part_id,
+ 				 id.die_revision);
+-			return -ENODEV;
++			ret = -ENODEV;
++			goto fail_cleanup;
+ 		}
+ 	}
+ 
+@@ -565,7 +586,8 @@ static int pca954x_probe(struct i2c_client *client,
+ 	ret = pca954x_init(client, data);
+ 	if (ret < 0) {
+ 		dev_warn(dev, "probe failed\n");
+-		return -ENODEV;
++		ret = -ENODEV;
++		goto fail_cleanup;
+ 	}
+ 
+ 	ret = pca954x_irq_setup(muxc);
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.34.1
+
