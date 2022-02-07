@@ -2,95 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 590CFC35274
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4654C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380986AbiBGLjy (ORCPT
+        id S1384386AbiBGLkA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:39:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
+        Mon, 7 Feb 2022 06:40:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384673AbiBGL3e (ORCPT
+        with ESMTP id S1384679AbiBGL3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Feb 2022 06:29:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D75C0258CE;
-        Mon,  7 Feb 2022 03:27:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69BBCC03E91C
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 03:27:55 -0800 (PST)
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EC1360918;
-        Mon,  7 Feb 2022 11:27:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF956C004E1;
-        Mon,  7 Feb 2022 11:27:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233274;
-        bh=oockd+H0nbljZXJvxJaW8xs5secCp/bASldZOrm0rlE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qwKJh+ehzJqVFKdoXKsa26ymzoXB6/YTVsXUkttJBaWaKob4lRTu85cYSHULxLDqK
-         vXdCPOcg4jLVcaPCXf1uHFMe4Ye9MKXAzsOLiKfGH+sAf99+TeLKDxfkrXrSqr5q9Y
-         9hjrsVHmlk0sodqDuWoV9s1h9DqcnbYpwN4Yja+8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 071/110] ASoC: fsl: Add missing error handling in pcm030_fabric_probe
-Date:   Mon,  7 Feb 2022 12:06:44 +0100
-Message-Id: <20220207103804.687368485@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
-References: <20220207103802.280120990@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id B72B13F4B4
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:27:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644233273;
+        bh=Tn4bc4zR8BLXzuWSYuCglM3OFSG7x0cpAc4I3hArdaE=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=DSFyRfh3ruPfe387MPeKtzA1Ni5+75V6zKBlM2VVthksiWqYuET8qSJdN5ppvbgsq
+         KaHF7PRf/LPMYa885BFyIgOsRpOOvnvIvPnMFm8QFphZGkk1fL1DwIqp2rX4nBuj0L
+         jk7SkH4eJrmaBFpeuT8O9BzKo+3zPRFx8oHHM0inLp3zQH5tF9OqeCV9ccTFRuNEKs
+         WYM/BRs2kWjnH1yhaaabTCOarLF72O4XWE1Htc2dZklDquGQqoTvFfHa3u87BKnvYd
+         1rez0O07Tbh0sciGUm9/j3MCTGfk9q5OIfQkFvu7KHN+FKe7wxpZzUuf0DGdZiaADG
+         zOTU4S70QKOJg==
+Received: by mail-ed1-f70.google.com with SMTP id k5-20020a508ac5000000b00408dec8390aso7593875edk.13
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 03:27:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Tn4bc4zR8BLXzuWSYuCglM3OFSG7x0cpAc4I3hArdaE=;
+        b=GLz2HHWbRX2QiPR6TLvhihmN8+tIvBYIWz2T678o4f5pkl7pgjpSvCNQbM0twX6pYM
+         Fk8eu9DG3IhVYSy2IJ8BKLDbgzFUjRzp64LDl1mQ9dUoYGnuujWqy3mJ3HenToUrYYkf
+         KlTnqkL5brb82xPsKD0iPodyFZBoyLF8vNYpyvBU0/BU34prJrsYnkoia8WHjN0FlY2j
+         GAPdQ6ldMd8nDEcWzK04eEarQOOhK0qQvMhfkOtkFBjLNxoxA9aHUGVL/4gWN/ug6GIw
+         UTnOyh42ke7g97AS5shO5lswvbTP/+GK2n63ITrxtPKDWxaoLKttpVgqSyF8sCur8wDv
+         OudQ==
+X-Gm-Message-State: AOAM530sBf1xJWkdylxNlF+vpbHiP0VmzBiYXThZ6vTiv5qjqSyIymj6
+        H8JPkPXVzC3AqASH2QKA5AbW9MmWcbe/CWfHFHfCT0zWBAO0sQOthP+Gj0pFXWGq9ZHBQE7JmoZ
+        ucgqY62HayaN1hveta0nb11muxBDYyzMGrwfWaAzGnw==
+X-Received: by 2002:a05:6402:881:: with SMTP id e1mr11159387edy.234.1644233273263;
+        Mon, 07 Feb 2022 03:27:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz4ZPRw7J+5pEKOaY5Z7jldo/XTG3FVjdDvBj6oSzyzQCPUO8pkxiH+YwKpJrz6QXStMDjdRQ==
+X-Received: by 2002:a05:6402:881:: with SMTP id e1mr11159366edy.234.1644233273056;
+        Mon, 07 Feb 2022 03:27:53 -0800 (PST)
+Received: from [192.168.0.87] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id z19sm3611505eji.87.2022.02.07.03.27.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 03:27:52 -0800 (PST)
+Message-ID: <a3ef9a3d-951e-c7b2-f4e5-ec613997501e@canonical.com>
+Date:   Mon, 7 Feb 2022 12:27:50 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 1/6] dt-bindings: i2c: npcm: support NPCM845
+Content-Language: en-US
+To:     Tyrone Ting <warp5tw@gmail.com>, avifishman70@gmail.com,
+        tmaimon77@gmail.com, tali.perry1@gmail.com, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
+        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
+        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
+        olof@lixom.net, andriy.shevchenko@linux.intel.com,
+        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com
+Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220207063338.6570-1-warp5tw@gmail.com>
+ <20220207063338.6570-2-warp5tw@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220207063338.6570-2-warp5tw@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+On 07/02/2022 07:33, Tyrone Ting wrote:
+> From: Tyrone Ting <kfting@nuvoton.com>
+> 
+> This commit adds compatible and syscon description for NPCM845 i2c module.
 
-commit fb25621da5702c104ce0a48de5b174ced09e5b4e upstream.
+Do not use "This commit" but instead:
+https://elixir.bootlin.com/linux/v5.13/source/Documentation/process/submitting-patches.rst#L89
 
-Add the missing platform_device_put() and platform_device_del()
-before return from pcm030_fabric_probe in the error handling case.
+> 
+> Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+> Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+> Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+> ---
+>  .../bindings/i2c/nuvoton,npcm7xx-i2c.yaml     | 21 ++++++++++++++-----
+>  1 file changed, 16 insertions(+), 5 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+> index 128444942aec..05e58f44b03a 100644
+> --- a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+> @@ -7,17 +7,22 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: nuvoton NPCM7XX I2C Controller Device Tree Bindings
+>  
+>  description: |
+> -  The NPCM750x includes sixteen I2C bus controllers. All Controllers support
+> -  both master and slave mode. Each controller can switch between master and slave
+> -  at run time (i.e. IPMB mode). Each controller has two 16 byte HW FIFO for TX and
+> -  RX.
+> +  The NPCM7XX includes sixteen I2C bus controllers and the NPCM8XX includes
+> +  twenty-seven I2C bus controllers. NPCM8XX controllers 24-26 are connected on I2C
+> +  pins in parallel to controllers 8-10.
+> +  All controllers support both master and slave mode.
+> +  Each controller can switch between master and slave at run time (i.e. IPMB mode).
+> +  NPCM7XX I2C controller has two 16 byte HW FIFO for TX and RX and NPCM8XX I2C
+> +  controller has two 32 byte HW FIFO for TX and RX.
+>  
+>  maintainers:
+>    - Tali Perry <tali.perry1@gmail.com>
+>  
+>  properties:
+>    compatible:
+> -    const: nuvoton,npcm750-i2c
+> +    enum:
+> +      - nuvoton,npcm750-i2c
+> +      - nuvoton,npcm845-i2c
+>  
+>    reg:
+>      maxItems: 1
+> @@ -36,11 +41,16 @@ properties:
+>      default: 100000
+>      enum: [100000, 400000, 1000000]
+>  
+> +  syscon:
+> +    $ref: "/schemas/types.yaml#/definitions/phandle"
+> +    description: The phandle of system manager register node.
+> +
+>  required:
+>    - compatible
+>    - reg
+>    - interrupts
+>    - clocks
+> +  - syscon
 
-Fixes: c912fa913446 ("ASoC: fsl: register the wm9712-codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220127131336.30214-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/soc/fsl/pcm030-audio-fabric.c |   11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+This breaks ABI of existing DTS. Actually your driver change does it but
+here it is explicit...
 
---- a/sound/soc/fsl/pcm030-audio-fabric.c
-+++ b/sound/soc/fsl/pcm030-audio-fabric.c
-@@ -93,16 +93,21 @@ static int pcm030_fabric_probe(struct pl
- 		dev_err(&op->dev, "platform_device_alloc() failed\n");
- 
- 	ret = platform_device_add(pdata->codec_device);
--	if (ret)
-+	if (ret) {
- 		dev_err(&op->dev, "platform_device_add() failed: %d\n", ret);
-+		platform_device_put(pdata->codec_device);
-+	}
- 
- 	ret = snd_soc_register_card(card);
--	if (ret)
-+	if (ret) {
- 		dev_err(&op->dev, "snd_soc_register_card() failed: %d\n", ret);
-+		platform_device_del(pdata->codec_device);
-+		platform_device_put(pdata->codec_device);
-+	}
- 
- 	platform_set_drvdata(op, pdata);
--
- 	return ret;
-+
- }
- 
- static int pcm030_fabric_remove(struct platform_device *op)
+>  
+>  allOf:
+>    - $ref: /schemas/i2c/i2c-controller.yaml#
+> @@ -57,6 +67,7 @@ examples:
+>          clock-frequency = <100000>;
+>          interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
+>          compatible = "nuvoton,npcm750-i2c";
+> +        syscon = <&gcr>;
+>      };
+>  
+>  ...
 
 
+Best regards,
+Krzysztof
