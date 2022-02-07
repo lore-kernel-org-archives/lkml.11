@@ -2,81 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04587C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01DF1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245138AbiBGWsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 17:48:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
+        id S245160AbiBGWtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 17:49:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231463AbiBGWsl (ORCPT
+        with ESMTP id S231463AbiBGWts (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 17:48:41 -0500
-X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 14:48:38 PST
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D20C061355;
-        Mon,  7 Feb 2022 14:48:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644274117;
-        bh=QhZBPtbAWH4+pKc3YMKNO4ZUECQS51u5SUOueTN1NGg=;
-        h=X-UI-Sender-Class:Date:From:Subject:To:Cc;
-        b=Lwl34HF/VMltqaVw0xBpCYB9VcHeyhGakRFm/hWcojk0l88vpnV0YwjJV7vPYywt+
-         WeuqSC3XH/5ZyEqE2MyOQgVB0pzyxWelpwVAX9LMoLAHiIBqnUjb+tkwNrcor1MUkT
-         JE0yd6wQwmw4PZGevbpv4ZyzSg0b7slAhUFunyf0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.100.20] ([46.142.35.82]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MfHEP-1nxAS63xFb-00goFO; Mon, 07
- Feb 2022 23:43:34 +0100
-Message-ID: <3251deaa-2b0f-1e04-fdb3-361b84ef4a7a@gmx.de>
-Date:   Mon, 7 Feb 2022 23:43:33 +0100
+        Mon, 7 Feb 2022 17:49:48 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F52C061355;
+        Mon,  7 Feb 2022 14:49:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644274187; x=1675810187;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=kCrDIOrEFsaqkXzsZbh8yWB/DwYaGsvCXUnA57EV60o=;
+  b=WJXmPv2BjjL6DfXYwYsIBdAdfdhF9CFbHiMIAZtBYux70MVKmBgz83ZS
+   Ny6HdO/W7RljLfbi5MYWYuMy/fdFBrjAjAoQl4LfchVXzWww7mRXUhyjd
+   M6fEvyrtC/AHHYxKhC/aQb5YJQhyi+GKbyTrHW3JpOfZ1iRahdws+N4O3
+   9vmyP2MrFDsM3MITWnod+HZCKDdFpROaZaXcaD0kMPXJbxxh+RpZP6YwC
+   0THtEHQRgMlgp38sOg3abYKTfzn+3mzicF0R5KuP67Ldl225p7vg5Gmlb
+   KkNgfyESWnAYd5OBXn5EyxMLJatP1v7M/WfvjPeRvJrFiE/4XtENEO65c
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="248772691"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="248772691"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 14:49:46 -0800
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="525309179"
+Received: from hgrunes-mobl1.amr.corp.intel.com (HELO [10.251.3.57]) ([10.251.3.57])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 14:49:45 -0800
+Message-ID: <d53abb4b-2459-e1f7-3b7f-a8017cdd3757@intel.com>
+Date:   Mon, 7 Feb 2022 14:49:45 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-From:   Ronald Warsow <rwarsow@gmx.de>
-Subject: Re: [PATCH 5.16 000/127] 5.16.8-rc2 review
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Language: en-US
+To:     Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Balbir Singh <bsingharora@gmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Eugene Syromiatnikov <esyr@redhat.com>,
+        Florian Weimer <fweimer@redhat.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
+        Dave Martin <Dave.Martin@arm.com>,
+        Weijiang Yang <weijiang.yang@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
+        kcc@google.com, eranian@google.com
+Cc:     Yu-cheng Yu <yu-cheng.yu@intel.com>
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <20220130211838.8382-5-rick.p.edgecombe@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH 04/35] x86/cpufeatures: Introduce CPU setup and option
+ parsing for CET
+In-Reply-To: <20220130211838.8382-5-rick.p.edgecombe@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:RZNd/xCD/zmSBdEh/hZVBZ/+M029zV543YVboXn/dcEJt8wJPXu
- fLJhzSU/rzrhToxixgkrDAjbT4y0SVNcIKR5YWEDnkZbNuI++xpqx+g4ggFur4FZixdoW2i
- ITu0T1A4qgSVpKl2xeGHAh4DJCArHZ6kylv86cbmk9lwOv0tHt0Ukm3i4UYk6fRDklKdmT/
- RrMRaK8icvVqGbOB6StaQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:3ODOsgAMdFU=:WvP8R29XAfZ72OczrvrIFC
- OAC0aJ3+mV4pewM0QHZfKh0Ef2WMtY8Zw9jYgAOdWp6asUfcXMADovAmArfs/Dnha0yduAQJU
- 5GuosIlInFnRRFcFkv2yRpxyuqopSP0JmJTzN4gKlnM6CAQoEwVJyJn4e1Ugdox11TEPSjtd6
- n318fLJ2P2/NQ8wg+8FK2ktJYaoqS5w9UVKbkqphGfJ+fIwusUjBI2yJb+KrhZdeVO42n8GIs
- hzTed7VAFtKqu63A6WurRQdf3oFVaQ+pXNHb3eLKENxIFr4PwwCSTBVzMmy9uPrd7hAvSOAMK
- +wtmpVDb2QvRLyN1eJrK6Da33a1j7aj26r8kHs0sqmJMvFyPy3pp1+3bOUJxWY+QcI8KfrPh1
- Ye7OpaIGiADgk4HYvPV9LzdQl+a31LnwxOxpNjVKTW8e7qIhY/IceTWhoo10vccLhcqdKnPUh
- 6CxqTocJealxd6siT9lXfQrO7aCkjiVMfQYspaEBrQvfb7otOQF8wb+AAGvy8b2dmGXAbt/qH
- P+uRlfyQ5xokAZcVlkhPt0EYiBXIWWeH0iIe45AeCSsfMcXAfHP7Hv3wC4fQXqp1reLb0+huu
- Aq5xA6WlSLXqh6p7JOxxEe7ifchHJefg7EqqeuFt0NPsta/2IPCrQudMDbhJMHZbokTmBzUDj
- oAyPkToBjS4J+ChqrbvLqTR9XdGAoItBnN8YBw2Kv71esSFlhUgkLw+A/K6GgTZpKC5P1gFCA
- IoUiSbXuaDvMoXr7YFqaadE+GoE0vwNMqIQ/A5VfFB+NwijSn6kwawpDWh/a0nexWN2lfNv98
- gIG70nEepFp4aTWhmYeO+jkUQraLCnsHYEsKfRwYqxcZKk02cj+9yNehLzHWpNYJAPSYVuyBO
- TWecUg602N4fVcBa7eAZlu5+deb9ez7jz5MsMvMIxzlEBDpV2izOCxZyoPEWKnbF9AOFhk0k0
- n6llywkgEEqMQpfghlZ2CrKo6fjFAx3GMlHt7G7mFK2zL2poe+KkXpA2lzEeE8z0+3MHtDrcN
- EVI2g9F8kv7XZYtQdhAifx+ygToKg9uAOKYnE+LTyvUhnekkw1GDL44xG7VW+E9xxzCfprJ/3
- nvky2jMj/jh2vk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
+>   * Some CPU features depend on higher CPUID levels, which may not always
+>   * be available due to CPUID level capping or broken virtualization
+> @@ -1261,6 +1269,9 @@ static void __init cpu_parse_early_param(void)
+>  	if (cmdline_find_option_bool(boot_command_line, "noxsaves"))
+>  		setup_clear_cpu_cap(X86_FEATURE_XSAVES);
+>  
+> +	if (cmdline_find_option_bool(boot_command_line, "no_user_shstk"))
+> +		setup_clear_cpu_cap(X86_FEATURE_SHSTK);
 
-5.16.8-rc2
+Given this:
 
-compiles, boots and runs on my x86_64
-(Intel i5-11400, Fedora 35)
+	https://lore.kernel.org/all/20220127115626.14179-2-bp@alien8.de/
 
-Thanks
-
-Tested-by: Ronald Warsow <rwarsow@gmx.de>
-------------------------------------------------------------------------
-
-regards
-Ronald
-
-
+I'd probably yank the command-line option out of this series, or stick
+it in a separate patch that you tack on to the end.
