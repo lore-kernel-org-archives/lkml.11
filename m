@@ -2,123 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD1DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:17:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9059C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242488AbiBGQQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:16:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52068 "EHLO
+        id S1352330AbiBGQQx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:16:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381651AbiBGQOt (ORCPT
+        with ESMTP id S1387604AbiBGQQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:14:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 25779C0401CF
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:14:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644250487;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=IFrUiE399AWkgKFh5f0w6DFQ5l0IKVbpkKeYpipiJKA=;
-        b=e5JMRZ+g9PXSj05Gg/j8UNHukGnlYbkAC7T1eqne6D1Hnb5t9nqV7ZT5Rh7nje5w8TZm90
-        htAmugC+eqMlWIQSiU95XOqI8CISrr2QFLNDAvXe3ljmQ1UkZHRZV0Cr0CvzLqU9lbL5If
-        02aJ7yZg2VbQqpjABYI2SwYCUt6bt6I=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-396-ge-AldT3OBSw44XITdS2ag-1; Mon, 07 Feb 2022 11:14:46 -0500
-X-MC-Unique: ge-AldT3OBSw44XITdS2ag-1
-Received: by mail-wm1-f70.google.com with SMTP id r16-20020a05600c2c5000b0037bb20c50b8so3039937wmg.3
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 08:14:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IFrUiE399AWkgKFh5f0w6DFQ5l0IKVbpkKeYpipiJKA=;
-        b=KYNAMXBG+1mBVpugz92tZNKItGWQXur3AY6+/U89O5/qoItp12WOJ+3kXupW3Rj+DA
-         NLCLWdc88L+LMHrH2KubZ4W2Nl4esqtNLOfuTHV6+klu9ZmWPl4TsU2IPyh9vwMhbi7B
-         4WyKN10mB2THMGQHEs3YklKmcjQIAc1SK2gYKtioNW3ZFmaUkS9vjbiRz39x5+rY4O0L
-         8WmrwnT0LeaC0ynNTlAV86OZQHfOhXXkqAcnN5H8+jHVtlbDlVfF9/ZFVPxM/YT+vTrN
-         azNTvw7iJGwJJC2Rkqvl/rb23G/KgrTFI9YXrZnWG4/uqxS7z20RkyidYL636lvnss1m
-         4d1A==
-X-Gm-Message-State: AOAM5315USvsTX985h8n7duDYglIYoeTO/vUpCCSIFI7HXhNCaRXOBcl
-        nJ8AV7DrWS0v75xFKqW99813aVMQ/qNWtCn+bN/vRC4IC/ZUyAidZaGuKCzPTZA6AI2YEsYWNVW
-        mLRfrWIp8uiiCSCPx7LD28YvhPPlvZnWbi1X5esDdvn2tob9yDGvpUddHgB4ZzZYYySNkTuQi4h
-        Q=
-X-Received: by 2002:a5d:40ca:: with SMTP id b10mr178629wrq.6.1644250484876;
-        Mon, 07 Feb 2022 08:14:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxag/VMAQvDNvrhkp9126/FEr3+jzTAsqTwom1rxeqdyBy5yKiDpvjeiVrKAD+kaImszZyfLA==
-X-Received: by 2002:a5d:40ca:: with SMTP id b10mr178611wrq.6.1644250484657;
-        Mon, 07 Feb 2022 08:14:44 -0800 (PST)
-Received: from kherbst.pingu.com (ip1f10bb48.dynamic.kabel-deutschland.de. [31.16.187.72])
-        by smtp.gmail.com with ESMTPSA id f8sm12358148wry.12.2022.02.07.08.14.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 08:14:44 -0800 (PST)
-From:   Karol Herbst <kherbst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Karol Herbst <kherbst@redhat.com>, stable@vger.kernel.org,
-        Ben Skeggs <bskeggs@redhat.com>, Lyude Paul <lyude@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVER FOR NVIDIA
-        GEFORCE/QUADRO GPUS),
-        nouveau@lists.freedesktop.org (open list:DRM DRIVER FOR NVIDIA
-        GEFORCE/QUADRO GPUS)
-Subject: [PATCH] drm/nouveau/mmu: fix reuse of nvkm_umem
-Date:   Mon,  7 Feb 2022 17:14:42 +0100
-Message-Id: <20220207161443.1843660-1-kherbst@redhat.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Feb 2022 11:16:09 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F3EC0401CE;
+        Mon,  7 Feb 2022 08:16:08 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 85524A50;
+        Mon,  7 Feb 2022 17:16:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644250566;
+        bh=aFkueRgWrJNvd3R2K1xflySlUNscsWztv2uokuEkh9I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nZK1tUgx86ylAnUIWlj2XVGt9I3p8J0h+L4yS9X2FR2ac1TZVfsz+sqmw6q32FLt2
+         XBqJkltHOP84U3EkM6TflyU7nJTEp9yKRVvxoTkwwTap+mD0HWlOmAPjAMPuXn4L/f
+         ACf9R+pOSDDzhStzAqw8cmk9fwefENv7D+vHkZjY=
+Date:   Mon, 7 Feb 2022 18:16:04 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 63/66] staging: media: Add support for the Allwinner
+ A31 ISP
+Message-ID: <YgFFxMd2htKvX0K1@pendragon.ideasonboard.com>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-64-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220205185429.2278860-64-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I am not entirely sure if this fixes anything, but the code standed out
-while investigated problematic calls to vunmap.
+Hi Paul,
 
-nvkm_umem.io is only ever set for the NVKM_OBJECT_MAP_IO case in
-nvkm_umem_map, but never for the NVKM_OBJECT_MAP_VA one, which could lead
-to taking the wrong patch inside nvkm_umem_unmap.
+Thank you for the patch.
 
-I just don't know if this is a real issue or not, but the code doesn't
-look correct this way.
+On Sat, Feb 05, 2022 at 07:54:26PM +0100, Paul Kocialkowski wrote:
+> Some Allwinner platforms come with an Image Signal Processor, which
+> supports various features in order to enhance and transform data
+> received by image sensors into good-looking pictures. In most cases,
+> the data is raw bayer, which gets internally converted to RGB and
+> finally YUV, which is what the hardware produces.
+> 
+> This driver supports ISPs that are similar to the A31 ISP, which was
+> the first standalone ISP found in Allwinner platforms. Simpler ISP
+> blocks were found in the A10 and A20, where they are tied to a CSI
+> controller. Newer generations of Allwinner SoCs (starting with the
+> H6, H616, etc) come with a new camera subsystem and revised ISP.
+> Even though these previous and next-generation ISPs are somewhat
+> similar to the A31 ISP, they have enough significant differences to
+> be out of the scope of this driver.
+> 
+> While the ISP supports many features, including 3A and many
+> enhancement blocks, this implementation is limited to the following:
+> - V3s (V3/S3) platform support;
+> - Bayer media bus formats as input;
 
-Fixes: c83c4097eba8 ("drm/nouveau/mmu: define user interfaces to mmu memory allocation")
-Cc: <stable@vger.kernel.org> # v4.15+
----
- drivers/gpu/drm/nouveau/nvkm/subdev/mmu/umem.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Greyscale formats would also be nice to have, if the hardware can
+support that (it mostly just requires the ability to disable the CFA
+interpolation).
 
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/umem.c b/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/umem.c
-index e530bb8b3b17..2608e0796066 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/umem.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/umem.c
-@@ -102,6 +102,7 @@ nvkm_umem_map(struct nvkm_object *object, void *argv, u32 argc,
- 		*handle = (unsigned long)(void *)umem->map;
- 		*length = nvkm_memory_size(umem->memory);
- 		*type = NVKM_OBJECT_MAP_VA;
-+		umem->io = false;
- 		return 0;
- 	} else
- 	if ((umem->type & NVKM_MEM_VRAM) ||
-@@ -112,12 +113,11 @@ nvkm_umem_map(struct nvkm_object *object, void *argv, u32 argc,
- 			return ret;
- 
- 		*type = NVKM_OBJECT_MAP_IO;
--	} else {
--		return -EINVAL;
-+		umem->io = true;
-+		return 0;
- 	}
- 
--	umem->io = (*type == NVKM_OBJECT_MAP_IO);
--	return 0;
-+	return -EINVAL;
- }
- 
- static void *
+> - Semi-planar YUV (NV12/NV21) as output;
+
+Packed YUV would also be useful if the hardware supports it.
+
+> - Debayering with per-component gain and offset configuration;
+> - 2D noise filtering with configurable coefficients.
+> 
+> Since many features are missing from the associated uAPI, the driver
+> is aimed to integrate staging until all features are properly
+> described.
+> 
+> On the technical side, it uses the v4l2 and media controller APIs,
+> with a video node for capture, a processor subdev and a video node
+> for parameters submission. A specific uAPI structure and associated
+> v4l2 meta format are used to configure parameters of the supported
+> modules.
+> 
+> One particular thing about the hardware is that configuration for
+> module registers needs to be stored in a DMA buffer and gets copied
+> to actual registers by the hardware at the next vsync, when instructed
+> by a flag. This is handled by the "state" mechanism in the driver.
+> 
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> ---
+>  drivers/staging/media/sunxi/Kconfig           |   1 +
+>  drivers/staging/media/sunxi/Makefile          |   1 +
+>  drivers/staging/media/sunxi/sun6i-isp/Kconfig |  13 +
+>  .../staging/media/sunxi/sun6i-isp/Makefile    |   4 +
+>  .../staging/media/sunxi/sun6i-isp/sun6i_isp.c | 572 +++++++++++++
+>  .../staging/media/sunxi/sun6i-isp/sun6i_isp.h |  86 ++
+>  .../media/sunxi/sun6i-isp/sun6i_isp_capture.c | 751 ++++++++++++++++++
+>  .../media/sunxi/sun6i-isp/sun6i_isp_capture.h |  78 ++
+>  .../media/sunxi/sun6i-isp/sun6i_isp_params.c  | 573 +++++++++++++
+>  .../media/sunxi/sun6i-isp/sun6i_isp_params.h  |  52 ++
+>  .../media/sunxi/sun6i-isp/sun6i_isp_proc.c    | 599 ++++++++++++++
+>  .../media/sunxi/sun6i-isp/sun6i_isp_proc.h    |  61 ++
+>  .../media/sunxi/sun6i-isp/sun6i_isp_reg.h     | 275 +++++++
+>  .../sunxi/sun6i-isp/uapi/sun6i-isp-config.h   |  43 +
+
+Could you add a TODO file to list the issues that need to be fixed for
+the driver to move out of staging ? I'll already propose one entry:
+
+- Add support in libcamera
+
+This isn't required to merge the driver in staging as long as ABI
+compatibility doesn't need to be preserved until the driver is moved out
+of staging.
+
+>  14 files changed, 3109 insertions(+)
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/Kconfig
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/Makefile
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp.c
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp.h
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_capture.c
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_capture.h
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_params.c
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_params.h
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_proc.c
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_proc.h
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_reg.h
+>  create mode 100644 drivers/staging/media/sunxi/sun6i-isp/uapi/sun6i-isp-config.h
+
+[snip]
+
 -- 
-2.34.1
+Regards,
 
+Laurent Pinchart
