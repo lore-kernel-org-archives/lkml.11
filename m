@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70884C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57DD8C35278
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386775AbiBGLgl (ORCPT
+        id S1386758AbiBGLgf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:36:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37308 "EHLO
+        Mon, 7 Feb 2022 06:36:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357112AbiBGLZS (ORCPT
+        with ESMTP id S1380400AbiBGLZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:25:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDDEC0401F3;
-        Mon,  7 Feb 2022 03:25:13 -0800 (PST)
+        Mon, 7 Feb 2022 06:25:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E87C03E946;
+        Mon,  7 Feb 2022 03:25:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 209EF6077B;
-        Mon,  7 Feb 2022 11:25:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75370C004E1;
-        Mon,  7 Feb 2022 11:25:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7D7E6135A;
+        Mon,  7 Feb 2022 11:25:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A396BC340EB;
+        Mon,  7 Feb 2022 11:25:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233112;
-        bh=u4UjAcFF1Zp7pNCg0/6sdayjl3EP4O06VFNJH8ux4dM=;
+        s=korg; t=1644233127;
+        bh=Wvu9U0FC7Jn2345zfBPmgze6YuQzHKCpO7jO646nQC4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IP6+ZSaE0tBsu/Jn8k9XBGbUD22AByA4H/iTQR7H9wzUAI7xds+uXZztc0bAxtBM5
-         V0m96t1uydYB7Lf9wz4WXsJjCfLx0HT7C1TnPolYQlK5wQltFr5DassULGHRmt9e4Z
-         pA50j9P/gyWQorbtF4GxxwwMcbXjZM8gt+AvrSw0=
+        b=opbpBoAxS4VhIspCSbcwW6VjZSF5plrgY3DzWwYWb75j4c+LrOeEec3KPpQeWru7n
+         LEzncAWA0ShYpslJ7JVJLkm9dd3rXEdtAr7WGP0pT5tVwkN3MhD5+A65DbqFgmjg4h
+         6WTtUb2xc3epMycRNcyDR2R9PBYaS0Q22NpdFjDI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 008/110] ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
-Date:   Mon,  7 Feb 2022 12:05:41 +0100
-Message-Id: <20220207103802.562124328@linuxfoundation.org>
+        stable@vger.kernel.org, Aun-Ali Zaidi <admin@kodeit.net>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Aditya Garg <gargaditya08@live.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 025/110] drm/amd/display: Force link_rate as LINK_RATE_RBR2 for 2018 15" Apple Retina panels
+Date:   Mon,  7 Feb 2022 12:05:58 +0100
+Message-Id: <20220207103803.101677250@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -48,41 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Aun-Ali Zaidi <admin@kodeit.net>
 
-commit 4f1e50d6a9cf9c1b8c859d449b5031cacfa8404e upstream.
+commit 30fbce374745a9c6af93c775a5ac49a97f822fda upstream.
 
-We don't currently validate that the values being set are within the range
-we advertised to userspace as being valid, do so and reject any values
-that are out of range.
+The eDP link rate reported by the DP_MAX_LINK_RATE dpcd register (0xa) is
+contradictory to the highest rate supported reported by
+EDID (0xc = LINK_RATE_RBR2). The effects of this compounded with commit
+'4a8ca46bae8a ("drm/amd/display: Default max bpc to 16 for eDP")' results
+in no display modes being found and a dark panel.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
+For now, simply force the maximum supported link rate for the eDP attached
+2018 15" Apple Retina panels.
+
+Additionally, we must also check the firmware revision since the device ID
+reported by the DPCD is identical to that of the more capable 16,1,
+incorrectly quirking it. We also use said firmware check to quirk the
+refreshed 15,1 models with Vega graphics as they use a slightly newer
+firmware version.
+
+Tested-by: Aun-Ali Zaidi <admin@kodeit.net>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Aun-Ali Zaidi <admin@kodeit.net>
+Signed-off-by: Aditya Garg <gargaditya08@live.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220124153253.3548853-3-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-ops.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c |   20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -423,8 +423,15 @@ int snd_soc_put_volsw_sx(struct snd_kcon
- 	int err = 0;
- 	unsigned int val, val_mask;
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+@@ -3913,6 +3913,26 @@ static bool retrieve_link_cap(struct dc_
+ 		dp_hw_fw_revision.ieee_fw_rev,
+ 		sizeof(dp_hw_fw_revision.ieee_fw_rev));
  
-+	val = ucontrol->value.integer.value[0];
-+	if (mc->platform_max && val > mc->platform_max)
-+		return -EINVAL;
-+	if (val > max - min)
-+		return -EINVAL;
-+	if (val < 0)
-+		return -EINVAL;
- 	val_mask = mask << shift;
--	val = (ucontrol->value.integer.value[0] + min) & mask;
-+	val = (val + min) & mask;
- 	val = val << shift;
- 
- 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
++	/* Quirk for Apple MBP 2018 15" Retina panels: wrong DP_MAX_LINK_RATE */
++	{
++		uint8_t str_mbp_2018[] = { 101, 68, 21, 103, 98, 97 };
++		uint8_t fwrev_mbp_2018[] = { 7, 4 };
++		uint8_t fwrev_mbp_2018_vega[] = { 8, 4 };
++
++		/* We also check for the firmware revision as 16,1 models have an
++		 * identical device id and are incorrectly quirked otherwise.
++		 */
++		if ((link->dpcd_caps.sink_dev_id == 0x0010fa) &&
++		    !memcmp(link->dpcd_caps.sink_dev_id_str, str_mbp_2018,
++			     sizeof(str_mbp_2018)) &&
++		    (!memcmp(link->dpcd_caps.sink_fw_revision, fwrev_mbp_2018,
++			     sizeof(fwrev_mbp_2018)) ||
++		    !memcmp(link->dpcd_caps.sink_fw_revision, fwrev_mbp_2018_vega,
++			     sizeof(fwrev_mbp_2018_vega)))) {
++			link->reported_link_cap.link_rate = LINK_RATE_RBR2;
++		}
++	}
++
+ 	memset(&link->dpcd_caps.dsc_caps, '\0',
+ 			sizeof(link->dpcd_caps.dsc_caps));
+ 	memset(&link->dpcd_caps.fec_cap, '\0', sizeof(link->dpcd_caps.fec_cap));
 
 
