@@ -2,329 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80576C3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D43C6C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383897AbiBGRJb (ORCPT
+        id S1384472AbiBGRJi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:09:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57584 "EHLO
+        Mon, 7 Feb 2022 12:09:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357739AbiBGRAL (ORCPT
+        with ESMTP id S1383646AbiBGRBH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:00:11 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD442C0401D6;
-        Mon,  7 Feb 2022 09:00:07 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217GxFU4001643;
-        Mon, 7 Feb 2022 17:00:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=cR8o6qHn0Nut0W0pG13ceP4boyb9RECueBYqhHCmi4c=;
- b=sVu9HervUtTs8yhOrOY4CGJKLo1QbQdFDOhE9qU3T1RCDE0yrDZPDUxQeV7mdeUFe4j1
- c0Z/FAh0xVmk/J0Dxjq/of3cwN452u5Tf43v/ysBTJKHA+3MVRoBiQoZpAjobkRN2E5G
- GbeiWs/e83p/1a2/1oxFC4CLfuZKLs7zXAmn5a2Bj6Zaoq67PEtypiMWbSmyhOgFmH9x
- M0VjpKD4OlRaJ7rU+1RVkLoC1G/qGHJug304it2h0pG20OVCQgsJwopSieBka4NJcM1m
- 1+ywjgbtYEW3iEyEJc2nvGvCDNnKu6xSG+TsdI7sOwLiS18C0DTkZu9BfdrwmelupgV0 KQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22st9v2v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 17:00:06 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217GxJUW002048;
-        Mon, 7 Feb 2022 17:00:05 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22st9v1d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 17:00:05 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217GqQfg008704;
-        Mon, 7 Feb 2022 17:00:03 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3e1gv8xuwq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 17:00:03 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217H002u42926584
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 17:00:00 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F0FEAA4053;
-        Mon,  7 Feb 2022 16:59:59 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 83808A405D;
-        Mon,  7 Feb 2022 16:59:59 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 16:59:59 +0000 (GMT)
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>
-Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH v2 01/11] s390/uaccess: Add copy_from/to_user_key functions
-Date:   Mon,  7 Feb 2022 17:59:20 +0100
-Message-Id: <20220207165930.1608621-2-scgl@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220207165930.1608621-1-scgl@linux.ibm.com>
-References: <20220207165930.1608621-1-scgl@linux.ibm.com>
+        Mon, 7 Feb 2022 12:01:07 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E6FC0401DD;
+        Mon,  7 Feb 2022 09:01:06 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id y129so5612841ybe.7;
+        Mon, 07 Feb 2022 09:01:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pTRuVaqajpl8oLymDUpg7WFzxX4FDWJYRUOPK7U1Ir0=;
+        b=GPI7ziLCc6ZtVQOuo09my9y/hwGNdQCx4CP5HjEMybPGq2fmV+fz0x5Gr6wv/0TwB+
+         EJxSErw4x8m0AkDxvtNGK1HCQqp2x8Vmwmw0t4E/mnA9uu1aX3riv2olLzUlq55iBw0s
+         GWBieOozgZsmvXljYXyMOaVwnNjGg77StHLM5mSU03y0PZ6Ee4IDGOF1Awna7P5aN2WI
+         fA9Ylv9lSpp5R0ezUJYxOCT5VIF46h9+1oF2YKipHGZWr6sJNNwqZideX+hghYrc69Pr
+         eU+3y7Wt3UQluaWWQ+riBI+o7EG+ZNRprzfM5CkuZY/xgZ1api51FTlLfOF+Rwm+OJaD
+         EfRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pTRuVaqajpl8oLymDUpg7WFzxX4FDWJYRUOPK7U1Ir0=;
+        b=UH9VvAoVA87Hep9vJzBWt1rJzhAzfTVta8IIrMPWHR2PWDga7wv0UhpNNJH3zPYq9B
+         f53ijvJH1wzyDrMiDMPHqdxxS5LWXHCpi1pIPDWMUk6aSGEFyao6ogVxBYUYNepvda2J
+         5ACKN6SzoSLi1EgyNuCynU+JpZZEpk4JZm8Gl2KC1LfZqaOjGRyABnRmulKaq60lrjsl
+         bxmqDv+pf8KDPFE5uYidjk/ziB4rD89JuA/OPMds5v84acvvicySklcKp6MImCdSMKq0
+         N8+rU7//17U3Y5WJcgEXrw15BIYm6VIIgi8HlLmKxFc2FdB48JZV6OWJvLxPE+wbuAlF
+         i1yA==
+X-Gm-Message-State: AOAM532VIKRhTwhqdMBlK41SR2IwB3Pstmog24iv2FcqKS/4NmPMVr44
+        ZYPieUsYYQkvAqTDjcEUzMxm40/3IRFRVcRK7QcnYHSNHyE=
+X-Google-Smtp-Source: ABdhPJxZMU7f9Y2KkBbyTjQzngxXX0OwWbkE98XQLx6Dr07oRQkpXKfVL2L3MT8cE9rRLYd2IZ2H3M1D8v26/jQ+bqA=
+X-Received: by 2002:a25:b58:: with SMTP id 85mr681517ybl.182.1644253265193;
+ Mon, 07 Feb 2022 09:01:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: QSqf3D44FJfbAf4SBZguIICIzo4rTDxV
-X-Proofpoint-ORIG-GUID: D2pJ0Q-h6tUXYOm8plQT9Yl0cl9YcQTX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_06,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- mlxlogscore=999 priorityscore=1501 malwarescore=0 phishscore=0
- suspectscore=0 adultscore=0 spamscore=0 bulkscore=0 lowpriorityscore=0
- mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070103
+References: <4df50e95-6173-4ed1-9d08-3c1c4abab23f@gmail.com>
+ <CAHC9VhSjTqT-4TMxBnQOQHkj+djONihfeoPVyy1egrZY2t10XA@mail.gmail.com>
+ <c8a616e4-26a6-af51-212c-31dca0e265cd@gmail.com> <CAHC9VhQTZdeNOx3AXdoc9LXUzDk5n7wyGBX-tV-ZaovhPAdWwQ@mail.gmail.com>
+ <e85dd38b-ef7b-ed7e-882e-124cdf942c44@gmail.com> <CAHC9VhROuJtvNHuVaR6pEekNFacH3Tywx58_hn1f5Mwk+kjC8g@mail.gmail.com>
+ <b7e55304-d114-bcbe-08d2-b54828121a01@gmail.com> <CAHC9VhSdgD4Nfaxbnnn4r-OK8koSZ7+zQoPShDbGi9PvkJFpng@mail.gmail.com>
+In-Reply-To: <CAHC9VhSdgD4Nfaxbnnn4r-OK8koSZ7+zQoPShDbGi9PvkJFpng@mail.gmail.com>
+From:   William Roberts <bill.c.roberts@gmail.com>
+Date:   Mon, 7 Feb 2022 11:00:54 -0600
+Message-ID: <CAFftDdpxmf4R9zPVGUUCFinST_2t8iW2SAJYG4e=3JeWtDowJw@mail.gmail.com>
+Subject: Re: [PATCH] SELinux: Always allow FIOCLEX and FIONCLEX
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Demi Marie Obenour <demiobenour@gmail.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        SElinux list <selinux@vger.kernel.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        selinux-refpolicy@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add copy_from/to_user_key functions, which perform storage key checking.
-These functions can be used by KVM for emulating instructions that need
-to be key checked.
-These functions differ from their non _key counterparts in
-include/linux/uaccess.h only in the additional key argument and must be
-kept in sync with those.
+On Mon, Feb 7, 2022 at 9:08 AM Paul Moore <paul@paul-moore.com> wrote:
+>
+> On Wed, Feb 2, 2022 at 5:13 AM Demi Marie Obenour <demiobenour@gmail.com> wrote:
+> > On 2/1/22 12:26, Paul Moore wrote:
+> > > On Sat, Jan 29, 2022 at 10:40 PM Demi Marie Obenour
+> > > <demiobenour@gmail.com> wrote:
+> > >> On 1/26/22 17:41, Paul Moore wrote:
+> > >>> On Tue, Jan 25, 2022 at 5:50 PM Demi Marie Obenour
+> > >>> <demiobenour@gmail.com> wrote:
+> > >>>> On 1/25/22 17:27, Paul Moore wrote:
+> > >>>>> On Tue, Jan 25, 2022 at 4:34 PM Demi Marie Obenour
+> > >>>>> <demiobenour@gmail.com> wrote:
+> > >>>>>>
+> > >>>>>> These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
+> > >>>>>> always allows too.  Furthermore, a failed FIOCLEX could result in a file
+> > >>>>>> descriptor being leaked to a process that should not have access to it.
+> > >>>>>>
+> > >>>>>> Signed-off-by: Demi Marie Obenour <demiobenour@gmail.com>
+> > >>>>>> ---
+> > >>>>>>  security/selinux/hooks.c | 5 +++++
+> > >>>>>>  1 file changed, 5 insertions(+)
+> > >>>>>
+> > >>>>> I'm not convinced that these two ioctls should be exempt from SELinux
+> > >>>>> policy control, can you explain why allowing these ioctls with the
+> > >>>>> file:ioctl permission is not sufficient for your use case?  Is it a
+> > >>>>> matter of granularity?
+> > >>>>
+> > >>>> FIOCLEX and FIONCLEX are applicable to *all* file descriptors, not just
+> > >>>> files.  If I want to allow them with SELinux policy, I have to grant
+> > >>>> *:ioctl to all processes and use xperm rules to determine what ioctls
+> > >>>> are actually allowed.  That is incompatible with existing policies and
+> > >>>> needs frequent maintenance when new ioctls are added.
+> > >>>>
+> > >>>> Furthermore, these ioctls do not allow one to do anything that cannot
+> > >>>> already be done by fcntl(F_SETFD), and (unless I have missed something)
+> > >>>> SELinux unconditionally allows that.  Therefore, blocking these ioctls
+> > >>>> does not improve security, but does risk breaking userspace programs.
+> > >>>> The risk is especially great because in the absence of SELinux, I
+> > >>>> believe FIOCLEX and FIONCLEX *will* always succeed, and userspace
+> > >>>> programs may rely on this.  Worse, if a failure of FIOCLEX is ignored,
+> > >>>> a file descriptor can be leaked to a child process that should not have
+> > >>>> access to it, but which SELinux allows access to.  Userspace
+> > >>>> SELinux-naive sandboxes are one way this could happen.  Therefore,
+> > >>>> blocking FIOCLEX may *create* a security issue, and it cannot solve one.
+> > >>>
+> > >>> I can see you are frustrated with my initial take on this, but please
+> > >>> understand that excluding an operation from the security policy is not
+> > >>> something to take lightly and needs discussion.  I've added the
+> > >>> SELinux refpolicy list to this thread as I believe their input would
+> > >>> be helpful here.
+> > >>
+> > >> Absolutely it is not something that should be taken lightly, though I
+> > >> strongly believe it is correct in this case.  Is one of my assumptions
+> > >> mistaken?
+> > >
+> > > My concern is that there is a distro/admin somewhere which is relying
+> > > on their SELinux policy enforcing access controls on these ioctls and
+> > > removing these controls would cause them a regression.
+> >
+> > I obviously do not have visibility into all systems, but I suspect that
+> > nobody is actually relying on this.  Setting and clearing CLOEXEC via
+> > fcntl is not subject to SELinux restrictions, so blocking FIOCLEX
+> > and FIONCLEX can be trivially bypassed unless fcntl(F_SETFD) is
+> > blocked by seccomp or another LSM.  Clearing close-on-exec can also be
+> > implemented with dup2(), and setting it can be implemented with dup3()
+> > and F_DUPFD_CLOEXEC (which SELinux also allows).  In short, I believe
+> > that unconditionally allowing FIOCLEX and FIONCLEX may fix real-world
+> > problems, and that it is highly unlikely that anyone is relying on the
+> > current behavior.
+>
+> I understand your point, but I remain concerned about making a kernel
+> change for something that can be addressed via policy.  I'm also
+> concerned that in the nine days this thread has been on both the mail
+> SELinux developers and refpolicy lists no one other than you and I
+> have commented on this patch.  In order to consider this patch
+> further, I'm going to need to see comments from others, preferably
+> those with a background in supporting SELinux policy.
+>
 
-Since the existing uaccess implementation on s390 makes use of move
-instructions that support having an additional access key supplied,
-we can implement raw_copy_from/to_user_key by enhancing the
-existing implementation.
+AFAIK/AFAICT Android makes no reference to F_SETFD, and tracing the code
+does seem to be ignored, and the code for FIOCLEX FIONCLEX calls into
+the same kernel routine set_close_on_exec().
+Considering that Android's bionic contains support for "e" flag to
+fopen, and it's
+used in a lot of places, makes me more sure the check is skipped for F_SETFD
 
-Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
----
- arch/s390/include/asm/uaccess.h | 22 +++++++++
- arch/s390/lib/uaccess.c         | 81 +++++++++++++++++++++++++--------
- 2 files changed, 85 insertions(+), 18 deletions(-)
+However, Android does make reference to FIOCLEX FIONCLEX and every
+domain has it enabled:
+domain.te:allowxperm domain { file_type fs_type domain dev_type }:{
+dir notdevfile_class_set blk_file } ioctl { FIOCLEX FIONCLEX };
+domain.te:allowxperm domain tun_device:chr_file ioctl { FIOCLEX FIONCLEX };
 
-diff --git a/arch/s390/include/asm/uaccess.h b/arch/s390/include/asm/uaccess.h
-index d74e26b48604..ba1bcb91af95 100644
---- a/arch/s390/include/asm/uaccess.h
-+++ b/arch/s390/include/asm/uaccess.h
-@@ -44,6 +44,28 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n);
- #define INLINE_COPY_TO_USER
- #endif
- 
-+unsigned long __must_check
-+_copy_from_user_key(void *to, const void __user *from, unsigned long n, unsigned long key);
-+
-+static __always_inline unsigned long __must_check
-+copy_from_user_key(void *to, const void __user *from, unsigned long n, unsigned long key)
-+{
-+	if (likely(check_copy_size(to, n, false)))
-+		n = _copy_from_user_key(to, from, n, key);
-+	return n;
-+}
-+
-+unsigned long __must_check
-+_copy_to_user_key(void __user *to, const void *from, unsigned long n, unsigned long key);
-+
-+static __always_inline unsigned long __must_check
-+copy_to_user_key(void __user *to, const void *from, unsigned long n, unsigned long key)
-+{
-+	if (likely(check_copy_size(from, n, true)))
-+		n = _copy_to_user_key(to, from, n, key);
-+	return n;
-+}
-+
- int __put_user_bad(void) __attribute__((noreturn));
- int __get_user_bad(void) __attribute__((noreturn));
- 
-diff --git a/arch/s390/lib/uaccess.c b/arch/s390/lib/uaccess.c
-index 8a5d21461889..b709239feb5d 100644
---- a/arch/s390/lib/uaccess.c
-+++ b/arch/s390/lib/uaccess.c
-@@ -59,11 +59,13 @@ static inline int copy_with_mvcos(void)
- #endif
- 
- static inline unsigned long copy_from_user_mvcos(void *x, const void __user *ptr,
--						 unsigned long size)
-+						 unsigned long size, unsigned long key)
- {
- 	unsigned long tmp1, tmp2;
- 	union oac spec = {
-+		.oac2.key = key,
- 		.oac2.as = PSW_BITS_AS_SECONDARY,
-+		.oac2.k = 1,
- 		.oac2.a = 1,
- 	};
- 
-@@ -94,19 +96,19 @@ static inline unsigned long copy_from_user_mvcos(void *x, const void __user *ptr
- }
- 
- static inline unsigned long copy_from_user_mvcp(void *x, const void __user *ptr,
--						unsigned long size)
-+						unsigned long size, unsigned long key)
- {
- 	unsigned long tmp1, tmp2;
- 
- 	tmp1 = -256UL;
- 	asm volatile(
- 		"   sacf  0\n"
--		"0: mvcp  0(%0,%2),0(%1),%3\n"
-+		"0: mvcp  0(%0,%2),0(%1),%[key]\n"
- 		"7: jz    5f\n"
- 		"1: algr  %0,%3\n"
- 		"   la    %1,256(%1)\n"
- 		"   la    %2,256(%2)\n"
--		"2: mvcp  0(%0,%2),0(%1),%3\n"
-+		"2: mvcp  0(%0,%2),0(%1),%[key]\n"
- 		"8: jnz   1b\n"
- 		"   j     5f\n"
- 		"3: la    %4,255(%1)\n"	/* %4 = ptr + 255 */
-@@ -115,7 +117,7 @@ static inline unsigned long copy_from_user_mvcp(void *x, const void __user *ptr,
- 		"   slgr  %4,%1\n"
- 		"   clgr  %0,%4\n"	/* copy crosses next page boundary? */
- 		"   jnh   6f\n"
--		"4: mvcp  0(%4,%2),0(%1),%3\n"
-+		"4: mvcp  0(%4,%2),0(%1),%[key]\n"
- 		"9: slgr  %0,%4\n"
- 		"   j     6f\n"
- 		"5: slgr  %0,%0\n"
-@@ -123,24 +125,49 @@ static inline unsigned long copy_from_user_mvcp(void *x, const void __user *ptr,
- 		EX_TABLE(0b,3b) EX_TABLE(2b,3b) EX_TABLE(4b,6b)
- 		EX_TABLE(7b,3b) EX_TABLE(8b,3b) EX_TABLE(9b,6b)
- 		: "+a" (size), "+a" (ptr), "+a" (x), "+a" (tmp1), "=a" (tmp2)
--		: : "cc", "memory");
-+		: [key] "d" (key << 4)
-+		: "cc", "memory");
- 	return size;
- }
- 
--unsigned long raw_copy_from_user(void *to, const void __user *from, unsigned long n)
-+static unsigned long raw_copy_from_user_key(void *to, const void __user *from,
-+					    unsigned long n, unsigned long key)
- {
- 	if (copy_with_mvcos())
--		return copy_from_user_mvcos(to, from, n);
--	return copy_from_user_mvcp(to, from, n);
-+		return copy_from_user_mvcos(to, from, n, key);
-+	return copy_from_user_mvcp(to, from, n, key);
-+}
-+
-+unsigned long raw_copy_from_user(void *to, const void __user *from, unsigned long n)
-+{
-+	return raw_copy_from_user_key(to, from, n, 0);
- }
- EXPORT_SYMBOL(raw_copy_from_user);
- 
-+unsigned long _copy_from_user_key(void *to, const void __user *from,
-+				  unsigned long n, unsigned long key)
-+{
-+	unsigned long res = n;
-+
-+	might_fault();
-+	if (!should_fail_usercopy()) {
-+		instrument_copy_from_user(to, from, n);
-+		res = raw_copy_from_user_key(to, from, n, key);
-+	}
-+	if (unlikely(res))
-+		memset(to + (n - res), 0, res);
-+	return res;
-+}
-+EXPORT_SYMBOL(_copy_from_user_key);
-+
- static inline unsigned long copy_to_user_mvcos(void __user *ptr, const void *x,
--					       unsigned long size)
-+					       unsigned long size, unsigned long key)
- {
- 	unsigned long tmp1, tmp2;
- 	union oac spec = {
-+		.oac1.key = key,
- 		.oac1.as = PSW_BITS_AS_SECONDARY,
-+		.oac1.k = 1,
- 		.oac1.a = 1,
- 	};
- 
-@@ -171,19 +198,19 @@ static inline unsigned long copy_to_user_mvcos(void __user *ptr, const void *x,
- }
- 
- static inline unsigned long copy_to_user_mvcs(void __user *ptr, const void *x,
--					      unsigned long size)
-+					      unsigned long size, unsigned long key)
- {
- 	unsigned long tmp1, tmp2;
- 
- 	tmp1 = -256UL;
- 	asm volatile(
- 		"   sacf  0\n"
--		"0: mvcs  0(%0,%1),0(%2),%3\n"
-+		"0: mvcs  0(%0,%1),0(%2),%[key]\n"
- 		"7: jz    5f\n"
- 		"1: algr  %0,%3\n"
- 		"   la    %1,256(%1)\n"
- 		"   la    %2,256(%2)\n"
--		"2: mvcs  0(%0,%1),0(%2),%3\n"
-+		"2: mvcs  0(%0,%1),0(%2),%[key]\n"
- 		"8: jnz   1b\n"
- 		"   j     5f\n"
- 		"3: la    %4,255(%1)\n" /* %4 = ptr + 255 */
-@@ -192,7 +219,7 @@ static inline unsigned long copy_to_user_mvcs(void __user *ptr, const void *x,
- 		"   slgr  %4,%1\n"
- 		"   clgr  %0,%4\n"	/* copy crosses next page boundary? */
- 		"   jnh   6f\n"
--		"4: mvcs  0(%4,%1),0(%2),%3\n"
-+		"4: mvcs  0(%4,%1),0(%2),%[key]\n"
- 		"9: slgr  %0,%4\n"
- 		"   j     6f\n"
- 		"5: slgr  %0,%0\n"
-@@ -200,18 +227,36 @@ static inline unsigned long copy_to_user_mvcs(void __user *ptr, const void *x,
- 		EX_TABLE(0b,3b) EX_TABLE(2b,3b) EX_TABLE(4b,6b)
- 		EX_TABLE(7b,3b) EX_TABLE(8b,3b) EX_TABLE(9b,6b)
- 		: "+a" (size), "+a" (ptr), "+a" (x), "+a" (tmp1), "=a" (tmp2)
--		: : "cc", "memory");
-+		: [key] "d" (key << 4)
-+		: "cc", "memory");
- 	return size;
- }
- 
--unsigned long raw_copy_to_user(void __user *to, const void *from, unsigned long n)
-+static unsigned long raw_copy_to_user_key(void __user *to, const void *from,
-+					  unsigned long n, unsigned long key)
- {
- 	if (copy_with_mvcos())
--		return copy_to_user_mvcos(to, from, n);
--	return copy_to_user_mvcs(to, from, n);
-+		return copy_to_user_mvcos(to, from, n, key);
-+	return copy_to_user_mvcs(to, from, n, key);
-+}
-+
-+unsigned long raw_copy_to_user(void __user *to, const void *from, unsigned long n)
-+{
-+	return raw_copy_to_user_key(to, from, n, 0);
- }
- EXPORT_SYMBOL(raw_copy_to_user);
- 
-+unsigned long _copy_to_user_key(void __user *to, const void *from,
-+				unsigned long n, unsigned long key)
-+{
-+	might_fault();
-+	if (should_fail_usercopy())
-+		return n;
-+	instrument_copy_to_user(to, from, n);
-+	return raw_copy_to_user_key(to, from, n, key);
-+}
-+EXPORT_SYMBOL(_copy_to_user_key);
-+
- static inline unsigned long clear_user_mvcos(void __user *to, unsigned long size)
- {
- 	unsigned long tmp1, tmp2;
--- 
-2.32.0
+Refpolicy doesn't use xperm AFAICT.
 
+I stayed quiet, I wouldn't ack on this myself, but the premise seems
+correct and we
+can safely drop this. Note that I didn't review the code. But we need
+to ensure we handle
+policy correctly and not break anything. I'm not sure what the
+compilers are doing
+for validation of policy macro values, but we would probably want to
+mark it deprecated,
+but still allow loading of old compiled policies.
+
+> Also, while I'm sure you are already well aware of this, I think it is
+> worth mentioning that SELinux does apply access controls when file
+> descriptors are inherited across an exec() boundary.
+>
+> --
+> paul-moore.com
