@@ -2,67 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB08CC47081
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 957E3C352A7
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344948AbiBHBEM (ORCPT
+        id S1345156AbiBHBEc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:04:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
+        Mon, 7 Feb 2022 20:04:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245543AbiBGXJn (ORCPT
+        with ESMTP id S238617AbiBGXX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:09:43 -0500
-Received: from smtprelay05.ispgateway.de (smtprelay05.ispgateway.de [80.67.18.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BBBC0612A4;
-        Mon,  7 Feb 2022 15:09:43 -0800 (PST)
-Received: from [92.206.166.137] (helo=note-book.lan)
-        by smtprelay05.ispgateway.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <git@apitzsch.eu>)
-        id 1nHD6w-0001JC-Rm; Tue, 08 Feb 2022 00:07:54 +0100
-From:   =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>
-To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>
-Subject: [PATCH v2 1/3] dt-bindings: vendor-prefixes: Add ocs prefix
-Date:   Tue,  8 Feb 2022 00:06:36 +0100
-Message-Id: <20220207230638.56730-2-git@apitzsch.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207230638.56730-1-git@apitzsch.eu>
-References: <20211117091405.7412-1-git@apitzsch.eu>
- <20220207230638.56730-1-git@apitzsch.eu>
+        Mon, 7 Feb 2022 18:23:57 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4E3C061355;
+        Mon,  7 Feb 2022 15:23:56 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so806273pjh.3;
+        Mon, 07 Feb 2022 15:23:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Q4NGVfnZcTyTN7uyU45OoCJgZ8qSuaDFnbB0+R0yaoU=;
+        b=J9okMS8ibcD1d6kJ2AV43EegsSK00dpFoJfenatFVPg3mCkxf6l0+R3KeKcPlGYez+
+         vQgnpulyimR7MCNqt+YXLjIlKV4LHj03g6aGZoMAqs4bcns2qnl0gaUP59bcSVXBHzL/
+         tkWNYc/PKe/hrSnSZRyBEYR6Wee615vJTjgOERc241bmGaQY/4EwN6uvacVIbTKN0klS
+         5BhbvzJklY71KS1pj+/lXpLopOIyPTqGIH+/MK5NP9ySZANtgrTtCeOQa0+lcWicw2bl
+         loIsuUo2QSUSZEaofaom3wAidnQ0/QA2nR+U50syrh/GwTkTFBTgyzcIFCHW/RGcL2PE
+         asmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Q4NGVfnZcTyTN7uyU45OoCJgZ8qSuaDFnbB0+R0yaoU=;
+        b=qZ26S2aPK/BFav5nuPedhnca6DgASy6QdZEYR81n2BJcE1lyukuN6Bq6HqvBTUVdU+
+         87nqHZsi0gPzq0G9QYFKwyIHw7RPS7HHBm/Cjx//etupKbahJn5CaeiKFzSod5Kjzh1b
+         18RRHJqTD1GHF8Km8l66MB3iDyMDnmPKPbMadrrdCF2dX7+gH3bxn9d74aEkhCfWRYyy
+         ySjcuywNt/RFnoU3ZK1HSrXogfeCSqYzJAVhl0JWYbdlIU7aQRGajrhPvUkLEMRoSXnX
+         IvkrIdKuiNm6nyJQkKbnYmUq+drThEAuQhlCPN/dGf4LFaFiCjaespVO2DI25WlkTEAQ
+         FvGQ==
+X-Gm-Message-State: AOAM530nEOUT1JlKBTvmBSdLyS0LujuZqlXJKfPoFhrjvwsPbH5iEBaB
+        /ZvuJ01AsubpkZ3CIkfuS4A=
+X-Google-Smtp-Source: ABdhPJzPi+18QP61QkBD3QrQXZf2jGk9fBmgd2jZB23uHQUcVAWcdNe2AYk0ZeYIUsujebh3SGrVlQ==
+X-Received: by 2002:a17:902:e545:: with SMTP id n5mr1855955plf.129.1644276236236;
+        Mon, 07 Feb 2022 15:23:56 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id md9sm429343pjb.6.2022.02.07.15.23.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 15:23:55 -0800 (PST)
+Subject: Re: [PATCH v3] serial: 8250_bcm2835aux: Add ACPI support
+To:     Adrien Thierry <athierry@redhat.com>, linux-serial@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Jeremy Linton <jeremy.linton@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com
+References: <20220207232129.402882-1-athierry@redhat.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <8b19f824-cd4f-10fc-c13b-0b177324294c@gmail.com>
+Date:   Mon, 7 Feb 2022 15:23:51 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Df-Sender: YW5kcmVAYXBpdHpzY2guZXU=
+In-Reply-To: <20220207232129.402882-1-athierry@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the prefix for Orient Chip Technology.
+On 2/7/22 3:21 PM, Adrien Thierry wrote:
+> Add ACPI support to 8250_bcm2835aux driver. This makes it possible to
+> use the miniuart on the Raspberry Pi with the tianocore/edk2 UEFI
+> firmware.
+> 
+> Signed-off-by: Adrien Thierry <athierry@redhat.com>
 
-Signed-off-by: André Apitzsch <git@apitzsch.eu>
----
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 294093d45a23..9ffffa9773ca 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -854,6 +854,8 @@ patternProperties:
-     description: NXP Semiconductors
-   "^oceanic,.*":
-     description: Oceanic Systems (UK) Ltd.
-+  "^ocs,.*":
-+    description: Orient Chip Technology Co., Ltd.
-   "^oct,.*":
-     description: Octavo Systems LLC
-   "^okaya,.*":
+Looks a lot better, thanks!
 -- 
-2.35.1
-
+Florian
