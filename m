@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D6BC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78F0C46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382097AbiBGL4z (ORCPT
+        id S1382015AbiBGL4p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:56:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44508 "EHLO
+        Mon, 7 Feb 2022 06:56:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385190AbiBGLbS (ORCPT
+        with ESMTP id S1385124AbiBGLbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0C8C03FEE0;
-        Mon,  7 Feb 2022 03:29:33 -0800 (PST)
+        Mon, 7 Feb 2022 06:31:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE53C033258;
+        Mon,  7 Feb 2022 03:29:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82D126077B;
-        Mon,  7 Feb 2022 11:29:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66D58C004E1;
-        Mon,  7 Feb 2022 11:29:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2C8B60A69;
+        Mon,  7 Feb 2022 11:29:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78F75C004E1;
+        Mon,  7 Feb 2022 11:29:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233373;
-        bh=GS6MBhstiZFiTAX47S9HOYPrRvE1rIgmTK6Ds/8qu4Q=;
+        s=korg; t=1644233363;
+        bh=R4imgKnV8m32j4qt81S3AnOiSUStzzwNsdj4QWnDjis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vz2MI98HlH63Wyrq7duaOcQ/cViXIuzS6ixFxzTiLFsYy6OWrUdS59Onaq/QQU5d8
-         EyOHX+pjoSS9Mjk5favPOtchc0b87Jt7GuU5TqBoiA0lMvV9sivU9qW5eTldrKIAvc
-         +zkcd8nzcZ3I0QMzWdS1eA5o5LAetDnPdWfo9IcY=
+        b=w8GLwpo2RxJ7/bQyUhPOqOoWcoo2Y/jOwQY7GDCuhTGhvH6ebw29q4N+81HgD9aFs
+         rOXYsiqy+GP5CZd0UkagMXa2mgI3l1ELvwVzJ2nfWBEGBsBE1Fw+WNaFcOD9vsCpbv
+         AyERg/JsYoFIe28q22Wx9LbQP0UB/t1fDASC/BTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haiyue Wang <haiyue.wang@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 085/110] gve: fix the wrong AdminQ buffer queue index check
-Date:   Mon,  7 Feb 2022 12:06:58 +0100
-Message-Id: <20220207103805.285730669@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Yin <yinxin.x@bytedance.com>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.15 100/110] ext4: modify the logic of ext4_mb_new_blocks_simple
+Date:   Mon,  7 Feb 2022 12:07:13 +0100
+Message-Id: <20220207103805.775103847@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -49,62 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haiyue Wang <haiyue.wang@intel.com>
+From: Xin Yin <yinxin.x@bytedance.com>
 
-commit 1f84a9450d75e08af70d9e2f2d5e1c0ac0c881d2 upstream.
+commit 31a074a0c62dc0d2bfb9b543142db4fe27f9e5eb upstream.
 
-The 'tail' and 'head' are 'unsigned int' type free-running count, when
-'head' is overflow, the 'int i (= tail) < u32 head' will be false:
+For now in ext4_mb_new_blocks_simple, if we found a block which
+should be excluded then will switch to next group, this may
+probably cause 'group' run out of range.
 
-Only '- loop 0: idx = 63' result is shown, so it needs to use 'int' type
-to compare, it can handle the overflow correctly.
+Change to check next block in the same group when get a block should
+be excluded. Also change the search range to EXT4_CLUSTERS_PER_GROUP
+and add error checking.
 
-typedef uint32_t u32;
-
-int main()
-{
-        u32 tail, head;
-        int stail, shead;
-        int i, loop;
-
-        tail = 0xffffffff;
-        head = 0x00000000;
-
-        for (i = tail, loop = 0; i < head; i++) {
-                unsigned int idx = i & 63;
-
-                printf("+ loop %d: idx = %u\n", loop++, idx);
-        }
-
-        stail = tail;
-        shead = head;
-        for (i = stail, loop = 0; i < shead; i++) {
-                unsigned int idx = i & 63;
-
-                printf("- loop %d: idx = %u\n", loop++, idx);
-        }
-
-        return 0;
-}
-
-Fixes: 5cdad90de62c ("gve: Batch AQ commands for creating and destroying queues.")
-Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Link: https://lore.kernel.org/r/20220110035141.1980-3-yinxin.x@bytedance.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/google/gve/gve_adminq.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/mballoc.c |   26 +++++++++++++++++---------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
 
---- a/drivers/net/ethernet/google/gve/gve_adminq.c
-+++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-@@ -281,7 +281,7 @@ static int gve_adminq_parse_err(struct g
-  */
- static int gve_adminq_kick_and_wait(struct gve_priv *priv)
- {
--	u32 tail, head;
-+	int tail, head;
- 	int i;
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -5753,7 +5753,8 @@ static ext4_fsblk_t ext4_mb_new_blocks_s
+ 	struct super_block *sb = ar->inode->i_sb;
+ 	ext4_group_t group;
+ 	ext4_grpblk_t blkoff;
+-	int i = sb->s_blocksize;
++	ext4_grpblk_t max = EXT4_CLUSTERS_PER_GROUP(sb);
++	ext4_grpblk_t i = 0;
+ 	ext4_fsblk_t goal, block;
+ 	struct ext4_super_block *es = EXT4_SB(sb)->s_es;
  
- 	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
+@@ -5775,19 +5776,26 @@ static ext4_fsblk_t ext4_mb_new_blocks_s
+ 		ext4_get_group_no_and_offset(sb,
+ 			max(ext4_group_first_block_no(sb, group), goal),
+ 			NULL, &blkoff);
+-		i = mb_find_next_zero_bit(bitmap_bh->b_data, sb->s_blocksize,
++		while (1) {
++			i = mb_find_next_zero_bit(bitmap_bh->b_data, max,
+ 						blkoff);
++			if (i >= max)
++				break;
++			if (ext4_fc_replay_check_excluded(sb,
++				ext4_group_first_block_no(sb, group) + i)) {
++				blkoff = i + 1;
++			} else
++				break;
++		}
+ 		brelse(bitmap_bh);
+-		if (i >= sb->s_blocksize)
+-			continue;
+-		if (ext4_fc_replay_check_excluded(sb,
+-			ext4_group_first_block_no(sb, group) + i))
+-			continue;
+-		break;
++		if (i < max)
++			break;
+ 	}
+ 
+-	if (group >= ext4_get_groups_count(sb) && i >= sb->s_blocksize)
++	if (group >= ext4_get_groups_count(sb) || i >= max) {
++		*errp = -ENOSPC;
+ 		return 0;
++	}
+ 
+ 	block = ext4_group_first_block_no(sb, group) + i;
+ 	ext4_mb_mark_bb(sb, block, 1, 1);
 
 
