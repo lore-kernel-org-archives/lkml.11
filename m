@@ -2,256 +2,405 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDDBBC35276
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 500B5C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243368AbiBGQBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:01:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
+        id S1382683AbiBGQAU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:00:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384530AbiBGQAt (ORCPT
+        with ESMTP id S1384420AbiBGPxX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:00:49 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2077.outbound.protection.outlook.com [40.107.94.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7793C0401CC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:00:48 -0800 (PST)
+        Mon, 7 Feb 2022 10:53:23 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD87FC0401CC;
+        Mon,  7 Feb 2022 07:53:21 -0800 (PST)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217De92n008232;
+        Mon, 7 Feb 2022 15:53:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=ZeH5qhsLKtWw0S/TGg8T2TAQMTffJGtl6r9o+qVtIwE=;
+ b=UhqQK5H7qPRwPM2lltx/YZqoQNt/Cw23kmMhkj0YxjfhWuG4t7FFhwU4uHHpVJgdA7iT
+ nyXKWWS4BEfO5LLr8MjTACU75Gi0ZHUhoDFTsuVNbICCrEU/ScVzFUhAvVF19x1LljDY
+ eY0wTi4QxfEVrxTjoD86w7xYnaBx4FyM6eckTlpOVrcAhMwemO4Sxy/oBfE/BXxiO7Pq
+ n32JF1FmhVnpHmKxg7nw0GTlH4nqxTAELu5mul4LW07DqedRzfztQ0HN4GjgoijkOcK8
+ WftwFKnJanbNppBd899/tVFo9IY6G+Ej6WCpb4J6W2+Mx6pzNAb4fzXmwV3uKh3TMPX7 IA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3e1fu2ppr6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 07 Feb 2022 15:53:05 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 217Fk2bo088891;
+        Mon, 7 Feb 2022 15:53:04 GMT
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2169.outbound.protection.outlook.com [104.47.59.169])
+        by aserp3030.oracle.com with ESMTP id 3e1f9djj4d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 07 Feb 2022 15:53:03 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CkyYCnAhH+Ileiwx7szXf/V1zoPqdu1TPqYVz5Za4yj4XYbw/bxPCKOMMUGDaOLUOfYTOnk5OYQKN2c0v3oAZ973MAxthgXssMAXU6FHyqzqNx6Ro2GKZDMdJbaxN4fUtCEe5GaYx6f8pQ9wQSIAWsrsYdP0jGQKM1PJlT1mLWr5h77nVzU6xSCAWGA277PzKRh1uv82MsBwElQ9yklGWe40ZgDdZ9V9KZbH48mvBjGd44bbmj/R+iPTPL/dF3QLV2+kreCJeVE6HzVp9iMLicuw3w8+iWbkf445IFRr+ULuBdqIFJ3CXX6ho3A/Lg6EX+yEbcMb03uBTvVdiJuN/w==
+ b=LqEbaKAO2chJBdwbjicMRtZJRUKOTB9STpRkAv87e3Lh0NeX05QoLPPm+WSuDaQWNpuKXNz3u2r9vRwU4WjpTwQ/cr0gBl2lvIewG+Loj49HAMHbVG6RgAgDSDFrUnxtyLtuTL0lyU2luHIXEBWT6kR01JhIFFfZKGjIJWepWwtA1ykAi6Za38t33bVRWEnVcXquAo6G8IQLAV1R4nrWq3ompVzonzloNi5bi5DKwF+Nn73RO3JA3+AMPQsBPkxrXG5pggO66xhB1wRzWqNuD/WQ1byaepqdkoZ3M2G0tSBEJDuE0puzMfa7+XFe92FmbQOegnLeT/m4uIGMxgFqHg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=24nxa10g4gma+53eO2vWWN01muFAXWU5dLm6s0yzvI4=;
- b=mC/TP5HlaQqhRt+Al5uBAPN/J8KqN0GE0dbtWkxeAnxHsFIwuoEnngkn9QdkAy1ynyKCuyQu+YhqFRH7bWpNNzpTPMSm4nspJrgyETTPKlxCeW7vT+LGliJzXzfWXnZoI1mHHBHDHrLz5dUp0QGg9LKf64IpDL32GUqv1ToyTVNyKWPpbsq2EGVPo74pHA8Zh2N8WgjHXyDr3jWJbR6UbRFFO3acuGHcEwAfw8COyDIQAtl5iHLAKZUFPJcAo2zrjAZh7L7ZvXBMVILM1pzyfaZQBm588am/LlmZf1/DuQJRai79Ps6Qm2rABvCcvmdNh/X8MjMln3Fwc5lIoGUnJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=ZeH5qhsLKtWw0S/TGg8T2TAQMTffJGtl6r9o+qVtIwE=;
+ b=OuECPDXVaFYyHHURzSWcIz8EHcTZjexwlnzG+UWT/O3TlEP44qEcVNIuthu0syf3jeIusDLsXyEd+hTwdG8NLHmtg61XxNQ5CFbosepF0MyI47gSQnv9dNe+qRR6XJGX3GN8G6ptnORZlTKw/Fbimjl/t3j84WioPydInSo/aEskxGOKKxERiZ89KprqFsko0XKmX+rY1MjHnRPpSyx5AJGMQ/JUg9hxJxY687J4NV+vbAlrimrRI6X0Gukh1XWmtBMRgBgt1LeRLtG9ZUAiep/qp2XRTZdNuFTgCO0bZOKxNTTXDGrvzFes5RakH3lE8P+qzXCXuQYESoPM7D/Hrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=24nxa10g4gma+53eO2vWWN01muFAXWU5dLm6s0yzvI4=;
- b=VsG5ohk0KzZLS76S4gHGyN7gZ6FogWs6gXuHvtz32JR/CyBVqniU7ufl4qJiZbo+t3PYAQENqiCuiVKdwzMriUcRba5INnA4XZ/Z2G+YRaG5AegWJoKnGwJo1ichzx3rCYQEW0tVXpo/1NsKZbLAyLHY5vZmx/nfPNL37EBlqss=
-Received: from DM6PR07CA0063.namprd07.prod.outlook.com (2603:10b6:5:74::40) by
- MW3PR12MB4522.namprd12.prod.outlook.com (2603:10b6:303:5f::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4951.17; Mon, 7 Feb 2022 16:00:46 +0000
-Received: from DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:74:cafe::8) by DM6PR07CA0063.outlook.office365.com
- (2603:10b6:5:74::40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
- Transport; Mon, 7 Feb 2022 16:00:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT046.mail.protection.outlook.com (10.13.172.121) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4951.12 via Frontend Transport; Mon, 7 Feb 2022 16:00:46 +0000
-Received: from BLR5CG134614W.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 7 Feb
- 2022 10:00:39 -0600
-From:   K Prateek Nayak <kprateek.nayak@amd.com>
-To:     <peterz@infradead.org>
-CC:     <aubrey.li@linux.intel.com>, <efault@gmx.de>,
-        <gautham.shenoy@amd.com>, <linux-kernel@vger.kernel.org>,
-        <mgorman@techsingularity.net>, <mingo@kernel.org>,
-        <song.bao.hua@hisilicon.com>, <srikar@linux.vnet.ibm.com>,
-        <valentin.schneider@arm.com>, <vincent.guittot@linaro.org>,
-        K Prateek Nayak <kprateek.nayak@amd.com>
-Subject: [PATCH] sched/fair: Consider cpu affinity when allowing NUMA imbalance in find_idlest_group
-Date:   Mon, 7 Feb 2022 21:29:21 +0530
-Message-ID: <20220207155921.21321-1-kprateek.nayak@amd.com>
-X-Mailer: git-send-email 2.25.1
+ bh=ZeH5qhsLKtWw0S/TGg8T2TAQMTffJGtl6r9o+qVtIwE=;
+ b=Ne740SOYGp1wyS4luFhCNTuugD/iDv+cfSZ5tyDB2ZJEsxCeSMni+dbtB44g6ShpcXrL/oz4ik68HEifQHGOEAsgunFD5bJJhfCPgyreEbnWWErGPSrx4DyELceuDMJxhKtX0eUjWDt2NxxVtYE0ellCKcHNjBCKVAXq57kbFuQ=
+Received: from CH0PR10MB4858.namprd10.prod.outlook.com (2603:10b6:610:cb::17)
+ by DM6PR10MB3163.namprd10.prod.outlook.com (2603:10b6:5:1a2::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Mon, 7 Feb
+ 2022 15:53:02 +0000
+Received: from CH0PR10MB4858.namprd10.prod.outlook.com
+ ([fe80::c8a5:6173:74d9:314d]) by CH0PR10MB4858.namprd10.prod.outlook.com
+ ([fe80::c8a5:6173:74d9:314d%3]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
+ 15:53:02 +0000
+From:   Chuck Lever III <chuck.lever@oracle.com>
+To:     Neil Brown <neilb@suse.de>
+CC:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Hemment <markhemm@googlemail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        David Howells <dhowells@redhat.com>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 17/21] SUNRPC: improve 'swap' handling: scheduling and
+ PF_MEMALLOC
+Thread-Topic: [PATCH 17/21] SUNRPC: improve 'swap' handling: scheduling and
+ PF_MEMALLOC
+Thread-Index: AQHYG94BVCu8bHRAZ0KRlArQjI71z6yIPdWA
+Date:   Mon, 7 Feb 2022 15:53:02 +0000
+Message-ID: <6E3E6EB3-6235-4498-A8FE-495D9357CEBB@oracle.com>
+References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+ <164420916122.29374.8760841832230503670.stgit@noble.brown>
+In-Reply-To: <164420916122.29374.8760841832230503670.stgit@noble.brown>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3654.120.0.1.13)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ae34d280-fc11-4d92-eccc-08d9ea51ec03
+x-ms-traffictypediagnostic: DM6PR10MB3163:EE_
+x-microsoft-antispam-prvs: <DM6PR10MB316379C156C9DB81DDA42AE4932C9@DM6PR10MB3163.namprd10.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /r/3FgGt3oJQsUHmM4m15nJuAV++ZFa6W6VPC7CEMlvyCRPDuGE3LehIB9n58gZ+kFQY1qGu+SVSkT9UN5Gawc/3sAztpPZhJMiR8v7XaLXlGVqj/aa5XwTWE9baR/PHFLAckwnpP0IuPALo0X8ErIvYstgGA2Ef2W9mnFVkWRC1+lnNF44qRDH//cjhX4qqQRcmCvt4bShFqWzCvIimrKyY/01+ULnyzuPUxyrsY9RlYsy1+rqq50OKudM5P1v/AL4wPeoG12fJqb0uq02Ty/5RX75LUXQqz60VHGRS4RvqJjaOyPlICAxc0ZNrCiekjNwdQKxhFAgIg7V/7H1BvIKg+VGkKM4RNI7sCR+rDSuVaWlAUlVZUBwEd/7U1N0nEcSFxkDwyQrL7zlUql69fujbJdqa9e2evfJzZcjmRHEEtQQjUAIFhM6y0xIo5I4asf7BQi2mpMCvFOFeyu5tOUuvk3uu4PLGP5VTPhMyLc6OPLFu8G6ymgjSm9w/vJiB4/dUwhBs7EnLNZH1ZdmyfrytP8djW2cLdx4wTPOxb6FPJJQ8G0LcLU4EFVVcXLnY0VhXkZgxfXSmwp4IgNqrn9C8hceY8XQSQELGhwGcFu0b0TX9lavcUsBJfNAjdsSLI/ZM3O2Brrn9+2CJkCMg++tHXV3qSfi3eYDK/CtsEn6eXYBOOXhsiExuKy0VsavAOqtsJLjBIwBGc/iWmy3J1wc4WBrgi1zGsk3pnQ8OTpAZTo7wPA9/73csVUuRt45H
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR10MB4858.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(54906003)(508600001)(6916009)(36756003)(38100700002)(2906002)(6486002)(76116006)(66476007)(26005)(66946007)(83380400001)(38070700005)(5660300002)(66556008)(122000001)(66446008)(8936002)(4326008)(33656002)(71200400001)(8676002)(2616005)(64756008)(86362001)(53546011)(186003)(7416002)(6506007)(6512007)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?V79Vv9ZFcihklU2hBBzSFzEq+WSHThn2KeFbwoQwQaZs1WccIZgmP7dU4F7n?=
+ =?us-ascii?Q?6WzyNvC+j/4XdWJrxnyK4MBtMkYc0KUn2EpgcAfDFCbKnS1DxmEdqbxxYyUf?=
+ =?us-ascii?Q?sem/CxPrpCZpKEz3R3+pZZBBM4ZA3hbHmy7edOaUsL7zsSguNPQ9JY4aSrTs?=
+ =?us-ascii?Q?ZdB4VOWz6X0qoVglrsw8NpzgXZYWrcZ1Kg/p5ppeBxSaqvdDPPcGXBVVit+B?=
+ =?us-ascii?Q?Ci+6uTwm9MHqPtaGvXEPBMiAGisZrnkg0dkVWC8z4qrs7+jD4dDiTnGE9PoG?=
+ =?us-ascii?Q?9/37ZbLwIamSTjVA0m+69bmFH09Y4EojE7FUbJQ5pj9WiOgKfkNQCW0C5+fR?=
+ =?us-ascii?Q?P9JvM26jtyJA3aDJYsLs+0q4mOAed+a0EhNNiVdiawsFysV85DWi5dOP4Smr?=
+ =?us-ascii?Q?tAdwqmEkfERQpiDW058pXdZL7zLF9r3mFuZSQL9jVu1UUN1WYxwH3ItwCIax?=
+ =?us-ascii?Q?quUVH/UXvh5zzdwzgw2YTKBm7FhlztRkR2h8pt8PPpWrquXYGq4r4BU449GN?=
+ =?us-ascii?Q?VmwZw4MiNJhFCUGlU5kniFjlMgeguJxozRdc0MUQglOsCZ4uLuHkHemh3BAa?=
+ =?us-ascii?Q?JEO43fGbsshBXBXddrgvnWWUi+NokX52RWx/pMrSpOOvK9LUby6WJKV8BnQj?=
+ =?us-ascii?Q?SXZ+KzFFqIYdMKgX7n5tyBJcXTR37V0jPGF14YDJ3YaSl4Uo1fBYhWwXTs/g?=
+ =?us-ascii?Q?fWO2fNuIIwhq9L33gmwJZSrFFbCfmfXfH/YnoQ5Gw+hlaL4GvSZGB50zQDKS?=
+ =?us-ascii?Q?VDNOE3W4E1Y5Mfq2cOajUTvNIQrovkxFgLcLaAlkqY/JbRx8yKdFM6+bfO0h?=
+ =?us-ascii?Q?nlvCFMLnaoLXFyIfmZFPRtd5yuWQP8eH72Z0rb08iOeUDpRXcEbv4Z+kp5/H?=
+ =?us-ascii?Q?nI4dinJaT/ulCsskhrS9ePnyBUcfTyR2uLNU16yLY3dFrLWRJNFyiV3qWxsT?=
+ =?us-ascii?Q?2LZhmhZ4ENKedHCaPZlQSqtN2BPo4HuHQk3m4Lz9wXMqFz8RXnsQ4r4Z193y?=
+ =?us-ascii?Q?F8wBg7yOXrJPcmhiWm8nCWnrRNmmESqpr67W2kyesJxl69rVc6/zQ9nNund5?=
+ =?us-ascii?Q?D7gIIyeDDg2iUPDhpBOLs6l/Mcg/BhayZevy7Hp2OPrxdV3IvAd87lXLgksI?=
+ =?us-ascii?Q?lWT3jgsmNbZYOPRlH9X2FzY0Ni0FP7fOPSBRlht1epBRMaBsysELIb87Tw0Z?=
+ =?us-ascii?Q?ON3+vEXu+60bt/SbC9V+IwCS6UftWA1Q/YPQBSdGRsIXSIdCyssxPzkqXvOF?=
+ =?us-ascii?Q?Zm/GjMsEYTA3DmxAG8okUjnFbGRzMhqT143zUFsGOq4utGed3DWkYT9QArq4?=
+ =?us-ascii?Q?sQGBFakc7QeZ7K7BQEJ69G/sNEKJ9Db1d+XkDCHetbR05n1qs5KYs2nOUY9v?=
+ =?us-ascii?Q?Fmo45ESegSnNsf6ESeXbpCDDprlETlFFFar5kGMjbUB2wFqrr1557BNDbv1J?=
+ =?us-ascii?Q?ng4r6H5H28IMqUIGFspSE8Wzs64Wbp1U90A4lS++SCib1pQMEkKmAzxtPiHV?=
+ =?us-ascii?Q?rodbm7OMQk8y00KEGtB86vQu3O4HTGjGnHt3SydsekJ0uk1tdxnJtC0XLlT6?=
+ =?us-ascii?Q?TSmiQ97AyGn4iKj/elg9uJw3eYBP3XY7e9x1oMeZUkQZlPNJBKXbjrMIexuc?=
+ =?us-ascii?Q?vNmwvw9LF78WfTDiyDeeapc=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <289317D10D85214A85766F8E61DE7563@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b7fa0e85-ddd1-4481-875e-08d9ea5300d5
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4522:EE_
-X-Microsoft-Antispam-PRVS: <MW3PR12MB45228D85A7D00C23F5A3CF4A982C9@MW3PR12MB4522.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aPEamAFeVKTBiO2v6D6Uq/sdxrTXQjbJSuvKQYDnSs5vvkW4ygoie0/DQbhgPKiWbYLcq9hRAtX/49fhASF4QwaKx1Q/xuq99iQypgnOj3PRi0tYBOVNTRHhhWUBkL2le8BLzMquOWphiQzePLB89fbkKUc2CkT3/lpKVQGtmQdxck9mYN7yCvWH9qjRjM3kapj8QiqWw2Iz6McMCF6kN2O36D5caSLFWqdGggg7A9ytdKBhrz8qWAAbxipKCjyDj5EJpwzE7YBgHIHOpXabL8QHXUWJRvIEKe/di6EgsFQbVwaLLCiDGU2DEcttuiycDZGJmC9NydRMRWWDexHIINiTHxd5QlYW1wGZY9EUF65AwNrFFW6gDoqz/yRYHApBQ/I6GolFhsFcD4ZssFwoqEadRJ5fIGk9dIhd7YtBFmyRAWAeRQmQsUcgKy8Ta6dfNkWL9yATGMQNlY5vqDDdiEld1Lp2F0ISN3YseBvbGL4A9YafVy24DAbgUOdN5pO7u1H9Z3FdYkj0xWafjxjLpLPUn0S/ifROlG24/JMh0zP6egA1TRTzeWaHmr5n8+CKh4gcq+7r4LOyBSh83JSQ7S9L1SX95ZlvFkDX6Y1LlnR874mWbk8OwhxCy+l4AOn46x5VZHpDzAGBgQZTZn5fGMVtbo3Gak0D814GgbE5Eph4dpwZaJnC/23gRr6B+FPFBuGawlvr1xzqwVUjqtF0TlRQ6CRUjJGqRNduq+LadTz11eWI9uvAXIg5QHmYbIIbwJqrGM4d7w3QvgQ1kJBKFgbMMqE8L/OoWmf4FhCbt08=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(4326008)(6916009)(82310400004)(8936002)(36860700001)(8676002)(70206006)(316002)(86362001)(70586007)(54906003)(2906002)(47076005)(7696005)(2616005)(508600001)(83380400001)(6666004)(36756003)(81166007)(26005)(356005)(16526019)(40460700003)(186003)(1076003)(7416002)(5660300002)(426003)(966005)(336012)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 16:00:46.5721
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR10MB4858.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae34d280-fc11-4d92-eccc-08d9ea51ec03
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Feb 2022 15:53:02.1316
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7fa0e85-ddd1-4481-875e-08d9ea5300d5
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4522
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: b5y8ZFeWhlsPrATaj5Y93WPa6tYxe5Sora+rfhXaXxuVgyr/IsSfb/1vO6+hJIe9jwx/oXWYEayMmk+F2e7Rdw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3163
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10251 signatures=673430
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 adultscore=0
+ mlxlogscore=999 suspectscore=0 mlxscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202070101
+X-Proofpoint-ORIG-GUID: r4vY5c2KiqNznBsc5itB_CPbuOYFF5Xm
+X-Proofpoint-GUID: r4vY5c2KiqNznBsc5itB_CPbuOYFF5Xm
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Neither the sched/tip nor Mel's v5 patchset [1] provides an optimal
-new-task wakeup strategy when the tasks are affined to a subset of cpus
-which can result in piling of tasks on the same set of CPU in a NUMA
-group despite there being other cpus in a different NUMA group where the
-task could have run in. A good placement makes a difference especially
-in case of short lived task where the delay in load balancer kicking in
-can cause degradation in perfromance.
 
-Benchmark is performed using pinned run of STREAM, parallelized with OMP,
-on a Zen3 machine. STREAM is configured to run 8 threads with CPU affinity
-set to cpus 0,16,32,48,64,80,96,112.
-This ensures an even distribution of allowed cpus across the NUMA groups
-in NPS1, NPS2 and NPS4 modes.
-The script running the stream itself is pinned to cpus 8-15 to maintain
-consistency across runs and to make sure the script runs on an LLC
-not part of stream cpulist so as to not interfere with the benchmark.
 
-Changes are based on top of v5 of Mel's patchset
-"Adjust NUMA imbalance for multiple LLCs" [1]
+> On Feb 6, 2022, at 11:46 PM, NeilBrown <neilb@suse.de> wrote:
+>=20
+> rpc tasks can be marked as RPC_TASK_SWAPPER.  This causes GFP_MEMALLOC
+> to be used for some allocations.  This is needed in some cases, but not
+> in all where it is currently provided, and in some where it isn't
+> provided.
+>=20
+> Currently *all* tasks associated with a rpc_client on which swap is
+> enabled get the flag and hence some GFP_MEMALLOC support.
+>=20
+> GFP_MEMALLOC is provided for ->buf_alloc() but only swap-writes need it.
+> However xdr_alloc_bvec does not get GFP_MEMALLOC - though it often does
+> need it.
+>=20
+> xdr_alloc_bvec is called while the XPRT_LOCK is held.  If this blocks,
+> then it blocks all other queued tasks.  So this allocation needs
+> GFP_MEMALLOC for *all* requests, not just writes, when the xprt is used
+> for any swap writes.
+>=20
+> Similarly, if the transport is not connected, that will block all
+> requests including swap writes, so memory allocations should get
+> GFP_MEMALLOC if swap writes are possible.
+>=20
+> So with this patch:
+> 1/ we ONLY set RPC_TASK_SWAPPER for swap writes.
+> 2/ __rpc_execute() sets PF_MEMALLOC while handling any task
+>    with RPC_TASK_SWAPPER set, or when handling any task that
+>    holds the XPRT_LOCKED lock on an xprt used for swap.
+>    This removes the need for the RPC_IS_SWAPPER() test
+>    in ->buf_alloc handlers.
+> 3/ xprt_prepare_transmit() sets PF_MEMALLOC after locking
+>    any task to a swapper xprt.  __rpc_execute() will clear it.
+> 3/ PF_MEMALLOC is set for all the connect workers.
+>=20
+> Signed-off-by: NeilBrown <neilb@suse.de>
 
-Following are the results:
+Thanks for including xprtrdma in the patch. Those changes
+look consistent with the xprtsock hunks.
 
-	 5.17.0-rc1              5.17.0-rc1              5.17.0-rc1
-	 tip sched/core          tip sched/core          tip sched/core
-				 + mel-v5                + mel-v5
-							 + this-fix
+Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
 
-NPS Mode - NPS1
 
- Copy:	 92133.36 (0.00 pct)	 117595.57 (27.63 pct)	 150655.69 (63.51 pct)
-Scale:	 90847.82 (0.00 pct)	 114525.59 (26.06 pct)	 148939.47 (63.94 pct)
-  Add:	 103585.04 (0.00 pct)	 137548.40 (32.78 pct)	 186323.75 (79.87 pct)
-Triad:	 100060.42 (0.00 pct)	 133695.34 (33.61 pct)	 184203.97 (84.09 pct)
+> ---
+> fs/nfs/write.c                  |    2 ++
+> net/sunrpc/clnt.c               |    2 --
+> net/sunrpc/sched.c              |   20 +++++++++++++++++---
+> net/sunrpc/xprt.c               |    3 +++
+> net/sunrpc/xprtrdma/transport.c |    6 ++++--
+> net/sunrpc/xprtsock.c           |    8 ++++++++
+> 6 files changed, 34 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+> index 987a187bd39a..9f7176745fef 100644
+> --- a/fs/nfs/write.c
+> +++ b/fs/nfs/write.c
+> @@ -1409,6 +1409,8 @@ static void nfs_initiate_write(struct nfs_pgio_head=
+er *hdr,
+> {
+> 	int priority =3D flush_task_priority(how);
+>=20
+> +	if (IS_SWAPFILE(hdr->inode))
+> +		task_setup_data->flags |=3D RPC_TASK_SWAPPER;
+> 	task_setup_data->priority =3D priority;
+> 	rpc_ops->write_setup(hdr, msg, &task_setup_data->rpc_client);
+> 	trace_nfs_initiate_write(hdr);
+> diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+> index d1fb7c0c7685..842366a2fc57 100644
+> --- a/net/sunrpc/clnt.c
+> +++ b/net/sunrpc/clnt.c
+> @@ -1085,8 +1085,6 @@ void rpc_task_set_client(struct rpc_task *task, str=
+uct rpc_clnt *clnt)
+> 		task->tk_flags |=3D RPC_TASK_TIMEOUT;
+> 	if (clnt->cl_noretranstimeo)
+> 		task->tk_flags |=3D RPC_TASK_NO_RETRANS_TIMEOUT;
+> -	if (atomic_read(&clnt->cl_swapper))
+> -		task->tk_flags |=3D RPC_TASK_SWAPPER;
+> 	/* Add to the client's list of all tasks */
+> 	spin_lock(&clnt->cl_lock);
+> 	list_add_tail(&task->tk_task, &clnt->cl_tasks);
+> diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
+> index 256302bf6557..9020cedb7c95 100644
+> --- a/net/sunrpc/sched.c
+> +++ b/net/sunrpc/sched.c
+> @@ -869,6 +869,15 @@ void rpc_release_calldata(const struct rpc_call_ops =
+*ops, void *calldata)
+> 		ops->rpc_release(calldata);
+> }
+>=20
+> +static bool xprt_needs_memalloc(struct rpc_xprt *xprt, struct rpc_task *=
+tk)
+> +{
+> +	if (!xprt)
+> +		return false;
+> +	if (!atomic_read(&xprt->swapper))
+> +		return false;
+> +	return test_bit(XPRT_LOCKED, &xprt->state) && xprt->snd_task =3D=3D tk;
+> +}
+> +
+> /*
+>  * This is the RPC `scheduler' (or rather, the finite state machine).
+>  */
+> @@ -877,6 +886,7 @@ static void __rpc_execute(struct rpc_task *task)
+> 	struct rpc_wait_queue *queue;
+> 	int task_is_async =3D RPC_IS_ASYNC(task);
+> 	int status =3D 0;
+> +	unsigned long pflags =3D current->flags;
+>=20
+> 	WARN_ON_ONCE(RPC_IS_QUEUED(task));
+> 	if (RPC_IS_QUEUED(task))
+> @@ -899,6 +909,10 @@ static void __rpc_execute(struct rpc_task *task)
+> 		}
+> 		if (!do_action)
+> 			break;
+> +		if (RPC_IS_SWAPPER(task) ||
+> +		    xprt_needs_memalloc(task->tk_xprt, task))
+> +			current->flags |=3D PF_MEMALLOC;
+> +
+> 		trace_rpc_task_run_action(task, do_action);
+> 		do_action(task);
+>=20
+> @@ -936,7 +950,7 @@ static void __rpc_execute(struct rpc_task *task)
+> 		rpc_clear_running(task);
+> 		spin_unlock(&queue->lock);
+> 		if (task_is_async)
+> -			return;
+> +			goto out;
+>=20
+> 		/* sync task: sleep here */
+> 		trace_rpc_task_sync_sleep(task, task->tk_action);
+> @@ -960,6 +974,8 @@ static void __rpc_execute(struct rpc_task *task)
+>=20
+> 	/* Release all resources associated with the task */
+> 	rpc_release_task(task);
+> +out:
+> +	current_restore_flags(pflags, PF_MEMALLOC);
+> }
+>=20
+> /*
+> @@ -1018,8 +1034,6 @@ int rpc_malloc(struct rpc_task *task)
+>=20
+> 	if (RPC_IS_ASYNC(task))
+> 		gfp =3D GFP_NOWAIT | __GFP_NOWARN;
+> -	if (RPC_IS_SWAPPER(task))
+> -		gfp |=3D __GFP_MEMALLOC;
+>=20
+> 	size +=3D sizeof(struct rpc_buffer);
+> 	if (size <=3D RPC_BUFFER_MAXSIZE)
+> diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
+> index a0a2583fe941..0614e7463d4b 100644
+> --- a/net/sunrpc/xprt.c
+> +++ b/net/sunrpc/xprt.c
+> @@ -1492,6 +1492,9 @@ bool xprt_prepare_transmit(struct rpc_task *task)
+> 		return false;
+>=20
+> 	}
+> +	if (atomic_read(&xprt->swapper))
+> +		/* This will be clear in __rpc_execute */
+> +		current->flags |=3D PF_MEMALLOC;
+> 	return true;
+> }
+>=20
+> diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transp=
+ort.c
+> index 923e4b512ee9..6b7e10e5a141 100644
+> --- a/net/sunrpc/xprtrdma/transport.c
+> +++ b/net/sunrpc/xprtrdma/transport.c
+> @@ -235,8 +235,11 @@ xprt_rdma_connect_worker(struct work_struct *work)
+> 	struct rpcrdma_xprt *r_xprt =3D container_of(work, struct rpcrdma_xprt,
+> 						   rx_connect_worker.work);
+> 	struct rpc_xprt *xprt =3D &r_xprt->rx_xprt;
+> +	unsigned int pflags =3D current->flags;
+> 	int rc;
+>=20
+> +	if (atomic_read(&xprt->swapper))
+> +		current->flags |=3D PF_MEMALLOC;
+> 	rc =3D rpcrdma_xprt_connect(r_xprt);
+> 	xprt_clear_connecting(xprt);
+> 	if (!rc) {
+> @@ -250,6 +253,7 @@ xprt_rdma_connect_worker(struct work_struct *work)
+> 		rpcrdma_xprt_disconnect(r_xprt);
+> 	xprt_unlock_connect(xprt, r_xprt);
+> 	xprt_wake_pending_tasks(xprt, rc);
+> +	current_restore_flags(pflags, PF_MEMALLOC);
+> }
+>=20
+> /**
+> @@ -572,8 +576,6 @@ xprt_rdma_allocate(struct rpc_task *task)
+> 	flags =3D RPCRDMA_DEF_GFP;
+> 	if (RPC_IS_ASYNC(task))
+> 		flags =3D GFP_NOWAIT | __GFP_NOWARN;
+> -	if (RPC_IS_SWAPPER(task))
+> -		flags |=3D __GFP_MEMALLOC;
+>=20
+> 	if (!rpcrdma_check_regbuf(r_xprt, req->rl_sendbuf, rqst->rq_callsize,
+> 				  flags))
+> diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+> index 69b6ee5a5fd1..c461a0ce9531 100644
+> --- a/net/sunrpc/xprtsock.c
+> +++ b/net/sunrpc/xprtsock.c
+> @@ -2047,7 +2047,10 @@ static void xs_udp_setup_socket(struct work_struct=
+ *work)
+> 	struct rpc_xprt *xprt =3D &transport->xprt;
+> 	struct socket *sock;
+> 	int status =3D -EIO;
+> +	unsigned int pflags =3D current->flags;
+>=20
+> +	if (atomic_read(&xprt->swapper))
+> +		current->flags |=3D PF_MEMALLOC;
+> 	sock =3D xs_create_sock(xprt, transport,
+> 			xs_addr(xprt)->sa_family, SOCK_DGRAM,
+> 			IPPROTO_UDP, false);
+> @@ -2067,6 +2070,7 @@ static void xs_udp_setup_socket(struct work_struct =
+*work)
+> 	xprt_clear_connecting(xprt);
+> 	xprt_unlock_connect(xprt, transport);
+> 	xprt_wake_pending_tasks(xprt, status);
+> +	current_restore_flags(pflags, PF_MEMALLOC);
+> }
+>=20
+> /**
+> @@ -2226,7 +2230,10 @@ static void xs_tcp_setup_socket(struct work_struct=
+ *work)
+> 	struct socket *sock =3D transport->sock;
+> 	struct rpc_xprt *xprt =3D &transport->xprt;
+> 	int status;
+> +	unsigned int pflags =3D current->flags;
+>=20
+> +	if (atomic_read(&xprt->swapper))
+> +		current->flags |=3D PF_MEMALLOC;
+> 	if (!sock) {
+> 		sock =3D xs_create_sock(xprt, transport,
+> 				xs_addr(xprt)->sa_family, SOCK_STREAM,
+> @@ -2291,6 +2298,7 @@ static void xs_tcp_setup_socket(struct work_struct =
+*work)
+> 	xprt_clear_connecting(xprt);
+> out_unlock:
+> 	xprt_unlock_connect(xprt, transport);
+> +	current_restore_flags(pflags, PF_MEMALLOC);
+> }
+>=20
+> /**
+>=20
+>=20
 
-NPS Mode - NPS 2
+--
+Chuck Lever
 
- Copy:	 52969.12 (0.00 pct)	 76969.90 (45.31 pct)	 165892.91 (213.18 pct)
-Scale:	 49209.91 (0.00 pct)	 69200.05 (40.62 pct)	 152210.69 (209.30 pct)
-  Add:	 60106.69 (0.00 pct)	 92049.47 (53.14 pct)	 195135.02 (224.64 pct)
-Triad:	 60052.66 (0.00 pct)	 88323.03 (47.07 pct)	 193672.59 (222.50 pct)
 
-NPS Mode - NPS4
-
- Copy:	 44122.00 (0.00 pct)	 157154.70 (256.18 pct)	 169755.52 (284.74 pct)
-Scale:	 41730.68 (0.00 pct)	 172303.88 (312.89 pct)	 170247.06 (307.96 pct)
-  Add:	 51666.98 (0.00 pct)	 214293.71 (314.75 pct)	 213560.61 (313.34 pct)
-Triad:	 50489.87 (0.00 pct)	 212242.49 (320.36 pct)	 210844.58 (317.59 pct)
-
-The following sched_wakeup_new tracepoint output shows the initial
-placement of tasks in mel-v5 in NPS2 mode:
-
-stream-4578    [016] d..2.    81.970702: sched_wakeup_new: comm=stream pid=4580 prio=120 target_cpu=000
-stream-4578    [016] d..2.    81.970760: sched_wakeup_new: comm=stream pid=4581 prio=120 target_cpu=016
-stream-4578    [016] d..2.    81.970823: sched_wakeup_new: comm=stream pid=4582 prio=120 target_cpu=048
-stream-4578    [016] d..2.    81.970875: sched_wakeup_new: comm=stream pid=4583 prio=120 target_cpu=032
-stream-4578    [016] d..2.    81.970920: sched_wakeup_new: comm=stream pid=4584 prio=120 target_cpu=016
-stream-4578    [016] d..2.    81.970961: sched_wakeup_new: comm=stream pid=4585 prio=120 target_cpu=016
-stream-4578    [016] d..2.    81.971039: sched_wakeup_new: comm=stream pid=4586 prio=120 target_cpu=112
-
-Three stream threads pile up on cpu 16 initially and in case of
-short runs, where the load balancer doesn't have enough time to kick in
-to migrate task, performance might suffer. This pattern is observed
-consistently where tasks pile on one cpu of the group where the
-runner script is pinned to.
-
-The following sched_wakeup_new tracepoint output shows the initial
-placement of tasks with this fix in NPS2 mode:
-
-stream-4639    [032] d..2.   102.903581: sched_wakeup_new: comm=stream pid=4641 prio=120 target_cpu=016
-stream-4639    [032] d..2.   102.903698: sched_wakeup_new: comm=stream pid=4642 prio=120 target_cpu=048
-stream-4639    [032] d..2.   102.903762: sched_wakeup_new: comm=stream pid=4643 prio=120 target_cpu=080
-stream-4639    [032] d..2.   102.903823: sched_wakeup_new: comm=stream pid=4644 prio=120 target_cpu=112
-stream-4639    [032] d..2.   102.903879: sched_wakeup_new: comm=stream pid=4645 prio=120 target_cpu=096
-stream-4639    [032] d..2.   102.903938: sched_wakeup_new: comm=stream pid=4646 prio=120 target_cpu=000
-stream-4639    [032] d..2.   102.903991: sched_wakeup_new: comm=stream pid=4647 prio=120 target_cpu=064
-
-The tasks have been distributed evenly across all the allowed cpus
-and no pile up can be seen.
-
-Aggressive NUMA balancing is only done when needed. We select the
-minimum of number of allowed cpus in sched group and the calculated
-sd.imb_numa_nr as our imbalance threshold and the default behavior
-of mel-v5 is only modified when the former is smaller than
-the latter.
-
-This can help is case of embarrassingly parallel programs with tight
-cpus affinity set.
-
-[1] https://lore.kernel.org/lkml/20220203144652.12540-1-mgorman@techsingularity.net/
-
-Signed-off-by: K Prateek Nayak <kprateek.nayak@amd.com>
----
- kernel/sched/core.c | 3 +++
- kernel/sched/fair.c | 7 ++++++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 1d863d7f6ad7..9a92ac42bb24 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -9294,6 +9294,7 @@ static struct kmem_cache *task_group_cache __read_mostly;
- 
- DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
- DECLARE_PER_CPU(cpumask_var_t, select_idle_mask);
-+DECLARE_PER_CPU(cpumask_var_t, find_idlest_group_mask);
- 
- void __init sched_init(void)
- {
-@@ -9344,6 +9345,8 @@ void __init sched_init(void)
- 			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
- 		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
- 			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
-+		per_cpu(find_idlest_group_mask, i) = (cpumask_var_t)kzalloc_node(
-+			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
- 	}
- #endif /* CONFIG_CPUMASK_OFFSTACK */
- 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index babf3b65db38..ffced741b244 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -5751,6 +5751,7 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
- /* Working cpumask for: load_balance, load_balance_newidle. */
- DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
- DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
-+DEFINE_PER_CPU(cpumask_var_t, find_idlest_group_mask);
- 
- #ifdef CONFIG_NO_HZ_COMMON
- 
-@@ -9022,6 +9023,7 @@ static inline bool allow_numa_imbalance(int running, int imb_numa_nr)
- static struct sched_group *
- find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
- {
-+	struct cpumask *cpus = this_cpu_cpumask_var_ptr(find_idlest_group_mask);
- 	struct sched_group *idlest = NULL, *local = NULL, *group = sd->groups;
- 	struct sg_lb_stats local_sgs, tmp_sgs;
- 	struct sg_lb_stats *sgs;
-@@ -9130,6 +9132,7 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
- 
- 	case group_has_spare:
- 		if (sd->flags & SD_NUMA) {
-+			int imb;
- #ifdef CONFIG_NUMA_BALANCING
- 			int idlest_cpu;
- 			/*
-@@ -9150,7 +9153,9 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
- 			 * allowed. If there is a real need of migration,
- 			 * periodic load balance will take care of it.
- 			 */
--			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, sd->imb_numa_nr))
-+			cpumask_and(cpus, sched_group_span(local), p->cpus_ptr);
-+			imb = min(cpumask_weight(cpus), sd->imb_numa_nr);
-+			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, imb))
- 				return NULL;
- 		}
- 
--- 
-2.25.1
 
