@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3F7C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 008A1C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388716AbiBGLoh (ORCPT
+        id S1381445AbiBGLoi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:44:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46036 "EHLO
+        Mon, 7 Feb 2022 06:44:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385888AbiBGLc6 (ORCPT
+        with ESMTP id S1385920AbiBGLdE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:32:58 -0500
+        Mon, 7 Feb 2022 06:33:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FBDC043181;
-        Mon,  7 Feb 2022 03:32:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14041C043181;
+        Mon,  7 Feb 2022 03:33:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15FD560A69;
-        Mon,  7 Feb 2022 11:32:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAC07C004E1;
-        Mon,  7 Feb 2022 11:32:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A58B660A69;
+        Mon,  7 Feb 2022 11:33:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FC0DC004E1;
+        Mon,  7 Feb 2022 11:33:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233576;
-        bh=u8o5PCQAyIhvn8HqQIszupSztvY2NwO4h4QsnvWbks0=;
+        s=korg; t=1644233583;
+        bh=qo1pc4HKb26wpACQTb3j2bo0TYaK5ZqtGgd+5l84YT8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ze/sdS+0Ua3L8CxKh6A3Dw2ziDX1/Iujdvz32+6NJX0Wqhh2CpBhuvRvM2jgNwpGW
-         RvAtqkW7yJApCyfgocg/45SUUtk8DsmSRTyjqyqyzCD/F7gIY0wNIFeWeSCG+//i9D
-         q8M7vVhCrK9ez4iF+ELSP0ZEmezi8d42mn8JIVIw=
+        b=VwvIMRgeurN1v7wK+jr13nbY2Lak2iILtNQNj13/sPx2nwq1eQLu0zZ5DgmxA/qls
+         61CbGTRiNiWLRrgyT3MmrIo1CErsR85Xvz7p+TQD1QMf3DDUmd1Ck5xVXWoeFHT+Df
+         42omg1xQBw9gA1CTuOeL88ZX9cpBF0Zg8bTRExv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        Chia-Lin Kao <acelan.kao@canonical.com>
-Subject: [PATCH 5.16 023/126] drm/i915/adlp: Fix TypeC PHY-ready status readout
-Date:   Mon,  7 Feb 2022 12:05:54 +0100
-Message-Id: <20220207103804.958489222@linuxfoundation.org>
+        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 025/126] drm/amd/pm: correct the MGpuFanBoost support for Beige Goby
+Date:   Mon,  7 Feb 2022 12:05:56 +0100
+Message-Id: <20220207103805.022861512@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -52,45 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Imre Deak <imre.deak@intel.com>
+From: Evan Quan <evan.quan@amd.com>
 
-commit 3c6f13ad723e7206f03bb2752b01d18202b7fc9d upstream.
+commit 3ec5586b4699cfb75cdfa09425e11d121db40773 upstream.
 
-The TCSS_DDI_STATUS register is indexed by tc_port not by the FIA port
-index, fix this up. This only caused an issue on TC#3/4 ports in legacy
-mode, as in all other cases the two indices either match (on TC#1/2) or
-the TCSS_DDI_STATUS_READY flag is set regardless of something being
-connected or not (on TC#1/2/3/4 in dp-alt and tbt-alt modes).
+The existing way cannot handle Beige Goby well as a different
+PPTable data structure(PPTable_beige_goby_t instead of PPTable_t)
+is used there.
 
-Reported-and-tested-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
-Fixes: 55ce306c2aa1 ("drm/i915/adl_p: Implement TC sequences")
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/4698
-Cc: José Roberto de Souza <jose.souza@intel.com>
-Cc: <stable@vger.kernel.org> # v5.14+
-Signed-off-by: Imre Deak <imre.deak@intel.com>
-Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220126104356.2022975-1-imre.deak@intel.com
-(cherry picked from commit 516b33460c5bee78b2055637b0547bdb0e6af754)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_tc.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/i915/display/intel_tc.c
-+++ b/drivers/gpu/drm/i915/display/intel_tc.c
-@@ -345,10 +345,11 @@ static bool icl_tc_phy_status_complete(s
- static bool adl_tc_phy_status_complete(struct intel_digital_port *dig_port)
- {
- 	struct drm_i915_private *i915 = to_i915(dig_port->base.base.dev);
-+	enum tc_port tc_port = intel_port_to_tc(i915, dig_port->base.port);
- 	struct intel_uncore *uncore = &i915->uncore;
- 	u32 val;
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
+@@ -3681,14 +3681,14 @@ static ssize_t sienna_cichlid_get_gpu_me
  
--	val = intel_uncore_read(uncore, TCSS_DDI_STATUS(dig_port->tc_phy_fia_idx));
-+	val = intel_uncore_read(uncore, TCSS_DDI_STATUS(tc_port));
- 	if (val == 0xffffffff) {
- 		drm_dbg_kms(&i915->drm,
- 			    "Port %s: PHY in TCCOLD, assuming not complete\n",
+ static int sienna_cichlid_enable_mgpu_fan_boost(struct smu_context *smu)
+ {
+-	struct smu_table_context *table_context = &smu->smu_table;
+-	PPTable_t *smc_pptable = table_context->driver_pptable;
++	uint16_t *mgpu_fan_boost_limit_rpm;
+ 
++	GET_PPTABLE_MEMBER(MGpuFanBoostLimitRpm, &mgpu_fan_boost_limit_rpm);
+ 	/*
+ 	 * Skip the MGpuFanBoost setting for those ASICs
+ 	 * which do not support it
+ 	 */
+-	if (!smc_pptable->MGpuFanBoostLimitRpm)
++	if (*mgpu_fan_boost_limit_rpm == 0)
+ 		return 0;
+ 
+ 	return smu_cmn_send_smc_msg_with_param(smu,
 
 
