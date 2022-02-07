@@ -2,134 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C8FBC3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BF7C35270
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:54:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345925AbiBGFwA (ORCPT
+        id S1348677AbiBGFwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:52:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35862 "EHLO
+        Mon, 7 Feb 2022 00:52:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350686AbiBGDnK (ORCPT
+        with ESMTP id S229561AbiBGFBm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 22:43:10 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B629C061A73;
-        Sun,  6 Feb 2022 19:43:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644205389; x=1675741389;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=jyHTg8lc0rGJjYDbvRpmmpXq2f0nIZ3DZxj0wHryZ9Q=;
-  b=XNxksdeDNzMQxwRnR8fdySwpNTZnutTnBqqVnSUwLGNGpFc98nds2K1u
-   kYF5TygrtQTF19+qeDVTT+elGKJCKRBvY5RKrGQHJFyfu81t3Iu8AwFWm
-   O3nNUIOSFA/k+316XXmH9SAA2B0DLTLVPiZVXOMoQkkSN3hjHrSvFKlaJ
-   bDBZFeB57PfY96UZaYYOIU93/80zDKOkYquaBYEyja/1eFw8v1/px7bs5
-   b8rK2QjKfb1O+TL9i56p+Qi2h4WH2+7lZfzjRgfVLSjzbV0u/rjBHcslp
-   Y2JtBRDSD0S3U7mAbsWGVxDo2cs2XvzK3dSpO+B54fJmJQjh/Hvgv0IeL
-   g==;
-IronPort-SDR: LFwX+2kkz/dSAtaaFwAsKjKNjhNXpD8tg4DD6rnX5C3HNHw1dOUYa5xbav7Bvz/WhtZBK6exmJ
- z9NQ3DU+4a9uScj/kPLDmU+REej+WVxGbWJcVQZubKU6vLjf2RQ2PMRWNGaJbTTqclH7nsxTmQ
- Q/v+h90rszuKM9VmhLhLeP3d24XM3ULzEyP2bs5V9G9VrUBkBfOWiLaJ94f7wGYHM9fTWYjh3X
- xCCCeYsTDdKg7RQ/4aIxaONT3digBrCqNnjE1OKhOMHSa3UZs5uZRnxM/w+pIpe/hq02uhTWJj
- lKkmPoQV3vcnoTlRvngpo6Uy
-X-IronPort-AV: E=Sophos;i="5.88,348,1635231600"; 
-   d="scan'208";a="161282083"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Feb 2022 20:43:08 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 6 Feb 2022 20:43:08 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Sun, 6 Feb 2022 20:43:06 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
-        <alexandre.belloni@bootlin.com>
-CC:     <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        Mon, 7 Feb 2022 00:01:42 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC551C043185
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 21:01:37 -0800 (PST)
+X-UUID: d18a93e47dd04dd0a8426c6bd770449d-20220207
+X-UUID: d18a93e47dd04dd0a8426c6bd770449d-20220207
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1486972065; Mon, 07 Feb 2022 12:56:31 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 7 Feb 2022 12:56:31 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Feb
+ 2022 12:56:30 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 7 Feb 2022 12:56:30 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
+        <narmstrong@baylibre.com>, <robert.foss@linaro.org>,
+        <andrzej.hajda@intel.com>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <p.zabel@pengutronix.de>
+CC:     <xji@analogixsemi.com>, <jitao.shi@mediatek.com>,
+        <xinlei.lee@mediatek.com>,
+        <angelogioacchino.delregno@collabora.com>,
         <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
-        "Tudor Ambarus" <tudor.ambarus@microchip.com>
-Subject: [PATCH v2] ARM: dts: at91: sama7g5: Add crypto nodes
-Date:   Mon, 7 Feb 2022 05:43:03 +0200
-Message-ID: <20220207034303.72827-1-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [v11,3/3] drm/bridge: anx7625: config hs packets end aligned to avoid screen shift
+Date:   Mon, 7 Feb 2022 12:56:25 +0800
+Message-ID: <20220207045625.17713-4-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220207045625.17713-1-rex-bc.chen@mediatek.com>
+References: <20220207045625.17713-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Describe and enable the AES, SHA and TDES crypto IPs. Tested with the
-extra run-time self tests of the registered crypto algorithms.
+This device requires the packets on lanes aligned at the end to fix
+screen shift or scroll.
 
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Xin Ji <xji@analogixsemi.com>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
 ---
-v2:
-- add label to the tdes node
-- update commit description and specify testing method
-- put clocks and clock-names properties before dmas and dma-names
-  because the clocks are mandatory, while DMA is optional for TDES and SHA
+ drivers/gpu/drm/bridge/analogix/anx7625.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
- arch/arm/boot/dts/sama7g5.dtsi | 35 ++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
-
-diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
-index 7972cb8c2562..a87f498cf098 100644
---- a/arch/arm/boot/dts/sama7g5.dtsi
-+++ b/arch/arm/boot/dts/sama7g5.dtsi
-@@ -393,6 +393,29 @@ pit64b1: timer@e1804000 {
- 			clock-names = "pclk", "gclk";
- 		};
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+index 2346dbcc505f..fe32ab0878ae 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.c
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+@@ -1673,7 +1673,8 @@ static int anx7625_attach_dsi(struct anx7625_data *ctx)
+ 	dsi->format = MIPI_DSI_FMT_RGB888;
+ 	dsi->mode_flags = MIPI_DSI_MODE_VIDEO	|
+ 		MIPI_DSI_MODE_VIDEO_SYNC_PULSE	|
+-		MIPI_DSI_MODE_VIDEO_HSE;
++		MIPI_DSI_MODE_VIDEO_HSE	|
++		MIPI_DSI_HS_PKT_END_ALIGNED;
  
-+		aes: aes@e1810000 {
-+			compatible = "atmel,at91sam9g46-aes";
-+			reg = <0xe1810000 0x100>;
-+			interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&pmc PMC_TYPE_PERIPHERAL 27>;
-+			clock-names = "aes_clk";
-+			dmas = <&dma0 AT91_XDMAC_DT_PERID(1)>,
-+			       <&dma0 AT91_XDMAC_DT_PERID(2)>;
-+			dma-names = "tx", "rx";
-+			status = "okay";
-+		};
-+
-+		sha: sha@e1814000 {
-+			compatible = "atmel,at91sam9g46-sha";
-+			reg = <0xe1814000 0x100>;
-+			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&pmc PMC_TYPE_PERIPHERAL 83>;
-+			clock-names = "sha_clk";
-+			dmas = <&dma0 AT91_XDMAC_DT_PERID(48)>;
-+			dma-names = "tx";
-+			status = "okay";
-+		};
-+
- 		flx0: flexcom@e1818000 {
- 			compatible = "atmel,sama5d2-flexcom";
- 			reg = <0xe1818000 0x200>;
-@@ -475,6 +498,18 @@ trng: rng@e2010000 {
- 			status = "disabled";
- 		};
- 
-+		tdes: tdes@e2014000 {
-+			compatible = "atmel,at91sam9g46-tdes";
-+			reg = <0xe2014000 0x100>;
-+			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&pmc PMC_TYPE_PERIPHERAL 96>;
-+			clock-names = "tdes_clk";
-+			dmas = <&dma0 AT91_XDMAC_DT_PERID(54)>,
-+			       <&dma0 AT91_XDMAC_DT_PERID(53)>;
-+			dma-names = "tx", "rx";
-+			status = "okay";
-+		};
-+
- 		flx4: flexcom@e2018000 {
- 			compatible = "atmel,sama5d2-flexcom";
- 			reg = <0xe2018000 0x200>;
+ 	ret = devm_mipi_dsi_attach(dev, dsi);
+ 	if (ret) {
 -- 
-2.25.1
+2.31.0
 
