@@ -2,135 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D30BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 312C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236786AbiBGKYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:24:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
+        id S241752AbiBGKY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:24:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357045AbiBGKL3 (ORCPT
+        with ESMTP id S1352754AbiBGKWx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:11:29 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C9DC0401E3
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:11:09 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id e3so9792186wra.0
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 02:11:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=t1grJfuaAdS3B1XhyLaLbix7QKdpfthiiXC5enSQ1wU=;
-        b=wPpS1R/uWVlqPEkanPeqJeH/0D36BtOQVNLC6MxnxsReockDsvWqZG0Z1ByYDDuvM7
-         4wItKYbdClpjxyuOyRK9/gJfr5YryUe5EgYLsk6JfeJMCd3XkXMnnxdp9JqUXD/1UkV8
-         t0mtIzGSIsgctau6xdm1KHCMbGvMNEL/JVAUQjalNg9u+oU7LrHc3Wn3uSNTw5lbgYUd
-         DpByqvFXqb50PDV3lL8IoxrzzsNtFipGmOWCNjjpRAvXUMLeFiYICD19OtjrI4lXaS4R
-         V0LkGJa1SmI6gGzOs8S5qtFDYA0i7YfRY+bvGhZQkICcuObnwhNHAjilL2KENHyKeg7s
-         CLCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=t1grJfuaAdS3B1XhyLaLbix7QKdpfthiiXC5enSQ1wU=;
-        b=R58i/sTEmxv2miTgW2+kBcH3vvE8JMZO+v7Zo/POWyiaYeeudqOLASmlpE4aGEyezv
-         XYGtQr7vxLxpGAur59AUA1b4UNIcwNmuCpEYt1HgFCCQsS0AXYFMIKppln6l7SUr2h87
-         ZZzLhi13LPfGd1mWTFQcjPQQBMPIh0KtGMROs1gOd23IFbp2+HBFr/hQJ801E2Wk25qZ
-         ZgfUC46dkbW3PnrzksZ9PXbdHtPh1bdruk+msbc3UKMBJXO7xylwTwmJR0yG98wWw/f1
-         76d7bU4ckfQMDaWTcUm8EW4F40Xcc1t8JBSB0xhqY3i6PqxsMqGo1LMJB1n0ZqS+ZfSo
-         m/QA==
-X-Gm-Message-State: AOAM530Yz6FVCv2YfptfFL7UCGOaY5o/v19dFzHRcN+kF/KQ4fFca4B5
-        Y0oA4i2a1Ok8dMojfKG1SwhCMVqPQPFa2Q==
-X-Google-Smtp-Source: ABdhPJyfPm5Ul6/cWxD2ilu20wXd7IFB/LmDVwLybcoxL+DwkSm+3qkAcNf1ZOyzjv+UAG62JG50qg==
-X-Received: by 2002:a05:6000:1548:: with SMTP id 8mr9155762wry.254.1644228667605;
-        Mon, 07 Feb 2022 02:11:07 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id c13sm9620833wrv.24.2022.02.07.02.11.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 02:11:07 -0800 (PST)
-Date:   Mon, 7 Feb 2022 10:11:05 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Chanwoo Choi <cw00.choi@samsung.com>
-Subject: Re: [PATCH v2 0/5] mfd/extcon/regulators: max77843: add
- dtschema/bindings
-Message-ID: <YgDwOWRpfVBfcXxs@google.com>
-References: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
- <1bebedb9-644f-783d-492c-84a5de91720d@canonical.com>
- <YgDnUNCNCO+JLyHU@google.com>
- <88fcdbe6-5fef-d9cc-a645-69e35230cdeb@canonical.com>
+        Mon, 7 Feb 2022 05:22:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D84FBC043188
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:22:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644229372;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2smJ/GlsLCD4bPAcOtXvALm5pEn5dU6rKnsOljI8KSo=;
+        b=Xf7UbQquJIXbvEWSX6hyv9QGpoOj4YVDWVM0fONsNAyWJOrj+IiNGxqOpkQHhXSpy5S/hJ
+        em3AZSU+b91fhfOT0mFA3X0y1SOWq68qXylB63fmskfYYUSJZjiATdt2Et6SFGK9NxAVPJ
+        J5KvvYOclSAke6fP+7oPrsHch8wPkZs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-65-idtXnJI4OrGmulbvj6Mxvg-1; Mon, 07 Feb 2022 05:22:46 -0500
+X-MC-Unique: idtXnJI4OrGmulbvj6Mxvg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3B34A1800D50;
+        Mon,  7 Feb 2022 10:22:42 +0000 (UTC)
+Received: from oldenburg.str.redhat.com (unknown [10.39.193.205])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 23E96607B6;
+        Mon,  7 Feb 2022 10:22:21 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     "'Edgecombe, Rick P'" <rick.p.edgecombe@intel.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "bsingharora@gmail.com" <bsingharora@gmail.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "Syromiatnikov, Eugene" <esyr@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "Eranian, Stephane" <eranian@google.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
+        "jannh@google.com" <jannh@google.com>,
+        "kcc@google.com" <kcc@google.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "pavel@ucw.cz" <pavel@ucw.cz>, "oleg@redhat.com" <oleg@redhat.com>,
+        "Yang, Weijiang" <weijiang.yang@intel.com>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "bp@alien8.de" <bp@alien8.de>, "arnd@arndb.de" <arnd@arndb.de>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "Dave.Martin@arm.com" <Dave.Martin@arm.com>,
+        "john.allen@amd.com" <john.allen@amd.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "gorcunov@gmail.com" <gorcunov@gmail.com>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+References: <87fsozek0j.ffs@tglx>
+        <a7e59ae16e0e05579b087caf4045e42b174e2167.camel@intel.com>
+        <3421da7fc8474b6db0e265b20ffd28d0@AcuMS.aculab.com>
+        <CAMe9rOonepEiRyoAyTGkDMQQhuyuoP4iTZJJhKGxgnq9vv=dLQ@mail.gmail.com>
+        <9f948745435c4c9273131146d50fe6f328b91a78.camel@intel.com>
+        <782f27dbe6fc419a8946eeb426253e28@AcuMS.aculab.com>
+Date:   Mon, 07 Feb 2022 11:22:20 +0100
+In-Reply-To: <782f27dbe6fc419a8946eeb426253e28@AcuMS.aculab.com> (David
+        Laight's message of "Sun, 6 Feb 2022 13:42:42 +0000")
+Message-ID: <8735kvm0wz.fsf@oldenburg.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <88fcdbe6-5fef-d9cc-a645-69e35230cdeb@canonical.com>
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 07 Feb 2022, Krzysztof Kozlowski wrote:
+* David Laight:
 
-> On 07/02/2022 10:33, Lee Jones wrote:
-> > On Sun, 06 Feb 2022, Krzysztof Kozlowski wrote:
-> > 
-> >> On 11/01/2022 18:48, Krzysztof Kozlowski wrote:
-> >>> Hi,
-> >>>
-> >>> The max77843 shares some parts with max77693 but it lacked bindings.  All
-> >>> its compatibles were undocumented.  Add basic bindings for max77843,
-> >>> matching existing devicetree.  These are not complete bindings, but
-> >>> rather reverse-engineered to match current state.
-> >>>
-> >>> I do not have access to device with MAX77843, so if anyone else
-> >>> volunteers to be the bindings maintainer, please join.
-> >>>
-> >>> Changes since v1
-> >>> ================
-> >>> 1. MFD: Use absolute path to schemas.
-> >>> 2. Regulator: mention all allowed properties,
-> >>>    additionalProperties=false, add min/max values for voltages and
-> >>>    current, don't use patternProperties when not needed.
-> >>> 3. extcon: Use absolute path to schemas.
-> >>>
-> >>> Dependencies
-> >>> ============
-> >>> 1. Patch 1/5 (dts): nothing depends on it, sending here so Rob's automatic
-> >>>    checker won't complain about DTS.
-> >>>    I will take it via Samsung SoC tree.
-> >>>
-> >>> 2. The patch 4/5 (mfd bindings) depends on regulator and extcon, so they
-> >>>    should come together (2+3+4+5).
-> >>>
-> >> Dear Lee,
-> >>
-> >> This patchset was reviewed and there are no outstanding issues. Could
-> >> you pick up patches 2-5 (skipping DTS patch) via MFD tree?
-> > 
-> > Are the subsystem maintainers not going to review/ack?
-> > 
-> 
-> Would be nice to have them, but maybe since these are dt-bindings maybe
-> they were skipped? 
+> Was there any 'spare' space in struct jmpbuf ?
 
-Agreed, not required, but nice to have to avoid possible conflict.
+jmp_buf in glibc looks like this:
 
-> Or maybe it was the end-of-year holidays?
+(gdb) ptype/o jmp_buf
+type = struct __jmp_buf_tag {
+/*      0      |      64 */    __jmp_buf __jmpbuf;
+/*     64      |       4 */    int __mask_was_saved;
+/* XXX  4-byte hole      */
+/*     72      |     128 */    __sigset_t __saved_mask;
 
-> I can resend hoping it will trigger more acks. Do you wish me to resend?
+                               /* total size (bytes):  200 */
+                             } [1]
+(gdb) ptype/o __jmp_buf
+type = long [8]
 
-That shouldn't be necessary.
+The glibc ABI reserves space for 1024 signals, something that Linux is
+never going to implement.  We can use that space to store a few extra
+registers in __save_mask.  There is a complication because the
+pthread_cancel unwinding allocates only space for the __jmpbuf member.
+Fortunately, we do not need to unwind the shadow stack for thread
+cancellation, so we don't need that extra space in that case.
 
-I'll give the guys a little while to protest/ack, then I'll merge.
+Thanks,
+Florian
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
