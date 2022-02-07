@@ -2,105 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB09CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C041C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443190AbiBGPKt (ORCPT
+        id S1443203AbiBGPKy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:10:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34590 "EHLO
+        Mon, 7 Feb 2022 10:10:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354785AbiBGPFj (ORCPT
+        with ESMTP id S1442451AbiBGOuj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:05:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5D4C0401C1;
-        Mon,  7 Feb 2022 07:05:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58AEE6145D;
-        Mon,  7 Feb 2022 15:05:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7672CC340F1;
-        Mon,  7 Feb 2022 15:05:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644246337;
-        bh=j5R4Gv27wDTelz/5MkpZClOBJ+BnL0TYVY4HhplRl4E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RsSjUqwnB108XHjy4DpeXhNZRDJQfdUVj5DgQLcXjvYwGZ3e02kLXwlIiEsuk/ob4
-         a3JAY6QGJ2ByFyuxOwNjC9TWd35teKnyd5hEwH5BE1KAJ7PmZOVKfadSvqBuL1MC4O
-         tuGE5UxdAiI/vcfCVHPvMXGpenjf+GQyxZ44zy0NFzgzY3UHxRJUPKGC9FF8hA7zUW
-         f4ErsoqYf1J4TUYGjUfpXljPLHCFKi7EItaAVxJBT8Q9ww5AtEDnWpMYHeCjfc+XsZ
-         i1R5nISuNaO3tm+Faok2X5kx7uINBpgFT0I7pz/6r7WXCimT2kcETLXLVYjJFP/bdB
-         vY5HMS9WKMQiA==
-Date:   Mon, 7 Feb 2022 15:05:32 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Cc:     "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        Sowjanya Komatineni <skomatineni@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
-Subject: Re: [PATCH 6/6] spi: tegra210-quad: combined sequence mode
-Message-ID: <YgE1PD2irQeinD9N@sirena.org.uk>
-References: <1643970576-31503-1-git-send-email-kyarlagadda@nvidia.com>
- <1643970576-31503-7-git-send-email-kyarlagadda@nvidia.com>
- <Yf0zkdS2nqHOZjMG@sirena.org.uk>
- <DM6PR12MB35630A9020EC4B309D877086C32C9@DM6PR12MB3563.namprd12.prod.outlook.com>
+        Mon, 7 Feb 2022 09:50:39 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D44AC0401C2;
+        Mon,  7 Feb 2022 06:50:38 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 89AB31F444AE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644245435;
+        bh=mITQyN74T8TrzhhNjUVWhdqcFowm7op0GVEcLUl0r3k=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=jscu1N6GY8MVTJJI2CzFQZ6jf4L7fmsfwr667QFfHNFSiTAD+RzEF7yTwlpPYY+3t
+         A+rcbtV1RPtkgqOKVm/jiteSszWCmJa2jiZ553iEAKkwDioX4tzpOZasgUOvH6aTlK
+         g858F61ZO4FxTqAhJK5IEjJEztTCohI0WJ5DMNXkd+xxTmRySp+38J1m7YOg+kgQMa
+         YlytzZhi55wIsLw6MVIqwiHQQauf+/nRPUiTY2TEfUe4oNW4i/pfDSEuSRIlj+xnsa
+         PNtXsenh4KMr3ZTqpAVCpi3Bqrdds3M/OrpKuiyRjdaKZbTL00xkPm0QqggoLy0LRv
+         bc9VNH4XcwA6g==
+Message-ID: <4e1b549b-748e-94f3-befb-59ceab950297@collabora.com>
+Date:   Mon, 7 Feb 2022 15:50:32 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="L2V1A7HZ4pNge4n4"
-Content-Disposition: inline
-In-Reply-To: <DM6PR12MB35630A9020EC4B309D877086C32C9@DM6PR12MB3563.namprd12.prod.outlook.com>
-X-Cookie: Never give an inch!
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH V6, 2/5] media: mtk-jpegenc: manage jpegenc multi-hardware
+Content-Language: en-US
+To:     "kyrie.wu" <kyrie.wu@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, xia.jiang@mediatek.com,
+        maoguang.meng@mediatek.com, srv_heupstream@mediatek.com,
+        irui.wang@mediatek.com
+References: <1638501230-13417-1-git-send-email-kyrie.wu@mediatek.com>
+ <1638501230-13417-3-git-send-email-kyrie.wu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <1638501230-13417-3-git-send-email-kyrie.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Il 03/12/21 04:13, kyrie.wu ha scritto:
+> manage each hardware information, including irq/clk/power.
+> the hardware includes HW0 and HW1.
+> 
+> Signed-off-by: kyrie.wu <kyrie.wu@mediatek.com>
 
---L2V1A7HZ4pNge4n4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hello Kyrie,
+thanks for the patch!
 
-On Mon, Feb 07, 2022 at 02:54:00PM +0000, Krishna Yarlagadda wrote:
+However, there are a few things to improve...
 
-> > > +	if (cdata->is_cmb_xfer && transfer_count == 3)
-> > > +		ret = tegra_qspi_combined_seq_xfer(tqspi, msg);
-> > > +	else
-> > > +		ret = tegra_qspi_non_combined_seq_xfer(tqspi, msg);
+> ---
+> V6: use of_platform_populate to replace component framework
+> to manage multi-hardware
+> ---
+>   drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c   | 103 +++++++---
+>   drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h   |  55 +++++
+>   drivers/media/platform/mtk-jpeg/mtk_jpeg_enc_hw.c | 232 +++++++++++++++++++++-
+>   3 files changed, 362 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
+> index a89c7b2..da7eb84 100644
+> --- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
+> +++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
+> @@ -1353,33 +1353,40 @@ static int mtk_jpeg_probe(struct platform_device *pdev)
+>   	spin_lock_init(&jpeg->hw_lock);
+>   	jpeg->dev = &pdev->dev;
+>   	jpeg->variant = of_device_get_match_data(jpeg->dev);
+> -	INIT_DELAYED_WORK(&jpeg->job_timeout_work, mtk_jpeg_job_timeout_work);
+>   
+> -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	jpeg->reg_base = devm_ioremap_resource(&pdev->dev, res);
 
-> > This check needs to be more specific.  But like I said in reply to the binding
-> > patch I don't see why we can't just pattern match on the data without requiring
-> > a property here, we'd need to check that the message is suitable no matter
-> > what.
+This has to be rebased... new versions are using devm_platform_ioremap_resource(),
+which is shorter and cleaner...
 
-> There is no real-world use case we encountered so far preventing us stick to pattern.
-> But this was to avoid any corner case where there could be 3 different transfers sent in single msg.
+> -	if (IS_ERR(jpeg->reg_base)) {
+> -		ret = PTR_ERR(jpeg->reg_base);
+> -		return ret;
+> -	}
+> +	if (!jpeg->variant->is_encoder) {
 
-So you'll remove the property and just pattern match on the message?
+What about mediatek,mtk-jpgenc? That's also an encoder... this "is_encoder"
+variable is a bit confusing... Is that a newer version of the IP?
+Please, let's find a better name for this variable to avoid confusion.
 
-Please fix your mail client to word wrap within paragraphs at something
-substantially less than 80 columns.  Doing this makes your messages much
-easier to read and reply to.
 
---L2V1A7HZ4pNge4n4
-Content-Type: application/pgp-signature; name="signature.asc"
+> +		INIT_DELAYED_WORK(&jpeg->job_timeout_work,
+> +				mtk_jpeg_job_timeout_work);
+>   
+> -	jpeg_irq = platform_get_irq(pdev, 0);
+> -	if (jpeg_irq < 0) {
+> -		dev_err(&pdev->dev, "Failed to get jpeg_irq %d.\n", jpeg_irq);
+> -		return jpeg_irq;
+> -	}
+> +		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +		jpeg->reg_base = devm_ioremap_resource(&pdev->dev, res);
+> +		if (IS_ERR(jpeg->reg_base)) {
+> +			ret = PTR_ERR(jpeg->reg_base);
+> +			return ret;
+> +		}
+>   
+> -	ret = devm_request_irq(&pdev->dev, jpeg_irq,
+> -			       jpeg->variant->irq_handler, 0, pdev->name, jpeg);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "Failed to request jpeg_irq %d (%d)\n",
+> -			jpeg_irq, ret);
+> -		goto err_req_irq;
+> -	}
+> +		jpeg_irq = platform_get_irq(pdev, 0);
+> +		if (jpeg_irq < 0) {
+> +			dev_err(&pdev->dev, "Failed to get jpeg_irq.\n");
+> +			return jpeg_irq;
+> +		}
+>   
+> -	ret = mtk_jpeg_clk_init(jpeg);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "Failed to init clk, err %d\n", ret);
+> -		goto err_clk_init;
+> +		ret = devm_request_irq(&pdev->dev, jpeg_irq,
+> +				       jpeg->variant->irq_handler,
+> +					   0, pdev->name, jpeg);
+> +		if (ret) {
+> +			dev_err(&pdev->dev, "Failed to request jpeg_irq %d (%d)\n",
+> +				jpeg_irq, ret);
+> +			goto err_req_irq;
+> +		}
+> +
+> +		ret = mtk_jpeg_clk_init(jpeg);
+> +		if (ret) {
+> +			dev_err(&pdev->dev, "Failed to init clk(%d)\n", ret);
+> +			goto err_clk_init;
+> +		}
+> +
+> +		pm_runtime_enable(&pdev->dev);
+>   	}
+>   
+>   	ret = v4l2_device_register(&pdev->dev, &jpeg->v4l2_dev);
 
------BEGIN PGP SIGNATURE-----
+...snip...
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIBNTsACgkQJNaLcl1U
-h9BFNwf/ZmIVt/rPd9AefPfAWPMK3pHWlBlYzPmBgZi391BXYFZQwyI/4bJYQ7Ab
-PMBM5GNFjTtqa2KFmkQ9hikJEuxTzcXckRikQ0wO+kix9rydqC/DYSxKl0Bo/y1V
-syLYHM1voFHziWbqfnaFATKU88+CtaTHBNjfIqagE+MtUUZi8yeF+TJB444m4gxt
-Pp4o+Ux83APBvyLsuYWYT5ua22o4ChDhAjOTQWP/fh4Eywd/yBDDw4kYDB0GYEwg
-OR8NX5K+nZgz/TSavbQqeDx1NrY4WcV5TyFfGa4jajDXw1BlcgA2hZcwOMfO7MOI
-GscayI2JryM5qaUgVL3vSM7ePri9Jg==
-=5TVG
------END PGP SIGNATURE-----
+/
+> diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_enc_hw.c b/drivers/media/platform/mtk-jpeg/mtk_jpeg_enc_hw.c
+> index 1cf037b..4ccda1d 100644
+> --- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_enc_hw.c
+> +++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_enc_hw.c
+> @@ -4,12 +4,27 @@
+>    * Author: Xia Jiang <xia.jiang@mediatek.com>
+>    *
+>    */
+> -
+> +#include <linux/clk.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/irq.h>
+>   #include <linux/io.h>
+>   #include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/slab.h>
+> +#include <media/media-device.h>
+>   #include <media/videobuf2-core.h>
+>   #include <media/videobuf2-dma-contig.h>
+> +#include <media/videobuf2-v4l2.h>
+> +#include <media/v4l2-mem2mem.h>
+> +#include <media/v4l2-dev.h>
+> +#include <media/v4l2-device.h>
+> +#include <media/v4l2-fh.h>
+> +#include <media/v4l2-event.h>
+>   
+> +#include "mtk_jpeg_core.h"
+>   #include "mtk_jpeg_enc_hw.h"
+>   
+>   static const struct mtk_jpeg_enc_qlt mtk_jpeg_enc_quality[] = {
+> @@ -30,6 +45,21 @@ static const struct mtk_jpeg_enc_qlt mtk_jpeg_enc_quality[] = {
+>   	{.quality_param = 97, .hardware_value = JPEG_ENC_QUALITY_Q97},
+>   };
+>   
+> +#if defined(CONFIG_OF)
+> +static const struct of_device_id mtk_jpegenc_drv_ids[] = {
 
---L2V1A7HZ4pNge4n4--
+There's nothing special in jpgenc1 or, at least, nothing that really needs
+us to differentiate between jpgenc0 and jpgenc1, apart knowing which core is
+the "main" one, hence, you don't need a special compatible string for each core.
+
+Here's my proposal:
+- Use one compatible "mediatek,mt8195-jpgenc-hw"
+- Add either of:
+   - A bool "mediatek,hw-leader" on core 0; or
+   - A u8 "mediatek,instance" (0, 1, 2 ... for core number)
+
+A comment is required on "mediatek,instance" though... this way should only be
+chosen if it is expected, in the future, to have the following situation on
+newer SoCs:
+- More than two cores, and
+- non-interchangeable cores (meaning that, for example, frame 1 *shall* go to
+   core 1, frame 2 shall go to core 2, frame 3 to core 3, BUT core 2/3 are not
+   interchangeable, as in there are reasons to never process frame 2 on core 3),
+   so this means that it's not important if Linux labels core 3 as core 2.
+
+Otherwise, if it's not expected to have non-interchangeable "hw-follower" cores,
+or if more than two cores are not ever expected, "mediatek,hw-leader" is the best
+choice for this.
+
+Example:
+
+jpegenc@address {
+	compatible = "mediatek,mt8195-jpgenc";
+	reg = < .... >;
+	ranges = < ....... >;
+	.... other properties here ....
+
+	jpegenc-hw0@relative-address {
+		compatible = "mediatek,mt8195-jpgenc-hw", "mediatek,jpgenc-hw";
+		iommus, interrupts, other properties here ...
+		mediatek,hw-leader;
+	};
+
+	jpegenc-hw1@relative-address {
+		compatible = "mediatek,mt8195-jpgenc-hw", "mediatek,jpgenc-hw";
+		iommus, interrupts, etc.....
+	};
+};
+
+> +	{
+> +		.compatible = "mediatek,mt8195-jpgenc0",
+> +		.data = (void *)MTK_JPEGENC_HW0,
+> +	},
+> +	{
+> +		.compatible = "mediatek,mt8195-jpgenc1",
+> +		.data = (void *)MTK_JPEGENC_HW1,
+> +	},
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, mtk_jpegenc_drv_ids);
+> +#endif
+> +
+>   void mtk_jpeg_enc_reset(void __iomem *base)
+>   {
+>   	writel(0, base + JPEG_ENC_RSTB);
+
+Thanks,
+Angelo
+
