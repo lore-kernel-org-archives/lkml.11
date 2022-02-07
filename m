@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E49C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73756C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358997AbiBGP7z (ORCPT
+        id S1356143AbiBGP7w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:59:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
+        Mon, 7 Feb 2022 10:59:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385588AbiBGP4H (ORCPT
+        with ESMTP id S1385583AbiBGPzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:56:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BDF6C0401CC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:56:07 -0800 (PST)
+        Mon, 7 Feb 2022 10:55:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4CF59C0401CE
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:55:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249366;
+        s=mimecast20190719; t=1644249351;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZPXfeiFExpOXhTUBTnQ3rPqBk4UBybQ6CD98nOBVkzg=;
-        b=RfI2Fu+bTDO2/YfkWELOFGBts+ncPuBV4cHm4LtalIHBw01if7+81tSqB6Hzo+CqnSZX5H
-        66uTKsN41B9niixMV79ozIDuA8qxxsfN+YDSD8Nd2UhPSU6mcKggJioSZwPPLfKZSpTSYg
-        tAKI667anbA/nXh/j67SzONmKEzbrT4=
+        bh=EAX/iPSDnKifJ1ul8GYSz/iW0O/HgQPeT+89Chaumh4=;
+        b=LC569S7T+X3ePsCLgWs9TDNGxFCbz30nhzCdOX1ueMlsvDiwadEb+6ZaT8FT9NNjIjm9Ea
+        gmYEXSb8SMFuoCgnB25X7JYroT+kHae3NOQFnmhkMtO9DtUKF6Pj+QyDsVsGyKXuDaKeyl
+        nStSc1gIyDgHuQawSuVdtamLIAl3bWg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-434-NgEBCeIEN32whUkd4taQkg-1; Mon, 07 Feb 2022 10:56:03 -0500
-X-MC-Unique: NgEBCeIEN32whUkd4taQkg-1
+ us-mta-311-jqEL4Il4OMi6dTRpCOZybg-1; Mon, 07 Feb 2022 10:55:48 -0500
+X-MC-Unique: jqEL4Il4OMi6dTRpCOZybg-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0DFD31091DA2;
-        Mon,  7 Feb 2022 15:56:00 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E9757DE38;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1FA26100C675;
         Mon,  7 Feb 2022 15:55:45 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.192.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 495177DE38;
+        Mon,  7 Feb 2022 15:55:37 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>,
@@ -67,9 +67,9 @@ Cc:     Tony Luck <tony.luck@intel.com>,
         Kan Liang <kan.liang@linux.intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 07/30] KVM: x86: nSVM: deal with L1 hypervisor that intercepts interrupts but lets L2 control them
-Date:   Mon,  7 Feb 2022 17:54:24 +0200
-Message-Id: <20220207155447.840194-8-mlevitsk@redhat.com>
+Subject: [PATCH RESEND 06/30] KVM: x86: mark syntethic SMM vmexit as SVM_EXIT_SW
+Date:   Mon,  7 Feb 2022 17:54:23 +0200
+Message-Id: <20220207155447.840194-7-mlevitsk@redhat.com>
 In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
 References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
@@ -79,90 +79,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix a corner case in which the L1 hypervisor intercepts
-interrupts (INTERCEPT_INTR) and either doesn't set
-virtual interrupt masking (V_INTR_MASKING) or enters a
-nested guest with EFLAGS.IF disabled prior to the entry.
+Use a dummy unused vmexit reason to mark the 'VM exit'
+that is happening when we exit to handle SMM,
+which is not a real VM exit.
 
-In this case, despite the fact that L1 intercepts the interrupts,
-KVM still needs to set up an interrupt window to wait before
-injecting the INTR vmexit.
-
-Currently the KVM instead enters an endless loop of 'req_immediate_exit'.
-
-Exactly the same issue also happens for SMIs and NMI.
-Fix this as well.
-
-Note that on VMX, this case is impossible as there is only
-'vmexit on external interrupts' execution control which either set,
-in which case both host and guest's EFLAGS.IF
-are ignored, or not set, in which case no VMexits are delivered.
-
+This makes it a bit easier to read the KVM trace,
+and avoids other potential problems.
 
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/svm/svm.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ arch/x86/kvm/svm/svm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 9a4e299ed5673..22e614008cf59 100644
+index 8013be9edf27c..9a4e299ed5673 100644
 --- a/arch/x86/kvm/svm/svm.c
 +++ b/arch/x86/kvm/svm/svm.c
-@@ -3372,11 +3372,13 @@ static int svm_nmi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- 	if (svm->nested.nested_run_pending)
- 		return -EBUSY;
+@@ -4194,7 +4194,7 @@ static int svm_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
+ 	svm->vmcb->save.rsp = vcpu->arch.regs[VCPU_REGS_RSP];
+ 	svm->vmcb->save.rip = vcpu->arch.regs[VCPU_REGS_RIP];
  
-+	if (svm_nmi_blocked(vcpu))
-+		return 0;
-+
- 	/* An NMI must not be injected into L2 if it's supposed to VM-Exit.  */
- 	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_nmi(svm))
- 		return -EBUSY;
--
--	return !svm_nmi_blocked(vcpu);
-+	return 1;
- }
+-	ret = nested_svm_vmexit(svm);
++	ret = nested_svm_simple_vmexit(svm, SVM_EXIT_SW);
+ 	if (ret)
+ 		return ret;
  
- static bool svm_get_nmi_mask(struct kvm_vcpu *vcpu)
-@@ -3428,9 +3430,13 @@ bool svm_interrupt_blocked(struct kvm_vcpu *vcpu)
- static int svm_interrupt_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-+
- 	if (svm->nested.nested_run_pending)
- 		return -EBUSY;
- 
-+	if (svm_interrupt_blocked(vcpu))
-+		return 0;
-+
- 	/*
- 	 * An IRQ must not be injected into L2 if it's supposed to VM-Exit,
- 	 * e.g. if the IRQ arrived asynchronously after checking nested events.
-@@ -3438,7 +3444,7 @@ static int svm_interrupt_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- 	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_intr(svm))
- 		return -EBUSY;
- 
--	return !svm_interrupt_blocked(vcpu);
-+	return 1;
- }
- 
- static void svm_enable_irq_window(struct kvm_vcpu *vcpu)
-@@ -4169,11 +4175,14 @@ static int svm_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- 	if (svm->nested.nested_run_pending)
- 		return -EBUSY;
- 
-+	if (svm_smi_blocked(vcpu))
-+		return 0;
-+
- 	/* An SMI must not be injected into L2 if it's supposed to VM-Exit.  */
- 	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_smi(svm))
- 		return -EBUSY;
- 
--	return !svm_smi_blocked(vcpu);
-+	return 1;
- }
- 
- static int svm_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
 -- 
 2.26.3
 
