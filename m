@@ -2,129 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96CBFC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B87A3C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377370AbiBGNLK (ORCPT
+        id S1448388AbiBGNLc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:11:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42876 "EHLO
+        Mon, 7 Feb 2022 08:11:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353403AbiBGNFN (ORCPT
+        with ESMTP id S1447408AbiBGM4x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:05:13 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7D8C0401D2;
-        Mon,  7 Feb 2022 05:05:04 -0800 (PST)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217BaCje024832;
-        Mon, 7 Feb 2022 13:05:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=9reA5PYbVXOY4Il5UEVRVO7g9nR9yFNlpSR7fCxMI7U=;
- b=c7fc1zI8s5tgeRjQ+Bs+S+Ljfm81Ugmc7cOspG4a9lysRqflAbYKIXj7tdKrQ/zMPnXe
- tGelKktw0wevQo43+T2T0+FrQe1z4ZJWDdjYSLCvQM89Qwq5tJsuPeZ6KPgf6GxHJEkk
- tRMKEt34xc4r9N5HdEaONmduwt+ia98q/h0XmfwG2LaHKJhpac7K4sf7KtmMluNtKLmu
- wwv9oKAEdHQ84sTXrR+p+E7VSKnh1GE2+srgTCqLKqZMolPh0FcGvjgh0RpOrwlnx1Vx
- fUnP/6w7QzBVUdZ+QDR/FVwwTFoqytNKGpWxD7nbsXo30QmWTCvntlMkXoLYTe4QRKPg ig== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22tqkxgg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 13:05:03 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217D0Hkl012466;
-        Mon, 7 Feb 2022 13:05:03 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22tqkxfm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 13:05:03 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217CwHxL012846;
-        Mon, 7 Feb 2022 13:05:00 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3e1gv8vkbh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 13:05:00 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217D4u7s30867896
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 13:04:56 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 81EC1A4070;
-        Mon,  7 Feb 2022 13:04:56 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 94252A406D;
-        Mon,  7 Feb 2022 13:04:55 +0000 (GMT)
-Received: from [9.171.90.80] (unknown [9.171.90.80])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 13:04:55 +0000 (GMT)
-Message-ID: <9a186055-2637-0113-18be-ab08b5db1c74@linux.ibm.com>
-Date:   Mon, 7 Feb 2022 14:04:55 +0100
+        Mon, 7 Feb 2022 07:56:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF93C043181;
+        Mon,  7 Feb 2022 04:56:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4793661123;
+        Mon,  7 Feb 2022 12:56:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FD66C004E1;
+        Mon,  7 Feb 2022 12:56:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644238611;
+        bh=8xgMJsl6httlwP/0dJYgn5BHyLzJK1hTK6WwcDbk8gM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ln6QFa642uBptjmCoJaPrIwBhwHzjksqi/8ZYGtnGXPJ5RbaOeX2CgXt5M6YLGv/3
+         PjMvEwILR41IQWSXddMktTcSgPZvUy3J9g8qavzWpobqsit9w69wc+eLjfRGXXt1s2
+         RSp+If0YZuQZ1qCsDz5jjhnHgSn0UCzh0n0DTk48XghpcYynq1yDZ2LKEjXAXM2pCQ
+         aj2thhyUGKdjZpaOl/V5T+D/Vww8tAY8ijq399ywdZ5kCQtVmIB7MyZs/2XPQRyENw
+         WPt3P1gdfuDY0qs8eRPElT0Drl+gd/loo69MvrX8BSNlaUuB+VyHEvPv96apC+lyBG
+         TiyGhVqb4kS1w==
+Date:   Mon, 7 Feb 2022 12:56:47 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Patrick Rudolph <patrick.rudolph@9elements.com>
+Cc:     Peter Rosin <peda@axentia.se>, Liam Girdwood <lgirdwood@gmail.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [v4 3/3] i2c: muxes: pca954x: Add regulator support
+Message-ID: <YgEXD4eTK3gB1EzM@sirena.org.uk>
+References: <20220207092827.104978-1-patrick.rudolph@9elements.com>
+ <20220207092827.104978-4-patrick.rudolph@9elements.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 30/30] MAINTAINERS: additional files related kvm s390
- pci passthrough
-Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Christian Borntraeger <borntraeger@de.ibm.com>
-References: <20220204211536.321475-1-mjrosato@linux.ibm.com>
- <20220204211536.321475-31-mjrosato@linux.ibm.com>
-From:   Christian Borntraeger <borntraeger@linux.ibm.com>
-In-Reply-To: <20220204211536.321475-31-mjrosato@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: URjhQ3veZQwwF_Mw6-Jw4d08Ttlhjew-
-X-Proofpoint-GUID: BdCsKKWGCe2pWYq6U14wyGqQzTRWGCp9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
- impostorscore=0 phishscore=0 suspectscore=0 malwarescore=0 mlxscore=0
- spamscore=0 priorityscore=1501 clxscore=1015 bulkscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070085
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="UyFMJwItiuRhtm5G"
+Content-Disposition: inline
+In-Reply-To: <20220207092827.104978-4-patrick.rudolph@9elements.com>
+X-Cookie: Never give an inch!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+--UyFMJwItiuRhtm5G
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Am 04.02.22 um 22:15 schrieb Matthew Rosato:
-> Add entries from the s390 kvm subdirectory related to pci passthrough.
-> 
-> Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
+On Mon, Feb 07, 2022 at 10:28:26AM +0100, Patrick Rudolph wrote:
 
+> Add an optional vdd regulator and enable it when found for devices
+> that are powered off by default.
 
-Can you change that to  borntraeger@linux.ibm.com ?
+Unless this device can work without power this regulator usage should
+not be optional.  This is just removing error handling.
 
+--UyFMJwItiuRhtm5G
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->   MAINTAINERS | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index bb83dcbcb619..2762295ad85e 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -16900,6 +16900,8 @@ M:	Eric Farman <farman@linux.ibm.com>
->   L:	linux-s390@vger.kernel.org
->   L:	kvm@vger.kernel.org
->   S:	Supported
-> +F:	arch/s390/include/asm/kvm_pci.h
-> +F:	arch/s390/kvm/pci*
->   F:	drivers/vfio/pci/vfio_pci_zdev.c
->   F:	include/uapi/linux/vfio_zdev.h
->   
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIBFw4ACgkQJNaLcl1U
+h9A1egf9FMFSaHWLZsE3ryRLlLWyRHTjN4R2PxElpm1jq3pj0VHsVvILflBYg3TU
+GVL/43pbgQ1rlKCc7gI79Wsnqodp8io8QbKVd8h+8HgE29sUQ/5V9MdsT1vfNDhS
+stkN5asRMsh8+qn3JatbyNSoxT9MMRAcwYrkjjTxlG5em9Bg71UeDgUV7mhzsPP9
+3c3+vSDnsRxnwqUdJX0wnurECFsPEN9sgXkwXVRpnBvnpqf8ClIbyO4ersSPDkAA
+ZoPQl64D3cOwXqEhr+qoI8v/I8k5Lg63qSZ22Ij9OxaRNrex6ivNMmUA1uocinsF
+gZzmWmXIgy6rUy3+o7e/pc89GaP4ng==
+=BYgj
+-----END PGP SIGNATURE-----
+
+--UyFMJwItiuRhtm5G--
