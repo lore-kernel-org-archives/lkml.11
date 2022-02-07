@@ -2,432 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB33AC47081
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695BDC47082
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357067AbiBGLUR (ORCPT
+        id S1382822AbiBGLUx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:20:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
+        Mon, 7 Feb 2022 06:20:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377215AbiBGLPY (ORCPT
+        with ESMTP id S1378063AbiBGLPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21477C0401DB;
-        Mon,  7 Feb 2022 03:15:02 -0800 (PST)
+        Mon, 7 Feb 2022 06:15:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE2FC0401CE;
+        Mon,  7 Feb 2022 03:15:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95B73B811B2;
-        Mon,  7 Feb 2022 11:15:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B35B3C004E1;
-        Mon,  7 Feb 2022 11:14:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEB94B811AF;
+        Mon,  7 Feb 2022 11:15:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7FEFC004E1;
+        Mon,  7 Feb 2022 11:15:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232500;
-        bh=fnJ5T/+T8VdjoPmxHrDFPmo/ON0q0F0U0DbtSCqqsQI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=yN5H00hYde95Nkr8l7fKzqwKT4gmelcZAvUzP/EOxm5QwSBsTPhGfqTO8mTVfa8BV
-         U4DVzcxKe15nfSnfTwg71QCkpcp7E+Ua5Pi2eaWHtjIUbznaeFT+VpMuO3E3limn3p
-         kJSlNjYrJhARCe9EL0N1KuV8qSylN0Zt2oMZJ+5g=
+        s=korg; t=1644232521;
+        bh=F1s5gUhACbxYTgy3q4vT3rcy4q4s2APu8H8KOKKraCE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZGqUVtfHTnNGBdpkKlCwHD16JczQ8bUiaGZ4dSCGWZZ1b2IRCp0K/GEqd8W57nAq2
+         qW4miE4gpPQrZSCAwnqvzOmfC5qsA/PQDl/eNyubxlBHEWhFZ68I6daIfyt6OIr+os
+         L2MY9ZyMsdmTOLGgF+AzOUaevAlew+SyOpeuVUY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.19 00/86] 4.19.228-rc1 review
-Date:   Mon,  7 Feb 2022 12:05:23 +0100
-Message-Id: <20220207103757.550973048@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 37/86] ipv6: annotate accesses to fn->fn_sernum
+Date:   Mon,  7 Feb 2022 12:06:00 +0100
+Message-Id: <20220207103758.744907067@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
+References: <20220207103757.550973048@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.228-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.19.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.19.228-rc1
-X-KernelTest-Deadline: 2022-02-09T10:38+00:00
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.19.228 release.
-There are 86 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
-
-Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
-Anything received after that time might be too late.
-
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.228-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.19.228-rc1
-
-Ritesh Harjani <riteshh@linux.ibm.com>
-    ext4: fix error handling in ext4_restore_inline_data()
-
-Sergey Shtylyov <s.shtylyov@omp.ru>
-    EDAC/xgene: Fix deferred probing
-
-Sergey Shtylyov <s.shtylyov@omp.ru>
-    EDAC/altera: Fix deferred probing
-
-Riwen Lu <luriwen@kylinos.cn>
-    rtc: cmos: Evaluate century appropriate
-
-Muhammad Usama Anjum <usama.anjum@collabora.com>
-    selftests: futex: Use variable MAKE instead of make
-
-Dai Ngo <dai.ngo@oracle.com>
-    nfsd: nfsd4_setclientid_confirm mistakenly expires confirmed client.
-
-John Meneghini <jmeneghi@redhat.com>
-    scsi: bnx2fc: Make bnx2fc_recv_frame() mp safe
-
-Dan Carpenter <dan.carpenter@oracle.com>
-    ASoC: max9759: fix underflow in speaker_gain_control_put()
-
-Jiasheng Jiang <jiasheng@iscas.ac.cn>
-    ASoC: cpcap: Check for NULL pointer after calling of_get_child_by_name
-
-Miaoqian Lin <linmq006@gmail.com>
-    ASoC: fsl: Add missing error handling in pcm030_fabric_probe
-
-Dan Carpenter <dan.carpenter@oracle.com>
-    drm/i915/overlay: Prevent divide by zero bugs in scaling
-
-Yannick Vignon <yannick.vignon@nxp.com>
-    net: stmmac: ensure PTP time register reads are consistent
-
-Lior Nahmanson <liorna@nvidia.com>
-    net: macsec: Verify that send_sci is on when setting Tx sci explicitly
-
-Miquel Raynal <miquel.raynal@bootlin.com>
-    net: ieee802154: Return meaningful error codes from the netlink helpers
-
-Miquel Raynal <miquel.raynal@bootlin.com>
-    net: ieee802154: ca8210: Stop leaking skb's
-
-Miquel Raynal <miquel.raynal@bootlin.com>
-    net: ieee802154: mcr20a: Fix lifs/sifs periods
-
-Miquel Raynal <miquel.raynal@bootlin.com>
-    net: ieee802154: hwsim: Ensure proper channel selection at probe time
-
-Miaoqian Lin <linmq006@gmail.com>
-    spi: meson-spicc: add IRQ check in meson_spicc_probe
-
-Benjamin Gaignard <benjamin.gaignard@collabora.com>
-    spi: mediatek: Avoid NULL pointer crash in interrupt
-
-Kamal Dasu <kdasu.kdev@gmail.com>
-    spi: bcm-qspi: check for valid cs before applying chip select
-
-Joerg Roedel <jroedel@suse.de>
-    iommu/amd: Fix loop timeout issue in iommu_ga_log_enable()
-
-Guoqing Jiang <guoqing.jiang@linux.dev>
-    iommu/vt-d: Fix potential memory leak in intel_setup_irq_remapping()
-
-Leon Romanovsky <leonro@nvidia.com>
-    RDMA/mlx4: Don't continue event handler after memory allocation failure
-
-Guenter Roeck <linux@roeck-us.net>
-    Revert "ASoC: mediatek: Check for error clk pointer"
-
-Martin K. Petersen <martin.petersen@oracle.com>
-    block: bio-integrity: Advance seed correctly for larger interval sizes
-
-Nick Lopez <github@glowingmonkey.org>
-    drm/nouveau: fix off by one in BIOS boundary checking
-
-Christian Lachner <gladiac@gmail.com>
-    ALSA: hda/realtek: Fix silent output on Gigabyte X570 Aorus Xtreme after reboot from Windows
-
-Christian Lachner <gladiac@gmail.com>
-    ALSA: hda/realtek: Fix silent output on Gigabyte X570S Aorus Master (newer chipset)
-
-Christian Lachner <gladiac@gmail.com>
-    ALSA: hda/realtek: Add missing fixup-model entry for Gigabyte X570 ALC1220 quirks
-
-Mark Brown <broonie@kernel.org>
-    ASoC: ops: Reject out of bounds values in snd_soc_put_xr_sx()
-
-Mark Brown <broonie@kernel.org>
-    ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
-
-Mark Brown <broonie@kernel.org>
-    ASoC: ops: Reject out of bounds values in snd_soc_put_volsw()
-
-Paul Moore <paul@paul-moore.com>
-    audit: improve audit queue handling when "audit=1" on cmdline
-
-Eric Dumazet <edumazet@google.com>
-    af_packet: fix data-race in packet_setsockopt / packet_setsockopt
-
-Eric Dumazet <edumazet@google.com>
-    rtnetlink: make sure to refresh master_dev/m_ops in __rtnl_newlink()
-
-Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-    net: amd-xgbe: Fix skb data length underflow
-
-Raju Rangoju <Raju.Rangoju@amd.com>
-    net: amd-xgbe: ensure to reset the tx_timer_active flag
-
-Georgi Valkov <gvalkov@abv.bg>
-    ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
-
-Eric Dumazet <edumazet@google.com>
-    tcp: fix possible socket leaks in internal pacing mode
-
-Florian Westphal <fw@strlen.de>
-    netfilter: nat: limit port clash resolution attempts
-
-Florian Westphal <fw@strlen.de>
-    netfilter: nat: remove l4 protocol port rovers
-
-Eric Dumazet <edumazet@google.com>
-    ipv4: tcp: send zero IPID in SYNACK messages
-
-Eric Dumazet <edumazet@google.com>
-    ipv4: raw: lock the socket in raw_bind()
-
-Hangyu Hua <hbh25y@gmail.com>
-    yam: fix a memory leak in yam_siocdevprivate()
-
-Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-    ibmvnic: don't spin in tasklet
-
-Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-    ibmvnic: init ->running_cap_crqs early
-
-Marek Behún <kabel@kernel.org>
-    phylib: fix potential use-after-free
-
-Trond Myklebust <trond.myklebust@hammerspace.com>
-    NFS: Ensure the server has an up to date ctime before renaming
-
-Trond Myklebust <trond.myklebust@hammerspace.com>
-    NFS: Ensure the server has an up to date ctime before hardlinking
-
-Eric Dumazet <edumazet@google.com>
-    ipv6: annotate accesses to fn->fn_sernum
-
-José Expósito <jose.exposito89@gmail.com>
-    drm/msm/dsi: invalid parameter check in msm_dsi_phy_enable
-
-Xianting Tian <xianting.tian@linux.alibaba.com>
-    drm/msm: Fix wrong size calculation
-
-Jianguo Wu <wujianguo@chinatelecom.cn>
-    net-procfs: show net devices bound packet types
-
-Trond Myklebust <trond.myklebust@hammerspace.com>
-    NFSv4: nfs_atomic_open() can race when looking up a non-regular file
-
-Trond Myklebust <trond.myklebust@hammerspace.com>
-    NFSv4: Handle case where the lookup of a directory fails
-
-Guenter Roeck <linux@roeck-us.net>
-    hwmon: (lm90) Reduce maximum conversion rate for G781
-
-Eric Dumazet <edumazet@google.com>
-    ipv4: avoid using shared IP generator for connected sockets
-
-Xin Long <lucien.xin@gmail.com>
-    ping: fix the sk_bound_dev_if match in ping_lookup
-
-Congyu Liu <liu3101@purdue.edu>
-    net: fix information leakage in /proc/net/ptype
-
-Ido Schimmel <idosch@nvidia.com>
-    ipv6_tunnel: Rate limit warning messages
-
-John Meneghini <jmeneghi@redhat.com>
-    scsi: bnx2fc: Flush destroy_work queue before calling bnx2fc_interface_put()
-
-Matthias Kaehlcke <mka@chromium.org>
-    rpmsg: char: Fix race between the release of rpmsg_eptdev and cdev
-
-Sujit Kautkar <sujitka@chromium.org>
-    rpmsg: char: Fix race between the release of rpmsg_ctrldev and cdev
-
-Joe Damato <jdamato@fastly.com>
-    i40e: fix unsigned stat widths
-
-Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
-    i40e: Fix queues reservation for XDP
-
-Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-    i40e: Fix issue when maximum queues is exceeded
-
-Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-    i40e: Increase delay to 1 s after global EMP reset
-
-Christophe Leroy <christophe.leroy@csgroup.eu>
-    powerpc/32: Fix boot failure with GCC latent entropy plugin
-
-Marek Behún <kabel@kernel.org>
-    net: sfp: ignore disabled SFP node
-
-Badhri Jagan Sridharan <badhri@google.com>
-    usb: typec: tcpm: Do not disconnect while receiving VBUS off
-
-Alan Stern <stern@rowland.harvard.edu>
-    USB: core: Fix hang in usb_kill_urb by adding memory barriers
-
-Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-    usb: gadget: f_sourcesink: Fix isoc transfer for USB_SPEED_SUPER_PLUS
-
-Jon Hunter <jonathanh@nvidia.com>
-    usb: common: ulpi: Fix crash in ulpi_match()
-
-Alan Stern <stern@rowland.harvard.edu>
-    usb-storage: Add unusual-devs entry for VL817 USB-SATA bridge
-
-Cameron Williams <cang1@live.co.uk>
-    tty: Add support for Brainboxes UC cards.
-
-daniel.starke@siemens.com <daniel.starke@siemens.com>
-    tty: n_gsm: fix SW flow control encoding/handling
-
-Valentin Caron <valentin.caron@foss.st.com>
-    serial: stm32: fix software flow control transfer
-
-Robert Hancock <robert.hancock@calian.com>
-    serial: 8250: of: Fix mapped region size when using reg-offset property
-
-Pablo Neira Ayuso <pablo@netfilter.org>
-    netfilter: nft_payload: do not update layer 4 checksum when mangling fragments
-
-Lucas Stach <l.stach@pengutronix.de>
-    drm/etnaviv: relax submit size limits
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    PM: wakeup: simplify the output logic of pm_show_wakelocks()
-
-Jan Kara <jack@suse.cz>
-    udf: Fix NULL ptr deref when converting from inline format
-
-Jan Kara <jack@suse.cz>
-    udf: Restore i_lenAlloc when inode expansion fails
-
-Steffen Maier <maier@linux.ibm.com>
-    scsi: zfcp: Fix failed recovery on gone remote port with non-NPIV FCP devices
-
-Vasily Gorbik <gor@linux.ibm.com>
-    s390/hypfs: include z/VM guests with access control group set
-
-Brian Gix <brian.gix@intel.com>
-    Bluetooth: refactor malicious adv data check
-
-
--------------
-
-Diffstat:
-
- Makefile                                           |   4 +-
- arch/powerpc/kernel/Makefile                       |   1 +
- arch/powerpc/lib/Makefile                          |   3 +
- arch/s390/hypfs/hypfs_vm.c                         |   6 +-
- block/bio-integrity.c                              |   2 +-
- drivers/edac/altera_edac.c                         |   2 +-
- drivers/edac/xgene_edac.c                          |   2 +-
- drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c       |   4 +-
- drivers/gpu/drm/i915/intel_overlay.c               |   3 +
- drivers/gpu/drm/msm/dsi/phy/dsi_phy.c              |   4 +-
- drivers/gpu/drm/msm/msm_drv.c                      |   2 +-
- drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c    |   2 +-
- drivers/hwmon/lm90.c                               |   2 +-
- drivers/infiniband/hw/mlx4/main.c                  |   2 +-
- drivers/iommu/amd_iommu_init.c                     |   2 +
- drivers/iommu/intel_irq_remapping.c                |  13 ++-
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c           |  14 ++-
- drivers/net/ethernet/ibm/ibmvnic.c                 | 112 +++++++++++++--------
- drivers/net/ethernet/intel/i40e/i40e.h             |   9 +-
- drivers/net/ethernet/intel/i40e/i40e_debugfs.c     |   2 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c        |  44 ++++----
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c |  59 +++++++++++
- .../net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c  |  19 ++--
- drivers/net/hamradio/yam.c                         |   4 +-
- drivers/net/ieee802154/ca8210.c                    |   1 +
- drivers/net/ieee802154/mac802154_hwsim.c           |   1 +
- drivers/net/ieee802154/mcr20a.c                    |   4 +-
- drivers/net/macsec.c                               |   9 ++
- drivers/net/phy/phy_device.c                       |   6 +-
- drivers/net/phy/phylink.c                          |   5 +
- drivers/net/usb/ipheth.c                           |   6 +-
- drivers/rpmsg/rpmsg_char.c                         |  22 +---
- drivers/rtc/rtc-mc146818-lib.c                     |   2 +-
- drivers/s390/scsi/zfcp_fc.c                        |  13 ++-
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c                  |  41 ++++----
- drivers/soc/mediatek/mtk-scpsys.c                  |  15 +--
- drivers/spi/spi-bcm-qspi.c                         |   2 +-
- drivers/spi/spi-meson-spicc.c                      |   5 +
- drivers/spi/spi-mt65xx.c                           |   2 +-
- drivers/tty/n_gsm.c                                |   4 +-
- drivers/tty/serial/8250/8250_of.c                  |  11 +-
- drivers/tty/serial/8250/8250_pci.c                 | 100 +++++++++++++++++-
- drivers/tty/serial/stm32-usart.c                   |   2 +-
- drivers/usb/common/ulpi.c                          |   7 +-
- drivers/usb/core/hcd.c                             |  14 +++
- drivers/usb/core/urb.c                             |  12 +++
- drivers/usb/gadget/function/f_sourcesink.c         |   1 +
- drivers/usb/storage/unusual_devs.h                 |  10 ++
- drivers/usb/typec/tcpm.c                           |   3 +-
- fs/ext4/inline.c                                   |  10 +-
- fs/nfs/dir.c                                       |  22 ++++
- fs/nfsd/nfs4state.c                                |   4 +-
- fs/udf/inode.c                                     |   9 +-
- include/linux/netdevice.h                          |   1 +
- include/net/ip.h                                   |  21 ++--
- include/net/ip6_fib.h                              |   2 +-
- include/net/netfilter/nf_nat_l4proto.h             |   2 +-
- kernel/audit.c                                     |  62 ++++++++----
- kernel/power/wakelock.c                            |  12 +--
- net/bluetooth/hci_event.c                          |  10 +-
- net/core/net-procfs.c                              |  38 ++++++-
- net/core/rtnetlink.c                               |   6 +-
- net/ieee802154/nl802154.c                          |   8 +-
- net/ipv4/ip_output.c                               |  11 +-
- net/ipv4/ping.c                                    |   3 +-
- net/ipv4/raw.c                                     |   5 +-
- net/ipv4/tcp_output.c                              |  31 ++++--
- net/ipv6/ip6_fib.c                                 |  23 +++--
- net/ipv6/ip6_tunnel.c                              |   8 +-
- net/ipv6/route.c                                   |   2 +-
- net/netfilter/nf_nat_proto_common.c                |  37 ++++---
- net/netfilter/nf_nat_proto_dccp.c                  |   5 +-
- net/netfilter/nf_nat_proto_sctp.c                  |   5 +-
- net/netfilter/nf_nat_proto_tcp.c                   |   5 +-
- net/netfilter/nf_nat_proto_udp.c                   |  10 +-
- net/netfilter/nft_payload.c                        |   3 +
- net/packet/af_packet.c                             |  10 +-
- sound/pci/hda/patch_realtek.c                      |   5 +-
- sound/soc/codecs/cpcap.c                           |   2 +
- sound/soc/codecs/max9759.c                         |   3 +-
- sound/soc/fsl/pcm030-audio-fabric.c                |  11 +-
- sound/soc/soc-ops.c                                |  29 +++++-
- tools/testing/selftests/futex/Makefile             |   4 +-
- 83 files changed, 731 insertions(+), 303 deletions(-)
+From: Eric Dumazet <edumazet@google.com>
+
+commit aafc2e3285c2d7a79b7ee15221c19fbeca7b1509 upstream.
+
+struct fib6_node's fn_sernum field can be
+read while other threads change it.
+
+Add READ_ONCE()/WRITE_ONCE() annotations.
+
+Do not change existing smp barriers in fib6_get_cookie_safe()
+and __fib6_update_sernum_upto_root()
+
+syzbot reported:
+
+BUG: KCSAN: data-race in fib6_clean_node / inet6_csk_route_socket
+
+write to 0xffff88813df62e2c of 4 bytes by task 1920 on cpu 1:
+ fib6_clean_node+0xc2/0x260 net/ipv6/ip6_fib.c:2178
+ fib6_walk_continue+0x38e/0x430 net/ipv6/ip6_fib.c:2112
+ fib6_walk net/ipv6/ip6_fib.c:2160 [inline]
+ fib6_clean_tree net/ipv6/ip6_fib.c:2240 [inline]
+ __fib6_clean_all+0x1a9/0x2e0 net/ipv6/ip6_fib.c:2256
+ fib6_flush_trees+0x6c/0x80 net/ipv6/ip6_fib.c:2281
+ rt_genid_bump_ipv6 include/net/net_namespace.h:488 [inline]
+ addrconf_dad_completed+0x57f/0x870 net/ipv6/addrconf.c:4230
+ addrconf_dad_work+0x908/0x1170
+ process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
+ worker_thread+0x616/0xa70 kernel/workqueue.c:2454
+ kthread+0x1bf/0x1e0 kernel/kthread.c:359
+ ret_from_fork+0x1f/0x30
+
+read to 0xffff88813df62e2c of 4 bytes by task 15701 on cpu 0:
+ fib6_get_cookie_safe include/net/ip6_fib.h:285 [inline]
+ rt6_get_cookie include/net/ip6_fib.h:306 [inline]
+ ip6_dst_store include/net/ip6_route.h:234 [inline]
+ inet6_csk_route_socket+0x352/0x3c0 net/ipv6/inet6_connection_sock.c:109
+ inet6_csk_xmit+0x91/0x1e0 net/ipv6/inet6_connection_sock.c:121
+ __tcp_transmit_skb+0x1323/0x1840 net/ipv4/tcp_output.c:1402
+ tcp_transmit_skb net/ipv4/tcp_output.c:1420 [inline]
+ tcp_write_xmit+0x1450/0x4460 net/ipv4/tcp_output.c:2680
+ __tcp_push_pending_frames+0x68/0x1c0 net/ipv4/tcp_output.c:2864
+ tcp_push+0x2d9/0x2f0 net/ipv4/tcp.c:725
+ mptcp_push_release net/mptcp/protocol.c:1491 [inline]
+ __mptcp_push_pending+0x46c/0x490 net/mptcp/protocol.c:1578
+ mptcp_sendmsg+0x9ec/0xa50 net/mptcp/protocol.c:1764
+ inet6_sendmsg+0x5f/0x80 net/ipv6/af_inet6.c:643
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ kernel_sendmsg+0x97/0xd0 net/socket.c:745
+ sock_no_sendpage+0x84/0xb0 net/core/sock.c:3086
+ inet_sendpage+0x9d/0xc0 net/ipv4/af_inet.c:834
+ kernel_sendpage+0x187/0x200 net/socket.c:3492
+ sock_sendpage+0x5a/0x70 net/socket.c:1007
+ pipe_to_sendpage+0x128/0x160 fs/splice.c:364
+ splice_from_pipe_feed fs/splice.c:418 [inline]
+ __splice_from_pipe+0x207/0x500 fs/splice.c:562
+ splice_from_pipe fs/splice.c:597 [inline]
+ generic_splice_sendpage+0x94/0xd0 fs/splice.c:746
+ do_splice_from fs/splice.c:767 [inline]
+ direct_splice_actor+0x80/0xa0 fs/splice.c:936
+ splice_direct_to_actor+0x345/0x650 fs/splice.c:891
+ do_splice_direct+0x106/0x190 fs/splice.c:979
+ do_sendfile+0x675/0xc40 fs/read_write.c:1245
+ __do_sys_sendfile64 fs/read_write.c:1310 [inline]
+ __se_sys_sendfile64 fs/read_write.c:1296 [inline]
+ __x64_sys_sendfile64+0x102/0x140 fs/read_write.c:1296
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0x0000026f -> 0x00000271
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 15701 Comm: syz-executor.2 Not tainted 5.16.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+The Fixes tag I chose is probably arbitrary, I do not think
+we need to backport this patch to older kernels.
+
+Fixes: c5cff8561d2d ("ipv6: add rcu grace period before freeing fib6_node")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Link: https://lore.kernel.org/r/20220120174112.1126644-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/net/ip6_fib.h |    2 +-
+ net/ipv6/ip6_fib.c    |   23 +++++++++++++----------
+ net/ipv6/route.c      |    2 +-
+ 3 files changed, 15 insertions(+), 12 deletions(-)
+
+--- a/include/net/ip6_fib.h
++++ b/include/net/ip6_fib.h
+@@ -243,7 +243,7 @@ static inline bool fib6_get_cookie_safe(
+ 	fn = rcu_dereference(f6i->fib6_node);
+ 
+ 	if (fn) {
+-		*cookie = fn->fn_sernum;
++		*cookie = READ_ONCE(fn->fn_sernum);
+ 		/* pairs with smp_wmb() in fib6_update_sernum_upto_root() */
+ 		smp_rmb();
+ 		status = true;
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -112,7 +112,7 @@ void fib6_update_sernum(struct net *net,
+ 	fn = rcu_dereference_protected(f6i->fib6_node,
+ 			lockdep_is_held(&f6i->fib6_table->tb6_lock));
+ 	if (fn)
+-		fn->fn_sernum = fib6_new_sernum(net);
++		WRITE_ONCE(fn->fn_sernum, fib6_new_sernum(net));
+ }
+ 
+ /*
+@@ -544,12 +544,13 @@ static int fib6_dump_table(struct fib6_t
+ 		spin_unlock_bh(&table->tb6_lock);
+ 		if (res > 0) {
+ 			cb->args[4] = 1;
+-			cb->args[5] = w->root->fn_sernum;
++			cb->args[5] = READ_ONCE(w->root->fn_sernum);
+ 		}
+ 	} else {
+-		if (cb->args[5] != w->root->fn_sernum) {
++		int sernum = READ_ONCE(w->root->fn_sernum);
++		if (cb->args[5] != sernum) {
+ 			/* Begin at the root if the tree changed */
+-			cb->args[5] = w->root->fn_sernum;
++			cb->args[5] = sernum;
+ 			w->state = FWS_INIT;
+ 			w->node = w->root;
+ 			w->skip = w->count;
+@@ -1203,7 +1204,7 @@ static void __fib6_update_sernum_upto_ro
+ 	/* paired with smp_rmb() in rt6_get_cookie_safe() */
+ 	smp_wmb();
+ 	while (fn) {
+-		fn->fn_sernum = sernum;
++		WRITE_ONCE(fn->fn_sernum, sernum);
+ 		fn = rcu_dereference_protected(fn->parent,
+ 				lockdep_is_held(&rt->fib6_table->tb6_lock));
+ 	}
+@@ -1983,8 +1984,8 @@ static int fib6_clean_node(struct fib6_w
+ 	};
+ 
+ 	if (c->sernum != FIB6_NO_SERNUM_CHANGE &&
+-	    w->node->fn_sernum != c->sernum)
+-		w->node->fn_sernum = c->sernum;
++	    READ_ONCE(w->node->fn_sernum) != c->sernum)
++		WRITE_ONCE(w->node->fn_sernum, c->sernum);
+ 
+ 	if (!c->func) {
+ 		WARN_ON_ONCE(c->sernum == FIB6_NO_SERNUM_CHANGE);
+@@ -2332,7 +2333,7 @@ static void ipv6_route_seq_setup_walk(st
+ 	iter->w.state = FWS_INIT;
+ 	iter->w.node = iter->w.root;
+ 	iter->w.args = iter;
+-	iter->sernum = iter->w.root->fn_sernum;
++	iter->sernum = READ_ONCE(iter->w.root->fn_sernum);
+ 	INIT_LIST_HEAD(&iter->w.lh);
+ 	fib6_walker_link(net, &iter->w);
+ }
+@@ -2360,8 +2361,10 @@ static struct fib6_table *ipv6_route_seq
+ 
+ static void ipv6_route_check_sernum(struct ipv6_route_iter *iter)
+ {
+-	if (iter->sernum != iter->w.root->fn_sernum) {
+-		iter->sernum = iter->w.root->fn_sernum;
++	int sernum = READ_ONCE(iter->w.root->fn_sernum);
++
++	if (iter->sernum != sernum) {
++		iter->sernum = sernum;
+ 		iter->w.state = FWS_INIT;
+ 		iter->w.node = iter->w.root;
+ 		WARN_ON(iter->w.skip);
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -2320,7 +2320,7 @@ static void ip6_link_failure(struct sk_b
+ 			if (from) {
+ 				fn = rcu_dereference(from->fib6_node);
+ 				if (fn && (rt->rt6i_flags & RTF_DEFAULT))
+-					fn->fn_sernum = -1;
++					WRITE_ONCE(fn->fn_sernum, -1);
+ 			}
+ 		}
+ 		rcu_read_unlock();
 
 
