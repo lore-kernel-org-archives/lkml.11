@@ -2,54 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F0FC47082
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAEEC3527C
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238533AbiBGFuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:50:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
+        id S239143AbiBGFuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352076AbiBGEsn (ORCPT
+        with ESMTP id S241071AbiBGEqs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:48:43 -0500
+        Sun, 6 Feb 2022 23:46:48 -0500
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A818C043181;
-        Sun,  6 Feb 2022 20:48:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAE7C043181;
+        Sun,  6 Feb 2022 20:46:46 -0800 (PST)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 2472B1F37E;
-        Mon,  7 Feb 2022 04:48:41 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 4B1AF1F37E;
+        Mon,  7 Feb 2022 04:46:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644209321; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1644209205; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=abp/o94+2rJ4ao5gU5Y3VRhEK9AxXE9gpElUGz0LzVk=;
-        b=CCn6rwGgP1ohSmx2GAqIuYP8+Qj6wqy0px0oekO6styNpRvwCtVHm+LgMww7xKi0dZxr33
-        F9KVX5dJGAHKxI8KHRFoW/9WEqDbubyDmE97JuSIsq374hFBq9bgFNGw7hHp+kM2IV8b6V
-        v8ETLUb5TzNyIoMihm1YrQCqDarH5TE=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=U9N4d6jiSLUN/jgU8wn+Vx5a7YFyPHoCVjyVTiQLtWo=;
+        b=D7ClHLlXCPAnUMq8dOvwwwrzmaScoUlfNpLlP8S3SYnqtpIWp1GvKY3L1IQPtBoYiEW6PM
+        5jAqcWOlkakD4qjbhUmLX8EmVIZNMZy/zOHGAxZ6J6qNuD/7jguzu128xBC84FZvC0zsQH
+        +mKe4lXZ0OsN3471M8Q8Vw/8Kn08LD0=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644209321;
+        s=susede2_ed25519; t=1644209205;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=abp/o94+2rJ4ao5gU5Y3VRhEK9AxXE9gpElUGz0LzVk=;
-        b=zX3qPGqzKSp/jTG3hChxzUyM+Yu2Mr9oyUJcRa20dUWYAXy1z0gdUFudbbOcKK+2H6ZalB
-        KkALKn9wZTiQL3CA==
+         content-transfer-encoding:content-transfer-encoding;
+        bh=U9N4d6jiSLUN/jgU8wn+Vx5a7YFyPHoCVjyVTiQLtWo=;
+        b=hHkMCaHK8KlVEpuDXQEX/KtsCHk/EHsmxCbe8b1mwiiu69NFUbbVVBGfHAulbMf7Mtoe17
+        /WLUrlTVBvFxEqDw==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 47EF01330E;
-        Mon,  7 Feb 2022 04:48:37 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2F0291330E;
+        Mon,  7 Feb 2022 04:46:41 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id HcYZAaWkAGKHNQAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:48:37 +0000
-Subject: [PATCH 16/21] NFS: discard NFS_RPC_SWAPFLAGS and RPC_TASK_ROOTCREDS
+        id L37WNTGkAGL/NAAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:46:41 +0000
+Subject: [PATCH 00/21 V4] Repair SWAP-over_NFS
 From:   NeilBrown <neilb@suse.de>
 To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
         Anna Schumaker <anna.schumaker@netapp.com>,
@@ -60,10 +58,8 @@ To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
         David Howells <dhowells@redhat.com>
 Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Date:   Mon, 07 Feb 2022 15:46:01 +1100
-Message-ID: <164420916121.29374.12391432623392264427.stgit@noble.brown>
-In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
+Date:   Mon, 07 Feb 2022 15:46:00 +1100
+Message-ID: <164420889455.29374.17958998143835612560.stgit@noble.brown>
 User-Agent: StGit/0.23
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -72,96 +68,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-NFS_RPC_SWAPFLAGS is only used for READ requests.
-It sets RPC_TASK_SWAPPER which gives some memory-allocation priority to
-requests.  This is not needed for swap READ - though it is for writes
-where it is set via a different mechanism.
+This 4th version of the series address review comment, particularly
+tidying up "NFS: swap IO handling is slightly different for O_DIRECT IO"
+and collect reviewed-by etc.
 
-RPC_TASK_ROOTCREDS causes the 'machine' credential to be used.
-This is not needed as the root credential is saved when the swap file is
-opened, and this is used for all IO.
+I've also move 3 NFS patches which depend on the MM patches to the end
+in case they helps maintainers land the patches in a consistent order.
+Those three patches might go through the NFS free after the next merge
+window.
 
-So NFS_RPC_SWAPFLAGS isn't needed, and as it is the only user of
-RPC_TASK_ROOTCREDS, that isn't needed either.
+Original intro follows.
+Thanks,
+NeilBrown
 
-Remove both.
+swap-over-NFS currently has a variety of problems.
 
-Signed-off-by: NeilBrown <neilb@suse.de>
+swap writes call generic_write_checks(), which always fails on a swap
+file, so it completely fails.
+Even without this, various deadlocks are possible - largely due to
+improvements in NFS memory allocation (using NOFS instead of ATOMIC)
+which weren't tested against swap-out.
+
+NFS is the only filesystem that has supported fs-based swap IO, and it
+hasn't worked for several releases, so now is a convenient time to clean
+up the swap-via-filesystem interfaces - we cannot break anything !
+
+So the first few patches here clean up and improve various parts of the
+swap-via-filesystem code.  ->activate_swap() is given a cleaner
+interface, a new ->swap_rw is introduced instead of burdening
+->direct_IO, etc.
+
+Current swap-to-filesystem code only ever submits single-page reads and
+writes.  These patches change that to allow multi-page IO when adjacent
+requests are submitted.  Writes are also changed to be async rather than
+sync.  This substantially speeds up write throughput for swap-over-NFS.
+
 ---
- fs/nfs/read.c                 |    4 ----
- include/linux/nfs_fs.h        |    5 -----
- include/linux/sunrpc/sched.h  |    1 -
- include/trace/events/sunrpc.h |    1 -
- net/sunrpc/auth.c             |    2 +-
- 5 files changed, 1 insertion(+), 12 deletions(-)
 
-diff --git a/fs/nfs/read.c b/fs/nfs/read.c
-index eb00229c1a50..cd797ce3a67c 100644
---- a/fs/nfs/read.c
-+++ b/fs/nfs/read.c
-@@ -194,10 +194,6 @@ static void nfs_initiate_read(struct nfs_pgio_header *hdr,
- 			      const struct nfs_rpc_ops *rpc_ops,
- 			      struct rpc_task_setup *task_setup_data, int how)
- {
--	struct inode *inode = hdr->inode;
--	int swap_flags = IS_SWAPFILE(inode) ? NFS_RPC_SWAPFLAGS : 0;
--
--	task_setup_data->flags |= swap_flags;
- 	rpc_ops->read_setup(hdr, msg);
- 	trace_nfs_initiate_read(hdr);
- }
-diff --git a/include/linux/nfs_fs.h b/include/linux/nfs_fs.h
-index 02aa49323d1d..ff8b3820409c 100644
---- a/include/linux/nfs_fs.h
-+++ b/include/linux/nfs_fs.h
-@@ -45,11 +45,6 @@
-  */
- #define NFS_MAX_TRANSPORTS 16
- 
--/*
-- * These are the default flags for swap requests
-- */
--#define NFS_RPC_SWAPFLAGS		(RPC_TASK_SWAPPER|RPC_TASK_ROOTCREDS)
--
- /*
-  * Size of the NFS directory verifier
-  */
-diff --git a/include/linux/sunrpc/sched.h b/include/linux/sunrpc/sched.h
-index db964bb63912..56710f8056d3 100644
---- a/include/linux/sunrpc/sched.h
-+++ b/include/linux/sunrpc/sched.h
-@@ -124,7 +124,6 @@ struct rpc_task_setup {
- #define RPC_TASK_MOVEABLE	0x0004		/* nfs4.1+ rpc tasks */
- #define RPC_TASK_NULLCREDS	0x0010		/* Use AUTH_NULL credential */
- #define RPC_CALL_MAJORSEEN	0x0020		/* major timeout seen */
--#define RPC_TASK_ROOTCREDS	0x0040		/* force root creds */
- #define RPC_TASK_DYNAMIC	0x0080		/* task was kmalloc'ed */
- #define	RPC_TASK_NO_ROUND_ROBIN	0x0100		/* send requests on "main" xprt */
- #define RPC_TASK_SOFT		0x0200		/* Use soft timeouts */
-diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
-index 29982d60b68a..ac33892da411 100644
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -311,7 +311,6 @@ TRACE_EVENT(rpc_request,
- 		{ RPC_TASK_MOVEABLE, "MOVEABLE" },			\
- 		{ RPC_TASK_NULLCREDS, "NULLCREDS" },			\
- 		{ RPC_CALL_MAJORSEEN, "MAJORSEEN" },			\
--		{ RPC_TASK_ROOTCREDS, "ROOTCREDS" },			\
- 		{ RPC_TASK_DYNAMIC, "DYNAMIC" },			\
- 		{ RPC_TASK_NO_ROUND_ROBIN, "NO_ROUND_ROBIN" },		\
- 		{ RPC_TASK_SOFT, "SOFT" },				\
-diff --git a/net/sunrpc/auth.c b/net/sunrpc/auth.c
-index 6bfa19f9fa6a..682fcd24bf43 100644
---- a/net/sunrpc/auth.c
-+++ b/net/sunrpc/auth.c
-@@ -670,7 +670,7 @@ rpcauth_bindcred(struct rpc_task *task, const struct cred *cred, int flags)
- 	/* If machine cred couldn't be bound, try a root cred */
- 	if (new)
- 		;
--	else if (cred == &machine_cred || (flags & RPC_TASK_ROOTCREDS))
-+	else if (cred == &machine_cred)
- 		new = rpcauth_bind_root_cred(task, lookupflags);
- 	else if (flags & RPC_TASK_NULLCREDS)
- 		new = authnull_ops.lookup_cred(NULL, NULL, 0);
+NeilBrown (21):
+ MM - in merge winow
+      MM: create new mm/swap.h header file.
+      MM: drop swap_set_page_dirty
+      MM: move responsibility for setting SWP_FS_OPS to ->swap_activate
+      MM: reclaim mustn't enter FS for SWP_FS_OPS swap-space
+      MM: introduce ->swap_rw and use it for reads from SWP_FS_OPS swap-space
+      MM: perform async writes to SWP_FS_OPS swap-space using ->swap_rw
+      DOC: update documentation for swap_activate and swap_rw
+      MM: submit multipage reads for SWP_FS_OPS swap-space
+      MM: submit multipage write for SWP_FS_OPS swap-space
+      VFS: Add FMODE_CAN_ODIRECT file flag
 
+ NFS - in merge window
+      NFS: remove IS_SWAPFILE hack
+      SUNRPC/call_alloc: async tasks mustn't block waiting for memory
+      SUNRPC/auth: async tasks mustn't block waiting for memory
+      SUNRPC/xprt: async tasks mustn't block waiting for memory
+      SUNRPC: remove scheduling boost for "SWAPPER" tasks.
+      NFS: discard NFS_RPC_SWAPFLAGS and RPC_TASK_ROOTCREDS
+      SUNRPC: improve 'swap' handling: scheduling and PF_MEMALLOC
+      NFSv4: keep state manager thread active if swap is enabled
+
+ NFS - after merge window
+      NFS: rename nfs_direct_IO and use as ->swap_rw
+      NFS: swap IO handling is slightly different for O_DIRECT IO
+      NFS: swap-out must always use STABLE writes.
+
+
+ Documentation/filesystems/locking.rst |  18 +-
+ Documentation/filesystems/vfs.rst     |  17 +-
+ drivers/block/loop.c                  |   4 +-
+ fs/cifs/file.c                        |   7 +-
+ fs/fcntl.c                            |   9 +-
+ fs/nfs/direct.c                       |  67 +++++---
+ fs/nfs/file.c                         |  39 +++--
+ fs/nfs/nfs4_fs.h                      |   1 +
+ fs/nfs/nfs4proc.c                     |  20 +++
+ fs/nfs/nfs4state.c                    |  39 ++++-
+ fs/nfs/read.c                         |   4 -
+ fs/nfs/write.c                        |   2 +
+ fs/open.c                             |   9 +-
+ fs/overlayfs/file.c                   |  13 +-
+ include/linux/fs.h                    |   4 +
+ include/linux/nfs_fs.h                |  15 +-
+ include/linux/nfs_xdr.h               |   2 +
+ include/linux/sunrpc/auth.h           |   1 +
+ include/linux/sunrpc/sched.h          |   1 -
+ include/linux/swap.h                  |   7 +-
+ include/linux/writeback.h             |   7 +
+ include/trace/events/sunrpc.h         |   1 -
+ mm/madvise.c                          |   8 +-
+ mm/memory.c                           |   2 +-
+ mm/page_io.c                          | 237 +++++++++++++++++++-------
+ mm/swap.h                             |  30 +++-
+ mm/swap_state.c                       |  22 ++-
+ mm/swapfile.c                         |  13 +-
+ mm/vmscan.c                           |  38 +++--
+ net/sunrpc/auth.c                     |   8 +-
+ net/sunrpc/auth_gss/auth_gss.c        |   6 +-
+ net/sunrpc/auth_unix.c                |  10 +-
+ net/sunrpc/clnt.c                     |   7 +-
+ net/sunrpc/sched.c                    |  29 ++--
+ net/sunrpc/xprt.c                     |  19 +--
+ net/sunrpc/xprtrdma/transport.c       |  10 +-
+ net/sunrpc/xprtsock.c                 |   8 +
+ 37 files changed, 519 insertions(+), 215 deletions(-)
+
+--
+Signature
 
