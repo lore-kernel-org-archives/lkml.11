@@ -2,124 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C483FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3F8EC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245145AbiBGRqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:46:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
+        id S1344725AbiBGRq1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 12:46:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384311AbiBGRgy (ORCPT
+        with ESMTP id S1383727AbiBGRke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:36:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33FB7C0401D5;
-        Mon,  7 Feb 2022 09:36:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5717B815C6;
-        Mon,  7 Feb 2022 17:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51C3CC004E1;
-        Mon,  7 Feb 2022 17:36:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644255410;
-        bh=/7YN1m76qf4snYDMVXR15LGTPvRjVN/AzA2qo6qhVtI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=sIIeoPL8OANAhj44U1X2u3zQNXXTY1oNGPK1fQdVT33tNkvktg0GpxHLyNj3K0x0Y
-         wtLfKFRIAPZAXgk6+w5ADLpkcGocrbN7xLd3pMhnGVkDs7MLXNgdzQHEBb+dHjMOCA
-         lPu5UbwA4JkRzAAZglw0pPUuwOTIVReV56CBlvm1GdMxqXbvCjeYYGxm1aKC3/xnlE
-         LVAsPetTzl99KaBACPC+Q4vhd2QS7IScea5Vt041eaunVaLh9tAUgXN4J26/cEi2V1
-         gqn18+3Cut7ljOd6vFbBscsv+wvwpDnmq2ODyZpbafGo39RxgCSfqrEsbZ3+4IsH09
-         yhC3Bq8NCI8wg==
-Date:   Mon, 7 Feb 2022 11:36:48 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Vidya Sagar <vidyas@nvidia.com>
-Cc:     bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, kishon@ti.com,
-        vkoul@kernel.org, kw@linux.com, krzysztof.kozlowski@canonical.com,
-        p.zabel@pengutronix.de, mperttunen@nvidia.com,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org, kthota@nvidia.com,
-        mmaddireddy@nvidia.com, sagar.tv@gmail.com
-Subject: Re: [PATCH V1 09/10] PCI: Disable MSI for Tegra234 root ports
-Message-ID: <20220207173648.GA402391@bhelgaas>
+        Mon, 7 Feb 2022 12:40:34 -0500
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C5A1C0401D9;
+        Mon,  7 Feb 2022 09:40:34 -0800 (PST)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nH7yl-0006Gx-01; Mon, 07 Feb 2022 18:39:07 +0100
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 66847C2116; Mon,  7 Feb 2022 18:35:50 +0100 (CET)
+Date:   Mon, 7 Feb 2022 18:35:50 +0100
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Huacai Chen <chenhuacai@kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v2 1/2] MIPS: Loongson64: Clean up use of cc-ifversion
+Message-ID: <20220207173550.GB16822@alpha.franken.de>
+References: <20220125221925.3547683-1-nathan@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220205162144.30240-10-vidyas@nvidia.com>
+In-Reply-To: <20220125221925.3547683-1-nathan@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 09:51:43PM +0530, Vidya Sagar wrote:
-> Tegra234 PCIe rootports don't generate MSI interrupts for PME and AER
-> events. Since PCIe spec (Ref: r4.0 sec 7.7.1.2 and 7.7.2.2) doesn't support
-> using a mix of INTx and MSI/MSI-X, MSI needs to be disabled to avoid root
-> ports service drivers registering their respective ISRs with MSI interrupt
-> and to let only INTx be used for all events.
-
-s/rootports/root ports/ to match other usage here.
-
-This argument matches that in 8c7e96d3fe75 ("PCI: Disable MSI for
-Tegra root ports") [1], but that's not quite what sec 7.7.1.2 and
-7.7.2.2 say.  Those sections talk about what happens when both MSI and
-MSI-X are disabled:
-
-  If MSI and MSI-X are both disabled, the Function requests servicing
-  using INTx interrupts (if supported).
-
-but they don't say anything about what happens when MSI or MSI-X is
-*enabled*.
-
-I think a better citation is PCIe r6.0, sec 6.1.4.3, which says:
-
-  While enabled for MSI or MSI-X operation, a Function is prohibited
-  from using INTx interrupts (if implemented) to request service (MSI,
-  MSI-X, and INTx are mutually exclusive).
-
-Can you please update the comment in the code and this commit log to
-cite PCIe r6.0, sec 6.1.4.3 instead, and to clarify that these Tegra
-devices always use INTx for PME and AER, even when MSI/MSI-X is
-enabled?
-
-Why do these Tegra quirks use DECLARE_PCI_FIXUP_CLASS_EARLY() instead
-of just DECLARE_PCI_FIXUP_EARLY()?  quirk_al_msi_disable() uses the
-_CLASS version because the same Device ID is used for non-Root Port
-devices.  Is the same true here, or could these use
-DECLARE_PCI_FIXUP_EARLY()?
-
-There are many quirks that disable MSI, and they're a mixture of EARLY
-and FINAL.  They should probably all be the same.
-
-[1] https://git.kernel.org/linus/8c7e96d3fe75
-
-> Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+On Tue, Jan 25, 2022 at 03:19:24PM -0700, Nathan Chancellor wrote:
+> This Makefile checks that GCC is 4.9 or newer, which is redundant after
+> commit 76ae847497bc ("Documentation: raise minimum supported version of
+> GCC to 5.1"), so cc-option can be removed.
+> 
+> Clang does not support -march=loongson3a so it needs to continue to use
+> -march=mips64r2, which no longer needs cc-option because all supported
+> clang versions recognize this flag.
+> 
+> -march=loonson3a can be used unconditionally with GCC because the
+> minimum supported GCC version has been bumped past 4.9.0, which won't
+> have the bug mentioned in the comment. The _MIPS_ISA macro redefinition
+> can be removed at the same time for the same reason.
+> 
+> Suggested-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+> Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 > ---
->  drivers/pci/quirks.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
 > 
-> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> index d2dd6a6cda60..3ac5c45e61a1 100644
-> --- a/drivers/pci/quirks.c
-> +++ b/drivers/pci/quirks.c
-> @@ -2747,6 +2747,15 @@ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_NVIDIA, 0x10e5,
->  DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_NVIDIA, 0x10e6,
->  			      PCI_CLASS_BRIDGE_PCI, 8,
->  			      pci_quirk_nvidia_tegra_disable_rp_msi);
-> +DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_NVIDIA, 0x229a,
-> +			      PCI_CLASS_BRIDGE_PCI, 8,
-> +			      pci_quirk_nvidia_tegra_disable_rp_msi);
-> +DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_NVIDIA, 0x229c,
-> +			      PCI_CLASS_BRIDGE_PCI, 8,
-> +			      pci_quirk_nvidia_tegra_disable_rp_msi);
-> +DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_NVIDIA, 0x229e,
-> +			      PCI_CLASS_BRIDGE_PCI, 8,
-> +			      pci_quirk_nvidia_tegra_disable_rp_msi);
->  
->  /*
->   * Some versions of the MCP55 bridge from Nvidia have a legacy IRQ routing
-> -- 
-> 2.17.1
+> v1 -> v2: https://lore.kernel.org/r/20220120214001.1879469-1-nathan@kernel.org/
 > 
+> * Eliminate ld-option call (Jiaxun).
+> * Eliminate _MIPS_ISA macro redefinitions (Nick).
+> 
+>  arch/mips/loongson64/Platform | 21 +++------------------
+>  1 file changed, 3 insertions(+), 18 deletions(-)
+
+applied to mips-next.
+
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
