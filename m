@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 589DCC3527A
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30AA3C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385800AbiBGLcj (ORCPT
+        id S1386485AbiBGLen (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:32:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
+        Mon, 7 Feb 2022 06:34:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383062AbiBGLV3 (ORCPT
+        with ESMTP id S1383929AbiBGLYI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:21:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E06FC0401CC;
-        Mon,  7 Feb 2022 03:21:12 -0800 (PST)
+        Mon, 7 Feb 2022 06:24:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764E0C043189;
+        Mon,  7 Feb 2022 03:24:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9E7161464;
-        Mon,  7 Feb 2022 11:21:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8983FC004E1;
-        Mon,  7 Feb 2022 11:21:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36262B81028;
+        Mon,  7 Feb 2022 11:24:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8092AC004E1;
+        Mon,  7 Feb 2022 11:24:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232865;
-        bh=PXxvrLo0f5n0j+2ESXkHAGvNHfjbEgwhgKzsc6FW1F4=;
+        s=korg; t=1644233045;
+        bh=aMaqliSo0pUwthaPjUJtqmJ27qP7rBg0/Ef30il+49I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xvABHUdpB54JGI6Opmbw+ircF3QuGrJsJ/mqsIuzopX7TNc0tRIKbRKXWRcw3B1rj
-         ax6RfHT+oDdkyQdFVuI0wFh9N9x382oVQvW1UD7JmlTcuib7cDYgQHO50bqA3j18oO
-         BtfEcYCr0LM0PWbY2kRjzrrGJgriiF0svs8hyad4=
+        b=xvQYssItOZyTjEkJN7zT87Dvj2PiARN3l1XKJFbK2cx+Kls1ic4LPnYN9q50xFycd
+         MUWrfRo0yMdITSyLz1z5QazgbGGi8b6hfwT68Y13VpJprGrL50fZ5RE1XBDwf0IaET
+         v904nLYEVkDUKNHtNKN+yVDE6A35qHrF3bNoGGcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.10 03/74] ASoC: ops: Reject out of bounds values in snd_soc_put_volsw()
-Date:   Mon,  7 Feb 2022 12:06:01 +0100
-Message-Id: <20220207103757.342565772@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 72/74] net: dsa: mt7530: make NET_DSA_MT7530 select MEDIATEK_GE_PHY
+Date:   Mon,  7 Feb 2022 12:07:10 +0100
+Message-Id: <20220207103759.591363633@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -48,54 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-commit 817f7c9335ec01e0f5e8caffc4f1dcd5e458a4c0 upstream.
+commit 4223f86512877b04c932e7203648b37eec931731 upstream.
 
-We don't currently validate that the values being set are within the range
-we advertised to userspace as being valid, do so and reject any values
-that are out of range.
+Make MediaTek MT753x DSA driver enable MediaTek Gigabit PHYs driver to
+properly control MT7530 and MT7531 switch PHYs.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220124153253.3548853-2-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+A noticeable change is that the behaviour of switchport interfaces going
+up-down-up-down is no longer there.
+
+Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220129062703.595-1-arinc.unal@arinc9.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-ops.c |   18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+ drivers/net/dsa/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -316,13 +316,27 @@ int snd_soc_put_volsw(struct snd_kcontro
- 	if (sign_bit)
- 		mask = BIT(sign_bit + 1) - 1;
- 
--	val = ((ucontrol->value.integer.value[0] + min) & mask);
-+	val = ucontrol->value.integer.value[0];
-+	if (mc->platform_max && val > mc->platform_max)
-+		return -EINVAL;
-+	if (val > max - min)
-+		return -EINVAL;
-+	if (val < 0)
-+		return -EINVAL;
-+	val = (val + min) & mask;
- 	if (invert)
- 		val = max - val;
- 	val_mask = mask << shift;
- 	val = val << shift;
- 	if (snd_soc_volsw_is_stereo(mc)) {
--		val2 = ((ucontrol->value.integer.value[1] + min) & mask);
-+		val2 = ucontrol->value.integer.value[1];
-+		if (mc->platform_max && val2 > mc->platform_max)
-+			return -EINVAL;
-+		if (val2 > max - min)
-+			return -EINVAL;
-+		if (val2 < 0)
-+			return -EINVAL;
-+		val2 = (val2 + min) & mask;
- 		if (invert)
- 			val2 = max - val2;
- 		if (reg == reg2) {
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -36,6 +36,7 @@ config NET_DSA_MT7530
+ 	tristate "MediaTek MT753x and MT7621 Ethernet switch support"
+ 	depends on NET_DSA
+ 	select NET_DSA_TAG_MTK
++	select MEDIATEK_GE_PHY
+ 	help
+ 	  This enables support for the MediaTek MT7530, MT7531, and MT7621
+ 	  Ethernet switch chips.
 
 
