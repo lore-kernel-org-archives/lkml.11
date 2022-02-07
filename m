@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D9DC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 252E6C3527C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382557AbiBGLTp (ORCPT
+        id S1382564AbiBGLTr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:19:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52684 "EHLO
+        Mon, 7 Feb 2022 06:19:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359493AbiBGLOy (ORCPT
+        with ESMTP id S1359847AbiBGLPB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:14:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C334C0401D5;
-        Mon,  7 Feb 2022 03:14:43 -0800 (PST)
+        Mon, 7 Feb 2022 06:15:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21746C0401E6;
+        Mon,  7 Feb 2022 03:14:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13D88611AA;
-        Mon,  7 Feb 2022 11:14:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBDDAC340EB;
-        Mon,  7 Feb 2022 11:14:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A48F7B811A6;
+        Mon,  7 Feb 2022 11:14:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAB60C004E1;
+        Mon,  7 Feb 2022 11:14:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232482;
-        bh=Q9a/NR6CCkrCfIyyMhl7MJzPq8ENrfsh9TBIGOR7dsc=;
+        s=korg; t=1644232461;
+        bh=C7V72L6qUMellueiSr7gQPjlWH16WYktJB8JU2MQGNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qSZ9ygbJVMwg5I5JEvBXFaqaU4R7AqmirU0n9McO6M9+wRZrjb/dbVSCIowJFFX5S
-         u05V3rWQocxQAWl8HdT/bBzNVZb3sNZf+kDs+yWqGzfJTA85a83aOjlOE8e+K1EFVc
-         /ObvoaaW8NN9Eottxyix5QE7Qh1evDJQx+O4Aa3o=
+        b=HyGu7z5OjW5azltD0t3MvM3ga0DCMMh1uWYMwSR7x+In0mwAHfQUMYZlFxAoVpIa0
+         NGj+ayP4iu9PJOrqc9rfJPfTbg3hPB84oAnNs9WlaJ6lky917ZU1jGDALiGjgT4FaY
+         QMVLb1lAn1KfLr++q5oeA1WDa3shW+UAVFJmWbkQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, butt3rflyh4ck <butterflyhuangxx@gmail.com>,
-        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>
-Subject: [PATCH 4.19 04/86] udf: Restore i_lenAlloc when inode expansion fails
-Date:   Mon,  7 Feb 2022 12:05:27 +0100
-Message-Id: <20220207103757.693208252@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Badhri Jagan Sridharan <badhri@google.com>
+Subject: [PATCH 4.19 17/86] usb: typec: tcpm: Do not disconnect while receiving VBUS off
+Date:   Mon,  7 Feb 2022 12:05:40 +0100
+Message-Id: <20220207103758.119388532@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -49,34 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Badhri Jagan Sridharan <badhri@google.com>
 
-commit ea8569194b43f0f01f0a84c689388542c7254a1f upstream.
+commit 90b8aa9f5b09edae6928c0561f933fec9f7a9987 upstream.
 
-When we fail to expand inode from inline format to a normal format, we
-restore inode to contain the original inline formatting but we forgot to
-set i_lenAlloc back. The mismatch between i_lenAlloc and i_size was then
-causing further problems such as warnings and lost data down the line.
+With some chargers, vbus might momentarily raise above VSAFE5V and fall
+back to 0V before tcpm gets to read port->tcpc->get_vbus. This will
+will report a VBUS off event causing TCPM to transition to
+SNK_UNATTACHED where it should be waiting in either SNK_ATTACH_WAIT
+or SNK_DEBOUNCED state. This patch makes TCPM avoid vbus off events
+while in SNK_ATTACH_WAIT or SNK_DEBOUNCED state.
 
-Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
-CC: stable@vger.kernel.org
-Fixes: 7e49b6f2480c ("udf: Convert UDF to new truncate calling sequence")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jan Kara <jack@suse.cz>
+Stub from the spec:
+    "4.5.2.2.4.2 Exiting from AttachWait.SNK State
+    A Sink shall transition to Unattached.SNK when the state of both
+    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce.
+    A DRP shall transition to Unattached.SRC when the state of both
+    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce."
+
+[23.194131] CC1: 0 -> 0, CC2: 0 -> 5 [state SNK_UNATTACHED, polarity 0, connected]
+[23.201777] state change SNK_UNATTACHED -> SNK_ATTACH_WAIT [rev3 NONE_AMS]
+[23.209949] pending state change SNK_ATTACH_WAIT -> SNK_DEBOUNCED @ 170 ms [rev3 NONE_AMS]
+[23.300579] VBUS off
+[23.300668] state change SNK_ATTACH_WAIT -> SNK_UNATTACHED [rev3 NONE_AMS]
+[23.301014] VBUS VSAFE0V
+[23.301111] Start toggling
+
+Fixes: f0690a25a140b8 ("staging: typec: USB Type-C Port Manager (tcpm)")
+Cc: stable@vger.kernel.org
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
+Link: https://lore.kernel.org/r/20220122015520.332507-1-badhri@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/udf/inode.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/typec/tcpm.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/fs/udf/inode.c
-+++ b/fs/udf/inode.c
-@@ -311,6 +311,7 @@ int udf_expand_file_adinicb(struct inode
- 		unlock_page(page);
- 		iinfo->i_alloc_type = ICBTAG_FLAG_AD_IN_ICB;
- 		inode->i_data.a_ops = &udf_adinicb_aops;
-+		iinfo->i_lenAlloc = inode->i_size;
- 		up_write(&iinfo->i_data_sem);
- 	}
- 	put_page(page);
+--- a/drivers/usb/typec/tcpm.c
++++ b/drivers/usb/typec/tcpm.c
+@@ -3865,7 +3865,8 @@ static void _tcpm_pd_vbus_off(struct tcp
+ 	case SNK_TRYWAIT_DEBOUNCE:
+ 		break;
+ 	case SNK_ATTACH_WAIT:
+-		tcpm_set_state(port, SNK_UNATTACHED, 0);
++	case SNK_DEBOUNCED:
++		/* Do nothing, as TCPM is still waiting for vbus to reaach VSAFE5V to connect */
+ 		break;
+ 
+ 	case SNK_NEGOTIATE_CAPABILITIES:
 
 
