@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D483C3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8C9C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240954AbiBGTpU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:45:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
+        id S240844AbiBGTpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:45:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240413AbiBGTnb (ORCPT
+        with ESMTP id S240744AbiBGTnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:43:31 -0500
+        Mon, 7 Feb 2022 14:43:35 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E40C0401E1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:43:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5048C0401E1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:43:33 -0800 (PST)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644263007;
+        s=2020; t=1644263010;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CcJAS7OHmwiIaC/n5sQLSDHnPEzEBeUZ3m1d4fP3mjQ=;
-        b=yyO3GMreuW1+E5VBxVctTVFluNm8xtt5rxmastM+uZ/XRECiE/2lneXr1z2y+a1izvEnCq
-        abPeFfwZ60L6SwnaSCcrFJ8jcLSdZXsB5nLV3hcigF6xO1w5PL+yj033xwyvTIvEIUDyOf
-        E5V3L39EJZzvdizD+DzxPVKzVfvHFALNJs+LSgdd4jNJ0sMchRJwf+G8kU16cjBJWfwKpO
-        WqbdqC7v4VbSHOvHM4g05J5yJIOK9DTVHlzhjXK+RGlQbJf7NSkyd9w1dyslwRQ6kTMKfU
-        d/0q3L1ci9vmKaUBYAIGt2KyrOevUG+nowFF749PGMGWTJ1HXY4Y/PulWHGN5g==
+        bh=Dj3bzcV/JKnAQq1HK9ibyS2ElcfEPKvgkUc6/7SCgNI=;
+        b=nMmbmbR8ZEaKUEC8ojvRV2LQeX8JhrAilGvxEy3k6NRASW7nSHePovmBW6ILZr4wGq8/r7
+        jllZM49kj0wWi6JrjR2wSuqaSXnCRORPvOsMnwc7h5685P03Lb5UaUfXmJD0rc/U0LvPXg
+        0LVKOD1I6DioILulQasVPx1axwYS3axECmpx8No9wB1MhUJ2JjhFRptrnWbyEtL8Shh/UV
+        mhKnovR4sNCtlsRrd0iJWQr2rWfTaYrCAmsF9Y0gcuAek0omQSUXA42veC/y3R2WDthfKw
+        kKwBuEOwGllueocx//7KgNPjC8ICt8ewIAMCyyozEmc8sZsIgApoZB51+bPALw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644263007;
+        s=2020e; t=1644263010;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CcJAS7OHmwiIaC/n5sQLSDHnPEzEBeUZ3m1d4fP3mjQ=;
-        b=R9l7ob6ZMwful/kMPl9aGn6l6U0+mxKAzj0UhtVw+mk58nrAKzJblGJfrBGTha8jPdnDY1
-        vv9GJwFmccymSaDA==
+        bh=Dj3bzcV/JKnAQq1HK9ibyS2ElcfEPKvgkUc6/7SCgNI=;
+        b=vYRhR+IFj6maZm1JY7MMv1kHL1tg6bDVhYsb4biiLoTUlwc3QVia7oW7S5ntVFcFB+coLD
+        6wX+J/BhicZu9uAQ==
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH printk v1 05/13] printk: call boot_delay_msec() in printk_delay()
-Date:   Mon,  7 Feb 2022 20:49:15 +0106
-Message-Id: <20220207194323.273637-6-john.ogness@linutronix.de>
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH printk v1 11/13] printk: reimplement console_lock for proper kthread support
+Date:   Mon,  7 Feb 2022 20:49:21 +0106
+Message-Id: <20220207194323.273637-12-john.ogness@linutronix.de>
 In-Reply-To: <20220207194323.273637-1-john.ogness@linutronix.de>
 References: <20220207194323.273637-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -53,40 +54,476 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-boot_delay_msec() is always called immediately before printk_delay()
-so just call it from within printk_delay().
+With non-threaded console printers preemption is disabled while
+holding the console lock in order to avoid the situation where the
+console printer is scheduled away and no other task can lock the
+console (for printing or otherwise). Disabling preemption is
+necessary because the console lock is implemented purely as a
+semaphore, which has no owner.
+
+Like non-threaded console printers, kthread printers use the
+console lock to synchronize during printing. However, since they
+use console_lock() instead of a best-effort console_trylock(), it
+is not possible to disable preemption upon locking. Therefore an
+alternative for synchronizing and avoiding the above mentioned
+situation is needed.
+
+The kthread printers do not need to synchronize against each other,
+but they do need to synchronize against console_lock() callers. To
+provide this synchronization, introduce a per-console mutex. The
+mutex is taken by the kthread printer during printing and is also
+taken by console_lock() callers. Since mutexes have owners, when
+calling console_lock(), the scheduler is able to schedule any
+kthread printers that may have been preempted while printing.
+
+Rather than console_lock() callers holding the per-console mutex
+for the duration of the console lock, the per-console mutex is only
+taken in order to set a new CON_PAUSED flag, which is checked by
+the kthread printers. This avoids any issues due to nested locking
+between the various per-console mutexes.
+
+The kthread printers must also synchronize against console_trylock()
+callers. Since console_trylock() is non-blocking, a global atomic
+counter will be used to identify if any kthread printers are active.
+The kthread printers will also check the atomic counter to identify
+if the console has been locked by another task via
+console_trylock().
+
+A locking overview for console_lock(), console_trylock(), and the
+kthread printers is as follows (pseudo code):
+
+console_lock()
+{
+	down(&console_sem);
+	for_each_console(con) {
+		mutex_lock(&con->lock);
+		con->flags |= CON_PAUSED;
+		mutex_unlock(&con->lock);
+	}
+}
+
+console_trylock()
+{
+	assert(down_trylock(&console_sem));
+	assert(atomic_cmpxchg(&console_lock_count, 0, -1));
+}
+
+kthread_printer()
+{
+	mutex_lock(&con->lock);
+	assert(con->flags & CON_PAUSED);
+	assert(atomic_inc_unless_negative(&console_lock_count));
+	con->write();
+	atomic_dec(&console_lock_count);
+	mutex_unlock(&con->lock);
+}
+
+Also note that the console owner and waiter logic now only applies
+between contexts that have both taken the console lock via
+console_trylock(). This is for 2 reasons:
+
+1. Contexts that have taken the console lock via console_lock()
+   require a sleepable context when unlocking to unpause the kthread
+   printers. But a waiter context has used console_trylock() and
+   may not be sleepable.
+
+2. The kthread printers no longer acquire the console lock, so it is
+   not possible to handover the console lock.
+
+This also has implications for console_unlock(), which attempts a
+console_trylock() before returning. Introduce
+console_trylock_sched() to allow console_unlock() to specify if it
+is in a sleepable context.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- kernel/printk/printk.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ include/linux/console.h |  15 ++++
+ kernel/printk/printk.c  | 190 +++++++++++++++++++++++++++++++---------
+ 2 files changed, 166 insertions(+), 39 deletions(-)
 
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 0f94b1771df8..c51c7f5507a5 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -16,6 +16,7 @@
+ 
+ #include <linux/atomic.h>
+ #include <linux/types.h>
++#include <linux/mutex.h>
+ 
+ struct vc_data;
+ struct console_font_op;
+@@ -136,6 +137,7 @@ static inline int con_debug_leave(void)
+ #define CON_ANYTIME	(16) /* Safe to call before per-cpu resources ready */
+ #define CON_BRL		(32) /* Used for a braille device */
+ #define CON_EXTENDED	(64) /* Use the extended output format a la /dev/kmsg */
++#define CON_PAUSED	(128) /* Sleep while console is locked */
+ 
+ struct console {
+ 	char	name[16];
+@@ -155,6 +157,19 @@ struct console {
+ 	unsigned long dropped;
+ 	struct task_struct *thread;
+ 
++	/*
++	 * The per-console lock is used by printing kthreads to synchronize
++	 * this console with callers of console_lock(). This is necessary in
++	 * order to allow printing kthreads to run in parallel to each other,
++	 * while each safely accessing their own @flags and synchronizing
++	 * against direct printing via console_lock/console_unlock.
++	 *
++	 * Note: For synchronizing against direct printing via
++	 *       console_trylock/console_unlock, see the static global
++	 *       variable @console_lock_count.
++	 */
++	struct mutex lock;
++
+ 	void	*data;
+ 	struct	 console *next;
+ };
 diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 206405f349d0..8c9a89c60989 100644
+index e182f31fec58..135fbe647092 100644
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -2002,8 +2002,10 @@ static u8 *__printk_recursion_counter(void)
+@@ -214,6 +214,26 @@ int devkmsg_sysctl_set_loglvl(struct ctl_table *table, int write,
+ /* Number of registered extended console drivers. */
+ static int nr_ext_console_drivers;
  
- int printk_delay_msec __read_mostly;
- 
--static inline void printk_delay(void)
-+static inline void printk_delay(int level)
- {
-+	boot_delay_msec(level);
++/*
++ * Used to synchronize printing kthreads against direct printing via
++ * console_trylock/console_unlock.
++ *
++ * Values:
++ * -1 = console locked (via trylock), kthreads will not print
++ *  0 = no kthread printing, console not locked (via trylock)
++ * >0 = kthread(s) actively printing
++ *
++ * Note: For synchronizing against direct printing via
++ *       console_lock/console_unlock, see the @lock variable in
++ *       struct console.
++ */
++static atomic_t console_lock_count = ATOMIC_INIT(0);
 +
- 	if (unlikely(printk_delay_msec)) {
- 		int m = printk_delay_msec;
++#define console_excl_trylock() (atomic_cmpxchg(&console_lock_count, 0, -1) == 0)
++#define console_excl_unlock() atomic_cmpxchg(&console_lock_count, -1, 0)
++#define console_printer_tryenter() atomic_inc_unless_negative(&console_lock_count)
++#define console_printer_exit() atomic_dec(&console_lock_count)
++
+ /*
+  * Helper macros to handle lockdep when locking/unlocking console_sem. We use
+  * macros instead of functions so that _RET_IP_ contains useful information.
+@@ -256,6 +276,37 @@ static void __up_console_sem(unsigned long ip)
+ }
+ #define up_console_sem() __up_console_sem(_RET_IP_)
  
-@@ -2224,8 +2226,7 @@ asmlinkage int vprintk_emit(int facility, int level,
- 		in_sched = true;
++/*
++ * Tracks whether kthread printers are all paused. A value of true implies
++ * that the console is locked via console_lock() or the console is suspended.
++ * Reading and writing to this variable requires holding @console_sem.
++ */
++static bool consoles_paused;
++
++/*
++ * Pause or unpause all kthread printers.
++ *
++ * Requires the console_lock.
++ */
++static void __pause_all_consoles(bool do_pause)
++{
++	struct console *con;
++
++	for_each_console(con) {
++		mutex_lock(&con->lock);
++		if (do_pause)
++			con->flags |= CON_PAUSED;
++		else
++			con->flags &= ~CON_PAUSED;
++		mutex_unlock(&con->lock);
++	}
++
++	consoles_paused = do_pause;
++}
++
++#define pause_all_consoles() __pause_all_consoles(true)
++#define unpause_all_consoles() __pause_all_consoles(false)
++
+ /*
+  * This is used for debugging the mess that is the VT code by
+  * keeping track if we have the console semaphore held. It's
+@@ -2506,10 +2557,6 @@ void resume_console(void)
+ 	down_console_sem();
+ 	console_suspended = 0;
+ 	console_unlock();
+-
+-	/* Wake the kthread printers. */
+-	wake_up_klogd();
+-
+ 	pr_flush(1000, true);
+ }
+ 
+@@ -2547,6 +2594,7 @@ void console_lock(void)
+ 	down_console_sem();
+ 	if (console_suspended)
+ 		return;
++	pause_all_consoles();
+ 	console_locked = 1;
+ 	console_may_schedule = 1;
+ }
+@@ -2568,15 +2616,45 @@ int console_trylock(void)
+ 		up_console_sem();
+ 		return 0;
+ 	}
++	if (!console_excl_trylock()) {
++		up_console_sem();
++		return 0;
++	}
+ 	console_locked = 1;
+ 	console_may_schedule = 0;
+ 	return 1;
+ }
+ EXPORT_SYMBOL(console_trylock);
+ 
++/*
++ * A variant of console_trylock() that allows specifying if the context may
++ * sleep. If yes, a trylock on @console_sem is attempted and if successful,
++ * the threaded printers are paused. This is important to ensure that
++ * sleepable contexts do not become involved in console_lock handovers and
++ * will call cond_resched() during the printing loop.
++ */
++static int console_trylock_sched(bool may_schedule)
++{
++	if (!may_schedule)
++		return console_trylock();
++
++	might_sleep();
++
++	if (down_trylock_console_sem())
++		return 0;
++	if (console_suspended) {
++		up_console_sem();
++		return 0;
++	}
++	pause_all_consoles();
++	console_locked = 1;
++	console_may_schedule = 1;
++	return 1;
++}
++
+ int is_console_locked(void)
+ {
+-	return console_locked;
++	return (console_locked || atomic_read(&console_lock_count));
+ }
+ EXPORT_SYMBOL(is_console_locked);
+ 
+@@ -2610,6 +2688,19 @@ static inline bool console_is_usable(struct console *con)
+ static void __console_unlock(void)
+ {
+ 	console_locked = 0;
++
++	/*
++	 * Depending on whether console_lock() or console_trylock() was used,
++	 * appropriately allow the kthread printers to continue.
++	 */
++	if (consoles_paused)
++		unpause_all_consoles();
++	else
++		console_excl_unlock();
++
++	/* Wake the kthread printers. */
++	wake_up_klogd();
++
+ 	up_console_sem();
+ }
+ 
+@@ -2632,7 +2723,8 @@ static void __console_unlock(void)
+  *
+  * @handover will be set to true if a printk waiter has taken over the
+  * console_lock, in which case the caller is no longer holding the
+- * console_lock. Otherwise it is set to false.
++ * console_lock. Otherwise it is set to false. A NULL pointer may be provided
++ * to disable allowing the console_lock to be taken over by a printk waiter.
+  */
+ static bool console_emit_next_record(struct console *con, char *text, char *ext_text,
+ 				     char *dropped_text, bool *handover)
+@@ -2640,12 +2732,14 @@ static bool console_emit_next_record(struct console *con, char *text, char *ext_
+ 	struct printk_info info;
+ 	struct printk_record r;
+ 	unsigned long flags;
++	bool allow_handover;
+ 	char *write_text;
+ 	size_t len;
+ 
+ 	prb_rec_init_rd(&r, &info, text, CONSOLE_LOG_MAX);
+ 
+-	*handover = false;
++	if (handover)
++		*handover = false;
+ 
+ 	if (!prb_read_valid(prb, con->seq, &r))
+ 		return false;
+@@ -2671,18 +2765,23 @@ static bool console_emit_next_record(struct console *con, char *text, char *ext_
+ 		len = record_print_text(&r, console_msg_format & MSG_FORMAT_SYSLOG, printk_time);
  	}
  
--	boot_delay_msec(level);
--	printk_delay();
-+	printk_delay(level);
+-	/*
+-	 * While actively printing out messages, if another printk()
+-	 * were to occur on another CPU, it may wait for this one to
+-	 * finish. This task can not be preempted if there is a
+-	 * waiter waiting to take over.
+-	 *
+-	 * Interrupts are disabled because the hand over to a waiter
+-	 * must not be interrupted until the hand over is completed
+-	 * (@console_waiter is cleared).
+-	 */
+-	printk_safe_enter_irqsave(flags);
+-	console_lock_spinning_enable();
++	/* Handovers may only happen between trylock contexts. */
++	allow_handover = (handover && atomic_read(&console_lock_count) == -1);
++
++	if (allow_handover) {
++		/*
++		 * While actively printing out messages, if another printk()
++		 * were to occur on another CPU, it may wait for this one to
++		 * finish. This task can not be preempted if there is a
++		 * waiter waiting to take over.
++		 *
++		 * Interrupts are disabled because the hand over to a waiter
++		 * must not be interrupted until the hand over is completed
++		 * (@console_waiter is cleared).
++		 */
++		printk_safe_enter_irqsave(flags);
++		console_lock_spinning_enable();
++	}
  
- 	printed_len = vprintk_store(facility, level, dev_info, fmt, args);
+ 	stop_critical_timings();	/* don't trace print latency */
+ 	call_console_driver(con, write_text, len, dropped_text);
+@@ -2690,8 +2789,10 @@ static bool console_emit_next_record(struct console *con, char *text, char *ext_
  
+ 	con->seq++;
+ 
+-	*handover = console_lock_spinning_disable_and_check();
+-	printk_safe_exit_irqrestore(flags);
++	if (allow_handover) {
++		*handover = console_lock_spinning_disable_and_check();
++		printk_safe_exit_irqrestore(flags);
++	}
+ 
+ 	printk_delay(r.info->level);
+ skip:
+@@ -2825,7 +2926,7 @@ void console_unlock(void)
+ 		 * Re-check if there is a new record to flush. If the trylock
+ 		 * fails, another context is already handling the printing.
+ 		 */
+-	} while (prb_read_valid(prb, next_seq, NULL) && console_trylock());
++	} while (prb_read_valid(prb, next_seq, NULL) && console_trylock_sched(do_cond_resched));
+ }
+ EXPORT_SYMBOL(console_unlock);
+ 
+@@ -2856,6 +2957,10 @@ void console_unblank(void)
+ 	if (oops_in_progress) {
+ 		if (down_trylock_console_sem() != 0)
+ 			return;
++		if (!console_excl_trylock()) {
++			up_console_sem();
++			return;
++		}
+ 	} else {
+ 		pr_flush(1000, true);
+ 		console_lock();
+@@ -2937,10 +3042,6 @@ void console_start(struct console *console)
+ 	console_lock();
+ 	console->flags |= CON_ENABLED;
+ 	console_unlock();
+-
+-	/* Wake the kthread printers. */
+-	wake_up_klogd();
+-
+ 	pr_flush(1000, true);
+ }
+ EXPORT_SYMBOL(console_start);
+@@ -3135,7 +3236,11 @@ void register_console(struct console *newcon)
+ 	if (newcon->flags & CON_EXTENDED)
+ 		nr_ext_console_drivers++;
+ 
++	if (consoles_paused)
++		newcon->flags |= CON_PAUSED;
++
+ 	newcon->dropped = 0;
++	mutex_init(&newcon->lock);
+ 	if (newcon->flags & CON_PRINTBUFFER) {
+ 		/* Get a consistent copy of @syslog_seq. */
+ 		mutex_lock(&syslog_lock);
+@@ -3397,16 +3502,17 @@ static bool printer_should_wake(struct console *con, u64 seq)
+ 	if (kthread_should_stop())
+ 		return true;
+ 
+-	if (console_suspended)
+-		return false;
+-
+ 	/*
+ 	 * This is an unsafe read to con->flags, but false positives
+ 	 * are not an issue as long as they are rare.
+ 	 */
+ 	flags = data_race(READ_ONCE(con->flags));
+-	if (!(flags & CON_ENABLED))
++
++	if (!(flags & CON_ENABLED) ||
++	    (flags & CON_PAUSED) ||
++	    atomic_read(&console_lock_count) == -1) {
+ 		return false;
++	}
+ 
+ 	return prb_read_valid(prb, seq, NULL);
+ }
+@@ -3417,7 +3523,6 @@ static int printk_kthread_func(void *data)
+ 	char *dropped_text = NULL;
+ 	char *ext_text = NULL;
+ 	bool progress;
+-	bool handover;
+ 	u64 seq = 0;
+ 	char *text;
+ 	int error;
+@@ -3450,9 +3555,17 @@ static int printk_kthread_func(void *data)
+ 			continue;
+ 
+ 		do {
+-			console_lock();
+-			if (console_suspended) {
+-				console_unlock();
++			error = mutex_lock_interruptible(&con->lock);
++			if (error)
++				break;
++
++			if (!console_is_usable(con)) {
++				mutex_unlock(&con->lock);
++				break;
++			}
++
++			if ((con->flags & CON_PAUSED) || !console_printer_tryenter()) {
++				mutex_unlock(&con->lock);
+ 				break;
+ 			}
+ 
+@@ -3466,14 +3579,13 @@ static int printk_kthread_func(void *data)
+ 			 */
+ 			console_may_schedule = 0;
+ 			progress = console_emit_next_record(con, text, ext_text,
+-							    dropped_text, &handover);
+-			if (handover)
+-				break;
++							    dropped_text, NULL);
+ 
+ 			seq = con->seq;
+ 
+-			/* Unlock console without invoking direct printing. */
+-			__console_unlock();
++			console_printer_exit();
++
++			mutex_unlock(&con->lock);
+ 		} while (progress);
+ 	}
+ out:
 -- 
 2.30.2
 
