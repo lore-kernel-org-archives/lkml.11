@@ -2,132 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC661C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC82C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245473AbiBGJtY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:49:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37374 "EHLO
+        id S245369AbiBGJtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 04:49:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245350AbiBGJrE (ORCPT
+        with ESMTP id S1353269AbiBGJkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:47:04 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B33AC043187
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:47:03 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 3081C3F328
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:47:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644227222;
-        bh=RpKisFMVOYgXhr4OBFF0I13PIr7NXdi+wKM2xMCNQ4M=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=Gn7MshsG9J1Ke5+3eCcwYpe5i0jScbu/mOcDCL99CFtmDJW5F7VjB3Z4OhybMxt55
-         LBbvP3QIlqGYuHolUrorzj+1xQHrIfG9A+cV82DAnW5YresuS9FOPa17xEHNfpxyAi
-         Yqw+Ac2081joSDl9Gdx9ktZDmLibh6CPYFnzxBLLK6AoRp/sqQi6H30k6HjJ/P2mGg
-         hp1gjJoV+O6Xxdvb5K8pe5Z9O8gK6gURhmTYNqiDECPhCwONKzELK2SuKRiZBWgTqE
-         Bxax7DtsvHf4Tk5QsYO+ZtRlFEpfhOf0/XzVizRFaPWNg1GGC6y4g3Ihbl9Gi6vH5P
-         Qo+npaKNuKHXA==
-Received: by mail-ed1-f69.google.com with SMTP id cr7-20020a056402222700b0040f59dae606so2339508edb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:47:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RpKisFMVOYgXhr4OBFF0I13PIr7NXdi+wKM2xMCNQ4M=;
-        b=MEkmzMBBKMTTiWg5unpPg+9SIM5e3od0xVJWoiCiP9W0B8KIp5CUCjhHmnvnVZn/OC
-         aEsUr2YMlFNzXcb/1aYBUDt5LxmI1WxIbzBoYJ1BPe1GK0H3eWVtvi9ctkqMcNJc6Ln+
-         2AnJ4MfxeM3gBG4LwMtHNoxDuGDi0zj76X9JCVjHne12oYXOwgqn7A37mTvUkvr20r1R
-         CO2qT7LYRx7MZkWufavjjSyncSdgL4wr9HTdmNjrGAx2Jq+OobEfixWFJ6OWu+mHQ1qM
-         XMko5TVvxOdQJrz49GY9UuDH8US46Ebd7eWkfZ6ch9qqN/55UbFdjbx/+nkKdloSA/Zt
-         iWmw==
-X-Gm-Message-State: AOAM531DEL5NDH8XDSGUy72GrjIQWvAj9M/ZHr7hMSrbXekk5wxKQePK
-        G7CTs+/sh2tNlSL3YmNYwabY+S9GLX31zwBrJAK9oAZ6d5Wmlm0l8r+OjrO1QwS+EF8+9EcKmbv
-        aF2DDGXYcrw0DUm5zVAUwdMQ4K1TXm7RjTXM8RZuC5Q==
-X-Received: by 2002:a17:907:3da1:: with SMTP id he33mr9059614ejc.603.1644227221796;
-        Mon, 07 Feb 2022 01:47:01 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw1BoRtqvleLXKJ94x9jr4A9T/K/xfXE9FqqRN0ilJdw6S1IME3NnflwItPXK1N2kfs64wGqQ==
-X-Received: by 2002:a17:907:3da1:: with SMTP id he33mr9059600ejc.603.1644227221642;
-        Mon, 07 Feb 2022 01:47:01 -0800 (PST)
-Received: from [192.168.0.86] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id o3sm108814edt.67.2022.02.07.01.47.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 01:47:01 -0800 (PST)
-Message-ID: <88fcdbe6-5fef-d9cc-a645-69e35230cdeb@canonical.com>
-Date:   Mon, 7 Feb 2022 10:47:00 +0100
+        Mon, 7 Feb 2022 04:40:37 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31B5C043181;
+        Mon,  7 Feb 2022 01:40:36 -0800 (PST)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21791W14019419;
+        Mon, 7 Feb 2022 09:40:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=qVG4tU4H7fOaP1KwrYkrDs4hBEyqs2LYEUzncyFENFw=;
+ b=nXrovFCpiZiYpm9LOaGEfg/GLoeMXCLKtaKv9uyypjzf3WUNxKYF8613dgmX5RHFItda
+ jbzgVhSdlLuSDY02zlD5Kfd/bh+NvXzxK+mw0Jix5qE0OnT9wDRhGusHL5RYj5DI9BbE
+ 3EZf3btZvkyZBOc0xk99/hhYlfXkTTxDxPX2taaryzD53NI5Oxnbfnc5SrnpbyTo2TMf
+ pPbG7GDMXKSdSxBoEJ59qB08iCRFB5LBW6L9DLPwfhBMyiSOAADRc7mPsKh6yr/vIg0a
+ 8VDPpl6BcLJRTbA3RxfUdhqIe++HckMUqLYripK+SxspqYIObjPu82HqkIFH7gBhkjwn rQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e23anq2gd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 09:40:36 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2178vBI5017722;
+        Mon, 7 Feb 2022 09:40:35 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e23anq2fq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 09:40:35 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2179bt1H018561;
+        Mon, 7 Feb 2022 09:40:33 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggjjm5y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 09:40:33 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2179eT1E47120770
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 09:40:29 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 93F0242045;
+        Mon,  7 Feb 2022 09:40:29 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 36FC042049;
+        Mon,  7 Feb 2022 09:40:29 +0000 (GMT)
+Received: from [9.145.9.42] (unknown [9.145.9.42])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Feb 2022 09:40:29 +0000 (GMT)
+Message-ID: <fe560369-8faa-876f-6c93-fc752a2a3b2d@linux.ibm.com>
+Date:   Mon, 7 Feb 2022 10:40:28 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 0/5] mfd/extcon/regulators: max77843: add
- dtschema/bindings
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v7 03/17] KVM: s390: pv: handle secure storage exceptions
+ for normal guests
 Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Chanwoo Choi <cw00.choi@samsung.com>
-References: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
- <1bebedb9-644f-783d-492c-84a5de91720d@canonical.com>
- <YgDnUNCNCO+JLyHU@google.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <YgDnUNCNCO+JLyHU@google.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
+        david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
+References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
+ <20220204155349.63238-4-imbrenda@linux.ibm.com>
+From:   Janosch Frank <frankja@linux.ibm.com>
+In-Reply-To: <20220204155349.63238-4-imbrenda@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 8JDkixgk1Zo3b_9_S-ZGeULArmGCfv1p
+X-Proofpoint-ORIG-GUID: d3JT9EDYHWzyyxBx0Z08UQm8STOxccDW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_03,2022-02-07_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 spamscore=0 priorityscore=1501 clxscore=1015
+ mlxlogscore=858 adultscore=0 bulkscore=0 suspectscore=0 impostorscore=0
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070061
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/02/2022 10:33, Lee Jones wrote:
-> On Sun, 06 Feb 2022, Krzysztof Kozlowski wrote:
+On 2/4/22 16:53, Claudio Imbrenda wrote:
+> With upcoming patches, normal guests might touch secure pages.
 > 
->> On 11/01/2022 18:48, Krzysztof Kozlowski wrote:
->>> Hi,
->>>
->>> The max77843 shares some parts with max77693 but it lacked bindings.  All
->>> its compatibles were undocumented.  Add basic bindings for max77843,
->>> matching existing devicetree.  These are not complete bindings, but
->>> rather reverse-engineered to match current state.
->>>
->>> I do not have access to device with MAX77843, so if anyone else
->>> volunteers to be the bindings maintainer, please join.
->>>
->>> Changes since v1
->>> ================
->>> 1. MFD: Use absolute path to schemas.
->>> 2. Regulator: mention all allowed properties,
->>>    additionalProperties=false, add min/max values for voltages and
->>>    current, don't use patternProperties when not needed.
->>> 3. extcon: Use absolute path to schemas.
->>>
->>> Dependencies
->>> ============
->>> 1. Patch 1/5 (dts): nothing depends on it, sending here so Rob's automatic
->>>    checker won't complain about DTS.
->>>    I will take it via Samsung SoC tree.
->>>
->>> 2. The patch 4/5 (mfd bindings) depends on regulator and extcon, so they
->>>    should come together (2+3+4+5).
->>>
->> Dear Lee,
->>
->> This patchset was reviewed and there are no outstanding issues. Could
->> you pick up patches 2-5 (skipping DTS patch) via MFD tree?
+> This patch extends the existing exception handler to convert the pages
+> to non secure also when the exception is triggered by a normal guest.
 > 
-> Are the subsystem maintainers not going to review/ack?
+> This can happen for example when a secure guest reboots; the first
+> stage of a secure guest is non secure, and in general a secure guest
+> can reboot into non-secure mode.
+> 
+> If the secure memory of the previous boot has not been cleared up
+> completely yet (which will be allowed to happen in an upcoming patch),
+> a non-secure guest might touch secure memory, which will need to be
+> handled properly.
+> 
+> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+
+Once you fix the compiler warning:
+Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+
+> ---
+>   arch/s390/mm/fault.c | 12 +++++++++++-
+>   1 file changed, 11 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/s390/mm/fault.c b/arch/s390/mm/fault.c
+> index 47b52e5384f8..bbd37e2c7962 100644
+> --- a/arch/s390/mm/fault.c
+> +++ b/arch/s390/mm/fault.c
+> @@ -770,6 +770,7 @@ void do_secure_storage_access(struct pt_regs *regs)
+>   	struct vm_area_struct *vma;
+>   	struct mm_struct *mm;
+>   	struct page *page;
+> +	struct gmap *gmap;
+>   	int rc;
+>   
+>   	/*
+> @@ -799,6 +800,16 @@ void do_secure_storage_access(struct pt_regs *regs)
+>   	}
+>   
+>   	switch (get_fault_type(regs)) {
+> +	case GMAP_FAULT:
+> +		gmap = (struct gmap *)S390_lowcore.gmap;
+> +		mmap_read_lock(mm);
+> +		addr = __gmap_translate(gmap, addr);
+> +		mmap_read_unlock(mm);
+> +		if (IS_ERR_VALUE(addr)) {
+> +			do_fault_error(regs, VM_ACCESS_FLAGS, VM_FAULT_BADMAP);
+> +			break;
+> +		}
+> +		fallthrough;
+>   	case USER_FAULT:
+>   		mm = current->mm;
+>   		mmap_read_lock(mm);
+> @@ -827,7 +838,6 @@ void do_secure_storage_access(struct pt_regs *regs)
+>   		if (rc)
+>   			BUG();
+>   		break;
+> -	case GMAP_FAULT:
+>   	default:
+>   		do_fault_error(regs, VM_READ | VM_WRITE, VM_FAULT_BADMAP);
+>   		WARN_ON_ONCE(1);
 > 
 
-Would be nice to have them, but maybe since these are dt-bindings maybe
-they were skipped? Or maybe it was the end-of-year holidays?
-
-I can resend hoping it will trigger more acks. Do you wish me to resend?
-
-Best regards,
-Krzysztof
