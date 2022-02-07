@@ -2,144 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B83DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A5DC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448620AbiBGNMM (ORCPT
+        id S1448613AbiBGNML (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:12:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37962 "EHLO
+        Mon, 7 Feb 2022 08:12:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447705AbiBGNBN (ORCPT
+        with ESMTP id S1358150AbiBGNGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:01:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AF2C043181;
-        Mon,  7 Feb 2022 05:01:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B846AB81020;
-        Mon,  7 Feb 2022 13:01:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0157DC004E1;
-        Mon,  7 Feb 2022 13:01:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644238869;
-        bh=JOc1/6BZgCfsZYq3N36mbfIFoPDeRG9grLrfprzG+r8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JqNzuh+GfyMIdM8LVAIedh2MKCYgVMklskYwUHWzplhWZR/hBE0x/twHaAFevsUXq
-         C/E4Jug/AouJue+jyUK/C0O1u/z12BfWJzANeJFD7Au8GmHtqxed85it87Jm2c/VqD
-         5iQ2ykyE0D210OFRnxrp1QLzwip5+oW/VaaxIp7XSR+CYrpbYVdATtoLE0qWcPrSMb
-         8utW3YP28BdnBMw5zbLGVlnmKtCXWwvzOLnjMU0h/mIDR6ryIvPGoCHVc56p2gkMmX
-         xf59ddSVHTIZcKFaqjrShePZ4Tx2FXmxeTqpSHjx+6maF4TIXk0gIvwTnGVuoTw0fE
-         AQlM41k4JBebA==
-Date:   Mon, 7 Feb 2022 14:01:06 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Sui Chen <suichen@google.com>
-Cc:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        openbmc@lists.ozlabs.org, joel@jms.id.au, andrew@aj.id.au,
-        tali.perry1@gmail.com, benjaminfair@google.com, krellan@google.com,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [RFC Patch v3 1/3] i2c debug counters as sysfs attributes
-Message-ID: <YgEYEk355t8C4J1x@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Sui Chen <suichen@google.com>, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au,
-        andrew@aj.id.au, tali.perry1@gmail.com, benjaminfair@google.com,
-        krellan@google.com, kernel test robot <lkp@intel.com>
-References: <20211221174344.1249202-1-suichen@google.com>
- <20211221174344.1249202-2-suichen@google.com>
+        Mon, 7 Feb 2022 08:06:42 -0500
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB501C043188;
+        Mon,  7 Feb 2022 05:06:40 -0800 (PST)
+Received: by mail-ua1-f54.google.com with SMTP id 60so22715473uae.1;
+        Mon, 07 Feb 2022 05:06:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JZStMkBCEdUkIJefmCWfZykazV+/zPRZRIGtWs+bRb0=;
+        b=zVdog81bqfyQClBj3TjJwffNUnRqGYEEVIpDRMVlDr9RDc+EpYhhnE+FRsgLBvX/IB
+         QL5/DEpfp9Skv3Z1x9duy4515pCf/sR/sMLQwFSjMUsWOYDlSTqTbRXLglnVjfETbqGE
+         MBzNy9ZZfpsCs+gQN3+2YFlVk8oEwOWJzwgKQwnBTuLY2iCLLW2EIDB7dwVyF1qQGcYm
+         S36oDCIoiOtkBuSV/w3RQmVF7TLG58pgD4gjUeKSX8G7tO1b5M+cS15K6zEgvAnejVQS
+         clwBuKfNjoOLVyL1ATiQN77JC84wOjbkBNOXn/IqHpnXVtDMbeXWc99pUwnjzAg0HNPl
+         7cxw==
+X-Gm-Message-State: AOAM532CMcnYIwC1DqksPdcsl5Y85meiYP01b4V8fyJBSHjSYq+MHI99
+        t6pBWM53xFJk0J8d7v2tmxAMUqbZc3hvdQ==
+X-Google-Smtp-Source: ABdhPJzFQTtECeDvgEBcBOSXjqDqXP8RaSF++Sk1oQ1ZdlJX6MzhU4MqKtE0UqYWw/BSLoTtS2zJ7w==
+X-Received: by 2002:a67:3341:: with SMTP id z62mr4394352vsz.70.1644239199785;
+        Mon, 07 Feb 2022 05:06:39 -0800 (PST)
+Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
+        by smtp.gmail.com with ESMTPSA id w3sm2326819vkd.5.2022.02.07.05.06.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 05:06:39 -0800 (PST)
+Received: by mail-ua1-f50.google.com with SMTP id g18so12473821uak.5;
+        Mon, 07 Feb 2022 05:06:39 -0800 (PST)
+X-Received: by 2002:a67:b00e:: with SMTP id z14mr4329049vse.57.1644239199108;
+ Mon, 07 Feb 2022 05:06:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kV9YJMcLA9AXD3Nw"
-Content-Disposition: inline
-In-Reply-To: <20211221174344.1249202-2-suichen@google.com>
+References: <20220128173006.1713210-1-geert@linux-m68k.org> <c1034042-f8f4-b5c9-3b0a-8d1aa1efc8e7@gmail.com>
+In-Reply-To: <c1034042-f8f4-b5c9-3b0a-8d1aa1efc8e7@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 7 Feb 2022 14:06:28 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWS2Eh3c-=GPj8GpMwYesGXqSgwo3__cTfM5_5h5=qYyQ@mail.gmail.com>
+Message-ID: <CAMuHMdWS2Eh3c-=GPj8GpMwYesGXqSgwo3__cTfM5_5h5=qYyQ@mail.gmail.com>
+Subject: Re: [PATCH] m68k: mm: Remove check for VM_IO to fix deferred I/O
+To:     Michael Schmitz <schmitzmic@gmail.com>
+Cc:     linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jan 31, 2022 at 3:22 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
+> Am 29.01.2022 um 06:30 schrieb Geert Uytterhoeven:
+> > When an application accesses a mapped frame buffer backed by deferred
+> > I/O, it receives a segmentation fault.  Fix this by removing the check
+> > for VM_IO in do_page_fault().
+> >
+> > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>
+> Works fine on my Falcon030 when applied to v5.16.
+>
+> Tested-by: Michael Schmitz <schmitzmic@gmail.com>
 
---kV9YJMcLA9AXD3Nw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Thanks, queued in the m68k for-v5.18 branch.
 
-Hi,
+Gr{oetje,eeting}s,
 
-I finally had some time to look at your proposal. As I wrote last time,
-you convinced me to have the stats in sysfs for apple-to-apple
-comparisons.
+                        Geert
 
-One change I'd like to see is to let the I2C core handle the stats and
-not the individual bus drivers. From what I see, the I2C core could
-handle all this if the bus drivers use proper fault codes.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-> - ber_cnt (bus error count)
-
-I'm not sure what exactly "bus error" means in this case. But I think it
-can be translated to any not-otherwise handled errno returned by
-__i2c_transfer() or __i2c_smbus_transfer(). I also think it should be
-named "bus_errors". Do we really need the "cnt" suffix?
-
-> - nack_cnt (NACK count)
-
-This would be -ENXIO for __i2c_transfer and friends. Name should be
-"NACKs"?
-
-> - rec_fail_cnt, rec_succ_cnt (recovery failure/success count)
-
-This would be the return code of i2c_recover_bus(). Names should be
-"recovery_failures" and "recovery_successes"?
-
-> - timeout_cnt (timeout count)
-
-This would be -ETIMEDOUT for __i2c_transfer and friends. Name should be
-"timeouts"?
-
-> - i2c_speed (bus frequency)
-
-Yes, we can have that. I don't think this is really a stat, though. It
-is an attribute of an adapter. It has been requested before:
-
-http://patchwork.ozlabs.org/project/linux-i2c/patch/1413403411-8895-4-git-send-email-octavian.purdila@intel.com/
-http://patchwork.ozlabs.org/project/linux-i2c/patch/20181210084111.6938-2-tudor.ambarus@microchip.com/
-http://patchwork.ozlabs.org/project/linux-i2c/patch/20201013100314.216154-1-tali.perry1@gmail.com/
-
-So, I think we can tackle it again but it is orthogonal from the stats
-series.
-
-> - tx_complete_cnt (transaction completed, including both as an initiator
->   and as a target)
-
-This would be retval == num_msgs for __i2c_transfer and friends. I also
-think it should be named "transfers_completed". "tx" often goes with
-"rx" as a pair. I really wondered "why only tx" first.
-
-So, let's keep at the high level first. What do you think about my
-suggestions?
-
-Thanks and happy hacking,
-
-   Wolfram
-
-
---kV9YJMcLA9AXD3Nw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIBGA4ACgkQFA3kzBSg
-KbYCOA/+NKh18t9FOXG44dWZgqsl4HHVMSmEjwzcVjFNG8EDlatHUuhVIO2jag8j
-3SWfe/lNFa0e30K0ggYZDSkkL70i65Rs6/7bxCGL8+UhD3K+w5l7+6IKkAJ/cYOf
-ZtnjnOhMQxQ9YFh/YxG7+xOd9vJ8gpi001htwf6t0OBU7KR80SfjF+YlkZfZ/BVJ
-9Xsr965j/Qf+wFzrPtuEmMo7qScyns95fcryivYCg+/9RQ101+sUs4AtE41bKFIo
-3gtxbEoyqVMweaF4sigBqnu75fillhHlU3+ChU54IzPwclTBfX1i1YqLOAkA9wUn
-jf3OTXgOCORXhVDF6rXd7GaiZdDzvBFk85oluZP3KxpwraYhNCjPOYgZko6fQqJB
-fPxipmFwHionCOje+owWxIJskFc/nfEFl32VtO+QXpFklXkm/LkAqb+imgMjZDw0
-UBJxDI1LW8vAmxcoQR9Qh4iiiAjCkV5RoOosevk1Q68N6rbv8KuWFio2PqmcDmOE
-W5A24VtxdbYyYJ9jMchSRXJoPXNW5I4YZ0W4v4WIqyWWGODPjOanxr57RBlDuJbo
-KqqIwmc8N8kTIE2qvJ7cn2vZ8RoRdQsAUNL6gRFUsjqA/470yLwTkzPfRh9/ACB2
-e/Q5dEAm7CNzs5hfSWxg8ViAJA6EW2XThZW9Or2XSvkRj/l5YeA=
-=logL
------END PGP SIGNATURE-----
-
---kV9YJMcLA9AXD3Nw--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
