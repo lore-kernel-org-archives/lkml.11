@@ -2,112 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55290C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6407EC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343497AbiBGRym (ORCPT
+        id S1343981AbiBGRyn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:54:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32902 "EHLO
+        Mon, 7 Feb 2022 12:54:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239410AbiBGRtR (ORCPT
+        with ESMTP id S1344640AbiBGRwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:49:17 -0500
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC8CC0401D9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:49:16 -0800 (PST)
-Received: by mail-qv1-xf35.google.com with SMTP id k4so11959757qvt.6
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 09:49:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kJucW2FhnAmOVXK6ttAIBgemWe7fm9oO1NBHaN+SpLo=;
-        b=7t3DM3VcFauVZOBlngQ9606Z9gD+sKLDq4AgAEevZr3ZavsH+WJjWgzundrmQ8j/fH
-         hCffawc1iSxT+eaqadAZ1tqlVNTDb+A8KjFDmVKplNkHqDhpdrPs8wFr6OC0CiykGHfz
-         AAKSENzVQE2vrUQ/ZlKTDOUsfDlVmSnj8w3uUXoD6Bbh5yOayLCi6VyiOjsv2oE4naa5
-         MzMyXm98/uP0z8aA1/Qe3tZBOtjj8qSrjwkLFmZTgROZ7VSP+wkCsFASes3w87WNcxdo
-         jYbbZnyI+uLZXYUYlcOT73zPchwbG85kEXuSM8Hr9RZ6VbhoEm2EuodTvRrGz/h2HdJ4
-         n6tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kJucW2FhnAmOVXK6ttAIBgemWe7fm9oO1NBHaN+SpLo=;
-        b=MHfvvAEjJEOq9PBEATNoqa7h69OAxHVIRPB3cup41g0kAQpGV+Q/5vRiVpsKPe7LK5
-         xuWj8IC0HRNx4P6UYwjoloLTZNPzGRc1DkjoZyEzBSIuC0+XZw4hczU2uPvxkrUyk7CD
-         Wwy0PCp4Y8AcTeEnHn8ki+oNMLtNq6PvZx5iA41ByZjma/f1oMpcThuyz0NM/TWB9XOb
-         E+7TVjxTVrK4PAx/qywTGlRUn6pGaT7MUACRai/9WUfvEaSX4x/G3oQG24YqgeOfQuCS
-         /gU2/eyWaTJN2At3l/A93pgljDntgLz+Kf/NMQvhv5Ri4BzdqfqL2jWPjzgihhqvsJzT
-         shuQ==
-X-Gm-Message-State: AOAM5327ob7YWEzuEgwGjJVl99DXjI4JxnmjBtxuFIAPI0xD4Bc5SA9A
-        PyCIyFHDYfm2Z/XmZAKZ2GVTGA==
-X-Google-Smtp-Source: ABdhPJyfrQtt982KQJ8YVomy4l18OH5G1tRs6T70oQ9tcGHf4td1lFkXstlwrfw1W6P49W2p7bCKGw==
-X-Received: by 2002:a05:6214:29e2:: with SMTP id jv2mr600877qvb.4.1644256156176;
-        Mon, 07 Feb 2022 09:49:16 -0800 (PST)
-Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
-        by smtp.gmail.com with ESMTPSA id s28sm5387928qkm.53.2022.02.07.09.49.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 09:49:15 -0800 (PST)
-Date:   Mon, 7 Feb 2022 12:49:15 -0500
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Huang Ying <ying.huang@intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@suse.de>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Feng Tang <feng.tang@intel.com>,
+        Mon, 7 Feb 2022 12:52:39 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8CDC0401D9;
+        Mon,  7 Feb 2022 09:52:38 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4E7441EC01B7;
+        Mon,  7 Feb 2022 18:52:33 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644256353;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=lj3M3QiQvXsBo94U4HlpV/D8C0ht7/jERvq5KAmCCTE=;
+        b=RBq8vE9Qzf2e+zlbZGA9DQP1MUr9EquOtpBPB/LIb0VrV3MWGw859eIXsOAguuxr3oh7RX
+        U+x/86JIZYerfBFoHjXGrzDqFJkJjKFYyQNGp9K5+LbWwdAqD0zvAhQGdLHiWxNfs5V7of
+        2pBZkpWHSDm+IkFL22w6dVHUxpVgwnk=
+Date:   Mon, 7 Feb 2022 18:52:28 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Michael Roth <michael.roth@amd.com>
+Cc:     Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Rik van Riel <riel@surriel.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
-        Wei Xu <weixugc@google.com>, osalvador <osalvador@suse.de>,
-        Shakeel Butt <shakeelb@google.com>,
-        zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>
-Subject: Re: [PATCH -V11 3/3] memory tiering: skip to scan fast memory
-Message-ID: <YgFbmxRR4QC7CJKb@cmpxchg.org>
-References: <20220128082751.593478-1-ying.huang@intel.com>
- <20220128082751.593478-4-ying.huang@intel.com>
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com
+Subject: Re: [PATCH v9 31/43] x86/compressed/64: Add support for SEV-SNP
+ CPUID table in #VC handlers
+Message-ID: <YgFcXMEvWs9xGTPF@zn.tnic>
+References: <20220128171804.569796-1-brijesh.singh@amd.com>
+ <20220128171804.569796-32-brijesh.singh@amd.com>
+ <Yf5XScto3mDXnl9u@zn.tnic>
+ <20220205162249.4dkttihw6my7iha3@amd.com>
+ <Yf/PN8rBy3m5seU9@zn.tnic>
+ <20220207153739.p63sa5tcaxtdx2wn@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220128082751.593478-4-ying.huang@intel.com>
+In-Reply-To: <20220207153739.p63sa5tcaxtdx2wn@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 04:27:51PM +0800, Huang Ying wrote:
-> If the NUMA balancing isn't used to optimize the page placement among
-> sockets but only among memory types, the hot pages in the fast memory
-> node couldn't be migrated (promoted) to anywhere.  So it's unnecessary
-> to scan the pages in the fast memory node via changing their PTE/PMD
-> mapping to be PROT_NONE.  So that the page faults could be avoided
-> too.
-> 
-> In the test, if only the memory tiering NUMA balancing mode is enabled, the
-> number of the NUMA balancing hint faults for the DRAM node is reduced to
-> almost 0 with the patch.  While the benchmark score doesn't change
-> visibly.
-> 
-> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-> Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-> Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Michal Hocko <mhocko@suse.com>
-> Cc: Rik van Riel <riel@surriel.com>
-> Cc: Mel Gorman <mgorman@techsingularity.net>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Yang Shi <shy828301@gmail.com>
-> Cc: Zi Yan <ziy@nvidia.com>
-> Cc: Wei Xu <weixugc@google.com>
-> Cc: osalvador <osalvador@suse.de>
-> Cc: Shakeel Butt <shakeelb@google.com>
-> Cc: zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-mm@kvack.org
+On Mon, Feb 07, 2022 at 09:37:39AM -0600, Michael Roth wrote:
+> Absolutely, I know a thorough review is grueling work, and would never
+> want to give the impression that I don't appreciate it. Was just hoping
+> to revisit these in the context of v9 since there were some concerning
+> things in flight WRT the spec handling and I was sort of focused on
+> getting ahead of those in case they involved firmware/spec changes. But
+> I realize that's resulted in a waste of your time and I should have at
+> least provided some indication of where I was with these before your
+> review. Won't happen again.
 
-Looks good to me.
+Thanks, that's appreciated.
 
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+And in case you're wondering, the kernel is the most flexible thing from
+all parties involved so even if you have to change the spec/fw, fixing
+the kernel is a lot easier than any of the other things. So make sure
+you do a good job with the spec/fw - the kernel will be fine. :-)
+
+> Ok, will work this in for v10. My plan is to introduce this struct:
+> 
+>   struct cpuid_leaf {
+>       u32 fn;
+>       u32 subfn;
+>       u32 eax;
+>       u32 ebx;
+>       u32 ecx;
+>       u32 edx;
+>   }
+
+Ok.
+
+> as part of the patch which introduces sev_cpuid_hv():
+> 
+>   x86/sev: Move MSR-based VMGEXITs for CPUID to helper
+> 
+> and then utilize that for the function parameters there, here, and any
+> other patches in the SNP code involved with fetching/manipulating cpuid
+> values before returning them to the #VC handler.
+
+Sounds good.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
