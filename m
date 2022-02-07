@@ -2,102 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C976C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F15B4C35273
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350847AbiBGFwy (ORCPT
+        id S1350767AbiBGFwx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:52:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
+        Mon, 7 Feb 2022 00:52:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241182AbiBGEsI (ORCPT
+        with ESMTP id S229774AbiBGFBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:48:08 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF356C043181;
-        Sun,  6 Feb 2022 20:48:07 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 980B4210E8;
-        Mon,  7 Feb 2022 04:48:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644209286; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2w8E8+D8DnDn4oux4W6cKi7wJrd0JGZITu8BgcqO5/k=;
-        b=iIaeyp+u+6up1G0hpe0ns8cxnMeE6N4td3CtAWY+xZIGV+UKST1UGVia/hjHjG3qOIcUAl
-        giG/fcb7PceuAdwQKLhekiYjp3BTPoUdQH5hMxRU7sqNfqk/ybnfaJ4iMjn7mj5MFX1fWO
-        7Jh6V+gwtrKOjdzEU1rDx5podtWYG/E=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644209286;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2w8E8+D8DnDn4oux4W6cKi7wJrd0JGZITu8BgcqO5/k=;
-        b=sb1QOGj4V3V8k41j+kPjQWi6J0FNHQBPDe3wYFw+hB7Sa78/4oiATv1segw7lCSXrSSAJV
-        f8j/FpEi2KgcDMDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 85BCC1330E;
-        Mon,  7 Feb 2022 04:48:03 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id QQM1EIOkAGJcNQAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:48:03 +0000
-Subject: [PATCH 11/21] NFS: remove IS_SWAPFILE hack
-From:   NeilBrown <neilb@suse.de>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mark Hemment <markhemm@googlemail.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>
-Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 07 Feb 2022 15:46:01 +1100
-Message-ID: <164420916118.29374.2111079497808369007.stgit@noble.brown>
-In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-User-Agent: StGit/0.23
+        Mon, 7 Feb 2022 00:01:45 -0500
+X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 21:01:37 PST
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33717C043184
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 21:01:36 -0800 (PST)
+X-UUID: 75dcebd48bbc45d6b8d70bef0d5a8338-20220207
+X-UUID: 75dcebd48bbc45d6b8d70bef0d5a8338-20220207
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2135712476; Mon, 07 Feb 2022 12:56:31 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 7 Feb 2022 12:56:30 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 7 Feb 2022 12:56:30 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
+        <narmstrong@baylibre.com>, <robert.foss@linaro.org>,
+        <andrzej.hajda@intel.com>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <p.zabel@pengutronix.de>
+CC:     <xji@analogixsemi.com>, <jitao.shi@mediatek.com>,
+        <xinlei.lee@mediatek.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [v11,0/3] force hsa hbp hfp packets multiple of lanenum to avoid screen shift
+Date:   Mon, 7 Feb 2022 12:56:22 +0800
+Message-ID: <20220207045625.17713-1-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This code is pointless as IS_SWAPFILE is always defined.
-So remove it.
+Changes since v10:
+ - Rebase to 5.17-rc3.
+ - Add more maintainers.
 
-Suggested-by: Mark Hemment <markhemm@googlemail.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: NeilBrown <neilb@suse.de>
----
- fs/nfs/file.c |    5 -----
- 1 file changed, 5 deletions(-)
+Changes since v9:
+ - Change description of "MIPI_DSI_HS_PKT_END_ALIGNED".
+ - Use mode_flags directly instead of another variable on patch [2/3].
+ - Add explanation of implementation in mtk_dsi.c on commit message of [2/3].
 
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 9e2def045111..4d4750738aeb 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -44,11 +44,6 @@
- 
- static const struct vm_operations_struct nfs_file_vm_ops;
- 
--/* Hack for future NFS swap support */
--#ifndef IS_SWAPFILE
--# define IS_SWAPFILE(inode)	(0)
--#endif
--
- int nfs_check_flags(int flags)
- {
- 	if ((flags & (O_APPEND | O_DIRECT)) == (O_APPEND | O_DIRECT))
+Changes since v8:
+ - Use mode_flags to control this limitation instead of "hs_packet_end_aligned".
+ - Add new bit definition "MIPI_DSI_HS_PKT_END_ALIGNED" for mode_flags.
 
+Changes since v7:
+ - Rebase to kernel 5.16
+ - Add tags of reviewed-by and acked-by.
+ - Add detailed commit message for flag "hs_packet_end_aligned" in DSI common driver.
+
+Changes since v6:
+ - Add "bool hs_packet_end_aligned" in "struct mipi_dsi_device" to control the dsi aligned.
+ - Config the "hs_packet_end_aligned" in ANX7725 .attach().
+
+Changes since v5:
+ - Search the anx7625 compatible as flag to control dsi output aligned.
+
+Changes since v4:
+ - Move "dt-bindings: drm/bridge: anx7625: add force_dsi_end_without_null" before
+   "drm/mediatek: force hsa hbp hfp packets multiple of lanenum to avoid".
+ - Retitle "dt-bindings: drm/bridge: anx7625: add force_dsi_end_without_null".
+
+Rex-BC Chen (3):
+  drm/dsi: transfer DSI HS packets ending at the same time
+  drm/mediatek: implement the DSI HS packets aligned
+  drm/bridge: anx7625: config hs packets end aligned to avoid screen shift
+
+ drivers/gpu/drm/bridge/analogix/anx7625.c |  3 ++-
+ drivers/gpu/drm/mediatek/mtk_dsi.c        | 12 ++++++++++++
+ include/drm/drm_mipi_dsi.h                |  2 ++
+ 3 files changed, 16 insertions(+), 1 deletion(-)
+
+-- 
+2.31.0
 
