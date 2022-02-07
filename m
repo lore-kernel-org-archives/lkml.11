@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA1BC47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC16BC47081
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343803AbiBGLQu (ORCPT
+        id S1380982AbiBGLQ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:16:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50528 "EHLO
+        Mon, 7 Feb 2022 06:16:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240051AbiBGLN4 (ORCPT
+        with ESMTP id S1379780AbiBGLQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:13:56 -0500
+        Mon, 7 Feb 2022 06:16:21 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7616DC043181;
-        Mon,  7 Feb 2022 03:13:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17047C043181;
+        Mon,  7 Feb 2022 03:16:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06752611AA;
-        Mon,  7 Feb 2022 11:13:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5DE1C004E1;
-        Mon,  7 Feb 2022 11:13:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97B426126D;
+        Mon,  7 Feb 2022 11:16:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 776FAC004E1;
+        Mon,  7 Feb 2022 11:16:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232434;
-        bh=6Zh7jCNt9Cw8yt9T1v996Y2BQCPeVng+cR4IQ7nstWU=;
+        s=korg; t=1644232579;
+        bh=PkDSCHfSoW1Otd51STQdopensaiCHNHWwutyrZDS9Gg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1aTTt4vaFeK73WruS9Q1fLVKVOcMFqCw2Nw7xCk8OEVaWsBvfCYj3v7Tqfm3KWHAG
-         fxIky29XWMzqq8ghsQMyv4K2dcFMUTiwdgi9RFvBDY5+threSfA/gRGc+3bpc2xb9u
-         YFatrxXApxys141rMNXTvyyxhYdMOrAGmp1KY8OU=
+        b=e2Fg7AbEEqTd9QFmm9eGTkbxg7x8J4PdRTd26iGVEeLV7QwI/umqnvH1k4OL8+0Hy
+         2fZXaIF1feL3+BckuKlTBclNWDgYPUml5cbM7Djky2gEDnu8ACwWfzl5iOUiMR/etq
+         WFLPEIQAO6E6KnnXMnoSA8cOP12clVJb1t9Uzd94=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
         Richard Guy Briggs <rgb@redhat.com>,
         Paul Moore <paul@paul-moore.com>
-Subject: [PATCH 4.14 46/69] audit: improve audit queue handling when "audit=1" on cmdline
-Date:   Mon,  7 Feb 2022 12:06:08 +0100
-Message-Id: <20220207103757.140200063@linuxfoundation.org>
+Subject: [PATCH 4.19 54/86] audit: improve audit queue handling when "audit=1" on cmdline
+Date:   Mon,  7 Feb 2022 12:06:17 +0100
+Message-Id: <20220207103759.334877202@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
-References: <20220207103755.604121441@linuxfoundation.org>
+In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
+References: <20220207103757.550973048@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -102,7 +102,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/kernel/audit.c
 +++ b/kernel/audit.c
-@@ -509,20 +509,22 @@ static void kauditd_printk_skb(struct sk
+@@ -549,20 +549,22 @@ static void kauditd_printk_skb(struct sk
  /**
   * kauditd_rehold_skb - Handle a audit record send failure in the hold queue
   * @skb: audit record
@@ -128,7 +128,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
   *
   * Description:
   * Queue the audit record, waiting for an instance of auditd.  When this
-@@ -532,19 +534,31 @@ static void kauditd_rehold_skb(struct sk
+@@ -572,19 +574,31 @@ static void kauditd_rehold_skb(struct sk
   * and queue it, if we have room.  If we want to hold on to the record, but we
   * don't have room, record a record lost message.
   */
@@ -165,7 +165,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	if (!audit_backlog_limit ||
  	    skb_queue_len(&audit_hold_queue) < audit_backlog_limit) {
  		skb_queue_tail(&audit_hold_queue, skb);
-@@ -553,24 +567,32 @@ static void kauditd_hold_skb(struct sk_b
+@@ -593,24 +607,32 @@ static void kauditd_hold_skb(struct sk_b
  
  	/* we have no other options - drop the message */
  	audit_log_lost("kauditd hold queue overflow");
@@ -203,7 +203,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  }
  
  /**
-@@ -608,7 +630,7 @@ static void auditd_reset(const struct au
+@@ -648,7 +670,7 @@ static void auditd_reset(const struct au
  	/* flush the retry queue to the hold queue, but don't touch the main
  	 * queue since we need to process that normally for multicast */
  	while ((skb = skb_dequeue(&audit_retry_queue)))
@@ -212,7 +212,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  }
  
  /**
-@@ -682,16 +704,18 @@ static int kauditd_send_queue(struct soc
+@@ -722,16 +744,18 @@ static int kauditd_send_queue(struct soc
  			      struct sk_buff_head *queue,
  			      unsigned int retry_limit,
  			      void (*skb_hook)(struct sk_buff *skb),
@@ -234,7 +234,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		/* call the skb_hook for each skb we touch */
  		if (skb_hook)
  			(*skb_hook)(skb);
-@@ -699,7 +723,7 @@ static int kauditd_send_queue(struct soc
+@@ -739,7 +763,7 @@ static int kauditd_send_queue(struct soc
  		/* can we send to anyone via unicast? */
  		if (!sk) {
  			if (err_hook)
@@ -243,7 +243,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  			continue;
  		}
  
-@@ -713,7 +737,7 @@ retry:
+@@ -753,7 +777,7 @@ retry:
  			    rc == -ECONNREFUSED || rc == -EPERM) {
  				sk = NULL;
  				if (err_hook)
