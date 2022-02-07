@@ -2,183 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E49C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD93FC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349787AbiBGGhE (ORCPT
+        id S1353410AbiBGGhr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:37:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60208 "EHLO
+        Mon, 7 Feb 2022 01:37:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232755AbiBGG35 (ORCPT
+        with ESMTP id S241011AbiBGGcX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:29:57 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A211FC043184;
-        Sun,  6 Feb 2022 22:29:56 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id u12so3280747plq.10;
-        Sun, 06 Feb 2022 22:29:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=CpQoC6BpaQ14c8xpHvHSZfO/e4PX8wXeyUZwi9sox80=;
-        b=PzxDlZnPz3s/zC5c+Q+Qff1agP8y6AcfDt7nMu1PfK8r7BW3qRjh1ebpf6K0POgcNt
-         TWBRF8ECWbY1cT4urFgVA3pdPlpAGeWGjQ7FTmpWKLa/njcrKtYaX1j1yXbKZVYVR8zP
-         KvdnWhATWQtshPwjcc2JV7JpqtMMgDx6WT1kIOUI1R+eaQc3mTCVeEtghW50usvokPYq
-         /6XaWSIGMl6YDhZFLmSF0hvBUiT7pAOVh2/Ig8Kpf1jxeRDN+B43dxVx+TEqCZ6V2BGp
-         B2HuvJkUItJ9V3cmHUb+liPzbp6E3ur+q0kEMgWeFLNJED18bAOK7pQMmfegmA/cwXbw
-         9O8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=CpQoC6BpaQ14c8xpHvHSZfO/e4PX8wXeyUZwi9sox80=;
-        b=mvOwbecZ5/VfQNMPrFw2AwBtZ1PbTcQK9LqPMQzr3LHKf4erAgHNR7jEELGlbwK+TF
-         i+Oy9VT/mItE4JqzusKIC1AMYXJhJpsf4BLN+P8X3teY0KvOjz3If3oOrJmTx0pJxJtF
-         7xoeAzbjPHe75cH1aUhgGlkSwsWPykmjDYGSgzmAssKnXsTT6Q2zEMO2LI56qVemYjUq
-         n6V55SE3eng5XeP+Jiddo4eEZDksHOI90GJNEF7dhionMa6e/7bM8iN1Q7qbQ0Ubbh62
-         ztZOpGmIolUkAT8hFxLJROquuKHfeSJt1qGNvuXAHH2Jru/8ScuzNY9sNd+/nKcz9YFq
-         ujcg==
-X-Gm-Message-State: AOAM5339/qut6WkfbCJA2Az5shEeVRcPcv36tIs40u0vq36RPFKNjFfl
-        DurMPGOefUO0gL7o69lkRMI=
-X-Google-Smtp-Source: ABdhPJzMYJ7HvvqDLUzu+yH57sJdcIwB1e5pkvzwAyo0Lb4imKeyCI4hwznQXo/NsOpWwQHAAaxn8w==
-X-Received: by 2002:a17:90b:4f4b:: with SMTP id pj11mr16701231pjb.120.1644215396173;
-        Sun, 06 Feb 2022 22:29:56 -0800 (PST)
-Received: from scdiu3.sunplus.com ([113.196.136.192])
-        by smtp.googlemail.com with ESMTPSA id j8sm3994386pjc.11.2022.02.06.22.29.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Feb 2022 22:29:55 -0800 (PST)
-From:   Tony Huang <tonyhuang.sunplus@gmail.com>
-To:     robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, derek.kiernan@xilinx.com,
-        dragan.cvetic@xilinx.com, arnd@arndb.de,
-        gregkh@linuxfoundation.org, tony.huang@sunplus.com,
-        wells.lu@sunplus.com
-Cc:     Tony Huang <tonyhuang.sunplus@gmail.com>
-Subject: [PATCH v8 1/2] dt-binding: misc: Add iop yaml file for Sunplus SP7021
-Date:   Mon,  7 Feb 2022 14:30:05 +0800
-Message-Id: <9aa1c339079d919bd780146a93a6db226486373c.1644212476.git.tonyhuang.sunplus@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
-References: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
-In-Reply-To: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
-References: <cover.1644212476.git.tonyhuang.sunplus@gmail.com>
+        Mon, 7 Feb 2022 01:32:23 -0500
+Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138F9C043181
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:32:22 -0800 (PST)
+Received: from omf20.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay11.hostedemail.com (Postfix) with ESMTP id 10DEC80294;
+        Mon,  7 Feb 2022 06:32:21 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id 086812002E;
+        Mon,  7 Feb 2022 06:32:14 +0000 (UTC)
+Message-ID: <62a6db49ef29745514b0263b9bb39b5a16f90efe.camel@perches.com>
+Subject: Re: [PATCH] Staging : android: Struct file_operations should be
+ const
+From:   Joe Perches <joe@perches.com>
+To:     Leonardo Araujo <leonardo.aa88@gmail.com>,
+        gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Date:   Sun, 06 Feb 2022 22:32:14 -0800
+In-Reply-To: <20220207031711.13644-1-leonardo.aa88@gmail.com>
+References: <20220207031711.13644-1-leonardo.aa88@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4-1ubuntu2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Stat-Signature: 8dikj3qm5jo846ci3kktjr9bssgn3eqo
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: 086812002E
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/tJ4keTdXdL28cbp7ERmXh3BWFz4CR16g=
+X-HE-Tag: 1644215534-707106
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add iop yaml file for Sunplus SP7021
+On Mon, 2022-02-07 at 00:17 -0300, Leonardo Araujo wrote:
+> From: "Leonardo Araujo" <leonardo.aa88@gmail.com>
+> 
+> WARNING: struct file_operations should normally be const
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Tony Huang <tonyhuang.sunplus@gmail.com>
----
-Changes in v8:
- -No change
+Always compile the files modified by a patch before you send it out.
 
- .../devicetree/bindings/misc/sunplus-iop.yaml      | 76 ++++++++++++++++++++++
- MAINTAINERS                                        |  5 ++
- 2 files changed, 81 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/misc/sunplus-iop.yaml
+[]
+> diff --git a/drivers/staging/android/ashmem.c b/drivers/staging/android/ashmem.c
+[]
+> @@ -377,7 +377,7 @@ ashmem_vmfile_get_unmapped_area(struct file *file, unsigned long addr,
+>  
+>  static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
+>  {
+> -	static struct file_operations vmfile_fops;
+> +	static const struct file_operations vmfile_fops;
+>  	struct ashmem_area *asma = file->private_data;
+>  	int ret = 0;
+>  
 
-diff --git a/Documentation/devicetree/bindings/misc/sunplus-iop.yaml b/Documentation/devicetree/bindings/misc/sunplus-iop.yaml
-new file mode 100644
-index 0000000..b37e697
---- /dev/null
-+++ b/Documentation/devicetree/bindings/misc/sunplus-iop.yaml
-@@ -0,0 +1,76 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) Sunplus Ltd. Co. 2021
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/misc/sunplus-iop.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Sunplus IOP(8051) controller
-+
-+maintainers:
-+  - Tony Huang <tonyhuang.sunplus@gmail.com>
-+
-+description: |
-+  Processor for I/O control, RTC wake-up procedure management,
-+  and cooperation with CPU&PMC in power management.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - sunplus,sp7021-iop
-+
-+  reg:
-+    items:
-+      - description: IOP registers regions
-+      - description: PMC registers regions
-+      - description: MOON0 registers regions
-+
-+  reg-names:
-+    items:
-+      - const: iop
-+      - const: iop_pmc
-+      - const: moon0
-+
-+  interrupts:
-+    items:
-+      - description: IOP_INT0. IOP to system Interrupt 0.
-+                     Sent by IOP to system RISC.
-+      - description: IOP_INT1. IOP to System Interrupt 1.
-+                     Sent by IOP to system RISC.
-+
-+  memory-region:
-+    maxItems: 1
-+
-+  wakeup-gpios:
-+    description: When the linux kernel system is powered off.
-+      8051 is always powered. 8051 cand receive external signals
-+      according to this gpio pin. 8051 receives external signal
-+      through gpio pin. 8051 can power on linux kernel system.
-+
-+required:
-+  - compatible
-+  - reg
-+  - reg-names
-+  - interrupts
-+  - memory-region
-+  - wakeup-gpios
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    iop: iop@9c000400 {
-+        compatible = "sunplus,sp7021-iop";
-+        reg = <0x9c000400 0x80>, <0x9c003100 0x80>, <0x9c000000 0x80>;
-+        reg-names = "iop", "iop_pmc", "moon0";
-+        interrupt-parent = <&intc>;
-+        interrupts = <41 IRQ_TYPE_LEVEL_HIGH>, <42 IRQ_TYPE_LEVEL_HIGH>;
-+        memory-region = <&iop_reserve>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&iop_pins>;
-+        wakeup-gpios = <&pctl 1 GPIO_ACTIVE_HIGH>;
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fb18ce7..6f336c9 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18242,6 +18242,11 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/dlink/sundance.c
- 
-+SUNPLUS IOP DRIVER
-+M:	Tony Huang <tonyhuang.sunplus@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/misc/sunplu-iop.yaml
-+
- SUPERH
- M:	Yoshinori Sato <ysato@users.sourceforge.jp>
- M:	Rich Felker <dalias@libc.org>
--- 
-2.7.4
+<apply patch>
+$ make allyesconfig
+$ make drivers/staging/android/ashmem.o
+[...]
+  CC      drivers/staging/android/ashmem.o
+drivers/staging/android/ashmem.c: In function ‘ashmem_mmap’:
+drivers/staging/android/ashmem.c:431:37: error: assignment of read-only variable ‘vmfile_fops’
+  431 |                         vmfile_fops = *vmfile->f_op;
+      |                                     ^
+drivers/staging/android/ashmem.c:432:42: error: assignment of member ‘mmap’ in read-only object
+  432 |                         vmfile_fops.mmap = ashmem_vmfile_mmap;
+      |                                          ^
+drivers/staging/android/ashmem.c:433:55: error: assignment of member ‘get_unmapped_area’ in read-only object
+  433 |                         vmfile_fops.get_unmapped_area =
+      |                                                       ^
+make[3]: *** [scripts/Makefile.build:289: drivers/staging/android/ashmem.o] Error 1
+make[2]: *** [scripts/Makefile.build:572: drivers/staging/android] Error 2
+make[1]: *** [scripts/Makefile.build:572: drivers/staging] Error 2
+make: *** [Makefile:1965: drivers] Error 2
+
+
 
