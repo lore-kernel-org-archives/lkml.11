@@ -2,69 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F07F5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D392FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242021AbiBGUSW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:18:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45372 "EHLO
+        id S241849AbiBGU05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:26:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241734AbiBGUOp (ORCPT
+        with ESMTP id S234543AbiBGUYc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:14:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A52C0401E1;
-        Mon,  7 Feb 2022 12:14:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FA39B816D9;
-        Mon,  7 Feb 2022 20:14:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C57FEC004E1;
-        Mon,  7 Feb 2022 20:14:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644264882;
-        bh=0M21RJ3h28C6tQN0sbw3p2LtChDpgeliRzFb0M/3rHI=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=un7M4SnAusq+FMRtuRRunXBoqhUfiTHyFhg/xCwIRuT60gWsz/xX9eetnFuV9rh2c
-         k6Mp16lwt6L0EW2U8DUR33w36oepYaRkbiuMhIFW1mSUBpOgdeA8s1AOCMhJj9Kyrm
-         RBaIWlirkajN6MgnHwv4hZ/folUJfiLUNlWZCmWzZS5Jh/lNn4C+RqyA+OzD1SBZvl
-         ZSboAlhlYEgo+iVWwdFqJf5EzQdhK1I32EbjPHoa8DE+Zixii26ztKuFayZ9Hvyv9h
-         BZv2z9CLkAA4Mn3bWPuH7edREPzpVV2pC6VULMjvKs2nVqTPpDEXo87ClImni2gdB/
-         pjxPLyvv/fSyQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B504CE5CF96;
-        Mon,  7 Feb 2022 20:14:42 +0000 (UTC)
-Subject: Re: [GIT PULL] integrity: subsystem fixes for v5.17
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <3a988ebfffe725e3172a6850c3b2b603d16c2330.camel@linux.ibm.com>
-References: <3a988ebfffe725e3172a6850c3b2b603d16c2330.camel@linux.ibm.com>
-X-PR-Tracked-List-Id: <linux-integrity.vger.kernel.org>
-X-PR-Tracked-Message-Id: <3a988ebfffe725e3172a6850c3b2b603d16c2330.camel@linux.ibm.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/zohar/linux-integrity.git tags/integrity-v5.17-fix
-X-PR-Tracked-Commit-Id: 89677197ae709eb1ab3646952c44f6a171c9e74c
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c8ba56b7e8f3ca4d86c556f5498e4faeb6d139ec
-Message-Id: <164426488273.18191.13523485374769038925.pr-tracker-bot@kernel.org>
-Date:   Mon, 07 Feb 2022 20:14:42 +0000
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-integrity <linux-integrity@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+        Mon, 7 Feb 2022 15:24:32 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA3DC0401DA;
+        Mon,  7 Feb 2022 12:24:31 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id z4so14391444lfg.5;
+        Mon, 07 Feb 2022 12:24:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=gItGRtBFmuDCuiCd8LZimI8CT8KycScnCN76eWqmpsI=;
+        b=EvGmrX7VLUplcnT7jV/mKf7O+C+eUWXMUppPpYkx6X9DhLk8AvGTjImHanjDBoSfid
+         p+e+YTlRflPL2Ke4p+llrqzuoi+T9WduxnN4OGM6oMSCpsVjeJ9O7fZl8wqmLC7LBbYm
+         Lcnl9+KHWE/ges8niXD9d1f2MdpOQ89TbyZVvnUk+yvUZzfyPqnIrX9SFEdoC7Q5HR/G
+         jZMVmTDWmlvagkAEzMUAUzGHXSJ6ljsOL3VfU1f1tZK9bfUFP5YPVV0UOJOy6vu241i/
+         AJ+LjR7N37F6Zvsuc/Xfcf2LKt1YDeC+cYmpFjapst9HF1Ag1KTjQRJQugX45T/JUfjf
+         noPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gItGRtBFmuDCuiCd8LZimI8CT8KycScnCN76eWqmpsI=;
+        b=eMB3YV6/oC9E+9DhfI8U3BY4t1gXAnaEp7iRYeUHXCIuPyJe5vxQrdWZ5hxl5/D9dM
+         ilL2o6A7b/yOAdfBGYg1V9tdj6p7QCQvbqhlk2jgRehWWRw2oHM/YQ/D+8UWmzG/820M
+         ObTbrqCDci8aHltmBb4upgCl14NFHJBGhwGtTnC347+OCkWeZPAL+RHsxNfz16qzX8vC
+         R8Q0juoiRKbQe3I9x0DFu7zg5bpkmi/QkOdti5EsJxu815TnLKTE3sxbgH6RigsEL0ev
+         ySa2PBH+BMcIeOrdjZBquivmsH9zwnIT+DzjkhJ1kLLZBBrjhE/HOnXzyTOvk11UpigF
+         mrcw==
+X-Gm-Message-State: AOAM531OxE4SopaEjVezmel34xcXD8ckR/Zem1nb68iYOcR6pAa03EVb
+        5cl/PCsc2/XNO7rNj5PnVHEaoQbhZrncEg==
+X-Google-Smtp-Source: ABdhPJz7L7ywOhhkq7VsLw/TZyIlGHs1A43QzxAPf71xzK7cAl3+cKVgqJvVR4mIAjJjhLs6FT83Fg==
+X-Received: by 2002:a05:6512:234a:: with SMTP id p10mr767844lfu.15.1644265469479;
+        Mon, 07 Feb 2022 12:24:29 -0800 (PST)
+Received: from localhost.localdomain ([94.103.224.201])
+        by smtp.gmail.com with ESMTPSA id m7sm1759127ljh.47.2022.02.07.12.24.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 12:24:28 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, toke@toke.dk,
+        linville@tuxdriver.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH v3 2/2] ath9k: htc: clean up *STAT_* macros
+Date:   Mon,  7 Feb 2022 23:24:25 +0300
+Message-Id: <28c83b99b8fea0115ad7fbda7cc93a86468ec50d.1644265120.git.paskripkin@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 06 Feb 2022 18:32:45 -0500:
+I've changed *STAT_* macros a bit in previous patch and I seems like
+they become really unreadable. Align these macros definitions to make
+code cleaner.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/zohar/linux-integrity.git tags/integrity-v5.17-fix
+Also fixed following checkpatch warning
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c8ba56b7e8f3ca4d86c556f5498e4faeb6d139ec
+ERROR: Macros with complex values should be enclosed in parentheses
 
-Thank you!
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
+Changes since v2:
+	- My send-email script forgot, that mailing lists exist.
+	  Added back all related lists
+	- Fixed checkpatch warning
+
+Changes since v1:
+	- Added this patch
+
+---
+ drivers/net/wireless/ath/ath9k/htc.h | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 141642e5e00d..b4755e21a501 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -327,14 +327,14 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
+ }
+ 
+ #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+-#define __STAT_SAVE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
+-#define TX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+-#define TX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+-#define RX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+-#define RX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+-#define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
+-
+-#define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
++#define __STAT_SAVE(expr)	(hif_dev->htc_handle->drv_priv ? (expr) : 0)
++#define TX_STAT_INC(c)		__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
++#define TX_STAT_ADD(c, a)	__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
++#define RX_STAT_INC(c)		__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
++#define RX_STAT_ADD(c, a)	__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
++#define CAB_STAT_INC		(priv->debug.tx_stats.cab_queued++)
++
++#define TX_QSTAT_INC(q)		(priv->debug.tx_stats.queue_stats[q]++)
+ 
+ void ath9k_htc_err_stat_rx(struct ath9k_htc_priv *priv,
+ 			   struct ath_rx_status *rs);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.34.1
+
