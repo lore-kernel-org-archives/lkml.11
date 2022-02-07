@@ -2,127 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 836F8C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D276AC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238266AbiBGFuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:50:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
+        id S238680AbiBGFuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352072AbiBGEsP (ORCPT
+        with ESMTP id S242311AbiBGDRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:48:15 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22607C043181;
-        Sun,  6 Feb 2022 20:48:14 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id D2BA6210E8;
-        Mon,  7 Feb 2022 04:48:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644209292; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ViWGm/depDGf235ykZcrvlwHPhzYZ1IOzNywgeuJlCs=;
-        b=dEj/ZECgQzPmVNNwNtLhRwIK+t+7MZfIgofMU57KXuIxPsebs5TmJ+yBisbfSkJ1Lthv13
-        WGxGwr5R4TqIlYYAhIz1CsdYyp+aE9q3/2eQvTm0XbIF4xjDADjB0h2337rxl00eMcgeg/
-        EywU58RZdtc7KMmvbgUOuYuHFQJUK2Q=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644209292;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ViWGm/depDGf235ykZcrvlwHPhzYZ1IOzNywgeuJlCs=;
-        b=LB4uxgey7EDf4HC0h1f45bTAwNW+UouWDbatH0XJLCUd1qURVb63ibV21W/iR7wynleyiL
-        nIOTeQVWLnjvIqCQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F0D7B1330E;
-        Mon,  7 Feb 2022 04:48:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id O2hbK4mkAGJiNQAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:48:09 +0000
-Subject: [PATCH 12/21] SUNRPC/call_alloc: async tasks mustn't block waiting
- for memory
-From:   NeilBrown <neilb@suse.de>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mark Hemment <markhemm@googlemail.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>
-Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 07 Feb 2022 15:46:01 +1100
-Message-ID: <164420916119.29374.4983888648335050333.stgit@noble.brown>
-In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-User-Agent: StGit/0.23
+        Sun, 6 Feb 2022 22:17:18 -0500
+Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2A2C061A73
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 19:17:17 -0800 (PST)
+Received: by mail-oo1-xc2d.google.com with SMTP id c7-20020a4ad207000000b002e7ab4185d2so12202579oos.6
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 19:17:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pVL1XarGkGpNrMFF5FpaCxOCFgNox/eu94U3iNLWgOk=;
+        b=UzVcUxMLk6QizfUc8c/7P9RNR++92zr5T0oDttbGCWP7UGcZ7xi9Nxd6CknDb6Zn1I
+         VK31u/QMNp/hkXmq3vnr9FMoKmAcs4R7UNr7Ylv6LXSdmsH0XMjW+Mr70MzA7kWubIPS
+         KitfUUKfznChgEkaPtDIip9U1lHKb3/zj3jAlD0FEL4LhOzBulb8bLHuV8sg3R9gJ8KI
+         PzL+YdOj5NyVN13ZbEitnZ1091DJjypEHJ4TXyVckOtJ0q7eD58XQHIGvDqRZE4qJ7kg
+         QU652s5nHCrxnq9vvfjdO7sQrKegfL11u2VFTOdhjzMksD0vXllCCrTAJAvwDF8tnhg4
+         T55w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pVL1XarGkGpNrMFF5FpaCxOCFgNox/eu94U3iNLWgOk=;
+        b=fDXxB1Ey0oW2df9DaD9Xp8pwrPrSai1GllvW+z/B13FAjWJ1p4GNvxw5NDQYLxqA93
+         BAGqJpDyp+fgeAzLTjXRGHoHsh09uLETlmzMWyaLyALUlkQKNfjesKzrFycNwRrWqfvf
+         p2HmFcvk4zXxmLvglL38L6TbD6KE+9jsvkUMOa0BKphbvC9g3PP5q7j9vS7jTzewG31+
+         hswlvKodbnTfi/dS5NwT/QCx7ss7ql5Acj87PFJA891vVq4Eg8vC4N/Y9Eqq+wIvMOJ7
+         RpSYv2hwprxfpx7fpYdhRClm/JiWEWawqRklas+ylKxTIKxUkhDKvq3cEHwrv5cgixTZ
+         BR8g==
+X-Gm-Message-State: AOAM531UA7Yo+0tKiW7eK4kX5QJYre5Vr7rMj0DpiSRKrSewfUGkTsC7
+        N663e1wVxxeXA5E49Z5UJ/U=
+X-Google-Smtp-Source: ABdhPJz5HxJMSDPOW73LlU/PtUzQWEN6ctR43Vhlii0R+CgbtJvTVDKLZbk8OSHZQBi3hgAOzBobWw==
+X-Received: by 2002:a05:6870:3654:: with SMTP id v20mr2726890oak.17.1644203837175;
+        Sun, 06 Feb 2022 19:17:17 -0800 (PST)
+Received: from localhost.localdomain ([2804:14d:4cd8:12bf:4134:806a:5a4a:2a88])
+        by smtp.gmail.com with ESMTPSA id w62sm3704537oie.4.2022.02.06.19.17.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 19:17:16 -0800 (PST)
+From:   Leonardo Araujo <leonardo.aa88@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        "Leonardo Araujo" <leonardo.aa88@gmail.com>
+Subject: [PATCH] Staging : android: Struct file_operations should be const
+Date:   Mon,  7 Feb 2022 00:17:11 -0300
+Message-Id: <20220207031711.13644-1-leonardo.aa88@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When memory is short, new worker threads cannot be created and we depend
-on the minimum one rpciod thread to be able to handle everything.
-So it must not block waiting for memory.
+From: "Leonardo Araujo" <leonardo.aa88@gmail.com>
 
-mempools are particularly a problem as memory can only be released back
-to the mempool by an async rpc task running.  If all available
-workqueue threads are waiting on the mempool, no thread is available to
-return anything.
+WARNING: struct file_operations should normally be const
 
-rpc_malloc() can block, and this might cause deadlocks.
-So check RPC_IS_ASYNC(), rather than RPC_IS_SWAPPER() to determine if
-blocking is acceptable.
-
-Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Leonardo Araujo <leonardo.aa88@gmail.com>
 ---
- net/sunrpc/sched.c              |    4 +++-
- net/sunrpc/xprtrdma/transport.c |    4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/staging/android/ashmem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
-index e2c835482791..d5b6e897f5a5 100644
---- a/net/sunrpc/sched.c
-+++ b/net/sunrpc/sched.c
-@@ -1023,8 +1023,10 @@ int rpc_malloc(struct rpc_task *task)
- 	struct rpc_buffer *buf;
- 	gfp_t gfp = GFP_NOFS;
+diff --git a/drivers/staging/android/ashmem.c b/drivers/staging/android/ashmem.c
+index ddbde3f8430e..4c6b420fbf4d 100644
+--- a/drivers/staging/android/ashmem.c
++++ b/drivers/staging/android/ashmem.c
+@@ -377,7 +377,7 @@ ashmem_vmfile_get_unmapped_area(struct file *file, unsigned long addr,
  
-+	if (RPC_IS_ASYNC(task))
-+		gfp = GFP_NOWAIT | __GFP_NOWARN;
- 	if (RPC_IS_SWAPPER(task))
--		gfp = __GFP_MEMALLOC | GFP_NOWAIT | __GFP_NOWARN;
-+		gfp |= __GFP_MEMALLOC;
+ static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
+ {
+-	static struct file_operations vmfile_fops;
++	static const struct file_operations vmfile_fops;
+ 	struct ashmem_area *asma = file->private_data;
+ 	int ret = 0;
  
- 	size += sizeof(struct rpc_buffer);
- 	if (size <= RPC_BUFFER_MAXSIZE)
-diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
-index 42e375dbdadb..5714bf880e95 100644
---- a/net/sunrpc/xprtrdma/transport.c
-+++ b/net/sunrpc/xprtrdma/transport.c
-@@ -570,8 +570,10 @@ xprt_rdma_allocate(struct rpc_task *task)
- 	gfp_t flags;
- 
- 	flags = RPCRDMA_DEF_GFP;
-+	if (RPC_IS_ASYNC(task))
-+		flags = GFP_NOWAIT | __GFP_NOWARN;
- 	if (RPC_IS_SWAPPER(task))
--		flags = __GFP_MEMALLOC | GFP_NOWAIT | __GFP_NOWARN;
-+		flags |= __GFP_MEMALLOC;
- 
- 	if (!rpcrdma_check_regbuf(r_xprt, req->rl_sendbuf, rqst->rq_callsize,
- 				  flags))
-
+-- 
+2.29.0
 
