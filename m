@@ -2,177 +2,445 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAEEC3527C
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09AE2C47080
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239143AbiBGFuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:50:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
+        id S237475AbiBGFuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:50:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241071AbiBGEqs (ORCPT
+        with ESMTP id S238394AbiBGDlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:46:48 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAE7C043181;
-        Sun,  6 Feb 2022 20:46:46 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 4B1AF1F37E;
-        Mon,  7 Feb 2022 04:46:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644209205; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=U9N4d6jiSLUN/jgU8wn+Vx5a7YFyPHoCVjyVTiQLtWo=;
-        b=D7ClHLlXCPAnUMq8dOvwwwrzmaScoUlfNpLlP8S3SYnqtpIWp1GvKY3L1IQPtBoYiEW6PM
-        5jAqcWOlkakD4qjbhUmLX8EmVIZNMZy/zOHGAxZ6J6qNuD/7jguzu128xBC84FZvC0zsQH
-        +mKe4lXZ0OsN3471M8Q8Vw/8Kn08LD0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644209205;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=U9N4d6jiSLUN/jgU8wn+Vx5a7YFyPHoCVjyVTiQLtWo=;
-        b=hHkMCaHK8KlVEpuDXQEX/KtsCHk/EHsmxCbe8b1mwiiu69NFUbbVVBGfHAulbMf7Mtoe17
-        /WLUrlTVBvFxEqDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2F0291330E;
-        Mon,  7 Feb 2022 04:46:41 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id L37WNTGkAGL/NAAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:46:41 +0000
-Subject: [PATCH 00/21 V4] Repair SWAP-over_NFS
-From:   NeilBrown <neilb@suse.de>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mark Hemment <markhemm@googlemail.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>
-Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 07 Feb 2022 15:46:00 +1100
-Message-ID: <164420889455.29374.17958998143835612560.stgit@noble.brown>
-User-Agent: StGit/0.23
+        Sun, 6 Feb 2022 22:41:24 -0500
+X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 19:41:23 PST
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A862C061A73
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 19:41:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644205283; x=1675741283;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=DxzfBPyoiTsLf0QdgfHO2igbzYxMtnjk2Zp6ZwRl9LU=;
+  b=M8X9LgBwsrkZbJzpnjNqymG6HbLRyAidliSiQDO5sv9T3HHTZVdsMoZt
+   jNDcEtL2J90gjchgUAfAxks7eiyrS8GIzTCRyjdn7bNOIvQwLd61Q/vNa
+   DfEQeFGzikeqKqJKE94sQ03EtFXHgmxkQIjD1sFjuVXb+sYhoq5/H93eB
+   vpVYuglfmkEPRpfdiDKE6qHGFgWtRjHD5nZ6Xv9Ty03SqosUsuMi88bxx
+   cv3w4tvCLJdLzWK0fd4cV7wbq1EEDGZkkeDv9ei+Xx4/duGPuPwQxCGcq
+   mkqiJF9v6YVR3goCvZ5pFOwUt2p3ONSPNb1mL3rsY2bc8yxGEagqXlLO4
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="246223698"
+X-IronPort-AV: E=Sophos;i="5.88,348,1635231600"; 
+   d="scan'208";a="246223698"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 19:40:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,348,1635231600"; 
+   d="scan'208";a="700320489"
+Received: from chenyu-desktop.sh.intel.com ([10.239.158.186])
+  by orsmga005.jf.intel.com with ESMTP; 06 Feb 2022 19:40:15 -0800
+From:   Chen Yu <yu.c.chen@intel.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Tim Chen <tim.c.chen@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Barry Song <21cnbao@gmail.com>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Aubrey Li <aubrey.li@intel.com>,
+        Len Brown <len.brown@intel.com>,
+        Zhang Rui <rui.zhang@intel.com>, Chen Yu <yu.c.chen@intel.com>
+Subject: [PATCH][RFC] sched: Stop searching for idle cpu if the LLC domain is overloaded
+Date:   Mon,  7 Feb 2022 11:40:13 +0800
+Message-Id: <20220207034013.599214-1-yu.c.chen@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This 4th version of the series address review comment, particularly
-tidying up "NFS: swap IO handling is slightly different for O_DIRECT IO"
-and collect reviewed-by etc.
+[Problem Statement]
+Searching for an idle cpu/core in a LLC domain is time consuming
+when the LLC domain is relatively busy. Even worse, it is possible
+that after iterating the whole LLC domain, it might still
+fail to find an idle cpu/core.
 
-I've also move 3 NFS patches which depend on the MM patches to the end
-in case they helps maintainers land the patches in a consistent order.
-Those three patches might go through the NFS free after the next merge
-window.
+The following histogram is the time(usec) spent in select_idle_cpu(),
+when running 224 instance of netperf:
 
-Original intro follows.
-Thanks,
-NeilBrown
+@usec: 
+[1]                    2 |                                                    |
+[2, 4)                 1 |                                                    |
+[4, 8)                 4 |                                                    |
+[8, 16)              948 |                                                    |
+[16, 32)           18420 |@@@@@@@@@@@@@@@@@@                                  |
+[32, 64)           40391 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@             |
+[64, 128)          49345 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    |
+[128, 256)         52539 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+[256, 512)         45178 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
+[512, 1K)          28838 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@                        |
+[1K, 2K)           10825 |@@@@@@@@@@                                          |
+[2K, 4K)            1352 |@                                                   |
+[4K, 8K)              24 |    
 
-swap-over-NFS currently has a variety of problems.
+The time spent in select_idle_cpu() is visible to some workloads and might
+bring negative impact. 
 
-swap writes call generic_write_checks(), which always fails on a swap
-file, so it completely fails.
-Even without this, various deadlocks are possible - largely due to
-improvements in NFS memory allocation (using NOFS instead of ATOMIC)
-which weren't tested against swap-out.
+[Symptom analysis]
+The patch [1] from Mel Gorman has been applied to track the efficiency
+of select_idle_sibling. Copy the indicators here:
 
-NFS is the only filesystem that has supported fs-based swap IO, and it
-hasn't worked for several releases, so now is a convenient time to clean
-up the swap-via-filesystem interfaces - we cannot break anything !
+SIS Search Efficiency(se_eff%):
+        A ratio expressed as a percentage of runqueues scanned versus
+        idle CPUs found. A 100% efficiency indicates that the target,
+        prev or recent CPU of a task was idle at wakeup. The lower the
+        efficiency, the more runqueues were scanned before an idle CPU
+        was found.
 
-So the first few patches here clean up and improve various parts of the
-swap-via-filesystem code.  ->activate_swap() is given a cleaner
-interface, a new ->swap_rw is introduced instead of burdening
-->direct_IO, etc.
+SIS Domain Search Efficiency(dom_eff%):
+        Similar, except only for the slower SIS
+	patch.
 
-Current swap-to-filesystem code only ever submits single-page reads and
-writes.  These patches change that to allow multi-page IO when adjacent
-requests are submitted.  Writes are also changed to be async rather than
-sync.  This substantially speeds up write throughput for swap-over-NFS.
+SIS Fast Success Rate(fast_rate%):
+        Percentage of SIS that used target, prev or
+	recent CPUs.
 
+SIS Success rate(success_rate%):
+        Percentage of scans that found an idle CPU.
+
+netperf, hackbench, schbench, tbench
+were tested with 25% 50% 75% 100% 125% 150% 175% 200% of cpu number
+respectively. Each test lasts for 60 seconds, and repeats 3 times.
+The system would reboot into a fresh environment for each benchmark testing.
+
+Test on vanilla kernel:
+schedstat_parse.py -f netperf_vanilla.log
+case	        load	    se_eff%	    dom_eff%	  fast_rate%	success_rate%
+TCP_RR	   thread-28	     99.978	      18.535	      99.995	     100.000
+TCP_RR	   thread-56	     99.397	       5.671	      99.964	     100.000
+TCP_RR	   thread-84	     21.721	       6.818	      73.632	     100.000
+TCP_RR	  thread-112	     12.500	       5.533	      59.000	     100.000
+TCP_RR	  thread-140	      8.524	       4.535	      49.020	     100.000
+TCP_RR	  thread-168	      6.438	       3.945	      40.309	      99.999
+TCP_RR	  thread-196	      5.397	       3.718	      32.320	      99.982
+TCP_RR	  thread-224	      4.874	       3.661	      25.775	      99.767
+UDP_RR	   thread-28	     99.988	      17.704	      99.997	     100.000
+UDP_RR	   thread-56	     99.528	       5.977	      99.970	     100.000
+UDP_RR	   thread-84	     24.219	       6.992	      76.479	     100.000
+UDP_RR	  thread-112	     13.907	       5.706	      62.538	     100.000
+UDP_RR	  thread-140	      9.408	       4.699	      52.519	     100.000
+UDP_RR	  thread-168	      7.095	       4.077	      44.352	     100.000
+UDP_RR	  thread-196	      5.757	       3.775	      35.764	      99.991
+UDP_RR	  thread-224	      5.124	       3.704	      28.748	      99.860
+
+schedstat_parse.py -f schbench_vanilla.log
+(mthread-n has 1/4 * n * 112 tasks)
+case	        load	    se_eff%	    dom_eff%	  fast_rate%	success_rate%
+normal	   mthread-1	     99.152	       6.400	      99.941	     100.000
+normal	   mthread-2	     97.844	       4.003	      99.908	     100.000
+normal	   mthread-3	     96.395	       2.118	      99.917	      99.998
+normal	   mthread-4	     55.288	       1.451	      98.615	      99.804
+normal	   mthread-5	      7.004	       1.870	      45.597	      61.036
+normal	   mthread-6	      3.354	       1.346	      20.777	      34.230
+normal	   mthread-7	      2.183	       1.028	      11.257	      21.055
+normal	   mthread-8	      1.653	       0.825	       7.849	      15.549
+
+schedstat_parse.py -f hackbench_vanilla.log
+(group-n has 1/4 * n * 112 tasks)
+case			load	        se_eff%	    dom_eff%	  fast_rate%	success_rate%
+process-pipe	     group-1	         99.991	       7.692	      99.999	     100.000
+process-pipe	     group-2	         99.934	       4.615	      99.997	     100.000
+process-pipe	     group-3	         99.597	       3.198	      99.987	     100.000
+process-pipe	     group-4	         98.378	       2.464	      99.958	     100.000
+process-pipe	     group-5	         27.474	       3.653	      89.811	      99.800
+process-pipe	     group-6	         20.201	       4.098	      82.763	      99.570
+process-pipe	     group-7	         16.423	       4.156	      77.398	      99.316
+process-pipe	     group-8	         13.165	       3.920	      72.232	      98.828
+process-sockets	     group-1	         99.977	       5.882	      99.999	     100.000
+process-sockets	     group-2	         99.927	       5.505	      99.996	     100.000
+process-sockets	     group-3	         99.397	       3.250	      99.980	     100.000
+process-sockets	     group-4	         79.680	       4.258	      98.864	      99.998
+process-sockets	     group-5	          7.673	       2.503	      63.659	      92.115
+process-sockets	     group-6	          4.642	       1.584	      58.946	      88.048
+process-sockets	     group-7	          3.493	       1.379	      49.816	      81.164
+process-sockets	     group-8	          3.015	       1.407	      40.845	      75.500
+threads-pipe	     group-1	         99.997	       0.000	     100.000	     100.000
+threads-pipe	     group-2	         99.894	       2.932	      99.997	     100.000
+threads-pipe	     group-3	         99.611	       4.117	      99.983	     100.000
+threads-pipe	     group-4	         97.703	       2.624	      99.937	     100.000
+threads-pipe	     group-5	         22.919	       3.623	      87.150	      99.764
+threads-pipe	     group-6	         18.016	       4.038	      80.491	      99.557
+threads-pipe	     group-7	         14.663	       3.991	      75.239	      99.247
+threads-pipe	     group-8	         12.242	       3.808	      70.651	      98.644
+threads-sockets	     group-1	         99.990	       6.667	      99.999	     100.000
+threads-sockets	     group-2	         99.940	       5.114	      99.997	     100.000
+threads-sockets	     group-3	         99.469	       4.115	      99.977	     100.000
+threads-sockets	     group-4	         87.528	       4.038	      99.400	     100.000
+threads-sockets	     group-5	          6.942	       2.398	      59.244	      88.337
+threads-sockets	     group-6	          4.359	       1.954	      49.448	      87.860
+threads-sockets	     group-7	          2.845	       1.345	      41.198	      77.102
+threads-sockets	     group-8	          2.871	       1.404	      38.512	      74.312
+
+schedstat_parse.py -f tbench_vanilla.log
+case			load	      se_eff%	    dom_eff%	  fast_rate%	success_rate%
+loopback	   thread-28	       99.976	      18.369	      99.995	     100.000
+loopback	   thread-56	       99.222	       7.799	      99.934	     100.000
+loopback	   thread-84	       19.723	       6.819	      70.215	     100.000
+loopback	  thread-112	       11.283	       5.371	      55.371	      99.999
+loopback	  thread-140	        0.000	       0.000	       0.000	       0.000
+loopback	  thread-168	        0.000	       0.000	       0.000	       0.000
+loopback	  thread-196	        0.000	       0.000	       0.000	       0.000
+loopback	  thread-224	        0.000	       0.000	       0.000	       0.000
+
+According to the test on vanilla kernel, if the system is busy,
+the SIS Search Efficiency(se_eff%) drops significantly. Although some
+benchmarks would finally find an idle cpu(success_rate% = 100%), it is
+doubtful whether it is worth it to search the whole LLC domain.
+
+[Proposal]
+It would be ideal to have a crystal ball to predict the success rate
+of finding an idle cpu/core in the LLC. If it is doomed to fail,
+there is no need to search in the LLC domain. There are many potential
+metrics which could be used to predict the success rate. And the
+metric should be carefully chosen that, it should help reduce the
+unnecessary cpu runqueue scan, but meanwhile not give up the opportunity
+to find an idle cpu.
+
+Choose average cpu utilization as the candidate, since the util_avg is
+a metric of accumulated historic activity, which seems to be more accurate
+than instantaneous metrics(such as rq->nr_running) on calculating the probability
+of find an idle cpu. Only when the average cpu utilization has reaches
+85% of the total cpu capacity, this domain is regarded as overloaded.
+The reason to choose 85% is that, this is the threshold of an overloaded
+LLC sched group(imbalance_pct = 117, threshold = 100 / 117 * 100%).
+
+Furthermore, to minimize the overhead of calculating the metrics in
+select_idle_cpu(), borrow the statistics from periodic load balance.
+
+[Benchmark result]
+In summary, patched kernel has better performance than vanilla
+in some microbenchmarks, and no significant negative impact to other
+microbenchmarks. Patched kernel also benefits a known OLTP benchmark,
+which operates with system about 95% busy.
+
+The following is the benchmark result comparison between
+baseline:vanilla and compare:patched kernel. Positive compare%
+indicates better performance.
+
+OLTP(95% busy)
+baseline    compare
+1.00        +1.41%
+
+hackbench(Throughput)
+(group-n has 1/4 * n * 112 tasks)
+=========
+case            	load    	baseline(std%)	compare%( std%)
+process-pipe    	group-1 	 1.00 (  0.32)	 -0.03 (  0.22)
+process-pipe    	group-2 	 1.00 (  0.60)	 +1.12 (  0.46)
+process-pipe    	group-3 	 1.00 (  0.03)	 +1.44 (  0.63)
+process-pipe    	group-4 	 1.00 (  0.44)	 +1.52 (  0.66)
+process-pipe    	group-5 	 1.00 (  0.13)	 +0.02 (  0.45)
+process-pipe    	group-6 	 1.00 (  0.65)	 -0.13 (  0.36)
+process-pipe    	group-7 	 1.00 (  0.12)	 -0.35 (  0.15)
+process-pipe    	group-8 	 1.00 (  0.05)	 -0.72 (  0.09)
+process-sockets 	group-1 	 1.00 (  0.08)	 -0.75 (  0.61)
+process-sockets 	group-2 	 1.00 (  0.32)	 +0.15 (  0.28)
+process-sockets 	group-3 	 1.00 (  0.19)	 +0.33 (  0.22)
+process-sockets 	group-4 	 1.00 (  0.40)	 +0.47 (  0.22)
+process-sockets 	group-5 	 1.00 (  1.96)	 +6.09 (  0.36)
+process-sockets 	group-6 	 1.00 (  0.42)	 -1.18 (  0.64)
+process-sockets 	group-7 	 1.00 (  0.12)	 -0.57 (  0.12)
+process-sockets 	group-8 	 1.00 (  0.14)	 +0.33 (  0.29)
+threads-pipe    	group-1 	 1.00 (  0.25)	 -1.08 (  0.30)
+threads-pipe    	group-2 	 1.00 (  0.59)	 +0.54 (  0.60)
+threads-pipe    	group-3 	 1.00 (  0.98)	 -0.47 (  0.74)
+threads-pipe    	group-4 	 1.00 (  0.24)	 +0.10 (  0.14)
+threads-pipe    	group-5 	 1.00 (  0.15)	 -0.03 (  0.28)
+threads-pipe    	group-6 	 1.00 (  0.28)	 -0.50 (  0.18)
+threads-pipe    	group-7 	 1.00 (  0.11)	 -0.63 (  0.04)
+threads-pipe    	group-8 	 1.00 (  0.08)	 -0.43 (  0.04)
+threads-sockets 	group-1 	 1.00 (  0.49)	 -1.30 (  0.16)
+threads-sockets 	group-2 	 1.00 (  0.19)	 -0.18 (  0.09)
+threads-sockets 	group-3 	 1.00 (  0.28)	 +0.50 (  0.04)
+threads-sockets 	group-4 	 1.00 (  1.36)	 +1.50 (  0.78)
+threads-sockets 	group-5 	 1.00 (  0.33)	 +1.33 (  0.50)
+threads-sockets 	group-6 	 1.00 (  0.21)	 +0.36 (  0.16)
+threads-sockets 	group-7 	 1.00 (  0.09)	 -0.36 (  0.15)
+threads-sockets 	group-8 	 1.00 (  0.12)	 +1.07 (  0.03)
+
+netperf(Throughput)
+=======
+case            	load    	baseline(std%)	compare%( std%)
+TCP_RR          	thread-28	 1.00 (  0.29)	 -0.23 (  0.42)
+TCP_RR          	thread-56	 1.00 (  1.03)	 +0.42 (  1.00)
+TCP_RR          	thread-84	 1.00 (  0.80)	 +0.39 (  0.84)
+TCP_RR          	thread-112	 1.00 (  0.43)	 +0.45 (  0.35)
+TCP_RR          	thread-140	 1.00 (  0.26)	 +0.58 (  0.32)
+TCP_RR          	thread-168	 1.00 (  0.21)	 +0.69 (  0.23)
+TCP_RR          	thread-196	 1.00 (  0.20)	 +0.77 (  0.18)
+TCP_RR          	thread-224	 1.00 (  0.18)	+164.89 ( 44.90)
+UDP_RR          	thread-28	 1.00 (  0.38)	 -0.48 (  0.34)
+UDP_RR          	thread-56	 1.00 (  0.59)	 +1.07 (  0.62)
+UDP_RR          	thread-84	 1.00 (  1.04)	 +0.44 (  1.03)
+UDP_RR          	thread-112	 1.00 ( 14.96)	 +2.53 ( 32.65)
+UDP_RR          	thread-140	 1.00 ( 14.83)	 +0.96 ( 18.83)
+UDP_RR          	thread-168	 1.00 ( 13.12)	 +0.76 (  8.64)
+UDP_RR          	thread-196	 1.00 (  9.67)	 +1.32 ( 18.53)
+UDP_RR          	thread-224	 1.00 ( 14.10)	+126.46 ( 42.27)
+
+tbench(Throughput)
+======
+case            	load    	baseline(std%)	compare%( std%)
+loopback        	thread-28	 1.00 (  0.12)	 +0.25 (  0.08)
+loopback        	thread-56	 1.00 (  0.10)	 +0.15 (  0.11)
+loopback        	thread-84	 1.00 (  0.11)	 +0.09 (  0.09)
+loopback        	thread-112	 1.00 (  0.08)	 -0.11 (  0.09)
+loopback        	thread-140	 1.00 (  0.17)	 +2.54 (  0.24)
+loopback        	thread-168	 1.00 (  0.04)	 +2.44 (  0.16)
+loopback        	thread-196	 1.00 (  0.10)	 +2.41 (  0.10)
+loopback        	thread-224	 1.00 (  0.17)	 +2.30 (  0.10)
+
+schbench(Latency)
+(mthread-n has 1/4 * n * 112 tasks)
+========
+case            	load    	baseline(std%)	compare%( std%)
+normal          	mthread-1	 1.00 (  1.01)	 +0.57 (  1.06)
+normal          	mthread-2	 1.00 ( 20.99)	+14.65 (  4.67)
+normal          	mthread-3	 1.00 (  3.03)	 -0.12 (  3.41)
+normal          	mthread-4	 1.00 (  0.76)	 -4.71 ( 21.04)
+normal          	mthread-5	 1.00 (  1.80)	 -4.90 (  1.39)
+normal          	mthread-6	 1.00 (  0.08)	 -0.59 (  1.56)
+normal          	mthread-7	 1.00 (  2.68)	 -1.70 (  3.53)
+normal          	mthread-8	 1.00 (  2.19)	 -0.50 (  3.46)
+
+According to the results above, when the workloads is 2 times of the cpu
+number(224), the throughput of netperf improves a lot(164.89% and 126.46%).
+It might be interesting to look into the reason why this patch benefits
+netperf significantly. Further investigation has shown that, the system
+utilization is around 90% on vanilla kernel, while 100% on patched kernel.
+It is still under investigation why vanilla kernel could not reach 100%.
+
+For the latency result from schbench, there seems to be some regressions.
+And consider the standard deviation ratio, only when the running task is
+125% of the cpu number, there is a valid regression.
+
+[Limitation]
+
+A corner case needs to be covered that, it is possible that there is unbalanced
+tasks among CPUs due to cpu affinity. For example, suppose the LLC domain is
+composed of 8 cpus, and 10 tasks are bound to cpu0~cpu6, while cpu7 is idle:
+
+		cpu0	cpu1	cpu2	cpu3	cpu4	cpu5	cpu6	cpu7
+util_avg	1024	1024	1024	1024	1024	1024	1024	0
+
+Since the total average util is higher than 85% of cpu capacity
+(7 * 1024 / 8 * 1024 = 87.5%), this LLC domain is regarded as overloaded and
+will not be scanned, leaving the idle cpu7 undetected.
+
+A possible workaround to mitigate this problem is that, the idle cpu's capacity
+can be subtracted from the total cpu util. In the example above, the adjusted
+total average util becomes 1024 * 7 - 1024, and the util ratio is 6/8 = 75%,
+as it is lower than 85%. the idle cpu searching will continue. But currently
+I don't have better solution in mind to deal with it gracefully.
+
+Link: https://lore.kernel.org/lkml/20210726102247.21437-2-mgorman@techsingularity.net/ #1
+Suggested-by: Tim Chen <tim.c.chen@intel.com>
+Signed-off-by: Chen Yu <yu.c.chen@intel.com>
 ---
+ include/linux/sched/topology.h |  1 +
+ kernel/sched/fair.c            | 30 ++++++++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
-NeilBrown (21):
- MM - in merge winow
-      MM: create new mm/swap.h header file.
-      MM: drop swap_set_page_dirty
-      MM: move responsibility for setting SWP_FS_OPS to ->swap_activate
-      MM: reclaim mustn't enter FS for SWP_FS_OPS swap-space
-      MM: introduce ->swap_rw and use it for reads from SWP_FS_OPS swap-space
-      MM: perform async writes to SWP_FS_OPS swap-space using ->swap_rw
-      DOC: update documentation for swap_activate and swap_rw
-      MM: submit multipage reads for SWP_FS_OPS swap-space
-      MM: submit multipage write for SWP_FS_OPS swap-space
-      VFS: Add FMODE_CAN_ODIRECT file flag
-
- NFS - in merge window
-      NFS: remove IS_SWAPFILE hack
-      SUNRPC/call_alloc: async tasks mustn't block waiting for memory
-      SUNRPC/auth: async tasks mustn't block waiting for memory
-      SUNRPC/xprt: async tasks mustn't block waiting for memory
-      SUNRPC: remove scheduling boost for "SWAPPER" tasks.
-      NFS: discard NFS_RPC_SWAPFLAGS and RPC_TASK_ROOTCREDS
-      SUNRPC: improve 'swap' handling: scheduling and PF_MEMALLOC
-      NFSv4: keep state manager thread active if swap is enabled
-
- NFS - after merge window
-      NFS: rename nfs_direct_IO and use as ->swap_rw
-      NFS: swap IO handling is slightly different for O_DIRECT IO
-      NFS: swap-out must always use STABLE writes.
-
-
- Documentation/filesystems/locking.rst |  18 +-
- Documentation/filesystems/vfs.rst     |  17 +-
- drivers/block/loop.c                  |   4 +-
- fs/cifs/file.c                        |   7 +-
- fs/fcntl.c                            |   9 +-
- fs/nfs/direct.c                       |  67 +++++---
- fs/nfs/file.c                         |  39 +++--
- fs/nfs/nfs4_fs.h                      |   1 +
- fs/nfs/nfs4proc.c                     |  20 +++
- fs/nfs/nfs4state.c                    |  39 ++++-
- fs/nfs/read.c                         |   4 -
- fs/nfs/write.c                        |   2 +
- fs/open.c                             |   9 +-
- fs/overlayfs/file.c                   |  13 +-
- include/linux/fs.h                    |   4 +
- include/linux/nfs_fs.h                |  15 +-
- include/linux/nfs_xdr.h               |   2 +
- include/linux/sunrpc/auth.h           |   1 +
- include/linux/sunrpc/sched.h          |   1 -
- include/linux/swap.h                  |   7 +-
- include/linux/writeback.h             |   7 +
- include/trace/events/sunrpc.h         |   1 -
- mm/madvise.c                          |   8 +-
- mm/memory.c                           |   2 +-
- mm/page_io.c                          | 237 +++++++++++++++++++-------
- mm/swap.h                             |  30 +++-
- mm/swap_state.c                       |  22 ++-
- mm/swapfile.c                         |  13 +-
- mm/vmscan.c                           |  38 +++--
- net/sunrpc/auth.c                     |   8 +-
- net/sunrpc/auth_gss/auth_gss.c        |   6 +-
- net/sunrpc/auth_unix.c                |  10 +-
- net/sunrpc/clnt.c                     |   7 +-
- net/sunrpc/sched.c                    |  29 ++--
- net/sunrpc/xprt.c                     |  19 +--
- net/sunrpc/xprtrdma/transport.c       |  10 +-
- net/sunrpc/xprtsock.c                 |   8 +
- 37 files changed, 519 insertions(+), 215 deletions(-)
-
---
-Signature
+diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
+index 8054641c0a7b..ec0cc3fe5b0a 100644
+--- a/include/linux/sched/topology.h
++++ b/include/linux/sched/topology.h
+@@ -81,6 +81,7 @@ struct sched_domain_shared {
+ 	atomic_t	ref;
+ 	atomic_t	nr_busy_cpus;
+ 	int		has_idle_cores;
++	bool		overloaded;
+ };
+ 
+ struct sched_domain {
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 5146163bfabb..1a58befe892d 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -6273,6 +6273,7 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
+ 	int i, cpu, idle_cpu = -1, nr = INT_MAX;
+ 	struct rq *this_rq = this_rq();
+ 	int this = smp_processor_id();
++	struct sched_domain_shared *sd_share;
+ 	struct sched_domain *this_sd;
+ 	u64 time = 0;
+ 
+@@ -6280,6 +6281,10 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
+ 	if (!this_sd)
+ 		return -1;
+ 
++	sd_share = rcu_dereference(per_cpu(sd_llc_shared, target));
++	if (sd_share && READ_ONCE(sd_share->overloaded))
++		return -1;
++
+ 	cpumask_and(cpus, sched_domain_span(sd), p->cpus_ptr);
+ 
+ 	if (sched_feat(SIS_PROP) && !has_idle_core) {
+@@ -9212,6 +9217,7 @@ static inline void update_sd_lb_stats(struct lb_env *env, struct sd_lb_stats *sd
+ 	struct sg_lb_stats *local = &sds->local_stat;
+ 	struct sg_lb_stats tmp_sgs;
+ 	int sg_status = 0;
++	unsigned long sum_util = 0;
+ 
+ 	do {
+ 		struct sg_lb_stats *sgs = &tmp_sgs;
+@@ -9242,6 +9248,7 @@ static inline void update_sd_lb_stats(struct lb_env *env, struct sd_lb_stats *sd
+ 		/* Now, start updating sd_lb_stats */
+ 		sds->total_load += sgs->group_load;
+ 		sds->total_capacity += sgs->group_capacity;
++		sum_util += sgs->group_util;
+ 
+ 		sg = sg->next;
+ 	} while (sg != env->sd->groups);
+@@ -9268,6 +9275,29 @@ static inline void update_sd_lb_stats(struct lb_env *env, struct sd_lb_stats *sd
+ 		WRITE_ONCE(rd->overutilized, SG_OVERUTILIZED);
+ 		trace_sched_overutilized_tp(rd, SG_OVERUTILIZED);
+ 	}
++
++	/*
++	 * Check if the LLC domain is overloaded. The overload hint
++	 * could be used to skip the LLC domain idle cpu search in
++	 * select_idle_cpu(). The update of this hint occurs during
++	 * periodic load balancing, rather than frequent newidle balance.
++	 */
++	if (env->idle != CPU_NEWLY_IDLE &&
++	    env->sd->span_weight == per_cpu(sd_llc_size, env->dst_cpu)) {
++		struct sched_domain_shared *sd_share =
++			rcu_dereference(per_cpu(sd_llc_shared, env->dst_cpu));
++
++		if (!sd_share)
++			return;
++
++		/*
++		 * Derived from group_is_overloaded(). The default imbalance_pct
++		 * is 117 on LLC domain, which means the threshold of average
++		 * utilization is 85%.
++		 */
++		WRITE_ONCE(sd_share->overloaded, (sds->total_capacity * 100) <
++			   (sum_util * env->sd->imbalance_pct));
++	}
+ }
+ 
+ #define NUMA_IMBALANCE_MIN 2
+-- 
+2.25.1
 
