@@ -2,98 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F868C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7111CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448636AbiBGNMQ (ORCPT
+        id S1448629AbiBGNMO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:12:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55324 "EHLO
+        Mon, 7 Feb 2022 08:12:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382733AbiBGMYW (ORCPT
+        with ESMTP id S1442251AbiBGMUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:24:22 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E93C002B4D;
-        Mon,  7 Feb 2022 04:18:13 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 9B090210E7;
-        Mon,  7 Feb 2022 12:18:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644236292; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=i4aAhbDoTDfRME9edOXYN8Xd3j7KeUJo6FCdttuCi7Q=;
-        b=qcuQVmPAKpuli8d8JKcy9s2e+6GX/jOzZeZJNIji/24oWaLjPX8+Cz2+qzRBS1bRUmJPDe
-        pYqkF0kg059Fuh0emCFA3zwXUDfANmYFDp+aiQv2AFBdtdSYZWeY8qy3+mQ+BfgWCYW2ra
-        eFvrMzdhrvh2BOyfRa+Pli1YwbUwxbk=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 781D913BE6;
-        Mon,  7 Feb 2022 12:18:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id AInNHAQOAWLMegAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Mon, 07 Feb 2022 12:18:12 +0000
-From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
-To:     Eric Biederman <ebiederm@xmission.com>,
-        Alexey Gladkov <legion@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>
-Subject: [RFC PATCH 1/6] set_user: Perform RLIMIT_NPROC capability check against new user credentials
-Date:   Mon,  7 Feb 2022 13:17:55 +0100
-Message-Id: <20220207121800.5079-2-mkoutny@suse.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220207121800.5079-1-mkoutny@suse.com>
-References: <20220207121800.5079-1-mkoutny@suse.com>
+        Mon, 7 Feb 2022 07:20:49 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172BCDF8E3EC;
+        Mon,  7 Feb 2022 04:07:01 -0800 (PST)
+Received: from [192.168.1.111] (91-156-85-209.elisa-laajakaista.fi [91.156.85.209])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 4B2FC499;
+        Mon,  7 Feb 2022 13:06:56 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644235617;
+        bh=uH3r+Qyhm3NdERrDEidXSeR4RXvMj+L+e0iwChpe9eA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=X0ZFIBgrcyPspRGiprabJFQGAPllvw9rkYosOiAtQ8it/1sdpTdjN/XbbNE5n5b00
+         hRSZH5PAYGhr0M7mSGyPct4Davqo6sqFlsu5oaDgse1FQehzu+OxFQtAdeCUXeDi2H
+         +OJzJV7ZrUpVKmjHkxse+x87Lpt2QTBzAZ64aM2U=
+Message-ID: <7e5af144-bd5f-cd0e-2109-49b318449a78@ideasonboard.com>
+Date:   Mon, 7 Feb 2022 14:06:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFCv3 0/6] TI camera serdes and I2C address translation (Was:
+ [RFCv3 0/6] Hi,)
+Content-Language: en-US
+To:     Luca Ceresoli <luca@lucaceresoli.net>, linux-media@vger.kernel.org,
+        linux-i2c@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham@ideasonboard.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Peter Rosin <peda@axentia.se>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        matti.vaittinen@fi.rohmeurope.com
+References: <20220206115939.3091265-1-luca@lucaceresoli.net>
+From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+In-Reply-To: <20220206115939.3091265-1-luca@lucaceresoli.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The check is currently against the current->cred but since those are
-going to change and we want to check RLIMIT_NPROC condition after the
-switch, supply the capability check with the new cred.
-But since we're checking new_user being INIT_USER any new cred's
-capability-based allowance may be redundant when the check fails and the
-alternative solution would be revert of the commit 2863643fb8b9
-("set_user: add capability check when rlimit(RLIMIT_NPROC) exceeds")
+Hi Luca,
 
-Fixes: 2863643fb8b9 ("set_user: add capability check when rlimit(RLIMIT_NPROC) exceeds")
+On 06/02/2022 13:59, Luca Ceresoli wrote:
+> this RFCv3, codename "FOSDEM Fries", of RFC patches to support the TI
+> DS90UB9xx serializer/deserializer chipsets with I2C address translation.
+> 
+> I sent RFCv2 back in 2019 (!). After that I have applied most of the
+> improvements proposed during code review, most notably device tree
+> representation and proper use of kernel abstractions for clocks and GPIO. I
+> have also done many improvements all over the drivers code.
 
-Cc: Solar Designer <solar@openwall.com>
-Cc: Christian Brauner <christian.brauner@ubuntu.com>
-Signed-off-by: Michal Koutný <mkoutny@suse.com>
----
- kernel/sys.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Thanks for sending this! I'll have a closer look at the code in the near 
+future.
 
-diff --git a/kernel/sys.c b/kernel/sys.c
-index 8ea20912103a..48c90dcceff3 100644
---- a/kernel/sys.c
-+++ b/kernel/sys.c
-@@ -481,7 +481,8 @@ static int set_user(struct cred *new)
- 	 */
- 	if (ucounts_limit_cmp(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) >= 0 &&
- 			new_user != INIT_USER &&
--			!capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN))
-+			!security_capable(new, &init_user_ns, CAP_SYS_RESOURCE, CAP_OPT_NONE) &&
-+			!security_capable(new, &init_user_ns, CAP_SYS_ADMIN, CAP_OPT_NONE))
- 		current->flags |= PF_NPROC_EXCEEDED;
- 	else
- 		current->flags &= ~PF_NPROC_EXCEEDED;
--- 
-2.34.1
+> However I still don't consider these drivers "ready", hence the RFC status.
+> 
+> One reason is that, while the I2C ATR idea has been considered good by
+> Wolfram, its implementation requires I2C core changes that have been tried
+> but never made it to mainline. I think that discussion needs to be reopened
+> and work has to be done on that side. Thus for the time being this code
+> still has the alias pool: it is an interim solution until I2C core is
+> ready.
+> 
+> Also be aware that the only hardware where I sould test this code runs a
+> v4.19 kernel. I cannot guarantee it will work perfectly on mainline.
+> 
+> And since my hardware has only one camera connected to each deserializer I
+> dropped support. However I wrote the code to be able to easily add support
+> for 2 and 4 camera inputs as well as 2 CSI-2 outputs (DS90UB960).
+ >
+> Finally, I dropped all attempts at supporting hotplug. The goals I had 2+
+> years ago are not reasonably doable even with current kernels. Luckily all
+> the users that I talked with are happy without hotplug. For this reason I
+> simplified the serializer management in the DS90UB954 driver by keeping the
+> serializer always instantiated.
+> 
+> Even with the above limitations I felt I'd send this v3 anyway since
+> several people have contacted me since v2 asking whether this
+> implementation has made progress towards mainline. Some even improved on
+> top of my code it their own forks. As I cannot afford to work on this topic
+> in the near future, here is the latest and greatest version I can produce,
+> with all the improvements I made so far.
 
+I've discussed with Luca in private emails, but I'll add a short status 
+about my work in this thread:
+
+About a year ago I took Luca's then-latest-patches and started working 
+on them. The aim was to get full multiplexed streams support to v4l2 so 
+that we could support CSI-2 bus with multiple virtual channels and 
+embedded data, and after that, add support for fpdlink devices.
+
+Since then I have sent multiple versions of the v4l2 work (no drivers 
+yet, only the framework changes) to upstream lists. Some pieces have 
+already been merged to upstream (e.g. subdev state), but most of it is 
+still under work. Here's a link to v10 of the streams series:
+
+https://lore.kernel.org/all/20211130141536.891878-1-tomi.valkeinen@ideasonboard.com/
+
+It has a link to my (now slightly outdated) git branch which contains 
+the driver work too.
+
+The fpdlink drivers have diverged from Luca's version quite a bit. The 
+most obvious difference is the support for multiplexed streams, of 
+course, but there are lots of other changes too. The drivers support 
+DS90UB960 (no UB954 at the moment), DS90UB953 and DS90UB913. UB960 
+supports all the inputs and outputs. I have also dropped some code which 
+I did not need and which I wasn't sure if it's correctly implemented, to 
+make it easier to work on the multiplexed streams version. Some of that 
+code may need to be added back.
+
+I have not changed the i2c-atr driver, and my fpdlink driver uses it 
+more or less the same way as in Luca's version.
+
+Considering that you're not able to work on this, my suggestion is to 
+review the i2c-atr patches here (or perhaps send those patches in a 
+separate series?), but afaics the fpdlink drivers without multiplexed 
+streams is a dead-end, as they can only support a single camera (and no 
+embedded data), so I don't see much point in properly reviewing them.
+
+However, I will go through the fpdlink drivers in this series and 
+cherry-pick the changes that make sense. I was about to start working on 
+proper fpdlink-clock-rate and clkout support, but I see you've already 
+done that work =).
+
+But, of course, I'm open to other ideas on how to proceed.
+
+  Tomi
