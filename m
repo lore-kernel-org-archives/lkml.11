@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF54C35272
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AAECC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379269AbiBGLQK (ORCPT
+        id S1380578AbiBGLQy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:16:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
+        Mon, 7 Feb 2022 06:16:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354980AbiBGLM2 (ORCPT
+        with ESMTP id S1379698AbiBGLQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:12:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54D7C043181;
-        Mon,  7 Feb 2022 03:12:27 -0800 (PST)
+        Mon, 7 Feb 2022 06:16:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D926C043189;
+        Mon,  7 Feb 2022 03:16:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 633496113B;
-        Mon,  7 Feb 2022 11:12:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41AA1C004E1;
-        Mon,  7 Feb 2022 11:12:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F51B6113B;
+        Mon,  7 Feb 2022 11:16:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F1B3C004E1;
+        Mon,  7 Feb 2022 11:16:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232346;
-        bh=880A3N1m8uxGACnXvYZQDn0CmPaaXP1yPfGtSMIAMvY=;
+        s=korg; t=1644232572;
+        bh=F9nM7RC2KedaKUX+hil3fXIdjk9e2x621P2GLnez9Eo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AJHONb9SgBz3g0AXeP2RibuqhljC7qQkmyfFSiCtzxYdMHGONXz1j6AWLZeJuBPyI
-         YSP1AC4JBSYqWO8/UIl5K6PfjjIcXpBTT1OfwXBYD5USt0bX6eEaNB0sa1wbFS0sc3
-         aDxnoRWI7sxIp4CFdMYQBiasnfKD5gb9jTfKK2Io=
+        b=IzmuKsiQzbvB537vUoUqWs6PuSxNoujvRVzqKljLDE1wM2PhmaWDktfiDDj1NOSDG
+         W9LUkgz0EvGwlHE5VZodToB32sEKqhTnX8eSvq9MusdqXAJiJ8srv2utFoNkMlm9zI
+         JYVNmRo+Nf/xFhnctehPn6rbzr/DRHuUCWlrRElw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 16/69] net: sfp: ignore disabled SFP node
-Date:   Mon,  7 Feb 2022 12:05:38 +0100
-Message-Id: <20220207103756.148355340@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 52/86] rtnetlink: make sure to refresh master_dev/m_ops in __rtnl_newlink()
+Date:   Mon,  7 Feb 2022 12:06:15 +0100
+Message-Id: <20220207103759.263872926@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
-References: <20220207103755.604121441@linuxfoundation.org>
+In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
+References: <20220207103757.550973048@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Behún <kabel@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 2148927e6ed43a1667baf7c2ae3e0e05a44b51a0 upstream.
+commit c6f6f2444bdbe0079e41914a35081530d0409963 upstream.
 
-Commit ce0aa27ff3f6 ("sfp: add sfp-bus to bridge between network devices
-and sfp cages") added code which finds SFP bus DT node even if the node
-is disabled with status = "disabled". Because of this, when phylink is
-created, it ends with non-null .sfp_bus member, even though the SFP
-module is not probed (because the node is disabled).
+While looking at one unrelated syzbot bug, I found the replay logic
+in __rtnl_newlink() to potentially trigger use-after-free.
 
-We need to ignore disabled SFP bus node.
+It is better to clear master_dev and m_ops inside the loop,
+in case we have to replay it.
 
-Fixes: ce0aa27ff3f6 ("sfp: add sfp-bus to bridge between network devices and sfp cages")
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Cc: stable@vger.kernel.org # 2203cbf2c8b5 ("net: sfp: move fwnode parsing into sfp-bus layer")
-Signed-off-by: David S. Miller <davem@davemloft.net>
-[ backport to 4.14 ]
-Signed-off-by: Marek Behún <kabel@kernel.org>
+Fixes: ba7d49b1f0f8 ("rtnetlink: provide api for getting and setting slave info")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Jiri Pirko <jiri@nvidia.com>
+Link: https://lore.kernel.org/r/20220201012106.216495-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/phylink.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ net/core/rtnetlink.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -514,6 +514,11 @@ static int phylink_register_sfp(struct p
- 	if (!sfp_np)
- 		return 0;
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -2942,9 +2942,9 @@ static int rtnl_newlink(struct sk_buff *
+ {
+ 	struct net *net = sock_net(skb->sk);
+ 	const struct rtnl_link_ops *ops;
+-	const struct rtnl_link_ops *m_ops = NULL;
++	const struct rtnl_link_ops *m_ops;
+ 	struct net_device *dev;
+-	struct net_device *master_dev = NULL;
++	struct net_device *master_dev;
+ 	struct ifinfomsg *ifm;
+ 	char kind[MODULE_NAME_LEN];
+ 	char ifname[IFNAMSIZ];
+@@ -2979,6 +2979,8 @@ replay:
+ 			dev = NULL;
+ 	}
  
-+	if (!of_device_is_available(sfp_np)) {
-+		of_node_put(sfp_np);
-+		return 0;
-+	}
-+
- 	pl->sfp_bus = sfp_register_upstream(sfp_np, pl->netdev, pl,
- 					    &sfp_phylink_ops);
- 	if (!pl->sfp_bus)
++	master_dev = NULL;
++	m_ops = NULL;
+ 	if (dev) {
+ 		master_dev = netdev_master_upper_dev_get(dev);
+ 		if (master_dev)
 
 
