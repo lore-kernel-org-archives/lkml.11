@@ -2,179 +2,349 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D43C6C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5527C35272
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384472AbiBGRJi (ORCPT
+        id S1384023AbiBGRJh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:09:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
+        Mon, 7 Feb 2022 12:09:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383646AbiBGRBH (ORCPT
+        with ESMTP id S1357960AbiBGRAN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:01:07 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E6FC0401DD;
-        Mon,  7 Feb 2022 09:01:06 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id y129so5612841ybe.7;
-        Mon, 07 Feb 2022 09:01:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pTRuVaqajpl8oLymDUpg7WFzxX4FDWJYRUOPK7U1Ir0=;
-        b=GPI7ziLCc6ZtVQOuo09my9y/hwGNdQCx4CP5HjEMybPGq2fmV+fz0x5Gr6wv/0TwB+
-         EJxSErw4x8m0AkDxvtNGK1HCQqp2x8Vmwmw0t4E/mnA9uu1aX3riv2olLzUlq55iBw0s
-         GWBieOozgZsmvXljYXyMOaVwnNjGg77StHLM5mSU03y0PZ6Ee4IDGOF1Awna7P5aN2WI
-         fA9Ylv9lSpp5R0ezUJYxOCT5VIF46h9+1oF2YKipHGZWr6sJNNwqZideX+hghYrc69Pr
-         eU+3y7Wt3UQluaWWQ+riBI+o7EG+ZNRprzfM5CkuZY/xgZ1api51FTlLfOF+Rwm+OJaD
-         EfRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pTRuVaqajpl8oLymDUpg7WFzxX4FDWJYRUOPK7U1Ir0=;
-        b=UH9VvAoVA87Hep9vJzBWt1rJzhAzfTVta8IIrMPWHR2PWDga7wv0UhpNNJH3zPYq9B
-         f53ijvJH1wzyDrMiDMPHqdxxS5LWXHCpi1pIPDWMUk6aSGEFyao6ogVxBYUYNepvda2J
-         5ACKN6SzoSLi1EgyNuCynU+JpZZEpk4JZm8Gl2KC1LfZqaOjGRyABnRmulKaq60lrjsl
-         bxmqDv+pf8KDPFE5uYidjk/ziB4rD89JuA/OPMds5v84acvvicySklcKp6MImCdSMKq0
-         N8+rU7//17U3Y5WJcgEXrw15BIYm6VIIgi8HlLmKxFc2FdB48JZV6OWJvLxPE+wbuAlF
-         i1yA==
-X-Gm-Message-State: AOAM532VIKRhTwhqdMBlK41SR2IwB3Pstmog24iv2FcqKS/4NmPMVr44
-        ZYPieUsYYQkvAqTDjcEUzMxm40/3IRFRVcRK7QcnYHSNHyE=
-X-Google-Smtp-Source: ABdhPJxZMU7f9Y2KkBbyTjQzngxXX0OwWbkE98XQLx6Dr07oRQkpXKfVL2L3MT8cE9rRLYd2IZ2H3M1D8v26/jQ+bqA=
-X-Received: by 2002:a25:b58:: with SMTP id 85mr681517ybl.182.1644253265193;
- Mon, 07 Feb 2022 09:01:05 -0800 (PST)
+        Mon, 7 Feb 2022 12:00:13 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB22C0401D5;
+        Mon,  7 Feb 2022 09:00:11 -0800 (PST)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217GxWkY015455;
+        Mon, 7 Feb 2022 17:00:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=cAoUWdslfLuUyOGpLu3ifyKBA+8eVxhnvqLYFPYJfDk=;
+ b=TWhWI5h3OerxFrnquEe0UresV+TqSX4QwHbAirGdRD73g0kNfwcTyJkjnNkkwFZKoRUi
+ ncRJyAayE5CR0fJrq3oCnHvRdCG/qBXKaAUgSjt5jgxj8hg2Q7tCuTUcPiW2Arxmbdgz
+ pMrbBjwV0v3A7eCgrxq8mOsyM8NkynYwVoASsDYKyAykbBIKKhj2878k8JUHAZzRvpKW
+ w3LSLGlTR6YtidAxLQ9Ss65jI7Xs7Uu3OUK/L4EU4CC8Jd3K30ItvfSaN/2bNcQuZAID
+ AyqCCbzrySqXg60KUW+97wid511C5ikMMLeGs7+OXGOqgWzgnYJ5/lKQTeJOt8NzmB/V SA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e1huxcfdn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 17:00:09 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217H00sP017346;
+        Mon, 7 Feb 2022 17:00:08 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e1huxcfcj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 17:00:08 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217GqSWm009092;
+        Mon, 7 Feb 2022 17:00:07 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04ams.nl.ibm.com with ESMTP id 3e1gv8xuxj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 17:00:06 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217GnxHm48103834
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 16:49:59 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 96B9EA4057;
+        Mon,  7 Feb 2022 17:00:02 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 290CDA4051;
+        Mon,  7 Feb 2022 17:00:02 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Feb 2022 17:00:02 +0000 (GMT)
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>
+Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH v2 06/11] KVM: s390: Add vm IOCTL for key checked guest absolute memory access
+Date:   Mon,  7 Feb 2022 17:59:25 +0100
+Message-Id: <20220207165930.1608621-7-scgl@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220207165930.1608621-1-scgl@linux.ibm.com>
+References: <20220207165930.1608621-1-scgl@linux.ibm.com>
 MIME-Version: 1.0
-References: <4df50e95-6173-4ed1-9d08-3c1c4abab23f@gmail.com>
- <CAHC9VhSjTqT-4TMxBnQOQHkj+djONihfeoPVyy1egrZY2t10XA@mail.gmail.com>
- <c8a616e4-26a6-af51-212c-31dca0e265cd@gmail.com> <CAHC9VhQTZdeNOx3AXdoc9LXUzDk5n7wyGBX-tV-ZaovhPAdWwQ@mail.gmail.com>
- <e85dd38b-ef7b-ed7e-882e-124cdf942c44@gmail.com> <CAHC9VhROuJtvNHuVaR6pEekNFacH3Tywx58_hn1f5Mwk+kjC8g@mail.gmail.com>
- <b7e55304-d114-bcbe-08d2-b54828121a01@gmail.com> <CAHC9VhSdgD4Nfaxbnnn4r-OK8koSZ7+zQoPShDbGi9PvkJFpng@mail.gmail.com>
-In-Reply-To: <CAHC9VhSdgD4Nfaxbnnn4r-OK8koSZ7+zQoPShDbGi9PvkJFpng@mail.gmail.com>
-From:   William Roberts <bill.c.roberts@gmail.com>
-Date:   Mon, 7 Feb 2022 11:00:54 -0600
-Message-ID: <CAFftDdpxmf4R9zPVGUUCFinST_2t8iW2SAJYG4e=3JeWtDowJw@mail.gmail.com>
-Subject: Re: [PATCH] SELinux: Always allow FIOCLEX and FIONCLEX
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Demi Marie Obenour <demiobenour@gmail.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        SElinux list <selinux@vger.kernel.org>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        selinux-refpolicy@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: FrQZyTs8pN4k_MRZ1nb5rUY6j1hGktYp
+X-Proofpoint-GUID: frfn6Y0yBnvVuhviJ6pK16efcHOnwx5W
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_06,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 impostorscore=0 bulkscore=0 adultscore=0 priorityscore=1501
+ suspectscore=0 mlxscore=0 mlxlogscore=999 spamscore=0 malwarescore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 9:08 AM Paul Moore <paul@paul-moore.com> wrote:
->
-> On Wed, Feb 2, 2022 at 5:13 AM Demi Marie Obenour <demiobenour@gmail.com> wrote:
-> > On 2/1/22 12:26, Paul Moore wrote:
-> > > On Sat, Jan 29, 2022 at 10:40 PM Demi Marie Obenour
-> > > <demiobenour@gmail.com> wrote:
-> > >> On 1/26/22 17:41, Paul Moore wrote:
-> > >>> On Tue, Jan 25, 2022 at 5:50 PM Demi Marie Obenour
-> > >>> <demiobenour@gmail.com> wrote:
-> > >>>> On 1/25/22 17:27, Paul Moore wrote:
-> > >>>>> On Tue, Jan 25, 2022 at 4:34 PM Demi Marie Obenour
-> > >>>>> <demiobenour@gmail.com> wrote:
-> > >>>>>>
-> > >>>>>> These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
-> > >>>>>> always allows too.  Furthermore, a failed FIOCLEX could result in a file
-> > >>>>>> descriptor being leaked to a process that should not have access to it.
-> > >>>>>>
-> > >>>>>> Signed-off-by: Demi Marie Obenour <demiobenour@gmail.com>
-> > >>>>>> ---
-> > >>>>>>  security/selinux/hooks.c | 5 +++++
-> > >>>>>>  1 file changed, 5 insertions(+)
-> > >>>>>
-> > >>>>> I'm not convinced that these two ioctls should be exempt from SELinux
-> > >>>>> policy control, can you explain why allowing these ioctls with the
-> > >>>>> file:ioctl permission is not sufficient for your use case?  Is it a
-> > >>>>> matter of granularity?
-> > >>>>
-> > >>>> FIOCLEX and FIONCLEX are applicable to *all* file descriptors, not just
-> > >>>> files.  If I want to allow them with SELinux policy, I have to grant
-> > >>>> *:ioctl to all processes and use xperm rules to determine what ioctls
-> > >>>> are actually allowed.  That is incompatible with existing policies and
-> > >>>> needs frequent maintenance when new ioctls are added.
-> > >>>>
-> > >>>> Furthermore, these ioctls do not allow one to do anything that cannot
-> > >>>> already be done by fcntl(F_SETFD), and (unless I have missed something)
-> > >>>> SELinux unconditionally allows that.  Therefore, blocking these ioctls
-> > >>>> does not improve security, but does risk breaking userspace programs.
-> > >>>> The risk is especially great because in the absence of SELinux, I
-> > >>>> believe FIOCLEX and FIONCLEX *will* always succeed, and userspace
-> > >>>> programs may rely on this.  Worse, if a failure of FIOCLEX is ignored,
-> > >>>> a file descriptor can be leaked to a child process that should not have
-> > >>>> access to it, but which SELinux allows access to.  Userspace
-> > >>>> SELinux-naive sandboxes are one way this could happen.  Therefore,
-> > >>>> blocking FIOCLEX may *create* a security issue, and it cannot solve one.
-> > >>>
-> > >>> I can see you are frustrated with my initial take on this, but please
-> > >>> understand that excluding an operation from the security policy is not
-> > >>> something to take lightly and needs discussion.  I've added the
-> > >>> SELinux refpolicy list to this thread as I believe their input would
-> > >>> be helpful here.
-> > >>
-> > >> Absolutely it is not something that should be taken lightly, though I
-> > >> strongly believe it is correct in this case.  Is one of my assumptions
-> > >> mistaken?
-> > >
-> > > My concern is that there is a distro/admin somewhere which is relying
-> > > on their SELinux policy enforcing access controls on these ioctls and
-> > > removing these controls would cause them a regression.
-> >
-> > I obviously do not have visibility into all systems, but I suspect that
-> > nobody is actually relying on this.  Setting and clearing CLOEXEC via
-> > fcntl is not subject to SELinux restrictions, so blocking FIOCLEX
-> > and FIONCLEX can be trivially bypassed unless fcntl(F_SETFD) is
-> > blocked by seccomp or another LSM.  Clearing close-on-exec can also be
-> > implemented with dup2(), and setting it can be implemented with dup3()
-> > and F_DUPFD_CLOEXEC (which SELinux also allows).  In short, I believe
-> > that unconditionally allowing FIOCLEX and FIONCLEX may fix real-world
-> > problems, and that it is highly unlikely that anyone is relying on the
-> > current behavior.
->
-> I understand your point, but I remain concerned about making a kernel
-> change for something that can be addressed via policy.  I'm also
-> concerned that in the nine days this thread has been on both the mail
-> SELinux developers and refpolicy lists no one other than you and I
-> have commented on this patch.  In order to consider this patch
-> further, I'm going to need to see comments from others, preferably
-> those with a background in supporting SELinux policy.
->
+Channel I/O honors storage keys and is performed on absolute memory.
+For I/O emulation user space therefore needs to be able to do key
+checked accesses.
+The vm IOCTL supports read/write accesses, as well as checking
+if an access would succeed.
+Unlike relying on KVM_S390_GET_SKEYS for key checking would,
+the vm IOCTL performs the check in lockstep with the read or write,
+by, ultimately, mapping the access to move instructions that
+support key protection checking with a supplied key.
+Fetch and storage protection override are not applicable to absolute
+accesses and so are not applied as they are when using the vcpu memop.
 
-AFAIK/AFAICT Android makes no reference to F_SETFD, and tracing the code
-does seem to be ignored, and the code for FIOCLEX FIONCLEX calls into
-the same kernel routine set_close_on_exec().
-Considering that Android's bionic contains support for "e" flag to
-fopen, and it's
-used in a lot of places, makes me more sure the check is skipped for F_SETFD
+Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Acked-by: Janosch Frank <frankja@linux.ibm.com>
+---
+ arch/s390/kvm/gaccess.c  | 72 ++++++++++++++++++++++++++++++++++
+ arch/s390/kvm/gaccess.h  |  6 +++
+ arch/s390/kvm/kvm-s390.c | 84 ++++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/kvm.h |  2 +
+ 4 files changed, 164 insertions(+)
 
-However, Android does make reference to FIOCLEX FIONCLEX and every
-domain has it enabled:
-domain.te:allowxperm domain { file_type fs_type domain dev_type }:{
-dir notdevfile_class_set blk_file } ioctl { FIOCLEX FIONCLEX };
-domain.te:allowxperm domain tun_device:chr_file ioctl { FIOCLEX FIONCLEX };
+diff --git a/arch/s390/kvm/gaccess.c b/arch/s390/kvm/gaccess.c
+index 37838f637707..d53a183c2005 100644
+--- a/arch/s390/kvm/gaccess.c
++++ b/arch/s390/kvm/gaccess.c
+@@ -795,6 +795,35 @@ static int low_address_protection_enabled(struct kvm_vcpu *vcpu,
+ 	return 1;
+ }
+ 
++static int vm_check_access_key(struct kvm *kvm, u8 access_key,
++			       enum gacc_mode mode, gpa_t gpa)
++{
++	u8 storage_key, access_control;
++	bool fetch_protected;
++	unsigned long hva;
++	int r;
++
++	if (access_key == 0)
++		return 0;
++
++	hva = gfn_to_hva(kvm, gpa_to_gfn(gpa));
++	if (kvm_is_error_hva(hva))
++		return PGM_ADDRESSING;
++
++	mmap_read_lock(current->mm);
++	r = get_guest_storage_key(current->mm, hva, &storage_key);
++	mmap_read_unlock(current->mm);
++	if (r)
++		return r;
++	access_control = FIELD_GET(_PAGE_ACC_BITS, storage_key);
++	if (access_control == access_key)
++		return 0;
++	fetch_protected = storage_key & _PAGE_FP_BIT;
++	if ((mode == GACC_FETCH || mode == GACC_IFETCH) && !fetch_protected)
++		return 0;
++	return PGM_PROTECTION;
++}
++
+ static bool fetch_prot_override_applicable(struct kvm_vcpu *vcpu, enum gacc_mode mode,
+ 					   union asce asce)
+ {
+@@ -994,6 +1023,26 @@ access_guest_page_with_key(struct kvm *kvm, enum gacc_mode mode, gpa_t gpa,
+ 	return 0;
+ }
+ 
++int access_guest_abs_with_key(struct kvm *kvm, gpa_t gpa, void *data,
++			      unsigned long len, enum gacc_mode mode, u8 access_key)
++{
++	int offset = offset_in_page(gpa);
++	int fragment_len;
++	int rc;
++
++	while (min(PAGE_SIZE - offset, len) > 0) {
++		fragment_len = min(PAGE_SIZE - offset, len);
++		rc = access_guest_page_with_key(kvm, mode, gpa, data, fragment_len, access_key);
++		if (rc)
++			return rc;
++		offset = 0;
++		len -= fragment_len;
++		data += fragment_len;
++		gpa += fragment_len;
++	}
++	return 0;
++}
++
+ int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+ 			  void *data, unsigned long len, enum gacc_mode mode,
+ 			  u8 access_key)
+@@ -1144,6 +1193,29 @@ int check_gva_range(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+ 	return rc;
+ }
+ 
++/**
++ * check_gpa_range - test a range of guest physical addresses for accessibility
++ * @kvm: virtual machine instance
++ * @gpa: guest physical address
++ * @length: length of test range
++ * @mode: access mode to test, relevant for storage keys
++ * @access_key: access key to mach the storage keys with
++ */
++int check_gpa_range(struct kvm *kvm, unsigned long gpa, unsigned long length,
++		    enum gacc_mode mode, u8 access_key)
++{
++	unsigned int fragment_len;
++	int rc = 0;
++
++	while (length && !rc) {
++		fragment_len = min(PAGE_SIZE - offset_in_page(gpa), length);
++		rc = vm_check_access_key(kvm, access_key, mode, gpa);
++		length -= fragment_len;
++		gpa += fragment_len;
++	}
++	return rc;
++}
++
+ /**
+  * kvm_s390_check_low_addr_prot_real - check for low-address protection
+  * @vcpu: virtual cpu
+diff --git a/arch/s390/kvm/gaccess.h b/arch/s390/kvm/gaccess.h
+index c5f2e7311b17..1124ff282012 100644
+--- a/arch/s390/kvm/gaccess.h
++++ b/arch/s390/kvm/gaccess.h
+@@ -193,6 +193,12 @@ int guest_translate_address_with_key(struct kvm_vcpu *vcpu, unsigned long gva, u
+ int check_gva_range(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+ 		    unsigned long length, enum gacc_mode mode, u8 access_key);
+ 
++int check_gpa_range(struct kvm *kvm, unsigned long gpa, unsigned long length,
++		    enum gacc_mode mode, u8 access_key);
++
++int access_guest_abs_with_key(struct kvm *kvm, gpa_t gpa, void *data,
++			      unsigned long len, enum gacc_mode mode, u8 access_key);
++
+ int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+ 			  void *data, unsigned long len, enum gacc_mode mode,
+ 			  u8 access_key);
+diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+index 71e61fb3f0d9..be9092295d3f 100644
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -2365,6 +2365,81 @@ static bool access_key_invalid(u8 access_key)
+ 	return access_key > 0xf;
+ }
+ 
++static int kvm_s390_vm_mem_op(struct kvm *kvm, struct kvm_s390_mem_op *mop)
++{
++	void __user *uaddr = (void __user *)mop->buf;
++	u64 supported_flags;
++	void *tmpbuf = NULL;
++	u8 access_key = 0;
++	int r, srcu_idx;
++
++	supported_flags = KVM_S390_MEMOP_F_SKEY_PROTECTION
++			  | KVM_S390_MEMOP_F_CHECK_ONLY;
++	if (mop->flags & ~supported_flags)
++		return -EINVAL;
++	if (mop->size > MEM_OP_MAX_SIZE)
++		return -E2BIG;
++	if (kvm_s390_pv_is_protected(kvm))
++		return -EINVAL;
++	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
++		tmpbuf = vmalloc(mop->size);
++		if (!tmpbuf)
++			return -ENOMEM;
++	}
++	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
++		access_key = mop->key;
++		mop->key = 0;
++		if (access_key_invalid(access_key))
++			return -EINVAL;
++	}
++	if (memchr_inv(&mop->reserved, 0, sizeof(mop->reserved)))
++		return -EINVAL;
++
++	srcu_idx = srcu_read_lock(&kvm->srcu);
++
++	if (kvm_is_error_gpa(kvm, mop->gaddr)) {
++		r = PGM_ADDRESSING;
++		goto out_unlock;
++	}
++
++	switch (mop->op) {
++	case KVM_S390_MEMOP_ABSOLUTE_READ: {
++		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
++			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_FETCH, access_key);
++		} else {
++			r = access_guest_abs_with_key(kvm, mop->gaddr, tmpbuf,
++						      mop->size, GACC_FETCH, access_key);
++			if (r == 0) {
++				if (copy_to_user(uaddr, tmpbuf, mop->size))
++					r = -EFAULT;
++			}
++		}
++		break;
++	}
++	case KVM_S390_MEMOP_ABSOLUTE_WRITE: {
++		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
++			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_STORE, access_key);
++		} else {
++			if (copy_from_user(tmpbuf, uaddr, mop->size)) {
++				r = -EFAULT;
++				break;
++			}
++			r = access_guest_abs_with_key(kvm, mop->gaddr, tmpbuf,
++						      mop->size, GACC_STORE, access_key);
++		}
++		break;
++	}
++	default:
++		r = -EINVAL;
++	}
++
++out_unlock:
++	srcu_read_unlock(&kvm->srcu, srcu_idx);
++
++	vfree(tmpbuf);
++	return r;
++}
++
+ long kvm_arch_vm_ioctl(struct file *filp,
+ 		       unsigned int ioctl, unsigned long arg)
+ {
+@@ -2489,6 +2564,15 @@ long kvm_arch_vm_ioctl(struct file *filp,
+ 		}
+ 		break;
+ 	}
++	case KVM_S390_MEM_OP: {
++		struct kvm_s390_mem_op mem_op;
++
++		if (copy_from_user(&mem_op, argp, sizeof(mem_op)) == 0)
++			r = kvm_s390_vm_mem_op(kvm, &mem_op);
++		else
++			r = -EFAULT;
++		break;
++	}
+ 	default:
+ 		r = -ENOTTY;
+ 	}
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index 5771b026fbc0..ea81132a1cb1 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -575,6 +575,8 @@ struct kvm_s390_mem_op {
+ #define KVM_S390_MEMOP_LOGICAL_WRITE	1
+ #define KVM_S390_MEMOP_SIDA_READ	2
+ #define KVM_S390_MEMOP_SIDA_WRITE	3
++#define KVM_S390_MEMOP_ABSOLUTE_READ	4
++#define KVM_S390_MEMOP_ABSOLUTE_WRITE	5
+ /* flags for kvm_s390_mem_op->flags */
+ #define KVM_S390_MEMOP_F_CHECK_ONLY		(1ULL << 0)
+ #define KVM_S390_MEMOP_F_INJECT_EXCEPTION	(1ULL << 1)
+-- 
+2.32.0
 
-Refpolicy doesn't use xperm AFAICT.
-
-I stayed quiet, I wouldn't ack on this myself, but the premise seems
-correct and we
-can safely drop this. Note that I didn't review the code. But we need
-to ensure we handle
-policy correctly and not break anything. I'm not sure what the
-compilers are doing
-for validation of policy macro values, but we would probably want to
-mark it deprecated,
-but still allow loading of old compiled policies.
-
-> Also, while I'm sure you are already well aware of this, I think it is
-> worth mentioning that SELinux does apply access controls when file
-> descriptors are inherited across an exec() boundary.
->
-> --
-> paul-moore.com
