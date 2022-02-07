@@ -2,305 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3EFAC3527E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE7D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389270AbiBGNvf (ORCPT
+        id S1389200AbiBGNvV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:51:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
+        Mon, 7 Feb 2022 08:51:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381343AbiBGN3x (ORCPT
+        with ESMTP id S1350009AbiBGN0d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:29:53 -0500
-X-Greylist: delayed 601 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 05:29:51 PST
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EC4C043181;
-        Mon,  7 Feb 2022 05:29:51 -0800 (PST)
-Received: from [192.168.0.7] (ip5f5aee58.dynamic.kabel-deutschland.de [95.90.238.88])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 70ABB61E64846;
-        Mon,  7 Feb 2022 14:14:21 +0100 (CET)
-Message-ID: <d41d8b41-c347-47e7-e52b-39d7211c8952@molgen.mpg.de>
-Date:   Mon, 7 Feb 2022 14:14:20 +0100
+        Mon, 7 Feb 2022 08:26:33 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A971C043188
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:26:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644240392; x=1675776392;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=jwkzm8rlM42MAJem1ebz1/ephF2+kPSW8EADgQDGZmU=;
+  b=gU5lkKguLTy3NqyF3xKn2SQwZaCev/sEIdVrtZNe/ay3JJvXSuGHt7rW
+   Y/3t1ndxh3f0opQk4Sm2ESZnZKxJeohqHXCCrxb4PjoqVBuz5A3OkNeB8
+   z1Dj2vGPof19KIR35dIqaB6HfwEkjcRK7Khqupa/Qu7QqdbEhNuscFFm7
+   0vMGI4MkcBoFagSY8Na0OMWezjuzpI6nrYev39+t1j5sbyFG0QcHV5lHN
+   iUFOKJmDRiyRFTW7PfaTgca6J76n3Wsr83a7mvkXLqbTSbqhyLkv1/V8I
+   A9zW1HyykAn+B71DqE6U1jDnLO5SFZ5gkM7cUsY7xin4AJAYuitTlDzE1
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="247547105"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="247547105"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 05:26:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="567476063"
+Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 07 Feb 2022 05:26:30 -0800
+Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nH42H-0000Z7-Kz; Mon, 07 Feb 2022 13:26:29 +0000
+Date:   Mon, 7 Feb 2022 21:25:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Davidlohr Bueso <dave@stgolabs.net>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Subject: drivers/md/raid5.c:7055:9: sparse: sparse: cast removes address
+ space '__percpu' of expression
+Message-ID: <202202072158.7y7wxNRC-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: Unable to transfer big files to Nokia N9
-Content-Language: en-US
-To:     Thorsten Leemhuis <regressions@leemhuis.info>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-bluetooth@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, regressions@lists.linux.dev,
-        Takashi Iwai <tiwai@suse.com>
-References: <eb6d86eb-d156-d7ac-0965-181719023d51@molgen.mpg.de>
- <CABBYNZLENxvXMCh6XbBSnu0jasV1F0QestEK5v2mnNUpJdw3Vw@mail.gmail.com>
- <cf71bdea-ec22-e4c9-016c-69e94a130607@molgen.mpg.de>
- <a93c0fa7-7b84-6aea-265b-c913e0c84678@molgen.mpg.de>
- <d7206e12-1b99-c3be-84f4-df22af427ef5@molgen.mpg.de>
- <371027df-7f32-edab-208d-d4cdd2202ba6@leemhuis.info>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <371027df-7f32-edab-208d-d4cdd2202ba6@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Thorsten, dear Luiz,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   dfd42facf1e4ada021b939b4e19c935dcdd55566
+commit: 770b1d216d7371c94c88713824da4be4bc39a4e0 md/raid5: play nice with PREEMPT_RT
+date:   5 weeks ago
+config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220207/202202072158.7y7wxNRC-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=770b1d216d7371c94c88713824da4be4bc39a4e0
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 770b1d216d7371c94c88713824da4be4bc39a4e0
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
-Am 28.01.22 um 11:36 schrieb Thorsten Leemhuis:
-> Hi, this is your Linux kernel regression tracker speaking.
+sparse warnings: (new ones prefixed by >>)
+   drivers/md/raid5.c: note: in included file:
+   drivers/md/raid5.h:271:14: sparse: sparse: array of flexible structures
+   drivers/md/raid5.c:641:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:641:40: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:641:40: sparse:    struct md_rdev *
+   drivers/md/raid5.c:643:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:643:32: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:643:32: sparse:    struct md_rdev *
+   drivers/md/raid5.c:667:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:667:40: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:667:40: sparse:    struct md_rdev *
+   drivers/md/raid5.c:669:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:669:32: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:669:32: sparse:    struct md_rdev *
+   drivers/md/raid5.c:1101:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:1101:25: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:1101:25: sparse:    struct md_rdev *
+   drivers/md/raid5.c:1103:24: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:1103:24: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:1103:24: sparse:    struct md_rdev *
+   drivers/md/raid5.c:3563:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:3563:32: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:3563:32: sparse:    struct md_rdev *
+   drivers/md/raid5.c:3689:48: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:3689:48: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:3689:48: sparse:    struct md_rdev *
+   drivers/md/raid5.c:3696:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:3696:32: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:3696:32: sparse:    struct md_rdev *
+   drivers/md/raid5.c:3718:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:3718:16: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:3718:16: sparse:    struct md_rdev *
+   drivers/md/raid5.c:4646:24: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:4646:24: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:4646:24: sparse:    struct md_rdev *
+   drivers/md/raid5.c:4657:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:4657:32: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:4657:32: sparse:    struct md_rdev *
+   drivers/md/raid5.c:4704:49: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:4704:49: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:4704:49: sparse:    struct md_rdev *
+   drivers/md/raid5.c:4717:49: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:4717:49: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:4717:49: sparse:    struct md_rdev *
+   drivers/md/raid5.c:4726:49: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:4726:49: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:4726:49: sparse:    struct md_rdev *
+   drivers/md/raid5.c:4748:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:4748:40: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:4748:40: sparse:    struct md_rdev *
+   drivers/md/raid5.c:5419:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:5419:16: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:5419:16: sparse:    struct md_rdev *
+   drivers/md/raid5.c:5422:24: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:5422:24: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:5422:24: sparse:    struct md_rdev *
+>> drivers/md/raid5.c:7055:9: sparse: sparse: cast removes address space '__percpu' of expression
+>> drivers/md/raid5.c:7055:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct lockdep_map *lock @@     got struct lockdep_map [noderef] __percpu * @@
+   drivers/md/raid5.c:7055:9: sparse:     expected struct lockdep_map *lock
+   drivers/md/raid5.c:7055:9: sparse:     got struct lockdep_map [noderef] __percpu *
+>> drivers/md/raid5.c:7055:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct local_lock_t [usertype] *l @@     got struct local_lock_t [noderef] __percpu * @@
+   drivers/md/raid5.c:7055:9: sparse:     expected struct local_lock_t [usertype] *l
+   drivers/md/raid5.c:7055:9: sparse:     got struct local_lock_t [noderef] __percpu *
+   drivers/md/raid5.c:7808:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:7808:40: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:7808:40: sparse:    struct md_rdev *
+   drivers/md/raid5.c:8021:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:8021:25: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:8021:25: sparse:    struct md_rdev *
+   drivers/md/raid5.c:8037:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   drivers/md/raid5.c:8037:25: sparse:    struct md_rdev [noderef] __rcu *
+   drivers/md/raid5.c:8037:25: sparse:    struct md_rdev *
+   drivers/md/raid5.c:1476:16: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:1476:39: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:2208:54: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:2419:16: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:2421:9: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:2422:9: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:7031:23: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:7031:23: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:7032:9: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:7033:16: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:7034:9: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:7039:34: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:7040:17: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:7041:22: sparse: sparse: dereference of noderef expression
+   drivers/md/raid5.c:97:9: sparse: sparse: context imbalance in 'raid5_quiesce' - different lock contexts for basic block
 
-Thorsten, thank you for following up on this.
+vim +/__percpu +7055 drivers/md/raid5.c
 
-> On 16.01.22 14:27, Paul Menzel wrote:
->> #regzbot introduced: 81be03e026dc0c16dc1c64e088b2a53b73caa895
-> 
-> thx for getting regzbot involved, much appreciated!
-> 
->> Dear Luiz,
->>
->> It turns out there was a regression in Linux 5.16-rc1.
-> 
-> @bt-maintaners, what's the status here? Paul reported that over ten days
-> ago and there wasn't a single reply. Or did the discussion move
-> somewhere else?
-> 
-> @Paul: just wondering, did you give 5.17-rc1 a try? Might be worth a
-> shot, if only to confirm the issue is still present.
+  7036	
+  7037	static int alloc_scratch_buffer(struct r5conf *conf, struct raid5_percpu *percpu)
+  7038	{
+  7039		if (conf->level == 6 && !percpu->spare_page) {
+  7040			percpu->spare_page = alloc_page(GFP_KERNEL);
+  7041			if (!percpu->spare_page)
+  7042				return -ENOMEM;
+  7043		}
+  7044	
+  7045		if (scribble_alloc(percpu,
+  7046				   max(conf->raid_disks,
+  7047				       conf->previous_raid_disks),
+  7048				   max(conf->chunk_sectors,
+  7049				       conf->prev_chunk_sectors)
+  7050				   / RAID5_STRIPE_SECTORS(conf))) {
+  7051			free_scratch_buffer(conf, percpu);
+  7052			return -ENOMEM;
+  7053		}
+  7054	
+> 7055		local_lock_init(&percpu->lock);
+  7056		return 0;
+  7057	}
+  7058	
 
-I just tried with 5.17-rc3, and the issue is still present.
-
-
-Kind regards,
-
-Paul
-
-
->> Am 20.12.21 um 22:31 schrieb Paul Menzel:
->>
->>> Am 01.12.21 um 23:07 schrieb Paul Menzel:
->>>
->>>> Am 01.12.21 um 19:29 schrieb Luiz Augusto von Dentz:
->>>>
->>>>> On Wed, Dec 1, 2021 at 9:39 AM Paul Menzel <pmenzel@molgen.mpg.de>
->>>>> wrote:
->>>>
->>>>>> For the first time, I wanted to transfer a 2 MB PDF file from a Dell
->>>>>> Latitude E7250 with Debian sid/unstable with Linux 5.16-rc1 to a Nokia
->>>>>> N9 (MeeGo/Harmattan). Using the package *bluez-obexd* 5.61-1 and GNOME
->>>>>> 41, the device was found, and paired fine. Then I selected to transfer
->>>>>> the 2 MB file, and after starting for a second, it timed out after the
->>>>>> progress bar moves forward ones and failed.
->>>>>>
->>>>>> The systemd journal contains:
->>>>>>
->>>>>>        obexd[21139]: Transfer(0x56243fe4f790) Error: Timed out
->>>>>> waiting for response
->>>>>>
->>>>>> Testing with a a 5 byte test text file, worked fine. Also testing
->>>>>> with a
->>>>>> Galaly M32, both files were transferred without problems (though
->>>>>> slowly
->>>>>> with 32 KB/s.)
->>>>>>
->>>>>> Trying to connect to the device with bluetoothctl failed for me,
->>>>>> and the
->>>>>> journal contained, it failed.
->>>>>>
->>>>>>        $ bluetoothctl
->>>>>>        Agent registered
->>>>>>        [bluetooth]# connect 40:98:4E:5B:CE:XX
->>>>>>        Attempting to connect to 40:98:4E:5B:CE:XX
->>>>>>        Failed to connect: org.bluez.Error.Failed
->>>>>>
->>>>>>        bluetoothd[21104]: src/service.c:btd_service_connect()
->>>>>> a2dp-source profile connect failed for 40:98:4E:5B:CE:B3: Protocol
->>>>>> not available
->>>>>>
->>>>>> As the Nokia N9 was once pretty popular in the Linux community, I am
->>>>>> pretty sure, it used to work fine in the past, and there is some
->>>>>> regression. It’d be great, if you could give me some hints how to
->>>>>> further debug the issue.
->>>>>
->>>>> We will need some logs, obexd and btmon, if possible.
->>>>
->>>> I only managed to get the btmon trace [1]. I did `sudo modprobe -r
->>>> btusb` and `sudo btmon -w /dev/shm/trace.log`.
->>>>
->>>> Linux messages:
->>>>
->>>>       [29880.100381] calling  btusb_driver_init+0x0/0x1000 [btusb] @
->>>> 28716
->>>>       [29880.239603] usbcore: registered new interface driver btusb
->>>>       [29880.239608] initcall btusb_driver_init+0x0/0x1000 [btusb]
->>>> returned 0 after 135952 usecs
->>>>       [29880.240706] Bluetooth: hci0: unexpected event for opcode 0x0500
->>>>       [29880.241598] Bluetooth: hci0: Legacy ROM 2.5 revision 1.0
->>>> build 3 week 17 2014
->>>>       [29880.241605] Bluetooth: hci0: Intel device is already patched.
->>>> patch num: 32
->>>>
->>>>   From the system journal:
->>>>
->>>>       Dez 01 22:52:19 ersatz obexd[21139]: Transfer(0x56243fe53dd0)
->>>> Error: Timed out waiting for response
->>>
->>> Were you able to see anything in the attached logs? If the obexd logs
->>> are missing, can you please tell how I should capture them?
->>>
->>> I also tested with Ubuntu 20.04 (*linux-image-5.11.0-27-generic*) and
->>> 21.10 (*linux-image-5.13.0-19-generic*) live systems booted from a USB
->>> storage device, and transferring `/usr/bin/systemctl`
->>> (`/lib/systemd/systemd`) with size of 1.8 MB worked fine.
->>>
->>> Could there be a regression in that area? Unfortunately, it’s not easy
->>> for me to do a bisection on the device at hand.
->>>
->>> (Would it be possible to do with QEMU and USB controller and Bluetooth
->>> device passthrough? How can I transfer the file on the command line so
->>> I wouldn’t need to install a desktop environment?)
->>
->> Turns out, that is indeed possible [2], but turned out to be cumbersome,
->> as I hit the regression [3], which seems to have been fixed by commit
->> 95655456e7ce (Bluetooth: btintel: Fix broken LED quirk for legacy ROM
->> devices) merged in the current Linux 5.17 cycle this week.
->>
->> As a work around, I applied a hunk from Takashi’s patch.
->>
->> -       { USB_DEVICE(0x8087, 0x0a2a), .driver_info =
->> BTUSB_INTEL_COMBINED },
->> +       { USB_DEVICE(0x8087, 0x0a2a), .driver_info = BTUSB_INTEL_COMBINED |
->> + BTUSB_INTEL_BROKEN_INITIAL_NCMD },
->>
->> My problem with the Nokia N9 is still present in Linus’ master branch.
->>
->> Then I built a minimal Linux kernel for QEMU, and ran:
->>
->>      qemu-system-x86_64 -cpu host -m 2G -enable-kvm \
->>        -usb -device usb-host,vendorid=0x8087,productid=0x0a2a \
->>        -drive file=/dev/shm/debian-64.img,format=raw,if=virtio \
->>        -net nic -net user,hostfwd=tcp::22223-:22 \
->>        -kernel /dev/shm/bzImage -append "root=/dev/vda1 rw quiet"
->>
->> In the Debian sid/unstable VM, I used
->>
->>      ssh root@localhost -p 22223
->>
->> I once had to pair the VM with the Nokia N9 in bluetoothctl, and then
->> started `/usr/libexec/bluetooth/obexd`, and ran `obexctl`, and connected
->> first with `connect`, and then ran `send /lib/systemd/systemd` to
->> transfer the file. In the problematic cases it stopped/hung after the
->> first progress message.
->>
->>      # obexctl
->>      [NEW] Client /org/bluez/obex
->>      [obex]# connect 40:98:4E:5B:CE:XX
->>      Attempting to connect to 40:98:4E:5B:CE:XX
->>      [NEW] Session /org/bluez/obex/client/session0 [default]
->>      [NEW] ObjectPush /org/bluez/obex/client/session0
->>      Connection successful
->>      [40:98:4E:5B:CE:XX]# send /lib/systemd/systemd
->>      Attempting to send /lib/systemd/systemd to
->> /org/bluez/obex/client/session0
->>      [NEW] Transfer /org/bluez/obex/client/session0/transfer0
->>      Transfer /org/bluez/obex/client/session0/transfer0
->>          Status: queued
->>          Name: systemd
->>          Size: 1841712
->>          Filename: /lib/systemd/systemd
->>          Session: /org/bluez/obex/client/session0
->>      [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: active
->>      [CHG] Transfer /org/bluez/obex/client/session0/transfer0
->> Transferred: 32737 (@32KB/s 00:55)
->>      [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: error
->>      [DEL] Transfer /org/bluez/obex/client/session0/transfer0
->>
->> Some manual bisection of Linux releases, verified, that the regression
->> was introduced in Linux 5.16-rc1. (Lucky me, I started using Bluetooth
->> with the Nokia with Linux 5.16-rc1.) Then I verified it was introduced
->> by the Bluetooth pull request for Linux 5.16. Then I picked commit
->> 81be03e026dc0c16dc1c64e088b2a53b73caa895 due to the commit message, and
->> bisected from there, and it turns out, that this commit is actually
->> introducing the regression.
->>
->>      $ git bisect good
->>      81be03e026dc0c16dc1c64e088b2a53b73caa895 is the first bad commit
->>      commit 81be03e026dc0c16dc1c64e088b2a53b73caa895
->>      Author: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
->>      Date:   Fri Sep 3 15:27:32 2021 -0700
->>
->>          Bluetooth: RFCOMM: Replace use of memcpy_from_msg with
->> bt_skb_sendmmsg
->>
->>          This makes use of bt_skb_sendmmsg instead using memcpy_from_msg
->> which
->>          is not considered safe to be used when lock_sock is held.
->>
->>          Also make rfcomm_dlc_send handle skb with fragments and queue
->> them all
->>          atomically.
->>
->>          Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
->>          Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
->>
->>       net/bluetooth/rfcomm/core.c | 50
->> ++++++++++++++++++++++++++++++++++++++-------
->>       net/bluetooth/rfcomm/sock.c | 46
->> +++++++++--------------------------------
->>       2 files changed, 53 insertions(+), 43 deletions(-)
->>
->> Unfortunately, the patch does not cleanly revert, so users have to wait
->> until an expert can take a look, and come up with a fix.
->>
->>
->> Kind regards,
->>
->> Paul
->>
->>
->> PS: For the records:
->>
->>      $ git bisect log
->>      # bad: [81be03e026dc0c16dc1c64e088b2a53b73caa895] Bluetooth: RFCOMM:
->> Replace use of memcpy_from_msg with bt_skb_sendmmsg
->>      # good: [49d8a5606428ca0962d09050a5af81461ff90fbb] Bluetooth: fix
->> init and cleanup of sco_conn.timeout_work
->>      git bisect start '81be03e026dc0' 'HEAD^'
->>      # good: [904c139a2517191e48f9cb1bb2d611ae59434009] Bluetooth: Add
->> support for msbc coding format
->>      git bisect good 904c139a2517191e48f9cb1bb2d611ae59434009
->>      # good: [8bba13b1d08d42e2e8308924fa5c1551a7b2b011] Bluetooth:
->> btintel: Fix incorrect out of memory check
->>      git bisect good 8bba13b1d08d42e2e8308924fa5c1551a7b2b011
->>      # good: [38f64f650dc0e44c146ff88d15a7339efa325918] Bluetooth: Add
->> bt_skb_sendmsg helper
->>      git bisect good 38f64f650dc0e44c146ff88d15a7339efa325918
->>      # good: [0771cbb3b97d3c1d68eecd7f00055f599954c34e] Bluetooth: SCO:
->> Replace use of memcpy_from_msg with bt_skb_sendmsg
->>      git bisect good 0771cbb3b97d3c1d68eecd7f00055f599954c34e
->>      # first bad commit: [81be03e026dc0c16dc1c64e088b2a53b73caa895]
->> Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg
->>
->>
->> Kind regards,
->>
->> Paul
->>
->>
->>>> [1]: https://owww.molgen.mpg.de/~pmenzel/trace.log.7z
->> [2]:
->> https://lore.kernel.org/linux-bluetooth/5891f0d5-8d51-9da5-7663-718f301490b1@molgen.mpg.de/T/#u
->>
->> [3]:
->> https://lore.kernel.org/linux-bluetooth/20211202162256.31837-1-tiwai@suse.de/
->>
->>
->>
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
