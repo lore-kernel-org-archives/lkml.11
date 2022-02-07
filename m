@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34F28C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87308C35274
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387956AbiBGLmW (ORCPT
+        id S1387983AbiBGLm3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:42:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38440 "EHLO
+        Mon, 7 Feb 2022 06:42:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359408AbiBGL2n (ORCPT
+        with ESMTP id S1384646AbiBGL3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:28:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361B0C033252;
-        Mon,  7 Feb 2022 03:27:02 -0800 (PST)
+        Mon, 7 Feb 2022 06:29:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2286C02B5ED;
+        Mon,  7 Feb 2022 03:27:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36FCA60A6B;
-        Mon,  7 Feb 2022 11:27:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D724C004E1;
-        Mon,  7 Feb 2022 11:27:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7796D60A71;
+        Mon,  7 Feb 2022 11:27:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 431F1C004E1;
+        Mon,  7 Feb 2022 11:27:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233221;
-        bh=9q3/IOuZ6+o3g3xGCTBih0kUoMO02HHzHtG+4luzBNg=;
+        s=korg; t=1644233267;
+        bh=VQ0um3hPcWFFTWCtrxqzMA54VF4LBJGzFd1GZ0+xhEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PT4aQI2mT1TuCcYOhBctJEX6UAw/ObzwEQrZ97Glfa57GSEDm1+DewHjUtBuut6F7
-         A8hrdLHqrBfeI9h/r/1WFxvxieKVcexdVM5XsgwzUuGSMLyw3HsvgU8HEPxeijlItF
-         z42q7fuz1a0iwxZ7v5FsWFRxOOZ//BUIf0CTs1PY=
+        b=VxVrbIZYvR9+gABOA9Uxgp+f6mq5VlNl4fUF59VvC1WUC7bjRCQ7xE/luiZp4/Iyo
+         aOKnsfALkocaxtVG/OgIzQeTDmrhp3xAmZmJm+v/sZ7FI7BQ78r3tWy19fV0Io2DDY
+         47mEf/CKpFMV5scFFPvMz0ecnSFcSlBs/j/xt4u0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Lachner <gladiac@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 014/110] ALSA: hda/realtek: Add missing fixup-model entry for Gigabyte X570 ALC1220 quirks
-Date:   Mon,  7 Feb 2022 12:05:47 +0100
-Message-Id: <20220207103802.750149389@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.15 069/110] drm/i915/overlay: Prevent divide by zero bugs in scaling
+Date:   Mon,  7 Feb 2022 12:06:42 +0100
+Message-Id: <20220207103804.624178325@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -49,32 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Lachner <gladiac@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 63394a16086fc2152869d7902621e2525e14bc40 upstream.
+commit 90a3d22ff02b196d5884e111f39271a1d4ee8e3e upstream.
 
-The initial commit of the new Gigabyte X570 ALC1220 quirks lacked the
-fixup-model entry in alc882_fixup_models[]. It seemed not to cause any ill
-effects but for completeness sake this commit makes up for that.
+Smatch detected a divide by zero bug in check_overlay_scaling().
 
-Signed-off-by: Christian Lachner <gladiac@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220129113243.93068-2-gladiac@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    drivers/gpu/drm/i915/display/intel_overlay.c:976 check_overlay_scaling()
+    error: potential divide by zero bug '/ rec->dst_height'.
+    drivers/gpu/drm/i915/display/intel_overlay.c:980 check_overlay_scaling()
+    error: potential divide by zero bug '/ rec->dst_width'.
+
+Prevent this by ensuring that the dst height and width are non-zero.
+
+Fixes: 02e792fbaadb ("drm/i915: implement drmmode overlay support v4")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220124122409.GA31673@kili
+(cherry picked from commit cf5b64f7f10b28bebb9b7c9d25e7aee5cbe43918)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/i915/display/intel_overlay.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -2660,6 +2660,7 @@ static const struct hda_model_fixup alc8
- 	{.id = ALC882_FIXUP_NO_PRIMARY_HP, .name = "no-primary-hp"},
- 	{.id = ALC887_FIXUP_ASUS_BASS, .name = "asus-bass"},
- 	{.id = ALC1220_FIXUP_GB_DUAL_CODECS, .name = "dual-codecs"},
-+	{.id = ALC1220_FIXUP_GB_X570, .name = "gb-x570"},
- 	{.id = ALC1220_FIXUP_CLEVO_P950, .name = "clevo-p950"},
- 	{}
- };
+--- a/drivers/gpu/drm/i915/display/intel_overlay.c
++++ b/drivers/gpu/drm/i915/display/intel_overlay.c
+@@ -959,6 +959,9 @@ static int check_overlay_dst(struct inte
+ 	const struct intel_crtc_state *pipe_config =
+ 		overlay->crtc->config;
+ 
++	if (rec->dst_height == 0 || rec->dst_width == 0)
++		return -EINVAL;
++
+ 	if (rec->dst_x < pipe_config->pipe_src_w &&
+ 	    rec->dst_x + rec->dst_width <= pipe_config->pipe_src_w &&
+ 	    rec->dst_y < pipe_config->pipe_src_h &&
 
 
