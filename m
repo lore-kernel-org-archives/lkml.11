@@ -2,140 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E44C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E543EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243252AbiBGV4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 16:56:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
+        id S243288AbiBGV5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 16:57:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242051AbiBGV4Q (ORCPT
+        with ESMTP id S239942AbiBGV5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 16:56:16 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C45C061A73
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:56:15 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id y5so14428428pfe.4
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 13:56:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tHxa2zKVaHBcu/brPJMMDCzteRvMa8lCYhxJZN7g04o=;
-        b=I3T0MgX3KD3D8din9AD4VmFgX5xNMlWkCITEwL0yWT4rotEFC5G/eY54wJX+04On6C
-         CHr+Fk8wpO7RGMsRViMvJA3/won/IUNX8Ak9LBq8aIS1CJfPR5C6w46zR1Z8O+YPMarK
-         I3WWGlNHdYu4PYfMgfgnwpeTxftKTY5LuLmhc=
+        Mon, 7 Feb 2022 16:57:43 -0500
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83015C061355;
+        Mon,  7 Feb 2022 13:57:42 -0800 (PST)
+Received: by mail-oi1-f179.google.com with SMTP id v67so18550090oie.9;
+        Mon, 07 Feb 2022 13:57:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=tHxa2zKVaHBcu/brPJMMDCzteRvMa8lCYhxJZN7g04o=;
-        b=nFDNXCY/5ExJzazeY6MwMEujiQwU2UQLHCjObqeVYgCE5LErj8KUJOnWkRijo5vLmX
-         nSJkJprMWuw1wmfF83DvT4cuGCYlevMUC+HqsYYQI6CUU3wFZfgUyX44wh5s30mWSFtD
-         MZykWdjM+xXbRQ7kaTOMgqWk1Orberta8t2XlZKO3bkv8W2RePgSrPTT19Lh4gXcuiRf
-         msxO8BCDXh2H6/vtX/T2GFxg4a75dVFkm9SF3GTEWM21pZh4GCpvXkDZJ2f6hO1YEu8K
-         MSPG9TrCCkDwyEtNvlVHrAaIUWJb7vnryjCraf+RBTaqXRaGz1BXWsJ7csQZQgJR8d6P
-         tiGg==
-X-Gm-Message-State: AOAM532F9rMeBqUM4P75gSJbOjMu0QOqh4sBfOASNjH48vTypw4Z1Lt+
-        AbypvazrFqtCkijZ4U9FM0/N0Q==
-X-Google-Smtp-Source: ABdhPJyCMZS8k4XqgP2140WPRUddkLLGFWtx/egtokuBNm31gkdMHe+p42tk+Kmo6pOth6YVBsHvXw==
-X-Received: by 2002:a63:4f4f:: with SMTP id p15mr1109735pgl.452.1644270975192;
-        Mon, 07 Feb 2022 13:56:15 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id 6sm9348292pgx.36.2022.02.07.13.56.14
+        bh=CIT/zYqj4KmVgAn5vqAR/pRlBWKndIBHim2BVa6q7Ls=;
+        b=KSGmF6KvTFIGClFbVC3UbOKuK6wZ2DbdRiAOtOkGAFEry/ORZRT99drWOO+cADiv0x
+         pnNM3IQCej43FDiEGISd3ceHfQ7ggyYlq3b/CsNOKSt+ypOst7nKxEqa880w9vxvHA21
+         GOqaKCsGWJtL+5c0hZmec7p/PYO5/ABP+r/p4lxsz5S9yxnynHZ9idReRU66POybc0vB
+         WN69yaRvxymPw+3Xs4xSNtDmXg+WANHVM3h6ro6UQAOaiFrHb6VWK13220WE+7FshSW3
+         qWH22e+439MpoHaSVvYLDq+dbnOYc+HDhTtx2LMgQQRChxAvSDVp99MgAaWfU0a2EWZR
+         mTEA==
+X-Gm-Message-State: AOAM530km0pAE625xOUzASKOIpKgsfG/azU2NV+KPPk1YT3AmGYSqJ1S
+        uxLmwM6o823c8yt3B6/UFw==
+X-Google-Smtp-Source: ABdhPJwTY5WUNnR2oOLu+PEJubSNdTF2LEaIPZoKmZNu5fb1bdtr6OBaXStUltyISA4pM2kJzMAO9w==
+X-Received: by 2002:a05:6808:ec4:: with SMTP id q4mr485990oiv.326.1644271061869;
+        Mon, 07 Feb 2022 13:57:41 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id y19sm4589626oti.49.2022.02.07.13.57.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 13:56:14 -0800 (PST)
-Date:   Mon, 7 Feb 2022 13:56:14 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Martin Fernandez <martin.fernandez@eclypsium.com>
-Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
-        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
-        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
-        alison.schofield@intel.com
-Subject: Re: [PATCH v6 4/6] x86/e820: Tag e820_entry with crypto capabilities
-Message-ID: <202202071351.AEEEA92@keescook>
-References: <20220203164328.203629-1-martin.fernandez@eclypsium.com>
- <20220203164328.203629-5-martin.fernandez@eclypsium.com>
+        Mon, 07 Feb 2022 13:57:40 -0800 (PST)
+Received: (nullmailer pid 996196 invoked by uid 1000);
+        Mon, 07 Feb 2022 21:57:38 -0000
+Date:   Mon, 7 Feb 2022 15:57:38 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Lukasz Luba <lukasz.luba@arm.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 0/8] dt-bindings: memory: convert to dtschema
+Message-ID: <YgGV0jz9qlbQUk8/@robh.at.kernel.org>
+References: <20220206135807.211767-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220203164328.203629-5-martin.fernandez@eclypsium.com>
+In-Reply-To: <20220206135807.211767-1-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 01:43:26PM -0300, Martin Fernandez wrote:
-> Add a new enum for crypto capabilities.
+On Sun, Feb 06, 2022 at 02:57:59PM +0100, Krzysztof Kozlowski wrote:
+> Hi,
 > 
-> Add a new member in e820_entry to hold whether an entry is able to do
-> hardware memory encryption or not.
+> Changes since v2:
+> 1. Re-order patches so timings get converted earlier. This fixes dt-checker
+> robot report.
+> 2. Add Dmitry's review tag.
+> 3. Three new patches:
+>    #6: dt-bindings: memory: lpddr3: deprecate passing timings frequency as unit address
+>    #7: memory: of: parse max-freq property
+>    #8: ARM: dts: exynos: remove deprecated unit address for LPDDR3 timings on Odroid
 > 
-> Add a new function e820__range_set_crypto_capable to mark all the
-> entries in a range of addresses as encryptable. This will be called
-> when initializing EFI.
+> Changes since v1:
+> 1. Drop patch 1 (ARM dts) - applied.
+> 2. Correct description in lpddr2-timings (Dmitry).
 > 
-> Change e820__update_table to handle merging and overlap problems
-> taking into account crypto_capable.
+> Best regards,
+> Krzysztof
 > 
-> Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
-> ---
->  arch/x86/include/asm/e820/api.h   |   1 +
->  arch/x86/include/asm/e820/types.h |  12 +++-
->  arch/x86/kernel/e820.c            | 114 ++++++++++++++++++++++++++++--
->  3 files changed, 119 insertions(+), 8 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/e820/api.h b/arch/x86/include/asm/e820/api.h
-> index e8f58ddd06d9..4b3b01fafdd1 100644
-> --- a/arch/x86/include/asm/e820/api.h
-> +++ b/arch/x86/include/asm/e820/api.h
-> @@ -17,6 +17,7 @@ extern bool e820__mapped_all(u64 start, u64 end, enum e820_type type);
->  extern void e820__range_add   (u64 start, u64 size, enum e820_type type);
->  extern u64  e820__range_update(u64 start, u64 size, enum e820_type old_type, enum e820_type new_type);
->  extern u64  e820__range_remove(u64 start, u64 size, enum e820_type old_type, bool check_type);
-> +extern u64  e820__range_set_crypto_capable(u64 start, u64 size);
->  
->  extern void e820__print_table(char *who);
->  extern int  e820__update_table(struct e820_table *table);
-> diff --git a/arch/x86/include/asm/e820/types.h b/arch/x86/include/asm/e820/types.h
-> index 314f75d886d0..aef03c665f5e 100644
-> --- a/arch/x86/include/asm/e820/types.h
-> +++ b/arch/x86/include/asm/e820/types.h
-> @@ -46,6 +46,11 @@ enum e820_type {
->  	E820_TYPE_RESERVED_KERN	= 128,
->  };
->  
-> +enum e820_crypto_capabilities {
-> +	E820_NOT_CRYPTO_CAPABLE	= 0,
-> +	E820_CRYPTO_CAPABLE	= 1,
-> +};
+> Krzysztof Kozlowski (8):
+>   dt-bindings: memory: lpddr2-timings: convert to dtschema
+>   dt-bindings: memory: lpddr3-timings: convert to dtschema
+>   dt-bindings: memory: lpddr3: convert to dtschema
+>   dt-bindings: memory: lpddr3: adjust IO width to spec
+>   dt-bindings: memory: lpddr3: deprecate manufacturer ID
+>   dt-bindings: memory: lpddr3: deprecate passing timings frequency as
+>     unit address
+>   memory: of: parse max-freq property
+>   ARM: dts: exynos: remove deprecated unit address for LPDDR3 timings on
+>     Odroid
 
-Is this expected to grow beyond a bool?
-
-> +
->  /*
->   * A single E820 map entry, describing a memory range of [addr...addr+size-1],
->   * of 'type' memory type:
-> @@ -53,9 +58,10 @@ enum e820_type {
->   * (We pack it because there can be thousands of them on large systems.)
->   */
->  struct e820_entry {
-> -	u64			addr;
-> -	u64			size;
-> -	enum e820_type		type;
-> +	u64				addr;
-> +	u64				size;
-> +	enum e820_type			type;
-> +	enum e820_crypto_capabilities	crypto_capable;
->  } __attribute__((packed));
-
-Is there any concern about growing this structure? The "thousands" note
-in the comment is likely rare. FWIW, this seems fine to me, but I
-thought I'd mention it.
-
--- 
-Kees Cook
+Reviewed-by: Rob Herring <robh@kernel.org>
