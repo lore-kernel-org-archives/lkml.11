@@ -2,98 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D3D1C35270
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD25C35273
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448784AbiBGNM7 (ORCPT
+        id S1386766AbiBGNNX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:12:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53428 "EHLO
+        Mon, 7 Feb 2022 08:13:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443097AbiBGMWG (ORCPT
+        with ESMTP id S1385353AbiBGNKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:22:06 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB147C03C1AD
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:16:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644236190; x=1675772190;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1vCj/FFG9pSnPF/Iv806R/ZlY0+1L2qMpTxrhPDp3JE=;
-  b=QI70Pxkd2c1uAnspQUMZl9vc4Ttdppz7zfKumBp1OCApKOomP1ACgQ1i
-   aRI+4O9s0DPtpLkjtMoOQsOyGwnh/CREdnBY7VULlVmefDRyLefPbtE3j
-   j+5SqvxWiAyMATlUFNil2PlKascZm7KuskZDBGGm7qOycrQq4Sl9ZIYvd
-   P0iU+WERKIWqZZqx6TkBil3nnyuOPXzptp6GmULuQ9BE7a3QRNSY2go1N
-   rzvaNODKOega7e7QePYgRzkmf80bmCx0wJQjEI4PMswiLBO3TW/d2gw2r
-   PQ0tFFt2Uzk84TICyKSQmj8tZB0Ur0qYcNP0WOKc5xEfvOuxIvNOHvdz/
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="248914436"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="248914436"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:16:30 -0800
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="700444170"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:16:29 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nH2va-001tWE-7Y;
-        Mon, 07 Feb 2022 14:15:30 +0200
-Date:   Mon, 7 Feb 2022 14:15:29 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     andy@kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] lib/test_string.c: return -ENOMEM on memset16_selftest
- allocation failure
-Message-ID: <YgENYYPT2gs7sX8H@smile.fi.intel.com>
-References: <20220207103626.103256-1-jiapeng.chong@linux.alibaba.com>
+        Mon, 7 Feb 2022 08:10:38 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC435C0401C1;
+        Mon,  7 Feb 2022 05:10:24 -0800 (PST)
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 05/12] iio: core: Add new DMABUF interface infrastructure
+Date:   Mon,  7 Feb 2022 12:59:26 +0000
+Message-Id: <20220207125933.81634-6-paul@crapouillou.net>
+In-Reply-To: <20220207125933.81634-1-paul@crapouillou.net>
+References: <20220207125933.81634-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207103626.103256-1-jiapeng.chong@linux.alibaba.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 06:36:26PM +0800, Jiapeng Chong wrote:
-> Clean up the following smatch warning:
-> 
-> lib/test_string.c:14 memset16_selftest() warn: returning -1 instead of
-> -ENOMEM is sloppy.
+Add the necessary infrastructure to the IIO core to support a new
+optional DMABUF based interface.
 
-It's not that makes much difference, but fine
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The advantage of this new DMABUF based interface vs. the read()
+interface, is that it avoids an extra copy of the data between the
+kernel and userspace. This is particularly userful for high-speed
+devices which produce several megabytes or even gigabytes of data per
+second.
 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  lib/test_string.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/lib/test_string.c b/lib/test_string.c
-> index 9dfd6f52de92..f23d6cd2d9c7 100644
-> --- a/lib/test_string.c
-> +++ b/lib/test_string.c
-> @@ -11,7 +11,7 @@ static __init int memset16_selftest(void)
->  
->  	p = kmalloc(256 * 2 * 2, GFP_KERNEL);
->  	if (!p)
-> -		return -1;
-> +		return -ENOMEM;
->  
->  	for (i = 0; i < 256; i++) {
->  		for (j = 0; j < 256; j++) {
-> -- 
-> 2.20.1.7.g153144c
-> 
+The data in this new DMABUF interface is managed at the granularity of
+DMABUF objects. Reducing the granularity from byte level to block level
+is done to reduce the userspace-kernelspace synchronization overhead
+since performing syscalls for each byte at a few Mbps is just not
+feasible.
 
+This of course leads to a slightly increased latency. For this reason an
+application can choose the size of the DMABUFs as well as how many it
+allocates. E.g. two DMABUFs would be a traditional double buffering
+scheme. But using a higher number might be necessary to avoid
+underflow/overflow situations in the presence of scheduling latencies.
+
+As part of the interface, 2 new IOCTLs have been added:
+
+IIO_BUFFER_DMABUF_ALLOC_IOCTL(struct iio_dmabuf_alloc_req *):
+ Each call will allocate a new DMABUF object. The return value (if not
+ a negative errno value as error) will be the file descriptor of the new
+ DMABUF.
+
+IIO_BUFFER_DMABUF_ENQUEUE_IOCTL(struct iio_dmabuf *):
+ Place the DMABUF object into the queue pending for hardware process.
+
+These two IOCTLs have to be performed on the IIO buffer's file
+descriptor, obtained using the IIO_BUFFER_GET_FD_IOCTL() ioctl.
+
+To access the data stored in a block by userspace the block must be
+mapped to the process's memory. This is done by calling mmap() on the
+DMABUF's file descriptor.
+
+Before accessing the data through the map, you must use the
+DMA_BUF_IOCTL_SYNC(struct dma_buf_sync *) ioctl, with the
+DMA_BUF_SYNC_START flag, to make sure that the data is available.
+This call may block until the hardware is done with this block. Once
+you are done reading or writing the data, you must use this ioctl again
+with the DMA_BUF_SYNC_END flag, before enqueueing the DMABUF to the
+kernel's queue.
+
+If you need to know when the hardware is done with a DMABUF, you can
+poll its file descriptor for the EPOLLOUT event.
+
+Finally, to destroy a DMABUF object, simply call close() on its file
+descriptor.
+
+A typical workflow for the new interface is:
+
+  for block in blocks:
+    DMABUF_ALLOC block
+    mmap block
+
+  enable buffer
+
+  while !done
+    for block in blocks:
+      DMABUF_ENQUEUE block
+
+      DMABUF_SYNC_START block
+      process data
+      DMABUF_SYNC_END block
+
+  disable buffer
+
+  for block in blocks:
+    close block
+
+v2: Only allow the new IOCTLs on the buffer FD created with
+    IIO_BUFFER_GET_FD_IOCTL().
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ drivers/iio/industrialio-buffer.c | 55 +++++++++++++++++++++++++++++++
+ include/linux/iio/buffer_impl.h   |  8 +++++
+ include/uapi/linux/iio/buffer.h   | 29 ++++++++++++++++
+ 3 files changed, 92 insertions(+)
+
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 94eb9f6cf128..72f333a519bc 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -17,6 +17,7 @@
+ #include <linux/fs.h>
+ #include <linux/cdev.h>
+ #include <linux/slab.h>
++#include <linux/mm.h>
+ #include <linux/poll.h>
+ #include <linux/sched/signal.h>
+ 
+@@ -1520,11 +1521,65 @@ static int iio_buffer_chrdev_release(struct inode *inode, struct file *filep)
+ 	return 0;
+ }
+ 
++static int iio_buffer_enqueue_dmabuf(struct iio_buffer *buffer,
++				     struct iio_dmabuf __user *user_buf)
++{
++	struct iio_dmabuf dmabuf;
++
++	if (!buffer->access->enqueue_dmabuf)
++		return -EPERM;
++
++	if (copy_from_user(&dmabuf, user_buf, sizeof(dmabuf)))
++		return -EFAULT;
++
++	if (dmabuf.flags & ~IIO_BUFFER_DMABUF_SUPPORTED_FLAGS)
++		return -EINVAL;
++
++	return buffer->access->enqueue_dmabuf(buffer, &dmabuf);
++}
++
++static int iio_buffer_alloc_dmabuf(struct iio_buffer *buffer,
++				   struct iio_dmabuf_alloc_req __user *user_req)
++{
++	struct iio_dmabuf_alloc_req req;
++
++	if (!buffer->access->alloc_dmabuf)
++		return -EPERM;
++
++	if (copy_from_user(&req, user_req, sizeof(req)))
++		return -EFAULT;
++
++	if (req.resv)
++		return -EINVAL;
++
++	return buffer->access->alloc_dmabuf(buffer, &req);
++}
++
++static long iio_buffer_chrdev_ioctl(struct file *filp,
++				    unsigned int cmd, unsigned long arg)
++{
++	struct iio_dev_buffer_pair *ib = filp->private_data;
++	struct iio_buffer *buffer = ib->buffer;
++	void __user *_arg = (void __user *)arg;
++
++	switch (cmd) {
++	case IIO_BUFFER_DMABUF_ALLOC_IOCTL:
++		return iio_buffer_alloc_dmabuf(buffer, _arg);
++	case IIO_BUFFER_DMABUF_ENQUEUE_IOCTL:
++		/* TODO: support non-blocking enqueue operation */
++		return iio_buffer_enqueue_dmabuf(buffer, _arg);
++	default:
++		return IIO_IOCTL_UNHANDLED;
++	}
++}
++
+ static const struct file_operations iio_buffer_chrdev_fileops = {
+ 	.owner = THIS_MODULE,
+ 	.llseek = noop_llseek,
+ 	.read = iio_buffer_read,
+ 	.write = iio_buffer_write,
++	.unlocked_ioctl = iio_buffer_chrdev_ioctl,
++	.compat_ioctl = compat_ptr_ioctl,
+ 	.poll = iio_buffer_poll,
+ 	.release = iio_buffer_chrdev_release,
+ };
+diff --git a/include/linux/iio/buffer_impl.h b/include/linux/iio/buffer_impl.h
+index e2ca8ea23e19..728541bc2c63 100644
+--- a/include/linux/iio/buffer_impl.h
++++ b/include/linux/iio/buffer_impl.h
+@@ -39,6 +39,9 @@ struct iio_buffer;
+  *                      device stops sampling. Calles are balanced with @enable.
+  * @release:		called when the last reference to the buffer is dropped,
+  *			should free all resources allocated by the buffer.
++ * @alloc_dmabuf:	called from userspace via ioctl to allocate one DMABUF.
++ * @enqueue_dmabuf:	called from userspace via ioctl to queue this DMABUF
++ *			object to this buffer. Requires a valid DMABUF fd.
+  * @modes:		Supported operating modes by this buffer type
+  * @flags:		A bitmask combination of INDIO_BUFFER_FLAG_*
+  *
+@@ -68,6 +71,11 @@ struct iio_buffer_access_funcs {
+ 
+ 	void (*release)(struct iio_buffer *buffer);
+ 
++	int (*alloc_dmabuf)(struct iio_buffer *buffer,
++			    struct iio_dmabuf_alloc_req *req);
++	int (*enqueue_dmabuf)(struct iio_buffer *buffer,
++			      struct iio_dmabuf *block);
++
+ 	unsigned int modes;
+ 	unsigned int flags;
+ };
+diff --git a/include/uapi/linux/iio/buffer.h b/include/uapi/linux/iio/buffer.h
+index 13939032b3f6..e4621b926262 100644
+--- a/include/uapi/linux/iio/buffer.h
++++ b/include/uapi/linux/iio/buffer.h
+@@ -5,6 +5,35 @@
+ #ifndef _UAPI_IIO_BUFFER_H_
+ #define _UAPI_IIO_BUFFER_H_
+ 
++#include <linux/types.h>
++
++#define IIO_BUFFER_DMABUF_SUPPORTED_FLAGS	0x00000000
++
++/**
++ * struct iio_dmabuf_alloc_req - Descriptor for allocating IIO DMABUFs
++ * @size:	the size of a single DMABUF
++ * @resv:	reserved
++ */
++struct iio_dmabuf_alloc_req {
++	__u64 size;
++	__u64 resv;
++};
++
++/**
++ * struct iio_dmabuf - Descriptor for a single IIO DMABUF object
++ * @fd:		file descriptor of the DMABUF object
++ * @flags:	one or more IIO_BUFFER_DMABUF_* flags
++ * @bytes_used:	number of bytes used in this DMABUF for the data transfer.
++ *		If zero, the full buffer is used.
++ */
++struct iio_dmabuf {
++	__u32 fd;
++	__u32 flags;
++	__u64 bytes_used;
++};
++
+ #define IIO_BUFFER_GET_FD_IOCTL			_IOWR('i', 0x91, int)
++#define IIO_BUFFER_DMABUF_ALLOC_IOCTL		_IOW('i', 0x92, struct iio_dmabuf_alloc_req)
++#define IIO_BUFFER_DMABUF_ENQUEUE_IOCTL		_IOW('i', 0x93, struct iio_dmabuf)
+ 
+ #endif /* _UAPI_IIO_BUFFER_H_ */
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
