@@ -2,89 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F02C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 21:50:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242755AbiBGVut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 16:50:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34246 "EHLO
+        id S242979AbiBGVuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 16:50:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242743AbiBGVuj (ORCPT
+        with ESMTP id S242781AbiBGVuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 16:50:39 -0500
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569B6C061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:50:39 -0800 (PST)
-Received: by mail-vs1-xe34.google.com with SMTP id g10so1251488vss.1
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 13:50:39 -0800 (PST)
+        Mon, 7 Feb 2022 16:50:52 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1EAC06109E
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:50:51 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id x23so29708257lfc.0
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 13:50:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LrJtG/4VF3TjaBbbVCMP3L8XINzF0HJUnLz1QbyH774=;
-        b=OIA3HNAQMQ2qVTofuripOySnB8XsK+KrH1Fa3nCSa0GqX6xDef7u1BLlL+FtDbAOpX
-         TOBvrVoolEO8RU0TDuiBwgtNLaAX3h+uRyEJD0guTIQi7rsnaHX2dGgxhyacaT2cACUT
-         w+CE+BDnIKB+i3OFkxXizBi1lDvw6ooJqJI6GNAp6PCI7KgmT9MnOODe/ZWG+zp0AcU+
-         u9vL9zuuVh2XLlo/dSSDdnDLB2H4wlMkeGn/Ui2yupguX5P32j2n1cr6RyP+wWeXhN7T
-         qjhzdD08Y22oWbMz5/7geaSRNBDXP0zgCMA0rPJqoziREry1FzjjJF61aK09qgc7vYhC
-         Jv3A==
+        bh=/ijq+SQEgOasCfrLHlBKCHwbcT+Y/IDNSQSnjTzRzSw=;
+        b=jBN9y7BxHTFMA+5Hqs8ZS/igmyf6qQbVUnCCODRSEUwBrCSjqqILU4uh0PypgUtLG5
+         O3bWTHyLGe7Ieqhbz9i1Xo+qNhh1Qm/jo9yFkRJvD/JCdrGdi9OpOqa23Pt5qs0rs+Qu
+         cn4VhJQK6in+29yAAMojj2zm6a8nagBBoYCFbMRWxe7gGPuo7pUPPm2vJXdW6Pvh78Id
+         D8ii/aNPzRzYxtROLqAlop6M4oW3n4+w99D9I08On+CJ2nM330kJWT+349yK4LVjmQfk
+         HXNxCDZpTW98l2JBY4bzgGrMEZH3KBAmbaDZdTOhxYAcum8xSmbtJbyawind7qxDE+sh
+         dujQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LrJtG/4VF3TjaBbbVCMP3L8XINzF0HJUnLz1QbyH774=;
-        b=Jchg7tLUwFTdtHroR2ehkOhZ8zouZFn5Jg4gn2kbPztsTogncl4tMgHnJHs2213g0f
-         I5waFCEpdU/Zs3DikjaJ7cC8S6Z5K4Xnp4UovwnfdyOKaXkCsqQhyoSJyZ4B64TZEEvY
-         5uGTLf45uorcw1WcHU1IBpQaOPQT6OGhlfs5REMt41we+nO6cBmaZ5jYEwRDiL0Ojl1q
-         oU5zP4rYDgOEfklieoZGXsge2Bq7Sr0PWAaiD05HYqWHEszcCvBLraK5dNazPuNfZ2ND
-         yBI16+5cXR+KEuweNALorPpzUVj3yHzf8efW/FrYkoUv1pKQ7O3J2TB6Vpp1AYSBxxXF
-         EwZA==
-X-Gm-Message-State: AOAM530d8nCXw7k3fxHfyoHQDGQ/+DARMssHax7GfOI3SlQaDYv4EnkR
-        gDGb485VcDJvwSlls94ZHCvyt5z5esD+gfpo3g8uag==
-X-Google-Smtp-Source: ABdhPJw2An15tX4wk6vj87vqmn3C3Le56zen1+ee6Epwhv/PcbapVScQqxoFhNHrTGgijorQ6jNfOxXFsHZMSp+P1dE=
-X-Received: by 2002:a67:e08d:: with SMTP id f13mr608800vsl.78.1644270638386;
- Mon, 07 Feb 2022 13:50:38 -0800 (PST)
+        bh=/ijq+SQEgOasCfrLHlBKCHwbcT+Y/IDNSQSnjTzRzSw=;
+        b=W1idUBHLO58ft7mo3ZjyCY/3EGennJiferW88OryRtJCgAyXGS16SIzCED7TZXwfOp
+         5XUPjEC5QwgAHvwwMC6qc6kOpxTbDoOAD0E+w4JvmvDw6u7At8xZlAIiM91NqgudABEc
+         /jZgmELUxACqNky+a+m51BDDWucV0I0NaLKRquaP8PisiKtJpHHgOZRx682uKWWL9/YI
+         FdyOf6EAm+oK25+sxlWxPaQ8ZeBqdw/k237rZBrU2PB3sExTlIHaNywHMEL5W4f/6fVF
+         GD05TDYXj6C5Cxjw+tFYz6QfeOQJxFn0YV5RJveGCrZs3Out7vaAYBNR16elhEp6Gaal
+         TIuQ==
+X-Gm-Message-State: AOAM532TbOm1SXEdxZWv1pLQCEgHBmJNBKpFj8Kl8UxgYYs/lWfV0PMu
+        MQeiQcuUS3dffmCTzx/H0tWlhWtn0Q6PMZCvKL8JvA==
+X-Google-Smtp-Source: ABdhPJyyZyHGsx4zvOcYNokXStjUvR2p9IAVvxbSkLJKLHP62dNiRzw/RBz/mCHZp8HaItYXhfmeNONlNnlJXKM7rQ4=
+X-Received: by 2002:ac2:58c7:: with SMTP id u7mr999449lfo.518.1644270649934;
+ Mon, 07 Feb 2022 13:50:49 -0800 (PST)
 MIME-Version: 1.0
-References: <e10b79cf-d6d5-ffcc-bce4-edd92b7cb6b9@molgen.mpg.de>
- <CAHmME9pktmNpcBS_DJhJ5Z+6xO9P1wroQ9_gwx8KZMBxk1FBeQ@mail.gmail.com> <CAG48ez2P9-CAdgRizcp5T_uuoXRAt0xtodh1doiMW0fKZVX-7g@mail.gmail.com>
-In-Reply-To: <CAG48ez2P9-CAdgRizcp5T_uuoXRAt0xtodh1doiMW0fKZVX-7g@mail.gmail.com>
-From:   Jann Horn <jannh@google.com>
-Date:   Mon, 7 Feb 2022 22:50:12 +0100
-Message-ID: <CAG48ez3wZOZZX1UHM-Q=KhOnnGR85Unm08q7jT_wVfOq0PW94Q@mail.gmail.com>
-Subject: Re: BUG: KCSAN: data-race in add_device_randomness+0x20d/0x290
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     pmenzel@molgen.mpg.de, "Theodore Y. Ts'o" <tytso@mit.edu>,
+References: <20220204115718.14934-1-pbonzini@redhat.com> <20220204115718.14934-2-pbonzini@redhat.com>
+ <Yf1pk1EEBXj0O0/p@google.com> <8081cbe5-6d12-9f99-9f0f-13c1d7617647@redhat.com>
+ <YgFEVr9NM1vXdexg@google.com>
+In-Reply-To: <YgFEVr9NM1vXdexg@google.com>
+From:   David Matlack <dmatlack@google.com>
+Date:   Mon, 7 Feb 2022 13:50:23 -0800
+Message-ID: <CALzav=c9GzV3To=tjU2sdCmkzh7WLK+i+W5pUjtfZsnkcg1dcQ@mail.gmail.com>
+Subject: Re: [PATCH 01/23] KVM: MMU: pass uses_nx directly to reset_shadow_zero_bits_mask
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         LKML <linux-kernel@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
+        kvm list <kvm@vger.kernel.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 10:45 PM Jann Horn <jannh@google.com> wrote:
-> On Mon, Feb 7, 2022 at 7:42 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> > Thanks for the report. I assume that this is actually an old bug. Do
-> > you have a vmlinux or a random.o from this kernel you could send me to
-> > double check? Without that, my best guess, which I'd say I have
-> > relatively high confidence about, is that the "1 byte read" is
-> > actually a `movzx eax, cs:lfsr` referring to the `static u8 lfsr`
-> > here, which gets inlined into add_device_randomness:
-> >
-> > static int crng_slow_load(const u8 *cp, size_t len)
-> > {
-> >     unsigned long flags;
-> >     static u8 lfsr = 1;
-> >
-> > This was added in 2008 with dc12baacb95f ("random: use a different
-> > mixing algorithm for add_device_randomness()"). My understanding is
-> > that the race here isn't super problematic as we're in kind of a half
-> > assed "low effort" phase anyway. But I'll give it some thought. I'm
-> > CCing Jann as well who reported the original issue that motivated that
-> > change.
+On Mon, Feb 7, 2022 at 8:10 AM Sean Christopherson <seanjc@google.com> wrote:
 >
-> But the "lfsr" variable is never accessed outside the part of this
-> method that holds a global spinlock. So that can't really be it,
-> right?
+> On Sat, Feb 05, 2022, Paolo Bonzini wrote:
+> > On 2/4/22 18:59, David Matlack wrote:
+> > > > + reset_shadow_zero_bits_mask(vcpu, context, is_efer_nx(context));
+> > >
+> > > Out of curiousity, how does KVM mitigate iTLB multi-hit when shadowing
+> > > NPT and the guest has not enabled EFER.NX?
+> >
+> > You got me worried for a second but iTLB multihit is Intel-only, isn't it?
+>
+> AFAIK, yes, big Core only.  arch/x86/kernel/cpu/common.c sets NO_ITLB_MULTIHIT
+> for all AMD, Hygon, and Atom CPUs.
 
-There is a data race in crng_ready(), it just loads from "crng_init"
-without READ_ONCE()... maybe that's what KCSAN is noticing?
+Ah that's right, it's Intel-only. Thanks!
