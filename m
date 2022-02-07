@@ -2,105 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7CF8C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11FD2C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:28:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242591AbiBGU1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:27:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
+        id S242925AbiBGU1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:27:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241525AbiBGUXv (ORCPT
+        with ESMTP id S232919AbiBGUY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:23:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B79C0401DA;
-        Mon,  7 Feb 2022 12:23:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78102B816F8;
-        Mon,  7 Feb 2022 20:23:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F06C004E1;
-        Mon,  7 Feb 2022 20:23:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644265428;
-        bh=usqaXiifcEu+JIY0FJvPPoSf4O8s+5EkUbpQUKh5KyU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mqQKGW8oImfRrgLRIJs936msARKuW7MF6OO4wl5/4jfGk14W8csXorOwibKtXBS4p
-         ivQ3yCdOEV2Ed1I4uqW97PAyTfKxPQO+3OBYs7KPntk3Dl8cL9cU9XWG+MquvabU2v
-         mI2DYXDw+zbzRCkNVxN6E9Pqw8EHdCDX8MAemYQI24K3yjSJcKYs7YMsDjk6DCBpc7
-         Y0efuOcSVJRXAkAsgk1eZKFBNEDqpU2d5wiie3J+q2w80KP4MpJY905Ouf+WF0oDKV
-         ENblOEROW7KC5dpUDMOOgZVuq7NgKGZDy1T75sGyAsQ7NMML1S3ZFrjR6zWPscGxeh
-         YYuThUp1DnThQ==
-Date:   Mon, 7 Feb 2022 21:23:45 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Hugh Dickins <hughd@google.com>
-Cc:     Derek Basehore <dbasehore@chromium.org>,
-        Rajat Jain <rajatja@google.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org
-Subject: Re: 5.17-rc regression: X1 Carbon touchpad not resumed
-Message-ID: <YgF/0QGFN4SppLKg@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Derek Basehore <dbasehore@chromium.org>,
-        Rajat Jain <rajatja@google.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org
-References: <89456fcd-a113-4c82-4b10-a9bcaefac68f@google.com>
+        Mon, 7 Feb 2022 15:24:26 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E81EC0401DA;
+        Mon,  7 Feb 2022 12:24:25 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id c15so21337953ljf.11;
+        Mon, 07 Feb 2022 12:24:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0QZUBGn5Vf3a75LS52BCKhCqw6Mtv6YRAewQwFkN9YU=;
+        b=HhaDozkIYW6SQNj1SQEVEcn2tye5SwdgIeieSdv/hIXRvmL1r923vLwDCNEEGwxBgy
+         ejLv9/tQuSRFUF6C7yjnA3fjs9L1IZyReulArI7kR7mayrLqFa+Pu+f1s6gYvelTFBt4
+         hKPqwWco2L3GIx8GWLseYf5rrUEGQKsJFMY0Jhq9deKERJj8heycEDGAXc6H2Mlq8GUJ
+         KWLysWMrukYAbLX/0qbqPZ3ZcmXbbq6Pt85S7Edf48M0a1LqXGXmv5gXzx4AHPW06Sb2
+         Tfogob6yzAnGUGavRbX4E61OEUFN9jaWmhYiqYCD3J2RRxJeibyNkh7HBXNBFzbTkg65
+         raiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0QZUBGn5Vf3a75LS52BCKhCqw6Mtv6YRAewQwFkN9YU=;
+        b=Xrqxxh0nU7e/xPggz6YBaLVbFHCaTbKhA+9J275ZHIqGcCKjL3jZxntApVSNz5NjgC
+         21WPRwAVDnZgsw7Y74uGrwUllrtBogWHQGEWuLHAJ7qFvtBVr2XfzND6X0300NaQlSeD
+         n6eTzsGgY2iR4zykNjWRY3OSfgllVfaVj/ErKvMlUzdNUquDmsijYtIgBhHcM0ZoP7jM
+         pqxBMN0JeI4KuJKe6+bjBxdSC1IPAkMYxmsD01jLZ3OF5Uf9zacjm+fIXaWraa6RdcHS
+         NF8pgT/pjVJEivAJv4pLGl536KV3BlqfFQNE4K8uW7EH8l2A3rfoUCJWicxZR+vc6k7e
+         BCXw==
+X-Gm-Message-State: AOAM531Y7GuYkyLrSM+MC9p0uAhECLXt1iZLj2sSYcIayRP+j5l7NaFz
+        A6Gz0MT2e8T25VVi8MDInRo=
+X-Google-Smtp-Source: ABdhPJz4tTPcQksNjB3XhXBM2BhaAlFbe5VIPLCf72OHyrbnaTGpDRyfcnx/8nTl/uDcOydHOb1FUw==
+X-Received: by 2002:a2e:8447:: with SMTP id u7mr734250ljh.516.1644265463369;
+        Mon, 07 Feb 2022 12:24:23 -0800 (PST)
+Received: from localhost.localdomain ([94.103.224.201])
+        by smtp.gmail.com with ESMTPSA id n16sm1625618lfq.113.2022.02.07.12.24.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 12:24:22 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, toke@toke.dk,
+        linville@tuxdriver.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
+        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+Subject: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Date:   Mon,  7 Feb 2022 23:24:18 +0300
+Message-Id: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="SVWOx/Z2IM0sSr6X"
-Content-Disposition: inline
-In-Reply-To: <89456fcd-a113-4c82-4b10-a9bcaefac68f@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb(). The
+problem was in incorrect htc_handle->drv_priv initialization.
 
---SVWOx/Z2IM0sSr6X
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Probable call trace which can trigger use-after-free:
 
-Hello Hugh,
+ath9k_htc_probe_device()
+  /* htc_handle->drv_priv = priv; */
+  ath9k_htc_wait_for_target()      <--- Failed
+  ieee80211_free_hw()		   <--- priv pointer is freed
 
-> Bisection led to 172d931910e1db800f4e71e8ed92281b6f8c6ee2
-> ("i2c: enable async suspend/resume on i2c client devices")
-> and reverting that fixes it for me.
+<IRQ>
+...
+ath9k_hif_usb_rx_cb()
+  ath9k_hif_usb_rx_stream()
+   RX_STAT_INC()		<--- htc_handle->drv_priv access
 
-Thank you for the report plus bisection and sorry for the regression!
+In order to not add fancy protection for drv_priv we can move
+htc_handle->drv_priv initialization at the end of the
+ath9k_htc_probe_device() and add helper macro to make
+all *_STAT_* macros NULL save.
 
-I will wait a few days if people come up with a fix. If not, I will
-revert the offending commit. Are you willing to test patches in case
-there will be some?
+Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
+Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
-All the best,
+Changes since v2:
+	- My send-email script forgot, that mailing lists exist.
+	  Added back all related lists
 
-   Wolfram
+Changes since v1:
+	- Removed clean-ups and moved them to 2/2
 
+---
+ drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
+ drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
---SVWOx/Z2IM0sSr6X
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 6b45e63fae4b..141642e5e00d 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -327,11 +327,11 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
+ }
+ 
+ #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+-
+-#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+-#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+-#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+-#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
++#define __STAT_SAVE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
++#define TX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
++#define TX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
++#define RX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
++#define RX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+ #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
+ 
+ #define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
+index ff61ae34ecdf..07ac88fb1c57 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
+@@ -944,7 +944,6 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
+ 	priv->hw = hw;
+ 	priv->htc = htc_handle;
+ 	priv->dev = dev;
+-	htc_handle->drv_priv = priv;
+ 	SET_IEEE80211_DEV(hw, priv->dev);
+ 
+ 	ret = ath9k_htc_wait_for_target(priv);
+@@ -965,6 +964,8 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
+ 	if (ret)
+ 		goto err_init;
+ 
++	htc_handle->drv_priv = priv;
++
+ 	return 0;
+ 
+ err_init:
+-- 
+2.34.1
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIBf80ACgkQFA3kzBSg
-KbYP/w//bKPTb4uzystTG/NLAI6vfcl66Q1s10ZKVC8aEK7LS+bSSMLTiUmSf638
-vYP5hs+neOiDdeBFdhYvcm1tMlud6quQKsYugbtNLQxY1J+bBJnqMLLWZ8zn/EHf
-0G4jLNW3u3v2C88A7E6dEywMsx+8CDtdtqcDWXKljIMbV3yNLPF1c8qhHsbh8diO
-xIv6RY8KSnR37uG+3hv7TQEXLM15hc8KT7l7sMtgQb1+oMRnpsalbPmJFTyx4cy8
-zanBvoSgg3PlYx4C8/cGzc2YSaMZKPNs5PIdC2nodlL0gm6JVDIx37KuEzqVs6gA
-9r1BQzdcjPkoW87Pi7HLnTD6h/XcWb8MAK6gnu9hO1UxjCTFMFxMnYQ6wpyni5rk
-bXr/MhALZfMh+T+yUFe3p3zrRZEp7ek9uKiPFXFdjg/gNaxen5BgYsXBMlUjU0rh
-U6UZce3AP9Oct+lDa9OrwoG7l58pTZRb7PCBjpS3B07u5YngzXybf4/vdbak4se4
-DFWMCBKaWgngJPEcu6z7ar2BOhwAFWFNuNUPDWulW3KsEVf6GUh9rDAyHaLAWnwN
-2RqsAkMs1IsFJWXwxM4EiJSEiPB+nKKXW4BPRjCQ6NS0Yn8duiGOphlgQPK8oC36
-+53oDlSCYXEWEp2W0zhZJOv8l9hmDabbwJopfSaxq2nmLOyGYJ0=
-=a8CQ
------END PGP SIGNATURE-----
-
---SVWOx/Z2IM0sSr6X--
