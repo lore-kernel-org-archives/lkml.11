@@ -2,97 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DAB4C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9AF1C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345173AbiBGPIv (ORCPT
+        id S1442394AbiBGPJC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:08:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51776 "EHLO
+        Mon, 7 Feb 2022 10:09:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441967AbiBGOqm (ORCPT
+        with ESMTP id S1441797AbiBGOz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:46:42 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B8FBC03FEC1;
-        Mon,  7 Feb 2022 06:46:19 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 6266E21100;
-        Mon,  7 Feb 2022 14:46:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644245176; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gNh5UrO2grxW38SlZb3RoMz+NPhu6ub9EMH/rFUycQ0=;
-        b=rISZxS6qaVofJ9ph3oN9d1EnGNCeHElNJWQxqEsBhI7bHkdZbIkjtPOhCCQQPeX31cCX6n
-        XKQh/Qy39IdzefMePC0rX0lqMGP2xUUmSKvUBakM0ls0z2WOGetXWJWorYlzATzjLrpK/G
-        7nY4BNmcMzImqdgXZhouzLaKWYNpkW0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644245176;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gNh5UrO2grxW38SlZb3RoMz+NPhu6ub9EMH/rFUycQ0=;
-        b=6u/Eh5SuLEoJXhx7JzjJULISRn9OQqWmkkWlKRO9pVPHbQyrUCzQDZRdwy8JbcsuDE4E6y
-        dwVYLumd+bNyhjCg==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 5156BA3BC1;
-        Mon,  7 Feb 2022 14:46:15 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id A08D5A05BC; Mon,  7 Feb 2022 15:46:12 +0100 (CET)
-Date:   Mon, 7 Feb 2022 15:46:12 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Jan Kara <jack@suse.com>, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        NeilBrown <neilb@suse.de>, linux-ext4@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] ext2: remove unused pointer bdi
-Message-ID: <20220207144612.zdczs7wxzbuk3ydr@quack3.lan>
-References: <20220207134039.337197-1-colin.i.king@gmail.com>
+        Mon, 7 Feb 2022 09:55:27 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D139EC0401C1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:55:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644245726; x=1675781726;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lrDm90sIcTwCRyZv7U8fHaZS5F+uJhBQphImTVnl7cw=;
+  b=CG5ZJ1mR/fUBeYZWCbJ8zhmPi4Asmoybc9xo4632VP+c48YwQRoj9vRa
+   6cBUZyboWsiF2rMVYCisyu9c7MNXXTlWqGGi3VMrvzXYcnZI4lAmDDsAE
+   bu5l2RIEBLXUjpJ8cQCtc3Cl7nC1boKy6r6OCgnz3LKRIjJiRkDgkaLxs
+   Kcq4VwDI2iVusM9ExXzCr7KjJYPJkviP1so63lrfQCglC1m3T8QqD3MsK
+   Ahv+oKQyjMoCCcS+BcHF4O6jmOVpcROPuFxo6i0b0cveDLWzdPbIS1CUT
+   XzmmiDq3Pxl6ZzrtNgJOAc412+WFtzf3sco1SntaaLKTWU7EaKtNe7Suy
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="248680655"
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="248680655"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 06:55:26 -0800
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="499222182"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 06:55:25 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nH5PO-001wHk-5J;
+        Mon, 07 Feb 2022 16:54:26 +0200
+Date:   Mon, 7 Feb 2022 16:54:25 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Rodolfo Giometti <giometti@enneenne.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/1] pps: generators: pps_gen_parport: Switch to use
+ module_parport_driver()
+Message-ID: <YgEyoemcpsvC3bcI@smile.fi.intel.com>
+References: <20220207141944.8707-1-andriy.shevchenko@linux.intel.com>
+ <YgEtpvGHId1xKSDY@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220207134039.337197-1-colin.i.king@gmail.com>
+In-Reply-To: <YgEtpvGHId1xKSDY@kroah.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 07-02-22 13:40:39, Colin Ian King wrote:
-> The call to bdi_congested has been removed and so the bdi pointer
-> is no longer required. Remove it.
-> 
-> Fixes: 9bbab3a63d49 ("mm/fs: remove bdi_congested() and wb_congested() and related functions")
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+On Mon, Feb 07, 2022 at 03:33:10PM +0100, Greg Kroah-Hartman wrote:
+> On Mon, Feb 07, 2022 at 04:19:44PM +0200, Andy Shevchenko wrote:
+> > Switch to use module_parport_driver() to reduce boilerplate code.
 
-I guess this change is in mm tree? So probably it is best if Andrew picks
-it up.
-
-								Honza
-
-> ---
->  fs/ext2/ialloc.c | 3 ---
->  1 file changed, 3 deletions(-)
+> You changed the functionality here :(
 > 
-> diff --git a/fs/ext2/ialloc.c b/fs/ext2/ialloc.c
-> index d632764da240..998dd2ac8008 100644
-> --- a/fs/ext2/ialloc.c
-> +++ b/fs/ext2/ialloc.c
-> @@ -170,9 +170,6 @@ static void ext2_preread_inode(struct inode *inode)
->  	unsigned long offset;
->  	unsigned long block;
->  	struct ext2_group_desc * gdp;
-> -	struct backing_dev_info *bdi;
-> -
-> -	bdi = inode_to_bdi(inode);
->  
->  	block_group = (inode->i_ino - 1) / EXT2_INODES_PER_GROUP(inode->i_sb);
->  	gdp = ext2_get_group_desc(inode->i_sb, block_group, NULL);
-> -- 
-> 2.34.1
+> Currently if send_delay is too big, loading the module will fail.
 > 
+> Now it succeeds but binding to a device fails, that's a functional
+> change.  Are you _SURE_ that is ok to do?
+
+We already discussed that during v1 IIRC. And I told that it might even gain
+additional flexibility for built-in case of the module.
+
+> And why did you not mention any of this in the changelog text?  You
+> passed this off as a mere code cleanup, no functional change :(
+
+This is fair point. Since we end up in the same Q above. I will update
+changelog in v5.
+
+Thank you for review!
+
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+With Best Regards,
+Andy Shevchenko
+
+
