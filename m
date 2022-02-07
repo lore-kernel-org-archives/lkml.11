@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06FE7C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D918C41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240813AbiBGTpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:45:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
+        id S240906AbiBGTpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:45:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240724AbiBGTnd (ORCPT
+        with ESMTP id S239957AbiBGTn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:43:33 -0500
+        Mon, 7 Feb 2022 14:43:29 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F48C0401E6
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:43:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD63C0401E4
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:43:28 -0800 (PST)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644263010;
+        s=2020; t=1644263006;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Wz4b8g7RhPiNelQL/klnUcQZ1lWWUK2rdxPkiBZW57s=;
-        b=NkQ9Tzkk+waPE4Lx3hILnB/SEXPjt9O0DPteuf5yohGTXni5i6bt3h6TasqLt56Z0LAEUA
-        a/Nq4Fvw53pRhkeAs7CAE5Ps3bkfYxefH4usfEOtyPKYAbrdXfDU8jXF3Si8EnEpmlV06/
-        2l73Xi9e5r/VFxS1ad0ZM2weUGslPPyPI/0mTbNPSPGGR1mqEKHJIzUUt8ZJaqPAWlpsaU
-        GE6lJ264fWXTvDQ4cepXLe03iSVmRpwiwqwJSQ0wUiQ2ZkwrWKaFoqWeDSSjJGck1Mm22a
-        EvKUcI/PD1U5GCKlhMjUZBCxnzvxZc/fWIufOTJ4RA8FUK9N7sACU5xsrc7Hnw==
+        bh=YeoQK9icCZQHqxjTMXztaF3pNjld+IRlJPuqBw66sL4=;
+        b=hxkII20lpD34X3CtBuHp0CCV19hqTdEWFnxIE5rW4TLI34jRq/J67CNh5e4+3zDXTBLSKX
+        ZGvj+VV6gesck38MmRndRSBkyFNywpPs4q0oJpdExUBfdTKSpOGEdN52XBeRDmehsVKx+A
+        n451bPzMFczXFfkN5j4OCPOXRgMJ1xv9CrQMIxejRmtoaMTYIuz+DHiC0wlc5VGxDlC7fs
+        nUutZecadPcS0xzYsrZawVhhTontfdlHboTCl6zinMlYZTzb6CkP6iP6zHuRJzs7wfI6Af
+        R42Sf06HJt/gS/xMEXFABJGYI7IEUwBBsqxBnfXKmXGxzu4kDpWYofX+kkzcoA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644263010;
+        s=2020e; t=1644263006;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Wz4b8g7RhPiNelQL/klnUcQZ1lWWUK2rdxPkiBZW57s=;
-        b=VYiRfbKySMkonqCi+iIKU7JtpTkuoiQlT94ayGBwIImidq/e5p6/N8xGM1S8Op0ZZwofyo
-        uC6KFmr+iDdetYAQ==
+        bh=YeoQK9icCZQHqxjTMXztaF3pNjld+IRlJPuqBw66sL4=;
+        b=nVSx6zvM/ianRuZFzFAUSAoY9g0kHDH5KgIleQqCyOf3LLx4Zlas+Cwvz+Wb0pPCQkZFHu
+        sJpkZzB1vWIqg9CA==
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH printk v1 12/13] printk: remove @console_locked
-Date:   Mon,  7 Feb 2022 20:49:22 +0106
-Message-Id: <20220207194323.273637-13-john.ogness@linutronix.de>
+Subject: [PATCH printk v1 02/13] printk: cpu sync always disable interrupts
+Date:   Mon,  7 Feb 2022 20:49:12 +0106
+Message-Id: <20220207194323.273637-3-john.ogness@linutronix.de>
 In-Reply-To: <20220207194323.273637-1-john.ogness@linutronix.de>
 References: <20220207194323.273637-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -53,103 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The static global variable @console_locked is used to help debug VT
-code to make sure that certain code paths are running with the
-console_lock held. However, this information is also available with
-the static global variable @consoles_paused (for locking via
-console_lock()), and the static global variable @console_lock_count
-(for locking via console_trylock()).
-
-Remove @console_locked and update is_console_locked() to use the
-alternative variables.
+The CPU sync functions are a NOP for !CONFIG_SMP. But for
+!CONFIG_SMP they still need to disable interrupts in order to
+preserve context within the CPU sync sections.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- kernel/printk/printk.c | 30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+ include/linux/printk.h | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 135fbe647092..086155578f10 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -307,15 +307,7 @@ static void __pause_all_consoles(bool do_pause)
- #define pause_all_consoles() __pause_all_consoles(true)
- #define unpause_all_consoles() __pause_all_consoles(false)
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index 780408b29c13..cd8192e611a1 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -285,9 +285,16 @@ extern int __printk_cpu_sync_try_get(void);
+ extern void __printk_cpu_sync_wait(void);
+ extern void __printk_cpu_sync_put(void);
  
--/*
-- * This is used for debugging the mess that is the VT code by
-- * keeping track if we have the console semaphore held. It's
-- * definitely not the perfect debug tool (we don't know if _WE_
-- * hold it and are racing, but it helps tracking those weird code
-- * paths in the console code where we end up in places I want
-- * locked without the console semaphore held).
-- */
--static int console_locked, console_suspended;
-+static int console_suspended;
++#else
++
++#define __printk_cpu_sync_try_get() true
++#define __printk_cpu_sync_wait()
++#define __printk_cpu_sync_put()
++#endif /* CONFIG_SMP */
++
+ /**
+- * printk_cpu_sync_get_irqsave() - Acquire the printk cpu-reentrant spinning
+- *                                 lock and disable interrupts.
++ * printk_cpu_sync_get_irqsave() - Disable interrupts and acquire the printk
++ *                                 cpu-reentrant spinning lock.
+  * @flags: Stack-allocated storage for saving local interrupt state,
+  *         to be passed to printk_cpu_sync_put_irqrestore().
+  *
+@@ -314,13 +321,6 @@ extern void __printk_cpu_sync_put(void);
+ 		local_irq_restore(flags);	\
+ 	} while (0)
  
- /*
-  *	Array of consoles built from command line options (console=)
-@@ -2595,7 +2587,6 @@ void console_lock(void)
- 	if (console_suspended)
- 		return;
- 	pause_all_consoles();
--	console_locked = 1;
- 	console_may_schedule = 1;
- }
- EXPORT_SYMBOL(console_lock);
-@@ -2620,7 +2611,6 @@ int console_trylock(void)
- 		up_console_sem();
- 		return 0;
- 	}
--	console_locked = 1;
- 	console_may_schedule = 0;
- 	return 1;
- }
-@@ -2647,14 +2637,25 @@ static int console_trylock_sched(bool may_schedule)
- 		return 0;
- 	}
- 	pause_all_consoles();
--	console_locked = 1;
- 	console_may_schedule = 1;
- 	return 1;
- }
- 
-+/*
-+ * This is used to help to make sure that certain paths within the VT code are
-+ * running with the console lock held. It is definitely not the perfect debug
-+ * tool (it is not known if the VT code is the task holding the console lock),
-+ * but it helps tracking those weird code paths in the console code such as
-+ * when the console is suspended: where the console is not locked but no
-+ * console printing may occur.
-+ *
-+ * Note: This returns true when the console is suspended but is not locked.
-+ *       This is intentional because the VT code must consider that situation
-+ *       the same as if the console was locked.
-+ */
- int is_console_locked(void)
- {
--	return (console_locked || atomic_read(&console_lock_count));
-+	return (consoles_paused || atomic_read(&console_lock_count));
- }
- EXPORT_SYMBOL(is_console_locked);
- 
-@@ -2687,8 +2688,6 @@ static inline bool console_is_usable(struct console *con)
- 
- static void __console_unlock(void)
- {
--	console_locked = 0;
+-#else
 -
- 	/*
- 	 * Depending on whether console_lock() or console_trylock() was used,
- 	 * appropriately allow the kthread printers to continue.
-@@ -2966,7 +2965,6 @@ void console_unblank(void)
- 		console_lock();
- 	}
+-#define printk_cpu_sync_get_irqsave(flags) ((void)flags)
+-#define printk_cpu_sync_put_irqrestore(flags) ((void)flags)
+-
+-#endif /* CONFIG_SMP */
+-
+ extern int kptr_restrict;
  
--	console_locked = 1;
- 	console_may_schedule = 0;
- 	for_each_console(c)
- 		if ((c->flags & CON_ENABLED) && c->unblank)
+ /**
 -- 
 2.30.2
 
