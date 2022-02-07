@@ -2,89 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D61C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AAA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239831AbiBGSbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:31:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
+        id S240566AbiBGSfF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:35:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243904AbiBGSZc (ORCPT
+        with ESMTP id S240490AbiBGScE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:25:32 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70CDC0401D9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:25:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644258331; x=1675794331;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+g3d/khpgpbVGXsUIHT4OSkqD8lvmSb0Jeo3mZpjGic=;
-  b=fzR4grscm8MQiKDT1TZur1bxVgIaXRsuGLCvDBlq/B11EpsHvj0rBSXj
-   Sf4CKNsNisN+hVe9VFx6zL5nX+UsIRmlHwWsFOy2jvFpDP/PqF6R17w3P
-   g2RUjfpaf0Y2UfsZ3XpabR2/JwseZZZaXu2kEnjZeOeJh/xW+J7P7he+K
-   8qIYjJ4ziPfrEj+Mt+ijlusagPl8acimf5JyQo2ECNoLAyRfzu2Gd+2bK
-   7u6xrPaRtZ/P49dBU1tjwCDjMdblxCfBtTn4SauiYSKd7a6j5LlbgOG2v
-   eXa9z0WbkFlsZn9j1FvO0ucmduT2I5xzjJa5xH4E5nN356z9bouyjQBPL
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="229428066"
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="229428066"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 10:24:29 -0800
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="499290647"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 10:24:29 -0800
-Date:   Mon, 7 Feb 2022 10:27:25 -0800
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v1 09/10] iommu/vt-d: Refactor
- dmar_insert_one_dev_info()
-Message-ID: <20220207102725.3ce9320d@jacob-builder>
-In-Reply-To: <20220207064142.1092846-10-baolu.lu@linux.intel.com>
-References: <20220207064142.1092846-1-baolu.lu@linux.intel.com>
-        <20220207064142.1092846-10-baolu.lu@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 7 Feb 2022 13:32:04 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE40C0401DF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:32:04 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id mz22-20020a17090b379600b001b863f7a846so7268798pjb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 10:32:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=S5r7fnqeDy+mkjZQN4h4voFdDc0GV+XZLPB3/vK2BOk=;
+        b=aCiYn/Ji6EoB3DdBgLs2L5HeMojNwVbv+p28zibQLL/3F9XbD3Lzp1ufLuITgHINsZ
+         BvcUIO1KlLVwXMb2H7E9NfgwvyHV47qt4YZVb5Le2IrOdIlgphyH0KtEeAVq/xHybiK/
+         BtC8X3Dw0eutmyTCEFH1BPc3yXUkUJxxd55QCZ3TbgCieFKOm6PkItqy12CjDp487j0R
+         ciwswkfANlJPav+oI8IZbnvGz/WPRbwjDOmNVvIQ5QDQ7i0IJYfMplALClGa0em3n28B
+         ni5awbGtUaAMjpVkyZ+nEJfPqICHpisdC2pZbyJfjed3F1mdZ7HqG0t9n5BpNgNBE/Aa
+         L4YQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=S5r7fnqeDy+mkjZQN4h4voFdDc0GV+XZLPB3/vK2BOk=;
+        b=Y9r/Z955koiARHXdd4kxZjKIRwf4bTmDwrMBj4SSDGqWlPLCdO1sa2MI1yEN88kTpM
+         LgJV1iYta6Hd68C2VsxkXIbTHTBFzrQpKnm5e+VrmD+vCUh/LXrjB5fHOr2gkLADvpOp
+         9oPtBXnHcij9OCUUd3vrovh6MrgonZ5+YV66Zw6k+wxSAoKa4H08a6OsWyI8taKFxKU4
+         VaCxXozG35/9eBTOf8FqwB+hn4kjtesDtWpmytezlyxJ/ogNj4eT8+AT+4uFOouPiSn9
+         7CBA/TiccQY8n4xH5IwGrT1T1nv6a3P2YDZAF3g9afPmgL0h6lAtEH92WLopHbbDegwm
+         kf/Q==
+X-Gm-Message-State: AOAM533D+Rb3KCMKEUTvdLwy3rzWK9YjHfguAZDtIqyULqN6Bn3mynbC
+        OWreRWh9NnlS7cTfVeeA6+T3yqbetjtn
+X-Google-Smtp-Source: ABdhPJxcKq2dEI5NXB5GHj0brCLFSKHkA6D4MuUXxnx2zPwa3jitNwWBvjFX/9uQ/jtLm+pjtB1upIGEBzWf
+X-Received: from mizhang-super.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1071])
+ (user=mizhang job=sendgmr) by 2002:a17:903:2290:: with SMTP id
+ b16mr853365plh.103.1644258723718; Mon, 07 Feb 2022 10:32:03 -0800 (PST)
+Reply-To: Mingwei Zhang <mizhang@google.com>
+Date:   Mon,  7 Feb 2022 18:31:44 +0000
+Message-Id: <20220207183144.1148652-1-mizhang@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+Subject: [PATCH] KVM: fix trailing spaces and incorrect indent in function parameter.
+From:   Mingwei Zhang <mizhang@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Matlack <dmatlack@google.com>,
+        Mingwei Zhang <mizhang@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi BaoLu,
+Trailing spaces and incorrect spaces within function defintions makes it
+incovenient to submit new patches to the code, as they are always
+'irrelevant' changes.
 
-On Mon,  7 Feb 2022 14:41:41 +0800, Lu Baolu <baolu.lu@linux.intel.com>
-wrote:
+So, fix the space issue in virt/kvm/kvm_main.c in a separate commit.
 
->  static void intel_iommu_release_device(struct device *dev)
->  {
-> -	struct intel_iommu *iommu;
-> -
-> -	iommu = device_to_iommu(dev, NULL, NULL);
-> -	if (!iommu)
-> -		return;
-> -
-> -	dmar_remove_one_dev_info(dev);
-> +	struct device_domain_info *info = get_domain_info(dev);
-> +	unsigned long index = DEVI_IDX(info->segment, info->bus,
-> info->devfn); 
-> +	xa_erase(&device_domain_array, index);
-> +	dev_iommu_priv_set(info->dev, NULL);
->  	set_dma_ops(dev, NULL);
-> +	kfree(info);
-Now that info and sinfo are under RCU, should we use kfree_rcu?
+Cc: David Matlack <dmatlack@google.com>
 
-Thanks,
+Signed-off-by: Mingwei Zhang <mizhang@google.com>
+---
+ virt/kvm/kvm_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Jacob
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 034c567a680c..37606b61a28d 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -2514,7 +2514,7 @@ static int hva_to_pfn_remapped(struct vm_area_struct *vma,
+ 	 * tail pages of non-compound higher order allocations, which
+ 	 * would then underflow the refcount when the caller does the
+ 	 * required put_page. Don't allow those pages here.
+-	 */ 
++	 */
+ 	if (!kvm_try_get_pfn(pfn))
+ 		r = -EFAULT;
+ 
+@@ -2932,7 +2932,7 @@ EXPORT_SYMBOL_GPL(kvm_vcpu_read_guest_atomic);
+ 
+ static int __kvm_write_guest_page(struct kvm *kvm,
+ 				  struct kvm_memory_slot *memslot, gfn_t gfn,
+-			          const void *data, int offset, int len)
++				  const void *data, int offset, int len)
+ {
+ 	int r;
+ 	unsigned long addr;
+-- 
+2.35.0.263.gb82422642f-goog
+
