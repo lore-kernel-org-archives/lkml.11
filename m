@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 600F4C35274
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3947FC3527B
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:37:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376284AbiBGL2r (ORCPT
+        id S1376507AbiBGL3C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:28:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34468 "EHLO
+        Mon, 7 Feb 2022 06:29:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383347AbiBGLWR (ORCPT
+        with ESMTP id S1383384AbiBGLWX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:22:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A95C043181;
-        Mon,  7 Feb 2022 03:22:16 -0800 (PST)
+        Mon, 7 Feb 2022 06:22:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893E1C043181;
+        Mon,  7 Feb 2022 03:22:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DBDB61380;
-        Mon,  7 Feb 2022 11:22:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07D5FC004E1;
-        Mon,  7 Feb 2022 11:22:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CEE1B81028;
+        Mon,  7 Feb 2022 11:22:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 205C5C004E1;
+        Mon,  7 Feb 2022 11:22:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232935;
-        bh=0G4mg7JrTwEv++ARZxUJpNZ1oLOwrJ8UNREcb0ZZ/f8=;
+        s=korg; t=1644232938;
+        bh=KWI6vSg9iJAy0sZw7ylDuPKoHk9LZwGvR0dTqATAMdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FBOWvg4y0hu918E4Q3FO7y1qt+DdyLhHPXPgetIUU7/XtoZVXvOQnDlTveQvxviZ3
-         ZF0Czx7K5+USGdF/YAw22c9NFdpZu8GzQmpqIkHJ2Snx+B60IelXj+gFxsOyujGQfJ
-         mlzHCQ6POO4yCLme6LYJ9NIXIPtXV7umffDC1G6A=
+        b=NOXsDu5b7IlRGxZHzfQ2ndccwnaVbmC2nmsYL2R1skVz1mDfMQBbnVImd4AYyHrNc
+         7B4gONvPUw9yEUKFxRsfjO/0JYBC/BDjuBmgbuUwqvacl1AneHCnpzPbg2wsdDFt+u
+         2l9DbGLJAcsr6Bv8ypT3ik8drq8yx7R4zxNh+KAU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
         Alexander Aring <aahringo@redhat.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 5.10 38/74] net: ieee802154: ca8210: Stop leaking skbs
-Date:   Mon,  7 Feb 2022 12:06:36 +0100
-Message-Id: <20220207103758.478423747@linuxfoundation.org>
+Subject: [PATCH 5.10 39/74] net: ieee802154: Return meaningful error codes from the netlink helpers
+Date:   Mon,  7 Feb 2022 12:06:37 +0100
+Message-Id: <20220207103758.508489235@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
 References: <20220207103757.232676988@linuxfoundation.org>
@@ -52,33 +52,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit 621b24b09eb61c63f262da0c9c5f0e93348897e5 upstream.
+commit 79c37ca73a6e9a33f7b2b7783ba6af07a448c8a9 upstream.
 
-Upon error the ieee802154_xmit_complete() helper is not called. Only
-ieee802154_wake_queue() is called manually. We then leak the skb
-structure.
+Returning -1 does not indicate anything useful.
 
-Free the skb structure upon error before returning.
+Use a standard and meaningful error code instead.
 
-Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
+Fixes: a26c5fd7622d ("nl802154: add support for security layer")
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-5-miquel.raynal@bootlin.com
+Link: https://lore.kernel.org/r/20220125121426.848337-6-miquel.raynal@bootlin.com
 Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ieee802154/ca8210.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/ieee802154/nl802154.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -1771,6 +1771,7 @@ static int ca8210_async_xmit_complete(
- 			status
- 		);
- 		if (status != MAC_TRANSACTION_OVERFLOW) {
-+			dev_kfree_skb_any(priv->tx_skb);
- 			ieee802154_wake_queue(priv->hw);
- 			return 0;
- 		}
+--- a/net/ieee802154/nl802154.c
++++ b/net/ieee802154/nl802154.c
+@@ -1441,7 +1441,7 @@ static int nl802154_send_key(struct sk_b
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1634,7 +1634,7 @@ static int nl802154_send_device(struct s
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1812,7 +1812,7 @@ static int nl802154_send_devkey(struct s
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1988,7 +1988,7 @@ static int nl802154_send_seclevel(struct
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
 
 
