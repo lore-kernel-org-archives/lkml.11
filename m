@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D53C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62540C35280
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354869AbiBGLM0 (ORCPT
+        id S1354944AbiBGLM1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47962 "EHLO
+        Mon, 7 Feb 2022 06:12:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355369AbiBGLIb (ORCPT
+        with ESMTP id S1355389AbiBGLIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:08:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44203C0401C3;
-        Mon,  7 Feb 2022 03:08:30 -0800 (PST)
+        Mon, 7 Feb 2022 06:08:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D029EC043188;
+        Mon,  7 Feb 2022 03:08:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02F6CB80EE8;
-        Mon,  7 Feb 2022 11:08:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41EF6C004E1;
-        Mon,  7 Feb 2022 11:08:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CED0611AA;
+        Mon,  7 Feb 2022 11:08:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37058C004E1;
+        Mon,  7 Feb 2022 11:08:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232107;
-        bh=t3CKQhOZSqK+9EDYMRdB/12HFLkeO7GVPHP9kDG6JOE=;
+        s=korg; t=1644232110;
+        bh=7vHquFwOPFGNQcR3qdz5Kr4WxcV90rTeiXlqPExMHy4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sBSeM8+3PRq9LXQNuDKWX64flsNSPueAS9HZZFnjduqQez62rZSsmM7+MdMeky66h
-         O4UReQE8RDx9wcUO0nWTsOBPDnorAPF2iWUtd61NEHzREuMYfrCjugkNHh2P+shz61
-         nyBdyfo2SdPky6d6PdOM42jZkt96FI8kvGrqXg1k=
+        b=0XqqfSFck9MJxx5ucxrPbgGsn1xf8xc+gSMFrPUlwAxw+0whkmxtXosyaUKHpKeGT
+         0RSDE7PkFpboviXpgQtJMB8/inw7vMpANEEtk7b1uVVwFZxicz10iWiw3wlHdC0Ckl
+         U74mztbE27gRgRJD5/niIDUvBDw2HtUzeitR7GIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyu Tao <tao.lyu@epfl.ch>,
+        stable@vger.kernel.org,
         Trond Myklebust <trond.myklebust@hammerspace.com>,
         Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 4.9 19/48] NFSv4: Handle case where the lookup of a directory fails
-Date:   Mon,  7 Feb 2022 12:05:52 +0100
-Message-Id: <20220207103752.968788657@linuxfoundation.org>
+Subject: [PATCH 4.9 20/48] NFSv4: nfs_atomic_open() can race when looking up a non-regular file
+Date:   Mon,  7 Feb 2022 12:05:53 +0100
+Message-Id: <20220207103753.000309508@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -52,45 +52,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit ac795161c93699d600db16c1a8cc23a65a1eceaf upstream.
+commit 1751fc1db36f6f411709e143d5393f92d12137a9 upstream.
 
-If the application sets the O_DIRECTORY flag, and tries to open a
-regular file, nfs_atomic_open() will punt to doing a regular lookup.
-If the server then returns a regular file, we will happily return a
-file descriptor with uninitialised open state.
+If the file type changes back to being a regular file on the server
+between the failed OPEN and our LOOKUP, then we need to re-run the OPEN.
 
-The fix is to return the expected ENOTDIR error in these cases.
-
-Reported-by: Lyu Tao <tao.lyu@epfl.ch>
 Fixes: 0dd2b474d0b6 ("nfs: implement i_op->atomic_open()")
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/dir.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ fs/nfs/dir.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
 --- a/fs/nfs/dir.c
 +++ b/fs/nfs/dir.c
-@@ -1602,6 +1602,19 @@ out:
- 
- no_open:
- 	res = nfs_lookup(dir, dentry, lookup_flags);
-+	if (!res) {
-+		inode = d_inode(dentry);
-+		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
-+		    !S_ISDIR(inode->i_mode))
-+			res = ERR_PTR(-ENOTDIR);
-+	} else if (!IS_ERR(res)) {
-+		inode = d_inode(res);
-+		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
-+		    !S_ISDIR(inode->i_mode)) {
+@@ -1607,12 +1607,17 @@ no_open:
+ 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
+ 		    !S_ISDIR(inode->i_mode))
+ 			res = ERR_PTR(-ENOTDIR);
++		else if (inode && S_ISREG(inode->i_mode))
++			res = ERR_PTR(-EOPENSTALE);
+ 	} else if (!IS_ERR(res)) {
+ 		inode = d_inode(res);
+ 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
+ 		    !S_ISDIR(inode->i_mode)) {
+ 			dput(res);
+ 			res = ERR_PTR(-ENOTDIR);
++		} else if (inode && S_ISREG(inode->i_mode)) {
 +			dput(res);
-+			res = ERR_PTR(-ENOTDIR);
-+		}
-+	}
++			res = ERR_PTR(-EOPENSTALE);
+ 		}
+ 	}
  	if (switched) {
- 		d_lookup_done(dentry);
- 		if (!res)
 
 
