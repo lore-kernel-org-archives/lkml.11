@@ -2,98 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D040C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A7EFC35274
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390956AbiBGOTN (ORCPT
+        id S1391202AbiBGOT1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:19:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
+        Mon, 7 Feb 2022 09:19:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389323AbiBGNwm (ORCPT
+        with ESMTP id S1389029AbiBGNvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:52:42 -0500
-X-Greylist: delayed 2220 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 05:52:41 PST
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D35BC043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:52:41 -0800 (PST)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2177mw96004196;
-        Mon, 7 Feb 2022 08:15:37 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e1ky9n08c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 08:15:36 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 217DFZL1062642
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 7 Feb 2022 08:15:35 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 7 Feb 2022
- 08:15:34 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 7 Feb 2022 08:15:34 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 217DFMUW004584;
-        Mon, 7 Feb 2022 08:15:31 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v6 4/4] MAINTAINERS: add maintainer for ADMV1014 driver
-Date:   Mon, 7 Feb 2022 15:05:49 +0200
-Message-ID: <20220207130549.98415-4-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207130549.98415-1-antoniu.miclaus@analog.com>
-References: <20220207130549.98415-1-antoniu.miclaus@analog.com>
+        Mon, 7 Feb 2022 08:51:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7CA92C0401C0
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:51:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644241861;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=msKQIf5m3RNJ8ndoRLO0bGCg3f8WFhwpKNN7KVs8sjk=;
+        b=H/BBLsEau9tMutIpd1EYmv++jkFa+p+tgr3Z45IWnJfLf25I0xbVtge+GiGUrXmM2LFBOZ
+        kFwNwgubg5up33J6nEuJB+PC0EF3+QnjrsFIgL/J8pKRf1C0IvLDWoXxDEyZv5rx1+R7C5
+        eFcaNzecQCap7jwm5Q+eWGXnuNEvzMU=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-611-y9qTajqZOvKmpr-7Y9xD7A-1; Mon, 07 Feb 2022 08:51:00 -0500
+X-MC-Unique: y9qTajqZOvKmpr-7Y9xD7A-1
+Received: by mail-ej1-f71.google.com with SMTP id o7-20020a170906860700b006cbe6deec1bso649761ejx.22
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 05:51:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=msKQIf5m3RNJ8ndoRLO0bGCg3f8WFhwpKNN7KVs8sjk=;
+        b=yLjjsnhYwBwOZ+RFThPdcQl+nMQHsnUVx0EMNS8vyyOGI8K7bhybUQI+TrudmC/GMu
+         8SCkMpnSI93YdT/pf2S9Gn4DOYNXB1ndhVZGYv/QwKdP8cudrB4jUtOXQv1RabmPRCXD
+         J3BYaJQkGFMI6hirSSoMiRMI1CQqPQn1N0R4gAWK/D0tCmAPyXak92pr7LKk+5W6DiKd
+         ONQ2ooPnYMn4D0H/066uz+5U5m3nOMKyRXtwMlxOwdrzqtMitnLNQrqDbJlhPRbiVQZn
+         eg8rUxkzry0Mtwx8c4Y/5fhTACWR4tGeJCZ6KJGb1Ylv5nQvwfr1eay1xt+kyueliZWq
+         5c2g==
+X-Gm-Message-State: AOAM533CiUMRSZWAZPh2wCQBx0HJM0X4HYLk4egH5RzLLqV2Et5rXyED
+        KehN+ef74EZ0FXigRCg9ymIeay371YdNxMImYwActM5SKfrV4i4jBYwLpoPvZHKhv4a0yS2Pc4y
+        wnqoVq1KR5PyXA/ndruHVLC1m
+X-Received: by 2002:a17:907:e9e:: with SMTP id ho30mr9943362ejc.648.1644241859351;
+        Mon, 07 Feb 2022 05:50:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyy7q7L46GUgvrZDsUs7fcdkR+jHAnTyhwBqS2NTRUYS3qbGsv1f/ky1Xjl5fOHHMMPa2/MXg==
+X-Received: by 2002:a17:907:e9e:: with SMTP id ho30mr9943343ejc.648.1644241859035;
+        Mon, 07 Feb 2022 05:50:59 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id qh12sm225724ejb.172.2022.02.07.05.50.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 05:50:58 -0800 (PST)
+Message-ID: <180d7f0f-8c58-2a52-02a7-bd014d81d7a3@redhat.com>
+Date:   Mon, 7 Feb 2022 14:50:57 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: ThD-htmUggFxx1eLhH7hn6TxTZzXw8Ih
-X-Proofpoint-GUID: ThD-htmUggFxx1eLhH7hn6TxTZzXw8Ih
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
- mlxscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
- malwarescore=0 phishscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070086
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 06/23] KVM: MMU: load new PGD once nested two-dimensional
+ paging is initialized
+Content-Language: en-US
+To:     David Matlack <dmatlack@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        seanjc@google.com, vkuznets@redhat.com
+References: <20220204115718.14934-1-pbonzini@redhat.com>
+ <20220204115718.14934-7-pbonzini@redhat.com> <Yf178LYEY4pFJcLc@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Yf178LYEY4pFJcLc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add myself as maintainer for the ADMV1014 driver.
+On 2/4/22 20:18, David Matlack wrote:
+> On Fri, Feb 04, 2022 at 06:57:01AM -0500, Paolo Bonzini wrote:
+>> __kvm_mmu_new_pgd looks at the MMU's root_level and shadow_root_level
+>> via fast_pgd_switch.
+> Those checks are just for performance correct (to skip iterating through
+> the list of roots)?
+> 
+> Either way, it's probably worth including a Fixes tag below.
+> 
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-no changes in v6.
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+There's no bug because __kvm_mmu_new_pgd is passed a correct new_role. 
+But it's unnecessarily complex as shown by patches 7 and 9.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 170bbbeefc3f..b05148cfd4aa 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1119,6 +1119,14 @@ W:	http://ez.analog.com/community/linux-device-drivers
- F:	Documentation/devicetree/bindings/hwmon/adi,adm1177.yaml
- F:	drivers/hwmon/adm1177.c
- 
-+ANALOG DEVICES INC ADMV1014 DRIVER
-+M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
-+F:	drivers/iio/frequency/admv1014.c
-+
- ANALOG DEVICES INC ADP5061 DRIVER
- M:	Michael Hennerich <Michael.Hennerich@analog.com>
- L:	linux-pm@vger.kernel.org
--- 
-2.35.1
+Paolo
 
