@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F611C47080
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CDAC47081
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:55:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387204AbiBGLkW (ORCPT
+        id S1387224AbiBGLkb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:40:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38388 "EHLO
+        Mon, 7 Feb 2022 06:40:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384704AbiBGL3g (ORCPT
+        with ESMTP id S1384754AbiBGL37 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:29:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486CFC0401D1;
-        Mon,  7 Feb 2022 03:28:03 -0800 (PST)
+        Mon, 7 Feb 2022 06:29:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B18EC0401DC;
+        Mon,  7 Feb 2022 03:28:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0458AB80EBD;
-        Mon,  7 Feb 2022 11:28:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B371C340F0;
-        Mon,  7 Feb 2022 11:27:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1736BB811BE;
+        Mon,  7 Feb 2022 11:28:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A233C34105;
+        Mon,  7 Feb 2022 11:28:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233280;
-        bh=biUjx9epFYxUc5njJ7zZT0O1LrXh9iSxhzE0Ljx4fBI=;
+        s=korg; t=1644233296;
+        bh=UQXmFZvWzDM7T2wZ+gPuu+7zNQpmp5zPgxWJTNgyGXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OYs9Jo9EtA7FesHozSOyGRkhE7fydY4vcQmF00FNJ9DKbqF2ET3hEfcbkVOx6Yk5w
-         xhRfZtgPQddCRWQytlagEid3kFoPLZCEI9sko4TrMyEvFNsbmogUgTgfScgP20fAwB
-         M0/r8xR2xTHY9mF0cfayyRoFXpeu9/UeT5V3BpHw=
+        b=aq6IU9Ac0g28anXfaCl112u/WLMKHHtio1k8ya51ZrVKxXNmGaazTWehkv6LwAiY6
+         ExI02T1imwcIA5Z20EH3Kbv7VBy9TdF636ES182qjLDm7wvlhAcmDQO0denAyLperg
+         2OpKiGauxUXRRvjYmBHUmpAvoMIOnr/Nf9amGjro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        stable@vger.kernel.org,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
         Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 073/110] ASoC: simple-card: fix probe failure on platform component
-Date:   Mon,  7 Feb 2022 12:06:46 +0100
-Message-Id: <20220207103804.763779936@linuxfoundation.org>
+Subject: [PATCH 5.15 051/110] spi: mediatek: Avoid NULL pointer crash in interrupt
+Date:   Mon,  7 Feb 2022 12:06:24 +0100
+Message-Id: <20220207103804.007505010@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -49,69 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 
-commit a64067f4cecaaa4deed8e33d3266bc0bcc189142 upstream.
+commit f83a96e5f033fbbd21764705cb9c04234b96218e upstream.
 
-A previous change to simple-card resulted in asoc_simple_parse_dai
-attempting to retrieve the dai_name for platform components, which are
-unlikely to have a valid DAI name. This caused simple-card to fail to
-probe when using the xlnx_formatter_pcm as the platform component, since
-it does not register any DAI components.
+In some case, like after a transfer timeout, master->cur_msg pointer
+is NULL which led to a kernel crash when trying to use master->cur_msg->spi.
+mtk_spi_can_dma(), pointed by master->can_dma, doesn't use this parameter
+avoid the problem by setting NULL as second parameter.
 
-Since the dai_name is not used for platform components, just skip trying
-to retrieve it for those.
-
-Fixes: f107294c6422 ("ASoC: simple-card: support snd_soc_dai_link_component style for cpu")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220107214711.1100162-6-robert.hancock@calian.com
+Fixes: a568231f46322 ("spi: mediatek: Add spi bus for Mediatek MT8173")
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Link: https://lore.kernel.org/r/20220131141708.888710-1-benjamin.gaignard@collabora.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/generic/simple-card.c |   26 +++++++++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
+ drivers/spi/spi-mt65xx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/soc/generic/simple-card.c
-+++ b/sound/soc/generic/simple-card.c
-@@ -28,6 +28,30 @@ static const struct snd_soc_ops simple_o
- 	.hw_params	= asoc_simple_hw_params,
- };
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -624,7 +624,7 @@ static irqreturn_t mtk_spi_interrupt(int
+ 	else
+ 		mdata->state = MTK_SPI_IDLE;
  
-+static int asoc_simple_parse_platform(struct device_node *node,
-+				      struct snd_soc_dai_link_component *dlc)
-+{
-+	struct of_phandle_args args;
-+	int ret;
-+
-+	if (!node)
-+		return 0;
-+
-+	/*
-+	 * Get node via "sound-dai = <&phandle port>"
-+	 * it will be used as xxx_of_node on soc_bind_dai_link()
-+	 */
-+	ret = of_parse_phandle_with_args(node, DAI, CELL, 0, &args);
-+	if (ret)
-+		return ret;
-+
-+	/* dai_name is not required and may not exist for plat component */
-+
-+	dlc->of_node = args.np;
-+
-+	return 0;
-+}
-+
- static int asoc_simple_parse_dai(struct device_node *node,
- 				 struct snd_soc_dai_link_component *dlc,
- 				 int *is_single_link)
-@@ -289,7 +313,7 @@ static int simple_dai_link_of(struct aso
- 	if (ret < 0)
- 		goto dai_link_of_err;
- 
--	ret = asoc_simple_parse_dai(plat, platforms, NULL);
-+	ret = asoc_simple_parse_platform(plat, platforms);
- 	if (ret < 0)
- 		goto dai_link_of_err;
- 
+-	if (!master->can_dma(master, master->cur_msg->spi, trans)) {
++	if (!master->can_dma(master, NULL, trans)) {
+ 		if (trans->rx_buf) {
+ 			cnt = mdata->xfer_len / 4;
+ 			ioread32_rep(mdata->base + SPI_RX_DATA_REG,
 
 
