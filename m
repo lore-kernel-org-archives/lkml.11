@@ -2,158 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D249CC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58787C3526E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384468AbiBGPng (ORCPT
+        id S1384575AbiBGPnm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:43:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
+        Mon, 7 Feb 2022 10:43:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381422AbiBGPko (ORCPT
+        with ESMTP id S1352774AbiBGPi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:40:44 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6C2C0401CA;
-        Mon,  7 Feb 2022 07:40:43 -0800 (PST)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217E5bUj009597;
-        Mon, 7 Feb 2022 15:40:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=95RuD2tXWyR+QAfVrYV3Qt/2Z/eamOXxsUZ+9wmapuA=;
- b=RnK0fvo36LmgG8h+8s+Y+6culVIzGIPv7ASxYxRl1BrshbWnMTHR1M5VsYb9cIJEZ0YV
- T5Vsnp/ILYLaYsRhpcoSuZubgExz+TE3rjds1EoUn+oRhgLovtfHyr0PBtO7Auf2AdUI
- bH+nDd7ozF0aUbY4jzEOUPwgypbB+pRl8iJEHZpHGy4qV0jhL7zipH/PKfPyOGFYMRi5
- ZWHtdPjs2q4dG23bfL0GTLx89JdQsQ3fTUPlFSSJWWDI1AWGwXgMs89tGlFNnzI4SbTF
- ZZFI4jEvInErmxdabr+6w7+ur7ZjirSP7X7tCMZgstso6q7Qx7UjHraBiGJLVgHlRtF7 Iw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22q0yukx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 15:40:43 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217FXRHs005956;
-        Mon, 7 Feb 2022 15:40:43 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22q0yuk7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 15:40:42 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217FYTZf032444;
-        Mon, 7 Feb 2022 15:40:40 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03ams.nl.ibm.com with ESMTP id 3e1gv968jd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 15:40:40 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217FebZ425952516
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 15:40:37 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 31C3A42049;
-        Mon,  7 Feb 2022 15:40:37 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C90B142042;
-        Mon,  7 Feb 2022 15:40:36 +0000 (GMT)
-Received: from [9.145.9.42] (unknown [9.145.9.42])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 15:40:36 +0000 (GMT)
-Message-ID: <27bf3142-77a2-599b-d057-3efc6a1fd8f4@linux.ibm.com>
-Date:   Mon, 7 Feb 2022 16:40:36 +0100
+        Mon, 7 Feb 2022 10:38:27 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDFDC0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:38:25 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id y84so17310914iof.0
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 07:38:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:in-reply-to:references:subject:message-id:date
+         :mime-version:content-transfer-encoding;
+        bh=uN1CSm5Xp0zfBe9o48GNau7bniWjnN8OKEvpexouZmA=;
+        b=e7TGsDDQnw7DcjI6Brhjc6vCkM0BGnGHOPePjmWKGBU33M8F3SkG5FC9LetY1qxkST
+         uS9Qu7uylVk9F7PIEVKRHenzEBnN8svGYCbBCD/f3btZzar8CHQF71cidCwAJWIniv8E
+         0lac2EA1iUAVm6024Xlwi3l+/5Ud/MWR2AAd1fOG5Chd1JUbumKrjpzV35Ciq+RSeTGD
+         JvoWrKZqUWs+Mblu+src5E3wJraRRSqr3zQuI2QSYoIy03+wUB8QMHcSXMAmfBLGEkcp
+         xGYWaxbmMw9mlsEcO7NHonfZwk369I36O5lJiHETzzkvNCtGBe2eduQCDw9DZpK9Gv7n
+         ikqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=uN1CSm5Xp0zfBe9o48GNau7bniWjnN8OKEvpexouZmA=;
+        b=UKnQkWhuLeoy4MI8yeAL93oJb/4JUu/L4AJ4PPs+ImofprINa7MWMq2r3hWlxuQhPY
+         lCUINu5Xa9lFN+iQV6WSTslDyjIi+dtqDjv4tvGvFsa/JuhADs2/uLIbvXYWaSClJOWS
+         iWkTDs2F9WjAi90yW8gaLgGE/koNuJN4X6ZPaQ7G5dcImW6IfTNHBYYFCYqMeTFVpImy
+         yRBoLV1Lz974MHgi7j3GbLDHzR+8PCNH+Guhx4D8mWTF4SX7ANOQx/WosfSIDsyowDZJ
+         Xzu/onTxp7/vhXBczA9ibtVLE1p8X05OjYmPiGbanuKgsFJrC+o1RFwA4NlVs/jQ5SYo
+         8Tpw==
+X-Gm-Message-State: AOAM531wQSdqybKQ0GaTn4kj1sL35uW/nltJQgQch7fNIo1zhjCRZaCU
+        wflDLj9vhpURMi8ltkDOa/bakA==
+X-Google-Smtp-Source: ABdhPJyLp8yQXnthAsAiXf5Lyt8EZbSsYGzPNbpW4fdUvzh6XOdUKIJi5wEmEzcBbdv+ClLxErVLhw==
+X-Received: by 2002:a05:6602:2c83:: with SMTP id i3mr49969iow.105.1644248305006;
+        Mon, 07 Feb 2022 07:38:25 -0800 (PST)
+Received: from x1.localdomain ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id z23sm6052912iol.11.2022.02.07.07.38.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 07:38:24 -0800 (PST)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     "Chen, Rong A" <rong.a.chen@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
+        io-uring Mailing list <io-uring@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Tea Inside Mailing List <timl@vger.teainside.org>,
+        kernel test robot <lkp@intel.com>
+In-Reply-To: <20220207140533.565411-1-ammarfaizi2@gnuweeb.org>
+References: <d33bb5a9-8173-f65b-f653-51fc0681c6d6@intel.com> <20220207114315.555413-1-ammarfaizi2@gnuweeb.org> <91e8ca64-0670-d998-73d8-f75ec5264cb0@kernel.dk> <20220207140533.565411-1-ammarfaizi2@gnuweeb.org>
+Subject: Re: [PATCH io_uring-5.17 v2] io_uring: Clean up a false-positive warning from GCC 9.3.0
+Message-Id: <164424830208.19639.16912208440698766253.b4-ty@kernel.dk>
+Date:   Mon, 07 Feb 2022 08:38:22 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v7 16/17] KVM: s390: pv: add
- KVM_CAP_S390_PROT_REBOOT_ASYNC
-Content-Language: en-US
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
-References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
- <20220204155349.63238-17-imbrenda@linux.ibm.com>
- <2b9b31bf-e45a-7006-c68e-6e143665640c@linux.ibm.com>
- <20220207161939.1d382a02@p-imbrenda>
-From:   Janosch Frank <frankja@linux.ibm.com>
-In-Reply-To: <20220207161939.1d382a02@p-imbrenda>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: yWuybFJguXKOGib3S5z4HiXReHCgIA9j
-X-Proofpoint-ORIG-GUID: e9IBxAuoD-85CARyvFiN9QqTvKC4lMC1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 suspectscore=0 priorityscore=1501 mlxlogscore=999
- clxscore=1015 adultscore=0 bulkscore=0 mlxscore=0 spamscore=0
- impostorscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202070097
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 16:19, Claudio Imbrenda wrote:
-> On Mon, 7 Feb 2022 15:37:48 +0100
-> Janosch Frank <frankja@linux.ibm.com> wrote:
+On Mon, 7 Feb 2022 21:05:33 +0700, Ammar Faizi wrote:
+> From: Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>
 > 
->> On 2/4/22 16:53, Claudio Imbrenda wrote:
->>> Add KVM_CAP_S390_PROT_REBOOT_ASYNC to signal that the
->>> KVM_PV_ASYNC_DISABLE and KVM_PV_ASYNC_DISABLE_PREPARE commands for the
->>> KVM_S390_PV_COMMAND ioctl are available.
->>>
->>> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
->>> ---
->>>    arch/s390/kvm/kvm-s390.c | 3 +++
->>>    include/uapi/linux/kvm.h | 1 +
->>>    2 files changed, 4 insertions(+)
->>>
->>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->>> index f7952cef1309..1e696202a569 100644
->>> --- a/arch/s390/kvm/kvm-s390.c
->>> +++ b/arch/s390/kvm/kvm-s390.c
->>> @@ -608,6 +608,9 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
->>>    	case KVM_CAP_S390_BPB:
->>>    		r = test_facility(82);
->>>    		break;
->>> +	case KVM_CAP_S390_PROT_REBOOT_ASYNC:
->>> +		r = lazy_destroy && is_prot_virt_host();
->>
->> While reboot might be the best use-case for the async disable I don't
->> think we should name the capability this way.
->>
->> KVM_CAP_S390_PROTECTED_ASYNC_DESTR ?
+> In io_recv(), if import_single_range() fails, the @flags variable is
+> uninitialized, then it will goto out_free.
 > 
-> then maybe
+> After the goto, the compiler doesn't know that (ret < min_ret) is
+> always true, so it thinks the "if ((flags & MSG_WAITALL) ..."  path
+> could be taken.
 > 
-> KVM_CAP_S390_PROTECTED_ASYNC_DISABLE ?
+> [...]
 
-Sounds good to me
+Applied, thanks!
 
-> 
->>
->> It's a bit long but the initial capability didn't abbreviate the
->> protected part so it is what it is.
->>
->>
->>> +		break;
->>>    	case KVM_CAP_S390_PROTECTED:
->>>    		r = is_prot_virt_host();
->>>    		break;
->>> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
->>> index 7f574c87a6ba..c41c108f6b14 100644
->>> --- a/include/uapi/linux/kvm.h
->>> +++ b/include/uapi/linux/kvm.h
->>> @@ -1134,6 +1134,7 @@ struct kvm_ppc_resize_hpt {
->>>    #define KVM_CAP_VM_GPA_BITS 207
->>>    #define KVM_CAP_XSAVE2 208
->>>    #define KVM_CAP_SYS_ATTRIBUTES 209
->>> +#define KVM_CAP_S390_PROT_REBOOT_ASYNC 215
->>>    
->>>    #ifdef KVM_CAP_IRQ_ROUTING
->>>    
->>>    
->>
-> 
+[1/1] io_uring: Clean up a false-positive warning from GCC 9.3.0
+      commit: 0d7c1153d9291197c1dc473cfaade77acb874b4b
+
+Best regards,
+-- 
+Jens Axboe
+
 
