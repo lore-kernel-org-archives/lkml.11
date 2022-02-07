@@ -2,127 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A717EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D572DC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242695AbiBGGgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:36:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
+        id S243605AbiBGGgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:36:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233718AbiBGGbR (ORCPT
+        with ESMTP id S241068AbiBGG3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:31:17 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15F78C043188
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:30:51 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id t9so8185471plg.13
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 22:30:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=osho4FvgLzowJuFLyZCnSgKHB8Ho1YEMLsQwVPBIhrQ=;
-        b=aYEV+dyLB+amBduXwKLTJW/3/KSl0vdvVUWqaLhgwH4B52TecfYl5wCP1ZsiORX1CB
-         6hlKB8KJmLK9j+we7MeXGW6G05ckobQjwsznT1kEQiadEJyLHzDccSzCK9AzYAuaTRCM
-         K4KcKEkTnnNOt1MxOYkMnFNv3yFdmEFTCib5cwP+6y/bm82FjQbng91jGTlkRTjSNeGB
-         +WdbeFm4zHYH/AZll9BgHaTYRZ2bjnigbxMujoB+FVhkClPBDL0Cywwc+18lTVbUP5Q7
-         Ax4GJY29WBjjomuDf+oLTC/bLe713unqaaNjg2z2DmSWFEbapAdr5MvSsxKjydf2Fhfk
-         Bo1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=osho4FvgLzowJuFLyZCnSgKHB8Ho1YEMLsQwVPBIhrQ=;
-        b=EV65Cu3Q+WtCkatKhWxI+1K7jMHt2DikcQsMEzDnFZJY8TjBn/6vgiGeNpRuS0balZ
-         6BbVkCI5H2PmdlaADGjkp+U13GkTXLHkrR3X0DKCxhPF9CZj55ApiPlW9YEDsj66OAtv
-         3k9xU+YbQRdLjN1BXkAUrxecIZJHynI+NCgBi057L4b0fbvIqv3NXQhVgaLhCofxNw6Z
-         4kaora7h4JdoAmRLc2euwbTlWwfkN7y28ZC2BdgUjaV1mHjDzistmMHrrL551iNQjaua
-         1KqKkvup/N9EYpDBH4OJFNfC142iTXjKSeCEpDkcf9kSprZ0/fJnveGzOy6ptxpW17u3
-         a/3w==
-X-Gm-Message-State: AOAM533bkOdJk413wsYXi7ufehpt9xhJAt7CZjZAhQdYl8rwDmjcf+oo
-        hFs/WYIjbYiVicNsDUIi27mhQw==
-X-Google-Smtp-Source: ABdhPJyVcYtlV91++9ZVxo2GN3FeH1zysf9x9ULbE58unMlpr3ZDHua5lxLFugP4dveVBuh2RNkDcw==
-X-Received: by 2002:a17:90a:eb0f:: with SMTP id j15mr7879986pjz.155.1644215450600;
-        Sun, 06 Feb 2022 22:30:50 -0800 (PST)
-Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id i10sm5266634pjd.2.2022.02.06.22.30.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 22:30:50 -0800 (PST)
-From:   Zong Li <zong.li@sifive.com>
-To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
-        conor.dooley@microchip.com, geert@linux-m68k.org,
-        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Cc:     Zong Li <zong.li@sifive.com>, Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH v5 1/3] dt-bindings: Add dma-channels property and modify compatible
-Date:   Mon,  7 Feb 2022 14:30:38 +0800
-Message-Id: <30430019105af445d52b7a48331c106f8e6d6816.1644215230.git.zong.li@sifive.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1644215230.git.zong.li@sifive.com>
-References: <cover.1644215230.git.zong.li@sifive.com>
+        Mon, 7 Feb 2022 01:29:22 -0500
+X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 22:29:20 PST
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5169EC043181;
+        Sun,  6 Feb 2022 22:29:20 -0800 (PST)
+X-UUID: b38ae3703fd145f7aa8aadeb02123d6a-20220207
+X-UUID: b38ae3703fd145f7aa8aadeb02123d6a-20220207
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <roger.lu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 458394913; Mon, 07 Feb 2022 14:24:13 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 7 Feb 2022 14:24:12 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Feb
+ 2022 14:24:11 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 7 Feb 2022 14:24:11 +0800
+Message-ID: <4490a88150f5aa108e1d6ff8ce55264c3b1734c2.camel@mediatek.com>
+Subject: Re: [PATCH v22 1/7] dt-bindings: soc: mediatek: add mtk svs
+ dt-bindings
+From:   Roger Lu <roger.lu@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Kevin Hilman <khilman@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Xiaoqing Liu <Xiaoqing.Liu@mediatek.com>,
+        "HenryC Chen" <HenryC.Chen@mediatek.com>,
+        Nishanth Menon <nm@ti.com>,
+        Charles Yang <Charles.Yang@mediatek.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Fan Chen <fan.chen@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Nicolas Boichat <drinkcat@google.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Enric Balletbo Serra <eballetbo@gmail.com>,
+        "Mark Rutland" <mark.rutland@arm.com>,
+        Angus Lin <Angus.Lin@mediatek.com>
+Date:   Mon, 7 Feb 2022 14:24:11 +0800
+In-Reply-To: <YfnFBirxSnCqRDem@robh.at.kernel.org>
+References: <20220127033956.24585-1-roger.lu@mediatek.com>
+         <20220127033956.24585-2-roger.lu@mediatek.com>
+         <YfnFBirxSnCqRDem@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dma-channels property, then we can determine how many channels there
-by device tree, rather than statically defining it in PDMA driver.
-In addition, we also modify the compatible for PDMA versioning scheme.
+Hi Rob,
 
-Signed-off-by: Zong Li <zong.li@sifive.com>
-Suggested-by: Palmer Dabbelt <palmer@rivosinc.com>
----
- .../bindings/dma/sifive,fu540-c000-pdma.yaml  | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+On Tue, 2022-02-01 at 17:40 -0600, Rob Herring wrote:
+> On Thu, 27 Jan 2022 11:39:50 +0800, Roger Lu wrote:
+> > Document the binding for enabling mtk svs on MediaTek SoC.
+> > 
+> > Signed-off-by: Roger Lu <roger.lu@mediatek.com>
+> > ---
+> >  .../bindings/soc/mediatek/mtk-svs.yaml        | 83 +++++++++++++++++++
+> >  1 file changed, 83 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mtk-
+> > svs.yaml
+> > 
+> 
+> 
+> Please add Acked-by/Reviewed-by tags when posting new versions. However,
+> there's no need to repost patches *only* to add the tags. The upstream
+> maintainer will do that for acks received on the version they apply.
+> 
+> If a tag was not added on purpose, please state why and what changed.
 
-diff --git a/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml b/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
-index 75ad898c59bc..92f410f54d72 100644
---- a/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
-+++ b/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
-@@ -25,7 +25,15 @@ description: |
- properties:
-   compatible:
-     items:
--      - const: sifive,fu540-c000-pdma
-+      - enum:
-+          - sifive,fu540-c000-pdma
-+      - const: sifive,pdma0
-+    description:
-+      Should be "sifive,<chip>-pdma" and "sifive,pdma<version>".
-+      Supported compatible strings are -
-+      "sifive,fu540-c000-pdma" for the SiFive PDMA v0 as integrated onto the
-+      SiFive FU540 chip resp and "sifive,pdma0" for the SiFive PDMA v0 IP block
-+      with no chip integration tweaks.
- 
-   reg:
-     maxItems: 1
-@@ -34,6 +42,12 @@ properties:
-     minItems: 1
-     maxItems: 8
- 
-+  dma-channels:
-+    description: For backwards-compatibility, the default value is 4
-+    minimum: 1
-+    maximum: 4
-+    default: 4
-+
-   '#dma-cells':
-     const: 1
- 
-@@ -48,8 +62,9 @@ additionalProperties: false
- examples:
-   - |
-     dma@3000000 {
--      compatible = "sifive,fu540-c000-pdma";
-+      compatible = "sifive,fu540-c000-pdma", "sifive,pdma0";
-       reg = <0x3000000 0x8000>;
-+      dma-channels = <4>;
-       interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>, <30>;
-       #dma-cells = <1>;
-     };
--- 
-2.31.1
+Oh, this patch has error detected and shown in [1]. Therefore, I fix it and
+state the change at [2]. Thanks for the explanation and time to review the
+patch.
+
+[1] 
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220107095200.4389-2-roger.lu@mediatek.com/
+[2] 
+https://patchwork.kernel.org/project/linux-mediatek/cover/20220127033956.24585-1-roger.lu@mediatek.com/
+- Remove unnecessary "maxItems" from nvmem-cells in mtk-svs.yaml.
 
