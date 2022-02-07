@@ -2,93 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D32C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4920C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353234AbiBGPm4 (ORCPT
+        id S1352699AbiBGPnU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:42:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
+        Mon, 7 Feb 2022 10:43:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235077AbiBGPgL (ORCPT
+        with ESMTP id S232788AbiBGPmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:36:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FC5C0401CC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:36:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F280614C1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:36:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21450C004E1;
-        Mon,  7 Feb 2022 15:36:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644248169;
-        bh=BLkm1GdmzHsOVnabP/GWrS29PbIl8CqAmJZiVXAFXBE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aJeWWIQzxVCSSZmZ2qfvZ6IO0oKpUlBXIpPfsO05Q0HFf+VDLBBSSMC10WlDEF1Oj
-         FITGcsuineVMuowgdjDwPRIrrLXz0h8t6MV1gYJV6luh6TNveMs+ZCZ5MY8uwwzYPw
-         +9b5Qs6YPKCDqPG0zOHBdhcWsOiHA0HUW40OuE123gltqd2mfScJ2hP45m2nptXuBn
-         GdrhEgKFr2HUJ507Na2+0N8pS+0A6i8N7prpketY5LTzorubkR7q1ERa9gOhnU5YOA
-         JnTZ2De7SIHHEYvU1ccQFcvjy1zXL+dwaZBLYC1hFedo7Q2xAjqXDcwoV2I9UzZPMI
-         4f/Xa3zgPhfOw==
-Date:   Mon, 7 Feb 2022 16:36:07 +0100
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Oscar Shiang <oscar0225@livemail.tw>
-Subject: Re: [patch v11 09/13] task isolation: add preempt notifier to sync
- per-CPU vmstat dirty info to thread info
-Message-ID: <20220207153607.GA526451@lothringen>
-References: <20220204173537.429902988@fedora.localdomain>
- <20220204173554.854482726@fedora.localdomain>
+        Mon, 7 Feb 2022 10:42:05 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4B8C0401C1;
+        Mon,  7 Feb 2022 07:42:05 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id u12so4303318plq.10;
+        Mon, 07 Feb 2022 07:42:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=7ig8by8e56o4EYLYkc6fPLQYZasp8vJLPsQ0K6bAyGQ=;
+        b=dwar9GQFDfzTw7a7hJjbwZ13AurkkntTpTzLErO1MMQf0Knh5xkPjBG9ESOaqZd/1f
+         ILXS2mBNHSJw+csRz6rxrq49Ts0FCwor+bewDf6rFT5FqzCiT+jXvHV+OxGNVWxTJYOQ
+         TsAQEzujBbeKQXN7xvF3y5Wty1O8mDqYcFX30aCwIuL4/aOcVvC2GXH63FREG2LPgF+i
+         LbCpeDQnuccpGUHRDOGWksr+6M7ftkvtN/Z9Tyq69ZV6uFR6mrngcXNUVl4sTT56pN7R
+         zQ87waDSxWJfYQDo6zYrSDCPtEONsl6/BTrJf8sNMCSPIUZbcU7Sh+uxgTtOeKSt/V+D
+         vV9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=7ig8by8e56o4EYLYkc6fPLQYZasp8vJLPsQ0K6bAyGQ=;
+        b=d6+ooYttikNGFh+gmJiA9isgJzuG4kxjjrmboecrzuLN/X6qrtI1vQ8leug6hShCHX
+         AUFT+OqEg8KmubC/8VdXf96dNH1DRhGE4wZHom2czPXSgmHFOjlkIkSHfxQGc3IakFY+
+         1GkNdTmwIzRRVlV5nNPakuVbZgoXk3wCplVpy/3u7u3qPyx2r+28ydFedQwwhQD883XC
+         wus4TM/kuMs+FGJgjmvZWxDH0ONmqhRcUK9oCpQWbkHQEZAKc1ZRidLCzrSMq/R3+GAk
+         TWdFtRvljZotrlFWXbTRkUe59+0JjMYXoG0i/q/vNMhcHxY/dvOhesvffahA/PUS41i2
+         cWkQ==
+X-Gm-Message-State: AOAM533Rq4JndCaQGtqfcJ+fA8ilnhCN0NpDrpAy/gU4ORp23TRRBxHY
+        1acfLpY0wpWtf0q5WbvdNfE=
+X-Google-Smtp-Source: ABdhPJx337OIo+YSoTn/w0nURrlCWi4puuCf3DsAZ40orZvwh4CqnAzGSj1Fbw1jU4VlcSjvBzE9Ew==
+X-Received: by 2002:a17:90a:5407:: with SMTP id z7mr165714pjh.7.1644248524937;
+        Mon, 07 Feb 2022 07:42:04 -0800 (PST)
+Received: from [10.59.0.6] ([85.203.23.80])
+        by smtp.gmail.com with ESMTPSA id a37sm8711111pga.3.2022.02.07.07.41.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 07:42:04 -0800 (PST)
+Message-ID: <f04b6000-f128-f928-0e3e-e3acc206d2d1@gmail.com>
+Date:   Mon, 7 Feb 2022 23:41:49 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220204173554.854482726@fedora.localdomain>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Content-Language: en-US
+To:     jic23@kernel.org, lars@metafoo.de, valek@2n.cz,
+        gwendal@chromium.org
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [BUG] iio: light: opt3001: possible deadlock in opt3001_read_raw()
+ and opt3001_irq()
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 02:35:46PM -0300, Marcelo Tosatti wrote:
-> If a thread has task isolation activated, is preempted by thread B,
-> which marks vmstat information dirty, and is preempted back in,
-> one might return to userspace with vmstat dirty information on the 
-> CPU in question.
-> 
-> To address this problem, add a preempt notifier that transfers vmstat dirty
-> information to TIF_TASK_ISOL thread flag.
+Hello,
 
-Ah ok that answers my previous question :)
+My static analysis tool reports a possible deadlock in the opt3001 
+driver in Linux 5.16:
 
-> Index: linux-2.6/mm/vmstat.c
-> ===================================================================
-> --- linux-2.6.orig/mm/vmstat.c
-> +++ linux-2.6/mm/vmstat.c
-> @@ -353,6 +353,13 @@ void init_sync_vmstat(void)
->  	set_thread_flag(TIF_TASK_ISOL);
->  }
->  EXPORT_SYMBOL_GPL(vmstat_dirty);
-> +
-> +void vmstat_dirty_to_thread_flag(void)
-> +{
-> +	if (raw_cpu_read(vmstat_dirty) == true)
+opt3001_read_raw()
+   mutex_lock(&opt->lock); --> Line 399 (Lock A)
+   opt3001_get_lux()
+     wait_event_timeout(opt->result_ready_queue, ...) --> Line 276 (Wait X)
+   mutex_lock(&opt->lock); --> Line 412 (Unlock A)
 
-__this_cpu_read()?
+opt3001_irq()
+   mutex_lock(&opt->lock); --> Line 693 (Lock A)
+   mutex_unlock(&opt->lock); --> Line 730 (Unlock A)
+   wake_up(&opt->result_ready_queue); --> Line 733 (Wake X)
 
-> +		set_thread_flag(TIF_TASK_ISOL);
-> +}
-> +EXPORT_SYMBOL_GPL(vmstat_dirty_to_thread_flag);
->  #else
->  static inline void mark_vmstat_dirty(void)
->  {
-> 
-> 
+When opt3001_read_raw() is executed, "Wait X" is performed by holding 
+"Lock A". If opt3001_irq() is executed at this time, "Wake X" cannot be 
+performed to wake up "Wait X" in opt3001_read_raw(), because "Lock A" 
+has been already hold by opt3001_read_raw(), causing a possible deadlock.
+I find that "Wait X" is performed with a timeout, to relieve the 
+possible deadlock; but I think this timeout can cause inefficient execution.
+
+I am not quite sure whether this possible problem is real and how to fix 
+it if it is real.
+Any feedback would be appreciated, thanks :)
+
+
+Best wishes,
+Jia-Ju Bai
