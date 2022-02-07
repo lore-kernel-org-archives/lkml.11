@@ -2,114 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EEFC47082
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 267D1C47084
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383053AbiBGOn5 (ORCPT
+        id S1383180AbiBGOoT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:43:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
+        Mon, 7 Feb 2022 09:44:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356664AbiBGOUY (ORCPT
+        with ESMTP id S1441837AbiBGOd1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:20:24 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D30BC0401C0;
-        Mon,  7 Feb 2022 06:20:24 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id z4so12370993lfg.5;
-        Mon, 07 Feb 2022 06:20:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1DmVvauQogPdSOmMYGT0+c2REtcYPYAhJ2C4GBTFK30=;
-        b=CnVeLw94cVE8wp1I0kVfya/qFwXTtg7iHHYV01GdMNk+F7D/oT9bCwgwB7aX5nx9k5
-         L8CkRIw+dwBQOE0YkE3PiK5Ni89obtbAaZPp9/P/Dm3rhlZil+TACFihNXsLUkC6hnFY
-         /R03waGawnU/WJuy9qvO8gvFKUVprj7bb7MrFLDbR+04L7v1FFTWYUNuuDjanskS8rJo
-         GzIZy63aOyVzMdzOg7ND3J/sLgOj8I/wPctYKDppNkXW2gVzqKPIUAuggUqp3zyO9P4y
-         ZSBTUNXDskwYbJp8u4EUaVe9+TsOisynY+hEnAC+2vCtXda0QpI2YJvQZboKS0V0xj1Y
-         SPgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1DmVvauQogPdSOmMYGT0+c2REtcYPYAhJ2C4GBTFK30=;
-        b=m3XPNj35bg0QY62AMUo+Sfa8eb9AG9wQV6+7OMKh/2tPIhwLIX6hWi8qe/ds5OQccm
-         gYgdo2bffMWyzVfPWsNVBO4ULFyipox7xq1fdcdfiVzgDl1jFg8bq7nVDh17ySzksHZZ
-         meUBkQ6qXexGYy0pQwxzgG9LLpQAkfWHD7dBi0YTUQX+eGqNMemQ5WbPv0/0Bj+MqIae
-         Ia8cuHxL4Xp1MTTZZ3Vnu42sKjQgGT04UhxFtmoF2AdvceRqSuan25V8PJkKevzl5Rk3
-         5c/SQ5bUYuOd7z74ojiQpBDdoxtXA1ZJ3ZW3x4mhTLENs5DZnZDDPi6SIMt9vXHPT5a1
-         dupQ==
-X-Gm-Message-State: AOAM530wSTXHXhHcai7TSQvrKVSCqq/KHp4IV+tT7eMudWl2sFzmH9Nw
-        BQSSWGTbCyc7uSAbe5AA60g=
-X-Google-Smtp-Source: ABdhPJxvM5gUBekTZyRtGOm7YurnBNVe5BKjYWy0gnPR9eGrgX1FB2eAMv4Tl6pIecOFJrpQTaSkMg==
-X-Received: by 2002:ac2:46c9:: with SMTP id p9mr8527758lfo.365.1644243621652;
-        Mon, 07 Feb 2022 06:20:21 -0800 (PST)
-Received: from localhost.localdomain (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.gmail.com with ESMTPSA id t13sm1515599lfl.94.2022.02.07.06.20.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 06:20:21 -0800 (PST)
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Cc:     linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/4] media: v4l2-ctrls: Add new V4L2_H264_DECODE_PARAM_FLAG_P/BFRAME flags
-Date:   Mon,  7 Feb 2022 17:19:34 +0300
-Message-Id: <20220207141937.13089-2-digetx@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220207141937.13089-1-digetx@gmail.com>
-References: <20220207141937.13089-1-digetx@gmail.com>
+        Mon, 7 Feb 2022 09:33:27 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DCAC0401C1;
+        Mon,  7 Feb 2022 06:33:26 -0800 (PST)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217DnQIs003511;
+        Mon, 7 Feb 2022 14:33:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=aCZXhcVXSPv1P9tobnQfMHdpYQnynrNHE8D3Hvg84Ro=;
+ b=g3HAMExKodEqeYA8+lS83FmnojJ+UJSRrEQAw7jOPxg2B2sKuzdRV/xrpHilZJ7BNUzT
+ egz22dE3KNQjC0j2L3AqGH8Bhgnq0ywC6ni1IcriwNhbNVjKBC/qLBOhEQrmBBCsOV8Z
+ RdYovBpqsp8hDsYiwGMZWatvYH4zkOy9FtPps4CDR2k1lqCBttxoZR7bfIMWm3Ag9U58
+ L2XhoxY8VSP7YCw7JniWFqUDByKdYyv2Yxaxf8dkXWgsfciVA4RaoWY2QUeV8mSiCj+o
+ 33xOXaWrG7gamLYUShgkWuWf7ejYoDlWre2nAfoEg37fJ2EpcJ/E2lXX25ww7co3HdzV EQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22qep77g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 14:33:26 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217ETKgb007027;
+        Mon, 7 Feb 2022 14:33:26 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22qep76g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 14:33:25 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217EW9kw000827;
+        Mon, 7 Feb 2022 14:33:23 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma03fra.de.ibm.com with ESMTP id 3e1gv94w08-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 14:33:23 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217EXHt923921000
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 14:33:17 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 58FFB52057;
+        Mon,  7 Feb 2022 14:33:17 +0000 (GMT)
+Received: from osiris (unknown [9.145.87.217])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id E60A452050;
+        Mon,  7 Feb 2022 14:33:16 +0000 (GMT)
+Date:   Mon, 7 Feb 2022 15:33:15 +0100
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Janosch Frank <frankja@linux.ibm.com>
+Cc:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org,
+        borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
+        david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
+Subject: Re: [PATCH v7 01/17] KVM: s390: pv: leak the topmost page table when
+ destroy fails
+Message-ID: <YgEtq1i3K3ZkPpEX@osiris>
+References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
+ <20220204155349.63238-2-imbrenda@linux.ibm.com>
+ <0939aac3-9427-ed04-17e4-3c1e4195d509@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0939aac3-9427-ed04-17e4-3c1e4195d509@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 9ET2utHlInBuupsodJsb4ISe87Ns56WD
+X-Proofpoint-GUID: fC4jLNtkByYpueAS_0s5-3sGam0RN0AG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ adultscore=0 malwarescore=0 clxscore=1011 suspectscore=0 bulkscore=0
+ lowpriorityscore=0 impostorscore=0 priorityscore=1501 spamscore=0
+ mlxlogscore=991 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070093
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add new V4L2_H264_DECODE_PARAM_FLAG_P/BFRAME flags that are needed by
-NVIDIA Tegra video decoder. Userspace will have to set these flags in
-accordance to the type of a decoded frame.
+> > +	asce = (gmap->asce & ~PAGE_MASK) | __pa(table);
+> 
+> Please add a comment:
+> Set the new table origin while preserving ASCE control bits like table type
+> and length.
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
----
- .../userspace-api/media/v4l/ext-ctrls-codec-stateless.rst   | 6 ++++++
- include/uapi/linux/v4l2-controls.h                          | 2 ++
- 2 files changed, 8 insertions(+)
-
-diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
-index cc080c4257d0..f87584ad90ba 100644
---- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
-+++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
-@@ -616,6 +616,12 @@ Stateless Codec Control ID
-     * - ``V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD``
-       - 0x00000004
-       -
-+    * - ``V4L2_H264_DECODE_PARAM_FLAG_PFRAME``
-+      - 0x00000008
-+      -
-+    * - ``V4L2_H264_DECODE_PARAM_FLAG_BFRAME``
-+      - 0x00000010
-+      -
- 
- .. raw:: latex
- 
-diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
-index c8e0f84d204d..e3d48d571062 100644
---- a/include/uapi/linux/v4l2-controls.h
-+++ b/include/uapi/linux/v4l2-controls.h
-@@ -1563,6 +1563,8 @@ struct v4l2_h264_dpb_entry {
- #define V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC		0x01
- #define V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC		0x02
- #define V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD	0x04
-+#define V4L2_H264_DECODE_PARAM_FLAG_PFRAME		0x08
-+#define V4L2_H264_DECODE_PARAM_FLAG_BFRAME		0x10
- 
- #define V4L2_CID_STATELESS_H264_DECODE_PARAMS	(V4L2_CID_CODEC_STATELESS_BASE + 7)
- /**
--- 
-2.34.1
-
+And while touching this anyway, please make use of _ASCE_ORIGIN
+instead of PAGE_MASK.
