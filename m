@@ -2,47 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD0CC3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6663C35294
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386582AbiBGLfB (ORCPT
+        id S1386693AbiBGLfY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:35:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36300 "EHLO
+        Mon, 7 Feb 2022 06:35:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383984AbiBGLYT (ORCPT
+        with ESMTP id S1384086AbiBGLYl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:24:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D10C043181;
-        Mon,  7 Feb 2022 03:24:18 -0800 (PST)
+        Mon, 7 Feb 2022 06:24:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA3AC043181;
+        Mon,  7 Feb 2022 03:24:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E45A6077B;
-        Mon,  7 Feb 2022 11:24:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 172FBC004E1;
-        Mon,  7 Feb 2022 11:24:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 290E7B81028;
+        Mon,  7 Feb 2022 11:24:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52033C004E1;
+        Mon,  7 Feb 2022 11:24:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233057;
-        bh=8ELA8n0JSaPgKf6UOUwdoTJ7cdz4zQaC8pC25At5iZg=;
+        s=korg; t=1644233079;
+        bh=KA0v6uzmrpCq8CZngEmIzixkjPkWni2L1J8EWKJLKg4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZCTYM2YVziV/42vdPYKA1bcefm/L25VQuLnjYf9vjZ6B1k+Nqp87RVub0aVVOU78Y
-         hNXyf9jV4OJRcB/PrumFFWM7+JpTxEhdNfaju3s1EAxYbhGksOnWzYmIshwDqUF75Z
-         frqF5RgvSmqWKO8B9raCOndw70B7JNTvBnmYBI0E=
+        b=aygwEb0CYYhKshccfKdNiK32+hxkZCKTEm+rUhreEzTrl8LE4S7c8qDzrYa1tyQT6
+         5dHwo09gmohfI+/JMtA/mTXNbneUHeYAmt7keorf7Mtbl8KdvdVFc7QmKsGaYf3kMt
+         I4+DPf2W5U6NfFqNHFvt6AGeSowi75xjQ4iCP9ec=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Bruce Fields <bfields@fieldses.org>
-Subject: [PATCH 5.10 53/74] nfsd: nfsd4_setclientid_confirm mistakenly expires confirmed client.
-Date:   Mon,  7 Feb 2022 12:06:51 +0100
-Message-Id: <20220207103758.952824876@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Uma Shankar <uma.shankar@intel.com>,
+        Mario Kleiner <mario.kleiner.de@gmail.com>
+Subject: [PATCH 5.15 001/110] drm/i915: Disable DSB usage for now
+Date:   Mon,  7 Feb 2022 12:05:34 +0100
+Message-Id: <20220207103802.334366967@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
-References: <20220207103757.232676988@linuxfoundation.org>
+In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
+References: <20220207103802.280120990@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,45 +54,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dai Ngo <dai.ngo@oracle.com>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit ab451ea952fe9d7afefae55ddb28943a148247fe upstream.
+commit 99510e1afb4863a225207146bd988064c5fd0629 upstream.
 
->From RFC 7530 Section 16.34.5:
+Turns out the DSB has trouble correctly loading the gamma LUT.
+>From a cursory look maybe like some entries do not load
+properly, or they get loaded with some gibberish. Unfortunately
+our current kms_color/etc. tests do not seem to catch this.
 
-o  The server has not recorded an unconfirmed { v, x, c, *, * } and
-   has recorded a confirmed { v, x, c, *, s }.  If the principals of
-   the record and of SETCLIENTID_CONFIRM do not match, the server
-   returns NFS4ERR_CLID_INUSE without removing any relevant leased
-   client state, and without changing recorded callback and
-   callback_ident values for client { x }.
+I had a brief look at the generated DSB batch and it looked
+correct. Tried a few quick tricks like writing the index
+register twice/etc. but didn't see any improvement.
+Also tried switching to the 10bit gamma mode in case
+there is yet another issue with the multi-segment mode, but
+even the 10bit mode was showing issues.
 
-The current code intends to do what the spec describes above but
-it forgot to set 'old' to NULL resulting to the confirmed client
-to be expired.
+Switching to mmio fixes all of it. I suppose one theory is that
+maybe the DSB bangs on the LUT too quickly and it can't keep up
+and instead some data either gets dropped or corrupted. To confirm
+that someone should try to slow down the DSB's progress a bit.
+Another thought was that maybe the LUT has crappy dual porting
+and you get contention if you try to load it during active
+scanout. But why then would the mmio path work, unless it's
+just sufficiently slow?
 
-Fixes: 2b63482185e6 ("nfsd: fix clid_inuse on mount with security change")
-Signed-off-by: Dai Ngo <dai.ngo@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Reviewed-by: Bruce Fields <bfields@fieldses.org>
+Whatever the case, this is currently busted so let's disable
+it until we get to the root of the problem.
+
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/3916
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211014181856.17581-2-ville.syrjala@linux.intel.com
+Reviewed-by: Uma Shankar <uma.shankar@intel.com>
+Cc: Mario Kleiner <mario.kleiner.de@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/nfs4state.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/i915_pci.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/nfsd/nfs4state.c
-+++ b/fs/nfsd/nfs4state.c
-@@ -4047,8 +4047,10 @@ nfsd4_setclientid_confirm(struct svc_rqs
- 			status = nfserr_clid_inuse;
- 			if (client_has_state(old)
- 					&& !same_creds(&unconf->cl_cred,
--							&old->cl_cred))
-+							&old->cl_cred)) {
-+				old = NULL;
- 				goto out;
-+			}
- 			status = mark_client_expired_locked(old);
- 			if (status) {
- 				old = NULL;
+--- a/drivers/gpu/drm/i915/i915_pci.c
++++ b/drivers/gpu/drm/i915/i915_pci.c
+@@ -865,7 +865,7 @@ static const struct intel_device_info js
+ 	}, \
+ 	TGL_CURSOR_OFFSETS, \
+ 	.has_global_mocs = 1, \
+-	.display.has_dsb = 1
++	.display.has_dsb = 0 /* FIXME: LUT load is broken with DSB */
+ 
+ static const struct intel_device_info tgl_info = {
+ 	GEN12_FEATURES,
 
 
