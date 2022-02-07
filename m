@@ -2,98 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99322C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83916C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382934AbiBGPI6 (ORCPT
+        id S1358141AbiBGPIy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:08:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55404 "EHLO
+        Mon, 7 Feb 2022 10:08:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442378AbiBGOtu (ORCPT
+        with ESMTP id S1442374AbiBGOto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:49:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7F4C0401C1;
-        Mon,  7 Feb 2022 06:49:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9444EB8120F;
-        Mon,  7 Feb 2022 14:49:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93AABC004E1;
-        Mon,  7 Feb 2022 14:49:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644245387;
-        bh=Psuk8AKsWmJK43HTQObBBI61+Rcw5PoqojA+kFWelj8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SheyqPxVih7lRu98iWTPmguQH9bpZdzyFZaGuGbhPOX6dBN1acx/q81ZaN7Fy43au
-         sq69Nx8eFT7NEWNktA0MA7DVMWzueVmb5TbSLEvSUKlsZ29736w2z9t2KhixH2WQjY
-         XzECg5hzPUa7jegYkYsEqciQkgJWV4/C7KBa2DHx8NAAMMYSVelmDSAze/KSTbQVfW
-         Klm0SyO0l7ZsCgMdGyFFYbR5gI4JwcEcTpAP5K64VFfoVrPsIR1LOjvTULk4rIomL3
-         d9x017YwmYcN591K+vVlM1cwNFjVFXp5OzETt+prna76Lph07Blw/BV8bMlkmXb+wM
-         BEmvWR0hzJtpQ==
-Date:   Mon, 7 Feb 2022 15:49:44 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH -next] i2c: bcm2835: add missing disable and put clk on
- error in bcm2835_i2c_probe()
-Message-ID: <YgExiKpGzpr01Bbf@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        f.fainelli@gmail.com
-References: <20210601140835.3595921-1-yangyingliang@huawei.com>
+        Mon, 7 Feb 2022 09:49:44 -0500
+X-Greylist: delayed 904 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 06:49:43 PST
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D86C0401C1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:49:43 -0800 (PST)
+Received: from [192.168.0.105] (101.228.68.195) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Mon, 7 Feb
+ 2022 22:19:33 +0800
+Message-ID: <ad0493ac-af20-f207-9333-561042d7fc49@amlogic.com>
+Date:   Mon, 7 Feb 2022 22:19:03 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ATbTRyqtzskqR3Km"
-Content-Disposition: inline
-In-Reply-To: <20210601140835.3595921-1-yangyingliang@huawei.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V6 0/5] Use CCF to describe the UART baud rate clock
+Content-Language: en-US
+To:     Kevin Hilman <khilman@baylibre.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        "Jerome Brunet" <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220118030911.12815-1-yu.tu@amlogic.com>
+ <7hfspjqrn7.fsf@baylibre.com>
+ <cc3b971f-c630-4ce2-e6dd-c13bcba89d22@amlogic.com>
+ <7hbl00ykhf.fsf@baylibre.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <7hbl00ykhf.fsf@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [101.228.68.195]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+  Hi Kevin,
+	First of all,thank you very much for your reply.Due to the Chinese 
+Spring Festival holiday recently, so i just reply to you now。
 
---ATbTRyqtzskqR3Km
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 2022/1/25 3:58, Kevin Hilman wrote:
+> [ EXTERNAL EMAIL ]
+> 
+> Yu Tu <yu.tu@amlogic.com> writes:
+> 
+>> Hi Kevin,
+>> 	Thank you very much for your reply.
+>>
+>> On 2022/1/20 6:37, Kevin Hilman wrote:
+>>> [ EXTERNAL EMAIL ]
+>>>
+>>> Hello,
+>>>
+>>> Yu Tu <yu.tu@amlogic.com> writes:
+>>>
+>>>> Using the common Clock code to describe the UART baud rate
+>>>> clock makes it easier for the UART driver to be compatible
+>>>> with the baud rate requirements of the UART IP on different
+>>>> meson chips. Add Meson S4 SoC compatible.
+>>>
+>>> Could you describe how this was tested and on which SoCs?  There seem to
+>>> be some changes in this series that might affect previous SoCs.
+>>>
+>> For me, the board starts normally and prints. My intention was to add
+>> the S4 SOC UART compatible, but for the S4 our baud rate clock is
+>> calculated at 12MHz by default.So a series of changes were made at your
+>> suggestion.
+>>
+>> Since most SoCs are too old, I was able to find all the platforms myself
+>> such as Meson6, Meson8, Meson8b, GXL and so on. I only tested it with
+>> G12A and S4.But when I talked to Martin earlier he tried meson8b's log.
+>> The test patch is in the attachment.
+>>
+>> I have found that on some boards with this change, the initcall_debug
+>> Uart driver takes longer to initialize. Running the stty command to
+>> change the baud rate at the same time may cause a jam.
+> 
+> This kind of detail is important to document in the cover letter,
+> including a bit more detail on how to reproduce so that other can help
+> test or may have ideas for how to solve.
+> 
+The problem recurrence method is described below:
+First, add the patch I changed. It then launches normally to the console 
+command line.  Finally, run the stty command to change buad rate. The 
+detailed commands are as follows:
+stty -F /dev/ttyAML0 115200 and stty -F /dev/ttyAML0 921600 .Alternate 
+execution can reproduce.
 
-On Tue, Jun 01, 2021 at 10:08:35PM +0800, Yang Yingliang wrote:
-> Add clk_disable_unprepare() and clk_rate_exclusive_put() on error
-> path in bcm2835_i2c_probe().
->=20
-> Fixes: bebff81fb8b9 ("i2c: bcm2835: Model Divider in CCF")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+>> I'd love to know what else you suggest.
+> 
+> I don't expect you to be able to test on all SoCs, but just to list what
+> SoCs and which boards you tested on.  This way, those who have other
+> boards can help test and we can have a better idea of how this was
+> tested before merging.
+> 
+I only have S4 and G12A so far, so I've only tested on those two platforms.
 
-Correct, but I applied another version instead which was a tad better:
-http://patchwork.ozlabs.org/project/linux-i2c/patch/338008c444af4785a07fb5a=
-402b60225a4964ae9.1629484876.git.christophe.jaillet@wanadoo.fr/
-
-But thanks for working on it!
-
-
---ATbTRyqtzskqR3Km
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIBMYgACgkQFA3kzBSg
-Kba2Sw//RGcfdx9shYhs0YZsY75d2VgluBKQ2CTI/NRmZHAnL0Hdzk1UMjGiDT4Y
-LLmUslwBk8od97Kl2rPJ6PN86TfaX06AqMYPgoWLoJnNGhDIum9xSOOZHjdX7l6F
-uOfXJy6aai/rw5ssexFMmkurKovETniqg56zoDuYEXc8UTA9n2u/8dLGO/LRr17/
-ix23u/aAvBpulPd51CWEQ1kasCC+Ncle+9VA6JeJlazg+YqSOeH3q1evAu68Guks
-o0Va3xPpEPP0ri+FOLNm9T4zbbdvmihSbaC8ZtKizptPWr7DIs47D27wyYHzVn64
-KagL1rAjA61LYng5qxPnLZ61n0esZu5FPnRBz2p44YyuWzrvY0KzpMf/0xRsNbmd
-B59y7QrW2ejdwsfjMYe6v/dR3HzJBAPB8ZKPPlyuMluPzny/0EZPir1Uj4toIEGB
-QPq392DO4F41J5zi0rmeEYZ5qD7GRc/5oNacT6Xjkx34t+DqlWBlyHzXviPr0K+p
-zV7+FslxHiZ1eGsGIeNqcfybw+bYewZt4nnwq76zRPAvgTNBvnBHelzCfiADas8x
-F36eT+MK4cTBwnTEV5ae5rtKKuY+xgDDpfKIDLmYj8NGtmQFsLVyEYRHcRcgJgEn
-Y6b8+IPjsdCJ0DIntD3AxNQ4JmyaQRfwGHtlFFkyGwXdfoBoLp4=
-=h19W
------END PGP SIGNATURE-----
-
---ATbTRyqtzskqR3Km--
+> Thanks,
+> 
+> Kevin
+> 
