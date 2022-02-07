@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5804C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8958C352A8
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240259AbiBGLNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:13:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48852 "EHLO
+        id S1356060AbiBGLMw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:12:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241185AbiBGLKU (ORCPT
+        with ESMTP id S245176AbiBGLJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:10:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E058C043181;
-        Mon,  7 Feb 2022 03:10:19 -0800 (PST)
+        Mon, 7 Feb 2022 06:09:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2942AC043181;
+        Mon,  7 Feb 2022 03:09:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F8C2B80EE8;
-        Mon,  7 Feb 2022 11:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75043C004E1;
-        Mon,  7 Feb 2022 11:10:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 68AD4611AA;
+        Mon,  7 Feb 2022 11:09:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35E54C004E1;
+        Mon,  7 Feb 2022 11:09:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232217;
-        bh=WGp/yHoda8RCUhsch7BwXxaqQvT+yxWwh8fzlXaL+Ms=;
+        s=korg; t=1644232174;
+        bh=PxCjQB59AFOjGkXG7BsiizVDI2hZ6Ml5PksMKyStTcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u7xKw5RXshcZjp9oWMGF6E1iGOKUjrTllsKUJnhapz0PDuHXT6SqtkwHeB8yktSFK
-         GGEccCXmc/I2RPmGwp9CN2fT57ajAxOr90LpM5MmcHyj0ZRn2PWkXzGa1pjivlByGb
-         WeC92okb3ARJGLuufy55qyE4qp55o8W/sNFVdMaA=
+        b=gPUJlPf5pOxCcQKWMMj9gSwXxdrV3ZOwEameuT4o8pUcnGic5W5VWsZBey7AO7/Ic
+         VhSuOinLPZsUY1USxIhBMcL11i6fpUF0rwKs27qYC8F7VuYeGDAccw2UaGzljXoLkG
+         Sk4DMBweJLeJyn+LxhUjKVAdPcz9hXcmTYXVC3Ug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 4.9 47/48] EDAC/xgene: Fix deferred probing
-Date:   Mon,  7 Feb 2022 12:06:20 +0100
-Message-Id: <20220207103753.858445909@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.9 39/48] spi: mediatek: Avoid NULL pointer crash in interrupt
+Date:   Mon,  7 Feb 2022 12:06:12 +0100
+Message-Id: <20220207103753.607222671@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -48,38 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 
-commit dfd0dfb9a7cc04acf93435b440dd34c2ca7b4424 upstream.
+commit f83a96e5f033fbbd21764705cb9c04234b96218e upstream.
 
-The driver overrides error codes returned by platform_get_irq_optional()
-to -EINVAL for some strange reason, so if it returns -EPROBE_DEFER, the
-driver will fail the probe permanently instead of the deferred probing.
-Switch to propagating the proper error codes to platform driver code
-upwards.
+In some case, like after a transfer timeout, master->cur_msg pointer
+is NULL which led to a kernel crash when trying to use master->cur_msg->spi.
+mtk_spi_can_dma(), pointed by master->can_dma, doesn't use this parameter
+avoid the problem by setting NULL as second parameter.
 
-  [ bp: Massage commit message. ]
-
-Fixes: 0d4429301c4a ("EDAC: Add APM X-Gene SoC EDAC driver")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220124185503.6720-3-s.shtylyov@omp.ru
+Fixes: a568231f46322 ("spi: mediatek: Add spi bus for Mediatek MT8173")
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Link: https://lore.kernel.org/r/20220131141708.888710-1-benjamin.gaignard@collabora.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/edac/xgene_edac.c |    2 +-
+ drivers/spi/spi-mt65xx.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/edac/xgene_edac.c
-+++ b/drivers/edac/xgene_edac.c
-@@ -1936,7 +1936,7 @@ static int xgene_edac_probe(struct platf
- 			irq = platform_get_irq(pdev, i);
- 			if (irq < 0) {
- 				dev_err(&pdev->dev, "No IRQ resource\n");
--				rc = -EINVAL;
-+				rc = irq;
- 				goto out_err;
- 			}
- 			rc = devm_request_irq(&pdev->dev, irq,
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -440,7 +440,7 @@ static irqreturn_t mtk_spi_interrupt(int
+ 	else
+ 		mdata->state = MTK_SPI_IDLE;
+ 
+-	if (!master->can_dma(master, master->cur_msg->spi, trans)) {
++	if (!master->can_dma(master, NULL, trans)) {
+ 		if (trans->rx_buf) {
+ 			cnt = mdata->xfer_len / 4;
+ 			ioread32_rep(mdata->base + SPI_RX_DATA_REG,
 
 
