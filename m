@@ -2,81 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CBDC388F3
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8D5C35280
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345247AbiBHBEn (ORCPT
+        id S1344969AbiBHBEN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:04:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
+        Mon, 7 Feb 2022 20:04:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237896AbiBGXcG (ORCPT
+        with ESMTP id S238462AbiBGXJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:32:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32501C061355;
-        Mon,  7 Feb 2022 15:32:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B0960E9E;
-        Mon,  7 Feb 2022 23:32:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39CC0C004E1;
-        Mon,  7 Feb 2022 23:32:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644276725;
-        bh=Sip9F5Bfsba1zq25dZliHosPf+iJHY5BZ3ZAUNyiX9Q=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Z10xrt4P2z6n/9x0o45n9hD44NEp74dqY2HFtNOkYHbDOZOBHzW3NM+X/d37mv1JW
-         fRjbOnc3wDHiiE4Zr4YSykieNOuTFOEp3HVY6jZPNpVtd6kTIU7Sqpp9zzHNsnRj6E
-         CXcbXcl1vAgcR0lmVoak0wAWhi2tv/dGkk46nimauCfCoAMuNJ51ZhdhrO4E0xVTwA
-         dotKn5nQTpYAq10NCOZQIUHWMq2TMA+1jxDstrR0d0Q8tkjNqQWzjzAXy4caKkqill
-         nZPNRBlLYoOKE4uUp8Btdwf2+zHjpK1cT8MkwCJzNFYPASeiAfvobxJEm1cXs8XZV5
-         oYTFfvpydxkRg==
-Date:   Mon, 7 Feb 2022 17:39:23 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Ben Skeggs <bskeggs@redhat.com>, Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] nouveau/svm: Use struct_size() helper in
- nouveau_pfns_map()
-Message-ID: <20220207233923.GA524723@embeddedor>
+        Mon, 7 Feb 2022 18:09:48 -0500
+Received: from smtprelay05.ispgateway.de (smtprelay05.ispgateway.de [80.67.18.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B181C061355;
+        Mon,  7 Feb 2022 15:09:47 -0800 (PST)
+Received: from [92.206.166.137] (helo=note-book.lan)
+        by smtprelay05.ispgateway.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <git@apitzsch.eu>)
+        id 1nHD78-0001JC-EZ; Tue, 08 Feb 2022 00:08:06 +0100
+From:   =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>
+To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>
+Subject: [PATCH v2 3/3] leds: sgm3140: Add ocs,ocp8110 compatible
+Date:   Tue,  8 Feb 2022 00:06:38 +0100
+Message-Id: <20220207230638.56730-4-git@apitzsch.eu>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207230638.56730-1-git@apitzsch.eu>
+References: <20211117091405.7412-1-git@apitzsch.eu>
+ <20220207230638.56730-1-git@apitzsch.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Df-Sender: YW5kcmVAYXBpdHpzY2guZXU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make use of the struct_size() helper instead of an open-coded version,
-in order to avoid any potential type mistakes or integer overflows that,
-in the worse scenario, could lead to heap overflows.
+Orient-Chip's ocp8110 has the same pin configuration as the sgm3140.
+The data sheet can be found at:
+https://cdn.datasheetspdf.com/pdf-down/O/C/P/OCP8110-OrientChip.pdf
 
-Link: https://github.com/KSPP/linux/issues/160
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Signed-off-by: André Apitzsch <git@apitzsch.eu>
 ---
- drivers/gpu/drm/nouveau/nouveau_svm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/leds/flash/leds-sgm3140.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_svm.c b/drivers/gpu/drm/nouveau/nouveau_svm.c
-index 266809e511e2..46a5a1016e37 100644
---- a/drivers/gpu/drm/nouveau/nouveau_svm.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_svm.c
-@@ -925,8 +925,8 @@ nouveau_pfns_map(struct nouveau_svmm *svmm, struct mm_struct *mm,
- 
- 	mutex_lock(&svmm->mutex);
- 
--	ret = nvif_object_ioctl(&svmm->vmm->vmm.object, args, sizeof(*args) +
--				npages * sizeof(args->p.phys[0]), NULL);
-+	ret = nvif_object_ioctl(&svmm->vmm->vmm.object, args,
-+				struct_size(args, p.phys, npages), NULL);
- 
- 	mutex_unlock(&svmm->mutex);
+diff --git a/drivers/leds/flash/leds-sgm3140.c b/drivers/leds/flash/leds-sgm3140.c
+index f4f831570f11..d3a30ad94ac4 100644
+--- a/drivers/leds/flash/leds-sgm3140.c
++++ b/drivers/leds/flash/leds-sgm3140.c
+@@ -290,6 +290,7 @@ static int sgm3140_remove(struct platform_device *pdev)
  }
+ 
+ static const struct of_device_id sgm3140_dt_match[] = {
++	{ .compatible = "ocs,ocp8110" },
+ 	{ .compatible = "sgmicro,sgm3140" },
+ 	{ /* sentinel */ }
+ };
 -- 
-2.27.0
+2.35.1
 
