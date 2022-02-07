@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDF8C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A37C47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241203AbiBGLT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:19:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53258 "EHLO
+        id S1356710AbiBGLUE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:20:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376872AbiBGLPQ (ORCPT
+        with ESMTP id S1377080AbiBGLPW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21633C0401F2;
-        Mon,  7 Feb 2022 03:14:55 -0800 (PST)
+        Mon, 7 Feb 2022 06:15:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4F0C0401C1;
+        Mon,  7 Feb 2022 03:15:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 174F76113B;
-        Mon,  7 Feb 2022 11:14:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF8F7C340F0;
-        Mon,  7 Feb 2022 11:14:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA05DB811AF;
+        Mon,  7 Feb 2022 11:14:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3EEFC004E1;
+        Mon,  7 Feb 2022 11:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232491;
-        bh=+xFqXhiOYB6EBvF7+DEQtDi3iSvbToZdWSF+mNcRdGo=;
+        s=korg; t=1644232497;
+        bh=MT4sNF0PfxcIg6PS6y3Pd/xe1QUKigz4w0dUAF1+YxE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fw3rNBdGCwigApkZM8cVFyqWVeG5Y1MkXGrTBwOmzZ8UJJ/WdfbQ0cpdC51iC2E8f
-         5u5V1sXdQvn0uWCI0h72edD4/BBw+KQabE7Gpk2MOoTQcCmtjuc3SxA+b/rJ+FixV3
-         dNF6kORK6pkKyZ1bXZtUIOmXHD43X5pTHu8s/0yg=
+        b=ETyhh2uMGQ8WDmBAG8dpTNh0XexMnwjiVzQziIZVq3YB4RFzWezVZgQ1waWoNDeYt
+         Z0rrVcNNuz0jbh7CRpmdqi1ctAHm9foDEiYQbt/69e2aWuaahFC6ADIB6vHwf8jHmk
+         VecW0eKw2GtbpGOnGeM6ATDOZ2rQltImHgXEMwRE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>
-Subject: [PATCH 4.19 07/86] drm/etnaviv: relax submit size limits
-Date:   Mon,  7 Feb 2022 12:05:30 +0100
-Message-Id: <20220207103757.797933402@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
+Subject: [PATCH 4.19 09/86] serial: 8250: of: Fix mapped region size when using reg-offset property
+Date:   Mon,  7 Feb 2022 12:05:32 +0100
+Message-Id: <20220207103757.862574812@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -48,35 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit e3d26528e083e612314d4dcd713f3d5a26143ddc upstream.
+commit d06b1cf28297e27127d3da54753a3a01a2fa2f28 upstream.
 
-While all userspace tried to limit commandstreams to 64K in size,
-a bug in the Mesa driver lead to command streams of up to 128K
-being submitted. Allow those to avoid breaking existing userspace.
+8250_of supports a reg-offset property which is intended to handle
+cases where the device registers start at an offset inside the region
+of memory allocated to the device. The Xilinx 16550 UART, for which this
+support was initially added, requires this. However, the code did not
+adjust the overall size of the mapped region accordingly, causing the
+driver to request an area of memory past the end of the device's
+allocation. For example, if the UART was allocated an address of
+0xb0130000, size of 0x10000 and reg-offset of 0x1000 in the device
+tree, the region of memory reserved was b0131000-b0140fff, which caused
+the driver for the region starting at b0140000 to fail to probe.
 
-Fixes: 6dfa2fab8ddd ("drm/etnaviv: limit submit sizes")
-Cc: stable@vger.kernel.org
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+Fix this by subtracting reg-offset from the mapped region size.
+
+Fixes: b912b5e2cfb3 ([POWERPC] Xilinx: of_serial support for Xilinx uart 16550.)
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Link: https://lore.kernel.org/r/20220112194214.881844-1-robert.hancock@calian.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_of.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-+++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-@@ -444,8 +444,8 @@ int etnaviv_ioctl_gem_submit(struct drm_
- 		return -EINVAL;
- 	}
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -104,8 +104,17 @@ static int of_platform_serial_setup(stru
+ 		port->mapsize = resource_size(&resource);
  
--	if (args->stream_size > SZ_64K || args->nr_relocs > SZ_64K ||
--	    args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
-+	if (args->stream_size > SZ_128K || args->nr_relocs > SZ_128K ||
-+	    args->nr_bos > SZ_128K || args->nr_pmrs > 128) {
- 		DRM_ERROR("submit arguments out of size limits\n");
- 		return -EINVAL;
- 	}
+ 		/* Check for shifted address mapping */
+-		if (of_property_read_u32(np, "reg-offset", &prop) == 0)
++		if (of_property_read_u32(np, "reg-offset", &prop) == 0) {
++			if (prop >= port->mapsize) {
++				dev_warn(&ofdev->dev, "reg-offset %u exceeds region size %pa\n",
++					 prop, &port->mapsize);
++				ret = -EINVAL;
++				goto err_unprepare;
++			}
++
+ 			port->mapbase += prop;
++			port->mapsize -= prop;
++		}
+ 
+ 		port->iotype = UPIO_MEM;
+ 		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
 
 
