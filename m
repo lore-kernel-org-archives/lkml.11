@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE7DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 652CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383812AbiBGLXh (ORCPT
+        id S1383842AbiBGLXm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:23:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
+        Mon, 7 Feb 2022 06:23:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382156AbiBGLS1 (ORCPT
+        with ESMTP id S1382159AbiBGLS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:18:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBFAC03F938;
-        Mon,  7 Feb 2022 03:18:11 -0800 (PST)
+        Mon, 7 Feb 2022 06:18:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2F2C0401D4;
+        Mon,  7 Feb 2022 03:18:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08133B80EC3;
-        Mon,  7 Feb 2022 11:18:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 357C0C004E1;
-        Mon,  7 Feb 2022 11:18:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A2476126D;
+        Mon,  7 Feb 2022 11:18:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F1A1C004E1;
+        Mon,  7 Feb 2022 11:18:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232688;
-        bh=+2yQwBmdDLsntIJxVE0Bnkeye6Q+83n4LOF2QFZGPjk=;
+        s=korg; t=1644232691;
+        bh=8RcvJ0iNpGXd9hhP8foxR5IlHZdwD/RWOBg4L/G1cj0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rikAK+FhMG5D2+NDfH9M4GzZVqoAeXJD050Fa9HSTMZl9+1PARV2Xdimx/09PeEP6
-         V3ZBmMNvKkxsqxR+SmesH2dVbPSMjTzHhCeZDW3i9ARSAJLmgfMOShVnh3bWC1YSTq
-         AX++EuHajEnB4ca6aW7kIskVYdAjbIk4Ish8ZHDQ=
+        b=1bwxGQ2ZMMZ8LEFiiO5/X4IEDRhCFsPmDJlksPH5nZcO4u9EhefMhvd/N013nqdfy
+         YsrGa9AEI3jD6S+6ZGR1A2zCR+jL1UFAp9Dukl6sdeawVfpsXVDApoHPfcEhuzDtMq
+         XjdGM8EBaC441vDYQ1F27CTK13CqrrM4qf4xxdKs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
-        =?UTF-8?q?H=C3=A5kon=20Bugge?= <haakon.bugge@oracle.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 4.19 64/86] RDMA/mlx4: Dont continue event handler after memory allocation failure
-Date:   Mon,  7 Feb 2022 12:06:27 +0100
-Message-Id: <20220207103759.661417834@linuxfoundation.org>
+        stable@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 4.19 65/86] iommu/vt-d: Fix potential memory leak in intel_setup_irq_remapping()
+Date:   Mon,  7 Feb 2022 12:06:28 +0100
+Message-Id: <20220207103759.692772181@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -50,37 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Guoqing Jiang <guoqing.jiang@linux.dev>
 
-commit f3136c4ce7acf64bee43135971ca52a880572e32 upstream.
+commit 99e675d473eb8cf2deac1376a0f840222fc1adcf upstream.
 
-The failure to allocate memory during MLX4_DEV_EVENT_PORT_MGMT_CHANGE
-event handler will cause skip the assignment logic, but
-ib_dispatch_event() will be called anyway.
+After commit e3beca48a45b ("irqdomain/treewide: Keep firmware node
+unconditionally allocated"). For tear down scenario, fn is only freed
+after fail to allocate ir_domain, though it also should be freed in case
+dmar_enable_qi returns error.
 
-Fix it by calling to return instead of break after memory allocation
-failure.
+Besides free fn, irq_domain and ir_msi_domain need to be removed as well
+if intel_setup_irq_remapping fails to enable queued invalidation.
 
-Fixes: 00f5ce99dc6e ("mlx4: Use port management change event instead of smp_snoop")
-Link: https://lore.kernel.org/r/12a0e83f18cfad4b5f62654f141e240d04915e10.1643622264.git.leonro@nvidia.com
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Improve the rewinding path by add out_free_ir_domain and out_free_fwnode
+lables per Baolu's suggestion.
+
+Fixes: e3beca48a45b ("irqdomain/treewide: Keep firmware node unconditionally allocated")
+Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Link: https://lore.kernel.org/r/20220119063640.16864-1-guoqing.jiang@linux.dev
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Link: https://lore.kernel.org/r/20220128031002.2219155-3-baolu.lu@linux.intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/mlx4/main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel_irq_remapping.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
---- a/drivers/infiniband/hw/mlx4/main.c
-+++ b/drivers/infiniband/hw/mlx4/main.c
-@@ -3351,7 +3351,7 @@ static void mlx4_ib_event(struct mlx4_de
- 	case MLX4_DEV_EVENT_PORT_MGMT_CHANGE:
- 		ew = kmalloc(sizeof *ew, GFP_ATOMIC);
- 		if (!ew)
--			break;
-+			return;
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -543,9 +543,8 @@ static int intel_setup_irq_remapping(str
+ 					    fn, &intel_ir_domain_ops,
+ 					    iommu);
+ 	if (!iommu->ir_domain) {
+-		irq_domain_free_fwnode(fn);
+ 		pr_err("IR%d: failed to allocate irqdomain\n", iommu->seq_id);
+-		goto out_free_bitmap;
++		goto out_free_fwnode;
+ 	}
+ 	iommu->ir_msi_domain =
+ 		arch_create_remap_msi_irq_domain(iommu->ir_domain,
+@@ -569,7 +568,7 @@ static int intel_setup_irq_remapping(str
  
- 		INIT_WORK(&ew->work, handle_port_mgmt_change_event);
- 		memcpy(&ew->ib_eqe, eqe, sizeof *eqe);
+ 		if (dmar_enable_qi(iommu)) {
+ 			pr_err("Failed to enable queued invalidation\n");
+-			goto out_free_bitmap;
++			goto out_free_ir_domain;
+ 		}
+ 	}
+ 
+@@ -593,6 +592,14 @@ static int intel_setup_irq_remapping(str
+ 
+ 	return 0;
+ 
++out_free_ir_domain:
++	if (iommu->ir_msi_domain)
++		irq_domain_remove(iommu->ir_msi_domain);
++	iommu->ir_msi_domain = NULL;
++	irq_domain_remove(iommu->ir_domain);
++	iommu->ir_domain = NULL;
++out_free_fwnode:
++	irq_domain_free_fwnode(fn);
+ out_free_bitmap:
+ 	kfree(bitmap);
+ out_free_pages:
 
 
