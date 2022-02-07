@@ -2,322 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 897C6C4707F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F48C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 06:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354739AbiBGGiR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 01:38:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33336 "EHLO
+        id S231701AbiBGG4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:56:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241814AbiBGGd6 (ORCPT
+        with ESMTP id S1357841AbiBGGoY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 01:33:58 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5577C043184;
-        Sun,  6 Feb 2022 22:33:57 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id i30so11299800pfk.8;
-        Sun, 06 Feb 2022 22:33:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=qlN75CsLXoZ8b2tnKBNp17X1wC9KO37usZLYNCoKx88=;
-        b=gAMQM2ZZDEBpY9C97KfQaZ5RtMwvF8HhABYLHimmnFQ8YTY1/NX2bcxmcJuRlBiLoS
-         bvl9ITfB4v5f+CJenqN8XIByNBVfgBEEv+v4kDdw3qm4EV9TsSAn8pQpPRuG/1i4Uz/9
-         g8MibHIiM9DSN5Srr79pVTH9b53s2iXNQBWfjfwL3DZWmel9vg1rw39u843caqSY4nve
-         uliOaCpQbDyXFIEWzjxAt/7Vc0fXVfSxkY2FysZX+lB2VoGzbItNscVigCEJW+9UQfhV
-         4bmIsFQEorLN3l5gA7CmIFpCE2AF82WF1LqhV0FxjrRNI9w+wgI/zLFMCgzJCCk3SqV8
-         Wl3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=qlN75CsLXoZ8b2tnKBNp17X1wC9KO37usZLYNCoKx88=;
-        b=ahJQTp/BG8x5eN6jOpvJ9nTkdDMTyTCg5ggRxruWUmiw1GmppLtcMLhy7dladHU5qF
-         tc3g4qmuXVEE+hLQvCBskKYUyZBTqDVsbavAtTCqgqiH/mAZhBStkcYnHQFjrSbweG00
-         qzOTpZXPXjl74QLDlrWv4V7Lat6ghgfATYGOe/9f7CIMTRdkAGUErxxT36MLSvLynDWJ
-         UJflXMchcyC+/eB+b8xPofI2R/prkYEJBbCgTIMhlqumebXAJQVt9hIpi7G4rkgewr+x
-         pIC2q9yBkXU0toE929F+V53irNVi+MewWvW292vDSlvHpRnDTEg7cl2pVqocmGYQJmqP
-         9eIg==
-X-Gm-Message-State: AOAM533uRwe6P8OxFXu+YodwsFrmCW2dU8KLe5pQ38433ae/ouT05UAV
-        NQQqtpy5vpzle7AQE4isHBy/i+LzYs0crno=
-X-Google-Smtp-Source: ABdhPJwVu/dblxj+rjmT9D41ENsuEDMzdHSjCqqnU9RJZ1n2ONjWs+Q1nr5jf53P79BDwaYF5VlkAw==
-X-Received: by 2002:aa7:8490:: with SMTP id u16mr14254701pfn.1.1644215637318;
-        Sun, 06 Feb 2022 22:33:57 -0800 (PST)
-Received: from localhost ([2401:e180:8894:9737:7848:1ec7:b697:7d50])
-        by smtp.gmail.com with ESMTPSA id 204sm10654051pfu.91.2022.02.06.22.33.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 06 Feb 2022 22:33:57 -0800 (PST)
-From:   Tyrone Ting <warp5tw@gmail.com>
-To:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
-        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
-        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
-        olof@lixom.net, andriy.shevchenko@linux.intel.com,
-        warp5tw@gmail.com, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com
-Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 4/6] i2c: npcm: Handle spurious interrupts
-Date:   Mon,  7 Feb 2022 14:33:36 +0800
-Message-Id: <20220207063338.6570-5-warp5tw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220207063338.6570-1-warp5tw@gmail.com>
-References: <20220207063338.6570-1-warp5tw@gmail.com>
+        Mon, 7 Feb 2022 01:44:24 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8FFC0401C0
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 22:44:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644216263; x=1675752263;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=/1FAEc7MxY57hsQjIIjJSXw/pIhYqbkltVpu9dLzdic=;
+  b=HDfnjt06/QciKFur9FsKIlBPtvK6xneIGcA3ZhJ2jAbCInRRxDexiWCN
+   sVOYubzcwrpy9GOUbiBbdK/TjGnuWpu7lqF+fd2XRd3r2vMEkH7yWt1Cn
+   6s6pZYw4dq04AWRttQj+lbBqKmt6QmI52278yIWjgpHLbY1/KcuXM1QD7
+   oP/J3dOmhB3blxt8XdnxfL4lZzAhkZGPdZxy7zRQhn0CoeK8IzMlxXKe9
+   3FSvt39TN67oxQ19mjpfwEY9LX9tdhSxNSM/MIUqzxuSRlgP8/ybBW/+k
+   /9As8IXXKO63R1gRKfOsqAW1HWX2SwT40GA3VqJIse8rlyjeU/FJKUcB9
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273171192"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="273171192"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2022 22:43:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="525020303"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+  by orsmga007.jf.intel.com with ESMTP; 06 Feb 2022 22:43:18 -0800
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v1 07/10] iommu/vt-d: Use an xarray for global device_domain_info
+Date:   Mon,  7 Feb 2022 14:41:39 +0800
+Message-Id: <20220207064142.1092846-8-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220207064142.1092846-1-baolu.lu@linux.intel.com>
+References: <20220207064142.1092846-1-baolu.lu@linux.intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tali Perry <tali.perry1@gmail.com>
+Replace the existing global device_domain_list with an array so that it
+could be easily searched. The index of the array is composed by the PCI
+segment, bus and devfn. And use RCU lock for protection.
 
-In order to better handle spurious interrupts:
-1. Disable incoming interrupts in master only mode.
-2. Clear EOB after every interrupt.
-3. Return correct status during interrupt.
-
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/i2c/busses/i2c-npcm7xx.c | 96 +++++++++++++++++++++-----------
- 1 file changed, 65 insertions(+), 31 deletions(-)
+ include/linux/intel-iommu.h |  1 -
+ drivers/iommu/intel/iommu.c | 68 ++++++++++++++++---------------------
+ 2 files changed, 30 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
-index 5c22e69afe34..1ddf309b91a3 100644
---- a/drivers/i2c/busses/i2c-npcm7xx.c
-+++ b/drivers/i2c/busses/i2c-npcm7xx.c
-@@ -360,14 +360,14 @@ static int npcm_i2c_get_SCL(struct i2c_adapter *_adap)
- {
- 	struct npcm_i2c *bus = container_of(_adap, struct npcm_i2c, adap);
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 8c7591b5f3e2..1ccba739a062 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -610,7 +610,6 @@ struct intel_iommu {
+ /* PCI domain-device relationship */
+ struct device_domain_info {
+ 	struct list_head link;	/* link to domain siblings */
+-	struct list_head global; /* link to global list */
+ 	struct list_head table;	/* link to pasid table */
+ 	u32 segment;		/* PCI segment number */
+ 	u8 bus;			/* PCI bus number */
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 165c890b8304..d7eba86c7f72 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -151,8 +151,6 @@ static struct intel_iommu **g_iommus;
  
--	return !!(I2CCTL3_SCL_LVL & ioread32(bus->reg + NPCM_I2CCTL3));
-+	return !!(I2CCTL3_SCL_LVL & ioread8(bus->reg + NPCM_I2CCTL3));
+ static void __init check_tylersburg_isoch(void);
+ static int rwbf_quirk;
+-static inline struct device_domain_info *
+-dmar_search_domain_by_dev_info(int segment, int bus, int devfn);
+ 
+ /*
+  * set to 1 to panic kernel if can't successfully enable VT-d
+@@ -315,30 +313,30 @@ struct device_domain_info *get_domain_info(struct device *dev)
  }
  
- static int npcm_i2c_get_SDA(struct i2c_adapter *_adap)
- {
- 	struct npcm_i2c *bus = container_of(_adap, struct npcm_i2c, adap);
- 
--	return !!(I2CCTL3_SDA_LVL & ioread32(bus->reg + NPCM_I2CCTL3));
-+	return !!(I2CCTL3_SDA_LVL & ioread8(bus->reg + NPCM_I2CCTL3));
- }
- 
- static inline u16 npcm_i2c_get_index(struct npcm_i2c *bus)
-@@ -564,6 +564,15 @@ static inline void npcm_i2c_nack(struct npcm_i2c *bus)
- 	iowrite8(val, bus->reg + NPCM_I2CCTL1);
- }
- 
-+static inline void npcm_i2c_clear_master_status(struct npcm_i2c *bus)
-+{
-+	u8 val;
+ DEFINE_SPINLOCK(device_domain_lock);
+-static LIST_HEAD(device_domain_list);
++static DEFINE_XARRAY_ALLOC(device_domain_array);
 +
-+	/* Clear NEGACK, STASTR and BER bits */
-+	val = NPCM_I2CST_BER | NPCM_I2CST_NEGACK | NPCM_I2CST_STASTR;
-+	iowrite8(val, bus->reg + NPCM_I2CST);
-+}
-+
- #if IS_ENABLED(CONFIG_I2C_SLAVE)
- static void npcm_i2c_slave_int_enable(struct npcm_i2c *bus, bool enable)
++#define DEVI_IDX(seg, bus, devfn) ((((u16)(seg)) << 16) | PCI_DEVID(bus, devfn))
+ 
+ /*
+- * Iterate over elements in device_domain_list and call the specified
++ * Iterate over elements in device_domain_array and call the specified
+  * callback @fn against each element.
+  */
+ int for_each_device_domain(int (*fn)(struct device_domain_info *info,
+ 				     void *data), void *data)
  {
-@@ -643,8 +652,8 @@ static void npcm_i2c_reset(struct npcm_i2c *bus)
- 	iowrite8(NPCM_I2CCST_BB, bus->reg + NPCM_I2CCST);
- 	iowrite8(0xFF, bus->reg + NPCM_I2CST);
+-	int ret = 0;
+-	unsigned long flags;
+ 	struct device_domain_info *info;
++	unsigned long index;
++	int ret = 0;
  
--	/* Clear EOB bit */
--	iowrite8(NPCM_I2CCST3_EO_BUSY, bus->reg + NPCM_I2CCST3);
-+	/* Clear and disable EOB */
-+	npcm_i2c_eob_int(bus, false);
- 
- 	/* Clear all fifo bits: */
- 	iowrite8(NPCM_I2CFIF_CTS_CLR_FIFO, bus->reg + NPCM_I2CFIF_CTS);
-@@ -656,6 +665,9 @@ static void npcm_i2c_reset(struct npcm_i2c *bus)
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	list_for_each_entry(info, &device_domain_list, global) {
++	rcu_read_lock();
++	xa_for_each(&device_domain_array, index, info) {
+ 		ret = fn(info, data);
+-		if (ret) {
+-			spin_unlock_irqrestore(&device_domain_lock, flags);
+-			return ret;
+-		}
++		if (ret)
++			break;
  	}
- #endif
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	rcu_read_unlock();
  
-+	/* clear status bits for spurious interrupts */
-+	npcm_i2c_clear_master_status(bus);
-+
- 	bus->state = I2C_IDLE;
+-	return 0;
++	return ret;
  }
  
-@@ -818,15 +830,6 @@ static void npcm_i2c_read_fifo(struct npcm_i2c *bus, u8 bytes_in_fifo)
+ const struct iommu_ops intel_iommu_ops;
+@@ -900,7 +898,8 @@ static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn, u8 bus, u
+ 	struct dmar_domain *domain;
+ 	int offset, level;
+ 
+-	info = dmar_search_domain_by_dev_info(iommu->segment, bus, devfn);
++	info = xa_load(&device_domain_array,
++		       DEVI_IDX(iommu->segment, bus, devfn));
+ 	if (!info || !info->domain) {
+ 		pr_info("device [%02x:%02x.%d] not probed\n",
+ 			bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
+@@ -1747,14 +1746,14 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+ 
+ static void disable_dmar_iommu(struct intel_iommu *iommu)
+ {
+-	struct device_domain_info *info, *tmp;
+-	unsigned long flags;
++	struct device_domain_info *info;
++	unsigned long index;
+ 
+ 	if (!iommu->domain_ids)
+ 		return;
+ 
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	list_for_each_entry_safe(info, tmp, &device_domain_list, global) {
++	rcu_read_lock();
++	xa_for_each(&device_domain_array, index, info) {
+ 		if (info->iommu != iommu)
+ 			continue;
+ 
+@@ -1763,7 +1762,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+ 
+ 		__dmar_remove_one_dev_info(info);
  	}
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	rcu_read_unlock();
+ 
+ 	if (iommu->gcmd & DMA_GCMD_TE)
+ 		iommu_disable_translation(iommu);
+@@ -2388,7 +2387,8 @@ static inline void unlink_domain_info(struct device_domain_info *info)
+ {
+ 	assert_spin_locked(&device_domain_lock);
+ 	list_del(&info->link);
+-	list_del(&info->global);
++	xa_erase(&device_domain_array,
++		 DEVI_IDX(info->segment, info->bus, info->devfn));
+ 	if (info->dev)
+ 		dev_iommu_priv_set(info->dev, NULL);
+ }
+@@ -2419,19 +2419,6 @@ struct dmar_domain *find_domain(struct device *dev)
+ 	return NULL;
  }
  
--static inline void npcm_i2c_clear_master_status(struct npcm_i2c *bus)
+-static inline struct device_domain_info *
+-dmar_search_domain_by_dev_info(int segment, int bus, int devfn)
 -{
--	u8 val;
+-	struct device_domain_info *info;
 -
--	/* Clear NEGACK, STASTR and BER bits */
--	val = NPCM_I2CST_BER | NPCM_I2CST_NEGACK | NPCM_I2CST_STASTR;
--	iowrite8(val, bus->reg + NPCM_I2CST);
+-	list_for_each_entry(info, &device_domain_list, global)
+-		if (info->segment == segment && info->bus == bus &&
+-		    info->devfn == devfn)
+-			return info;
+-
+-	return NULL;
 -}
 -
- static void npcm_i2c_master_abort(struct npcm_i2c *bus)
- {
- 	/* Only current master is allowed to issue a stop condition */
-@@ -1234,7 +1237,16 @@ static irqreturn_t npcm_i2c_int_slave_handler(struct npcm_i2c *bus)
- 		ret = IRQ_HANDLED;
- 	} /* SDAST */
+ static int domain_setup_first_level(struct intel_iommu *iommu,
+ 				    struct dmar_domain *domain,
+ 				    struct device *dev,
+@@ -4344,8 +4331,8 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 	struct pci_dev *pdev = dev_is_pci(dev) ? to_pci_dev(dev) : NULL;
+ 	struct device_domain_info *info;
+ 	struct intel_iommu *iommu;
+-	unsigned long flags;
+ 	u8 bus, devfn;
++	void *curr;
  
--	return ret;
-+	/*
-+	 * if irq is not one of the above, make sure EOB is disabled and all
-+	 * status bits are cleared.
-+	 */
-+	if (ret == IRQ_NONE) {
-+		npcm_i2c_eob_int(bus, false);
-+		npcm_i2c_clear_master_status(bus);
-+	}
-+
-+	return IRQ_HANDLED;
- }
- 
- static int npcm_i2c_reg_slave(struct i2c_client *client)
-@@ -1470,6 +1482,9 @@ static void npcm_i2c_irq_handle_nack(struct npcm_i2c *bus)
- 		npcm_i2c_eob_int(bus, false);
- 		npcm_i2c_master_stop(bus);
- 
-+		/* Clear SDA Status bit (by reading dummy byte) */
-+		npcm_i2c_rd_byte(bus);
-+
- 		/*
- 		 * The bus is released from stall only after the SW clears
- 		 * NEGACK bit. Then a Stop condition is sent.
-@@ -1477,6 +1492,8 @@ static void npcm_i2c_irq_handle_nack(struct npcm_i2c *bus)
- 		npcm_i2c_clear_master_status(bus);
- 		readx_poll_timeout_atomic(ioread8, bus->reg + NPCM_I2CCST, val,
- 					  !(val & NPCM_I2CCST_BUSY), 10, 200);
-+		/* verify no status bits are still set after bus is released */
-+		npcm_i2c_clear_master_status(bus);
- 	}
- 	bus->state = I2C_IDLE;
- 
-@@ -1675,10 +1692,10 @@ static int npcm_i2c_recovery_tgclk(struct i2c_adapter *_adap)
- 	int              iter = 27;
- 
- 	if ((npcm_i2c_get_SDA(_adap) == 1) && (npcm_i2c_get_SCL(_adap) == 1)) {
--		dev_dbg(bus->dev, "bus%d recovery skipped, bus not stuck",
--			bus->num);
-+		dev_dbg(bus->dev, "bus%d-0x%x recovery skipped, bus not stuck",
-+			bus->num, bus->dest_addr);
- 		npcm_i2c_reset(bus);
--		return status;
-+		return 0;
- 	}
- 
- 	npcm_i2c_int_enable(bus, false);
-@@ -1912,6 +1929,7 @@ static int npcm_i2c_init_module(struct npcm_i2c *bus, enum i2c_mode mode,
- 	    bus_freq_hz < I2C_FREQ_MIN_HZ || bus_freq_hz > I2C_FREQ_MAX_HZ)
- 		return -EINVAL;
- 
-+	npcm_i2c_int_enable(bus, false);
- 	npcm_i2c_disable(bus);
- 
- 	/* Configure FIFO mode : */
-@@ -1940,10 +1958,18 @@ static int npcm_i2c_init_module(struct npcm_i2c *bus, enum i2c_mode mode,
- 	val = (val | NPCM_I2CCTL1_NMINTE) & ~NPCM_I2CCTL1_RWS;
- 	iowrite8(val, bus->reg + NPCM_I2CCTL1);
- 
--	npcm_i2c_int_enable(bus, true);
--
- 	npcm_i2c_reset(bus);
- 
-+	/* check HW is OK: SDA and SCL should be high at this point. */
-+	if ((npcm_i2c_get_SDA(&bus->adap) == 0) ||
-+	    (npcm_i2c_get_SCL(&bus->adap) == 0)) {
-+		dev_err(bus->dev, "I2C%d init fail: lines are low", bus->num);
-+		dev_err(bus->dev, "SDA=%d SCL=%d", npcm_i2c_get_SDA(&bus->adap),
-+			npcm_i2c_get_SCL(&bus->adap));
-+		return -ENXIO;
-+	}
-+
-+	npcm_i2c_int_enable(bus, true);
- 	return 0;
- }
- 
-@@ -1991,10 +2017,14 @@ static irqreturn_t npcm_i2c_bus_irq(int irq, void *dev_id)
- #if IS_ENABLED(CONFIG_I2C_SLAVE)
- 	if (bus->slave) {
- 		bus->master_or_slave = I2C_SLAVE;
--		return npcm_i2c_int_slave_handler(bus);
-+		if (npcm_i2c_int_slave_handler(bus))
-+			return IRQ_HANDLED;
- 	}
- #endif
--	return IRQ_NONE;
-+	/* clear status bits for spurious interrupts */
-+	npcm_i2c_clear_master_status(bus);
-+
-+	return IRQ_HANDLED;
- }
- 
- static bool npcm_i2c_master_start_xmit(struct npcm_i2c *bus,
-@@ -2051,7 +2081,6 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	u8 *write_data, *read_data;
- 	u8 slave_addr;
- 	unsigned long timeout;
--	int ret = 0;
- 	bool read_block = false;
- 	bool read_PEC = false;
- 	u8 bus_busy;
-@@ -2141,12 +2170,12 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	bus->read_block_use = read_block;
- 
- 	reinit_completion(&bus->cmd_complete);
--	if (!npcm_i2c_master_start_xmit(bus, slave_addr, nwrite, nread,
--					write_data, read_data, read_PEC,
--					read_block))
--		ret = -EBUSY;
- 
--	if (ret != -EBUSY) {
-+	npcm_i2c_int_enable(bus, true);
-+
-+	if (npcm_i2c_master_start_xmit(bus, slave_addr, nwrite, nread,
-+				       write_data, read_data, read_PEC,
-+				       read_block)) {
- 		time_left = wait_for_completion_timeout(&bus->cmd_complete,
- 							timeout);
- 
-@@ -2160,26 +2189,31 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 			}
+ 	iommu = device_to_iommu(dev, &bus, &devfn);
+ 	if (!iommu)
+@@ -4387,10 +4374,15 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
  		}
  	}
--	ret = bus->cmd_err;
  
- 	/* if there was BER, check if need to recover the bus: */
- 	if (bus->cmd_err == -EAGAIN)
--		ret = i2c_recover_bus(adap);
-+		bus->cmd_err = i2c_recover_bus(adap);
- 
- 	/*
- 	 * After any type of error, check if LAST bit is still set,
- 	 * due to a HW issue.
- 	 * It cannot be cleared without resetting the module.
- 	 */
--	if (bus->cmd_err &&
--	    (NPCM_I2CRXF_CTL_LAST_PEC & ioread8(bus->reg + NPCM_I2CRXF_CTL)))
-+	else if (bus->cmd_err &&
-+		 (NPCM_I2CRXF_CTL_LAST_PEC & ioread8(bus->reg + NPCM_I2CRXF_CTL)))
- 		npcm_i2c_reset(bus);
- 
-+	/* after any xfer, successful or not, stall and EOB must be disabled */
-+	npcm_i2c_stall_after_start(bus, false);
-+	npcm_i2c_eob_int(bus, false);
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	list_add(&info->global, &device_domain_list);
++	curr = xa_store(&device_domain_array,
++			DEVI_IDX(info->segment, info->bus, info->devfn),
++			info, GFP_KERNEL);
++	if (xa_err(curr) || WARN_ON(curr)) {
++		kfree(info);
++		return ERR_PTR(-ENOSPC);
++	}
 +
- #if IS_ENABLED(CONFIG_I2C_SLAVE)
- 	/* reenable slave if it was enabled */
- 	if (bus->slave)
- 		iowrite8((bus->slave->addr & 0x7F) | NPCM_I2CADDR_SAEN,
- 			 bus->reg + NPCM_I2CADDR1);
-+#else
-+	npcm_i2c_int_enable(bus, false);
- #endif
- 	return bus->cmd_err;
+ 	dev_iommu_priv_set(dev, info);
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
+ 
+ 	return &iommu->iommu;
  }
 -- 
-2.17.1
+2.25.1
 
