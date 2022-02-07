@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DDEC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:59:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB30BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344905AbiBGLon (ORCPT
+        id S1389159AbiBGLqY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:44:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46118 "EHLO
+        Mon, 7 Feb 2022 06:46:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385967AbiBGLdM (ORCPT
+        with ESMTP id S1386230AbiBGLeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:33:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2710AC043181;
-        Mon,  7 Feb 2022 03:33:11 -0800 (PST)
+        Mon, 7 Feb 2022 06:34:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1EC2C043181;
+        Mon,  7 Feb 2022 03:34:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1FE8B8111C;
-        Mon,  7 Feb 2022 11:33:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C26FEC004E1;
-        Mon,  7 Feb 2022 11:33:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B3EB60A69;
+        Mon,  7 Feb 2022 11:34:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C10C004E1;
+        Mon,  7 Feb 2022 11:34:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233589;
-        bh=45tOOHDrjTYStgkC+9Zc7z5T7IhQblOXUrM1/Oiv+8Y=;
+        s=korg; t=1644233641;
+        bh=EtbOZiAqtWbT4t6/B/vsUfgMMXkYyFMWs8SFTUx3QU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ni7sS6sNoeweGTWwLpr2YI0+Zb3VRj+d+Mgxezjih31L9++P6XrrWPLh+uK6EjY+d
-         3vkIZ46fRmBTDGDwxXQ48xE6VuMb80oGCRftB0fdxgCB4V6JC6ftARpX8Y0bq9R2Pa
-         ztBeRzJ7qSP0TfrrVz+z2LNH/+JJp7jcMm9zbYt8=
+        b=iLON1TxALfT8aPijy2aukgpFGhgLHZi8m8QF3IHPM7lpJr46NSw5AQucWyd0Q8s9P
+         +DHqqj1kuwC5BRYohyUtZizOAAln428lbYC5gz5d99N39rEy/ZKXlziHlRvAZG/XYJ
+         OxlyMHTVytNb0Uho/UdVypJjG7skXTtUalrK27Y4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Wheeler <daniel.wheeler@amd.com>,
-        Aric Cyr <Aric.Cyr@amd.com>, Stylon Wang <stylon.wang@amd.com>,
-        Paul Hsieh <paul.hsieh@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 027/126] drm/amd/display: watermark latencies is not enough on DCN31
-Date:   Mon,  7 Feb 2022 12:05:58 +0100
-Message-Id: <20220207103805.085322616@linuxfoundation.org>
+        stable@vger.kernel.org, Camel Guo <camelg@axis.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 075/126] net: stmmac: dump gmac4 DMA registers correctly
+Date:   Mon,  7 Feb 2022 12:06:46 +0100
+Message-Id: <20220207103806.694567104@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -51,87 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Hsieh <paul.hsieh@amd.com>
+From: Camel Guo <camelg@axis.com>
 
-commit f5fa54f45ab41cbb1f99b1208f49554132ffb207 upstream.
+commit 7af037c39b600bac2c716dd1228e8ddbe149573f upstream.
 
-[Why]
-The original latencies were causing underflow in some modes.
-Resolution: 2880x1620@60p when HDR enable
+Unlike gmac100, gmac1000, gmac4 has 27 DMA registers and they are
+located at DMA_CHAN_BASE_ADDR (0x1100). In order for ethtool to dump
+gmac4 DMA registers correctly, this commit checks if a net_device has
+gmac4 and uses different logic to dump its DMA registers.
 
-[How]
-1. Replace with the up-to-date watermark values based on new measurments
-2. Correct the ddr_wm_table name to DDR5 on DCN31
+This fixes the following KASAN warning, which can normally be triggered
+by a command similar like "ethtool -d eth0":
 
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
-Acked-by: Stylon Wang <stylon.wang@amd.com>
-Signed-off-by: Paul Hsieh <paul.hsieh@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+BUG: KASAN: vmalloc-out-of-bounds in dwmac4_dump_dma_regs+0x6d4/0xb30
+Write of size 4 at addr ffffffc010177100 by task ethtool/1839
+ kasan_report+0x200/0x21c
+ __asan_report_store4_noabort+0x34/0x60
+ dwmac4_dump_dma_regs+0x6d4/0xb30
+ stmmac_ethtool_gregs+0x110/0x204
+ ethtool_get_regs+0x200/0x4b0
+ dev_ethtool+0x1dac/0x3800
+ dev_ioctl+0x7c0/0xb50
+ sock_ioctl+0x298/0x6c4
+ ...
+
+Fixes: fbf68229ffe7 ("net: stmmac: unify registers dumps methods")
+Signed-off-by: Camel Guo <camelg@axis.com>
+Link: https://lore.kernel.org/r/20220131083841.3346801-1-camel.guo@axis.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_clk_mgr.c |   20 +++++------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h      |    1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c |   19 +++++++++++++++++--
+ 2 files changed, 18 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_clk_mgr.c
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_clk_mgr.c
-@@ -329,38 +329,38 @@ static struct clk_bw_params dcn31_bw_par
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
+@@ -150,6 +150,7 @@
  
- };
+ #define NUM_DWMAC100_DMA_REGS	9
+ #define NUM_DWMAC1000_DMA_REGS	23
++#define NUM_DWMAC4_DMA_REGS	27
  
--static struct wm_table ddr4_wm_table = {
-+static struct wm_table ddr5_wm_table = {
- 	.entries = {
- 		{
- 			.wm_inst = WM_A,
- 			.wm_type = WM_TYPE_PSTATE_CHG,
- 			.pstate_latency_us = 11.72,
--			.sr_exit_time_us = 6.09,
--			.sr_enter_plus_exit_time_us = 7.14,
-+			.sr_exit_time_us = 9,
-+			.sr_enter_plus_exit_time_us = 11,
- 			.valid = true,
- 		},
- 		{
- 			.wm_inst = WM_B,
- 			.wm_type = WM_TYPE_PSTATE_CHG,
- 			.pstate_latency_us = 11.72,
--			.sr_exit_time_us = 10.12,
--			.sr_enter_plus_exit_time_us = 11.48,
-+			.sr_exit_time_us = 9,
-+			.sr_enter_plus_exit_time_us = 11,
- 			.valid = true,
- 		},
- 		{
- 			.wm_inst = WM_C,
- 			.wm_type = WM_TYPE_PSTATE_CHG,
- 			.pstate_latency_us = 11.72,
--			.sr_exit_time_us = 10.12,
--			.sr_enter_plus_exit_time_us = 11.48,
-+			.sr_exit_time_us = 9,
-+			.sr_enter_plus_exit_time_us = 11,
- 			.valid = true,
- 		},
- 		{
- 			.wm_inst = WM_D,
- 			.wm_type = WM_TYPE_PSTATE_CHG,
- 			.pstate_latency_us = 11.72,
--			.sr_exit_time_us = 10.12,
--			.sr_enter_plus_exit_time_us = 11.48,
-+			.sr_exit_time_us = 9,
-+			.sr_enter_plus_exit_time_us = 11,
- 			.valid = true,
- 		},
- 	}
-@@ -688,7 +688,7 @@ void dcn31_clk_mgr_construct(
- 		if (ctx->dc_bios->integrated_info->memory_type == LpDdr5MemType) {
- 			dcn31_bw_params.wm_table = lpddr5_wm_table;
- 		} else {
--			dcn31_bw_params.wm_table = ddr4_wm_table;
-+			dcn31_bw_params.wm_table = ddr5_wm_table;
- 		}
- 		/* Saved clocks configured at boot for debug purposes */
- 		 dcn31_dump_clk_registers(&clk_mgr->base.base.boot_snapshot, &clk_mgr->base.base, &log_info);
+ void dwmac_enable_dma_transmission(void __iomem *ioaddr);
+ void dwmac_enable_dma_irq(void __iomem *ioaddr, u32 chan, bool rx, bool tx);
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -21,10 +21,18 @@
+ #include "dwxgmac2.h"
+ 
+ #define REG_SPACE_SIZE	0x1060
++#define GMAC4_REG_SPACE_SIZE	0x116C
+ #define MAC100_ETHTOOL_NAME	"st_mac100"
+ #define GMAC_ETHTOOL_NAME	"st_gmac"
+ #define XGMAC_ETHTOOL_NAME	"st_xgmac"
+ 
++/* Same as DMA_CHAN_BASE_ADDR defined in dwmac4_dma.h
++ *
++ * It is here because dwmac_dma.h and dwmac4_dam.h can not be included at the
++ * same time due to the conflicting macro names.
++ */
++#define GMAC4_DMA_CHAN_BASE_ADDR  0x00001100
++
+ #define ETHTOOL_DMA_OFFSET	55
+ 
+ struct stmmac_stats {
+@@ -435,6 +443,8 @@ static int stmmac_ethtool_get_regs_len(s
+ 
+ 	if (priv->plat->has_xgmac)
+ 		return XGMAC_REGSIZE * 4;
++	else if (priv->plat->has_gmac4)
++		return GMAC4_REG_SPACE_SIZE;
+ 	return REG_SPACE_SIZE;
+ }
+ 
+@@ -447,8 +457,13 @@ static void stmmac_ethtool_gregs(struct
+ 	stmmac_dump_mac_regs(priv, priv->hw, reg_space);
+ 	stmmac_dump_dma_regs(priv, priv->ioaddr, reg_space);
+ 
+-	if (!priv->plat->has_xgmac) {
+-		/* Copy DMA registers to where ethtool expects them */
++	/* Copy DMA registers to where ethtool expects them */
++	if (priv->plat->has_gmac4) {
++		/* GMAC4 dumps its DMA registers at its DMA_CHAN_BASE_ADDR */
++		memcpy(&reg_space[ETHTOOL_DMA_OFFSET],
++		       &reg_space[GMAC4_DMA_CHAN_BASE_ADDR / 4],
++		       NUM_DWMAC4_DMA_REGS * 4);
++	} else if (!priv->plat->has_xgmac) {
+ 		memcpy(&reg_space[ETHTOOL_DMA_OFFSET],
+ 		       &reg_space[DMA_BUS_MODE / 4],
+ 		       NUM_DWMAC1000_DMA_REGS * 4);
 
 
