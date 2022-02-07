@@ -2,167 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC33C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:16:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5246C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448751AbiBGNMu (ORCPT
+        id S1448716AbiBGNMo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:12:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
+        Mon, 7 Feb 2022 08:12:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442187AbiBGMU1 (ORCPT
+        with ESMTP id S1384812AbiBGNF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:20:27 -0500
-X-Greylist: delayed 329 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 04:06:24 PST
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7B5C0302EC;
-        Mon,  7 Feb 2022 04:06:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644235582;
-        bh=ny+4Ok9hjLmZqMdJOe+AHOHZyUc8dQTSBOKig5sw1Zw=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=Gl5KqIy622abwGTYrM6Xo1WJVLlSblrb3aZsWKqO25F/xWICAtUsE3POqESd0qXde
-         bM/ExhXbhRuSDpoDn5S6s91bGYfLyLKUZ7uc7DIowflvAYfIr1dY18SX2aNmS/sclK
-         gxxRpSL13TkqoebmCiH+62phf+icKdvYCL4KdPtY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N5VHG-1oO2ST3tkI-01709e; Mon, 07
- Feb 2022 13:00:24 +0100
-Date:   Mon, 7 Feb 2022 13:00:20 +0100
-From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     Tyrone Ting <warp5tw@gmail.com>
-Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
-        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
-        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
-        olof@lixom.net, andriy.shevchenko@linux.intel.com,
-        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, devicetree@vger.kernel.org,
-        openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 6/6] i2c: npcm: Support NPCM845
-Message-ID: <YgEJ1M40AG9EuRPI@latitude>
-References: <20220207063338.6570-1-warp5tw@gmail.com>
- <20220207063338.6570-7-warp5tw@gmail.com>
+        Mon, 7 Feb 2022 08:05:27 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972CCC0401C4;
+        Mon,  7 Feb 2022 05:05:24 -0800 (PST)
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 02/12] iio: buffer-dma: Enable buffer write support
+Date:   Mon,  7 Feb 2022 12:59:23 +0000
+Message-Id: <20220207125933.81634-3-paul@crapouillou.net>
+In-Reply-To: <20220207125933.81634-1-paul@crapouillou.net>
+References: <20220207125933.81634-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="LFTVFI5jLgkqvDDv"
-Content-Disposition: inline
-In-Reply-To: <20220207063338.6570-7-warp5tw@gmail.com>
-X-Provags-ID: V03:K1:yg89WwvSEPrQ7hqxZPv4583IrZHv7A7T87r0LqD6PbFz3C7FN/u
- DCigsPCdor6D5A6cW9pbDSVK9Wv7zDCZff+OnUfqn03zB/IKN/kfRue1QlcueWxNEcDF7cq
- v7kUL6I1LDa0n/X7JpqTp/cVEV9z/uaWTnAp/M1NjLk7sw5xbBxX58aGYTsD5gpunxjgfA6
- 1P2h57S5hXSollPCTcc1Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:z6mXA6PRim8=:mnjFTZTnYE8Rw0YqXK6Ju9
- EyPZ1VT51XgCvfmBG89lRz0bIoctrULAb1vHRywr1bHkpSSwpOwU0JPSZ39f3VTQosv8+n1Ln
- IQVwl0P/pmchLf2hPEcwXPEnSZMBm3aPCaOjTLDdOGt8WuofFTsg1NlDXtQAL6hUxb+f664Jz
- T+nFYfH4wkQ5ZBbFBK/I1AXur7v6YhZSh8h+7xuw4hxMPhG/+rCCkyuTK9vCxesBVcSfUeEYq
- mUhEUHyTm/66iNDunR7t9MeOmnO+mI8sF+p3StscGU4QQi6spe15p5Pngk2exoUrb3pB/ZO9i
- FiTER85pcKwlVJhkCK9IoC+CVAG2bKbA7hR7QdGCrfsvhg/hRrg1O1/ZZdm0K7lIfIadS8HwE
- pVBznNpqhml5Itx44k7c8eBlzeSt+27H8YOXX4Ym4PVhr4ews0awjftUpJeZ+56kHELa6avPO
- U852nmB3gVtbZsavfSn7vLW2EYf8+GGgh59FNdLcauJ1l6ooLVkAUbSPStdot8gKGFt2hs28V
- IbLHjLl+NeuCZoX4xP8BN94diXVD3PNsJWiM1LtCbfoncST5NqOjTORtI1JV7XLqpGpdd4km7
- erfOMwc6A0hwDkeRubSfBFCfjCcU+CPZ4adDSnNDxTS3YwqGjJNxJHg7tT8gsQbXOErA0ygG7
- +M/MTFCxEobsuk1+UAnWW3NqFNCg4eRJuEApMJk8TxglvXJY4YTHFEjCJwAHJxQADWXjku1Ni
- kXch0HbzJjH1oLesnaeUg50UmWEV2e80HLpeGpnjXBfZ//GED0SBhbm8XX5IuYJbVPjFPbi3L
- RWV9odHYf4B/9ACh7uvqZbIMPsvnw4OBY58eMEO+TjToDpGRiNARX8yRfjzxapiV+MdAxkDgv
- 7E28V+Kldm2f8OOLYeSMo2HkfkfT4jGeQ90kaYr5aGzWiXxVPa2kuPKuARG8FEJZBdqiBZpMW
- XCBODFxdHxmrZ/AKTKiPQAyMynqiU9sRb/Yvvw0cXIbvF/V29PmBHv0+Xz2ZKu/QYGj/N4Y35
- Lo1+r6P+QHMQiIx9Y6hKhS3hR5e4zKQs7IQxVUiglyngVV00yzbBiqvCrYYBjatETOfB6/k3U
- I+VXA3WMgs0SLg=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Adding write support to the buffer-dma code is easy - the write()
+function basically needs to do the exact same thing as the read()
+function: dequeue a block, read or write the data, enqueue the block
+when entirely processed.
 
---LFTVFI5jLgkqvDDv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Therefore, the iio_buffer_dma_read() and the new iio_buffer_dma_write()
+now both call a function iio_buffer_dma_io(), which will perform this
+task.
 
-Hello,
+The .space_available() callback can return the exact same value as the
+.data_available() callback for input buffers, since in both cases we
+count the exact same thing (the number of bytes in each available
+block).
 
-On Mon, Feb 07, 2022 at 02:33:38PM +0800, Tyrone Ting wrote:
-> From: Tyrone Ting <kfting@nuvoton.com>
->=20
-> NPCM8XX uses a similar i2c module as NPCM7XX.
-> The only difference is that the internal HW FIFO
-> is larger.
->=20
-> Related Makefile and Kconfig files are modified
-> to support as well.
->=20
-> Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller drive=
-r")
+Note that we preemptively reset block->bytes_used to the buffer's size
+in iio_dma_buffer_request_update(), as in the future the
+iio_dma_buffer_enqueue() function won't reset it.
 
-It's not really a bug fix, but rather an additional feature.
-Therefore, I suggest removing the Fixes tag from this patch.
+v2: - Fix block->state not being reset in
+      iio_dma_buffer_request_update() for output buffers.
+    - Only update block->bytes_used once and add a comment about why we
+      update it.
+    - Add a comment about why we're setting a different state for output
+      buffers in iio_dma_buffer_request_update()
+    - Remove useless cast to bool (!!) in iio_dma_buffer_io()
 
-> Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-> Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-> ---
-[...]
->  /* init register and default value required to enable module */
->  #define NPCM_I2CSEGCTL			0xE4
-> +#ifdef CONFIG_ARCH_NPCM7XX
->  #define NPCM_I2CSEGCTL_INIT_VAL		0x0333F000
-> +#else
-> +#define NPCM_I2CSEGCTL_INIT_VAL		0x9333F000
-> +#endif
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+---
+ drivers/iio/buffer/industrialio-buffer-dma.c | 88 ++++++++++++++++----
+ include/linux/iio/buffer-dma.h               |  7 ++
+ 2 files changed, 79 insertions(+), 16 deletions(-)
 
-This is going to cause problems when someone tries to compile a kernel
-that runs on both NPCM7xx and NPCM8xx (because the driver will then only
-work on NPCM7xx).
+diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
+index 1fc91467d1aa..a9f1b673374f 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dma.c
++++ b/drivers/iio/buffer/industrialio-buffer-dma.c
+@@ -195,6 +195,18 @@ static void _iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
+ 		block->state = IIO_BLOCK_STATE_DONE;
+ }
+ 
++static void iio_dma_buffer_queue_wake(struct iio_dma_buffer_queue *queue)
++{
++	__poll_t flags;
++
++	if (queue->buffer.direction == IIO_BUFFER_DIRECTION_IN)
++		flags = EPOLLIN | EPOLLRDNORM;
++	else
++		flags = EPOLLOUT | EPOLLWRNORM;
++
++	wake_up_interruptible_poll(&queue->buffer.pollq, flags);
++}
++
+ /**
+  * iio_dma_buffer_block_done() - Indicate that a block has been completed
+  * @block: The completed block
+@@ -212,7 +224,7 @@ void iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
+ 	spin_unlock_irqrestore(&queue->list_lock, flags);
+ 
+ 	iio_buffer_block_put_atomic(block);
+-	wake_up_interruptible_poll(&queue->buffer.pollq, EPOLLIN | EPOLLRDNORM);
++	iio_dma_buffer_queue_wake(queue);
+ }
+ EXPORT_SYMBOL_GPL(iio_dma_buffer_block_done);
+ 
+@@ -241,7 +253,7 @@ void iio_dma_buffer_block_list_abort(struct iio_dma_buffer_queue *queue,
+ 	}
+ 	spin_unlock_irqrestore(&queue->list_lock, flags);
+ 
+-	wake_up_interruptible_poll(&queue->buffer.pollq, EPOLLIN | EPOLLRDNORM);
++	iio_dma_buffer_queue_wake(queue);
+ }
+ EXPORT_SYMBOL_GPL(iio_dma_buffer_block_list_abort);
+ 
+@@ -335,8 +347,24 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
+ 			queue->fileio.blocks[i] = block;
+ 		}
+ 
+-		block->state = IIO_BLOCK_STATE_QUEUED;
+-		list_add_tail(&block->head, &queue->incoming);
++		/*
++		 * block->bytes_used may have been modified previously, e.g. by
++		 * iio_dma_buffer_block_list_abort(). Reset it here to the
++		 * block's so that iio_dma_buffer_io() will work.
++		 */
++		block->bytes_used = block->size;
++
++		/*
++		 * If it's an input buffer, mark the block as queued, and
++		 * iio_dma_buffer_enable() will submit it. Otherwise mark it as
++		 * done, which means it's ready to be dequeued.
++		 */
++		if (queue->buffer.direction == IIO_BUFFER_DIRECTION_IN) {
++			block->state = IIO_BLOCK_STATE_QUEUED;
++			list_add_tail(&block->head, &queue->incoming);
++		} else {
++			block->state = IIO_BLOCK_STATE_DONE;
++		}
+ 	}
+ 
+ out_unlock:
+@@ -465,20 +493,12 @@ static struct iio_dma_buffer_block *iio_dma_buffer_dequeue(
+ 	return block;
+ }
+ 
+-/**
+- * iio_dma_buffer_read() - DMA buffer read callback
+- * @buffer: Buffer to read form
+- * @n: Number of bytes to read
+- * @user_buffer: Userspace buffer to copy the data to
+- *
+- * Should be used as the read callback for iio_buffer_access_ops
+- * struct for DMA buffers.
+- */
+-int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
+-	char __user *user_buffer)
++static int iio_dma_buffer_io(struct iio_buffer *buffer,
++			     size_t n, char __user *user_buffer, bool is_write)
+ {
+ 	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
+ 	struct iio_dma_buffer_block *block;
++	void *addr;
+ 	int ret;
+ 
+ 	if (n < buffer->bytes_per_datum)
+@@ -501,8 +521,13 @@ int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
+ 	n = rounddown(n, buffer->bytes_per_datum);
+ 	if (n > block->bytes_used - queue->fileio.pos)
+ 		n = block->bytes_used - queue->fileio.pos;
++	addr = block->vaddr + queue->fileio.pos;
+ 
+-	if (copy_to_user(user_buffer, block->vaddr + queue->fileio.pos, n)) {
++	if (is_write)
++		ret = copy_from_user(addr, user_buffer, n);
++	else
++		ret = copy_to_user(user_buffer, addr, n);
++	if (ret) {
+ 		ret = -EFAULT;
+ 		goto out_unlock;
+ 	}
+@@ -521,8 +546,39 @@ int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
+ 
+ 	return ret;
+ }
++
++/**
++ * iio_dma_buffer_read() - DMA buffer read callback
++ * @buffer: Buffer to read form
++ * @n: Number of bytes to read
++ * @user_buffer: Userspace buffer to copy the data to
++ *
++ * Should be used as the read callback for iio_buffer_access_ops
++ * struct for DMA buffers.
++ */
++int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
++	char __user *user_buffer)
++{
++	return iio_dma_buffer_io(buffer, n, user_buffer, false);
++}
+ EXPORT_SYMBOL_GPL(iio_dma_buffer_read);
+ 
++/**
++ * iio_dma_buffer_write() - DMA buffer write callback
++ * @buffer: Buffer to read form
++ * @n: Number of bytes to read
++ * @user_buffer: Userspace buffer to copy the data from
++ *
++ * Should be used as the write callback for iio_buffer_access_ops
++ * struct for DMA buffers.
++ */
++int iio_dma_buffer_write(struct iio_buffer *buffer, size_t n,
++			 const char __user *user_buffer)
++{
++	return iio_dma_buffer_io(buffer, n, (__force char *)user_buffer, true);
++}
++EXPORT_SYMBOL_GPL(iio_dma_buffer_write);
++
+ /**
+  * iio_dma_buffer_data_available() - DMA buffer data_available callback
+  * @buf: Buffer to check for data availability
+diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
+index 18d3702fa95d..490b93f76fa8 100644
+--- a/include/linux/iio/buffer-dma.h
++++ b/include/linux/iio/buffer-dma.h
+@@ -132,6 +132,8 @@ int iio_dma_buffer_disable(struct iio_buffer *buffer,
+ 	struct iio_dev *indio_dev);
+ int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
+ 	char __user *user_buffer);
++int iio_dma_buffer_write(struct iio_buffer *buffer, size_t n,
++			 const char __user *user_buffer);
+ size_t iio_dma_buffer_data_available(struct iio_buffer *buffer);
+ int iio_dma_buffer_set_bytes_per_datum(struct iio_buffer *buffer, size_t bpd);
+ int iio_dma_buffer_set_length(struct iio_buffer *buffer, unsigned int length);
+@@ -142,4 +144,9 @@ int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
+ void iio_dma_buffer_exit(struct iio_dma_buffer_queue *queue);
+ void iio_dma_buffer_release(struct iio_dma_buffer_queue *queue);
+ 
++static inline size_t iio_dma_buffer_space_available(struct iio_buffer *buffer)
++{
++	return iio_dma_buffer_data_available(buffer);
++}
++
+ #endif
+-- 
+2.34.1
 
-And every time another platform is added, this approach will make the
-code less readable.
-
-A more future-proof approach is probably to have a struct with chip-
-specific data (such as the I2CSECCTL initialization value), which is
-then selected via the .data field in of_device_id.
-
-
->  static const struct of_device_id npcm_i2c_bus_of_table[] =3D {
->  	{ .compatible =3D "nuvoton,npcm750-i2c", },
-> +	{ .compatible =3D "nuvoton,npcm845-i2c", },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, npcm_i2c_bus_of_table);
-
-e.g.:
-
-	static const struct of_device_id npcm_i2c_bus_of_table[] =3D {
-		{ .compatible =3D "nuvoton,npcm750-i2c", .data =3D &npcm750_info },
-		{ .compatible =3D "nuvoton,npcm845-i2c", .data =3D &npcm845_info },
-		{}
-	};
-	MODULE_DEVICE_TABLE(of, npcm_i2c_bus_of_table);
-
-
-Best regards,
-Jonathan
-
---LFTVFI5jLgkqvDDv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmIBCaYACgkQCDBEmo7z
-X9uI7A/+MWPp/zPHPaH3lYE4rWHKtXP/hbBmF0vkBrZkvhLAh69d3QhFSCURD+7b
-aC2EGxA6Jmnnbq4iGi76fSAge1D6KiDCpYvi3QLRSY5h66nEyvnAs2JlZZXMfBkQ
-TTCWSzdULh1ow8+IdwzTuQ/ngCNk+Dar1R8tsPvZjfgjNA+huM/UuBNP6c8XY/pe
-r1gGazpuFO5IittQwGVqW0f7WVdu7gBGsuOBlpdS4xMGdw5Zp2XSmMXPjESEI6Tp
-lCycBXLdhzEokfA76PhOuRSjn6V3fyZYlw/iIxLh/vISBD+XtAt9RuvvqHmxIlS0
-T+rqm3Kdn6BPb6xYxdBt2lySI6838dS7CvAI4ntu42bGTM+xboOSXm7RTUT0/PRV
-cGV3Uo3vx9fLNWVjxLhEbuMYyGY1AbE5UuORWkij2XilAWrwOqvFUWWu0Xw5UnaA
-SaWSZHU7/9QP16BCwoVt5Nv2HiygMddN50dZFAzcy2oLXoChLFThcrc5KGKvfX/4
-ltXWQ4XI+7riX9QhoD9HX2SLwTNaX1V8nHojvzbflb7UIvujg8VSu2uBq6hRElDe
-BrBEbtEkFYVzs2zkULWGsp9bQGcwJF3gVEWFTpxuLWS6xFB3kJqPhVffoqxL4NbD
-W3HqOmJArx3js3avkgpp3LzI8hAAYfq+yP3Fibsmc9Z89mU5rYE=
-=8qyc
------END PGP SIGNATURE-----
-
---LFTVFI5jLgkqvDDv--
