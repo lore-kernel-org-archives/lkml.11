@@ -2,181 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1357BC3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99678C35272
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448533AbiBGNLt (ORCPT
+        id S1448561AbiBGNL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:11:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
+        Mon, 7 Feb 2022 08:11:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447831AbiBGNB5 (ORCPT
+        with ESMTP id S1445240AbiBGMlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:01:57 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FE9C0401C8;
-        Mon,  7 Feb 2022 05:01:55 -0800 (PST)
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 12/12] Documentation: iio: Document high-speed DMABUF based API
-Date:   Mon,  7 Feb 2022 13:01:40 +0000
-Message-Id: <20220207130140.81891-2-paul@crapouillou.net>
-In-Reply-To: <20220207130140.81891-1-paul@crapouillou.net>
-References: <20220207125933.81634-1-paul@crapouillou.net>
- <20220207130140.81891-1-paul@crapouillou.net>
+        Mon, 7 Feb 2022 07:41:46 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52BDBE031016
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 04:33:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644237197; x=1675773197;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vhBTmSn8UkwEjJUl4ynGb5kIz8nOXSvEwd6JGQ6YNy8=;
+  b=ABFF0jbt9bD8QBR9MYcd7MFWyf5rwaJVjImMDNTHcMLkYTQI1qa1+AQI
+   rpx0pCFIG5Sd5BhE/l2FqAZLBaQtibUz36FnsWqMF37AdyD/9ahJqT5Al
+   oxz5GWWh6HraxHYNAO5zebXZ+3rAPqAHgUZ88zHpeVM82lC/uqfjiAo3A
+   d7YzbKIHC7b8+HOIZFAah7MaqAOw9GIphfPZi3ZoiJ5r8jJzsEteonG7P
+   qz5cV9GBTob6siimsajLIEKYbubAZLHd7WVq89ID94uAR30FcKCqtmy7k
+   jmG6lQnsLgnQAlznypBX9RiYoZnluWunWMyya6VlD93+gm/0IZCyn/UlZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="228674150"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="228674150"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:32:13 -0800
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="621535538"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:32:11 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nH3Al-001tq2-Md;
+        Mon, 07 Feb 2022 14:31:11 +0200
+Date:   Mon, 7 Feb 2022 14:31:11 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Moses Christopher Bollavarapu <mosescb.dev@gmail.com>
+Cc:     gregkh@linuxfoundation.org, joe@perches.com, kitakar@gmail.com,
+        laurent.pinchart@ideasonboard.com, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        mchehab@kernel.org, sakari.ailus@linux.intel.com,
+        tomi.valkeinen@ideasonboard.com, dan.carpenter@oracle.com
+Subject: Re: [PATCH] staging: media: atomisp: Use GENMASK instead of manual
+ masking
+Message-ID: <YgERD7JdlqdaNHuA@smile.fi.intel.com>
+References: <20220206185830.39360-1-mosescb.dev@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220206185830.39360-1-mosescb.dev@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the new DMABUF based API.
+On Sun, Feb 06, 2022 at 07:58:30PM +0100, Moses Christopher Bollavarapu wrote:
+> There is a GENMASK macro available in linux/bits.h, for masking.
+> 
+> Example: GENMASK(3, 0) = 0b00001111 (same as (1 << 4) - 1)
 
-v2: - Explicitly state that the new interface is optional and is
-      not implemented by all drivers.
-    - The IOCTLs can now only be called on the buffer FD returned by
-      IIO_BUFFER_GET_FD_IOCTL.
-    - Move the page up a bit in the index since it is core stuff and not
-      driver-specific.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
- Documentation/driver-api/dma-buf.rst |  2 +
- Documentation/iio/dmabuf_api.rst     | 94 ++++++++++++++++++++++++++++
- Documentation/iio/index.rst          |  2 +
- 3 files changed, 98 insertions(+)
- create mode 100644 Documentation/iio/dmabuf_api.rst
+> Signed-off-by: Moses Christopher Bollavarapu <mosescb.dev@gmail.com>
+> ---
+>  drivers/staging/media/atomisp/pci/atomisp_compat_css20.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/staging/media/atomisp/pci/atomisp_compat_css20.c b/drivers/staging/media/atomisp/pci/atomisp_compat_css20.c
+> index 1173be0e72b0..a345fa1d7de9 100644
+> --- a/drivers/staging/media/atomisp/pci/atomisp_compat_css20.c
+> +++ b/drivers/staging/media/atomisp/pci/atomisp_compat_css20.c
+> @@ -40,6 +40,7 @@
+>  
+>  #include <linux/io.h>
+>  #include <linux/pm_runtime.h>
 
-diff --git a/Documentation/driver-api/dma-buf.rst b/Documentation/driver-api/dma-buf.rst
-index 2cd7db82d9fe..d3c9b58d2706 100644
---- a/Documentation/driver-api/dma-buf.rst
-+++ b/Documentation/driver-api/dma-buf.rst
-@@ -1,3 +1,5 @@
-+.. _dma-buf:
-+
- Buffer Sharing and Synchronization
- ==================================
- 
-diff --git a/Documentation/iio/dmabuf_api.rst b/Documentation/iio/dmabuf_api.rst
-new file mode 100644
-index 000000000000..43bb2c1b9fdc
---- /dev/null
-+++ b/Documentation/iio/dmabuf_api.rst
-@@ -0,0 +1,94 @@
-+===================================
-+High-speed DMABUF interface for IIO
-+===================================
-+
-+1. Overview
-+===========
-+
-+The Industrial I/O subsystem supports access to buffers through a file-based
-+interface, with read() and write() access calls through the IIO device's dev
-+node.
-+
-+It additionally supports a DMABUF based interface, where the userspace
-+application can allocate and append DMABUF objects to the buffer's queue.
-+This interface is however optional and is not available in all drivers.
-+
-+The advantage of this DMABUF based interface vs. the read()
-+interface, is that it avoids an extra copy of the data between the
-+kernel and userspace. This is particularly useful for high-speed
-+devices which produce several megabytes or even gigabytes of data per
-+second.
-+
-+The data in this DMABUF interface is managed at the granularity of
-+DMABUF objects. Reducing the granularity from byte level to block level
-+is done to reduce the userspace-kernelspace synchronization overhead
-+since performing syscalls for each byte at a few Mbps is just not
-+feasible.
-+
-+This of course leads to a slightly increased latency. For this reason an
-+application can choose the size of the DMABUFs as well as how many it
-+allocates. E.g. two DMABUFs would be a traditional double buffering
-+scheme. But using a higher number might be necessary to avoid
-+underflow/overflow situations in the presence of scheduling latencies.
-+
-+2. User API
-+===========
-+
-+``IIO_BUFFER_DMABUF_ALLOC_IOCTL(struct iio_dmabuf_alloc_req *)``
-+----------------------------------------------------------------
-+
-+Each call will allocate a new DMABUF object. The return value (if not
-+a negative errno value as error) will be the file descriptor of the new
-+DMABUF.
-+
-+``IIO_BUFFER_DMABUF_ENQUEUE_IOCTL(struct iio_dmabuf *)``
-+--------------------------------------------------------
-+
-+Place the DMABUF object into the queue pending for hardware process.
-+
-+These two IOCTLs have to be performed on the IIO buffer's file
-+descriptor, obtained using the `IIO_BUFFER_GET_FD_IOCTL` ioctl.
-+
-+3. Usage
-+========
-+
-+To access the data stored in a block by userspace the block must be
-+mapped to the process's memory. This is done by calling mmap() on the
-+DMABUF's file descriptor.
-+
-+Before accessing the data through the map, you must use the
-+DMA_BUF_IOCTL_SYNC(struct dma_buf_sync *) ioctl, with the
-+DMA_BUF_SYNC_START flag, to make sure that the data is available.
-+This call may block until the hardware is done with this block. Once
-+you are done reading or writing the data, you must use this ioctl again
-+with the DMA_BUF_SYNC_END flag, before enqueueing the DMABUF to the
-+kernel's queue.
-+
-+If you need to know when the hardware is done with a DMABUF, you can
-+poll its file descriptor for the EPOLLOUT event.
-+
-+Finally, to destroy a DMABUF object, simply call close() on its file
-+descriptor.
-+
-+For more information about manipulating DMABUF objects, see: :ref:`dma-buf`.
-+
-+A typical workflow for the new interface is:
-+
-+    for block in blocks:
-+      DMABUF_ALLOC block
-+      mmap block
-+
-+    enable buffer
-+
-+    while !done
-+      for block in blocks:
-+        DMABUF_ENQUEUE block
-+
-+        DMABUF_SYNC_START block
-+        process data
-+        DMABUF_SYNC_END block
-+
-+    disable buffer
-+
-+    for block in blocks:
-+      close block
-diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-index 58b7a4ebac51..669deb67ddee 100644
---- a/Documentation/iio/index.rst
-+++ b/Documentation/iio/index.rst
-@@ -9,4 +9,6 @@ Industrial I/O
- 
-    iio_configfs
- 
-+   dmabuf_api
-+
-    ep93xx_adc
+> +#include <linux/bits.h>
+
+Probably this can be still ordered.
+
+>  /* Assume max number of ACC stages */
+>  #define MAX_ACC_STAGES	20
+> @@ -1913,11 +1914,11 @@ void atomisp_css_input_set_mode(struct atomisp_sub_device *asd,
+>  			    &asd->stream_env[ATOMISP_INPUT_STREAM_GENERAL].stream_config;
+>  		s_config->mode = IA_CSS_INPUT_MODE_TPG;
+>  		s_config->source.tpg.mode = IA_CSS_TPG_MODE_CHECKERBOARD;
+> -		s_config->source.tpg.x_mask = (1 << 4) - 1;
+> +		s_config->source.tpg.x_mask = GENMASK(3, 0);
+>  		s_config->source.tpg.x_delta = -2;
+> -		s_config->source.tpg.y_mask = (1 << 4) - 1;
+> +		s_config->source.tpg.y_mask = GENMASK(3, 0);
+>  		s_config->source.tpg.y_delta = 3;
+> -		s_config->source.tpg.xy_mask = (1 << 8) - 1;
+> +		s_config->source.tpg.xy_mask = GENMASK(7, 0);
+>  		return;
+>  	}
+>  
+> -- 
+> 2.30.2
+> 
+
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
