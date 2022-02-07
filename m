@@ -2,151 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAEE0C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B83DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448569AbiBGNMA (ORCPT
+        id S1448620AbiBGNMM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:12:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
+        Mon, 7 Feb 2022 08:12:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446786AbiBGMnz (ORCPT
+        with ESMTP id S1447705AbiBGNBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:43:55 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2986C0401C5;
-        Mon,  7 Feb 2022 04:41:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644237713; x=1675773713;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=lthWInRe5rhsFpXyr44BcVGfaJiVQJ2UlxjwGFZbtNQ=;
-  b=XNT1fQWLr+sI4RLUBAZFk7TEsWNaxnqTUHTM6CDA0eikp5DVR4TXz8C6
-   0KYyIA21g5orVtrrSIJXtjl67VKM4FmnhZLNkOaY1N/t7qJJzOjYt5Zqg
-   jVoVZuekv02AX6M9zcjR4aIu5PRfukjefwqZSGCUxWkNz+i5QnY6SZtMr
-   9uYJlHvQKgryMZ+6hGm5zIMhwKBvyXJRE1KnPWxTOciPGleMB88vlWeZj
-   4VeOTdfsRppYtHeTaeVp6viKzNCwP9x15+vMgPgBZTwB2mWs9+lomG+Vo
-   CDqBJmnZ7alB+DqcY365jE6cO0lUqSCD93KdmeIgg03JTMSq9n/8c0lhY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="229354774"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="229354774"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 04:41:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="536203226"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 07 Feb 2022 04:41:52 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id E71F53ED; Mon,  7 Feb 2022 14:42:06 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v3 1/1] iio: chemical: atlas-ezo-sensor: Make use of device properties
-Date:   Mon,  7 Feb 2022 14:42:04 +0200
-Message-Id: <20220207124204.11658-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 7 Feb 2022 08:01:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AF2C043181;
+        Mon,  7 Feb 2022 05:01:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B846AB81020;
+        Mon,  7 Feb 2022 13:01:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0157DC004E1;
+        Mon,  7 Feb 2022 13:01:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644238869;
+        bh=JOc1/6BZgCfsZYq3N36mbfIFoPDeRG9grLrfprzG+r8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JqNzuh+GfyMIdM8LVAIedh2MKCYgVMklskYwUHWzplhWZR/hBE0x/twHaAFevsUXq
+         C/E4Jug/AouJue+jyUK/C0O1u/z12BfWJzANeJFD7Au8GmHtqxed85it87Jm2c/VqD
+         5iQ2ykyE0D210OFRnxrp1QLzwip5+oW/VaaxIp7XSR+CYrpbYVdATtoLE0qWcPrSMb
+         8utW3YP28BdnBMw5zbLGVlnmKtCXWwvzOLnjMU0h/mIDR6ryIvPGoCHVc56p2gkMmX
+         xf59ddSVHTIZcKFaqjrShePZ4Tx2FXmxeTqpSHjx+6maF4TIXk0gIvwTnGVuoTw0fE
+         AQlM41k4JBebA==
+Date:   Mon, 7 Feb 2022 14:01:06 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Sui Chen <suichen@google.com>
+Cc:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        openbmc@lists.ozlabs.org, joel@jms.id.au, andrew@aj.id.au,
+        tali.perry1@gmail.com, benjaminfair@google.com, krellan@google.com,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [RFC Patch v3 1/3] i2c debug counters as sysfs attributes
+Message-ID: <YgEYEk355t8C4J1x@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Sui Chen <suichen@google.com>, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au,
+        andrew@aj.id.au, tali.perry1@gmail.com, benjaminfair@google.com,
+        krellan@google.com, kernel test robot <lkp@intel.com>
+References: <20211221174344.1249202-1-suichen@google.com>
+ <20211221174344.1249202-2-suichen@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kV9YJMcLA9AXD3Nw"
+Content-Disposition: inline
+In-Reply-To: <20211221174344.1249202-2-suichen@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the module to be property provider agnostic and allow
-it to be used on non-OF platforms.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v3: reincarnated enum (Jonathan)
- drivers/iio/chemical/atlas-ezo-sensor.c | 32 +++++++++++++------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+--kV9YJMcLA9AXD3Nw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/iio/chemical/atlas-ezo-sensor.c b/drivers/iio/chemical/atlas-ezo-sensor.c
-index b1bacfe3c3ce..bbcf5a59c1f4 100644
---- a/drivers/iio/chemical/atlas-ezo-sensor.c
-+++ b/drivers/iio/chemical/atlas-ezo-sensor.c
-@@ -6,13 +6,15 @@
-  * Author: Matt Ranostay <matt.ranostay@konsulko.com>
-  */
- 
--#include <linux/module.h>
- #include <linux/init.h>
- #include <linux/delay.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
- #include <linux/mutex.h>
-+#include <linux/property.h>
- #include <linux/err.h>
- #include <linux/i2c.h>
--#include <linux/of_device.h>
-+
- #include <linux/iio/iio.h>
- 
- #define ATLAS_EZO_DRV_NAME		"atlas-ezo-sensor"
-@@ -33,7 +35,7 @@ struct atlas_ezo_device {
- 
- struct atlas_ezo_data {
- 	struct i2c_client *client;
--	struct atlas_ezo_device *chip;
-+	const struct atlas_ezo_device *chip;
- 
- 	/* lock to avoid multiple concurrent read calls */
- 	struct mutex lock;
-@@ -184,17 +186,17 @@ static const struct iio_info atlas_info = {
- };
- 
- static const struct i2c_device_id atlas_ezo_id[] = {
--	{ "atlas-co2-ezo", ATLAS_CO2_EZO },
--	{ "atlas-o2-ezo", ATLAS_O2_EZO },
--	{ "atlas-hum-ezo", ATLAS_HUM_EZO },
-+	{ "atlas-co2-ezo", (kernel_ulong_t)&atlas_ezo_devices[ATLAS_CO2_EZO] },
-+	{ "atlas-o2-ezo", (kernel_ulong_t)&atlas_ezo_devices[ATLAS_O2_EZO] },
-+	{ "atlas-hum-ezo", (kernel_ulong_t)&atlas_ezo_devices[ATLAS_HUM_EZO] },
- 	{}
- };
- MODULE_DEVICE_TABLE(i2c, atlas_ezo_id);
- 
- static const struct of_device_id atlas_ezo_dt_ids[] = {
--	{ .compatible = "atlas,co2-ezo", .data = (void *)ATLAS_CO2_EZO, },
--	{ .compatible = "atlas,o2-ezo", .data = (void *)ATLAS_O2_EZO, },
--	{ .compatible = "atlas,hum-ezo", .data = (void *)ATLAS_HUM_EZO, },
-+	{ .compatible = "atlas,co2-ezo", .data = &atlas_ezo_devices[ATLAS_CO2_EZO], },
-+	{ .compatible = "atlas,o2-ezo", .data = &atlas_ezo_devices[ATLAS_O2_EZO], },
-+	{ .compatible = "atlas,hum-ezo", .data = &atlas_ezo_devices[ATLAS_HUM_EZO], },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
-@@ -202,20 +204,20 @@ MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
- static int atlas_ezo_probe(struct i2c_client *client,
- 		       const struct i2c_device_id *id)
- {
-+	const struct atlas_ezo_device *chip;
- 	struct atlas_ezo_data *data;
--	struct atlas_ezo_device *chip;
--	const struct of_device_id *of_id;
- 	struct iio_dev *indio_dev;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
--	of_id = of_match_device(atlas_ezo_dt_ids, &client->dev);
--	if (!of_id)
--		chip = &atlas_ezo_devices[id->driver_data];
-+	if (dev_fwnode(&client->dev))
-+		chip = device_get_match_data(&client->dev);
- 	else
--		chip = &atlas_ezo_devices[(unsigned long)of_id->data];
-+		chip = (const struct atlas_ezo_device *)id->driver_data;
-+	if (!chip)
-+		return -EINVAL;
- 
- 	indio_dev->info = &atlas_info;
- 	indio_dev->name = ATLAS_EZO_DRV_NAME;
--- 
-2.34.1
+Hi,
 
+I finally had some time to look at your proposal. As I wrote last time,
+you convinced me to have the stats in sysfs for apple-to-apple
+comparisons.
+
+One change I'd like to see is to let the I2C core handle the stats and
+not the individual bus drivers. From what I see, the I2C core could
+handle all this if the bus drivers use proper fault codes.
+
+> - ber_cnt (bus error count)
+
+I'm not sure what exactly "bus error" means in this case. But I think it
+can be translated to any not-otherwise handled errno returned by
+__i2c_transfer() or __i2c_smbus_transfer(). I also think it should be
+named "bus_errors". Do we really need the "cnt" suffix?
+
+> - nack_cnt (NACK count)
+
+This would be -ENXIO for __i2c_transfer and friends. Name should be
+"NACKs"?
+
+> - rec_fail_cnt, rec_succ_cnt (recovery failure/success count)
+
+This would be the return code of i2c_recover_bus(). Names should be
+"recovery_failures" and "recovery_successes"?
+
+> - timeout_cnt (timeout count)
+
+This would be -ETIMEDOUT for __i2c_transfer and friends. Name should be
+"timeouts"?
+
+> - i2c_speed (bus frequency)
+
+Yes, we can have that. I don't think this is really a stat, though. It
+is an attribute of an adapter. It has been requested before:
+
+http://patchwork.ozlabs.org/project/linux-i2c/patch/1413403411-8895-4-git-send-email-octavian.purdila@intel.com/
+http://patchwork.ozlabs.org/project/linux-i2c/patch/20181210084111.6938-2-tudor.ambarus@microchip.com/
+http://patchwork.ozlabs.org/project/linux-i2c/patch/20201013100314.216154-1-tali.perry1@gmail.com/
+
+So, I think we can tackle it again but it is orthogonal from the stats
+series.
+
+> - tx_complete_cnt (transaction completed, including both as an initiator
+>   and as a target)
+
+This would be retval == num_msgs for __i2c_transfer and friends. I also
+think it should be named "transfers_completed". "tx" often goes with
+"rx" as a pair. I really wondered "why only tx" first.
+
+So, let's keep at the high level first. What do you think about my
+suggestions?
+
+Thanks and happy hacking,
+
+   Wolfram
+
+
+--kV9YJMcLA9AXD3Nw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIBGA4ACgkQFA3kzBSg
+KbYCOA/+NKh18t9FOXG44dWZgqsl4HHVMSmEjwzcVjFNG8EDlatHUuhVIO2jag8j
+3SWfe/lNFa0e30K0ggYZDSkkL70i65Rs6/7bxCGL8+UhD3K+w5l7+6IKkAJ/cYOf
+ZtnjnOhMQxQ9YFh/YxG7+xOd9vJ8gpi001htwf6t0OBU7KR80SfjF+YlkZfZ/BVJ
+9Xsr965j/Qf+wFzrPtuEmMo7qScyns95fcryivYCg+/9RQ101+sUs4AtE41bKFIo
+3gtxbEoyqVMweaF4sigBqnu75fillhHlU3+ChU54IzPwclTBfX1i1YqLOAkA9wUn
+jf3OTXgOCORXhVDF6rXd7GaiZdDzvBFk85oluZP3KxpwraYhNCjPOYgZko6fQqJB
+fPxipmFwHionCOje+owWxIJskFc/nfEFl32VtO+QXpFklXkm/LkAqb+imgMjZDw0
+UBJxDI1LW8vAmxcoQR9Qh4iiiAjCkV5RoOosevk1Q68N6rbv8KuWFio2PqmcDmOE
+W5A24VtxdbYyYJ9jMchSRXJoPXNW5I4YZ0W4v4WIqyWWGODPjOanxr57RBlDuJbo
+KqqIwmc8N8kTIE2qvJ7cn2vZ8RoRdQsAUNL6gRFUsjqA/470yLwTkzPfRh9/ACB2
+e/Q5dEAm7CNzs5hfSWxg8ViAJA6EW2XThZW9Or2XSvkRj/l5YeA=
+=logL
+-----END PGP SIGNATURE-----
+
+--kV9YJMcLA9AXD3Nw--
