@@ -2,113 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7F5C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78C2C35274
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442831AbiBGPJy (ORCPT
+        id S1442882AbiBGPKM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:09:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
+        Mon, 7 Feb 2022 10:10:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442465AbiBGOvA (ORCPT
+        with ESMTP id S1442174AbiBGOrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:51:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1694C0401C3
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:50:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644245459;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zikTiAYNsW3FX50KxVFGIBWDk9jSNH8ecGKPu+J72PI=;
-        b=CGXyEX9VNN1hPtQbRgV87I1Dvp8irXNjulG+i5SU5yX8Q4JgdtduPRZWV1gAaYQaCLGO6Z
-        4eZ8r1n1A/zASTgqV6DvH3gdBEDFfhO+XG63hckMo7TSHwGbwdf2n4z4n7PVkzOrP2CMoJ
-        WhEleZD0Q5EF38H4em3kfsQJ4veee7c=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-622-7e8sX7e9NJmsyxEfDLYR4w-1; Mon, 07 Feb 2022 09:50:58 -0500
-X-MC-Unique: 7e8sX7e9NJmsyxEfDLYR4w-1
-Received: by mail-wm1-f71.google.com with SMTP id bg16-20020a05600c3c9000b0034bea12c043so12356943wmb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 06:50:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=zikTiAYNsW3FX50KxVFGIBWDk9jSNH8ecGKPu+J72PI=;
-        b=uNK9u2oDZDDy0/dPRRopP+KYa8iWS21r0nnNnn/4t90ykpooLIhVFmzqM1EajuRuHw
-         FvWGRaVaV+dY0YlIR3GW+4VXA/BYgNSOdv9kqvdl5lmcFPswv/3s/15pm+JpByYv/Z22
-         AiGRuGiz4p097Ot/Ivrajd0pzTfNX8E4MXVu0Wh5ja/fxhbjoLLxymBlX0S3o1E9mIFe
-         7zMWN9Ex42+X+J1cxlZAPI1fJX4q4/JgVE3WA3BFxxFcCEKrc7vJ5U3KHZkxZ0B0CrG8
-         Xjdhbu9hghOFEGvyWrYZCOjLXICwQg39Y2fAc1j+moB/jRjM291IpiKJGVrxfZQ2nE4I
-         voyA==
-X-Gm-Message-State: AOAM532lPFQgr2KwZqnCpx9KAvDSfG5tJLuKfP5i86SQ1Bze+jdKn268
-        tRCYERBjrRAPfHqAjcaOnsHS1h8Hjuy6l0E34foHLHbrKsKR0gOGINenIPgAkmNL2LKLeBxKbVT
-        a1LtOmgETR5SW5gwsUUcBZ0D5
-X-Received: by 2002:a05:600c:28d2:: with SMTP id h18mr10299117wmd.56.1644245455841;
-        Mon, 07 Feb 2022 06:50:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyLpe2hgXZ2il+Wvv9VULju4pkFVV31oFWKYZl79U3Bxo66VYH7T4BN2SHO+24n0lcDktcc6g==
-X-Received: by 2002:a05:600c:28d2:: with SMTP id h18mr10299106wmd.56.1644245455667;
-        Mon, 07 Feb 2022 06:50:55 -0800 (PST)
-Received: from ?IPV6:2003:cb:c709:6300:a751:d742:1f76:8639? (p200300cbc7096300a751d7421f768639.dip0.t-ipconnect.de. [2003:cb:c709:6300:a751:d742:1f76:8639])
-        by smtp.gmail.com with ESMTPSA id l10sm11993306wry.79.2022.02.07.06.50.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 06:50:55 -0800 (PST)
-Message-ID: <c8d704f2-cc1c-52d2-3898-bf07dcb76e1a@redhat.com>
-Date:   Mon, 7 Feb 2022 15:50:54 +0100
+        Mon, 7 Feb 2022 09:47:35 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2F6C03FEC8
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:47:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644245254; x=1675781254;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NFLLMgHFBwJhXlvHAadZYGDnNUvR3br8H3+mEqUjtmU=;
+  b=letVqL7r5qDZWN5FA2kSPQjtJ609ua40T6/6oSIeVldElGad1PyThpTd
+   oin7uWk6HlLXO/aM5dKdP+EVk3txPdYIqAtLDaazJGjavAmsynO4w69Yv
+   bFBFfHzXlnjvjWV82QDjwo4ihQeZ/jQH46OtAE7Xy5duegwkHAjEgEGQV
+   du8IWPlc5kTKsLohMyZbgQCly2ylJQL4LQYY3Nx7lW84BI9eKciUDL5CN
+   vCxebE8vcjAG5FSvribO9dA8G7BmgcI4J25PVGcXY+GYGUFV5cdBs/Zfc
+   7B96qZ3K9Yqs+rmVpf5dcozyIbiPMh3BdsMCBwlFD1Dh+UcmnjJ0BsagG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="247564159"
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="247564159"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 06:47:34 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="677776693"
+Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 07 Feb 2022 06:47:32 -0800
+Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nH5Ih-0000d5-KG; Mon, 07 Feb 2022 14:47:31 +0000
+Date:   Mon, 7 Feb 2022 22:47:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Zhi Wang <zhi.wang.linux@gmail.com>, hch@lst.de, jgg@nvidia.com,
+        jani.nikula@linux.intel.com
+Cc:     kbuild-all@lists.01.org, Zhi Wang <zhi.wang.linux@gmail.com>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Terrence Xu <terrence.xu@intel.com>,
+        intel-gvt-dev@lists.freedesktop.org
+Subject: Re: [Intel-gfx] [PATCH 1/3] i915/gvt: Introduce the mmio_table.c to
+ support VFIO new mdev API
+Message-ID: <202202072226.kzm2Qm5q-lkp@intel.com>
+References: <20220127120508.11330-1-zhi.a.wang@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 2/4] mm/memory_hotplug: avoid calling zone_intersects()
- for ZONE_NORMAL
-Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220207133643.23427-1-linmiaohe@huawei.com>
- <20220207133643.23427-3-linmiaohe@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220207133643.23427-3-linmiaohe@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127120508.11330-1-zhi.a.wang@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07.02.22 14:36, Miaohe Lin wrote:
-> If zid reaches ZONE_NORMAL, the caller will always get the NORMAL zone no
-> matter what zone_intersects() returns. So we can save some possible cpu
-> cycles by avoid calling zone_intersects() for ZONE_NORMAL.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  mm/memory_hotplug.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-> index cbc67c27e0dd..140809e60e9a 100644
-> --- a/mm/memory_hotplug.c
-> +++ b/mm/memory_hotplug.c
-> @@ -826,7 +826,7 @@ static struct zone *default_kernel_zone_for_pfn(int nid, unsigned long start_pfn
->  	struct pglist_data *pgdat = NODE_DATA(nid);
->  	int zid;
->  
-> -	for (zid = 0; zid <= ZONE_NORMAL; zid++) {
-> +	for (zid = 0; zid < ZONE_NORMAL; zid++) {
->  		struct zone *zone = &pgdat->node_zones[zid];
->  
->  		if (zone_intersects(zone, start_pfn, nr_pages))
+Hi Zhi,
+
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on drm-tip/drm-tip]
+[also build test WARNING on next-20220207]
+[cannot apply to drm-intel/for-linux-next hch-configfs/for-next v5.17-rc3]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Zhi-Wang/i915-gvt-Introduce-the-mmio_table-c-to-support-VFIO-new-mdev-API/20220127-200727
+base:   git://anongit.freedesktop.org/drm/drm-tip drm-tip
+config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220207/202202072226.kzm2Qm5q-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/533f92651a7a56481a053f1e04dc5a5ec024ffb9
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Zhi-Wang/i915-gvt-Introduce-the-mmio_table-c-to-support-VFIO-new-mdev-API/20220127-200727
+        git checkout 533f92651a7a56481a053f1e04dc5a5ec024ffb9
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
-Makes sense, although we just don't care about the CPU cycles at that point.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/gpu/drm/i915/gvt/handlers.c:45:6: sparse: sparse: symbol 'intel_gvt_match_device' was not declared. Should it be static?
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+vim +/intel_gvt_match_device +45 drivers/gpu/drm/i915/gvt/handlers.c
 
--- 
-Thanks,
+12d14cc43b3470 Zhi Wang 2016-08-30  44  
+12d14cc43b3470 Zhi Wang 2016-08-30 @45  bool intel_gvt_match_device(struct intel_gvt *gvt,
+12d14cc43b3470 Zhi Wang 2016-08-30  46  		unsigned long device)
+12d14cc43b3470 Zhi Wang 2016-08-30  47  {
+533f92651a7a56 Zhi Wang 2022-01-27  48  	return intel_gvt_get_device_type(gvt->gt->i915) & device;
+12d14cc43b3470 Zhi Wang 2016-08-30  49  }
+12d14cc43b3470 Zhi Wang 2016-08-30  50  
 
-David / dhildenb
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
