@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5231BC38162
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABD7C4708C
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382047AbiBGMAn (ORCPT
+        id S1391384AbiBGMBi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:00:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
+        Mon, 7 Feb 2022 07:01:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386748AbiBGLgb (ORCPT
+        with ESMTP id S1386785AbiBGLgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:36:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026E9C043181;
-        Mon,  7 Feb 2022 03:36:30 -0800 (PST)
+        Mon, 7 Feb 2022 06:36:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188F1C043181;
+        Mon,  7 Feb 2022 03:36:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8208A60A69;
-        Mon,  7 Feb 2022 11:36:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4948FC004E1;
-        Mon,  7 Feb 2022 11:36:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0415B8112E;
+        Mon,  7 Feb 2022 11:36:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D55A6C004E1;
+        Mon,  7 Feb 2022 11:36:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233790;
-        bh=rrCuu477wj4X6lM0wC9UJqAp+SzH0iPa855DMsGM5eA=;
+        s=korg; t=1644233802;
+        bh=Bhdf+S29ZevkiMeS0rzmUpQEcBMlLRTwt6TQNWmKMNc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vG77KdU+pylEYjlWOPzMxMSbX14SwUoD5v7P5xZOLe/pWjKIHyCcXzjAAtITeRoGa
-         X0c2tLjZ5MMEwWj8YHKKaWxNMZ3afwq8huyP6jLe8oPlxvEAhVrbNbVCsdujIvcBFd
-         JI8OoSDS2Nk9KLPb+KutkijQ+6D6AWYBsA/AYKKA=
+        b=WOgyTYF1ZRY+aRc9Dy9//oH1HNDjAO1LnHFmBRuFG5jcnCqEJSC3MVPEa0gjOK+z/
+         tSry8nGC+VYla98xNGcPRf8p1T+hhi5f4KcJkjz/LKVXy9Kj5kZzPTl7VIUAE56FoG
+         ok1P64yIA70by5o+U3kVoc2sZhUMd2UFC0bZkog4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        stable@kernel.org, Xin Yin <yinxin.x@bytedance.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.16 119/126] ext4: fix incorrect type issue during replay_del_range
-Date:   Mon,  7 Feb 2022 12:07:30 +0100
-Message-Id: <20220207103808.170434877@linuxfoundation.org>
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 5.16 123/126] gpio: idt3243x: Fix an ignored error return from platform_get_irq()
+Date:   Mon,  7 Feb 2022 12:07:34 +0100
+Message-Id: <20220207103808.296043047@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -51,37 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Yin <yinxin.x@bytedance.com>
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-commit 8fca8a2b0a822f7936130af7299d2fd7f0a66714 upstream.
+commit 7c1cf55577782725ea2bc24687767c8fe8e57486 upstream.
 
-should not use fast commit log data directly, add le32_to_cpu().
+The return from the call to platform_get_irq() is int, it can be
+a negative error code, however this is being assigned to an unsigned
+int variable 'parent_irq', so making 'parent_irq' an int.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 0b5b5a62b945 ("ext4: use ext4_ext_remove_space() for fast commit replay delete range")
-Cc: stable@kernel.org
-Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
-Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220126063146.2302-1-yinxin.x@bytedance.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Eliminate the following coccicheck warning:
+./drivers/gpio/gpio-idt3243x.c:167:6-16: WARNING: Unsigned expression
+compared with zero: parent_irq < 0
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Fixes: 30fee1d7462a ("gpio: idt3243x: Fix IRQ check in idt_gpio_probe")
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/fast_commit.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpio/gpio-idt3243x.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/fast_commit.c
-+++ b/fs/ext4/fast_commit.c
-@@ -1819,8 +1819,9 @@ ext4_fc_replay_del_range(struct super_bl
- 	}
+--- a/drivers/gpio/gpio-idt3243x.c
++++ b/drivers/gpio/gpio-idt3243x.c
+@@ -132,7 +132,7 @@ static int idt_gpio_probe(struct platfor
+ 	struct device *dev = &pdev->dev;
+ 	struct gpio_irq_chip *girq;
+ 	struct idt_gpio_ctrl *ctrl;
+-	unsigned int parent_irq;
++	int parent_irq;
+ 	int ngpios;
+ 	int ret;
  
- 	down_write(&EXT4_I(inode)->i_data_sem);
--	ret = ext4_ext_remove_space(inode, lrange.fc_lblk,
--				lrange.fc_lblk + lrange.fc_len - 1);
-+	ret = ext4_ext_remove_space(inode, le32_to_cpu(lrange.fc_lblk),
-+				le32_to_cpu(lrange.fc_lblk) +
-+				le32_to_cpu(lrange.fc_len) - 1);
- 	up_write(&EXT4_I(inode)->i_data_sem);
- 	if (ret)
- 		goto out;
 
 
