@@ -2,81 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF519C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C95EBC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239196AbiBGSYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:24:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
+        id S238673AbiBGSYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:24:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235799AbiBGSWR (ORCPT
+        with ESMTP id S235906AbiBGSWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:22:17 -0500
-X-Greylist: delayed 2640 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 10:22:15 PST
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1123AC0401D9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:22:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
-        Message-ID:From:References:Cc:To:content-disposition;
-        bh=fEpCgCTX3h2p5UN6S8G2mb2i3aC8G4ppdXgJ4LAUOGU=; b=XtZxNl7rveoZfo3hm92UT9KtIn
-        TtfEzS/obXfk3nfrPZQaNcvNJUwwbQ6FzvaeEldi8mcXvPcHXrxfFOT99cxGORMyDdpOVPqYgWzhi
-        NJnUpgdumuFyV2Tyl4IQts6oBLVaEJ6HMSLjCaSC8BxCiLvC8sRYx1T5KoSKEkaCFuFOKFauwDLJT
-        qDYAHUO9NbVOKwEI0y/pDnprLXyf0uJTBMutoNPy5QjfIiwWCMAn64wh72jOJz0AvGzbx5ngPzJla
-        9IgNxQUju0gJaTa8Q0ExQHFh65YjcZN7/8ClykiaX2fTLk5f5rYdLc6sSPtEu6A4YR4u/mO5qpQUx
-        bob8LGjg==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1nH7xp-00EVc6-C4; Mon, 07 Feb 2022 10:38:09 -0700
-To:     Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Alistair Popple <apopple@nvidia.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        nvdimm@lists.linux.dev, linux-mm@kvack.org
-References: <20220207063249.1833066-1-hch@lst.de>
- <20220207063249.1833066-7-hch@lst.de>
-From:   Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <a8c54032-3347-c999-d644-02e6e7d2bfa4@deltatee.com>
-Date:   Mon, 7 Feb 2022 10:38:06 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 7 Feb 2022 13:22:19 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C39C0401DC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:22:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644258137; x=1675794137;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=vC9sAF8h2IwzwAaasvP35mbG0oIdz/OPeQG9samMx2I=;
+  b=VYBawi8DbUpoE+IfGG4AnsAh920tjyUlok3lfQoHC0H34xggeJttREYg
+   FsR0K9fN/64RK0d+9rCiw0X91GPRYIkZ6fEZ6GNLXI7fDklExt4CqBoWx
+   NbZGeVeHI8rjVDZYAiXXpzOcVDTdoKrZqOki+Lua4rWoNj5RAm3AxNNQD
+   vkEA8CL19jUPFssLUwLvhnrwwUXB1/w3NsjDQTdUnANyzGbeSwEWZGbnB
+   yZUw/4yHcI/bkZ/A1WZm8OYBTz6PZr57wSxbDl+NYWnwn2hXqfgERR87o
+   0fK1ydPCAYHbNi6WrWFWE731MV4VaPGqR8oREGR2D728GfU9tauY6G4vC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273301293"
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="273301293"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 10:21:52 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="632558049"
+Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 07 Feb 2022 10:21:50 -0800
+Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nH8e5-0000r6-Ev; Mon, 07 Feb 2022 18:21:49 +0000
+Date:   Tue, 8 Feb 2022 02:21:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        David Teigland <teigland@redhat.com>
+Subject: fs/dlm/midcomms.c:913:22: sparse: sparse: restricted __le32 degrades
+ to integer
+Message-ID: <202202080253.WdgaN4vt-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220207063249.1833066-7-hch@lst.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-CA
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: linux-mm@kvack.org, nvdimm@lists.linux.dev, nouveau@lists.freedesktop.org, dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org, rcampbell@nvidia.com, apopple@nvidia.com, jgg@ziepe.ca, lyude@redhat.com, kherbst@redhat.com, bskeggs@redhat.com, Xinhui.Pan@amd.com, christian.koenig@amd.com, alexander.deucher@amd.com, Felix.Kuehling@amd.com, dan.j.williams@intel.com, akpm@linux-foundation.org, hch@lst.de
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH 6/8] mm: don't include <linux/memremap.h> in <linux/mm.h>
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   dfd42facf1e4ada021b939b4e19c935dcdd55566
+commit: 658bd576f95ed597e519cdadf1c86ac87c17aea5 fs: dlm: move version conversion to compile time
+date:   3 months ago
+config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220208/202202080253.WdgaN4vt-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=658bd576f95ed597e519cdadf1c86ac87c17aea5
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 658bd576f95ed597e519cdadf1c86ac87c17aea5
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
-On 2022-02-06 11:32 p.m., Christoph Hellwig wrote:
-> Move the check for the actual pgmap types that need the free at refcount
-> one behavior into the out of line helper, and thus avoid the need to
-> pull memremap.h into mm.h.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+sparse warnings: (new ones prefixed by >>)
+   fs/dlm/midcomms.c:213:1: sparse: sparse: symbol '__srcu_struct_nodes_srcu' was not declared. Should it be static?
+   fs/dlm/midcomms.c:570:25: sparse: sparse: cast to restricted __le32
+   fs/dlm/midcomms.c:678:19: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:680:16: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:718:27: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:737:25: sparse: sparse: cast to restricted __le32
+   fs/dlm/midcomms.c:747:25: sparse: sparse: cast to restricted __le32
+   fs/dlm/midcomms.c:756:23: sparse: sparse: cast to restricted __le32
+   fs/dlm/midcomms.c:766:42: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:769:26: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:804:23: sparse: sparse: cast to restricted __le32
+   fs/dlm/midcomms.c:838:27: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:898:26: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:920:25: sparse: sparse: cast to restricted __le32
+>> fs/dlm/midcomms.c:913:22: sparse: sparse: restricted __le32 degrades to integer
+   fs/dlm/midcomms.c:916:22: sparse: sparse: restricted __le32 degrades to integer
+   fs/dlm/midcomms.c:1056:20: sparse: sparse: context imbalance in 'dlm_midcomms_get_mhandle' - wrong count at exit
+   fs/dlm/midcomms.c: note: in included file (through include/linux/notifier.h, arch/x86/include/asm/uprobes.h, include/linux/uprobes.h, ...):
+   include/linux/srcu.h:188:9: sparse: sparse: context imbalance in 'dlm_midcomms_commit_mhandle' - unexpected unlock
 
-I've noticed mm/memcontrol.c uses is_device_private_page() and also
-needs a memremap.h include added to compile with my configuration.
+vim +913 fs/dlm/midcomms.c
 
-Logan
+   871	
+   872	/*
+   873	 * Called from the low-level comms layer to process a buffer of
+   874	 * commands.
+   875	 */
+   876	
+   877	int dlm_process_incoming_buffer(int nodeid, unsigned char *buf, int len)
+   878	{
+   879		const unsigned char *ptr = buf;
+   880		const struct dlm_header *hd;
+   881		uint16_t msglen;
+   882		int ret = 0;
+   883	
+   884		while (len >= sizeof(struct dlm_header)) {
+   885			hd = (struct dlm_header *)ptr;
+   886	
+   887			/* no message should be more than DLM_MAX_SOCKET_BUFSIZE or
+   888			 * less than dlm_header size.
+   889			 *
+   890			 * Some messages does not have a 8 byte length boundary yet
+   891			 * which can occur in a unaligned memory access of some dlm
+   892			 * messages. However this problem need to be fixed at the
+   893			 * sending side, for now it seems nobody run into architecture
+   894			 * related issues yet but it slows down some processing.
+   895			 * Fixing this issue should be scheduled in future by doing
+   896			 * the next major version bump.
+   897			 */
+   898			msglen = le16_to_cpu(hd->h_length);
+   899			if (msglen > DLM_MAX_SOCKET_BUFSIZE ||
+   900			    msglen < sizeof(struct dlm_header)) {
+   901				log_print("received invalid length header: %u from node %d, will abort message parsing",
+   902					  msglen, nodeid);
+   903				return -EBADMSG;
+   904			}
+   905	
+   906			/* caller will take care that leftover
+   907			 * will be parsed next call with more data
+   908			 */
+   909			if (msglen > len)
+   910				break;
+   911	
+   912			switch (hd->h_version) {
+ > 913			case cpu_to_le32(DLM_VERSION_3_1):
+   914				dlm_midcomms_receive_buffer_3_1((union dlm_packet *)ptr, nodeid);
+   915				break;
+   916			case cpu_to_le32(DLM_VERSION_3_2):
+   917				dlm_midcomms_receive_buffer_3_2((union dlm_packet *)ptr, nodeid);
+   918				break;
+   919			default:
+   920				log_print("received invalid version header: %u from node %d, will skip this message",
+   921					  le32_to_cpu(hd->h_version), nodeid);
+   922				break;
+   923			}
+   924	
+   925			ret += msglen;
+   926			len -= msglen;
+   927			ptr += msglen;
+   928		}
+   929	
+   930		return ret;
+   931	}
+   932	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
