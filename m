@@ -2,95 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB4B4C35273
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40395C47080
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388998AbiBGNu6 (ORCPT
+        id S1389133AbiBGNvJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:50:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
+        Mon, 7 Feb 2022 08:51:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449196AbiBGNRn (ORCPT
+        with ESMTP id S1381046AbiBGNdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:17:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F76AC0401EA
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 05:17:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15A99B81230
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 13:17:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3B55C004E1;
-        Mon,  7 Feb 2022 13:17:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644239848;
-        bh=16LtBqoEMMiLQCTXhAEgcV9F72cfpCz0MRGQUmR5x/Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SgzKT68Bq710WvquBg7y3NXAM/Iod+ZcAnvjYD4VuMtrTAlVXobLNEETmL7Ka43+q
-         O/qgHMj1k3EiUFzAaOkrPMrDz00JbP0nN81GwmlLoCCzDQMr/jta4Yidb8LYZeg4Ad
-         tgP+eraON92tLnXxTcgHuY+6+oge+kIq9UlsiO0mZnVRIdVMfS1tQebItQU3r4huO3
-         TUlINgq3vqORn+YQVHyQn33n8RnBFZWZN/lPeDpPC7wPrAlpZvJsMnbepGjlE7tbww
-         m9C5A9zx3AXoqecq6FwbsyI9XKQtFyQYYxrMngH+GixVeoH/xE23LGmEV6eMrl2XBK
-         +82yZslluD8gw==
-Date:   Mon, 7 Feb 2022 13:17:23 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        James Liao <jamesjj.liao@mediatek.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Daniel Golle <daniel@makrotopia.org>
-Subject: Re: [PATCH] Revert "ASoC: mediatek: Check for error clk pointer"
-Message-ID: <YgEb42YZI1iKwqiS@sirena.org.uk>
-References: <20220205014755.699603-1-linux@roeck-us.net>
+        Mon, 7 Feb 2022 08:33:33 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF9FC043189;
+        Mon,  7 Feb 2022 05:33:32 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id v129so6337305wme.2;
+        Mon, 07 Feb 2022 05:33:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V9QEgmdSl8jrpLmboxH3MycHRrNVtMiq+z3Om5YP+L4=;
+        b=ZeXCogp2RMZJX5bCWf5GbVepmcsMjxXm6LLMgfx0ol8BSDdh8zAsv+NO9/LnCpM0jB
+         bVrc/woX1x72Ie3U1zOWBW+QSDGWgRoIhxbPYK3X2ZzjKJDMjnPpbYMJVM6Boqr2sPeL
+         /6sCSMQUF7rByaBI1nwjEu/MhYDhu1qvv+5TCmAdzNs7BgTo2djdrGjEPKsqW7EJefsD
+         P3neh3NRyJGCLgoNX1YxdsjWaL698+tF51+kY7JtQSg/bF3ycqX9PoPavxEQn+06JR4T
+         r2XMKw7uXjNmpoJYCU770I/sBp4rR71G5lrGSFrHU/NEg1K3bRMhiRMuuK+eyQHFr6Fw
+         u8yQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V9QEgmdSl8jrpLmboxH3MycHRrNVtMiq+z3Om5YP+L4=;
+        b=hJAE/FGJ5sfq/a269J/NFlK9/RZWFhoSeD1eWoHdDgKmPyT0Net15V3f5swN2xv58G
+         ccUHSCExOlLT9h+7HOJjrXp0gIedPUjgIwzbveqSx5thHPVrvXnBgiQjKwIZ/FqB5ZFY
+         QhEpGnZPhpCsZwZNn0KrNF4KHPhvMDKeeZwfdDEk5PLjKio5gyeuQb7Am0KsezISk6a9
+         Ktg7BLS3l1i1FutbamshnrFKEZYnUGcLmi8RUlf5PX4hgP7wXy6RE7klayg6hUhkokRO
+         RJIs2Gr8adbAE/o4edtBVjHISu/t37QjJ5DnYUZxmfvFufe/8+aFbvSc+yRhQa5AOkbH
+         GXBg==
+X-Gm-Message-State: AOAM533fI1CIBL30lwDqLqgWMGmoZcEUqhsIkv/Y/HnjxFyPa49chFVZ
+        UprX5CeTAJMQUC3cj6gAA1s=
+X-Google-Smtp-Source: ABdhPJylUXyrmFmYPgL7jbK0a9g9xkwVwdjDV+JW8NPwgewUuCwNlNWvwo/VRNkr3mzIoT3RoF/Q2Q==
+X-Received: by 2002:a7b:c84f:: with SMTP id c15mr14361555wml.181.1644240811059;
+        Mon, 07 Feb 2022 05:33:31 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id bg23sm11366849wmb.5.2022.02.07.05.33.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 05:33:30 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] brcmfmac: of: remove redundant variable len
+Date:   Mon,  7 Feb 2022 13:33:29 +0000
+Message-Id: <20220207133329.336664-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Aqk5F9s36CVnq371"
-Content-Disposition: inline
-In-Reply-To: <20220205014755.699603-1-linux@roeck-us.net>
-X-Cookie: Never give an inch!
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The variable len is being assigned bit is never used. The variable
+and the strlen call are redundant and can be removed.
 
---Aqk5F9s36CVnq371
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-On Fri, Feb 04, 2022 at 05:47:55PM -0800, Guenter Roeck wrote:
-> This reverts commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e.
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+index 5708de1d9f26..8623bde5eb70 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+@@ -71,14 +71,13 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+ 	/* Set board-type to the first string of the machine compatible prop */
+ 	root = of_find_node_by_path("/");
+ 	if (root) {
+-		int i, len;
++		int i;
+ 		char *board_type;
+ 		const char *tmp;
+ 
+ 		of_property_read_string_index(root, "compatible", 0, &tmp);
+ 
+ 		/* get rid of '/' in the compatible string to be able to find the FW */
+-		len = strlen(tmp) + 1;
+ 		board_type = devm_kstrdup(dev, tmp, GFP_KERNEL);
+ 		if (!board_type) {
+ 			of_node_put(root);
+-- 
+2.34.1
 
-Please submit patches using subject lines reflecting the style for the
-subsystem, this makes it easier for people to identify relevant patches.
-Look at what existing commits in the area you're changing are doing and
-make sure your subject lines visually resemble what they're doing.
-There's no need to resubmit to fix this alone.
-
-Please include human readable descriptions of things like commits and
-issues being discussed in e-mail in your mails, this makes them much
-easier for humans to read especially when they have no internet access.
-I do frequently catch up on my mail on flights or while otherwise
-travelling so this is even more pressing for me than just being about
-making things a bit easier to read.
-
---Aqk5F9s36CVnq371
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIBG+IACgkQJNaLcl1U
-h9BJnQf+KcWHmQpnCUz7tmRRQV7SHRdfESvOFdafzfZcgMvJqn170QtNLNqQak4h
-P0b+AzksW4Ku0XUDtG22ToW3GL6xaahhdK3z1BIBHv42kHlClcOwqtoaLSEV0q4h
-OxIEZaiwRFDLX/a0NByy2M3WThSg9SO6W8wnCXGeghAN9nl3tZgIefVg9Vbns/FF
-xHtph1zJ8BEHT8c3k6diVcVIWObQNx2Tsyli6hk78+NgCl2vbLLp7tmxIqPM5/iN
-mBYNXhOhFl/Fzq5qAOMqTs8/3EWGpXq8ddodg7xO1JgNLLiMI+C3XZUkn8A0l2Y3
-Un2z1wcm9xs2FfCnpoxOpM6hJxoTTA==
-=v5Ec
------END PGP SIGNATURE-----
-
---Aqk5F9s36CVnq371--
