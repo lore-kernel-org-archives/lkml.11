@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BAC8C35275
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F179FC4707F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386426AbiBGRJq (ORCPT
+        id S1385615AbiBGRJn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:09:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57602 "EHLO
+        Mon, 7 Feb 2022 12:09:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357819AbiBGRAL (ORCPT
+        with ESMTP id S1357942AbiBGRAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:00:11 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8565CC0401DB;
-        Mon,  7 Feb 2022 09:00:08 -0800 (PST)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217GxTNm017305;
-        Mon, 7 Feb 2022 17:00:06 GMT
+        Mon, 7 Feb 2022 12:00:12 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CFEAC0401DF;
+        Mon,  7 Feb 2022 09:00:10 -0800 (PST)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217GxXVj005809;
+        Mon, 7 Feb 2022 17:00:08 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=YkaDjfN6fpTsxhXUZebdfTLf6Q+ECbzky4ml3wC9PFQ=;
- b=SQ1J6i0Gxr5Emj4gtIRmqPDQx/mMsTK8ueGg8iyTxYlvA1H2I6JGGb60z6FchGoDMzad
- bAX9mrjegy185RWCXGSjxG8IJgRIwT+AQtaHHXqNG0K27nOAUpl7EIlkmDXPsOWzvp3b
- U/B42Ylk8udTvc3PAbGe+vGxGF9OFU++ivBDop9QC3QtbchNF8ydnGkLZ6I7xKCGLCVY
- ksA8VOMnNK6/dbjLahG8HyizCMDhcGld/M5uJ6lQ4R7pkPnUrx6aKPbqvv2BHVPAjOdO
- vdFCzAwnyIHbWhSzzQkxSCbWERv6S8KQJxhUD+qoSYxxpfmFzDEbAIUzCxcg5DzoioTF uw== 
+ bh=v0k2Fn83Q9jwPu2f5J44ZhN//xaqGG7q6985B3Mjp0M=;
+ b=F2BWRwMAtWrV75d+wSWxOc9Sizbhl6fdVYJ/bO+lQSSNtdoaR1C1sQJU/5JQONe8hdHI
+ TWnolaikPUqiCptSc+Ev3o9mvuTbQqWO2dn6VRlLkuw5ehnavKFjEOILmx6rKhPAbLDE
+ y9C1YjacLEuCtEVG+IQygKs7S/zOR95bCFOGixJvZV3nXJeqVFkxIYaYPmlD1vN/B2LH
+ OZEZqGDdjPdbSvYFNH00y0M5ZiPblRSU6YL4ZC1AijajKQ4tsm91uVxdFyb7ygnOAaOO
+ WAgLJKm04L70Wjwu7KnCT0KVsDDErNFYoU5CPJUGBGRx2KdFcaTtTRWh1c4UeekrXWxy jA== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22vkt04u-1
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22kq2507-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 17:00:06 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217GxaaM020266;
-        Mon, 7 Feb 2022 17:00:06 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22vkt03v-1
+        Mon, 07 Feb 2022 17:00:08 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217H07jC008593;
+        Mon, 7 Feb 2022 17:00:07 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22kq24xq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 17:00:07 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217GqWLc006978;
+        Mon, 7 Feb 2022 17:00:05 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04fra.de.ibm.com with ESMTP id 3e2ygpvwfs-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Mon, 07 Feb 2022 17:00:05 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217GqTR5010178;
-        Mon, 7 Feb 2022 17:00:04 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3e1gv96tu5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 17:00:04 +0000
 Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217H012o46924214
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217GnxsC27656502
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 17:00:01 GMT
+        Mon, 7 Feb 2022 16:49:59 GMT
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 16CD5A405B;
+        by IMSVA (Postfix) with ESMTP id 1F18EA404D;
+        Mon,  7 Feb 2022 17:00:02 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A52A2A406D;
         Mon,  7 Feb 2022 17:00:01 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9AF15A4040;
-        Mon,  7 Feb 2022 17:00:00 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 17:00:00 +0000 (GMT)
+        Mon,  7 Feb 2022 17:00:01 +0000 (GMT)
 From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
 To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
         Heiko Carstens <hca@linux.ibm.com>,
@@ -72,176 +72,179 @@ Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
         linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
         Sven Schnelle <svens@linux.ibm.com>,
         Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH v2 03/11] KVM: s390: handle_tprot: Honor storage keys
-Date:   Mon,  7 Feb 2022 17:59:22 +0100
-Message-Id: <20220207165930.1608621-4-scgl@linux.ibm.com>
+Subject: [PATCH v2 05/11] KVM: s390: Add optional storage key checking to MEMOP IOCTL
+Date:   Mon,  7 Feb 2022 17:59:24 +0100
+Message-Id: <20220207165930.1608621-6-scgl@linux.ibm.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220207165930.1608621-1-scgl@linux.ibm.com>
 References: <20220207165930.1608621-1-scgl@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: m5NNYntGTCQaGQsLewLM-0SJAHsxNHv5
-X-Proofpoint-ORIG-GUID: YV6h6io7gdEm-IUqssa6a_KLqyPbWebZ
+X-Proofpoint-GUID: V8SwZ-5yEPJvola0t1EHqbHZDiy2FcYN
+X-Proofpoint-ORIG-GUID: pIzfdm8ewaG83g4kesIysorSUuJ9twrw
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-02-07_06,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
- lowpriorityscore=0 mlxscore=0 impostorscore=0 phishscore=0 suspectscore=0
- priorityscore=1501 adultscore=0 malwarescore=0 spamscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202070103
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 bulkscore=0 spamscore=0 impostorscore=0 suspectscore=0
+ mlxlogscore=999 lowpriorityscore=0 adultscore=0 malwarescore=0 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the access key operand to check for key protection when
-translating guest addresses.
-Since the translation code checks for accessing exceptions/error hvas,
-we can remove the check here and simplify the control flow.
-Keep checking if the memory is read-only even if such memslots are
-currently not supported.
+User space needs a mechanism to perform key checked accesses when
+emulating instructions.
 
-handle_tprot was the last user of guest_translate_address,
-so remove it.
+The key can be passed as an additional argument.
+Having an additional argument is flexible, as user space can
+pass the guest PSW's key, in order to make an access the same way the
+CPU would, or pass another key if necessary.
 
 Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+Acked-by: Janosch Frank <frankja@linux.ibm.com>
 Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
 ---
- arch/s390/kvm/gaccess.c |  9 ------
- arch/s390/kvm/gaccess.h |  3 --
- arch/s390/kvm/priv.c    | 66 ++++++++++++++++++++++-------------------
- 3 files changed, 35 insertions(+), 43 deletions(-)
+ arch/s390/kvm/kvm-s390.c | 49 +++++++++++++++++++++++++++++++---------
+ include/uapi/linux/kvm.h |  8 +++++--
+ 2 files changed, 44 insertions(+), 13 deletions(-)
 
-diff --git a/arch/s390/kvm/gaccess.c b/arch/s390/kvm/gaccess.c
-index 7fca0cff4c12..37838f637707 100644
---- a/arch/s390/kvm/gaccess.c
-+++ b/arch/s390/kvm/gaccess.c
-@@ -1118,15 +1118,6 @@ int guest_translate_address_with_key(struct kvm_vcpu *vcpu, unsigned long gva, u
- 				   access_key);
+diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+index cf347e1a4f17..71e61fb3f0d9 100644
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -32,6 +32,7 @@
+ #include <linux/sched/signal.h>
+ #include <linux/string.h>
+ #include <linux/pgtable.h>
++#include <linux/bitfield.h>
+ 
+ #include <asm/asm-offsets.h>
+ #include <asm/lowcore.h>
+@@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
+ 	return r;
  }
  
--int guest_translate_address(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
--			    unsigned long *gpa, enum gacc_mode mode)
--{
--	u8 access_key = psw_bits(vcpu->arch.sie_block->gpsw).key;
--
--	return guest_translate_address_with_key(vcpu, gva, ar, gpa, mode,
--						access_key);
--}
--
- /**
-  * check_gva_range - test a range of guest virtual addresses for accessibility
-  * @vcpu: virtual cpu
-diff --git a/arch/s390/kvm/gaccess.h b/arch/s390/kvm/gaccess.h
-index e5b2f56e7962..c5f2e7311b17 100644
---- a/arch/s390/kvm/gaccess.h
-+++ b/arch/s390/kvm/gaccess.h
-@@ -190,9 +190,6 @@ int guest_translate_address_with_key(struct kvm_vcpu *vcpu, unsigned long gva, u
- 				     unsigned long *gpa, enum gacc_mode mode,
- 				     u8 access_key);
- 
--int guest_translate_address(struct kvm_vcpu *vcpu, unsigned long gva,
--			    u8 ar, unsigned long *gpa, enum gacc_mode mode);
--
- int check_gva_range(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
- 		    unsigned long length, enum gacc_mode mode, u8 access_key);
- 
-diff --git a/arch/s390/kvm/priv.c b/arch/s390/kvm/priv.c
-index 417154b314a6..30b24c42ef99 100644
---- a/arch/s390/kvm/priv.c
-+++ b/arch/s390/kvm/priv.c
-@@ -1443,10 +1443,11 @@ int kvm_s390_handle_eb(struct kvm_vcpu *vcpu)
- 
- static int handle_tprot(struct kvm_vcpu *vcpu)
++static bool access_key_invalid(u8 access_key)
++{
++	return access_key > 0xf;
++}
++
+ long kvm_arch_vm_ioctl(struct file *filp,
+ 		       unsigned int ioctl, unsigned long arg)
  {
--	u64 address1, address2;
--	unsigned long hva, gpa;
--	int ret = 0, cc = 0;
-+	u64 address, operand2;
-+	unsigned long gpa;
-+	u8 access_key;
- 	bool writable;
-+	int ret, cc;
- 	u8 ar;
+@@ -4687,34 +4693,54 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+ 				  struct kvm_s390_mem_op *mop)
+ {
+ 	void __user *uaddr = (void __user *)mop->buf;
++	u8 access_key = 0, ar = 0;
+ 	void *tmpbuf = NULL;
++	bool check_reserved;
+ 	int r = 0;
+ 	const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
+-				    | KVM_S390_MEMOP_F_CHECK_ONLY;
++				    | KVM_S390_MEMOP_F_CHECK_ONLY
++				    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
  
- 	vcpu->stat.instruction_tprot++;
-@@ -1454,43 +1455,46 @@ static int handle_tprot(struct kvm_vcpu *vcpu)
- 	if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_PSTATE)
- 		return kvm_s390_inject_program_int(vcpu, PGM_PRIVILEGED_OP);
- 
--	kvm_s390_get_base_disp_sse(vcpu, &address1, &address2, &ar, NULL);
-+	kvm_s390_get_base_disp_sse(vcpu, &address, &operand2, &ar, NULL);
-+	access_key = (operand2 & 0xf0) >> 4;
- 
--	/* we only handle the Linux memory detection case:
--	 * access key == 0
--	 * everything else goes to userspace. */
--	if (address2 & 0xf0)
--		return -EOPNOTSUPP;
- 	if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_DAT)
- 		ipte_lock(vcpu);
--	ret = guest_translate_address(vcpu, address1, ar, &gpa, GACC_STORE);
--	if (ret == PGM_PROTECTION) {
-+
-+	ret = guest_translate_address_with_key(vcpu, address, ar, &gpa,
-+					       GACC_STORE, access_key);
-+	if (ret == 0) {
-+		gfn_to_hva_prot(vcpu->kvm, gpa_to_gfn(gpa), &writable);
-+	} else if (ret == PGM_PROTECTION) {
-+		writable = false;
- 		/* Write protected? Try again with read-only... */
--		cc = 1;
--		ret = guest_translate_address(vcpu, address1, ar, &gpa,
--					      GACC_FETCH);
-+		ret = guest_translate_address_with_key(vcpu, address, ar, &gpa,
-+						       GACC_FETCH, access_key);
+-	if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
++	if (mop->flags & ~supported_flags || !mop->size)
+ 		return -EINVAL;
+-
+ 	if (mop->size > MEM_OP_MAX_SIZE)
+ 		return -E2BIG;
+-
+ 	if (kvm_s390_pv_cpu_is_protected(vcpu))
+ 		return -EINVAL;
+-
+ 	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+ 		tmpbuf = vmalloc(mop->size);
+ 		if (!tmpbuf)
+ 			return -ENOMEM;
  	}
--	if (ret) {
--		if (ret == PGM_ADDRESSING || ret == PGM_TRANSLATION_SPEC) {
--			ret = kvm_s390_inject_program_int(vcpu, ret);
--		} else if (ret > 0) {
--			/* Translation not available */
--			kvm_s390_set_psw_cc(vcpu, 3);
-+	if (ret >= 0) {
-+		cc = -1;
-+
-+		/* Fetching permitted; storing permitted */
-+		if (ret == 0 && writable)
-+			cc = 0;
-+		/* Fetching permitted; storing not permitted */
-+		else if (ret == 0 && !writable)
-+			cc = 1;
-+		/* Fetching not permitted; storing not permitted */
-+		else if (ret == PGM_PROTECTION)
-+			cc = 2;
-+		/* Translation not available */
-+		else if (ret != PGM_ADDRESSING && ret != PGM_TRANSLATION_SPEC)
-+			cc = 3;
-+
-+		if (cc != -1) {
-+			kvm_s390_set_psw_cc(vcpu, cc);
- 			ret = 0;
-+		} else {
-+			ret = kvm_s390_inject_program_int(vcpu, ret);
++	ar = mop->ar;
++	mop->ar = 0;
++	if (ar >= NUM_ACRS)
++		return -EINVAL;
++	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
++		access_key = mop->key;
++		mop->key = 0;
++		if (access_key_invalid(access_key))
++			return -EINVAL;
++	}
++	/*
++	 * Check that reserved/unused == 0, but only for extensions,
++	 * so we stay backward compatible.
++	 * This gives us more design flexibility for future extensions, i.e.
++	 * we can add functionality without adding a flag.
++	 */
++	check_reserved = mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION;
++	if (check_reserved && memchr_inv(&mop->reserved, 0, sizeof(mop->reserved)))
++		return -EINVAL;
+ 
+ 	switch (mop->op) {
+ 	case KVM_S390_MEMOP_LOGICAL_READ:
+ 		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+-			r = check_gva_range(vcpu, mop->gaddr, mop->ar,
+-					    mop->size, GACC_FETCH, 0);
++			r = check_gva_range(vcpu, mop->gaddr, ar, mop->size,
++					    GACC_FETCH, access_key);
+ 			break;
  		}
--		goto out_unlock;
+-		r = read_guest(vcpu, mop->gaddr, mop->ar, tmpbuf, mop->size);
++		r = read_guest_with_key(vcpu, mop->gaddr, ar, tmpbuf,
++					mop->size, access_key);
+ 		if (r == 0) {
+ 			if (copy_to_user(uaddr, tmpbuf, mop->size))
+ 				r = -EFAULT;
+@@ -4722,15 +4748,16 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+ 		break;
+ 	case KVM_S390_MEMOP_LOGICAL_WRITE:
+ 		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+-			r = check_gva_range(vcpu, mop->gaddr, mop->ar,
+-					    mop->size, GACC_STORE, 0);
++			r = check_gva_range(vcpu, mop->gaddr, ar, mop->size,
++					    GACC_STORE, access_key);
+ 			break;
+ 		}
+ 		if (copy_from_user(tmpbuf, uaddr, mop->size)) {
+ 			r = -EFAULT;
+ 			break;
+ 		}
+-		r = write_guest(vcpu, mop->gaddr, mop->ar, tmpbuf, mop->size);
++		r = write_guest_with_key(vcpu, mop->gaddr, ar, tmpbuf,
++					 mop->size, access_key);
+ 		break;
  	}
  
--	hva = gfn_to_hva_prot(vcpu->kvm, gpa_to_gfn(gpa), &writable);
--	if (kvm_is_error_hva(hva)) {
--		ret = kvm_s390_inject_program_int(vcpu, PGM_ADDRESSING);
--	} else {
--		if (!writable)
--			cc = 1;		/* Write not permitted ==> read-only */
--		kvm_s390_set_psw_cc(vcpu, cc);
--		/* Note: CC2 only occurs for storage keys (not supported yet) */
--	}
--out_unlock:
- 	if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_DAT)
- 		ipte_unlock(vcpu);
- 	return ret;
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index b46bcdb0cab1..5771b026fbc0 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -562,9 +562,12 @@ struct kvm_s390_mem_op {
+ 	__u32 op;		/* type of operation */
+ 	__u64 buf;		/* buffer in userspace */
+ 	union {
+-		__u8 ar;	/* the access register number */
++		struct {
++			__u8 ar;	/* the access register number */
++			__u8 key;	/* access key to use for storage key protection */
++		};
+ 		__u32 sida_offset; /* offset into the sida */
+-		__u8 reserved[32]; /* should be set to 0 */
++		__u8 reserved[32]; /* must be set to 0 */
+ 	};
+ };
+ /* types for kvm_s390_mem_op->op */
+@@ -575,6 +578,7 @@ struct kvm_s390_mem_op {
+ /* flags for kvm_s390_mem_op->flags */
+ #define KVM_S390_MEMOP_F_CHECK_ONLY		(1ULL << 0)
+ #define KVM_S390_MEMOP_F_INJECT_EXCEPTION	(1ULL << 1)
++#define KVM_S390_MEMOP_F_SKEY_PROTECTION	(1ULL << 2)
+ 
+ /* for KVM_INTERRUPT */
+ struct kvm_interrupt {
 -- 
 2.32.0
 
