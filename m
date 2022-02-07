@@ -2,93 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B703DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7CF8C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 20:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242364AbiBGU1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:27:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
+        id S242591AbiBGU1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:27:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232631AbiBGUYY (ORCPT
+        with ESMTP id S241525AbiBGUXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 15:24:24 -0500
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73FCC0401DA;
-        Mon,  7 Feb 2022 12:24:23 -0800 (PST)
-Received: by mail-ot1-f51.google.com with SMTP id w27-20020a9d5a9b000000b005a17d68ae89so11720869oth.12;
-        Mon, 07 Feb 2022 12:24:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EFWtFTnJpSwgLhq6r6w4pljMn11UZ/W2WRxEYkJ+EFo=;
-        b=EWQYWDvMP14NMq9n9nT2w0JNJOKihtGznqMZHqLmgc2GI2r07Wx+d/ZEZnmhOPtIMk
-         LWqwsCXx1KfgMp60WtJ3DFBGUsXkGHo8sPpzDn1+FtPYuDoLY/3NDrS51w2m0XngiNoR
-         wPA4kubFYLDH0WfrN+NI1KaDANN75+bjcOE76QoLyxzB7eC5Ca7VgnsRcUeASwX8/yq+
-         5MllNMpsy0G3VuRw9pvefvWnqhUFNANPHaQxtuC312R+K0MzNW0Nws6eViAizdO4+wRb
-         ePqCvG6F+uBaMW2AAsyU4Qi8wffMK2V3hdzrD1P6U6KvQfLSzN9lsJif74al3l7OOX1/
-         dECA==
-X-Gm-Message-State: AOAM531r/GHZpkl+DAUUyEtTafBdCOIwRiy7F0S1bMYM4an5Rj/5f1F3
-        fuS/09ZxqICGhyax1Ig6OA==
-X-Google-Smtp-Source: ABdhPJzIJJnRLqMqAko/qcvW1Ml8GLbpjAmJwz23gPjyPp+3wC0WwIXhPvIoYhJfcemgMiOGVIFG9g==
-X-Received: by 2002:a9d:6d07:: with SMTP id o7mr609746otp.363.1644265463239;
-        Mon, 07 Feb 2022 12:24:23 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id c6sm4282542ooo.19.2022.02.07.12.24.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 12:24:22 -0800 (PST)
-Received: (nullmailer pid 846789 invoked by uid 1000);
-        Mon, 07 Feb 2022 20:24:21 -0000
-Date:   Mon, 7 Feb 2022 14:24:21 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Sander Vanheule <sander@svanheule.net>
-Cc:     John Crispin <john@phrozen.org>, Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Bert Vermeulen <bert@biot.com>,
-        Birger Koblitz <mail@birger-koblitz.de>
-Subject: Re: [PATCH v4 1/3] dt-bindings: interrupt-controller:
- realtek,rtl-intc: require parents
-Message-ID: <YgF/9bUh5WOjbd1e@robh.at.kernel.org>
-References: <cover.1644165421.git.sander@svanheule.net>
- <d1920b7b0b882512e628b4e4e93fa8fef1b5364a.1644165421.git.sander@svanheule.net>
+        Mon, 7 Feb 2022 15:23:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B79C0401DA;
+        Mon,  7 Feb 2022 12:23:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78102B816F8;
+        Mon,  7 Feb 2022 20:23:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F06C004E1;
+        Mon,  7 Feb 2022 20:23:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644265428;
+        bh=usqaXiifcEu+JIY0FJvPPoSf4O8s+5EkUbpQUKh5KyU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mqQKGW8oImfRrgLRIJs936msARKuW7MF6OO4wl5/4jfGk14W8csXorOwibKtXBS4p
+         ivQ3yCdOEV2Ed1I4uqW97PAyTfKxPQO+3OBYs7KPntk3Dl8cL9cU9XWG+MquvabU2v
+         mI2DYXDw+zbzRCkNVxN6E9Pqw8EHdCDX8MAemYQI24K3yjSJcKYs7YMsDjk6DCBpc7
+         Y0efuOcSVJRXAkAsgk1eZKFBNEDqpU2d5wiie3J+q2w80KP4MpJY905Ouf+WF0oDKV
+         ENblOEROW7KC5dpUDMOOgZVuq7NgKGZDy1T75sGyAsQ7NMML1S3ZFrjR6zWPscGxeh
+         YYuThUp1DnThQ==
+Date:   Mon, 7 Feb 2022 21:23:45 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Hugh Dickins <hughd@google.com>
+Cc:     Derek Basehore <dbasehore@chromium.org>,
+        Rajat Jain <rajatja@google.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org
+Subject: Re: 5.17-rc regression: X1 Carbon touchpad not resumed
+Message-ID: <YgF/0QGFN4SppLKg@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Hugh Dickins <hughd@google.com>,
+        Derek Basehore <dbasehore@chromium.org>,
+        Rajat Jain <rajatja@google.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org
+References: <89456fcd-a113-4c82-4b10-a9bcaefac68f@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="SVWOx/Z2IM0sSr6X"
 Content-Disposition: inline
-In-Reply-To: <d1920b7b0b882512e628b4e4e93fa8fef1b5364a.1644165421.git.sander@svanheule.net>
+In-Reply-To: <89456fcd-a113-4c82-4b10-a9bcaefac68f@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 06 Feb 2022 17:41:51 +0100, Sander Vanheule wrote:
-> The interrupt router has 32 inputs, and up to 15 outputs connected to
-> the MIPS CPU's interrupts. The way these are mapped to each other is
-> runtime configurable. This controller can also mask individual interrupt
-> sources, and has a status register to indicate pending interrupts. This
-> means the controller is not transparent, and the use of "interrupt-map"
-> inappropriate. Instead, a list of parent interrupts should be specified.
-> 
-> Two-part compatibles are introduced to be able to require "interrupts"
-> for new devicetrees. The relevant descriptions are extended or added to
-> more clearly describe the functionality of this controller. The old
-> compatible, with "interrupt-map" and "#address-cells", is deprecated.
-> Interrupt specifiers for new compatibles will require two cells, to
-> indicate the output selection.
-> 
-> To prevent spurious changes to the binding when more SoCs are added,
-> "allOf" is used with one "if", and the compatible enum only has one
-> item.
-> 
-> The example is updated to provide a correct example for RTL8380 SoCs.
-> 
-> Signed-off-by: Sander Vanheule <sander@svanheule.net>
-> ---
-> Changes in v4:
-> - Indicate more clearly that the controller is not transparent.
-> ---
->  .../realtek,rtl-intc.yaml                     | 82 ++++++++++++++-----
->  1 file changed, 62 insertions(+), 20 deletions(-)
-> 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+--SVWOx/Z2IM0sSr6X
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hello Hugh,
+
+> Bisection led to 172d931910e1db800f4e71e8ed92281b6f8c6ee2
+> ("i2c: enable async suspend/resume on i2c client devices")
+> and reverting that fixes it for me.
+
+Thank you for the report plus bisection and sorry for the regression!
+
+I will wait a few days if people come up with a fix. If not, I will
+revert the offending commit. Are you willing to test patches in case
+there will be some?
+
+All the best,
+
+   Wolfram
+
+
+--SVWOx/Z2IM0sSr6X
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIBf80ACgkQFA3kzBSg
+KbYP/w//bKPTb4uzystTG/NLAI6vfcl66Q1s10ZKVC8aEK7LS+bSSMLTiUmSf638
+vYP5hs+neOiDdeBFdhYvcm1tMlud6quQKsYugbtNLQxY1J+bBJnqMLLWZ8zn/EHf
+0G4jLNW3u3v2C88A7E6dEywMsx+8CDtdtqcDWXKljIMbV3yNLPF1c8qhHsbh8diO
+xIv6RY8KSnR37uG+3hv7TQEXLM15hc8KT7l7sMtgQb1+oMRnpsalbPmJFTyx4cy8
+zanBvoSgg3PlYx4C8/cGzc2YSaMZKPNs5PIdC2nodlL0gm6JVDIx37KuEzqVs6gA
+9r1BQzdcjPkoW87Pi7HLnTD6h/XcWb8MAK6gnu9hO1UxjCTFMFxMnYQ6wpyni5rk
+bXr/MhALZfMh+T+yUFe3p3zrRZEp7ek9uKiPFXFdjg/gNaxen5BgYsXBMlUjU0rh
+U6UZce3AP9Oct+lDa9OrwoG7l58pTZRb7PCBjpS3B07u5YngzXybf4/vdbak4se4
+DFWMCBKaWgngJPEcu6z7ar2BOhwAFWFNuNUPDWulW3KsEVf6GUh9rDAyHaLAWnwN
+2RqsAkMs1IsFJWXwxM4EiJSEiPB+nKKXW4BPRjCQ6NS0Yn8duiGOphlgQPK8oC36
++53oDlSCYXEWEp2W0zhZJOv8l9hmDabbwJopfSaxq2nmLOyGYJ0=
+=a8CQ
+-----END PGP SIGNATURE-----
+
+--SVWOx/Z2IM0sSr6X--
