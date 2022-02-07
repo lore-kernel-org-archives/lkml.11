@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAF9C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA44C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349480AbiBGFw0 (ORCPT
+        id S1349787AbiBGFw3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:52:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50632 "EHLO
+        Mon, 7 Feb 2022 00:52:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352075AbiBGEsf (ORCPT
+        with ESMTP id S1352032AbiBGErK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 23:48:35 -0500
+        Sun, 6 Feb 2022 23:47:10 -0500
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622E0C043181;
-        Sun,  6 Feb 2022 20:48:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B0BC043181;
+        Sun,  6 Feb 2022 20:47:10 -0800 (PST)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id CCCD8210E8;
-        Mon,  7 Feb 2022 04:48:33 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id C173D210EA;
+        Mon,  7 Feb 2022 04:47:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644209313; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1644209228; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ca/QMA9b8aSP2XqDNpzMoh70WOqFOvfMXBDfQmXLg8g=;
-        b=g7MhZp92/rnAsaBQF/LBN2grTXpM1lSbRGyvPNrVbdb93Hur/KShishK0kboEEwtuBgXEN
-        eV5m3zMF/R1LupwK2CXzQ0u20tEnJ9/jxsjPA8hEJhCJA48lpiq2r6PjIQxxf6AYRjBofP
-        Fhn0FQcRrR9S9O3YbkmJ9Fq76of65ME=
+        bh=jIwc70WfyZePk+M4TY2KFFjSotnhhDywYz77GPeU54I=;
+        b=ikz+i/JzVV65yxb2LUs6PuJG5e71Z8cf0FCBCTwmQXIBBaWz7WzKAfUY7+5dxqv3EeamNP
+        vpVguyYOVN3GdY74xr7qwgFI/YZ2d0mfWArhal/iwFqps1IacbWE5EGygBB7cXVhUTyGXV
+        TxOxx4jDPhTUzTesTOJxRzKEX5wg/aY=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644209313;
+        s=susede2_ed25519; t=1644209228;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ca/QMA9b8aSP2XqDNpzMoh70WOqFOvfMXBDfQmXLg8g=;
-        b=S7cvC95vxV7Ud1UDWIFO6Oa2myUbnd6qE+5EbMwEIspBQunKCydhhC2WbDtoFc/abo0+oz
-        jz1Nwrey9mHimyDg==
+        bh=jIwc70WfyZePk+M4TY2KFFjSotnhhDywYz77GPeU54I=;
+        b=TDjRpTiE1Vmtdb2gZ+xE1034/7dr8Wq8HP7cTr9R85FgeZ86lrzm4X7/YxOcgW/9zP4kQi
+        jZERoqE82s77CkDw==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7A6061330E;
-        Mon,  7 Feb 2022 04:48:30 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DF1A91330E;
+        Mon,  7 Feb 2022 04:47:05 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id jU5zDZ6kAGJ/NQAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:48:30 +0000
-Subject: [PATCH 15/21] SUNRPC: remove scheduling boost for "SWAPPER" tasks.
+        id O7oOJ0mkAGIXNQAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 07 Feb 2022 04:47:05 +0000
+Subject: [PATCH 03/21] MM: move responsibility for setting SWP_FS_OPS to
+ ->swap_activate
 From:   NeilBrown <neilb@suse.de>
 To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
         Anna Schumaker <anna.schumaker@netapp.com>,
@@ -62,7 +63,7 @@ To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
 Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
 Date:   Mon, 07 Feb 2022 15:46:01 +1100
-Message-ID: <164420916121.29374.301108979284279934.stgit@noble.brown>
+Message-ID: <164420916113.29374.18179900562061291108.stgit@noble.brown>
 In-Reply-To: <164420889455.29374.17958998143835612560.stgit@noble.brown>
 References: <164420889455.29374.17958998143835612560.stgit@noble.brown>
 User-Agent: StGit/0.23
@@ -73,70 +74,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, tasks marked as "swapper" tasks get put to the front of
-non-priority rpc_queues, and are sorted earlier than non-swapper tasks on
-the transport's ->xmit_queue.
+If a filesystem wishes to handle all swap IO itself (via ->direct_IO and
+->readpage), rather than just providing devices addresses for
+submit_bio(), SWP_FS_OPS must be set.
+Currently the protocol for setting this it to have ->swap_activate
+return zero.  In that case SWP_FS_OPS is set, and add_swap_extent()
+is called for the entire file.
 
-This is pointless as currently *all* tasks for a mount that has swap
-enabled on *any* file are marked as "swapper" tasks.  So the net result
-is that the non-priority rpc_queues are reverse-ordered (LIFO).
+This is a little clumsy as different return values for ->swap_activate
+have quite different meanings, and it makes it hard to search for which
+filesystems require SWP_FS_OPS to be set.
 
-This scheduling boost is not necessary to avoid deadlocks, and hurts
-fairness, so remove it.  If there were a need to expedite some requests,
-the tk_priority mechanism is a more appropriate tool.
+So remove the special meaning of a zero return, and require the
+filesystem to set SWP_FS_OPS if it so desires, and to always call
+add_swap_extent() as required.
 
+Currently only NFS and CIFS return zero for add_swap_extent().
+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: NeilBrown <neilb@suse.de>
 ---
- net/sunrpc/sched.c |    7 -------
- net/sunrpc/xprt.c  |   11 -----------
- 2 files changed, 18 deletions(-)
+ fs/cifs/file.c       |    3 ++-
+ fs/nfs/file.c        |   13 +++++++++++--
+ include/linux/swap.h |    6 ++++++
+ mm/swapfile.c        |   10 +++-------
+ 4 files changed, 22 insertions(+), 10 deletions(-)
 
-diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
-index d5b6e897f5a5..256302bf6557 100644
---- a/net/sunrpc/sched.c
-+++ b/net/sunrpc/sched.c
-@@ -186,11 +186,6 @@ static void __rpc_add_wait_queue_priority(struct rpc_wait_queue *queue,
+diff --git a/fs/cifs/file.c b/fs/cifs/file.c
+index e7af802dcfa6..fe49f1cab018 100644
+--- a/fs/cifs/file.c
++++ b/fs/cifs/file.c
+@@ -4917,7 +4917,8 @@ static int cifs_swap_activate(struct swap_info_struct *sis,
+ 	 * from reading or writing the file
+ 	 */
  
- /*
-  * Add new request to wait queue.
-- *
-- * Swapper tasks always get inserted at the head of the queue.
-- * This should avoid many nasty memory deadlocks and hopefully
-- * improve overall performance.
-- * Everyone else gets appended to the queue to ensure proper FIFO behavior.
-  */
- static void __rpc_add_wait_queue(struct rpc_wait_queue *queue,
- 		struct rpc_task *task,
-@@ -199,8 +194,6 @@ static void __rpc_add_wait_queue(struct rpc_wait_queue *queue,
- 	INIT_LIST_HEAD(&task->u.tk_wait.timer_list);
- 	if (RPC_IS_PRIORITY(queue))
- 		__rpc_add_wait_queue_priority(queue, task, queue_priority);
--	else if (RPC_IS_SWAPPER(task))
--		list_add(&task->u.tk_wait.list, &queue->tasks[0]);
- 	else
- 		list_add_tail(&task->u.tk_wait.list, &queue->tasks[0]);
- 	task->tk_waitqueue = queue;
-diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
-index 47d207e416ab..a0a2583fe941 100644
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -1354,17 +1354,6 @@ xprt_request_enqueue_transmit(struct rpc_task *task)
- 				INIT_LIST_HEAD(&req->rq_xmit2);
- 				goto out;
- 			}
--		} else if (RPC_IS_SWAPPER(task)) {
--			list_for_each_entry(pos, &xprt->xmit_queue, rq_xmit) {
--				if (pos->rq_cong || pos->rq_bytes_sent)
--					continue;
--				if (RPC_IS_SWAPPER(pos->rq_task))
--					continue;
--				/* Note: req is added _before_ pos */
--				list_add_tail(&req->rq_xmit, &pos->rq_xmit);
--				INIT_LIST_HEAD(&req->rq_xmit2);
--				goto out;
--			}
- 		} else if (!req->rq_seqno) {
- 			list_for_each_entry(pos, &xprt->xmit_queue, rq_xmit) {
- 				if (pos->rq_task->tk_owner != task->tk_owner)
+-	return 0;
++	sis->flags |= SWP_FS_OPS;
++	return add_swap_extent(sis, 0, sis->max, 0);
+ }
+ 
+ static void cifs_swap_deactivate(struct file *file)
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index 76d76acbc594..d5aa55c7edb0 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -488,6 +488,7 @@ static int nfs_swap_activate(struct swap_info_struct *sis, struct file *file,
+ {
+ 	unsigned long blocks;
+ 	long long isize;
++	int ret;
+ 	struct rpc_clnt *clnt = NFS_CLIENT(file->f_mapping->host);
+ 	struct inode *inode = file->f_mapping->host;
+ 
+@@ -500,9 +501,17 @@ static int nfs_swap_activate(struct swap_info_struct *sis, struct file *file,
+ 		return -EINVAL;
+ 	}
+ 
++	ret = rpc_clnt_swap_activate(clnt);
++	if (ret)
++		return ret;
++	ret = add_swap_extent(sis, 0, sis->max, 0);
++	if (ret < 0) {
++		rpc_clnt_swap_deactivate(clnt);
++		return ret;
++	}
+ 	*span = sis->pages;
+-
+-	return rpc_clnt_swap_activate(clnt);
++	sis->flags |= SWP_FS_OPS;
++	return ret;
+ }
+ 
+ static void nfs_swap_deactivate(struct file *file)
+diff --git a/include/linux/swap.h b/include/linux/swap.h
+index a43929f7033e..b57cff3c5ac2 100644
+--- a/include/linux/swap.h
++++ b/include/linux/swap.h
+@@ -573,6 +573,12 @@ static inline swp_entry_t get_swap_page(struct page *page)
+ 	return entry;
+ }
+ 
++static inline int add_swap_extent(struct swap_info_struct *sis,
++				  unsigned long start_page,
++				  unsigned long nr_pages, sector_t start_block)
++{
++	return -EINVAL;
++}
+ #endif /* CONFIG_SWAP */
+ 
+ #ifdef CONFIG_THP_SWAP
+diff --git a/mm/swapfile.c b/mm/swapfile.c
+index 71c7a31dd291..ed6028aea8bf 100644
+--- a/mm/swapfile.c
++++ b/mm/swapfile.c
+@@ -2347,13 +2347,9 @@ static int setup_swap_extents(struct swap_info_struct *sis, sector_t *span)
+ 
+ 	if (mapping->a_ops->swap_activate) {
+ 		ret = mapping->a_ops->swap_activate(sis, swap_file, span);
+-		if (ret >= 0)
+-			sis->flags |= SWP_ACTIVATED;
+-		if (!ret) {
+-			sis->flags |= SWP_FS_OPS;
+-			ret = add_swap_extent(sis, 0, sis->max, 0);
+-			*span = sis->pages;
+-		}
++		if (ret < 0)
++			return ret;
++		sis->flags |= SWP_ACTIVATED;
+ 		return ret;
+ 	}
+ 
 
 
