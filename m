@@ -2,108 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E987C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:53:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B0BC43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384911AbiBGPwE convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:52:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
+        id S241397AbiBGP7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 10:59:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383114AbiBGPu3 (ORCPT
+        with ESMTP id S1385590AbiBGP4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:50:29 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B60E5C0401C1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:50:28 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-108-njvjn7dXMv-LfAVryvNBVg-1; Mon, 07 Feb 2022 15:50:25 +0000
-X-MC-Unique: njvjn7dXMv-LfAVryvNBVg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Mon, 7 Feb 2022 15:50:16 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Mon, 7 Feb 2022 15:50:16 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Ari Sundholm' <ari@tuxera.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Anton Altaparmakov <anton@tuxera.com>
-Subject: RE: [PATCH] fs/read_write.c: Fix a broken signed integer overflow
- check.
-Thread-Topic: [PATCH] fs/read_write.c: Fix a broken signed integer overflow
- check.
-Thread-Index: AQHYHCmhrNPdt8nHtECGo27UFYwbXqyIOyHw
-Date:   Mon, 7 Feb 2022 15:50:16 +0000
-Message-ID: <051a5e4621344301a2c4f84c3de57ec3@AcuMS.aculab.com>
-References: <20220207120711.4070403-1-ari@tuxera.com>
-In-Reply-To: <20220207120711.4070403-1-ari@tuxera.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 7 Feb 2022 10:56:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85CF9C0401CC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:56:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644249377;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hIkOyOBrYC66as9Hh5WBjO5DbzrEJzCI4Y98UxmVlRg=;
+        b=Eil31yxaf80Lu+0BSGUgbnuKsQ0iEMZmts58qlRwAMtDk2zJfcfyYfwZablXSDcEXwOVzN
+        IrMt9NENTiKc6LmsUmrdGxI5kQkPzRMOTsH6Qu3658vCafhfphqjkrMVdSGeOBmG90uO3d
+        aYlqP/vuT+MLS22QwCRXNWcnPlIMCWo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-639-oRBj8DFEPRSHtMKGb7doUw-1; Mon, 07 Feb 2022 10:56:14 -0500
+X-MC-Unique: oRBj8DFEPRSHtMKGb7doUw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 22080100C662;
+        Mon,  7 Feb 2022 15:56:11 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.192.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7C77482765;
+        Mon,  7 Feb 2022 15:56:00 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sean Christopherson <seanjc@google.com>,
+        David Airlie <airlied@linux.ie>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Jim Mattson <jmattson@google.com>, x86@kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH RESEND 08/30] KVM: x86: lapic: don't touch irr_pending in kvm_apic_update_apicv when inhibiting it
+Date:   Mon,  7 Feb 2022 17:54:25 +0200
+Message-Id: <20220207155447.840194-9-mlevitsk@redhat.com>
+In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
+References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ari Sundholm
-> Sent: 07 February 2022 12:07
-> 
-> The function generic_copy_file_checks() checks that the ends of the
-> input and output file ranges do not overflow. Unfortunately, there is
-> an issue with the check itself.
-> 
-> Due to the integer promotion rules in C, the expressions
-> (pos_in + count) and (pos_out + count) have an unsigned type because
-> the count variable has the type uint64_t. Thus, in many cases where we
-> should detect signed integer overflow to have occurred (and thus one or
-> more of the ranges being invalid), the expressions will instead be
-> interpreted as large unsigned integers. This means the check is broken.
-> 
-> Fix this by explicitly casting the expressions to loff_t.
-...
-> ---
->  fs/read_write.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/fs/read_write.c b/fs/read_write.c
-> index 0074afa7ecb3..64166e74adc5 100644
-> --- a/fs/read_write.c
-> +++ b/fs/read_write.c
-> @@ -1431,7 +1431,8 @@ static int generic_copy_file_checks(struct file *file_in, loff_t pos_in,
->  		return -ETXTBSY;
-> 
->  	/* Ensure offsets don't wrap. */
-> -	if (pos_in + count < pos_in || pos_out + count < pos_out)
-> +	if ((loff_t)(pos_in + count) < pos_in ||
-> +			(loff_t)(pos_out + count) < pos_out)
->  		return -EOVERFLOW;
+kvm_apic_update_apicv is called when AVIC is still active, thus IRR bits
+can be set by the CPU after it is called, and don't cause the irr_pending
+to be set to true.
 
-Hard to convince myself that is right.
-The old code is the standard check for unsigned addition overflow.
-The new one is just odd.
+Also logic in avic_kick_target_vcpu doesn't expect a race with this
+function so to make it simple, just keep irr_pending set to true and
+let the next interrupt injection to the guest clear it.
 
-If pos_in is guaranteed to be +ve in a signed variable you can check:
-	count < (1ull << 63) - pos_in
-since the RHS is then guaranteed not to wrap.
 
-	David
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+---
+ arch/x86/kvm/lapic.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 0da7d0960fcb5..dd4e2888c244b 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -2307,7 +2307,12 @@ void kvm_apic_update_apicv(struct kvm_vcpu *vcpu)
+ 		apic->irr_pending = true;
+ 		apic->isr_count = 1;
+ 	} else {
+-		apic->irr_pending = (apic_search_irr(apic) != -1);
++		/*
++		 * Don't clear irr_pending, searching the IRR can race with
++		 * updates from the CPU as APICv is still active from hardware's
++		 * perspective.  The flag will be cleared as appropriate when
++		 * KVM injects the interrupt.
++		 */
+ 		apic->isr_count = count_vectors(apic->regs + APIC_ISR);
+ 	}
+ }
+-- 
+2.26.3
 
