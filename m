@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF009C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F486C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391272AbiBGL6y (ORCPT
+        id S1391260AbiBGL6w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:58:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47524 "EHLO
+        Mon, 7 Feb 2022 06:58:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378322AbiBGLfu (ORCPT
+        with ESMTP id S1377754AbiBGLfr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:35:50 -0500
+        Mon, 7 Feb 2022 06:35:47 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66ED9C0401C3;
-        Mon,  7 Feb 2022 03:35:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 638DEC03FEC8;
+        Mon,  7 Feb 2022 03:35:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 042A060B5B;
-        Mon,  7 Feb 2022 11:35:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCDE2C004E1;
-        Mon,  7 Feb 2022 11:35:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D62E260180;
+        Mon,  7 Feb 2022 11:35:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96E11C004E1;
+        Mon,  7 Feb 2022 11:35:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233742;
-        bh=Z7H7oZrmQOOS5dhXt+kfnsPedSGfqT1i5+pCQHO2n5E=;
+        s=korg; t=1644233739;
+        bh=DFsm60ujwlq6xrmRluf3V0gZYV+0uKA4KIhEf3z/2VY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QT4Km53LWiJ+Bg3Evq/VAcdYGefZvDoDtkhEs2JagNk8vVcFDbt3XKHGhFs6Phy69
-         Z6hgqrurdgpQdeQxmk9m+Ax5s9lrf5Z3gC8aUx3ttehbB7xqStJV95lyT4UqlFnf/t
-         NXyxf40NuQDRHwe5xzKfgEJfBbasYrZRUgCNNKhk=
+        b=ODjv018DgL4WC527PwuUfriM21P3W+DY7QmWol6Nv8tcIKGfRw7XMhztC4ewTrqry
+         64dPLMpyuND8FDRAnMIddDMGjnqjpkYRsXEuCniR8PkNu/QPhRJK+E6YtgqhThLbGx
+         jxTHPHEAp0N//JuKPATpbGTgMWan9LToxGwZtez4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Borowski <kilobyte@angband.pl>,
-        =?UTF-8?q?Martin=20Li=C5=A1ka?= <mliska@suse.cz>,
-        Sergei Trofimovich <slyich@gmail.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 107/126] objtool: Fix truncated string warning
-Date:   Mon,  7 Feb 2022 12:07:18 +0100
-Message-Id: <20220207103807.759609312@linuxfoundation.org>
+        stable@vger.kernel.org, Riwen Lu <luriwen@kylinos.cn>,
+        Eric Wong <e@80x24.org>,
+        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 5.16 106/126] rtc: cmos: Evaluate century appropriate
+Date:   Mon,  7 Feb 2022 12:07:17 +0100
+Message-Id: <20220207103807.720623227@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -52,60 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergei Trofimovich <slyich@gmail.com>
+From: Riwen Lu <luriwen@kylinos.cn>
 
-[ Upstream commit 82880283d7fcd0a1d20964a56d6d1a5cc0df0713 ]
+commit ff164ae39b82ee483b24579c8e22a13a8ce5bd04 upstream.
 
-On GCC 12, the build fails due to a possible truncated string:
+There's limiting the year to 2069. When setting the rtc year to 2070,
+reading it returns 1970. Evaluate century starting from 19 to count the
+correct year.
 
-    check.c: In function 'validate_call':
-    check.c:2865:58: error: '%d' directive output may be truncated writing between 1 and 10 bytes into a region of size 9 [-Werror=format-truncation=]
-     2865 |                 snprintf(pvname, sizeof(pvname), "pv_ops[%d]", idx);
-          |                                                          ^~
+$ sudo date -s 20700106
+Mon 06 Jan 2070 12:00:00 AM CST
+$ sudo hwclock -w
+$ sudo hwclock -r
+1970-01-06 12:00:49.604968+08:00
 
-In theory it's a valid bug:
+Fixes: 2a4daadd4d3e5071 ("rtc: cmos: ignore bogus century byte")
 
-    static char pvname[16];
-    int idx;
-    ...
-    idx = (rel->addend / sizeof(void *));
-    snprintf(pvname, sizeof(pvname), "pv_ops[%d]", idx);
-
-There are only 7 chars for %d while it could take up to 9, so the
-printed "pv_ops[%d]" string could get truncated.
-
-In reality the bug should never happen, because pv_ops only has ~80
-entries, so 7 chars for the integer is more than enough.  Still, it's
-worth fixing.  Bump the buffer size by 2 bytes to silence the warning.
-
-[ jpoimboe: changed size to 19; massaged changelog ]
-
-Fixes: db2b0c5d7b6f ("objtool: Support pv_opsindirect calls for noinstr")
-Reported-by: Adam Borowski <kilobyte@angband.pl>
-Reported-by: Martin Liška <mliska@suse.cz>
-Signed-off-by: Sergei Trofimovich <slyich@gmail.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220120233748.2062559-1-slyich@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Riwen Lu <luriwen@kylinos.cn>
+Acked-by: Eric Wong <e@80x24.org>
+Reviewed-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220106084609.1223688-1-luriwen@kylinos.cn
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl> # preparation for stable
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/check.c | 2 +-
+ drivers/rtc/rtc-mc146818-lib.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 21735829b860c..750ef1c446c8a 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2823,7 +2823,7 @@ static inline bool func_uaccess_safe(struct symbol *func)
+--- a/drivers/rtc/rtc-mc146818-lib.c
++++ b/drivers/rtc/rtc-mc146818-lib.c
+@@ -104,7 +104,7 @@ again:
+ 	time->tm_year += real_year - 72;
+ #endif
  
- static inline const char *call_dest_name(struct instruction *insn)
- {
--	static char pvname[16];
-+	static char pvname[19];
- 	struct reloc *rel;
- 	int idx;
+-	if (century > 20)
++	if (century > 19)
+ 		time->tm_year += (century - 19) * 100;
  
--- 
-2.34.1
-
+ 	/*
 
 
