@@ -2,107 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E385C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4993DC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343940AbiBGJtd (ORCPT
+        id S1344736AbiBGJtm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:49:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33302 "EHLO
+        Mon, 7 Feb 2022 04:49:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351900AbiBGJgc (ORCPT
+        with ESMTP id S236505AbiBGJoX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:36:32 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B3B0C043187
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:36:31 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id w11so23605179wra.4
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:36:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=qrvBS/TzjL+d5+7WnH62vtdXI5w+DWvXkC7GzKhpJJk=;
-        b=tc5s7ekSpBAR+xbhyLx3fnhzUwxa8WfVcQK1lWdQybmI2OXSMntUTM0FS54/pS0l1k
-         fjthaUllv6xcgQlo07cKhtBRZeSp3Wtw+XeY1dAzNxDDW69BIHgh9qXLHSTe2StCLnvI
-         ZbbNeHBKk9uPK3v95zObnCm3VeOnwVXPh0DlPsOqKvRr7xFZWGGjWcyWKMYqXUJH4QAp
-         JIg/XLlwZJ3WxSLrQeeO4EwEecIKmGugBjK/BuSD73aUeQfkM/ee4Knoes+yf0raBbSF
-         Cw5VYI9VBzNONL+qlx47DwfeYhbjBfd/OeKtuLtH1k55dtnerjpBkNaKWODtJopzmn3R
-         6EYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=qrvBS/TzjL+d5+7WnH62vtdXI5w+DWvXkC7GzKhpJJk=;
-        b=Fx52o2dtwMX8H7d+LwcbgTmNWlg0k+RjzjhuAuo7rGUxOcPJUCo5ByL5gUJyFy2YuO
-         qkyNzY0xU4xWdAdHT0x26yDoPvBlPnexf7gUi/Z0aXR25+mH4IZ3KM4831xZnHa8K7dc
-         tP0MpcLCusUze60pAvvvKm34xE5tPCX0XNXN4y2c/McsZWoMLV0o8yPtnubakbksdQ9P
-         Jgj78croyhHSAywH/ncEpIYzzUN8oRsjrvdLocBKmgJdf9ho5GP6Pq7+GqnUuygunB9g
-         aZ4RetDyfuHNIEFMI6O9h2M00z8HtHaVGjru4V8eWtcfJcjS6KBFttxnl0ZeJFEIaaTz
-         f3vg==
-X-Gm-Message-State: AOAM533Dd3+IZJw2rS6xnn5Sl120XcNkqrWxOd3BEdtIbyPluUpodRVN
-        Uz33wPNyWzrU8KW/mhcBoKJqTg==
-X-Google-Smtp-Source: ABdhPJw++V5on4HlT6+jIXzacZJXDK3OK3YGQ425d24Wltt5gE0fwoH6RTaQC/qkOuDwmb7mArXSlA==
-X-Received: by 2002:adf:ea82:: with SMTP id s2mr9251824wrm.44.1644226589677;
-        Mon, 07 Feb 2022 01:36:29 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id i19sm20468171wmq.45.2022.02.07.01.36.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 01:36:29 -0800 (PST)
-Date:   Mon, 7 Feb 2022 09:36:27 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Subject: Re: [PATCH v2 0/3] regulator/mfd: dt-bindings: maxim,max77802:
- convert to dtschema
-Message-ID: <YgDoG8Xlhq5L3Bii@google.com>
-References: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
- <f0a9e656-cf18-f212-b701-a1c9d10c4a59@canonical.com>
+        Mon, 7 Feb 2022 04:44:23 -0500
+X-Greylist: delayed 3633 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 01:44:21 PST
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8400AC043181;
+        Mon,  7 Feb 2022 01:44:21 -0800 (PST)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7CCA8240008;
+        Mon,  7 Feb 2022 09:44:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1644227059;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6KUt7aT0vf3HkBvqg1m3IH1dZxNe1djrpK9xW+fnoQw=;
+        b=NkrfXNXYCHbTieByp9pVKjdSsJHaXqLnlqhNJGbny2eQ/2CsZrUdW2mSW8BFideJw1mHR7
+        15E1pOBLcS9Zp/1a1+f6oN2t/XT5OKikI5lpiYSLG2Zsg02H2FT2KS4iKkG/crYs0wRf/d
+        LdAbBUGvjGFfl0ceKgyWRSvFGkoenC8W/DHCeWzBHaqNAWaq5hcmZziIcYMn2MBYgGQERM
+        SJJqkl47m6fRQi+eSFynQYJiS+deVZKhB4CRpVfmFn9Iveedvri6/XWxuSJSUDSrowXNWy
+        N2qKe3FTk9/WTFe/Qpb4KssN0vY9p4sxkx+Snv5XDpdBc1wcZwbKDvlk4nw8Nw==
+Date:   Mon, 7 Feb 2022 10:44:16 +0100
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>
+Cc:     Samuel Holland <samuel@sholland.org>, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-staging@lists.linux.dev, Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 02/66] dt-bindings: interconnect: sunxi: Add V3s mbus
+ compatible
+Message-ID: <YgDp8HzmcS8Nkn0q@aptenodytes>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <5386b1f5-9e75-4ce3-6641-bd7667c85d42@sholland.org>
+ <YgDbv8aQEOOjwTb0@aptenodytes>
+ <8021451.T7Z3S40VBb@jernej-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="10LvNQVJYUIIwFrj"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f0a9e656-cf18-f212-b701-a1c9d10c4a59@canonical.com>
+In-Reply-To: <8021451.T7Z3S40VBb@jernej-laptop>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 06 Feb 2022, Krzysztof Kozlowski wrote:
 
-> On 11/01/2022 18:54, Krzysztof Kozlowski wrote:
+--10LvNQVJYUIIwFrj
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi Jernej,
+
+On Mon 07 Feb 22, 09:50, Jernej =C5=A0krabec wrote:
+> Hi Paul,
+>=20
+> Dne ponedeljek, 07. februar 2022 ob 09:43:43 CET je Paul Kocialkowski=20
+> napisal(a):
 > > Hi,
-> > 
-> > Changes since v1
-> > ================
-> > 1. MFD: Use absolute path to schemas.
-> > 2. Regulator: skip properties.
-> > 
-> > Dependencies
-> > ============
-> > 1. DTS patch: nothing depends on it, sending here so Rob's automatic
-> >    checker won't complain about DTS.
-> >    I will take it via Samsung SoC tree.
-> > 
-> > 2. Final MFD patch depends on regulator, so the two last patches could
-> >    go via Rob's, Mark's or Lee's trees.
-> > 
-> 
-> Dear Lee,
-> 
-> This patchset was reviewed and there are no outstanding issues. Could
-> you pick up entire set via MFD tree?
+> >=20
+> > On Sat 05 Feb 22, 14:14, Samuel Holland wrote:
+> > > On 2/5/22 12:53 PM, Paul Kocialkowski wrote:
+> > > > Since the V3s uses the internal mbus, document its compatible.
+> > > >=20
+> > > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > > > ---
+> > > >=20
+> > > >  .../devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-mbus.yaml  |=
+ 1 +
+> > > >  1 file changed, 1 insertion(+)
+> > > >=20
+> > > > diff --git
+> > > > a/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-m=
+bus.
+> > > > yaml
+> > > > b/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-m=
+bus.
+> > > > yaml index 29c9961ee2d8..b67bf9261a6a 100644
+> > > > ---
+> > > > a/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-m=
+bus.
+> > > > yaml +++
+> > > > b/Documentation/devicetree/bindings/arm/sunxi/allwinner,sun4i-a10-m=
+bus.
+> > > > yaml> >=20
+> > > > @@ -31,6 +31,7 @@ properties:
+> > > >        - allwinner,sun5i-a13-mbus
+> > > >        - allwinner,sun8i-h3-mbus
+> > > >        - allwinner,sun8i-r40-mbus
+> > > >=20
+> > > > +      - allwinner,sun8i-v3s-mbus
+> > >=20
+> > > Please enable the expanded binding added in commit 245578ba9f03
+> > > ("dt-bindings: arm: sunxi: Expand MBUS binding")[1] by adding the new
+> > > compatible to the "if" block lower in the file. That way we can add V=
+3S
+> > > devfreq support in the future without changing that binding.
+> >=20
+> > I had missed that new driver but surely I will expand the updated bindi=
+ng.
+> >=20
+> > By the way do you have an explanation about the cell index given to the
+> > interconnects (after &mbus)?
+>=20
+> This is mbus channel. You can find appropriate one checking DRAM driver i=
+n U-
+> Boot, where mbus is configured.
 
-Nothing from LED or Regulator?
+Thanks, that's exactly what I was looking for! Looks like in my case
+MBUS_PORT_CSI will be used both for CSI and ISP.
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+For the record it's also defined in the BSP kernel at:
+include/linux/sunxi_mbus.h
+
+Thanks,
+
+Paul
+
+> Best regards,
+> Jernej
+>=20
+> >=20
+> > Paul
+> >=20
+> > > Regards,
+> > > Samuel
+> > >=20
+> > > [1]: https://git.kernel.org/torvalds/c/245578ba9f03
+> > >=20
+> > > >        - allwinner,sun50i-a64-mbus
+> > > >   =20
+> > > >    reg:
+>=20
+>=20
+>=20
+>=20
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--10LvNQVJYUIIwFrj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmIA6fAACgkQ3cLmz3+f
+v9Fywwf/eKwq4XMLDo180gX6Pm1kgA2v/uxUB0R0xsoXaELb6IluwiuPO0jVvNCN
+rYT26DH13eSTfZtHD9UlCMb7J1PO4lGT+FeVURUWx7tnX8m5r2H0H66VqyAdlPUT
+mOunobehDH81Sl2Pj7FDVa1jyA8Bg/CZwnCxKi7cwLyg4EvFxQCYG3AxKb30UZya
+WcQcmj84SGHps/X1XdbS1vnllGv9e9mE9FvaVdi+WZ4iUzcQOwCXpMsYiWoc0YdV
+LhUCUeGeAqr9STaTz7ZDCPBMUjNtnONtTiDcyDIMcAIWshytEl2S2sKkpy4o8c8V
+caHW8IBvVlyHHv9YjOnNRf5ysP3T7g==
+=vjaa
+-----END PGP SIGNATURE-----
+
+--10LvNQVJYUIIwFrj--
