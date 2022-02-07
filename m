@@ -2,89 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9912C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94744C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238760AbiBGRW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:22:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
+        id S240054AbiBGRXA convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 12:23:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237603AbiBGRW1 (ORCPT
+        with ESMTP id S1382714AbiBGROu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:22:27 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04EBC0401D5;
-        Mon,  7 Feb 2022 09:22:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644254547; x=1675790547;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9Cowf7J9LryTk5PzMkLkhfkff1e0+oXlLWDASRWsqFs=;
-  b=VSEEQJbvPYneVjTIzM5cWHXF6w85fHpjLTEm3S10ZyqGjfKhS3RPNlQo
-   ByCluDmG+AzplMMxV2W+fxQlaXk8rms0+5b5io4lQAV8K1z12TKl9M6yf
-   aIHyuW+Zd7KAdyiLapuu5m/YIkGqn1pKX0FT3qNTXo9hyTp5LpZSGyXXL
-   STpF3Tg5m7lMWQq3EK78+TherR7xBhH9jSz40bRHfr/rNBwWIuZHUrMM1
-   blBe4XPV8Sk5IcLn3AopAxkzikFBNH0WWv0pkj4gF+5uQMbIzD+NjGb5G
-   wPSz5XLHPHN3rGJ+qyJcOjMYdgD/NXureKNw0YCsES3f94snduwAjpUUC
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="309509447"
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="309509447"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 09:22:26 -0800
-X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="484492252"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 09:22:24 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nH7hd-001ybo-I0;
-        Mon, 07 Feb 2022 19:21:25 +0200
-Date:   Mon, 7 Feb 2022 19:21:25 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code
- defined constants in messages
-Message-ID: <YgFVFceYQtWq4Hww@smile.fi.intel.com>
-References: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
- <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
+        Mon, 7 Feb 2022 12:14:50 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 13295C0401D5
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:14:48 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-261-OsvrFIUnMKKFrChEQsxdNA-1; Mon, 07 Feb 2022 17:14:46 +0000
+X-MC-Unique: OsvrFIUnMKKFrChEQsxdNA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Mon, 7 Feb 2022 17:14:43 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Mon, 7 Feb 2022 17:14:43 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christoph Hellwig' <hch@infradead.org>,
+        Stafford Horne <shorne@gmail.com>
+CC:     LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        "Jonas Bonn" <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "openrisc@lists.librecores.org" <openrisc@lists.librecores.org>
+Subject: RE: [PATCH] openrisc: remove CONFIG_SET_FS
+Thread-Topic: [PATCH] openrisc: remove CONFIG_SET_FS
+Thread-Index: AQHYG/BjkR+ecsCi7UOyp98rZRODA6yIU2uA
+Date:   Mon, 7 Feb 2022 17:14:43 +0000
+Message-ID: <3744dcbbf2874875b023548aacdd8b41@AcuMS.aculab.com>
+References: <20220206013648.3491865-1-shorne@gmail.com>
+ <YgC/8ng5WX6Nt104@infradead.org>
+In-Reply-To: <YgC/8ng5WX6Nt104@infradead.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 08:37:55AM -0800, Joe Perches wrote:
-> On Mon, 2022-02-07 at 12:48 +0200, Andy Shevchenko wrote:
-> > In a couple of messages the constants, which have their definitions,
-> > are hard coded into the message text. Unhardcode them.
+From: Christoph Hellwig
+> Sent: 07 February 2022 06:45
 > 
-> Found by inspection or tool?
-
-Does it matter? No, a side effect of the following patch.
-
-...
-
-> > +		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
-> > +			LTC2983_CUSTOM_STEINHART_SIZE);
+> On Sun, Feb 06, 2022 at 10:36:47AM +0900, Stafford Horne wrote:
+> > Remove the address space override API set_fs() used for User Mode Linux.
 > 
-> probably better using "%u" and not "%d"
+> This ain't UML :)
 > 
-> and better with a \n termination too.
+> > +	return size <= TASK_SIZE && addr <= (TASK_SIZE - size);
+> 
+> No need for the inner braces.
 
-I think it would be a separate change if we wish so. Let Jonathan to tell what
-to do here.
+Since TASK_SIZE is actually an address wouldn't be better to
+swap the condition around (in every architecture).
 
--- 
-With Best Regards,
-Andy Shevchenko
+	return addr <= TASK_SIZE && size <= TASK_SIZE - addr;
 
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
