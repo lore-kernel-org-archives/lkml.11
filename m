@@ -2,477 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63929C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07686C35273
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 13:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448591AbiBGNMG (ORCPT
+        id S1448577AbiBGNMB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:12:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46302 "EHLO
+        Mon, 7 Feb 2022 08:12:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392319AbiBGMJW (ORCPT
+        with ESMTP id S1442370AbiBGMU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 07:09:22 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F733C03FEE5;
-        Mon,  7 Feb 2022 04:02:24 -0800 (PST)
-Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jskdk473Xz67WVb;
-        Mon,  7 Feb 2022 19:37:30 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Feb 2022 12:42:26 +0100
-Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 7 Feb
- 2022 11:42:24 +0000
-Date:   Mon, 7 Feb 2022 11:42:23 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Yicong Yang <yangyicong@hisilicon.com>
-CC:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <daniel.thompson@linaro.org>, <joro@8bytes.org>,
-        <john.garry@huawei.com>, <shameerali.kolothum.thodi@huawei.com>,
-        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
-        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
-        <linuxarm@huawei.com>, <song.bao.hua@hisilicon.com>
-Subject: Re: [PATCH v3 1/8] hwtracing: Add trace function support for
- HiSilicon PCIe Tune and Trace device
-Message-ID: <20220207114223.00001d2a@Huawei.com>
-In-Reply-To: <20220124131118.17887-2-yangyicong@hisilicon.com>
-References: <20220124131118.17887-1-yangyicong@hisilicon.com>
-        <20220124131118.17887-2-yangyicong@hisilicon.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Mon, 7 Feb 2022 07:20:56 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AE3C02B5C7;
+        Mon,  7 Feb 2022 04:08:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1644235704; x=1675771704;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=m/q6pkb+TA7cRlY6xlVOjKQ4P8DeARpuUdX/+csSvX4=;
+  b=VhWW5VlJ+Ij0r7HYtTC7rtGoKQ80lzJSEyGJkhlN9s4/ycNR8STGrIxU
+   7wm/M/2AwBtRT56MJyShkV1MCFn7pF3pSvpNXez/h6WCJa0v1ncHg3PhD
+   dFmkHn9+X3pR0b11b7TghBjo5GaIBUE4jEGRGogQHHzHFjHYWlyo7VC+Q
+   y0wdhQYSXKasobHKSbbu28Yvs5xuN9Zol0lkUq9qQtpy1YiYdDXgq6LFd
+   3eg74SNkk0pnzuxMNv3eTVjbi08RZo7+7OR1XFpP2jDG2mt80Z+TALENA
+   Nt1dn5pc58mbxQXES4PXzoU3zMWMXaxa2naTIsaoyhdgJh0Yys+vNqjJH
+   g==;
+X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
+   d="scan'208";a="21932193"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 07 Feb 2022 13:08:22 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Mon, 07 Feb 2022 13:08:22 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Mon, 07 Feb 2022 13:08:22 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1644235702; x=1675771702;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=m/q6pkb+TA7cRlY6xlVOjKQ4P8DeARpuUdX/+csSvX4=;
+  b=R0fUFWOdFK8b/66rT4bIyhvoxx1Q9eS3yMCico9uy5oOjZcwpvbe3rJo
+   yudGubxUWLbksbDBdikkQeOl59h9G8PHjwKyoqUyMTVia/RTXNTTDBhZ+
+   k3aKu3m7c3nljibsBMdpQQw/Gp9qE2d+ddYPj9IsXXUmQFIhtPAIwcKn9
+   otPfVvG1BPDeWlwqLtB8V5ORdujtn7bxEqCA912EUi6eoJmogVGRqdF41
+   E2bKKC8DgSrG6nRyUW2uKJbAaowxqPJvxmLKRhiaXGBHh15MazRU6aoTr
+   icrdmshwsanwU4zaVZiQF6/B3Y2h7RVQU+dTFmByH8guu4S32pt0nQhKh
+   A==;
+X-IronPort-AV: E=Sophos;i="5.88,349,1635199200"; 
+   d="scan'208";a="21932192"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 07 Feb 2022 13:08:22 +0100
+Received: from steina-w.localnet (unknown [10.123.49.12])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id DE334280065;
+        Mon,  7 Feb 2022 13:08:21 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Steve Longerbeam <slongerbeam@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: (EXT) Re: [PATCH 3/8] media: imx: Use dedicated format handler for i.MX7/8
+Date:   Mon, 07 Feb 2022 13:08:21 +0100
+Message-ID: <4044945.1IzOArtZ34@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <Yf33YviITGDnolHw@pendragon.ideasonboard.com>
+References: <20220204121514.2762676-1-alexander.stein@ew.tq-group.com> <20220204121514.2762676-4-alexander.stein@ew.tq-group.com> <Yf33YviITGDnolHw@pendragon.ideasonboard.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.41]
-X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 24 Jan 2022 21:11:11 +0800
-Yicong Yang <yangyicong@hisilicon.com> wrote:
+Hi Laurent,
 
-> HiSilicon PCIe tune and trace device(PTT) is a PCIe Root Complex
-> integrated Endpoint(RCiEP) device, providing the capability
-> to dynamically monitor and tune the PCIe traffic, and trace
-> the TLP headers.
+Am Samstag, 5. Februar 2022, 05:04:50 CET schrieb Laurent Pinchart:
+> Hi Alexander and Dorota,
 > 
-> Add the driver for the device to enable the trace function.
-> This patch adds basic function of trace, including the device's
-> probe and initialization, functions for trace buffer allocation
-> and trace enable/disable, register an interrupt handler to
-> simply response to the DMA events. The user interface of trace
-> will be added in the following patch.
+> Thank you for the patch.
 > 
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Hi Yicong,
-
-I've not been following all the earlier discussion on this driver closely
-so I may well raise something that has already been addressed. If so
-just ignore the comment.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/Makefile                 |   1 +
->  drivers/hwtracing/Kconfig        |   2 +
->  drivers/hwtracing/ptt/Kconfig    |  11 +
->  drivers/hwtracing/ptt/Makefile   |   2 +
->  drivers/hwtracing/ptt/hisi_ptt.c | 398 +++++++++++++++++++++++++++++++
->  drivers/hwtracing/ptt/hisi_ptt.h | 159 ++++++++++++
->  6 files changed, 573 insertions(+)
->  create mode 100644 drivers/hwtracing/ptt/Kconfig
->  create mode 100644 drivers/hwtracing/ptt/Makefile
->  create mode 100644 drivers/hwtracing/ptt/hisi_ptt.c
->  create mode 100644 drivers/hwtracing/ptt/hisi_ptt.h
+> On Fri, Feb 04, 2022 at 01:15:09PM +0100, Alexander Stein wrote:
+> > From: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+> > 
+> > This splits out a format handler which takes into account
+> > the capabilities of the i.MX7/8 video device,
+> > as opposed to the default handler compatible with both i.MX5/6 and
+> > i.MX7/8.
+> > 
+> > Signed-off-by: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+> > Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+> > ---
+> > Changes in comparison to original commit from Dorota:
+> > * is_imx56 is used instead of enum
+> > 
+> >  drivers/staging/media/imx/imx-media-utils.c | 56 +++++++++++++++++++--
+> >  1 file changed, 52 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/staging/media/imx/imx-media-utils.c
+> > b/drivers/staging/media/imx/imx-media-utils.c index
+> > 0daa6aad45f4..32aaa2e81bea 100644
+> > --- a/drivers/staging/media/imx/imx-media-utils.c
+> > +++ b/drivers/staging/media/imx/imx-media-utils.c
+> > @@ -516,10 +516,9 @@ void imx_media_try_colorimetry(struct
+> > v4l2_mbus_framefmt *tryfmt,> 
+> >  }
+> >  EXPORT_SYMBOL_GPL(imx_media_try_colorimetry);
+> > 
+> > -int imx_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
+> > -				  const struct v4l2_mbus_framefmt 
+*mbus,
+> > -				  const struct imx_media_pixfmt 
+*cc,
+> > -				  bool is_imx56)
+> > +static int imx56_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
+> > +					   const struct 
+v4l2_mbus_framefmt *mbus,
+> > +					   const struct 
+imx_media_pixfmt *cc)
+> > 
+> >  {
+> >  
+> >  	u32 width;
+> >  	u32 stride;
+> > 
+> > @@ -568,6 +567,55 @@ int imx_media_mbus_fmt_to_pix_fmt(struct
+> > v4l2_pix_format *pix,> 
+> >  	return 0;
+> >  
+> >  }
+> > 
+> > +
+> > +static int imx78_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
+> > +					   const struct 
+v4l2_mbus_framefmt *mbus,
+> > +					   const struct 
+imx_media_pixfmt *cc)
+> > +{
+> > +	int ret;
+> > +
+> > +	if (!cc)
+> > +		cc = imx_media_find_mbus_format(mbus->code, 
+PIXFMT_SEL_ANY);
+> > +
+> > +	if (!cc)
+> > +		return -EINVAL;
+> > +	/*
+> > +	 * The hardware can handle line lengths divisible by 4 pixels
+> > +	 * as long as the whole buffer size ends up divisible by 8 bytes.
+> > +	 * If not, use the value of 8 pixels recommended in the datasheet.
+> > +	 */
+> > +	ret = v4l2_fill_pixfmt(pix, cc->fourcc,
+> > +			       round_up(mbus->width, 4), mbus-
+>height);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	/* Only 8bits-per-pixel formats may need to get aligned to 8 
+pixels,
+> > +	 * because both 10-bit and 16-bit pixels occupy 2 bytes.
+> > +	 * In those, 4-pixel aligmnent is equal to 8-byte alignment.
+> > +	 */
+> > +	if (pix->sizeimage % 8 != 0)
+> > +		ret = v4l2_fill_pixfmt(pix, cc->fourcc,
+> > +				       round_up(mbus->width, 8), 
+mbus->height);
 > 
-> diff --git a/drivers/Makefile b/drivers/Makefile
-> index a110338c860c..ab3411e4eba5 100644
-> --- a/drivers/Makefile
-> +++ b/drivers/Makefile
-> @@ -175,6 +175,7 @@ obj-$(CONFIG_USB4)		+= thunderbolt/
->  obj-$(CONFIG_CORESIGHT)		+= hwtracing/coresight/
->  obj-y				+= hwtracing/intel_th/
->  obj-$(CONFIG_STM)		+= hwtracing/stm/
-> +obj-$(CONFIG_HISI_PTT)		+= hwtracing/ptt/
->  obj-$(CONFIG_ANDROID)		+= android/
->  obj-$(CONFIG_NVMEM)		+= nvmem/
->  obj-$(CONFIG_FPGA)		+= fpga/
-> diff --git a/drivers/hwtracing/Kconfig b/drivers/hwtracing/Kconfig
-> index 13085835a636..911ee977103c 100644
-> --- a/drivers/hwtracing/Kconfig
-> +++ b/drivers/hwtracing/Kconfig
-> @@ -5,4 +5,6 @@ source "drivers/hwtracing/stm/Kconfig"
->  
->  source "drivers/hwtracing/intel_th/Kconfig"
->  
-> +source "drivers/hwtracing/ptt/Kconfig"
-> +
->  endmenu
-> diff --git a/drivers/hwtracing/ptt/Kconfig b/drivers/hwtracing/ptt/Kconfig
-> new file mode 100644
-> index 000000000000..4f4f2459ac47
-> --- /dev/null
-> +++ b/drivers/hwtracing/ptt/Kconfig
-> @@ -0,0 +1,11 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +config HISI_PTT
-> +	tristate "HiSilicon PCIe Tune and Trace Device"
-> +	depends on ARM64 && PCI && HAS_DMA && HAS_IOMEM
-> +	help
-> +	  HiSilicon PCIe Tune and Trace Device exist as a PCIe RCiEP
-> +	  device, provides support for PCIe traffic tuning and
-> +	  tracing TLP headers to the memory.
-> +
-> +	  This driver can also be built as a module. If so, the module
-> +	  will be called hisi_ptt.
-> diff --git a/drivers/hwtracing/ptt/Makefile b/drivers/hwtracing/ptt/Makefile
-> new file mode 100644
-> index 000000000000..908c09a98161
-> --- /dev/null
-> +++ b/drivers/hwtracing/ptt/Makefile
-> @@ -0,0 +1,2 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +obj-$(CONFIG_HISI_PTT) += hisi_ptt.o
-> diff --git a/drivers/hwtracing/ptt/hisi_ptt.c b/drivers/hwtracing/ptt/hisi_ptt.c
-> new file mode 100644
-> index 000000000000..6d0a0ca5c0a9
-> --- /dev/null
-> +++ b/drivers/hwtracing/ptt/hisi_ptt.c
-> @@ -0,0 +1,398 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Driver for HiSilicon PCIe tune and trace device
-> + *
-> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-> + * Author: Yicong Yang <yangyicong@hisilicon.com>
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/bitops.h>
-> +#include <linux/delay.h>
-> +#include <linux/dma-iommu.h>
-> +#include <linux/dma-mapping.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io.h>
-> +#include <linux/iommu.h>
-> +#include <linux/iopoll.h>
-> +#include <linux/module.h>
-> +#include <linux/sysfs.h>
-> +
-> +#include "hisi_ptt.h"
-> +
-> +static u16 hisi_ptt_get_filter_val(struct pci_dev *pdev)
-> +{
-> +	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT)
-> +		return BIT(HISI_PCIE_CORE_PORT_ID(PCI_SLOT(pdev->devfn)));
-> +
-> +	return PCI_DEVID(pdev->bus->number, pdev->devfn);
-> +}
-> +
-> +static int hisi_ptt_wait_trace_hw_idle(struct hisi_ptt *hisi_ptt)
-> +{
-> +	u32 val;
-> +
-> +	return readl_poll_timeout(hisi_ptt->iobase + HISI_PTT_TRACE_STS, val,
-> +				  val & HISI_PTT_TRACE_IDLE,
-> +				  HISI_PTT_WAIT_POLL_INTERVAL_US,
-> +				  HISI_PTT_WAIT_TIMEOUT_US);
-> +}
-> +
-> +static void hisi_ptt_free_trace_buf(struct hisi_ptt *hisi_ptt)
-> +{
-> +	struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
-> +	struct device *dev = &hisi_ptt->pdev->dev;
-> +	struct hisi_ptt_dma_buffer *buffer, *tbuffer;
-> +
-> +	list_for_each_entry_safe(buffer, tbuffer, &ctrl->trace_buf, list) {
-> +		list_del(&buffer->list);
-> +		dma_free_coherent(dev, buffer->size, buffer->addr,
-> +				  buffer->dma);
-> +		kfree(buffer);
-> +	}
-> +}
-> +
-> +static int hisi_ptt_alloc_trace_buf(struct hisi_ptt *hisi_ptt)
-> +{
-> +	struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
-> +	struct device *dev = &hisi_ptt->pdev->dev;
-> +	struct hisi_ptt_dma_buffer *buffer;
-> +	int i, ret;
-> +
-> +	hisi_ptt->trace_ctrl.buf_index = 0;
-> +
-> +	/* Make sure the trace buffer is empty before allocating */
+> I think you could simplify this by using cc->bpp to figure out the
+> alignment instead of calling v4l2_fill_pixfmt() twice.
 
-This comment is misleading as it suggests it not being empty is
-a bad thing but the code handles it as an acceptable path.
-Perhaps:
-	/*
-	 * If the trace buffer has already been allocated, zero the
-	 * memory.
-	 */
+Yeah, this should be possible. I can't test it (yet) though, I don't have a 8-
+Bit sensor. Will do in the next version.
 
-> +	if (!list_empty(&ctrl->trace_buf)) {
-> +		list_for_each_entry(buffer, &ctrl->trace_buf, list)
-> +			memset(buffer->addr, 0, buffer->size);
-> +		return 0;
-> +	}
-> +
-> +	for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; ++i) {
-> +		buffer = kzalloc(sizeof(*buffer), GFP_KERNEL);
-> +		if (!buffer) {
-> +			ret = -ENOMEM;
-> +			goto err;
-> +		}
-> +
-> +		buffer->addr = dma_alloc_coherent(dev, ctrl->buffer_size,
-> +						  &buffer->dma, GFP_KERNEL);
-> +		if (!buffer->addr) {
-> +			kfree(buffer);
-> +			ret = -ENOMEM;
-> +			goto err;
-> +		}
-> +
-> +		memset(buffer->addr, 0, buffer->size);
-See:
-https://lore.kernel.org/lkml/20190108130701.14161-4-hch@lst.de/
-dma_alloc_coherent() always zeros the memory for us hence there
-is no longer a dma_kzalloc_coherent()
+> > +	pix->colorspace = mbus->colorspace;
+> > +	pix->xfer_func = mbus->xfer_func;
+> > +	pix->ycbcr_enc = mbus->ycbcr_enc;
+> > +	pix->quantization = mbus->quantization;
+> > +	pix->field = mbus->field;
+> 
+> Should v4l2_fill_pixfmt() be updated to handle colorspace and field too
+> instead of doing it manually here ?
 
-> +
-> +		buffer->index = i;
+I'm not so sure which parts of v4l2_pix_format shall be set into 
+v4l2_fill_pixfmt(). Unfortunately there is no API description in the header, 
+git log doesn't help much either. In the end this should be a separate patch.
 
-Carrying an index inside a list which corresponds directly
-to the position in the list is not particularly nice.
-Why can't we compute this index on the fly where the list
-is walked?  Or am I misunderstanding and the order of the buffers
-is changed in a later patch?
+Best regards,
+Alexander
 
-As a side note, is a list actually appropriate when we always
-have 4 of these buffers?  Feels like an array of buffer
-structures might be cheaper.
-
-> +		buffer->size = ctrl->buffer_size;
-> +		list_add_tail(&buffer->list, &ctrl->trace_buf);
-> +	}
-> +
-> +	return 0;
-> +err:
-> +	hisi_ptt_free_trace_buf(hisi_ptt);
-> +	return ret;
-> +}
-> +
-> +static void hisi_ptt_trace_end(struct hisi_ptt *hisi_ptt)
-> +{
-> +	writel(0, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-> +	hisi_ptt->trace_ctrl.status = HISI_PTT_TRACE_STATUS_OFF;
-> +}
-> +
-> +static int hisi_ptt_trace_start(struct hisi_ptt *hisi_ptt)
-> +{
-> +	struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
-> +	struct hisi_ptt_dma_buffer *cur;
-> +	u32 val;
-> +
-> +	/* Check device idle before start trace */
-> +	if (hisi_ptt_wait_trace_hw_idle(hisi_ptt)) {
-> +		pci_err(hisi_ptt->pdev, "Failed to start trace, the device is still busy.\n");
-> +		return -EBUSY;
-> +	}
-> +
-> +	/* Reset the DMA before start tracing */
-> +	val = readl(hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-> +	val |= HISI_PTT_TRACE_CTRL_RST;
-> +	writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-> +
-> +	/*
-> +	 * We'll be in the perf context where preemption is disabled,
-> +	 * so use busy loop here.
-> +	 */
-> +	mdelay(HISI_PTT_RESET_WAIT_MS);
-
-Busy look for 1 second?  Ouch.  If we can reduce this in any way
-that would be great or if there is a means to do it before
-we disable preemption.
-
-> +
-> +	val = readl(hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-> +	val &= ~HISI_PTT_TRACE_CTRL_RST;
-> +	writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-> +
-> +	/* Clear the interrupt status */
-> +	writel(HISI_PTT_TRACE_INT_STAT_MASK, hisi_ptt->iobase + HISI_PTT_TRACE_INT_STAT);
-> +	writel(0, hisi_ptt->iobase + HISI_PTT_TRACE_INT_MASK);
-> +
-> +	/* Configure the trace DMA buffer */
-> +	list_for_each_entry(cur, &ctrl->trace_buf, list) {
-
-I comment on the use of cur->index above.  Here it would be easy to compute
-the index as we go for example assuming we never end up with holes
-in the list.
-
-> +		writel(lower_32_bits(cur->dma),
-> +		       hisi_ptt->iobase + HISI_PTT_TRACE_ADDR_BASE_LO_0 +
-> +		       cur->index * HISI_PTT_TRACE_ADDR_STRIDE);
-> +		writel(upper_32_bits(cur->dma),
-> +		       hisi_ptt->iobase + HISI_PTT_TRACE_ADDR_BASE_HI_0 +
-> +		       cur->index * HISI_PTT_TRACE_ADDR_STRIDE);
-> +	}
-> +	writel(ctrl->buffer_size, hisi_ptt->iobase + HISI_PTT_TRACE_ADDR_SIZE);
-> +
-> +	/* Set the trace control register */
-> +	val = FIELD_PREP(HISI_PTT_TRACE_CTRL_TYPE_SEL, ctrl->type);
-> +	val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_RXTX_SEL, ctrl->direction);
-> +	val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_DATA_FORMAT, ctrl->format);
-> +	val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_TARGET_SEL, hisi_ptt->trace_ctrl.filter);
-> +	if (!hisi_ptt->trace_ctrl.is_port)
-> +		val |= HISI_PTT_TRACE_CTRL_FILTER_MODE;
-> +
-> +	/* Start the Trace */
-> +	val |= HISI_PTT_TRACE_CTRL_EN;
-> +	writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-> +
-> +	ctrl->status = HISI_PTT_TRACE_STATUS_ON;
-> +
-> +	return 0;
-> +}
-> +
-
-...
-
-> +
-> +static void hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
-> +{
-> +	struct pci_dev *pdev = hisi_ptt->pdev;
-> +	struct pci_bus *bus;
-> +	u32 reg;
-> +
-> +	INIT_LIST_HEAD(&hisi_ptt->port_filters);
-> +	INIT_LIST_HEAD(&hisi_ptt->req_filters);
-> +
-> +	/*
-> +	 * The device range register provides the information about the
-> +	 * root ports which the RCiEP can control and trace. The RCiEP
-> +	 * and the root ports it support are on the same PCIe core, with
-> +	 * same domain number but maybe different bus number. The device
-> +	 * range register will tell us which root ports we can support,
-> +	 * Bit[31:16] indicates the upper BDF numbers of the root port,
-> +	 * while Bit[15:0] indicates the lower.
-> +	 */
-> +	reg = readl(hisi_ptt->iobase + HISI_PTT_DEVICE_RANGE);
-> +	hisi_ptt->upper = reg >> 16;
-> +	hisi_ptt->lower = reg & 0xffff;
-Trivial:
-Perhaps worthing define HISI_PTT_DEVICE_RANGE_UPPER_MASK etc adn using
-FIELD_GET?
-
-> +
-> +	reg = readl(hisi_ptt->iobase + HISI_PTT_LOCATION);
-> +	hisi_ptt->core_id = FIELD_GET(HISI_PTT_CORE_ID, reg);
-> +	hisi_ptt->sicl_id = FIELD_GET(HISI_PTT_SICL_ID, reg);
-> +
-> +	bus = pci_find_bus(pci_domain_nr(pdev->bus), PCI_BUS_NUM(hisi_ptt->upper));
-> +	if (bus)
-> +		pci_walk_bus(bus, hisi_ptt_init_filters, hisi_ptt);
-> +
-> +	/* Initialize trace controls */
-> +	INIT_LIST_HEAD(&hisi_ptt->trace_ctrl.trace_buf);
-> +	hisi_ptt->trace_ctrl.buffer_size = HISI_PTT_TRACE_BUF_SIZE;
-> +	hisi_ptt->trace_ctrl.default_cpu = cpumask_first(cpumask_of_node(dev_to_node(&pdev->dev)));
-> +}
-> +
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +int imx_media_mbus_fmt_to_pix_fmt(struct v4l2_pix_format *pix,
+> > +				  const struct v4l2_mbus_framefmt 
+*mbus,
+> > +				  const struct imx_media_pixfmt 
+*cc,
+> > +				  bool is_imx56)
+> > +{
+> > +	if (is_imx56)
+> > +		return imx56_media_mbus_fmt_to_pix_fmt(pix, mbus, cc);
+> > +	else
+> > +		return imx78_media_mbus_fmt_to_pix_fmt(pix, mbus, cc);
+> > +}
+> > 
+> >  EXPORT_SYMBOL_GPL(imx_media_mbus_fmt_to_pix_fmt);
+> >  
+> >  void imx_media_free_dma_buf(struct device *dev,
 
 
-...
-
-> diff --git a/drivers/hwtracing/ptt/hisi_ptt.h b/drivers/hwtracing/ptt/hisi_ptt.h
-> new file mode 100644
-> index 000000000000..8aa5d6b78cc5
-> --- /dev/null
-> +++ b/drivers/hwtracing/ptt/hisi_ptt.h
-> @@ -0,0 +1,159 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * Driver for HiSilicon PCIe tune and trace device
-> + *
-> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-> + * Author: Yicong Yang <yangyicong@hisilicon.com>
-> + */
-> +
-> +#ifndef _HISI_PTT_H
-> +#define _HISI_PTT_H
-> +
-> +#include <linux/bits.h>
-> +#include <linux/list.h>
-> +#include <linux/mutex.h>
-> +#include <linux/pci.h>
-> +#include <linux/types.h>
-> +
-> +/*
-> + * The definition of the device registers and register fields.
-> + */
-> +#define HISI_PTT_TRACE_ADDR_SIZE	0x0800
-> +#define HISI_PTT_TRACE_ADDR_BASE_LO_0	0x0810
-> +#define HISI_PTT_TRACE_ADDR_BASE_HI_0	0x0814
-> +#define HISI_PTT_TRACE_ADDR_STRIDE	0x8
-> +#define HISI_PTT_TRACE_CTRL		0x0850
-> +#define   HISI_PTT_TRACE_CTRL_EN	BIT(0)
-> +#define   HISI_PTT_TRACE_CTRL_RST	BIT(1)
-> +#define   HISI_PTT_TRACE_CTRL_RXTX_SEL	GENMASK(3, 2)
-> +#define   HISI_PTT_TRACE_CTRL_TYPE_SEL	GENMASK(7, 4)
-> +#define   HISI_PTT_TRACE_CTRL_DATA_FORMAT	BIT(14)
-> +#define   HISI_PTT_TRACE_CTRL_FILTER_MODE	BIT(15)
-> +#define   HISI_PTT_TRACE_CTRL_TARGET_SEL	GENMASK(31, 16)
-> +#define HISI_PTT_TRACE_INT_STAT		0x0890
-> +#define   HISI_PTT_TRACE_INT_STAT_MASK	GENMASK(3, 0)
-> +#define HISI_PTT_TRACE_INT_MASK		0x0894
-> +#define HISI_PTT_TRACE_WR_STS		0x08a0
-> +#define   HISI_PTT_TRACE_WR_STS_WRITE	GENMASK(27, 0)
-> +#define   HISI_PTT_TRACE_WR_STS_BUFFER	GENMASK(29, 28)
-> +#define HISI_PTT_TRACE_STS		0x08b0
-> +#define   HISI_PTT_TRACE_IDLE		BIT(0)
-> +#define HISI_PTT_DEVICE_RANGE		0x0fe0
-> +#define HISI_PTT_LOCATION		0x0fe8
-> +#define   HISI_PTT_CORE_ID		GENMASK(15, 0)
-> +#define   HISI_PTT_SICL_ID		GENMASK(31, 16)
-> +
-> +/* Parameters of PTT trace DMA part. */
-> +#define HISI_PTT_TRACE_DMA_IRQ			0
-> +#define HISI_PTT_TRACE_BUF_CNT			4
-> +#define HISI_PTT_TRACE_BUF_SIZE			SZ_4M
-> +#define HISI_PTT_TRACE_TOTAL_BUF_SIZE		(HISI_PTT_TRACE_BUF_SIZE * \
-> +						 HISI_PTT_TRACE_BUF_CNT)
-> +/* Wait time for DMA hardware to reset */
-> +#define HISI_PTT_RESET_WAIT_MS		1000UL
-> +/* Poll timeout and interval for waiting hardware work to finish */
-> +#define HISI_PTT_WAIT_TIMEOUT_US	1000000UL
-> +#define HISI_PTT_WAIT_POLL_INTERVAL_US	100UL
-> +
-> +#define HISI_PCIE_CORE_PORT_ID(devfn)	(PCI_FUNC(devfn) << 1)
-> +
-> +enum hisi_ptt_trace_status {
-> +	HISI_PTT_TRACE_STATUS_OFF = 0,
-> +	HISI_PTT_TRACE_STATUS_ON,
-> +};
-
-Why not just use a boolean given we only have off and on states?
 
 
