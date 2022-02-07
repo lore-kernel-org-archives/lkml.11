@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C203C47081
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7E5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391106AbiBGL6U (ORCPT
+        id S1390882AbiBGL6G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:58:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44538 "EHLO
+        Mon, 7 Feb 2022 06:58:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385372AbiBGLbj (ORCPT
+        with ESMTP id S1384709AbiBGL3i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:31:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA95C03FEE4;
-        Mon,  7 Feb 2022 03:30:14 -0800 (PST)
+        Mon, 7 Feb 2022 06:29:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB891C0401CA;
+        Mon,  7 Feb 2022 03:28:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27B58B80EBD;
-        Mon,  7 Feb 2022 11:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20A0BC004E1;
-        Mon,  7 Feb 2022 11:30:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7784460AB2;
+        Mon,  7 Feb 2022 11:28:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5220DC004E1;
+        Mon,  7 Feb 2022 11:28:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233411;
-        bh=rG2zIR8em5dhqg9au0dA4l5hkYO7yd8NVH3Wp/6VZIs=;
+        s=korg; t=1644233283;
+        bh=u3/akX/dz9ZO7Yp9P/0+QWrmMr/uEK5Ppvyr2pAXRic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SFppwJmxWItrmpyQ0yZNqiEJLC7nN/SNr0E+HEuzg0rDSouPXvFuPCXMG6ssvAPg/
-         RL9+IBt1Yf4TZVwFoBncU471mxP45CbFO8Wzf2PqJcX/CbJK1kCXbaBC8Gbm42P+uW
-         kF1sVjG+VCKSEuc6Q3xkzXmxdVouFixlq5q11Zbg=
+        b=cRFmOPzv10hMTRT6BL48zRmuMEEDXH4g3h5ozIn8i5dK2B5rdCUw1+t3fdGt+aPVb
+         oYuMDz6FCYXcLgduts/z8TuPUtzFYy1BF24mrgzKW4zPEG/zduEbFspwG3d1Ln0/qR
+         UQSvvnU8aRBEc6mREIa5BEmbzhmm0mTtOLp5Dino=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH 5.15 089/110] tools/resolve_btfids: Do not print any commands when building silently
-Date:   Mon,  7 Feb 2022 12:07:02 +0100
-Message-Id: <20220207103805.420581720@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 074/110] ASoC: cpcap: Check for NULL pointer after calling of_get_child_by_name
+Date:   Mon,  7 Feb 2022 12:06:47 +0100
+Message-Id: <20220207103804.801499999@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -49,44 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 7f3bdbc3f13146eb9d07de81ea71f551587a384b upstream.
+commit f7a6021aaf02088870559f82fc13c58cda7fea1a upstream.
 
-When building with 'make -s', there is some output from resolve_btfids:
+If the device does not exist, of_get_child_by_name() will return NULL
+pointer.
+And devm_snd_soc_register_component() does not check it.
+Also, I have noticed that cpcap_codec_driver has not been used yet.
+Therefore, it should be better to check it in order to avoid the future
+dereference of the NULL pointer.
 
-$ make -sj"$(nproc)" oldconfig prepare
-  MKDIR     .../tools/bpf/resolve_btfids/libbpf/
-  MKDIR     .../tools/bpf/resolve_btfids//libsubcmd
-  LINK     resolve_btfids
-
-Silent mode means that no information should be emitted about what is
-currently being done. Use the $(silent) variable from Makefile.include
-to avoid defining the msg macro so that there is no information printed.
-
-Fixes: fbbb68de80a4 ("bpf: Add resolve_btfids tool to resolve BTF IDs in ELF object")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220201212503.731732-1-nathan@kernel.org
+Fixes: f6cdf2d3445d ("ASoC: cpcap: new codec")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220111025048.524134-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/bpf/resolve_btfids/Makefile |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ sound/soc/codecs/cpcap.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/tools/bpf/resolve_btfids/Makefile
-+++ b/tools/bpf/resolve_btfids/Makefile
-@@ -9,7 +9,11 @@ ifeq ($(V),1)
-   msg =
- else
-   Q = @
--  msg = @printf '  %-8s %s%s\n' "$(1)" "$(notdir $(2))" "$(if $(3), $(3))";
-+  ifeq ($(silent),1)
-+    msg =
-+  else
-+    msg = @printf '  %-8s %s%s\n' "$(1)" "$(notdir $(2))" "$(if $(3), $(3))";
-+  endif
-   MAKEFLAGS=--no-print-directory
- endif
+--- a/sound/soc/codecs/cpcap.c
++++ b/sound/soc/codecs/cpcap.c
+@@ -1667,6 +1667,8 @@ static int cpcap_codec_probe(struct plat
+ {
+ 	struct device_node *codec_node =
+ 		of_get_child_by_name(pdev->dev.parent->of_node, "audio-codec");
++	if (!codec_node)
++		return -ENODEV;
+ 
+ 	pdev->dev.of_node = codec_node;
  
 
 
