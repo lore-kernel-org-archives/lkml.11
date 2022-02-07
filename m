@@ -2,669 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5E2C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D44E8C35278
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383083AbiBGOoD (ORCPT
+        id S1383251AbiBGOoY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:44:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36162 "EHLO
+        Mon, 7 Feb 2022 09:44:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356741AbiBGOU1 (ORCPT
+        with ESMTP id S1391529AbiBGOVu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:20:27 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC604C0401C1;
-        Mon,  7 Feb 2022 06:20:25 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id o12so27091446lfg.12;
-        Mon, 07 Feb 2022 06:20:25 -0800 (PST)
+        Mon, 7 Feb 2022 09:21:50 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8553AC0401EF;
+        Mon,  7 Feb 2022 06:21:28 -0800 (PST)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217De0PI031119;
+        Mon, 7 Feb 2022 14:21:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type :
+ content-transfer-encoding : in-reply-to : mime-version; s=corp-2021-07-09;
+ bh=qhV03sglIVR9gbnhc/NL09l0gVHM+WSkZnqgkpLIv5o=;
+ b=OblQnzIrYl3MDyRIjHcou1PV0pBF6O8ZBoD5z63vf+jZBPAao9oshaPaZACtSeNxgSWj
+ 2ke2J8xBVueTRIHkKLNZJtVtxrvnn6VUrrwxZInQpceEeN5wNDxmyorSpDf+PhjoUhvi
+ pnmJiu34lOopJkyC88qf+JoDPbsHS/EQCnbe1OIiSEgFDvu0R0v9ECoYE68CdNjEaCVP
+ yCaKfbhT4JnD5yrGg5HQuD2CmN6i/XS1FWZ9mndNUmU/Z2F3tWQA3k3Ete5IPsFSxpY7
+ Kcp8KQuMvnrswAi4l2A5uMd7/yiilIqqEaKYqi8xKH0PXUrDXmOVdb9gs/AUTPEF0wwN HA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3e1h4b5xwd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 07 Feb 2022 14:21:24 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 217EBiog101664;
+        Mon, 7 Feb 2022 14:21:22 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2173.outbound.protection.outlook.com [104.47.57.173])
+        by userp3030.oracle.com with ESMTP id 3e1ebx59yr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 07 Feb 2022 14:21:22 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jI2g2R7yPc1lADt5g1yyjNJUMphc1Sknm/Ikdj//yIRQf3G8fXNIf60R2sIo/1eWQanQ60E0TFHw7q7d8TozghZoveOStz7zmC34mln6QZ2lt9lTqSXIs9HWo178iOFAdVvYd5mFfvaUjoYQ35Id/gJO+upNEyAj0Pd1klUvG0rQq5UcWVeo7w1FE4Ok8oMCC1PFprrESACTnIzZSC5Ye2If6lWR6LaMGs+L00wxU/9s1WKqeXc/c9PJ3++ytzDrq36q7UcSnGOxM8goVc74CmMW5lMPhN2zP0JB/E3qKMR4sYalxhFwYtFFP/JMymy0rsfgehBUcChMJFp9ywL6EA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qhV03sglIVR9gbnhc/NL09l0gVHM+WSkZnqgkpLIv5o=;
+ b=bnUMF2WU1fbKdkRKiChKTieB4OBikurC0zuORtTNcx1Ki39skG3p/9Z76zxx2KDfYH/i0frLBrss1tLxDzdnSxsXFpHBCQDxjl7cGaG/b8JRrz6+c2F9ZYTAAkDEUTj7MjAtew4xAWR7AZ0oqIX9nluyUKR9zLL98pwbSQ294rzLgmBoA8TSSMiOcEri+irbybCIMnWxgkmpXNYTRraUWjjhaHPvCB/QNkl6lCSNoVG8qbJqeyWy+rdjAbMakNeCYSl2iZE4WqAtd5ICr+h9CBLra8zSwMW8J8Z+t9pZqJywXYOfo0H7JELOkjrEGwtjuAUmRxk6wUfcW6qxMSMYdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gSi+JnFUcMxH+thg7c07KEbycAW5CMH/rd67OUchC/4=;
-        b=CjGMRljSrF0P+xIKS/NwdyKR5Bs5F3Th/X0j+lHl6dE2FNw1PCBRhxlb2tEfHM1DXz
-         OhB1w+xdpg5Yt8PrlSRni1rl3MRxyEpRfmXKothRGOLtbmEUvpXZxrqhOSWW3pf3sYaS
-         V2Y6XdlGLER2n6HTs3BS/v+hYIYbj+vf9SshFqCgDZX4fAYKGqb9icmjUXdmXGtqiLTg
-         JGbTYwzqdXBqoTf+CLJyMxbBLtxjAg8jDOvSEluzK1Hy+Qmy2EFj3XHYm/b9vVcQ8ar7
-         NCxWFl+wpTYSaDHzK11M5MtidEuEHPZ+KckI6Y/1YF40bzq8VbvDTWsxpXb1Sm6dk9xz
-         woEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gSi+JnFUcMxH+thg7c07KEbycAW5CMH/rd67OUchC/4=;
-        b=QcDCOoLnRr/c9z2KYdDq6Q/RRvwtR2F0dEJkHqA2QvK2XKDRxhLqJP5jlCIOJYlzUT
-         QXcqNu7huV4TjizKzBCCicxtDWI6kAVO6LrF24yxB5SVBVrxOGHcMmJMbKjH5nl/i3Qj
-         hdhG8yhOw9FU6sgo/ViLcJMyr+aLyoC1B2q2KMAhhF4zhWdC1RmntMLJDPNxgez1HjMN
-         8hD3++NWIO5RSkxiYjBI8wwzG8W4oFQO4DBfWQI3qJIK+tC9GPk+m37atoU8Tl99u3YT
-         VFDCRApwpV69rvi52FAtUfaSMWUGhs46bJHtd/0NCqcf1y8ZrglAK7oEy8eipFWpuCf7
-         pRHA==
-X-Gm-Message-State: AOAM532arR6glnzW+MWXUD647LWRfOb/qWgq3aUEOXHi5rVLHVdjxQp4
-        tJwKH4lvsl68HEQC36QcrL8=
-X-Google-Smtp-Source: ABdhPJz51tWBx0HGufKvMLmNtslwwFWl1SdvyCgMvYz1uvyPk93nEuVJUuAS5OHEeCsqIUavbltPFA==
-X-Received: by 2002:a05:6512:2821:: with SMTP id cf33mr8499704lfb.37.1644243624149;
-        Mon, 07 Feb 2022 06:20:24 -0800 (PST)
-Received: from localhost.localdomain (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.gmail.com with ESMTPSA id t13sm1515599lfl.94.2022.02.07.06.20.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 06:20:23 -0800 (PST)
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Cc:     linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 4/4] media: staging: tegra-vde: Remove legacy UAPI support
-Date:   Mon,  7 Feb 2022 17:19:37 +0300
-Message-Id: <20220207141937.13089-5-digetx@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220207141937.13089-1-digetx@gmail.com>
-References: <20220207141937.13089-1-digetx@gmail.com>
-MIME-Version: 1.0
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qhV03sglIVR9gbnhc/NL09l0gVHM+WSkZnqgkpLIv5o=;
+ b=RT/AGRil4eVsmCeWNDJE7+iYURxhyDoPvcILOYv+BRv8nkslZcuxOP+H3vBC5HsC1Eaom7myUyqtKe2t0MljYBcUkf0TwkPAj1CA1UZKymb7R1JeBkmJW/sKeXqJ1W+VXqDcgEYKd4V+xkaLR+h3V6QMi+qwOAJwNhMEmIR7sWc=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BN6PR10MB1713.namprd10.prod.outlook.com
+ (2603:10b6:405:9::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.11; Mon, 7 Feb
+ 2022 14:21:20 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::e5a5:8f49:7ec4:b7b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::e5a5:8f49:7ec4:b7b8%5]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
+ 14:21:20 +0000
+Date:   Mon, 7 Feb 2022 17:20:46 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        io-uring Mailing list <io-uring@vger.kernel.org>,
+        Tea Inside Mailing List <timl@vger.teainside.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        "Chen, Rong A" <rong.a.chen@intel.com>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Subject: Re: [PATCH io_uring-5.17] io_uring: Fix build error potential
+ reading uninitialized value
+Message-ID: <20220207142046.GP1978@kadam>
+References: <d33bb5a9-8173-f65b-f653-51fc0681c6d6@intel.com>
+ <20220207114315.555413-1-ammarfaizi2@gnuweeb.org>
+ <91e8ca64-0670-d998-73d8-f75ec5264cb0@kernel.dk>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <91e8ca64-0670-d998-73d8-f75ec5264cb0@kernel.dk>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNXP275CA0009.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::21)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dd15d318-6fd0-48bd-3554-08d9ea451bba
+X-MS-TrafficTypeDiagnostic: BN6PR10MB1713:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR10MB1713F823B051DE46876816508E2C9@BN6PR10MB1713.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xCPi9GhgEWLIwD9hxFvbw+Y6kLo9/BgZBHUBaxkNPuT50722dQSo6l9Na3FSb/glYYDQwONla7uQxCodem7w4UknnyRRhADAZh2/QU1xTdvQs+Vu0Zn5BuxtMGqS0v6DKeihWyGCnQZ7yglxD0ImyPwYL/XbqOHBBfFnpoe4r/rbWn21zM/TdMumN4j2muZCAbulTh3yU283QSnvfNK1ClHsOQlyG9DPQLX9hroQ7OVkhWsHQtu2S7cok2MNKfba66lvHXvX+LNMWRvUUNoQp6BWBq43hf0aB99whfyACMf5ShDZBhdjcSwkRD+nwRkgHDjcbML4jUQr6L4RBumSmBsXc38/DQIxXyNfWnWv+yBwzefhWjm18UpQ92doGJT47sz/moTzcD8zrpHkDg/kgplNu7Lkx45YDO43jz5beU6k45Vpn2pqJbEipK9+TMlOCos95+ngOaqJT+xZaihren4wDCWcK2JQd2ZZLA1N5HIO8AUiHiENXm+6GRwdGJvY9yD+TpYaEkJ3fWoIvP0ww99fSq8ZLtkRJkcrF+MYPzJUEANYeh59664fqKFo8IfdFBbEBMAQzhLCpIvXDjGsXPccQDdTS4+/PcMxnH33154ZCHz7N7x1+QRvokpVkI2lX6dP7poAX5e5fh5rnYZV+U5QqIdcV6iIiZAbpUxhCa1z9vVzRv1/GcxzUBe3G1LB//Fhb3hfjhMgr1jRxf7hsQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(1076003)(66946007)(66556008)(66476007)(8936002)(8676002)(186003)(26005)(6486002)(4326008)(86362001)(33656002)(33716001)(38350700002)(38100700002)(6916009)(316002)(54906003)(52116002)(53546011)(508600001)(9686003)(6666004)(6512007)(6506007)(2906002)(7416002)(44832011)(83380400001)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N2RzSmhhNmtzSEdySUprQ1ZxRE4yUXczSHN5Ym1HaHlNRkN5TlFmMC9JMnU1?=
+ =?utf-8?B?eXRkOFFQbnFURVFXN0tNcUFPd0t2eXlobHA4L1VwdUdPMWI5Zi92Z1JLakZP?=
+ =?utf-8?B?L1F4MThhSEw4WXp2TG5rRzdIZ3JvVFB3c3BoelY5MCtTckNqRlFzcVJFb2J0?=
+ =?utf-8?B?R3BFdHMrcHV5ays2QkZKRjZEZ0Y0eXlDNHRYWEp3SFpWWnJJV3VXaytLamVC?=
+ =?utf-8?B?R0VkOW05TVFvZUNETlByckF5UTRyUlpKakFTRzZ6WWJ6RkFUb3NDRXB4aTdi?=
+ =?utf-8?B?NFB1UDU4dGxJaE1QY0ZoTktjRXorci85djlHcVpFUnp3eWQ3WDI2eUNLZzNO?=
+ =?utf-8?B?NW9GaVhvWmR1cnI2TFpKR3FLMnNIejRCQmp2MllwWWtNaVo1SHJucWRqTGk4?=
+ =?utf-8?B?ZDRKT2pWRGVNcmtoWnNzYms4eURPYVNXcE14VFBwd003ZUV3dmxiZllJcmFk?=
+ =?utf-8?B?TWFYd0xUb3lFUDlWQVlRaE1vaG1YMFloNWdVNzhrdFlzbWpQYnNObHJkdXpt?=
+ =?utf-8?B?Z0M2NDNFTzJhNVVEK2VQcWZNVWJtb0JMVW5PRk1GbHozOGc2Y1FzT3Z4Tnoz?=
+ =?utf-8?B?Q01mTTJwTUFBMFM1Yi9MN08xbTU0SStZS01KcDZyeUdCRyt1cGJMVGVDVzhH?=
+ =?utf-8?B?MXZUQjFYU0tTdEMyN3YyMXNGajBtaW12Rk90Y1h0QzkvTXV5TVVGMWN4enZT?=
+ =?utf-8?B?VjlEaEFIZEVjeHBPL2ppRm9kTE12VkViUlZOaFVsMG94T1FCYWhZMUNUVSs5?=
+ =?utf-8?B?ZEhIbGpHdGppZFB6U1NqTlVxL2FzNnV2RXNmTy9kMVl1STJyYVgvQ2V3TVNz?=
+ =?utf-8?B?eXNBRWEwYU5VdmlvS1RpZEtxOU95MDY1a3RGSVJ5UWd2dkNnMWRPMnFrekRk?=
+ =?utf-8?B?MklvMFdBVStPellpVFdHMElDQ3FaZWR3MFF2M3Bhc0tTWW0ydHM3Q2RjYnlV?=
+ =?utf-8?B?RXBibGJmMW1Jd2JsOXJpVWFuaUpLbHFIZnhMTjl4ZzNZbHcySWpiZVp0MFNH?=
+ =?utf-8?B?ZGtYdml0dExMeVhqNXBSc0FrRTRtTW9UdzkrejNFYnlnYWM2alI1Tk1oYm5h?=
+ =?utf-8?B?dE1QNTNQallZM2F3a2R2NGZPOUlXdTFlQVROSmtPd3U4UjFOeTFiWTN3SkVq?=
+ =?utf-8?B?L01UTHFnUGRFU3NNVVVhc0J5RXowTFVIZVI0cCtiUXM5UnBLVWxtMGxNL1BP?=
+ =?utf-8?B?UUw5QlZ6ck5qenVnR2hXWC9Sdjh0V09JNEtZWnhaOVp4QldhUENCbWFzRVlL?=
+ =?utf-8?B?UVREcXVtYnBPOFFGUEhYOS9URkZNWkpoTnZyWmI1cWltRjVvSjFYK3c0MmZQ?=
+ =?utf-8?B?UkN0MnB0U1hSbUg4RmZ0T1E2VGpZR2Q2aVVvYkgwNFMwZHVLZ3VhNGVocFFI?=
+ =?utf-8?B?TFRnQVNKTWd5MnpZTTJtdXFCcjByRjFKWk5Cb3FGOEtCQk9QOFBGYk5NdkpB?=
+ =?utf-8?B?WUNUYnNwcTFiK0tHRWpac0JpMTBiYUhtSFY1bHJQWHNhZTlsMzBrVVk3NWp6?=
+ =?utf-8?B?UFh5NTVjck1ybFdmRStwb2pidytWcGQxV1hKWS8wU0p1QVVlNTRPdmJsb0w3?=
+ =?utf-8?B?bXpUSFg5U0ZoNlVRZ0gvc0FFbytLc0FjT2pwamdUeHcrK254ck1OOHFNeTFM?=
+ =?utf-8?B?REdkdy8xcVVLMTZDQVNoTkNxVE4xZEtoOVJJQ29udVF5WXZLbzBBNWxRY1Qw?=
+ =?utf-8?B?UEJ4QkZLWHBUbDQxbFovcDNaWEdnRGJXOVV4NFdqTzY5eDg2am15aXJBd2dU?=
+ =?utf-8?B?emFLc2c3Mkh5RThmVE53T2ZFMnFZOEpmd3N4QkV1cEFlVjltRDJyKzdGaVlQ?=
+ =?utf-8?B?cHllMFJpbXlxR1pOenUvWWp1MnR3SS9WN2RXU04vMjZPeThQZC9tRUo0cjA1?=
+ =?utf-8?B?ZFhtR1UzNUhvb0ZRUVdCazhNSTVPeXpqN3FsSzdadTgzMCtiYjEwUnNMWnRh?=
+ =?utf-8?B?WWlkT2MvREkzNUtwK0NVV0lqVERWOURMVnJWWFJnOGIyNVhvSnZrTHp6SFdy?=
+ =?utf-8?B?Skt5MExqVEpBWmI0OWxwcEtqSmhZYko2YlhIRkxIOUowY0FZNTI5YnZrb084?=
+ =?utf-8?B?L2JNdkdBMXA3dG1LQlF6TWFFNVlmTWVGYjR6OXRhQm5HMjJ6emExNG9ZZW1H?=
+ =?utf-8?B?QjZWbjEvZE9aZUVBTGxBWXFvYW5SRUxIOXV4ZDhOUFQrQXUvYmg4ZFRzQ2hZ?=
+ =?utf-8?B?emRTZkJHc2lSTlhPbi9PaUpXamZJS1M1WGJiajlqZk80VVZTODE2elQzcHZO?=
+ =?utf-8?B?MVM4QTJsZ1dHYnBDRlFOV0pBdFlnPT0=?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd15d318-6fd0-48bd-3554-08d9ea451bba
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2022 14:21:20.0653
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RgNIIlVBwEw8yfsxDo0KayxEsVEoixgZKGOZmHdgAC5swncP9oXcv8JEGp9cs4IYTXbs8zMFZNopxqdXP5juSM0zCO83cEKdqbabZlUSTCU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR10MB1713
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10250 signatures=673430
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 suspectscore=0
+ mlxlogscore=999 mlxscore=0 adultscore=0 malwarescore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202070092
+X-Proofpoint-GUID: F5Yz0NP2GlULOIL5vHq-nbLD4Wt9Xizr
+X-Proofpoint-ORIG-GUID: F5Yz0NP2GlULOIL5vHq-nbLD4Wt9Xizr
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The legacy UAPI became unnecessary with the V4L stateless decoder API
-support addition to the Tegra decoder driver. Remove legacy UAPI support.
+On Mon, Feb 07, 2022 at 06:45:57AM -0700, Jens Axboe wrote:
+> On 2/7/22 4:43 AM, Ammar Faizi wrote:
+> > From: Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>
+> > 
+> > In io_recv() if import_single_range() fails, the @flags variable is
+> > uninitialized, then it will goto out_free.
+> > 
+> > After the goto, the compiler doesn't know that (ret < min_ret) is
+> > always true, so it thinks the "if ((flags & MSG_WAITALL) ..."  path
+> > could be taken.
+> > 
+> > The complaint comes from gcc-9 (Debian 9.3.0-22) 9.3.0:
+> > ```
+> >   fs/io_uring.c:5238 io_recvfrom() error: uninitialized symbol 'flags'
+> > ```
+> > Fix this by bypassing the @ret and @flags check when
+> > import_single_range() fails.
+> 
+> The compiler should be able to deduce this, and I guess newer compilers
+> do which is why we haven't seen this warning before.
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
----
- .../staging/media/tegra-vde/dmabuf-cache.c    |   2 +-
- drivers/staging/media/tegra-vde/h264.c        |  61 ++--
- drivers/staging/media/tegra-vde/iommu.c       |   2 +-
- drivers/staging/media/tegra-vde/uapi.h        |  73 -----
- drivers/staging/media/tegra-vde/vde.c         | 283 +-----------------
- drivers/staging/media/tegra-vde/vde.h         |  11 -
- 6 files changed, 35 insertions(+), 397 deletions(-)
- delete mode 100644 drivers/staging/media/tegra-vde/uapi.h
+No, we disabled GCC's uninitialized variable checking a couple years
+back.  Linus got sick of the false positives.  You can still see it if
+you enable W=2
 
-diff --git a/drivers/staging/media/tegra-vde/dmabuf-cache.c b/drivers/staging/media/tegra-vde/dmabuf-cache.c
-index a98d03419b8f..69c346148070 100644
---- a/drivers/staging/media/tegra-vde/dmabuf-cache.c
-+++ b/drivers/staging/media/tegra-vde/dmabuf-cache.c
-@@ -66,9 +66,9 @@ int tegra_vde_dmabuf_cache_map(struct tegra_vde *vde,
- 			       struct dma_buf_attachment **ap,
- 			       dma_addr_t *addrp)
- {
--	struct device *dev = vde->miscdev.parent;
- 	struct dma_buf_attachment *attachment;
- 	struct tegra_vde_cache_entry *entry;
-+	struct device *dev = vde->dev;
- 	struct sg_table *sgt;
- 	struct iova *iova;
- 	int err;
-diff --git a/drivers/staging/media/tegra-vde/h264.c b/drivers/staging/media/tegra-vde/h264.c
-index cbf27f0cfdb1..a46c648a26c6 100644
---- a/drivers/staging/media/tegra-vde/h264.c
-+++ b/drivers/staging/media/tegra-vde/h264.c
-@@ -14,9 +14,36 @@
- #include <media/v4l2-h264.h>
- 
- #include "trace.h"
--#include "uapi.h"
- #include "vde.h"
- 
-+#define FLAG_B_FRAME		0x1
-+#define FLAG_REFERENCE		0x2
-+
-+struct tegra_vde_h264_frame {
-+	unsigned int frame_num;
-+	unsigned int flags;
-+};
-+
-+struct tegra_vde_h264_decoder_ctx {
-+	unsigned int dpb_frames_nb;
-+	unsigned int dpb_ref_frames_with_earlier_poc_nb;
-+	unsigned int baseline_profile;
-+	unsigned int level_idc;
-+	unsigned int log2_max_pic_order_cnt_lsb;
-+	unsigned int log2_max_frame_num;
-+	unsigned int pic_order_cnt_type;
-+	unsigned int direct_8x8_inference_flag;
-+	unsigned int pic_width_in_mbs;
-+	unsigned int pic_height_in_mbs;
-+	unsigned int pic_init_qp;
-+	unsigned int deblocking_filter_control_present_flag;
-+	unsigned int constrained_intra_pred_flag;
-+	unsigned int chroma_qp_index_offset;
-+	unsigned int pic_order_present_flag;
-+	unsigned int num_ref_idx_l0_active_minus1;
-+	unsigned int num_ref_idx_l1_active_minus1;
-+};
-+
- struct h264_reflists {
- 	u8 p[V4L2_H264_NUM_DPB_ENTRIES];
- 	u8 b0[V4L2_H264_NUM_DPB_ENTRIES];
-@@ -438,19 +465,8 @@ static void tegra_vde_decode_frame(struct tegra_vde *vde,
- 			 vde->sxe, 0x00);
- }
- 
--int tegra_vde_validate_h264_frame(struct device *dev,
--				  struct tegra_vde_h264_frame *frame)
--{
--	if (frame->frame_num > 0x7FFFFF) {
--		dev_err(dev, "Bad frame_num %u\n", frame->frame_num);
--		return -EINVAL;
--	}
--
--	return 0;
--}
--
--int tegra_vde_validate_h264_ctx(struct device *dev,
--				struct tegra_vde_h264_decoder_ctx *ctx)
-+static int tegra_vde_validate_h264_ctx(struct device *dev,
-+				       struct tegra_vde_h264_decoder_ctx *ctx)
- {
- 	if (ctx->dpb_frames_nb == 0 || ctx->dpb_frames_nb > 17) {
- 		dev_err(dev, "Bad DPB size %u\n", ctx->dpb_frames_nb);
-@@ -637,23 +653,6 @@ static int tegra_vde_decode_end(struct tegra_vde *vde)
- 	return ret;
- }
- 
--int tegra_vde_decode_h264(struct tegra_vde *vde,
--			  struct tegra_vde_h264_decoder_ctx *ctx,
--			  struct tegra_video_frame *dpb_frames,
--			  dma_addr_t bitstream_data_addr,
--			  size_t bitstream_data_size)
--{
--	int err;
--
--	err = tegra_vde_decode_begin(vde, ctx, dpb_frames,
--				     bitstream_data_addr,
--				     bitstream_data_size);
--	if (err)
--		return err;
--
--	return tegra_vde_decode_end(vde);
--}
--
- static struct vb2_buffer *get_ref_buf(struct tegra_ctx *ctx,
- 				      struct vb2_v4l2_buffer *dst,
- 				      unsigned int dpb_idx)
-diff --git a/drivers/staging/media/tegra-vde/iommu.c b/drivers/staging/media/tegra-vde/iommu.c
-index adf8dc7ee25c..5521ed3e465f 100644
---- a/drivers/staging/media/tegra-vde/iommu.c
-+++ b/drivers/staging/media/tegra-vde/iommu.c
-@@ -60,7 +60,7 @@ void tegra_vde_iommu_unmap(struct tegra_vde *vde, struct iova *iova)
- 
- int tegra_vde_iommu_init(struct tegra_vde *vde)
- {
--	struct device *dev = vde->miscdev.parent;
-+	struct device *dev = vde->dev;
- 	struct iova *iova;
- 	unsigned long order;
- 	unsigned long shift;
-diff --git a/drivers/staging/media/tegra-vde/uapi.h b/drivers/staging/media/tegra-vde/uapi.h
-deleted file mode 100644
-index ffb4983e5bb6..000000000000
---- a/drivers/staging/media/tegra-vde/uapi.h
-+++ /dev/null
-@@ -1,73 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0+ */
--/* Copyright (C) 2016-2017 Dmitry Osipenko <digetx@gmail.com> */
--#ifndef _UAPI_TEGRA_VDE_H_
--#define _UAPI_TEGRA_VDE_H_
--
--#include <linux/types.h>
--#include <asm/ioctl.h>
--
--#define FLAG_B_FRAME		0x1
--#define FLAG_REFERENCE		0x2
--
--struct tegra_vde_h264_frame {
--	__s32 y_fd;
--	__s32 cb_fd;
--	__s32 cr_fd;
--	__s32 aux_fd;
--	__u32 y_offset;
--	__u32 cb_offset;
--	__u32 cr_offset;
--	__u32 aux_offset;
--	__u32 frame_num;
--	__u32 flags;
--
--	// Must be zero'ed
--	__u32 reserved[6];
--};
--
--struct tegra_vde_h264_decoder_ctx {
--	__s32 bitstream_data_fd;
--	__u32 bitstream_data_offset;
--
--	__u64 dpb_frames_ptr;
--	__u32 dpb_frames_nb;
--	__u32 dpb_ref_frames_with_earlier_poc_nb;
--
--	// SPS
--	__u32 baseline_profile;
--	__u32 level_idc;
--	__u32 log2_max_pic_order_cnt_lsb;
--	__u32 log2_max_frame_num;
--	__u32 pic_order_cnt_type;
--	__u32 direct_8x8_inference_flag;
--	__u32 pic_width_in_mbs;
--	__u32 pic_height_in_mbs;
--
--	// PPS
--	__u32 pic_init_qp;
--	__u32 deblocking_filter_control_present_flag;
--	__u32 constrained_intra_pred_flag;
--	__u32 chroma_qp_index_offset;
--	__u32 pic_order_present_flag;
--
--	// Slice header
--	__u32 num_ref_idx_l0_active_minus1;
--	__u32 num_ref_idx_l1_active_minus1;
--
--	// Must be zero'ed
--	__u32 reserved[11];
--};
--
--#define VDE_IOCTL_BASE			('v' + 0x20)
--
--#define VDE_IO(nr)			_IO(VDE_IOCTL_BASE, nr)
--#define VDE_IOR(nr, type)		_IOR(VDE_IOCTL_BASE, nr, type)
--#define VDE_IOW(nr, type)		_IOW(VDE_IOCTL_BASE, nr, type)
--#define VDE_IOWR(nr, type)		_IOWR(VDE_IOCTL_BASE, nr, type)
--
--#define TEGRA_VDE_DECODE_H264		0x00
--
--#define TEGRA_VDE_IOCTL_DECODE_H264	\
--	VDE_IOW(TEGRA_VDE_DECODE_H264, struct tegra_vde_h264_decoder_ctx)
--
--#endif // _UAPI_TEGRA_VDE_H_
-diff --git a/drivers/staging/media/tegra-vde/vde.c b/drivers/staging/media/tegra-vde/vde.c
-index c147d58c3bfb..f3e863a94c5a 100644
---- a/drivers/staging/media/tegra-vde/vde.c
-+++ b/drivers/staging/media/tegra-vde/vde.c
-@@ -11,7 +11,6 @@
- #include <linux/genalloc.h>
- #include <linux/interrupt.h>
- #include <linux/list.h>
--#include <linux/miscdevice.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
- #include <linux/pm_runtime.h>
-@@ -22,7 +21,6 @@
- #include <soc/tegra/common.h>
- #include <soc/tegra/pmc.h>
- 
--#include "uapi.h"
- #include "vde.h"
- 
- #define CREATE_TRACE_POINTS
-@@ -58,7 +56,7 @@ int tegra_vde_alloc_bo(struct tegra_vde *vde,
- 		       enum dma_data_direction dma_dir,
- 		       size_t size)
- {
--	struct device *dev = vde->miscdev.parent;
-+	struct device *dev = vde->dev;
- 	struct tegra_vde_bo *bo;
- 	int err;
- 
-@@ -129,7 +127,7 @@ int tegra_vde_alloc_bo(struct tegra_vde *vde,
- void tegra_vde_free_bo(struct tegra_vde_bo *bo)
- {
- 	struct tegra_vde *vde = bo->vde;
--	struct device *dev = vde->miscdev.parent;
-+	struct device *dev = vde->dev;
- 
- 	if (vde->domain)
- 		tegra_vde_iommu_unmap(vde, bo->iova);
-@@ -143,266 +141,6 @@ void tegra_vde_free_bo(struct tegra_vde_bo *bo)
- 	kfree(bo);
- }
- 
--static int tegra_vde_attach_dmabuf(struct tegra_vde *vde,
--				   int fd,
--				   unsigned long offset,
--				   size_t min_size,
--				   size_t align_size,
--				   struct dma_buf_attachment **a,
--				   dma_addr_t *addrp,
--				   size_t *size,
--				   enum dma_data_direction dma_dir)
--{
--	struct device *dev = vde->miscdev.parent;
--	struct dma_buf *dmabuf;
--	int err;
--
--	dmabuf = dma_buf_get(fd);
--	if (IS_ERR(dmabuf)) {
--		dev_err(dev, "Invalid dmabuf FD\n");
--		return PTR_ERR(dmabuf);
--	}
--
--	if (dmabuf->size & (align_size - 1)) {
--		dev_err(dev, "Unaligned dmabuf 0x%zX, should be aligned to 0x%zX\n",
--			dmabuf->size, align_size);
--		return -EINVAL;
--	}
--
--	if ((u64)offset + min_size > dmabuf->size) {
--		dev_err(dev, "Too small dmabuf size %zu @0x%lX, should be at least %zu\n",
--			dmabuf->size, offset, min_size);
--		return -EINVAL;
--	}
--
--	err = tegra_vde_dmabuf_cache_map(vde, dmabuf, dma_dir, a, addrp);
--	if (err)
--		goto err_put;
--
--	*addrp = *addrp + offset;
--
--	if (size)
--		*size = dmabuf->size - offset;
--
--	return 0;
--
--err_put:
--	dma_buf_put(dmabuf);
--
--	return err;
--}
--
--static int tegra_vde_attach_dmabufs_to_frame(struct tegra_vde *vde,
--					     struct tegra_video_frame *frame,
--					     struct tegra_vde_h264_frame *src,
--					     enum dma_data_direction dma_dir,
--					     bool baseline_profile,
--					     size_t lsize, size_t csize)
--{
--	int err;
--
--	err = tegra_vde_attach_dmabuf(vde, src->y_fd,
--				      src->y_offset, lsize, SZ_256,
--				      &frame->y_dmabuf_attachment,
--				      &frame->y_addr,
--				      NULL, dma_dir);
--	if (err)
--		return err;
--
--	err = tegra_vde_attach_dmabuf(vde, src->cb_fd,
--				      src->cb_offset, csize, SZ_256,
--				      &frame->cb_dmabuf_attachment,
--				      &frame->cb_addr,
--				      NULL, dma_dir);
--	if (err)
--		goto err_release_y;
--
--	err = tegra_vde_attach_dmabuf(vde, src->cr_fd,
--				      src->cr_offset, csize, SZ_256,
--				      &frame->cr_dmabuf_attachment,
--				      &frame->cr_addr,
--				      NULL, dma_dir);
--	if (err)
--		goto err_release_cb;
--
--	if (baseline_profile) {
--		frame->aux_addr = 0x64DEAD00;
--		return 0;
--	}
--
--	err = tegra_vde_attach_dmabuf(vde, src->aux_fd,
--				      src->aux_offset, csize, SZ_256,
--				      &frame->aux_dmabuf_attachment,
--				      &frame->aux_addr,
--				      NULL, dma_dir);
--	if (err)
--		goto err_release_cr;
--
--	return 0;
--
--err_release_cr:
--	tegra_vde_dmabuf_cache_unmap(vde, frame->cr_dmabuf_attachment, true);
--err_release_cb:
--	tegra_vde_dmabuf_cache_unmap(vde, frame->cb_dmabuf_attachment, true);
--err_release_y:
--	tegra_vde_dmabuf_cache_unmap(vde, frame->y_dmabuf_attachment, true);
--
--	return err;
--}
--
--static void tegra_vde_release_frame_dmabufs(struct tegra_vde *vde,
--					    struct tegra_video_frame *frame,
--					    enum dma_data_direction dma_dir,
--					    bool baseline_profile,
--					    bool release)
--{
--	if (!baseline_profile)
--		tegra_vde_dmabuf_cache_unmap(vde, frame->aux_dmabuf_attachment,
--					     release);
--
--	tegra_vde_dmabuf_cache_unmap(vde, frame->cr_dmabuf_attachment, release);
--	tegra_vde_dmabuf_cache_unmap(vde, frame->cb_dmabuf_attachment, release);
--	tegra_vde_dmabuf_cache_unmap(vde, frame->y_dmabuf_attachment, release);
--}
--
--static int tegra_vde_ioctl_decode_h264(struct tegra_vde *vde,
--				       unsigned long vaddr)
--{
--	struct dma_buf_attachment *bitstream_data_dmabuf_attachment;
--	struct tegra_vde_h264_frame __user *frames_user;
--	size_t bitstream_data_size, lsize, csize;
--	struct device *dev = vde->miscdev.parent;
--	struct tegra_vde_h264_decoder_ctx ctx;
--	struct tegra_video_frame *dpb_frames;
--	struct tegra_vde_h264_frame *frames;
--	enum dma_data_direction dma_dir;
--	dma_addr_t bitstream_data_addr;
--	unsigned int macroblocks_nb;
--	unsigned int cstride;
--	unsigned int i;
--	int ret;
--
--	if (copy_from_user(&ctx, (void __user *)vaddr, sizeof(ctx)))
--		return -EFAULT;
--
--	ret = tegra_vde_validate_h264_ctx(dev, &ctx);
--	if (ret)
--		return ret;
--
--	ret = tegra_vde_attach_dmabuf(vde, ctx.bitstream_data_fd,
--				      ctx.bitstream_data_offset,
--				      SZ_16K, SZ_16K,
--				      &bitstream_data_dmabuf_attachment,
--				      &bitstream_data_addr,
--				      &bitstream_data_size,
--				      DMA_TO_DEVICE);
--	if (ret)
--		return ret;
--
--	frames = kmalloc_array(ctx.dpb_frames_nb, sizeof(*frames), GFP_KERNEL);
--	if (!frames) {
--		ret = -ENOMEM;
--		goto release_bitstream_dmabuf;
--	}
--
--	dpb_frames = kcalloc(ctx.dpb_frames_nb, sizeof(*dpb_frames),
--			     GFP_KERNEL);
--	if (!dpb_frames) {
--		ret = -ENOMEM;
--		goto free_frames;
--	}
--
--	macroblocks_nb = ctx.pic_width_in_mbs * ctx.pic_height_in_mbs;
--	frames_user = u64_to_user_ptr(ctx.dpb_frames_ptr);
--
--	if (copy_from_user(frames, frames_user,
--			   ctx.dpb_frames_nb * sizeof(*frames))) {
--		ret = -EFAULT;
--		goto free_dpb_frames;
--	}
--
--	cstride = ALIGN(ctx.pic_width_in_mbs * 8, 16);
--	csize = cstride * ctx.pic_height_in_mbs * 8;
--	lsize = macroblocks_nb * 256;
--
--	for (i = 0; i < ctx.dpb_frames_nb; i++) {
--		ret = tegra_vde_validate_h264_frame(dev, &frames[i]);
--		if (ret)
--			goto release_dpb_frames;
--
--		dpb_frames[i].flags = frames[i].flags;
--		dpb_frames[i].frame_num = frames[i].frame_num;
--		dpb_frames[i].luma_atoms_pitch = ctx.pic_width_in_mbs;
--		dpb_frames[i].chroma_atoms_pitch = cstride / VDE_ATOM;
--
--		dma_dir = (i == 0) ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
--
--		ret = tegra_vde_attach_dmabufs_to_frame(vde, &dpb_frames[i],
--							&frames[i], dma_dir,
--							ctx.baseline_profile,
--							lsize, csize);
--		if (ret)
--			goto release_dpb_frames;
--	}
--
--	ret = tegra_vde_decode_h264(vde, &ctx, dpb_frames,
--				    bitstream_data_addr, bitstream_data_size);
--
--release_dpb_frames:
--	while (i--) {
--		dma_dir = (i == 0) ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
--
--		tegra_vde_release_frame_dmabufs(vde, &dpb_frames[i], dma_dir,
--						ctx.baseline_profile, ret != 0);
--	}
--
--free_dpb_frames:
--	kfree(dpb_frames);
--
--free_frames:
--	kfree(frames);
--
--release_bitstream_dmabuf:
--	tegra_vde_dmabuf_cache_unmap(vde, bitstream_data_dmabuf_attachment,
--				     ret != 0);
--
--	return ret;
--}
--
--static long tegra_vde_unlocked_ioctl(struct file *filp,
--				     unsigned int cmd, unsigned long arg)
--{
--	struct miscdevice *miscdev = filp->private_data;
--	struct tegra_vde *vde = container_of(miscdev, struct tegra_vde,
--					     miscdev);
--
--	switch (cmd) {
--	case TEGRA_VDE_IOCTL_DECODE_H264:
--		return tegra_vde_ioctl_decode_h264(vde, arg);
--	}
--
--	dev_err(miscdev->parent, "Invalid IOCTL command %u\n", cmd);
--
--	return -ENOTTY;
--}
--
--static int tegra_vde_release_file(struct inode *inode, struct file *filp)
--{
--	struct miscdevice *miscdev = filp->private_data;
--	struct tegra_vde *vde = container_of(miscdev, struct tegra_vde,
--					     miscdev);
--
--	tegra_vde_dmabuf_cache_unmap_sync(vde);
--
--	return 0;
--}
--
--static const struct file_operations tegra_vde_fops = {
--	.owner		= THIS_MODULE,
--	.unlocked_ioctl	= tegra_vde_unlocked_ioctl,
--	.release	= tegra_vde_release_file,
--};
--
- static irqreturn_t tegra_vde_isr(int irq, void *data)
- {
- 	struct tegra_vde *vde = data;
-@@ -590,11 +328,6 @@ static int tegra_vde_probe(struct platform_device *pdev)
- 	mutex_init(&vde->lock);
- 	init_completion(&vde->decode_completion);
- 
--	vde->miscdev.minor = MISC_DYNAMIC_MINOR;
--	vde->miscdev.name = "tegra_vde";
--	vde->miscdev.fops = &tegra_vde_fops;
--	vde->miscdev.parent = dev;
--
- 	err = tegra_vde_iommu_init(vde);
- 	if (err) {
- 		dev_err(dev, "Failed to initialize IOMMU: %d\n", err);
-@@ -622,22 +355,14 @@ static int tegra_vde_probe(struct platform_device *pdev)
- 		goto err_pm_runtime;
- 	}
- 
--	err = misc_register(&vde->miscdev);
--	if (err) {
--		dev_err(dev, "Failed to register misc device: %d\n", err);
--		goto err_free_secure_bo;
--	}
--
- 	err = tegra_vde_v4l2_init(vde);
- 	if (err) {
- 		dev_err(dev, "Failed to initialize V4L2: %d\n", err);
--		goto misc_unreg;
-+		goto err_free_secure_bo;
- 	}
- 
- 	return 0;
- 
--misc_unreg:
--	misc_deregister(&vde->miscdev);
- err_free_secure_bo:
- 	tegra_vde_free_bo(vde->secure_bo);
- err_pm_runtime:
-@@ -659,8 +384,6 @@ static int tegra_vde_remove(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 
- 	tegra_vde_v4l2_deinit(vde);
--	misc_deregister(&vde->miscdev);
--
- 	tegra_vde_free_bo(vde->secure_bo);
- 
- 	/*
-diff --git a/drivers/staging/media/tegra-vde/vde.h b/drivers/staging/media/tegra-vde/vde.h
-index e0396bb0b986..0fbb1f3d2c88 100644
---- a/drivers/staging/media/tegra-vde/vde.h
-+++ b/drivers/staging/media/tegra-vde/vde.h
-@@ -12,7 +12,6 @@
- #include <linux/dma-direction.h>
- #include <linux/iova.h>
- #include <linux/list.h>
--#include <linux/miscdevice.h>
- #include <linux/mutex.h>
- #include <linux/types.h>
- #include <linux/workqueue.h>
-@@ -107,7 +106,6 @@ struct tegra_vde {
- 	struct mutex lock;
- 	struct mutex map_lock;
- 	struct list_head map_list;
--	struct miscdevice miscdev;
- 	struct reset_control *rst;
- 	struct reset_control *rst_mc;
- 	struct gen_pool *iram_pool;
-@@ -183,15 +181,6 @@ u32 tegra_vde_readl(struct tegra_vde *vde, void __iomem *base, u32 offset);
- void tegra_vde_set_bits(struct tegra_vde *vde, u32 mask, void __iomem *base,
- 			u32 offset);
- 
--int tegra_vde_validate_h264_frame(struct device *dev,
--				  struct tegra_vde_h264_frame *frame);
--int tegra_vde_validate_h264_ctx(struct device *dev,
--				struct tegra_vde_h264_decoder_ctx *ctx);
--int tegra_vde_decode_h264(struct tegra_vde *vde,
--			  struct tegra_vde_h264_decoder_ctx *ctx,
--			  struct tegra_video_frame *dpb_frames,
--			  dma_addr_t bitstream_data_addr,
--			  size_t bitstream_data_size);
- int tegra_vde_h264_decode_run(struct tegra_ctx *ctx);
- int tegra_vde_h264_decode_wait(struct tegra_ctx *ctx);
- 
--- 
-2.34.1
+fs/io_uring.c: In function ‘io_recv’:
+fs/io_uring.c:5252:20: warning: ‘flags’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  } else if ((flags & MSG_WAITALL) && (msg.msg_flags & (MSG_TRUNC | MSG_CTRUNC))) {
+             ~~~~~~~^~~~~~~~~~~~~~
+
+If you introduce an uninitialized variable bug then likelyhood is the
+kbuild-bot will send you a Clang warning or a Smatch warning or both.
+I don't think anyone looks at GCC W=2 warnings.
+
+regards,
+dan carpenter
 
