@@ -2,138 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73905C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A659AC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244314AbiBGIx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:53:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40922 "EHLO
+        id S245104AbiBGIyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:54:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349444AbiBGIwV (ORCPT
+        with ESMTP id S245735AbiBGItq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:52:21 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E2EC043181;
-        Mon,  7 Feb 2022 00:52:20 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E128A1EC0354;
-        Mon,  7 Feb 2022 09:52:14 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644223935;
+        Mon, 7 Feb 2022 03:49:46 -0500
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E654C043181;
+        Mon,  7 Feb 2022 00:49:45 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1644223781;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=W5/DZokBYRxpM+GgYWtpQjoT7RaWk9dlrfIFiuzFIa4=;
-        b=jUn+1eurN4z9tcFEvPAiW+VNtadYuGyS3JMfBuoiNodnP/0JZHNwGb/xOJWSbIn/2ze9Ph
-        /6U9mkyDEsx+5w3M15F3iu8WvX4l8FtMSzvOUrOM7fRhuhMAgkQ6Yyzow3mEeTeiaLIvd7
-        gq5mBSHT15V9rBoNG7QcM3bWD0g3WFw=
-Date:   Mon, 7 Feb 2022 09:52:09 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        Liam Merwick <liam.merwick@oracle.com>
-Subject: Re: [PATCH v9 42/43] virt: sevguest: Add support to derive key
-Message-ID: <YgDduR0mrptX5arB@zn.tnic>
-References: <20220128171804.569796-1-brijesh.singh@amd.com>
- <20220128171804.569796-43-brijesh.singh@amd.com>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UBM1gIzU+01nrnh6VMwcHQq+WPbC6EDjF3CE0IODu/M=;
+        b=pUXVXhNysJC84kLT0rUQIoz5s6uL5zgEE0ilDsHMsfpJ2plPGtoh5WLKLthtnisror4520
+        9Ev3UeFVZ7ctZD8VB6OvlrIKsYybLUT+jkE/LCrdyIVzebbVM0y9PnMNVoEsiZH+oU1MkN
+        BEv2WVKdyjs9Ln0Sr9e+Jic8JZhAm0w=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     cai.huoqing@linux.dev
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Cai Huoqing <caihuoqing@baidu.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: ethernet: litex: Add the dependency on HAS_IOMEM
+Date:   Mon,  7 Feb 2022 16:49:12 +0800
+Message-Id: <20220207084912.9309-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220128171804.569796-43-brijesh.singh@amd.com>
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 11:18:03AM -0600, Brijesh Singh wrote:
-> +static int get_derived_key(struct snp_guest_dev *snp_dev, struct snp_guest_request_ioctl *arg)
-> +{
-> +	struct snp_guest_crypto *crypto = snp_dev->crypto;
-> +	struct snp_derived_key_resp resp = {0};
-> +	struct snp_derived_key_req req = {0};
-> +	int rc, resp_len;
-> +	u8 buf[64+16]; /* Response data is 64 bytes and max authsize for GCM is 16 bytes */
+The helper function devm_platform_ioremap_resource_xxx()
+needs HAS_IOMEM enabled, so add the dependency on HAS_IOMEM.
 
-verify_comment_style: Warning: No tail comments please:
- drivers/virt/coco/sevguest/sevguest.c:401 [+	u8 buf[64+16]; /* Response data is 64 bytes and max authsize for GCM is 16 bytes */]
+Fixes: 464a57281f29 ("net/mlxbf_gige: Make use of devm_platform_ioremap_resourcexxx()")
+Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+---
+ drivers/net/ethernet/litex/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +	if (!arg->req_data || !arg->resp_data)
-> +		return -EINVAL;
-> +
-> +	/* Copy the request payload from userspace */
-
-That comment looks useless.
-
-> +	if (copy_from_user(&req, (void __user *)arg->req_data, sizeof(req)))
-> +		return -EFAULT;
-> +
-> +	/*
-> +	 * The intermediate response buffer is used while decrypting the
-> +	 * response payload. Make sure that it has enough space to cover the
-> +	 * authtag.
-> +	 */
-> +	resp_len = sizeof(resp.data) + crypto->a_len;
-> +	if (sizeof(buf) < resp_len)
-> +		return -ENOMEM;
-
-That test can happen before the copy_from_user() above.
-
-> +
-> +	/* Issue the command to get the attestation report */
-
-Also useless.
-
-> +	rc = handle_guest_request(snp_dev, SVM_VMGEXIT_GUEST_REQUEST, arg->msg_version,
-> +				  SNP_MSG_KEY_REQ, &req, sizeof(req), buf, resp_len,
-> +				  &arg->fw_err);
-> +	if (rc)
-> +		goto e_free;
-> +
-> +	/* Copy the response payload to userspace */
-
-Ditto.
-
-> +	memcpy(resp.data, buf, sizeof(resp.data));
-> +	if (copy_to_user((void __user *)arg->resp_data, &resp, sizeof(resp)))
-> +		rc = -EFAULT;
-> +
-> +e_free:
-> +	memzero_explicit(buf, sizeof(buf));
-> +	memzero_explicit(&resp, sizeof(resp));
-
-Those are allocated on stack, why are you clearing them?
-
-> +	return rc;
-> +}
-
+diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
+index f99adbf26ab4..04345b929d8e 100644
+--- a/drivers/net/ethernet/litex/Kconfig
++++ b/drivers/net/ethernet/litex/Kconfig
+@@ -17,7 +17,7 @@ if NET_VENDOR_LITEX
+ 
+ config LITEX_LITEETH
+ 	tristate "LiteX Ethernet support"
+-	depends on OF
++	depends on OF && HAS_IOMEM
+ 	help
+ 	  If you wish to compile a kernel for hardware with a LiteX LiteEth
+ 	  device then you should answer Y to this.
 -- 
-Regards/Gruss,
-    Boris.
+2.25.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
