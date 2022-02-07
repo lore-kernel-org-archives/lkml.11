@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE96C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4604C3527B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382857AbiBGLVA (ORCPT
+        id S1382869AbiBGLVC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53952 "EHLO
+        Mon, 7 Feb 2022 06:21:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378265AbiBGLPr (ORCPT
+        with ESMTP id S1378374AbiBGLPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:15:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23900C0401E0;
-        Mon,  7 Feb 2022 03:15:26 -0800 (PST)
+        Mon, 7 Feb 2022 06:15:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0748CC03FEE4;
+        Mon,  7 Feb 2022 03:15:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9772B811A6;
-        Mon,  7 Feb 2022 11:15:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D865BC340EB;
-        Mon,  7 Feb 2022 11:15:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 125F661261;
+        Mon,  7 Feb 2022 11:15:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1385C004E1;
+        Mon,  7 Feb 2022 11:15:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232518;
-        bh=Q97Eg1yGWPuCM9Q3yh8qkEPnDzvSL2qN4yS7WFruiwE=;
+        s=korg; t=1644232527;
+        bh=JMahfiX//lp0cOousyhIrX++kALvABEYKu4qvkRO6Vs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i+t9UBK86FQVpWdAq9ox81mTfRKsKXRG9ukGTiFHpvQjrjsW3e1Y4zyGWMEhn/ZoJ
-         t7+7k4ZnVisilCdHQMqOKR0E0+V7gJLcu5XBhuSRVxVS0q9Yjhq4Nwql5/vWRngOaS
-         MoxqYw1mw0jrOL5lYX8XvwP/xX0SAt4IGr0rmYEs=
+        b=TndUlk9THPEgzMOO0/6VyRSZSFDPeuPXzB0HK5wJ/ulKNCs2q0VLw6yH7g67z298y
+         FYfMwmd6GXhzeFTnM6yeNfglMyLnOp4WsCP3m7Fz9bit2PANP/8RNmflQ/2NvNQQ/+
+         A2MC10wf63yfg7kW9oXfGyl+HXA/7/IbyY99YrEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH 4.19 36/86] drm/msm/dsi: invalid parameter check in msm_dsi_phy_enable
-Date:   Mon,  7 Feb 2022 12:05:59 +0100
-Message-Id: <20220207103758.713106289@linuxfoundation.org>
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 39/86] NFS: Ensure the server has an up to date ctime before renaming
+Date:   Mon,  7 Feb 2022 12:06:02 +0100
+Message-Id: <20220207103758.813501892@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -50,44 +51,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 5e761a2287234bc402ba7ef07129f5103bcd775c upstream.
+[ Upstream commit 6ff9d99bb88faebf134ca668842349d9718e5464 ]
 
-The function performs a check on the "phy" input parameter, however, it
-is used before the check.
+Renaming a file is required by POSIX to update the file ctime, so
+ensure that the file data is synced to disk so that we don't clobber the
+updated ctime by writing back after creating the hard link.
 
-Initialize the "dev" variable after the sanity check to avoid a possible
-NULL pointer dereference.
-
-Fixes: 5c8290284402b ("drm/msm/dsi: Split PHY drivers to separate files")
-Addresses-Coverity-ID: 1493860 ("Null pointer dereference")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220116181844.7400-1-jose.exposito89@gmail.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f2c2c552f119 ("NFS: Move delegation recall into the NFSv4 callback for rename_setup()")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/phy/dsi_phy.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/nfs/dir.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
-@@ -667,12 +667,14 @@ void __exit msm_dsi_phy_driver_unregiste
- int msm_dsi_phy_enable(struct msm_dsi_phy *phy, int src_pll_id,
- 			struct msm_dsi_phy_clk_request *clk_req)
- {
--	struct device *dev = &phy->pdev->dev;
-+	struct device *dev;
- 	int ret;
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -2123,6 +2123,8 @@ int nfs_rename(struct inode *old_dir, st
+ 		}
+ 	}
  
- 	if (!phy || !phy->cfg->ops.enable)
- 		return -EINVAL;
- 
-+	dev = &phy->pdev->dev;
-+
- 	ret = dsi_phy_enable_resource(phy);
- 	if (ret) {
- 		dev_err(dev, "%s: resource enable failed, %d\n",
++	if (S_ISREG(old_inode->i_mode))
++		nfs_sync_inode(old_inode);
+ 	task = nfs_async_rename(old_dir, new_dir, old_dentry, new_dentry, NULL);
+ 	if (IS_ERR(task)) {
+ 		error = PTR_ERR(task);
 
 
