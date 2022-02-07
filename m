@@ -2,135 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F2BC4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF431C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 05:51:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234769AbiBGFtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 00:49:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32778 "EHLO
+        id S234073AbiBGFth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 00:49:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239587AbiBGD33 (ORCPT
+        with ESMTP id S1350342AbiBGDaH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Feb 2022 22:29:29 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B207C061A73;
-        Sun,  6 Feb 2022 19:29:27 -0800 (PST)
-Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JsWjl51mXzZfM0;
-        Mon,  7 Feb 2022 11:25:15 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500011.china.huawei.com (7.221.188.124) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Feb 2022 11:29:25 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 7 Feb 2022 11:29:24 +0800
-From:   Peng Liu <liupeng256@huawei.com>
-To:     <glider@google.com>, <elver@google.com>, <dvyukov@google.com>,
-        <corbet@lwn.net>, <sumit.semwal@linaro.org>,
-        <christian.koenig@amd.com>, <akpm@linux-foundation.org>
-CC:     <kasan-dev@googlegroups.com>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linaro-mm-sig@lists.linaro.org>,
-        <linux-mm@kvack.org>, <liupeng256@huawei.com>
-Subject: [PATCH v3] kfence: Make test case compatible with run time set sample interval
-Date:   Mon, 7 Feb 2022 03:44:32 +0000
-Message-ID: <20220207034432.185532-1-liupeng256@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
+        Sun, 6 Feb 2022 22:30:07 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2088.outbound.protection.outlook.com [40.107.244.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65E5C061A73
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 19:30:05 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=og5qCXKHzIixIoG93zAnExYLejGK8IL3CrpfgAe4TbKrMEqktYJbWZtFFaTZWt9TqWPy5iinVGJc9Vsy8iZXgfFBlp3sjN3RQGLIVqdwkdynv0aAMt2WfLS/ZICFw0yXneWs/s5M5mJXrEfB66K0n5ykyw4qFQGLfIyYQPYZ/Re3VmuiksGO+f1eXiOqwQyaOm7wYbwIkrHP2UH5Wt2SKIwGJ3o3qkA+sPKCdxEGTMbpKLkw4Mt8hIo5YgMThLm+guNzIS8YTZF7OujObEfzoBb3NauBfSqY2Pl9Zqyp9T0QAjNjsL+uWdfxn0zE2mRX26ZiwyGUGXC9N1HWCtZL8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jzWVgmpPJlmPMecU3JhUV57rCwC0Lay5y4PVz93VGpE=;
+ b=OQlI2c7/kfgkW6dImkHxz3ZdYVHpph1co1c4mGfhzkVaFbfU22O7e5lO0Ks26McmIGtt9++a97gs7yrDnncTs/Kl9uBql5HAVLYPM7Twu/iud1oZ//tKUn0FeoCDJ6mkiFqYAvgAf3VahmEEl/TykuAZrjlr4pgxXttwkNjjGD57sVDu0GcJD8d6B8e72tHLtFW+hmqElGioeg93LuBu1dFomNemVoiIv5v8drp14DHyHT3G6g+C4Oas4Vu5QhZGBD1tJtKSOla/mTrlaW4SkoaGt573LiWbz6mdpKy0p/2E29w+E94aASSNNMP8Bxqg4S1We3O6Oy5Ai+cxph8ncQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jzWVgmpPJlmPMecU3JhUV57rCwC0Lay5y4PVz93VGpE=;
+ b=ZofT7zHhWc1Oxah5HOTXFuwP1okKytDW87eNo0j4nOMrIqlBUcmF1ZYOV4xjvF413S3f43+n6852mUj2K9sOpycybMVshpo6ScR+fd1/TYonazqlwkG6VwvTLP7AYTjI/rTAGnP7f3MJVhLjltLUqRXlG6suyxpOPKWnRo4RO8Q=
+Received: from DM6PR12MB2619.namprd12.prod.outlook.com (2603:10b6:5:45::18) by
+ DM5PR12MB1916.namprd12.prod.outlook.com (2603:10b6:3:112::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4951.12; Mon, 7 Feb 2022 03:30:01 +0000
+Received: from DM6PR12MB2619.namprd12.prod.outlook.com
+ ([fe80::a894:300e:5c16:5639]) by DM6PR12MB2619.namprd12.prod.outlook.com
+ ([fe80::a894:300e:5c16:5639%6]) with mapi id 15.20.4951.018; Mon, 7 Feb 2022
+ 03:30:01 +0000
+From:   "Quan, Evan" <Evan.Quan@amd.com>
+To:     =?iso-8859-1?Q?Ma=EDra_Canal?= <maira.canal@usp.br>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "Koenig, Christian" <Christian.Koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "nathan@kernel.org" <nathan@kernel.org>,
+        "ndesaulniers@google.com" <ndesaulniers@google.com>,
+        "Lazar, Lijo" <Lijo.Lazar@amd.com>,
+        "Tuikov, Luben" <Luben.Tuikov@amd.com>,
+        "Chen, Guchun" <Guchun.Chen@amd.com>,
+        "Zhang, Hawking" <Hawking.Zhang@amd.com>,
+        "jiapeng.chong@linux.alibaba.com" <jiapeng.chong@linux.alibaba.com>
+CC:     "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] drm/amd/pm: add missing prototypes to amdgpu_dpm_internal
+Thread-Topic: [PATCH] drm/amd/pm: add missing prototypes to
+ amdgpu_dpm_internal
+Thread-Index: AQHYGJaXQ42Lm1VvwEmwNUASEbtx+KyHdI7w
+Date:   Mon, 7 Feb 2022 03:30:01 +0000
+Message-ID: <DM6PR12MB26199543AD01C2DA18CCFB64E42C9@DM6PR12MB2619.namprd12.prod.outlook.com>
+References: <YfskWvNqt81rZZpQ@fedora>
+In-Reply-To: <YfskWvNqt81rZZpQ@fedora>
+Accept-Language: en-US, zh-CN
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Enabled=true;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_SetDate=2022-02-07T03:29:57Z;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Method=Standard;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Name=AMD Official Use
+ Only-AIP 2.0;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_ActionId=ad92e81e-ea20-44bd-89a5-ec95d51ef386;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_ContentBits=1
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3c95d8c5-d6ed-4db9-fe23-08d9e9ea1fd4
+x-ms-traffictypediagnostic: DM5PR12MB1916:EE_
+x-microsoft-antispam-prvs: <DM5PR12MB1916D8B0AF426A7040C6DAFCE42C9@DM5PR12MB1916.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RPLQs25PhX2D5evhmAxJgAMvhZ4QtIrq5Y/8JB96JJDl/6tRAWSeosystKKONrnBIOyv/YmcDrtEyzFfmec6mD66s0Xp3VAqoA0NGT4FsgfImes0T4RVS6fQM8Sl1GELKmmfwgglHEaVvBzMf9pSONWhw2esczFNQqRnePg8h73W9pNbq01SezcwcDISaMqVlrPCxzd90y+slBlfptMcygZU+qvnr+fwZIdvX/vgNeOdT59PwiuCI13H5+1s00AMCIpiTydnF2ZKZGcgyTZG2zu5kS8f2Zz6JqUexI3pcM27T3zHu198LqMPlDalGaKy1ECMfZFSCW/ic29Zgtx5eEaKJCXdJs4s/753xwFqB7yL+jOgKSM6715qoHTHoV0u3Z5hKS0ADDmrqC0j6KwYlFbxSDnjtnd/Ouz+DZDdWyGVshak5DXHjpRuMFwPeJdNgQAXjlXphzd/PBnWQjFjAPLZgHxoGCjAY6/c8xclfUcVpONX/JN3HrNNfTrheD53ydmQKYbUNoRsyNLte4PKbIxbfbUTlX3GN8RIFNMpHowv7ygoHg5C8PP+UdMRwajg728cAFfXYwcIbw5ZDdd6NbJzQDP0ymMo1OIgyKghR/7kixz991Y5d08CPtdbddH6AZCB08eWPCTU/uPum6bpVxsjPj46SWL/NYOiWiROpkW0BrQyxoeFNBfa4XpY10TXb19xCIN+VtPw91Wr5S3Y0IqPXESmW8Af2mzmN4dUmA4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB2619.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66556008)(8936002)(4326008)(83380400001)(52536014)(66476007)(66574015)(66446008)(64756008)(55016003)(8676002)(508600001)(33656002)(26005)(6506007)(38100700002)(38070700005)(110136005)(86362001)(53546011)(122000001)(9686003)(921005)(5660300002)(76116006)(66946007)(54906003)(7696005)(316002)(186003)(2906002)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?ZwjK+uiHDSWCPXeoJ8gX4ymigSKew65Kkj369/OOz6PPL5vEe7m9VtiX+W?=
+ =?iso-8859-1?Q?r93Uu+pwD47KpQREZTtoSFAAOOagHgC8B+MOaR7nAPjmwq/9GVljHD+G/8?=
+ =?iso-8859-1?Q?GpPnb+EMzAwN54Q3FqoZdMOTwRWWBmz/FcyHCzD7TXPnMG7N7bHtns/ZLe?=
+ =?iso-8859-1?Q?0XQNSRk4rOaH7+bA+tJc/CGmqtSvyyzE5IfYmBfblzZWJGcH+hGu205T5p?=
+ =?iso-8859-1?Q?Kny6FT/rYERSxzYisfoglsUCOY1rQ0ZvI3mA61OKRhixlr2mcN4j4sba7v?=
+ =?iso-8859-1?Q?ZRIKGLpt4Zy726rCbwD/VPx/QQ9iMqyZl5YWsNdqkqeAla2TbjDeJeSDMN?=
+ =?iso-8859-1?Q?Y8561OQXVOYtox12wBd9O0g++v5xVbJpU5noIdGt4Xpkdqx04f40nUbi03?=
+ =?iso-8859-1?Q?e0MGGQCmJeABzfaLi0ijvuWrgKX5wvLKr/1O2WlUohx1kF/xF+Tth4zOZI?=
+ =?iso-8859-1?Q?gKd0K6aA3Eiph4Al02EqW0v1r+KQGXO01c8/StY65xy0KjJTGcvFaHQ1cr?=
+ =?iso-8859-1?Q?r8zagcfxtI8J7OWfSSMq/4D2GqHOhJ2SkB22mTKz+OZl1789WrsGhSpgdu?=
+ =?iso-8859-1?Q?5DJjwcX9741OnCtfaLL7rD5uRRX4E6Ea+vDpo8IYc1GGi6zFN7EbNLnBVi?=
+ =?iso-8859-1?Q?heHwJzn4c3gzNEdJ/9noV5ME5vUvDf9vnQX+gP3QX60FjfLjPPsd2IB+Oa?=
+ =?iso-8859-1?Q?9SB27ghaudrz1e5GgxOY6z2WsaT7fXHkAcrYUfClDg5DNaJCqYSCcuImwi?=
+ =?iso-8859-1?Q?upZRvD/DcxXq1aPGmGydbwiByj23Q9UF7ffypNLUdFaGW9HmRO+fHUNyXN?=
+ =?iso-8859-1?Q?E93JEmCGdE9iAexVLRbG4JcA/mDUOve1hC2MyAhQF27QEv1vnif/OSJmR7?=
+ =?iso-8859-1?Q?Fb+B0f7G3XE1x37h1SgriQU7fe5YR8b5IczYY3PaMB+d0/P1Ca8KWOrhdW?=
+ =?iso-8859-1?Q?SND9NsCL75/KKNzdreVCasJLqQzLHWOAjgMH0r/JBrVTNiekcpL7cxDqrt?=
+ =?iso-8859-1?Q?xJ5lQHQs4EF6irdRh9dM2y+trZ8Q+D85iaMOTf40VWMcOIeBMCadP/Gtp3?=
+ =?iso-8859-1?Q?AA/ctLXy8HebPQn21RpKyO/otcbMisbqRXGhoZWSZMrBcN9ilPU+oqQIQX?=
+ =?iso-8859-1?Q?Gqxj0lNyanJZS6Gy77ImN5Rlo4vwGKdt3nTrcqTH0X8T6RSoKlSwogq1Zj?=
+ =?iso-8859-1?Q?BUryDQF7SsoyFlMk9SmNv/EE8uq9DmjA3tBOsLUvm7TqpQGV91Zb1y+u0z?=
+ =?iso-8859-1?Q?ESm5INa87eJJ3Mhi7K+vYRoxp1fMiTONsJG3E6pnxaG21dfzCWKSWtAWAe?=
+ =?iso-8859-1?Q?1UI7rqdM9nhsWRlcqQabyFs61E4uUo/2pvDlaSK0qZq/eUT/SftDWQP+l1?=
+ =?iso-8859-1?Q?qsZuaHzLGemYM9zFFWBuTHzq8aoof/uLCkczDHdZA3M67bVv3NADrXGhD1?=
+ =?iso-8859-1?Q?vjEuvfag9WjQWEhI1f5UtUcft/Zr75jEEwyT2Y15gm8KFO8bezA10F/Ere?=
+ =?iso-8859-1?Q?chQWSaXa4j08UTJl7OSaQeDk7lodhYpDJczsNadz0D0VxSPJ1fHtTuU5oC?=
+ =?iso-8859-1?Q?OfiaJb3dNeggX5uHcWlEXHyA4BqPHJzOAReibR9/ro9wn/K0nfnzjt6YA6?=
+ =?iso-8859-1?Q?X0Dp+ULPpwO5g=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB2619.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c95d8c5-d6ed-4db9-fe23-08d9e9ea1fd4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Feb 2022 03:30:01.4369
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bRnGRLBidpl8e6F8yrO2zVwcLD0xITVqUzE3/TBSN/tycuuzlaoXxFpQ+IaqDeRZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1916
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The parameter kfence_sample_interval can be set via boot parameter
-and late shell command, which is convenient for automated tests and
-KFENCE parameter optimization. However, KFENCE test case just uses
-compile-time CONFIG_KFENCE_SAMPLE_INTERVAL, which will make KFENCE
-test case not run as users desired. Export kfence_sample_interval,
-so that KFENCE test case can use run-time-set sample interval.
+[AMD Official Use Only]
 
-Signed-off-by: Peng Liu <liupeng256@huawei.com>
----
-v2->v3:
-- Revise change log description
-v1->v2:
-- Use EXPORT_SYMBOL_GPL replace EXPORT_SYMBOL
+Thanks for the fix!
+Reviewed-by: Evan Quan <evan.quan@amd.com>
 
- include/linux/kfence.h  | 2 ++
- mm/kfence/core.c        | 3 ++-
- mm/kfence/kfence_test.c | 8 ++++----
- 3 files changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/include/linux/kfence.h b/include/linux/kfence.h
-index 4b5e3679a72c..f49e64222628 100644
---- a/include/linux/kfence.h
-+++ b/include/linux/kfence.h
-@@ -17,6 +17,8 @@
- #include <linux/atomic.h>
- #include <linux/static_key.h>
- 
-+extern unsigned long kfence_sample_interval;
-+
- /*
-  * We allocate an even number of pages, as it simplifies calculations to map
-  * address to metadata indices; effectively, the very first page serves as an
-diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-index 5ad40e3add45..13128fa13062 100644
---- a/mm/kfence/core.c
-+++ b/mm/kfence/core.c
-@@ -47,7 +47,8 @@
- 
- static bool kfence_enabled __read_mostly;
- 
--static unsigned long kfence_sample_interval __read_mostly = CONFIG_KFENCE_SAMPLE_INTERVAL;
-+unsigned long kfence_sample_interval __read_mostly = CONFIG_KFENCE_SAMPLE_INTERVAL;
-+EXPORT_SYMBOL_GPL(kfence_sample_interval); /* Export for test modules. */
- 
- #ifdef MODULE_PARAM_PREFIX
- #undef MODULE_PARAM_PREFIX
-diff --git a/mm/kfence/kfence_test.c b/mm/kfence/kfence_test.c
-index a22b1af85577..50dbb815a2a8 100644
---- a/mm/kfence/kfence_test.c
-+++ b/mm/kfence/kfence_test.c
-@@ -268,13 +268,13 @@ static void *test_alloc(struct kunit *test, size_t size, gfp_t gfp, enum allocat
- 	 * 100x the sample interval should be more than enough to ensure we get
- 	 * a KFENCE allocation eventually.
- 	 */
--	timeout = jiffies + msecs_to_jiffies(100 * CONFIG_KFENCE_SAMPLE_INTERVAL);
-+	timeout = jiffies + msecs_to_jiffies(100 * kfence_sample_interval);
- 	/*
- 	 * Especially for non-preemption kernels, ensure the allocation-gate
- 	 * timer can catch up: after @resched_after, every failed allocation
- 	 * attempt yields, to ensure the allocation-gate timer is scheduled.
- 	 */
--	resched_after = jiffies + msecs_to_jiffies(CONFIG_KFENCE_SAMPLE_INTERVAL);
-+	resched_after = jiffies + msecs_to_jiffies(kfence_sample_interval);
- 	do {
- 		if (test_cache)
- 			alloc = kmem_cache_alloc(test_cache, gfp);
-@@ -608,7 +608,7 @@ static void test_gfpzero(struct kunit *test)
- 	int i;
- 
- 	/* Skip if we think it'd take too long. */
--	KFENCE_TEST_REQUIRES(test, CONFIG_KFENCE_SAMPLE_INTERVAL <= 100);
-+	KFENCE_TEST_REQUIRES(test, kfence_sample_interval <= 100);
- 
- 	setup_test_cache(test, size, 0, NULL);
- 	buf1 = test_alloc(test, size, GFP_KERNEL, ALLOCATE_ANY);
-@@ -739,7 +739,7 @@ static void test_memcache_alloc_bulk(struct kunit *test)
- 	 * 100x the sample interval should be more than enough to ensure we get
- 	 * a KFENCE allocation eventually.
- 	 */
--	timeout = jiffies + msecs_to_jiffies(100 * CONFIG_KFENCE_SAMPLE_INTERVAL);
-+	timeout = jiffies + msecs_to_jiffies(100 * kfence_sample_interval);
- 	do {
- 		void *objects[100];
- 		int i, num = kmem_cache_alloc_bulk(test_cache, GFP_ATOMIC, ARRAY_SIZE(objects),
--- 
-2.18.0.huawei.25
-
+> -----Original Message-----
+> From: Ma=EDra Canal <maira.canal@usp.br>
+> Sent: Thursday, February 3, 2022 8:40 AM
+> To: Quan, Evan <Evan.Quan@amd.com>; Deucher, Alexander
+> <Alexander.Deucher@amd.com>; Koenig, Christian
+> <Christian.Koenig@amd.com>; Pan, Xinhui <Xinhui.Pan@amd.com>;
+> airlied@linux.ie; daniel@ffwll.ch; nathan@kernel.org;
+> ndesaulniers@google.com; Lazar, Lijo <Lijo.Lazar@amd.com>; Tuikov, Luben
+> <Luben.Tuikov@amd.com>; Chen, Guchun <Guchun.Chen@amd.com>;
+> Zhang, Hawking <Hawking.Zhang@amd.com>;
+> jiapeng.chong@linux.alibaba.com
+> Cc: amd-gfx@lists.freedesktop.org; dri-devel@lists.freedesktop.org; linux=
+-
+> kernel@vger.kernel.org
+> Subject: [PATCH] drm/amd/pm: add missing prototypes to
+> amdgpu_dpm_internal
+>=20
+> Include the header with the prototype to silence the following clang
+> warnings:
+>=20
+> drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:29:6:
+> warning: no
+> previous prototype for function 'amdgpu_dpm_get_active_displays'
+> [-Wmissing-prototypes]
+> void amdgpu_dpm_get_active_displays(struct amdgpu_device *adev)
+>      ^
+> drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:29:1: note:
+> declare
+> 'static' if the function is not intended to be used outside of this
+> translation unit
+> void amdgpu_dpm_get_active_displays(struct amdgpu_device *adev)
+> ^
+> static
+> drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:76:5:
+> warning: no
+> previous prototype for function 'amdgpu_dpm_get_vrefresh'
+> [-Wmissing-prototypes]
+> u32 amdgpu_dpm_get_vrefresh(struct amdgpu_device *adev)
+>     ^
+> drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:76:1: note:
+> declare
+> 'static' if the function is not intended to be used outside of this
+> translation unit
+> u32 amdgpu_dpm_get_vrefresh(struct amdgpu_device *adev)
+> ^
+> static
+> 2 warnings generated.
+>=20
+> Besides that, remove the duplicated prototype of the function
+> amdgpu_dpm_get_vblank_time in order to keep the consistency of the
+> headers.
+>=20
+> fixes: 6ddbd37f ("drm/amd/pm: optimize the amdgpu_pm_compute_clocks()
+> implementations")
+>=20
+> Signed-off-by: Ma=EDra Canal <maira.canal@usp.br>
+> ---
+>  drivers/gpu/drm/amd/pm/amdgpu_dpm_internal.c | 1 +
+>  drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h      | 1 -
+>  drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c   | 1 +
+>  3 files changed, 2 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/gpu/drm/amd/pm/amdgpu_dpm_internal.c
+> b/drivers/gpu/drm/amd/pm/amdgpu_dpm_internal.c
+> index ba5f6413412d..42efe838fa85 100644
+> --- a/drivers/gpu/drm/amd/pm/amdgpu_dpm_internal.c
+> +++ b/drivers/gpu/drm/amd/pm/amdgpu_dpm_internal.c
+> @@ -25,6 +25,7 @@
+>  #include "amdgpu_display.h"
+>  #include "hwmgr.h"
+>  #include "amdgpu_smu.h"
+> +#include "amdgpu_dpm_internal.h"
+>=20
+>  void amdgpu_dpm_get_active_displays(struct amdgpu_device *adev)
+>  {
+> diff --git a/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
+> b/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
+> index 5cc05110cdae..09790413cbc4 100644
+> --- a/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
+> +++ b/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
+> @@ -343,7 +343,6 @@ struct amdgpu_pm {
+>  	struct amdgpu_ctx       *stable_pstate_ctx;
+>  };
+>=20
+> -u32 amdgpu_dpm_get_vblank_time(struct amdgpu_device *adev);
+>  int amdgpu_dpm_read_sensor(struct amdgpu_device *adev, enum
+> amd_pp_sensors sensor,
+>  			   void *data, uint32_t *size);
+>=20
+> diff --git a/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
+> b/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
+> index 7427c50409d4..caae54487f9c 100644
+> --- a/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
+> +++ b/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
+> @@ -28,6 +28,7 @@
+>  #include "amdgpu_pm.h"
+>  #include "amdgpu_dpm.h"
+>  #include "amdgpu_atombios.h"
+> +#include "amdgpu_dpm_internal.h"
+>  #include "amd_pcie.h"
+>  #include "sid.h"
+>  #include "r600_dpm.h"
+> --
+> 2.34.1
