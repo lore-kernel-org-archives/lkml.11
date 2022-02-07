@@ -2,115 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF99C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C46C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343818AbiBGPva (ORCPT
+        id S1355878AbiBGPvg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:51:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
+        Mon, 7 Feb 2022 10:51:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385641AbiBGPot (ORCPT
+        with ESMTP id S1386614AbiBGPrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:44:49 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C076C0401E6;
-        Mon,  7 Feb 2022 07:44:46 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217Esqsd030207;
-        Mon, 7 Feb 2022 15:44:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=jOhZpDNAvGlx7JL+JuWldFRo7QkbLt/2NFIFiLXgya8=;
- b=AqaFISx6+gUOBnC0vR5PiJCz4h3L4LakeVoLlFxq/TETQLIoFVLnhQENrF36ySUXOL2y
- eKAy9xLeAQH3iQVWd2CPa66aGlBEL/pJvSwyXC2yULIUS8TDbNOA+pbggLs6SamLaqmY
- arUWLDWAhjpAEcMqDr/ckFTbGt9SkYgYWnUPDgAm2WLN+aFOrySeOgu1xbMs7IkaGckb
- 9LocmVsOR81w9PXjqf0+Yqq8yDOeNa8rqcENH/VyUPc7GRUnL3h1v1r5XvndmyrY6Yqq
- 0mS983Av1lYa9rNYyzZChDLKVkR7f2RrOuFrPdp9O24hjlWt3pZv9rwqL9mNbJTFWrxK Lw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22st02wm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 15:44:46 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217FJkHp027799;
-        Mon, 7 Feb 2022 15:44:45 GMT
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22st02w0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 15:44:45 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217FhWnM011652;
-        Mon, 7 Feb 2022 15:44:44 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma02wdc.us.ibm.com with ESMTP id 3e2f8mjcxf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 15:44:44 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217Fig8v35389830
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 15:44:42 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C02CA6A063;
-        Mon,  7 Feb 2022 15:44:42 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CCBC46A058;
-        Mon,  7 Feb 2022 15:44:40 +0000 (GMT)
-Received: from [9.211.136.120] (unknown [9.211.136.120])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 15:44:40 +0000 (GMT)
-Message-ID: <f0a3fc18-aedc-7215-06f1-7a8e68032155@linux.ibm.com>
-Date:   Mon, 7 Feb 2022 10:44:40 -0500
+        Mon, 7 Feb 2022 10:47:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57565C0401C1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:47:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEAAFB8105D
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:47:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA01DC340EF;
+        Mon,  7 Feb 2022 15:47:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644248830;
+        bh=LdSadHOKGFFrAfu0I2Qkry7wLCE2PrwoIGXW+wZTZtY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=T7B0mK+u3e3kI992aSXF6HWThT+Dt14mr2tDh4CXWp1dCLGuRisy8vuaTrVo8C2t6
+         yAzOMTKry8iNg9WpcQt0GiLfK3hAyjvJlm+3DGXeogx469hSnGlUMWyCE3zjQ+foNJ
+         uhJo4s75lP6YiLkqAbmV+s9H6cBQkg8TLJB+1Ca+OQ52B/cL8Aa/klLVpBYnmuBQUk
+         MjAl+VSE7AP1HRlKpJ9S7f0OhzIV1sZuyIJ7E0m3NA+TV+ufPiqBFxVtsvwaeyqOb7
+         LBjmaGCRXqhkiO8vwEpKM2uk0TjkVgZ+YR4AK8YoZnw+7U93mJOsVFlCD4z7lgdyTL
+         NVsCMO51oVh9g==
+Date:   Mon, 7 Feb 2022 16:47:07 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Oscar Shiang <oscar0225@livemail.tw>
+Subject: Re: [patch v11 10/13] KVM: x86: process isolation work from VM-entry
+ code path
+Message-ID: <20220207154707.GC526451@lothringen>
+References: <20220204173537.429902988@fedora.localdomain>
+ <20220204173554.897857855@fedora.localdomain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 30/30] MAINTAINERS: additional files related kvm s390
- pci passthrough
-Content-Language: en-US
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Christian Borntraeger <borntraeger@de.ibm.com>
-References: <20220204211536.321475-1-mjrosato@linux.ibm.com>
- <20220204211536.321475-31-mjrosato@linux.ibm.com>
- <9a186055-2637-0113-18be-ab08b5db1c74@linux.ibm.com>
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <9a186055-2637-0113-18be-ab08b5db1c74@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Sk1YmCfl_cCtPj7dVZB7Q2HNaotvq7Jn
-X-Proofpoint-ORIG-GUID: esDzGk1kIB0F5c_Gy_mzP4RmcPDmmcY5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 spamscore=0 suspectscore=0 malwarescore=0 mlxscore=0
- mlxlogscore=999 impostorscore=0 bulkscore=0 adultscore=0 clxscore=1015
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070097
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204173554.897857855@fedora.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 8:04 AM, Christian Borntraeger wrote:
+On Fri, Feb 04, 2022 at 02:35:47PM -0300, Marcelo Tosatti wrote:
+> VM-entry code path is an entry point similar to userspace return
+> when task isolation is concerned.
 > 
+> Call isolation_exit_to_user_mode before VM-enter.
 > 
-> Am 04.02.22 um 22:15 schrieb Matthew Rosato:
->> Add entries from the s390 kvm subdirectory related to pci passthrough.
->>
->> Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
+> Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
 > 
+> ---
+> v11
+> - Add TIF_TASK_ISOL bit to thread info flags and use it
+>   to decide whether to perform task isolation work on
+>   return to userspace                                   (Frederic W. Weisbecker)
 > 
-> Can you change that to  borntraeger@linux.ibm.com ?
+>  include/linux/entry-kvm.h |    4 +++-
+>  kernel/entry/kvm.c        |   18 ++++++++++++++----
+>  2 files changed, 17 insertions(+), 5 deletions(-)
+> 
+> Index: linux-2.6/kernel/entry/kvm.c
+> ===================================================================
+> --- linux-2.6.orig/kernel/entry/kvm.c
+> +++ linux-2.6/kernel/entry/kvm.c
+> @@ -2,6 +2,7 @@
+>  
+>  #include <linux/entry-kvm.h>
+>  #include <linux/kvm_host.h>
+> +#include <linux/task_isolation.h>
+>  
+>  static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
+>  {
+> @@ -22,6 +23,9 @@ static int xfer_to_guest_mode_work(struc
+>  		if (ti_work & _TIF_NOTIFY_RESUME)
+>  			tracehook_notify_resume(NULL);
+>  
+> +		if (ti_work & _TIF_TASK_ISOL)
+> +			task_isol_exit_to_user_mode();
+> +
+>  		ret = arch_xfer_to_guest_mode_handle_work(vcpu, ti_work);
+>  		if (ret)
+>  			return ret;
+> 
 > 
 
-Sure.  It looks like this happened on some of the earlier patches in 
-this series too, I'll go ahead and adjust them all.
+Do you need this?
+
+diff --git a/include/linux/entry-kvm.h b/include/linux/entry-kvm.h
+index 07c878d6e323..3588d6071caf 100644
+--- a/include/linux/entry-kvm.h
++++ b/include/linux/entry-kvm.h
+@@ -18,7 +18,7 @@
+ 
+ #define XFER_TO_GUEST_MODE_WORK						\
+ 	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL |	\
+-	 _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
++	 _TIF_NOTIFY_RESUME | _TIF_TASK_ISOL | ARCH_XFER_TO_GUEST_MODE_WORK)
+ 
+ struct kvm_vcpu;
+ 
