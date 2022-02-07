@@ -2,274 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1282AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236680AbiBGQBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:01:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38880 "EHLO
+        id S245533AbiBGQAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:00:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357214AbiBGP7x (ORCPT
+        with ESMTP id S1377051AbiBGP5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:59:53 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AED7C0401CE
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:59:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 7 Feb 2022 10:57:00 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF3DC0401CE
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:56:59 -0800 (PST)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BDB4ACE1158
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:59:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13442C340F0;
-        Mon,  7 Feb 2022 15:59:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644249587;
-        bh=lpyoTQGGfPdBu6D5jCoW1Uwqc9k9CFLDPrxe0jkTtMw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DJRZASbMNwMXpITIImbmWATpzOI7Gcgm+8zqwGPgECWVi1+bIZ+iywHMXpPUyijwI
-         zdBJIIrws5sgRV3gQaO2NWzyWjumTbSGiFg1o6Xl0RFOJSX8bOuM94DIr0pRidTkfX
-         FwQFvKlA6vm/w1NlUvS1nsd22CMa8wLgakYdZfcSQeL+Kaaf85QdjZ5330JedlQcsO
-         4tbE4WaqY/jfRswVJHO1FAjpd6BKGYY0r5q1umoOXk47L6clwmb5NVz0w8RCa4XPhQ
-         Cg1FUDBYFzwbxGuwsLNt+0gYffpfIQ1fcyqbN/NEKQL3O5pTXw6tZ54INDDOFDX9xC
-         4nzRMb3nKRdsg==
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@gentwo.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nitesh Lal <nilal@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Nicolas Saenz <nsaenzju@redhat.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Phil Auld <pauld@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>
-Subject: [PATCH 8/8] sched/isolation: Split housekeeping cpumask per isolation features
-Date:   Mon,  7 Feb 2022 16:59:10 +0100
-Message-Id: <20220207155910.527133-9-frederic@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220207155910.527133-1-frederic@kernel.org>
-References: <20220207155910.527133-1-frederic@kernel.org>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id AEEAD4003C
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:56:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644249418;
+        bh=3KCJtIIAHid1u1Ypwj6pcJ1BKiFWLA7ETi2tEpWd/KM=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=d3zYrg8/QwD5CAPs29nqw1oSk42TU4EDHDXDvbIJfOkP3OHO0KGY5Ay4x3iBxtmhR
+         bo0lvQiVA1GRvjqzCWdEk5l5ggl53NysepRAOzq60aEQJ4h4k8QmE9XsvYz/zNlprS
+         alcWO5kK9g+EJ67kQvqcffhUV6djdDrCveI5+4F7qLGqx5y0mEUFxqap3rhajbuuRK
+         Q/7hp5dwu7dPnL8NbT2mMCYj8UgAOk6pbeI9vluwK0geu2zGIlDNyr6vHBiSCPC8dI
+         fchcJ8zu5gC2jXXv7U67H5/qq9CGhQuoelrVJ07dEFL/Qzx8YDk86O9mx5gMnDY+XS
+         RYsNGfgCHR8/A==
+Received: by mail-ej1-f72.google.com with SMTP id la22-20020a170907781600b006a7884de505so4490034ejc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 07:56:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3KCJtIIAHid1u1Ypwj6pcJ1BKiFWLA7ETi2tEpWd/KM=;
+        b=fINWqeB95gv1Pt/b9iCc8Kx/ndhDz1F6MmDPNs2BsIZdiJLjorPVWfGSqKqhajkLwZ
+         Q4cGb8PvBwV7r+hXrHZd01Q9g4WPqWO73Y2lBkTKjJ+PvyIvwkllKujW8pCQozf2F8Tx
+         pTnVn6kVI6QqBseG9xBUZkR4kYKzLekq/QkPJDJIn9m6lWkgojOivifhGTpSxQxJ8HPm
+         PTYEVgSfFhlfba7OGXxtcf1Y/HrYdXLFGgjQAEvVVlY51L2V+/Qq0XQfYR6jPjIhbV2U
+         T14MSmXBTSJB/MMOCvarwUmsk5V5+2vdTuPNPRroN3TS7fq8r/Bxi0Reo/5yyQoj8ho+
+         +3jQ==
+X-Gm-Message-State: AOAM532setZHP8kuVdT1+FDTeixqbAMSDA/BrqyZDqh8amzil+Ot/kHS
+        a19c0Hn93RQ6nFejg2nGVDBHXQsHfSqxWjs6JIjY8F4OvSu++fOfXFtxUg/azAKDMCx70Cw1D6s
+        aYXob106Hr8dUIxk/ey5yZik5owpnq5mK0FIOaWBLUw==
+X-Received: by 2002:a17:907:ca6:: with SMTP id gi38mr290863ejc.353.1644249418354;
+        Mon, 07 Feb 2022 07:56:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxNtGmRyRii7O51uydqBLa9NhyKzrDOTW8Z28l8gq9kBDum2SUHT7YCiJHTkDya3nBusEaO7g==
+X-Received: by 2002:a17:907:ca6:: with SMTP id gi38mr290850ejc.353.1644249418176;
+        Mon, 07 Feb 2022 07:56:58 -0800 (PST)
+Received: from [192.168.0.90] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id v19sm3356879edw.39.2022.02.07.07.56.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 07:56:57 -0800 (PST)
+Message-ID: <f8387f12-24f9-4a39-e9b8-3b83f1de078d@canonical.com>
+Date:   Mon, 7 Feb 2022 16:56:56 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/3] dt-bindings: crypto: Convert Atmel AES to yaml
+Content-Language: en-US
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        herbert@gondor.apana.org.au, robh+dt@kernel.org
+Cc:     davem@davemloft.net, nicolas.ferre@microchip.com,
+        claudiu.beznea@microchip.com, alexandre.belloni@bootlin.com,
+        linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220207032405.70733-1-tudor.ambarus@microchip.com>
+ <20220207032405.70733-2-tudor.ambarus@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220207032405.70733-2-tudor.ambarus@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To prepare for supporting each housekeeping feature toward cpuset, split
-the global housekeeping cpumask per HK_TYPE_* entry.
+On 07/02/2022 04:24, Tudor Ambarus wrote:
+> Convert Atmel AES documentation to yaml format. With the conversion the
+> clock and clock-names properties are made mandatory. The driver returns
+> -EINVAL if "aes_clk" is not found, reflect that in the bindings and make
+> the clock and clock-names properties mandatory. Update the example to
+> better describe how one should define the dt node.
+> 
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> ---
+>  .../devicetree/bindings/crypto/atmel,aes.yaml | 65 +++++++++++++++++++
+>  .../bindings/crypto/atmel-crypto.txt          | 20 ------
+>  2 files changed, 65 insertions(+), 20 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/crypto/atmel,aes.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/crypto/atmel,aes.yaml b/Documentation/devicetree/bindings/crypto/atmel,aes.yaml
+> new file mode 100644
+> index 000000000000..f77ec04dbabe
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/crypto/atmel,aes.yaml
+> @@ -0,0 +1,65 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/crypto/atmel,aes.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Atmel Advanced Encryption Standard (AES) HW cryptographic accelerator
+> +
+> +maintainers:
+> +  - Tudor Ambarus <tudor.ambarus@microchip.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: atmel,at91sam9g46-aes
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    const: aes_clk
+> +
+> +  dmas:
+> +    items:
+> +      - description: TX DMA Channel
+> +      - description: RX DMA Channel
+> +
+> +  dma-names:
+> +    items:
+> +      - const: tx
+> +      - const: rx
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +  - dmas
+> +  - dma-names
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/clock/at91.h>
+> +    #include <dt-bindings/dma/at91.h>
 
-This will later allow, for example, to runtime modify the cpulist passed
-through "isolcpus=", "nohz_full=" and "rcu_nocbs=" kernel boot
-parameters.
+One empty line for readability.
 
-Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
-Reviewed-by: Phil Auld <pauld@redhat.com>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: Nitesh Lal <nilal@redhat.com>
-Cc: Nicolas Saenz <nsaenzju@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Christoph Lameter <cl@gentwo.de>
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Zefan Li <lizefan.x@bytedance.com>
-Cc: Alex Belits <abelits@marvell.com>
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Paul E. McKenney  <paulmck@kernel.org>
----
- kernel/sched/isolation.c | 91 +++++++++++++++++++++++++++-------------
- 1 file changed, 62 insertions(+), 29 deletions(-)
+> +    aes: aes@f8038000 {
 
-diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
-index 883eee9fae22..b4d10815c45a 100644
---- a/kernel/sched/isolation.c
-+++ b/kernel/sched/isolation.c
-@@ -23,12 +23,17 @@ enum hk_flags {
- 
- DEFINE_STATIC_KEY_FALSE(housekeeping_overridden);
- EXPORT_SYMBOL_GPL(housekeeping_overridden);
--static cpumask_var_t housekeeping_mask;
--static unsigned int housekeeping_flags;
-+
-+struct housekeeping {
-+	cpumask_var_t cpumasks[HK_TYPE_MAX];
-+	unsigned long flags;
-+};
-+
-+static struct housekeeping housekeeping;
- 
- bool housekeeping_enabled(enum hk_type type)
- {
--	return !!(housekeeping_flags & BIT(type));
-+	return !!(housekeeping.flags & BIT(type));
- }
- EXPORT_SYMBOL_GPL(housekeeping_enabled);
- 
-@@ -37,12 +42,12 @@ int housekeeping_any_cpu(enum hk_type type)
- 	int cpu;
- 
- 	if (static_branch_unlikely(&housekeeping_overridden)) {
--		if (housekeeping_flags & BIT(type)) {
--			cpu = sched_numa_find_closest(housekeeping_mask, smp_processor_id());
-+		if (housekeeping.flags & BIT(type)) {
-+			cpu = sched_numa_find_closest(housekeeping.cpumasks[type], smp_processor_id());
- 			if (cpu < nr_cpu_ids)
- 				return cpu;
- 
--			return cpumask_any_and(housekeeping_mask, cpu_online_mask);
-+			return cpumask_any_and(housekeeping.cpumasks[type], cpu_online_mask);
- 		}
- 	}
- 	return smp_processor_id();
-@@ -52,8 +57,8 @@ EXPORT_SYMBOL_GPL(housekeeping_any_cpu);
- const struct cpumask *housekeeping_cpumask(enum hk_type type)
- {
- 	if (static_branch_unlikely(&housekeeping_overridden))
--		if (housekeeping_flags & BIT(type))
--			return housekeeping_mask;
-+		if (housekeeping.flags & BIT(type))
-+			return housekeeping.cpumasks[type];
- 	return cpu_possible_mask;
- }
- EXPORT_SYMBOL_GPL(housekeeping_cpumask);
-@@ -61,40 +66,53 @@ EXPORT_SYMBOL_GPL(housekeeping_cpumask);
- void housekeeping_affine(struct task_struct *t, enum hk_type type)
- {
- 	if (static_branch_unlikely(&housekeeping_overridden))
--		if (housekeeping_flags & BIT(type))
--			set_cpus_allowed_ptr(t, housekeeping_mask);
-+		if (housekeeping.flags & BIT(type))
-+			set_cpus_allowed_ptr(t, housekeeping.cpumasks[type]);
- }
- EXPORT_SYMBOL_GPL(housekeeping_affine);
- 
- bool housekeeping_test_cpu(int cpu, enum hk_type type)
- {
- 	if (static_branch_unlikely(&housekeeping_overridden))
--		if (housekeeping_flags & BIT(type))
--			return cpumask_test_cpu(cpu, housekeeping_mask);
-+		if (housekeeping.flags & BIT(type))
-+			return cpumask_test_cpu(cpu, housekeeping.cpumasks[type]);
- 	return true;
- }
- EXPORT_SYMBOL_GPL(housekeeping_test_cpu);
- 
- void __init housekeeping_init(void)
- {
--	if (!housekeeping_flags)
-+	enum hk_type type;
-+
-+	if (!housekeeping.flags)
- 		return;
- 
- 	static_branch_enable(&housekeeping_overridden);
- 
--	if (housekeeping_flags & HK_FLAG_TICK)
-+	if (housekeeping.flags & HK_FLAG_TICK)
- 		sched_tick_offload_init();
- 
--	/* We need at least one CPU to handle housekeeping work */
--	WARN_ON_ONCE(cpumask_empty(housekeeping_mask));
-+	for_each_set_bit(type, &housekeeping.flags, HK_TYPE_MAX) {
-+		/* We need at least one CPU to handle housekeeping work */
-+		WARN_ON_ONCE(cpumask_empty(housekeeping.cpumasks[type]));
-+	}
- }
- 
--static int __init housekeeping_setup(char *str, enum hk_flags flags)
-+static void __init housekeeping_setup_type(enum hk_type type,
-+					   cpumask_var_t housekeeping_staging)
-+{
-+
-+	alloc_bootmem_cpumask_var(&housekeeping.cpumasks[type]);
-+	cpumask_copy(housekeeping.cpumasks[type],
-+		     housekeeping_staging);
-+}
-+
-+static int __init housekeeping_setup(char *str, unsigned long flags)
- {
- 	cpumask_var_t non_housekeeping_mask, housekeeping_staging;
- 	int err = 0;
- 
--	if ((flags & HK_FLAG_TICK) && !(housekeeping_flags & HK_FLAG_TICK)) {
-+	if ((flags & HK_FLAG_TICK) && !(housekeeping.flags & HK_FLAG_TICK)) {
- 		if (!IS_ENABLED(CONFIG_NO_HZ_FULL)) {
- 			pr_warn("Housekeeping: nohz unsupported."
- 				" Build with CONFIG_NO_HZ_FULL\n");
-@@ -115,26 +133,41 @@ static int __init housekeeping_setup(char *str, enum hk_flags flags)
- 	if (!cpumask_intersects(cpu_present_mask, housekeeping_staging)) {
- 		__cpumask_set_cpu(smp_processor_id(), housekeeping_staging);
- 		__cpumask_clear_cpu(smp_processor_id(), non_housekeeping_mask);
--		if (!housekeeping_flags) {
-+		if (!housekeeping.flags) {
- 			pr_warn("Housekeeping: must include one present CPU, "
- 				"using boot CPU:%d\n", smp_processor_id());
- 		}
- 	}
- 
--	if (!housekeeping_flags) {
--		alloc_bootmem_cpumask_var(&housekeeping_mask);
--		cpumask_copy(housekeeping_mask, housekeeping_staging);
-+	if (!housekeeping.flags) {
-+		/* First setup call ("nohz_full=" or "isolcpus=") */
-+		enum hk_type type;
-+
-+		for_each_set_bit(type, &flags, HK_TYPE_MAX)
-+			housekeeping_setup_type(type, housekeeping_staging);
- 	} else {
--		if (!cpumask_equal(housekeeping_staging, housekeeping_mask)) {
--			pr_warn("Housekeeping: nohz_full= must match isolcpus=\n");
--			goto free_housekeeping_staging;
-+		/* Second setup call ("nohz_full=" after "isolcpus=" or the reverse) */
-+		enum hk_type type;
-+		unsigned long iter_flags = flags & housekeeping.flags;
-+
-+		for_each_set_bit(type, &iter_flags, HK_TYPE_MAX) {
-+			if (!cpumask_equal(housekeeping_staging,
-+					   housekeeping.cpumasks[type])) {
-+				pr_warn("Housekeeping: nohz_full= must match isolcpus=\n");
-+				goto free_housekeeping_staging;
-+			}
- 		}
-+
-+		iter_flags = flags & ~housekeeping.flags;
-+
-+		for_each_set_bit(type, &iter_flags, HK_TYPE_MAX)
-+			housekeeping_setup_type(type, housekeeping_staging);
- 	}
- 
--	if ((flags & HK_FLAG_TICK) && !(housekeeping_flags & HK_FLAG_TICK))
-+	if ((flags & HK_FLAG_TICK) && !(housekeeping.flags & HK_FLAG_TICK))
- 		tick_nohz_full_setup(non_housekeeping_mask);
- 
--	housekeeping_flags |= flags;
-+	housekeeping.flags |= flags;
- 	err = 1;
- 
- free_housekeeping_staging:
-@@ -147,7 +180,7 @@ static int __init housekeeping_setup(char *str, enum hk_flags flags)
- 
- static int __init housekeeping_nohz_full_setup(char *str)
- {
--	unsigned int flags;
-+	unsigned long flags;
- 
- 	flags = HK_FLAG_TICK | HK_FLAG_WQ | HK_FLAG_TIMER | HK_FLAG_RCU |
- 		HK_FLAG_MISC | HK_FLAG_KTHREAD;
-@@ -158,7 +191,7 @@ __setup("nohz_full=", housekeeping_nohz_full_setup);
- 
- static int __init housekeeping_isolcpus_setup(char *str)
- {
--	unsigned int flags = 0;
-+	unsigned long flags = 0;
- 	bool illegal = false;
- 	char *par;
- 	int len;
--- 
-2.25.1
+Generic node name, so "crypto".
 
+> +      compatible = "atmel,at91sam9g46-aes";
+> +      reg = <0xe1810000 0x100>;
+> +      interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
+> +      clocks = <&pmc PMC_TYPE_PERIPHERAL 27>;
+> +      clock-names = "aes_clk";
+> +      dmas = <&dma0 AT91_XDMAC_DT_PERID(1)>,
+> +             <&dma0 AT91_XDMAC_DT_PERID(2)>;
+> +      dma-names = "tx", "rx";
+> +      status= "okay";
+> +    };
+
+Drop the status property.
+
+Best regards,
+Krzysztof
