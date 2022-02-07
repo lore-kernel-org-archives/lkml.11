@@ -2,142 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D86B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A69C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:32:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237775AbiBGSbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:31:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52544 "EHLO
+        id S239501AbiBGSbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:31:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236724AbiBGSaV (ORCPT
+        with ESMTP id S230321AbiBGS2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:30:21 -0500
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0015BC0401D9;
-        Mon,  7 Feb 2022 10:30:19 -0800 (PST)
-Received: by mail-yb1-f179.google.com with SMTP id v186so42821365ybg.1;
-        Mon, 07 Feb 2022 10:30:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4IAhmP+T6jOpGNX9JETe6Tu8YD8CCasYVfZ4rkK45R8=;
-        b=aarYX4yFDYrt0N5Z6PY7UE/nyJiv5EiNXzKgk0kJedIb3o43oY5rLm4RJ0+pfoI15/
-         OJ0Dxqdh93Vxob9E1KUckXJCTo9IcbumkwNOFfeIWM9Rh7X75f/JU2VHohIbT7KDvF6D
-         LmE6zcsC0P8p3jnrsxB+vnexf8MSlYA8d6xh3LQJMowWrUPS2BIO56qdk/3DxWBKQ8Zc
-         0RoqsNVwI8xEaR9emY5aiiX4HsV8IZduUv/SEXHeUf+sZhOwRUT7V3ufAOKQuV0/rGwx
-         k+fhk9Aaww+VC5sJLFufBj87oUeRbOLYpoox6NgYM6brupIk24wB/k7SxleVmlPYegNz
-         xhDA==
-X-Gm-Message-State: AOAM531sKr5VhfyAT8R8mdItc3ORTRhuLyoyUNg9FflDL/xYfj7XaOp7
-        o3z2tr3/aAFOLJD/dBKCC9Ghd8gTHA9CHMRwTSOEdxuo
-X-Google-Smtp-Source: ABdhPJyu5/rAfWk6UIp8oq4UHYNADQTG73zJdmFAcr10aFmyNsCHRzdsCmYSPfp2ww578LGa8QjbWmGIrJISJ29AvvU=
-X-Received: by 2002:a81:5c82:: with SMTP id q124mr1139183ywb.326.1644258619139;
- Mon, 07 Feb 2022 10:30:19 -0800 (PST)
+        Mon, 7 Feb 2022 13:28:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92639C0401DA;
+        Mon,  7 Feb 2022 10:28:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3476060DC6;
+        Mon,  7 Feb 2022 18:28:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F940C004E1;
+        Mon,  7 Feb 2022 18:28:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644258488;
+        bh=ETqd+yZ/HS9AXaGMHGmXNmo1b7Ei8h0Mz5rxIDEAYCs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=R0lPrTz1FVVpdU3QufS9iVKKMCmrC8ANQnsceUKDopylKuSrAc9ZWIg8FaEdCA+9m
+         VJxfjTgBkmVzq+EQK9UR4ZWGhAWrmt2LELoJzDvV/+v8YG72iirrcJ3/ZAZQMkJygq
+         AP0y+Pnj8ziGzIfx9FOdXP6gQZc/+MejhJTXPV7zpf4aIMZk5BRsaECWXVcuBBIUCc
+         Om2hSoJ3n5oM8NCeOQ16Eoq3Ucy3BtjC8B3yQD/a2bzpBiwQnc71U/2OKmy1LQyGJl
+         X/16Qrhf0kRAW+gGOKKNmb+/oW+VRYvzu8ik92egN9UhQfF0PBI4x5bYezTP/Fj+O3
+         auwZo+RrVIF6w==
+Date:   Mon, 7 Feb 2022 12:28:06 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lorenzo.pieralisi@arm.com, bhelgaas@google.com, michals@xilinx.com
+Subject: Re: [PATCH 1/2] PCI: xilinx-cpm: Update YAML schemas for Versal CPM5
+ Root Port
+Message-ID: <20220207182806.GA408432@bhelgaas>
 MIME-Version: 1.0
-References: <20220207182134.2900362-1-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <20220207182134.2900362-1-srinivas.pandruvada@linux.intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 7 Feb 2022 19:30:08 +0100
-Message-ID: <CAJZ5v0i+ffre4YszWdjuebz98eDZTf2LioZTAQvOpEOT8RRB1A@mail.gmail.com>
-Subject: Re: [PATCH] Documentation: admin-guide: pm: Document uncore frequency scaling
-To:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207041250.1658-2-bharat.kumar.gogada@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CC: linux-pm, please!
+It looks like the subject line convention here would be something
+like:
 
-On Mon, Feb 7, 2022 at 7:21 PM Srinivas Pandruvada
-<srinivas.pandruvada@linux.intel.com> wrote:
->
-> Added documentation to configure uncore frequency limits in Intel
-> Xeon processors.
->
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> ---
->  .../pm/intel_uncore_frequency_scaling.rst     | 56 +++++++++++++++++++
->  .../admin-guide/pm/working-state.rst          |  1 +
->  2 files changed, 57 insertions(+)
->  create mode 100644 Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst
->
-> diff --git a/Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst b/Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst
-> new file mode 100644
-> index 000000000000..b3519560594b
-> --- /dev/null
-> +++ b/Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst
-> @@ -0,0 +1,56 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +.. include:: <isonum.txt>
-> +
-> +==============================
-> +Intel Uncore Frequency Scaling
-> +==============================
-> +
-> +:Copyright: |copy| 2022 Intel Corporation
-> +
-> +:Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> +
-> +Introduction
-> +===========================================
-> +
-> +Uncore can consume significant amount of power in Intel's Xeon servers based
-> +on the workload characteristics. To optimize total power and improve overall
-> +performance, SoC has an internal algorithm for scaling uncore frequency. These
-> +algorithms monitor workload usage of uncore and set a desirable frequency.
-> +
-> +It is possible that users have different expectations of uncore performance and
-> +want to have control over it. The objective is similar to set scaling min/max
-> +frequencies using cpufreq sysfs to improve compute performance. Users may have
-> +some latency sensitive workload where they do not want any change to uncore
-> +frequency. Also, users may have workload which requires different core and
-> +uncore performance at distinct phases and they want to use both cpufreq and
-> +uncore scaling interface to distribute power and improve overall performance.
-> +
-> +To control uncore frequency, a sysfs interface is provided in the directory:
-> +`/sys/devices/system/cpu/intel_uncore_frequency/`.
-> +
-> +There is one directory for each package and die combination as the scope of
-> +uncore scaling control is per die in multiple dies/package SoC or per
-> +package for single die per package SoC. The name represents the
-> +scope of control. For example: 'package_00_die_00' is for package id 0 and
-> +die 0 in it.
-> +
-> +Each package_*_die_* contains following attributes:
-> +
-> +``initial_max_freq_khz``
-> +       Out of reset, this attribute represent the maximum possible frequency.
-> +       This is a read only attribute. If users adjust max_freq_khz,
-> +       they can always go back to maximum using the value from this attribute.
-> +
-> +``initial_min_freq_khz``
-> +       Out of reset, this attribute represent the minimum possible frequency.
-> +       This is a read only attribute. If users adjust min_freq_khz,
-> +       they can always go back to minimum using the value from this attribute.
-> +
-> +``max_freq_khz``
-> +       This attribute is used to set the maximum uncore frequency.
-> +
-> +``min_freq_khz``
-> +       This attribute is used to set the minimum uncore frequency.
-> +
-> +``current_freq_khz``
-> +       This attribute is used to get the current uncore frequency.
-> diff --git a/Documentation/admin-guide/pm/working-state.rst b/Documentation/admin-guide/pm/working-state.rst
-> index 5d2757e2de65..ee45887811ff 100644
-> --- a/Documentation/admin-guide/pm/working-state.rst
-> +++ b/Documentation/admin-guide/pm/working-state.rst
-> @@ -15,3 +15,4 @@ Working-State Power Management
->     cpufreq_drivers
->     intel_epb
->     intel-speed-select
-> +   intel_uncore_frequency_scaling
-> --
-> 2.34.1
->
+  dt-bindings: PCI: xilinx-cpm: Add Versal CPM5 Root Port
+
+(From "git log --oneline Documentation/devicetree/bindings/pci/")
+
+On Mon, Feb 07, 2022 at 09:42:48AM +0530, Bharat Kumar Gogada wrote:
+> Xilinx Versal Premium series has CPM5 block which supports Root port
+> functioning at Gen5 speed.
+> Add support for YAML schemas documentation for Versal CPM5 Root Port driver.
+
+s/Root port/Root Port/ to be consistent.
+Add blank line between paragraphs.
+
+Bjorn
