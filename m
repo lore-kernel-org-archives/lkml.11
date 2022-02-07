@@ -2,146 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E03C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:06:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89DF4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbiBHBFW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:05:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45954 "EHLO
+        id S237747AbiBHBFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:05:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343686AbiBGXsU (ORCPT
+        with ESMTP id S1343655AbiBGXpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:48:20 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC785C06109E
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:48:16 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id v4so8611486pjh.2
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 15:48:16 -0800 (PST)
+        Mon, 7 Feb 2022 18:45:33 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3288C061355;
+        Mon,  7 Feb 2022 15:45:32 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id w20so3128654plq.12;
+        Mon, 07 Feb 2022 15:45:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DmAjZsfccwaVaNtes6EmfPZ2rG4blpFc0pyFaBFNy/c=;
-        b=O48QwLhH9/EyfzfbZFDBuyW7NgAxpUfsKFo77vRIIp/J97PxXdR/Nfj2Q5oBXNcuPo
-         Jf+QknfQrGr7pgD1rVD/n/xLnaeB/v8ecoI8tICXQpFrYlc8ZMljeCsh4aBWr+MUr3+G
-         Z+isaq63CF1Tym+PBdMK6+axq9i8a6odmcOzGYnYQtwotEiike8g+3qsd0ovrJL+iHr9
-         IRWBaGik6wVgAJ2agrzQUCGB/xt89X7wnTl3AQVzdoaewv8FDh3sJaMY7Az0F+paU4cv
-         ZGtrP1Ka76pG+mtfqeJGLgKYnsm2YYJsLXjwUbqakndlRzflCo3MlbsGS63DJb4uRxOi
-         pbXQ==
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SOlDcigm4n6gdPdH8AmGLkuI+tW6UrV7hcWCFZoVrAY=;
+        b=dm5xfy+c5fdS/CNt4z29/lpJizNfFByAYYUdWsehbVpACh16EeTDHldhl6Uve6GeaD
+         zB1Zs5saDQ9Ef+hjJfkMjvNDcwB2KYaQXj/fONn9Y9mhVq1TMreaDNcdlVENvIhbOY6L
+         j6HXXs2SDVSV4tQO/7kjysAkTuQFlG3t+y/RaV9k78HC03IjLEsk3uuo1SSt9vDnCOUh
+         HklHZ8sHCbdwOjtb3yOA5JmDeoKKcEJ4Hi+H7vprDFQKDmMEhTrhWw2x8gKFYO8zX/tn
+         mzLTxOxGN3rrNCEBOgxVbiiBITxv1rf9OUoHXM1rfydveqegGiF2RcBdsncnMZQfQ5tq
+         Y51A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DmAjZsfccwaVaNtes6EmfPZ2rG4blpFc0pyFaBFNy/c=;
-        b=vGFAdAyuBbt1HLqzvSVRJstaJlUBfJd2bV/UQgxLB7XjqEmb6g2mbA2gpI8Xa6p/Mb
-         UlG+wFeVvHW1llRWMTGl8MgnDDzUTT8qKYj/MFNObv/UZRfyNuPZxxM0zFM5fM8xTXbe
-         eblHQU7zzDBo6AaIrGroyMwOK+C983lRG8hUWiQ4rkzp/sPfGvj/GYPp15P1c1cGuEAV
-         ylim0WCpEzpYIjaWhxy040HwSaCLqf7HgI0B/7LX+D6ZAf2qMdXKZszEUR14+2ugvEN9
-         WbU+LznLwzsVymCF8YzHrp0+EMypPnOUjzeDIDra+yg8lIZ/oRQZ4oH/VS8Vcwp7rvbs
-         9wrA==
-X-Gm-Message-State: AOAM5321gsSFgNuuwad/tvfOQrzpZiTG3R8htP2HSSML6lnRlNnj/T0a
-        0lOyxkH+/EonAlX9PHA+6ZicsA==
-X-Google-Smtp-Source: ABdhPJxqxfPIQtuam5GkZBepPAbS7V0Q8IGPcsrc+Vbtsq0AWBZ7iKtmXQsqTlN6H1uGOVjInIYmRw==
-X-Received: by 2002:a17:902:d487:: with SMTP id c7mr2089230plg.0.1644277695967;
-        Mon, 07 Feb 2022 15:48:15 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id u18sm13306160pfk.14.2022.02.07.15.48.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 15:48:15 -0800 (PST)
-Date:   Mon, 7 Feb 2022 23:48:11 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v9 30/43] KVM: SEV: Add documentation for SEV-SNP CPUID
- Enforcement
-Message-ID: <YgGvu1BsYP9cihwh@google.com>
-References: <20220128171804.569796-1-brijesh.singh@amd.com>
- <20220128171804.569796-31-brijesh.singh@amd.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SOlDcigm4n6gdPdH8AmGLkuI+tW6UrV7hcWCFZoVrAY=;
+        b=dayFwLRa4rOmO23foOZmLPf4EKkWGfMbgjJWjjPz/rTRVVWfmUQXt2RyPA3wr24YSr
+         y1yc5KzVzH/FCBPfNPJwmGic32rhZGxMbkceJNZWbA3xQXUvM7+dY7xlkygLzU4Q7ETg
+         Ibg39txUde9Dl+GFCYNekurWZKnJ/FqOnBPr9JWNw4SAA0Er1w2sm07FMsK8MBMBBBS6
+         HA+Huhatn6pLZ08nOJdsJGQqY4RA5TEVh6tKIN751r8xHyBLgojMkAo64pfBVj86bXMt
+         0QSC6okx4l+4qX3zn7bK7IyTd1rFKM3lxZlo/2HReut/OrgKi72Ful8kIValzMbOuD8/
+         X9qg==
+X-Gm-Message-State: AOAM5324wAPkhKQbxkZ2Xz5fLu5I/6aSs0Y+Xo5Zhusd+IIoSwr7c5nW
+        889Hghpz1Mr2C/OOp06B1Ik=
+X-Google-Smtp-Source: ABdhPJxAxSduiwveZrKdhTzAuehj2Mp5gyMESO5lr/vwkznD+9omhXJFsS1EdUPiJwJm1ECDK52YLg==
+X-Received: by 2002:a17:902:6903:: with SMTP id j3mr2049032plk.137.1644277532196;
+        Mon, 07 Feb 2022 15:45:32 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id o8sm13391432pfu.52.2022.02.07.15.45.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 15:45:31 -0800 (PST)
+Subject: Re: [PATCH 5.10 00/74] 5.10.99-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220207103757.232676988@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <151d741f-f93a-b8f9-15c3-9c72d2395de1@gmail.com>
+Date:   Mon, 7 Feb 2022 15:45:29 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128171804.569796-31-brijesh.singh@amd.com>
+In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022, Brijesh Singh wrote:
-> From: Michael Roth <michael.roth@amd.com>
+On 2/7/22 3:05 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.99 release.
+> There are 74 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Update the documentation with SEV-SNP CPUID enforcement.
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
 > 
-> Signed-off-by: Michael Roth <michael.roth@amd.com>
-> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
-> ---
->  .../virt/kvm/amd-memory-encryption.rst        | 28 +++++++++++++++++++
->  1 file changed, 28 insertions(+)
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.99-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
 > 
-> diff --git a/Documentation/virt/kvm/amd-memory-encryption.rst b/Documentation/virt/kvm/amd-memory-encryption.rst
-> index 1c6847fff304..0c72f44cc11a 100644
-> --- a/Documentation/virt/kvm/amd-memory-encryption.rst
-> +++ b/Documentation/virt/kvm/amd-memory-encryption.rst
+> thanks,
+> 
+> greg k-h
 
-This doc is specifically for KVM's host-side implemenation, whereas the below is
-(a) mostly targeted at the guest and (b) has nothing to do with KVM.
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-Documentation/x86/amd-memory-encryption.rst isn't a great fit either.
-
-Since TDX will need a fair bit of documentation, and SEV-ES could retroactively
-use docs as well, what about adding a sub-directory:
-
-	Documentation/virt/confidential_compute
-
-to match the "cc_platform_has" stuffr, and then we can add sev.rst and tdx.rst
-there?  Or sev-es.rst, sev-snp.rst, etc... if we want to split things up more.
-
-It might be worth extracting the SEV details from x86/amd-memory-encryption.rst
-into virt/ as well.  A big chunk of that file appears to be SEV specific, and it
-appears to have gotten a little out-of-whack.  E.g. this section no longer makes
-sense as the last paragraph below appears to be talking about SME (bit 23 in MSR
-0xc0010010), but walking back "this bit" would reference SEV.  I suspect a
-mostly-standalone sev.rst would be easier to follow than an intertwined SME+SEV.
-
-  If support for SME is present, MSR 0xc00100010 (MSR_AMD64_SYSCFG) can be used to
-  determine if SME is enabled and/or to enable memory encryption::
-
-          0xc0010010:
-                  Bit[23]   0 = memory encryption features are disabled
-                            1 = memory encryption features are enabled
-
-  If SEV is supported, MSR 0xc0010131 (MSR_AMD64_SEV) can be used to determine if
-  SEV is active::
-
-          0xc0010131:
-                  Bit[0]    0 = memory encryption is not active
-                            1 = memory encryption is active
-
-  Linux relies on BIOS to set this bit if BIOS has determined that the reduction
-  in the physical address space as a result of enabling memory encryption (see
-  CPUID information above) will not conflict with the address space resource
-  requirements for the system.  If this bit is not set upon Linux startup then
-  Linux itself will not set it and memory encryption will not be possible.
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
