@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73872C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8565C47081
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380728AbiBGRct (ORCPT
+        id S1346246AbiBGRdA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:32:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
+        Mon, 7 Feb 2022 12:33:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349505AbiBGRYZ (ORCPT
+        with ESMTP id S1347982AbiBGRYH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:24:25 -0500
+        Mon, 7 Feb 2022 12:24:07 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CACC0401DA;
-        Mon,  7 Feb 2022 09:24:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9644EC0401D5;
+        Mon,  7 Feb 2022 09:24:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644254663; x=1675790663;
+  t=1644254646; x=1675790646;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=O/baY3O2NJtkO7J3JO965MgJPc2xuckoPLKHYpueZy4=;
-  b=KcTIA5Ia6TtkYJn0A4u9IEw79Whv7RSqh7Wv3vkp1UyA1N9AhJdJ8mBp
-   UGeIWDw5gxi0M685SNA2YihQfLEa55QZBTJB8JS9/f5dTZCpKYXfdI/L/
-   FEkwTVhzdUu1mtG7Q0nvPnpbwPZ+pmUjDgPjMwKC8QSesOOHr1n/kmN8+
-   zMkZQgVv8TT9MFpZ3MqqZa1v+LfCzrd7N4O9oUIxerULxwPt3LkpT6zBB
-   sjWD7yUsbOs9MvASVJMvQrf9YoTMd0Pl498plBY7IHFlAba0sqQoZCxYt
-   Sq90OzDhlWRGb8bjYFfJmd8EfAJEzRowc0tarm7Zl5zGYjkvh4zJRkFRO
+  bh=w/JZqlKQOTQ72ycCiJ6at2Sa6bT/5IpfMb1yuC0M5ss=;
+  b=Y/LyJN0k3zkBIpkdsJ4MSDaB/FX0uXE36KKC1sW2I6QtoK/aOE+AMrdx
+   324L5jirUOMdac0ETQGYu5aZ84RdslzuGVh709vd7poiMTmAsAt2aDTej
+   6GNDlF5a0kQRRUzuSZVc83q/XUJEDT2bmkiNblS6po6PHzAQtypaXbrMD
+   WspAO0h2aeXFiQs7JNvsWepQp4qOXY4LWa7V4ReiB5EimhbprFa51W4if
+   8GGYmXxrh+xpMb/woUYgpBRX/DoPRUU2UfZmWUSC6ui9o8KsLuuk6zZ5E
+   vA3FXwKMfY3UA28ctQcL6w+8XFevODwhYywXXBhz4hKfRNc+hqBHKQLrz
    w==;
-IronPort-SDR: dvXbUd4k6ktRAvlgDg4LgJqTtIybRk59e/EKW7ODNVJ04qcUL8ufle59Iv4UgQXJswX+bmFbNn
- URaLOp63XeJCzXIUEbLZdTogy3RkOOvKUuYRnWP5wbRYvuwaafQ+JVIuR6V8LYb++zFNr9LvfG
- U89GXe2DGlgEcGYRbOgZ5nhuvf2XBQDekyKUYPZ884MYPGSZfl5AsQHjzLdGgSg0lnLrdI3DXq
- eysMb4jA38DJH9K+UZtNpBSSbPjUQVoMe2MkQce5srcV4EsuoDARKZ6odScVjq73bKwWN0QVsH
- NDRxmWEPcjyv9p3bjIsflOTF
+IronPort-SDR: bHcIWsUX6shFj40A1Wz/NGHH438+weOmbbneYcjvS0+5AI0vTAxS3XJrUrTHfjR69yU3e7CxDh
+ FXKWLmF1qYvlYYQ/yK7wxHGbhjOoL9dznr4bdRy3A1jjv4B4DwJfRK+bFbl0kUcO7o31l6ISSe
+ 43Bu30Z7zcGLxh5xIBwfC7Fn5OAQ80lKZa6Ys8jucu0P5vEYzV+hbPkbvEtl2bY8DMhGvhDEN2
+ GlRk0zGrGKuJJ0nJOS9EJkGMp58ePU9e18AQV9zxO3Ndahk+Yo/xjzNR3xRX+XWjEu/ht1hN9u
+ mhOvIEA6HOZXqq1K3UC5AzsL
 X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
-   d="scan'208";a="145147866"
+   d="scan'208";a="145147794"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 10:23:15 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 10:23:02 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Feb 2022 10:23:14 -0700
+ 15.1.2375.17; Mon, 7 Feb 2022 10:23:02 -0700
 Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Feb 2022 10:23:09 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Feb 2022 10:22:57 -0700
 From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
         <robh+dt@kernel.org>
@@ -53,9 +53,9 @@ CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
         <davem@davemloft.net>, <kuba@kernel.org>,
         <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
         <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Subject: [PATCH v8 net-next 09/10] net: dsa: microchip: add support for fdb and mdb management
-Date:   Mon, 7 Feb 2022 22:52:03 +0530
-Message-ID: <20220207172204.589190-10-prasanna.vengateshan@microchip.com>
+Subject: [PATCH v8 net-next 07/10] net: dsa: microchip: add support for ethtool port counters
+Date:   Mon, 7 Feb 2022 22:52:01 +0530
+Message-ID: <20220207172204.589190-8-prasanna.vengateshan@microchip.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
 References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
@@ -66,574 +66,206 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support for fdb_add, mdb_add, fdb_del, mdb_del and
-fdb_dump operations. ALU1 and ALU2 are used for fdb operations.
+Added support for get_eth_**_stats() (phy/mac/ctrl) and
+get_stats64()
 
-fdb_add: find any existing entries and update the port map.
-if ALU1 write is failed and attempt to write ALU2.
-If ALU2 is also failed then exit. Clear WRITE_FAIL for both ALU1
-& ALU2.
-
-fdb_del: find the matching entry and clear the respective port
-in the port map by writing the ALU tables
-
-fdb_dump: read and dump 2 ALUs upto last entry. ALU_START bit is
-used to find the last entry. If the read is timed out, then pass
-the error message.
-
-mdb_add: Find the empty slot in ALU and update the port map &
-mac address by writing the ALU
-
-mdb_del: find the matching entry and delete the respective port
-in port map by writing the ALU
-
-For MAC address, could not use upper_32_bits() & lower_32_bits()
-as per Vladimir proposal since it gets accessed in terms of 16bits.
-I tried to have common API to get 16bits based on index but shifting
-seems to be straight-forward.
+Reused the KSZ common APIs for get_ethtool_stats() & get_sset_count()
+along with relevant lan937x hooks for KSZ common layer and added
+support for get_strings()
 
 Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/microchip/lan937x_main.c | 511 +++++++++++++++++++++++
- 1 file changed, 511 insertions(+)
+ drivers/net/dsa/microchip/lan937x_main.c | 164 +++++++++++++++++++++++
+ 1 file changed, 164 insertions(+)
 
 diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 0f550eed0ee3..8849ed17ff3e 100644
+index bddb9ce41136..dfeb728bf737 100644
 --- a/drivers/net/dsa/microchip/lan937x_main.c
 +++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -17,6 +17,70 @@
- #include "ksz_common.h"
- #include "lan937x_dev.h"
- 
-+static u8 lan937x_get_fid(u16 vid)
-+{
-+	if (vid > ALU_FID_SIZE)
-+		return LAN937X_GET_FID(vid);
-+	else
-+		return vid;
-+}
-+
-+static int lan937x_read_table(struct ksz_device *dev, u32 *table)
-+{
-+	int ret;
-+
-+	/* read alu table */
-+	ret = ksz_read32(dev, REG_SW_ALU_VAL_A, &table[0]);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ksz_read32(dev, REG_SW_ALU_VAL_B, &table[1]);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ksz_read32(dev, REG_SW_ALU_VAL_C, &table[2]);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ksz_read32(dev, REG_SW_ALU_VAL_D, &table[3]);
-+}
-+
-+static int lan937x_write_table(struct ksz_device *dev, u32 *table)
-+{
-+	int ret;
-+
-+	/* write alu table */
-+	ret = ksz_write32(dev, REG_SW_ALU_VAL_A, table[0]);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ksz_write32(dev, REG_SW_ALU_VAL_B, table[1]);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ksz_write32(dev, REG_SW_ALU_VAL_C, table[2]);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ksz_write32(dev, REG_SW_ALU_VAL_D, table[3]);
-+}
-+
-+static int lan937x_wait_alu_ready(int alu, struct ksz_device *dev)
-+{
-+	unsigned int val;
-+
-+	return regmap_read_poll_timeout(dev->regmap[2], REG_SW_ALU_CTRL(alu),
-+					val, !(val & ALU_START), 10, 1000);
-+}
-+
-+static int lan937x_wait_alu_sta_ready(struct ksz_device *dev)
-+{
-+	unsigned int val;
-+
-+	return regmap_read_poll_timeout(dev->regmap[2], REG_SW_ALU_STAT_CTRL__4,
-+					val, !(val & ALU_STAT_START), 10, 1000);
-+}
-+
- static enum dsa_tag_protocol lan937x_get_tag_protocol(struct dsa_switch *ds,
- 						      int port,
- 						      enum dsa_tag_protocol mp)
-@@ -98,6 +162,448 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
- 	ksz_update_port_member(dev, port);
+@@ -45,6 +45,20 @@ static int lan937x_phy_write16(struct dsa_switch *ds, int addr, int reg,
+ 	return lan937x_internal_phy_write(dev, addr, reg, val);
  }
  
-+static int lan937x_port_fdb_add(struct dsa_switch *ds, int port,
-+				const unsigned char *addr, u16 vid)
++static void lan937x_get_strings(struct dsa_switch *ds, int port, u32 stringset,
++				u8 *buf)
 +{
 +	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(vid);
-+	u32 alu_table[4];
-+	int ret, i;
-+	u32 data;
-+	u8 val;
++	int i;
 +
-+	mutex_lock(&dev->alu_mutex);
++	if (stringset != ETH_SS_STATS)
++		return;
 +
-+	/* Accessing two ALU tables through loop */
-+	for (i = 0; i < ALU_STA_DYN_CNT; i++) {
-+		/* find any entry with mac & fid */
-+		data = fid << ALU_FID_INDEX_S;
-+		data |= ((addr[0] << 8) | addr[1]);
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_0, data);
-+		if (ret < 0)
-+			break;
-+
-+		data = ((addr[2] << 24) | (addr[3] << 16));
-+		data |= ((addr[4] << 8) | addr[5]);
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_1, data);
-+		if (ret < 0)
-+			break;
-+
-+		/* start read operation */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  ALU_READ | ALU_START);
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU\n");
-+			break;
-+		}
-+
-+		/* read ALU entry */
-+		ret = lan937x_read_table(dev, alu_table);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU\n");
-+			break;
-+		}
-+
-+		/* update ALU entry */
-+		alu_table[0] = ALU_V_STATIC_VALID;
-+
-+		/* update port number */
-+		alu_table[1] |= BIT(port);
-+
-+		if (fid)
-+			alu_table[1] |= ALU_V_USE_FID;
-+
-+		alu_table[2] = (fid << ALU_V_FID_S);
-+		alu_table[2] |= ((addr[0] << 8) | addr[1]);
-+		alu_table[3] = ((addr[2] << 24) | (addr[3] << 16));
-+		alu_table[3] |= ((addr[4] << 8) | addr[5]);
-+
-+		ret = lan937x_write_table(dev, alu_table);
-+		if (ret < 0)
-+			break;
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_WRITE | ALU_START));
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to write ALU\n");
-+			break;
-+		}
-+
-+		ret = ksz_read8(dev, REG_SW_LUE_INT_STATUS__1, &val);
-+		if (ret < 0)
-+			break;
-+
-+		/* ALU2 write failed */
-+		if (val & WRITE_FAIL_INT && i == 1)
-+			dev_err(dev->dev, "Failed to write ALU\n");
-+
-+		/* if ALU1 write is failed and attempt to write ALU2,
-+		 * otherwise exit. Clear Write fail for both ALU1 & ALU2
-+		 */
-+		if (val & WRITE_FAIL_INT) {
-+			/* Write to clear the Write Fail */
-+			ret = ksz_write8(dev, REG_SW_LUE_INT_STATUS__1,
-+					 WRITE_FAIL_INT);
-+			if (ret < 0)
-+				break;
-+		} else {
-+			break;
-+		}
-+	}
-+
-+	mutex_unlock(&dev->alu_mutex);
-+
-+	return ret;
++	for (i = 0; i < dev->mib_cnt; i++)
++		memcpy(buf + i * ETH_GSTRING_LEN, lan937x_mib_names[i].string,
++		       ETH_GSTRING_LEN);
 +}
 +
-+static int lan937x_port_fdb_del(struct dsa_switch *ds, int port,
-+				const unsigned char *addr, u16 vid)
+ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
+ 				       u8 state)
+ {
+@@ -334,12 +348,162 @@ static void lan937x_phylink_get_caps(struct dsa_switch *ds, int port,
+ 	}
+ }
+ 
++static void lan937x_get_eth_phy_stats(struct dsa_switch *ds, int port,
++				      struct ethtool_eth_phy_stats *phy_stats)
 +{
 +	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(vid);
-+	u32 alu_table[4];
-+	int ret, i;
-+	u32 data;
++	struct ksz_port_mib *mib = &dev->ports[port].mib;
++	u64 *cnt;
 +
-+	mutex_lock(&dev->alu_mutex);
++	mutex_lock(&mib->cnt_mutex);
 +
-+	/* Accessing two ALU tables through loop */
-+	for (i = 0; i < ALU_STA_DYN_CNT; i++) {
-+		/* read any entry with mac & fid */
-+		data = fid << ALU_FID_INDEX_S;
-+		data |= ((addr[0] << 8) | addr[1]);
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_0, data);
-+		if (ret < 0)
-+			break;
++	cnt = &mib->counters[lan937x_mib_rx_sym_err];
++	lan937x_r_mib_pkt(dev, port, lan937x_mib_rx_sym_err, NULL, cnt);
 +
-+		data = ((addr[2] << 24) | (addr[3] << 16));
-+		data |= ((addr[4] << 8) | addr[5]);
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_1, data);
-+		if (ret < 0)
-+			break;
++	phy_stats->SymbolErrorDuringCarrier = *cnt;
 +
-+		/* start read operation */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_READ | ALU_START));
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU\n");
-+			break;
-+		}
-+
-+		ret = ksz_read32(dev, REG_SW_ALU_VAL_A, &alu_table[0]);
-+		if (ret < 0)
-+			break;
-+
-+		if (alu_table[0] & ALU_V_STATIC_VALID) {
-+			/* read ALU entry */
-+			ret = lan937x_read_table(dev, alu_table);
-+			if (ret < 0) {
-+				dev_err(dev->dev, "Failed to read ALU table\n");
-+				break;
-+			}
-+
-+			/* clear forwarding port */
-+			alu_table[1] &= ~BIT(port);
-+
-+			/* if there is no port to forward, clear table */
-+			if ((alu_table[1] & ALU_V_PORT_MAP) == 0)
-+				memset(&alu_table, 0, sizeof(alu_table));
-+		} else {
-+			memset(&alu_table, 0, sizeof(alu_table));
-+		}
-+
-+		ret = lan937x_write_table(dev, alu_table);
-+		if (ret < 0)
-+			break;
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_WRITE | ALU_START));
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to delete ALU Entries\n");
-+			break;
-+		}
-+	}
-+
-+	mutex_unlock(&dev->alu_mutex);
-+
-+	return ret;
++	mutex_unlock(&mib->cnt_mutex);
 +}
 +
-+static void lan937x_convert_alu(struct lan_alu_struct *alu, u32 *alu_table)
-+{
-+	alu->is_static = !!(alu_table[0] & ALU_V_STATIC_VALID);
-+	alu->is_src_filter = !!(alu_table[0] & ALU_V_SRC_FILTER);
-+	alu->is_dst_filter = !!(alu_table[0] & ALU_V_DST_FILTER);
-+	alu->prio_age = (alu_table[0] >> ALU_V_PRIO_AGE_CNT_S) &
-+			 ALU_V_PRIO_AGE_CNT_M;
-+	alu->mstp = alu_table[0] & ALU_V_MSTP_M;
-+
-+	alu->is_override = !!(alu_table[1] & ALU_V_OVERRIDE);
-+	alu->is_use_fid = !!(alu_table[1] & ALU_V_USE_FID);
-+	alu->port_forward = alu_table[1] & ALU_V_PORT_MAP;
-+
-+	alu->fid = (alu_table[2] >> ALU_V_FID_S) & ALU_V_FID_M;
-+
-+	alu->mac[0] = (alu_table[2] >> 8) & 0xFF;
-+	alu->mac[1] = alu_table[2] & 0xFF;
-+	alu->mac[2] = (alu_table[3] >> 24) & 0xFF;
-+	alu->mac[3] = (alu_table[3] >> 16) & 0xFF;
-+	alu->mac[4] = (alu_table[3] >> 8) & 0xFF;
-+	alu->mac[5] = alu_table[3] & 0xFF;
-+}
-+
-+static int lan937x_port_fdb_dump(struct dsa_switch *ds, int port,
-+				 dsa_fdb_dump_cb_t *cb, void *data)
++static void lan937x_get_eth_mac_stats(struct dsa_switch *ds, int port,
++				      struct ethtool_eth_mac_stats *mac_stats)
 +{
 +	struct ksz_device *dev = ds->priv;
-+	struct lan_alu_struct alu;
-+	u32 lan937x_data;
-+	u32 alu_table[4];
-+	int timeout;
-+	int ret, i;
++	struct ksz_port_mib *mib = &dev->ports[port].mib;
++	u64 *ctr = mib->counters;
 +
-+	mutex_lock(&dev->alu_mutex);
++	mutex_lock(&mib->cnt_mutex);
 +
-+	/* Accessing two ALU tables through loop */
-+	for (i = 0; i < ALU_STA_DYN_CNT; i++) {
-+		/* start ALU search */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_START | ALU_SEARCH));
-+		if (ret < 0)
-+			goto exit;
-+
-+		do {
-+			timeout = 1000;
-+			do {
-+				ret = ksz_read32(dev, REG_SW_ALU_CTRL(i),
-+						 &lan937x_data);
-+				if (ret < 0)
-+					goto exit;
-+
-+				if ((lan937x_data & ALU_VALID) ||
-+				    !(lan937x_data & ALU_START))
-+					break;
-+				usleep_range(1, 10);
-+			} while (timeout-- > 0);
-+
-+			if (!timeout) {
-+				dev_err(dev->dev, "Failed to search ALU\n");
-+				ret = -ETIMEDOUT;
-+				goto exit;
-+			}
-+
-+			/* read ALU table */
-+			ret = lan937x_read_table(dev, alu_table);
-+			if (ret < 0)
-+				goto exit;
-+
-+			lan937x_convert_alu(&alu, alu_table);
-+
-+			if (alu.port_forward & BIT(port)) {
-+				ret = cb(alu.mac, alu.fid, alu.is_static, data);
-+				if (ret)
-+					goto exit;
-+			}
-+		} while (lan937x_data & ALU_START);
-+
-+exit:
-+		/* stop ALU search & continue to next ALU if available */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i), 0);
++	while (mib->cnt_ptr < dev->mib_cnt) {
++		lan937x_r_mib_pkt(dev, port, mib->cnt_ptr,
++				  NULL, &mib->counters[mib->cnt_ptr]);
++		++mib->cnt_ptr;
 +	}
 +
-+	mutex_unlock(&dev->alu_mutex);
++	mac_stats->FramesTransmittedOK = ctr[lan937x_mib_tx_mcast] +
++					 ctr[lan937x_mib_tx_bcast] +
++					 ctr[lan937x_mib_tx_ucast] +
++					 ctr[lan937x_mib_tx_pause];
 +
-+	return ret;
++	mac_stats->SingleCollisionFrames = ctr[lan937x_mib_tx_single_col];
++	mac_stats->MultipleCollisionFrames = ctr[lan937x_mib_tx_mult_col];
++
++	mac_stats->FramesReceivedOK = ctr[lan937x_mib_rx_mcast] +
++				      ctr[lan937x_mib_rx_bcast] +
++				      ctr[lan937x_mib_rx_ucast] +
++				      ctr[lan937x_mib_rx_pause];
++
++	mac_stats->FrameCheckSequenceErrors = ctr[lan937x_mib_rx_crc_err];
++	mac_stats->AlignmentErrors = ctr[lan937x_mib_rx_align_err];
++	mac_stats->OctetsTransmittedOK = ctr[lan937x_mib_tx_total];
++	mac_stats->FramesWithDeferredXmissions = ctr[lan937x_mib_tx_deferred];
++	mac_stats->LateCollisions = ctr[lan937x_mib_tx_late_col];
++	mac_stats->FramesAbortedDueToXSColls = ctr[lan937x_mib_tx_exc_col];
++	mac_stats->FramesLostDueToIntMACXmitError = ctr[lan937x_mib_tx_discard];
++
++	mac_stats->OctetsReceivedOK = ctr[lan937x_mib_rx_total];
++	mac_stats->FramesLostDueToIntMACRcvError = ctr[lan937x_mib_rx_discard];
++	mac_stats->MulticastFramesXmittedOK = ctr[lan937x_mib_tx_mcast];
++	mac_stats->BroadcastFramesXmittedOK = ctr[lan937x_mib_tx_bcast];
++
++	mac_stats->MulticastFramesReceivedOK = ctr[lan937x_mib_rx_mcast];
++	mac_stats->BroadcastFramesReceivedOK = ctr[lan937x_mib_rx_bcast];
++	mac_stats->InRangeLengthErrors = ctr[lan937x_mib_rx_fragments];
++
++	mib->cnt_ptr = 0;
++	mutex_unlock(&mib->cnt_mutex);
 +}
 +
-+static int lan937x_port_mdb_add(struct dsa_switch *ds, int port,
-+				const struct switchdev_obj_port_mdb *mdb)
++static void lan937x_get_eth_ctrl_stats(struct dsa_switch *ds, int port,
++				       struct ethtool_eth_ctrl_stats *ctrl_sts)
 +{
 +	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(mdb->vid);
-+	u32 static_table[4];
-+	u32 mac_hi, mac_lo;
-+	int index, ret;
-+	u32 data;
++	struct ksz_port_mib *mib = &dev->ports[port].mib;
++	u64 *cnt;
 +
-+	mac_hi = ((mdb->addr[0] << 8) | mdb->addr[1]);
-+	mac_lo = ((mdb->addr[2] << 24) | (mdb->addr[3] << 16));
-+	mac_lo |= ((mdb->addr[4] << 8) | mdb->addr[5]);
++	mutex_lock(&mib->cnt_mutex);
 +
-+	mutex_lock(&dev->alu_mutex);
++	cnt = &mib->counters[lan937x_mib_rx_pause];
++	lan937x_r_mib_pkt(dev, port, lan937x_mib_rx_pause, NULL, cnt);
++	ctrl_sts->MACControlFramesReceived = *cnt;
 +
-+	/* Access the entries in the table */
-+	for (index = 0; index < dev->num_statics; index++) {
-+		/* find empty slot first */
-+		data = (index << ALU_STAT_INDEX_S) |
-+			ALU_STAT_READ | ALU_STAT_START;
++	cnt = &mib->counters[lan937x_mib_tx_pause];
++	lan937x_r_mib_pkt(dev, port, lan937x_mib_tx_pause, NULL, cnt);
++	ctrl_sts->MACControlFramesTransmitted = *cnt;
 +
-+		ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+		if (ret < 0)
-+			goto exit;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_sta_ready(dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+			goto exit;
-+		}
-+
-+		/* read ALU static table */
-+		ret = lan937x_read_table(dev, static_table);
-+		if (ret < 0)
-+			goto exit;
-+
-+		if (static_table[0] & ALU_V_STATIC_VALID) {
-+			/* check this has same fid & mac address */
-+			if (((static_table[2] >> ALU_V_FID_S) == fid) &&
-+			    ((static_table[2] & ALU_V_MAC_ADDR_HI) == mac_hi) &&
-+			    static_table[3] == mac_lo) {
-+				/* found matching one */
-+				break;
-+			}
-+		} else {
-+			/* found empty one */
-+			break;
-+		}
-+	}
-+
-+	/* no available entry */
-+	if (index == dev->num_statics) {
-+		ret = -ENOSPC;
-+		goto exit;
-+	}
-+
-+	/* add entry */
-+	static_table[0] = ALU_V_STATIC_VALID;
-+
-+	static_table[1] |= BIT(port);
-+	if (fid)
-+		static_table[1] |= ALU_V_USE_FID;
-+	static_table[2] = (fid << ALU_V_FID_S);
-+	static_table[2] |= mac_hi;
-+	static_table[3] = mac_lo;
-+
-+	ret = lan937x_write_table(dev, static_table);
-+	if (ret < 0)
-+		goto exit;
-+
-+	data = (index << ALU_STAT_INDEX_S) | ALU_STAT_START;
-+	ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be finished */
-+	ret = lan937x_wait_alu_sta_ready(dev);
-+	if (ret < 0)
-+		dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+
-+exit:
-+	mutex_unlock(&dev->alu_mutex);
-+	return ret;
++	mutex_unlock(&mib->cnt_mutex);
 +}
 +
-+static int lan937x_port_mdb_del(struct dsa_switch *ds, int port,
-+				const struct switchdev_obj_port_mdb *mdb)
++static void lan937x_get_stats64(struct dsa_switch *ds, int port,
++				struct rtnl_link_stats64 *s)
 +{
 +	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(mdb->vid);
-+	u32 static_table[4];
-+	u32 mac_hi, mac_lo;
-+	int index, ret;
-+	u32 data;
++	struct ksz_port_mib *mib = &dev->ports[port].mib;
++	u64 *ctr = mib->counters;
 +
-+	mac_hi = ((mdb->addr[0] << 8) | mdb->addr[1]);
-+	mac_lo = ((mdb->addr[2] << 24) | (mdb->addr[3] << 16));
-+	mac_lo |= ((mdb->addr[4] << 8) | mdb->addr[5]);
++	mutex_lock(&mib->cnt_mutex);
 +
-+	mutex_lock(&dev->alu_mutex);
-+
-+	/* Access the entries in the table */
-+	for (index = 0; index < dev->num_statics; index++) {
-+		data = (index << ALU_STAT_INDEX_S) |
-+			ALU_STAT_READ | ALU_STAT_START;
-+		ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+		if (ret < 0)
-+			goto exit;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_sta_ready(dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+			goto exit;
-+		}
-+
-+		/* read ALU static table */
-+		ret = lan937x_read_table(dev, static_table);
-+		if (ret < 0)
-+			goto exit;
-+
-+		if (static_table[0] & ALU_V_STATIC_VALID) {
-+			/* check this has same fid & mac address */
-+			if (((static_table[2] >> ALU_V_FID_S) == fid) &&
-+			    ((static_table[2] & ALU_V_MAC_ADDR_HI) == mac_hi) &&
-+			    static_table[3] == mac_lo) {
-+				/* found matching one */
-+				break;
-+			}
-+		}
++	while (mib->cnt_ptr < dev->mib_cnt) {
++		lan937x_r_mib_pkt(dev, port, mib->cnt_ptr,
++				  NULL, &mib->counters[mib->cnt_ptr]);
++		++mib->cnt_ptr;
 +	}
 +
-+	/* no available entry */
-+	if (index == dev->num_statics)
-+		goto exit;
++	s->rx_packets = ctr[lan937x_mib_rx_mcast] +
++			ctr[lan937x_mib_rx_bcast] +
++			ctr[lan937x_mib_rx_ucast] +
++			ctr[lan937x_mib_rx_pause];
 +
-+	/* clear port based on port arg */
-+	static_table[1] &= ~BIT(port);
++	s->tx_packets = ctr[lan937x_mib_tx_mcast] +
++			ctr[lan937x_mib_tx_bcast] +
++			ctr[lan937x_mib_tx_ucast] +
++			ctr[lan937x_mib_tx_pause];
 +
-+	if ((static_table[1] & ALU_V_PORT_MAP) == 0) {
-+		/* delete entry */
-+		memset(&static_table, 0, sizeof(static_table));
-+	}
++	s->rx_bytes = ctr[lan937x_mib_rx_total];
++	s->tx_bytes = ctr[lan937x_mib_tx_total];
 +
-+	ret = lan937x_write_table(dev, static_table);
-+	if (ret < 0)
-+		goto exit;
++	s->rx_errors = ctr[lan937x_mib_rx_fragments] +
++		       ctr[lan937x_mib_rx_jabbers] +
++		       ctr[lan937x_mib_rx_sym_err] +
++		       ctr[lan937x_mib_rx_align_err] +
++		       ctr[lan937x_mib_rx_crc_err];
 +
-+	data = (index << ALU_STAT_INDEX_S) | ALU_STAT_START;
-+	ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+	if (ret < 0)
-+		goto exit;
++	s->tx_errors = ctr[lan937x_mib_tx_exc_col] +
++		       ctr[lan937x_mib_tx_late_col];
 +
-+	/* wait to be finished */
-+	ret = lan937x_wait_alu_sta_ready(dev);
-+	if (ret < 0)
-+		dev_err(dev->dev, "Failed to read ALU STATIC\n");
++	s->rx_dropped = ctr[lan937x_mib_rx_discard];
++	s->tx_dropped = ctr[lan937x_mib_tx_discard];
++	s->multicast = ctr[lan937x_mib_rx_mcast];
 +
-+exit:
-+	mutex_unlock(&dev->alu_mutex);
++	s->collisions = ctr[lan937x_mib_tx_late_col] +
++			ctr[lan937x_mib_tx_single_col] +
++			ctr[lan937x_mib_tx_mult_col];
 +
-+	return ret;
++	s->rx_length_errors = ctr[lan937x_mib_rx_fragments] +
++			      ctr[lan937x_mib_rx_jabbers];
++
++	s->rx_crc_errors = ctr[lan937x_mib_rx_crc_err];
++	s->rx_frame_errors = ctr[lan937x_mib_rx_align_err];
++	s->tx_aborted_errors = ctr[lan937x_mib_tx_exc_col];
++	s->tx_window_errors = ctr[lan937x_mib_tx_late_col];
++
++	mib->cnt_ptr = 0;
++	mutex_unlock(&mib->cnt_mutex);
 +}
 +
- static int lan937x_port_mirror_add(struct dsa_switch *ds, int port,
- 				   struct dsa_mall_mirror_tc_entry *mirror,
- 				   bool ingress)
-@@ -590,6 +1096,11 @@ const struct dsa_switch_ops lan937x_switch_ops = {
+ const struct dsa_switch_ops lan937x_switch_ops = {
+ 	.get_tag_protocol = lan937x_get_tag_protocol,
+ 	.setup = lan937x_setup,
+ 	.phy_read = lan937x_phy_read16,
+ 	.phy_write = lan937x_phy_write16,
+ 	.port_enable = ksz_enable_port,
++	.get_strings = lan937x_get_strings,
++	.get_ethtool_stats = ksz_get_ethtool_stats,
++	.get_sset_count = ksz_sset_count,
++	.get_eth_ctrl_stats = lan937x_get_eth_ctrl_stats,
++	.get_eth_mac_stats = lan937x_get_eth_mac_stats,
++	.get_eth_phy_stats = lan937x_get_eth_phy_stats,
++	.get_stats64 = lan937x_get_stats64,
+ 	.port_bridge_join = ksz_port_bridge_join,
  	.port_bridge_leave = ksz_port_bridge_leave,
  	.port_stp_state_set = lan937x_port_stp_state_set,
- 	.port_fast_age = ksz_port_fast_age,
-+	.port_fdb_dump = lan937x_port_fdb_dump,
-+	.port_fdb_add = lan937x_port_fdb_add,
-+	.port_fdb_del = lan937x_port_fdb_del,
-+	.port_mdb_add = lan937x_port_mdb_add,
-+	.port_mdb_del = lan937x_port_mdb_del,
- 	.port_mirror_add = lan937x_port_mirror_add,
- 	.port_mirror_del = lan937x_port_mirror_del,
- 	.port_max_mtu = lan937x_get_max_mtu,
 -- 
 2.30.2
 
