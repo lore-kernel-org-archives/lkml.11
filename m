@@ -2,152 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33864C3A589
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C62C35275
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 12:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391530AbiBGMCH (ORCPT
+        id S1391731AbiBGMC4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 07:02:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48796 "EHLO
+        Mon, 7 Feb 2022 07:02:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386797AbiBGLhI (ORCPT
+        with ESMTP id S1387650AbiBGLl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:37:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E340C043181;
-        Mon,  7 Feb 2022 03:37:07 -0800 (PST)
+        Mon, 7 Feb 2022 06:41:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B167C03E93D;
+        Mon,  7 Feb 2022 03:40:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEFE660B5B;
-        Mon,  7 Feb 2022 11:37:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D750C004E1;
-        Mon,  7 Feb 2022 11:37:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233826;
-        bh=mghb54hZFOF3Tf8Tw34fghEoY09mRRxhydg5x0NVEVE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sB5/vD+jyShTn+H+Vhx2AIt1T3JZgCgjcEyGTvt2VxZxJSXZNqDOcA8O3oG6IYUMx
-         Ww3wnIRicgLPPosHJbtXu06LNkB+rqvtoLmmzL9xY8Hsd1WMF355fRiiDtIFqnYUyT
-         B2bEZVIXx/FQj+2qoNs8ZauMV4ZcAoEeitcVO+S8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.16 089/126] ASoC: codecs: wcd938x: fix incorrect used of portid
-Date:   Mon,  7 Feb 2022 12:07:00 +0100
-Message-Id: <20220207103807.170220798@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
-References: <20220207103804.053675072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DF4160DBF;
+        Mon,  7 Feb 2022 11:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B98DAC340F0;
+        Mon,  7 Feb 2022 11:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644234010;
+        bh=LurCH/FgOiyF5tRrbMdN+klo1M8jNPBO4OqOYHEWz0k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=mYdEQ5TF4K7TDhfDM0t+ipH+GXJwozzx0b4HKEOm8Z/3jLqExCl+JPAeTL4j2PQRk
+         x8saaTkchxeQDBGwtUh65hlYDWvYkhYAhj+PHdVZNzRIaY+15cLzK3Asv6p5uIGiRG
+         mY9zSav585jh+RV2u+Hijtn5/2UREuxXG3DwS8StLuBQHEo7XhWA411IJiiAUJPYml
+         +cRQimmc5+FIAmTJaNlQTEx7hcdDlTuL49rn8Dn0/cEaPjTwEnQK6JUPZFAhRWWCru
+         E6xFayawpyctWduU1zQtfo5m3xqOY2+S5beS8Bj3VrQJj6CWW4VToyVD7chq/vduE9
+         t/WTmeyG25Y2w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9E069E6BB3D;
+        Mon,  7 Feb 2022 11:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 net-next 0/7] net: use kfree_skb_reason() for ip/udp packet
+ receive
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164423401064.10014.14060566984987490532.git-patchwork-notify@kernel.org>
+Date:   Mon, 07 Feb 2022 11:40:10 +0000
+References: <20220205074739.543606-1-imagedong@tencent.com>
+In-Reply-To: <20220205074739.543606-1-imagedong@tencent.com>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     dsahern@kernel.org, kuba@kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        edumazet@google.com, alobakin@pm.me, ast@kernel.org,
+        imagedong@tencent.com, pabeni@redhat.com, keescook@chromium.org,
+        talalahmad@google.com, haokexin@gmail.com,
+        ilias.apalodimas@linaro.org, memxor@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        paulb@nvidia.com, cong.wang@bytedance.com, mengensun@tencent.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Hello:
 
-commit c5c1546a654f613e291a7c5d6f3660fc1eb6d0c7 upstream.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Mixer controls have the channel id in mixer->reg, which is not same
-as port id. port id should be derived from chan_info array.
-So fix this. Without this, its possible that we could corrupt
-struct wcd938x_sdw_priv by accessing port_map array out of range
-with channel id instead of port id.
+On Sat,  5 Feb 2022 15:47:32 +0800 you wrote:
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> In this series patches, kfree_skb() is replaced with kfree_skb_reason()
+> during ipv4 and udp4 packet receiving path, and following drop reasons
+> are introduced:
+> 
+> SKB_DROP_REASON_SOCKET_FILTER
+> SKB_DROP_REASON_NETFILTER_DROP
+> SKB_DROP_REASON_OTHERHOST
+> SKB_DROP_REASON_IP_CSUM
+> SKB_DROP_REASON_IP_INHDR
+> SKB_DROP_REASON_IP_RPFILTER
+> SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST
+> SKB_DROP_REASON_XFRM_POLICY
+> SKB_DROP_REASON_IP_NOPROTO
+> SKB_DROP_REASON_SOCKET_RCVBUFF
+> SKB_DROP_REASON_PROTO_MEM
+> 
+> [...]
 
-Fixes: e8ba1e05bdc0 ("ASoC: codecs: wcd938x: add basic controls")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220126113549.8853-2-srinivas.kandagatla@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/soc/codecs/wcd938x.c |   25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+Here is the summary with links:
+  - [v4,net-next,1/7] net: skb_drop_reason: add document for drop reasons
+    https://git.kernel.org/netdev/net-next/c/88590b369354
+  - [v4,net-next,2/7] net: netfilter: use kfree_drop_reason() for NF_DROP
+    https://git.kernel.org/netdev/net-next/c/2df3041ba3be
+  - [v4,net-next,3/7] net: ipv4: use kfree_skb_reason() in ip_rcv_core()
+    https://git.kernel.org/netdev/net-next/c/33cba42985c8
+  - [v4,net-next,4/7] net: ipv4: use kfree_skb_reason() in ip_rcv_finish_core()
+    https://git.kernel.org/netdev/net-next/c/c1f166d1f7ee
+  - [v4,net-next,5/7] net: ipv4: use kfree_skb_reason() in ip_protocol_deliver_rcu()
+    https://git.kernel.org/netdev/net-next/c/10580c479190
+  - [v4,net-next,6/7] net: udp: use kfree_skb_reason() in udp_queue_rcv_one_skb()
+    https://git.kernel.org/netdev/net-next/c/1379a92d38e3
+  - [v4,net-next,7/7] net: udp: use kfree_skb_reason() in __udp_queue_rcv_skb()
+    https://git.kernel.org/netdev/net-next/c/08d4c0370c40
 
---- a/sound/soc/codecs/wcd938x.c
-+++ b/sound/soc/codecs/wcd938x.c
-@@ -1432,14 +1432,10 @@ static int wcd938x_sdw_connect_port(stru
- 	return 0;
- }
- 
--static int wcd938x_connect_port(struct wcd938x_sdw_priv *wcd, u8 ch_id, u8 enable)
-+static int wcd938x_connect_port(struct wcd938x_sdw_priv *wcd, u8 port_num, u8 ch_id, u8 enable)
- {
--	u8 port_num;
--
--	port_num = wcd->ch_info[ch_id].port_num;
--
- 	return wcd938x_sdw_connect_port(&wcd->ch_info[ch_id],
--					&wcd->port_config[port_num],
-+					&wcd->port_config[port_num - 1],
- 					enable);
- }
- 
-@@ -2593,6 +2589,7 @@ static int wcd938x_set_compander(struct
- 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
- 	struct wcd938x_sdw_priv *wcd;
- 	int value = ucontrol->value.integer.value[0];
-+	int portidx;
- 	struct soc_mixer_control *mc;
- 	bool hphr;
- 
-@@ -2606,10 +2603,12 @@ static int wcd938x_set_compander(struct
- 	else
- 		wcd938x->comp1_enable = value;
- 
-+	portidx = wcd->ch_info[mc->reg].port_num;
-+
- 	if (value)
--		wcd938x_connect_port(wcd, mc->reg, true);
-+		wcd938x_connect_port(wcd, portidx, mc->reg, true);
- 	else
--		wcd938x_connect_port(wcd, mc->reg, false);
-+		wcd938x_connect_port(wcd, portidx, mc->reg, false);
- 
- 	return 0;
- }
-@@ -2882,9 +2881,11 @@ static int wcd938x_get_swr_port(struct s
- 	struct wcd938x_sdw_priv *wcd;
- 	struct soc_mixer_control *mixer = (struct soc_mixer_control *)kcontrol->private_value;
- 	int dai_id = mixer->shift;
--	int portidx = mixer->reg;
-+	int portidx, ch_idx = mixer->reg;
-+
- 
- 	wcd = wcd938x->sdw_priv[dai_id];
-+	portidx = wcd->ch_info[ch_idx].port_num;
- 
- 	ucontrol->value.integer.value[0] = wcd->port_enable[portidx];
- 
-@@ -2899,12 +2900,14 @@ static int wcd938x_set_swr_port(struct s
- 	struct wcd938x_sdw_priv *wcd;
- 	struct soc_mixer_control *mixer =
- 		(struct soc_mixer_control *)kcontrol->private_value;
--	int portidx = mixer->reg;
-+	int ch_idx = mixer->reg;
-+	int portidx;
- 	int dai_id = mixer->shift;
- 	bool enable;
- 
- 	wcd = wcd938x->sdw_priv[dai_id];
- 
-+	portidx = wcd->ch_info[ch_idx].port_num;
- 	if (ucontrol->value.integer.value[0])
- 		enable = true;
- 	else
-@@ -2912,7 +2915,7 @@ static int wcd938x_set_swr_port(struct s
- 
- 	wcd->port_enable[portidx] = enable;
- 
--	wcd938x_connect_port(wcd, portidx, enable);
-+	wcd938x_connect_port(wcd, portidx, ch_idx, enable);
- 
- 	return 0;
- 
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
