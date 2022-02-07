@@ -2,299 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B448C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66541C3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:02:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238172AbiBGTAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:00:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37784 "EHLO
+        id S238578AbiBGTA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:00:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235289AbiBGS7l (ORCPT
+        with ESMTP id S235571AbiBGS7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:59:41 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C245C0401DA;
-        Mon,  7 Feb 2022 10:59:40 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id d188so18103707iof.7;
-        Mon, 07 Feb 2022 10:59:40 -0800 (PST)
+        Mon, 7 Feb 2022 13:59:52 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CC2C0401DA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:59:51 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id v74so14606150pfc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 10:59:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vCjZeNRcMberIdKYc/1uI6XuGgsV9pq+8Qq35xVVQKg=;
-        b=nhN5MK/rg4pc++rSewICR5bIXm+UYggB9K/lnC3GjhqOKdlEOt6RrcvtgMQpIVcOz7
-         EmIcpVVCwGlqjfxSNHWabAlLGsFENbb3dTPyRlezl0Sse9FtCqzfJcqiMzRi2HPggda4
-         OEOWt1tEY65l01EA6VwkbcMGeMzXb+LCpGV4WIvxN6yqHHejCyV0p9HRU8AkqzBa4aLX
-         ysGFrGuniFzz3SwsMhkswqXxqCfXrGi1M+JKwqgycLQ8J1mFb1zvqATa0PR9/lBy37Z0
-         GIz6KQrqZ0U+S0GFeIm4WMRlWslNb0wn5oiJRt7Ymv6vBxlIDZ6gJ893nCErcyXkWvCF
-         TNbg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CtWHOL3r0vE0dVNQ7OfegrmekIbjr0Qo1AupSU7062w=;
+        b=Q9EhMoHSpFDJ6+BzYiTUsC0IPnS7w9fC56SvLY++6V0VB+dEFV+rFTOOBuef6TFHuq
+         uoSH+39f44KoYdj1VzCe7Hu2+SZ28EDXFO9iJ/rEXnJMWX0ohYnr8nAQ58EwKaLDOEbt
+         gexeu+kblTBER96is4+7sCF9nj1EHi3hXTOmjy4fUMmJnkgHpoFZQ9UrLlC0q2oGwfZQ
+         TpKufWSzvkY712OKqyFR5OUm7agZXdp/0XmyLCULUDn1RyMw0yZzG3G261CGvsFx8LOW
+         aAXEWUKFy+wKGnkz7S7nNHAlCVEXWYoMFIBizNWfKYukWvYLHbVg6ToDjNWq6DeBfUDw
+         R4Ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vCjZeNRcMberIdKYc/1uI6XuGgsV9pq+8Qq35xVVQKg=;
-        b=r/mN84HKDqPzjP6ktBAYJc4nt+t/axQ1ANn6mEPVR8X1J979Zrq7g5RAep1kN+bMny
-         yLv0D45WRrIxE6L5omAXdMDp/6iSnBEe0QjngtjKY8JbZXEvazMMsHMCxw6wNWDKMI8A
-         7tblCnbYXu2jPhJswlqCo8lAfybx0EIxHsU5mTCm0giMO1jxe1v3AB7RAQK16KZ7TqNX
-         +rqzrlB6CofKp2lDiiTdFUVQ+Qbj4CHVcaHKRhRs7u8wXycYo4VzuL77kz+95ywoH0y0
-         Gw/JgMazdiCdKFa4gF35VRE/aYCWZb59/3o6em4A7+1L1RmLJuAbrTltS6w+8dRyuKPr
-         mWAg==
-X-Gm-Message-State: AOAM5300EPF2N4Atmw09ubAF2FgDZAw/1rNwbPtjOb0jylEnfvxaRCyV
-        ubXLTWY2Fbe9e1V43hzo6yGIZDBh17H8Byn48bI=
-X-Google-Smtp-Source: ABdhPJx2VykWB8J5wszsXjRiLgluBPf/jOQHOtQGbi2HYek/PsfZqpfKwXoVBCNh3kCpEXrCrV3XQTwhMygZ1Y1P+e0=
-X-Received: by 2002:a5d:88c1:: with SMTP id i1mr443974iol.154.1644260380036;
- Mon, 07 Feb 2022 10:59:40 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CtWHOL3r0vE0dVNQ7OfegrmekIbjr0Qo1AupSU7062w=;
+        b=fAECSyX3h1Jbj8PJbd60ZYxgvmVxOXY0gfHK24I9d637I5ndSyLY5UHJ66LULq5Qph
+         ucn6MbnRF3CXV/o+nQixK7899lkulBB/+6nR+J/hdFQGrDDdNRWvlVdnHtHKBJkg+IMs
+         wu11uWdRKn4ABXQsZ20ib1gqkv1bdDus2ZRMfO5KWZH2vURV3aBY8BSBp6c0jek2+5Sv
+         Hwl0bfkm7hLClSyhlxIIYCq+FEiKFzOmnSXeuxZqNNYkuDjT5TEr63FPaoOdLMNxEVMX
+         qd/O9Sx64AdaNzYIsiNqsgLzkFr6O4+W2dmmjRwXGTAYAtrgjnurql84Sg7BufjqGd15
+         P09A==
+X-Gm-Message-State: AOAM532c0/dnaTtoqWn84YZX0istkezeHe4Q8PQ4X2g154n+4J7/Rl6v
+        ubveS6PhLCEUAgS4V+c3PC6K6Q==
+X-Google-Smtp-Source: ABdhPJwU6XnczZxNDXE76ffRZ3HcVN5y3W4ndgLuIbSYt0r3zqGJKU3yxvLmSmDqNZy+GIcP8ni1Tw==
+X-Received: by 2002:aa7:8892:: with SMTP id z18mr789005pfe.15.1644260391118;
+        Mon, 07 Feb 2022 10:59:51 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id p2sm97744pjo.38.2022.02.07.10.59.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 10:59:50 -0800 (PST)
+Date:   Mon, 7 Feb 2022 18:59:47 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>
+Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, lirongqing@baidu.com, kvm@vger.kernel.org,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] KVM: X86: Introduce vfio_intr_stat per-vm debugfs file
+Message-ID: <YgFsIyxauHVeepqJ@google.com>
+References: <1642593015-28729-1-git-send-email-yuanzhaoxiong@baidu.com>
 MIME-Version: 1.0
-References: <20220202135333.190761-1-jolsa@kernel.org> <20220202135333.190761-7-jolsa@kernel.org>
-In-Reply-To: <20220202135333.190761-7-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 7 Feb 2022 10:59:29 -0800
-Message-ID: <CAEf4BzZPSYzyoxrPC4uNHedhTr_75b2Qa8h3OC7GCK-n6mYrdg@mail.gmail.com>
-Subject: Re: [PATCH 6/8] libbpf: Add bpf_program__attach_kprobe_opts for multi kprobes
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jiri Olsa <olsajiri@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1642593015-28729-1-git-send-email-yuanzhaoxiong@baidu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 5:54 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> Adding support to bpf_program__attach_kprobe_opts to load kprobes
-> to multiple functions.
->
-> If the kprobe program has BPF_TRACE_FPROBE as expected_attach_type
-> it will use the new fprobe link to attach the program. In this case
-> it will use 'func_name' as pattern for functions to attach.
->
-> Adding also support to use '*' wildcard in 'kprobe/kretprobe' section
-> name by SEC macro, like:
->
->   SEC("kprobe/bpf_fentry_test*")
->   SEC("kretprobe/bpf_fentry_test*")
->
-> This will set kprobe's expected_attach_type to BPF_TRACE_FPROBE,
-> and attach it to provided functions pattern.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  tools/lib/bpf/libbpf.c | 136 ++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 133 insertions(+), 3 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 7d595cfd03bc..6b343ef77ed8 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -8607,13 +8607,15 @@ static struct bpf_link *attach_trace(const struct bpf_program *prog, long cookie
->  static struct bpf_link *attach_lsm(const struct bpf_program *prog, long cookie);
->  static struct bpf_link *attach_iter(const struct bpf_program *prog, long cookie);
->
-> +static int init_kprobe(struct bpf_program *prog, long cookie);
-> +
->  static const struct bpf_sec_def section_defs[] = {
->         SEC_DEF("socket",               SOCKET_FILTER, 0, SEC_NONE | SEC_SLOPPY_PFX),
->         SEC_DEF("sk_reuseport/migrate", SK_REUSEPORT, BPF_SK_REUSEPORT_SELECT_OR_MIGRATE, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
->         SEC_DEF("sk_reuseport",         SK_REUSEPORT, BPF_SK_REUSEPORT_SELECT, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
-> -       SEC_DEF("kprobe/",              KPROBE, 0, SEC_NONE, attach_kprobe),
-> +       SEC_DEF("kprobe/",              KPROBE, 0, SEC_NONE, attach_kprobe, .init_fn = init_kprobe),
->         SEC_DEF("uprobe/",              KPROBE, 0, SEC_NONE),
-> -       SEC_DEF("kretprobe/",           KPROBE, 0, SEC_NONE, attach_kprobe),
-> +       SEC_DEF("kretprobe/",           KPROBE, 0, SEC_NONE, attach_kprobe, .init_fn = init_kprobe),
->         SEC_DEF("uretprobe/",           KPROBE, 0, SEC_NONE),
->         SEC_DEF("tc",                   SCHED_CLS, 0, SEC_NONE),
->         SEC_DEF("classifier",           SCHED_CLS, 0, SEC_NONE | SEC_SLOPPY_PFX | SEC_DEPRECATED),
-> @@ -10031,6 +10033,123 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
->         return pfd;
->  }
->
-> +struct fprobe_resolve {
-> +       const char *name;
-> +       __u64 *addrs;
-> +       __u32 alloc;
-> +       __u32 cnt;
-> +};
-> +
-> +static bool glob_matches(const char *glob, const char *s)
+On Wed, Jan 19, 2022, Yuan ZhaoXiong wrote:
+> +#ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
 
-we've since added more generic glob_match() implementation (see
-test_progs.c), let's copy/paste that one (it's actually shorter and
-doesn't do hacky input args modification). Let's maybe also add '?'
-handling (it's trivial). Both original code in perf and the one in
-test_progs.c are GPL-2.0-only, so let's also get acks from original
-authors.
+This is pointless, KVM x86 unconditionally selects HAVE_KVM_IRQ_BYPASS.
 
-> +{
-> +       int n = strlen(glob);
+> +#include <linux/kvm_irqfd.h>
+> +#include <asm/irq_remapping.h>
+> +#endif
 > +
-> +       if (n == 1 && glob[0] == '*')
-> +               return true;
-> +
-> +       if (glob[0] == '*' && glob[n - 1] == '*') {
-> +               const char *subs;
-> +               /* substring match */
-> +
-> +               /* this is hacky, but we don't want to allocate
-> +                * for no good reason
-> +                */
-> +               ((char *)glob)[n - 1] = '\0';
-> +               subs = strstr(s, glob + 1);
-> +               ((char *)glob)[n - 1] = '*';
-> +
-> +               return subs != NULL;
-> +       } else if (glob[0] == '*') {
-> +               size_t nn = strlen(s);
-> +               /* suffix match */
-> +
-> +               /* too short for a given suffix */
-> +               if (nn < n - 1)
-> +                       return false;
-> +               return strcmp(s + nn - (n - 1), glob + 1) == 0;
-> +       } else if (glob[n - 1] == '*') {
-> +               /* prefix match */
-> +               return strncmp(s, glob, n - 1) == 0;
-> +       } else {
-> +               /* exact match */
-> +               return strcmp(glob, s) == 0;
-> +       }
-> +}
-> +
-> +static int resolve_fprobe_cb(void *arg, unsigned long long sym_addr,
-> +                            char sym_type, const char *sym_name)
-> +{
-> +       struct fprobe_resolve *res = arg;
-> +       __u64 *p;
-> +
-> +       if (!glob_matches(res->name, sym_name))
-> +               return 0;
-> +
-> +       if (res->cnt == res->alloc) {
-> +               res->alloc = max((__u32) 16, res->alloc * 3 / 2);
-> +               p = libbpf_reallocarray(res->addrs, res->alloc, sizeof(__u32));
-> +               if (!p)
-> +                       return -ENOMEM;
-> +               res->addrs = p;
-> +       }
-
-please use libbpf_ensure_mem() instead
-
-
-> +       res->addrs[res->cnt++] = sym_addr;
-> +       return 0;
-> +}
-> +
-> +static struct bpf_link *
-> +attach_fprobe_opts(const struct bpf_program *prog,
-> +                  const char *func_name,
-
-func_glob or func_pattern?
-
-> +                  const struct bpf_kprobe_opts *kopts)
-> +{
-> +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
-> +       struct fprobe_resolve res = {
-> +               .name = func_name,
-> +       };
-> +       struct bpf_link *link = NULL;
-> +       char errmsg[STRERR_BUFSIZE];
-> +       int err, link_fd, prog_fd;
-> +       bool retprobe;
-> +
-> +       err = libbpf__kallsyms_parse(&res, resolve_fprobe_cb);
-> +       if (err)
-> +               goto error;
-> +       if (!res.cnt) {
-> +               err = -ENOENT;
-> +               goto error;
-> +       }
-> +
-> +       retprobe = OPTS_GET(kopts, retprobe, false);
-> +
-> +       opts.fprobe.addrs = (__u64) res.addrs;
-
-ptr_to_u64()
-
-> +       opts.fprobe.cnt = res.cnt;
-> +       opts.flags = retprobe ? BPF_F_FPROBE_RETURN : 0;
-> +
-> +       link = calloc(1, sizeof(*link));
-> +       if (!link) {
-> +               err = -ENOMEM;
-> +               goto error;
-> +       }
-> +       link->detach = &bpf_link__detach_fd;
-> +
-> +       prog_fd = bpf_program__fd(prog);
-> +       link_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_FPROBE, &opts);
-> +       if (link_fd < 0) {
-> +               err = -errno;
-> +               pr_warn("prog '%s': failed to attach to %s: %s\n",
-> +                       prog->name, res.name,
-> +                       libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-> +               goto error;
-> +       }
-> +       link->fd = link_fd;
-> +       free(res.addrs);
-> +       return link;
-> +
-> +error:
-> +       free(link);
-> +       free(res.addrs);
-> +       return libbpf_err_ptr(err);
-> +}
-> +
->  struct bpf_link *
->  bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
->                                 const char *func_name,
-> @@ -10047,6 +10166,9 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
->         if (!OPTS_VALID(opts, bpf_kprobe_opts))
->                 return libbpf_err_ptr(-EINVAL);
->
-> +       if (prog->expected_attach_type == BPF_TRACE_FPROBE)
-> +               return attach_fprobe_opts(prog, func_name, opts);
-> +
->         retprobe = OPTS_GET(opts, retprobe, false);
->         offset = OPTS_GET(opts, offset, 0);
->         pe_opts.bpf_cookie = OPTS_GET(opts, bpf_cookie, 0);
-> @@ -10112,6 +10234,14 @@ struct bpf_link *bpf_program__attach_kprobe(const struct bpf_program *prog,
->         return bpf_program__attach_kprobe_opts(prog, func_name, &opts);
->  }
->
-> +static int init_kprobe(struct bpf_program *prog, long cookie)
-> +{
-> +       /* If we have wildcard, switch to fprobe link. */
-> +       if (strchr(prog->sec_name, '*'))
-
-ugh... :( maybe let's have a separate SEC("kprobe.multi/<glob>") and
-same for kretprobe?
-
-
-> +               bpf_program__set_expected_attach_type(prog, BPF_TRACE_FPROBE);
-> +       return 0;
-> +}
-> +
->  static struct bpf_link *attach_kprobe(const struct bpf_program *prog, long cookie)
+>  static int vcpu_get_timer_advance_ns(void *data, u64 *val)
 >  {
->         DECLARE_LIBBPF_OPTS(bpf_kprobe_opts, opts);
-> @@ -10127,7 +10257,7 @@ static struct bpf_link *attach_kprobe(const struct bpf_program *prog, long cooki
->         else
->                 func_name = prog->sec_name + sizeof("kprobe/") - 1;
->
-> -       n = sscanf(func_name, "%m[a-zA-Z0-9_.]+%li", &func, &offset);
-> +       n = sscanf(func_name, "%m[a-zA-Z0-9_.*]+%li", &func, &offset);
->         if (n < 1) {
->                 err = -EINVAL;
->                 pr_warn("kprobe name is invalid: %s\n", func_name);
-> --
-> 2.34.1
->
+>  	struct kvm_vcpu *vcpu = (struct kvm_vcpu *) data;
+> @@ -181,9 +186,94 @@ static int kvm_mmu_rmaps_stat_release(struct inode *inode, struct file *file)
+>  	.release	= kvm_mmu_rmaps_stat_release,
+>  };
+>  
+> +#ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
+> +static int kvm_vfio_intr_stat_show(struct seq_file *m, void *v)
+> +{
+> +	struct kvm_kernel_irq_routing_entry *e;
+> +	struct kvm_irq_routing_table *irq_rt;
+> +	unsigned int host_irq, guest_irq;
+> +	struct kvm_kernel_irqfd *irqfd;
+> +	struct kvm *kvm = m->private;
+> +	struct kvm_lapic_irq irq;
+> +	struct kvm_vcpu *vcpu;
+> +	int idx;
+> +
+> +	if (!kvm_arch_has_assigned_device(kvm) ||
+> +			!irq_remapping_cap(IRQ_POSTING_CAP)) {
+
+Bad indentation and unnecessary curly braces.
+
+	if (!kvm_arch_has_assigned_device(kvm) ||
+	    !irq_remapping_cap(IRQ_POSTING_CAP))
+		return 0;
+
+
+> +		return 0;
+> +	}
+> +
+> +	seq_printf(m, "%12s %12s %12s %12s\n",
+> +			"guest_irq", "host_irq", "vector", "vcpu");
+
+Bad indentation.  Ditto for many cases below.
+
+
+	seq_printf(m, "%12s %12s %12s %12s\n",
+		   "guest_irq", "host_irq", "vector", "vcpu");
+	   
+> +
+> +	spin_lock_irq(&kvm->irqfds.lock);
+> +	idx = srcu_read_lock(&kvm->irq_srcu);
+> +	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
+> +
+> +	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
+> +		if (!irqfd->producer)
+> +			continue;
+> +
+> +		host_irq = irqfd->producer->irq;
+> +		guest_irq = irqfd->gsi;
+> +
+> +		if (guest_irq >= irq_rt->nr_rt_entries ||
+> +				hlist_empty(&irq_rt->map[guest_irq])) {
+
+Indentation.
+
+> +			pr_warn_once("no route for guest_irq %u/%u (broken user space?)\n",
+> +					guest_irq, irq_rt->nr_rt_entries);
+
+Indentation, though I personally don't see much point of duplicating the message
+from vmx_pi_update_irte(), just continue on.
+
+> +			continue;
+> +		}
+> +
+> +		hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
+> +			if (e->type != KVM_IRQ_ROUTING_MSI)
+> +				continue;
+> +
+> +			kvm_set_msi_irq(kvm, e, &irq);
+> +			if (kvm_intr_is_single_vcpu(kvm, &irq, &vcpu)) {
+
+Unnecessary curly braces (though this one is debatable).
+
+> +				seq_printf(m, "%12u %12u %12u %12u\n",
+> +						guest_irq, host_irq, irq.vector, vcpu->vcpu_id);
+
+Indentation.
+
+> +			}
+> +		}
+> +	}
+> +	srcu_read_unlock(&kvm->irq_srcu, idx);
+> +	spin_unlock_irq(&kvm->irqfds.lock);
+> +	return 0;
+> +}
+> +
