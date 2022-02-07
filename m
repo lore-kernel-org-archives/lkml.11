@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8FCDC4707A
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EB4FC35275
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383994AbiBGLYW (ORCPT
+        id S1384008AbiBGLYZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:24:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58042 "EHLO
+        Mon, 7 Feb 2022 06:24:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382330AbiBGLSw (ORCPT
+        with ESMTP id S1382326AbiBGLSw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Feb 2022 06:18:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8299AC043189;
-        Mon,  7 Feb 2022 03:18:40 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE66C0401C1;
+        Mon,  7 Feb 2022 03:18:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14B7B61447;
-        Mon,  7 Feb 2022 11:18:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCDBAC004E1;
-        Mon,  7 Feb 2022 11:18:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED9FC61426;
+        Mon,  7 Feb 2022 11:18:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D04EEC004E1;
+        Mon,  7 Feb 2022 11:18:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232719;
-        bh=0bwm7FIBxf3TvTOQpHtoB9j5vV7n2mRMKeL1BqS9TsE=;
+        s=korg; t=1644232716;
+        bh=f0y3q7bWN+Cd31ROBfKgbkOcO5BctI8JgsO6LElPB+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bpJuSc6ldtbPnpDYrkS+GG8Xogs2ADnuDnt1HLGvA3FX6+ahMWiCPKDlVh/w6KVWa
-         9GyuIMKj0LNVabfgj0z1Ir3poqxiYDrK45Z5ijWq3I7REuzVvEaFHPsyX4fUXiTyFy
-         izVJ+lhcCmKLgKt9dJYB6kJDMyxYjcxpS+xpJyCQ=
+        b=1MT6tMHIPbTdHKiojKFPbwA+V1xvcNlAOJIQG1tFGK7dt6HVDRnx8F7SKc4CPYadO
+         DDUtpwEfcNSR/cZ44dpVe0KsGVO9Ue/buUG5XB9AseAWXVXB60AMdL9/hldSK/dtdf
+         JT9E1KLX1R3EUv3nRZxjOVWdRDlshDzwa4JtDczM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yutian Yang <nglaive@gmail.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        shenwenbo@zju.edu.cn, Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 15/44] memcg: charge fs_context and legacy_fs_context
-Date:   Mon,  7 Feb 2022 12:06:31 +0100
-Message-Id: <20220207103753.651823494@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
+        James Liao <jamesjj.liao@mediatek.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.4 14/44] Revert "ASoC: mediatek: Check for error clk pointer"
+Date:   Mon,  7 Feb 2022 12:06:30 +0100
+Message-Id: <20220207103753.620758555@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
 References: <20220207103753.155627314@linuxfoundation.org>
@@ -54,107 +54,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yutian Yang <nglaive@gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-commit bb902cb47cf93b33cd92b3b7a4019330a03ef57f upstream.
+This reverts commit 8b894d503ed79c3e1a96eab50a69ff29e5aade34 which is
+commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e upstream
 
-This patch adds accounting flags to fs_context and legacy_fs_context
-allocation sites so that kernel could correctly charge these objects.
+With this patch in the tree, Chromebooks running the affected hardware
+no longer boot. Bisect points to this patch, and reverting it fixes
+the problem.
 
-We have written a PoC to demonstrate the effect of the missing-charging
-bugs.  The PoC takes around 1,200MB unaccounted memory, while it is
-charged for only 362MB memory usage.  We evaluate the PoC on QEMU x86_64
-v5.2.90 + Linux kernel v5.10.19 + Debian buster.  All the limitations
-including ulimits and sysctl variables are set as default.  Specifically,
-the hard NOFILE limit and nr_open in sysctl are both 1,048,576.
+An analysis of the code with this patch applied shows:
 
-/*------------------------- POC code ----------------------------*/
+        ret = init_clks(pdev, clk);
+        if (ret)
+                return ERR_PTR(ret);
+...
+                for (j = 0; j < MAX_CLKS && data->clk_id[j]; j++) {
+                        struct clk *c = clk[data->clk_id[j]];
 
-#define _GNU_SOURCE
-#include <sys/types.h>
-#include <sys/file.h>
-#include <time.h>
-#include <sys/wait.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <signal.h>
-#include <sched.h>
-#include <fcntl.h>
-#include <linux/mount.h>
+                        if (IS_ERR(c)) {
+                                dev_err(&pdev->dev, "%s: clk unavailable\n",
+                                        data->name);
+                                return ERR_CAST(c);
+                        }
 
-#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
-                        } while (0)
+                        scpd->clk[j] = c;
+                }
 
-#define STACK_SIZE (8 * 1024)
-#ifndef __NR_fsopen
-#define __NR_fsopen 430
-#endif
-static inline int fsopen(const char *fs_name, unsigned int flags)
-{
-        return syscall(__NR_fsopen, fs_name, flags);
-}
+Not all clocks in the clk_names array have to be present. Only the clocks
+in the data->clk_id array are actually needed. The code already checks if
+the required clocks are available and bails out if not. The assumption that
+all clocks have to be present is wrong, and commit 9de2b9286a6d needs to be
+reverted.
 
-static char thread_stack[512][STACK_SIZE];
-
-int thread_fn(void* arg)
-{
-  for (int i = 0; i< 800000; ++i) {
-    int fsfd = fsopen("nfs", FSOPEN_CLOEXEC);
-    if (fsfd == -1) {
-      errExit("fsopen");
-    }
-  }
-  while(1);
-  return 0;
-}
-
-int main(int argc, char *argv[]) {
-  int thread_pid;
-  for (int i = 0; i < 1; ++i) {
-    thread_pid = clone(thread_fn, thread_stack[i] + STACK_SIZE, \
-      SIGCHLD, NULL);
-  }
-  while(1);
-  return 0;
-}
-
-/*-------------------------- end --------------------------------*/
-
-Link: https://lkml.kernel.org/r/1626517201-24086-1-git-send-email-nglaive@gmail.com
-Signed-off-by: Yutian Yang <nglaive@gmail.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
-Cc: <shenwenbo@zju.edu.cn>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 9de2b9286a6d ("ASoC: mediatek: Check for error clk pointer")
+Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: James Liao <jamesjj.liao@mediatek.com>
+Cc: Kevin Hilman <khilman@baylibre.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com
+Cc: Frank Wunderlich <frank-w@public-files.de>
+Cc: Daniel Golle <daniel@makrotopia.org>
+Link: https://lore.kernel.org/lkml/20220205014755.699603-1-linux@roeck-us.net/
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fs_context.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/soc/mediatek/mtk-scpsys.c |   15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
---- a/fs/fs_context.c
-+++ b/fs/fs_context.c
-@@ -258,7 +258,7 @@ static struct fs_context *alloc_fs_conte
- 	struct fs_context *fc;
- 	int ret = -ENOMEM;
+--- a/drivers/soc/mediatek/mtk-scpsys.c
++++ b/drivers/soc/mediatek/mtk-scpsys.c
+@@ -333,17 +333,12 @@ out:
+ 	return ret;
+ }
  
--	fc = kzalloc(sizeof(struct fs_context), GFP_KERNEL);
-+	fc = kzalloc(sizeof(struct fs_context), GFP_KERNEL_ACCOUNT);
- 	if (!fc)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -686,7 +686,7 @@ const struct fs_context_operations legac
-  */
- static int legacy_init_fs_context(struct fs_context *fc)
+-static int init_clks(struct platform_device *pdev, struct clk **clk)
++static void init_clks(struct platform_device *pdev, struct clk **clk)
  {
--	fc->fs_private = kzalloc(sizeof(struct legacy_fs_context), GFP_KERNEL);
-+	fc->fs_private = kzalloc(sizeof(struct legacy_fs_context), GFP_KERNEL_ACCOUNT);
- 	if (!fc->fs_private)
- 		return -ENOMEM;
- 	fc->ops = &legacy_fs_context_ops;
+ 	int i;
+ 
+-	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
++	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
+ 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
+-		if (IS_ERR(clk[i]))
+-			return PTR_ERR(clk[i]);
+-	}
+-
+-	return 0;
+ }
+ 
+ static struct scp *init_scp(struct platform_device *pdev,
+@@ -353,7 +348,7 @@ static struct scp *init_scp(struct platf
+ {
+ 	struct genpd_onecell_data *pd_data;
+ 	struct resource *res;
+-	int i, j, ret;
++	int i, j;
+ 	struct scp *scp;
+ 	struct clk *clk[CLK_MAX];
+ 
+@@ -408,9 +403,7 @@ static struct scp *init_scp(struct platf
+ 
+ 	pd_data->num_domains = num;
+ 
+-	ret = init_clks(pdev, clk);
+-	if (ret)
+-		return ERR_PTR(ret);
++	init_clks(pdev, clk);
+ 
+ 	for (i = 0; i < num; i++) {
+ 		struct scp_domain *scpd = &scp->domains[i];
 
 
