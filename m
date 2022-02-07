@@ -2,85 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB51C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:22:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 19:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238915AbiBGTSz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 14:18:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
+        id S235801AbiBGTWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 14:22:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239313AbiBGTOz (ORCPT
+        with ESMTP id S237706AbiBGTV7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 14:14:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00921C0401DC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:14:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB551B80EF6
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 19:14:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 440D8C004E1;
-        Mon,  7 Feb 2022 19:14:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644261292;
-        bh=HJoLZayjw9d/gTYyeZLWOIyycJnicgl+gCOYbWkZsXU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mtOs0UFvLFkypBmJJ4xlwyKBYH+C3cuBhr2TXU4kpDV9+q1LF8W1t++Gwl4Ejy9//
-         xbD6K6t+PhFRAo0E9bK7c63F1EadKKIfN678kYPxoxlCKz/M++a5b1hdQU6q56lPQf
-         A/G+HyzTi+1QQoBU0/VhUOx3ja68Klh4Yx9BHryHm6RE99SZvhzVQ9aS0ED7pwNVYA
-         LAaA67j2ip7+Oop90XwqyRjxNe6N3/HPmvLTj94CBSZ/tXh8BjuGhhrIB1oeliy/TT
-         6D3quwBsbKKrzomk2Lf/xp41Lbm0i4EB4eth6qu7VpDbCL+xHcS7N/N3jdZFEhjALr
-         7BZMFQ5tFiuSA==
-Date:   Mon, 7 Feb 2022 11:14:50 -0800
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     Chao Yu <chao@kernel.org>
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] f2fs: avoid unneeded preflush during checkpoint()
-Message-ID: <YgFvqnoa61BspqmW@google.com>
-References: <20220207113516.9489-1-chao@kernel.org>
+        Mon, 7 Feb 2022 14:21:59 -0500
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ABA7C0401E2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 11:21:58 -0800 (PST)
+Received: by mail-qv1-xf35.google.com with SMTP id k4so12188834qvt.6
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 11:21:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MpROwmI6Qnm2emkziisG5aDXgeJvPxSLNV0Lic7ckQs=;
+        b=OaiSuWRoTh89hqFli2OaM/99731kyVjifGW/6GRnhqIbNkn4rqP5cCBkUjKmhiONGA
+         DRfaWqoDUSS3IuMSZybn6CxVSz9gReIWR5zHG2jjk1KjqYVDa/9CCxg0tFF3xZ3AN4KM
+         IWW23EV/8VVY2qGl9kiFU+8+HFL3FZ5X6K6By2RBakx/Ghc4c95TqRKVwgL78FFsnybj
+         gOmsu8PRvUOA7lJpZIzHdbR6U2MiJsL97ZsWs6lb+AZn8w27xJatWjWCvHlr0v+nfzrq
+         5FEXre/2zFc0NgKQwTEa1qY6KjXxjGFFZdTM7G5gNDX+6knlEUNvM1LWH4Y4kbABTlQ9
+         MW3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MpROwmI6Qnm2emkziisG5aDXgeJvPxSLNV0Lic7ckQs=;
+        b=IRSNa08blOmoFGnJeoeN823cG424rmpmc1SihD6AzhPSq8Pc40p4xhjJZjpdpJaWN+
+         Bag4kkafni0C7CKMWUFHKupawXrgVXeUgI9a9ZIP9X9m1XSSP/RKe+LiRR9MWYwc8Tmb
+         Q0SJJ84JzXKYEjbKr0Z9KowZeaABCR6nwLndtmB04+XKXEukTYlsbPl61VrSeUgfUKG6
+         /esl66kD1CGUBLo3gNdw9GSxSH04hTcumMISOh+yKjqWeMdIgv9R1kti6gBErObyQSwu
+         8NihJeEgUIWNb4ePod/HED6p9S/4lIwBhSAI788m+y4wb1uYXM3FGnuz2cB3FopuJ9Lm
+         /fGg==
+X-Gm-Message-State: AOAM530eZgSQSpAL5bLWWslXgXT18qB7Xfe5jjB64PgzadkKsTaDdUnD
+        CmkShKjB2SZZsq7M7t5gDkc6Ww==
+X-Google-Smtp-Source: ABdhPJxhzWQ+13BW3b7rMAkbC+gsglkVidW/xLtoMpCgPLxkDjpi1/nh8Ncg8X/Gh7aVJ+bLlWGexw==
+X-Received: by 2002:a05:6214:248a:: with SMTP id gi10mr727781qvb.99.1644261717527;
+        Mon, 07 Feb 2022 11:21:57 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id y20sm5819031qta.9.2022.02.07.11.21.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 11:21:56 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nH9aF-000Hph-TJ; Mon, 07 Feb 2022 15:21:55 -0400
+Date:   Mon, 7 Feb 2022 15:21:55 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org
+Subject: Re: [PATCH 7/8] mm: remove the extra ZONE_DEVICE struct page refcount
+Message-ID: <20220207192155.GB49147@ziepe.ca>
+References: <20220207063249.1833066-1-hch@lst.de>
+ <20220207063249.1833066-8-hch@lst.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220207113516.9489-1-chao@kernel.org>
+In-Reply-To: <20220207063249.1833066-8-hch@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/07, Chao Yu wrote:
-> During checkpoint, we have committed preflush command via f2fs_flush_device_cache()
-
- 787 int f2fs_flush_device_cache(struct f2fs_sb_info *sbi)
- 788 {
- 789         int ret = 0, i;
- 790 
- 791         if (!f2fs_is_multi_device(sbi))
- 792                 return 0;
-
-Seems a wrong assumption.
-
-> to persist all metadata pages except last #2 CP pack page, so we don't need to
-> commit another preflush command in commit_checkpoint(), remove it to avoid unneeded
-> write cache overhead.
+On Mon, Feb 07, 2022 at 07:32:48AM +0100, Christoph Hellwig wrote:
+> ZONE_DEVICE struct pages have an extra reference count that complicates
+> the code for put_page() and several places in the kernel that need to
+> check the reference count to see that a page is not being used (gup,
+> compaction, migration, etc.). Clean up the code so the reference count
+> doesn't need to be treated specially for ZONE_DEVICE pages.
 > 
-> Signed-off-by: Chao Yu <chao@kernel.org>
+> Note that this excludes the special idle page wakeup for fsdax pages,
+> which still happens at refcount 1.  This is a separate issue and will
+> be sorted out later.  Given that only fsdax pages require the
+> notifiacation when the refcount hits 1 now, the PAGEMAP_OPS Kconfig
+> symbol can go away and be replaced with a FS_DAX check for this hook
+> in the put_page fastpath.
+> 
+> Based on an earlier patch from Ralph Campbell <rcampbell@nvidia.com>.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->  fs/f2fs/data.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-> index 8c417864c66a..15ac18bbbc8e 100644
-> --- a/fs/f2fs/data.c
-> +++ b/fs/f2fs/data.c
-> @@ -598,7 +598,7 @@ static void __f2fs_submit_merged_write(struct f2fs_sb_info *sbi,
->  		io->fio.op = REQ_OP_WRITE;
->  		io->fio.op_flags = REQ_META | REQ_PRIO | REQ_SYNC;
->  		if (!test_opt(sbi, NOBARRIER))
-> -			io->fio.op_flags |= REQ_PREFLUSH | REQ_FUA;
-> +			io->fio.op_flags |= REQ_FUA;
->  	}
->  	__submit_merged_bio(io);
->  	up_write(&io->io_rwsem);
-> -- 
-> 2.32.0
+>  arch/powerpc/kvm/book3s_hv_uvmem.c       |  1 -
+>  drivers/gpu/drm/amd/amdkfd/kfd_migrate.c |  1 -
+>  drivers/gpu/drm/nouveau/nouveau_dmem.c   |  1 -
+>  fs/Kconfig                               |  1 -
+>  include/linux/memremap.h                 | 12 +++--
+>  include/linux/mm.h                       |  6 +--
+>  lib/test_hmm.c                           |  1 -
+>  mm/Kconfig                               |  4 --
+>  mm/internal.h                            |  2 +
+>  mm/memcontrol.c                          | 11 ++---
+>  mm/memremap.c                            | 57 ++++++++----------------
+>  mm/migrate.c                             |  6 ---
+>  mm/swap.c                                | 16 ++-----
+>  13 files changed, 36 insertions(+), 83 deletions(-)
+
+It looks like a good next step to me
+
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+
+>  struct dev_pagemap_ops {
+>  	/*
+> -	 * Called once the page refcount reaches 1.  (ZONE_DEVICE pages never
+> -	 * reach 0 refcount unless there is a refcount bug. This allows the
+> -	 * device driver to implement its own memory management.)
+> +	 * Called once the page refcount reaches 0.  The reference count will be
+> +	 * reset to one by the core code after the method is called to prepare
+> +	 * for handing out the page again.
+
+I did prefer Ralph's version of this that kept the refcount at 0 while
+the page was on the free-list. I hope we can get there again after
+later series :)
+
+Jason
