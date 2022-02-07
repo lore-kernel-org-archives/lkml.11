@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C133C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B1AAC3527A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382506AbiBGLT0 (ORCPT
+        id S1382514AbiBGLTa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:19:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
+        Mon, 7 Feb 2022 06:19:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358828AbiBGLOp (ORCPT
+        with ESMTP id S1359139AbiBGLOs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:14:45 -0500
+        Mon, 7 Feb 2022 06:14:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E229AC0401E2;
-        Mon,  7 Feb 2022 03:14:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6295EC03FECB;
+        Mon,  7 Feb 2022 03:14:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D79FB61314;
-        Mon,  7 Feb 2022 11:14:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC878C004E1;
-        Mon,  7 Feb 2022 11:14:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 164E26140B;
+        Mon,  7 Feb 2022 11:14:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7618C004E1;
+        Mon,  7 Feb 2022 11:14:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232452;
-        bh=41Bn7dpcwKdRVGJAeUT3KkBCidaikRKvL17gJkZ77QY=;
+        s=korg; t=1644232458;
+        bh=pJ5eda+plEWIbRfwBgyrrzOAuIMWr4zooQdZPAgbqd4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q/LuXbeiUy6Al3WDahQfzypVBFL++yOLzEC49PcmRp9g2DRoc50APPXVJao5DJm3d
-         jYxIZt9foqLqGzQa45SVydbowbv+DL8rti43Qy5FWasaLBnDYCg9bMie7N5v2/BtnU
-         m2hB3VedQkdDlkxJ01DcMNIFtd9dX8W427bR375w=
+        b=bzjjrfRMkaBFstz1MLTD7QEJh36kIeDkEk5uiiLsk831uQt08rvycGQRMPoNKpB52
+         1J+oS6lZEsLrfJcC4Kne72/M/QY9jB+KozY+QyupMAXxFvWlfKiukmNODGJenkprGu
+         dMXKC0tMpCtaeDUlDyQEFWtlHqwgnO1kIknVCL0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>
-Subject: [PATCH 4.19 14/86] usb: common: ulpi: Fix crash in ulpi_match()
-Date:   Mon,  7 Feb 2022 12:05:37 +0100
-Message-Id: <20220207103758.026314966@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
+Subject: [PATCH 4.19 16/86] USB: core: Fix hang in usb_kill_urb by adding memory barriers
+Date:   Mon,  7 Feb 2022 12:05:39 +0100
+Message-Id: <20220207103758.087848858@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -48,47 +49,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Hunter <jonathanh@nvidia.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 2e3dd4a6246945bf84ea6f478365d116e661554c upstream.
+commit 26fbe9772b8c459687930511444ce443011f86bf upstream.
 
-Commit 7495af930835 ("ARM: multi_v7_defconfig: Enable drivers for
-DragonBoard 410c") enables the CONFIG_PHY_QCOM_USB_HS for the ARM
-multi_v7_defconfig. Enabling this Kconfig is causing the kernel to crash
-on the Tegra20 Ventana platform in the ulpi_match() function.
+The syzbot fuzzer has identified a bug in which processes hang waiting
+for usb_kill_urb() to return.  It turns out the issue is not unlinking
+the URB; that works just fine.  Rather, the problem arises when the
+wakeup notification that the URB has completed is not received.
 
-The Qualcomm USB HS PHY driver that is enabled by CONFIG_PHY_QCOM_USB_HS,
-registers a ulpi_driver but this driver does not provide an 'id_table',
-so when ulpi_match() is called on the Tegra20 Ventana platform, it
-crashes when attempting to deference the id_table pointer which is not
-valid. The Qualcomm USB HS PHY driver uses device-tree for matching the
-ULPI driver with the device and so fix this crash by using device-tree
-for matching if the id_table is not valid.
+The reason is memory-access ordering on SMP systems.  In outline form,
+usb_kill_urb() and __usb_hcd_giveback_urb() operating concurrently on
+different CPUs perform the following actions:
 
-Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
-Link: https://lore.kernel.org/r/20220117150039.44058-1-jonathanh@nvidia.com
+CPU 0					CPU 1
+----------------------------		---------------------------------
+usb_kill_urb():				__usb_hcd_giveback_urb():
+  ...					  ...
+  atomic_inc(&urb->reject);		  atomic_dec(&urb->use_count);
+  ...					  ...
+  wait_event(usb_kill_urb_queue,
+	atomic_read(&urb->use_count) == 0);
+					  if (atomic_read(&urb->reject))
+						wake_up(&usb_kill_urb_queue);
+
+Confining your attention to urb->reject and urb->use_count, you can
+see that the overall pattern of accesses on CPU 0 is:
+
+	write urb->reject, then read urb->use_count;
+
+whereas the overall pattern of accesses on CPU 1 is:
+
+	write urb->use_count, then read urb->reject.
+
+This pattern is referred to in memory-model circles as SB (for "Store
+Buffering"), and it is well known that without suitable enforcement of
+the desired order of accesses -- in the form of memory barriers -- it
+is entirely possible for one or both CPUs to execute their reads ahead
+of their writes.  The end result will be that sometimes CPU 0 sees the
+old un-decremented value of urb->use_count while CPU 1 sees the old
+un-incremented value of urb->reject.  Consequently CPU 0 ends up on
+the wait queue and never gets woken up, leading to the observed hang
+in usb_kill_urb().
+
+The same pattern of accesses occurs in usb_poison_urb() and the
+failure pathway of usb_hcd_submit_urb().
+
+The problem is fixed by adding suitable memory barriers.  To provide
+proper memory-access ordering in the SB pattern, a full barrier is
+required on both CPUs.  The atomic_inc() and atomic_dec() accesses
+themselves don't provide any memory ordering, but since they are
+present, we can use the optimized smp_mb__after_atomic() memory
+barrier in the various routines to obtain the desired effect.
+
+This patch adds the necessary memory barriers.
+
+CC: <stable@vger.kernel.org>
+Reported-and-tested-by: syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/Ye8K0QYee0Q0Nna2@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/common/ulpi.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/usb/core/hcd.c |   14 ++++++++++++++
+ drivers/usb/core/urb.c |   12 ++++++++++++
+ 2 files changed, 26 insertions(+)
 
---- a/drivers/usb/common/ulpi.c
-+++ b/drivers/usb/common/ulpi.c
-@@ -39,8 +39,11 @@ static int ulpi_match(struct device *dev
- 	struct ulpi *ulpi = to_ulpi_dev(dev);
- 	const struct ulpi_device_id *id;
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1670,6 +1670,13 @@ int usb_hcd_submit_urb (struct urb *urb,
+ 		urb->hcpriv = NULL;
+ 		INIT_LIST_HEAD(&urb->urb_list);
+ 		atomic_dec(&urb->use_count);
++		/*
++		 * Order the write of urb->use_count above before the read
++		 * of urb->reject below.  Pairs with the memory barriers in
++		 * usb_kill_urb() and usb_poison_urb().
++		 */
++		smp_mb__after_atomic();
++
+ 		atomic_dec(&urb->dev->urbnum);
+ 		if (atomic_read(&urb->reject))
+ 			wake_up(&usb_kill_urb_queue);
+@@ -1779,6 +1786,13 @@ static void __usb_hcd_giveback_urb(struc
  
--	/* Some ULPI devices don't have a vendor id so rely on OF match */
--	if (ulpi->id.vendor == 0)
+ 	usb_anchor_resume_wakeups(anchor);
+ 	atomic_dec(&urb->use_count);
 +	/*
-+	 * Some ULPI devices don't have a vendor id
-+	 * or provide an id_table so rely on OF match.
++	 * Order the write of urb->use_count above before the read
++	 * of urb->reject below.  Pairs with the memory barriers in
++	 * usb_kill_urb() and usb_poison_urb().
 +	 */
-+	if (ulpi->id.vendor == 0 || !drv->id_table)
- 		return of_driver_match_device(dev, driver);
++	smp_mb__after_atomic();
++
+ 	if (unlikely(atomic_read(&urb->reject)))
+ 		wake_up(&usb_kill_urb_queue);
+ 	usb_put_urb(urb);
+--- a/drivers/usb/core/urb.c
++++ b/drivers/usb/core/urb.c
+@@ -692,6 +692,12 @@ void usb_kill_urb(struct urb *urb)
+ 	if (!(urb && urb->dev && urb->ep))
+ 		return;
+ 	atomic_inc(&urb->reject);
++	/*
++	 * Order the write of urb->reject above before the read
++	 * of urb->use_count below.  Pairs with the barriers in
++	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
++	 */
++	smp_mb__after_atomic();
  
- 	for (id = drv->id_table; id->vendor; id++)
+ 	usb_hcd_unlink_urb(urb, -ENOENT);
+ 	wait_event(usb_kill_urb_queue, atomic_read(&urb->use_count) == 0);
+@@ -733,6 +739,12 @@ void usb_poison_urb(struct urb *urb)
+ 	if (!urb)
+ 		return;
+ 	atomic_inc(&urb->reject);
++	/*
++	 * Order the write of urb->reject above before the read
++	 * of urb->use_count below.  Pairs with the barriers in
++	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
++	 */
++	smp_mb__after_atomic();
+ 
+ 	if (!urb->dev || !urb->ep)
+ 		return;
 
 
