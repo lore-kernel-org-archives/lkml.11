@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D021C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C133C35276
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382497AbiBGLTX (ORCPT
+        id S1382506AbiBGLT0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:19:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
+        Mon, 7 Feb 2022 06:19:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357317AbiBGLOU (ORCPT
+        with ESMTP id S1358828AbiBGLOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:14:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA36C03FED1;
-        Mon,  7 Feb 2022 03:14:06 -0800 (PST)
+        Mon, 7 Feb 2022 06:14:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E229AC0401E2;
+        Mon,  7 Feb 2022 03:14:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B576CB811AF;
-        Mon,  7 Feb 2022 11:14:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E55AEC340EB;
-        Mon,  7 Feb 2022 11:14:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D79FB61314;
+        Mon,  7 Feb 2022 11:14:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC878C004E1;
+        Mon,  7 Feb 2022 11:14:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232443;
-        bh=inEi6MZyFIrjD+u/UkCk8WlduMCblX7w7gqJwvl//nE=;
+        s=korg; t=1644232452;
+        bh=41Bn7dpcwKdRVGJAeUT3KkBCidaikRKvL17gJkZ77QY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=thjrgNu08V4BQu4bBYymDREcEQ/CzkTCIgF6EfQtkepHdQisDIKL1KqLIuuu5i8Gp
-         Ps9ucNK8H376eWfDIHD8/WiwdS59l35Dq4u2gCzwL3MXHacH3z7Fb2RdiG03PEuinL
-         brPwe2H4ivOEOoGbQmlQN2aDZm2HuTGTat80JVdY=
+        b=Q/LuXbeiUy6Al3WDahQfzypVBFL++yOLzEC49PcmRp9g2DRoc50APPXVJao5DJm3d
+         jYxIZt9foqLqGzQa45SVydbowbv+DL8rti43Qy5FWasaLBnDYCg9bMie7N5v2/BtnU
+         m2hB3VedQkdDlkxJ01DcMNIFtd9dX8W427bR375w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.19 11/86] tty: n_gsm: fix SW flow control encoding/handling
-Date:   Mon,  7 Feb 2022 12:05:34 +0100
-Message-Id: <20220207103757.930570465@linuxfoundation.org>
+        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>
+Subject: [PATCH 4.19 14/86] usb: common: ulpi: Fix crash in ulpi_match()
+Date:   Mon,  7 Feb 2022 12:05:37 +0100
+Message-Id: <20220207103758.026314966@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -48,64 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+From: Jon Hunter <jonathanh@nvidia.com>
 
-commit 8838b2af23caf1ff0610caef2795d6668a013b2d upstream.
+commit 2e3dd4a6246945bf84ea6f478365d116e661554c upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.2.7.3 states that DC1 (XON) and DC3 (XOFF)
-are the control characters defined in ISO/IEC 646. These shall be quoted if
-seen in the data stream to avoid interpretation as flow control characters.
+Commit 7495af930835 ("ARM: multi_v7_defconfig: Enable drivers for
+DragonBoard 410c") enables the CONFIG_PHY_QCOM_USB_HS for the ARM
+multi_v7_defconfig. Enabling this Kconfig is causing the kernel to crash
+on the Tegra20 Ventana platform in the ulpi_match() function.
 
-ISO/IEC 646 refers to the set of ISO standards described as the ISO
-7-bit coded character set for information interchange. Its final version
-is also known as ITU T.50.
-See https://www.itu.int/rec/T-REC-T.50-199209-I/en
+The Qualcomm USB HS PHY driver that is enabled by CONFIG_PHY_QCOM_USB_HS,
+registers a ulpi_driver but this driver does not provide an 'id_table',
+so when ulpi_match() is called on the Tegra20 Ventana platform, it
+crashes when attempting to deference the id_table pointer which is not
+valid. The Qualcomm USB HS PHY driver uses device-tree for matching the
+ULPI driver with the device and so fix this crash by using device-tree
+for matching if the id_table is not valid.
 
-To abide the standard it is needed to quote DC1 and DC3 correctly if these
-are seen as data bytes and not as control characters. The current
-implementation already tries to enforce this but fails to catch all
-defined cases. 3GPP 27.010 chapter 5.2.7.3 clearly states that the most
-significant bit shall be ignored for DC1 and DC3 handling. The current
-implementation handles only the case with the most significant bit set 0.
-Cases in which DC1 and DC3 have the most significant bit set 1 are left
-unhandled.
-
-This patch fixes this by masking the data bytes with ISO_IEC_646_MASK (only
-the 7 least significant bits set 1) before comparing them with XON
-(a.k.a. DC1) and XOFF (a.k.a. DC3) when testing which byte values need
-quotation via byte stuffing.
-
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220120101857.2509-1-daniel.starke@siemens.com
+Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
+Link: https://lore.kernel.org/r/20220117150039.44058-1-jonathanh@nvidia.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/usb/common/ulpi.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -313,6 +313,7 @@ static struct tty_driver *gsm_tty_driver
- #define GSM1_ESCAPE_BITS	0x20
- #define XON			0x11
- #define XOFF			0x13
-+#define ISO_IEC_646_MASK	0x7F
+--- a/drivers/usb/common/ulpi.c
++++ b/drivers/usb/common/ulpi.c
+@@ -39,8 +39,11 @@ static int ulpi_match(struct device *dev
+ 	struct ulpi *ulpi = to_ulpi_dev(dev);
+ 	const struct ulpi_device_id *id;
  
- static const struct tty_port_operations gsm_port_ops;
+-	/* Some ULPI devices don't have a vendor id so rely on OF match */
+-	if (ulpi->id.vendor == 0)
++	/*
++	 * Some ULPI devices don't have a vendor id
++	 * or provide an id_table so rely on OF match.
++	 */
++	if (ulpi->id.vendor == 0 || !drv->id_table)
+ 		return of_driver_match_device(dev, driver);
  
-@@ -531,7 +532,8 @@ static int gsm_stuff_frame(const u8 *inp
- 	int olen = 0;
- 	while (len--) {
- 		if (*input == GSM1_SOF || *input == GSM1_ESCAPE
--		    || *input == XON || *input == XOFF) {
-+		    || (*input & ISO_IEC_646_MASK) == XON
-+		    || (*input & ISO_IEC_646_MASK) == XOFF) {
- 			*output++ = GSM1_ESCAPE;
- 			*output++ = *input++ ^ GSM1_ESCAPE_BITS;
- 			olen++;
+ 	for (id = drv->id_table; id->vendor; id++)
 
 
