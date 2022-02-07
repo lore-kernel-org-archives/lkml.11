@@ -2,365 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10608C3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 648D9C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383482AbiBGOo2 (ORCPT
+        id S1382997AbiBGOnv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:44:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41340 "EHLO
+        Mon, 7 Feb 2022 09:43:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392204AbiBGOYU (ORCPT
+        with ESMTP id S1391741AbiBGOWC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:24:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE25BC0401C0
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:24:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E073B80B44
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 14:24:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADFD2C340F0;
-        Mon,  7 Feb 2022 14:24:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644243856;
-        bh=nuxygkBprsNkn9ipH0fMeqRTMCJPy/JXzipwoI0EJmk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OKbaj8RaJVkghMY72xBj+itCltHONqRtW+1habiZhzIacDf1TCUpbOmSVtPQlRmdj
-         lCBSdsNBUoZqF99pv70CjRCQ8Z+ooiJqWZYX2+4U6RdyM17VCkJUjwVWMJsGjPgfur
-         ZhCqVqxuRI35H2gFaOioGRhTMgGz9jW0Ve9nCpZJwSudFetIeNNKqJrLGK91Jf8yzk
-         3hLAyzTvgOvPakou1oWxCKNEYZ2Jae4lgbswlaEtMuN8Tjy9JSWDFO6SLLzdMJkEcP
-         KSj/AmPL//4/nf1uMCzYvtwbfVjQixWWwmT/N8xxzMWaeRt9mNkF6FXHz04hgJRJAS
-         Po37Ybbc6c4ig==
-Date:   Mon, 7 Feb 2022 16:24:09 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 41/75] hexagon: Add pmd_pfn()
-Message-ID: <YgEriTI5iGNTiYwZ@kernel.org>
-References: <20220204195852.1751729-1-willy@infradead.org>
- <20220204195852.1751729-42-willy@infradead.org>
- <YgAPtxN7WW222SFI@kernel.org>
- <YgAztSuYrKXZBgJx@casper.infradead.org>
- <YgA+tGqw70ZBTu/1@kernel.org>
- <YgBGLyl4SKWikon0@casper.infradead.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgBGLyl4SKWikon0@casper.infradead.org>
+        Mon, 7 Feb 2022 09:22:02 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A1AC0401EA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:21:59 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 6B311210FD;
+        Mon,  7 Feb 2022 14:21:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644243718; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sAhh4gqPC9v9hFbZq/l77CXsNyM7wDN8WvcunYKnnQw=;
+        b=iBfqES/I9Wd6THlQ1EkiHdjWlvW8EKqfLotzLJoSA0USixJN5V0aqNq/Fo6ROlJNgJjgAJ
+        IWvahUOFHfQ2eTuqh9MIud46EK4vsQfGYlrjkO9K121XHYTo1o04Wi6/ANXqoaGqRPQcP2
+        4pG8SlgNbKN08ml0TDaOlbToHc5NM/Q=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644243718;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sAhh4gqPC9v9hFbZq/l77CXsNyM7wDN8WvcunYKnnQw=;
+        b=QXXXuqoIaBjXf1BCW9WHoz6QzhXCnPDaxMbtyE3OR6hyPWOWo9ZJTGvdZcA+w8DSi6DWRZ
+        MSS7W/MkYd2LXWAA==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 18B42A3BA1;
+        Mon,  7 Feb 2022 14:21:58 +0000 (UTC)
+Date:   Mon, 07 Feb 2022 15:21:58 +0100
+Message-ID: <s5hzgn2u589.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Alexander Sergeyev <sergeev917@gmail.com>
+Cc:     "moderated list:SOUND" <alsa-devel@alsa-project.org>,
+        Kailang Yang <kailang@realtek.com>,
+        Jeremy Szu <jeremy.szu@canonical.com>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, tiwai@suse.com,
+        Hui Wang <hui.wang@canonical.com>,
+        PeiSen Hou <pshou@realtek.com>,
+        Jian-Hong Pan <jhp@endlessos.org>
+Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855 G8
+In-Reply-To: <20220205175132.ihwp5wlxga4efngl@localhost.localdomain>
+References: <20220115152215.kprws5nja2i43qax@localhost.localdomain>
+        <s5hilugw0l0.wl-tiwai@suse.de>
+        <20220119093249.eaxem33bjqjxcher@localhost.localdomain>
+        <20220122190522.ycaygrqcen7d3hj2@localhost.localdomain>
+        <20220122205637.7gzurdu7xl4sthxw@localhost.localdomain>
+        <s5ho83yldu3.wl-tiwai@suse.de>
+        <20220129144704.xlmeylllvy3b3fum@localhost.localdomain>
+        <20220130111020.44gzrm5ckrakjta2@localhost.localdomain>
+        <s5htudk9cn3.wl-tiwai@suse.de>
+        <20220205150016.gvrst7ldvgjh7fra@localhost.localdomain>
+        <20220205175132.ihwp5wlxga4efngl@localhost.localdomain>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 06, 2022 at 10:05:35PM +0000, Matthew Wilcox wrote:
-> On Sun, Feb 06, 2022 at 11:33:40PM +0200, Mike Rapoport wrote:
-> > On Sun, Feb 06, 2022 at 08:46:45PM +0000, Matthew Wilcox wrote:
-> > > On Sun, Feb 06, 2022 at 08:13:11PM +0200, Mike Rapoport wrote:
-> > > > On Fri, Feb 04, 2022 at 07:58:18PM +0000, Matthew Wilcox (Oracle) wrote:
-> > > > > I need to use this function in common code, so define it for hexagon.
-> > > > > 
-> > > > > Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> > > > > ---
-> > > > >  arch/hexagon/include/asm/pgtable.h | 3 ++-
-> > > > 
-> > > > Why hexagon out of all architectures?
-> > > > What about m68k, nios2, nds32 etc?
-> > 
-> > > Presumably they don't support CONFIG_TRANSPARENT_HUGEPAGE.
-> > > This code isn't compiled when THP are disabled; at least I haven't
-> > > had a buildbot complaint for any other architectures.
-> > 
-> > m68k defconfig fails:
-> > 
-> >   CC      mm/page_vma_mapped.o
-> > mm/page_vma_mapped.c: In function 'page_vma_mapped_walk':
-> > mm/page_vma_mapped.c:219:20: error: implicit declaration of function 'pmd_pfn'; did you mean 'pmd_off'? [-Werror=implicit-function-declaration]
-> >   219 |     if (!check_pmd(pmd_pfn(pmde), pvmw))
-> >       |                    ^~~~~~~
-> >       |                    pmd_off
+On Sat, 05 Feb 2022 18:51:32 +0100,
+Alexander Sergeyev wrote:
 > 
-> Ok, so this whole thing is protected by "if (pmd_trans_huge(pmd))"
-> which is defined to be 0 if !THP.  But obviously, gcc is trying to parse
-> it.  So I think we need something like:
+> On Mon, Jan 31, 2022 at 03:57:04PM +0100, Takashi Iwai wrote:
+> > In anyway, we need to track down exactly which access triggers those 
+> > errors...
 > 
-> #ifndef CONFIG_TRANSPARENT_HUGEPAGE
-> static inline unsigned long pmd_pfn(pmd_t pmd)
-> {
->         BUG();
->         return 0UL;
-> }
-> #endif
+> I went deeper into codec reads and writes:
+> - snd_hda_codec_write
+> - snd_hdac_codec_write
+> - codec_write
+> - snd_hdac_exec_verb
+> - codec_exec_verb
+> - snd_hdac_bus_exec_verb_unlocked
+> - azx_send_cmd / azx_get_response
+> - snd_hdac_bus_send_cmd / azx_rirb_get_response
 > 
-> but that can have its own problem if architectures define pmd_pfn()
-> when they don't have CONFIG_TRANSPARENT_HUGEPAGE.  Which of course, they
-> can do.
+> In the last functions a circular buffer is used to write commands. The 
+> problem is that "bus->corb.buf[wp]" and "bus->rirb.res[addr]" are 
+> nowhere close to the IOMMU-reported address of the offending memory 
+> access. It's likely that I've missed other communication channels. But 
+> is it possible that IOMMU-reported address and buffers addresses are of 
+> different kinds (physical/virtual) or different regions mapped to the 
+> same physical pages?
+> 
+> Example:
+> snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x3b8000, wp=0xfb, &buf[wp]=00000000f1fd4592
+> snd_hdac_bus_get_response: reading result from 0000000059c4003d
+> snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x339000, wp=0xfc, &buf[wp]=000000007f14c128
+> snd_hdac_bus_get_response: reading result from 0000000059c4003d
+> snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x1470740, wp=0xfd, &buf[wp]=00000000a6b14901
+> snd_hdac_bus_get_response: reading result from 0000000059c4003d
+> snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x14ba000, wp=0xfe, &buf[wp]=00000000d8d1672a
+> snd_hdac_bus_get_response: reading result from 0000000059c4003d
+> snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x14b8000, wp=0xff, &buf[wp]=00000000b87b3287
+> snd_hdac_bus_get_response: reading result from 0000000059c4003d
+> snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x2ba000, wp=0x0, &buf[wp]=000000002162c728
+> snd_hdac_bus_get_response: reading result from 0000000059c4003d
+> snd_hdac_bus_send_cmd: bus->corb.buf[wp] = cpu_to_le32(val) // = 0x2b8000, wp=0x1, &buf[wp]=0000000095f61061
+> snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff800 flags=0x0020]
 
-I think the safest would be to define pmd_pfn where it's missing. Then
-the whole pmd_pfn(), pmd_page() and pmd_page_vaddr() can be cleaned up on
-top, but this won't block folio work.
-
-I've baked a patch that defines pmd_pfn() based on pmd_page_vaddr() or pmd_page()
-definition. With pmd_pfn() defined we won't need special care for THP or
-!THP cases and PMD is always there even if it's called PGD sometimes.
-
-From e0befabdfb5a4aaeab38a998fa58fe3218e80ad8 Mon Sep 17 00:00:00 2001
-From: Mike Rapoport <rppt@linux.ibm.com>
-Date: Fri, 4 Feb 2022 13:49:20 -0500
-Subject: [PATCH] arch: Add pmd_pfn() where it is missing
-
-Willy needs to use this function in common code, so define it for
-architectures and/or configrations that miss it.
-
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
----
- arch/alpha/include/asm/pgtable.h         | 1 +
- arch/arc/include/asm/hugepage.h          | 1 -
- arch/arc/include/asm/pgtable-levels.h    | 1 +
- arch/arm/include/asm/pgtable-2level.h    | 2 ++
- arch/csky/include/asm/pgtable.h          | 1 +
- arch/hexagon/include/asm/pgtable.h       | 5 +++++
- arch/ia64/include/asm/pgtable.h          | 1 +
- arch/m68k/include/asm/mcf_pgtable.h      | 1 +
- arch/m68k/include/asm/motorola_pgtable.h | 1 +
- arch/m68k/include/asm/sun3_pgtable.h     | 1 +
- arch/microblaze/include/asm/pgtable.h    | 3 +++
- arch/nds32/include/asm/pgtable.h         | 1 +
- arch/nios2/include/asm/pgtable.h         | 1 +
- arch/openrisc/include/asm/pgtable.h      | 1 +
- arch/parisc/include/asm/pgtable.h        | 1 +
- arch/sh/include/asm/pgtable_32.h         | 1 +
- arch/um/include/asm/pgtable.h            | 1 +
- arch/xtensa/include/asm/pgtable.h        | 1 +
- 18 files changed, 24 insertions(+), 1 deletion(-)
-
-diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
-index 02f0429f1068..170451fde043 100644
---- a/arch/alpha/include/asm/pgtable.h
-+++ b/arch/alpha/include/asm/pgtable.h
-@@ -233,6 +233,7 @@ pmd_page_vaddr(pmd_t pmd)
- 	return ((pmd_val(pmd) & _PFN_MASK) >> (32-PAGE_SHIFT)) + PAGE_OFFSET;
- }
- 
-+#define pmd_pfn(pmd)	(pmd_val(pmd) >> 32)
- #define pmd_page(pmd)	(pfn_to_page(pmd_val(pmd) >> 32))
- #define pud_page(pud)	(pfn_to_page(pud_val(pud) >> 32))
- 
-diff --git a/arch/arc/include/asm/hugepage.h b/arch/arc/include/asm/hugepage.h
-index 11b0ff26b97b..5001b796fb8d 100644
---- a/arch/arc/include/asm/hugepage.h
-+++ b/arch/arc/include/asm/hugepage.h
-@@ -31,7 +31,6 @@ static inline pmd_t pte_pmd(pte_t pte)
- 
- #define pmd_write(pmd)		pte_write(pmd_pte(pmd))
- #define pmd_young(pmd)		pte_young(pmd_pte(pmd))
--#define pmd_pfn(pmd)		pte_pfn(pmd_pte(pmd))
- #define pmd_dirty(pmd)		pte_dirty(pmd_pte(pmd))
- 
- #define mk_pmd(page, prot)	pte_pmd(mk_pte(page, prot))
-diff --git a/arch/arc/include/asm/pgtable-levels.h b/arch/arc/include/asm/pgtable-levels.h
-index 8084ef2f6491..7848348719b2 100644
---- a/arch/arc/include/asm/pgtable-levels.h
-+++ b/arch/arc/include/asm/pgtable-levels.h
-@@ -161,6 +161,7 @@
- #define pmd_present(x)		(pmd_val(x))
- #define pmd_clear(xp)		do { pmd_val(*(xp)) = 0; } while (0)
- #define pmd_page_vaddr(pmd)	(pmd_val(pmd) & PAGE_MASK)
-+#define pmd_pfn(pmd)		((pmd_val(pmd) & PAGE_MASK) >> PAGE_SHIFT)
- #define pmd_page(pmd)		virt_to_page(pmd_page_vaddr(pmd))
- #define set_pmd(pmdp, pmd)	(*(pmdp) = pmd)
- #define pmd_pgtable(pmd)	((pgtable_t) pmd_page_vaddr(pmd))
-diff --git a/arch/arm/include/asm/pgtable-2level.h b/arch/arm/include/asm/pgtable-2level.h
-index 70fe69bdcce2..92abd4cd8ca2 100644
---- a/arch/arm/include/asm/pgtable-2level.h
-+++ b/arch/arm/include/asm/pgtable-2level.h
-@@ -208,6 +208,8 @@ static inline pmd_t *pmd_offset(pud_t *pud, unsigned long addr)
- }
- #define pmd_offset pmd_offset
- 
-+#define pmd_pfn(pmd)		(__phys_to_pfn(pmd_val(pmd) & PHYS_MASK))
-+
- #define pmd_large(pmd)		(pmd_val(pmd) & 2)
- #define pmd_leaf(pmd)		(pmd_val(pmd) & 2)
- #define pmd_bad(pmd)		(pmd_val(pmd) & 2)
-diff --git a/arch/csky/include/asm/pgtable.h b/arch/csky/include/asm/pgtable.h
-index 151607ed5158..bbe245117777 100644
---- a/arch/csky/include/asm/pgtable.h
-+++ b/arch/csky/include/asm/pgtable.h
-@@ -30,6 +30,7 @@
- #define pgd_ERROR(e) \
- 	pr_err("%s:%d: bad pgd %08lx.\n", __FILE__, __LINE__, pgd_val(e))
- 
-+#define pmd_pfn(pmd)	(pmd_phys(pmd) >> PAGE_SHIFT)
- #define pmd_page(pmd)	(pfn_to_page(pmd_phys(pmd) >> PAGE_SHIFT))
- #define pte_clear(mm, addr, ptep)	set_pte((ptep), \
- 	(((unsigned int) addr >= PAGE_OFFSET) ? __pte(_PAGE_GLOBAL) : __pte(0)))
-diff --git a/arch/hexagon/include/asm/pgtable.h b/arch/hexagon/include/asm/pgtable.h
-index 18cd6ea9ab23..0610724d6a28 100644
---- a/arch/hexagon/include/asm/pgtable.h
-+++ b/arch/hexagon/include/asm/pgtable.h
-@@ -235,6 +235,11 @@ static inline int pmd_bad(pmd_t pmd)
- 	return 0;
- }
- 
-+/*
-+ * pmd_pfn - converts a PMD entry to a page frame number
-+ */
-+#define pmd_pfn(pmd)  (pmd_val(pmd) >> PAGE_SHIFT)
-+
- /*
-  * pmd_page - converts a PMD entry to a page pointer
-  */
-diff --git a/arch/ia64/include/asm/pgtable.h b/arch/ia64/include/asm/pgtable.h
-index 9584b2c5f394..7aa8f2330fb1 100644
---- a/arch/ia64/include/asm/pgtable.h
-+++ b/arch/ia64/include/asm/pgtable.h
-@@ -267,6 +267,7 @@ ia64_phys_addr_valid (unsigned long addr)
- #define pmd_present(pmd)		(pmd_val(pmd) != 0UL)
- #define pmd_clear(pmdp)			(pmd_val(*(pmdp)) = 0UL)
- #define pmd_page_vaddr(pmd)		((unsigned long) __va(pmd_val(pmd) & _PFN_MASK))
-+#define pmd_pfn(pmd)			((pmd_val(pmd) & _PFN_MASK) >> PAGE_SHIFT)
- #define pmd_page(pmd)			virt_to_page((pmd_val(pmd) + PAGE_OFFSET))
- 
- #define pud_none(pud)			(!pud_val(pud))
-diff --git a/arch/m68k/include/asm/mcf_pgtable.h b/arch/m68k/include/asm/mcf_pgtable.h
-index 6f2b87d7a50d..94f38d76e278 100644
---- a/arch/m68k/include/asm/mcf_pgtable.h
-+++ b/arch/m68k/include/asm/mcf_pgtable.h
-@@ -322,6 +322,7 @@ extern pgd_t kernel_pg_dir[PTRS_PER_PGD];
- #define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
- #define __swp_entry_to_pte(x)	(__pte((x).val))
- 
-+#define pmd_pfn(pmd)		(pmd_val(pmd) >> PAGE_SHIFT)
- #define pmd_page(pmd)		(pfn_to_page(pmd_val(pmd) >> PAGE_SHIFT))
- 
- #define pfn_pte(pfn, prot)	__pte(((pfn) << PAGE_SHIFT) | pgprot_val(prot))
-diff --git a/arch/m68k/include/asm/motorola_pgtable.h b/arch/m68k/include/asm/motorola_pgtable.h
-index 022c3abc280d..7c9b56e2a750 100644
---- a/arch/m68k/include/asm/motorola_pgtable.h
-+++ b/arch/m68k/include/asm/motorola_pgtable.h
-@@ -147,6 +147,7 @@ static inline void pud_set(pud_t *pudp, pmd_t *pmdp)
- #define pmd_present(pmd)	(pmd_val(pmd) & _PAGE_TABLE)
- #define pmd_clear(pmdp)		({ pmd_val(*pmdp) = 0; })
- 
-+#define pmd_pfn(pmd)		((pmd_val(pmd) & _TABLE_MASK) >> PAGE_SHIFT)
- /*
-  * m68k does not have huge pages (020/030 actually could), but generic code
-  * expects pmd_page() to exists, only to then DCE it all. Provide a dummy to
-diff --git a/arch/m68k/include/asm/sun3_pgtable.h b/arch/m68k/include/asm/sun3_pgtable.h
-index 5b24283a0a42..5e4e753f0d24 100644
---- a/arch/m68k/include/asm/sun3_pgtable.h
-+++ b/arch/m68k/include/asm/sun3_pgtable.h
-@@ -130,6 +130,7 @@ static inline void pte_clear (struct mm_struct *mm, unsigned long addr, pte_t *p
- ({ pte_t __pte; pte_val(__pte) = pfn | pgprot_val(pgprot); __pte; })
- 
- #define pte_page(pte)		virt_to_page(__pte_page(pte))
-+#define pmd_pfn(pmd)		(pmd_val(pmd) >> PAGE_SHIFT)
- #define pmd_page(pmd)		virt_to_page(pmd_page_vaddr(pmd))
- 
- 
-diff --git a/arch/microblaze/include/asm/pgtable.h b/arch/microblaze/include/asm/pgtable.h
-index c136a01e467e..0c72646370e1 100644
---- a/arch/microblaze/include/asm/pgtable.h
-+++ b/arch/microblaze/include/asm/pgtable.h
-@@ -399,6 +399,9 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
- 	return ((unsigned long) (pmd_val(pmd) & PAGE_MASK));
- }
- 
-+/* returns pfn of the pmd entry*/
-+#define pmd_pfn(pmd)	(__pa(pmd_val(pmd)) >> PAGE_SHIFT)
-+
- /* returns struct *page of the pmd entry*/
- #define pmd_page(pmd)	(pfn_to_page(__pa(pmd_val(pmd)) >> PAGE_SHIFT))
- 
-diff --git a/arch/nds32/include/asm/pgtable.h b/arch/nds32/include/asm/pgtable.h
-index 419f984eef70..7ff144467b29 100644
---- a/arch/nds32/include/asm/pgtable.h
-+++ b/arch/nds32/include/asm/pgtable.h
-@@ -308,6 +308,7 @@ static inline pmd_t __mk_pmd(pte_t * ptep, unsigned long prot)
- 	return pmd;
- }
- 
-+#define pmd_pfn(pmd)	     (pmd_val(pmd) >> PAGE_SHIFT)
- #define pmd_page(pmd)        virt_to_page(__va(pmd_val(pmd)))
- 
- /*
-diff --git a/arch/nios2/include/asm/pgtable.h b/arch/nios2/include/asm/pgtable.h
-index 4a995fa628ee..262d0609268c 100644
---- a/arch/nios2/include/asm/pgtable.h
-+++ b/arch/nios2/include/asm/pgtable.h
-@@ -235,6 +235,7 @@ static inline void pte_clear(struct mm_struct *mm,
-  * and a page entry and page directory to the page they refer to.
-  */
- #define pmd_phys(pmd)		virt_to_phys((void *)pmd_val(pmd))
-+#define pmd_pfn(pmd)		(pmd_phys(pmd) >> PAGE_SHIFT)
- #define pmd_page(pmd)		(pfn_to_page(pmd_phys(pmd) >> PAGE_SHIFT))
- 
- static inline unsigned long pmd_page_vaddr(pmd_t pmd)
-diff --git a/arch/openrisc/include/asm/pgtable.h b/arch/openrisc/include/asm/pgtable.h
-index cdd657f80bfa..c3abbf71e09f 100644
---- a/arch/openrisc/include/asm/pgtable.h
-+++ b/arch/openrisc/include/asm/pgtable.h
-@@ -361,6 +361,7 @@ static inline void pmd_set(pmd_t *pmdp, pte_t *ptep)
- 	pmd_val(*pmdp) = _KERNPG_TABLE | (unsigned long) ptep;
- }
- 
-+#define pmd_pfn(pmd)		(pmd_val(pmd) >> PAGE_SHIFT)
- #define pmd_page(pmd)		(pfn_to_page(pmd_val(pmd) >> PAGE_SHIFT))
- 
- static inline unsigned long pmd_page_vaddr(pmd_t pmd)
-diff --git a/arch/parisc/include/asm/pgtable.h b/arch/parisc/include/asm/pgtable.h
-index 3e7cf882639f..48d49f207f84 100644
---- a/arch/parisc/include/asm/pgtable.h
-+++ b/arch/parisc/include/asm/pgtable.h
-@@ -405,6 +405,7 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
- 	return ((unsigned long) __va(pmd_address(pmd)));
- }
- 
-+#define pmd_pfn(pmd)	(pmd_address(pmd) >> PAGE_SHIFT)
- #define __pmd_page(pmd) ((unsigned long) __va(pmd_address(pmd)))
- #define pmd_page(pmd)	virt_to_page((void *)__pmd_page(pmd))
- 
-diff --git a/arch/sh/include/asm/pgtable_32.h b/arch/sh/include/asm/pgtable_32.h
-index 41be43e99cff..d0240decacca 100644
---- a/arch/sh/include/asm/pgtable_32.h
-+++ b/arch/sh/include/asm/pgtable_32.h
-@@ -406,6 +406,7 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
- 	return (unsigned long)pmd_val(pmd);
- }
- 
-+#define pmd_pfn(pmd)		(__pa(pmd_val(pmd)) >> PAGE_SHIFT)
- #define pmd_page(pmd)		(virt_to_page(pmd_val(pmd)))
- 
- #ifdef CONFIG_X2TLB
-diff --git a/arch/um/include/asm/pgtable.h b/arch/um/include/asm/pgtable.h
-index b9e20bbe2f75..167e236d9bb8 100644
---- a/arch/um/include/asm/pgtable.h
-+++ b/arch/um/include/asm/pgtable.h
-@@ -109,6 +109,7 @@ extern unsigned long end_iomem;
- #define p4d_newpage(x)  (p4d_val(x) & _PAGE_NEWPAGE)
- #define p4d_mkuptodate(x) (p4d_val(x) &= ~_PAGE_NEWPAGE)
- 
-+#define pmd_pfn(pmd) (pmd_val(pmd) >> PAGE_SHIFT)
- #define pmd_page(pmd) phys_to_page(pmd_val(pmd) & PAGE_MASK)
- 
- #define pte_page(x) pfn_to_page(pte_pfn(x))
-diff --git a/arch/xtensa/include/asm/pgtable.h b/arch/xtensa/include/asm/pgtable.h
-index bd5aeb795567..8da562f5da73 100644
---- a/arch/xtensa/include/asm/pgtable.h
-+++ b/arch/xtensa/include/asm/pgtable.h
-@@ -241,6 +241,7 @@ static inline void paging_init(void) { }
-  * The pmd contains the kernel virtual address of the pte page.
-  */
- #define pmd_page_vaddr(pmd) ((unsigned long)(pmd_val(pmd) & PAGE_MASK))
-+#define pmd_pfn(pmd) (__pa(pmd_val(pmd)) >> PAGE_SHIFT)
- #define pmd_page(pmd) virt_to_page(pmd_val(pmd))
- 
- /*
--- 
-2.25.1
+Hm, I'm not sure, either.  But let's try to avoid some possible
+confusion at first, e.g. a patch like below.
 
 
--- 
-Sincerely yours,
-Mike.
+Takashi
+
+-- 8< --
+diff --git a/sound/hda/hdac_controller.c b/sound/hda/hdac_controller.c
+index f7bd6e2db085..074199aa73ea 100644
+--- a/sound/hda/hdac_controller.c
++++ b/sound/hda/hdac_controller.c
+@@ -618,7 +618,7 @@ int snd_hdac_bus_alloc_stream_pages(struct hdac_bus *bus)
+ 	if (WARN_ON(!num_streams))
+ 		return -EINVAL;
+ 	/* allocate memory for the position buffer */
+-	err = snd_dma_alloc_pages(dma_type, bus->dev,
++	err = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, bus->dev,
+ 				  num_streams * 8, &bus->posbuf);
+ 	if (err < 0)
+ 		return -ENOMEM;
+@@ -626,7 +626,7 @@ int snd_hdac_bus_alloc_stream_pages(struct hdac_bus *bus)
+ 		s->posbuf = (__le32 *)(bus->posbuf.area + s->index * 8);
+ 
+ 	/* single page (at least 4096 bytes) must suffice for both ringbuffes */
+-	return snd_dma_alloc_pages(dma_type, bus->dev, PAGE_SIZE, &bus->rb);
++	return snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, bus->dev, PAGE_SIZE, &bus->rb);
+ }
+ EXPORT_SYMBOL_GPL(snd_hdac_bus_alloc_stream_pages);
+ 
+
