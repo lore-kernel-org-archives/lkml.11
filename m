@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E49C35276
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E606C3527C
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385536AbiBGLb5 (ORCPT
+        id S1386321AbiBGLeY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:31:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
+        Mon, 7 Feb 2022 06:34:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382964AbiBGLVQ (ORCPT
+        with ESMTP id S1383831AbiBGLXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:21:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC98CC0401D4;
-        Mon,  7 Feb 2022 03:20:51 -0800 (PST)
+        Mon, 7 Feb 2022 06:23:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B3EC0401C2;
+        Mon,  7 Feb 2022 03:23:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC1E8B811BF;
-        Mon,  7 Feb 2022 11:20:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B140DC004E1;
-        Mon,  7 Feb 2022 11:20:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A51C6B81028;
+        Mon,  7 Feb 2022 11:23:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E66E3C004E1;
+        Mon,  7 Feb 2022 11:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232839;
-        bh=NJmS3B+Cb2vA5MU8O1kb12BTorYlXGdNj7c14dfOLcw=;
+        s=korg; t=1644233015;
+        bh=RvuDaYRuaj5nY8GNjEn5EiyUfTzSdHrWzSwRtuJGEV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=So1ljySBLZGW2C6usm45/0XQ0a0WxFUPxqqdWYyRjTB/w/xTrnMzAfpQ9lKTAf+SA
-         dprjBcJXdkS6bcVpyROHTvwzxcU/IEFNnuSlYi/z1MKYT9j6+RRHjJZqXyfiUa/oKi
-         98NS19jCV2yisRlBb2useTtm/xBrQvSVgMoH6MXw=
+        b=pNN8ucsfppJtqn2M1eMfoPzLWNTyIZJrPSRRgpa9NIKvmI9hcBrG+jfXxeDweMYZo
+         bJIZHm+HWbDit/L5884mj57d9Bc0QWDj9THKszYzs3im4F4nqNlXfGpwwgV3ye29EY
+         fB5J0YwuLdLJpfmpZQJ8BOuvtyc1x1RO1NEZjij0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.4 31/44] drm/i915/overlay: Prevent divide by zero bugs in scaling
-Date:   Mon,  7 Feb 2022 12:06:47 +0100
-Message-Id: <20220207103754.168225437@linuxfoundation.org>
+        stable@vger.kernel.org, Kyle Huey <me@kylehuey.com>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, stable@kernel.org
+Subject: [PATCH 5.10 64/74] x86/perf: Default set FREEZE_ON_SMI for all
+Date:   Mon,  7 Feb 2022 12:07:02 +0100
+Message-Id: <20220207103759.331714765@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
-References: <20220207103753.155627314@linuxfoundation.org>
+In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
+References: <20220207103757.232676988@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,41 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 90a3d22ff02b196d5884e111f39271a1d4ee8e3e upstream.
+commit a01994f5e5c79d3a35e5e8cf4252c7f2147323c3 upstream.
 
-Smatch detected a divide by zero bug in check_overlay_scaling().
+Kyle reported that rr[0] has started to malfunction on Comet Lake and
+later CPUs due to EFI starting to make use of CPL3 [1] and the PMU
+event filtering not distinguishing between regular CPL3 and SMM CPL3.
 
-    drivers/gpu/drm/i915/display/intel_overlay.c:976 check_overlay_scaling()
-    error: potential divide by zero bug '/ rec->dst_height'.
-    drivers/gpu/drm/i915/display/intel_overlay.c:980 check_overlay_scaling()
-    error: potential divide by zero bug '/ rec->dst_width'.
+Since this is a privilege violation, default disable SMM visibility
+where possible.
 
-Prevent this by ensuring that the dst height and width are non-zero.
+Administrators wanting to observe SMM cycles can easily change this
+using the sysfs attribute while regular users don't have access to
+this file.
 
-Fixes: 02e792fbaadb ("drm/i915: implement drmmode overlay support v4")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220124122409.GA31673@kili
-(cherry picked from commit cf5b64f7f10b28bebb9b7c9d25e7aee5cbe43918)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+[0] https://rr-project.org/
+
+[1] See the Intel white paper "Trustworthy SMM on the Intel vPro Platform"
+at https://bugzilla.kernel.org/attachment.cgi?id=300300, particularly the
+end of page 5.
+
+Reported-by: Kyle Huey <me@kylehuey.com>
+Suggested-by: Andrew Cooper <Andrew.Cooper3@citrix.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: stable@kernel.org
+Link: https://lkml.kernel.org/r/YfKChjX61OW4CkYm@hirez.programming.kicks-ass.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_overlay.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/events/intel/core.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/drivers/gpu/drm/i915/display/intel_overlay.c
-+++ b/drivers/gpu/drm/i915/display/intel_overlay.c
-@@ -913,6 +913,9 @@ static int check_overlay_dst(struct inte
- 	const struct intel_crtc_state *pipe_config =
- 		overlay->crtc->config;
- 
-+	if (rec->dst_height == 0 || rec->dst_width == 0)
-+		return -EINVAL;
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -4353,6 +4353,19 @@ static __initconst const struct x86_pmu
+ 	.lbr_read		= intel_pmu_lbr_read_64,
+ 	.lbr_save		= intel_pmu_lbr_save,
+ 	.lbr_restore		= intel_pmu_lbr_restore,
 +
- 	if (rec->dst_x < pipe_config->pipe_src_w &&
- 	    rec->dst_x + rec->dst_width <= pipe_config->pipe_src_w &&
- 	    rec->dst_y < pipe_config->pipe_src_h &&
++	/*
++	 * SMM has access to all 4 rings and while traditionally SMM code only
++	 * ran in CPL0, 2021-era firmware is starting to make use of CPL3 in SMM.
++	 *
++	 * Since the EVENTSEL.{USR,OS} CPL filtering makes no distinction
++	 * between SMM or not, this results in what should be pure userspace
++	 * counters including SMM data.
++	 *
++	 * This is a clear privilege issue, therefore globally disable
++	 * counting SMM by default.
++	 */
++	.attr_freeze_on_smi	= 1,
+ };
+ 
+ static __init void intel_clovertown_quirk(void)
 
 
