@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D34FFC43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DDEC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239388AbiBGLqn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:46:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46434 "EHLO
+        id S1344905AbiBGLon (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 06:44:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386252AbiBGLeJ (ORCPT
+        with ESMTP id S1385967AbiBGLdM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:34:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4990DC043188;
-        Mon,  7 Feb 2022 03:34:08 -0800 (PST)
+        Mon, 7 Feb 2022 06:33:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2710AC043181;
+        Mon,  7 Feb 2022 03:33:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCA4260A69;
-        Mon,  7 Feb 2022 11:34:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D135AC004E1;
-        Mon,  7 Feb 2022 11:34:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1FE8B8111C;
+        Mon,  7 Feb 2022 11:33:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C26FEC004E1;
+        Mon,  7 Feb 2022 11:33:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233647;
-        bh=l41qFpCCnF7zcx7W10sjE/r96IdLrzfLg4iNeaeKeis=;
+        s=korg; t=1644233589;
+        bh=45tOOHDrjTYStgkC+9Zc7z5T7IhQblOXUrM1/Oiv+8Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CqBo7iVC5N34b3DaUt11dA6GZQWZfewM7/vnokEVZZl4bIwfW530IRhGTR5XtfmM8
-         h/ykPLqmQk5Nv+jcUUBNK7qWTdXWWt9tRQvkzqcuK0U6E2Q8IV5ABt5l9xC/yY/7I0
-         K4kI8PwnCSMxM1DK0R/lfRbIBZAkhRFO5JHfBRV0=
+        b=Ni7sS6sNoeweGTWwLpr2YI0+Zb3VRj+d+Mgxezjih31L9++P6XrrWPLh+uK6EjY+d
+         3vkIZ46fRmBTDGDwxXQ48xE6VuMb80oGCRftB0fdxgCB4V6JC6ftARpX8Y0bq9R2Pa
+         ztBeRzJ7qSP0TfrrVz+z2LNH/+JJp7jcMm9zbYt8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yannick Vignon <yannick.vignon@nxp.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 077/126] net: stmmac: ensure PTP time register reads are consistent
-Date:   Mon,  7 Feb 2022 12:06:48 +0100
-Message-Id: <20220207103806.773594103@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Wheeler <daniel.wheeler@amd.com>,
+        Aric Cyr <Aric.Cyr@amd.com>, Stylon Wang <stylon.wang@amd.com>,
+        Paul Hsieh <paul.hsieh@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 027/126] drm/amd/display: watermark latencies is not enough on DCN31
+Date:   Mon,  7 Feb 2022 12:05:58 +0100
+Message-Id: <20220207103805.085322616@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -49,55 +51,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yannick Vignon <yannick.vignon@nxp.com>
+From: Paul Hsieh <paul.hsieh@amd.com>
 
-commit 80d4609008e6d696a279e39ae7458c916fcd44c1 upstream.
+commit f5fa54f45ab41cbb1f99b1208f49554132ffb207 upstream.
 
-Even if protected from preemption and interrupts, a small time window
-remains when the 2 register reads could return inconsistent values,
-each time the "seconds" register changes. This could lead to an about
-1-second error in the reported time.
+[Why]
+The original latencies were causing underflow in some modes.
+Resolution: 2880x1620@60p when HDR enable
 
-Add logic to ensure the "seconds" and "nanoseconds" values are consistent.
+[How]
+1. Replace with the up-to-date watermark values based on new measurments
+2. Correct the ddr_wm_table name to DDR5 on DCN31
 
-Fixes: 92ba6888510c ("stmmac: add the support for PTP hw clock driver")
-Signed-off-by: Yannick Vignon <yannick.vignon@nxp.com>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/20220203160025.750632-1-yannick.vignon@oss.nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
+Acked-by: Stylon Wang <stylon.wang@amd.com>
+Signed-off-by: Paul Hsieh <paul.hsieh@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c |   17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_clk_mgr.c |   20 +++++------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-@@ -145,15 +145,20 @@ static int adjust_systime(void __iomem *
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_clk_mgr.c
+@@ -329,38 +329,38 @@ static struct clk_bw_params dcn31_bw_par
  
- static void get_systime(void __iomem *ioaddr, u64 *systime)
- {
--	u64 ns;
-+	u64 ns, sec0, sec1;
+ };
  
--	/* Get the TSSS value */
--	ns = readl(ioaddr + PTP_STNSR);
--	/* Get the TSS and convert sec time value to nanosecond */
--	ns += readl(ioaddr + PTP_STSR) * 1000000000ULL;
-+	/* Get the TSS value */
-+	sec1 = readl_relaxed(ioaddr + PTP_STSR);
-+	do {
-+		sec0 = sec1;
-+		/* Get the TSSS value */
-+		ns = readl_relaxed(ioaddr + PTP_STNSR);
-+		/* Get the TSS value */
-+		sec1 = readl_relaxed(ioaddr + PTP_STSR);
-+	} while (sec0 != sec1);
- 
- 	if (systime)
--		*systime = ns;
-+		*systime = ns + (sec1 * 1000000000ULL);
- }
- 
- static void get_ptptime(void __iomem *ptpaddr, u64 *ptp_time)
+-static struct wm_table ddr4_wm_table = {
++static struct wm_table ddr5_wm_table = {
+ 	.entries = {
+ 		{
+ 			.wm_inst = WM_A,
+ 			.wm_type = WM_TYPE_PSTATE_CHG,
+ 			.pstate_latency_us = 11.72,
+-			.sr_exit_time_us = 6.09,
+-			.sr_enter_plus_exit_time_us = 7.14,
++			.sr_exit_time_us = 9,
++			.sr_enter_plus_exit_time_us = 11,
+ 			.valid = true,
+ 		},
+ 		{
+ 			.wm_inst = WM_B,
+ 			.wm_type = WM_TYPE_PSTATE_CHG,
+ 			.pstate_latency_us = 11.72,
+-			.sr_exit_time_us = 10.12,
+-			.sr_enter_plus_exit_time_us = 11.48,
++			.sr_exit_time_us = 9,
++			.sr_enter_plus_exit_time_us = 11,
+ 			.valid = true,
+ 		},
+ 		{
+ 			.wm_inst = WM_C,
+ 			.wm_type = WM_TYPE_PSTATE_CHG,
+ 			.pstate_latency_us = 11.72,
+-			.sr_exit_time_us = 10.12,
+-			.sr_enter_plus_exit_time_us = 11.48,
++			.sr_exit_time_us = 9,
++			.sr_enter_plus_exit_time_us = 11,
+ 			.valid = true,
+ 		},
+ 		{
+ 			.wm_inst = WM_D,
+ 			.wm_type = WM_TYPE_PSTATE_CHG,
+ 			.pstate_latency_us = 11.72,
+-			.sr_exit_time_us = 10.12,
+-			.sr_enter_plus_exit_time_us = 11.48,
++			.sr_exit_time_us = 9,
++			.sr_enter_plus_exit_time_us = 11,
+ 			.valid = true,
+ 		},
+ 	}
+@@ -688,7 +688,7 @@ void dcn31_clk_mgr_construct(
+ 		if (ctx->dc_bios->integrated_info->memory_type == LpDdr5MemType) {
+ 			dcn31_bw_params.wm_table = lpddr5_wm_table;
+ 		} else {
+-			dcn31_bw_params.wm_table = ddr4_wm_table;
++			dcn31_bw_params.wm_table = ddr5_wm_table;
+ 		}
+ 		/* Saved clocks configured at boot for debug purposes */
+ 		 dcn31_dump_clk_registers(&clk_mgr->base.base.boot_snapshot, &clk_mgr->base.base, &log_info);
 
 
