@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB874C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF54C35272
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379088AbiBGLQD (ORCPT
+        id S1379269AbiBGLQK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:16:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49752 "EHLO
+        Mon, 7 Feb 2022 06:16:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354815AbiBGLM0 (ORCPT
+        with ESMTP id S1354980AbiBGLM2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:12:26 -0500
+        Mon, 7 Feb 2022 06:12:28 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC89C043188;
-        Mon,  7 Feb 2022 03:12:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54D7C043181;
+        Mon,  7 Feb 2022 03:12:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B462611AA;
-        Mon,  7 Feb 2022 11:12:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC7DC004E1;
-        Mon,  7 Feb 2022 11:12:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 633496113B;
+        Mon,  7 Feb 2022 11:12:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41AA1C004E1;
+        Mon,  7 Feb 2022 11:12:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232344;
-        bh=FE2h/zvvcUjsME01AwRtBtnb1+6moFaXnxKmjhwCs3A=;
+        s=korg; t=1644232346;
+        bh=880A3N1m8uxGACnXvYZQDn0CmPaaXP1yPfGtSMIAMvY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d7/ngxnbVgbeCX6qVlzE8O9AH4ps0gtGp6nlrlGQs2YMcGT5zfFqnonfebWn1yj0U
-         sMjsyBmaxFVW1riW6xZT2ClV7wFswN6mTp6z4951DdVyS5+G+NFYMOeMQznijVTlem
-         +gsI/UCf2NbQCp50STInFUh3gLB3aGECndjVhu/g=
+        b=AJHONb9SgBz3g0AXeP2RibuqhljC7qQkmyfFSiCtzxYdMHGONXz1j6AWLZeJuBPyI
+         YSP1AC4JBSYqWO8/UIl5K6PfjjIcXpBTT1OfwXBYD5USt0bX6eEaNB0sa1wbFS0sc3
+         aDxnoRWI7sxIp4CFdMYQBiasnfKD5gb9jTfKK2Io=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Badhri Jagan Sridharan <badhri@google.com>
-Subject: [PATCH 4.14 15/69] usb: typec: tcpm: Do not disconnect while receiving VBUS off
-Date:   Mon,  7 Feb 2022 12:05:37 +0100
-Message-Id: <20220207103756.117211011@linuxfoundation.org>
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 16/69] net: sfp: ignore disabled SFP node
+Date:   Mon,  7 Feb 2022 12:05:38 +0100
+Message-Id: <20220207103756.148355340@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -50,53 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Badhri Jagan Sridharan <badhri@google.com>
+From: Marek Behún <kabel@kernel.org>
 
-commit 90b8aa9f5b09edae6928c0561f933fec9f7a9987 upstream.
+commit 2148927e6ed43a1667baf7c2ae3e0e05a44b51a0 upstream.
 
-With some chargers, vbus might momentarily raise above VSAFE5V and fall
-back to 0V before tcpm gets to read port->tcpc->get_vbus. This will
-will report a VBUS off event causing TCPM to transition to
-SNK_UNATTACHED where it should be waiting in either SNK_ATTACH_WAIT
-or SNK_DEBOUNCED state. This patch makes TCPM avoid vbus off events
-while in SNK_ATTACH_WAIT or SNK_DEBOUNCED state.
+Commit ce0aa27ff3f6 ("sfp: add sfp-bus to bridge between network devices
+and sfp cages") added code which finds SFP bus DT node even if the node
+is disabled with status = "disabled". Because of this, when phylink is
+created, it ends with non-null .sfp_bus member, even though the SFP
+module is not probed (because the node is disabled).
 
-Stub from the spec:
-    "4.5.2.2.4.2 Exiting from AttachWait.SNK State
-    A Sink shall transition to Unattached.SNK when the state of both
-    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce.
-    A DRP shall transition to Unattached.SRC when the state of both
-    the CC1 and CC2 pins is SNK.Open for at least tPDDebounce."
+We need to ignore disabled SFP bus node.
 
-[23.194131] CC1: 0 -> 0, CC2: 0 -> 5 [state SNK_UNATTACHED, polarity 0, connected]
-[23.201777] state change SNK_UNATTACHED -> SNK_ATTACH_WAIT [rev3 NONE_AMS]
-[23.209949] pending state change SNK_ATTACH_WAIT -> SNK_DEBOUNCED @ 170 ms [rev3 NONE_AMS]
-[23.300579] VBUS off
-[23.300668] state change SNK_ATTACH_WAIT -> SNK_UNATTACHED [rev3 NONE_AMS]
-[23.301014] VBUS VSAFE0V
-[23.301111] Start toggling
-
-Fixes: f0690a25a140b8 ("staging: typec: USB Type-C Port Manager (tcpm)")
-Cc: stable@vger.kernel.org
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
-Link: https://lore.kernel.org/r/20220122015520.332507-1-badhri@google.com
+Fixes: ce0aa27ff3f6 ("sfp: add sfp-bus to bridge between network devices and sfp cages")
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Cc: stable@vger.kernel.org # 2203cbf2c8b5 ("net: sfp: move fwnode parsing into sfp-bus layer")
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[ backport to 4.14 ]
+Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/typec/tcpm.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/phy/phylink.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/staging/typec/tcpm.c
-+++ b/drivers/staging/typec/tcpm.c
-@@ -3103,7 +3103,8 @@ static void _tcpm_pd_vbus_off(struct tcp
- 	case SNK_TRYWAIT_DEBOUNCE:
- 		break;
- 	case SNK_ATTACH_WAIT:
--		tcpm_set_state(port, SNK_UNATTACHED, 0);
-+	case SNK_DEBOUNCED:
-+		/* Do nothing, as TCPM is still waiting for vbus to reaach VSAFE5V to connect */
- 		break;
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -514,6 +514,11 @@ static int phylink_register_sfp(struct p
+ 	if (!sfp_np)
+ 		return 0;
  
- 	case SNK_NEGOTIATE_CAPABILITIES:
++	if (!of_device_is_available(sfp_np)) {
++		of_node_put(sfp_np);
++		return 0;
++	}
++
+ 	pl->sfp_bus = sfp_register_upstream(sfp_np, pl->netdev, pl,
+ 					    &sfp_phylink_ops);
+ 	if (!pl->sfp_bus)
 
 
