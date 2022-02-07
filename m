@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D71AC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3AFC35294
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387843AbiBGLlj (ORCPT
+        id S1387570AbiBGLlX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:41:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37854 "EHLO
+        Mon, 7 Feb 2022 06:41:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382259AbiBGL3S (ORCPT
+        with ESMTP id S1376276AbiBGL2r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:29:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AF3C02B66A;
-        Mon,  7 Feb 2022 03:27:22 -0800 (PST)
+        Mon, 7 Feb 2022 06:28:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA2CC0302E4;
+        Mon,  7 Feb 2022 03:27:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F35D3B811B2;
-        Mon,  7 Feb 2022 11:27:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D363C340F1;
-        Mon,  7 Feb 2022 11:27:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BCC6B811AF;
+        Mon,  7 Feb 2022 11:26:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98C7EC004E1;
+        Mon,  7 Feb 2022 11:26:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233224;
-        bh=MoTW/brTC+J+UXtfZY4dtaQdrJZe9Uc4Pjt72hZLdi4=;
+        s=korg; t=1644233215;
+        bh=YBYj7yDQGrPkgUYjPfnVySE9VmMenelOOdeQumIsyEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ghV6XsvgMMe6/nrjno2KIiWUIeHf74/dfxM8Vg3gV9vEt3FZpmaII3KITpErqDsZZ
-         nsKDREkfB/ZwJvuCySQ8t25+Bmj29rEoLmkTERakLwSRVm0bFTUCxt908L12FPmkx1
-         ifrKEIrHE/0a8WysUbNTAYYBnh5n3FH4Rm373aok=
+        b=eV8kIWdiyjMzxYa0UhsXovU5kwzfIPVgAzTISUpm5Cde9q4fJ4IyZjC7d5AuUe1SZ
+         CDnGPUruwwQGxhpkGzuEqPS2TvJKEUgARWnOzGL5F0dCX+7pwn92yiOUoYGJr2Jlzw
+         ocLTDMLD1QI19T5TH5kVJIupPjbnqKvl+rOJKF9M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.15 049/110] iommu/amd: Fix loop timeout issue in iommu_ga_log_enable()
-Date:   Mon,  7 Feb 2022 12:06:22 +0100
-Message-Id: <20220207103803.944639925@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        Chia-Lin Kao <acelan.kao@canonical.com>
+Subject: [PATCH 5.15 022/110] drm/i915/adlp: Fix TypeC PHY-ready status readout
+Date:   Mon,  7 Feb 2022 12:05:55 +0100
+Message-Id: <20220207103803.006271577@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103802.280120990@linuxfoundation.org>
 References: <20220207103802.280120990@linuxfoundation.org>
@@ -48,45 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Imre Deak <imre.deak@intel.com>
 
-commit 9b45a7738eec52bf0f5d8d3d54e822962781c5f2 upstream.
+commit 3c6f13ad723e7206f03bb2752b01d18202b7fc9d upstream.
 
-The polling loop for the register change in iommu_ga_log_enable() needs
-to have a udelay() in it.  Otherwise the CPU might be faster than the
-IOMMU hardware and wrongly trigger the WARN_ON() further down the code
-stream. Use a 10us for udelay(), has there is some hardware where
-activation of the GA log can take more than a 100ms.
+The TCSS_DDI_STATUS register is indexed by tc_port not by the FIA port
+index, fix this up. This only caused an issue on TC#3/4 ports in legacy
+mode, as in all other cases the two indices either match (on TC#1/2) or
+the TCSS_DDI_STATUS_READY flag is set regardless of something being
+connected or not (on TC#1/2/3/4 in dp-alt and tbt-alt modes).
 
-A future optimization should move the activation check of the GA log
-to the point where it gets used for the first time. But that is a
-bigger change and not suitable for a fix.
-
-Fixes: 8bda0cfbdc1a ("iommu/amd: Detect and initialize guest vAPIC log")
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Link: https://lore.kernel.org/r/20220204115537.3894-1-joro@8bytes.org
+Reported-and-tested-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
+Fixes: 55ce306c2aa1 ("drm/i915/adl_p: Implement TC sequences")
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/4698
+Cc: José Roberto de Souza <jose.souza@intel.com>
+Cc: <stable@vger.kernel.org> # v5.14+
+Signed-off-by: Imre Deak <imre.deak@intel.com>
+Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220126104356.2022975-1-imre.deak@intel.com
+(cherry picked from commit 516b33460c5bee78b2055637b0547bdb0e6af754)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/amd/init.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/i915/display/intel_tc.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -21,6 +21,7 @@
- #include <linux/export.h>
- #include <linux/kmemleak.h>
- #include <linux/mem_encrypt.h>
-+#include <linux/iopoll.h>
- #include <asm/pci-direct.h>
- #include <asm/iommu.h>
- #include <asm/apic.h>
-@@ -832,6 +833,7 @@ static int iommu_ga_log_enable(struct am
- 		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
- 		if (status & (MMIO_STATUS_GALOG_RUN_MASK))
- 			break;
-+		udelay(10);
- 	}
+--- a/drivers/gpu/drm/i915/display/intel_tc.c
++++ b/drivers/gpu/drm/i915/display/intel_tc.c
+@@ -291,10 +291,11 @@ static bool icl_tc_phy_status_complete(s
+ static bool adl_tc_phy_status_complete(struct intel_digital_port *dig_port)
+ {
+ 	struct drm_i915_private *i915 = to_i915(dig_port->base.base.dev);
++	enum tc_port tc_port = intel_port_to_tc(i915, dig_port->base.port);
+ 	struct intel_uncore *uncore = &i915->uncore;
+ 	u32 val;
  
- 	if (WARN_ON(i >= LOOP_TIMEOUT))
+-	val = intel_uncore_read(uncore, TCSS_DDI_STATUS(dig_port->tc_phy_fia_idx));
++	val = intel_uncore_read(uncore, TCSS_DDI_STATUS(tc_port));
+ 	if (val == 0xffffffff) {
+ 		drm_dbg_kms(&i915->drm,
+ 			    "Port %s: PHY in TCCOLD, assuming not complete\n",
 
 
