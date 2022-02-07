@@ -2,102 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD401C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:41:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85FA6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237141AbiBGSio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:38:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
+        id S230243AbiBGSmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:42:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235439AbiBGShH (ORCPT
+        with ESMTP id S235270AbiBGSkf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:37:07 -0500
-Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.148])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A0FC0401D9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:37:06 -0800 (PST)
-Received: (wp-smtpd smtp.tlen.pl 14155 invoked from network); 7 Feb 2022 19:30:24 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
-          t=1644258624; bh=0zcWeXpNBSlcuXMbQhaTETW+jrEMSoXxc604ZA0rADo=;
-          h=From:To:Cc:Subject;
-          b=sgTJpZL9tCTwz5VZBHCYJTe3YBWx9kesDr5AhR6YtNIgLkbojjvCd84A82nH0cC/u
-           JppxomjhUStAkwEk3U9JcASLh2JEAFLzF3qVRP26S2oosl2YhgjbmSj47hS36C6m0/
-           or/z7qTaOu4PV0HrDRQoNHdjNrz1aRpSOgtM0cVs=
-Received: from aaem217.neoplus.adsl.tpnet.pl (HELO localhost.localdomain) (mat.jonczyk@o2.pl@[83.4.116.217])
-          (envelope-sender <mat.jonczyk@o2.pl>)
-          by smtp.tlen.pl (WP-SMTPD) with SMTP
-          for <linux-kernel@vger.kernel.org>; 7 Feb 2022 19:30:24 +0100
-From:   =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
-To:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-hwmon@vger.kernel.org
-Cc:     =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>
-Subject: [PATCH 2/2] dell-smm-hwmon: rewrite CONFIG_I8K description
-Date:   Mon,  7 Feb 2022 19:29:40 +0100
-Message-Id: <20220207182940.242838-2-mat.jonczyk@o2.pl>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220207182940.242838-1-mat.jonczyk@o2.pl>
-References: <20220207182940.242838-1-mat.jonczyk@o2.pl>
+        Mon, 7 Feb 2022 13:40:35 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D073FC0401D9
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:40:33 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id 9so18096208iou.2
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 10:40:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xRXlDhviuTEfdiTDsXUwY6dPo1OySinAm73Hd1uXh0o=;
+        b=Z2iPrLZxMkV6EX9FGWFjy12J8QyHDDnMWexBVUyyLGBjvifSntAvR9UFEWloZvVbx4
+         XBpuX/Q7vnhyXtARRTf0xh6R9qg7yQN4Hq5xyGkI9X+siyhInl6CpNXPnTXFJwzGWa+C
+         pgyJuMhbelZdR0uBKZeGA/5TgwRpYVYzSwLRg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xRXlDhviuTEfdiTDsXUwY6dPo1OySinAm73Hd1uXh0o=;
+        b=gXMqGQEGDKbr1CO6XK9ZdWxgjrRQKYzW3KYYDxu/KbBRsmksVFYO2WzlRg3c7pMo00
+         fYtM7tf+HAp7VbXE643wIT6rZFQZBVNfSTxAjyi63MBat19vZ8XBZmeusV29uD709E92
+         V0DUyrIWSIt4UhEZVQ8H+AoYqtpWlkgNj1jfBUC31uoaCJFPqHSxdGF/b25X6mx4lMVU
+         Axv6q+WlXwVD99jQKFFRqRD7cfIB2AA0O2/ldll0/P36dxxjMgK+2lkBrCnW2vNI7Gm+
+         kjcFbsoJNOlRgkk/UPPNLJKD9g8+RdtY69c61rwR2+vBDyCjMj6jYp8nS8EMKpdP8i0h
+         0dQg==
+X-Gm-Message-State: AOAM530mPg/hZOAxDtUa5AEjq8njtrmEpXRzk6pwLhM1dSGWhHuIcutN
+        wa0RQk4Ilq5RrbdHl3HGyohjsw==
+X-Google-Smtp-Source: ABdhPJyt5a1vQSm9soeSqTDRgviqmpdpbmVCsEG5JXRmV6Lxn2JECxePfGKPW1h52SyQ/iUKCIWxwA==
+X-Received: by 2002:a02:8188:: with SMTP id n8mr513343jag.126.1644259232913;
+        Mon, 07 Feb 2022 10:40:32 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id o11sm5919815ilm.20.2022.02.07.10.40.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 10:40:32 -0800 (PST)
+Subject: Re: [PATCH] selftests: futex: set DEFAULT_INSTALL_HDR_PATH
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220119103332.2887370-1-usama.anjum@collabora.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <3a4878b9-f175-f16f-a901-efc33b2bf89f@linuxfoundation.org>
+Date:   Mon, 7 Feb 2022 11:40:31 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-WP-MailID: 798211090e6a0b49c177a6c4c0db5bbb
-X-WP-AV: skaner antywirusowy Poczty o2
-X-WP-SPAM: NO 0000000 [UYMk]                               
+In-Reply-To: <20220119103332.2887370-1-usama.anjum@collabora.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is not the laptops, but the /proc/i8k interface that is legacy. The
-old description was confusing, fix this.
+On 1/19/22 3:33 AM, Muhammad Usama Anjum wrote:
+> If only futex selftest is compiled, uapi header files are copied to the
+> selftests/futex/functional directory. This copy isn't needed. Set the
+> DEFAULT_INSTALL_HDR_PATH variable to 1 to use the default header install
+> path only. This removes extra copy of header file.
+> 
+> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> ---
+>   tools/testing/selftests/futex/functional/Makefile | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/tools/testing/selftests/futex/functional/Makefile b/tools/testing/selftests/futex/functional/Makefile
+> index 5cc38de9d8ea..9a8c3700d773 100644
+> --- a/tools/testing/selftests/futex/functional/Makefile
+> +++ b/tools/testing/selftests/futex/functional/Makefile
+> @@ -24,6 +24,7 @@ TEST_PROGS := run.sh
+>   
+>   top_srcdir = ../../../../..
+>   KSFT_KHDR_INSTALL := 1
+> +DEFAULT_INSTALL_HDR_PATH := 1
+>   include ../../lib.mk
+>   
+>   $(TEST_GEN_FILES): $(HEADERS)
+> 
 
-I'm not a native English speaker, so I'd like that someone proofread
-this description.
+This will be a good cleanup. However, please make there is no dependencies
+in the futex test sub-dirs on being able to find the headers under futex
 
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Pali Rohár <pali@kernel.org>
-Cc: Jean Delvare <jdelvare@suse.com>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Mark Gross <markgross@kernel.org>
----
- drivers/hwmon/Kconfig | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+I vaguely remember leaving this in place for reason.
 
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index dd244aa747ad..8f9f41a9ef70 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -506,18 +506,17 @@ config SENSORS_DELL_SMM
- 	  userspace interface for i8kutils package.
- 
- config I8K
--	bool "Dell i8k legacy laptop support"
-+	bool "Legacy /proc/i8k interface of Dell laptop SMM BIOS hwmon driver"
- 	depends on SENSORS_DELL_SMM
- 	help
--	  This option enables legacy /proc/i8k userspace interface in hwmon
--	  dell-smm-hwmon driver. Character file /proc/i8k reports bios version,
--	  temperature and allows controlling fan speeds of Dell laptops via
--	  System Management Mode. For old Dell laptops (like Dell Inspiron 8000)
--	  it reports also power and hotkey status. For fan speed control is
--	  needed userspace package i8kutils.
-+	  This option enables the legacy /proc/i8k userspace interface of the
-+	  dell-smm-hwmon driver. The character file /proc/i8k exposes the BIOS
-+	  version, temperatures and allows control of fan speeds of some Dell
-+	  laptops. Sometimes, it reports also power and hotkey status.
- 
--	  Say Y if you intend to run this kernel on old Dell laptops or want to
--	  use userspace package i8kutils.
-+	  This interface is required to run programs from the i8kutils package.
-+
-+	  Say Y if you intend to run userspace programs that use this interface.
- 	  Say N otherwise.
- 
- config SENSORS_DA9052_ADC
--- 
-2.25.1
+thanks,
+-- Shuah
 
