@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B0BC43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13183C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241397AbiBGP7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:59:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
+        id S1345970AbiBGP7o (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 10:59:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385590AbiBGP4T (ORCPT
+        with ESMTP id S1344651AbiBGP4p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:56:19 -0500
+        Mon, 7 Feb 2022 10:56:45 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85CF9C0401CC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:56:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2504DC0401D3
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:56:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644249377;
+        s=mimecast20190719; t=1644249404;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=hIkOyOBrYC66as9Hh5WBjO5DbzrEJzCI4Y98UxmVlRg=;
-        b=Eil31yxaf80Lu+0BSGUgbnuKsQ0iEMZmts58qlRwAMtDk2zJfcfyYfwZablXSDcEXwOVzN
-        IrMt9NENTiKc6LmsUmrdGxI5kQkPzRMOTsH6Qu3658vCafhfphqjkrMVdSGeOBmG90uO3d
-        aYlqP/vuT+MLS22QwCRXNWcnPlIMCWo=
+        bh=7uKkJYp30pF3ErxkQlRiirr2VHEvcBthwFChel8Mbe4=;
+        b=Tb3ODZGX0HbJpDH1Zv12UbFmt5k4APu8S3mStqZDc/94WNW+0cpPYQvVWSnGW+lRimCzw3
+        /8mCYVQgTnEGjllfH2xqY1wOKAYcwYWgNcLg9mLJBQn0hvZxjU+bpYGKUHj/KUf+GlSJ7X
+        3xVhjqco7hDVyVyjCL2KMvJuoi0CBWo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-639-oRBj8DFEPRSHtMKGb7doUw-1; Mon, 07 Feb 2022 10:56:14 -0500
-X-MC-Unique: oRBj8DFEPRSHtMKGb7doUw-1
+ us-mta-139-qpyNhtRvOWyRLxQ07D8F3g-1; Mon, 07 Feb 2022 10:56:40 -0500
+X-MC-Unique: qpyNhtRvOWyRLxQ07D8F3g-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 22080100C662;
-        Mon,  7 Feb 2022 15:56:11 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DA995874980;
+        Mon,  7 Feb 2022 15:56:37 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7C77482765;
-        Mon,  7 Feb 2022 15:56:00 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 991677DE38;
+        Mon,  7 Feb 2022 15:56:30 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Tony Luck <tony.luck@intel.com>,
@@ -66,9 +67,9 @@ Cc:     Tony Luck <tony.luck@intel.com>,
         Kan Liang <kan.liang@linux.intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH RESEND 08/30] KVM: x86: lapic: don't touch irr_pending in kvm_apic_update_apicv when inhibiting it
-Date:   Mon,  7 Feb 2022 17:54:25 +0200
-Message-Id: <20220207155447.840194-9-mlevitsk@redhat.com>
+Subject: [PATCH RESEND 11/30] KVM: x86: SVM: use vmcb01 in avic_init_vmcb
+Date:   Mon,  7 Feb 2022 17:54:28 +0200
+Message-Id: <20220207155447.840194-12-mlevitsk@redhat.com>
 In-Reply-To: <20220207155447.840194-1-mlevitsk@redhat.com>
 References: <20220207155447.840194-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
@@ -78,38 +79,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kvm_apic_update_apicv is called when AVIC is still active, thus IRR bits
-can be set by the CPU after it is called, and don't cause the irr_pending
-to be set to true.
+Out of precation use vmcb01 when enabling host AVIC.
 
-Also logic in avic_kick_target_vcpu doesn't expect a race with this
-function so to make it simple, just keep irr_pending set to true and
-let the next interrupt injection to the guest clear it.
-
+No functional change intended.
 
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/lapic.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/x86/kvm/svm/avic.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 0da7d0960fcb5..dd4e2888c244b 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2307,7 +2307,12 @@ void kvm_apic_update_apicv(struct kvm_vcpu *vcpu)
- 		apic->irr_pending = true;
- 		apic->isr_count = 1;
- 	} else {
--		apic->irr_pending = (apic_search_irr(apic) != -1);
-+		/*
-+		 * Don't clear irr_pending, searching the IRR can race with
-+		 * updates from the CPU as APICv is still active from hardware's
-+		 * perspective.  The flag will be cleared as appropriate when
-+		 * KVM injects the interrupt.
-+		 */
- 		apic->isr_count = count_vectors(apic->regs + APIC_ISR);
- 	}
- }
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index 4c2d622b3b9f0..c6072245f7fbb 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -167,7 +167,7 @@ int avic_vm_init(struct kvm *kvm)
+ 
+ void avic_init_vmcb(struct vcpu_svm *svm)
+ {
+-	struct vmcb *vmcb = svm->vmcb;
++	struct vmcb *vmcb = svm->vmcb01.ptr;
+ 	struct kvm_svm *kvm_svm = to_kvm_svm(svm->vcpu.kvm);
+ 	phys_addr_t bpa = __sme_set(page_to_phys(svm->avic_backing_page));
+ 	phys_addr_t lpa = __sme_set(page_to_phys(kvm_svm->avic_logical_id_table_page));
 -- 
 2.26.3
 
