@@ -2,151 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85832C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946BCC43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 10:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245665AbiBGKta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 05:49:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
+        id S1343637AbiBGKtc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 05:49:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237242AbiBGKqm (ORCPT
+        with ESMTP id S235099AbiBGKsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 05:46:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E38A1C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:46:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EB1A61258
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:46:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81654C340F0;
-        Mon,  7 Feb 2022 10:46:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644230800;
-        bh=JOHuvSu0RQEMIt4Zzch2eeYu1H0BUFLaBbYPrXModLI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Oj7N1uQJmagKS1uoY/v/7hFNdBVZN6X9pVR61qjGYcJ7hKNM4aCXKSL3aG1s7OemY
-         aG7lN2aogxiYfk6ADmBtPQXZCZcEHWGr7XuSKH4SuosXg0it58X2BxBNhLKSB32vcV
-         tEcdUGx/0Ac9uTCI7kYSukZttviakQuZExGDKseZt+bLkW8M10uLKNZbbuGVr0KRRL
-         ef5Iu92fu8/9ag03BD/ajx95lAI+3y6TrwYGyJjvNKXKGD9c0K2tTCmFvOqnYqnEpK
-         ZJ3zJq1UPe4pmzaLxrlSrNU1pyocAFPN1rSzwu0RziLef2Vy4DeaKOEXkaujUg2jrb
-         RmL13PiUUAHpQ==
-Date:   Mon, 7 Feb 2022 12:46:34 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 47/75] mm/mlock: Turn mlock_vma_page() into
- mlock_vma_folio()
-Message-ID: <YgD4irZcuuD/TWmQ@kernel.org>
-References: <20220204195852.1751729-1-willy@infradead.org>
- <20220204195852.1751729-48-willy@infradead.org>
+        Mon, 7 Feb 2022 05:48:19 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6230C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 02:48:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644230898; x=1675766898;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=mVOHb531swiHoNSO2HEJyxs7QHmBeZIo9CLzkP+bSBs=;
+  b=njWc2Ux7QL2Gkijvr+g39YJYG84Bs9L9yYh3kCs41EIhynn7tJHNk+Hn
+   Ph0igDAQSP9tjZrlzMZv/Ys7ahDtgz2Vcy7XYR61iY8vWuLEkgAPUFaI0
+   Wn2BjfWDXLRvqvNyZqnskHDl15Xwp0rgScfIv+aEnV2KVxw/2YXjW54Uh
+   AWI/xMmbqiNDzp5QGQvJ2OX292w3PlNaQ/GuCY3aax/r7IXpT9cjRdhoX
+   vmVgw5PEk/QTmcimxS2vmEKbe6PLAMWdfjviETLcEvxNvbm/mIwckTzDl
+   1fN64FtnfKtuBIgLRaZzenHjIAqhmctW8bnfzn0gqlcioDBDVxlv2Em4Q
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="236092078"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="236092078"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 02:48:18 -0800
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="700420240"
+Received: from nbaca1-mobl.ger.corp.intel.com (HELO localhost) ([10.252.18.25])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 02:48:14 -0800
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Christoph Hellwig <hch@lst.de>,
+        "Wang, Zhi A" <zhi.a.wang@intel.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Zhi Wang <zhi.wang.linux@gmail.com>,
+        "jgg@nvidia.com" <jgg@nvidia.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        "Xu, Terrence" <terrence.xu@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: Re: [PATCH 1/3] i915/gvt: Introduce the mmio_table.c to support
+ VFIO new mdev API
+In-Reply-To: <20220207083535.GA25345@lst.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220127120508.11330-1-zhi.a.wang@intel.com>
+ <20220207073247.GA24327@lst.de>
+ <DM4PR11MB5549FE45F8098368114ADE75CA2C9@DM4PR11MB5549.namprd11.prod.outlook.com>
+ <20220207083535.GA25345@lst.de>
+Date:   Mon, 07 Feb 2022 12:48:08 +0200
+Message-ID: <877da7rlzr.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220204195852.1751729-48-willy@infradead.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 07:58:24PM +0000, Matthew Wilcox (Oracle) wrote:
-> Add mlock_vma_page() back as a wrapper.  Saves a few calls to
-> compound_head() and an assertion that the page is not a tail page.
-> 
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> ---
->  mm/folio-compat.c |  5 +++++
->  mm/internal.h     |  3 ++-
->  mm/mlock.c        | 18 +++++++++---------
->  3 files changed, 16 insertions(+), 10 deletions(-)
-> 
-> diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-> index bcb037d9cec3..9cb0867d5b38 100644
-> --- a/mm/folio-compat.c
-> +++ b/mm/folio-compat.c
-> @@ -169,3 +169,8 @@ void clear_page_mlock(struct page *page)
->  {
->  	folio_end_mlock(page_folio(page));
->  }
-> +
-> +void mlock_vma_page(struct page *page)
-> +{
-> +	mlock_vma_folio(page_folio(page));
-> +}
+On Mon, 07 Feb 2022, Christoph Hellwig <hch@lst.de> wrote:
+> On Mon, Feb 07, 2022 at 08:28:13AM +0000, Wang, Zhi A wrote:
+>> 1) About having the mmio_table.h, I would like to keep the stuff in a
+>> dedicated header as putting them in intel_gvt.h might needs i915 guys
+>> to maintain it.
+>> 2) The other one is about if we should move the mmio_table.c into
+>> i915 folder. I guess we need the some comments from Jani. In the
+>> current version that I am testing, it's still in GVT folder. Guess we
+>> can submit a patch to move it to i915 folder later if Jani is ok
+>> about that.
+>
+> Yes, let's have Jani chime in on these.  They're basically one and the
+> same issue.  This code will have to be built into into the core i915
+> driver even with my planned split, which is kindof the point of this
+> exercise.  I think it makes sense to use the subdirectories as boundaries
+> for where the code ends up and not to declarare maintainership boundaries,
+> but it will be up to the i915 and gvt maintainers to decide that.
 
-This will make no-mmu unhappy, e.g. arm allnoconfig:
+Agreed. If there's going to be a gvt.ko, I think all of gvt/ should be
+part of that module, nothing more, nothing less.
 
-  CC      mm/folio-compat.o
-mm/folio-compat.c:174:6: error: redefinition of 'mlock_vma_page'
-  174 | void mlock_vma_page(struct page *page)
-      |      ^~~~~~~~~~~~~~
-In file included from mm/folio-compat.c:11:
-mm/internal.h:501:20: note: previous definition of 'mlock_vma_page' was here
-  501 | static inline void mlock_vma_page(struct page *page) { }
-      |                    ^~~~~~~~~~~~~~
-mm/folio-compat.c: In function 'mlock_vma_page':
-mm/folio-compat.c:176:2: error: implicit declaration of function 'mlock_vma_folio'; did you mean 'mlock_vma_page'? [-Werror=implicit-function-declaration]
-  176 |  mlock_vma_folio(page_folio(page));
-      |  ^~~~~~~~~~~~~~~
-      |  mlock_vma_page
+The gvt related files in i915/ should probably be named intel_gvt* or
+something, ditto for function naming, and we'll probably want patches
+touching them be Cc'd to intel-gfx list.
 
-This also applies to munlock_vma_page() and page_mlock(). 
-For some reason no build yelled about clear_page_mlock()...
+Joonas, Rodrigo, Tvrtko, thoughts?
 
-> diff --git a/mm/internal.h b/mm/internal.h
-> index 041c76a4c284..18b024aa7e59 100644
-> --- a/mm/internal.h
-> +++ b/mm/internal.h
-> @@ -411,7 +411,8 @@ static inline void munlock_vma_pages_all(struct vm_area_struct *vma)
->  /*
->   * must be called with vma's mmap_lock held for read or write, and page locked.
->   */
-> -extern void mlock_vma_page(struct page *page);
-> +void mlock_vma_page(struct page *page);
-> +void mlock_vma_folio(struct folio *folio);
->  extern unsigned int munlock_vma_page(struct page *page);
->  
->  extern int mlock_future_check(struct mm_struct *mm, unsigned long flags,
-> diff --git a/mm/mlock.c b/mm/mlock.c
-> index ff067d64acc5..d998fd5c84bf 100644
-> --- a/mm/mlock.c
-> +++ b/mm/mlock.c
-> @@ -94,21 +94,21 @@ void folio_end_mlock(struct folio *folio)
->   * Mark page as mlocked if not already.
->   * If page on LRU, isolate and putback to move to unevictable list.
->   */
-> -void mlock_vma_page(struct page *page)
-> +void mlock_vma_folio(struct folio *folio)
->  {
->  	/* Serialize with page migration */
-> -	BUG_ON(!PageLocked(page));
-> +	BUG_ON(!folio_test_locked(folio));
->  
-> -	VM_BUG_ON_PAGE(PageTail(page), page);
-> -	VM_BUG_ON_PAGE(PageCompound(page) && PageDoubleMap(page), page);
-> +	VM_BUG_ON_FOLIO(folio_test_large(folio) && folio_test_double_map(folio),
-> +			folio);
->  
-> -	if (!TestSetPageMlocked(page)) {
-> -		int nr_pages = thp_nr_pages(page);
-> +	if (!folio_test_set_mlocked(folio)) {
-> +		long nr_pages = folio_nr_pages(folio);
->  
-> -		mod_zone_page_state(page_zone(page), NR_MLOCK, nr_pages);
-> +		zone_stat_mod_folio(folio, NR_MLOCK, nr_pages);
->  		count_vm_events(UNEVICTABLE_PGMLOCKED, nr_pages);
-> -		if (!isolate_lru_page(page))
-> -			putback_lru_page(page);
-> +		if (!folio_isolate_lru(folio))
-> +			folio_putback_lru(folio);
->  	}
->  }
->  
-> -- 
-> 2.34.1
-> 
-> 
+BR,
+Jani.
 
 -- 
-Sincerely yours,
-Mike.
+Jani Nikula, Intel Open Source Graphics Center
