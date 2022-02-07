@@ -2,117 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C46C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355878AbiBGPvg (ORCPT
+        id S1358214AbiBGPvi convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:51:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59614 "EHLO
+        Mon, 7 Feb 2022 10:51:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386614AbiBGPrN (ORCPT
+        with ESMTP id S236905AbiBGPsN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:47:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57565C0401C1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 07:47:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEAAFB8105D
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:47:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA01DC340EF;
-        Mon,  7 Feb 2022 15:47:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644248830;
-        bh=LdSadHOKGFFrAfu0I2Qkry7wLCE2PrwoIGXW+wZTZtY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=T7B0mK+u3e3kI992aSXF6HWThT+Dt14mr2tDh4CXWp1dCLGuRisy8vuaTrVo8C2t6
-         yAzOMTKry8iNg9WpcQt0GiLfK3hAyjvJlm+3DGXeogx469hSnGlUMWyCE3zjQ+foNJ
-         uhJo4s75lP6YiLkqAbmV+s9H6cBQkg8TLJB+1Ca+OQ52B/cL8Aa/klLVpBYnmuBQUk
-         MjAl+VSE7AP1HRlKpJ9S7f0OhzIV1sZuyIJ7E0m3NA+TV+ufPiqBFxVtsvwaeyqOb7
-         LBjmaGCRXqhkiO8vwEpKM2uk0TjkVgZ+YR4AK8YoZnw+7U93mJOsVFlCD4z7lgdyTL
-         NVsCMO51oVh9g==
-Date:   Mon, 7 Feb 2022 16:47:07 +0100
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Oscar Shiang <oscar0225@livemail.tw>
-Subject: Re: [patch v11 10/13] KVM: x86: process isolation work from VM-entry
- code path
-Message-ID: <20220207154707.GC526451@lothringen>
-References: <20220204173537.429902988@fedora.localdomain>
- <20220204173554.897857855@fedora.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220204173554.897857855@fedora.localdomain>
+        Mon, 7 Feb 2022 10:48:13 -0500
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D8CBC0401CC;
+        Mon,  7 Feb 2022 07:48:11 -0800 (PST)
+Received: from smtpclient.apple (p4ff9f3e5.dip0.t-ipconnect.de [79.249.243.229])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 2285ECECF1;
+        Mon,  7 Feb 2022 16:48:10 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [PATCH 2/2] Bluetooth: mediatek: fix the conflict between mtk and
+ msft vendor event
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <2eed797ac2605bd068a025486fc0c09c2687e50c.1643435854.git.objelf@gmail.com>
+Date:   Mon, 7 Feb 2022 16:48:09 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        =?utf-8?B?Ik1hcmstWVcgQ2hlbiAo6Zmz5o+a5paHKSI=?= 
+        <Mark-YW.Chen@mediatek.com>, Soul.Huang@mediatek.com,
+        YN.Chen@mediatek.com, Leon.Yen@mediatek.com,
+        Eric-SY.Chang@mediatek.com, Deren.Wu@mediatek.com,
+        km.lin@mediatek.com, robin.chiu@mediatek.com,
+        Eddie.Chen@mediatek.com, ch.yeh@mediatek.com,
+        posh.sun@mediatek.com, ted.huang@mediatek.com,
+        Eric.Liang@mediatek.com, Stella.Chang@mediatek.com,
+        Tom.Chou@mediatek.com, steve.lee@mediatek.com, jsiuda@google.com,
+        frankgor@google.com, jemele@google.com, abhishekpandit@google.com,
+        michaelfsun@google.com, mcchou@chromium.org, shawnku@google.com,
+        linux-bluetooth@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <1CE2BE2F-A47D-4EEF-809A-035775125D83@holtmann.org>
+References: <52ae30c33f2994efcdff180764801141d59e6e0c.1643435854.git.objelf@gmail.com>
+ <2eed797ac2605bd068a025486fc0c09c2687e50c.1643435854.git.objelf@gmail.com>
+To:     Sean Wang <sean.wang@mediatek.com>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 02:35:47PM -0300, Marcelo Tosatti wrote:
-> VM-entry code path is an entry point similar to userspace return
-> when task isolation is concerned.
+Hi Sean,
+
+> There is a conflict between MediaTek wmt event and msft vendor extension
+> logic in the core layer since 145373cb1b1f ("Bluetooth: Add framework for
+> Microsoft vendor extension") was introduced because we changed the type of
+> mediatek wmt event to the type of msft vendor event in the driver.
 > 
-> Call isolation_exit_to_user_mode before VM-enter.
+> But the purpose we reported mediatek event to the core layer is for the
+> diagnostic purpose with that we are able to see the full packet trace via
+> monitoring socket with btmon. Thus, it is harmless we keep the original
+> type of mediatek vendor event here to avoid breaking the msft extension
+> function especially they can be supported by Mediatek chipset like MT7921
+> , MT7922 devices and future devices.
 > 
-> Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
-> 
+> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
 > ---
-> v11
-> - Add TIF_TASK_ISOL bit to thread info flags and use it
->   to decide whether to perform task isolation work on
->   return to userspace                                   (Frederic W. Weisbecker)
+> drivers/bluetooth/btmtk.h     | 1 +
+> drivers/bluetooth/btmtksdio.c | 9 +--------
+> drivers/bluetooth/btusb.c     | 5 -----
+> 3 files changed, 2 insertions(+), 13 deletions(-)
 > 
->  include/linux/entry-kvm.h |    4 +++-
->  kernel/entry/kvm.c        |   18 ++++++++++++++----
->  2 files changed, 17 insertions(+), 5 deletions(-)
+> diff --git a/drivers/bluetooth/btmtk.h b/drivers/bluetooth/btmtk.h
+> index 8960a5f89d48..013850fd2055 100644
+> --- a/drivers/bluetooth/btmtk.h
+> +++ b/drivers/bluetooth/btmtk.h
+> @@ -5,6 +5,7 @@
+> #define FIRMWARE_MT7668		"mediatek/mt7668pr2h.bin"
+> #define FIRMWARE_MT7961		"mediatek/BT_RAM_CODE_MT7961_1_2_hdr.bin"
 > 
-> Index: linux-2.6/kernel/entry/kvm.c
-> ===================================================================
-> --- linux-2.6.orig/kernel/entry/kvm.c
-> +++ linux-2.6/kernel/entry/kvm.c
-> @@ -2,6 +2,7 @@
->  
->  #include <linux/entry-kvm.h>
->  #include <linux/kvm_host.h>
-> +#include <linux/task_isolation.h>
->  
->  static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
->  {
-> @@ -22,6 +23,9 @@ static int xfer_to_guest_mode_work(struc
->  		if (ti_work & _TIF_NOTIFY_RESUME)
->  			tracehook_notify_resume(NULL);
->  
-> +		if (ti_work & _TIF_TASK_ISOL)
-> +			task_isol_exit_to_user_mode();
-> +
->  		ret = arch_xfer_to_guest_mode_handle_work(vcpu, ti_work);
->  		if (ret)
->  			return ret;
+> +#define HCI_EV_WMT 0xe4
+> #define HCI_WMT_MAX_EVENT_SIZE		64
 > 
+> #define BTMTK_WMT_REG_WRITE 0x1
+> diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+> index 8e200e80d2f6..cbb09e1b823d 100644
+> --- a/drivers/bluetooth/btmtksdio.c
+> +++ b/drivers/bluetooth/btmtksdio.c
+> @@ -381,13 +381,6 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+> 	struct hci_event_hdr *hdr = (void *)skb->data;
+> 	int err;
 > 
+> -	/* Fix up the vendor event id with 0xff for vendor specific instead
+> -	 * of 0xe4 so that event send via monitoring socket can be parsed
+> -	 * properly.
+> -	 */
+> -	if (hdr->evt == 0xe4)
+> -		hdr->evt = HCI_EV_VENDOR;
+> -
+> 	/* When someone waits for the WMT event, the skb is being cloned
+> 	 * and being processed the events from there then.
+> 	 */
+> @@ -403,7 +396,7 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+> 	if (err < 0)
+> 		goto err_free_skb;
+> 
+> -	if (hdr->evt == HCI_EV_VENDOR) {
+> +	if (hdr->evt == HCI_EV_WMT) {
+> 		if (test_and_clear_bit(BTMTKSDIO_TX_WAIT_VND_EVT,
+> 				       &bdev->tx_state)) {
+> 			/* Barrier to sync with other CPUs */
+> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+> index aefa0ee293f3..55ebab019d29 100644
+> --- a/drivers/bluetooth/btusb.c
+> +++ b/drivers/bluetooth/btusb.c
+> @@ -2271,11 +2271,6 @@ static void btusb_mtk_wmt_recv(struct urb *urb)
+> 		skb_put_data(skb, urb->transfer_buffer, urb->actual_length);
+> 
+> 		hdr = (void *)skb->data;
+> -		/* Fix up the vendor event id with 0xff for vendor specific
+> -		 * instead of 0xe4 so that event send via monitoring socket can
+> -		 * be parsed properly.
+> -		 */
+> -		hdr->evt = 0xff;
+> 
+> 		/* When someone waits for the WMT event, the skb is being cloned
+> 		 * and being processed the events from there then.
 
-Do you need this?
+please fix the reported issue by kernel test robot.
 
-diff --git a/include/linux/entry-kvm.h b/include/linux/entry-kvm.h
-index 07c878d6e323..3588d6071caf 100644
---- a/include/linux/entry-kvm.h
-+++ b/include/linux/entry-kvm.h
-@@ -18,7 +18,7 @@
- 
- #define XFER_TO_GUEST_MODE_WORK						\
- 	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL |	\
--	 _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
-+	 _TIF_NOTIFY_RESUME | _TIF_TASK_ISOL | ARCH_XFER_TO_GUEST_MODE_WORK)
- 
- struct kvm_vcpu;
- 
+Regards
+
+Marcel
+
