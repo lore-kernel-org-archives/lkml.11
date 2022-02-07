@@ -2,68 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F167C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:34:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1402DC3526C
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 17:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348624AbiBGRc3 (ORCPT
+        id S1377547AbiBGRch (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 12:32:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
+        Mon, 7 Feb 2022 12:32:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353792AbiBGR2P (ORCPT
+        with ESMTP id S231874AbiBGRYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:28:15 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2819EC0401D5
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 09:28:15 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8B1BC1EC01A9;
-        Mon,  7 Feb 2022 18:28:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644254889;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=Mq5DqFrbAk4eLWGR1kCn5L7Kj+LnBRVB7faRQPyb3mA=;
-        b=gGcQZyoYy4P5r5twm3QRWRVnPxg0ipO83eyZK9oA7n1CE4dLjLc9BHzZNPeIZVXuiGGs2Z
-        pV7lER6Qwg6fVDMR+Tk559NHebu6gR1r3ycv/qPNoigDSebo49rJ7QsMe4SeOauzsw/Agi
-        mRx8V9ZX/OXg94NuW/jCnbFMC61taz8=
-Date:   Mon, 7 Feb 2022 18:28:04 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, luto@kernel.org,
-        peterz@infradead.org, sathyanarayanan.kuppuswamy@linux.intel.com,
-        aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
-        david@redhat.com, hpa@zytor.com, jgross@suse.com,
-        jmattson@google.com, joro@8bytes.org, jpoimboe@redhat.com,
-        knsathya@kernel.org, pbonzini@redhat.com, sdeep@vmware.com,
-        seanjc@google.com, tony.luck@intel.com, vkuznets@redhat.com,
-        wanpengli@tencent.com, x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 22/29] x86/tdx: Make pages shared in ioremap()
-Message-ID: <YgFWpGQfA84Y0mW/@zn.tnic>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
- <20220124150215.36893-23-kirill.shutemov@linux.intel.com>
- <YgFIaJ8ijgQQ04Nv@zn.tnic>
- <1d77e91c-e151-7846-6cd4-6264236ca5ae@intel.com>
+        Mon, 7 Feb 2022 12:24:14 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0765DC0401D5;
+        Mon,  7 Feb 2022 09:24:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644254651; x=1675790651;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=oP8aRnbeYZ85cztbreKClDQUH5UzohGZ+W2mOCUgSDg=;
+  b=2GZB0dmBsa79GxgEZNdPs7+OWV1t/YlJ8g1Ffu5OrGJ3KHU7UZiLmLZ5
+   ymr1NFbv7Vc38+LHnXZRbeEal73s01uYdnqGIuYyeYkfoc6FqznvqO3ra
+   Pe5pog16Cw23Jqalf/jhdndSCNOYwaO1oqF0PBaqgRTgo9MnwHQmroeIk
+   4Ed18rF7hLyC6lUYpcQJ4QL8BmiqklTVC3U+HRvBkFXX7zmTzMnjEARwE
+   m8q3ylhrD7E803b82gFjpHQnLuviqZ2QuK5VpQkeQEF+yxxrdOB1JUSTa
+   jO9W5XAF5mq0Yo3Cu6GbMeVIPaJub1cYJVHjOU9U8TE19dn0ODW/wONjP
+   w==;
+IronPort-SDR: dbhfEh2gEBlUPL5H0Ob8GLo9IJkkVRzU32UmCngXBoV6L5cOU5fvlDdJWEQ2ZthjuSHUsW5nzu
+ JYZR2IE5NXmpoTzpzdQ6rUyM+RlAHckugMfOXqp0crWam4CpYG967sMyuxp/5iRDKQme7puCep
+ DOHusI756xaMpmaaytjGXQM8J7FxnkKuj96hP3QEKNAU9+mk57ZVMPMKppPPnGJYWe6QusMMQC
+ enHU2IyfS+P1MldnxWQdnFKtGzbe5mnXB/IDxLjXiwGVHA4VUcHsVeQu+GdZMpizw//uJm1Bo0
+ bnQTUdSshUgttznwdm+ov086
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="145147822"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 10:23:08 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Feb 2022 10:23:08 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Feb 2022 10:23:02 -0700
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Subject: [PATCH v8 net-next 08/10] net: dsa: microchip: add support for port mirror operations
+Date:   Mon, 7 Feb 2022 22:52:02 +0530
+Message-ID: <20220207172204.589190-9-prasanna.vengateshan@microchip.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
+References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1d77e91c-e151-7846-6cd4-6264236ca5ae@intel.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 08:57:39AM -0800, Dave Hansen wrote:
-> We can surely *do* this with cc_something() helpers.  It's just not as
-> easy as making cc_set/cc_clear().
+Added support for port_mirror_add() and port_mirror_del operations
 
-Sure, that's easy: cc_pgprot_{enc,dec}() or so.
+Sniffing is limited to one port & alert the user if any new
+sniffing port is selected
 
+Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ drivers/net/dsa/microchip/lan937x_main.c | 84 ++++++++++++++++++++++++
+ 1 file changed, 84 insertions(+)
+
+diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
+index dfeb728bf737..0f550eed0ee3 100644
+--- a/drivers/net/dsa/microchip/lan937x_main.c
++++ b/drivers/net/dsa/microchip/lan937x_main.c
+@@ -98,6 +98,88 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
+ 	ksz_update_port_member(dev, port);
+ }
+ 
++static int lan937x_port_mirror_add(struct dsa_switch *ds, int port,
++				   struct dsa_mall_mirror_tc_entry *mirror,
++				   bool ingress)
++{
++	struct ksz_device *dev = ds->priv;
++	int ret, p;
++	u8 data;
++
++	/* Limit to one sniffer port
++	 * Check if any of the port is already set for sniffing
++	 * If yes, instruct the user to remove the previous entry & exit
++	 */
++	for (p = 0; p < dev->port_cnt; p++) {
++		/* Skip the current sniffing port */
++		if (p == mirror->to_local_port)
++			continue;
++
++		ret = lan937x_pread8(dev, p, P_MIRROR_CTRL, &data);
++		if (ret < 0)
++			return ret;
++
++		if (data & PORT_MIRROR_SNIFFER) {
++			dev_err(dev->dev,
++				"Delete existing rules towards %s & try\n",
++				dsa_to_port(ds, p)->name);
++			return -EBUSY;
++		}
++	}
++
++	/* Configure ingress/egress mirroring */
++	if (ingress)
++		ret = lan937x_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX,
++				       true);
++	else
++		ret = lan937x_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX,
++				       true);
++	if (ret < 0)
++		return ret;
++
++	/* Configure sniffer port as other ports do not have
++	 * PORT_MIRROR_SNIFFER is set
++	 */
++	ret = lan937x_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
++			       PORT_MIRROR_SNIFFER, true);
++	if (ret < 0)
++		return ret;
++
++	return lan937x_cfg(dev, S_MIRROR_CTRL, SW_MIRROR_RX_TX, false);
++}
++
++static void lan937x_port_mirror_del(struct dsa_switch *ds, int port,
++				    struct dsa_mall_mirror_tc_entry *mirror)
++{
++	struct ksz_device *dev = ds->priv;
++	bool in_use = false;
++	u8 data;
++	int p;
++
++	/* clear ingress/egress mirroring port */
++	if (mirror->ingress)
++		lan937x_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX,
++				 false);
++	else
++		lan937x_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX,
++				 false);
++
++	/* Check if any of the port is still referring to sniffer port */
++	for (p = 0; p < dev->port_cnt; p++) {
++		lan937x_pread8(dev, p, P_MIRROR_CTRL, &data);
++
++		if ((data & (PORT_MIRROR_RX | PORT_MIRROR_TX))) {
++			in_use = true;
++			break;
++		}
++	}
++
++	/* delete sniffing if there are no other mirroring rule exist */
++	if (!in_use)
++		lan937x_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
++				 PORT_MIRROR_SNIFFER, false);
++}
++
+ static void lan937x_config_cpu_port(struct dsa_switch *ds)
+ {
+ 	struct ksz_device *dev = ds->priv;
+@@ -508,6 +590,8 @@ const struct dsa_switch_ops lan937x_switch_ops = {
+ 	.port_bridge_leave = ksz_port_bridge_leave,
+ 	.port_stp_state_set = lan937x_port_stp_state_set,
+ 	.port_fast_age = ksz_port_fast_age,
++	.port_mirror_add = lan937x_port_mirror_add,
++	.port_mirror_del = lan937x_port_mirror_del,
+ 	.port_max_mtu = lan937x_get_max_mtu,
+ 	.port_change_mtu = lan937x_change_mtu,
+ 	.phylink_get_caps = lan937x_phylink_get_caps,
 -- 
-Regards/Gruss,
-    Boris.
+2.30.2
 
-https://people.kernel.org/tglx/notes-about-netiquette
