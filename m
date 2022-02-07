@@ -2,281 +2,289 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A8AC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C599C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345017AbiBHBES (ORCPT
+        id S1345099AbiBHBE0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:04:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
+        Mon, 7 Feb 2022 20:04:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233015AbiBGXKd (ORCPT
+        with ESMTP id S233102AbiBGXTd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:10:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A56C061355;
-        Mon,  7 Feb 2022 15:10:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9846C60E88;
-        Mon,  7 Feb 2022 23:10:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F9EDC340F2;
-        Mon,  7 Feb 2022 23:10:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644275432;
-        bh=Lcdb4q3h6FG1qReWPKtwv14iRj024HvkZtSOCVum3ZE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=A9I3mZ5okqwJnmnOvQ5mSBofABVE4y5mO0TcPlGxxOBsbAHawMshH3hLUNui6Ji7e
-         WN67qJAu3A+o3B/w3PUKnpyAFgflRbmISStnyKcUB5Re4kAYc8CsHMHbQA+mGzhIVQ
-         IqZKy2dHfrqN98Hi7Beppm3F0UGBrr7RLd4xV3UVW6V1UOOEg6vPRS59NVKWu7GSBX
-         1V30BIBHDRrtdRdOtHkTUieqT9DuO4jYxhRXyKr+JTAKXpKomuZM2dPFolgrf1j6J+
-         RRWjJzHKPUVN6UwnqF0nZHxBNl3M+t9NJTiBZJrRsTrxALGwb2u6RHDnwnhuSuKkVn
-         xPnw2jcz7RnOA==
-Received: by mail-ej1-f54.google.com with SMTP id k25so46267693ejp.5;
-        Mon, 07 Feb 2022 15:10:31 -0800 (PST)
-X-Gm-Message-State: AOAM533UIG/Of2SSaqwKQc3Bk1lgBK48hFg322eylUEnlFMFLYWycq3Z
-        EPkUi57qJUEcu0upsHO/YsdM1/Mr81qlz0naaQ==
-X-Google-Smtp-Source: ABdhPJz7Qj0TuFoWxZhb8cva0V6D9Wp6M2Hdt+CzzUkPA0uqFFqcscoQvCYXutPCout4QIFnwq1QIvKZFgtuPsC7bWE=
-X-Received: by 2002:a17:906:2744:: with SMTP id a4mr1476727ejd.510.1644275430253;
- Mon, 07 Feb 2022 15:10:30 -0800 (PST)
+        Mon, 7 Feb 2022 18:19:33 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A0CC0612A4
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:19:32 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id v4so8550751pjh.2
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 15:19:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ThSHxAOPclKygYpsG6VmV+qfMk9x1IPAyMO8Co5HbOc=;
+        b=kmb14pxupGC2sDAnbX9Bh5L1woRvkv3WkvbZIKkM3MMG262WOPVKK1LtB05kz7o8V+
+         B7OjeVwlXI8mBEHkADnt89aw5Xxa/lep6snbGzcw4p/9IQm7xyHWeCJbaltKlok9XRZV
+         AylZGLQomu8E1huNtupY74xKbIDWCw7GFavFGmjLX+vlIZURQTSX/7iqrjFxBVqxBPnj
+         OcrCzCT7h8UJPu2yyadZG8wGYAfEFbHPOjFokH61y4YV2cJY83o9BSUVJp64mRUyU3/j
+         /MuMYDsoi7wxyPUc8GXI/0TuY9/VfzRFkohcTySRa7fb0Sh88s0y/39UF0ENE6sE9zab
+         NMBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ThSHxAOPclKygYpsG6VmV+qfMk9x1IPAyMO8Co5HbOc=;
+        b=eHpdVqhNVxlFZsLfyGC5riQV6XJLREA+WUdFI0yrx969OHrivmcbWZpQMD4Ink05Bx
+         NyFQb2gV9VZWrz3nEKMaLz/Tp7FBt96yWv9liOkxh91Ewwqk2OjfiaFN+BREymWlrMpO
+         I95Sx58h9/Wg1Ezg1HyHtsHNhlur0s/toGgciFE1LBYuw6G0gkMEFgS0qiS+cdy34OQi
+         oTle3r/68l7A9Vga9j/3VKjhWXXwbwiZaF5vGw73V35YYltudC7OXOWkeH0NwsN2oT2c
+         s9jr0c5/oWoyElMjOmJ4hZnzWpjwBXX0t1bjPHgH+Xi7eCy8shggr5nDXcio5WBl+s5E
+         79sg==
+X-Gm-Message-State: AOAM530xtujGfmkl/frs1hbnBrqWj5cB54wXcmQQVuTHf2eR5/s7reeO
+        bf0TTHEF46YqPMQsYKUUD2Sv9A==
+X-Google-Smtp-Source: ABdhPJySKVrDECFoi48FdGe8WJ8TGcWRJOgHFX/qwVFLbqTDSNz6K55tNKXLPHAiphc9QysAK12LdA==
+X-Received: by 2002:a17:902:7e06:: with SMTP id b6mr1915957plm.58.1644275971681;
+        Mon, 07 Feb 2022 15:19:31 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id o125sm9725998pfb.116.2022.02.07.15.19.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 15:19:31 -0800 (PST)
+Date:   Mon, 7 Feb 2022 23:19:27 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Peter Gonda <pgonda@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Marc Orr <marcorr@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KVM: SEV: Allow SEV intra-host migration of VM with
+ mirrors
+Message-ID: <YgGo/5GyJVfGH00T@google.com>
+References: <20220111154048.2108264-1-pgonda@google.com>
 MIME-Version: 1.0
-References: <20220126071932.32615-1-jason-jh.lin@mediatek.com> <20220126071932.32615-7-jason-jh.lin@mediatek.com>
-In-Reply-To: <20220126071932.32615-7-jason-jh.lin@mediatek.com>
-From:   Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Date:   Tue, 8 Feb 2022 07:10:18 +0800
-X-Gmail-Original-Message-ID: <CAAOTY_9oGmop6nKfpHgNgRb6JaJ2CukOyP-vdrBM1G5sxMAkrA@mail.gmail.com>
-Message-ID: <CAAOTY_9oGmop6nKfpHgNgRb6JaJ2CukOyP-vdrBM1G5sxMAkrA@mail.gmail.com>
-Subject: Re: [PATCH v15 06/12] dt-bindings: display: mediatek: add mt8195 SoC
- binding for vdosys0
-To:     "jason-jh.lin" <jason-jh.lin@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fei Shao <fshao@chromium.org>,
-        Moudy Ho <moudy.ho@mediatek.com>, roy-cw.yeh@mediatek.com,
-        CK Hu <ck.hu@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Jitao shi <jitao.shi@mediatek.com>,
-        Nancy Lin <nancy.lin@mediatek.com>, singo.chang@mediatek.com,
-        DTML <devicetree@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220111154048.2108264-1-pgonda@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Jason:
+On Tue, Jan 11, 2022, Peter Gonda wrote:
+> @@ -1623,22 +1624,41 @@ static void sev_unlock_vcpus_for_migration(struct kvm *kvm)
+>  	}
+>  }
+>  
+> -static void sev_migrate_from(struct kvm_sev_info *dst,
+> -			      struct kvm_sev_info *src)
+> +static void sev_migrate_from(struct kvm *dst_kvm, struct kvm *src_kvm)
+>  {
+> +	struct kvm_sev_info *dst = &to_kvm_svm(dst_kvm)->sev_info;
+> +	struct kvm_sev_info *src = &to_kvm_svm(src_kvm)->sev_info;
+> +	struct kvm_sev_info *mirror, *tmp;
+> +
+>  	dst->active = true;
+>  	dst->asid = src->asid;
+>  	dst->handle = src->handle;
+>  	dst->pages_locked = src->pages_locked;
+>  	dst->enc_context_owner = src->enc_context_owner;
+> +	dst->num_mirrored_vms = src->num_mirrored_vms;
+>  
+>  	src->asid = 0;
+>  	src->active = false;
+>  	src->handle = 0;
+>  	src->pages_locked = 0;
+>  	src->enc_context_owner = NULL;
+> +	src->num_mirrored_vms = 0;
+>  
+>  	list_cut_before(&dst->regions_list, &src->regions_list, &src->regions_list);
+> +	list_cut_before(&dst->mirror_vms, &src->mirror_vms, &src->mirror_vms);
+> +
+> +	/*
+> +	 * If this VM has mirrors we need to update the KVM refcounts from the
+> +	 * source to the destination.
+> +	 */
 
-jason-jh.lin <jason-jh.lin@mediatek.com> =E6=96=BC 2022=E5=B9=B41=E6=9C=882=
-6=E6=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=883:19=E5=AF=AB=E9=81=93=EF=
-=BC=9A
->
-> Add mt8195 SoC binding to AAL, CCORR, COLOR, DITHER, GAMMA, MERGE,
-> MUTEX, OVL and RDMA yaml schema for vdosys0.
+It's worth calling out that a reference is being taken on behalf of the mirror,
+that detail is easy to miss.  And maybe call out that the caller holds a reference
+to @src_kvm?
 
-Applied to mediatek-drm-next [1], thanks.
+	/*
+	 * If this VM has mirrors, "transfer" each mirror's refcount of the
+	 * source to the destination (this KVM).  The caller holds a reference
+	 * to the source, so there's no danger of use-after-free.
+	 */
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/=
-log/?h=3Dmediatek-drm-next
+> +	if (dst->num_mirrored_vms > 0) {
+> +		list_for_each_entry_safe(mirror, tmp, &dst->mirror_vms,
+> +					  mirror_entry) {
+> +			kvm_get_kvm(dst_kvm);
+> +			kvm_put_kvm(src_kvm);
+> +			mirror->enc_context_owner = dst_kvm;
+> +		}
+> +	}
+>  }
+>  
+>  static int sev_es_migrate_from(struct kvm *dst, struct kvm *src)
 
-Regards,
-Chun-Kuang
+...
 
->
-> Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
-> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> ---
->  .../devicetree/bindings/display/mediatek/mediatek,aal.yaml   | 1 +
->  .../devicetree/bindings/display/mediatek/mediatek,ccorr.yaml | 5 +++++
->  .../devicetree/bindings/display/mediatek/mediatek,color.yaml | 1 +
->  .../bindings/display/mediatek/mediatek,dither.yaml           | 1 +
->  .../devicetree/bindings/display/mediatek/mediatek,gamma.yaml | 1 +
->  .../devicetree/bindings/display/mediatek/mediatek,merge.yaml | 2 ++
->  .../devicetree/bindings/display/mediatek/mediatek,mutex.yaml | 5 +++--
->  .../devicetree/bindings/display/mediatek/mediatek,ovl.yaml   | 5 +++++
->  .../devicetree/bindings/display/mediatek/mediatek,rdma.yaml  | 2 ++
->  9 files changed, 21 insertions(+), 2 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-aal.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.=
-yaml
-> index 044331f5aacb..225f9dd726d2 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yam=
-l
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yam=
-l
-> @@ -28,6 +28,7 @@ properties:
->                - mediatek,mt2712-disp-aal
->                - mediatek,mt8183-disp-aal
->                - mediatek,mt8192-disp-aal
-> +              - mediatek,mt8195-disp-aal
->            - enum:
->                - mediatek,mt8173-disp-aal
->
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-ccorr.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,cc=
-orr.yaml
-> index ea45b40edee7..6894b6999412 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.y=
-aml
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.y=
-aml
-> @@ -25,6 +25,11 @@ properties:
->            - const: mediatek,mt8183-disp-ccorr
->        - items:
->            - const: mediatek,mt8192-disp-ccorr
-> +      - items:
-> +          - enum:
-> +              - mediatek,mt8195-disp-ccorr
-> +          - enum:
-> +              - mediatek,mt8192-disp-ccorr
->
->    reg:
->      maxItems: 1
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-color.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,co=
-lor.yaml
-> index 13628f346718..bc83155b3b4c 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.y=
-aml
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,color.y=
-aml
-> @@ -38,6 +38,7 @@ properties:
->            - enum:
->                - mediatek,mt8183-disp-color
->                - mediatek,mt8192-disp-color
-> +              - mediatek,mt8195-disp-color
->            - enum:
->                - mediatek,mt8173-disp-color
->    reg:
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-dither.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,d=
-ither.yaml
-> index 2c05e3019c75..9d89297f5f1d 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.=
-yaml
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.=
-yaml
-> @@ -27,6 +27,7 @@ properties:
->        - items:
->            - enum:
->                - mediatek,mt8192-disp-dither
-> +              - mediatek,mt8195-disp-dither
->            - enum:
->                - mediatek,mt8183-disp-dither
->
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-gamma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ga=
-mma.yaml
-> index 89ccb8dbadd7..247baad147b3 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.y=
-aml
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.y=
-aml
-> @@ -28,6 +28,7 @@ properties:
->        - items:
->            - enum:
->                - mediatek,mt8192-disp-gamma
-> +              - mediatek,mt8195-disp-gamma
->            - enum:
->                - mediatek,mt8183-disp-gamma
->
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-merge.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,me=
-rge.yaml
-> index fae106cf1753..60b21ef5549b 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.y=
-aml
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.y=
-aml
-> @@ -23,6 +23,8 @@ properties:
->      oneOf:
->        - items:
->            - const: mediatek,mt8173-disp-merge
-> +      - items:
-> +          - const: mediatek,mt8195-disp-merge
->
->    reg:
->      maxItems: 1
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-mutex.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,mu=
-tex.yaml
-> index 90f11e12a55e..6eca525eced0 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.y=
-aml
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.y=
-aml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/display/mediatek/mediatek,mutex.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->
-> -title: Mediatek display mutex
-> +title: Mediatek mutex
->
->  maintainers:
->    - Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> @@ -36,7 +36,8 @@ properties:
->            - const: mediatek,mt8183-disp-mutex
->        - items:
->            - const: mediatek,mt8192-disp-mutex
-> -
-> +      - items:
-> +          - const: mediatek,mt8195-disp-mutex
->    reg:
->      maxItems: 1
->
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-ovl.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.=
-yaml
-> index 8e4a62cb9c81..e71f79bc2dee 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yam=
-l
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yam=
-l
-> @@ -35,6 +35,11 @@ properties:
->                - mediatek,mt2712-disp-ovl
->            - enum:
->                - mediatek,mt2701-disp-ovl
-> +      - items:
-> +          - enum:
-> +              - mediatek,mt8195-disp-ovl
-> +          - enum:
-> +              - mediatek,mt8183-disp-ovl
->
->    reg:
->      maxItems: 1
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-rdma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,rdm=
-a.yaml
-> index a3c5f4c9fbcd..8ef821641672 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.ya=
-ml
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.ya=
-ml
-> @@ -29,6 +29,8 @@ properties:
->            - const: mediatek,mt8173-disp-rdma
->        - items:
->            - const: mediatek,mt8183-disp-rdma
-> +      - items:
-> +          - const: mediatek,mt8195-disp-rdma
->        - items:
->            - enum:
->                - mediatek,mt7623-disp-rdma
-> --
-> 2.18.0
->
+> @@ -2050,10 +2062,17 @@ void sev_vm_destroy(struct kvm *kvm)
+>  	if (is_mirroring_enc_context(kvm)) {
+>  		struct kvm *owner_kvm = sev->enc_context_owner;
+>  		struct kvm_sev_info *owner_sev = &to_kvm_svm(owner_kvm)->sev_info;
+> +		struct kvm_sev_info *mirror, *tmp;
+>  
+>  		mutex_lock(&owner_kvm->lock);
+>  		if (!WARN_ON(!owner_sev->num_mirrored_vms))
+>  			owner_sev->num_mirrored_vms--;
+> +
+> +		list_for_each_entry_safe(mirror, tmp, &owner_sev->mirror_vms,
+> +					  mirror_entry)
+> +			if (mirror == sev)
+> +				list_del(&mirror->mirror_entry);
+> +
+
+There's no need to walk the list just to find the entry you already have.  Maaaaybe
+if you were sanity checking, but it's not like we can do anything helpful if the
+sanity check fails, so eating a #GP due to consuming e.g. LIST_POISON1 is just as
+good as anything else.
+
+	if (is_mirroring_enc_context(kvm)) {
+		struct kvm *owner_kvm = sev->enc_context_owner;
+
+		mutex_lock(&owner_kvm->lock);
+		list_del(&->mirror_entry);
+		mutex_unlock(&owner_kvm->lock);
+		kvm_put_kvm(owner_kvm);
+		return;
+	}
+
+>  		mutex_unlock(&owner_kvm->lock);
+>  		kvm_put_kvm(owner_kvm);
+>  		return;
+> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+> index daa8ca84afcc..b9f5e33d5232 100644
+> --- a/arch/x86/kvm/svm/svm.h
+> +++ b/arch/x86/kvm/svm/svm.h
+> @@ -81,6 +81,10 @@ struct kvm_sev_info {
+>  	u64 ap_jump_table;	/* SEV-ES AP Jump Table address */
+>  	struct kvm *enc_context_owner; /* Owner of copied encryption context */
+>  	unsigned long num_mirrored_vms; /* Number of VMs sharing this ASID */
+> +	union {
+> +		struct list_head mirror_vms; /* List of VMs mirroring */
+> +		struct list_head mirror_entry; /* Use as a list entry of mirrors */
+> +	};
+
+
+Whoops.  IIRC, I suggested a union for tracking mirrors vs mirrored.  After seeing
+the code, that was a bad suggestion.  Memory isn't at a premimum for a per-VM
+object, so storing an extra list_head is a non-issue.
+
+If we split the two, then num_mirrored_vms goes away, and more importantly we won't
+have to deal with bugs where we inevitably forget to guard access to the union with
+a check against num_mirrored_vms.
+
+E.g. (completely untested and probably incomplete)
+
+---
+ arch/x86/kvm/svm/sev.c | 32 +++++++++-----------------------
+ arch/x86/kvm/svm/svm.h |  7 ++-----
+ 2 files changed, 11 insertions(+), 28 deletions(-)
+
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 369cf8c4da61..41f7e733c33e 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -1635,29 +1635,25 @@ static void sev_migrate_from(struct kvm *dst_kvm, struct kvm *src_kvm)
+ 	dst->handle = src->handle;
+ 	dst->pages_locked = src->pages_locked;
+ 	dst->enc_context_owner = src->enc_context_owner;
+-	dst->num_mirrored_vms = src->num_mirrored_vms;
+
+ 	src->asid = 0;
+ 	src->active = false;
+ 	src->handle = 0;
+ 	src->pages_locked = 0;
+ 	src->enc_context_owner = NULL;
+-	src->num_mirrored_vms = 0;
+
+ 	list_cut_before(&dst->regions_list, &src->regions_list, &src->regions_list);
+ 	list_cut_before(&dst->mirror_vms, &src->mirror_vms, &src->mirror_vms);
+
+ 	/*
+-	 * If this VM has mirrors we need to update the KVM refcounts from the
+-	 * source to the destination.
++	 * If this VM has mirrors, "transfer" each mirror's refcount from the
++	 * source to the destination (this KVM).  The caller holds a reference
++	 * to the source, so there's no danger of use-after-free.
+ 	 */
+-	if (dst->num_mirrored_vms > 0) {
+-		list_for_each_entry_safe(mirror, tmp, &dst->mirror_vms,
+-					  mirror_entry) {
+-			kvm_get_kvm(dst_kvm);
+-			kvm_put_kvm(src_kvm);
+-			mirror->enc_context_owner = dst_kvm;
+-		}
++	list_for_each_entry_safe(mirror, tmp, &dst->mirror_vms, mirror_entry) {
++		kvm_get_kvm(dst_kvm);
++		kvm_put_kvm(src_kvm);
++		mirror->enc_context_owner = dst_kvm;
+ 	}
+ }
+
+@@ -2019,7 +2015,6 @@ int sev_vm_copy_enc_context_from(struct kvm *kvm, unsigned int source_fd)
+ 	 */
+ 	source_sev = &to_kvm_svm(source_kvm)->sev_info;
+ 	kvm_get_kvm(source_kvm);
+-	source_sev->num_mirrored_vms++;
+ 	mirror_sev = &to_kvm_svm(kvm)->sev_info;
+ 	list_add_tail(&mirror_sev->mirror_entry, &source_sev->mirror_vms);
+
+@@ -2053,7 +2048,7 @@ void sev_vm_destroy(struct kvm *kvm)
+ 	struct list_head *head = &sev->regions_list;
+ 	struct list_head *pos, *q;
+
+-	WARN_ON(sev->num_mirrored_vms);
++	WARN_ON(!list_empty(&sev->mirror_vms));
+
+ 	if (!sev_guest(kvm))
+ 		return;
+@@ -2061,18 +2056,9 @@ void sev_vm_destroy(struct kvm *kvm)
+ 	/* If this is a mirror_kvm release the enc_context_owner and skip sev cleanup */
+ 	if (is_mirroring_enc_context(kvm)) {
+ 		struct kvm *owner_kvm = sev->enc_context_owner;
+-		struct kvm_sev_info *owner_sev = &to_kvm_svm(owner_kvm)->sev_info;
+-		struct kvm_sev_info *mirror, *tmp;
+
+ 		mutex_lock(&owner_kvm->lock);
+-		if (!WARN_ON(!owner_sev->num_mirrored_vms))
+-			owner_sev->num_mirrored_vms--;
+-
+-		list_for_each_entry_safe(mirror, tmp, &owner_sev->mirror_vms,
+-					  mirror_entry)
+-			if (mirror == sev)
+-				list_del(&mirror->mirror_entry);
+-
++		list_del(&mirror->mirror_entry);
+ 		mutex_unlock(&owner_kvm->lock);
+ 		kvm_put_kvm(owner_kvm);
+ 		return;
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index 0876329f273d..79bf568c2558 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -79,11 +79,8 @@ struct kvm_sev_info {
+ 	struct list_head regions_list;  /* List of registered regions */
+ 	u64 ap_jump_table;	/* SEV-ES AP Jump Table address */
+ 	struct kvm *enc_context_owner; /* Owner of copied encryption context */
+-	unsigned long num_mirrored_vms; /* Number of VMs sharing this ASID */
+-	union {
+-		struct list_head mirror_vms; /* List of VMs mirroring */
+-		struct list_head mirror_entry; /* Use as a list entry of mirrors */
+-	};
++	struct list_head mirror_vms; /* List of VMs mirroring */
++	struct list_head mirror_entry; /* Use as a list entry of mirrors */
+ 	struct misc_cg *misc_cg; /* For misc cgroup accounting */
+ 	atomic_t migration_in_progress;
+ };
+
+base-commit: 618a9a6fda17f48d86a1ce9851bd8ceffdc57d75
+--
+
