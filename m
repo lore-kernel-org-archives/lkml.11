@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DD89C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3F7C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388701AbiBGLod (ORCPT
+        id S1388716AbiBGLoh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:44:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
+        Mon, 7 Feb 2022 06:44:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385893AbiBGLdB (ORCPT
+        with ESMTP id S1385888AbiBGLc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:33:01 -0500
+        Mon, 7 Feb 2022 06:32:58 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75A3C043181;
-        Mon,  7 Feb 2022 03:33:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FBDC043181;
+        Mon,  7 Feb 2022 03:32:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66EE060A67;
-        Mon,  7 Feb 2022 11:33:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A4F0C004E1;
-        Mon,  7 Feb 2022 11:32:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15FD560A69;
+        Mon,  7 Feb 2022 11:32:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAC07C004E1;
+        Mon,  7 Feb 2022 11:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644233579;
-        bh=0b2/NmoR00QawfH4Fcskg1rd4c91k5VvvsO+xnT9CSQ=;
+        s=korg; t=1644233576;
+        bh=u8o5PCQAyIhvn8HqQIszupSztvY2NwO4h4QsnvWbks0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dAQ5K3juq+Gtali1zcUGtpIp1A9ljDwIRWtxuaMJFn1+kgyNXxb7RhVkp3bAg5Mcv
-         y+cHKZaelkMKKVO6Ne15IKfJkMT16F2Z0kQhFcQNUvoRie17975ASa9IaqhXvSngJS
-         Ut5SlUNX8twlSRCLsMkghQrdI04zwF8HWD4+Ai5M=
+        b=Ze/sdS+0Ua3L8CxKh6A3Dw2ziDX1/Iujdvz32+6NJX0Wqhh2CpBhuvRvM2jgNwpGW
+         RvAtqkW7yJApCyfgocg/45SUUtk8DsmSRTyjqyqyzCD/F7gIY0wNIFeWeSCG+//i9D
+         q8M7vVhCrK9ez4iF+ELSP0ZEmezi8d42mn8JIVIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lang Yu <Lang.Yu@amd.com>,
-        Lijo Lazar <lijo.lazar@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 024/126] drm/amdgpu: fix a potential GPU hang on cyan skillfish
-Date:   Mon,  7 Feb 2022 12:05:55 +0100
-Message-Id: <20220207103804.991012702@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        Chia-Lin Kao <acelan.kao@canonical.com>
+Subject: [PATCH 5.16 023/126] drm/i915/adlp: Fix TypeC PHY-ready status readout
+Date:   Mon,  7 Feb 2022 12:05:54 +0100
+Message-Id: <20220207103804.958489222@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103804.053675072@linuxfoundation.org>
 References: <20220207103804.053675072@linuxfoundation.org>
@@ -50,36 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lang Yu <Lang.Yu@amd.com>
+From: Imre Deak <imre.deak@intel.com>
 
-commit bca52455a3c07922ee976714b00563a13a29ab15 upstream.
+commit 3c6f13ad723e7206f03bb2752b01d18202b7fc9d upstream.
 
-We observed a GPU hang when querying GMC CG state(i.e.,
-cat amdgpu_pm_info) on cyan skillfish. Acctually, cyan
-skillfish doesn't support any CG features.
+The TCSS_DDI_STATUS register is indexed by tc_port not by the FIA port
+index, fix this up. This only caused an issue on TC#3/4 ports in legacy
+mode, as in all other cases the two indices either match (on TC#1/2) or
+the TCSS_DDI_STATUS_READY flag is set regardless of something being
+connected or not (on TC#1/2/3/4 in dp-alt and tbt-alt modes).
 
-Just prevent it from accessing GMC CG registers.
-
-Signed-off-by: Lang Yu <Lang.Yu@amd.com>
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Reported-and-tested-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
+Fixes: 55ce306c2aa1 ("drm/i915/adl_p: Implement TC sequences")
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/4698
+Cc: José Roberto de Souza <jose.souza@intel.com>
+Cc: <stable@vger.kernel.org> # v5.14+
+Signed-off-by: Imre Deak <imre.deak@intel.com>
+Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220126104356.2022975-1-imre.deak@intel.com
+(cherry picked from commit 516b33460c5bee78b2055637b0547bdb0e6af754)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/i915/display/intel_tc.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-@@ -1147,6 +1147,9 @@ static void gmc_v10_0_get_clockgating_st
+--- a/drivers/gpu/drm/i915/display/intel_tc.c
++++ b/drivers/gpu/drm/i915/display/intel_tc.c
+@@ -345,10 +345,11 @@ static bool icl_tc_phy_status_complete(s
+ static bool adl_tc_phy_status_complete(struct intel_digital_port *dig_port)
  {
- 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
+ 	struct drm_i915_private *i915 = to_i915(dig_port->base.base.dev);
++	enum tc_port tc_port = intel_port_to_tc(i915, dig_port->base.port);
+ 	struct intel_uncore *uncore = &i915->uncore;
+ 	u32 val;
  
-+	if (adev->ip_versions[GC_HWIP][0] == IP_VERSION(10, 1, 3))
-+		return;
-+
- 	adev->mmhub.funcs->get_clockgating(adev, flags);
- 
- 	if (adev->ip_versions[ATHUB_HWIP][0] >= IP_VERSION(2, 1, 0))
+-	val = intel_uncore_read(uncore, TCSS_DDI_STATUS(dig_port->tc_phy_fia_idx));
++	val = intel_uncore_read(uncore, TCSS_DDI_STATUS(tc_port));
+ 	if (val == 0xffffffff) {
+ 		drm_dbg_kms(&i915->drm,
+ 			    "Port %s: PHY in TCCOLD, assuming not complete\n",
 
 
