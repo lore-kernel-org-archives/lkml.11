@@ -2,122 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A0DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED3A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348753AbiBGSBf (ORCPT
+        id S1344744AbiBGSHu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:01:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
+        Mon, 7 Feb 2022 13:07:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344515AbiBGR4D (ORCPT
+        with ESMTP id S238839AbiBGSFF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 12:56:03 -0500
-Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F09C0401DA;
-        Mon,  7 Feb 2022 09:56:02 -0800 (PST)
-Received: by mail-vk1-f175.google.com with SMTP id w17so8285239vko.9;
-        Mon, 07 Feb 2022 09:56:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q2jFTN2u074XzT8suGCUZz+zCtO41192wV4ApDRi8Ns=;
-        b=JkalXYSqFISfJim092/HrQmPxPWEQ5IUfsQHmX0zZMnKh+5PXiMMRlt+d7S2oujxC0
-         DIWnoRb6BUeJvVhE18/2Wyvl+2YNhIirsyvpekH42iFD6MZEt29H4AaFXDAjYQb6IbOZ
-         PPfzN3b1UUUeClpCvog9gb4lf47eKA03LnU3CcU+IoQy8S/OW9RO02Pc3ux01Tg9NvX6
-         rfZJOe7LwJYnHEAPqHKMDfVaWHHywwLMmnkfbpFjTxTUAxrqrBUocHPAAr+ynzwsCq1r
-         CeUYGvEOw+ZnhQwwN4EjAFWOcIxRLg4g/zHfna7J0isXf9Mqjwfpc32Wn0wL3PKttqEX
-         S6Hw==
-X-Gm-Message-State: AOAM531l1+PmQn0uPDzPd6IGlI9MbY6Uopq3jJ+l8Bv89rwtaMSs6HN6
-        lLBBoi7tb6Ae3+IkoaqMjQhQhwX3iHfE3g==
-X-Google-Smtp-Source: ABdhPJwQrPwvpg/kMYycNB9eHrcRCtAtOgEEvjUQGDsUEHj1fwlJ/JoInV2SeLkWvQ3Y+WuuygD6fQ==
-X-Received: by 2002:a05:6122:1692:: with SMTP id 18mr344596vkl.25.1644256560903;
-        Mon, 07 Feb 2022 09:56:00 -0800 (PST)
-Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com. [209.85.217.44])
-        by smtp.gmail.com with ESMTPSA id w15sm14031vso.32.2022.02.07.09.55.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 09:56:00 -0800 (PST)
-Received: by mail-vs1-f44.google.com with SMTP id b2so521803vso.9;
-        Mon, 07 Feb 2022 09:55:59 -0800 (PST)
-X-Received: by 2002:a67:a401:: with SMTP id n1mr161631vse.38.1644256559395;
- Mon, 07 Feb 2022 09:55:59 -0800 (PST)
+        Mon, 7 Feb 2022 13:05:05 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5D4C0401E2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 10:05:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644257104; x=1675793104;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LUCSpHgmkTYHDcVbdREI9pkjDuWTx34JSR66QVMbHsE=;
+  b=PW6IEatTSPud/qsQomn/leGqXCnBIJUemXk6qntOGJdfUXAkAjJUDMLH
+   VfOh01HovSq0LCcXU1ZwEYpDmS4pxmtofAiY7EHA3unylX1hpHmNrDje+
+   ozOphcz9PTw4hX47ycv5xcqy7o0GgsQSgHwVbnuEDvtRvxYSpKvDOMvCM
+   Tp+Msj/AW8gLepoSoyszAQbToXapK+bNwmRDgq/tC46qhTMMAGvCvVb1O
+   eJCORXEJMu0kC1ycLd/fnpyR0zK0c3IhAFX+guweI/jrXIAH9s8N9Lv23
+   jU0hmsZyilPg8Xfk00IOny4xeuQ7gBfHxHx4ecDnhdeqmzQ0a0IiTX+qY
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="248984194"
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="248984194"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 10:05:03 -0800
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="600969462"
+Received: from jons-linux-dev-box.fm.intel.com (HELO jons-linux-dev-box) ([10.1.27.20])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 10:05:03 -0800
+Date:   Mon, 7 Feb 2022 09:59:07 -0800
+From:   Matthew Brost <matthew.brost@intel.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     kbuild@lists.01.org, lkp@intel.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        John Harrison <John.C.Harrison@Intel.com>
+Subject: Re: [kbuild] drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c:2376
+ eb_pin_timeline() warn: inconsistent returns '&tl->mutex'.
+Message-ID: <20220207175907.GA8452@jons-linux-dev-box>
+References: <202202072340.xZpz7hAb-lkp@intel.com>
 MIME-Version: 1.0
-References: <164299573337.26253.7538614611220034049.stgit@noble.brown>
-In-Reply-To: <164299573337.26253.7538614611220034049.stgit@noble.brown>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 7 Feb 2022 18:55:48 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXw6bhOf8BMWzje1h_gaBg8TxZXWAQgL0cpdYBkZ+LwXw@mail.gmail.com>
-Message-ID: <CAMuHMdXw6bhOf8BMWzje1h_gaBg8TxZXWAQgL0cpdYBkZ+LwXw@mail.gmail.com>
-Subject: Re: [PATCH 00/23 V3] Repair SWAP-over_NFS
-To:     NeilBrown <neilb@suse.de>
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>,
-        "open list:NFS, SUNRPC, AND..." <linux-nfs@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202202072340.xZpz7hAb-lkp@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Neil,
+On Mon, Feb 07, 2022 at 08:59:48PM +0300, Dan Carpenter wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git  master
+> head:   dfd42facf1e4ada021b939b4e19c935dcdd55566
+> commit: 544460c33821b44c2f0c643121303c3dc3f66ef1 drm/i915: Multi-BB execbuf
+> config: i386-randconfig-m021-20220207 (https://download.01.org/0day-ci/archive/20220207/202202072340.xZpz7hAb-lkp@intel.com/config )
+> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+> 
+> If you fix the issue, kindly add following tag as appropriate
 
-On Mon, Jan 24, 2022 at 5:40 PM NeilBrown <neilb@suse.de> wrote:
-> swap-over-NFS currently has a variety of problems.
->
-> swap writes call generic_write_checks(), which always fails on a swap
-> file, so it completely fails.
-> Even without this, various deadlocks are possible - largely due to
-> improvements in NFS memory allocation (using NOFS instead of ATOMIC)
-> which weren't tested against swap-out.
->
-> NFS is the only filesystem that has supported fs-based swap IO, and it
-> hasn't worked for several releases, so now is a convenient time to clean
-> up the swap-via-filesystem interfaces - we cannot break anything !
->
-> So the first few patches here clean up and improve various parts of the
-> swap-via-filesystem code.  ->activate_swap() is given a cleaner
-> interface, a new ->swap_rw is introduced instead of burdening
-> ->direct_IO, etc.
->
-> Current swap-to-filesystem code only ever submits single-page reads and
-> writes.  These patches change that to allow multi-page IO when adjacent
-> requests are submitted.  Writes are also changed to be async rather than
-> sync.  This substantially speeds up write throughput for swap-over-NFS.
->
-> Some of the NFS patches can land independently of the MM patches.  A few
-> require the MM patches to land first.
+This is fixed by the below patch:
+https://patchwork.freedesktop.org/patch/msgid/20220111163929.14017-1-matthew.brost@intel.com
 
-Thanks for your series!
-Swap over NFS was indeed broken last time I tried[1], but with your
-series, it's working again on arm32 (RZ/A1 with 32 MiB of RAM, 100Mbps
-Ethernet and Debian 9 nfsroot). My system was exercised using "apt
-update", and the subsequent "apt upgrade" is still running, though
-(it took more than 6 hours to build the apt dependency tree, now it's
-trying hard to create a list of packages...).
+Matt
 
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-BTW, I think you do want to run scripts/checkpatch.pl on your series,
-and improve it by fixing a few of the reported warnings (function
-definition arguments should also have an identifier name, missing
-data_race() comment, missing SPDX-License-Identifier tag).
-
-[1] https://lore.kernel.org/all/20191230153238.29878-1-geert+renesas@glider.be/
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> New smatch warnings:
+> drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c:2376 eb_pin_timeline() warn: inconsistent returns '&tl->mutex'.
+> 
+> vim +2376 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
+> 
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2333  static int eb_pin_timeline(struct i915_execbuffer *eb, struct intel_context *ce,
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2334  			   bool throttle)
+> 8f2a1057d6ec21 drivers/gpu/drm/i915/i915_gem_execbuffer.c     Chris Wilson      2019-04-25  2335  {
+> e5dadff4b09376 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-15  2336  	struct intel_timeline *tl;
+> 2bf541ff6d06f4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Maarten Lankhorst 2020-08-19  2337  	struct i915_request *rq = NULL;
+> 8f2a1057d6ec21 drivers/gpu/drm/i915/i915_gem_execbuffer.c     Chris Wilson      2019-04-25  2338  
+> a4e57f9031ccd5 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-04  2339  	/*
+> a4e57f9031ccd5 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-04  2340  	 * Take a local wakeref for preparing to dispatch the execbuf as
+> a4e57f9031ccd5 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-04  2341  	 * we expect to access the hardware fairly frequently in the
+> a4e57f9031ccd5 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-04  2342  	 * process, and require the engine to be kept awake between accesses.
+> a4e57f9031ccd5 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-04  2343  	 * Upon dispatch, we acquire another prolonged wakeref that we hold
+> a4e57f9031ccd5 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-04  2344  	 * until the timeline is idle, which in turn releases the wakeref
+> a4e57f9031ccd5 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-04  2345  	 * taken on the engine, and the parent device.
+> a4e57f9031ccd5 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-04  2346  	 */
+> e5dadff4b09376 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-15  2347  	tl = intel_context_timeline_lock(ce);
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2348  	if (IS_ERR(tl))
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2349  		return PTR_ERR(tl);
+> a4e57f9031ccd5 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-04  2350  
+> a4e57f9031ccd5 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-04  2351  	intel_context_enter(ce);
+> 2bf541ff6d06f4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Maarten Lankhorst 2020-08-19  2352  	if (throttle)
+> 2bf541ff6d06f4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Maarten Lankhorst 2020-08-19  2353  		rq = eb_throttle(eb, ce);
+> e5dadff4b09376 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-15  2354  	intel_context_timeline_unlock(tl);
+> e5dadff4b09376 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Chris Wilson      2019-08-15  2355  
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2356  	if (rq) {
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2357  		bool nonblock = eb->file->filp->f_flags & O_NONBLOCK;
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2358  		long timeout = nonblock ? 0 : MAX_SCHEDULE_TIMEOUT;
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2359  
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2360  		if (i915_request_wait(rq, I915_WAIT_INTERRUPTIBLE,
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2361  				      timeout) < 0) {
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2362  			i915_request_put(rq);
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2363  
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2364  			tl = intel_context_timeline_lock(ce);
+> 
+> This is mutex_lock_interruptible() so it can fail
+> 
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2365  			intel_context_exit(ce);
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2366  			intel_context_timeline_unlock(tl);
+> 
+> Leading to an error pointer dereference.  Maybe that's why Smatch is
+> complaining?  Hard to say.  Why are we calling mutex_lock if it's
+> O_NONBLOCK code?
+> 
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2367  
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2368  			if (nonblock)
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2369  				return -EWOULDBLOCK;
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2370  			else
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2371  				return -EINTR;
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2372  		}
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2373  		i915_request_put(rq);
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2374  	}
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2375  
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14 @2376  	return 0;
+> 544460c33821b4 drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c Matthew Brost     2021-10-14  2377  }
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org 
+> _______________________________________________
+> kbuild mailing list -- kbuild@lists.01.org
+> To unsubscribe send an email to kbuild-leave@lists.01.org
+> 
