@@ -2,102 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1332C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04587C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 22:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245126AbiBGWsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 17:48:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58732 "EHLO
+        id S245138AbiBGWsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 17:48:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234031AbiBGWsA (ORCPT
+        with ESMTP id S231463AbiBGWsl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 17:48:00 -0500
-Received: from smtp.smtpout.orange.fr (smtp10.smtpout.orange.fr [80.12.242.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585D5C0612A4
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 14:47:59 -0800 (PST)
-Received: from pop-os.home ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id HCncnIqRubnFGHCncnWXsD; Mon, 07 Feb 2022 23:47:57 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Mon, 07 Feb 2022 23:47:57 +0100
-X-ME-IP: 90.126.236.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org
-Subject: [PATCH v2 2/2] iommu/arm-smmu-v3: Simplify memory allocation
-Date:   Mon,  7 Feb 2022 23:47:55 +0100
-Message-Id: <598bd905103dcbe5653a54bb0dfb5a8597728214.1644274051.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <3f7b9b202c6b6f5edc234ab7af5f208fbf8bc944.1644274051.git.christophe.jaillet@wanadoo.fr>
-References: <3f7b9b202c6b6f5edc234ab7af5f208fbf8bc944.1644274051.git.christophe.jaillet@wanadoo.fr>
+        Mon, 7 Feb 2022 17:48:41 -0500
+X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 14:48:38 PST
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D20C061355;
+        Mon,  7 Feb 2022 14:48:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644274117;
+        bh=QhZBPtbAWH4+pKc3YMKNO4ZUECQS51u5SUOueTN1NGg=;
+        h=X-UI-Sender-Class:Date:From:Subject:To:Cc;
+        b=Lwl34HF/VMltqaVw0xBpCYB9VcHeyhGakRFm/hWcojk0l88vpnV0YwjJV7vPYywt+
+         WeuqSC3XH/5ZyEqE2MyOQgVB0pzyxWelpwVAX9LMoLAHiIBqnUjb+tkwNrcor1MUkT
+         JE0yd6wQwmw4PZGevbpv4ZyzSg0b7slAhUFunyf0=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.100.20] ([46.142.35.82]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MfHEP-1nxAS63xFb-00goFO; Mon, 07
+ Feb 2022 23:43:34 +0100
+Message-ID: <3251deaa-2b0f-1e04-fdb3-361b84ef4a7a@gmx.de>
+Date:   Mon, 7 Feb 2022 23:43:33 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Ronald Warsow <rwarsow@gmx.de>
+Subject: Re: [PATCH 5.16 000/127] 5.16.8-rc2 review
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Content-Language: de-DE
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:RZNd/xCD/zmSBdEh/hZVBZ/+M029zV543YVboXn/dcEJt8wJPXu
+ fLJhzSU/rzrhToxixgkrDAjbT4y0SVNcIKR5YWEDnkZbNuI++xpqx+g4ggFur4FZixdoW2i
+ ITu0T1A4qgSVpKl2xeGHAh4DJCArHZ6kylv86cbmk9lwOv0tHt0Ukm3i4UYk6fRDklKdmT/
+ RrMRaK8icvVqGbOB6StaQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:3ODOsgAMdFU=:WvP8R29XAfZ72OczrvrIFC
+ OAC0aJ3+mV4pewM0QHZfKh0Ef2WMtY8Zw9jYgAOdWp6asUfcXMADovAmArfs/Dnha0yduAQJU
+ 5GuosIlInFnRRFcFkv2yRpxyuqopSP0JmJTzN4gKlnM6CAQoEwVJyJn4e1Ugdox11TEPSjtd6
+ n318fLJ2P2/NQ8wg+8FK2ktJYaoqS5w9UVKbkqphGfJ+fIwusUjBI2yJb+KrhZdeVO42n8GIs
+ hzTed7VAFtKqu63A6WurRQdf3oFVaQ+pXNHb3eLKENxIFr4PwwCSTBVzMmy9uPrd7hAvSOAMK
+ +wtmpVDb2QvRLyN1eJrK6Da33a1j7aj26r8kHs0sqmJMvFyPy3pp1+3bOUJxWY+QcI8KfrPh1
+ Ye7OpaIGiADgk4HYvPV9LzdQl+a31LnwxOxpNjVKTW8e7qIhY/IceTWhoo10vccLhcqdKnPUh
+ 6CxqTocJealxd6siT9lXfQrO7aCkjiVMfQYspaEBrQvfb7otOQF8wb+AAGvy8b2dmGXAbt/qH
+ P+uRlfyQ5xokAZcVlkhPt0EYiBXIWWeH0iIe45AeCSsfMcXAfHP7Hv3wC4fQXqp1reLb0+huu
+ Aq5xA6WlSLXqh6p7JOxxEe7ifchHJefg7EqqeuFt0NPsta/2IPCrQudMDbhJMHZbokTmBzUDj
+ oAyPkToBjS4J+ChqrbvLqTR9XdGAoItBnN8YBw2Kv71esSFlhUgkLw+A/K6GgTZpKC5P1gFCA
+ IoUiSbXuaDvMoXr7YFqaadE+GoE0vwNMqIQ/A5VfFB+NwijSn6kwawpDWh/a0nexWN2lfNv98
+ gIG70nEepFp4aTWhmYeO+jkUQraLCnsHYEsKfRwYqxcZKk02cj+9yNehLzHWpNYJAPSYVuyBO
+ TWecUg602N4fVcBa7eAZlu5+deb9ez7jz5MsMvMIxzlEBDpV2izOCxZyoPEWKnbF9AOFhk0k0
+ n6llywkgEEqMQpfghlZ2CrKo6fjFAx3GMlHt7G7mFK2zL2poe+KkXpA2lzEeE8z0+3MHtDrcN
+ EVI2g9F8kv7XZYtQdhAifx+ygToKg9uAOKYnE+LTyvUhnekkw1GDL44xG7VW+E9xxzCfprJ/3
+ nvky2jMj/jh2vk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use devm_bitmap_zalloc() instead of hand writing it.
+hallo Greg
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-This is NOT compile tested.
-I don't have the needed cross compiling tools.
+5.16.8-rc2
 
-v2: - remove the dev_err() message
-    - remove the 'bitmap' variable
-    - update the error handling path to be more future proof and return
-      an explicit 0 in the success path
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 22 +++++----------------
- 1 file changed, 5 insertions(+), 17 deletions(-)
+compiles, boots and runs on my x86_64
+(Intel i5-11400, Fedora 35)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 14d06aad0726..bbc4eeb42811 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2911,32 +2911,20 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
- 	return 0;
- }
- 
--static void arm_smmu_cmdq_free_bitmap(void *data)
--{
--	unsigned long *bitmap = data;
--	bitmap_free(bitmap);
--}
--
- static int arm_smmu_cmdq_init(struct arm_smmu_device *smmu)
- {
--	int ret = 0;
- 	struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
- 	unsigned int nents = 1 << cmdq->q.llq.max_n_shift;
--	atomic_long_t *bitmap;
- 
- 	atomic_set(&cmdq->owner_prod, 0);
- 	atomic_set(&cmdq->lock, 0);
- 
--	bitmap = (atomic_long_t *)bitmap_zalloc(nents, GFP_KERNEL);
--	if (!bitmap) {
--		dev_err(smmu->dev, "failed to allocate cmdq bitmap\n");
--		ret = -ENOMEM;
--	} else {
--		cmdq->valid_map = bitmap;
--		devm_add_action(smmu->dev, arm_smmu_cmdq_free_bitmap, bitmap);
--	}
-+	cmdq->valid_map = (atomic_long_t *)devm_bitmap_zalloc(smmu->dev, nents,
-+							      GFP_KERNEL);
-+	if (!cmdq->valid_map)
-+		return -ENOMEM;
- 
--	return ret;
-+	return 0;
- }
- 
- static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
--- 
-2.32.0
+Thanks
+
+Tested-by: Ronald Warsow <rwarsow@gmx.de>
+------------------------------------------------------------------------
+
+regards
+Ronald
+
 
