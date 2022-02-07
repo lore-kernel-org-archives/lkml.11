@@ -2,49 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA90C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A633FC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 08:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244055AbiBGIGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 03:06:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46264 "EHLO
+        id S243536AbiBGIGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 03:06:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244003AbiBGH6i (ORCPT
+        with ESMTP id S244862AbiBGH4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 02:58:38 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F673C043184
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 23:58:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=f8QO7dJbkRzQfJ7nmNvBxZECS8
-        zadzGUEdeEbqV++w3fDPS+LTnUI4S8TieNLRqVUQYjCWoLW19oyv7DTLPJIXbh9mSNqJ+0xSBklzz
-        w8wTE+zzZJPOs2iCuL8nAt0FijE1IE75DvUqVMD5su8ug5m3SWnjbns6jVy1HwN36FDAesnqRqGYx
-        ZbOu59ETmm0BcdhVOZl797q5P+LixEt3NexQ4wuDw6bcjd4b+LZwJ+DmnM3wmf0eiXMYx/BKQKubr
-        lpO4Ql/RD766rrzuKuWzJdC9p/osybrNsIyWilX/gzwPXtdh+ZZtNqqNFMvAOCSZm7rK89vytDyxW
-        2Ke8E0kw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nGyux-009I0f-Qv; Mon, 07 Feb 2022 07:58:35 +0000
-Date:   Sun, 6 Feb 2022 23:58:35 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 45/75] mm/rmap: Turn page_referenced() into
- folio_referenced()
-Message-ID: <YgDRKw4vpIqC3+bi@infradead.org>
-References: <20220204195852.1751729-1-willy@infradead.org>
- <20220204195852.1751729-46-willy@infradead.org>
+        Mon, 7 Feb 2022 02:56:08 -0500
+X-Greylist: delayed 1120 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Feb 2022 23:56:05 PST
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71154C043185;
+        Sun,  6 Feb 2022 23:56:05 -0800 (PST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JsdHX3TJBzbjwM;
+        Mon,  7 Feb 2022 15:36:24 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Feb 2022 15:37:18 +0800
+CC:     <prime.zeng@hisilicon.com>, <linuxarm@huawei.com>
+Subject: Re: [PATCH 0/2] Add I2C bus recovery support on Kunpeng 920/930
+To:     Yicong Yang <yangyicong@hisilicon.com>,
+        <jarkko.nikula@linux.intel.com>,
+        <andriy.shevchenko@linux.intel.com>,
+        <mika.westerberg@linux.intel.com>, <wsa@kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220125124930.50369-1-yangyicong@hisilicon.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <0db7b7ab-a640-b8c3-33cc-29731a65227b@huawei.com>
+Date:   Mon, 7 Feb 2022 15:37:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220204195852.1751729-46-willy@infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220125124930.50369-1-yangyicong@hisilicon.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good,
+a friendly ping ...
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Hi Designware maintainers and Wolfram, any comments for this?
+
+thanks.
+
+On 2022/1/25 20:49, Yicong Yang wrote:
+> This series adds the I2C bus recovery support on Kunpeng 920/930.
+> We're using HiSilicon I2C controller on Kunpeng 930 and Designware
+> I2C controller on Kunpeng 920. For both platform, the SCL/SDA pins
+> are multiplexed with GPIOs. Both driver use generic GPIO recovery
+> method and we need to switch the pin mutiplexing before/after the
+> recovery process. We use ACPI method to help on the pin mux switching
+> which is also introduced in this series.
+> 
+> Yicong Yang (2):
+>   i2c: hisi: Add generic GPIO bus recovery support
+>   i2c: designware: Add ACPI assisted recovery support
+> 
+>  drivers/i2c/busses/i2c-designware-core.h    |  2 +
+>  drivers/i2c/busses/i2c-designware-master.c  | 84 ++++++++++++++++++++-
+>  drivers/i2c/busses/i2c-designware-platdrv.c |  6 +-
+>  drivers/i2c/busses/i2c-hisi.c               | 78 +++++++++++++++++++
+>  4 files changed, 164 insertions(+), 6 deletions(-)
+> 
