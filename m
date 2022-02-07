@@ -2,170 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B412C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE27BC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351372AbiBGJfz (ORCPT
+        id S1351736AbiBGJgD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:35:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
+        Mon, 7 Feb 2022 04:36:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351407AbiBGJ3I (ORCPT
+        with ESMTP id S1351276AbiBGJ3B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 04:29:08 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24057C043181
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:29:08 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id cz16so10350092edb.8
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:29:08 -0800 (PST)
+        Mon, 7 Feb 2022 04:29:01 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047C1C0401C2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 01:28:59 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id s7so1978699edd.3
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 01:28:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=esc1uJ/1b1Bl5sIRdBGqAaIciPpRZPZmuwi/GvPIASI=;
-        b=Kq7bxOK0EXnru4hWpt1BGbQD5x4elFR7kZIzwLbqjeBN3yWqt4iBQOeArytKJZQpf9
-         E4N7dJ0mOWMz9kp2XDwsxS/1K2k7ZpoqR+3BH/1md8ux2ayeH0kt4WHInqwdSbfJfSY5
-         6JWSfLb99OPJZyawEm11RCO/iLITTvYRylyRwd8ELCXeDnMf749ux5AvqPvofnRaI0eQ
-         3Ca13gb8SNaecWc+CHEgW4BwLibXanZR5CgtdLC6hnTipxW3Hy61ZJ9fTjhZ4Tn1wrPo
-         oCy+FzSPRhxKqYKPrxO8pY7moA2slRp3//1BpaZUfgqSBpgwUClZlXEToOK2mdznQBtp
-         q46A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FLK2lp6TV74+ddpLQXtHe3jOczUqIhg5KCOPYjiimz0=;
+        b=W0nozGTs3WBmNHCv6hIDWxLGpDVfJILMUf2O7Q/U9PCKWMULtz2UcOLfcz//u2iceU
+         IoObxtwzO/To7yeAbTWa6r8Oi4yd7dHk8MwrAekAhX17xjmKepV9K4vOWiwoTm1TmVD0
+         eEGXAxCDM9LwgwWfUk+Fbuo7247yBhiHhW1/NgAwsRoprLDT6329unNOAaU8eYA4J1SA
+         ZvRkaqThsWYRMYFI2GRgQWRUHSeNQhUpdcoeXnRjmwmB6RefMjXwCJ0v5eux2BLm4Izq
+         e1b5OzXD76KGfSAdNASTO0nj+ilzpOsA6hGPS7Do+nWGs+FzATKtEetdHV6CN8KnjXrV
+         OIYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=esc1uJ/1b1Bl5sIRdBGqAaIciPpRZPZmuwi/GvPIASI=;
-        b=AhPc8mXqYqUfRMCTawIjZ548wUE4VZIxnjAo90hhzPQcPeAVzMAkKqfGDDckF9pF1L
-         Qa5dYlFpqYPeNx2T7D1XLdhcx/I23pZ28ZojqjjEpvLKgj9qirEMVtdT60xuJCbg2Mde
-         DAJ7DzC6+BL+h2vA5mCQZkqCq3GyomSr6mCR/MztPH70g4B6z+EPReon1ngvPmMfr5lZ
-         na4fjMIPNlznsiFHbZj4sz45mvzQvJYTdalbZaZfVSytgDYybQJ1OCdIPUcUakPt75l8
-         +/J4i8QM0K9aiKzj9aWVotvaOFBhRz/+vqj1DTZIYCNZVubOpzkqPNwEIogNxfI50uA5
-         Cm5w==
-X-Gm-Message-State: AOAM530RBs6D0blwyMfABzZAoU0qi46LaPrOmWbe2trCpQtfmlHCXb6E
-        2i6litzxsi1Z2A2veIb446rM8w==
-X-Google-Smtp-Source: ABdhPJz6ga72M9Fh/6kWosxb2MY91mI/eDTayZjisNyDXZdtus2V/AVbaeSGGoDuxA4tsjwqhiy16g==
-X-Received: by 2002:a50:ee16:: with SMTP id g22mr5850857eds.434.1644226146737;
-        Mon, 07 Feb 2022 01:29:06 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FLK2lp6TV74+ddpLQXtHe3jOczUqIhg5KCOPYjiimz0=;
+        b=j+i0+peWMrOvPqm3EHidno3l6RnI4EKRKHJ6orGE1rYUjMhRyw6pwq3lEGXLcQ/JoA
+         A4beYV6H8tfWmYwS+g1vxTNd2iZWC9N8ZMYOk3CeZ1et8bKqAbUjdk1ZmUxfX/Wy81ro
+         12p+inLPb6NnD1yhVsWcqODw0/NZjf1bU2i0jprdh+kDi1itO4P7t9VIYGFZAxpvc+Eq
+         FT20Xhgl3vxjE+Np+gu3JmZPBiyj/1vJw/SXEE397csTVpWGPhf9PrpbeAUlTl0vqIDR
+         r9dIHLwslvuP/I4EBCVSLDFlNQ7zzDNqlNOD+rg6TQaKNkUjy7gNVWIit2wGINLwd+ik
+         kpmA==
+X-Gm-Message-State: AOAM532xukkv6bn49T2Ag2xJvg5U3esxhHdD8//5h4Bb9i2Do10Z1ejS
+        C95QMOeTq3TWc1N4YhMaEQpH3g==
+X-Google-Smtp-Source: ABdhPJzq7Tl8lnhKa+CHP0KNKxJ+ynu8aSyKQT7YIPwHg7TUfcTAIjzGO4fZEHCM2sksJn/flRHBUQ==
+X-Received: by 2002:a05:6402:38e:: with SMTP id o14mr9121850edv.414.1644226137585;
+        Mon, 07 Feb 2022 01:28:57 -0800 (PST)
 Received: from fedora.. (ip-088-153-139-166.um27.pools.vodafone-ip.de. [88.153.139.166])
-        by smtp.gmail.com with ESMTPSA id g9sm3487059ejm.152.2022.02.07.01.29.05
+        by smtp.gmail.com with ESMTPSA id g9sm3487059ejm.152.2022.02.07.01.28.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 01:29:06 -0800 (PST)
+        Mon, 07 Feb 2022 01:28:57 -0800 (PST)
 From:   Patrick Rudolph <patrick.rudolph@9elements.com>
-To:     Peter Rosin <peda@axentia.se>, Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [v4 3/3] i2c: muxes: pca954x: Add regulator support
-Date:   Mon,  7 Feb 2022 10:28:26 +0100
-Message-Id: <20220207092827.104978-4-patrick.rudolph@9elements.com>
+Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
+        devicetree@vger.kernel.org
+Subject: [v4 0/3] Add support for Maxim MAX735x/MAX736x variants
+Date:   Mon,  7 Feb 2022 10:28:23 +0100
+Message-Id: <20220207092827.104978-1-patrick.rudolph@9elements.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220207092827.104978-1-patrick.rudolph@9elements.com>
-References: <20220207092827.104978-1-patrick.rudolph@9elements.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an optional vdd regulator and enable it when found for devices
-that are powered off by default.
+v4:
+- Add missing maxitems dt-bindings property
 
-Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
----
- drivers/i2c/muxes/i2c-mux-pca954x.c | 32 ++++++++++++++++++++++++-----
- 1 file changed, 27 insertions(+), 5 deletions(-)
+v3:
+- Merge dt-bindings into i2c-mux-pca954x.yaml
 
-diff --git a/drivers/i2c/muxes/i2c-mux-pca954x.c b/drivers/i2c/muxes/i2c-mux-pca954x.c
-index 33b9a6a1fffa..086647193ea9 100644
---- a/drivers/i2c/muxes/i2c-mux-pca954x.c
-+++ b/drivers/i2c/muxes/i2c-mux-pca954x.c
-@@ -49,6 +49,7 @@
- #include <linux/module.h>
- #include <linux/pm.h>
- #include <linux/property.h>
-+#include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <dt-bindings/mux/mux.h>
-@@ -119,6 +120,7 @@ struct pca954x {
- 	struct irq_domain *irq;
- 	unsigned int irq_mask;
- 	raw_spinlock_t lock;
-+	struct regulator *supply;
- };
- 
- /* Provide specs for the PCA954x and MAX735x types we know about */
-@@ -459,6 +461,9 @@ static void pca954x_cleanup(struct i2c_mux_core *muxc)
- 	struct pca954x *data = i2c_mux_priv(muxc);
- 	int c, irq;
- 
-+	if (!IS_ERR_OR_NULL(data->supply))
-+		regulator_disable(data->supply);
-+
- 	if (data->irq) {
- 		for (c = 0; c < data->chip->nchans; c++) {
- 			irq = irq_find_mapping(data->irq, c);
-@@ -513,15 +518,30 @@ static int pca954x_probe(struct i2c_client *client,
- 			     pca954x_select_chan, pca954x_deselect_mux);
- 	if (!muxc)
- 		return -ENOMEM;
-+
- 	data = i2c_mux_priv(muxc);
- 
- 	i2c_set_clientdata(client, muxc);
- 	data->client = client;
- 
-+	data->supply = devm_regulator_get_optional(dev, "vdd");
-+	if (IS_ERR(data->supply)) {
-+		if ((PTR_ERR(data->supply) == -EPROBE_DEFER))
-+			return -EPROBE_DEFER;
-+	} else {
-+		ret = regulator_enable(data->supply);
-+		if (ret) {
-+			dev_err(dev, "Failed to enable regulator vdd: %d\n", ret);
-+			return ret;
-+		}
-+	}
-+
- 	/* Reset the mux if a reset GPIO is specified. */
- 	gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
--	if (IS_ERR(gpio))
--		return PTR_ERR(gpio);
-+	if (IS_ERR(gpio)) {
-+		ret = PTR_ERR(gpio);
-+		goto fail_cleanup;
-+	}
- 	if (gpio) {
- 		udelay(1);
- 		gpiod_set_value_cansleep(gpio, 0);
-@@ -538,7 +558,7 @@ static int pca954x_probe(struct i2c_client *client,
- 
- 		ret = i2c_get_device_id(client, &id);
- 		if (ret && ret != -EOPNOTSUPP)
--			return ret;
-+			goto fail_cleanup;
- 
- 		if (!ret &&
- 		    (id.manufacturer_id != data->chip->id.manufacturer_id ||
-@@ -546,7 +566,8 @@ static int pca954x_probe(struct i2c_client *client,
- 			dev_warn(dev, "unexpected device id %03x-%03x-%x\n",
- 				 id.manufacturer_id, id.part_id,
- 				 id.die_revision);
--			return -ENODEV;
-+			ret = -ENODEV;
-+			goto fail_cleanup;
- 		}
- 	}
- 
-@@ -565,7 +586,8 @@ static int pca954x_probe(struct i2c_client *client,
- 	ret = pca954x_init(client, data);
- 	if (ret < 0) {
- 		dev_warn(dev, "probe failed\n");
--		return -ENODEV;
-+		ret = -ENODEV;
-+		goto fail_cleanup;
- 	}
- 
- 	ret = pca954x_irq_setup(muxc);
+v2:
+- Move dt-bindings to separate file
+- Added support for MAX736x as they are very similar
+- Fixed an issue found by kernel test robot
+- Dropped max735x property and custom IRQ check
+- Added MAX7357 config register defines instead of magic values
+- Renamed vcc-supply to vdd-supply
+
+Patrick Rudolph (3):
+  dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
+  i2c: muxes: pca954x: Add MAX735x/MAX736x support
+  i2c: muxes: pca954x: Add regulator support
+
+ .../bindings/i2c/i2c-mux-pca954x.yaml         |  44 +++++--
+ drivers/i2c/muxes/Kconfig                     |   4 +-
+ drivers/i2c/muxes/i2c-mux-pca954x.c           | 124 ++++++++++++++++--
+ 3 files changed, 151 insertions(+), 21 deletions(-)
+
 -- 
 2.34.1
 
