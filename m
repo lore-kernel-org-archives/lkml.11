@@ -2,150 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E2FC4707F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FEDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389898AbiBGQa7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:30:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59858 "EHLO
+        id S242221AbiBGQaF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 11:30:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389592AbiBGQXl (ORCPT
+        with ESMTP id S1352714AbiBGQZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:23:41 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFE1C0401CE;
-        Mon,  7 Feb 2022 08:23:40 -0800 (PST)
-Received: from [192.168.1.111] (91-156-85-209.elisa-laajakaista.fi [91.156.85.209])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 9F51E340;
-        Mon,  7 Feb 2022 17:23:37 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1644251018;
-        bh=L1PNPDKuRthTmWHneC7DGneT0OsniCKt5ocgM/FNQAY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=BqSyY3N9mtxsy25nRjBW5T78kRfJz96/jgatmXIrtYT46e3ydtE3XQltgPIKu4eG2
-         JVhMdzeLVoS1fdiihqmTjRAfFoWFDet4vOnrYnIac4c1CB+ib+EYucB7v7eoDwvS70
-         5H76j7o+xSqgnmfUuYyhHHCRDaTVWUpYQc0vkxf0=
-Message-ID: <ef6eec20-6c1b-4c27-e5ad-5fb87300c6ba@ideasonboard.com>
-Date:   Mon, 7 Feb 2022 18:23:34 +0200
+        Mon, 7 Feb 2022 11:25:07 -0500
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 08:25:06 PST
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB6AC0401CF;
+        Mon,  7 Feb 2022 08:25:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644251106; x=1675787106;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=a6FIsAxlS8CipozOrCRtXjkQdiL4ZSwawArQFXpf6H0=;
+  b=k6m2QYdM5MuslAJuYBw2S2MK9CjWO74xO30UbUFNi/pgHvo4VTQ94e/o
+   CqQwmT+3nMACHkHTwO6nY7mp2dr//eHM6zSiqf+i45rU36be3adIagfih
+   OQ7XjxRo6R84Jxv2diXSSKVUYpQQMT0R1I2szt3X6ySmfqxSsdsquLfwq
+   Ujfb6527zvDaybAk/TUz9XkZKl9AIPmIxotzt83xzCGolVueenCIuvewN
+   wV5GN7VgsUxrnCvAeCEbsgpma8oEmMcfiQcFQP7IdRrk/R+xlMknelRYI
+   piSJKSvf8NeNEbJ+1kxpXtlyWj85y2vGr9xvmYeszNJOetswZDHl987uI
+   Q==;
+IronPort-SDR: olD1nXIeV6qYui820sqHCq6LXGhzzDFLcA3zFhI0a2QMW+hz3g32tD6oF1MCz3bb06LdU7/KX6
+ R6/kmpyiF8Dv9HrR9UFo9Gfrm6so3M1KG3lphrAP+J5+KrO98GBQh/P9JOMj+hGDAtR0Q5Cybh
+ O9Inum9/3imfhb9KIOvaGJjhEj/eODimVqMoyiEYlr+vrZ5t+FWmqAXeoNsaHRGCRe1uEQCoBQ
+ uDkM0MkfdrDqEfgD0SqRO9rpUl4niYDaQyx38XpGESDSK79jIKPSSMNJuh3DFuN/COxTgXpco/
+ Eea5hWLFPkMtjV5GFEgKTGX7
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="145139958"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:24:01 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Feb 2022 09:24:01 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 7 Feb 2022 09:23:56 -0700
+From:   <conor.dooley@microchip.com>
+To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
+        <jassisinghbrar@gmail.com>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
+        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <geert@linux-m68k.org>,
+        <krzysztof.kozlowski@canonical.com>, <linux-gpio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+CC:     <bin.meng@windriver.com>, <heiko@sntech.de>,
+        <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
+        <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
+        <atishp@rivosinc.com>, Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH v6 02/12] dt-bindings: soc/microchip: add services as sub devs of sys ctrlr
+Date:   Mon, 7 Feb 2022 16:26:28 +0000
+Message-ID: <20220207162637.1658677-3-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207162637.1658677-1-conor.dooley@microchip.com>
+References: <20220207162637.1658677-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFCv3 0/6] TI camera serdes and I2C address translation (Was:
- [RFCv3 0/6] Hi,)
-Content-Language: en-US
-To:     "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>,
-        Luca Ceresoli <luca@lucaceresoli.net>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>
-Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Wolfram Sang <wsa@the-dreams.de>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham@ideasonboard.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Peter Rosin <peda@axentia.se>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-References: <20220206115939.3091265-1-luca@lucaceresoli.net>
- <7e5af144-bd5f-cd0e-2109-49b318449a78@ideasonboard.com>
- <5aa3e282-3056-2088-9741-6d17273701b4@fi.rohmeurope.com>
- <74bacec6-35e5-346a-fb05-09ae44fc5592@lucaceresoli.net>
- <608d23fc-eef7-c0dc-de5b-53b140fe2d0f@fi.rohmeurope.com>
-From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-In-Reply-To: <608d23fc-eef7-c0dc-de5b-53b140fe2d0f@fi.rohmeurope.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/02/2022 16:38, Vaittinen, Matti wrote:
-> Hi again Luca,
-> 
-> On 2/7/22 16:07, Luca Ceresoli wrote:
->> Hi Matti,
->>
->> On 07/02/22 14:21, Vaittinen, Matti wrote:
->>> Hi dee Ho peeps,
->>>
->>> On 2/7/22 14:06, Tomi Valkeinen wrote:
->>>> Hi Luca,
->>>>
->>>> On 06/02/2022 13:59, Luca Ceresoli wrote:
->>>>> this RFCv3, codename "FOSDEM Fries", of RFC patches to support the TI
->>>>> DS90UB9xx serializer/deserializer chipsets with I2C address translation.
->>>
->>>
->>> I am not sure if I am poking in the nest of the wasps - but there's one
->>> major difference with the work I've done and with Toni's / Luca's work.
->>
->> You are. ;)
->>
->>> The TI DES drivers (like ub960 driver) packs pretty much everything
->>> under single driver at media/i2c - which (in my opinion) makes the
->>> driver pretty large one.
->>>
->>> My approach is/was to utilize MFD - and prepare the regmap + IRQs in the
->>> MFD (as is pretty usual) - and parse that much of the device-tree that
->>> we see how many SER devices are there - and that I get the non I2C
->>> related DES<=>SER link parameters set. After that I do kick alive the
->>> separate MFD cells for ATR, pinctrl/GPIO and media.
->>>
->>> The ATR driver instantiates the SER I2C devices like Toni's ub960 does.
->>> The SER compatible is once again matched in MFD (for SER) - which again
->>> provides regmap for SER, does initial I2C writes so SER starts
->>> responding to I2C reads and then kicks cells for media and pinctrl/gpio.
->>>
->>> I believe splitting the functionality to MFD subdevices makes drivers
->>> slightly clearer. You'll get GPIOs/pinctrl under pinctrl as usual,
->>> regmaps/IRQ-chips under MFD and only media/v4l2 related parts under media.
->>
->> There has been quite a fiery discussion about this in the past, you can
->> grab some popcorn and read
->> https://lore.kernel.org/linux-media/20181008211205.2900-1-vz@mleia.com/T/#m9b01af81665ac956af3c6d57810239420c3f8cee
->>
->> TL;DR: there have been strong opposition the the MFD idea.
-> 
-> Hm. I may be missing something but I didn't see opposition to using MFD
-> or splitting the drivers. I do see opposition to adding _functionality_
-> in MFD. If I read this correctly, Lee did oppose adding the I2C stuff,
-> sysfs attributes etc in MFD. Quoting his reply:
-> 
-> "This driver does too much real work ('stuff') to be an MFD driver.
-> MFD drivers should not need to care of; links, gates, modes, pixels,
-> frequencies maps or properties.  Nor should they contain elaborate
-> sysfs structures to control the aforementioned 'stuff'.
-> 
-> Granted, there may be some code in there which could be appropriate
-> for an MFD driver.  However most of it needs moving out into a
-> function driver (or two)."
-> 
-> And I tend to agree with Lee here. I would not put I2C bridge stuff or
-> sysfs attributes in MFD. But I think it does not mean SERDESes should
-> not use MFD when they clearly contain more IP blocks than the
-> video/media ones :) I am confident Lee and others might be much more
-> welcoming for driver which simply configures regmap and kicks subdriver
-> for doing the ATR / I2C stuff.
+From: Conor Dooley <conor.dooley@microchip.com>
 
-I admit that I don't know MFD drivers too well, but I was thinking about 
-this some time back and I wasn't quite sure about using MFD here.
+Document mpfs-rng and mpfs-generic-service as subdevices of the system
+controller.
 
-My thinking was that MFD is fine and good when a device contains more or 
-less independent functionalities, like a PMIC with, say, gpios and 
-regulators, both of which just work as long as the PMIC is powered up.
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+ .../microchip,mpfs-sys-controller.yaml        | 35 +++++++++++++++++--
+ 1 file changed, 33 insertions(+), 2 deletions(-)
 
-Here all the functionalities depend on the link (fpdlink or some other 
-"link" =), and the serializers. In other words, the link status or any 
-changes to the link or the serializers might affect the GPIO/I2C/IRQ 
-functionalities.
+diff --git a/Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml b/Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
+index f699772fedf3..b02c8bd72605 100644
+--- a/Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
++++ b/Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
+@@ -13,7 +13,6 @@ description: |
+   The PolarFire SoC system controller is communicated with via a mailbox.
+   This document describes the bindings for the client portion of that mailbox.
+ 
+-
+ properties:
+   mboxes:
+     maxItems: 1
+@@ -21,6 +20,38 @@ properties:
+   compatible:
+     const: microchip,mpfs-sys-controller
+ 
++  rng:
++    type: object
++
++    description: |
++      The hardware random number generator on the Polarfire SoC is
++      accessed via the mailbox interface provided by the system controller
++
++    properties:
++      compatible:
++        const: microchip,mpfs-rng
++
++    required:
++      - compatible
++
++  sysserv:
++    type: object
++
++    description: |
++      The PolarFire SoC system controller is communicated with via a mailbox.
++      This binding represents several of the functions provided by the system
++      controller which do not belong in a specific subsystem, such as reading
++      the fpga device certificate, all of which follow the same format:
++        - a command + optional payload sent to the sys controller
++        - a status + a payload returned to Linux
++
++    properties:
++      compatible:
++        const: microchip,mpfs-generic-service
++
++    required:
++      - compatible
++
+ required:
+   - compatible
+   - mboxes
+@@ -29,7 +60,7 @@ additionalProperties: false
+ 
+ examples:
+   - |
+-    syscontroller: syscontroller {
++    syscontroller {
+       compatible = "microchip,mpfs-sys-controller";
+       mboxes = <&mbox 0>;
+     };
+-- 
+2.35.1
 
-So, I don't have any clear concern here. Just a vague feeling that the 
-functionalities in this kind of devices may be more tightly tied 
-together than in normal MFDs. I could be totally wrong here.
-
-  Tomi
