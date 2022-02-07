@@ -2,142 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90713C35275
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F726C47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 14:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382943AbiBGOnn (ORCPT
+        id S1382792AbiBGOnc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:43:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
+        Mon, 7 Feb 2022 09:43:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232642AbiBGOh4 (ORCPT
+        with ESMTP id S1392368AbiBGO31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 09:37:56 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AB8C0401C1;
-        Mon,  7 Feb 2022 06:37:56 -0800 (PST)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217DFGI9005118;
-        Mon, 7 Feb 2022 14:37:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=cTR9ZXIYcP+4BYSAj0LxosDzLtcKa4Wv2bJf1hsmYdU=;
- b=G/R7uvcT4B/yw95xBJEruVikznP0SeGfPdptMNbo0KP+e+BlNe8uuYaY9gq+Li23t7Xb
- JUrdHu68jm1Vlnh3kb4vby4wD/0aRGNqGywdPwsZLA3bwC0vBEdQ0mYQ3Q6bNiRwaokt
- mhy/JMMfCqK45ga1RzjgM/GpBLCfVLcAR04OLr+tXsWds6qOnC3zgbESdHzFgnpenx+O
- Oro1xogYLDzcv/irINP6NdJbeMC/cXHL9eUrnaZ4AVzF5C08bik5CpeFJxmIXMG1ZojB
- MHi9UwlugfJYSksk4LzxeLduw13YqtzxQ1MCXcHa9n2x4ayxXV2JmJ17Elu276pXNGtS yw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22m5x8af-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 14:37:55 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217EHa5H025807;
-        Mon, 7 Feb 2022 14:37:54 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22m5x89q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 14:37:54 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217EW1kL025588;
-        Mon, 7 Feb 2022 14:37:52 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggjnsfn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 14:37:52 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217Ebn2h44499304
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Feb 2022 14:37:49 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5D03942041;
-        Mon,  7 Feb 2022 14:37:49 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E257D4203F;
-        Mon,  7 Feb 2022 14:37:48 +0000 (GMT)
-Received: from [9.145.9.42] (unknown [9.145.9.42])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Feb 2022 14:37:48 +0000 (GMT)
-Message-ID: <2b9b31bf-e45a-7006-c68e-6e143665640c@linux.ibm.com>
-Date:   Mon, 7 Feb 2022 15:37:48 +0100
+        Mon, 7 Feb 2022 09:29:27 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E684AC0401C3
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:29:23 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4JspS22MSMz9sSr;
+        Mon,  7 Feb 2022 15:29:22 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id dOz3A4mIe6Sr; Mon,  7 Feb 2022 15:29:22 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4JspS21WlXz9sSq;
+        Mon,  7 Feb 2022 15:29:22 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E342B8B770;
+        Mon,  7 Feb 2022 15:29:21 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id om8gFrsfA6rV; Mon,  7 Feb 2022 15:29:21 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id C48188B76C;
+        Mon,  7 Feb 2022 15:29:21 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 217ETCrr1245796
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 7 Feb 2022 15:29:12 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 217ETBfP1245795;
+        Mon, 7 Feb 2022 15:29:11 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org
+Subject: [PATCH] ilog2: Force inlining of __ilog2_u32() and __ilog2_u64()
+Date:   Mon,  7 Feb 2022 15:29:08 +0100
+Message-Id: <803a2ac3d923ebcfd0dd40f5886b05cae7bb0aba.1644243860.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v7 16/17] KVM: s390: pv: add
- KVM_CAP_S390_PROT_REBOOT_ASYNC
-Content-Language: en-US
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
-        david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com
-References: <20220204155349.63238-1-imbrenda@linux.ibm.com>
- <20220204155349.63238-17-imbrenda@linux.ibm.com>
-From:   Janosch Frank <frankja@linux.ibm.com>
-In-Reply-To: <20220204155349.63238-17-imbrenda@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: AFt_8BGPlWKQ9vvRNpS2Ntgp1qpVLHtw
-X-Proofpoint-ORIG-GUID: jYXNpELGffd-tgqJv4YlgJiV-7N31ydl
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
- suspectscore=0 phishscore=0 clxscore=1015 impostorscore=0
- priorityscore=1501 malwarescore=0 mlxlogscore=999 lowpriorityscore=0
- mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070093
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1644244146; l=3187; s=20211009; h=from:subject:message-id; bh=LbJyGmP0iWIV+hgEVGW0oqWQQm1oTy/XNUfH89Xt7zQ=; b=mNHf9SFAjgfitOeHz35BBXMOILPxupHhNaZkP1W+y+gPMKMHKePKlO4d50S4Lfmb78ZD9UoznNAk UQK1iUI1BJvp1QJ1fm+xY+UP2EbLYWNqfZaA/vyQGESu5PZDni/A
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/4/22 16:53, Claudio Imbrenda wrote:
-> Add KVM_CAP_S390_PROT_REBOOT_ASYNC to signal that the
-> KVM_PV_ASYNC_DISABLE and KVM_PV_ASYNC_DISABLE_PREPARE commands for the
-> KVM_S390_PV_COMMAND ioctl are available.
-> 
-> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> ---
->   arch/s390/kvm/kvm-s390.c | 3 +++
->   include/uapi/linux/kvm.h | 1 +
->   2 files changed, 4 insertions(+)
-> 
-> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-> index f7952cef1309..1e696202a569 100644
-> --- a/arch/s390/kvm/kvm-s390.c
-> +++ b/arch/s390/kvm/kvm-s390.c
-> @@ -608,6 +608,9 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
->   	case KVM_CAP_S390_BPB:
->   		r = test_facility(82);
->   		break;
-> +	case KVM_CAP_S390_PROT_REBOOT_ASYNC:
-> +		r = lazy_destroy && is_prot_virt_host();
+Building a kernel with CONFIG_CC_OPTIMISE_FOR_SIZE leads to
+__ilog2_u32() being duplicated 50 times and __ilog2_u64() 3 times
+in vmlinux on a tiny powerpc32 config.
 
-While reboot might be the best use-case for the async disable I don't 
-think we should name the capability this way.
+__ilog2_u32() being 2 instructions it is not worth being kept out
+of line, so force inlining. Allthough the u64 version is a bit bigger,
+there is still a small benefit in keeping it inlined. On a 64 bits
+config there's a real benefit.
 
-KVM_CAP_S390_PROTECTED_ASYNC_DESTR ?
+With this change the size of vmlinux text is reduced by 1 kbytes,
+which is approx 50% more than the size of the removed functions.
 
-It's a bit long but the initial capability didn't abbreviate the 
-protected part so it is what it is.
+Before the patch there is for instance:
 
+	c00d2a94 <__ilog2_u32>:
+	c00d2a94:	7c 63 00 34 	cntlzw  r3,r3
+	c00d2a98:	20 63 00 1f 	subfic  r3,r3,31
+	c00d2a9c:	4e 80 00 20 	blr
 
-> +		break;
->   	case KVM_CAP_S390_PROTECTED:
->   		r = is_prot_virt_host();
->   		break;
-> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-> index 7f574c87a6ba..c41c108f6b14 100644
-> --- a/include/uapi/linux/kvm.h
-> +++ b/include/uapi/linux/kvm.h
-> @@ -1134,6 +1134,7 @@ struct kvm_ppc_resize_hpt {
->   #define KVM_CAP_VM_GPA_BITS 207
->   #define KVM_CAP_XSAVE2 208
->   #define KVM_CAP_SYS_ATTRIBUTES 209
-> +#define KVM_CAP_S390_PROT_REBOOT_ASYNC 215
->   
->   #ifdef KVM_CAP_IRQ_ROUTING
->   
-> 
+	c00d36d8 <__order_base_2>:
+	c00d36d8:	28 03 00 01 	cmplwi  r3,1
+	c00d36dc:	40 81 00 2c 	ble     c00d3708 <__order_base_2+0x30>
+	c00d36e0:	94 21 ff f0 	stwu    r1,-16(r1)
+	c00d36e4:	7c 08 02 a6 	mflr    r0
+	c00d36e8:	38 63 ff ff 	addi    r3,r3,-1
+	c00d36ec:	90 01 00 14 	stw     r0,20(r1)
+	c00d36f0:	4b ff f3 a5 	bl      c00d2a94 <__ilog2_u32>
+	c00d36f4:	80 01 00 14 	lwz     r0,20(r1)
+	c00d36f8:	38 63 00 01 	addi    r3,r3,1
+	c00d36fc:	7c 08 03 a6 	mtlr    r0
+	c00d3700:	38 21 00 10 	addi    r1,r1,16
+	c00d3704:	4e 80 00 20 	blr
+	c00d3708:	38 60 00 00 	li      r3,0
+	c00d370c:	4e 80 00 20 	blr
+
+With the patch it has become:
+
+	c00d356c <__order_base_2>:
+	c00d356c:	28 03 00 01 	cmplwi  r3,1
+	c00d3570:	40 81 00 14 	ble     c00d3584 <__order_base_2+0x18>
+	c00d3574:	38 63 ff ff 	addi    r3,r3,-1
+	c00d3578:	7c 63 00 34 	cntlzw  r3,r3
+	c00d357c:	20 63 00 20 	subfic  r3,r3,32
+	c00d3580:	4e 80 00 20 	blr
+	c00d3584:	38 60 00 00 	li      r3,0
+	c00d3588:	4e 80 00 20 	blr
+
+No more need for __order_base_2() to setup a stack frame and
+save/restore caller address. And the following 'add 1' is
+merged in the substract.
+
+Another typical use of it:
+
+	c080ff28 <hugepagesz_setup>:
+	...
+	c080fff8:	7f c3 f3 78 	mr      r3,r30
+	c080fffc:	4b 8f 81 f1 	bl      c01081ec <__ilog2_u32>
+	c0810000:	38 63 ff f2 	addi    r3,r3,-14
+	...
+
+Becomes
+
+	c080ff1c <hugepagesz_setup>:
+	...
+	c080ffec:	7f c3 00 34 	cntlzw  r3,r30
+	c080fff0:	20 63 00 11 	subfic  r3,r3,17
+	...
+
+Here no need to move r30 argument to r3 then substract 14 to result. Just work
+on r30 and merge the 'sub 14' with the 'sub from 31'.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ include/linux/log2.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/log2.h b/include/linux/log2.h
+index df0b155c2141..9f30d087a128 100644
+--- a/include/linux/log2.h
++++ b/include/linux/log2.h
+@@ -18,7 +18,7 @@
+  * - the arch is not required to handle n==0 if implementing the fallback
+  */
+ #ifndef CONFIG_ARCH_HAS_ILOG2_U32
+-static inline __attribute__((const))
++static __always_inline __attribute__((const))
+ int __ilog2_u32(u32 n)
+ {
+ 	return fls(n) - 1;
+@@ -26,7 +26,7 @@ int __ilog2_u32(u32 n)
+ #endif
+ 
+ #ifndef CONFIG_ARCH_HAS_ILOG2_U64
+-static inline __attribute__((const))
++static __always_inline __attribute__((const))
+ int __ilog2_u64(u64 n)
+ {
+ 	return fls64(n) - 1;
+-- 
+2.33.1
 
