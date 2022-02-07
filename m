@@ -2,173 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 420B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD57EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 18:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235290AbiBGSxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 13:53:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
+        id S235801AbiBGSxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 13:53:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235927AbiBGSva (ORCPT
+        with ESMTP id S235952AbiBGSvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 13:51:30 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FABC0401DA;
-        Mon,  7 Feb 2022 10:51:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=YjnxRU9OsPHWFPB45I1omyCSwPagOekaYsZVmBqtP5Y=; b=Bmva/cOPXrRluFmWOKioi5vMqp
-        DGjVCFFUfrcyOKSesEGKFY4bzyTtp+0K6F9jUhsCUgP7gzNOYDIysro5PeAcq30EsEl7tyC6l7FpE
-        HVrhcsBDkXyoWaJV5aD+fodgQ67U/bRDwGI9gXVtl2KwB1LFxoGPntTK5IJkS0G3vWM2kVC/y1gQE
-        T0qofu2kIQ5G+hLsQh0whyWK9MF+IZHCpWU4fw5tawKYtmctPczvOpmT0qD/xhhWNWnWj4RjZVvzr
-        uyFNfivxVVAlxvJZLzph92Ekss0THyo2svpr5S+4UWTbxB8caXw9hzN6CMzy1T1vI4eAdcjzmMJaw
-        7fDRj2Tw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nH96l-001nqs-SX; Mon, 07 Feb 2022 18:51:28 +0000
-Message-ID: <d38afc1a-331f-ff0e-be81-71bec617d85c@infradead.org>
-Date:   Mon, 7 Feb 2022 10:51:22 -0800
+        Mon, 7 Feb 2022 13:51:45 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EB6C0401E0;
+        Mon,  7 Feb 2022 10:51:43 -0800 (PST)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217IQ4oL001233;
+        Mon, 7 Feb 2022 18:51:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=6wo3fy8YHuqfHQqrTi4jIFOaNA44Ygv455HTfVt4MkA=;
+ b=ZU8Qf2lQT4XRQY7Sa2xDY/EY+8aNtQ2qr+N/+KSN+8sG7uhk2Zcn5x9d4VEIRojSV0zN
+ 35hhA3wfHXzkNl9gb5zcTAkADqAXQB2b3g85NAVHbj/UzLfjzT033uvLdO/wL3hn3VUq
+ cdjSTzCbhmhuYOwO5oBU9GG/apZ2GmOwUWp/JhfkRbEZeoTO2czcHbNitfAe0svDwQ9L
+ v6LBMWpoN3yAXAqIXq6sWj2srx4K3lVYAvXn/mwBlv402xBSvUAM37mThqQr55rmTabN
+ hupI+XQjHerJ71HJoL+PSlcnmVpAGGpxDIlkK+8Ph5Ss+sej/1nV+JyA91h9e8mRYSJK wQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22st4em4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 18:51:02 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 217IdeJT030526;
+        Mon, 7 Feb 2022 18:51:01 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22st4ekm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 18:51:01 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 217Ilb8b011839;
+        Mon, 7 Feb 2022 18:51:00 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma03wdc.us.ibm.com with ESMTP id 3e1gvabq8s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 18:51:00 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 217Iovg831785398
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Feb 2022 18:50:57 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BC80A6E04E;
+        Mon,  7 Feb 2022 18:50:57 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 30BE46E052;
+        Mon,  7 Feb 2022 18:50:51 +0000 (GMT)
+Received: from [9.65.240.79] (unknown [9.65.240.79])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Feb 2022 18:50:50 +0000 (GMT)
+Message-ID: <3387b2e7-0921-cd80-279b-24d13f706443@linux.ibm.com>
+Date:   Mon, 7 Feb 2022 20:50:48 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/2] x86/Kconfig: move and modify CONFIG_I8K
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v7 0/5] Allow guest access to EFI confidential computing
+ secret area
 Content-Language: en-US
-To:     =?UTF-8?Q?Mateusz_Jo=c5=84czyk?= <mat.jonczyk@o2.pl>,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-hwmon@vger.kernel.org
-Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>
-References: <20220207182940.242838-1-mat.jonczyk@o2.pl>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220207182940.242838-1-mat.jonczyk@o2.pl>
+To:     Matthew Garrett <mjg59@srcf.ucam.org>,
+        Gerd Hoffmann <kraxel@redhat.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        James Bottomley <jejb@linux.ibm.com>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Andrew Scull <ascull@google.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        Lenny Szubowicz <lszubowi@redhat.com>,
+        Peter Gonda <pgonda@google.com>,
+        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
+        Jim Cadden <jcadden@ibm.com>,
+        Daniele Buono <dbuono@linux.vnet.ibm.com>,
+        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Nayna Jain <nayna@linux.ibm.com>, dougmill@linux.vnet.ibm.com,
+        gcwilson@linux.ibm.com, gjoyce@ibm.com,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Daniel Axtens <dja@axtens.net>,
+        Dov Murik <dovmurik@linux.ibm.com>
+References: <Yfk6vEuZFtgtA+G+@kroah.com>
+ <37779659ca96ac9c1f11bcc0ac0665895c795b54.camel@linux.ibm.com>
+ <20220202040157.GA8019@srcf.ucam.org> <YfogOurPZb7+Yelo@kroah.com>
+ <20220202065443.GA9249@srcf.ucam.org> <YfotMyQiQ66xfCOQ@kroah.com>
+ <20220202071023.GA9489@srcf.ucam.org>
+ <CAMj1kXFTyc9KnMsnvs+mt80DbJL8VGKKcQ0J=4NrGYGSAG8sRw@mail.gmail.com>
+ <20220202080401.GA9861@srcf.ucam.org>
+ <20220202083653.p3cb4w3qdud4e33t@sirius.home.kraxel.org>
+ <20220202084534.GA10247@srcf.ucam.org>
+From:   Dov Murik <dovmurik@linux.ibm.com>
+In-Reply-To: <20220202084534.GA10247@srcf.ucam.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: kNbeaTLnGVyfzqIU5wFmWGQaLaWnhJPq
+X-Proofpoint-ORIG-GUID: -177XkzI6xzpuOjb3dcnAHyLrUUkx8qg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_06,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ priorityscore=1501 spamscore=0 suspectscore=0 malwarescore=0 mlxscore=0
+ mlxlogscore=999 impostorscore=0 bulkscore=0 adultscore=0 clxscore=1011
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070113
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
-
-I like it. (I had a note to myself to do this also.)
 
 
-On 2/7/22 10:29, Mateusz Jończyk wrote:
-> In Kconfig, inside the "Processor type and features" menu, there is
-> the CONFIG_I8K option: "Dell i8k legacy laptop support". This is
-> very confusing - enabling CONFIG_I8K is not required for the kernel to
-> support old Dell laptops. This option is specific to the dell-smm-hwmon
-> driver, which mostly exports some hardware monitoring information and
-> allows the user to change fan speed.
+On 02/02/2022 10:45, Matthew Garrett wrote:
+> On Wed, Feb 02, 2022 at 09:36:53AM +0100, Gerd Hoffmann wrote:
 > 
-> This option is misplaced, so move CONFIG_I8K to drivers/hwmon/Kconfig,
-> where it belongs.
+>> Having a "secrets/" directory looks good to me.  Then the individual
+>> implementations can either add files to the directory, i.e. efi_secrets
+>> would create "secrets/<guid>" files.  Or each implementation creates a
+>> subdirectory with the secrets, i.e. "secrets/coco/" and
+>> "secrets/coco/<guid>".
 > 
-> Also, modify the dependency order - change
->         select SENSORS_DELL_SMM
-> to
->         depends on SENSORS_DELL_SMM
-> as it is just a configuration option of dell-smm-hwmon. This includes
-> changing the option type from tristate to bool. It was tristate because
-> it could select CONFIG_SENSORS_DELL_SMM=m .
-> 
-> When running "make oldconfig" on configurations with
-> CONFIG_SENSORS_DELL_SMM enabled , this change will result in an
-> additional question (which could be printed several times during
-> bisecting). I think that tidying up the configuration is worth it,
-> though.
-> 
-> Next patch tweaks the description of CONFIG_I8K.
-> 
-> Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-> Cc: Pali Rohár <pali@kernel.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Borislav Petkov <bp@alien8.de>
-> Cc: Dave Hansen <dave.hansen@linux.intel.com>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Hans de Goede <hdegoede@redhat.com>
-> Cc: Mark Gross <markgross@kernel.org>
-> ---
->  arch/x86/Kconfig      | 17 -----------------
->  drivers/hwmon/Kconfig | 15 +++++++++++++++
->  2 files changed, 15 insertions(+), 17 deletions(-)
-> 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 9f5bd41bf660..71d4ddd48c02 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -1275,23 +1275,6 @@ config TOSHIBA
->  	  Say Y if you intend to run this kernel on a Toshiba portable.
->  	  Say N otherwise.
+> I prefer a subdirectory, on the basis that we could conceivably end up 
+> with more than one implementation on a single device at some point, and 
+> also because it makes it trivial for userland to determine what the 
+> source is which may make a semantic difference under certain 
+> circumstances.
 >  
-> -config I8K
-> -	tristate "Dell i8k legacy laptop support"
-> -	depends on HWMON
-> -	depends on PROC_FS
-> -	select SENSORS_DELL_SMM
-> -	help
-> -	  This option enables legacy /proc/i8k userspace interface in hwmon
-> -	  dell-smm-hwmon driver. Character file /proc/i8k reports bios version,
-> -	  temperature and allows controlling fan speeds of Dell laptops via
-> -	  System Management Mode. For old Dell laptops (like Dell Inspiron 8000)
-> -	  it reports also power and hotkey status. For fan speed control is
-> -	  needed userspace package i8kutils.
-> -
-> -	  Say Y if you intend to run this kernel on old Dell laptops or want to
-> -	  use userspace package i8kutils.
-> -	  Say N otherwise.
-> -
->  config X86_REBOOTFIXUPS
->  	bool "Enable X86 board specific fixups for reboot"
->  	depends on X86_32
-> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-> index 8df25f1079ba..dd244aa747ad 100644
-> --- a/drivers/hwmon/Kconfig
-> +++ b/drivers/hwmon/Kconfig
-> @@ -505,6 +505,21 @@ config SENSORS_DELL_SMM
->  	  When option I8K is also enabled this driver provides legacy /proc/i8k
->  	  userspace interface for i8kutils package.
->  
-> +config I8K
-> +	bool "Dell i8k legacy laptop support"
-> +	depends on SENSORS_DELL_SMM
-> +	help
-> +	  This option enables legacy /proc/i8k userspace interface in hwmon
-> +	  dell-smm-hwmon driver. Character file /proc/i8k reports bios version,
 
-	                                                          BIOS
-
-> +	  temperature and allows controlling fan speeds of Dell laptops via
-> +	  System Management Mode. For old Dell laptops (like Dell Inspiron 8000)
-> +	  it reports also power and hotkey status. For fan speed control is
-> +	  needed userspace package i8kutils.
-
-Last sentence above is awkward. How about:
-
-	  it also reports power and hotkey status. For fan speed control, the
-	  i8kutils userspace package is needed.
-
-> +
-> +	  Say Y if you intend to run this kernel on old Dell laptops or want to
-> +	  use userspace package i8kutils.
-> +	  Say N otherwise.
-> +
->  config SENSORS_DA9052_ADC
->  	tristate "Dialog DA9052/DA9053 ADC"
->  	depends on PMIC_DA9052
+OK, sounds good.  In the next round of the series the module will create
+the files in <securityfs>/secrets/coco/ .
 
 
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+>> Longer-term (i.e once we have more than one implementation) we probably
+>> need a separate module which owns and manages the "secrets/" directory,
+>> and possibly provides some common helper functions too.
+> 
+> Agree.
 
-thanks.
--- 
-~Randy
+Yes; one candidate for such helper function is a filesystem that
+implements the "wipe file content from memory on unlink".
+
+
+-Dov
