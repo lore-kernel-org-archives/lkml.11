@@ -2,100 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA9AC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA9D7C3526C
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382040AbiBGQ37 (ORCPT
+        id S1382101AbiBGQaB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:29:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
+        Mon, 7 Feb 2022 11:30:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350009AbiBGQQm (ORCPT
+        with ESMTP id S1381968AbiBGQZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:16:42 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 653EBC0401D2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:16:42 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id v5-20020a17090a4ec500b001b8b702df57so3671900pjl.2
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 08:16:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=r5BkdnCSajJYnPXhZUqmm3cNTaK+0gcrgKWZLgS5EGs=;
-        b=WRZAOyN7Ijczhs803XsRhiMLkjuu5Fh8uouF+34kA0ht5c2bPTib7csH3iOvCve+nq
-         m3TKxLMdNWJetL3dcKcvNZEDv3639vC14cDvk/bPVZUh/smWYXJ77cqc/Qcg/dUaVh6j
-         uzIRnYYPuz3AEom56S85oL7qsAXEuVV7lkqsxU3pTCeoqtWSH7lL/0JIEtn+2hjFSRWq
-         5qW2pnDTpCWBHjEdGnq+g3T47QHR4jP8chmdjCJ0bYet4rsyfZyxpbuLnFqxZFCbmFLa
-         Oh/SMAdqT42Wjo8h+qAeno193jTWJlxln4ZJ24bDSwzZdYoiJQV0Q9nIYk694a7yKWGw
-         FKZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=r5BkdnCSajJYnPXhZUqmm3cNTaK+0gcrgKWZLgS5EGs=;
-        b=VO6gEC977jwMFMffL93l3ZM+ch1QvgDob40rkec9CGX7FNeOc7Z5jOLXcjF9+MWHyB
-         iahoEr8r65H6ENvrP609tGgdb7FqvwV8YX3MEFS7ND14x2iUGqH8VePe14YwxTlLrJMv
-         G8LP8dz7wYOmyLpdr0fiRxh/qeWg8Mjre57AW6QXy4uxOYWvLzg8wAioAzlEExyHhCOF
-         NAAMbMBNdJNtsKbzd2znZ+uQZa2EI9swn7IGGF/BShCGhFKPOVKmAY82GrWA+kyj6u39
-         DakUMWJFfZ3QoXhEju//vkM+S6qiC4IuMS5StLHxV2pF/id9X5PL3FTYytFzU3lzA7Z8
-         h/og==
-X-Gm-Message-State: AOAM530AKSgcaijMQC75GLlNxhFYC+r3lS3VT3N7b+nfc6YtjRUDmybX
-        oYyhYKb2VRaBeWoz2bulHhWg4Q==
-X-Google-Smtp-Source: ABdhPJxh9KeB3jV1PV+knXJ7UWCli6Yf29jvixzGdHwVWJg5mm2BUb6k+7gPOWSf0SMZSt0+cyCgQw==
-X-Received: by 2002:a17:902:b184:: with SMTP id s4mr330727plr.7.1644250601703;
-        Mon, 07 Feb 2022 08:16:41 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id 13sm12370602pfm.161.2022.02.07.08.16.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 08:16:41 -0800 (PST)
-Date:   Mon, 7 Feb 2022 16:16:37 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kbuild-all@lists.01.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zeng Guang <guang.zeng@intel.com>,
-        Chao Gao <chao.gao@intel.com>
-Subject: Re: [PATCH 04/11] KVM: SVM: Use common kvm_apic_write_nodecode() for
- AVIC write traps
-Message-ID: <YgFF5afpQZ1qQR5X@google.com>
-References: <20220204214205.3306634-5-seanjc@google.com>
- <202202050720.YPm113nN-lkp@intel.com>
+        Mon, 7 Feb 2022 11:25:34 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3775BC0401CE;
+        Mon,  7 Feb 2022 08:25:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644251133; x=1675787133;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=UgAsg9TlIrDzEqjVIYSY7g9vpEQeRY9RvW+oM1/ooF0=;
+  b=Li8lWxKOgYsYSr/18YuGQ02YKB7FQPWGJ7sPSo/5Uk0R9g2T0ezaXu1+
+   9/jLoTxOQbGob6SMr3pjMt8Y3rF1Ea0+K4/bue/vIYsEQGiEKeM188TnS
+   lo8lGvphP48gbty+idDAqSO6VHsoKgjxxahQmuYZ8cyiwkOl3RVGAeQHc
+   giL1EYbga6PUMMICUKzsI9rtEBiaXsBxBAgXJ9cyZXadBYVUoYs8EfZEQ
+   i0SRvbylx7kMnrsZual9BD4U+yTZ+95wqRxxNy9BJ1KFROBSoFpLeYcQ+
+   0SsQlN22A4evncYp504TtzHOYNmuMcHN7nQ64WuLXTWaZQuda8P3vcjoz
+   g==;
+IronPort-SDR: a5kwyl98BaeJDDdVDl5yUbw7rcuwyz/E9FtbOJijPgB9dt43zfaMptiY3NIHux370393lzmFLU
+ lzWz2ZEqSQH/HZ1VfAY8nqH5lXPP3+LCjLuzIWQQUnOq+LbNCiLbIAbjkkHMrJqOt9joT9Unk7
+ YJ/bfwhQjZXo5sAEDz5hJSqdcwZCClNOiHqx0yaQMyGtVaVpTfLWLhw8eh0GvO+h5Qu/4xJCB/
+ I5TYpZlnOnLtZf15L/GmvsWalzfssFDfTE3+P7MBfH0yoj71s2cawwSQ6ZpxD+DOhQDRcD07g/
+ MR2ujyQQJQOB9peCG1uyptaR
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="145140011"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Feb 2022 09:24:30 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Feb 2022 09:24:22 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 7 Feb 2022 09:24:17 -0700
+From:   <conor.dooley@microchip.com>
+To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
+        <jassisinghbrar@gmail.com>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
+        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <geert@linux-m68k.org>,
+        <krzysztof.kozlowski@canonical.com>, <linux-gpio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+CC:     <bin.meng@windriver.com>, <heiko@sntech.de>,
+        <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
+        <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
+        <atishp@rivosinc.com>, Rob Herring <robh@kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH v6 06/12] dt-bindings: pwm: add microchip corepwm binding
+Date:   Mon, 7 Feb 2022 16:26:32 +0000
+Message-ID: <20220207162637.1658677-7-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207162637.1658677-1-conor.dooley@microchip.com>
+References: <20220207162637.1658677-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202202050720.YPm113nN-lkp@intel.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022, kernel test robot wrote:
-> All errors (new ones prefixed by >>):
-> 
->    arch/x86/kvm/svm/avic.c: In function 'avic_unaccel_trap_write':
-> >> arch/x86/kvm/svm/avic.c:486:35: error: 'svm' undeclared (first use in this function); did you mean 'sem'?
->      486 |   if (avic_handle_apic_id_update(&svm->vcpu))
->          |                                   ^~~
->          |                                   sem
->    arch/x86/kvm/svm/avic.c:486:35: note: each undeclared identifier is reported only once for each function it appears in
-> 
-> 
-> vim +486 arch/x86/kvm/svm/avic.c
-> 
-> ef0f64960d012cb Joerg Roedel        2020-03-31  478  
-> 528172fca9c0e8f Sean Christopherson 2022-02-04  479  static int avic_unaccel_trap_write(struct kvm_vcpu *vcpu)
-> ef0f64960d012cb Joerg Roedel        2020-03-31  480  {
-> 528172fca9c0e8f Sean Christopherson 2022-02-04  481  	u32 offset = to_svm(vcpu)->vmcb->control.exit_info_1 &
-> ef0f64960d012cb Joerg Roedel        2020-03-31  482  				AVIC_UNACCEL_ACCESS_OFFSET_MASK;
-> ef0f64960d012cb Joerg Roedel        2020-03-31  483  
-> ef0f64960d012cb Joerg Roedel        2020-03-31  484  	switch (offset) {
-> ef0f64960d012cb Joerg Roedel        2020-03-31  485  	case APIC_ID:
-> ef0f64960d012cb Joerg Roedel        2020-03-31 @486  		if (avic_handle_apic_id_update(&svm->vcpu))
-> ef0f64960d012cb Joerg Roedel        2020-03-31  487  			return 0;
+From: Conor Dooley <conor.dooley@microchip.com>
 
-Doh, I did all my testing with avic_handle_apic_id_update() completely removed
-(because it's broken), but obviously forgot to rebuild without that patch when
-posting.
+Add device tree bindings for the Microchip fpga fabric based "core" PWM
+controller.
+
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+ .../bindings/pwm/microchip,corepwm.yaml       | 79 +++++++++++++++++++
+ 1 file changed, 79 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
+
+diff --git a/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml b/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
+new file mode 100644
+index 000000000000..30ec70ac5c44
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
+@@ -0,0 +1,79 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/microchip,corepwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip IP corePWM controller bindings
++
++maintainers:
++  - Conor Dooley <conor.dooley@microchip.com>
++
++description: |
++  corePWM is an 16 channel pulse width modulator FPGA IP
++
++  https://www.microsemi.com/existing-parts/parts/152118
++
++properties:
++  compatible:
++    items:
++      - const: microchip,corepwm-rtl-v4
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++  microchip,sync-update-mask:
++    description: |
++      Depending on how the IP is instantiated, there are two modes of operation.
++      In synchronous mode, all channels are updated at the beginning of the PWM period,
++      and in asynchronous mode updates happen as the control registers are written.
++      A 16 bit wide "SHADOW_REG_EN" parameter of the IP core controls whether synchronous
++      mode is possible for each channel, and is set by the bitstream programmed to the
++      FPGA. If the IP core is instantiated with SHADOW_REG_ENx=1, both registers that
++      control the duty cycle for channel x have a second "shadow"/buffer reg synthesised.
++      At runtime a bit wide register exposed to APB can be used to toggle on/off
++      synchronised mode for all channels it has been synthesised for.
++      Each bit of "microchip,sync-update-mask" corresponds to a PWM channel & represents
++      whether synchronous mode is possible for the PWM channel.
++
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 0
++
++  microchip,dac-mode-mask:
++    description: |
++      Optional, per-channel Low Ripple DAC mode is possible on this IP core. It creates
++      a minimum period pulse train whose High/Low average is that of the chosen duty
++      cycle. This "DAC" will have far better bandwidth and ripple performance than the
++      standard PWM algorithm can achieve. A 16 bit DAC_MODE module parameter of the IP
++      core, set at instantiation and by the bitstream programmed to the FPGA, determines
++      whether a given channel operates in regular PWM or DAC mode.
++      Each bit corresponds to a PWM channel & represents whether DAC mode is enabled
++      for that channel.
++
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 0
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - "#pwm-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    pwm@41000000 {
++      compatible = "microchip,corepwm-rtl-v4";
++      microchip,sync-update-mask = /bits/ 32 <0>;
++      clocks = <&clkcfg 30>;
++      reg = <0x41000000 0xF0>;
++      #pwm-cells = <2>;
++    };
+-- 
+2.35.1
+
