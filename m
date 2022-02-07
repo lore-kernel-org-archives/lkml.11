@@ -2,150 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F14C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58A2DC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 09:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349441AbiBGJAE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 04:00:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
+        id S243770AbiBGJBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 04:01:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242918AbiBGI6t (ORCPT
+        with ESMTP id S1349805AbiBGJAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 03:58:49 -0500
-X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 00:58:47 PST
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ADC7C043181;
-        Mon,  7 Feb 2022 00:58:47 -0800 (PST)
-X-UUID: 2cf4953b30db4e768f0e74993407d011-20220207
-X-UUID: 2cf4953b30db4e768f0e74993407d011-20220207
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <chun-jie.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2141366659; Mon, 07 Feb 2022 16:53:43 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 7 Feb 2022 16:53:42 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 7 Feb 2022 16:53:42 +0800
-Message-ID: <618ca2903de8fe3b1f68c450273af7a170de2675.camel@mediatek.com>
-Subject: Re: [v1 1/2] dt-bindings: power: Add MT8186 power domains
-From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh@kernel.org>
-CC:     Enric Balletbo Serra <eballetbo@gmail.com>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Mon, 7 Feb 2022 16:53:42 +0800
-In-Reply-To: <ae307028-979b-7e58-dd6f-f1d52520859b@gmail.com>
-References: <20220108131953.16744-1-chun-jie.chen@mediatek.com>
-         <20220108131953.16744-2-chun-jie.chen@mediatek.com>
-         <Yd43V1woRMAcXOfS@robh.at.kernel.org>
-         <ae307028-979b-7e58-dd6f-f1d52520859b@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 7 Feb 2022 04:00:52 -0500
+Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E4CC043181;
+        Mon,  7 Feb 2022 01:00:50 -0800 (PST)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 31E9E58018B;
+        Mon,  7 Feb 2022 04:00:50 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Mon, 07 Feb 2022 04:00:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; bh=LlmYXeK2fC2UdJ
+        0/MsJYEQrTJxKAOlqRD+axqJoLm3I=; b=fm5k1dGy1PeO02r1/TlAHJNiPhTGWE
+        5Iz8JgwP01EUiauX3iYERT0YPoAlmiNhvh3zHn48pU5ZR7i50wdIqMi2TqDT6zwS
+        hSIARHAQBic+WMq594pw+r1hdkJH4foiJ/v+za5CYtlxOHDk/rYnjJ62V9U2/ukk
+        R3ewIPTVnznf+fpkdJ/DJZMLouLKFrfDOanqmzwMjhr8CK/tWD65z3sO/CnpyEKO
+        fldsssTSz1jV+UAAVeaAblRuLVmN8hZUZ0VnWsFFq27v9+RX3ZCcaLoT52X32/KW
+        UatXs76ZJTfxBlcK/Hc3RYGiYWUjHrc7YN7Ksm1/YyQZN9WQa13550lw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=LlmYXeK2fC2UdJ0/MsJYEQrTJxKAOlqRD+axqJoLm
+        3I=; b=adMfYwoaQ/+F0Adw54uNBbogBqWCNOpwNoQ9vM7kPwDVtliGcE/0sJW5T
+        GSkPw8fKguIjcu3WS6SwiePhrbtPoapSJKd278hw9l2tAE/4SvgN9Kgdr6/zer0p
+        A6PTNSUunpLYmjfPgmCuXdOvtVnzckBrHJs1f6PbP1WMrBR2ZJGyNx4VBsi4cBzm
+        eWcn6BqdpcHjNov6rWoYYhZfXlzkoFhtDP7lZuQR/ySkBo6afBQJYlWgJOg6lPma
+        VaQ5opIv7rqfHGUpqYb3c0/pWUsLWRQ8cZf27BEA9hvk78RevuqoSUyunTfG2SVC
+        7fHlzXXpXiu1lF9InYRRu7WoiVb8A==
+X-ME-Sender: <xms:wt8AYvpYzksObIQVOstgSzXW_j7vTFG4na98z1tyat7OAlBQVMWVAg>
+    <xme:wt8AYpqaOsWE4i3N_9ZNkIZLPgSfeoklFLKzjhLbeUSB542-49RtnhvuFn84nDMCD
+    K-d_uqCQ0a0HTq-2Mw>
+X-ME-Received: <xmr:wt8AYsOHMqrHXEo3mqTx-DPOHWLrrIzBhHpR67W2xZSY-b0oBFO7OgzQ1heB2KGO1LjxAipzrsiiEftZuklxmByAIK4CMiZ884aFoCw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheeggdduvddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffojghfgggtgfesthekredtredtjeenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeejuefggeekfffgueevtddvudffhfejffejjedvvdduudethefhfefhfeeg
+    ieekkeenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:wt8AYi5sJGTaHdSyOFBTpB5GBdyKWj7W4q2Qx6G4ow6j7a3Ngk9u8w>
+    <xmx:wt8AYu4nXzcilGfFlbSU8FeohOslwB1MibQ6UJwKse6CAHxnRQI0MA>
+    <xmx:wt8AYqhwssUi8JB6SACMjFKALBnoIooSAjNSWdHq-vI-PfVYgLIm0Q>
+    <xmx:wt8AYtQUyHpHBiDSq0K7o6o4idoY_DwsL7FYrbumcamqnkqPLVPQxg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 7 Feb 2022 04:00:49 -0500 (EST)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Chen-Yu Tsai <wens@csie.org>, linux-sunxi@lists.linux.dev,
+        Samuel Holland <samuel@sholland.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>, Stephen Boyd <sboyd@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Alessandro Zummo <a.zummo@towertech.it>
+Subject: Re: (subset) [PATCH v3 5/6] clk: sunxi-ng: Add support for the sun6i RTC clocks
+Date:   Mon,  7 Feb 2022 10:00:45 +0100
+Message-Id: <164422443570.21572.13511859513410998733.b4-ty@cerno.tech>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220203021736.13434-6-samuel@sholland.org>
+References: <20220203021736.13434-1-samuel@sholland.org> <20220203021736.13434-6-samuel@sholland.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-01-14 at 13:49 +0100, Matthias Brugger wrote:
+On Wed, 2 Feb 2022 20:17:35 -0600, Samuel Holland wrote:
+> The RTC power domain in sun6i and newer SoCs manages the 16 MHz RC
+> oscillator (called "IOSC" or "osc16M") and the optional 32 kHz crystal
+> oscillator (called "LOSC" or "osc32k"). Starting with the H6, this power
+> domain also handles the 24 MHz DCXO (called variously "HOSC", "dcxo24M",
+> or "osc24M") as well. The H6 also adds a calibration circuit for IOSC.
 > 
-> On 12/01/2022 03:05, Rob Herring wrote:
-> > On Sat, Jan 08, 2022 at 09:19:52PM +0800, Chun-Jie Chen wrote:
-> > > Add power domains dt-bindings for MT8186.
-> > > 
-> > > Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-> > > ---
-> > >   .../power/mediatek,power-controller.yaml      |  1 +
-> > >   include/dt-bindings/power/mt8186-power.h      | 32
-> > > +++++++++++++++++++
-> > >   2 files changed, 33 insertions(+)
-> > >   create mode 100644 include/dt-bindings/power/mt8186-power.h
-> > > 
-> > > diff --git
-> > > a/Documentation/devicetree/bindings/power/mediatek,power-
-> > > controller.yaml
-> > > b/Documentation/devicetree/bindings/power/mediatek,power-
-> > > controller.yaml
-> > > index d6ebd77d28a7..135c6f722091 100644
-> > > --- a/Documentation/devicetree/bindings/power/mediatek,power-
-> > > controller.yaml
-> > > +++ b/Documentation/devicetree/bindings/power/mediatek,power-
-> > > controller.yaml
-> > > @@ -26,6 +26,7 @@ properties:
-> > >         - mediatek,mt8167-power-controller
-> > >         - mediatek,mt8173-power-controller
-> > >         - mediatek,mt8183-power-controller
-> > > +      - mediatek,mt8186-power-controller
-> > >         - mediatek,mt8192-power-controller
-> > >         - mediatek,mt8195-power-controller
-> > >   
-> > > diff --git a/include/dt-bindings/power/mt8186-power.h
-> > > b/include/dt-bindings/power/mt8186-power.h
-> > > new file mode 100644
-> > > index 000000000000..ca8ea2d24801
-> > > --- /dev/null
-> > > +++ b/include/dt-bindings/power/mt8186-power.h
-> > > @@ -0,0 +1,32 @@
-> > > +/* SPDX-License-Identifier: GPL-2.0-only */
-> > 
-> > Dual license please.
-> > 
+> Later SoCs introduce further variations on the design:
+>  - H616 adds an additional mux for the 32 kHz fanout source.
+>  - R329 adds an additional mux for the RTC timekeeping clock, a clock
+>    for the SPI bus between power domains inside the RTC, and removes the
+>    IOSC calibration functionality.
 > 
-> Other then that series looks good.
-> 
-> Regards,
-> Matthias
-> 
+> [...]
 
-Ok, I will update license in next patch.
+Applied to local tree (sunxi/clk-for-5.18).
 
 Thanks!
-Best Regards,
-Chun-Jie
-
-> > > +/*
-> > > + * Copyright (c) 2022 MediaTek Inc.
-> > > + * Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-> > > + */
-> > > +
-> > > +#ifndef _DT_BINDINGS_POWER_MT8186_POWER_H
-> > > +#define _DT_BINDINGS_POWER_MT8186_POWER_H
-> > > +
-> > > +#define MT8186_POWER_DOMAIN_MFG0			0
-> > > +#define MT8186_POWER_DOMAIN_MFG1			1
-> > > +#define MT8186_POWER_DOMAIN_MFG2			2
-> > > +#define MT8186_POWER_DOMAIN_MFG3			3
-> > > +#define MT8186_POWER_DOMAIN_SSUSB			4
-> > > +#define MT8186_POWER_DOMAIN_SSUSB_P1			5
-> > > +#define MT8186_POWER_DOMAIN_DIS				6
-> > > +#define MT8186_POWER_DOMAIN_IMG				7
-> > > +#define MT8186_POWER_DOMAIN_IMG2			8
-> > > +#define MT8186_POWER_DOMAIN_IPE				9
-> > > +#define MT8186_POWER_DOMAIN_CAM				10
-> > > +#define MT8186_POWER_DOMAIN_CAM_RAWA			11
-> > > +#define MT8186_POWER_DOMAIN_CAM_RAWB			12
-> > > +#define MT8186_POWER_DOMAIN_VENC			13
-> > > +#define MT8186_POWER_DOMAIN_VDEC			14
-> > > +#define MT8186_POWER_DOMAIN_WPE				15
-> > > +#define MT8186_POWER_DOMAIN_CONN_ON			16
-> > > +#define MT8186_POWER_DOMAIN_CSIRX_TOP			17
-> > > +#define MT8186_POWER_DOMAIN_ADSP_AO			18
-> > > +#define MT8186_POWER_DOMAIN_ADSP_INFRA			19
-> > > +#define MT8186_POWER_DOMAIN_ADSP_TOP			20
-> > > +
-> > > +#endif /* _DT_BINDINGS_POWER_MT8186_POWER_H */
-> > > -- 
-> > > 2.18.0
-> > > 
-> > > 
-
+Maxime
