@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05232C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD9AC35275
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 16:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389765AbiBGQam (ORCPT
+        id S1389810AbiBGQao (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:30:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
+        Mon, 7 Feb 2022 11:30:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378418AbiBGQ0V (ORCPT
+        with ESMTP id S1389584AbiBGQ0o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 11:26:21 -0500
+        Mon, 7 Feb 2022 11:26:44 -0500
 Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8BF9C0401D3
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:26:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 46126C0401CF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 08:26:43 -0800 (PST)
 Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOcrX014397;
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 217GOc8C014399;
         Mon, 7 Feb 2022 17:24:38 +0100
 From:   Willy Tarreau <w@1wt.eu>
 To:     "Paul E . McKenney" <paulmck@kernel.org>
 Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
         Willy Tarreau <w@1wt.eu>
-Subject: [PATCH 14/42] tools/nolibc/stdlib: move ltoa() to stdlib.h
-Date:   Mon,  7 Feb 2022 17:23:26 +0100
-Message-Id: <20220207162354.14293-15-w@1wt.eu>
+Subject: [PATCH 16/42] tools/nolibc/stdlib: add i64toa() and u64toa()
+Date:   Mon,  7 Feb 2022 17:23:28 +0100
+Message-Id: <20220207162354.14293-17-w@1wt.eu>
 X-Mailer: git-send-email 2.17.5
 In-Reply-To: <20220207162354.14293-1-w@1wt.eu>
 References: <20220207162354.14293-1-w@1wt.eu>
@@ -33,87 +33,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This function is not standard and performs the opposite of atol(). Let's
-move it with atol(). It's been split between a reentrant function and one
-using a static buffer.
-
-There's no more definition in nolibc.h anymore now.
+These are 64-bit variants of the itoa() and utoa() functions. They also
+support reentrant ones, and use the same itoa_buffer. The functions are
+a bit larger than the previous ones in 32-bit mode (86 and 98 bytes on
+x86_64 and armv7 respectively), which is why we continue to provide them
+as separate functions.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- tools/include/nolibc/nolibc.h | 22 ----------------------
- tools/include/nolibc/stdlib.h | 32 ++++++++++++++++++++++++++++++++
- 2 files changed, 32 insertions(+), 22 deletions(-)
+ tools/include/nolibc/stdlib.h | 72 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 72 insertions(+)
 
-diff --git a/tools/include/nolibc/nolibc.h b/tools/include/nolibc/nolibc.h
-index 23fb81414b1b..a349c88c45ff 100644
---- a/tools/include/nolibc/nolibc.h
-+++ b/tools/include/nolibc/nolibc.h
-@@ -94,26 +94,4 @@
- /* Used by programs to avoid std includes */
- #define NOLIBC
- 
--static __attribute__((unused))
--const char *ltoa(long in)
--{
--	/* large enough for -9223372036854775808 */
--	static char buffer[21];
--	char       *pos = buffer + sizeof(buffer) - 1;
--	int         neg = in < 0;
--	unsigned long n = neg ? -in : in;
--
--	*pos-- = '\0';
--	do {
--		*pos-- = '0' + n % 10;
--		n /= 10;
--		if (pos < buffer)
--			return pos + 1;
--	} while (n);
--
--	if (neg)
--		*pos-- = '-';
--	return pos + 1;
--}
--
- #endif /* _NOLIBC_H */
 diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
-index 09a506aadbbe..84fc4353fb01 100644
+index dbb45631c7ca..d972871bf2ba 100644
 --- a/tools/include/nolibc/stdlib.h
 +++ b/tools/include/nolibc/stdlib.h
-@@ -45,6 +45,38 @@ int atoi(const char *s)
- 	return atol(s);
+@@ -144,6 +144,78 @@ char *utoa(unsigned long in)
+ 	return itoa_buffer;
  }
  
-+/* performs the opposite of atol() using a user-fed buffer. The buffer must be
-+ * at least 21 bytes long (large enough for "-9223372036854775808").
++/* Converts the unsigned 64-bit integer <in> to its string representation into
++ * buffer <buffer>, which must be long enough to store the number and the
++ * trailing zero (21 bytes for 18446744073709551615). The buffer is filled from
++ * the first byte, and the number of characters emitted (not counting the
++ * trailing zero) is returned. The function is constructed in a way to optimize
++ * the code size and avoid any divide that could add a dependency on large
++ * external functions.
 + */
 +static __attribute__((unused))
-+const char *ltoa_r(long in, char *buffer)
++int u64toa_r(uint64_t in, char *buffer)
 +{
-+	char       *pos = buffer + 21 - 1;
-+	int         neg = in < 0;
-+	unsigned long n = neg ? -in : in;
++	unsigned long long lim;
++	int digits = 0;
++	int pos = 19; /* start with the highest possible digit */
++	int dig;
 +
-+	*pos-- = '\0';
 +	do {
-+		*pos-- = '0' + n % 10;
-+		n /= 10;
-+		if (pos < buffer)
-+			return pos + 1;
-+	} while (n);
++		for (dig = 0, lim = 1; dig < pos; dig++)
++			lim *= 10;
 +
-+	if (neg)
-+		*pos-- = '-';
-+	return pos + 1;
++		if (digits || in >= lim || !pos) {
++			for (dig = 0; in >= lim; dig++)
++				in -= lim;
++			buffer[digits++] = '0' + dig;
++		}
++	} while (pos--);
++
++	buffer[digits] = 0;
++	return digits;
 +}
 +
-+/* performs the opposite of atol() using a statically allocated buffer */
++/* Converts the signed 64-bit integer <in> to its string representation into
++ * buffer <buffer>, which must be long enough to store the number and the
++ * trailing zero (21 bytes for -9223372036854775808). The buffer is filled from
++ * the first byte, and the number of characters emitted (not counting the
++ * trailing zero) is returned.
++ */
 +static __attribute__((unused))
-+const char *ltoa(long in)
++int i64toa_r(int64_t in, char *buffer)
 +{
-+	/* large enough for -9223372036854775808 */
-+	static char buffer[21];
-+	return ltoa_r(in, buffer);
++	char *ptr = buffer;
++	int len = 0;
++
++	if (in < 0) {
++		in = -in;
++		*(ptr++) = '-';
++		len++;
++	}
++	len += u64toa_r(in, ptr);
++	return len;
++}
++
++/* converts int64_t <in> to a string using the static itoa_buffer and returns
++ * the pointer to that string.
++ */
++static inline __attribute__((unused))
++char *i64toa(int64_t in)
++{
++	i64toa_r(in, itoa_buffer);
++	return itoa_buffer;
++}
++
++/* converts uint64_t <in> to a string using the static itoa_buffer and returns
++ * the pointer to that string.
++ */
++static inline __attribute__((unused))
++char *u64toa(uint64_t in)
++{
++	u64toa_r(in, itoa_buffer);
++	return itoa_buffer;
 +}
 +
  static __attribute__((unused))
