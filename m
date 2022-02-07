@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE53C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDC6C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355388AbiBGLNO (ORCPT
+        id S1351864AbiBGLNN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:13:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
+        Mon, 7 Feb 2022 06:13:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343571AbiBGLKf (ORCPT
+        with ESMTP id S245457AbiBGLKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:10:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDADC043181;
-        Mon,  7 Feb 2022 03:10:34 -0800 (PST)
+        Mon, 7 Feb 2022 06:10:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F9EC043181;
+        Mon,  7 Feb 2022 03:10:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D9A3B80EE8;
-        Mon,  7 Feb 2022 11:10:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBF2C004E1;
-        Mon,  7 Feb 2022 11:10:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9417661261;
+        Mon,  7 Feb 2022 11:10:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CB2FC004E1;
+        Mon,  7 Feb 2022 11:10:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232231;
-        bh=kvmeKDKq4ruE2gAqLGR7+eCTMNUXOvT8e/qFwT9YNBE=;
+        s=korg; t=1644232229;
+        bh=40TGlXvYU8HmwnD5uK4ogNUgHQ0LKk7pe54l57x2akE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pesd8yStu6lwuuf85XKnP0NVeiPDREb/KvYXg+nkb29eOtovaxVpvVeJhncOGCIk4
-         mP0T+nBRty2MHSarWhil/OTapStGig2CMKV5LjcotpvM6qLWrtTsAluIHc60n6r7JF
-         s8cxoF0SiRk+3EtYTz/Cpmes9vDM7Ie3Ug7OBfGM=
+        b=L2MkOhkzVDxkCl9X1gTyNxxRmc0eD3z9f0y4uBA4RHVIuE6oEoD2g3BIjNjfAFzpS
+         8IEQG2XF/h0mC13n18/Jymc/DcEIx6Rv+REd7Hw7cRwQ3+eHi9Q8O2uGl4ITyovTKA
+         YqfdbSX6owrpQBZhRcSHwcBnPcV9KUNNaDKeCsKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 4.14 02/69] s390/hypfs: include z/VM guests with access control group set
-Date:   Mon,  7 Feb 2022 12:05:24 +0100
-Message-Id: <20220207103755.685560536@linuxfoundation.org>
+        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>
+Subject: [PATCH 4.14 10/69] tty: Add support for Brainboxes UC cards.
+Date:   Mon,  7 Feb 2022 12:05:32 +0100
+Message-Id: <20220207103755.949344220@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
 References: <20220207103755.604121441@linuxfoundation.org>
@@ -50,51 +48,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vasily Gorbik <gor@linux.ibm.com>
+From: Cameron Williams <cang1@live.co.uk>
 
-commit 663d34c8df98740f1e90241e78e456d00b3c6cad upstream.
+commit 152d1afa834c84530828ee031cf07a00e0fc0b8c upstream.
 
-Currently if z/VM guest is allowed to retrieve hypervisor performance
-data globally for all guests (privilege class B) the query is formed in a
-way to include all guests but the group name is left empty. This leads to
-that z/VM guests which have access control group set not being included
-in the results (even local vm).
+This commit adds support for the some of the Brainboxes PCI range of
+cards, including the UC-101, UC-235/246, UC-257, UC-268, UC-275/279,
+UC-302, UC-310, UC-313, UC-320/324, UC-346, UC-357, UC-368
+and UC-420/431.
 
-Change the query group identifier from empty to "any" to retrieve
-information about all guests from any groups (or without a group set).
-
-Cc: stable@vger.kernel.org
-Fixes: 31cb4bd31a48 ("[S390] Hypervisor filesystem (s390_hypfs) for z/VM")
-Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Cameron Williams <cang1@live.co.uk>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/AM5PR0202MB2564688493F7DD9B9C610827C45E9@AM5PR0202MB2564.eurprd02.prod.outlook.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/hypfs/hypfs_vm.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_pci.c |  100 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 98 insertions(+), 2 deletions(-)
 
---- a/arch/s390/hypfs/hypfs_vm.c
-+++ b/arch/s390/hypfs/hypfs_vm.c
-@@ -20,6 +20,7 @@
- 
- static char local_guest[] = "        ";
- static char all_guests[] = "*       ";
-+static char *all_groups = all_guests;
- static char *guest_query;
- 
- struct diag2fc_data {
-@@ -62,10 +63,11 @@ static int diag2fc(int size, char* query
- 
- 	memcpy(parm_list.userid, query, NAME_LEN);
- 	ASCEBC(parm_list.userid, NAME_LEN);
--	parm_list.addr = (unsigned long) addr ;
-+	memcpy(parm_list.aci_grp, all_groups, NAME_LEN);
-+	ASCEBC(parm_list.aci_grp, NAME_LEN);
-+	parm_list.addr = (unsigned long)addr;
- 	parm_list.size = size;
- 	parm_list.fmt = 0x02;
--	memset(parm_list.aci_grp, 0x40, NAME_LEN);
- 	rc = -1;
- 
- 	diag_stat_inc(DIAG_STAT_X2FC);
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -4808,8 +4808,30 @@ static const struct pci_device_id serial
+ 	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS400,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0dc0 */
+ 		pbn_b2_4_115200 },
++	/* Brainboxes Devices */
+ 	/*
+-	 * BrainBoxes UC-260
++	* Brainboxes UC-101
++	*/
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0BA1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-235/246
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0AA1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_1_115200 },
++	/*
++	 * Brainboxes UC-257
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0861,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-260/271/701/756
+ 	 */
+ 	{	PCI_VENDOR_ID_INTASHIELD, 0x0D21,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+@@ -4817,7 +4839,81 @@ static const struct pci_device_id serial
+ 		pbn_b2_4_115200 },
+ 	{	PCI_VENDOR_ID_INTASHIELD, 0x0E34,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+-		 PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
++		PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-268
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0841,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-275/279
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0881,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_8_115200 },
++	/*
++	 * Brainboxes UC-302
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x08E1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-310
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x08C1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-313
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x08A3,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-320/324
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A61,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_1_115200 },
++	/*
++	 * Brainboxes UC-346
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0B02,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-357
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A81,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A83,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-368
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0C41,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-420/431
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0921,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
+ 		pbn_b2_4_115200 },
+ 	/*
+ 	 * Perle PCI-RAS cards
 
 
