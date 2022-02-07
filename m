@@ -2,43 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8020C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57374C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 07:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244219AbiBGHSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 02:18:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
+        id S236945AbiBGHbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 02:31:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242072AbiBGHRL (ORCPT
+        with ESMTP id S234842AbiBGHYC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 02:17:11 -0500
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244CAC043181
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 23:17:11 -0800 (PST)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id CC77C68B05; Mon,  7 Feb 2022 08:09:07 +0100 (CET)
-Date:   Mon, 7 Feb 2022 08:09:07 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 02/10] iommu/vt-d: Remove intel_iommu::domains
-Message-ID: <20220207070907.GB23941@lst.de>
-References: <20220207064142.1092846-1-baolu.lu@linux.intel.com> <20220207064142.1092846-3-baolu.lu@linux.intel.com>
+        Mon, 7 Feb 2022 02:24:02 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1A6C043181
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Feb 2022 23:24:02 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id u130so11504657pfc.2
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Feb 2022 23:24:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mXSlfVDKwMF6om0Lh75ktdNJu0SBDC/xJ2BOT9KSvbk=;
+        b=IiY88wbW2bT/FKAhO9Q8+pXHoM8+Dm0ujhhZ7LHC7ZD3usBEdT4zDn2jtqSa0lk7Xv
+         OtuYgOHMaOUcDsRnosOy/m7eE13l9AHe5wi/LtmOJwIELfkZnOCYXHCe41RFppwRGQKa
+         oWdOcrlq9Bal6R8rnmj84oRYXVyv9OhR1potY2CBx6QsYD89IHuDbkwpFrIN8lbeWKyR
+         jv9ALex9BZ65VHyqtNrg+q1/vBF0CGpcOWv9lJuLFW8w72W296lCZfEXk4k16fhTWAhD
+         8QGEWAXg2tE0fLDpXEPXnISzSt9BHzpXiHKmkAgZeAZ+02CFG1JN+ddQwMfwzlluGz+5
+         xszg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mXSlfVDKwMF6om0Lh75ktdNJu0SBDC/xJ2BOT9KSvbk=;
+        b=4vOGHiQm5ZwGgrAHz2AY1viBaUqz5owTpT1uABX7HkTNENFay+hKkzYAUqgFouoK4N
+         Hk8fXzXppsUs4Awrn7QRaDdEvZgwG10kzpQO3RiJTqUmF6kixqu9pyFZNBuKTrVPpFcy
+         uwhrEcCy/XempmfxIy3DjeaMeJt7YKgoX3jqKYyxtCApHkP7t1auL0j66/mPpxOHuOCs
+         N4aWkPqVDeQSeZXKcZOcgKCDVH9XlWZAXCGfCZ/ZG/p19HrkuM9PCXA3hehYg+alSgoI
+         heKRJECX8jAlUtk5ODEfba2JxjlXJMeHVZ1mmy2uj439WcJRdjyE8gywLZ404VJLxOza
+         BVwQ==
+X-Gm-Message-State: AOAM532PNQgStFrDKnbFcvuIMF5ZPrJNUE4wlaGSMJmo7fVBuY2oenks
+        S+Ioq5fK2qJ0AIAsSrjfUCA=
+X-Google-Smtp-Source: ABdhPJx4yZeZ0Ph+3g4I1Y5TX7BY5YJn3N60mofH9h2it4LUr2NriDhiawvWGFDK+vaEhvRUpjEISA==
+X-Received: by 2002:a63:6c84:: with SMTP id h126mr8363072pgc.456.1644218641581;
+        Sun, 06 Feb 2022 23:24:01 -0800 (PST)
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id s17sm10258932pfk.156.2022.02.06.23.24.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Feb 2022 23:24:00 -0800 (PST)
+Date:   Mon, 7 Feb 2022 16:23:59 +0900
+From:   Stafford Horne <shorne@gmail.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        openrisc@lists.librecores.org
+Subject: Re: [PATCH] openrisc: remove CONFIG_SET_FS
+Message-ID: <YgDJD4jEA+f2hsHg@antec>
+References: <20220206013648.3491865-1-shorne@gmail.com>
+ <YgC/8ng5WX6Nt104@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220207064142.1092846-3-baolu.lu@linux.intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <YgC/8ng5WX6Nt104@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good,
+On Sun, Feb 06, 2022 at 10:45:06PM -0800, Christoph Hellwig wrote:
+> On Sun, Feb 06, 2022 at 10:36:47AM +0900, Stafford Horne wrote:
+> > Remove the address space override API set_fs() used for User Mode Linux.
+> 
+> This ain't UML :)
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Yes, Geert also brought that up.  As I mentioned there I took the text from your
+commit message in commit 8bb227ac34c0 ("um: remove set_fs").
+
+I didn't realize arch/um is for User Model Linux, I always thought um was just
+some other processor!  Next, I thought your comment 'used for User Mode Linux'
+was just referring to userpsace.
+
+Now I get it!
+
+I will fix this up in v2.
+
+> > +	return size <= TASK_SIZE && addr <= (TASK_SIZE - size);
+> 
+> No need for the inner braces.
+
+You mean to just write as:
+
+	return size <= TASK_SIZE && addr <= TASK_SIZE - size;
+
+I prefer keeping the braces around (TASK_SIZE - size).
+
+-Stafford
