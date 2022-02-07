@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 816B4C47084
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 175C7C352B6
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355046AbiBGLM3 (ORCPT
+        id S1356089AbiBGLMy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:12:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48082 "EHLO
+        Mon, 7 Feb 2022 06:12:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355394AbiBGLIh (ORCPT
+        with ESMTP id S1343596AbiBGLJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:08:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C7CC043181;
-        Mon,  7 Feb 2022 03:08:36 -0800 (PST)
+        Mon, 7 Feb 2022 06:09:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B41DC043181;
+        Mon,  7 Feb 2022 03:09:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76EE1B80EE8;
-        Mon,  7 Feb 2022 11:08:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DCE5C004E1;
-        Mon,  7 Feb 2022 11:08:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0B32B80EE8;
+        Mon,  7 Feb 2022 11:09:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A815C004E1;
+        Mon,  7 Feb 2022 11:09:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232114;
-        bh=juzRYEm7whiU1IYXtF4Z9WLLuBiMyQ5qTn+Fs7fzXiQ=;
+        s=korg; t=1644232177;
+        bh=kIOnlIL+ZpfpueiBTUh+F+Rlr+J6FU0lZxLynHKRHRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tfl1/gQP3M98x4ENhzHVK+3H5mlLFJclsqxA6AH99HD6R9d9JFdjyutx9BW/239+l
-         9vc1CS3alKzH54u51MnigOBB+qbjLM0hMKTgqrMKA8bNRT/QkM4RmrIx/aEtcxRTHQ
-         yitcAF16JbHEwAZjPkbDdBW2bHgIyx6Xa4QKzniQ=
+        b=WotOWhz28aFxt7SdBMqVoIJ+ZoHOsXxiB69BvLvuYFCEwyW/uzXnf2Y5Z2bfw0yKQ
+         /IjCaXZ2hpe/nLJadl5HYHMC4IOZ2Moe8SDnXprrGI14lHHTCUuUq8cqFLz0qqG5lo
+         wjxs9T7nVLkvsGx0V3QS2eY0l3Swt+P81FOun+DQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianguo Wu <wujianguo@chinatelecom.cn>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.9 21/48] net-procfs: show net devices bound packet types
-Date:   Mon,  7 Feb 2022 12:05:54 +0100
-Message-Id: <20220207103753.031121411@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>
+Subject: [PATCH 4.9 40/48] net: ieee802154: Return meaningful error codes from the netlink helpers
+Date:   Mon,  7 Feb 2022 12:06:13 +0100
+Message-Id: <20220207103753.637034831@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
 References: <20220207103752.341184175@linuxfoundation.org>
@@ -49,112 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianguo Wu <wujianguo@chinatelecom.cn>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit 1d10f8a1f40b965d449e8f2d5ed7b96a7c138b77 upstream.
+commit 79c37ca73a6e9a33f7b2b7783ba6af07a448c8a9 upstream.
 
-After commit:7866a621043f ("dev: add per net_device packet type chains"),
-we can not get packet types that are bound to a specified net device by
-/proc/net/ptype, this patch fix the regression.
+Returning -1 does not indicate anything useful.
 
-Run "tcpdump -i ens192 udp -nns0" Before and after apply this patch:
+Use a standard and meaningful error code instead.
 
-Before:
-  [root@localhost ~]# cat /proc/net/ptype
-  Type Device      Function
-  0800          ip_rcv
-  0806          arp_rcv
-  86dd          ipv6_rcv
-
-After:
-  [root@localhost ~]# cat /proc/net/ptype
-  Type Device      Function
-  ALL  ens192   tpacket_rcv
-  0800          ip_rcv
-  0806          arp_rcv
-  86dd          ipv6_rcv
-
-v1 -> v2:
-  - fix the regression rather than adding new /proc API as
-    suggested by Stephen Hemminger.
-
-Fixes: 7866a621043f ("dev: add per net_device packet type chains")
-Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: a26c5fd7622d ("nl802154: add support for security layer")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20220125121426.848337-6-miquel.raynal@bootlin.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/net-procfs.c |   35 ++++++++++++++++++++++++++++++++---
- 1 file changed, 32 insertions(+), 3 deletions(-)
+ net/ieee802154/nl802154.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -208,12 +208,23 @@ static const struct file_operations soft
- 	.release = seq_release,
- };
+--- a/net/ieee802154/nl802154.c
++++ b/net/ieee802154/nl802154.c
+@@ -1474,7 +1474,7 @@ static int nl802154_send_key(struct sk_b
  
--static void *ptype_get_idx(loff_t pos)
-+static void *ptype_get_idx(struct seq_file *seq, loff_t pos)
- {
-+	struct list_head *ptype_list = NULL;
- 	struct packet_type *pt = NULL;
-+	struct net_device *dev;
- 	loff_t i = 0;
- 	int t;
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
  
-+	for_each_netdev_rcu(seq_file_net(seq), dev) {
-+		ptype_list = &dev->ptype_all;
-+		list_for_each_entry_rcu(pt, ptype_list, list) {
-+			if (i == pos)
-+				return pt;
-+			++i;
-+		}
-+	}
-+
- 	list_for_each_entry_rcu(pt, &ptype_all, list) {
- 		if (i == pos)
- 			return pt;
-@@ -234,22 +245,40 @@ static void *ptype_seq_start(struct seq_
- 	__acquires(RCU)
- {
- 	rcu_read_lock();
--	return *pos ? ptype_get_idx(*pos - 1) : SEQ_START_TOKEN;
-+	return *pos ? ptype_get_idx(seq, *pos - 1) : SEQ_START_TOKEN;
- }
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1665,7 +1665,7 @@ static int nl802154_send_device(struct s
  
- static void *ptype_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- {
-+	struct net_device *dev;
- 	struct packet_type *pt;
- 	struct list_head *nxt;
- 	int hash;
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
  
- 	++*pos;
- 	if (v == SEQ_START_TOKEN)
--		return ptype_get_idx(0);
-+		return ptype_get_idx(seq, 0);
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1843,7 +1843,7 @@ static int nl802154_send_devkey(struct s
  
- 	pt = v;
- 	nxt = pt->list.next;
-+	if (pt->dev) {
-+		if (nxt != &pt->dev->ptype_all)
-+			goto found;
-+
-+		dev = pt->dev;
-+		for_each_netdev_continue_rcu(seq_file_net(seq), dev) {
-+			if (!list_empty(&dev->ptype_all)) {
-+				nxt = dev->ptype_all.next;
-+				goto found;
-+			}
-+		}
-+
-+		nxt = ptype_all.next;
-+		goto ptype_all;
-+	}
-+
- 	if (pt->type == htons(ETH_P_ALL)) {
-+ptype_all:
- 		if (nxt != &ptype_all)
- 			goto found;
- 		hash = 0;
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -2020,7 +2020,7 @@ static int nl802154_send_seclevel(struct
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
 
 
