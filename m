@@ -2,114 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 411C7C47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170A7C3527A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 15:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443108AbiBGPKe (ORCPT
+        id S1443093AbiBGPKb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 10:10:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
+        Mon, 7 Feb 2022 10:10:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382241AbiBGPDo (ORCPT
+        with ESMTP id S1376968AbiBGO5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 10:03:44 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB19C0401C1;
-        Mon,  7 Feb 2022 07:03:43 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id g8so3543468pfq.9;
-        Mon, 07 Feb 2022 07:03:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:from
-         :subject:cc:content-transfer-encoding;
-        bh=mS7TncTDTAedIOa0shd+ZvGI84i/d6u1cvvXwuS06Vs=;
-        b=Sl1aAWG5gg6a89W6+hFicuNJFDjzoyl7G87HBJQZ95+v0sgfh8ILxDj8Mkfxk19UBA
-         OsxOlkJU/x19u70esZnffMoPwI+6XB1K2HlG2ODOWNWNwUPf2zW9lkswGQ4eK+2taYPX
-         Tj8Yb+qq1qGXIWYbVdpf/fhONO0vBztvqWni62yPJX5QQq6mPu0eAia/6auVYyEVasiu
-         yP0nrsrAqWFWJ8N0JVSqPOyExBnQJM/4Cm8I4qnBC6GJ/Rqf35gwTN0IQGkcU03ghFJK
-         0aFoxMI7B+iVEMIOXRfpnWkIbvGRmEWmNzW3jPgeoNPkW2n9z6b7j/TNPUMOwhEAOIoM
-         ZzaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:from:subject:cc:content-transfer-encoding;
-        bh=mS7TncTDTAedIOa0shd+ZvGI84i/d6u1cvvXwuS06Vs=;
-        b=kNrOc3PjihaJeVgovzALeuAzfVq0Rn/UprBsBPbnxhq2hgwhJvUT77SNyELwY4IUjx
-         9U+k1CsRrmYLXqa5OqmyweBcYN4mx8l8ABBCzxT2hQaL8+ZoOHj25OsxyvSs/Z/2Cw9b
-         EQNU23fMT5c4p5GrMVoc5FNhK+r5XKqt9G/6EsM22M0i2F49zz92fHOOBQJCMIG6xjE7
-         fDqktPZwsNYdXpGpbMKpYXIvlWT4OTMD6q2PfcxkOor7wCUnPWfkGRhigWNx0IAsN4S0
-         5aFwQ4FDJnMwoXyKOQpt9L2iQ+kpQSnuSL1p6rRf3UeJT7GZTHBztDGua62F8ihZOZ8e
-         Rdyg==
-X-Gm-Message-State: AOAM532QZSB/NdJDJuuaV08DV06rfyxL2SjDWM5SNhliGKpv8xV4Xc5Y
-        dw5QOqxvvDiRXF5CCIxMLi9RX5nl5XGeaQ==
-X-Google-Smtp-Source: ABdhPJwJ843l2UFGHHTAgxbxW057CYEHotDhqvKJamSl4AwMke8vHlo7YUo3kOY8hVXvF82cWdkPKw==
-X-Received: by 2002:a63:2c16:: with SMTP id s22mr9704833pgs.297.1644246223146;
-        Mon, 07 Feb 2022 07:03:43 -0800 (PST)
-Received: from [10.59.0.6] ([85.203.23.80])
-        by smtp.gmail.com with ESMTPSA id w4sm8531262pgs.28.2022.02.07.07.03.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 07:03:42 -0800 (PST)
-Message-ID: <49ce0d1f-c302-7fe5-805b-9f505240f683@gmail.com>
-Date:   Mon, 7 Feb 2022 23:03:29 +0800
+        Mon, 7 Feb 2022 09:57:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6410C0401C1
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 06:57:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2901361035
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 14:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01309C340EF;
+        Mon,  7 Feb 2022 14:57:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644245841;
+        bh=kzb5Aw0aPnUl4WNXBuhTG37J8Ce6ZRlVv0R/YerwJD0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=R8bez1N9rfVAexNhrOfhQOt86r1tpO+oSDvKpM+RSh7rYNMjSohLEJjMXkzsViwUH
+         8pAOqaSFFR9H3sb6yFtDRLV0QUh+pKODVXvYQ9KofqMMMS1PedNHDs6ibZJH0PdwMH
+         RiXdEzS6nvQ5WElqoPe+lQA4L5k9l2M/2umonMFFTiArKBlJ/mrNhq42FKxX/rmB4c
+         nbeAtirB/qOES66NQdnYJmiDGAJKVJgOrmskqtjXwxAVniTyW1mbNeyQGeStyvN/co
+         vUR9ZBQ6mLpGID11nYqBFsRtpDG10Yr4ed2zuigK5sJtoMY2ZBhQGltfxcZsqeVaVP
+         pztSZalrrRqiw==
+Date:   Mon, 7 Feb 2022 15:57:18 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Oscar Shiang <oscar0225@livemail.tw>
+Subject: Re: [patch v11 05/13] task isolation: sync vmstats on return to
+ userspace
+Message-ID: <20220207145718.GA523931@lothringen>
+References: <20220204173537.429902988@fedora.localdomain>
+ <20220204173554.676117258@fedora.localdomain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Content-Language: en-US
-To:     stas.yakovlev@gmail.com, kvalo@kernel.org, davem@davemloft.net,
-        kuba@kernel.org
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [BUG] ipw2100: possible deadlocks involving waiting and locking
- operations
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204173554.676117258@fedora.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Fri, Feb 04, 2022 at 02:35:42PM -0300, Marcelo Tosatti wrote:
+> The logic to disable vmstat worker thread, when entering
+> nohz full, does not cover all scenarios. For example, it is possible
+> for the following to happen:
+> 
+> 1) enter nohz_full, which calls refresh_cpu_vm_stats, syncing the stats.
+> 2) app runs mlock, which increases counters for mlock'ed pages.
+> 3) start -RT loop
+> 
+> Since refresh_cpu_vm_stats from nohz_full logic can happen _before_
+> the mlock, vmstat shepherd can restart vmstat worker thread on
+> the CPU in question.
+> 
+> To fix this, use the task isolation prctl interface to quiesce 
+> deferred actions when returning to userspace.
+> 
+> This patch adds hooks to fork and exit code paths.
+> 
+> Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+> 
+> ---
+> v11: fold patch to add task_isol_exit hooks (Frederic)
+>      Use _TIF_TASK_ISOL bit on thread flags (Frederic)
+>      
+> v6: modify exit_to_user_mode_loop to cover exceptions and interrupts
+> v5: no changes
+> v4: add oneshot mode support
+> 
+>  include/linux/task_isolation.h |   16 ++++++++++++++++
+>  include/linux/vmstat.h         |    8 ++++++++
+>  kernel/entry/common.c          |   15 +++++++++++----
+>  kernel/task_isolation.c        |   21 +++++++++++++++++++++
+>  mm/vmstat.c                    |   21 +++++++++++++++++++++
+>  5 files changed, 77 insertions(+), 4 deletions(-)
+> 
+> Index: linux-2.6/include/linux/task_isolation.h
+> ===================================================================
+> --- linux-2.6.orig/include/linux/task_isolation.h
+> +++ linux-2.6/include/linux/task_isolation.h
+> @@ -27,6 +27,13 @@ static inline void task_isol_free(struct
+>  		__task_isol_free(tsk);
+>  }
+>  
+> +void __task_isol_exit(struct task_struct *tsk);
+> +static inline void task_isol_exit(struct task_struct *tsk)
+> +{
+> +	if (tsk->task_isol_info)
+> +		__task_isol_exit(tsk);
+> +}
+> +
+>  int prctl_task_isol_feat_get(unsigned long arg2, unsigned long arg3,
+>  			     unsigned long arg4, unsigned long arg5);
+>  int prctl_task_isol_cfg_get(unsigned long arg2, unsigned long arg3,
+> @@ -40,12 +47,22 @@ int prctl_task_isol_activate_set(unsigne
+>  
+>  int __copy_task_isol(struct task_struct *tsk);
+>  
+> +void task_isol_exit_to_user_mode(void);
+> +
+>  #else
+>  
+> +static inline void task_isol_exit_to_user_mode(void)
+> +{
+> +}
+> +
+>  static inline void task_isol_free(struct task_struct *tsk)
+>  {
+>  }
+>  
+> +static inline void task_isol_exit(struct task_struct *tsk)
+> +{
+> +}
+> +
+>  static inline int prctl_task_isol_feat_get(unsigned long arg2,
+>  					   unsigned long arg3,
+>  					   unsigned long arg4,
+> Index: linux-2.6/include/linux/vmstat.h
+> ===================================================================
+> --- linux-2.6.orig/include/linux/vmstat.h
+> +++ linux-2.6/include/linux/vmstat.h
+> @@ -21,6 +21,14 @@ int sysctl_vm_numa_stat_handler(struct c
+>  		void *buffer, size_t *length, loff_t *ppos);
+>  #endif
+>  
+> +#if defined(CONFIG_SMP) && defined(CONFIG_TASK_ISOLATION)
+> +void sync_vmstat(void);
+> +#else
+> +static inline void sync_vmstat(void)
+> +{
+> +}
+> +#endif
+> +
+>  struct reclaim_stat {
+>  	unsigned nr_dirty;
+>  	unsigned nr_unqueued_dirty;
+> Index: linux-2.6/kernel/entry/common.c
+> ===================================================================
+> --- linux-2.6.orig/kernel/entry/common.c
+> +++ linux-2.6/kernel/entry/common.c
+> @@ -6,6 +6,7 @@
+>  #include <linux/livepatch.h>
+>  #include <linux/audit.h>
+>  #include <linux/tick.h>
+> +#include <linux/task_isolation.h>
+>  
+>  #include "common.h"
+>  
+> @@ -174,6 +175,9 @@ static unsigned long exit_to_user_mode_l
+>  		if (ti_work & _TIF_NOTIFY_RESUME)
+>  			tracehook_notify_resume(regs);
+>  
+> +		if (ti_work & _TIF_TASK_ISOL)
+> +			task_isol_exit_to_user_mode();
+> +
+>  		/* Architecture specific TIF work */
+>  		arch_exit_to_user_mode_work(regs, ti_work);
+>  
+> Index: linux-2.6/kernel/task_isolation.c
+> ===================================================================
+> --- linux-2.6.orig/kernel/task_isolation.c
+> +++ linux-2.6/kernel/task_isolation.c
+> @@ -18,6 +18,12 @@
+>  #include <linux/sysfs.h>
+>  #include <linux/init.h>
+>  #include <linux/sched/task.h>
+> +#include <linux/mm.h>
+> +#include <linux/vmstat.h>
+> +
+> +void __task_isol_exit(struct task_struct *tsk)
+> +{
+> +}
+>  
+>  void __task_isol_free(struct task_struct *tsk)
+>  {
+> @@ -251,6 +257,9 @@ static int cfg_feat_quiesce_set(unsigned
+>  	task_isol_info->quiesce_mask = i_qctrl->quiesce_mask;
+>  	task_isol_info->oneshot_mask = i_qctrl->quiesce_oneshot_mask;
+>  	task_isol_info->conf_mask |= ISOL_F_QUIESCE;
+> +	if (task_isol_info->quiesce_mask & ISOL_F_QUIESCE_VMSTATS)
+> +		set_thread_flag(TIF_TASK_ISOL);
 
-My static analysis tool reports two possible deadlock in the ipw2100 
-driver in Linux 5.16:
+Should you check if (i->active_mask == ISOL_F_QUIESCE) before setting the
+flag?
 
-#BUG 1
-ipw2100_wx_set_retry()
-   mutex_lock(&priv->action_mutex); --> Line 7323 (Lock A)
-   ipw2100_set_short_retry()
-     ipw2100_hw_send_command()
-       wait_event_interruptible_timeout(priv->wait_command_queue, ...) 
---> Line 793 (Wait X)
+> +
+>  	ret = 0;
+>  
+>  out_free:
+> @@ -303,6 +312,7 @@ int __copy_task_isol(struct task_struct
+>  		new_info->active_mask = info->active_mask;
+>  
+>  	tsk->task_isol_info = new_info;
+> +	set_ti_thread_flag(task_thread_info(tsk), TIF_TASK_ISOL);
 
-ipw_radio_kill_sw()
-   mutex_lock(&priv->action_mutex); --> Line 4259 (Lock A)
-   schedule_reset()
-     wake_up_interruptible(&priv->wait_command_queue); --> Line 706 (Wake X)
+Same here?
 
-#BUG 2
-ipw2100_wx_set_scan()
-   mutex_lock(&priv->action_mutex); --> Line 7393 (Lock A)
-   ipw2100_start_scan()
-     ipw2100_hw_send_command()
-       wait_event_interruptible_timeout(priv->wait_command_queue, ...) 
---> Line 793 (Wait X)
+>  
+>  	return 0;
 
-ipw_radio_kill_sw()
-   mutex_lock(&priv->action_mutex); --> Line 4259 (Lock A)
-   schedule_reset()
-     wake_up_interruptible(&priv->wait_command_queue); --> Line 706 (Wake X)
-
-When ipw2100_wx_set_retry() or ipw2100_wx_set_scan() is executed, "Wait 
-X" is performed by holding "Lock A". If ipw_radio_kill_sw() is executed 
-at this time, "Wake X" cannot be performed to wake up "Wait X", because 
-"Lock A" has been already hold, causing possible deadlocks.
-I find that "Wait X" is performed with a timeout, to relieve the 
-possible deadlocks; but I think this timeout can cause inefficient 
-execution.
-
-I am not quite sure whether these possible problems are real.
-Any feedback would be appreciated, thanks :)
-
-
-Best wishes,
-Jia-Ju Bai
+Thanks.
