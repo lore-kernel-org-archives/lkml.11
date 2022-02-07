@@ -2,86 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7314C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F00C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382249AbiBGLSl (ORCPT
+        id S1382169AbiBGLSf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:18:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50362 "EHLO
+        Mon, 7 Feb 2022 06:18:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356753AbiBGLN1 (ORCPT
+        with ESMTP id S1356746AbiBGLN0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:13:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F57C0401C1;
-        Mon,  7 Feb 2022 03:13:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28634B80EE8;
-        Mon,  7 Feb 2022 11:13:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60EF1C004E1;
-        Mon,  7 Feb 2022 11:13:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232404;
-        bh=+Nxyqn9HuoEQlzbKhHgVB+8w/+IoiYP/Q9se7acyhjk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OO0YOA07XVGLndpJ+zoDEf6daFXhZoZPkeLQQRTeB4puZ09jPFD/Dk7kA3Lc4A3EJ
-         GmRdcyObjPVFyY1IQ0OF18RHkVSgADV/h0LDWYUkRv3bZc7EeHXw74KSrtG85p4B/N
-         0mwiV7gJEnPtgO5lTtzR2Q/QT3H2gMcixb4+yHfA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Borislav Petkov <bp@suse.de>, Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 4.14 67/69] EDAC/altera: Fix deferred probing
-Date:   Mon,  7 Feb 2022 12:06:29 +0100
-Message-Id: <20220207103757.836504837@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
-References: <20220207103755.604121441@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Feb 2022 06:13:26 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5ADC043189;
+        Mon,  7 Feb 2022 03:13:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644232402; x=1675768402;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4xNbC5qCZstZuFmtgmc8pSYf6lHMJUKirKVnXS8RvWU=;
+  b=JwkmjvGoKervAdYbQ4rVD9ClJV/m6qxY+NoPiwdykovrybGfA+bR+72q
+   g6dz4yzXnUKaYrplkZRO10032XVz2jzaA4MvgsNvCryt96wzo+tcHGszq
+   RVZu3FaUvMGp8BrXBBeI8GVNl6ll5nFDLOM1VfckZGdqEmMMuhT0nF85y
+   +WYL9ciTrKMRYPAFlS3XkPBCGo0q44pxs2Mf3m70WjrSaojUMtKFzh6bm
+   dRKSDiaArWUdhlA9/0MG7zy5i7xVHDBD/7vaOn8BqhJCh3VKGqPXz4WUl
+   SRvQz/iNNX0XvyWaLq4UE59zXk154p8iLZeEsAgGtUhXHp1G6M/dfax8E
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273212853"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="273212853"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:13:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
+   d="scan'208";a="621513506"
+Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 07 Feb 2022 03:13:19 -0800
+Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nH1xP-0000S0-9K; Mon, 07 Feb 2022 11:13:19 +0000
+Date:   Mon, 7 Feb 2022 19:12:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sai Teja Aluvala <quic_saluvala@quicinc.com>, marcel@holtmann.org,
+        johan.hedberg@gmail.com
+Cc:     kbuild-all@lists.01.org, mka@chromium.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        quic_hemantg@quicinc.com, linux-arm-msm@vger.kernel.org,
+        quic_bgodavar@quicinc.com, quic_rjliao@quicinc.com,
+        quic_hbandi@quicinc.com
+Subject: Re: [PATCH v1] arm64: dts: qcom: sc7280: Add bluetooth node on
+ SC7280 crd board
+Message-ID: <202202071900.HBQ0tQbr-lkp@intel.com>
+References: <1644207878-19839-1-git-send-email-quic_saluvala@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644207878-19839-1-git-send-email-quic_saluvala@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+Hi Sai,
 
-commit 279eb8575fdaa92c314a54c0d583c65e26229107 upstream.
+Thank you for the patch! Yet something to improve:
 
-The driver overrides the error codes returned by platform_get_irq() to
--ENODEV for some strange reason, so if it returns -EPROBE_DEFER, the
-driver will fail the probe permanently instead of the deferred probing.
-Switch to propagating the proper error codes to platform driver code
-upwards.
+[auto build test ERROR on robh/for-next]
+[also build test ERROR on v5.17-rc3]
+[cannot apply to next-20220207]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-  [ bp: Massage commit message. ]
+url:    https://github.com/0day-ci/linux/commits/Sai-Teja-Aluvala/arm64-dts-qcom-sc7280-Add-bluetooth-node-on-SC7280-crd-board/20220207-141304
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+config: arm64-randconfig-s031-20220207 (https://download.01.org/0day-ci/archive/20220207/202202071900.HBQ0tQbr-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/36d7dc511b4181b7243171a2949e2f097d799d40
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Sai-Teja-Aluvala/arm64-dts-qcom-sc7280-Add-bluetooth-node-on-SC7280-crd-board/20220207-141304
+        git checkout 36d7dc511b4181b7243171a2949e2f097d799d40
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-Fixes: 71bcada88b0f ("edac: altera: Add Altera SDRAM EDAC support")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220124185503.6720-2-s.shtylyov@omp.ru
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> Error: arch/arm64/boot/dts/qcom/sc7280-crd.dts:26.1-11 Label or path bluetooth not found
+   FATAL ERROR: Syntax error parsing input tree
+
 ---
- drivers/edac/altera_edac.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/edac/altera_edac.c
-+++ b/drivers/edac/altera_edac.c
-@@ -357,7 +357,7 @@ static int altr_sdram_probe(struct platf
- 	if (irq < 0) {
- 		edac_printk(KERN_ERR, EDAC_MC,
- 			    "No irq %d in DT\n", irq);
--		return -ENODEV;
-+		return irq;
- 	}
- 
- 	/* Arria10 has a 2nd IRQ */
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
