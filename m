@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9973DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8EF9C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Feb 2022 11:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383275AbiBGLV7 (ORCPT
+        id S1383283AbiBGLWA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:21:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55588 "EHLO
+        Mon, 7 Feb 2022 06:22:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381510AbiBGLRL (ORCPT
+        with ESMTP id S1381667AbiBGLRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 06:17:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C02BC0401D2;
-        Mon,  7 Feb 2022 03:17:00 -0800 (PST)
+        Mon, 7 Feb 2022 06:17:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8691FC03FEDB;
+        Mon,  7 Feb 2022 03:17:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A93646126D;
-        Mon,  7 Feb 2022 11:16:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88DC0C004E1;
-        Mon,  7 Feb 2022 11:16:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52833B81028;
+        Mon,  7 Feb 2022 11:17:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B906C004E1;
+        Mon,  7 Feb 2022 11:17:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644232619;
-        bh=Fi5FmP3vg78vf+vuAoyI4qaqL8RRmG0PE5bYYQm08KI=;
+        s=korg; t=1644232622;
+        bh=Y2D14aJlGlPFcq4A1gKe14I/jmpS3CFzo1RgycGaS+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S00cdXgwBxdWsR5BlfZZWdr7J6cw7vDekJtSzOIJmGqeXzpHS4t9rLevPrvlJCm6h
-         O2ANp3GZje6wGsEnuaYE9U7TzxaSU7q2gSbbAkM8ZFRJJIcGmRzEEVjDtfo+2eeUQI
-         jkb2KcKQiQ1j4JlxzkzQrihY/W8Q/aTQ5Fnhzh1w=
+        b=mqUFsrvgnDH+ITWsSYLuy1uytOnsFUfpgM2DaUPvTXHRGARZJUMO2fZZ08ISbW48W
+         nE/I4fuQQzjP0bCejtN3iOTKDrDCfAQDJ5Fks7htI6P7r+jBNbEjlBJn0dNicYJvd9
+         Hb8xCKLSAzO2ERB3K2SOFTJaktHOyooUGTTgfASQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.19 69/86] spi: meson-spicc: add IRQ check in meson_spicc_probe
-Date:   Mon,  7 Feb 2022 12:06:32 +0100
-Message-Id: <20220207103759.932004839@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>
+Subject: [PATCH 4.19 70/86] net: ieee802154: hwsim: Ensure proper channel selection at probe time
+Date:   Mon,  7 Feb 2022 12:06:33 +0100
+Message-Id: <20220207103759.966838188@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
 References: <20220207103757.550973048@linuxfoundation.org>
@@ -49,37 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit e937440f7fc444a3e3f1fb75ea65292d6f433a44 upstream.
+commit 1293fccc9e892712d910ec96079d3717307f1d2d upstream.
 
-This check misses checking for  platform_get_irq()'s call and may passes
-the negative error codes to devm_request_irq(), which takes unsigned IRQ #,
-causing it to fail with -EINVAL, overriding an original error code.
-Stop calling devm_request_irq() with invalid IRQ #s.
+Drivers are expected to set the PHY current_channel and current_page
+according to their default state. The hwsim driver is advertising being
+configured on channel 13 by default but that is not reflected in its own
+internal pib structure. In order to ensure that this driver consider the
+current channel as being 13 internally, we at least need to set the
+pib->channel field to 13.
 
-Fixes: 454fa271bc4e ("spi: Add Meson SPICC driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220126110447.24549-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+[stefan@datenfreihafen.org: fixed assigment from page to channel]
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20220125121426.848337-2-miquel.raynal@bootlin.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-meson-spicc.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ieee802154/mac802154_hwsim.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/spi/spi-meson-spicc.c
-+++ b/drivers/spi/spi-meson-spicc.c
-@@ -529,6 +529,11 @@ static int meson_spicc_probe(struct plat
- 	writel_relaxed(0, spicc->base + SPICC_INTREG);
+--- a/drivers/net/ieee802154/mac802154_hwsim.c
++++ b/drivers/net/ieee802154/mac802154_hwsim.c
+@@ -805,6 +805,7 @@ static int hwsim_add_one(struct genl_inf
+ 		goto err_pib;
+ 	}
  
- 	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		ret = irq;
-+		goto out_master;
-+	}
-+
- 	ret = devm_request_irq(&pdev->dev, irq, meson_spicc_irq,
- 			       0, NULL, spicc);
- 	if (ret) {
++	pib->channel = 13;
+ 	rcu_assign_pointer(phy->pib, pib);
+ 	phy->idx = idx;
+ 	INIT_LIST_HEAD(&phy->edges);
 
 
