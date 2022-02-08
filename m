@@ -2,290 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5812C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B98C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343837AbiBHBtB (ORCPT
+        id S1343948AbiBHBtG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:49:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60088 "EHLO
+        Mon, 7 Feb 2022 20:49:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234818AbiBHBbu (ORCPT
+        with ESMTP id S1344950AbiBHBmb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:31:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88041C061355;
-        Mon,  7 Feb 2022 17:31:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01D4661253;
-        Tue,  8 Feb 2022 01:31:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBBC3C004E1;
-        Tue,  8 Feb 2022 01:31:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644283908;
-        bh=FVFHKY6Lf5v9k+9f7XtvYdS9xaoSxDGnNdiLfTk98cU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=ACca6sfW0QhhOG37xqghFUEPFAHu4/cLZldK6AHO0fxPfRvY3L4hh+OEOPczU4+qh
-         tcWFYCnMamYIhnLcfqrVMmk1kNOg/FfCASuXegdI8zfobB8vFXd4z9xhtiNfVVIt0U
-         1PVZBcrQkhAIXkJ2bGHilOJ9ZYhfsCDevYyYwYcz8Zx/Ze497rwvb0xgAsPWok5ZQU
-         0FYOGpRGw0tB5CEScLBU+nN+3FcE+gQuRbB3qXgnrcDhYNi2nKQdq8h+8oH68CXwuG
-         rezvbXBxOGpu+UU2lXOLKqYBownzcqmsEnhJObimWYidnnd5BJd2fk35E45dwoNQib
-         mmLcy1YKo5msA==
-Message-ID: <6ba06196-0756-37a4-d6c4-2e47e6601dcd@kernel.org>
-Date:   Mon, 7 Feb 2022 17:31:45 -0800
+        Mon, 7 Feb 2022 20:42:31 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D026AC061A73;
+        Mon,  7 Feb 2022 17:42:29 -0800 (PST)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2180DqRu004583;
+        Tue, 8 Feb 2022 01:42:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=y0TAq5uOzk+Jle3ny7B++D4HVgPEgEWaFU3XPVXJg8U=;
+ b=rYRpBngbgasX9Vnl8OIXnYOBZHd8n9xAVBpgL+3W3dXm6yrGmo8901pZNkm35hWtBBoU
+ 1v9NK+KsOyrkgb+CO4vOAGBQcKm7lxzy2NmQZI7jlqqn/D4nea+WcpNArgb3f11jh8Dy
+ X3r8mqYZU8BowyBqsyKIzd9Tp6xb7v5r5y+pODT1GkZ7xaJQjK//HoJJra3/FdldwJi4
+ 1nlSxexSb6D9bnybsWN4A7F80g5G6EFmtYz1gmtkHf3uIqrt0j7pWBc6TZrUgLTXwbTH
+ jpsPdj39ucNqm1+WAjP85FG/QO8w81ofJkbRdGtEYcQ+G1xKCFdKNqJDaqSjerd4DlgH jg== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22stchad-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 01:42:28 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2181Whmd025441;
+        Tue, 8 Feb 2022 01:42:26 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06fra.de.ibm.com with ESMTP id 3e1ggj0prk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 01:42:25 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2181gMLu45548014
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 8 Feb 2022 01:42:22 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B3919A4059;
+        Tue,  8 Feb 2022 01:42:22 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CC818A4053;
+        Tue,  8 Feb 2022 01:42:21 +0000 (GMT)
+Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com.com (unknown [9.65.90.153])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  8 Feb 2022 01:42:21 +0000 (GMT)
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     linux-integrity@vger.kernel.org
+Cc:     Mimi Zohar <zohar@linux.ibm.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 8/8] fsverity: update the documentation
+Date:   Mon,  7 Feb 2022 20:41:40 -0500
+Message-Id: <20220208014140.483447-9-zohar@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220208014140.483447-1-zohar@linux.ibm.com>
+References: <20220208014140.483447-1-zohar@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 00/35] Shadow stacks for userspace
-Content-Language: en-US
-To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "David.Laight@aculab.com" <David.Laight@aculab.com>,
-        Adrian Reber <adrian@lisas.de>,
-        Cyrill Gorcunov <gorcunov@openvz.org>,
-        Eugene Syromiatnikov <esyr@redhat.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>
-Cc:     "bsingharora@gmail.com" <bsingharora@gmail.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "Syromiatnikov, Eugene" <esyr@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "Eranian, Stephane" <eranian@google.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "fweimer@redhat.com" <fweimer@redhat.com>,
-        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
-        "jannh@google.com" <jannh@google.com>,
-        "kcc@google.com" <kcc@google.com>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "pavel@ucw.cz" <pavel@ucw.cz>, "oleg@redhat.com" <oleg@redhat.com>,
-        "Yang, Weijiang" <weijiang.yang@intel.com>,
-        "bp@alien8.de" <bp@alien8.de>, "arnd@arndb.de" <arnd@arndb.de>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "Dave.Martin@arm.com" <Dave.Martin@arm.com>,
-        "john.allen@amd.com" <john.allen@amd.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "gorcunov@gmail.com" <gorcunov@gmail.com>
-References: <87fsozek0j.ffs@tglx>
- <a7e59ae16e0e05579b087caf4045e42b174e2167.camel@intel.com>
- <3421da7fc8474b6db0e265b20ffd28d0@AcuMS.aculab.com>
- <CAMe9rOonepEiRyoAyTGkDMQQhuyuoP4iTZJJhKGxgnq9vv=dLQ@mail.gmail.com>
- <9f948745435c4c9273131146d50fe6f328b91a78.camel@intel.com>
-From:   Andy Lutomirski <luto@kernel.org>
-In-Reply-To: <9f948745435c4c9273131146d50fe6f328b91a78.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: d6deKs_zOydTre7id0wXx9a4R3wKvDGd
+X-Proofpoint-ORIG-GUID: d6deKs_zOydTre7id0wXx9a4R3wKvDGd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_07,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ priorityscore=1501 spamscore=0 suspectscore=0 malwarescore=0 mlxscore=0
+ mlxlogscore=944 impostorscore=0 bulkscore=0 adultscore=0 clxscore=1015
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202080006
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/5/22 12:15, Edgecombe, Rick P wrote:
-> On Sat, 2022-02-05 at 05:29 -0800, H.J. Lu wrote:
->> On Sat, Feb 5, 2022 at 5:27 AM David Laight <David.Laight@aculab.com>
->> wrote:
->>>
->>> From: Edgecombe, Rick P
->>>> Sent: 04 February 2022 01:08
->>>> Hi Thomas,
->>>>
->>>> Thanks for feedback on the plan.
->>>>
->>>> On Thu, 2022-02-03 at 22:07 +0100, Thomas Gleixner wrote:
->>>>>> Until now, the enabling effort was trying to support both
->>>>>> Shadow
->>>>>> Stack and IBT.
->>>>>> This history will focus on a few areas of the shadow stack
->>>>>> development history
->>>>>> that I thought stood out.
->>>>>>
->>>>>>         Signals
->>>>>>         -------
->>>>>>         Originally signals placed the location of the shadow
->>>>>> stack
->>>>>> restore
->>>>>>         token inside the saved state on the stack. This was
->>>>>> problematic from a
->>>>>>         past ABI promises perspective. So the restore location
->>>>>> was
->>>>>> instead just
->>>>>>         assumed from the shadow stack pointer. This works
->>>>>> because in
->>>>>> normal
->>>>>>         allowed cases of calling sigreturn, the shadow stack
->>>>>> pointer
->>>>>> should be
->>>>>>         right at the restore token at that time. There is no
->>>>>> alternate shadow
->>>>>>         stack support. If an alt shadow stack is added later
->>>>>> we
->>>>>> would
->>>>>>         need to
->>>>>
->>>>> So how is that going to work? altstack is not an esoteric
->>>>> corner
->>>>> case.
->>>>
->>>> My understanding is that the main usages for the signal stack
->>>> were
->>>> handling stack overflows and corruption. Since the shadow stack
->>>> only
->>>> contains return addresses rather than large stack allocations,
->>>> and is
->>>> not generally writable or pivotable, I thought there was a good
->>>> possibility an alt shadow stack would not end up being especially
->>>> useful. Does it seem like reasonable guesswork?
->>>
->>> The other 'problem' is that it is valid to longjump out of a signal
->>> handler.
->>> These days you have to use siglongjmp() not longjmp() but it is
->>> still used.
->>>
->>> It is probably also valid to use siglongjmp() to jump from a nested
->>> signal handler into the outer handler.
->>> Given both signal handlers can have their own stack, there can be
->>> three
->>> stacks involved.
-> 
-> So the scenario is?
-> 
-> 1. Handle signal 1
-> 2. sigsetjmp()
-> 3. signalstack()
-> 4. Handle signal 2 on alt stack
-> 5. siglongjmp()
-> 
-> I'll check that it is covered by the tests, but I think it should work
-> in this series that has no alt shadow stack. I have only done a high
-> level overview of how the shadow stack stuff, that doesn't involve the
-> kernel, works in glibc. Sounds like I'll need to do a deeper dive.
-> 
->>>
->>> I think the shadow stack pointer has to be in ucontext - which also
->>> means the application can change it before returning from a signal.
-> 
-> Yes we might need to change it to support alt shadow stacks. Can you
-> elaborate why you think it has to be in ucontext? I was thinking of
-> looking at three options for storing the ssp:
->   - Stored in the shadow stack like a token using WRUSS from the kernel.
->   - Stored on the kernel side using a hashmap that maps ucontext or
->     sigframe userspace address to ssp (this is of course similar to
->     storing in ucontext, except that the user can’t change the ssp).
->   - Stored writable in userspace in ucontext.
-> 
-> But in this version, without alt shadow stacks, the shadow stack
-> pointer is not stored in ucontext. This causes the limitation that
-> userspace can only call sigreturn when it has returned back to a point
-> where there is a restore token on the shadow stack (which was placed
-> there by the kernel).
+Update the fsverity documentation related to IMA signature support.
 
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+---
+ Documentation/filesystems/fsverity.rst | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
-
-I'll reply here and maybe cover multiple things.
-
-
-User code already needs to rewind the regular stack to call sigreturn -- 
-sigreturn find the signal frame based on ESP/RSP.  So if you call it 
-from the wrong place, you go boom.  I think that the Linux SHSTK ABI 
-should have the property that no amount of tampering with just the 
-ucontext and associated structures can cause sigreturn to redirect to 
-the wrong IP -- there should be something on the shadow stack that also 
-gets verified in sigreturn.  IIRC the series does this, but it's been a 
-while.  The post-sigreturn SSP should be entirely implied by 
-pre-sigreturn SSP (or perhaps something on the shadow stack), so, in the 
-absence of an altshadowstack feature, no ucontext changes should be needed.
-
-We can also return from a signal or from more than one signal at once, 
-as above, using siglongjmp.  It seems like this should Just Work (tm), 
-at least in the absence of altshadowstack.
-
-So this leaves altshadowstack.  If we want to allow userspace to handle 
-a shstk overflow, I think we need altshadowstack.  And I can easily 
-imagine signal handling in a coroutine or user-threading evironment (Go? 
-UMCG or whatever it's called?) wanting this.  As noted, this obnoxious 
-Andy person didn't like putting any shstk-related extensions in the FPU 
-state.
-
-For better or for worse, altshadowstack is (I think) fundamentally a new 
-API.  No amount of ucontext magic is going to materialize an entire 
-shadow stack out of nowhere when someone calls sigaltstack().  So the 
-questions are: should we support altshadowstack from day one and, if so, 
-what should it look like?
-
-If we want to be clever, we could attempt to make altstadowstack 
-compatible with RSTORSSP.  Signal delivery pushes a restore token to the 
-old stack (hah!  what if the old stack is full?) and pushes the RSTORSSP 
-busy magic to the new stack, and sigreturn inverts it.  Code that wants 
-to return without sigreturn does it manually with RSTORSSP.  (Assuming 
-that I've understood the arcane RSTORSSP sequence right.  Intel wins 
-major points for documentation quality here.)  Or we could invent our 
-own scheme.  In either case, I don't immediately see any reason that the 
-ucontext needs to contain a shadow stack pointer.
-
-There's a delightful wart to consider, though.  siglongjmp, at least as 
-currently envisioned, can't return off an altshadowstack: the whole 
-point of the INCSSP distance restrictions to to avoid incrementing right 
-off the top of the current stack, but siglongjmp off an altshadowstack 
-fundamentally switches stacks.  So either siglongjmp off an 
-altshadowstack needs to be illegal or it needs to work differently.  (By 
-incssp-ing to the top of the altshadowstack, then switching, then 
-incssp-ing some more?  How does it even find the top of the current 
-altshadowstack?)  And the plot thickens if one tries to siglongjmp off 
-two nested altshadowstack-using signals in a single call.   Fortunately, 
-since altshadowstack is a new API, it's not entirely crazy to have 
-different rules.
-
-So I don't have a complete or even almost complete design in mind, but I 
-think we do need to make a conscious decision either to design this 
-right or to skip it for v1.
-
-As for CRIU, I don't think anyone really expects a new kernel, running 
-new userspace that takes advantage of features in the new kernel, to 
-work with old CRIU.  Upgrading to a SHSTK kernel should still allow 
-using CRIU with non-SHSTK userspace, but I don't see how it's possible 
-for CRIU to handle SHSTK without updates.  We should certainly do our 
-best to make CRIU's life easy, though.
-
-  This doesn’t mean it can’t switch to a different
-> shadow stack or handle a nested signal, but it limits the possibility
-> for calling sigreturn with a totally different sigframe (like CRIU and
-> SROP attacks do). It should hopefully be a helpful, protective
-> limitation for most apps and I'm hoping CRIU can be fixed without
-> removing it.
-> 
-> I am not aware of other limitations to signals (besides normal shadow
-> stack enforcement), but I could be missing it. And people's skepticism
-> is making me want to go back over it with more scrutiny.
-> 
->>> In much the same way as all the segment registers can be changed
->>> leading to all the nasty bugs when the final 'return to user' code
->>> traps in kernel when loading invalid segment registers or executing
->>> iret.
-> 
-> I don't think this is as difficult to avoid because userspace ssp has
-> its own register that should not be accessed at that point, but I have
-> not given this aspect enough analysis. Thanks for bringing it up.
-> 
->>>
->>> Hmmm... do shadow stacks mean that longjmp() has to be a system
->>> call?
->>
->> No.  setjmp/longjmp save and restore shadow stack pointer.
->>
-> 
-> It sounds like it would help to write up in a lot more detail exactly
-> how all the signal and specialer stack manipulation scenarios work in
-> glibc.
-> 
+diff --git a/Documentation/filesystems/fsverity.rst b/Documentation/filesystems/fsverity.rst
+index 1d831e3cbcb3..28a47488848e 100644
+--- a/Documentation/filesystems/fsverity.rst
++++ b/Documentation/filesystems/fsverity.rst
+@@ -74,8 +74,12 @@ authenticating the files is up to userspace.  However, to meet some
+ users' needs, fs-verity optionally supports a simple signature
+ verification mechanism where users can configure the kernel to require
+ that all fs-verity files be signed by a key loaded into a keyring; see
+-`Built-in signature verification`_.  Support for fs-verity file hashes
+-in IMA (Integrity Measurement Architecture) policies is also planned.
++`Built-in signature verification`_.
++
++IMA supports including fs-verity file digests and signatures in the
++IMA (Integrity Measurement Architecture) measurement list and
++verifying fs-verity based file signatures stored as security.ima
++xattrs, based on policy.
+ 
+ User API
+ ========
+@@ -653,13 +657,13 @@ weren't already directly answered in other parts of this document.
+     hashed and what to do with those hashes, such as log them,
+     authenticate them, or add them to a measurement list.
+ 
+-    IMA is planned to support the fs-verity hashing mechanism as an
+-    alternative to doing full file hashes, for people who want the
+-    performance and security benefits of the Merkle tree based hash.
+-    But it doesn't make sense to force all uses of fs-verity to be
+-    through IMA.  As a standalone filesystem feature, fs-verity
+-    already meets many users' needs, and it's testable like other
+-    filesystem features e.g. with xfstests.
++    IMA supports the fs-verity hashing mechanism as an alternative
++    to doing full file hashes, for people who want the performance
++    and security benefits of the Merkle tree based hash.  But it
++    doesn't make sense to force all uses of fs-verity to be through
++    IMA.  As a standalone filesystem feature, fs-verity already meets
++    many users' needs, and it's testable like other filesystem
++    features e.g. with xfstests.
+ 
+ :Q: Isn't fs-verity useless because the attacker can just modify the
+     hashes in the Merkle tree, which is stored on-disk?
+-- 
+2.27.0
 
