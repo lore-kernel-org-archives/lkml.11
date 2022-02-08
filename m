@@ -2,39 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 045A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:35:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB18BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384967AbiBHSfg (ORCPT
+        id S1385052AbiBHSfp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:35:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60576 "EHLO
+        Tue, 8 Feb 2022 13:35:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353488AbiBHSfb (ORCPT
+        with ESMTP id S1384593AbiBHSfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:35:31 -0500
+        Tue, 8 Feb 2022 13:35:33 -0500
 Received: from smtpout1.mo3004.mail-out.ovh.net (smtpout1.mo3004.mail-out.ovh.net [79.137.123.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11115C06157A;
-        Tue,  8 Feb 2022 10:35:31 -0800 (PST)
-Received: from pro2.mail.ovh.net (unknown [10.109.146.1])
-        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id C994A24725B;
-        Tue,  8 Feb 2022 18:35:29 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4344DC061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:35:32 -0800 (PST)
+Received: from pro2.mail.ovh.net (unknown [10.109.146.41])
+        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id 9B93E247407;
+        Tue,  8 Feb 2022 18:35:31 +0000 (UTC)
 Received: from localhost.localdomain (88.125.132.78) by DAG1EX2.emp2.local
  (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Feb
- 2022 19:35:28 +0100
+ 2022 19:35:30 +0100
 From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
 To:     <linux-renesas-soc@vger.kernel.org>, <geert+renesas@glider.be>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
 CC:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 2/6] dt-bindings: watchdog: renesas,wdt: Add support for RZ/N1
-Date:   Tue, 8 Feb 2022 19:35:06 +0100
-Message-ID: <20220208183511.2925304-3-jjhiblot@traphandler.com>
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 4/6] ARM: dts: r9a06g032-rzn1d400-db: Enable watchdog0 with a 60s timeout
+Date:   Tue, 8 Feb 2022 19:35:08 +0100
+Message-ID: <20220208183511.2925304-5-jjhiblot@traphandler.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220208183511.2925304-1-jjhiblot@traphandler.com>
 References: <20220208183511.2925304-1-jjhiblot@traphandler.com>
@@ -44,45 +41,34 @@ Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [88.125.132.78]
 X-ClientProxiedBy: DAG1EX1.emp2.local (172.16.2.1) To DAG1EX2.emp2.local
  (172.16.2.2)
-X-Ovh-Tracer-Id: 13254375182232992219
+X-Ovh-Tracer-Id: 13254938130543491547
 X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: 0
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrheejgdduudduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucenucfjughrpefhvffufffkofgjfhgggfgtihesthekredtredttdenucfhrhhomheplfgvrghnqdflrggtqhhuvghsucfjihgslhhothcuoehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomheqnecuggftrfgrthhtvghrnhepfeeugefgieeutdfhvdegveetvdeuvefgveegleeileevveehfeejjeffgfduudeknecukfhppedtrddtrddtrddtpdekkedruddvhedrudefvddrjeeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehprhhovddrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrheejgdduudduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpeefueeggfeiuedthfdvgeevtedvueevgfevgeelieelveevheefjeejfffguddukeenucfkpheptddrtddrtddrtddpkeekrdduvdehrddufedvrdejkeenucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Describe the WDT hardware in the RZ/N1 series.
+60s is a sensible default value.
 
 Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
 ---
- Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-index 91a98ccd4226..b453af2dee3b 100644
---- a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-+++ b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-@@ -19,6 +19,11 @@ properties:
-               - renesas,r7s9210-wdt      # RZ/A2
-           - const: renesas,rza-wdt       # RZ/A
- 
-+      - items:
-+          - enum:
-+              - renesas,r9a06g032-wdt    # RZ/N1D
-+          - const: renesas,rzn1-wdt      # RZ/N1
+diff --git a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+index 4e57ae2688fc..3f8f3ce87e12 100644
+--- a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
++++ b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+@@ -26,3 +26,8 @@ aliases {
+ &uart0 {
+ 	status = "okay";
+ };
 +
-       - items:
-           - enum:
-               - renesas,r9a07g044-wdt    # RZ/G2{L,LC}
-@@ -89,6 +94,7 @@ allOf:
-             contains:
-               enum:
-                 - renesas,rza-wdt
-+                - renesas,rzn1-wdt
-     then:
-       required:
-         - power-domains
++&wdt0 {
++	timeout-sec = <60>;
++	status = "okay";
++};
 -- 
 2.25.1
 
