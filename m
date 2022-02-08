@@ -2,175 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06DA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70851C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350358AbiBHNWr (ORCPT
+        id S1351263AbiBHNWx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:22:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
+        Tue, 8 Feb 2022 08:22:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376385AbiBHM75 (ORCPT
+        with ESMTP id S1358860AbiBHMls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:59:57 -0500
-X-Greylist: delayed 1150 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 04:59:47 PST
-Received: from bddwd-sys-mailin04.bddwd.baidu.com (mx402.baidu.com [124.64.201.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21509C03FEC0;
-        Tue,  8 Feb 2022 04:59:47 -0800 (PST)
-Received: from bjhw-sys-rpm015653cc5.bjhw.baidu.com (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
-        by bddwd-sys-mailin04.bddwd.baidu.com (Postfix) with ESMTP id 8B65B13D80030;
-        Tue,  8 Feb 2022 20:40:20 +0800 (CST)
-Received: from localhost (localhost [127.0.0.1])
-        by bjhw-sys-rpm015653cc5.bjhw.baidu.com (Postfix) with ESMTP id 7F6B3D9932;
-        Tue,  8 Feb 2022 20:40:20 +0800 (CST)
-From:   Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>
-To:     pbonzini@redhat.com, seanjc@google.com, wanpengli@tencent.com,
-        vkuznets@redhat.com, jmattson@google.com, joro@8bytes.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com
-Cc:     lirongqing@baidu.com, x86@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] KVM: X86: Introduce vfio_intr_stat per-vm debugfs file
-Date:   Tue,  8 Feb 2022 20:40:20 +0800
-Message-Id: <1644324020-17639-1-git-send-email-yuanzhaoxiong@baidu.com>
-X-Mailer: git-send-email 1.7.1
+        Tue, 8 Feb 2022 07:41:48 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D5BC03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:47 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id r19so2897368pfh.6
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2a4Zov6E++VeMpVDqW+bpg0HKHZjA85AGbm7eJFVTok=;
+        b=UK5/1wa6pFIEPSGIZaow9B/7baK1t3FJYJLgwb//r3zSSqpTXDRnxHEtqo3e0adC3V
+         3aFMXbNUsIQLBfSowdTPw9DEb+wFWm8V8JuIkNw+9K9ajSZSe3Vko+pogXCBEENcmzOi
+         uPGk6nvYOoXU/ewsdDAwwCjd3kCEl8FyF1iks=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2a4Zov6E++VeMpVDqW+bpg0HKHZjA85AGbm7eJFVTok=;
+        b=InYtsej2iY1kEzkdZ7mT2TFZHfA4sn6usFGaBxTFYgefZXWnP8RGz46gUu7w38OZNT
+         AC0bK040Fj7IdPMdhOdIrlSvlSQBAAdstaZtv6cQemRRzCJmu2DIsg8THxGntUStjgI3
+         flSBQZctvoOBQeA2mv3LA8qz2gsbQTeGIqimTdsySi0Xc/w3P2RiQg3NUJwg5rhSWcSJ
+         RIow26qvGFm9itu5Zbm+e4DzEa3d50c1UglexsqgJhfzGfjl84Nx57lqJciARJjpz2i3
+         D0Q/tA63rAyYm3s3CzXodZo9h55M44i60Wb0qPL9/CfjO1KYF8mg3EGzb6lF/C4Tkuib
+         iZXA==
+X-Gm-Message-State: AOAM530AUYcnrgRx2RQSgFo1kEVwDKuFd3c7u6D2bk/Etjp0/Y9U8V5z
+        Vl+OO10HFoaKjWFk/Be9ZqlcRQ==
+X-Google-Smtp-Source: ABdhPJxFX/826gPUwmwjQsBpabmmOS6aCRXpKBLH1nSGwHhUQ3qT7hUm02w9dIiJLfy6PTmB2Rv/SQ==
+X-Received: by 2002:a63:d943:: with SMTP id e3mr3365014pgj.427.1644324107392;
+        Tue, 08 Feb 2022 04:41:47 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:41:47 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 27/31] clk: mediatek: Unregister clks in mtk_clk_simple_probe() error path
+Date:   Tue,  8 Feb 2022 20:40:30 +0800
+Message-Id: <20220208124034.414635-28-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use this file to export correspondence between guest_irq, host_irq,
-vector and vcpu belonging to VFIO passthrough devices.
+Until now the mediatek clk driver library did not have any way to
+unregister clks, and so all drivers did not do proper cleanup in
+their error paths.
 
-An example output of this looks like (a vm with VFIO passthrough
-devices):
-   guest_irq     host_irq       vector         vcpu
-          24          201           37            8
-          25          202           35           25
-          26          203           35           20
-   ......
+Now that the library does have APIs to unregister clks, use them
+in the error path of mtk_clk_simple_probe() to do proper cleanup.
 
-When a VM has VFIO passthrough devices, the correspondence between
-guest_irq, host_irq, vector and vcpu may need to be known especially
-in AMD platform with avic disabled. The AMD avic is disabled, and
-the passthrough devices may cause vcpu vm exit twice for a interrupt.
-One extrernal interrupt caused by vfio host irq, other ipi to inject
-a interrupt to vm.
-
-If the system administrator known these information, set vfio host
-irq affinity to Pcpu which the correspondece guest irq affinited vcpu,
-to avoid extra vm exit.
-
-Co-developed-by: Li RongQing <lirongqing@baidu.com>
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Signed-off-by: Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
-v1: https://lore.kernel.org/lkml/1642593015-28729-1-git-send-email-yuanzhaoxiong@baidu.com/
-v1->v2: 
-- remove the HAVE_KVM_IRQ_BYPASS conditional judgment
-- Modifying code format and remove unnecessary curly braces
+ drivers/clk/mediatek/clk-mtk.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
- arch/x86/kvm/debugfs.c | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 78 insertions(+)
-
-diff --git a/arch/x86/kvm/debugfs.c b/arch/x86/kvm/debugfs.c
-index 9240b3b..fef9014 100644
---- a/arch/x86/kvm/debugfs.c
-+++ b/arch/x86/kvm/debugfs.c
-@@ -6,6 +6,8 @@
-  */
- #include <linux/kvm_host.h>
- #include <linux/debugfs.h>
-+#include <linux/kvm_irqfd.h>
-+#include <asm/irq_remapping.h>
- #include "lapic.h"
- #include "mmu.h"
- #include "mmu/mmu_internal.h"
-@@ -181,9 +183,85 @@ static int kvm_mmu_rmaps_stat_release(struct inode *inode, struct file *file)
- 	.release	= kvm_mmu_rmaps_stat_release,
- };
+diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
+index 8f15e9de742e..0e027be0d5fc 100644
+--- a/drivers/clk/mediatek/clk-mtk.c
++++ b/drivers/clk/mediatek/clk-mtk.c
+@@ -439,12 +439,14 @@ int mtk_clk_simple_probe(struct platform_device *pdev)
  
-+static int kvm_vfio_intr_stat_show(struct seq_file *m, void *v)
-+{
-+	struct kvm_kernel_irq_routing_entry *e;
-+	struct kvm_irq_routing_table *irq_rt;
-+	unsigned int host_irq, guest_irq;
-+	struct kvm_kernel_irqfd *irqfd;
-+	struct kvm *kvm = m->private;
-+	struct kvm_lapic_irq irq;
-+	struct kvm_vcpu *vcpu;
-+	int idx;
-+
-+	if (!kvm_arch_has_assigned_device(kvm) ||
-+	    !irq_remapping_cap(IRQ_POSTING_CAP))
-+		return 0;
-+
-+	seq_printf(m, "%12s %12s %12s %12s\n",
-+		   "guest_irq", "host_irq", "vector", "vcpu");
-+
-+	spin_lock_irq(&kvm->irqfds.lock);
-+	idx = srcu_read_lock(&kvm->irq_srcu);
-+	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
-+
-+	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
-+		if (!irqfd->producer)
-+			continue;
-+
-+		host_irq = irqfd->producer->irq;
-+		guest_irq = irqfd->gsi;
-+
-+		if (guest_irq >= irq_rt->nr_rt_entries ||
-+		    hlist_empty(&irq_rt->map[guest_irq]))
-+			continue;
-+
-+		hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
-+			if (e->type != KVM_IRQ_ROUTING_MSI)
-+				continue;
-+
-+			kvm_set_msi_irq(kvm, e, &irq);
-+			if (kvm_intr_is_single_vcpu(kvm, &irq, &vcpu))
-+				seq_printf(m, "%12u %12u %12u %12u\n",
-+					   guest_irq, host_irq, irq.vector, vcpu->vcpu_id);
-+		}
-+	}
-+	srcu_read_unlock(&kvm->irq_srcu, idx);
-+	spin_unlock_irq(&kvm->irqfds.lock);
-+	return 0;
-+}
-+
-+static int kvm_vfio_intr_stat_open(struct inode *inode, struct file *file)
-+{
-+	struct kvm *kvm = inode->i_private;
-+
-+	if (!kvm_get_kvm_safe(kvm))
-+		return -ENOENT;
-+
-+	return single_open(file, kvm_vfio_intr_stat_show, kvm);
-+}
-+
-+static int kvm_vfio_intr_stat_release(struct inode *inode, struct file *file)
-+{
-+	struct kvm *kvm = inode->i_private;
-+
-+	kvm_put_kvm(kvm);
-+	return single_release(inode, file);
-+}
-+
-+static const struct file_operations vfio_intr_stat_fops = {
-+	.open    = kvm_vfio_intr_stat_open,
-+	.read    = seq_read,
-+	.llseek  = seq_lseek,
-+	.release = kvm_vfio_intr_stat_release,
-+};
-+
- int kvm_arch_create_vm_debugfs(struct kvm *kvm)
- {
- 	debugfs_create_file("mmu_rmaps_stat", 0644, kvm->debugfs_dentry, kvm,
- 			    &mmu_rmaps_stat_fops);
-+
-+	debugfs_create_file("vfio_intr_stat", 0444, kvm->debugfs_dentry, kvm,
-+			    &vfio_intr_stat_fops);
- 	return 0;
- }
+ 	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
+ 	if (r)
+-		goto free_data;
++		goto unregister_clks;
+ 
+ 	platform_set_drvdata(pdev, clk_data);
+ 
+ 	return r;
+ 
++unregister_clks:
++	mtk_clk_unregister_gates(mcd->clks, mcd->num_clks, clk_data);
+ free_data:
+ 	mtk_free_clk_data(clk_data);
+ 	return r;
 -- 
-1.8.3.1
+2.35.0.263.gb82422642f-goog
 
