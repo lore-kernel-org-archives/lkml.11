@@ -2,96 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5DEAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82904C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384355AbiBHRhh (ORCPT
+        id S1352873AbiBHRkc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 12:37:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
+        Tue, 8 Feb 2022 12:40:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384340AbiBHRhf (ORCPT
+        with ESMTP id S232364AbiBHRka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 12:37:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551DCC06174F
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:37:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E55CF617BB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 17:37:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585C6C004E1;
-        Tue,  8 Feb 2022 17:37:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644341850;
-        bh=t26HgygNCh8gCfuTN/ojA3LnBOvxFUkG2+R14a7qPUY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZDXHH6KXySyqGenuzjikTOkmMlmgn61tcGHp65CJstK7pekDYRNyzdPbsWcUdRHMa
-         be9t0aqXdDBJZb2jh3M2ctzvjGKPhT2+U8miu88OGgesRiFS9qXr3dc9MBm6tagmwz
-         vOEQKiTzfNU/5ARKxOpFxgcWjZ7pTKxkjlDZxqjKohjn1KxVvI9YexxZfQo0TFibwA
-         2W1FOUJIJrluOsvh9LjXLg79eDMJ/gQF0HttM5iJCclCaGPPEvvIuxcp0nd2NYkoIP
-         JaWnyT/RDPoiM/SXeYzlWDGxq1lDtrtgq5PPZG7Hy+jHEZijyvDHudQ9opSnqKHdZW
-         NO2nOr+ZV8syw==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=hot-poop.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nHUQi-006Ksl-E4; Tue, 08 Feb 2022 17:37:28 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Cc:     will@kernel.org, jonathan.cameron@huawei.com,
-        Alexandru.Elisei@arm.com, catalin.marinas@arm.com,
-        linuxarm@huawei.com, jean-philippe@linaro.org, qperret@google.com,
-        julien.thierry.kdev@gmail.com, suzuki.poulose@arm.com,
-        james.morse@arm.com
-Subject: Re: [PATCH v4 0/4] kvm/arm: New VMID allocator based on asid
-Date:   Tue,  8 Feb 2022 17:37:27 +0000
-Message-Id: <164434147328.3931943.1270605694385749340.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20211122121844.867-1-shameerali.kolothum.thodi@huawei.com>
-References: <20211122121844.867-1-shameerali.kolothum.thodi@huawei.com>
+        Tue, 8 Feb 2022 12:40:30 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD70C061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:40:29 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id u12so7327628plq.10
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 09:40:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/n1iBZYN6aHIiLtOtn1wQ4O2zv6mMxdTx7XSbC0LcaI=;
+        b=HJCRSyKMcnxeOscdWUgdASIJppRNO8mryKlh6ZnR92wjTmgwvY0FCEaRhBmvzV962c
+         QdUMfwxgiba1SFdf9cfVB4kJ31kAA96EnfzxE4yIHduE4+xgkqI+2XvPawSMxMsvCxVX
+         H+/+DG9jlOJzNT61ivP+cIuq1EEV6K5aKXZfyxQrr0S9919TMECKe5gMfkRwWUosXnIg
+         knMgR2kMmqwBQRCom0lWdSj1niaw1GS5izTBRJi2ISSwkDNjPsPRvaPPb091gOfqV6YN
+         +VjCVjGjqbX0KnNHLqs2KW0rMtVADduFWCH84kQiqP8qob/ilyT0ENSVHdQ84nI3uHFl
+         5Eqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/n1iBZYN6aHIiLtOtn1wQ4O2zv6mMxdTx7XSbC0LcaI=;
+        b=dCmQh/SGcWMD7Gt5ULDJPKB8l6nunNJfTaO+9lq4QAoQEcqvEZRrhO8h7UkKM9gT+W
+         PWGQ1qJhIwUFApIPMjeoa34GEGc7ToOvOTDZrWgxevaS0hT+Gv9lGXdpuiNjQxOj+5Fl
+         twyZXQTKXKSg/FVgsJduUziagsQi0Pl0T5i7BRZCkC2rV+XagJ4SI7S8G9tusWxo71cz
+         snfmQJ3jsztrrd2x4bo+FnihB4xfe0DPx5dxCPhMha33KPQTGU/syxfQoecNnB7oU1/i
+         vHOrukWE/7WALw3cOCNTkF4wyxkJyBkDk/llphrm0H84JMuM1zJtQRgvxVG46AvodQxp
+         IZfA==
+X-Gm-Message-State: AOAM532BsfjmhKvwtdq9LJqn4xYyTw+YAY7tzRIqwFJCWDUehHpzWJcs
+        Eyp5e1pJn2kyhJm7K2gZEpEagPa+Gdr1gA==
+X-Google-Smtp-Source: ABdhPJwR/x0TYGG1SBd756+XzEqNV4rg/D+sMksphjg6guk0AuOrLNZLRo+6UJK75/mniRmmUzvZIw==
+X-Received: by 2002:a17:90b:a06:: with SMTP id gg6mr2559556pjb.153.1644342029263;
+        Tue, 08 Feb 2022 09:40:29 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id oc17sm3921322pjb.10.2022.02.08.09.40.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 09:40:28 -0800 (PST)
+Date:   Tue, 8 Feb 2022 17:40:25 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Borislav Petkov <bp@alien8.de>, X86 ML <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>
+Subject: Re: [PATCH v2 5/6] x86/cpu: Remove "noexec"
+Message-ID: <YgKrCZkiU3X2OV6b@google.com>
+References: <20220127115626.14179-1-bp@alien8.de>
+ <20220127115626.14179-6-bp@alien8.de>
+ <202202071419.E21C67553@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, shameerali.kolothum.thodi@huawei.com, will@kernel.org, jonathan.cameron@huawei.com, Alexandru.Elisei@arm.com, catalin.marinas@arm.com, linuxarm@huawei.com, jean-philippe@linaro.org, qperret@google.com, julien.thierry.kdev@gmail.com, suzuki.poulose@arm.com, james.morse@arm.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202202071419.E21C67553@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Nov 2021 12:18:40 +0000, Shameer Kolothum wrote:
-> Changes from v3:
-> - Main change is in patch #4, where the VMID is now set to an
->   invalid one on vCPU schedule out. Introduced an
->   INVALID_ACTIVE_VMID which is basically a VMID 0 with generation 1.
->   Since the basic allocator algorithm reserves vmid #0, it is never
->   used as an active VMID. This (hopefully) will fix the issue of
->   unnecessarily reserving VMID space with active_vmids when those
->   VMs are no longer active[0] and at the same time address the
->   problem noted in v3 wherein everything ends up in slow-path[1].
-> 
-> [...]
+On Mon, Feb 07, 2022, Kees Cook wrote:
+> On Thu, Jan 27, 2022 at 12:56:25PM +0100, Borislav Petkov wrote:
+> > From: Borislav Petkov <bp@suse.de>
+> > 
+> > It doesn't make any sense to disable non-executable mappings -
+> > security-wise or else.
 
-Applied to next, thanks!
-
-[1/4] KVM: arm64: Introduce a new VMID allocator for KVM
-      commit: 417838392f2e657ee25cc30e373ff4c35a0faa90
-[2/4] KVM: arm64: Make VMID bits accessible outside of allocator
-      commit: f8051e960922a9de8e42159103d5d9c697ef17ec
-[3/4] KVM: arm64: Align the VMID allocation with the arm64 ASID
-      commit: 3248136b3637e1671e4fa46e32e2122f9ec4bc3d
-[4/4] KVM: arm64: Make active_vmids invalid on vCPU schedule out
-      commit: 100b4f092f878dc379f1fcef9ce567c25dee3473
-
-Cheers,
-
-	M.
--- 
-Without deviation from the norm, progress is not possible.
-
-
+Heh, I've actually used noexec relatively recently to triage KVM goofs.  That
+said, the same net result can still be achieved via clearcpuid=52, so I've no
+objection to removing the dedicated parameter.
