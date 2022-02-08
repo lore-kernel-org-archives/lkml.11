@@ -2,226 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CFFDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345479AbiBHBw7 (ORCPT
+        id S1345524AbiBHBxm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:52:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38616 "EHLO
+        Mon, 7 Feb 2022 20:53:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345724AbiBHBwq (ORCPT
+        with ESMTP id S1345603AbiBHBxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:52:46 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B215FC00498F
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:50:23 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id D988D340;
-        Tue,  8 Feb 2022 02:50:16 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1644285017;
-        bh=54RXyBFN1XLouxjG1y5X1f2y2yfBy76HJn50KqRDiOY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=afS2BOYr6nvpIXII1E3nqlJGWpLM5PmVah7wqGyjfQ9kPEJkISHVQqpWTCNwUzmPR
-         25SYBZBZVFXtsUq2CbImsASFa0om6w5gMwLnxo8CSq2NduYhe2Faf52WIfKrX6WTrS
-         LJwHUcp9nSr103pCvjLaBQB3lgZo1k3Ay7hk+ru0=
-Date:   Tue, 8 Feb 2022 03:50:14 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        robert.foss@linaro.org, lschyi@chromium.org,
-        Sam Ravnborg <sam@ravnborg.org>, jjsu@chromium.org,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        Mon, 7 Feb 2022 20:53:14 -0500
+X-Greylist: delayed 197 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 17:50:54 PST
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4921FC002B4B;
+        Mon,  7 Feb 2022 17:50:53 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 4ADC35801B0;
+        Mon,  7 Feb 2022 20:45:30 -0500 (EST)
+Received: from imap49 ([10.202.2.99])
+  by compute2.internal (MEProxy); Mon, 07 Feb 2022 20:45:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; bh=xfHjsk/Ab5em69
+        ApYaItpIQPphwvspyed8kLJ5wDAeI=; b=0aCQGqE1NNXNjib9Cq4fFaeO7SYJc0
+        CdlLxAMX4kcRreTyas9KMyjd9ByL+ejeMqtVSNoR/aZ009NIunJMWZV3vrfyipH3
+        4mWHmyPNft2WL0JBpeactZ2jLoClL18Ijhl3Cuuk84opzwzaiIpydvq1ZvGHyDX/
+        Jw3XpTIsiEmdx2xAOpu2dSdMOEH3/GOMCkgfjv0RA55iNqCWWqJUszONZBOxiFUu
+        IWi3FN/lgRCZzSs/X8L3ls9IhBTn5EAYsdSNl8icgW82CRenZoCHtp6TY5/nEcBm
+        /aeSzl4aN1fSEPhDta+autGHnHlR0c5BU8Nn5EAn7oNeO2ryvk9TxWRw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=xfHjsk/Ab5em69ApY
+        aItpIQPphwvspyed8kLJ5wDAeI=; b=fSxjvw9vctzACM5LBzDKVnTWLBLX1zeme
+        TInmW2BHmpwQeRTReDm4qfVEY4hL2pvvWO//ydGGp9Iuc+2QMBwEePMsp43cHwkP
+        Kn+rl9Rc1oaCj/wqZsCQtygZNgJbNHyY1GaTaUAI7zU5nI/nqgAGLqyMDEhMJ7iB
+        bC7eDMMMan5X63XMoLD50wwulXgiWLupNl3ukb+al0lZ2THRaYxo1ZUcnjrYebZk
+        bXMobl9+59EQW99vxi0y1IQ8jCpJGrrVgGu5qlBiyjglnY5UtjLKIG/PUoP33/no
+        S4W2HNtLOS2FtumHgma1o+cKWPFfDB5RjCOFToKg56JnlsbmIDhfw==
+X-ME-Sender: <xms:OcsBYpcCSbg20ERhG8gZsQNyjQLnAYiyXyMJh1dUFqneKHIvaOPSZw>
+    <xme:OcsBYnPgk6xHSDc_UjEDuKfEeoLRQyP0IVCAuw15okiOAilxt_IHq81hqzaS8GiJT
+    wFJrber2k8I90P9TDw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheeigdefiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhlrggu
+    vgcuhggrthhkihhnshdfuceoshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtohhmqe
+    enucggtffrrghtthgvrhhnpeeuieffteejieetgfevteelheevudehteeihffhteehtdet
+    leegtedtvdevvddugeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
+X-ME-Proxy: <xmx:OcsBYig7AvLOOR686Tf17QJrIHieBoWbK6iqKH0DkHEgnjK2KogA8g>
+    <xmx:OcsBYi-M3ImmHhqRLmp5z-vfD237yO7IxSe9Ykzu8eZTI3TkXylb4w>
+    <xmx:OcsBYluucRK9FYANeYOkY7eodLNWzqhNDC-2DbYdNbfBD6vH-s0nEg>
+    <xmx:OcsBYmmN3EP02T9q91SnHWDA40ne2XaivZAdsVxPwF60uBI86D14YStzy48>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 1863CF6007E; Mon,  7 Feb 2022 20:45:29 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4748-g31a5b5f50e-fm-cal2020-20220204.001-g31a5b5f5
+Mime-Version: 1.0
+Message-Id: <26a95129-ea68-4877-b2d0-118bdb998611@www.fastmail.com>
+In-Reply-To: <20220207103755.604121441@linuxfoundation.org>
+References: <20220207103755.604121441@linuxfoundation.org>
+Date:   Mon, 07 Feb 2022 20:45:07 -0500
+From:   "Slade Watkins" <slade@sladewatkins.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] drm/bridge: ti-sn65dsi86: Use drm_bridge_connector
-Message-ID: <YgHMVneO/Y/qopEX@pendragon.ideasonboard.com>
-References: <20220205001342.3155839-1-dianders@chromium.org>
- <20220204161245.v2.1.I3ab26b7f197cc56c874246a43e57913e9c2c1028@changeid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220204161245.v2.1.I3ab26b7f197cc56c874246a43e57913e9c2c1028@changeid>
+Cc:     stable@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH 4.14 00/69] 4.14.265-rc1 review
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Doug,
+On Mon, Feb 7, 2022, at 6:05 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.14.265 release.
+> There are 69 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
 
-Thank you for the patch.
+Compiled and booted 4.14.265-rc1 on my x86_64 test system successfully without errors or regressions.
 
-On Fri, Feb 04, 2022 at 04:13:40PM -0800, Douglas Anderson wrote:
-> The ti-sn65dsi86 driver shouldn't hand-roll its own bridge
-> connector. It should use the normal drm_bridge_connector. Let's switch
-> to do that, removing all of the custom code.
-> 
-> NOTE: this still _doesn't_ implement DRM_BRIDGE_ATTACH_NO_CONNECTOR
-> support for ti-sn65dsi86 and that would still be a useful thing to do
-> in the future. It was attempted in the past [1] but put on the back
-> burner. However, unless we instantly change ti-sn65dsi86 fully from
-> not supporting DRM_BRIDGE_ATTACH_NO_CONNECTOR at all to _only_
-> supporting DRM_BRIDGE_ATTACH_NO_CONNECTOR then we'll still need a bit
-> of time when we support both. This is a better way to support the old
-> way where the driver hand rolls things itself.
-> 
-> A new notes about the implementation here:
-> * When using the drm_bridge_connector the connector should be created
->   after all the bridges, so we change the ordering a bit.
-> * I'm reasonably certain that we don't need to do anything to "free"
->   the new drm_bridge_connector. If drm_bridge_connector_init() returns
->   success then we know drm_connector_init() was called with the
->   `drm_bridge_connector_funcs`. The `drm_bridge_connector_funcs` has a
->   .destroy() that does all the cleanup. drm_connector_init() calls
->   __drm_mode_object_add() with a drm_connector_free() that will call
->   the .destroy().
-> * I'm also reasonably certain that I don't need to "undo" the
->   drm_bridge_attach() if drm_bridge_connector_init() fails. The
->   "detach" function is private and other similar code doesn't try to
->   undo the drm_bridge_attach() in error cases. There's also a comment
->   indicating the lack of balance at the top of drm_bridge_attach().
-> 
-> [1] https://lore.kernel.org/r/20210920225801.227211-4-robdclark@gmail.com
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Tested-by: Slade Watkins <slade@sladewatkins.com>
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
-> ---
-> 
-> Changes in v2:
-> - ("ti-sn65dsi86: Use drm_bridge_connector") new for v2.
-> 
->  drivers/gpu/drm/bridge/ti-sn65dsi86.c | 72 ++++++---------------------
->  1 file changed, 14 insertions(+), 58 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> index ba136a188be7..38616aab12ac 100644
-> --- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> +++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> @@ -26,6 +26,7 @@
->  #include <drm/drm_atomic.h>
->  #include <drm/drm_atomic_helper.h>
->  #include <drm/drm_bridge.h>
-> +#include <drm/drm_bridge_connector.h>
->  #include <drm/dp/drm_dp_aux_bus.h>
->  #include <drm/dp/drm_dp_helper.h>
->  #include <drm/drm_mipi_dsi.h>
-> @@ -174,7 +175,7 @@ struct ti_sn65dsi86 {
->  	struct regmap			*regmap;
->  	struct drm_dp_aux		aux;
->  	struct drm_bridge		bridge;
-> -	struct drm_connector		connector;
-> +	struct drm_connector		*connector;
->  	struct device_node		*host_node;
->  	struct mipi_dsi_device		*dsi;
->  	struct clk			*refclk;
-> @@ -646,54 +647,6 @@ static struct auxiliary_driver ti_sn_aux_driver = {
->  	.id_table = ti_sn_aux_id_table,
->  };
->  
-> -/* -----------------------------------------------------------------------------
-> - * DRM Connector Operations
-> - */
-> -
-> -static struct ti_sn65dsi86 *
-> -connector_to_ti_sn65dsi86(struct drm_connector *connector)
-> -{
-> -	return container_of(connector, struct ti_sn65dsi86, connector);
-> -}
-> -
-> -static int ti_sn_bridge_connector_get_modes(struct drm_connector *connector)
-> -{
-> -	struct ti_sn65dsi86 *pdata = connector_to_ti_sn65dsi86(connector);
-> -
-> -	return drm_bridge_get_modes(pdata->next_bridge, connector);
-> -}
-> -
-> -static struct drm_connector_helper_funcs ti_sn_bridge_connector_helper_funcs = {
-> -	.get_modes = ti_sn_bridge_connector_get_modes,
-> -};
-> -
-> -static const struct drm_connector_funcs ti_sn_bridge_connector_funcs = {
-> -	.fill_modes = drm_helper_probe_single_connector_modes,
-> -	.destroy = drm_connector_cleanup,
-> -	.reset = drm_atomic_helper_connector_reset,
-> -	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
-> -	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
-> -};
-> -
-> -static int ti_sn_bridge_connector_init(struct ti_sn65dsi86 *pdata)
-> -{
-> -	int ret;
-> -
-> -	ret = drm_connector_init(pdata->bridge.dev, &pdata->connector,
-> -				 &ti_sn_bridge_connector_funcs,
-> -				 DRM_MODE_CONNECTOR_eDP);
-> -	if (ret) {
-> -		DRM_ERROR("Failed to initialize connector with drm\n");
-> -		return ret;
-> -	}
-> -
-> -	drm_connector_helper_add(&pdata->connector,
-> -				 &ti_sn_bridge_connector_helper_funcs);
-> -	drm_connector_attach_encoder(&pdata->connector, pdata->bridge.encoder);
-> -
-> -	return 0;
-> -}
-> -
->  /*------------------------------------------------------------------------------
->   * DRM Bridge
->   */
-> @@ -757,10 +710,6 @@ static int ti_sn_bridge_attach(struct drm_bridge *bridge,
->  		return ret;
->  	}
->  
-> -	ret = ti_sn_bridge_connector_init(pdata);
-> -	if (ret < 0)
-> -		goto err_conn_init;
-> -
->  	/* We never want the next bridge to *also* create a connector: */
->  	flags |= DRM_BRIDGE_ATTACH_NO_CONNECTOR;
->  
-> @@ -768,13 +717,20 @@ static int ti_sn_bridge_attach(struct drm_bridge *bridge,
->  	ret = drm_bridge_attach(bridge->encoder, pdata->next_bridge,
->  				&pdata->bridge, flags);
->  	if (ret < 0)
-> -		goto err_dsi_host;
-> +		goto err_initted_aux;
-> +
-> +	pdata->connector = drm_bridge_connector_init(pdata->bridge.dev,
-> +						     pdata->bridge.encoder);
-> +	if (IS_ERR(pdata->connector)) {
-> +		ret = PTR_ERR(pdata->connector);
-> +		goto err_initted_aux;
-> +	}
-> +
-> +	drm_connector_attach_encoder(pdata->connector, pdata->bridge.encoder);
->  
->  	return 0;
->  
-> -err_dsi_host:
-> -	drm_connector_cleanup(&pdata->connector);
-> -err_conn_init:
-> +err_initted_aux:
->  	drm_dp_aux_unregister(&pdata->aux);
->  	return ret;
->  }
-> @@ -824,7 +780,7 @@ static void ti_sn_bridge_set_dsi_rate(struct ti_sn65dsi86 *pdata)
->  
->  static unsigned int ti_sn_bridge_get_bpp(struct ti_sn65dsi86 *pdata)
->  {
-> -	if (pdata->connector.display_info.bpc <= 6)
-> +	if (pdata->connector->display_info.bpc <= 6)
->  		return 18;
->  	else
->  		return 24;
-
--- 
-Regards,
-
-Laurent Pinchart
+Thanks,
+Slade
