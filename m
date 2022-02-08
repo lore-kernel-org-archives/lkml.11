@@ -2,184 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A885FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EF2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:37:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357622AbiBHNhQ (ORCPT
+        id S1357652AbiBHNhb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:37:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
+        Tue, 8 Feb 2022 08:37:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357695AbiBHNhI (ORCPT
+        with ESMTP id S1357839AbiBHNh2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:37:08 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC61C03FEE6;
-        Tue,  8 Feb 2022 05:37:06 -0800 (PST)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JtPDQ64hmz67nPb;
-        Tue,  8 Feb 2022 21:36:22 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 14:37:04 +0100
-Received: from A2006125610.china.huawei.com (10.202.227.178) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 13:36:58 +0000
-From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>
-CC:     <alex.williamson@redhat.com>, <jgg@nvidia.com>,
-        <cohuck@redhat.com>, <mgurtovoy@nvidia.com>, <yishaih@nvidia.com>,
-        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
-        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
-        <wangzhou1@hisilicon.com>
-Subject: [RFC v4 8/8] hisi_acc_vfio_pci: Use its own PCI reset_done error handler
-Date:   Tue, 8 Feb 2022 13:34:25 +0000
-Message-ID: <20220208133425.1096-9-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20220208133425.1096-1-shameerali.kolothum.thodi@huawei.com>
-References: <20220208133425.1096-1-shameerali.kolothum.thodi@huawei.com>
+        Tue, 8 Feb 2022 08:37:28 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B253C03FEDE
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:37:25 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id i15so8390834wrb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:37:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lcWfuffsHlkwnL+NX13z4fIGG38SkjTMAyUWe1hrS/s=;
+        b=ax89RcggFkFd1mkVOO4bbwwgJ2uBJIJ2Q3fJKhK2Sc4cUFhsuW3ihJFdynqkkKSgeO
+         fJjANcgbdR4JgM+ypugbaaa20LLd7KYcQ4+NwJZilXEMXE1px2Fi/oRL3Z+Wlic/KVtb
+         Pm3mBBFsisPBls4E9AmEI0yeHbuyadvvCM2vhrHxznL9qJhnZXnX1AW6/qjr135qRUK+
+         yOEu57BN7KgVC9CG4Q8L8N2Jy4giKEq66gDWFalRjDfZ3PIWuaip5DsbaRsi/ob0ciTX
+         7FUFic8jt2bertiXzJFl6bXz22pPFQAE8WREXskUGWldKms34kXs2xRwkKDpE5eaJUhx
+         xmsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lcWfuffsHlkwnL+NX13z4fIGG38SkjTMAyUWe1hrS/s=;
+        b=SHkYBdtqP3eTa5QEcs5pryTfnd3doYPxt7dXpfrOfhiYGQXi3HsDTTdDtTY0tp6Xr2
+         mPsAKjCKUroglYTum7ByqlT89jiP5CDSH5iWf2dT47sDu6F/yGRrpkHX10vgTjQQ+vps
+         QGiBn4vyoi0+6ZAke9xGGz2XjeJrrFd69MAsVPLVRCEorTqFrkPE4atJZwitLF1AIvGz
+         pmyngys3P6911997/T46UCZSVseAc1Z8tB0cJS9/0KMkJJMG0n03XBBJc+Iz9UZxl5+L
+         42uVvchYPSUIaGOjr8lglb1V23z9GMGQWbSoUnS7tuG0Hvcf73hr9UzB/MGkZQrHDgnM
+         DSvg==
+X-Gm-Message-State: AOAM531MS5LtlUoKopXiCwjqBSGdJWCopOD83FE8zy9vtc6oaS+EnNYd
+        wazS+qtstDut/bJoGF30ChsnHA==
+X-Google-Smtp-Source: ABdhPJzyK9POHUMwimAGW7OLwuIips21giBJNRXYRkQB5rSKYcfCh573Ny7ugpEOgQXzUz6NhceNAg==
+X-Received: by 2002:a5d:4411:: with SMTP id z17mr1561790wrq.384.1644327444049;
+        Tue, 08 Feb 2022 05:37:24 -0800 (PST)
+Received: from ?IPv6:2a02:6b6d:f804:0:e066:3489:1ae2:dec1? ([2a02:6b6d:f804:0:e066:3489:1ae2:dec1])
+        by smtp.gmail.com with ESMTPSA id v9sm1975681wrw.84.2022.02.08.05.37.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 05:37:23 -0800 (PST)
+Subject: Re: [External] [PATCH] io_uring: Fix use of uninitialized ret in
+ io_eventfd_register()
+To:     Nathan Chancellor <nathan@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>, trix@redhat.com,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     io-uring@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+References: <20220207162410.1013466-1-nathan@kernel.org>
+From:   Usama Arif <usama.arif@bytedance.com>
+Message-ID: <2af2d61f-bd3d-5288-7bd2-4768ebe266d7@bytedance.com>
+Date:   Tue, 8 Feb 2022 13:37:22 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.202.227.178]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20220207162410.1013466-1-nathan@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Register private handler for pci_error_handlers.reset_done and update
-state accordingly.
 
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/vfio/pci/hisi_acc_vfio_pci.c | 54 ++++++++++++++++++++++++++--
- drivers/vfio/pci/hisi_acc_vfio_pci.h |  4 ++-
- 2 files changed, 54 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/vfio/pci/hisi_acc_vfio_pci.c b/drivers/vfio/pci/hisi_acc_vfio_pci.c
-index 613bf86ceabf..55abbb20dec2 100644
---- a/drivers/vfio/pci/hisi_acc_vfio_pci.c
-+++ b/drivers/vfio/pci/hisi_acc_vfio_pci.c
-@@ -867,6 +867,25 @@ hisi_acc_vf_set_device_state(struct hisi_acc_vf_core_device *hisi_acc_vdev,
- 	return ERR_PTR(-EINVAL);
- }
- 
-+/*
-+ * This function is called in all state_mutex unlock cases to
-+ * handle a 'deferred_reset' if exists.
-+ */
-+static void hisi_acc_vf_state_mutex_unlock(struct hisi_acc_vf_core_device *hisi_acc_vdev)
-+{
-+again:
-+	spin_lock(&hisi_acc_vdev->reset_lock);
-+	if (hisi_acc_vdev->deferred_reset) {
-+		hisi_acc_vdev->deferred_reset = false;
-+		spin_unlock(&hisi_acc_vdev->reset_lock);
-+		hisi_acc_vdev->mig_state = VFIO_DEVICE_STATE_RUNNING;
-+		hisi_acc_vf_disable_fds(hisi_acc_vdev);
-+		goto again;
-+	}
-+	mutex_unlock(&hisi_acc_vdev->state_mutex);
-+	spin_unlock(&hisi_acc_vdev->reset_lock);
-+}
-+
- static struct file *
- hisi_acc_vfio_pci_set_device_state(struct vfio_device *vdev,
- 				   enum vfio_device_mig_state new_state)
-@@ -897,7 +916,7 @@ hisi_acc_vfio_pci_set_device_state(struct vfio_device *vdev,
- 			break;
- 		}
- 	}
--	mutex_unlock(&hisi_acc_vdev->state_mutex);
-+	hisi_acc_vf_state_mutex_unlock(hisi_acc_vdev);
- 	return res;
- }
- 
-@@ -910,7 +929,7 @@ hisi_acc_vfio_pci_get_device_state(struct vfio_device *vdev,
- 
- 	mutex_lock(&hisi_acc_vdev->state_mutex);
- 	*curr_state = hisi_acc_vdev->mig_state;
--	mutex_unlock(&hisi_acc_vdev->state_mutex);
-+	hisi_acc_vf_state_mutex_unlock(hisi_acc_vdev);
- 	return 0;
- }
- 
-@@ -1065,6 +1084,30 @@ static long hisi_acc_vfio_pci_ioctl(struct vfio_device *core_vdev, unsigned int
- 	return vfio_pci_core_ioctl(core_vdev, cmd, arg);
- }
- 
-+static void hisi_acc_vf_pci_aer_reset_done(struct pci_dev *pdev)
-+{
-+	struct hisi_acc_vf_core_device *hisi_acc_vdev = dev_get_drvdata(&pdev->dev);
-+
-+	if (!hisi_acc_vdev->migration_support)
-+		return;
-+
-+	/*
-+	 * As the higher VFIO layers are holding locks across reset and using
-+	 * those same locks with the mm_lock we need to prevent ABBA deadlock
-+	 * with the state_mutex and mm_lock.
-+	 * In case the state_mutex was taken already we defer the cleanup work
-+	 * to the unlock flow of the other running context.
-+	 */
-+	spin_lock(&hisi_acc_vdev->reset_lock);
-+	hisi_acc_vdev->deferred_reset = true;
-+	if (!mutex_trylock(&hisi_acc_vdev->state_mutex)) {
-+		spin_unlock(&hisi_acc_vdev->reset_lock);
-+		return;
-+	}
-+	spin_unlock(&hisi_acc_vdev->reset_lock);
-+	hisi_acc_vf_state_mutex_unlock(hisi_acc_vdev);
-+}
-+
- static int hisi_acc_vfio_pci_open_device(struct vfio_device *core_vdev)
- {
- 	struct hisi_acc_vf_core_device *hisi_acc_vdev = container_of(core_vdev,
-@@ -1168,12 +1211,17 @@ static const struct pci_device_id hisi_acc_vfio_pci_table[] = {
- 
- MODULE_DEVICE_TABLE(pci, hisi_acc_vfio_pci_table);
- 
-+static const struct pci_error_handlers hisi_acc_vf_err_handlers = {
-+	.reset_done = hisi_acc_vf_pci_aer_reset_done,
-+	.error_detected = vfio_pci_core_aer_err_detected,
-+};
-+
- static struct pci_driver hisi_acc_vfio_pci_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = hisi_acc_vfio_pci_table,
- 	.probe = hisi_acc_vfio_pci_probe,
- 	.remove = hisi_acc_vfio_pci_remove,
--	.err_handler = &vfio_pci_core_err_handlers,
-+	.err_handler = &hisi_acc_vf_err_handlers,
- };
- 
- module_pci_driver(hisi_acc_vfio_pci_driver);
-diff --git a/drivers/vfio/pci/hisi_acc_vfio_pci.h b/drivers/vfio/pci/hisi_acc_vfio_pci.h
-index ea87e0985d8d..7f1a5bc245da 100644
---- a/drivers/vfio/pci/hisi_acc_vfio_pci.h
-+++ b/drivers/vfio/pci/hisi_acc_vfio_pci.h
-@@ -104,6 +104,7 @@ struct hisi_acc_vf_migration_file {
- struct hisi_acc_vf_core_device {
- 	struct vfio_pci_core_device core_device;
- 	u8 migration_support:1;
-+	u8 deferred_reset:1;
- 	/* for migration state */
- 	struct mutex state_mutex;
- 	enum vfio_device_mig_state mig_state;
-@@ -112,7 +113,8 @@ struct hisi_acc_vf_core_device {
- 	struct hisi_qm *pf_qm;
- 	struct hisi_qm vf_qm;
- 	int vf_id;
--
-+	/* for reset handler */
-+	spinlock_t reset_lock;
- 	struct hisi_acc_vf_migration_file *resuming_migf;
- 	struct hisi_acc_vf_migration_file *saving_migf;
- };
--- 
-2.17.1
+On 07/02/2022 16:24, Nathan Chancellor wrote:
+> Clang warns:
+> 
+>    fs/io_uring.c:9396:9: warning: variable 'ret' is uninitialized when used here [-Wuninitialized]
+>            return ret;
+>                   ^~~
+>    fs/io_uring.c:9373:13: note: initialize the variable 'ret' to silence this warning
+>            int fd, ret;
+>                       ^
+>                        = 0
+>    1 warning generated.
+> 
+> Just return 0 directly and reduce the scope of ret to the if statement,
+> as that is the only place that it is used, which is how the function was
+> before the fixes commit.
+> 
+> Fixes: 1a75fac9a0f9 ("io_uring: avoid ring quiesce while registering/unregistering eventfd")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1579
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> ---
+>   fs/io_uring.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+>
 
+Thanks for pointing this out. Just for some background in earlier 
+revisions of the patch for "io_uring: avoid ring quiesce while 
+registering/unregistering eventfd" the error return part was being 
+handled differently, but ended up looking similar to before in the final 
+revision that got merged, but i forgot to change this part back. Would 
+it be possible to fold the below diff into the patch as well Jens?
+Thanks and sorry for missing this!
+
+Regards,
+Usama
+
+> diff --git a/fs/io_uring.c b/fs/io_uring.c
+> index 5479f0607430..7ef04bb66da1 100644
+> --- a/fs/io_uring.c
+> +++ b/fs/io_uring.c
+> @@ -9370,7 +9370,7 @@ static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg,
+>   {
+>   	struct io_ev_fd *ev_fd;
+>   	__s32 __user *fds = arg;
+> -	int fd, ret;
+> +	int fd;
+>   
+>   	ev_fd = rcu_dereference_protected(ctx->io_ev_fd,
+>   					lockdep_is_held(&ctx->uring_lock));
+> @@ -9386,14 +9386,14 @@ static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg,
+>   
+>   	ev_fd->cq_ev_fd = eventfd_ctx_fdget(fd);
+>   	if (IS_ERR(ev_fd->cq_ev_fd)) {
+> -		ret = PTR_ERR(ev_fd->cq_ev_fd);
+> +		int ret = PTR_ERR(ev_fd->cq_ev_fd);
+>   		kfree(ev_fd);
+>   		return ret;
+>   	}
+>   	ev_fd->eventfd_async = eventfd_async;
+>   
+>   	rcu_assign_pointer(ctx->io_ev_fd, ev_fd);
+> -	return ret;
+> +	return 0;
+>   }
+>   
+>   static void io_eventfd_put(struct rcu_head *rcu)
+> 
+> base-commit: 88a0394bc27de2dd8a8715970f289c5627052532
+> 
