@@ -2,116 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B27B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:36:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC80C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350821AbiBHNgL (ORCPT
+        id S1348815AbiBHNg0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:36:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33600 "EHLO
+        Tue, 8 Feb 2022 08:36:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350440AbiBHNgC (ORCPT
+        with ESMTP id S1351911AbiBHNgV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:36:02 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C57C03FED0;
-        Tue,  8 Feb 2022 05:36:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3D8E3CE1A3E;
-        Tue,  8 Feb 2022 13:35:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0F36C340F3;
-        Tue,  8 Feb 2022 13:35:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644327356;
-        bh=u79a7xGuIOnAI0hmeTWqkoFHjcZXOZRDz+/R4oy2k1k=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mynva61oT3uZHMDFA069MvSDpcsyx1yMlXE/p+xa6vXqTHok4+/N7a/xNVtabTCFm
-         In2iYnW4vzK/uESK3I9urNHZtMxi1fB9fkN2IQf4jAamEuLuzovvObTU+FDDg+9BTs
-         s+qv+o6otTmMXtoMALrySTUxZXad4qLAAb6wOk9YCwCRtHkqQg7+WviieSIok1mneq
-         SH3auuQApRKdyj6gH7VRcPUx3pUkHuOLQ/vnqX/jNGXFsCXQ4u8uTjmuqI03rYsrKZ
-         AN8XP8Flm/7UjqWFefbbpP2ihy7dJvOKg+3rWDopxCX+nhVpYy8fWA4YmcgXU1ukT8
-         uRh9tnDM5k9/A==
-Received: by mail-wm1-f41.google.com with SMTP id v129so8644702wme.2;
-        Tue, 08 Feb 2022 05:35:56 -0800 (PST)
-X-Gm-Message-State: AOAM533RApj/RWWQhmah+WlKoQLAQcnWgW4vx5N7uFLZklkjcuqax0YA
-        ZuoSqeS51eAlSo81K3b1TvIiXHHL0y9GDJCwZC4=
-X-Google-Smtp-Source: ABdhPJwhL/oOOSs5ddtm4cjVywRdX/vv8D4K4D7Cs1AgelJH4RPgbhf1fkVoFXF1pKq0071dZJCgc6DVhHV7AxenYm4=
-X-Received: by 2002:a05:600c:4f84:: with SMTP id n4mr1204593wmq.106.1644327354967;
- Tue, 08 Feb 2022 05:35:54 -0800 (PST)
+        Tue, 8 Feb 2022 08:36:21 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC097C03FEF3;
+        Tue,  8 Feb 2022 05:36:18 -0800 (PST)
+Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JtPCW0sVyz67NvB;
+        Tue,  8 Feb 2022 21:35:35 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 14:36:17 +0100
+Received: from A2006125610.china.huawei.com (10.202.227.178) by
+ lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 13:36:10 +0000
+From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>
+CC:     <alex.williamson@redhat.com>, <jgg@nvidia.com>,
+        <cohuck@redhat.com>, <mgurtovoy@nvidia.com>, <yishaih@nvidia.com>,
+        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
+        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
+        <wangzhou1@hisilicon.com>
+Subject: [RFC v4 2/8] crypto: hisilicon/qm: Move few definitions to common header
+Date:   Tue, 8 Feb 2022 13:34:19 +0000
+Message-ID: <20220208133425.1096-3-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
+In-Reply-To: <20220208133425.1096-1-shameerali.kolothum.thodi@huawei.com>
+References: <20220208133425.1096-1-shameerali.kolothum.thodi@huawei.com>
 MIME-Version: 1.0
-References: <20220203083658.559803-1-arnd@kernel.org> <CAMj1kXG5W4nTXP5fXLmWhNfsQ_WigKbhdZz5yh1MNqE_VcD1TA@mail.gmail.com>
- <CAK8P3a1GeHV4Mj6rcnAY7y0351r-A7imsyWevKfE_qwHMz0D1g@mail.gmail.com>
-In-Reply-To: <CAK8P3a1GeHV4Mj6rcnAY7y0351r-A7imsyWevKfE_qwHMz0D1g@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 8 Feb 2022 14:35:43 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXEB95mWGMNDC0LsOXm4o89tbAK83wF1ZBfK5jEozGw9ZA@mail.gmail.com>
-Message-ID: <CAMj1kXEB95mWGMNDC0LsOXm4o89tbAK83wF1ZBfK5jEozGw9ZA@mail.gmail.com>
-Subject: Re: [PATCH] [v2] ARM: sa1100/assabet: move dmabounce hack to ohci driver
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        USB list <linux-usb@vger.kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.202.227.178]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Feb 2022 at 13:49, Arnd Bergmann <arnd@kernel.org> wrote:
->
-> On Thu, Feb 3, 2022 at 9:47 AM Ard Biesheuvel <ardb@kernel.org> wrote:
-> > On Thu, 3 Feb 2022 at 09:38, Arnd Bergmann <arnd@kernel.org> wrote:
-> >
-> > > There are two main downsides:
-> > >
-> > >  - rather than using a dynamically sized pool, this buffer needs
-> > >    to be allocated at probe time using a fixed size. Without
-> > >    having any idea of what it should be, I picked a size of
-> > >    64KB, which is between what the other two OHCI front-ends use
-> > >    in their SRAM. If anyone has a better idea what that size
-> > >    is reasonable, this can be trivially changed.
-> > >
-> >
-> > I suppose this is a problem if the driver falls back to ordinary DRAM
-> > once the allocation runs out?
->
-> From what I can tell, there is no such fallback. If the localmem_pool
-> runs out, the allocation fails, which may cause other problems, but
-> it never falls back to the wrong DMA address.
->
+From: Longfang Liu <liulongfang@huawei.com>
 
-OK that is the least bad outcome I suppose.
+Move Doorbell and Mailbox definitions to common header
+file. Also export QM mailbox functions.
 
-> > >  - Previously, only USB transfers to unaddressable memory needed
-> > >    to go through the bounce buffer, now all of them do, which may
-> > >    impact runtime performance for USB endpoints that do a lot of
-> > >    transfers.
-> > >
-> > > On the upside, the local_mem support uses write-combining buffers,
-> > > which should be a bit faster for transfers to the device compared to
-> > > normal uncached coherent memory as used in dmabounce.
-> > >
-> >
-> > Talking from past experience using this trick on a NXP ARM9 SoC ~10
-> > years ago, using on-chip SRAM for USB DMA likely results in a
-> > significant performance boost, even without write combining, although
-> > the exact scenario obviously matters.
->
-> Right, that makes sense, but it won't help here because there is
-> no SRAM. One detail  I noticed is that the localmem pool normally
-> gets mapped as WC, which is what I did in the new code as well, but
-> dma_alloc_flags(..., DMA_ATTR_WRITE_COMBINE) does not always
-> honor this flag. I think it will do it here because a GFP_KERNEL
-> allocation should be served by the remap_allocator, while
-> GFP_ATOMIC allocations would be served by pool_allocator_alloc(),
-> which ignores the flag.
->
+This will be useful when we introduce VFIO PCI HiSilicon
+ACC live migration driver.
 
-Ah yes, ignore me. For some reason, I thought this was about on-chip SRAM.
+Signed-off-by: Longfang Liu <liulongfang@huawei.com>
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+---
+ drivers/crypto/hisilicon/qm.c | 32 +++++------------------------
+ include/linux/hisi_acc_qm.h   | 38 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 43 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
+index ed23e1d3fa27..8c29f9fba573 100644
+--- a/drivers/crypto/hisilicon/qm.c
++++ b/drivers/crypto/hisilicon/qm.c
+@@ -33,23 +33,6 @@
+ #define QM_ABNORMAL_EVENT_IRQ_VECTOR	3
+ 
+ /* mailbox */
+-#define QM_MB_CMD_SQC			0x0
+-#define QM_MB_CMD_CQC			0x1
+-#define QM_MB_CMD_EQC			0x2
+-#define QM_MB_CMD_AEQC			0x3
+-#define QM_MB_CMD_SQC_BT		0x4
+-#define QM_MB_CMD_CQC_BT		0x5
+-#define QM_MB_CMD_SQC_VFT_V2		0x6
+-#define QM_MB_CMD_STOP_QP		0x8
+-#define QM_MB_CMD_SRC			0xc
+-#define QM_MB_CMD_DST			0xd
+-
+-#define QM_MB_CMD_SEND_BASE		0x300
+-#define QM_MB_EVENT_SHIFT		8
+-#define QM_MB_BUSY_SHIFT		13
+-#define QM_MB_OP_SHIFT			14
+-#define QM_MB_CMD_DATA_ADDR_L		0x304
+-#define QM_MB_CMD_DATA_ADDR_H		0x308
+ #define QM_MB_PING_ALL_VFS		0xffff
+ #define QM_MB_CMD_DATA_SHIFT		32
+ #define QM_MB_CMD_DATA_MASK		GENMASK(31, 0)
+@@ -103,19 +86,12 @@
+ #define QM_DB_CMD_SHIFT_V1		16
+ #define QM_DB_INDEX_SHIFT_V1		32
+ #define QM_DB_PRIORITY_SHIFT_V1		48
+-#define QM_DOORBELL_SQ_CQ_BASE_V2	0x1000
+-#define QM_DOORBELL_EQ_AEQ_BASE_V2	0x2000
+ #define QM_QUE_ISO_CFG_V		0x0030
+ #define QM_PAGE_SIZE			0x0034
+ #define QM_QUE_ISO_EN			0x100154
+ #define QM_CAPBILITY			0x100158
+ #define QM_QP_NUN_MASK			GENMASK(10, 0)
+ #define QM_QP_DB_INTERVAL		0x10000
+-#define QM_QP_MAX_NUM_SHIFT		11
+-#define QM_DB_CMD_SHIFT_V2		12
+-#define QM_DB_RAND_SHIFT_V2		16
+-#define QM_DB_INDEX_SHIFT_V2		32
+-#define QM_DB_PRIORITY_SHIFT_V2		48
+ 
+ #define QM_MEM_START_INIT		0x100040
+ #define QM_MEM_INIT_DONE		0x100044
+@@ -693,7 +669,7 @@ static void qm_mb_pre_init(struct qm_mailbox *mailbox, u8 cmd,
+ }
+ 
+ /* return 0 mailbox ready, -ETIMEDOUT hardware timeout */
+-static int qm_wait_mb_ready(struct hisi_qm *qm)
++int qm_wait_mb_ready(struct hisi_qm *qm)
+ {
+ 	u32 val;
+ 
+@@ -701,6 +677,7 @@ static int qm_wait_mb_ready(struct hisi_qm *qm)
+ 					  val, !((val >> QM_MB_BUSY_SHIFT) &
+ 					  0x1), POLL_PERIOD, POLL_TIMEOUT);
+ }
++EXPORT_SYMBOL_GPL(qm_wait_mb_ready);
+ 
+ /* 128 bit should be written to hardware at one time to trigger a mailbox */
+ static void qm_mb_write(struct hisi_qm *qm, const void *src)
+@@ -745,8 +722,8 @@ static int qm_mb_nolock(struct hisi_qm *qm, struct qm_mailbox *mailbox)
+ 	return -EBUSY;
+ }
+ 
+-static int qm_mb(struct hisi_qm *qm, u8 cmd, dma_addr_t dma_addr, u16 queue,
+-		 bool op)
++int qm_mb(struct hisi_qm *qm, u8 cmd, dma_addr_t dma_addr, u16 queue,
++	  bool op)
+ {
+ 	struct qm_mailbox mailbox;
+ 	int ret;
+@@ -762,6 +739,7 @@ static int qm_mb(struct hisi_qm *qm, u8 cmd, dma_addr_t dma_addr, u16 queue,
+ 
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(qm_mb);
+ 
+ static void qm_db_v1(struct hisi_qm *qm, u16 qn, u8 cmd, u16 index, u8 priority)
+ {
+diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
+index 3068093229a5..8befb59c6fb3 100644
+--- a/include/linux/hisi_acc_qm.h
++++ b/include/linux/hisi_acc_qm.h
+@@ -34,6 +34,40 @@
+ #define QM_WUSER_M_CFG_ENABLE		0x1000a8
+ #define WUSER_M_CFG_ENABLE		0xffffffff
+ 
++/* mailbox */
++#define QM_MB_CMD_SQC                   0x0
++#define QM_MB_CMD_CQC                   0x1
++#define QM_MB_CMD_EQC                   0x2
++#define QM_MB_CMD_AEQC                  0x3
++#define QM_MB_CMD_SQC_BT                0x4
++#define QM_MB_CMD_CQC_BT                0x5
++#define QM_MB_CMD_SQC_VFT_V2            0x6
++#define QM_MB_CMD_STOP_QP               0x8
++#define QM_MB_CMD_SRC                   0xc
++#define QM_MB_CMD_DST                   0xd
++
++#define QM_MB_CMD_SEND_BASE		0x300
++#define QM_MB_EVENT_SHIFT               8
++#define QM_MB_BUSY_SHIFT		13
++#define QM_MB_OP_SHIFT			14
++#define QM_MB_CMD_DATA_ADDR_L		0x304
++#define QM_MB_CMD_DATA_ADDR_H		0x308
++#define QM_MB_MAX_WAIT_CNT		6000
++
++/* doorbell */
++#define QM_DOORBELL_CMD_SQ              0
++#define QM_DOORBELL_CMD_CQ              1
++#define QM_DOORBELL_CMD_EQ              2
++#define QM_DOORBELL_CMD_AEQ             3
++
++#define QM_DOORBELL_SQ_CQ_BASE_V2	0x1000
++#define QM_DOORBELL_EQ_AEQ_BASE_V2	0x2000
++#define QM_QP_MAX_NUM_SHIFT             11
++#define QM_DB_CMD_SHIFT_V2		12
++#define QM_DB_RAND_SHIFT_V2		16
++#define QM_DB_INDEX_SHIFT_V2		32
++#define QM_DB_PRIORITY_SHIFT_V2		48
++
+ /* qm cache */
+ #define QM_CACHE_CTL			0x100050
+ #define SQC_CACHE_ENABLE		BIT(0)
+@@ -414,6 +448,10 @@ pci_ers_result_t hisi_qm_dev_slot_reset(struct pci_dev *pdev);
+ void hisi_qm_reset_prepare(struct pci_dev *pdev);
+ void hisi_qm_reset_done(struct pci_dev *pdev);
+ 
++int qm_wait_mb_ready(struct hisi_qm *qm);
++int qm_mb(struct hisi_qm *qm, u8 cmd, dma_addr_t dma_addr, u16 queue,
++	  bool op);
++
+ struct hisi_acc_sgl_pool;
+ struct hisi_acc_hw_sgl *hisi_acc_sg_buf_map_to_hw_sgl(struct device *dev,
+ 	struct scatterlist *sgl, struct hisi_acc_sgl_pool *pool,
+-- 
+2.17.1
+
