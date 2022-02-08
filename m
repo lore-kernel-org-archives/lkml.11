@@ -2,146 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0894EC47086
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 889D7C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389276AbiBHWeA (ORCPT
+        id S1345764AbiBHWeR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:34:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
+        Tue, 8 Feb 2022 17:34:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386847AbiBHVRF (ORCPT
+        with ESMTP id S1386515AbiBHUsK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:17:05 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207B8C0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:17:05 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id b187-20020a251bc4000000b0061e15c5024fso190758ybb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:17:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=IkSsAEe4tLZ7sPXk1cQDbdyI/ymKu70QdfkWphwdEME=;
-        b=b79Z7mrt1T2rqjlQtvxG17JrcAsR5iLV5BcMxiBFygqW3qVgCsA77QfwZtD2vuQU7J
-         cfEe2GM7sD1ayD+2/wyB3JjaXRE357xbtHNQozxQOmj5kA08Q2eBZFr8f9eWB00WxvdE
-         udxuQSNKJXvYjAudABDXGuC60jf3ZP8UEmtoqgfLstZdnVHRo9AnvDrKwu631Kx1Ojgl
-         s0uBonnRONcL6fZ3DMCpxqDiNnVw++0Z6Ps+n3yCQuis5Jj620sfzQVc8+yk1UH1OeIH
-         fgYU0b9rkBxh4jfG1TjuBFZq17+JRhxD1O+H/GD7jyesjOw7sUJZOxbl0djhjp4T8fRn
-         BQiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=IkSsAEe4tLZ7sPXk1cQDbdyI/ymKu70QdfkWphwdEME=;
-        b=Ca6jWelzds8UEnn7aljyAvB6z+whHVovwsJE5i8uL5Iu3+xGpdX/5sowxVB6o93inl
-         v++/ont6AeKQ+B+z8dDM65kNvltulh1D58HOqeWNFsXFcuh3IxyuVBgI5jtPpmdnp3ve
-         mrI6ycW7WPnuIrU7HVCpNsyS0N+e4G9Z/qtJuFbZCcq7t//Gf90sEme8YfR7Q5UEshO9
-         1mKuxekkmIps+tJGqXWz22Mhm5B6ULizax5Rp2m5zsLDc7LQyjdltbRPlhjIWQR1a/6R
-         bnN0Z3t4+xiZLrrMXTcU9TeIyR2F3aHbyS62N2c6Emoibhbc0wgrK3xbfy1+T/ms4mYP
-         8feg==
-X-Gm-Message-State: AOAM533fqBvWz3Y3ZykSDTnuE+cMdt31Rd7kWcCoq7gd/31QSeJKzDUU
-        jPkhPOzxNlJBLjKrwMDLZfVAgVeip2KmKDAV3SH1I/gEKjrdL8BlWrAnf2Aq2dKLFzDkzKtR1GG
-        HdLj8MR/6LdWVKnFMdlDw68BcKJiDjhqM2uO7K6fw6HqS8WoYH0ZNaHQhSjqxU/IjiwOxLaNG
-X-Google-Smtp-Source: ABdhPJxTVkfw8EifXuKk44o0hXOLcZKl9tvUeVIC23vGxANJlD9t8VEaIHcuXL1EJCskdf6PGZH7c2cLpSSQ
-X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:6875:3c51:69be:6e2c])
- (user=eranian job=sendgmr) by 2002:a25:4d5:: with SMTP id 204mr6406319ybe.485.1644355024283;
- Tue, 08 Feb 2022 13:17:04 -0800 (PST)
-Date:   Tue,  8 Feb 2022 13:16:30 -0800
-In-Reply-To: <20220208211637.2221872-1-eranian@google.com>
-Message-Id: <20220208211637.2221872-6-eranian@google.com>
-Mime-Version: 1.0
-References: <20220208211637.2221872-1-eranian@google.com>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-Subject: [PATCH v6 05/12] perf/x86/amd: enable branch sampling priv level filtering
-From:   Stephane Eranian <eranian@google.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
-        jolsa@redhat.com, songliubraving@fb.com
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 8 Feb 2022 15:48:10 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F5FC0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:48:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644353289; x=1675889289;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=T1Dq70dqxoGsKjC3M8rAVhSwDwdOT6gVU2rJNwMN/fY=;
+  b=aVdVvj7Yqa2mXwqBAZRfcgSD4QlVlTNTuS2j7l4BOUQ9HVWIIpMOGDgf
+   w4oxL9q1D+/Yz0nHdivUBvA8ET+dm7qBXhUbuZW/6Sn1f72RNqk4SK7Pg
+   CRuuaNKmaCJI4xgYn/cm75HGhA67fJVz0L1S4u6FpbGYHZ9KpnBWtFB8d
+   sjrUjvqkUSxYME8v5sMUXjgRh8TrvXARy488VSrfQ2ej6wNjsyqNYPVf5
+   Zd6zEpG9EZb+ZQrscyQG+Pxx7pg31GfK1nn38AfAri5w1oAoiIY7ksGsG
+   obQ71T9kdpp4w7idHSoK3fYYaSX/v3zIesSmuTamB35fxV17ADS7ATnLY
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229020844"
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="229020844"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 12:48:09 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="632976632"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 08 Feb 2022 12:48:07 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nHXPD-0000j5-2E; Tue, 08 Feb 2022 20:48:07 +0000
+Date:   Wed, 9 Feb 2022 04:47:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mark:arm64/preempt-dynamic-static-key 7/7]
+ arch/arm64/include/asm/preempt.h:85:25: error: a parameter list without
+ types is only allowed in a function definition
+Message-ID: <202202090439.RWVJ0AMJ-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AMD Branch Sampling features does not provide hardware filtering by
-privilege level. The associated PMU counter does but not the branch sampling
-by itself. Given how BRS operates there is a possibility that BRS captures
-kernel level branches even though the event is programmed to count only at
-the user level.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git arm64/preempt-dynamic-static-key
+head:   106f60395c0b424e5e05a69bbd40075152f9a17f
+commit: 106f60395c0b424e5e05a69bbd40075152f9a17f [7/7] arm64: support PREEMPT_DYNAMIC
+config: arm64-randconfig-r025-20220208 (https://download.01.org/0day-ci/archive/20220209/202202090439.RWVJ0AMJ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e8bff9ae54a55b4dbfeb6ba55f723abbd81bf494)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=106f60395c0b424e5e05a69bbd40075152f9a17f
+        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
+        git fetch --no-tags mark arm64/preempt-dynamic-static-key
+        git checkout 106f60395c0b424e5e05a69bbd40075152f9a17f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 prepare
 
-Implement a workaround in software by removing the branches which belong to
-the wrong privilege level. The privilege level is evaluated on the target of
-the branch and not the source so as to be compatible with other architectures.
-As a consequence of this patch, the number of entries in the
-PERF_RECORD_BRANCH_STACK buffer may be less than the maximum (16).  It could
-even be zero. Another consequence is that consecutive entries in the branch
-stack may not reflect actual code path and may have discontinuities, in case
-kernel branches were suppressed. But this is no different than what happens
-on other architectures.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Stephane Eranian <eranian@google.com>
+All error/warnings (new ones prefixed by >>):
+
+   In file included from arch/arm64/kernel/asm-offsets.c:10:
+   In file included from include/linux/arm_sdei.h:8:
+   In file included from include/acpi/ghes.h:5:
+   In file included from include/acpi/apei.h:9:
+   In file included from include/linux/acpi.h:13:
+   In file included from include/linux/irqdomain.h:35:
+   In file included from include/linux/of.h:17:
+   In file included from include/linux/kobject.h:20:
+   In file included from include/linux/sysfs.h:16:
+   In file included from include/linux/kernfs.h:11:
+   In file included from include/linux/mutex.h:17:
+   In file included from include/linux/lockdep.h:14:
+   In file included from include/linux/smp.h:110:
+   In file included from include/linux/preempt.h:78:
+>> arch/arm64/include/asm/preempt.h:85:1: warning: declaration specifier missing, defaulting to 'int'
+   DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
+   ^
+   int
+>> arch/arm64/include/asm/preempt.h:85:25: error: a parameter list without types is only allowed in a function definition
+   DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
+                           ^
+   1 warning and 1 error generated.
+   make[2]: *** [scripts/Makefile.build:121: arch/arm64/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1191: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+
+vim +85 arch/arm64/include/asm/preempt.h
+
+    84	
+  > 85	DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
+    86	void dynamic_preempt_schedule(void);
+    87	#define __preempt_schedule()		dynamic_preempt_schedule()
+    88	void dynamic_preempt_schedule_notrace(void);
+    89	#define __preempt_schedule_notrace()	dynamic_preempt_schedule_notrace()
+    90	
+
 ---
- arch/x86/events/amd/brs.c | 26 ++++++++++++++++++++------
- 1 file changed, 20 insertions(+), 6 deletions(-)
-
-diff --git a/arch/x86/events/amd/brs.c b/arch/x86/events/amd/brs.c
-index 3c13c484c637..40461c3ce714 100644
---- a/arch/x86/events/amd/brs.c
-+++ b/arch/x86/events/amd/brs.c
-@@ -92,10 +92,6 @@ int amd_brs_setup_filter(struct perf_event *event)
- 	if ((type & ~PERF_SAMPLE_BRANCH_PLM_ALL) != PERF_SAMPLE_BRANCH_ANY)
- 		return -EINVAL;
- 
--	/* can only capture at all priv levels due to the way BRS works */
--	if ((type & PERF_SAMPLE_BRANCH_PLM_ALL) != PERF_SAMPLE_BRANCH_PLM_ALL)
--		return -EINVAL;
--
- 	return 0;
- }
- 
-@@ -195,6 +191,21 @@ void amd_brs_disable_all(void)
- 		amd_brs_disable();
- }
- 
-+static bool amd_brs_match_plm(struct perf_event *event, u64 to)
-+{
-+	int type = event->attr.branch_sample_type;
-+	int plm_k = PERF_SAMPLE_BRANCH_KERNEL | PERF_SAMPLE_BRANCH_HV;
-+	int plm_u = PERF_SAMPLE_BRANCH_USER;
-+
-+	if (!(type & plm_k) && kernel_ip(to))
-+		return 0;
-+
-+	if (!(type & plm_u) && !kernel_ip(to))
-+		return 0;
-+
-+	return 1;
-+}
-+
- /*
-  * Caller must ensure amd_brs_inuse() is true before calling
-  * return:
-@@ -252,8 +263,6 @@ void amd_brs_drain(void)
- 		if (to == BRS_POISON)
- 			break;
- 
--		rdmsrl(brs_from(brs_idx), from);
--
- 		/*
- 		 * Sign-extend SAMP_BR_TO to 64 bits, bits 61-63 are reserved.
- 		 * Necessary to generate proper virtual addresses suitable for
-@@ -261,6 +270,11 @@ void amd_brs_drain(void)
- 		 */
- 		to = (u64)(((s64)to << shift) >> shift);
- 
-+		if (!amd_brs_match_plm(event, to))
-+			continue;
-+
-+		rdmsrl(brs_from(brs_idx), from);
-+
- 		perf_clear_branch_entry_bitfields(br+nr);
- 
- 		br[nr].from = from;
--- 
-2.35.0.263.gb82422642f-goog
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
