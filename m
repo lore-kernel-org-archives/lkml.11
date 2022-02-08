@@ -2,99 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0587CC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7922C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388151AbiBHWcX (ORCPT
+        id S1388069AbiBHWcO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:32:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43554 "EHLO
+        Tue, 8 Feb 2022 17:32:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386225AbiBHTop (ORCPT
+        with ESMTP id S1386205AbiBHTnt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:44:45 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE714C0613CB;
-        Tue,  8 Feb 2022 11:44:44 -0800 (PST)
+        Tue, 8 Feb 2022 14:43:49 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AD6C0613CB;
+        Tue,  8 Feb 2022 11:43:48 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id y15-20020a17090a474f00b001b88562650aso2203146pjg.0;
+        Tue, 08 Feb 2022 11:43:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644349484; x=1675885484;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=B0beRUcpy6mm/IC1BcwaxatHK/JKj1WU47oyT+N03mg=;
-  b=PmOrBH44twkgttlFTrbNznHsN82tq/QyRPYBRGwKespy+V1TQ7XMOuuQ
-   d39cTRA8h5t8m34AxiK2mz7FTOLeM7Ais3fD73M80b6wnWbjL43yAliuQ
-   JJhLBoU46nnjAhA5TmZmfMyqCiaMVtvzKgY1XnbTtsL9u8kxe6k/hiQjd
-   w=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Feb 2022 11:44:44 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 11:44:43 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 11:44:43 -0800
-Received: from abhinavk-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 11:44:42 -0800
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-To:     <johannes@sipsolutions.net>, <linux-kernel@vger.kernel.org>
-CC:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        <gregkh@linuxfoundation.org>, <rafael@kernel.org>,
-        <robdclark@gmail.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <freedreno@lists.freedesktop.org>,
-        <seanpaul@chromium.org>, <swboyd@chromium.org>,
-        <nganji@codeaurora.org>, <aravindh@codeaurora.org>,
-        <khsieh@codeaurora.org>, <daniel@ffwll.ch>,
-        <dmitry.baryshkov@linaro.org>
-Subject: [PATCH] devcoredump: increase the device delete timeout to 10 mins
-Date:   Tue, 8 Feb 2022 11:44:32 -0800
-Message-ID: <1644349472-31077-1-git-send-email-quic_abhinavk@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=47Zt1ciDlAfZ4CsVaghTCf8CTxEeHu+p/hM6Ax63pg8=;
+        b=SMmHEK9AqUbqZLIwucjvRyGysfK96AdDbYtNYRCgagZmSxwc1w2HIUufH1A8ItRgep
+         Jz5mDipLmvR9OY5cEMy1DwAGNkeDaQQn8Reuo1OukFlRbZB+oN+A1Q9D7cLj9Mbid/G7
+         R3DxXDARvZCk6cSJL4vMoQduuaAowtBA/tRJtoqA5ha8uM2TW4qXxT/GVLp9w73Dv/n7
+         3d5yBVIg8yaLMeshP38X1FNuWWahuIsRvFClqT+LI52wWuuToWlLAF9RzkdHnWbT8zdF
+         BcA/Me+ULcQlKO1W4biSCA9doeTMeXKKfNQ+72B2MxdxTiF6pYTzdxDNRYV028gfR1nq
+         Sq7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=47Zt1ciDlAfZ4CsVaghTCf8CTxEeHu+p/hM6Ax63pg8=;
+        b=Vskd9rXTdoWmq77k7M2RTdDJTGZbF4qUWwI4TPST5GLM5xg23Kp/p0+WhsyT/Nc1QL
+         jSw7rjP8pdGO79iBoTnYZ9XQuBP2USw354lehNg02C4HhLRlV5mu5zjsnY7CnO4AJ7SZ
+         YyApipqbMWOo41cPoKal5Vo72hHtO3POjpZW37zxnEmPlQAT5CpHph1gxg/edBCsHOSz
+         iH/nf07Xj5zKNirzTD/U3iw5FdR7mN0JAZTqjf1huhvjzg3qKk+F9Rpk5FFGu5W9VIid
+         T+hu6I4GgYfVpZy83tGqRjNUz0XWfv6EU95UKEYlVJjErzHdahVu7IgofWvIwO70w+J/
+         kGHw==
+X-Gm-Message-State: AOAM532I5eoe59PwKwPwavNRtQkEIfSuxf4iTqk4R/RWbeQKwpwpdQds
+        Ir84hqDjbDhr//cNv4XTQpI=
+X-Google-Smtp-Source: ABdhPJzd2Xi0GuGR4M7cbShojHTa5914O2E9YTB2ynvlq39JbRXCTw81IBVhXHOA5wx+3FrqqomSiQ==
+X-Received: by 2002:a17:902:9343:: with SMTP id g3mr5950056plp.11.1644349428375;
+        Tue, 08 Feb 2022 11:43:48 -0800 (PST)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
+        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 11:43:47 -0800 (PST)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Radoslaw Burny <rburny@google.com>, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        linux-btrfs@vger.kernel.org, David Sterba <dsterba@suse.com>
+Subject: [PATCH 06/12] btrfs: change lockdep class size check using ks->names
+Date:   Tue,  8 Feb 2022 11:43:18 -0800
+Message-Id: <20220208194324.85333-7-namhyung@kernel.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
+References: <20220208194324.85333-1-namhyung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are cases where depending on the size of the devcoredump and the speed
-at which the usermode reads the dump, it can take longer than the current 5 mins
-timeout.
+With upcoming lock tracepoints config, it'd allow some lockdep
+annotation code without enabling CONFIG_LOCKDEP actually.  In that
+config, size of the struct lock_class_key would be 0.
 
-This can lead to incomplete dumps as the device is deleted once the timeout expires.
+But it'd cause divide-by-zero in btrfs_set_buffer_lockdep_class() due
+to ARRAY_SIZE macro.  Let's change it to use ks->names[] instead.  It
+should have the same size as with ks->keys[].
 
-One example is below where it took 6 mins for the devcoredump to be completely read.
-
-04:22:24.668 23916 23994 I HWDeviceDRM::DumpDebugData: Opening /sys/class/devcoredump/devcd6/data
-04:28:35.377 23916 23994 W HWDeviceDRM::DumpDebugData: Freeing devcoredump node
-
-Increase the timeout to 10 mins to accommodate system delays and large coredump
-sizes.
-
-Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc: Chris Mason <clm@fb.com>
+Cc: Josef Bacik <josef@toxicpanda.com>
+Cc: linux-btrfs@vger.kernel.org
+Acked-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- drivers/base/devcoredump.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/btrfs/disk-io.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/base/devcoredump.c b/drivers/base/devcoredump.c
-index f4d794d..6b83ae5 100644
---- a/drivers/base/devcoredump.c
-+++ b/drivers/base/devcoredump.c
-@@ -18,8 +18,8 @@ static struct class devcd_class;
- /* global disable flag, for security purposes */
- static bool devcd_disabled;
+diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
+index 87a5addbedf6..be41e35bee92 100644
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -190,7 +190,7 @@ void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb,
+ {
+ 	struct btrfs_lockdep_keyset *ks;
  
--/* if data isn't read by userspace after 5 minutes then delete it */
--#define DEVCD_TIMEOUT	(HZ * 60 * 5)
-+/* if data isn't read by userspace after 10 minutes then delete it */
-+#define DEVCD_TIMEOUT	(HZ * 60 * 10)
+-	BUG_ON(level >= ARRAY_SIZE(ks->keys));
++	BUG_ON(level >= ARRAY_SIZE(ks->names));
  
- struct devcd_entry {
- 	struct device devcd_dev;
+ 	/* find the matching keyset, id 0 is the default entry */
+ 	for (ks = btrfs_lockdep_keysets; ks->id; ks++)
 -- 
-2.7.4
+2.35.0.263.gb82422642f-goog
 
