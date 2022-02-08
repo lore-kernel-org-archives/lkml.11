@@ -2,231 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8BBC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F9FC41535
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388174AbiBHWc1 (ORCPT
+        id S1387960AbiBHWcB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:32:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43372 "EHLO
+        Tue, 8 Feb 2022 17:32:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386219AbiBHTn7 (ORCPT
+        with ESMTP id S1386543AbiBHUyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:43:59 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E651C0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:43:58 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id qe15so135630pjb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:43:58 -0800 (PST)
+        Tue, 8 Feb 2022 15:54:20 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43431C0612C3;
+        Tue,  8 Feb 2022 12:54:16 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id s7so956653edd.3;
+        Tue, 08 Feb 2022 12:54:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=m+nDZJr8SEJtsWfN1yVA4KOFdHwD0VQADvkkthoRg+M=;
-        b=KIWKaeu5lVDhyRByVq+Pe2NXQKxY7H7Aa5F2qlk9aEux7BT74ca5PXzOVfwTMs8G0d
-         aIQ/1GcK0JRJBaF5uURR1HltBeHPcOSTkM+qj2Wy2E2pVBP2v1/zaiXMgUvue/Uo5xt+
-         YABUPItp8vr+PKjsZfQRekvc/Uo4MSz6cnYvNxWYFCmDeQdeWEcIV2qwsZgCZQNazxRB
-         7GjDpffuHBV+YJNDTRnZViM6bl+vVxv1pwIxFmP8Qfps1Dk3ZcJAflTlrUHisnm9REo2
-         Cyb3jnnlNXscoB2YoKpvgdpT9OeYaWYj3SlrnSkaA+OTsgpqORsrfdmey/0HhrZ83jE/
-         vQqQ==
+        bh=PDhjQ85RPBAN8gdoe5LBgB+KXAQiKOAIVei1JjMNISU=;
+        b=KlypnIg2Q4TNPY7ywPtIVAaC6gRlZf6/GaS4h98jSWnLdWAidpxxul8Dh8RxnzInIB
+         FxFlGMNuADDHiTj1ewb1BRF9aaR5XLlHuz2/sVe6MErGo3JBZhwGf3/3pyC74jJUe/AU
+         ISjM5AFHdUg4pyXoFg9Qv4DHHrrXRF9/FGaSIcgOSflfHRjXYLzo55WHkUo3Yl7smqnF
+         vOJWuKEk7HTt+0s3/+vvS+NBxUN1vEh5xKLL2O4TeJCTdxLrZkt7q+2iaZjfvz6d2j6c
+         JVALpU/Xt00xdIc0NKJ0q7Z1+8bsP84m40fU9rIJfDFRB8BKYDyzClp0/Sh/iFL/IF4v
+         gkSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=m+nDZJr8SEJtsWfN1yVA4KOFdHwD0VQADvkkthoRg+M=;
-        b=tt3zlOjdFyQ7I7WpbmLzKqKbO1Ib0EEm4OwUZPC8Pt6jkdoSh9PZ00zZNas2DfnYKu
-         plSQ58XHLPik5VqdxTd/BoCXrel35aHu+FkOalGJ/E/oX7Zr3+3JadMU+kCCrNIVFshQ
-         I29bAXo3bx6y7ybZupDNeIuJE/LZPZQT1f3DpejJsFRbYyX+n+FaF8zZvZsFMtiENnxO
-         vRmG+jKQUtcJb/82h9Xt/+cpHUFUTA0MStQwjINi8MHTognm3WEmP5mZ6WveWs2IiXxz
-         hSm/YutCDBdKI9qMGO6OoosG5pJ54NReQ21Bk+zyRIxyfE3SxYpDKfpt2Lkejp9qg5sQ
-         GJTQ==
-X-Gm-Message-State: AOAM5306b2Iw4TKUY+7dSgR11Us3B0yGfxXE/Un7qkYi8L24Tv5PdgyI
-        qUrZ3cxurCKPYlUU8YtIDnk=
-X-Google-Smtp-Source: ABdhPJxfAWIl+DPBI2EOdOQgu6DTp1/Md6wPiyy/z2kttS9Zsr3fF3IE+mW+xojQu5VQE4/u/rovaw==
-X-Received: by 2002:a17:90b:3b42:: with SMTP id ot2mr3048087pjb.147.1644349437992;
-        Tue, 08 Feb 2022 11:43:57 -0800 (PST)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
-        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.56
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PDhjQ85RPBAN8gdoe5LBgB+KXAQiKOAIVei1JjMNISU=;
+        b=h0j3UXdmolw3xPe1fJRItIbVqrmZ/BiOeZPPxRpXtZN9E3liDjbee+4KsDHlJhRzDd
+         GNJWvS6JV9FMHKOL5BU1OLpZSqtCWl6X7UeiCdKBELlC9jhJ++1NE2vk8t/+AGidc//k
+         AQsk6bGl9RmWiSjvMvDVZLLtVFjBGw2uqtVDG/2JLz2DX71GNjVFO29pgu8bLX9A8Onh
+         BW8YKHkhrRPD/hVmAZDOjcLJI9dYK+si+KYXaQEbpiNvYfGaTVV/lpDT8Wr2Schpcc82
+         Ms3w4R/LOClJHpN92LnuEmPcCXPLle9RdK/Ss2e7mqo7WvoGomlUDYM4B+eUKNwe87Ce
+         QY3A==
+X-Gm-Message-State: AOAM530vQF7dJrG4m9Ck5v2vVBP6XFZPjTW94OW1/bQ1F8vxcbSD8qmF
+        /zcjvXiJXvYXdy5Ovq1ZXOeiRe3PLQ/FMA==
+X-Google-Smtp-Source: ABdhPJzKxy1DftrC9Hdvyz71ZUjBbAQJvqevq1dibwVr5XOxE/w6Jr5uhIT+BNs11hMybA1XTWmzhw==
+X-Received: by 2002:aa7:dbc3:: with SMTP id v3mr6404848edt.32.1644353654531;
+        Tue, 08 Feb 2022 12:54:14 -0800 (PST)
+Received: from netbook-debian ([94.179.49.215])
+        by smtp.gmail.com with ESMTPSA id gj8sm2329107ejc.186.2022.02.08.12.54.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 11:43:57 -0800 (PST)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>
-Subject: [PATCH 11/12] locking/mutex: Revive fast functions for CONFIG_LOCK_TRACEPOINTS
-Date:   Tue,  8 Feb 2022 11:43:23 -0800
-Message-Id: <20220208194324.85333-12-namhyung@kernel.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
-References: <20220208194324.85333-1-namhyung@kernel.org>
+        Tue, 08 Feb 2022 12:54:14 -0800 (PST)
+Date:   Tue, 8 Feb 2022 22:54:09 +0200
+From:   Denis Pauk <pauk.denis@gmail.com>
+To:     Oleksandr Natalenko <oleksandr@natalenko.name>
+Cc:     Eugene Shalygin <eugene.shalygin@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] hwmon: (asus-ec-sensors) add CPU core voltage
+Message-ID: <20220208225409.5285adf9@netbook-debian>
+In-Reply-To: <11918951.O9o76ZdvQC@natalenko.name>
+References: <20220208094244.1106312-1-eugene.shalygin@gmail.com>
+        <11918951.O9o76ZdvQC@natalenko.name>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The CONFIG_LOCK_TRACEPOINTS used the same path as CONFIG_DEBUG_ALLOC
-or CONFIG_LOCKDEP but it caused performance impact on mutex as it
-removes _fast variants at the beginning.
+On Tue, 08 Feb 2022 17:15:46 +0100
+Oleksandr Natalenko <oleksandr@natalenko.name> wrote:
 
-I'm not entirely sure why it removed the fast versions when lockdep is
-on.  It seems easy to add the required annotation when the fast
-version is succeeded as far as the tracpoints are concerned.
+> Hello.
+>=20
+> On =C3=BAter=C3=BD 8. =C3=BAnora 2022 10:42:43 CET Eugene Shalygin wrote:
+> > A user discovered [1] the CPU Core voltage sensor, which spans 2
+> > registers and provides output in mV. Althroug the discovery was made
+> > with a X470 chipset, the sensor is present in X570 (tested with
+> > C8H). For now simply add it to each board with the CPU current
+> > sensor present.
+> >=20
+> > [1] https://github.com/zeule/asus-ec-sensors/issues/12
+> >=20
+> > Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
+> > ---
+> >  Documentation/hwmon/asus_ec_sensors.rst |  1 +
+> >  drivers/hwmon/asus-ec-sensors.c         | 29
+> > ++++++++++++++++--------- 2 files changed, 20 insertions(+), 10
+> > deletions(-)
+> >=20
+> > diff --git a/Documentation/hwmon/asus_ec_sensors.rst
+> > b/Documentation/hwmon/asus_ec_sensors.rst index
+> > 22de1b037cfb..e7e8f1640f45 100644 ---
+> > a/Documentation/hwmon/asus_ec_sensors.rst +++
+> > b/Documentation/hwmon/asus_ec_sensors.rst @@ -39,6 +39,7 @@ The
+> > driver is aware of and reads the following sensors: 9. Readings
+> > from the "Water flow meter" header (RPM) 10. Readings from the
+> > "Water In" and "Water Out" temperature headers 11. CPU current
+> > +12. CPU core voltage
+> > =20
+> >  Sensor values are read from EC registers, and to avoid race with
+> > the board firmware the driver acquires ACPI mutex, the one used by
+> > the WMI when its diff --git a/drivers/hwmon/asus-ec-sensors.c
+> > b/drivers/hwmon/asus-ec-sensors.c index dd7b207d062f..bfac08a5dc57
+> > 100644 --- a/drivers/hwmon/asus-ec-sensors.c
+> > +++ b/drivers/hwmon/asus-ec-sensors.c
+> > @@ -18,6 +18,7 @@
+> >   * - VRM Heat Sink fan RPM
+> >   * - Water Flow fan RPM
+> >   * - CPU current
+> > + * - CPU core voltage
+> >   */
+> > =20
+> >  #include <linux/acpi.h>
+> > @@ -100,6 +101,8 @@ enum ec_sensors {
+> >  	ec_sensor_temp_t_sensor,
+> >  	/* VRM temperature [=E2=84=83] */
+> >  	ec_sensor_temp_vrm,
+> > +	/* CPU Core voltage [mV] */
+> > +	ec_sensor_in_cpu_core,
+> >  	/* CPU_Opt fan [RPM] */
+> >  	ec_sensor_fan_cpu_opt,
+> >  	/* VRM heat sink fan [RPM] */
+> > @@ -121,6 +124,7 @@ enum ec_sensors {
+> >  #define SENSOR_TEMP_MB BIT(ec_sensor_temp_mb)
+> >  #define SENSOR_TEMP_T_SENSOR BIT(ec_sensor_temp_t_sensor)
+> >  #define SENSOR_TEMP_VRM BIT(ec_sensor_temp_vrm)
+> > +#define SENSOR_IN_CPU_CORE BIT(ec_sensor_in_cpu_core)
+> >  #define SENSOR_FAN_CPU_OPT BIT(ec_sensor_fan_cpu_opt)
+> >  #define SENSOR_FAN_VRM_HS BIT(ec_sensor_fan_vrm_hs)
+> >  #define SENSOR_FAN_CHIPSET BIT(ec_sensor_fan_chipset)
+> > @@ -139,6 +143,8 @@ static const struct ec_sensor_info
+> > known_ec_sensors[] =3D { [ec_sensor_temp_t_sensor] =3D
+> >  		EC_SENSOR("T_Sensor", hwmon_temp, 1, 0x00, 0x3d),
+> >  	[ec_sensor_temp_vrm] =3D EC_SENSOR("VRM", hwmon_temp, 1,
+> > 0x00, 0x3e),
+> > +	[ec_sensor_in_cpu_core] =3D
+> > +		EC_SENSOR("CPU Core", hwmon_in, 2, 0x00, 0xa2),
+> >  	[ec_sensor_fan_cpu_opt] =3D
+> >  		EC_SENSOR("CPU_Opt", hwmon_fan, 2, 0x00, 0xb0),
+> >  	[ec_sensor_fan_vrm_hs] =3D EC_SENSOR("VRM HS", hwmon_fan, 2,
+> > 0x00, 0xb2), @@ -172,32 +178,34 @@ static const struct
+> > dmi_system_id asus_ec_dmi_table[] __initconst =3D {
+> > SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET),
+> > DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "Pro WS X570-ACE",
+> > SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
+> > -		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
+> > +		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU |
+> > SENSOR_IN_CPU_CORE), =20
+>=20
+> Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+>=20
+> on Pro WS X570-ACE:
+>=20
+> ```
+> asusec-isa-0000
+> Adapter: ISA adapter
+> CPU Core:      1.47 V
+> =E2=80=A6
+> ```
+>=20
+> Thanks.
+>=20
+> >  	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+> >  			      "ROG CROSSHAIR VIII DARK HERO",
+> >  		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+> > SENSOR_TEMP_T_SENSOR | SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+> > -		SENSOR_FAN_CPU_OPT | SENSOR_FAN_WATER_FLOW |
+> > SENSOR_CURR_CPU),
+> > +		SENSOR_FAN_CPU_OPT | SENSOR_FAN_WATER_FLOW |
+> > +		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+> >  	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+> >  			      "ROG CROSSHAIR VIII FORMULA",
+> >  		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+> > SENSOR_TEMP_T_SENSOR | SENSOR_TEMP_VRM | SENSOR_FAN_CPU_OPT |
+> > SENSOR_FAN_CHIPSET |
+> > -		SENSOR_CURR_CPU),
+> > +		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+> >  	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG
+> > CROSSHAIR VIII HERO", SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+> > SENSOR_TEMP_T_SENSOR | SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+> >  		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
+> > -		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
+> > +		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU |
+> > SENSOR_IN_CPU_CORE), DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+> >  			      "ROG CROSSHAIR VIII HERO (WI-FI)",
+> >  		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+> > SENSOR_TEMP_T_SENSOR | SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+> >  		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
+> > -		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
+> > +		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU |
+> > SENSOR_IN_CPU_CORE), DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+> >  			      "ROG CROSSHAIR VIII IMPACT",
+> >  		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+> > SENSOR_TEMP_T_SENSOR |
+> > -		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET |
+> > SENSOR_CURR_CPU),
+> > +		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET |
+> > +		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+> >  	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX
+> > B550-E GAMING", SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+> >  		SENSOR_TEMP_T_SENSOR |
+> > @@ -205,17 +213,19 @@ static const struct dmi_system_id
+> > asus_ec_dmi_table[] __initconst =3D {
+> > DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX B550-I
+> > GAMING", SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+> > -		SENSOR_TEMP_VRM | SENSOR_FAN_VRM_HS |
+> > SENSOR_CURR_CPU),
+> > +		SENSOR_TEMP_VRM | SENSOR_FAN_VRM_HS |
+> > +		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+> >  	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX
+> > X570-E GAMING", SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+> >  		SENSOR_TEMP_T_SENSOR |
+> > -		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET |
+> > SENSOR_CURR_CPU),
+> > +		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET |
+> > +		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+> >  	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX
+> > X570-F GAMING", SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+> >  		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET),
+> >  	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX
+> > X570-I GAMING", SENSOR_TEMP_T_SENSOR | SENSOR_FAN_VRM_HS |
+> > -		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
+> > +		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU |
+> > SENSOR_IN_CPU_CORE), {}
+> >  };
+> > =20
+> > @@ -467,7 +477,6 @@ static long scale_sensor_value(s32 value, int
+> > data_type) switch (data_type) {
+> >  	case hwmon_curr:
+> >  	case hwmon_temp:
+> > -	case hwmon_in:
+> >  		return value * MILLI;
+> >  	default:
+> >  		return value;
+> >  =20
+>=20
+>=20
 
-It reduces around 2% of elapsed time when I ran a micro-benchmark.  It
-was `perf bench sched messaging -p -l 1000000` and it had a pretty low
-lock contention rate (under 1% of total lock acquisition).  So the
-improvement should come from the fast path.
+Tested-by: Denis Pauk <pauk.denis@gmail.com>
 
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- include/linux/mutex.h  |  2 +-
- kernel/locking/mutex.c | 30 ++++++++++++++++++++----------
- 2 files changed, 21 insertions(+), 11 deletions(-)
-
-diff --git a/include/linux/mutex.h b/include/linux/mutex.h
-index b2d018250a41..49bde305453e 100644
---- a/include/linux/mutex.h
-+++ b/include/linux/mutex.h
-@@ -172,7 +172,7 @@ do {							\
-  * See kernel/locking/mutex.c for detailed documentation of these APIs.
-  * Also see Documentation/locking/mutex-design.rst.
-  */
--#ifdef CONFIG_LOCK_INFO
-+#ifdef CONFIG_DEBUG_LOCK_ALLOC
- extern void mutex_lock_nested(struct mutex *lock, unsigned int subclass);
- extern void _mutex_lock_nest_lock(struct mutex *lock, struct lockdep_map *nest_lock);
- 
-diff --git a/kernel/locking/mutex.c b/kernel/locking/mutex.c
-index 8733b96ce20a..f8bc4ae312a0 100644
---- a/kernel/locking/mutex.c
-+++ b/kernel/locking/mutex.c
-@@ -149,7 +149,7 @@ static inline bool __mutex_trylock(struct mutex *lock)
- 	return !__mutex_trylock_common(lock, false);
- }
- 
--#ifndef CONFIG_LOCK_INFO
-+#ifndef CONFIG_DEBUG_LOCK_ALLOC
- /*
-  * Lockdep annotations are contained to the slow paths for simplicity.
-  * There is nothing that would stop spreading the lockdep annotations outwards
-@@ -245,7 +245,7 @@ static void __mutex_handoff(struct mutex *lock, struct task_struct *task)
- 	}
- }
- 
--#ifndef CONFIG_LOCK_INFO
-+#ifndef CONFIG_DEBUG_LOCK_ALLOC
- /*
-  * We split the mutex lock/unlock logic into separate fastpath and
-  * slowpath functions, to reduce the register pressure on the fastpath.
-@@ -281,6 +281,8 @@ void __sched mutex_lock(struct mutex *lock)
- 
- 	if (!__mutex_trylock_fast(lock))
- 		__mutex_lock_slowpath(lock);
-+	else
-+		mutex_acquire(&lock->dep_map, 0, 0, _RET_IP_);
- }
- EXPORT_SYMBOL(mutex_lock);
- #endif
-@@ -533,9 +535,11 @@ static noinline void __sched __mutex_unlock_slowpath(struct mutex *lock, unsigne
-  */
- void __sched mutex_unlock(struct mutex *lock)
- {
--#ifndef CONFIG_LOCK_INFO
--	if (__mutex_unlock_fast(lock))
-+#ifndef CONFIG_DEBUG_LOCK_ALLOC
-+	if (__mutex_unlock_fast(lock)) {
-+		mutex_release(&lock->dep_map, _RET_IP_);
- 		return;
-+	}
- #endif
- 	__mutex_unlock_slowpath(lock, _RET_IP_);
- }
-@@ -591,7 +595,7 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
- 		if (ww_ctx->acquired == 0)
- 			ww_ctx->wounded = 0;
- 
--#ifdef CONFIG_LOCK_INFO
-+#ifdef CONFIG_DEBUG_LOCK_ALLOC
- 		nest_lock = &ww_ctx->dep_map;
- #endif
- 	}
-@@ -778,7 +782,7 @@ int ww_mutex_trylock(struct ww_mutex *ww, struct ww_acquire_ctx *ww_ctx)
- }
- EXPORT_SYMBOL(ww_mutex_trylock);
- 
--#ifdef CONFIG_LOCK_INFO
-+#ifdef CONFIG_DEBUG_LOCK_ALLOC
- void __sched
- mutex_lock_nested(struct mutex *lock, unsigned int subclass)
- {
-@@ -937,7 +941,7 @@ static noinline void __sched __mutex_unlock_slowpath(struct mutex *lock, unsigne
- 	wake_up_q(&wake_q);
- }
- 
--#ifndef CONFIG_LOCK_INFO
-+#ifndef CONFIG_DEBUG_LOCK_ALLOC
- /*
-  * Here come the less common (and hence less performance-critical) APIs:
-  * mutex_lock_interruptible() and mutex_trylock().
-@@ -964,8 +968,10 @@ int __sched mutex_lock_interruptible(struct mutex *lock)
- {
- 	might_sleep();
- 
--	if (__mutex_trylock_fast(lock))
-+	if (__mutex_trylock_fast(lock)) {
-+		mutex_acquire(&lock->dep_map, 0, 0, _RET_IP_);
- 		return 0;
-+	}
- 
- 	return __mutex_lock_interruptible_slowpath(lock);
- }
-@@ -988,8 +994,10 @@ int __sched mutex_lock_killable(struct mutex *lock)
- {
- 	might_sleep();
- 
--	if (__mutex_trylock_fast(lock))
-+	if (__mutex_trylock_fast(lock)) {
-+		mutex_acquire(&lock->dep_map, 0, 0, _RET_IP_);
- 		return 0;
-+	}
- 
- 	return __mutex_lock_killable_slowpath(lock);
- }
-@@ -1078,7 +1086,7 @@ int __sched mutex_trylock(struct mutex *lock)
- }
- EXPORT_SYMBOL(mutex_trylock);
- 
--#ifndef CONFIG_LOCK_INFO
-+#ifndef CONFIG_DEBUG_LOCK_ALLOC
- int __sched
- ww_mutex_lock(struct ww_mutex *lock, struct ww_acquire_ctx *ctx)
- {
-@@ -1087,6 +1095,7 @@ ww_mutex_lock(struct ww_mutex *lock, struct ww_acquire_ctx *ctx)
- 	if (__mutex_trylock_fast(&lock->base)) {
- 		if (ctx)
- 			ww_mutex_set_context_fastpath(lock, ctx);
-+		mutex_acquire(&lock->base.dep_map, 0, 0, _RET_IP_);
- 		return 0;
- 	}
- 
-@@ -1102,6 +1111,7 @@ ww_mutex_lock_interruptible(struct ww_mutex *lock, struct ww_acquire_ctx *ctx)
- 	if (__mutex_trylock_fast(&lock->base)) {
- 		if (ctx)
- 			ww_mutex_set_context_fastpath(lock, ctx);
-+		mutex_acquire(&lock->base.dep_map, 0, 0, _RET_IP_);
- 		return 0;
- 	}
- 
--- 
-2.35.0.263.gb82422642f-goog
-
+Best regards,
+             Denis.
