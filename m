@@ -2,96 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8316FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE71C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354330AbiBHLXs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:23:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47840 "EHLO
+        id S231797AbiBHLYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:24:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349748AbiBHJzI (ORCPT
+        with ESMTP id S1355894AbiBHJ7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:55:08 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12106C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:55:07 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id b13so36265504edn.0
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:55:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AqLy4wbT30gKNHEEk8JX8phB5jik7Edkg+UhlJoA5rs=;
-        b=GmStCOfR1LjR64d3+n6xiUfvnpjdXMYf6CGOzrW6RIz8xDIP0n8/jYPfRmgeH4wvSA
-         OHrBANagwetRO1ctOhpjjqD7hq3IRov+o5g/6r0ohsUWmjxkkAJDMOq5G7RuPuznKZbW
-         Lzs8UqpznjHrlZnMzaYxyFRSPYAnFnvEXsiKUDiZvjkpTJFrJJ7Ls7UIM2rbS4+dOVrw
-         ZTl80lTnm3SQW3C0NMVVs1AuA2J1zOFaOQeqPQydNl0ZsDO068k9z5YB2blovsV4bGfr
-         gty2VNbQEfzPRpAvMj9ngw21yaINuwxLkGx4nbkMcjKNYVKDht8HkTJcUAvqS8XqsgVi
-         dwyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AqLy4wbT30gKNHEEk8JX8phB5jik7Edkg+UhlJoA5rs=;
-        b=FNPHfgf9J+vKzuVDR1lMuS5YPCOMO/NTSwjCs9LTNI2Iuikk5Ms8P9ztwplnXWNqvj
-         ndKtonRW4WsffmJFBbf4kwcURmaqOIVy+0P6/t3plAZeLk1HmaNuULQfiNM/1svBFl78
-         f0WwER0dLbv9Ow3MP9dYjjDabKWb6E6jocmCIxdSTCcAZih139DuKNNY8yJYjw5eB5uC
-         tHMwNdJMK2nGpdU/3+c9fnNmdwxed/ubkajavu8d72Xt/c2Bt4LgcxmkJiD/mUAGdMjU
-         2T7kCB16U3H2Z+GnzFt8AKrKZfCtebC6rkgJgygwIPZncpLfmhtiFA5jDe4AQAOmBCUF
-         n2Sw==
-X-Gm-Message-State: AOAM530WqPXPGY/HG1Mh5k2uX7MPm5Q540zQFvGq/Y1T5erAkB0AY/l8
-        XcUkMQJYe2Tvel0f8VTUWBUXIoSmEFk5uIRIx1xQBA==
-X-Google-Smtp-Source: ABdhPJyuckf4+FV8dJpo2WtDgSZtUTZx/r7KCc+6Q0sBzWGx76zj30iQdTOjUHRAsDoMGMpJF9mslMLO5Se5xA+4mcg=
-X-Received: by 2002:aa7:de91:: with SMTP id j17mr3715196edv.396.1644314105618;
- Tue, 08 Feb 2022 01:55:05 -0800 (PST)
+        Tue, 8 Feb 2022 04:59:32 -0500
+X-Greylist: delayed 654 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 01:59:29 PST
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3EB1CC03FEC0;
+        Tue,  8 Feb 2022 01:59:29 -0800 (PST)
+HMM_SOURCE_IP: 172.18.0.48:33584.1340775733
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-110.86.5.91 (unknown [172.18.0.48])
+        by chinatelecom.cn (HERMES) with SMTP id A4EC62800A8;
+        Tue,  8 Feb 2022 17:48:27 +0800 (CST)
+X-189-SAVE-TO-SEND: zhenggy@chinatelecom.cn
+Received: from  ([172.18.0.48])
+        by app0024 with ESMTP id 138a66c129c44c58b32f4233f37be3ab for linux-kernel@vger.kernel.org;
+        Tue, 08 Feb 2022 17:48:30 CST
+X-Transaction-ID: 138a66c129c44c58b32f4233f37be3ab
+X-Real-From: zhenggy@chinatelecom.cn
+X-Receive-IP: 172.18.0.48
+X-MEDUSA-Status: 0
+Sender: zhenggy@chinatelecom.cn
+To:     bcrl@kvack.org, viro@zeniv.linux.org.uk, ebiggers@kernel.org,
+        axboe@kernel.dk
+Cc:     linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+From:   zhenggy <zhenggy@chinatelecom.cn>
+Subject: [PATCH] aio: inform block layer of how many requests we are
+ submitting
+Message-ID: <8e0186ed-04bb-7bb8-ff09-581a7b9fdf03@chinatelecom.cn>
+Date:   Tue, 8 Feb 2022 17:47:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-References: <20220120150024.646714-1-paul.kocialkowski@bootlin.com>
- <20220120150024.646714-4-paul.kocialkowski@bootlin.com> <CACRpkdZnw-Tf2eQwO+LZRW4UacR09qWRWct00=XLb4pfa-N3=g@mail.gmail.com>
-In-Reply-To: <CACRpkdZnw-Tf2eQwO+LZRW4UacR09qWRWct00=XLb4pfa-N3=g@mail.gmail.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 8 Feb 2022 10:54:55 +0100
-Message-ID: <CAMRc=MewxfQqM+QvzqjP05Qe5TeiEx+iiOFZLmieqCCVOL9UGQ@mail.gmail.com>
-Subject: Re: [PATCH v10 3/6] gpio: logicvc: Support compatible with major
- version only
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 30, 2022 at 1:43 AM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> On Thu, Jan 20, 2022 at 4:00 PM Paul Kocialkowski
-> <paul.kocialkowski@bootlin.com> wrote:
->
-> > Support the newly-introduced common compatible for version 3.
-> >
-> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
->
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
->
-> Are there dependencies between the GPIO patches and the rest?
-> Doesn't look like that.
-> Can Bartosz just merge the GPIO stuff to the GPIO tree?
->
-> Yours,
-> Linus Walleij
+After commit 47c122e35d7e ("block: pre-allocate requests if plug is
+started and is a batch"), block layer can make smarter request allocation
+if it know how many requests it need to submit, so switch to use
+blk_start_plug_nr_ios here to pass the number of requests we will submit.
 
-Except I'm seeing there's no agreement on the actual compatible yet in
-the previous patch.
+Signed-off-by: GuoYong Zheng <zhenggy@chinatelecom.cn>
+---
+ fs/aio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Bart
+diff --git a/fs/aio.c b/fs/aio.c
+index 4ceba13..7c4935e 100644
+--- a/fs/aio.c
++++ b/fs/aio.c
+@@ -2071,7 +2071,7 @@ static int io_submit_one(struct kioctx *ctx, struct iocb __user *user_iocb,
+ 		nr = ctx->nr_events;
+
+ 	if (nr > AIO_PLUG_THRESHOLD)
+-		blk_start_plug(&plug);
++		blk_start_plug_nr_ios(&plug, nr);
+ 	for (i = 0; i < nr; i++) {
+ 		struct iocb __user *user_iocb;
+
+-- 
+1.8.3.1
+
