@@ -2,96 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B94AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235677AbiBHP73 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:59:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
+        id S1382587AbiBHP7c (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 10:59:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381811AbiBHP7X (ORCPT
+        with ESMTP id S1382495AbiBHP71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:59:23 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62362C061576;
-        Tue,  8 Feb 2022 07:59:22 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2862C1FB;
-        Tue,  8 Feb 2022 07:59:22 -0800 (PST)
-Received: from [10.57.36.220] (unknown [10.57.36.220])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8899D3F70D;
-        Tue,  8 Feb 2022 07:59:20 -0800 (PST)
-Message-ID: <2d52edc4-c6e6-b641-b291-d1726cc20b30@arm.com>
-Date:   Tue, 8 Feb 2022 15:58:55 +0000
+        Tue, 8 Feb 2022 10:59:27 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A38C0613CA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 07:59:24 -0800 (PST)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id EB1C13F32B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 15:59:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644335962;
+        bh=GCejdhR+a/xBJu0EdDNmDz0h5nAc0bdug5YEZYD9D0o=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=d6dKpMYQ7SqpS6VioALkwrSX/7lH0jVSalazDnvVWhF4ZpEoixxyrA/mbodWQNFxw
+         bC16r3FexJ8wqrnnr7hd/yqQv1FS1G5ml4nZOeexf7hMGRwuhW2HWF567xxuJBmiPJ
+         dqbWBkpONGPWH24tHGJ8QMD6O9jtdUJcXzcBQ6rZAAEdelmY5sr+Bg0HYH3WRIMkKn
+         1otuQiX0zGw/LpPHHQblBqr50OAzBoTYmhlrjrA8Uf8kZs/1CcRruSVU1B7N4q5eFi
+         pbXWebr1t5dj9SoW08IVipWBoiUKeFEU8Kg4I2kY5ckW/zAoshtvBAcugabtWceZrZ
+         WX3wjj22etH/A==
+Received: by mail-ej1-f71.google.com with SMTP id ka12-20020a170907990c00b006c41c582397so4433899ejc.11
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 07:59:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GCejdhR+a/xBJu0EdDNmDz0h5nAc0bdug5YEZYD9D0o=;
+        b=6avZ2Ob/gLA3NUsgCmqfwaZRKUxAduUWQXoxMAssFvB7nto5muRQeNur9H8HnDG2AB
+         NXSxEMlNTYSBkXefSAktpn8swpnyA61bTEJ4X6fsRt6waAzfdzz4HsZz4qPsazJjQfqY
+         0QAD/qvYTD95HPiit1mC3zIek4Snwzr2KJXR3/f8TV5vxR4lFE1UOWAzmn4wkirPxbd1
+         1Bis6pbHttiEA9XtCHKcKvE4Iicyl8tpsuYfXGTSHPt7d/BCc90drrJHUVdKJfni3Gb0
+         XWg+hVIzfJUspS/dAlkPiUTHMBYbbOuP9SexS7VLfr8m2lTfr6iHIk+REB7xCKbC+Fr5
+         WlLw==
+X-Gm-Message-State: AOAM533pmNnFuNBVS6Na7ZZkqDtc5N7rXBxC43YXbxx+YsfyCf/BFex3
+        sa3dL1w/PFWo1aSpSoiYjep9hqudFh84yQE50u/6TOpr3uF2jGN4kzKfZOU/27FY4upng22zE3r
+        O7ejTbQfbQHewcGbkY4Rb3OI3wEe2nztEuk8TPViqOQ==
+X-Received: by 2002:a17:907:60d0:: with SMTP id hv16mr4209716ejc.668.1644335962378;
+        Tue, 08 Feb 2022 07:59:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzzMWiC01ysSyAaBuDoWTE5s3bHip+jTOUASLhVK6NUfNE19TNoA/lCw7TRiHSeEzA5hH0AUg==
+X-Received: by 2002:a17:907:60d0:: with SMTP id hv16mr4209691ejc.668.1644335962134;
+        Tue, 08 Feb 2022 07:59:22 -0800 (PST)
+Received: from [192.168.0.94] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id q4sm4956884ejb.109.2022.02.08.07.59.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 07:59:21 -0800 (PST)
+Message-ID: <fea9a9b3-5e15-e177-a0ee-ac08fa2b91ab@canonical.com>
+Date:   Tue, 8 Feb 2022 16:59:20 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [RFC PATCH v2 0/5] topdown with metrics
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 3/3] dt-bindings: crypto: Convert Atmel SHA to yaml
 Content-Language: en-US
-From:   Andrew Kilroy <andrew.kilroy@arm.com>
-To:     John Garry <john.garry@huawei.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, acme@kernel.org,
-        irogers@google.com, ak@linux.intel.com
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>
-References: <4fefb1bc-49b2-bc5b-23cd-cd8fabe8c588@huawei.com>
- <20220111150749.13365-1-andrew.kilroy@arm.com>
- <7cd7bd11-4900-81c4-de84-6e5fc63ec87c@huawei.com>
- <1fa70669-146c-7ec6-cee9-4f59751eb334@arm.com>
-In-Reply-To: <1fa70669-146c-7ec6-cee9-4f59751eb334@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        herbert@gondor.apana.org.au
+Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        alexandre.belloni@bootlin.com, linux-crypto@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kavyasree.kotagiri@microchip.com, devicetree@vger.kernel.org
+References: <20220208104918.226156-1-tudor.ambarus@microchip.com>
+ <20220208104918.226156-4-tudor.ambarus@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220208104918.226156-4-tudor.ambarus@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 08/02/2022 11:49, Tudor Ambarus wrote:
+> Convert Atmel SHA documentation to yaml format. With the conversion the
+> clock and clock-names properties are made mandatory. The driver returns
+> -EINVAL if "sha_clk" is not found, reflect that in the bindings and make
+> the clock and clock-names properties mandatory. Update the example to
+> better describe how one should define the dt node.
+> 
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> ---
+>  .../crypto/atmel,at91sam9g46-sha.yaml         | 59 +++++++++++++++++++
+>  .../bindings/crypto/atmel-crypto.txt          | 25 --------
+>  2 files changed, 59 insertions(+), 25 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-sha.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/crypto/atmel-crypto.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-sha.yaml b/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-sha.yaml
+> new file mode 100644
+> index 000000000000..e454f4468dc5
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-sha.yaml
+> @@ -0,0 +1,59 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/crypto/atmel,at91sam9g46-sha.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Atmel Secure Hash Algorithm (SHA) HW cryptographic accelerator
+> +
+> +maintainers:
+> +  - Tudor Ambarus <tudor.ambarus@microchip.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: atmel,at91sam9g46-sha
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    const: sha_clk
+> +
+> +  dmas:
+> +    maxItems: 1
+> +    description: TX DMA Channel
+> +
+
+One-item-description should work as well, so if you are going to resend:
+
++  dmas:
++    items:
++      - description: TX DMA Channel
+
+but the code looks equivalent, so:
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
 
-On 27/01/2022 11:42, Andrew Kilroy wrote:
-> 
-> 
-> On 20/01/2022 09:26, John Garry wrote:
->> On 11/01/2022 15:07, Andrew Kilroy wrote:
->>> This patch series adds the ability for the --topdown option to use
->>> metrics (defined in json files in the pmu-events directory) to describe
->>> how to calculate and determine the output columns for topdown level 1.
->>>
->>> For this to work, a number of metrics have to be defined for the
->>> relevant processor with the MetricGroup name "TopDownL1".  perf will
->>> arrange for the events defined in each metric to be collected, and each
->>> metric will be displayed in the output, as if
->>>
->>>    perf stat -M 'TopDownL1' --metric-only -- exampleapp
->>>
->>> had been used.
->>>
->>> Topdown was already implemented where certain kernel events are defined.
->>> If these kernel events are defined, the new json metrics behaviour is
->>> not used.  The json metrics approach is only used if the kernel events
->>> are absent.
->>>
->>> The last patch in the series disables the json metrics behaviour on x86.
->>> This is because of concerns that due to SMT it's not straightforward to
->>> express the various formulas as json for certain x86 cpus.  See
->>
->> I suppose this solution is ok.
->>
-> 
-> Thanks, would you mind giving it a Reviewed-By?
-> 
->> A concern is that today we only have 1x arm64 platform which actually 
->> supports this in mainline.
->>
->> Do you have any more which you plan to support?
->>
-> 
-> The Neoverse cores, mainly.
-> 
-
-Thanks for the feedback on this RFC, I think we'll resubmit these 
-patches at a later time, when we've got a json metrics file or two.
-
-Thanks,
-Andrew
+Best regards,
+Krzysztof
