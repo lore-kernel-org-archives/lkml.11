@@ -2,258 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF7AC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E04DC35274
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386762AbiBHWYI (ORCPT
+        id S1387586AbiBHW2f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:24:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
+        Tue, 8 Feb 2022 17:28:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386788AbiBHVLt (ORCPT
+        with ESMTP id S1387030AbiBHVsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:11:49 -0500
-Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2188C0612BC
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:11:48 -0800 (PST)
-Received: by mail-oo1-xc2d.google.com with SMTP id u25-20020a4ad0d9000000b002e8d4370689so104469oor.12
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:11:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=IolIE8DlbmDNUe3gGgG48U1O9vWoP4C6TXSIdX5Tgvs=;
-        b=AbUPMmzJT8mciX3qYbx/Wy97gl16cigP99mpGQx48PAxS+kyG4yRLTtflI4z6/QkEC
-         NPV2/hIi1bb5CMFGGAiFPrYcYTMQZp3w8o2qpSc/sZypMyS7ySM4bDmZ8+4uIr4iJCMb
-         LookcqAXmZ2p25+haf3s1l+u0dqp1Ozm+G878=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=IolIE8DlbmDNUe3gGgG48U1O9vWoP4C6TXSIdX5Tgvs=;
-        b=ZYB9tDkMiQFo4bsQRKS4SPJeP47eh5qHZSTLCz5K60CdvHHp/GukMANb7LkUpyitJS
-         76eBVGcInTreAmkzRzDNrzQpM/BtVPz9ZlL1E5FS1qkDacohx49p/2pvDv6oRnJnm29P
-         Wum1uhmxRn574Jwf3k9XiTWKiA1S6tO7VlKjn1OGHywoEDzggLiG+3Zxi7R4LlCW4Hjk
-         YZds0InXw6Tu+5oWB5B4KvF3s0RYzpwForQk1WeLAWpMjsqh8dmKu+s1CFWAarkr8cNg
-         n9TqCGx4L03gr1AGd0QktOKALxaDUh+pkHQwheBn4Mz+DOI5NLLwdrKTc0qghbPdwbur
-         Kcsg==
-X-Gm-Message-State: AOAM532XcMIl45tC7zJmpA7yazRSeJcpbJrbwwWBTb08W3tax2AQ14TX
-        FZrIZzwH81hfE9s6ry64r5hr4pIQHG/SRrv1/+13Qw==
-X-Google-Smtp-Source: ABdhPJwHNoxydd/t2CaA3EqBCm15INeCVbhxeoynL95/uM/C6nBW9vtMXvetlz1uGTkYLWiossI7SRfqhKSAUbviamc=
-X-Received: by 2002:a4a:b001:: with SMTP id f1mr2473858oon.25.1644354708042;
- Tue, 08 Feb 2022 13:11:48 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 8 Feb 2022 13:11:47 -0800
+        Tue, 8 Feb 2022 16:48:52 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11888C0612B8;
+        Tue,  8 Feb 2022 13:48:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644356931; x=1675892931;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=SE5sCiy+dRL7r3+PSeTM1Kw96jjyzlor4t7Em7ahwY0=;
+  b=NgvC2HhJQ/nPf0Tn24dRwSO2IKLF/JF9gUUq47TS6DZYRM6/V2HGZVNR
+   NG8BWPKtsa/SmldJyjtonna6TGdtbLaPMY3SZBBrx4nCBFwhZ6RkP6y6V
+   a4XkYyuk7yXBf6Jw/KBvi5n+1txxrNTcpQ4uEzf8ZSJSLfFeOdZKn+dui
+   96j3KM6q5khZg//6zMbDAyR2+qgCaK11inbrUwuTDvL/rcqSwGz+Lx2iH
+   5cgWW+E7fACoFfTd2dF5QszLe6hBZo61mJqyP/0xWtvsGbr8IXDDnd7Ps
+   JAis5tVHvU7kfGaXhMOFwsabNMb+LYv4kb0W9IMT8msXP7Mp+K9iJpclE
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="309805367"
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="309805367"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 13:48:49 -0800
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="632992866"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 13:48:49 -0800
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org, shuah@kernel.org
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH V3 2/4] selftests/sgx: Do not attempt enclave build without valid enclave
+Date:   Tue,  8 Feb 2022 13:48:40 -0800
+Message-Id: <e3778c77f95e6dca348c732b12f155051d2899b4.1644355600.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1644355600.git.reinette.chatre@intel.com>
+References: <cover.1644355600.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <1644334454-16719-3-git-send-email-quic_srivasam@quicinc.com>
-References: <1644334454-16719-1-git-send-email-quic_srivasam@quicinc.com> <1644334454-16719-3-git-send-email-quic_srivasam@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Tue, 8 Feb 2022 13:11:47 -0800
-Message-ID: <CAE-0n52LGY2amCKo+40D4BoSsANs7JeQ0t_4QfeXNC5q64Ccwg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] arm64: dts: qcom: sc7280: add lpass lpi pin
- controller node
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        devicetree@vger.kernel.org, dianders@chromium.org,
-        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org
-Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Srinivasa Rao Mandadapu (2022-02-08 07:34:13)
-> Add LPASS LPI pinctrl node required for Audio functionality on sc7280
-> based platforms.
->
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 150 +++++++++++++++++++++++++++++++
->  1 file changed, 150 insertions(+)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> index c7d6c46..4704a93 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> @@ -638,3 +638,153 @@
->                 bias-pull-up;
->         };
->  };
+It is not possible to build an enclave if it was not possible to load
+the binary from which it should be constructed. Do not attempt
+to make further progress but instead return with failure. A
+"return false" from setup_test_encl() is expected to trip an
+ASSERT_TRUE() and abort the rest of the test.
 
-Newline here.
+Fixes: 1b35eb719549 ("selftests/sgx: Encpsulate the test enclave creation")
+Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+Acked-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+Changes since V2:
+- Add Acked-by from Shuah.
 
-> +&soc {
-> +       lpass_tlmm: pinctrl@33c0000 {
-> +               compatible = "qcom,sc7280-lpass-lpi-pinctrl";
-> +               reg = <0 0x33c0000 0x0 0x20000>,
-> +                       <0 0x3550000 0x0 0x10000>;
-> +               gpio-controller;
-> +               #gpio-cells = <2>;
-> +               gpio-ranges = <&lpass_tlmm 0 0 15>;
-> +
-> +               #clock-cells = <1>;
+Changes since V1:
+- Add Acked-by from Dave.
+- Detail in commit log what callers will see with this change (Dave).
 
-Presumably this doesn't change so it should be moved to the sc7280.dtsi
-file as part of the soc node. It can be marked status = "disabled" if
-it's not commonly used, but I suspect it is commonly used on sc7280?
+ tools/testing/selftests/sgx/main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +
-> +               dmic01_active: dmic01-active-pins {
+diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
+index 370c4995f7c4..a7cd2c3e6f7e 100644
+--- a/tools/testing/selftests/sgx/main.c
++++ b/tools/testing/selftests/sgx/main.c
+@@ -147,6 +147,7 @@ static bool setup_test_encl(unsigned long heap_size, struct encl *encl,
+ 	if (!encl_load("test_encl.elf", encl, heap_size)) {
+ 		encl_delete(encl);
+ 		TH_LOG("Failed to load the test enclave.\n");
++		return false;
+ 	}
+ 
+ 	if (!encl_measure(encl))
+-- 
+2.25.1
 
-The '-pins' suffix is redundant. Please remove it.
-
-> +                       clk {
-> +                               pins = "gpio6";
-> +                               function = "dmic1_clk";
-> +                               drive-strength = <8>;
-> +                               output-high;
-> +                       };
-
-Please be consistent and have a newline between nodes.
-
-> +                       data {
-> +                               pins = "gpio7";
-> +                               function = "dmic1_data";
-> +                               drive-strength = <8>;
-> +                               input-enable;
-> +                       };
-> +               };
-> +
-> +               dmic01_sleep: dmic01-sleep-pins {
-> +                       clk {
-> +                               pins = "gpio6";
-> +                               function = "dmic1_clk";
-> +                               drive-strength = <2>;
-> +                               bias-disable;
-> +                               output-low;
-> +                       };
-> +
-> +                       data {
-> +                               pins = "gpio7";
-> +                               function = "dmic1_data";
-> +                               drive-strength = <2>;
-> +                               pull-down;
-> +                               input-enable;
-
-Why does input-enable matter? It's not a gpio.
-
-> +                       };
-> +               };
-> +
-> +               dmic23_active: dmic02-active-pins {
-> +                       clk {
-> +                               pins = "gpio8";
-> +                               function = "dmic2_clk";
-> +                               drive-strength = <8>;
-> +                               output-high;
-> +                       };
-> +                       data {
-> +                               pins = "gpio9";
-> +                               function = "dmic2_data";
-> +                               drive-strength = <8>;
-> +                               input-enable;
-> +                       };
-> +               };
-> +
-> +               dmic23_sleep: dmic02-sleep-pins {
-> +                       clk {
-> +                               pins = "gpio8";
-> +                               function = "dmic2_clk";
-> +                               drive-strength = <2>;
-> +                               bias-disable;
-> +                               output-low;
-> +                       };
-> +
-> +                       data {
-> +                               pins = "gpio9";
-> +                               function = "dmic2_data";
-> +                               drive-strength = <2>;
-> +                               pull-down;
-> +                               input-enable;
-> +                       };
-> +               };
-> +
-> +               rx_swr_active: rx_swr-active-pins {
-> +                       clk {
-> +                               pins = "gpio3";
-> +                               function = "swr_rx_clk";
-> +                               drive-strength = <2>;
-> +                               slew-rate = <1>;
-> +                               bias-disable;
-> +                       };
-> +
-> +                       data {
-> +                               pins = "gpio4", "gpio5";
-> +                               function = "swr_rx_data";
-> +                               drive-strength = <2>;
-> +                               slew-rate = <1>;
-> +                               bias-bus-hold;
-> +                       };
-> +               };
-> +
-> +               rx_swr_sleep: rx_swr-sleep-pins {
-> +                       clk {
-> +                               pins = "gpio3";
-> +                               function = "swr_rx_clk";
-> +                               drive-strength = <2>;
-> +                               input-enable;
-> +                               bias-pull-down;
-> +                       };
-> +
-> +                       data {
-> +                               pins = "gpio4", "gpio5";
-> +                               function = "swr_rx_data";
-> +                               drive-strength = <2>;
-> +                               input-enable;
-> +                               bias-pull-down;
-> +                       };
-> +               };
-> +
-> +               tx_swr_active: tx_swr-active-pins {
-> +                       clk {
-> +                               pins = "gpio0";
-> +                               function = "swr_tx_clk";
-> +                               drive-strength = <2>;
-> +                               slew-rate = <1>;
-> +                               bias-disable;
-> +                       };
-> +
-> +                       data {
-> +                               pins = "gpio1", "gpio2", "gpio14";
-> +                               function = "swr_tx_data";
-> +                               drive-strength = <2>;
-> +                               slew-rate = <1>;
-> +                               bias-bus-hold;
-> +                       };
-> +               };
-> +
-> +               tx_swr_sleep: tx_swr-sleep-pins {
-
-No underscore in node names.
-
-> +                       clk {
-> +                               pins = "gpio0";
-> +                               function = "swr_tx_clk";
-> +                               drive-strength = <2>;
-> +                               input-enable;
-> +                               bias-pull-down;
-> +                       };
-> +
-> +                       data {
-> +                               pins = "gpio1", "gpio2", "gpio14";
-> +                               function = "swr_tx_data";
-> +                               drive-strength = <2>;
-> +                               input-enable;
-> +                               bias-bus-hold;
-> +                       };
-> +               };
-> +       };
-> +};
-> --
-> 2.7.4
->
