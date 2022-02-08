@@ -2,108 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE380C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381805AbiBHPrT (ORCPT
+        id S1381835AbiBHPrv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:47:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
+        Tue, 8 Feb 2022 10:47:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381703AbiBHPrS (ORCPT
+        with ESMTP id S231406AbiBHPrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:47:18 -0500
-X-Greylist: delayed 412 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 07:47:13 PST
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74A27C061579;
-        Tue,  8 Feb 2022 07:47:13 -0800 (PST)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app3 (Coremail) with SMTP id cC_KCgDHzBjRjgJirB7ZDA--.1759S2;
-        Tue, 08 Feb 2022 23:40:06 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-hams@vger.kernel.org
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH] ax25: fix NPD bug in ax25_disconnect
-Date:   Tue,  8 Feb 2022 23:40:00 +0800
-Message-Id: <20220208154000.87070-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgDHzBjRjgJirB7ZDA--.1759S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7AF17Xry8XF1DJFyktw1UWrg_yoW8AFy3pF
-        ZrGrWxJFWkJFy5JF4fGFykJF18ZFWkK398Gr1xZFn3A34UGwn8XrZ5trWUtayYkFsxAF1U
-        Xa4UG3y5ZF4kAaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r10
-        6r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
-        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VU1a9aPUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwNAVZdtYEE3QAIss
+        Tue, 8 Feb 2022 10:47:48 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8FB65C061578;
+        Tue,  8 Feb 2022 07:47:47 -0800 (PST)
+Received: from [192.168.254.13] (unknown [72.85.44.115])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 3DB4E20B90C6;
+        Tue,  8 Feb 2022 07:47:46 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3DB4E20B90C6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1644335267;
+        bh=KmL07M010/ylefc6zNElZjQYbSBmTpd/e1SNOQwetTM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=PJMmBh8HudgS0Eyy3CtKlIqOzn5Pav8NmMnir/hQca15xoFu+ZCXljT+Qd5p/gQsg
+         lLQqq0eq4lL6zH6U75lA+xrszXmWz9NcLfRErWB8pbDLJQBhiRZN/4P8Oj8OFWK0Dy
+         tAsi618Vp/hGxc8RkNyk9WTWmDUR1PVWipWf9V5U=
+Message-ID: <4be3fef6-63ca-af97-7fc6-d93d85a9b706@linux.microsoft.com>
+Date:   Tue, 8 Feb 2022 10:47:44 -0500
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] SELinux: Always allow FIOCLEX and FIONCLEX
+Content-Language: en-US
+To:     William Roberts <bill.c.roberts@gmail.com>,
+        Dominick Grift <dominick.grift@defensec.nl>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Demi Marie Obenour <demiobenour@gmail.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        SElinux list <selinux@vger.kernel.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        selinux-refpolicy@vger.kernel.org
+References: <4df50e95-6173-4ed1-9d08-3c1c4abab23f@gmail.com>
+ <CAHC9VhSjTqT-4TMxBnQOQHkj+djONihfeoPVyy1egrZY2t10XA@mail.gmail.com>
+ <c8a616e4-26a6-af51-212c-31dca0e265cd@gmail.com>
+ <CAHC9VhQTZdeNOx3AXdoc9LXUzDk5n7wyGBX-tV-ZaovhPAdWwQ@mail.gmail.com>
+ <e85dd38b-ef7b-ed7e-882e-124cdf942c44@gmail.com>
+ <CAHC9VhROuJtvNHuVaR6pEekNFacH3Tywx58_hn1f5Mwk+kjC8g@mail.gmail.com>
+ <b7e55304-d114-bcbe-08d2-b54828121a01@gmail.com>
+ <CAHC9VhSdgD4Nfaxbnnn4r-OK8koSZ7+zQoPShDbGi9PvkJFpng@mail.gmail.com>
+ <478e1651-a383-05ff-d011-6dda771b8ce8@linux.microsoft.com>
+ <875ypt5zmz.fsf@defensec.nl>
+ <CAFftDdo9JmbyPzPWRjOYgZBOS9b5d+OGKKf8egS8_ysbbWW87Q@mail.gmail.com>
+From:   Chris PeBenito <chpebeni@linux.microsoft.com>
+In-Reply-To: <CAFftDdo9JmbyPzPWRjOYgZBOS9b5d+OGKKf8egS8_ysbbWW87Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ax25_disconnect() in ax25_kill_by_device() is not
-protected by any locks, thus there is a race condition
-between ax25_disconnect() and ax25_destroy_socket().
-when ax25->sk is assigned as NULL by ax25_destroy_socket(),
-a NULL pointer dereference bug will occur if site (1) or (2)
-dereferences ax25->sk.
+On 2/8/2022 09:17, William Roberts wrote:
+> <snip>
+> 
+> This is getting too long for me.
+> 
+>>>
+>>> I don't have a strong opinion either way.  If one were to allow this
+>>> using a policy rule, it would result in a major policy breakage.  The
+>>> rule would turn on extended perm checks across the entire system,
+>>> which the SELinux Reference Policy isn't written for.  I can't speak
+>>> to the Android policy, but I would imagine it would be the similar
+>>> problem there too.
+>>
+>> Excuse me if I am wrong but AFAIK adding a xperm rule does not turn on
+>> xperm checks across the entire system.
+> 
+> It doesn't as you state below its target + class.
+> 
+>>
+>> If i am not mistaken it will turn on xperm checks only for the
+>> operations that have the same source and target/target class.
+> 
+> That's correct.
 
-ax25_kill_by_device()                | ax25_release()
-  ax25_disconnect()                  |   ax25_destroy_socket()
-    ...                              |
-    if(ax25->sk != NULL)             |     ...
-      ...                            |     ax25->sk = NULL;
-      bh_lock_sock(ax25->sk); //(1)  |     ...
-      ...                            |
-      bh_unlock_sock(ax25->sk); //(2)|
+Just to clarify (Demi Marie also mentioned this earlier in the thread), 
+what I originally meant was how to emulate this patch by using policy 
+rules means you need a rule that allows the two ioctls on all domains 
+for all objects.  That results in xperms checks enabled everywhere.
 
-This patch moves ax25_disconnect() into lock_sock(), which can
-synchronize with ax25_destroy_socket() in ax25_release().
 
-Fail log:
-===============================================================
-BUG: kernel NULL pointer dereference, address: 0000000000000088
-...
-RIP: 0010:_raw_spin_lock+0x7e/0xd0
-...
-Call Trace:
-ax25_disconnect+0xf6/0x220
-ax25_device_event+0x187/0x250
-raw_notifier_call_chain+0x5e/0x70
-dev_close_many+0x17d/0x230
-rollback_registered_many+0x1f1/0x950
-unregister_netdevice_queue+0x133/0x200
-unregister_netdev+0x13/0x20
-...
+>> This is also why i don't (with the exception TIOSCTI for termdev
+>> chr_file) use xperms by default.
+>>
+>> 1. it is really easy to selectively filter ioctls by adding xperm rules
+>> for end users (and since ioctls are often device/driver specific they
+>> know best what is needed and what not)
+> 
+>>>>> and FIONCLEX can be trivially bypassed unless fcntl(F_SETFD)
+>>
+>> 2. if you filter ioctls in upstream policy for example like i do with
+>> TIOSCTI using for example (allowx foo bar (ioctl chr_file (not
+>> (0xXXXX)))) then you cannot easily exclude additional ioctls later where source is
+>> foo and target/tclass is bar/chr_file because there is already a rule in
+>> place allowing the ioctl (and you cannot add rules)
+> 
+> Currently, fcntl flag F_SETFD is never checked, it's silently allowed, but
+> the equivalent FIONCLEX and FIOCLEX are checked. So if you wrote policy
+> to block the FIO*CLEX flags, it would be bypassable through F_SETFD and
+> FD_CLOEXEC. So the patch proposed makes the FIO flags behave like
+> F_SETFD. Which means upstream policy users could drop this allow, which
+> could then remove the target/class rule and allow all icotls. Which is easy
+> to prevent and fix you could be a rule in to allowx 0 as documented in the
+> wiki: https://selinuxproject.org/page/XpermRules
+> 
+> The questions I think we have here are:
+> 1. Do we agree that the behavior between SETFD and the FIO flags are equivalent?
+>    I think they are.
+> 2. Do we want the interfaces to behave the same?
+>    I think they should.
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
- net/ax25/af_ax25.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If you can bypass FIONCLEX and FIOCLEX checks by F_SETFD and FD_CLOEXEC, 
+then I agree that the two FIO checks don't have value and can be skipped 
+as F_SETFD is.
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 3e49d28824e..3d87040d1bf 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -92,8 +92,8 @@ static void ax25_kill_by_device(struct net_device *dev)
- 			lock_sock(sk);
- 			s->ax25_dev = NULL;
- 			ax25_dev_put(ax25_dev);
--			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
-+			release_sock(sk);
- 			spin_lock_bh(&ax25_list_lock);
- 			sock_put(sk);
- 			/* The entry could have been deleted from the
+> 3. Do upstream users of the policy construct care?
+>    The patch is backwards compat, but I don't want their to be cruft
+> floating around with extra allowxperm rules.
+
+Reference policy does not have any xperm rules at this time.  I looked 
+at the Fedora policy, and that doesn't have any.
+
+
+
 -- 
-2.17.1
-
+Chris PeBenito
