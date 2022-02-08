@@ -2,101 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA7A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:41:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02943C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351264AbiBHOlb (ORCPT
+        id S1351474AbiBHOnN convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:41:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
+        Tue, 8 Feb 2022 09:43:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230374AbiBHOl2 (ORCPT
+        with ESMTP id S238856AbiBHOnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 09:41:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E67C03FED0;
-        Tue,  8 Feb 2022 06:41:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 8 Feb 2022 09:43:08 -0500
+X-Greylist: delayed 325 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 06:43:06 PST
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B77E0C03FECE
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 06:43:06 -0800 (PST)
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-556-gBPqdHwSMgifiW50WL7BZA-1; Tue, 08 Feb 2022 09:36:32 -0500
+X-MC-Unique: gBPqdHwSMgifiW50WL7BZA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ACFB5B81AF8;
-        Tue,  8 Feb 2022 14:41:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6F45C004E1;
-        Tue,  8 Feb 2022 14:41:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644331285;
-        bh=S2Mhl+SP+krSYHv8YbK+y9MJgy+YlW+2kfYbIoDxG68=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HKCzlP4n8IGs7fL0TOcDJCjbRQNsbErtXPYz5+Fa3jOdvZ8xePIsFRZHfOX/CrCi+
-         oR09E+WrZeEaoXNz7F3K17cNPzCzGuTGR6bwztv8tBDYnSNObLfn7t1cP46SmVWlu5
-         ymTKB2BUW7dlrwBoZUlIE5O5WXb4HEte4tOzsq/mDep3SHpG8tb+qvIM8uRy5j9ZMk
-         EUneCfvv4owzLlepm9/oLbGtm0wGiXl8+oxX0457N5qXJeMwO1oJCfu7Pq0SGXL2gF
-         4Gm9WRrPMASGK7rVtffRpvm3gcusYO8oexcyEOdvk4PT7OJHISgSiSuUh1eUK/84+X
-         yGIMw8ldInbRw==
-Date:   Tue, 8 Feb 2022 14:41:20 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Charles Keepax <ckeepax@opensource.cirrus.com>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Prasad Kumpatla <quic_pkumpatl@quicinc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Subject: Re: [PATCH v2] regmap-irq: Use regmap_irq_update_bits instead of
- regmap_write
-Message-ID: <YgKBEIapL8MAQAoI@sirena.org.uk>
-References: <20220119142953.1804-1-quic_pkumpatl@quicinc.com>
- <CGME20220208122955eucas1p2d4e32f51224242e9ebd0bce58b9c04ca@eucas1p2.samsung.com>
- <39f1b598-58ca-1e3d-3065-8dd692ee7c9f@samsung.com>
- <20220208133957.GC112838@ediswmail.ad.cirrus.com>
- <20220208135036.GD112838@ediswmail.ad.cirrus.com>
- <YgJ2hG2vwUclA/zF@sirena.org.uk>
- <20220208143316.GE112838@ediswmail.ad.cirrus.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 72D0F189DF52;
+        Tue,  8 Feb 2022 14:36:31 +0000 (UTC)
+Received: from x1.com (unknown [10.22.16.42])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 27C917C141;
+        Tue,  8 Feb 2022 14:36:29 +0000 (UTC)
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
+Subject: [PATCH V3] rtla: Fix segmentation fault when failing to enable -t
+Date:   Tue,  8 Feb 2022 15:36:21 +0100
+Message-Id: <5660a2b6bf66c2655842360f2d7f6b48db5dba23.1644327249.git.bristot@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jv8MBE5QGK8kAXmU"
-Content-Disposition: inline
-In-Reply-To: <20220208143316.GE112838@ediswmail.ad.cirrus.com>
-X-Cookie: This is your fortune.
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=bristot@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+rtla osnoise and timerlat are causing a segmentation fault when running
+with the --trace option on a kernel that does not support multiple
+instances. For example:
 
---jv8MBE5QGK8kAXmU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+    [root@f34 rtla]# rtla osnoise top -t
+    failed to enable the tracer osnoise
+    Could not enable osnoiser tracer for tracing
+    Failed to enable the trace instance
+    Segmentation fault (core dumped)
 
-On Tue, Feb 08, 2022 at 02:33:16PM +0000, Charles Keepax wrote:
-> On Tue, Feb 08, 2022 at 01:56:20PM +0000, Mark Brown wrote:
+This error happens because the exit code of the tools is trying
+to destroy the trace instance that failed to be created.
 
-> > My understanding was that they'd mixed interrupt handling in as a
-> > bitfield in another register.
+Make osnoise_destroy_tool() aware of possible NULL osnoise_tool *,
+and do not attempt to destroy it. This also simplifies the exit code.
 
-> Eek.. what a courageous choice. I guess that might work as
-> long as there is only a single IRQ status bit in the register,
-> if there are multiple bits this really needs more complex
-> handling, like you basically need the old behaviour for the
-> IRQ part of the register, and the new behaviour for the not
-> IRQ part of the register. So perhaps a new mask to denote which
-> bit of the register is being used for IRQ stuff?
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Fixes: 1eceb2fc2ca5 ("rtla/osnoise: Add osnoise top mode")
+Fixes: 829a6c0b5698 ("rtla/osnoise: Add the hist mode")
+Fixes: a828cd18bc4a ("rtla: Add timerlat tool and timelart top mode")
+Fixes: 1eeb6328e8b3 ("rtla/timerlat: Add timerlat hist mode")
+Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-trace-devel@vger.kernel.org
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+---
+Changes from V2:
+ - Init local variables as NULL (Steven)
+ - Cleanup in the exit code
+Changes from V1:
+ - Make osnoise_destroy_tool handle NULL osnoise_tool (Steven)
 
-Yeah, I think that's what I misread the code as doing.
+ tools/tracing/rtla/src/osnoise.c       | 3 +++
+ tools/tracing/rtla/src/osnoise_hist.c  | 7 +++----
+ tools/tracing/rtla/src/osnoise_top.c   | 7 +++----
+ tools/tracing/rtla/src/timerlat_hist.c | 7 +++----
+ tools/tracing/rtla/src/timerlat_top.c  | 7 +++----
+ 5 files changed, 15 insertions(+), 16 deletions(-)
 
---jv8MBE5QGK8kAXmU
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/tools/tracing/rtla/src/osnoise.c b/tools/tracing/rtla/src/osnoise.c
+index 7b73d1eccd0e..5648f9252e58 100644
+--- a/tools/tracing/rtla/src/osnoise.c
++++ b/tools/tracing/rtla/src/osnoise.c
+@@ -750,6 +750,9 @@ void osnoise_put_context(struct osnoise_context *context)
+  */
+ void osnoise_destroy_tool(struct osnoise_tool *top)
+ {
++	if (!top)
++		return;
++
+ 	trace_instance_destroy(&top->trace);
+ 
+ 	if (top->context)
+diff --git a/tools/tracing/rtla/src/osnoise_hist.c b/tools/tracing/rtla/src/osnoise_hist.c
+index 180fcbe423cd..1f0b7fce55cf 100644
+--- a/tools/tracing/rtla/src/osnoise_hist.c
++++ b/tools/tracing/rtla/src/osnoise_hist.c
+@@ -701,9 +701,9 @@ osnoise_hist_set_signals(struct osnoise_hist_params *params)
+ int osnoise_hist_main(int argc, char *argv[])
+ {
+ 	struct osnoise_hist_params *params;
++	struct osnoise_tool *record = NULL;
++	struct osnoise_tool *tool = NULL;
+ 	struct trace_instance *trace;
+-	struct osnoise_tool *record;
+-	struct osnoise_tool *tool;
+ 	int return_value = 1;
+ 	int retval;
+ 
+@@ -792,9 +792,8 @@ int osnoise_hist_main(int argc, char *argv[])
+ out_hist:
+ 	osnoise_free_histogram(tool->data);
+ out_destroy:
++	osnoise_destroy_tool(record);
+ 	osnoise_destroy_tool(tool);
+-	if (params->trace_output)
+-		osnoise_destroy_tool(record);
+ 	free(params);
+ out_exit:
+ 	exit(return_value);
+diff --git a/tools/tracing/rtla/src/osnoise_top.c b/tools/tracing/rtla/src/osnoise_top.c
+index 332b2ac205fc..c67dc28ef716 100644
+--- a/tools/tracing/rtla/src/osnoise_top.c
++++ b/tools/tracing/rtla/src/osnoise_top.c
+@@ -483,9 +483,9 @@ static void osnoise_top_set_signals(struct osnoise_top_params *params)
+ int osnoise_top_main(int argc, char **argv)
+ {
+ 	struct osnoise_top_params *params;
++	struct osnoise_tool *record = NULL;
++	struct osnoise_tool *tool = NULL;
+ 	struct trace_instance *trace;
+-	struct osnoise_tool *record;
+-	struct osnoise_tool *tool;
+ 	int return_value = 1;
+ 	int retval;
+ 
+@@ -571,9 +571,8 @@ int osnoise_top_main(int argc, char **argv)
+ 
+ out_top:
+ 	osnoise_free_top(tool->data);
++	osnoise_destroy_tool(record);
+ 	osnoise_destroy_tool(tool);
+-	if (params->trace_output)
+-		osnoise_destroy_tool(record);
+ out_exit:
+ 	exit(return_value);
+ }
+diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
+index 235f9620ef3d..436a799f9adf 100644
+--- a/tools/tracing/rtla/src/timerlat_hist.c
++++ b/tools/tracing/rtla/src/timerlat_hist.c
+@@ -729,9 +729,9 @@ timerlat_hist_set_signals(struct timerlat_hist_params *params)
+ int timerlat_hist_main(int argc, char *argv[])
+ {
+ 	struct timerlat_hist_params *params;
++	struct osnoise_tool *record = NULL;
++	struct osnoise_tool *tool = NULL;
+ 	struct trace_instance *trace;
+-	struct osnoise_tool *record;
+-	struct osnoise_tool *tool;
+ 	int return_value = 1;
+ 	int retval;
+ 
+@@ -813,9 +813,8 @@ int timerlat_hist_main(int argc, char *argv[])
+ 
+ out_hist:
+ 	timerlat_free_histogram(tool->data);
++	osnoise_destroy_tool(record);
+ 	osnoise_destroy_tool(tool);
+-	if (params->trace_output)
+-		osnoise_destroy_tool(record);
+ 	free(params);
+ out_exit:
+ 	exit(return_value);
+diff --git a/tools/tracing/rtla/src/timerlat_top.c b/tools/tracing/rtla/src/timerlat_top.c
+index 1ebd5291539c..d4187f6534ed 100644
+--- a/tools/tracing/rtla/src/timerlat_top.c
++++ b/tools/tracing/rtla/src/timerlat_top.c
+@@ -521,9 +521,9 @@ timerlat_top_set_signals(struct timerlat_top_params *params)
+ int timerlat_top_main(int argc, char *argv[])
+ {
+ 	struct timerlat_top_params *params;
++	struct osnoise_tool *record = NULL;
++	struct osnoise_tool *top = NULL;
+ 	struct trace_instance *trace;
+-	struct osnoise_tool *record;
+-	struct osnoise_tool *top;
+ 	int return_value = 1;
+ 	int retval;
+ 
+@@ -609,9 +609,8 @@ int timerlat_top_main(int argc, char *argv[])
+ 
+ out_top:
+ 	timerlat_free_top(top->data);
++	osnoise_destroy_tool(record);
+ 	osnoise_destroy_tool(top);
+-	if (params->trace_output)
+-		osnoise_destroy_tool(record);
+ 	free(params);
+ out_exit:
+ 	exit(return_value);
+-- 
+2.34.1
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmICgQ8ACgkQJNaLcl1U
-h9CuOQf/f55QEPYWcJesb5ASdVandS6mWWUT3NZ4QOrbearecpyY1z2pPh3zx7Yu
-qUVYuvfLMfJvSPsjtGHi2THg5eX+ctxJdpsflYf1SDGEQnX1dREsJl+1giBVqogn
-ybLMXZmEvzKOYoR9q0MZMw8baesjtlpirunaXvvK7ctnTB/5hfR/Slmm9dqwt2Ph
-PoElLbFPTzlvKFYccAyr6dsCxgbL1cV7rw0dSMdreAD7b7Is1V9X0zmq6bPPS0g5
-qXG3XIjUDDMqB1gNvAEqz8vUx4sqrh1SHkpyIDjfb5cC4dn1ANqiKeVbkzhTSCky
-cciN+AtOT6e9JkzbRLN3gVG8rq08aw==
-=Y0qE
------END PGP SIGNATURE-----
-
---jv8MBE5QGK8kAXmU--
