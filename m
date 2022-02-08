@@ -2,85 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 129FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3725EC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:55:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378526AbiBHOyg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:54:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
+        id S235908AbiBHOy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 09:54:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378492AbiBHOy3 (ORCPT
+        with ESMTP id S1378535AbiBHOyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 09:54:29 -0500
-X-Greylist: delayed 422 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 06:54:27 PST
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2002::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65B4C061576;
-        Tue,  8 Feb 2022 06:54:27 -0800 (PST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1644331641; bh=8Tibnb0HPy/7mdHJBFIbL6WT6EKCaNnLV6FVMpD0DPA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=BJLE3F6jy5fODGAPjKKNfRmbANEnR0XP6yo9kopb13WZwtQ7LkA/HEwCKjuhQxOiP
-         34wnF4UNA82IshvjpJdHQppx0uo0fse3Rhbw8WbcJLUc/yqgUcGRxSZ0NAXzKO8VvM
-         0A+rSOtOjaxssX9WCa+brWeYpX8Jvj440lVirFIl1YAkIFtn+HgoUSwtPUMnvOUz+n
-         2TzqSm1arCnaB8rqqq7c2rcihL9rympSVmx/zKSGZ/6ekb6kihrjd9Np8ne0uvcypc
-         gewk13AhxBMeHTnsiQxnEzsuG5HZWnL6WN+kyvvZVVAAT2/SYgQSPKAvoU4no4cps5
-         C3OnaIk2snLDw==
-To:     Pavel Skripkin <paskripkin@gmail.com>,
-        ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Subject: Re: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-In-Reply-To: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
-References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
-Date:   Tue, 08 Feb 2022 15:47:20 +0100
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87h799a007.fsf@toke.dk>
+        Tue, 8 Feb 2022 09:54:55 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9047BC0612B9;
+        Tue,  8 Feb 2022 06:54:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644332089; x=1675868089;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=g9kql/hsklTzU+6PF+PhoobhgtTUfK4IfIjF8oYQwSs=;
+  b=Cn4WYgYByVemMahhYmk8yt88771yY/a68ghRgGI1Khohb5BcjSTmUyjt
+   DLDHHZbhYuqOD7xyZW4YQ9D9RURBYTAuCdZzJUd6Lp49lojY6z53YW3yU
+   ASPoudK+TVcKi9N6/JsI/LhXNh00/BI60rS6OCbOQ60A+NHdzpfm3Vr46
+   8=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 06:54:49 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 06:54:48 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 8 Feb 2022 06:54:48 -0800
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 8 Feb 2022 06:54:43 -0800
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Das Srinagesh <gurus@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Subject: [PATCH V5 1/6] dt-bindings: regulator: Add pm8008 regulator bindings
+Date:   Tue, 8 Feb 2022 20:22:15 +0530
+Message-ID: <1644331940-18986-2-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pavel Skripkin <paskripkin@gmail.com> writes:
+Add bindings for pm8008 pmic regulators.
 
-> Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb(). The
-> problem was in incorrect htc_handle->drv_priv initialization.
->
-> Probable call trace which can trigger use-after-free:
->
-> ath9k_htc_probe_device()
->   /* htc_handle->drv_priv = priv; */
->   ath9k_htc_wait_for_target()      <--- Failed
->   ieee80211_free_hw()		   <--- priv pointer is freed
->
-> <IRQ>
-> ...
-> ath9k_hif_usb_rx_cb()
->   ath9k_hif_usb_rx_stream()
->    RX_STAT_INC()		<--- htc_handle->drv_priv access
->
-> In order to not add fancy protection for drv_priv we can move
-> htc_handle->drv_priv initialization at the end of the
-> ath9k_htc_probe_device() and add helper macro to make
-> all *_STAT_* macros NULL save.
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+---
+Changes in V2:
+ - Moved this patch before "mfd: pm8008: Add pm8008 regulator node" to
+   resolve dtschema errors. Removed regulator-min-microvolt and 
+   regulator-max-microvolt properties.
 
-I'm not too familiar with how the initialisation flow of an ath9k_htc
-device works. Looking at htc_handle->drv_priv there seems to
-be three other functions apart from the stat counters that dereference
-it:
+Changes in V3:
+ - As per Rob's comments added standard unit suffix for mindropout property,
+   added blank lines where required and added description for reg property.
 
-ath9k_htc_suspend()
-ath9k_htc_resume()
-ath9k_hif_usb_disconnect()
+Changes in V4:
+ - Changed compatible string to "com,pm8008-regulators"
+ - Moved "regulator-min-dropout-voltage-microvolt" to regulator.yaml as
+   separate patch.
 
-What guarantees that none of these will be called midway through
-ath9k_htc_probe_device() (which would lead to a NULL deref after this
-change)?
+Changes in V5:
+ - Removed the separate compatible for pm8008 regulator driver.
+ - Moved the supply nodes to chip level.
+ - Removed min-dropout property.
 
--Toke
+ .../bindings/regulator/qcom,pm8008-regulator.yaml  | 31 ++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/regulator/qcom,pm8008-regulator.yaml
+
+diff --git a/Documentation/devicetree/bindings/regulator/qcom,pm8008-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,pm8008-regulator.yaml
+new file mode 100644
+index 0000000..0098845
+--- /dev/null
++++ b/Documentation/devicetree/bindings/regulator/qcom,pm8008-regulator.yaml
+@@ -0,0 +1,31 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/regulator/qcom,pm8008-regulator.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm Technologies, Inc. PM8008 Regulator bindings
++
++maintainers:
++  - Satya Priya <skakit@codeaurora.org>
++
++description:
++  Qualcomm Technologies, Inc. PM8008 is an I2C controlled PMIC
++  containing 7 LDO regulators.
++
++patternProperties:
++  "^LDO[1-7]$":
++    type: object
++    $ref: "regulator.yaml#"
++    description: PM8008 regulator peripherals of PM8008 regulator device
++
++    properties:
++      regulator-name: true
++
++    required:
++      - regulator-name
++
++    unevaluatedProperties: false
++
++additionalProperties: false
++...
+-- 
+2.7.4
+
