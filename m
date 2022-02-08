@@ -2,68 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4350C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B55C3526E
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387841AbiBHW26 (ORCPT
+        id S1387260AbiBHW1k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:28:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51936 "EHLO
+        Tue, 8 Feb 2022 17:27:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387257AbiBHWRH (ORCPT
+        with ESMTP id S1386199AbiBHTnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 17:17:07 -0500
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF6CC0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:17:06 -0800 (PST)
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nHYnA-000TfY-U2; Tue, 08 Feb 2022 22:16:57 +0000
-Date:   Tue, 8 Feb 2022 22:16:56 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Waiman Long <longman@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alexey Gladkov <legion@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Jann Horn <jannh@google.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] copy_process(): Move fd_install() out of
- sighand->siglock critical section
-Message-ID: <YgLr2GEXgz/TxdUA@zeniv-ca.linux.org.uk>
-References: <20220208163912.1084752-1-longman@redhat.com>
- <YgKziblMKsmHkP4f@zeniv-ca.linux.org.uk>
- <bd83aca3-059f-92dd-e094-b27f51f9481a@redhat.com>
- <YgK/fdYWi0wWysci@zeniv-ca.linux.org.uk>
- <874k59f2ad.fsf@email.froward.int.ebiederm.org>
+        Tue, 8 Feb 2022 14:43:43 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1487C0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:43:42 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id c8-20020a17090a674800b001b91184b732so477022pjm.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:43:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=IzYAh6mtxyAZ2drjtva0WxDIoe1TxiIdW6u31Cu1VZ0=;
+        b=Z59AvqUCCa7UbRG2nJztf5OxSI9qQovj8CB7b/+6lPnCSxvE10jTasby5VST/dsbG1
+         OVAlzmtRVmJN3/xEluUeFGgv1tku1k8Nky1bf3K3UyyMEpAv+4GM/d3AktiTvQIyazqO
+         5j10K6DkStDMQzABmX4PqlAbgIRA6ciTLM7NS6tIMDt/dmzNEbNc3VkwyT9Qn+EJxZ85
+         ktaf1EYyxRpltgGfKwJJdoDhXWsasI/9JyvWq2tCFdcmgLPYumpRIDSQiOnjS8z/KHie
+         7ZKsxkOiOyeOUpXGax2FJI5NkjnTyMtx31xhASonu1EuJA+sL7BBAK3xT03dxNzO4c6a
+         8g8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=IzYAh6mtxyAZ2drjtva0WxDIoe1TxiIdW6u31Cu1VZ0=;
+        b=798saKTHREHNW+qICWqHQ8FXa3iqOvuVjDPa3yU2ABYor4A+nVFeKlTtrK4GXGfeqB
+         L9xpoNvvU7qoCVOQk+WlW5BjjXQy0MXKjhL4D6z/GIgAJkFeFcLjJN2uuLkSON83SHLS
+         K4ir4Ug0ytSqxjtRwMhvsnDtGBlHCGUZKWBUh33YC3/AV1BLov/Y5pNhTPgJ4Tntvpim
+         5H7xjvjsYGMfw66pnjp2H9MmGI1eyEZDAae07+l9rpjVb6O37vtujO/5ZH00FLiV3tBA
+         AplvbzclveJzWXBAuPiRmYU5luvITDTVD8badcV6IexTlwM8/ynm9/34YydhDxkNKgX7
+         1dnA==
+X-Gm-Message-State: AOAM53172iod4rzI5P7vFZiJ9hSOFhpShT+MTHNhCGnQnyXfgkNyZzH+
+        0PTRY9C98fzsESp4N3rPm+8=
+X-Google-Smtp-Source: ABdhPJxHfW73Un1j2m77knqGc5baEAyVhu9540XuJH25WpcdoAtQ7dfy05NOE3I/jDz5uR2KU/cH5w==
+X-Received: by 2002:a17:903:248:: with SMTP id j8mr3728183plh.123.1644349422264;
+        Tue, 08 Feb 2022 11:43:42 -0800 (PST)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
+        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 11:43:41 -0800 (PST)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Radoslaw Burny <rburny@google.com>
+Subject: [PATCH 03/12] timer: Protect lockdep functions with #ifdef
+Date:   Tue,  8 Feb 2022 11:43:15 -0800
+Message-Id: <20220208194324.85333-4-namhyung@kernel.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
+References: <20220208194324.85333-1-namhyung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <874k59f2ad.fsf@email.froward.int.ebiederm.org>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 03:59:06PM -0600, Eric W. Biederman wrote:
+With upcoming lock tracepoints config, it'd define some of lockdep
+functions without enabling CONFIG_LOCKDEP actually.  The existing code
+assumes those functions will be removed by the preprocessor but it's
+not the case anymore.  Let's protect the code with #ifdef's explicitly.
 
-> The fd is being installed in the fdtable of the parent process,
-> and the siglock and tasklist_lock are held to protect the child.
-> 
-> 
-> Further fd_install is exposing the fd to userspace where it can be used
-> by the process_madvise and the process_mrelease system calls, from
-> anything that shares the fdtable of the parent thread.  Which means it
-> needs to be guaranteed that kernel_clone will call wake_up_process
-> before it is safe to call fd_install.
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ kernel/time/timer.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-You mean "no calling fd_install() until after we are past the last possible
-failure exit, by which point we know that wake_up_process() will eventually
-be called", hopefully?  If so (as I assumed all along), anything downstream
-of
-        if (fatal_signal_pending(current)) {
-		retval = -EINTR;
-		goto bad_fork_cancel_cgroup;
-	}
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 85f1021ad459..4af95dbf6435 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -794,7 +794,10 @@ static void do_init_timer(struct timer_list *timer,
+ 	if (WARN_ON_ONCE(flags & ~TIMER_INIT_FLAGS))
+ 		flags &= TIMER_INIT_FLAGS;
+ 	timer->flags = flags | raw_smp_processor_id();
++
++#ifdef CONFIG_LOCKDEP
+ 	lockdep_init_map(&timer->lockdep_map, name, key, 0);
++#endif
+ }
+ 
+ /**
+@@ -1409,19 +1412,22 @@ static void call_timer_fn(struct timer_list *timer,
+ 	struct lockdep_map lockdep_map;
+ 
+ 	lockdep_copy_map(&lockdep_map, &timer->lockdep_map);
+-#endif
++
+ 	/*
+ 	 * Couple the lock chain with the lock chain at
+ 	 * del_timer_sync() by acquiring the lock_map around the fn()
+ 	 * call here and in del_timer_sync().
+ 	 */
+ 	lock_map_acquire(&lockdep_map);
++#endif
+ 
+ 	trace_timer_expire_entry(timer, baseclk);
+ 	fn(timer);
+ 	trace_timer_expire_exit(timer);
+ 
++#ifdef CONFIG_LOCKDEP
+ 	lock_map_release(&lockdep_map);
++#endif
+ 
+ 	if (count != preempt_count()) {
+ 		WARN_ONCE(1, "timer: %pS preempt leak: %08x -> %08x\n",
+-- 
+2.35.0.263.gb82422642f-goog
 
-should be fine...
