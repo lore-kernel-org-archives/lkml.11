@@ -2,69 +2,305 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D50EC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:16:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E99BDC3527D
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:16:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348814AbiBHNQC (ORCPT
+        id S1349741AbiBHNQG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:16:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
+        Tue, 8 Feb 2022 08:16:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349815AbiBHM5X (ORCPT
+        with ESMTP id S1358096AbiBHMky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:57:23 -0500
-X-Greylist: delayed 359 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 04:57:19 PST
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EAFB8C03FEC0;
-        Tue,  8 Feb 2022 04:57:19 -0800 (PST)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxL+M6ZwJik0oIAA--.26524S2;
-        Tue, 08 Feb 2022 20:51:07 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Baoquan He <bhe@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, kexec@lists.infradead.org,
-        linux-doc@vger.kernel.org, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/5] Update doc and fix some issues about kdump
-Date:   Tue,  8 Feb 2022 20:51:01 +0800
-Message-Id: <1644324666-15947-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9DxL+M6ZwJik0oIAA--.26524S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYS7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
-        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8I
-        cVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aV
-        CY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAq
-        x4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6x
-        CaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwAC
-        I402YVCY1x02628vn2kIc2xKxwCY02Avz4vE14v_Xr1l42xK82IYc2Ij64vIr41l4I8I3I
-        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
-        GVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
-        0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0
-        rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr
-        0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU6wZcUUUUU=
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Tue, 8 Feb 2022 07:40:54 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B76C03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:40:54 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id om7so2925708pjb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:40:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=sJY5Um+e3Zhwa51B9/uiFlDKmQ6du7mYuS31VfH399Q=;
+        b=SDUVezZ2U7t3EKc/zBv6B+CFLef3IyaUyi9jwAdEPdFHZ4OhbAldQvTrcFyF4SpMpw
+         XbL84xhIgwY3GULLblL6VThNKqcL6YfvDQmb6FFmCF/+07WiwmAJYzh3n0JhpmU5gUF4
+         b6b0N6R1MGh0WZrzWv0zOuyg3Nen/apn0TFfE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=sJY5Um+e3Zhwa51B9/uiFlDKmQ6du7mYuS31VfH399Q=;
+        b=0bNaNg5Av2AMpTyY1PFG4A3RgTF3xg6qhzOrabTaL3RHR4IYoKw5x9Q/A/xJSrDa24
+         SQbLKI5Jtb6dsV3hIFpLdDjAeqfG8mX2FopPmtQ2DO4I530BQnUEjKfF9O+OGhRR9ffu
+         rwaSpfSLamQzDw9LBBV24EHvyAPo0uhIRcW8jZa1UOaG+le91yTWqMBkIv3vOeKCGlxK
+         43VhgLzc1vn+SfzHHx1JYr9JTUzh/7M3jwr+olJ98l5dZA3dePlJeb4Rmf+krCEvDvPc
+         mYVfr45QC34xNvyADp95xOeqP1PaoAepdP3YxgPvxqKZSmDYHYzf2H7uLM9wyCynhvQI
+         iMDg==
+X-Gm-Message-State: AOAM533aK9CIf6lImJBViRQe97M4NocX3o+fyTxTKqLp1G6Fmp/ZZPYk
+        NLPmV+sP1GR0l+zDHbLtuSUmIQ==
+X-Google-Smtp-Source: ABdhPJzIptVfF9/Nr+7xAEGmtgdzohLMSJf77H6U3m66Hps5mBQCBofvJaIC8Rc4OcVkb/jxNFfcfA==
+X-Received: by 2002:a17:902:7e06:: with SMTP id b6mr4461526plm.58.1644324053538;
+        Tue, 08 Feb 2022 04:40:53 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.40.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:40:53 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 02/31] clk: mediatek: gate: Consolidate gate type clk related code
+Date:   Tue,  8 Feb 2022 20:40:05 +0800
+Message-Id: <20220208124034.414635-3-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tiezhu Yang (5):
-  docs: kdump: update description about sysfs file system support
-  docs: kdump: add scp example to write out the dump file
-  panic: unset panic_on_warn inside panic()
-  ubsan: no need to unset panic_on_warn in ubsan_epilogue()
-  kasan: no need to unset panic_on_warn in end_report()
+Right now some bits of the gate type clk code are in clk-gate.[ch], but
+other bits are in clk-mtk.[ch]. This is different from the cpumux and
+mux type clks, for which all of the code are found in the same files.
 
- Documentation/admin-guide/kdump/kdump.rst | 10 +++++++---
- kernel/panic.c                            | 20 +++++++++++---------
- lib/ubsan.c                               | 10 +---------
- mm/kasan/report.c                         | 10 +---------
- 4 files changed, 20 insertions(+), 30 deletions(-)
+Move the functions that register multiple clks from a given list,
+mtk_clk_register_gates_with_dev() and mtk_clk_register_gates(), to
+clk-gate.[ch] to consolidate all the code for the gate type clks.
 
+This commit only moves code with minor whitespace fixups to correct
+the code style. Further improvements, such as internalizing various
+functions and structures will be done in later commits.
+
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/clk/mediatek/clk-gate.c | 53 ++++++++++++++++++++++++++++++++-
+ drivers/clk/mediatek/clk-gate.h | 25 ++++++++++++++++
+ drivers/clk/mediatek/clk-mtk.c  | 51 -------------------------------
+ drivers/clk/mediatek/clk-mtk.h  | 25 ----------------
+ 4 files changed, 77 insertions(+), 77 deletions(-)
+
+diff --git a/drivers/clk/mediatek/clk-gate.c b/drivers/clk/mediatek/clk-gate.c
+index 5d88b428565b..54921768bfba 100644
+--- a/drivers/clk/mediatek/clk-gate.c
++++ b/drivers/clk/mediatek/clk-gate.c
+@@ -11,9 +11,9 @@
+ #include <linux/slab.h>
+ #include <linux/delay.h>
+ #include <linux/clkdev.h>
++#include <linux/mfd/syscon.h>
+ #include <linux/module.h>
+ 
+-#include "clk-mtk.h"
+ #include "clk-gate.h"
+ 
+ static u32 mtk_get_clockgating(struct clk_hw *hw)
+@@ -182,4 +182,55 @@ struct clk *mtk_clk_register_gate(
+ }
+ EXPORT_SYMBOL_GPL(mtk_clk_register_gate);
+ 
++int mtk_clk_register_gates_with_dev(struct device_node *node,
++				    const struct mtk_gate *clks, int num,
++				    struct clk_onecell_data *clk_data,
++				    struct device *dev)
++{
++	int i;
++	struct clk *clk;
++	struct regmap *regmap;
++
++	if (!clk_data)
++		return -ENOMEM;
++
++	regmap = device_node_to_regmap(node);
++	if (IS_ERR(regmap)) {
++		pr_err("Cannot find regmap for %pOF: %pe\n", node, regmap);
++		return PTR_ERR(regmap);
++	}
++
++	for (i = 0; i < num; i++) {
++		const struct mtk_gate *gate = &clks[i];
++
++		if (!IS_ERR_OR_NULL(clk_data->clks[gate->id]))
++			continue;
++
++		clk = mtk_clk_register_gate(gate->name, gate->parent_name,
++					    regmap,
++					    gate->regs->set_ofs,
++					    gate->regs->clr_ofs,
++					    gate->regs->sta_ofs,
++					    gate->shift, gate->ops,
++					    gate->flags, dev);
++
++		if (IS_ERR(clk)) {
++			pr_err("Failed to register clk %s: %pe\n", gate->name, clk);
++			continue;
++		}
++
++		clk_data->clks[gate->id] = clk;
++	}
++
++	return 0;
++}
++
++int mtk_clk_register_gates(struct device_node *node,
++			   const struct mtk_gate *clks, int num,
++			   struct clk_onecell_data *clk_data)
++{
++	return mtk_clk_register_gates_with_dev(node, clks, num, clk_data, NULL);
++}
++EXPORT_SYMBOL_GPL(mtk_clk_register_gates);
++
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/clk/mediatek/clk-gate.h b/drivers/clk/mediatek/clk-gate.h
+index 3c3329ec54b7..432b571d23b3 100644
+--- a/drivers/clk/mediatek/clk-gate.h
++++ b/drivers/clk/mediatek/clk-gate.h
+@@ -43,6 +43,22 @@ struct clk *mtk_clk_register_gate(
+ 		unsigned long flags,
+ 		struct device *dev);
+ 
++struct mtk_gate_regs {
++	u32 sta_ofs;
++	u32 clr_ofs;
++	u32 set_ofs;
++};
++
++struct mtk_gate {
++	int id;
++	const char *name;
++	const char *parent_name;
++	const struct mtk_gate_regs *regs;
++	int shift;
++	const struct clk_ops *ops;
++	unsigned long flags;
++};
++
+ #define GATE_MTK_FLAGS(_id, _name, _parent, _regs, _shift,	\
+ 			_ops, _flags) {				\
+ 		.id = _id,					\
+@@ -57,4 +73,13 @@ struct clk *mtk_clk_register_gate(
+ #define GATE_MTK(_id, _name, _parent, _regs, _shift, _ops)		\
+ 	GATE_MTK_FLAGS(_id, _name, _parent, _regs, _shift, _ops, 0)
+ 
++int mtk_clk_register_gates(struct device_node *node,
++			   const struct mtk_gate *clks, int num,
++			   struct clk_onecell_data *clk_data);
++
++int mtk_clk_register_gates_with_dev(struct device_node *node,
++				    const struct mtk_gate *clks, int num,
++				    struct clk_onecell_data *clk_data,
++				    struct device *dev);
++
+ #endif /* __DRV_CLK_GATE_H */
+diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
+index 519a461cbb6f..0c5db3c71fdd 100644
+--- a/drivers/clk/mediatek/clk-mtk.c
++++ b/drivers/clk/mediatek/clk-mtk.c
+@@ -106,57 +106,6 @@ void mtk_clk_register_factors(const struct mtk_fixed_factor *clks,
+ }
+ EXPORT_SYMBOL_GPL(mtk_clk_register_factors);
+ 
+-int mtk_clk_register_gates_with_dev(struct device_node *node,
+-		const struct mtk_gate *clks,
+-		int num, struct clk_onecell_data *clk_data,
+-		struct device *dev)
+-{
+-	int i;
+-	struct clk *clk;
+-	struct regmap *regmap;
+-
+-	if (!clk_data)
+-		return -ENOMEM;
+-
+-	regmap = device_node_to_regmap(node);
+-	if (IS_ERR(regmap)) {
+-		pr_err("Cannot find regmap for %pOF: %pe\n", node, regmap);
+-		return PTR_ERR(regmap);
+-	}
+-
+-	for (i = 0; i < num; i++) {
+-		const struct mtk_gate *gate = &clks[i];
+-
+-		if (!IS_ERR_OR_NULL(clk_data->clks[gate->id]))
+-			continue;
+-
+-		clk = mtk_clk_register_gate(gate->name, gate->parent_name,
+-				regmap,
+-				gate->regs->set_ofs,
+-				gate->regs->clr_ofs,
+-				gate->regs->sta_ofs,
+-				gate->shift, gate->ops, gate->flags, dev);
+-
+-		if (IS_ERR(clk)) {
+-			pr_err("Failed to register clk %s: %pe\n", gate->name, clk);
+-			continue;
+-		}
+-
+-		clk_data->clks[gate->id] = clk;
+-	}
+-
+-	return 0;
+-}
+-
+-int mtk_clk_register_gates(struct device_node *node,
+-		const struct mtk_gate *clks,
+-		int num, struct clk_onecell_data *clk_data)
+-{
+-	return mtk_clk_register_gates_with_dev(node,
+-		clks, num, clk_data, NULL);
+-}
+-EXPORT_SYMBOL_GPL(mtk_clk_register_gates);
+-
+ struct clk *mtk_clk_register_composite(const struct mtk_composite *mc,
+ 		void __iomem *base, spinlock_t *lock)
+ {
+diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
+index 0ff289d93452..bdec7dc5e07a 100644
+--- a/drivers/clk/mediatek/clk-mtk.h
++++ b/drivers/clk/mediatek/clk-mtk.h
+@@ -150,31 +150,6 @@ void mtk_clk_register_composites(const struct mtk_composite *mcs,
+ 		int num, void __iomem *base, spinlock_t *lock,
+ 		struct clk_onecell_data *clk_data);
+ 
+-struct mtk_gate_regs {
+-	u32 sta_ofs;
+-	u32 clr_ofs;
+-	u32 set_ofs;
+-};
+-
+-struct mtk_gate {
+-	int id;
+-	const char *name;
+-	const char *parent_name;
+-	const struct mtk_gate_regs *regs;
+-	int shift;
+-	const struct clk_ops *ops;
+-	unsigned long flags;
+-};
+-
+-int mtk_clk_register_gates(struct device_node *node,
+-			const struct mtk_gate *clks, int num,
+-			struct clk_onecell_data *clk_data);
+-
+-int mtk_clk_register_gates_with_dev(struct device_node *node,
+-		const struct mtk_gate *clks,
+-		int num, struct clk_onecell_data *clk_data,
+-		struct device *dev);
+-
+ struct mtk_clk_divider {
+ 	int id;
+ 	const char *name;
 -- 
-2.1.0
+2.35.0.263.gb82422642f-goog
 
