@@ -2,75 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C342C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F56AC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233822AbiBHLXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:23:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47352 "EHLO
+        id S1345857AbiBHLXp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:23:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355737AbiBHJxB (ORCPT
+        with ESMTP id S235548AbiBHJyY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:53:01 -0500
-X-Greylist: delayed 552 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 01:52:59 PST
-Received: from outbound-smtp30.blacknight.com (outbound-smtp30.blacknight.com [81.17.249.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA07BC03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:52:59 -0800 (PST)
-Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
-        by outbound-smtp30.blacknight.com (Postfix) with ESMTPS id 9BB69BAFE4
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:43:45 +0000 (GMT)
-Received: (qmail 1402 invoked from network); 8 Feb 2022 09:43:45 -0000
-Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.17.223])
-  by 81.17.254.9 with ESMTPA; 8 Feb 2022 09:43:45 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Mike Galbraith <efault@gmx.de>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        Gautham Shenoy <gautham.shenoy@amd.com>,
-        K Prateek Nayak <kprateek.nayak@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH v6 0/2] Adjust NUMA imbalance for multiple LLCs
-Date:   Tue,  8 Feb 2022 09:43:32 +0000
-Message-Id: <20220208094334.16379-1-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.31.1
+        Tue, 8 Feb 2022 04:54:24 -0500
+X-Greylist: delayed 72149 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 01:54:23 PST
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46EF1C03FEC0;
+        Tue,  8 Feb 2022 01:54:23 -0800 (PST)
+Date:   Tue, 08 Feb 2022 09:54:19 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644314060;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q/IayFDBAyr/LKIzMEy3/M8i4irY95BKw7ZqHhR11ow=;
+        b=xuboOmy97j14wcvq9eS80iq6pJBoZULoTopvOYqJSY03DPsDSsCvYfNlPGhZpkYQZGKoxB
+        ibE/tsgwSNHMZeJ31l/9Cb0ST1CDDCvFY0hcb2zHjEdtOAYOiMWH8C1T4TUbT8EJ667H6t
+        vPA+M9iv0/cJqrwCVDVfqnE5ZDJlKAOhou9Y1h0RPGGA4xpCxwVoI00/6+TCiSINnjIE0o
+        7c1AmKo9CN3pql86cytKIodyrAwJi8Ji7IVNNJgfK14GdPwebZ6BUZyOv2xz35Nrv48ejf
+        phu7x8vq/GCX/tzzIy9wp3cYC/kcnUp+IlFLO3tarc7gHtYG4RQ8IApzZUq95Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644314060;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q/IayFDBAyr/LKIzMEy3/M8i4irY95BKw7ZqHhR11ow=;
+        b=eWJF+bhAIK01aYIt+lNyZQElZZRX7nvgenZxiVT65ukw/CCl8rOCSEWdli5Viqb+eGth0a
+        kvKeeNQGlpq//GDQ==
+From:   "tip-bot2 for Jim Mattson" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/cpu] x86/cpufeatures: Put the AMX macros in the word 18 block
+Cc:     Jim Mattson <jmattson@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220203194308.2469117-1-jmattson@google.com>
+References: <20220203194308.2469117-1-jmattson@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164431405962.16921.15997082266702791882.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changelog sinve v5
-o Fix off-by-one error
+The following commit has been merged into the x86/cpu branch of tip:
 
-Changelog since V4
-o Scale imbalance based on the top domain that prefers siblings
-o Keep allowed imbalance as 2 up to the point where LLCs can be overloaded
+Commit-ID:     fa31a4d669bd471e9510db1abf9b91e1a6be6ff7
+Gitweb:        https://git.kernel.org/tip/fa31a4d669bd471e9510db1abf9b91e1a6be6ff7
+Author:        Jim Mattson <jmattson@google.com>
+AuthorDate:    Thu, 03 Feb 2022 11:43:07 -08:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Tue, 08 Feb 2022 10:23:35 +01:00
 
-Changelog since V3
-o Calculate imb_numa_nr for multiple SD_NUMA domains
-o Restore behaviour where communicating pairs remain on the same node
+x86/cpufeatures: Put the AMX macros in the word 18 block
 
-Commit 7d2b5dd0bcc4 ("sched/numa: Allow a floating imbalance between NUMA
-nodes") allowed an imbalance between NUMA nodes such that communicating
-tasks would not be pulled apart by the load balancer. This works fine when
-there is a 1:1 relationship between LLC and node but can be suboptimal
-for multiple LLCs if independent tasks prematurely use CPUs sharing cache.
+These macros are for bits in CPUID.(EAX=7,ECX=0):EDX, not for bits in
+CPUID(EAX=7,ECX=1):EAX. Put them with their brethren.
 
-The series addresses two problems -- inconsistent logic when allowing a
-NUMA imbalance and sub-optimal performance when there are many LLCs per
-NUMA node.
+  [ bp: Sort word 18 bits properly, as caught by Like Xu
+    <like.xu.linux@gmail.com> ]
 
- include/linux/sched/topology.h |  1 +
- kernel/sched/fair.c            | 30 ++++++++++---------
- kernel/sched/topology.c        | 53 ++++++++++++++++++++++++++++++++++
- 3 files changed, 71 insertions(+), 13 deletions(-)
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lkml.kernel.org/r/20220203194308.2469117-1-jmattson@google.com
+---
+ arch/x86/include/asm/cpufeatures.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
--- 
-2.31.1
-
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 6db4e29..5cd2209 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -299,9 +299,6 @@
+ /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+ #define X86_FEATURE_AVX512_BF16		(12*32+ 5) /* AVX512 BFLOAT16 instructions */
+-#define X86_FEATURE_AMX_BF16		(18*32+22) /* AMX bf16 Support */
+-#define X86_FEATURE_AMX_TILE		(18*32+24) /* AMX tile Support */
+-#define X86_FEATURE_AMX_INT8		(18*32+25) /* AMX int8 Support */
+ 
+ /* AMD-defined CPU features, CPUID level 0x80000008 (EBX), word 13 */
+ #define X86_FEATURE_CLZERO		(13*32+ 0) /* CLZERO instruction */
+@@ -390,7 +387,10 @@
+ #define X86_FEATURE_TSXLDTRK		(18*32+16) /* TSX Suspend Load Address Tracking */
+ #define X86_FEATURE_PCONFIG		(18*32+18) /* Intel PCONFIG */
+ #define X86_FEATURE_ARCH_LBR		(18*32+19) /* Intel ARCH LBR */
++#define X86_FEATURE_AMX_BF16		(18*32+22) /* AMX bf16 Support */
+ #define X86_FEATURE_AVX512_FP16		(18*32+23) /* AVX512 FP16 */
++#define X86_FEATURE_AMX_TILE		(18*32+24) /* AMX tile Support */
++#define X86_FEATURE_AMX_INT8		(18*32+25) /* AMX int8 Support */
+ #define X86_FEATURE_SPEC_CTRL		(18*32+26) /* "" Speculation Control (IBRS + IBPB) */
+ #define X86_FEATURE_INTEL_STIBP		(18*32+27) /* "" Single Thread Indirect Branch Predictors */
+ #define X86_FEATURE_FLUSH_L1D		(18*32+28) /* Flush L1D cache */
