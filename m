@@ -2,134 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C38C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349101AbiBHNS5 (ORCPT
+        id S1344082AbiBHNTD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:18:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34976 "EHLO
+        Tue, 8 Feb 2022 08:19:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376366AbiBHM5u (ORCPT
+        with ESMTP id S242857AbiBHMl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:57:50 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2056.outbound.protection.outlook.com [40.107.244.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603F0C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:57:48 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EAbVY9/VIjy8GFKeNRbHuAAJcf1wEFZc52GKxOXXqENQe9fbVs0Vl4S3ADE+9w+XlHPZq7yE31CdHFfqjKi+4/UVeTwPss5RNhu0GqzEPIVw9yj/o8CfMMh6PrPcaz4l8/GSqLrwdRCdwPnd82HcEY2mOKiPuMtJJYxmmWu2bjSFXdfFF1/taXmnlc+Q8oFU2Qa0qcFIGsz9Hok1OAUuovrEUcF78hIcr5h0FDZ58XpUqP0mzl3XTJnb24rMzNlSXi81BJgEL5jCm+fcYn6ks5SBZWquw58CiIT8GnNs796A0Y/KJE9UUlcwTxh4LP4pLmjTT+jRsPYa6fu7lWdkeA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2ztjqr1QYyqqbTkuQaTkAxMFfubmfc6Z5cJXFi20Exw=;
- b=ge6y/wQLygDiJRlfCqmVo3FSJi6vSdZ3fj1j6JFnbe4R54LSadi/yKrReBcBRanHnOU4ydkZ1Qlm3T6eXgAdQ68SXkRUth4o0HT0aspT3FOmjd5s/LEpbU7PT+ALNXfHeSC/u7WIdu6lpXJlNfQgFD++V31XqwHkXEJfInj83kJwNwQPraw0glWEDnD44zNNCqBUb0gt7VPJHBhsCkzqAu2f7fasvc/L+9I/grkzxa0zaMSGYal5ObT4IzCf7vaxdRKMW5Z04eV/jealfUwyNYzNJgkxcOBYTE6GgnkUfWHCjSDoFHxZXGNGLhx0EXYrNEQfY/q0v+SxNHVNzVOgmA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=bootlin.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        Tue, 8 Feb 2022 07:41:26 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A37C03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:26 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id y9so8504310pjf.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2ztjqr1QYyqqbTkuQaTkAxMFfubmfc6Z5cJXFi20Exw=;
- b=HH0CUwYhfnJx0JjGgHzZM6DyvZVzw/lW2aSNtuhfxjdmoOKVXZk50l64MwssONmewYLjAkZdnJG1iQ5CtwDyYBD8FlKBj98tF76M8KzcP2lxmfGh5tqh1/JjMUA8R+IVvED7sXEj4vamRR1DDILWSA33+5+o/ujzkOuX+2YjEQM=
-Received: from BN9PR03CA0519.namprd03.prod.outlook.com (2603:10b6:408:131::14)
- by SJ0PR02MB7744.namprd02.prod.outlook.com (2603:10b6:a03:31b::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Tue, 8 Feb
- 2022 12:57:46 +0000
-Received: from BN1NAM02FT005.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:131:cafe::17) by BN9PR03CA0519.outlook.office365.com
- (2603:10b6:408:131::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
- Transport; Tue, 8 Feb 2022 12:57:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT005.mail.protection.outlook.com (10.13.2.124) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4951.12 via Frontend Transport; Tue, 8 Feb 2022 12:57:46 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 8 Feb 2022 04:57:43 -0800
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 8 Feb 2022 04:57:43 -0800
-Envelope-to: git@xilinx.com,
- miquel.raynal@bootlin.com,
- vigneshr@ti.com,
- richard@nod.at,
- linux-mtd@lists.infradead.org,
- linux-kernel@vger.kernel.org
-Received: from [10.140.6.18] (port=57436 helo=xhdlakshmis40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <amit.kumar-mahapatra@xilinx.com>)
-        id 1nHQ3z-0007s6-DJ; Tue, 08 Feb 2022 04:57:43 -0800
-From:   Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
-To:     <miquel.raynal@bootlin.com>, <vigneshr@ti.com>
-CC:     <richard@nod.at>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <git@xilinx.com>,
-        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
-Subject: [PATCH] mtd: rawnand: pl353: Set the nand chip node as the flash node
-Date:   Tue, 8 Feb 2022 18:27:38 +0530
-Message-ID: <20220208125738.32162-1-amit.kumar-mahapatra@xilinx.com>
-X-Mailer: git-send-email 2.17.1
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=R3JoellM0j3/drkIwePqf6xNXC0okTaVtKIbynTeAOc=;
+        b=cDbvFXn+++jD2RBihOfm+4NuHtNk8YlQxYmPjF35O1yrsUbdXxfadniAuG4XR5nFwS
+         6AjlYWaCgdXKEQ9wtER+Kay6SUeGumXjw601aAOrw5/VgQcSA14qgibFM3JGqGXyIn/9
+         ETByjiRDfguEMxbmnwqFjDAIY6/V0+X2N5eCw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=R3JoellM0j3/drkIwePqf6xNXC0okTaVtKIbynTeAOc=;
+        b=dRdzVIyRAR88s6P7IKyUmRUaQyzK4CE9ZtRXlhPJHke7VqgvUCsT5j+5BswzPtEC1g
+         zlo3Mh/KMbznxDnxeyopPcmY6lg6sT5mQdNkwUZVN+ZlHV7WrcaQn1RncEjPthgNqWS0
+         UsNKGMdjLX4YUOMUKdRzd6WbJJNFD9Od7lCs1ImEOGesNruB72OSQXXvsDL4jNdbQvZl
+         leiv9VZvRX6w7pfK6bE5gBQw58/vQNWgn+Zce5kE9jKiGAN7KiYW0WfbLEkyV+ynrMbH
+         H2fEicIG+16zXk4CM1D57Jn8Z+/zjMScQjcgvIe8qjh04icavJksapWtk+z9c4scbUkO
+         7FYg==
+X-Gm-Message-State: AOAM5334gxBMRIfftTnOWqkQgDYQ3al0uHfe4HhiDu6ms3Ps5B0pxenk
+        cQtBnJt7U2Kra5/iICJsQ+ofGQ==
+X-Google-Smtp-Source: ABdhPJySG6k3d+lfO+J6p0YF76ehegEmYbi/IhHoJqpoMykEiunvLKUkSg7jAzY0zepF1RSOzn+Q1w==
+X-Received: by 2002:a17:90b:3a86:: with SMTP id om6mr1151521pjb.99.1644324085808;
+        Tue, 08 Feb 2022 04:41:25 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:41:25 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 17/31] clk: mediatek: Implement mtk_clk_unregister_divider_clks() API
+Date:   Tue,  8 Feb 2022 20:40:20 +0800
+Message-Id: <20220208124034.414635-18-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f2d1af60-3186-4359-d04c-08d9eb029a67
-X-MS-TrafficTypeDiagnostic: SJ0PR02MB7744:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR02MB774424A692222F32EF701CACBA2D9@SJ0PR02MB7744.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:2512;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: v1jT5mKBnbNQbv9wAvK3TLnBnjKjeL0i12+SAspVCTyiN/ujw3g+9Q5WPS3Dg+5sArYbY8l4Gm4d9g7TGFSsYe145v96UEyZMIHDUMqjkKUDiYIPTUJb/7uaIJ3J2f0v5YyWSxeczHtDqqJ+mh8yJZBv3kY3inHIsdJE7sIH0rMJ9KT6zYsZtU3BmPkiFnhxm5okLTq4YMm7cZI3JVVz1qCnKOM/XzVH9DyN3UwQ+DoyvANRwuizuenkOvoFQOeo6IVE49QD6TIIBlpgv20mLGMWl50wIBm3d76ZDPCG2Ao8884Ajn2rmPH+k2dZTEm22lnnaTd9eyeRq+eKyrTt5sOsMT1ecACwZaDXHx/X9Ajb9Irmrwzqsh0r3NE0f1G/0BnINoW70FiAXkRI8VWlMFCduwsM4XnYJ3cT5KowmiYlQg/SwhViDRbF2N8kWSUFviJ2wZAdYPYN+xMpFsOYAWOI/p1eeZ9BhUS7ghC2+LrYBu5vU+plMWPcRg6oKBKiuoH1t3h7cXBNSAmIWhCk/pJEhXz7wf/tdmZu/iEDW1IdWmtZG/C4GjkUhCGAl/QCFxKG1keQjf6a227aWdIcswgxSSg53BLmwEyMTD2m4LHzWbOt62fhe0ToaZljCrlxULmQjgS0Xw8FKcpTUkm8KHdvelAm658dMbbRTG1omGHhCyw+iHPhQne1aMWHvUOATHFtOYv+9TiM5pJUkkrV/A==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(40460700003)(82310400004)(6666004)(7696005)(7636003)(36860700001)(2906002)(47076005)(508600001)(2616005)(83380400001)(186003)(9786002)(356005)(5660300002)(336012)(426003)(26005)(8936002)(4326008)(110136005)(70206006)(36756003)(54906003)(107886003)(316002)(70586007)(8676002)(1076003)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 12:57:46.1186
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f2d1af60-3186-4359-d04c-08d9eb029a67
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT005.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR02MB7744
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In devicetree the flash information is embedded within nand chip node,
-so during nand chip initialization the nand chip node should be passed
-to nand_set_flash_node() api, instead of nand controller node.
+mtk_clk_register_divider_clks(), as the name suggests, is used to register
+a given list of divider clks. However it is lacking a counterpart
+unregister API.
 
-Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
----
-BRANCH: nand/next
----
- drivers/mtd/nand/raw/pl35x-nand-controller.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Implement said unregister API so that the various clock platform drivers
+can utilize it to do proper unregistration, cleanup and removal.
 
-diff --git a/drivers/mtd/nand/raw/pl35x-nand-controller.c b/drivers/mtd/nand/raw/pl35x-nand-controller.c
-index 8a91e069ee2e..3c6f6aff649f 100644
---- a/drivers/mtd/nand/raw/pl35x-nand-controller.c
-+++ b/drivers/mtd/nand/raw/pl35x-nand-controller.c
-@@ -1062,7 +1062,7 @@ static int pl35x_nand_chip_init(struct pl35x_nandc *nfc,
- 	chip->controller = &nfc->controller;
- 	mtd = nand_to_mtd(chip);
- 	mtd->dev.parent = nfc->dev;
--	nand_set_flash_node(chip, nfc->dev->of_node);
-+	nand_set_flash_node(chip, np);
- 	if (!mtd->name) {
- 		mtd->name = devm_kasprintf(nfc->dev, GFP_KERNEL,
- 					   "%s", PL35X_NANDC_DRIVER_NAME);
+In the header file, the register function's declaration is also
+reformatted to fit code style guidelines.
+
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/clk/mediatek/clk-mtk.c | 19 +++++++++++++++++++
+ drivers/clk/mediatek/clk-mtk.h |  8 +++++---
+ 2 files changed, 24 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
+index b267b2f04b84..3a6dfe445e63 100644
+--- a/drivers/clk/mediatek/clk-mtk.c
++++ b/drivers/clk/mediatek/clk-mtk.c
+@@ -286,6 +286,25 @@ void mtk_clk_register_dividers(const struct mtk_clk_divider *mcds,
+ 	}
+ }
+ 
++void mtk_clk_unregister_dividers(const struct mtk_clk_divider *mcds, int num,
++				 struct clk_onecell_data *clk_data)
++{
++	int i;
++
++	if (!clk_data)
++		return;
++
++	for (i = num; i > 0; i--) {
++		const struct mtk_clk_divider *mcd = &mcds[i - 1];
++
++		if (IS_ERR_OR_NULL(clk_data->clks[mcd->id]))
++			continue;
++
++		clk_unregister_divider(clk_data->clks[mcd->id]);
++		clk_data->clks[mcd->id] = ERR_PTR(-ENOENT);
++	}
++}
++
+ int mtk_clk_simple_probe(struct platform_device *pdev)
+ {
+ 	const struct mtk_clk_desc *mcd;
+diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
+index 4db1a97c1250..e3ae22fb0334 100644
+--- a/drivers/clk/mediatek/clk-mtk.h
++++ b/drivers/clk/mediatek/clk-mtk.h
+@@ -176,9 +176,11 @@ struct mtk_clk_divider {
+ 		.div_width = _width,				\
+ }
+ 
+-void mtk_clk_register_dividers(const struct mtk_clk_divider *mcds,
+-			int num, void __iomem *base, spinlock_t *lock,
+-				struct clk_onecell_data *clk_data);
++void mtk_clk_register_dividers(const struct mtk_clk_divider *mcds, int num,
++			       void __iomem *base, spinlock_t *lock,
++			       struct clk_onecell_data *clk_data);
++void mtk_clk_unregister_dividers(const struct mtk_clk_divider *mcds, int num,
++				 struct clk_onecell_data *clk_data);
+ 
+ struct clk_onecell_data *mtk_alloc_clk_data(unsigned int clk_num);
+ void mtk_free_clk_data(struct clk_onecell_data *clk_data);
 -- 
-2.17.1
+2.35.0.263.gb82422642f-goog
 
