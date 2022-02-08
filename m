@@ -2,122 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C30C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5611BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:11:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383746AbiBHRK0 (ORCPT
+        id S1352331AbiBHRLL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 12:10:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44728 "EHLO
+        Tue, 8 Feb 2022 12:11:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244646AbiBHRKX (ORCPT
+        with ESMTP id S244646AbiBHRLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 12:10:23 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82717C061576;
-        Tue,  8 Feb 2022 09:10:22 -0800 (PST)
-Date:   Tue, 8 Feb 2022 18:10:19 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644340221;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pVIJUQJ0Ki8jKxcVnu+JXzo7n2t1fOshvCE90L4+HCA=;
-        b=fMBTllFbi5CRsMKdL3deJDoNDCfPPbH3eUL+Y2farcA0uT6jdIqGXaeKgNLsgeuP44PrzK
-        yJ2INt2H36mQlOu9yeiBxvSY30N07QM/wa521X32ueZA95FcqlMthcy7qv7ZRJ1KMDehao
-        yqR9M9tVyoH7bwbT8OfDlkEGl+YPrI4bWEUeSvgXhnOBXE4dyA96yobaT2A3Nmx7b2QJdH
-        +WIxpstG23uxLa5AgVCNEDB5K70AHkbJqfwyOwJPiKqRnUg9t5PBmAMvTjza5T1vF4Tc9b
-        TXtGTXdhbYFlZB3T0e+8PoX39Osg2K4VrTI2HXkrI6dmvtNAZ2vQLNaCWHgDbw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644340221;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pVIJUQJ0Ki8jKxcVnu+JXzo7n2t1fOshvCE90L4+HCA=;
-        b=OUZleW8SVui/wDg8abv+0fBP7W8jblNX0+mj1AqKnxF/2Tr19Z58pkEFB/x2VkDjxM49Q3
-        QX1QiPFUyYqqfoAA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org
-Cc:     Andy Lutomirski <luto@kernel.org>, Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: Re: [PATCH REPOST 0/8] kernel/fork: Move thread stack free otu of
- the scheduler path.
-Message-ID: <YgKj+363/qsJHRGA@linutronix.de>
-References: <20220125152652.1963111-1-bigeasy@linutronix.de>
+        Tue, 8 Feb 2022 12:11:09 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73A3C061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:11:05 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id n17so22002825iod.4
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 09:11:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DUOmgbDHv9TGhzCwwc6ir5fTuwgLxZHx2yr6wrlhX/c=;
+        b=eex8i7kur3v78Vl/7duuld6Gedj+S9MbQzPL4dqaRAmkcvf6y19qbfCr7f0mpjVnYe
+         7NbM8tZue9DfEpwG7KleDx6axk4urVIRu6QhVzMymZ9l3AoEsJDxpe1mTPCJRrBPLTRv
+         GR5X4ED9HqF2qffqJd17N70du82rofyEAm0dk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DUOmgbDHv9TGhzCwwc6ir5fTuwgLxZHx2yr6wrlhX/c=;
+        b=ZNfOLuN1H6hTp1s/h5OEEk1gni7KBlknIofXZ+vBEM38l5PZERK+MOd9ucXc71F5VX
+         5pFs6RWUijweJ5cGB+L2jVgO1wAt77uc5+Tlu2NBKKrCGbDdw7q3DoxAZnTn6Ah+owFe
+         mXl/l3WHGTz0KeeMJrxQzzdQ6qRkLrVVLSaxv1eHDUyV8Y148ABchAEe3YOd+ogB/9cw
+         4NQA780SjzCtMoRycGGdebKhBsAp+9PID9/nYXkIxJ1wrIXjDaozl6vMdsxQKLPus+RE
+         psVhba+6xZrLGIh0UyWU7rNOnj3pyY2AqSNcXhf4kdpFB97nFj25FYnFwVAXQ31hWeYH
+         UZvQ==
+X-Gm-Message-State: AOAM533c9TuP1Uvv7p8jppnCPG4z3HNyxQi31815b/itbLJyyccvxXND
+        Q+mqa+ztsvXtRXZ0Rl6P1eWU6A==
+X-Google-Smtp-Source: ABdhPJxI+60kUWV0wK02Do1Ljum8fRfUSV96QCsR/1AD9uHXCNG3g22230pw4nhS3axAL2kQCSoY8Q==
+X-Received: by 2002:a05:6602:2ac1:: with SMTP id m1mr2448582iov.123.1644340265093;
+        Tue, 08 Feb 2022 09:11:05 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id g7sm7620275ild.23.2022.02.08.09.11.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 09:11:04 -0800 (PST)
+Subject: Re: [PATCH v3 1/1] Documentation: dev-tools: clarify KTAP
+ specification wording
+To:     frowand.list@gmail.com, Jonathan Corbet <corbet@lwn.net>,
+        David Gow <davidgow@google.com>,
+        Kees Cook <keescook@chromium.org>, Rae Moar <rmoar@google.com>,
+        Tim.Bird@sony.com, Brendan Higgins <brendanhiggins@google.com>
+Cc:     rmr167@gmail.com, guillaume.tucker@collabora.com,
+        dlatypov@google.com, kernelci@groups.io,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220208164623.3151777-1-frowand.list@gmail.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <86c4c8ce-468d-8922-3ada-7960f1924ba8@linuxfoundation.org>
+Date:   Tue, 8 Feb 2022 10:11:03 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220125152652.1963111-1-bigeasy@linutronix.de>
+In-Reply-To: <20220208164623.3151777-1-frowand.list@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-25 16:26:44 [+0100], To linux-kernel@vger.kernel.org wrote:
-> [ This is a repost of https://lkml.kernel.org/r/20211118143452.136421-1-bigeasy@linutronix.de ]
+On 2/8/22 9:46 AM, frowand.list@gmail.com wrote:
+> From: Frank Rowand <frank.rowand@sony.com>
 > 
-> This is a follup-up on the patch
->     sched: Delay task stack freeing on RT 
->     https://lkml.kernel.org/r/20210928122411.593486363@linutronix.de
+> Add the spec version to the title line.
 > 
-> It addresses the review feedback:
-> - Decouple stack accounting from its free invocation. The accounting
->   happens in do_exit(), the final free call happens later.
+> Explain likely source of "Unknown lines".
 > 
-> - Add put_task_stack_sched() to finish_task_switch(). Here the VMAP
->   stack is cached only. If it fails, or in the !VMAP case then the final
->   free happens in delayed_put_task_struct(). This is also an oportunity
->   to cache the stack.
+> "Unknown lines" in nested tests are optionally indented.
 > 
-> >From testing I observe the following:
+> Add "Unknown lines" items to differences between TAP & KTAP list
 > 
-> |            bash-1715    [006] .....   124.901510: copy_process: allocC ffffc90007e70000
-> |      sh-cmds.sh-1746    [007] .....   124.907389: copy_process: allocC ffffc90007dc4000
-> |          <idle>-0       [019] ...1.   124.918126: free_thread_stack: cache ffffc90007dc4000
-> |      sh-cmds.sh-1746    [007] .....   124.918279: copy_process: allocC ffffc90007de8000
-> |          <idle>-0       [004] ...1.   124.920121: free_thread_stack: delay ffffc90007de8001
-> |          <idle>-0       [007] ...1.   124.920299: free_thread_stack: cache ffffc90007e70000
-> |          <idle>-0       [007] ..s1.   124.945433: free_thread_stack: cache ffffc90007de8000
+> Reviewed-by: Tim Bird <Tim.Bird@sony.com>
+> Reviewed-by: David Gow <davidgow@google.com>
+> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+> ---
 > 
-> TS 124.901510, bash started sh-cmds.sh, obtained stack from cache.
-> TS 124.907389, script invokes its first command, obtained stacak from
-> cache. As you can see bash was running on CPU6 but its child was moved
-> CPU7. 
-> TS 124.918126, the first command is done, stack is ached on CPU19.
-> TS 124.918279, script's second command, ache from stack.
-> TS 124.920121, the command is done. The stack cache on CPU4 is full.
-> TS 124.920299, the script is done, caches stack on CPU7.
-> TS 124.945433, the RCU-callback of last command is now happening. On
-> CPU7, which is where the command was invoked (but not running). Instead
-> of freeing the stack, it was cached since CPU7 had an empty slot.
+> Changes since version 2
+>    - Add missing quote after word: incorrect
+>    - Add Reviewed-by tags
 > 
-> If I pin the script to CPU5 and run it with multiple commands then it
-> works as expected:
+> Changes since version 1
+>    - Explain likely source of "Unknown lines"
+>    - "Unknown line" in nested tests are optionally indented
+>    - Add "Unknown lines" items to differences between TAP & KTAP list
 > 
-> |            bash-1799    [005] .....   993.608131: copy_process: allocC ffffc90007fa0000
-> |      sh-cmds.sh-1827    [005] .....   993.608888: copy_process: allocC ffffc90007fa8000
-> |      sh-cmds.sh-1827    [005] .....   993.610734: copy_process: allocV ffffc90007ff4000
-> |      sh-cmds.sh-1829    [005] ...1.   993.610757: free_thread_stack: cache ffffc90007fa8000
-> |      sh-cmds.sh-1827    [005] .....   993.612401: copy_process: allocC ffffc90007fa8000
-> |           <...>-1830    [005] ...1.   993.612416: free_thread_stack: cache ffffc90007ff4000
-> |      sh-cmds.sh-1827    [005] .....   993.613707: copy_process: allocC ffffc90007ff4000
-> |      sh-cmds.sh-1831    [005] ...1.   993.613723: free_thread_stack: cache ffffc90007fa8000
-> |      sh-cmds.sh-1827    [005] .....   993.615024: copy_process: allocC ffffc90007fa8000
-> |           <...>-1832    [005] ...1.   993.615040: free_thread_stack: cache ffffc90007ff4000
-> |      sh-cmds.sh-1827    [005] .....   993.616380: copy_process: allocC ffffc90007ff4000
-> |           <...>-1833    [005] ...1.   993.616397: free_thread_stack: cache ffffc90007fa8000
-> |            bash-1799    [005] ...1.   993.617759: free_thread_stack: cache ffffc90007fa0000
-> |          <idle>-0       [005] ...1.   993.617871: free_thread_stack: delay ffffc90007ff4001
-> |          <idle>-0       [005] ..s1.   993.638311: free_thread_stack: free ffffc90007ff4000
+>   Documentation/dev-tools/ktap.rst | 24 ++++++++++++++++++------
+>   1 file changed, 18 insertions(+), 6 deletions(-)
 > 
-> and no new is allocated during its runtime and a cached stack is used.
+> diff --git a/Documentation/dev-tools/ktap.rst b/Documentation/dev-tools/ktap.rst
+> index 878530cb9c27..dfb3f10a8b2d 100644
+> --- a/Documentation/dev-tools/ktap.rst
+> +++ b/Documentation/dev-tools/ktap.rst
+> @@ -1,8 +1,8 @@
+>   .. SPDX-License-Identifier: GPL-2.0
+>   
+> -========================================
+> -The Kernel Test Anything Protocol (KTAP)
+> -========================================
+> +===================================================
+> +The Kernel Test Anything Protocol (KTAP), version 1
+> +===================================================
+>   
+>   TAP, or the Test Anything Protocol is a format for specifying test results used
+>   by a number of projects. It's website and specification are found at this `link
+> @@ -174,6 +174,13 @@ There may be lines within KTAP output that do not follow the format of one of
+>   the four formats for lines described above. This is allowed, however, they will
+>   not influence the status of the tests.
+>   
+> +This is an important difference from TAP.  Kernel tests may print messages
+> +to the system console or a log file.  Both of these destinations may contain
+> +messages either from unrelated kernel or userspace activity, or kernel
+> +messages from non-test code that is invoked by the test.  The kernel code
+> +invoked by the test likely is not aware that a test is in progress and
+> +thus can not print the message as a diagnostic message.
+> +
+>   Nested tests
+>   ------------
+>   
+> @@ -186,10 +193,13 @@ starting with another KTAP version line and test plan, and end with the overall
+>   result. If one of the subtests fail, for example, the parent test should also
+>   fail.
+>   
+> -Additionally, all result lines in a subtest should be indented. One level of
+> +Additionally, all lines in a subtest should be indented. One level of
+>   indentation is two spaces: "  ". The indentation should begin at the version
+>   line and should end before the parent test's result line.
+>   
+> +"Unknown lines" are not considered to be lines in a subtest and thus are
+> +allowed to be either indented or not indented.
+> +
+>   An example of a test with two nested subtests:
+>   
+>   .. code-block::
+> @@ -225,9 +235,11 @@ Major differences between TAP and KTAP
+>   --------------------------------------
+>   
+>   Note the major differences between the TAP and KTAP specification:
+> -- yaml and json are not recommended in diagnostic messages
+> -- TODO directive not recognized
+> +- yaml and json are not recommended in KTAP diagnostic messages
+> +- TODO directive not recognized in KTAP
+>   - KTAP allows for an arbitrary number of tests to be nested> +- TAP includes "Unknown lines" in the category of "Anything else"
+> +- TAP says "Unknown lines" are "incorrect"; KTAP allows "Unknown lines"
+>   
 
-ping
+If we can put the data in a table - makes it lot easier to read
 
-Sebastian
+>   The TAP14 specification does permit nested tests, but instead of using another
+>   nested version line, uses a line of the form
+> 
+
+Looks good otherwise. Thanks for clearly outlining the differences.
+
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
