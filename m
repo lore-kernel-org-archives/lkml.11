@@ -2,216 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C53DC35275
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E858C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387519AbiBHWYV (ORCPT
+        id S1387459AbiBHW14 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:24:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35462 "EHLO
+        Tue, 8 Feb 2022 17:27:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386752AbiBHVI5 (ORCPT
+        with ESMTP id S239316AbiBHWUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:08:57 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3587C0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:56 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id e3so674979wra.0
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PCYS5QyMNkkwqTDkShTEbfPtwnFmBXM7JP7Pazg2YKM=;
-        b=kTDETVVLcYRtMjjA8LySpUTc6zRE3ZqOVKlYdUkFPag87WIkrPWX47b+Rb5Gehv3cR
-         LO/YoTPo1B1XpGaBAzdpwQ20SF/lTTiXX0i09lBUwufoAO3uAsw/1GqRYGbBpFouLnMs
-         kFt72PsgGfZ5DstDIs4E5PvzoMLE0yCbrB9+Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PCYS5QyMNkkwqTDkShTEbfPtwnFmBXM7JP7Pazg2YKM=;
-        b=UiaBsv7Zdacwd+iLkCdYRZ34V/ZjyG7Zlw9iSXU2ah/QajBJj4jd9S9BbDmtiHPVcO
-         +AhkCFW85K/Ur9zcixG860yDPI1Xt+Edns46BP6ELomsM+dv7eljhNbjkTuNNSEMlAf+
-         tHGRaLyaSovHYzRZLKMctLfJcWHOyZW9R52NzVS0L00GcJUfUEiZewW2xuzreksmGSvE
-         hEC3znwXod9lZ/q4o1EmBc5AQI3piYkqEH5ogEyrY8jdhKWsQSH+o8/2xSQKzdPSdqd8
-         g5p/k//JRuJo85+mfOa4cFjSGPtkPoELaEzrvM+CV7FjuzXyNfmfrOh15MedGKnAsX5k
-         dYew==
-X-Gm-Message-State: AOAM531FG0PMK1bQu9FIGpoSBjTUnFBuLU7P7Rr+JbZqYPMZDsOupn36
-        hWRuDqoglISTazkWUa7RCbFECw==
-X-Google-Smtp-Source: ABdhPJzoozBk4sCtvPwFCt7Ns2n0EIlD3c2Oag8W2C4RKf4YDquTma29XshfY3LkS6cE7lgaMjCoTA==
-X-Received: by 2002:adf:fe01:: with SMTP id n1mr5008752wrr.141.1644354535375;
-        Tue, 08 Feb 2022 13:08:55 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 13:08:54 -0800 (PST)
-From:   Daniel Vetter <daniel.vetter@ffwll.ch>
-To:     DRI Development <dri-devel@lists.freedesktop.org>
-Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Claudio Suarez <cssk@net-c.es>, Du Cheng <ducheng2@gmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Subject: [PATCH v2 16/19] fbcon: untangle fbcon_exit
-Date:   Tue,  8 Feb 2022 22:08:21 +0100
-Message-Id: <20220208210824.2238981-17-daniel.vetter@ffwll.ch>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+        Tue, 8 Feb 2022 17:20:15 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB85C0612BC
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:20:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644358813; x=1675894813;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Yufv6cv4/3vguwhcn1V790iDRzQOgdMBKx6n1D9pxAQ=;
+  b=lK6Iv/bM7E8q+QRTxe0MKdXVYANrkp2EOb7FwbmTI2XUyw+BAtIkdRrm
+   DLI1W78yQ2cW/IslRyrKNKUpJVcPMjQ3uUeb6QUxDpjuGuFWzBsC7ocTT
+   jfqDWMwHndYNeYX8wxsPwzqXm7eE6JApPdOFU4pThJRRkgPbLRM427KJp
+   CDTa/bs1oK+vAggf3FVdxJmxpWq/aNujaauPMKunkDPpBgZbKspBbnrGx
+   AbcLf4XaQ2FQalhkVO05gjVSsEaPb4gBqDAHzkYkR0tNI4VXIzvTVfHP2
+   j9m9j4gTYsktNsHSb5IEK2B9h76yfL2JJTDRY3PICKA6onipmzZF9VtwL
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="248826565"
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="248826565"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 14:20:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="484976933"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 08 Feb 2022 14:20:12 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nHYqJ-0000ol-FR; Tue, 08 Feb 2022 22:20:11 +0000
+Date:   Wed, 9 Feb 2022 06:19:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        David Teigland <teigland@redhat.com>
+Subject: fs/dlm/midcomms.c:913:22: sparse: sparse: restricted __le32 degrades
+ to integer
+Message-ID: <202202090632.SQ22xw2f-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's a bunch of confusions going on here:
-- The deferred fbcon setup notifier should only be cleaned up from
-  fb_console_exit(), to be symmetric with fb_console_init()
-- We also need to make sure we don't race with the work, which means
-  temporarily dropping the console lock (or we can deadlock)
-- That also means no point in clearing deferred_takeover, we are
-  unloading everything anyway.
-- Finally rename fbcon_exit to fbcon_release_all and move it, since
-  that's what's it doing when being called from consw->con_deinit
-  through fbcon_deinit.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   555f3d7be91a873114c9656069f1a9fa476ec41a
+commit: 658bd576f95ed597e519cdadf1c86ac87c17aea5 fs: dlm: move version conversion to compile time
+date:   3 months ago
+config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220209/202202090632.SQ22xw2f-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=658bd576f95ed597e519cdadf1c86ac87c17aea5
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 658bd576f95ed597e519cdadf1c86ac87c17aea5
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-To answer a question from Sam just quoting my own reply:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> We loose the call to fbcon_release_all() here [in fb_console_exit()].
-> We have part of the old fbcon_exit() above, but miss the release parts.
 
-Ah yes that's the entire point of this change. The release_all in the
-fbcon exit path was only needed when fbcon was a separate module
-indepedent from core fb.ko. Which means it was possible to unload fbcon
-while having fbdev drivers registered.
+sparse warnings: (new ones prefixed by >>)
+   fs/dlm/midcomms.c:213:1: sparse: sparse: symbol '__srcu_struct_nodes_srcu' was not declared. Should it be static?
+   fs/dlm/midcomms.c:570:25: sparse: sparse: cast to restricted __le32
+   fs/dlm/midcomms.c:678:19: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:680:16: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:718:27: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:737:25: sparse: sparse: cast to restricted __le32
+   fs/dlm/midcomms.c:747:25: sparse: sparse: cast to restricted __le32
+   fs/dlm/midcomms.c:756:23: sparse: sparse: cast to restricted __le32
+   fs/dlm/midcomms.c:766:42: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:769:26: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:804:23: sparse: sparse: cast to restricted __le32
+   fs/dlm/midcomms.c:838:27: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:898:26: sparse: sparse: cast to restricted __le16
+   fs/dlm/midcomms.c:920:25: sparse: sparse: cast to restricted __le32
+>> fs/dlm/midcomms.c:913:22: sparse: sparse: restricted __le32 degrades to integer
+   fs/dlm/midcomms.c:916:22: sparse: sparse: restricted __le32 degrades to integer
+   fs/dlm/midcomms.c:1056:20: sparse: sparse: context imbalance in 'dlm_midcomms_get_mhandle' - wrong count at exit
+   fs/dlm/midcomms.c: note: in included file (through include/linux/notifier.h, arch/x86/include/asm/uprobes.h, include/linux/uprobes.h, ...):
+   include/linux/srcu.h:188:9: sparse: sparse: context imbalance in 'dlm_midcomms_commit_mhandle' - unexpected unlock
 
-But since we've merged them that has become impossible, so by the time the
-fb.ko module can be unloaded, there's guaranteed to be no fbdev drivers
-left. And hence removing them is pointless.
+vim +913 fs/dlm/midcomms.c
 
-v2: Explain the why better (Sam)
+   871	
+   872	/*
+   873	 * Called from the low-level comms layer to process a buffer of
+   874	 * commands.
+   875	 */
+   876	
+   877	int dlm_process_incoming_buffer(int nodeid, unsigned char *buf, int len)
+   878	{
+   879		const unsigned char *ptr = buf;
+   880		const struct dlm_header *hd;
+   881		uint16_t msglen;
+   882		int ret = 0;
+   883	
+   884		while (len >= sizeof(struct dlm_header)) {
+   885			hd = (struct dlm_header *)ptr;
+   886	
+   887			/* no message should be more than DLM_MAX_SOCKET_BUFSIZE or
+   888			 * less than dlm_header size.
+   889			 *
+   890			 * Some messages does not have a 8 byte length boundary yet
+   891			 * which can occur in a unaligned memory access of some dlm
+   892			 * messages. However this problem need to be fixed at the
+   893			 * sending side, for now it seems nobody run into architecture
+   894			 * related issues yet but it slows down some processing.
+   895			 * Fixing this issue should be scheduled in future by doing
+   896			 * the next major version bump.
+   897			 */
+   898			msglen = le16_to_cpu(hd->h_length);
+   899			if (msglen > DLM_MAX_SOCKET_BUFSIZE ||
+   900			    msglen < sizeof(struct dlm_header)) {
+   901				log_print("received invalid length header: %u from node %d, will abort message parsing",
+   902					  msglen, nodeid);
+   903				return -EBADMSG;
+   904			}
+   905	
+   906			/* caller will take care that leftover
+   907			 * will be parsed next call with more data
+   908			 */
+   909			if (msglen > len)
+   910				break;
+   911	
+   912			switch (hd->h_version) {
+ > 913			case cpu_to_le32(DLM_VERSION_3_1):
+   914				dlm_midcomms_receive_buffer_3_1((union dlm_packet *)ptr, nodeid);
+   915				break;
+   916			case cpu_to_le32(DLM_VERSION_3_2):
+   917				dlm_midcomms_receive_buffer_3_2((union dlm_packet *)ptr, nodeid);
+   918				break;
+   919			default:
+   920				log_print("received invalid version header: %u from node %d, will skip this message",
+   921					  le32_to_cpu(hd->h_version), nodeid);
+   922				break;
+   923			}
+   924	
+   925			ret += msglen;
+   926			len -= msglen;
+   927			ptr += msglen;
+   928		}
+   929	
+   930		return ret;
+   931	}
+   932	
 
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Claudio Suarez <cssk@net-c.es>
-Cc: Du Cheng <ducheng2@gmail.com>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 ---
- drivers/video/fbdev/core/fbcon.c | 63 ++++++++++++++++----------------
- 1 file changed, 32 insertions(+), 31 deletions(-)
-
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 685b4a9e5546..944f514c77ec 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -187,7 +187,6 @@ static void fbcon_redraw_move(struct vc_data *vc, struct fbcon_display *p,
- 			      int line, int count, int dy);
- static void fbcon_modechanged(struct fb_info *info);
- static void fbcon_set_all_vcs(struct fb_info *info);
--static void fbcon_exit(void);
- 
- static struct device *fbcon_device;
- 
-@@ -1146,6 +1145,27 @@ static void fbcon_free_font(struct fbcon_display *p, bool freefont)
- 
- static void set_vc_hi_font(struct vc_data *vc, bool set);
- 
-+static void fbcon_release_all(void)
-+{
-+	struct fb_info *info;
-+	int i, j, mapped;
-+
-+	for_each_registered_fb(i) {
-+		mapped = 0;
-+		info = registered_fb[i];
-+
-+		for (j = first_fb_vc; j <= last_fb_vc; j++) {
-+			if (con2fb_map[j] == i) {
-+				mapped = 1;
-+				con2fb_map[j] = -1;
-+			}
-+		}
-+
-+		if (mapped)
-+			fbcon_release(info);
-+	}
-+}
-+
- static void fbcon_deinit(struct vc_data *vc)
- {
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
-@@ -1185,7 +1205,7 @@ static void fbcon_deinit(struct vc_data *vc)
- 		set_vc_hi_font(vc, false);
- 
- 	if (!con_is_bound(&fb_con))
--		fbcon_exit();
-+		fbcon_release_all();
- 
- 	if (vc->vc_num == logo_shown)
- 		logo_shown = FBCON_LOGO_CANSHOW;
-@@ -3296,34 +3316,6 @@ static void fbcon_start(void)
- #endif
- }
- 
--static void fbcon_exit(void)
--{
--	struct fb_info *info;
--	int i, j, mapped;
--
--#ifdef CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER
--	if (deferred_takeover) {
--		dummycon_unregister_output_notifier(&fbcon_output_nb);
--		deferred_takeover = false;
--	}
--#endif
--
--	for_each_registered_fb(i) {
--		mapped = 0;
--		info = registered_fb[i];
--
--		for (j = first_fb_vc; j <= last_fb_vc; j++) {
--			if (con2fb_map[j] == i) {
--				mapped = 1;
--				con2fb_map[j] = -1;
--			}
--		}
--
--		if (mapped)
--			fbcon_release(info);
--	}
--}
--
- void __init fb_console_init(void)
- {
- 	int i;
-@@ -3363,10 +3355,19 @@ static void __exit fbcon_deinit_device(void)
- 
- void __exit fb_console_exit(void)
- {
-+#ifdef CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER
-+	console_lock();
-+	if (deferred_takeover)
-+		dummycon_unregister_output_notifier(&fbcon_output_nb);
-+	console_unlock();
-+
-+	cancel_work_sync(&fbcon_deferred_takeover_work);
-+#endif
-+
- 	console_lock();
- 	fbcon_deinit_device();
- 	device_destroy(fb_class, MKDEV(0, 0));
--	fbcon_exit();
-+
- 	do_unregister_con_driver(&fb_con);
- 	console_unlock();
- }	
--- 
-2.34.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
