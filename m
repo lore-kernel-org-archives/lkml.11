@@ -2,180 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D79C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00899C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355441AbiBHLa1 (ORCPT
+        id S1359354AbiBHLbT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:30:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60586 "EHLO
+        Tue, 8 Feb 2022 06:31:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356475AbiBHKtf (ORCPT
+        with ESMTP id S1356649AbiBHKxd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:49:35 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6693EC03FEC0;
-        Tue,  8 Feb 2022 02:49:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644317374; x=1675853374;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
+        Tue, 8 Feb 2022 05:53:33 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7B4C03FEC0;
+        Tue,  8 Feb 2022 02:53:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1644317611; x=1675853611;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8bVyjlOCtJLgcl05G5AMbfZqCl2pQSsFOps6GXgAhLc=;
-  b=WhoX+SR9E+jNjvmGn39SRQI8K76Qr0hRuEvrGWq1UGHQvmSAaBBG8hB9
-   VKKzUvulY2EbAbzSN3YdoVLA3j4Q70BNv7zdy712MmENXTUmfDlQAxM+R
-   t3/emUUjl19uWeHSB3qJrWwlmg7znx+VIrK6FN6QPJX+1yEI/kSd5NvIQ
-   SWTMFSn3VZVgMXKQ1jBXtlljD6IX4pkYwJltRL8Pnt6MaK8cbCAKjCNi2
-   ylRp8coQ1SYHflMFdD/VhL2xrx98WdA99p1E1JOrxFbLblw4rnZOmQ6IK
-   ZQTmPNzADZhCHXFyQER6OOLd5KbI8Bu5OzxbHgL2+jAhlogs6ChFB6/n+
+  bh=UbrGQyvULXin7BBC8wqdS8uqSO3Rl+MipBC4/fpyAFA=;
+  b=A70yp/lnOBAI3gXLtwTmKGkj8F3WQbzguuqxghR3rKFV9AsDK8JmYRBG
+   t368KlgLlyOinM6/Yp00c+a4ngRFQTDvs+CDj8TFwI4zusg3jaoIGwfuZ
+   krx1oxtKoubB5IvNPGaAY8dTVjqlYFjAwD1HMteMkZ5fnIcCydOOc/WjI
+   BqCF3kZDPgUYvKbTwc5C6FkHVt/PkXvt7ng//CKXPKz9z3+rTRCivoWcd
+   2i0kPA4X1v2wgnQKMjTY/EgmxYM7b/cA2tEXoMWkNw4ehgHDly04CG16M
+   9u7NC1ljE7teZzvm9mOPfNwDQGnvW3LkyLIU5sJgvOEse8myB+UOzepKM
    w==;
-IronPort-SDR: paXrHcMzXITY/LEfDy4ZULOXn79Aik7ZevZXoqizNpmg3tQ53phwZt/2VbR8iy70Vv8dFse3il
- hrOqtig2JihYu0NLVdtdTk5+zDmOh9XKlV7WVRayqHsPVvNQmO7Q8o4gPIN7PV+c1Z7TcwExrU
- nomC21ceRNA+zx92WakxziCSb3VNR72utsgy1K8kD8On7ame2/UMxBFrAmyoGFAzvPhAs/5mci
- 1gtQXfhJIO+EcoKyxn/csKGhv+0msT5daeDwV5muh0oZxVpDWy9myUVUI0zDa/rh+vnq3VThQn
- p7++QDtvQu46Fk15XuJmpqi2
-X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
-   d="scan'208";a="85018008"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Feb 2022 03:49:33 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 8 Feb 2022 03:49:33 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 8 Feb 2022 03:49:30 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <herbert@gondor.apana.org.au>, <krzysztof.kozlowski@canonical.com>
-CC:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <linux-crypto@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <kavyasree.kotagiri@microchip.com>,
-        <devicetree@vger.kernel.org>,
-        "Tudor Ambarus" <tudor.ambarus@microchip.com>
-Subject: [PATCH v2 3/3] dt-bindings: crypto: Convert Atmel SHA to yaml
-Date:   Tue, 8 Feb 2022 12:49:18 +0200
-Message-ID: <20220208104918.226156-4-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220208104918.226156-1-tudor.ambarus@microchip.com>
-References: <20220208104918.226156-1-tudor.ambarus@microchip.com>
+X-IronPort-AV: E=Sophos;i="5.88,352,1635199200"; 
+   d="scan'208";a="21957534"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 08 Feb 2022 11:53:29 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Tue, 08 Feb 2022 11:53:29 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Tue, 08 Feb 2022 11:53:29 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1644317609; x=1675853609;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=UbrGQyvULXin7BBC8wqdS8uqSO3Rl+MipBC4/fpyAFA=;
+  b=VWnvEgqtDGvLWpFibWP78PUxgQe4FS9HDx/QNP3mgMele6QiMfx+TOYn
+   WkoDBxcdmrChiv28+5qECk6WOShr8EBEiPiDAxgB8FEY+JNyuD1C279JE
+   oTAac32IfRRg1AFGZE5pcLbT9thlMFtvb4uHPVB3wB6EdbDdfWp5jnjfx
+   SBa8eo5NFRVDC2wSbEmWtFvMLn9xXghyL+KYLcGmfUOY3JOcNHuoIz/30
+   Ap9danfx8+pIpDiK2VyIo3puV44kUkzyGG4drWcxVtrFtB40sYM5zKXdp
+   hOHeKy7XtK628/97U7w9Z9THRGrW4zXI+t3XFMUJvsuHjfwrMFrSn2RVz
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,352,1635199200"; 
+   d="scan'208";a="21957533"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 08 Feb 2022 11:53:29 +0100
+Received: from schifferm-ubuntu (SCHIFFERM-M2.tq-net.de [10.121.201.138])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 3B223280065;
+        Tue,  8 Feb 2022 11:53:29 +0100 (CET)
+Message-ID: <9923df6525212389b86cb635624bcfb5c27a8bc5.camel@ew.tq-group.com>
+Subject: Re: [PATCH v2 1/2] arm64: dts: ti: k3-am65: disable optional
+ peripherals by default
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>, soc@kernel.org,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>, jan.kiszka@siemens.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Nishanth Menon <nm@ti.com>
+Date:   Tue, 08 Feb 2022 11:53:27 +0100
+In-Reply-To: <YgEBml9HvFzSl289@atomide.com>
+References: <20220203140240.973690-1-matthias.schiffer@ew.tq-group.com>
+         <20220204143108.653qk2ihnlhsr5aa@prior> <YgDCLaBHA3DDQAUd@atomide.com>
+         <5944ba0ce568eaf507917799b1dfd89a3d0ca492.camel@ew.tq-group.com>
+         <YgEBml9HvFzSl289@atomide.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert Atmel SHA documentation to yaml format. With the conversion the
-clock and clock-names properties are made mandatory. The driver returns
--EINVAL if "sha_clk" is not found, reflect that in the bindings and make
-the clock and clock-names properties mandatory. Update the example to
-better describe how one should define the dt node.
+On Mon, 2022-02-07 at 13:25 +0200, Tony Lindgren wrote:
+> * Matthias Schiffer <matthias.schiffer@ew.tq-group.com> [220207
+> 08:45]:
+> > Generally I think that it's a bootloader's responsiblity to disable
+> > unneeded devices - the kernel may not even have a driver for some
+> > peripherals, leading to the same behaviour as a "disabled" status.
+> > For
+> > this reason I believe that it should always be okay to set unneeded
+> > devices to "disabled", and it should be considered a safe default.
+> 
+> Not possible, think kexec for example :) How would the previous
+> kernel
+> even know what to disable if Linux has no idea about the devices?
 
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
----
- .../crypto/atmel,at91sam9g46-sha.yaml         | 59 +++++++++++++++++++
- .../bindings/crypto/atmel-crypto.txt          | 25 --------
- 2 files changed, 59 insertions(+), 25 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-sha.yaml
- delete mode 100644 Documentation/devicetree/bindings/crypto/atmel-crypto.txt
+Well, optimally, bootloader and all kernels would agree on the devices
+that are actually available, but I get your point.
 
-diff --git a/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-sha.yaml b/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-sha.yaml
-new file mode 100644
-index 000000000000..e454f4468dc5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-sha.yaml
-@@ -0,0 +1,59 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/crypto/atmel,at91sam9g46-sha.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Atmel Secure Hash Algorithm (SHA) HW cryptographic accelerator
-+
-+maintainers:
-+  - Tudor Ambarus <tudor.ambarus@microchip.com>
-+
-+properties:
-+  compatible:
-+    const: atmel,at91sam9g46-sha
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: sha_clk
-+
-+  dmas:
-+    maxItems: 1
-+    description: TX DMA Channel
-+
-+  dma-names:
-+    const: tx
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/at91.h>
-+    #include <dt-bindings/dma/at91.h>
-+
-+    sha: crypto@e1814000 {
-+      compatible = "atmel,at91sam9g46-sha";
-+      reg = <0xe1814000 0x100>;
-+      interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-+      clocks = <&pmc PMC_TYPE_PERIPHERAL 83>;
-+      clock-names = "sha_clk";
-+      dmas = <&dma0 AT91_XDMAC_DT_PERID(48)>;
-+      dma-names = "tx";
-+    };
-diff --git a/Documentation/devicetree/bindings/crypto/atmel-crypto.txt b/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-deleted file mode 100644
-index 5c6541cfcc4a..000000000000
---- a/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-+++ /dev/null
-@@ -1,25 +0,0 @@
--* Atmel HW cryptographic accelerators
--
--These are the HW cryptographic accelerators found on some Atmel products.
--
--* Secure Hash Algorithm (SHA)
--
--Required properties:
--- compatible : Should be "atmel,at91sam9g46-sha".
--- reg: Should contain SHA registers location and length.
--- interrupts: Should contain the IRQ line for the SHA.
--
--Optional properties:
--- dmas: One DMA specifiers as described in
--        atmel-dma.txt and dma.txt files.
--- dma-names: Contains one identifier string for each DMA specifier
--             in the dmas property. Only one "tx" string needed.
--
--Example:
--sha@f8034000 {
--	compatible = "atmel,at91sam9g46-sha";
--	reg = <0xf8034000 0x100>;
--	interrupts = <42 4 0>;
--	dmas = <&dma1 2 17>;
--	dma-names = "tx";
--};
--- 
-2.25.1
+> 
+> If there are issues you're seeing, it's likely a bug in some of the
+> device drivers for not checking for the necessary resources like
+> pinctrl for i2c lines.
+
+I don't think it's common for individual drivers to care about pinctrl
+unless switching between different pin settings is required at runtime.
+Many drivers can be used on different hardware, some of which may
+require pinmuxing, while others don't.
+
+Also, what is the expected behavior of a driver that is probed for an
+unusable device? Wouldn't this require some as-of-yet nonexisting
+status between "okay" and "disabled" that conveys something like "probe
+this device, initialize (and disable) PM, but don't register anything",
+so no unusable devices become visible to userspace (and possibly other
+kernel drivers)?
+
+> 
+> > I'm not sure what the consensus on these issues is. I'm more
+> > familiar
+> > with NXP's i.MX and Layerscape SoCs, where it's common to have all
+> > muxable peripherals set to "disabled" in the base DTSI, and a quick
+> > grep through a few dts directories gives me the impression that
+> > this is
+> > the case for most other vendors as well.
+> 
+> This approach only works for SoCs that don't need the kernel to idle
+> devices for runtime PM.
+
+I'm pretty sure that most modern SoCs I looked at have runtime PM, and
+it is simply expected that unusable devices are never enabled in the
+first place, so there is no need for the kernel to know about them.
+
+Regards,
+Matthias
+
+
+
+
+> Regards,
+> 
+> Tony
 
