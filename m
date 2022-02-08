@@ -2,132 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D615C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2092C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388900AbiBHWdi (ORCPT
+        id S1388676AbiBHWdW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:33:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44632 "EHLO
+        Tue, 8 Feb 2022 17:33:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387023AbiBHVq6 (ORCPT
+        with ESMTP id S1386257AbiBHTym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:46:58 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8318BC0612B8;
-        Tue,  8 Feb 2022 13:46:57 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 1E1601F383;
-        Tue,  8 Feb 2022 21:46:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644356816; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6Y4cqlpGJFVeRUEbBtoO3aZV+LJk6nsh0uPbojI7rXM=;
-        b=VOLE94XELXtFUqsCfzwaLtl1ioehxDM+6T4zC+XmXO4afpyMVrzOcCjW+iNddp9RxmjsNc
-        lRKVM8C8Jk95OCWPmEsya5u/aJm+rGzNS4U8mvXllVyXTOh3ac/dqK/oR7Vu0AV9GuL2EG
-        0cJmF5YbTZ7WGLqx1WdRA7mmqB8+Ov8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644356816;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6Y4cqlpGJFVeRUEbBtoO3aZV+LJk6nsh0uPbojI7rXM=;
-        b=XpMJKhki4kVnEkQE/U0fzVHvjwBQ/bzO72KOv2BltNkEEcRvmid1ZsP0fAD4K83kULjP6C
-        9zR4plpxRx5op5AA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8AED6139C1;
-        Tue,  8 Feb 2022 21:46:55 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id G0GPH8/kAmLCRQAAMHmgww
-        (envelope-from <jdelvare@suse.de>); Tue, 08 Feb 2022 21:46:55 +0000
-Date:   Tue, 8 Feb 2022 22:46:53 +0100
-From:   Jean Delvare <jdelvare@suse.de>
-To:     Terry Bowman <Terry.Bowman@amd.com>
-Cc:     linux@roeck-us.net, linux-watchdog@vger.kernel.org,
-        linux-i2c@vger.kernel.org, wsa@kernel.org,
-        andy.shevchenko@gmail.com, rafael.j.wysocki@intel.com,
-        linux-kernel@vger.kernel.org, wim@linux-watchdog.org,
-        rrichter@amd.com, thomas.lendacky@amd.com, sudheesh.mavila@amd.com,
-        Nehal-bakulchandra.Shah@amd.com, Basavaraj.Natikar@amd.com,
-        Shyam-sundar.S-k@amd.com, Mario.Limonciello@amd.com
-Subject: Re: [PATCH v4 0/9] i2c: piix4: Replace cd6h/cd7h port I/O accesses
- with MMIO accesses
-Message-ID: <20220208224653.6a62ba22@endymion.delvare>
-In-Reply-To: <4ae57999-0f23-7578-008d-2009bc36d46b@amd.com>
-References: <20220130184130.176646-1-terry.bowman@amd.com>
-        <20220208181114.180a99ba@endymion.delvare>
-        <4ae57999-0f23-7578-008d-2009bc36d46b@amd.com>
-Organization: SUSE Linux
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        Tue, 8 Feb 2022 14:54:42 -0500
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D57C0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:54:40 -0800 (PST)
+Received: by mail-ot1-x331.google.com with SMTP id x52-20020a05683040b400b0059ea92202daso19072ott.7
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:54:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zuxBOxSXx7d4b4cX2jnWBhyNkXcf+aRokxgpIzaMMY4=;
+        b=CKfBmmYn6zVLOBAXCzB4HbpOqT28Iz0wtkN2m8QBkqb4RPqsKjrXwnGt3ZJbnD3SDW
+         GOmAqhYcOClgVzKKvHk1hfJBMMVBg5OLoWTgwW8gllUxdz4CQT3eJBo7x3Bnl0Micb6U
+         Dn2z5sbZjVYesizs8uldTX3MtZaKwJDa0nKmPuUgMgK+Zpxuj6i/f4oGAXsJ+uZtOP4E
+         sDhhE8pavmiaz33Bz3nPq+XmDYGcQ/gD5PJ/txpnzxIUNNJG2ujd3C3uY0o5FX4T3Tiq
+         LC/tnfSJdgO4AawFjRZ3ZWCZat/elQt0le+nAd5DL9JdPsOcvHHnwhpEBURkGThuL/Zs
+         yexQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zuxBOxSXx7d4b4cX2jnWBhyNkXcf+aRokxgpIzaMMY4=;
+        b=tUwsH/eioCN0qLKc3yPw3C9Sm5H54WrHf0eTiWGykyYxkyhNDrByEIskCeysyXpGZc
+         9fBFSAEINnKSlP9fsTc4t+IcD3t3zZc3++uMmAyFDdC8MsKbImHagwrfywxf8HpmqMoA
+         rOpMQHtxs7Cai/ln8pdZWFlvdzYK8VZ+LFGpaMtXMvcdSSceg8jrIN/I3ermoVHSFar5
+         OUgKq7fb0JMg3EZtFVIC6HITN1uMpbb7S40ZpkzFxNsVeQ8kUqcjYopkIkq2sYBWcMmu
+         7JqddWA61JKmICDC+hVcUDz9R5QPs4jfh9y0J2lDWxMAaJQsLcOPcJZPGLpknMOsU7uO
+         Epbw==
+X-Gm-Message-State: AOAM530U5emdjwesC65cfxbvo8vtDXrfjWqBwBlhkYpsaCY2iOqNPXD/
+        u9zdVP6tBkixfQl5udxmWsnCLuBqUldPQx7v
+X-Google-Smtp-Source: ABdhPJzDFsOkiI+GltX2s6MP2uANOLhlNipg9bTK+D1nKUInvxZkn6mZe1NF/PqswBq8Hlj7Jz0IZg==
+X-Received: by 2002:a9d:609a:: with SMTP id m26mr2493399otj.223.1644350079668;
+        Tue, 08 Feb 2022 11:54:39 -0800 (PST)
+Received: from localhost.localdomain ([2804:14d:4cd8:12bf:fde8:3cda:d976:7f4e])
+        by smtp.gmail.com with ESMTPSA id 8sm3468204oav.28.2022.02.08.11.54.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 11:54:39 -0800 (PST)
+From:   Leonardo Araujo <leonardo.aa88@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        Leonardo Araujo <leonardo.aa88@gmail.com>
+Subject: [PATCH] Staging: r8188eu: core: do not use assignment in if condition
+Date:   Tue,  8 Feb 2022 16:54:25 -0300
+Message-Id: <20220208195425.32286-1-leonardo.aa88@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Feb 2022 13:36:55 -0600, Terry Bowman wrote:
-> On 2/8/22 11:11, Jean Delvare wrote:
-> > Unfortunately I'm not really able to test this series. While I do have
-> > an AMD-based laptop which uses the i2c-piix4 driver, the SMBus has
-> > never been usable on it. The driver creates 3 i2c buses (port 0 at
-> > 0b00, port 2 at 0b00 and port 1 at 0b20). The first 2 do not seem to
-> > have any device on them (i2cdetect returns empty). The last one must
-> > have some devices on it, I see address 0x1c answers the ping,
-> > unfortunately as soon as probing reaches address 0x2c, all later pings
-> > return success, regardless of the address. It seems that some I2C
-> > device (probably the one at 0x2c, but I don't know what it is) is
-> > holding SDA low forever, therefore preventing any use of the whole
-> > SMBus port until the next reboot.
-> 
-> My understanding is the OEM may have different i2c devices because it
-> is mainboard specific.
+This patch fixes the following checkpatch.pl warning:
 
-Yes, the devices on the SMBus could be anything Lenovo decided to use.
-Tomorrow I'll try to scan the SMBus but skipping the problematic
-address, to see if it works around the problem.
+ERROR: do not use assignment in if condition
 
-> >> (...)
-> >> Changes in v4:
-> >> (...)
-> >>  - Removed iowrite32(ioread32(...), ...). Unnecessary because MMIO is
-> >>    already enabled. (Terry Bowman)  
-> > 
-> > I'm curious, how can you be sure of that actually?
-> 
-> The removed code was using a MMIO region to write 1 to 'mmioen'. This was 
-> using the MMIO region to enable same MMIO region.
+Signed-off-by: Leonardo Araujo <leonardo.aa88@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_cmd.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Ah ah, I get it now. Nice chicken or the egg situation :-)
-
-> Programmer's manual shows FCH::PM::ISACONTROL[mmioen] has a '1' reset value.
-> Per programmer's manual, FCH::PM::ISACONTROL[mmioen] enables MMIO mapping 
-> at FED8_0000h..FED8_1FFFh. The FCH::PM::ISACONTROL register is MMIO 
-> mapped at FED8_0304h. 'mmioen' was intended to be set using port I/O to 
-> enable MMIO but, port I/O access to these registers is now disabled.
-
-Is my understanding correct that there is some overlapping of the
-access methods and there are certain chipsets where both legacy I/O and
-MMIO access is possible?
-
-If so, while there's indeed nothing to be done for the most recent
-systems where only MMIO access is possible, you may still need to
-enable MMIO access through legacy I/O if you try to use MMIO on
-chipsets where both are possible. I'm not sure what exactly where you
-set the limit. In the last patch you say that 0x51 is the first
-revision of the family 17h CPUs, but is family 17h the first where MMIO
-is available, or the first where legacy I/O isn't?
-
+diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+index c7e8602d2097..d02632dc16c3 100644
+--- a/drivers/staging/r8188eu/core/rtw_cmd.c
++++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+@@ -1329,7 +1329,8 @@ static void c2h_wk_callback(struct work_struct *work)
+ 	evtpriv->c2h_wk_alive = true;
+ 
+ 	while (!rtw_cbuf_empty(evtpriv->c2h_queue)) {
+-		if ((c2h_evt = (struct c2h_evt_hdr *)rtw_cbuf_pop(evtpriv->c2h_queue)) != NULL) {
++		c2h_evt = (struct c2h_evt_hdr *)rtw_cbuf_pop(evtpriv->c2h_queue);
++		if (c2h_evt) {
+ 			/* This C2H event is read, clear it */
+ 			rtw_write8(adapter, REG_C2HEVT_CLEAR, C2H_EVT_HOST_CLOSE);
+ 		} else {
 -- 
-Jean Delvare
-SUSE L3 Support
+2.29.0
+
