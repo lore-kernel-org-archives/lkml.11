@@ -2,235 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9889FC35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51ADBC35270
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388363AbiBHWcq (ORCPT
+        id S1388228AbiBHWcd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:32:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35380 "EHLO
+        Tue, 8 Feb 2022 17:32:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386726AbiBHVIv (ORCPT
+        with ESMTP id S1386973AbiBHViJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:08:51 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6452BC0612BC
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:50 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id s10so591417wra.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=a7btPFkxjvf2mfzDClUDZxd+ZY9UWGCKfTqWfIAGZE4=;
-        b=hC3hy+RQU0IwCFFhPrwVyJ7y2LIZTcjUzkEUlkvoHv0+/idoFt5rzVLYgDfL/hgQIi
-         i2eeoFzpPEkt5fIvytjXjxYMYBVzGR7jyva3sSvlFHwg+sOFZrStM/ihrh+FHInpCE0T
-         P8beATlmu3Ae4wYaareiwO9PDCh36eixaQNpw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=a7btPFkxjvf2mfzDClUDZxd+ZY9UWGCKfTqWfIAGZE4=;
-        b=VbrNtW7tn2AOf3/tbnOhRKT+2f9spv1mOibtKiZDGt6GtpKGpQoGeeo9nKfQvKFIQH
-         CHw8+ag2zVGumtWWhkrmNTC31CmSFw5k6oBcOW0AVL/D93oVj1jCVPg5jgW0+TfmEbdT
-         J/LLi93bQPRZWkS3n+W5ds6VigxidfhZh1MPMG/K4HcoSwfT7VUYM2lrbHISfsoNZk8i
-         5ktUkR1dhVfrNcx8/kQ7D8On3WCbUCAUsU0eU5I3seZxG8dkLBjRTabGSc8nngagV0eI
-         Y6sJikAFq5loe5iv+RI0Dr+lRSObGirWLdz8WGLMuxz5x9OEu4kBeKWEcccZjqTmp+Gt
-         cG8g==
-X-Gm-Message-State: AOAM530hcJ3FMIe39XKishw8dOYjZxYnmnEWXKFinVGShRlLI8TGR+p2
-        Q555cHRrXMuCrDAnfegsg7atlQ==
-X-Google-Smtp-Source: ABdhPJxeKo6oxb1DStpx7vg2vbnJEG3khQpC5Pgmw0k9BwE0aQ7ghCQbgGVL5nA7XrrUJ87c2ZVJ6w==
-X-Received: by 2002:a5d:4528:: with SMTP id j8mr5046963wra.544.1644354528995;
-        Tue, 08 Feb 2022 13:08:48 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 13:08:48 -0800 (PST)
-From:   Daniel Vetter <daniel.vetter@ffwll.ch>
-To:     DRI Development <dri-devel@lists.freedesktop.org>
-Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        kernel test robot <lkp@intel.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Claudio Suarez <cssk@net-c.es>, Du Cheng <ducheng2@gmail.com>
-Subject: [PATCH v2 11/19] fbcon: move more common code into fb_open()
-Date:   Tue,  8 Feb 2022 22:08:16 +0100
-Message-Id: <20220208210824.2238981-12-daniel.vetter@ffwll.ch>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+        Tue, 8 Feb 2022 16:38:09 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBE9C0612B8;
+        Tue,  8 Feb 2022 13:38:07 -0800 (PST)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 218KLPU4008129;
+        Tue, 8 Feb 2022 21:38:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=+vZEbJf2/F/HXJS/xb959JWBMnW+q6kEGUI0pVRvbIU=;
+ b=EBPlj+Fi0Suqi9+RuiXia3bLWlMJlGNVTeMW/DMnmzR5X9r3IYTnuP+x6CXdQ9ssyt+W
+ yf5Q4+zHV8G8zRPtGPTglyAfbu1pNNHmWH98aQzzbxUFSSjvrMGTa84afJ9oEOBdeKQ5
+ ECWuBKtiHv421EO44qS9+40YPLNPCEgm4I4gl0Ke9oJbIjqp9G37cJVof9drXnwb/6xH
+ VJt5NGh3wshXL6WlBo5PLjT/fRZocc0jxKdrRg/8KgVF761Y59QIFnUTPWABSZMESSdW
+ YR2Imvnrve2L0VwOrAv6zvNtMNgkDhoQNSrt4AZS5koAFdRvhVSzbQxhy8xc1x8dmZdW aQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e3tst2bdk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 21:38:05 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 218KTMtH022850;
+        Tue, 8 Feb 2022 21:38:04 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e3tst2bd9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 21:38:04 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 218LbhfF001267;
+        Tue, 8 Feb 2022 21:38:03 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma03wdc.us.ibm.com with ESMTP id 3e1gvb4whj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 21:38:03 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 218Lc1dY26018302
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 8 Feb 2022 21:38:01 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BB373AE05C;
+        Tue,  8 Feb 2022 21:38:01 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 93103AE063;
+        Tue,  8 Feb 2022 21:37:56 +0000 (GMT)
+Received: from [9.211.136.120] (unknown [9.211.136.120])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue,  8 Feb 2022 21:37:56 +0000 (GMT)
+Message-ID: <920cf807-efcd-319b-560a-ed3a1c6fdc85@linux.ibm.com>
+Date:   Tue, 8 Feb 2022 16:37:55 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 24/30] vfio-pci/zdev: wire up group notifier
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        linux-s390@vger.kernel.org, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
+        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220204211536.321475-1-mjrosato@linux.ibm.com>
+ <20220204211536.321475-25-mjrosato@linux.ibm.com>
+ <20220208104319.4861fb22.alex.williamson@redhat.com>
+ <20220208185141.GH4160@nvidia.com>
+ <20220208122624.43ad52ef.alex.williamson@redhat.com>
+ <438d8b1e-e149-35f1-a8c9-ed338eb97430@linux.ibm.com>
+ <20220208204041.GK4160@nvidia.com>
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20220208204041.GK4160@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: gBoIvL9YXflJpi2SsFc-is9hNyMZmx3G
+X-Proofpoint-GUID: LR1RpkiMXSJ2erWaWvdY7NsRIHuLJu0_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-08_06,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
+ malwarescore=0 lowpriorityscore=0 priorityscore=1501 phishscore=0
+ impostorscore=0 mlxlogscore=999 clxscore=1015 adultscore=0 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202080125
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No idea why con2fb_acquire_newinfo() initializes much less than
-fbcon_startup(), but so be it. From a quick look most of the
-un-initialized stuff should be fairly harmless, but who knows.
+On 2/8/22 3:40 PM, Jason Gunthorpe wrote:
+> On Tue, Feb 08, 2022 at 03:33:58PM -0500, Matthew Rosato wrote:
+> 
+>>> Is the purpose of IOAT to associate the device to a set of KVM page
+>>> tables?  That seems like a container or future iommufd operation.  I
+>>
+>> Yes, here we are establishing a relationship with the DMA table in the guest
+>> so that once mappings are established guest PCI operations (handled via
+>> special instructions in s390) don't need to go through the host but can be
+>> directly handled by firmware (so, effectively guest can keep running on its
+>> vcpu vs breaking out).
+> 
+> Oh, well, certainly sounds like a NAK on that - anything to do with
+> the DMA translation of a PCI device must go through the iommu layer,
+> not here.
+> 
+> Lets not repeat the iommu subsytem bypass mess power made please.
+> 
+>> It's more that non-KVM userspace doesn't care about what these ioctls are
+>> doing...  The enabling of 'interp, aif, ioat' is only pertinent when there
+>> is a KVM userspace, specifically because the information being shared /
+>> actions being performed as a result are only relevant to properly enabling
+>> zPCI features when the zPCI device is being passed through to a VM
+>> guest.
+> 
+> Then why are they KVM ioctls?
 
-Note that the error handling for the con2fb_acquire_newinfo() failure
-case was very strange: Callers updated con2fb_map to the new value
-before calling this function, but upon error con2fb_acquire_newinfo
-reset it to the old value. Since I removed the call to fbcon_release
-anyway that strange error path was sticking out like a sore thumb,
-hence I removed it. Which also allows us to remove the oldidx
-parameter from that function.
+Well, the primary reason I ended up here was that I need to ensure the 
+the operation is only performed when guest X owns host zPCI device Y. 
+The vfio-pci device ioctl had the benefit of acting on device 
+granularity + also already being aware of the host PCI (and thus zPCI) 
+device association -- so I already know exactly what hostdev is being 
+referenced for the operation.  All that was needed was the KVM notifier 
+to ensure the vfio device was associated to a KVM guest.
 
-v2: Explain what's going on with oldidx and error paths (Sam)
+I think moving over to a KVM ioctl is doable; I might still need to rely 
+on VFIO_GROUP_NOTIFY_SET_KVM though, not sure yet.
 
-v3: Drop unused variable (0day)
-
-Acked-by: Sam Ravnborg <sam@ravnborg.org> (v2)
-Cc: kernel test robot <lkp@intel.com>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Claudio Suarez <cssk@net-c.es>
-Cc: Du Cheng <ducheng2@gmail.com>
----
- drivers/video/fbdev/core/fbcon.c | 75 +++++++++++++-------------------
- 1 file changed, 30 insertions(+), 45 deletions(-)
-
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index a60891005d44..f0213a0e3870 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -682,8 +682,18 @@ static int fbcon_invalid_charcount(struct fb_info *info, unsigned charcount)
- 
- #endif /* CONFIG_MISC_TILEBLITTING */
- 
-+static void fbcon_release(struct fb_info *info)
-+{
-+	if (info->fbops->fb_release)
-+		info->fbops->fb_release(info, 0);
-+
-+	module_put(info->fbops->owner);
-+}
-+
- static int fbcon_open(struct fb_info *info)
- {
-+	struct fbcon_ops *ops;
-+
- 	if (!try_module_get(info->fbops->owner))
- 		return -ENODEV;
- 
-@@ -693,48 +703,31 @@ static int fbcon_open(struct fb_info *info)
- 		return -ENODEV;
- 	}
- 
--	return 0;
--}
-+	ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
-+	if (!ops) {
-+		fbcon_release(info);
-+		return -ENOMEM;
-+	}
- 
--static void fbcon_release(struct fb_info *info)
--{
--	if (info->fbops->fb_release)
--		info->fbops->fb_release(info, 0);
-+	INIT_DELAYED_WORK(&ops->cursor_work, fb_flashcursor);
-+	ops->info = info;
-+	info->fbcon_par = ops;
-+	ops->cur_blink_jiffies = HZ / 5;
- 
--	module_put(info->fbops->owner);
-+	return 0;
- }
- 
- static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
--				  int unit, int oldidx)
-+				  int unit)
- {
--	struct fbcon_ops *ops = NULL;
- 	int err;
- 
- 	err = fbcon_open(info);
- 	if (err)
- 		return err;
- 
--	if (!err) {
--		ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
--		if (!ops)
--			err = -ENOMEM;
--
--		INIT_DELAYED_WORK(&ops->cursor_work, fb_flashcursor);
--	}
--
--	if (!err) {
--		ops->cur_blink_jiffies = HZ / 5;
--		ops->info = info;
--		info->fbcon_par = ops;
--
--		if (vc)
--			set_blitting_type(vc, info);
--	}
--
--	if (err) {
--		con2fb_map[unit] = oldidx;
--		fbcon_release(info);
--	}
-+	if (vc)
-+		set_blitting_type(vc, info);
- 
- 	return err;
- }
-@@ -842,9 +835,11 @@ static int set_con2fb_map(int unit, int newidx, int user)
- 
- 	found = search_fb_in_map(newidx);
- 
--	con2fb_map[unit] = newidx;
--	if (!err && !found)
--		err = con2fb_acquire_newinfo(vc, info, unit, oldidx);
-+	if (!err && !found) {
-+		err = con2fb_acquire_newinfo(vc, info, unit);
-+		if (!err)
-+			con2fb_map[unit] = newidx;
-+	}
- 
- 	/*
- 	 * If old fb is not mapped to any of the consoles,
-@@ -941,20 +936,10 @@ static const char *fbcon_startup(void)
- 	if (fbcon_open(info))
- 		return NULL;
- 
--	ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
--	if (!ops) {
--		fbcon_release(info);
--		return NULL;
--	}
--
--	INIT_DELAYED_WORK(&ops->cursor_work, fb_flashcursor);
--
-+	ops = info->fbcon_par;
- 	ops->currcon = -1;
- 	ops->graphics = 1;
- 	ops->cur_rotate = -1;
--	ops->cur_blink_jiffies = HZ / 5;
--	ops->info = info;
--	info->fbcon_par = ops;
- 
- 	p->con_rotate = initial_rotation;
- 	if (p->con_rotate == -1)
-@@ -1024,7 +1009,7 @@ static void fbcon_init(struct vc_data *vc, int init)
- 		return;
- 
- 	if (!info->fbcon_par)
--		con2fb_acquire_newinfo(vc, info, vc->vc_num, -1);
-+		con2fb_acquire_newinfo(vc, info, vc->vc_num);
- 
- 	/* If we are not the first console on this
- 	   fb, copy the font from that console */
--- 
-2.34.1
+Based on prior comments in this thread I'm assuming Alex shares that 
+view too (don't use vfio device ioctl for something only being used for 
+VM passthrough) so I'll start looking at using KVM ioctls instead.
 
