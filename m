@@ -2,96 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FDD1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 23:08:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3177CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 23:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235164AbiBHXIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 18:08:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34042 "EHLO
+        id S229778AbiBHXIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 18:08:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234994AbiBHXID (ORCPT
+        with ESMTP id S235172AbiBHXIL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 18:08:03 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA861C061577;
-        Tue,  8 Feb 2022 15:08:02 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 74F8221107;
-        Tue,  8 Feb 2022 23:08:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644361681;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uiS+i+Yi/MMxlJxriyCYJVbMBk32ERqDOJ25GJCQbRc=;
-        b=UklAC60NoSQMJKh2xX5ZaEu0/SBWz31YETthCnXLKA9ZjOXV0UZpwyXG4hdVC0T/DHIzB7
-        WN/9ww9x5VUiBRwUuuPQRubP72Jrd01RUHszuF4p+rODIQtNE5NDJxsbhSimU1dyobqX1f
-        xv5ihVkzMgfmqvE1mJ9KRH1aA+iYVjY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644361681;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uiS+i+Yi/MMxlJxriyCYJVbMBk32ERqDOJ25GJCQbRc=;
-        b=ClYkgGbTQO0gh5nT0MhzEyJxDDF62O4PGlIzebj9vaM86LezgE3BGvjubR+ZbyQ3yFSCfa
-        T9ccYw19FeZ+KeDQ==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 6BD3AA3B88;
-        Tue,  8 Feb 2022 23:08:01 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id DFEB4DAB3E; Wed,  9 Feb 2022 00:04:20 +0100 (CET)
-Date:   Wed, 9 Feb 2022 00:04:20 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     =?utf-8?B?RMSBdmlzIE1vc8SBbnM=?= <davispuh@gmail.com>
-Cc:     linux-btrfs@vger.kernel.org, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] btrfs: send: in case of IO error log it
-Message-ID: <20220208230420.GJ12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        =?utf-8?B?RMSBdmlzIE1vc8SBbnM=?= <davispuh@gmail.com>,
-        linux-btrfs@vger.kernel.org, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
-        linux-kernel@vger.kernel.org
-References: <20220202201437.7718-1-davispuh@gmail.com>
- <20220205184822.2968-1-davispuh@gmail.com>
+        Tue, 8 Feb 2022 18:08:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D720BC06157A;
+        Tue,  8 Feb 2022 15:08:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94B07B81DA0;
+        Tue,  8 Feb 2022 23:08:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 442ABC340ED;
+        Tue,  8 Feb 2022 23:08:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644361688;
+        bh=HHLDK0gdiu6mDdxkccPZJ03JgjiezwhJUW2MRc88A9I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LE6VHe3/21VfERQewKclqDF5EJ9iVsjJRkB7//XHu+DbUvV74qk2QJ2rYQDZcCRkE
+         /PxU52NAqVAURdHbgOjSOMrndra3gtrDrFgpBR7AJUP9aKziksZz9QwsGQ76jxt+mY
+         gMLAL39PU+lTph+X6frYI8u1JNzh7twkGWJXbckGBUO/acto6O+i65/Ut3VNXOzChc
+         EIs6LjXLcPv4vGib9zLhGRh9yTYQDYHwvcgirQJ20MtTWhGh3y/IdZqV0LzxdX3yL4
+         YSIAKMMONgaJYE2bbxe3RGSgj2/9kA+3ibKHRB8zZYZnkeKOZ5xA4u1mcp7tkAInnk
+         iHV3USmx+4GIg==
+Date:   Tue, 8 Feb 2022 15:08:06 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: Re: [PATCH v1 3/7] random: inline leaves of rand_initialize()
+Message-ID: <YgL31gTJX6UztpvH@sol.localdomain>
+References: <20220208155335.378318-1-Jason@zx2c4.com>
+ <20220208155335.378318-4-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220205184822.2968-1-davispuh@gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20220208155335.378318-4-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 08:48:23PM +0200, Dāvis Mosāns wrote:
-> Currently if we get IO error while doing send then we abort without
-> logging information about which file caused issue.
-> So log it to help with debugging.
+On Tue, Feb 08, 2022 at 04:53:31PM +0100, Jason A. Donenfeld wrote:
+> This is a preparatory commit for the following one. We simply inline the
+> various functions that rand_initialize() calls that have no other
+> callers. The compiler was doing this anyway before. Doing this will
+> allow us to reorganize this after.
 > 
-> Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
-
-Added to misc-next, thanks.
-
+> Cc: Theodore Ts'o <tytso@mit.edu>
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 > ---
->  fs/btrfs/send.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/fs/btrfs/send.c b/fs/btrfs/send.c
-> index d8ccb62aa7d2..b1f75fde4a19 100644
-> --- a/fs/btrfs/send.c
-> +++ b/fs/btrfs/send.c
-> @@ -4999,6 +4999,8 @@ static int put_file_data(struct send_ctx *sctx, u64 offset, u32 len)
->  			lock_page(page);
->  			if (!PageUptodate(page)) {
->  				unlock_page(page);
-> +				btrfs_err(fs_info, "send: IO error at offset=%llu for inode=%llu root=%llu",
-> +					page_offset(page), sctx->cur_ino, sctx->send_root->root_key.objectid);
->  				put_page(page);
+>  drivers/char/random.c | 90 ++++++++++++++++---------------------------
+>  1 file changed, 33 insertions(+), 57 deletions(-)
 
-Good point in v2, using page must be before put_page. I've slightly
-reformatted the message so the lines fit to the limit.
+Looks good,
+
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+
+- Eric
