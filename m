@@ -2,115 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE84C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357148AbiBHLv1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:51:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
+        id S238661AbiBHLwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:52:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357980AbiBHLuQ (ORCPT
+        with ESMTP id S231327AbiBHLwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 06:50:16 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3364C02549C;
-        Tue,  8 Feb 2022 03:42:15 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 71654210F5;
-        Tue,  8 Feb 2022 11:42:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644320534; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=txkE5XzzyFXzIuOv7AWLb7NWIjo0bQa6foIWhGJ1WH8=;
-        b=NTxXEVyuDBlX93//ziag9/u/YKfr/o63OWd+BvhP4eq4trTMgcsXcL04QBfS8sP33AlWOc
-        I0oenl/j5W9toXdR1zZcvNgtta5Paomkkeup5R75HYtjIuECDKnOLGFA4SekBLA3+YOw5c
-        2JQG8NRQe9nuigXqWua6laRNVH5zQq8=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 28308A3B83;
-        Tue,  8 Feb 2022 11:42:14 +0000 (UTC)
-Date:   Tue, 8 Feb 2022 12:42:10 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Aaron Tomlin <atomlin@redhat.com>
-Cc:     mcgrof@kernel.org, cl@linux.com, mbenes@suse.cz,
-        akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        live-patching@vger.kernel.org, atomlin@atomlin.com,
-        ghalat@redhat.com, allen.lkml@gmail.com, void@manifault.com,
-        joe@perches.com
-Subject: Re: [RFC PATCH v4 03/13] module: Move livepatch support to a
- separate file
-Message-ID: <YgJXEhiwn5B4Psxa@alley>
-References: <20220130213214.1042497-1-atomlin@redhat.com>
- <20220130213214.1042497-4-atomlin@redhat.com>
+        Tue, 8 Feb 2022 06:52:17 -0500
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 69AA8C03FECA;
+        Tue,  8 Feb 2022 03:52:15 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id B60908106;
+        Tue,  8 Feb 2022 11:51:49 +0000 (UTC)
+Date:   Tue, 8 Feb 2022 13:52:13 +0200
+From:   Tony Lindgren <tony@atomide.com>
+To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>, soc@kernel.org,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>, jan.kiszka@siemens.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Nishanth Menon <nm@ti.com>
+Subject: Re: [PATCH v2 1/2] arm64: dts: ti: k3-am65: disable optional
+ peripherals by default
+Message-ID: <YgJZbdOlazrde7O/@atomide.com>
+References: <20220203140240.973690-1-matthias.schiffer@ew.tq-group.com>
+ <20220204143108.653qk2ihnlhsr5aa@prior>
+ <YgDCLaBHA3DDQAUd@atomide.com>
+ <5944ba0ce568eaf507917799b1dfd89a3d0ca492.camel@ew.tq-group.com>
+ <YgEBml9HvFzSl289@atomide.com>
+ <9923df6525212389b86cb635624bcfb5c27a8bc5.camel@ew.tq-group.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220130213214.1042497-4-atomlin@redhat.com>
+In-Reply-To: <9923df6525212389b86cb635624bcfb5c27a8bc5.camel@ew.tq-group.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 2022-01-30 21:32:04, Aaron Tomlin wrote:
-> No functional change.
+* Matthias Schiffer <matthias.schiffer@ew.tq-group.com> [220208 10:53]:
+> On Mon, 2022-02-07 at 13:25 +0200, Tony Lindgren wrote:
+> > * Matthias Schiffer <matthias.schiffer@ew.tq-group.com> [220207
+> > 08:45]:
+> > > Generally I think that it's a bootloader's responsiblity to disable
+> > > unneeded devices - the kernel may not even have a driver for some
+> > > peripherals, leading to the same behaviour as a "disabled" status.
+> > > For
+> > > this reason I believe that it should always be okay to set unneeded
+> > > devices to "disabled", and it should be considered a safe default.
+> > 
+> > Not possible, think kexec for example :) How would the previous
+> > kernel
+> > even know what to disable if Linux has no idea about the devices?
 > 
-> This patch migrates livepatch support (i.e. used during module
-> add/or load and remove/or deletion) from core module code into
-> kernel/module/livepatch.c. At the moment it contains code to
-> persist Elf information about a given livepatch module, only.
+> Well, optimally, bootloader and all kernels would agree on the devices
+> that are actually available, but I get your point.
 > 
-> diff --git a/include/linux/module.h b/include/linux/module.h
-> index f4338235ed2c..c7daac4d16ee 100644
-> --- a/include/linux/module.h
-> +++ b/include/linux/module.h
-> @@ -663,17 +663,23 @@ static inline bool module_requested_async_probing(struct module *module)
->  	return module && module->async_probe_requested;
->  }
->  
-> -#ifdef CONFIG_LIVEPATCH
->  static inline bool is_livepatch_module(struct module *mod)
->  {
-> -	return mod->klp;
-> +	if (IS_ENABLED(CONFIG_LIVEPATCH)) {
-> +		if (mod->klp)
-> +			return true;
-> +	}
-> +	return false;
+> > 
+> > If there are issues you're seeing, it's likely a bug in some of the
+> > device drivers for not checking for the necessary resources like
+> > pinctrl for i2c lines.
+> 
+> I don't think it's common for individual drivers to care about pinctrl
+> unless switching between different pin settings is required at runtime.
+> Many drivers can be used on different hardware, some of which may
+> require pinmuxing, while others don't.
 
-The following is easier to follow for me. But it is a matter of taste.
-Feel free to use whatever you prefer.
+Yeah that's true, some configurations only do pin muxing in the
+bootloader. So pins are not a good criteria for devicetree status enabled
+for when the device is operational.
 
-	return IS_ENABLED(CONFIG_LIVEPATCH) && mod->klp;
+Probably a better criteria for devicetree "operational" status is the
+device can be clocked and configured or idled. Some devices like GPUs
+can render to memory with no external pin configuration for example.
 
->  }
-> -#else /* !CONFIG_LIVEPATCH */
-> -static inline bool is_livepatch_module(struct module *mod)
-> +
-> +static inline bool set_livepatch_module(struct module *mod)
->  {
-> +	if (IS_ENABLED(CONFIG_LIVEPATCH)) {
-> +		mod->klp = true;
-> +		return true;
-> +	}
->  	return false;
+Following Linux running on a PC analogy.. If ACPI has some device that
+causes driver warnings on Linux boot, do we patch the ACPI table and
+pretend the device does not exist? Or do we patch the device driver to
+deal with the random buggy bootloader state for the device? :)
 
-This should go to internal.h.
+> Also, what is the expected behavior of a driver that is probed for an
+> unusable device? Wouldn't this require some as-of-yet nonexisting
+> status between "okay" and "disabled" that conveys something like "probe
+> this device, initialize (and disable) PM, but don't register anything",
+> so no unusable devices become visible to userspace (and possibly other
+> kernel drivers)?
 
-Alternative is to move both is_livepatch_module() and
-set_livepatch_module() into include/linux/livepatch.h.
+I did some experimental patches several years ago to add devicetree
+status for incomplete, but eventually came to the conclusion that it
+was not really needed. Feel free to revisit that if you have the
+spare cycles :)
 
-I do not have strong opinion.
+Having the drivers check for the resources like clocks and then just
+idle the device after probe solved the issues I was seeing for warnings
+and kexec. In some cases the device may need to be reset or at least
+properly reconfigured in the probe as the state can be unknown from the
+bootloader. That's about all there is to it. Sure you could save some
+memory with less instances for some devices, so maybe the status =
+"incomplete" could be used to do the trick for that.
 
->  }
-> -#endif /* CONFIG_LIVEPATCH */
->  
->  bool is_module_sig_enforced(void);
->  void set_module_sig_enforced(void);
+> > > I'm not sure what the consensus on these issues is. I'm more
+> > > familiar
+> > > with NXP's i.MX and Layerscape SoCs, where it's common to have all
+> > > muxable peripherals set to "disabled" in the base DTSI, and a quick
+> > > grep through a few dts directories gives me the impression that
+> > > this is
+> > > the case for most other vendors as well.
+> > 
+> > This approach only works for SoCs that don't need the kernel to idle
+> > devices for runtime PM.
+> 
+> I'm pretty sure that most modern SoCs I looked at have runtime PM, and
+> it is simply expected that unusable devices are never enabled in the
+> first place, so there is no need for the kernel to know about them.
 
-Otherwise, it looks good to me.
+Yeah well that assumption is the difference in getting runtime PM to
+work in a sane way across multiple SoCs and devices :)
 
-Best Regards,
-Petr
+Devices tagged with status = "disabled" are completely ignored by the
+kernel. Interconnect and bus related code may not know the details on
+how to reset and idle the child devices. Relying on firmware to do the
+reset and idle of unused devices may be too generic, can be buggy, and
+probably depends on the firmware revision.
+
+Regards,
+
+Tony
