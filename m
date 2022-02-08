@@ -2,131 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5213C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FDF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350688AbiBHIsh (ORCPT
+        id S1351508AbiBHItK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:48:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
+        Tue, 8 Feb 2022 03:49:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240114AbiBHIsc (ORCPT
+        with ESMTP id S1349583AbiBHIsx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:48:32 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B247C03FEC3
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:48:30 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id f17so18832654edd.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:48:30 -0800 (PST)
+        Tue, 8 Feb 2022 03:48:53 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF198C03FEC3
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:48:51 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id e3so15397948wra.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:48:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KtcVTbnikm5TjYlnqfzuROBrnAfn839wYMshT0LlrlY=;
-        b=BpDBSmg1Jr9VfdOJRYF+j1/JajvAr9L2nHHpeeu8yKE34gYmvzVusPZ39v+VidsSxH
-         WwyMlroOn1jCKn7lHEfGXvjkaUFmAsYmcrg5bYG8wNG4w7XEF6mc1E7xpYCh7D+CskRL
-         Eyr+j+nGdFF9nOYMj2ys9Vvi6FF3U0vc1l3PvcpvmeHFaKh4hPW06gCTL6Qqe5bMa0aJ
-         QC6trgRBfDt+LnUVGrHfiecghjxWSW1v7q6yjYIRJeL0yv+cZdKEli8Gj4es9Go/f81D
-         QpHHANGWvZ+bMmZahaGWypV7HwH7oBDFSElEZ/KVqUh2T28R8Xp5mtAReVRSxu2VHMIU
-         LR3A==
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EkVxK/LOYz0/eo5az4a2zVWUd5m6LEvFlEjayukrMYk=;
+        b=op64XUdgnstjz6QFJUzFkyQ4kvy0o35NYrSG8sjVko8AfwvJWsZX2akrlJ6y8EGQ2e
+         wWBJdZQ/tesItUNAXQhq6UMZSjC+HOYBqpC3eKF79QrR3n3MC2iNq/7IvhOYj1Z2uea1
+         tY5r5lV/2stL6vROHTELIfSmTXJHuMo+yDi910j2fFQlFc6qmbBoVmiykoU6jJ875/5d
+         Z3UsB7FqwI31PKTcHz0xY00UJZoba83/zojhH3ni1KDI1L4I+Lf7wFi2CQr7KBKRatqG
+         jqtcWLHmjx2+4Ad1YDmXlJYYJfWbMdIAIvgOj0tTEdyGg1Z07YptGVS00Fw2xCi4CIW+
+         JFVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KtcVTbnikm5TjYlnqfzuROBrnAfn839wYMshT0LlrlY=;
-        b=6qrHRq9oB4mGWsO0BJGdCIx1bbSSafR6/xNmtUwrXp9ComfvH78vVl9xBVFYyS1O4D
-         cMi9F9CxrcBc1MvO8/lrt7+pecdgMZBpuOKURwA5SQZEddlpmRnH8i/rT8hbqGbTQ76+
-         HZ2WOj+eCzTXSUFPdqr6otwVq1ld2Od4+pQ3f/WjgePBPfnGAZkKx17hP6o59BQ5G4uJ
-         AMBYRVVYoBN9LMMJs2D0AiRVQYRtwUoRL47OTs0Vzwk2Seom5zcd7yssPQLWYqYBSbEs
-         0ovNQAnl7pEG0oi02CMc+uijndnY94Qfv2ym0WjEqtOoTj7P64zU3AX+WWoX3/SNfpPy
-         GzWQ==
-X-Gm-Message-State: AOAM532Z2Sz7LLGzRlNkNUt2dUt2cHa3G/4p9kRP3GXvmYCPcb20qJnQ
-        z63wLUPwKVqxQCQG56xSwPY=
-X-Google-Smtp-Source: ABdhPJyByuNRI7Mzyoo8jprDI+E30rIgkRibWrqLN8NcWyDd7NB2Q1QfPfrBOBPguQquidXLTy1Z4A==
-X-Received: by 2002:a05:6402:510b:: with SMTP id m11mr3372067edd.290.1644310108749;
-        Tue, 08 Feb 2022 00:48:28 -0800 (PST)
-Received: from xyz-Precision-5820.fritz.box (dynamic-077-010-169-004.77.10.pool.telefonica.de. [77.10.169.4])
-        by smtp.gmail.com with ESMTPSA id z2sm2771758ejr.68.2022.02.08.00.48.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 00:48:28 -0800 (PST)
-From:   Oliver Barta <o.barta89@gmail.com>
-X-Google-Original-From: Oliver Barta <oliver.barta@aptiv.com>
-To:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Pi-Hsun Shih <pihsun@chromium.org>,
-        Rolf Evers-Fischer <Rolf.Evers.Fischer@aptiv.com>,
-        Oliver Barta <oliver.barta@aptiv.com>
-Subject: [PATCH] regulator: core: fix false positive in regulator_late_cleanup()
-Date:   Tue,  8 Feb 2022 09:46:45 +0100
-Message-Id: <20220208084645.8686-1-oliver.barta@aptiv.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EkVxK/LOYz0/eo5az4a2zVWUd5m6LEvFlEjayukrMYk=;
+        b=v5F5GuHQUJoXsXhNJmpIAsMZw0rDTFbibRnAxjhIhkDo3uGWBFFfHDE+FTrjaerzxN
+         KahJYETwl4txRsI5vqw+QUfSWy43r4+p8+4alS1LBOsBfyI2IZaJv66h/dlKpC/RGYdt
+         dl08EoPGlgxAbCck0CT3/DYTCSokoLi860WtCssYB2uSfrmW8nDuEqq+TwYLSAzKA9hd
+         rCHoZc9jq+KBRUzqyU56tGPELPwhZteyVlkCNer70jMeSPOZVpv9i9qmnhzkGG0lrIlz
+         tkIDyiEoQ++SC8I7KQnwqCuYG2se4NrCMxAapFPDHLFmWwfk7x1imAEQI3c5XcW9JkaU
+         wQ1g==
+X-Gm-Message-State: AOAM5307X39luOVxyTJqMW1M8sbmwtjvz3DyIALbVODtgGW7LJ/DZ/m/
+        JYsxJNRjylIWcAMBxGZzmbTYLENT3smHS6fSF6PhLA==
+X-Google-Smtp-Source: ABdhPJyosXWO+NAe1q63zMby8CE8NyRp3HJT3OqC3u+vUMEXQNCw+EOmmQ/CtbilJrSHEq/padGN1KsmnCaA7OOnan0=
+X-Received: by 2002:a05:6000:1e0a:: with SMTP id bj10mr2564533wrb.313.1644310130417;
+ Tue, 08 Feb 2022 00:48:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220126114452.692512-1-apatel@ventanamicro.com>
+ <20220126114452.692512-9-apatel@ventanamicro.com> <CAJF2gTRLcqQ8ZjKwWNmARtaraVW7dD5Hp5=iv+4kHYENvB2gWg@mail.gmail.com>
+In-Reply-To: <CAJF2gTRLcqQ8ZjKwWNmARtaraVW7dD5Hp5=iv+4kHYENvB2gWg@mail.gmail.com>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Tue, 8 Feb 2022 14:18:37 +0530
+Message-ID: <CAAhSdy00Yi10M0ECm+aUmbeviaXnm-bV9yLkwJKMSXQ2_7geCw@mail.gmail.com>
+Subject: Re: [PATCH v10 8/8] RISC-V: Enable RISC-V SBI CPU Idle driver for
+ QEMU virt machine
+To:     Guo Ren <guoren@kernel.org>
+Cc:     Anup Patel <apatel@ventanamicro.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Sandeep Tripathy <milun.tripathy@gmail.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Liush <liush@allwinnertech.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        kvm-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Barta <oliver.barta@aptiv.com>
+On Tue, Feb 8, 2022 at 11:56 AM Guo Ren <guoren@kernel.org> wrote:
+>
+> On Wed, Jan 26, 2022 at 7:51 PM Anup Patel <apatel@ventanamicro.com> wrote:
+> >
+> > From: Anup Patel <anup.patel@wdc.com>
+> >
+> > We enable RISC-V SBI CPU Idle driver for QEMU virt machine to test
+> > SBI HSM Supend on QEMU.
+> >
+> > Signed-off-by: Anup Patel <anup.patel@wdc.com>
+> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > ---
+> >  arch/riscv/Kconfig.socs           | 3 +++
+> >  arch/riscv/configs/defconfig      | 1 +
+> >  arch/riscv/configs/rv32_defconfig | 1 +
+> >  3 files changed, 5 insertions(+)
+> >
+> > diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+> > index 6ec44a22278a..f4097a815201 100644
+> > --- a/arch/riscv/Kconfig.socs
+> > +++ b/arch/riscv/Kconfig.socs
+> > @@ -36,6 +36,9 @@ config SOC_VIRT
+> >         select GOLDFISH
+> >         select RTC_DRV_GOLDFISH if RTC_CLASS
+> >         select SIFIVE_PLIC
+> > +       select PM_GENERIC_DOMAINS if PM
+> > +       select PM_GENERIC_DOMAINS_OF if PM && OF
+> > +       select RISCV_SBI_CPUIDLE if CPU_IDLE
+> >         help
+> >           This enables support for QEMU Virt Machine.
+> >
+> > diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+> > index a5e0482a4969..b8c882b70b02 100644
+> > --- a/arch/riscv/configs/defconfig
+> > +++ b/arch/riscv/configs/defconfig
+> > @@ -20,6 +20,7 @@ CONFIG_SOC_SIFIVE=y
+> >  CONFIG_SOC_VIRT=y
+> >  CONFIG_SMP=y
+> >  CONFIG_HOTPLUG_CPU=y
+> > +CONFIG_PM=y
+> >  CONFIG_CPU_IDLE=y
+> >  CONFIG_VIRTUALIZATION=y
+> >  CONFIG_KVM=m
+> > diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
+> rv32_defconfig would be removed. I think you could delete this part.
+> https://lore.kernel.org/linux-riscv/20220201150545.1512822-9-guoren@kernel.org/T/#u
+>
+> I would Cc you in the patch, and you could track the progress.
 
-The check done by regulator_late_cleanup() to detect whether a regulator
-is on was inconsistent with the check done by _regulator_is_enabled().
-While _regulator_is_enabled() takes the enable GPIO into account,
-regulator_late_cleanup() was not doing that.
+I am not sure in which order Palmer will merge these patches so I
+will let him take care of the conflicts in rv32_defconfig.
 
-This resulted in a false positive, e.g. when a GPIO-controlled fixed
-regulator was used, which was not enabled at boot time, e.g.
+Regards,
+Anup
 
-reg_disp_1v2: reg_disp_1v2 {
-	compatible = "regulator-fixed";
-	regulator-name = "display_1v2";
-	regulator-min-microvolt = <1200000>;
-	regulator-max-microvolt = <1200000>;
-	gpio = <&tlmm 148 0>;
-	enable-active-high;
-};
-
-Such regulator doesn't have an is_enabled() operation. Nevertheless
-it's state can be determined based on the enable GPIO. The check in
-regulator_late_cleanup() wrongly assumed that the regulator is on and
-tried to disable it.
-
-Signed-off-by: Oliver Barta <oliver.barta@aptiv.com>
----
- drivers/regulator/core.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index 86aa4141efa9..d2553970a67b 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -6014,9 +6014,8 @@ core_initcall(regulator_init);
- static int regulator_late_cleanup(struct device *dev, void *data)
- {
- 	struct regulator_dev *rdev = dev_to_rdev(dev);
--	const struct regulator_ops *ops = rdev->desc->ops;
- 	struct regulation_constraints *c = rdev->constraints;
--	int enabled, ret;
-+	int ret;
- 
- 	if (c && c->always_on)
- 		return 0;
-@@ -6029,14 +6028,8 @@ static int regulator_late_cleanup(struct device *dev, void *data)
- 	if (rdev->use_count)
- 		goto unlock;
- 
--	/* If we can't read the status assume it's always on. */
--	if (ops->is_enabled)
--		enabled = ops->is_enabled(rdev);
--	else
--		enabled = 1;
--
--	/* But if reading the status failed, assume that it's off. */
--	if (enabled <= 0)
-+	/* If reading the status failed, assume that it's off. */
-+	if (_regulator_is_enabled(rdev) <= 0)
- 		goto unlock;
- 
- 	if (have_full_constraints()) {
--- 
-2.25.1
-
+>
+> > index d1b87db54d68..6f9a7c89bff9 100644
+> > --- a/arch/riscv/configs/rv32_defconfig
+> > +++ b/arch/riscv/configs/rv32_defconfig
+> > @@ -20,6 +20,7 @@ CONFIG_SOC_VIRT=y
+> >  CONFIG_ARCH_RV32I=y
+> >  CONFIG_SMP=y
+> >  CONFIG_HOTPLUG_CPU=y
+> > +CONFIG_PM=y
+> >  CONFIG_CPU_IDLE=y
+> >  CONFIG_VIRTUALIZATION=y
+> >  CONFIG_KVM=m
+> > --
+> > 2.25.1
+> >
+> >
+> > --
+> > kvm-riscv mailing list
+> > kvm-riscv@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/kvm-riscv
+>
+>
+>
+> --
+> Best Regards
+>  Guo Ren
+>
+> ML: https://lore.kernel.org/linux-csky/
