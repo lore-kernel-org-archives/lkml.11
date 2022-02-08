@@ -2,108 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B44F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:28:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1868C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345913AbiBHC20 (ORCPT
+        id S1345935AbiBHC2m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 21:28:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58118 "EHLO
+        Mon, 7 Feb 2022 21:28:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237161AbiBHC2W (ORCPT
+        with ESMTP id S1345950AbiBHC2j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 21:28:22 -0500
-X-Greylist: delayed 1672 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 18:28:20 PST
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6BCC061355;
-        Mon,  7 Feb 2022 18:28:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=JMHymrZvU08T3r4BdtgDATv2Fh8Jo5X8RbDz8bhcHfM=; b=PD1RoF42O49tywgxC//b8v0Bbb
-        5VYGVygkbqH0eSUMoGyii6i/7Lm6bX7BC5lRZkcSUw1o6LDiyd2rOyOHOIMuozL5ASp+OY5x+kT4H
-        2DwRaaWzjSHb7qHU3yN9UOVFGvKYeL6CGo+eqjY/gmvhKRPVr4RojS6bTJ3D9IwjsFI8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nHFnu-004jlK-0o; Tue, 08 Feb 2022 03:00:26 +0100
-Date:   Tue, 8 Feb 2022 03:00:26 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 2/2] ARM: dts: kirkwood: Add Ctera C-200 V1 board
-Message-ID: <YgHOup5cKZJyxWFB@lunn.ch>
-References: <20220207212014.28551-1-paweldembicki@gmail.com>
- <20220207212014.28551-2-paweldembicki@gmail.com>
+        Mon, 7 Feb 2022 21:28:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E539FC043180
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 18:28:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644287316;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ssfxozQsVXkPqd8hURrWGqEOTDmpelF59UyVKkS50EU=;
+        b=SXqtqc5d5ELoKQ7BWKW5Gx/VOQjgrJZDvXghDctvkWX8y04RJE757VojE9FNsdpbCxGwEg
+        HVIXgZrWrsGVQMuWhf1waWU3fWkYdO/9VZvCrsztrdsjGAMLQmFb9vLjZWGNd4WlZcmkdI
+        15uV2iKPCza+haYTjmESA6CP+o4/k0w=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-330-SsqsfNtMPvOINxdmvum7gQ-1; Mon, 07 Feb 2022 21:28:35 -0500
+X-MC-Unique: SsqsfNtMPvOINxdmvum7gQ-1
+Received: by mail-ot1-f72.google.com with SMTP id l34-20020a0568302b2200b005a22eb442daso7237492otv.15
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 18:28:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ssfxozQsVXkPqd8hURrWGqEOTDmpelF59UyVKkS50EU=;
+        b=HVEMnbXAgavfW0Ssz6K/dz65X3opHVPwqL8f1Lzwh815Mbxh8QM3QT5jW1J9h9ZMUE
+         9gnYv7v2jqKVwl6Yyy+qhwlJqq0DBJkfpitaGHBJ/rDir508JLKsQAjIuvJHWLzlQ2nO
+         qSxNVkXUMm4qyL9v3oQYmVSCB6GA+Wn9MzNPMXxDeUvgrJ1JE33E0QEOh/P9ZSbs0V42
+         laURe4MMkF1kDZ9u/FX5U6XdvvPpllNJs29DLIOlozRxLtZcuygSATqIjD+IeO41xCsK
+         ldu9WNXKwbUKPSj81zzEav+DEZ6KAeAo/g9lWrM2VBNCxDwxQXiN5d/rodPi5Pvdk0eB
+         ILzw==
+X-Gm-Message-State: AOAM530lHrna1nc11kkYoPguMUfnXsy76ub8DkKx6Y5eJjxH/ZreWE+x
+        91Qag3kjMCo52T7JAN0039AzsEi11yr7kh2OSi/4eIvcOF6h5T2SQ+AGQioIWXUxX5baCzOltBu
+        hHI+0VMNd8t+DJErgnVgGrM6l
+X-Received: by 2002:a05:6808:158f:: with SMTP id t15mr765190oiw.245.1644287313994;
+        Mon, 07 Feb 2022 18:28:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwKiOrDglYt2FuXCmTmQ1mgfMz6OLvLtfGvYuXOiUJqkP4WbrVQO9aFHbdfA1Qfwpp+yI+c3w==
+X-Received: by 2002:a05:6808:158f:: with SMTP id t15mr765182oiw.245.1644287313783;
+        Mon, 07 Feb 2022 18:28:33 -0800 (PST)
+Received: from localhost.localdomain ([2804:431:c7f0:b1af:f10e:1643:81f3:16df])
+        by smtp.gmail.com with ESMTPSA id y15sm4617016oof.37.2022.02.07.18.28.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 18:28:33 -0800 (PST)
+From:   Leonardo Bras <leobras@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>
+Cc:     Leonardo Bras <leobras@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/1] x86/kvm/fpu: Mask guest fpstate->xfeatures with guest_supported_xcr0
+Date:   Mon,  7 Feb 2022 23:28:10 -0300
+Message-Id: <20220208022809.575769-1-leobras@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207212014.28551-2-paweldembicki@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 10:20:14PM +0100, Pawel Dembicki wrote:
-> Ctera C200 V1 is kirkwood-based 2-Bay NAS.
-> 
-> Hardware:
->   - SoC: Marvell 88F6281-A1 ARMv5TE Processor 1.2GHz
->   - Ram: 512MB (4x Nanya NT5TU128M8GE-AC)
->   - NAND Flash: 256MB (Samsung 216 K9F2G08U0C)
->   - Lan: 1x GBE (Marvell 88E1116R-NNC1)
->   - Storage: 2x SATA HDD 3.5" Slot
->   - USB: 2x USB 2.0 port
->   - Console: Internal J3 connector (1: Vcc, 2: Rx, 3: Tx, 4: GND)
->   - LEDs: 13x GPIO controlled
->   - Buttons: 2x GPIO controlled
-> 
-> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+During host/guest switch (like in kvm_arch_vcpu_ioctl_run()), the kernel
+swaps the fpu between host/guest contexts, by using fpu_swap_kvm_fpstate().
 
-Hi Pawel
+When xsave feature is available, the fpu swap is done by:
+- xsave(s) instruction, with guest's fpstate->xfeatures as mask, is used
+  to store the current state of the fpu registers to a buffer.
+- xrstor(s) instruction, with (fpu_kernel_cfg.max_features &
+  XFEATURE_MASK_FPSTATE) as mask, is used to put the buffer into fpu regs.
 
-It is a good idea to Cc: the mvebu maintainers, since kirkwood is part
-of that.
+For xsave(s) the mask is used to limit what parts of the fpu regs will
+be copied to the buffer. Likewise on xrstor(s), the mask is used to
+limit what parts of the fpu regs will be changed.
 
-> +	leds {
-> +		compatible = "gpio-leds";
-> +		pinctrl-0 = <&pmx_leds>;
-> +		pinctrl-names = "default";
-> +
-> +
+The mask for xsave(s), the guest's fpstate->xfeatures, is defined on
+kvm_arch_vcpu_create(), which (in summary) sets it to all features
+supported by the cpu which are enabled on kernel config.
 
-Please avoid 2 blank lines. This happens a few times in this file.
+This means that xsave(s) will save to guest buffer all the fpu regs
+contents the cpu has enabled when the guest is paused, even if they
+are not used.
 
-> +&pciec {
-> +	status = "okay";
-> +};
+This would not be an issue, if xrstor(s) would also do that.
 
-It would be nice to have a comment about what is on the PCIe bus. Or
-is it just a socket?
+xrstor(s)'s mask for host/guest swap is basically every valid feature
+contained in kernel config, except XFEATURE_MASK_PKRU.
+Accordingto kernel src, it is instead switched in switch_to() and
+flush_thread().
 
-> +
-> +&pcie0 {
-> +	status = "okay";
-> +};
-> +
-> +&pinctrl {
-> +	/* buzzer gpios are connected to two pins of buzzer
-> +	 * leave it as is due lack of proper driver
-> +	 */
-> +	pmx_buzzer: pmx-buzzer {
-> +		marvell,pins = "mpp12", "mpp13";
-> +		marvell,function = "gpio";
-> +	};
+Then, the following happens with a host supporting PKRU starts a
+guest that does not support it:
+1 - Host has XFEATURE_MASK_PKRU set. 1st switch to guest,
+2 - xsave(s) fpu regs to host fpustate (buffer has XFEATURE_MASK_PKRU)
+3 - xrstor(s) guest fpustate to fpu regs (fpu regs have XFEATURE_MASK_PKRU)
+4 - guest runs, then switch back to host,
+5 - xsave(s) fpu regs to guest fpstate (buffer now have XFEATURE_MASK_PKRU)
+6 - xrstor(s) host fpstate to fpu regs.
+7 - kvm_vcpu_ioctl_x86_get_xsave() copy guest fpstate to userspace (with
+    XFEATURE_MASK_PKRU, which should not be supported by guest vcpu)
 
-Is it possible to use "gpio-beeper"?
+On 5, even though the guest does not support PKRU, it does have the flag
+set on guest fpstate, which is transferred to userspace via vcpu ioctl
+KVM_GET_XSAVE.
 
-        beeper: beeper {
-                /* 4KHz Piezoelectric buzzer */
-                compatible = "gpio-beeper";
-                pinctrl-0 = <&pmx_beeper>;
-                pinctrl-names = "default";
-                gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
-        };
+This becomes a problem when the user decides on migrating the above guest
+to another machine that does not support PKRU:
+The new host restores guest's fpu regs to as they were before (xrstor(s)),
+but since the new host don't support PKRU, a general-protection exception
+ocurs in xrstor(s) and that crashes the guest.
 
-	Andrew
+This can be solved by making the guest's fpstate->user_xfeatures only hold
+values compatible to guest_supported_xcr0. This way, on 7 the only flags
+copied to userspace will be the ones compatible to guest requirements,
+and thus there will be no issue during migration.
+
+As a bonus, will also fail if userspace tries to set fpu features
+that are not compatible to the guest configuration. (KVM_SET_XSAVE ioctl)
+
+Signed-off-by: Leonardo Bras <leobras@redhat.com>
+---
+ arch/x86/kvm/cpuid.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index 28be02adc669..2337079445ba 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -296,6 +296,10 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 	vcpu->arch.guest_supported_xcr0 =
+ 		cpuid_get_supported_xcr0(vcpu->arch.cpuid_entries, vcpu->arch.cpuid_nent);
+ 
++	/* Mask out features unsupported by guest */
++	vcpu->arch.guest_fpu.fpstate->user_xfeatures =
++		fpu_user_cfg.default_features & vcpu->arch.guest_supported_xcr0;
++
+ 	kvm_update_pv_runtime(vcpu);
+ 
+ 	vcpu->arch.maxphyaddr = cpuid_query_maxphyaddr(vcpu);
+-- 
+2.35.1
+
