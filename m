@@ -2,188 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D512DC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2537C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346969AbiBHFcL (ORCPT
+        id S1347149AbiBHFcS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 00:32:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55688 "EHLO
+        Tue, 8 Feb 2022 00:32:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347015AbiBHErA (ORCPT
+        with ESMTP id S1347022AbiBHEr3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 23:47:00 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2125.outbound.protection.outlook.com [40.107.244.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B5CC0401E5;
-        Mon,  7 Feb 2022 20:46:59 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hb2knJKjyS4GGvNAOmtJYvNR+w9juW+UfsC8AJrxY6POI8hRx8wkIQlPK4PofwcW0c4jgFFK8e4DB8/E9Jg882jaiUeW03vHg4b9W3VfULjtvJPOY9PhlGc63S2ueuo8Ii2x59PRQSWBUzTnYiB+b5DM36jElQafBKaGGzjLmKPBZVD3q9fdW0KQd2KX6WnuTQUJD65k5vq7b8lWjQe5xBts1T16DajU6ixb7y7SIqlPW7jcGiTsB+tUBc/zSBoJTQLIi33lRJGs/3FqfuHc+L2P1ncJnCgZaEBA3TElkLodhmSH4Zl9OjF20p2UwvaYRWFGOymOEPsZkyWmsipoTg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cMiOnOSz3IyVWPX0xUP/G3tVqPywZ/OKkq0FH3v0e+8=;
- b=VXVrPsVT47yZSOIHescfh7wLWIyPMSdfUg+16xBonLjjTR5vVrVlFIHQvEPZgYNFgwY99a7mbE+9yoa1BStL3frrpE79oDy4hnwYs9SlTi3pI7Xf1qv4rRjM9Iw0FPuc51T1pJr+3ks5x/3MB9PYDVE/mg+bZ/gEK+7aAlNuSPWaMyga6DDycQ79J1mGxcC31Ltdols/jBpDk/QGkf3pMFuaLI1gTzyBmnZ0YNpgvlIfb/uiJn8SieNh8FKrZtqfZwLHn6iy52cHFRCecMvKm7JhCW/Co59Przi56cxzJAMbskB9iPtBUJ9YalJFkiv3EKwDfDG4/mhIJGZdLng3Rg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
+        Mon, 7 Feb 2022 23:47:29 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B97C0401DC;
+        Mon,  7 Feb 2022 20:47:29 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id z17so2877600plb.9;
+        Mon, 07 Feb 2022 20:47:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cMiOnOSz3IyVWPX0xUP/G3tVqPywZ/OKkq0FH3v0e+8=;
- b=UfXTRzFM2Hbv1zMvnVTIPP01cq+c5s//eXkIov2JRK+Z8QS7OcBFsHFZQvuQZTKVcE/5k05sU9uhh9qmKyYE+5BjgAsY4oXSO6+QZk0LcO4z7iN307I1fYMynVokrxdV2IQVwdQ7f5Qmz/CGV5grOIXvGgz7yr4mVjTzzgkCJyE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by DM6PR10MB4394.namprd10.prod.outlook.com
- (2603:10b6:5:221::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Tue, 8 Feb
- 2022 04:46:55 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4951.018; Tue, 8 Feb 2022
- 04:46:55 +0000
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v5 net-next 1/3] net: ocelot: align macros for consistency
-Date:   Mon,  7 Feb 2022 20:46:42 -0800
-Message-Id: <20220208044644.359951-2-colin.foster@in-advantage.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220208044644.359951-1-colin.foster@in-advantage.com>
-References: <20220208044644.359951-1-colin.foster@in-advantage.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MWHPR17CA0090.namprd17.prod.outlook.com
- (2603:10b6:300:c2::28) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=s9UxDPunzThEazgxjnJNZiUd1Sn9ezdvm0HY1dXaGJg=;
+        b=Te3Xw/Laa+58xrEhBZUXblnfIvrZq9PP8a6n5sNT1r0iPSz+2Na6f2d5T2NUcheHur
+         wyf5hlNNhcvKvnDizW7lxWngdzj694vMyBWGnp/5mMbMRGgH9zGHJdP2nNstbjva7F8k
+         dzVUBln38s40UMwfHyKEoYtJ0Vd/rH4nnL5g4RVgt12LaXO/2mlfFDu68l22A0W8Ixq8
+         SgNrdz/IDmjBomR1NX6ANb9YdSf/04AeEsZB4Y3mdNqm9u7fmpl9dg4M6Jltii8fVAPg
+         CxLifKxzN5q/HqvKCapgVcB++kTtjBdgZHtbCFXcPmqlBiCaQ8ugkdEH+F5N0sLZUen+
+         rh1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=s9UxDPunzThEazgxjnJNZiUd1Sn9ezdvm0HY1dXaGJg=;
+        b=h/V1pGdBFe83MpPoIODLNHVM6YLstnYtbot16NO9JCKgDhK+s/9qAnbWJKQ/r2Vd0L
+         XYJ/zF/TgffDlNJS75VbKJymkbXeWeh0jdfiwyfmBf2U0Goey8f2EdeC6oMgfj+ybAd9
+         84oY6BIa3ts3KDhJrMlGZ5gRmNuRStaGWXBQKohEZE1970TPq0Iss9XauQt8MnAQDdBN
+         pHEuAXsU0s+56Fq+HgGWIp8uD9briHiuJo4DrDtxIZWwT228n41xvUDuNtjLQt8Qevoz
+         DZtzFLTEL83spoMvg+fhegP3F0FEbijVvdBVvzVImqzIaKJlOYgcP25ew9JyKXpBza2v
+         QsUg==
+X-Gm-Message-State: AOAM531cOHWFP8TW5sBjwSitb9L0bEKJM337uHFWKaXzaeIwLtPgXp0R
+        g3of9TyyEVqn0rD0qAv0fYU=
+X-Google-Smtp-Source: ABdhPJxnXhfyyETbRVA04ZajBGzAY+x7vfTavhEVgoEcU/GG44I7F3oBilXC8UCBgiX6TVChnT+F/Q==
+X-Received: by 2002:a17:90b:17c4:: with SMTP id me4mr2495286pjb.198.1644295648655;
+        Mon, 07 Feb 2022 20:47:28 -0800 (PST)
+Received: from [10.0.2.64] ([209.37.97.194])
+        by smtp.googlemail.com with ESMTPSA id j3sm10105037pgs.0.2022.02.07.20.47.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 20:47:28 -0800 (PST)
+Message-ID: <53282d15-1e73-9aef-6384-3f76812480e6@gmail.com>
+Date:   Mon, 7 Feb 2022 20:47:26 -0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e8b365d5-1b05-4194-7597-08d9eabe0803
-X-MS-TrafficTypeDiagnostic: DM6PR10MB4394:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR10MB4394D7D5DE9B316462C23E6EA42D9@DM6PR10MB4394.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ax6gc72gH0hAvRIfNaf3vs9X4FeLCDevKgAJsPaa5Oxl8CSnVCz4AixJmgIDm+IfgB918BFkAhYDa7lPyEnh+IWUhVe3YkfTlq1fcAk24iP7d5oOHcDf3qOvJUMrMVFQHyetnkYmAhDYIcmhiRfuh99lbJR0lEo9JA3HQJ1Jlg0z53xffGbbMF2nO1+QLUK3RgSeLdNJaTAuxK+PWt4RjTJypVj82EO8D6FvfTX3A78ps7P5T7zl/WYZ+Efu7HL/Kv2qUkQfdjjrepdfpKcDlZBbKQhKgqs890dhsByID9jGU+ZWx9VThqVFMPPQLtLKUB4hD1e4Lbr5V2iVNpDy1OPXhVnSOAHcgfla3CY7y0rXs06FF8hQx16pp0Ih6IQRdlFseXa4hxd8HsEHXeHk6wECx9tGYoy3jam0qNOp8oGH99FDhfCkPByOq22I7aRBEdWBfTmJ5Tnwvu54Ao0uiFaY3pBRAn6twBZ1UMtZu+P3O2X3MeESLyLOnE3AuDsyrg5YYcHi3/PEPnuzOnwpneiqvXlfCQDFAssINAgM8khPPVvBS0byjVV/4Uep5kDws5q92443J/OLdUkV7+PEVhTbmV41kbQ70DZfUrKDtQf2prcfapvRglpT9mfs2+wG74y71OEnJxMp3Ws5Ko2XrVGORnJU8FUubEDjP7r3Wr8ZH0FGC+bSj6sJ9M11MI4l/TvcQtTic25QPUJ7P89Y9A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(346002)(396003)(376002)(39830400003)(42606007)(136003)(366004)(52116002)(1076003)(186003)(6486002)(6506007)(508600001)(86362001)(26005)(36756003)(2616005)(6666004)(6512007)(54906003)(83380400001)(5660300002)(66946007)(8936002)(2906002)(4326008)(66556008)(8676002)(66476007)(38350700002)(44832011)(38100700002)(316002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sXENp4CzzMvZVmuxd+fff+QbrrgYVqgroWBwbE4KLzIn+DKDgEm36hqOO1L3?=
- =?us-ascii?Q?JMMiNcEBuegkV5aXUSWp6RHuZgzAdnYU5iSAHs2wZcoizZ47MBbJDQeyhaHC?=
- =?us-ascii?Q?zHQr2KyrSUrhWTGXmnlmQvh8SK8uTmSzGc2j3UDJwHf2r9XIHHmbbkNc1M91?=
- =?us-ascii?Q?eFg/m2gBQytWwH6EHTuh3tTFHLYttueqEHCKBxVURQZ82RefSgDtaFh5z47S?=
- =?us-ascii?Q?LUonjOePH/Y64akmG31ILpypkOWIhtZ9pC482S3bpbGi7XOFV4jXY2ZyrH+6?=
- =?us-ascii?Q?i5UN2e4IvUcpgocQzEhi1EE1TLa9yD3EQW9t11VTKuDAeCTfXaJ9BpwjBH1Q?=
- =?us-ascii?Q?58wd9vUlu+9b3uh3x6hAiFMS0mseiqeg+b5Qx69TGkuz8HLguGHC+ygs8WXy?=
- =?us-ascii?Q?EfAZO4D3yJSm5kpebXEu4VwtPH5prLLJpcbz0vhXoYBJ9tJKEXAwg/efqr8M?=
- =?us-ascii?Q?5Ng+E+3MxfQedA7CBQfRv9S8xwNxxVUMZuyipUR71A3uxe8GXx9i/C1bMUFM?=
- =?us-ascii?Q?rWfG/RVZX9w7XaTyhBFu5pUg4708m/7jZUZUgt7isx48xRQzn74wpT9/hWb+?=
- =?us-ascii?Q?vqIjH+nIM2wbYNdCEne19ACpzxUTQMMRk5kMiDXbVADizZWlEBIqZAyTUn9G?=
- =?us-ascii?Q?tw4y42PZpns7qcm+nI0IAk1d8l5TLYvLZR2gvyReA/MtY0g/zG1OoC8P6ZIc?=
- =?us-ascii?Q?hPvGqrU39s2M+QoxcIUFB+yM0Ol/jiMsFoBVBqRoDpDlzjMRK6x5F+yIs2yM?=
- =?us-ascii?Q?xmgpOcU6ca7IdMww610VeXJTk20PHUojwJgAIxubw4DJT5mukAJ/IftAJY+x?=
- =?us-ascii?Q?ktWUy/p3NuzC1+kSIczZxJJCJJCqeX/fUYHz8Lk4JgXmn4En/NyfVED6+kjd?=
- =?us-ascii?Q?mVP3lB36x501POqRrzWU88L4CR8apGhfS8h6k7DvBuDcPNrvyaCriRWklUXm?=
- =?us-ascii?Q?Sa4PxcB001pn9svaMOSwYHnChhGXHMj3Hc+i+W7jtU3NMoCH5y4igct+8Wpo?=
- =?us-ascii?Q?2Yf9vaEOMXUiY1fVbl9223B8yWUpIOkpi4B40BWYDtG3+VlkrgciKxbPHLoR?=
- =?us-ascii?Q?HvjSnk0LryqpmqmPes1rHJtm9YCB5iVqbhDGe07NZx0ZYy8qD3gS2xmhFqFA?=
- =?us-ascii?Q?pvbMfj3+0wcyfR8thBquhHXg2OAS3E/KgC6JMW5kQAcqEXtj++tkRCUNnJ5u?=
- =?us-ascii?Q?L9fk0uxqZFWeHf13+0xY27K4cKfhmm7MOGJ+438DJ6vgqxIxjmxQcCTpuSfH?=
- =?us-ascii?Q?6mk4+r67/HwEibR79XcK6wHqJtxoqtiLtKUfxr2Gyb3Ln118cph4q1cPS4Uq?=
- =?us-ascii?Q?7NZGUN91FIA7WKv4jb8jYNaIkrLXpsNBXPzNUV4oNAGUoxG6zVfiCM8e6v1D?=
- =?us-ascii?Q?hS6s2wCLg4bcaEo4M9GxVZRuEiUWpZssaeGNRUVePK7iItVTKzTAeuJc/kWn?=
- =?us-ascii?Q?Xhi9bIRiAQbPg30/8CIDxH69gtX6ou5gmbUz+zlFsujRiQeQ3mMSatvxF0Dz?=
- =?us-ascii?Q?yv/Bd+x9h6NGPP5Or5FZN8w5Bobty1hynozuz0GLUDfqCzUZeFz7rTc1H3NX?=
- =?us-ascii?Q?rdwpbkjOr9bQ4wFxh7WcCy7QK1QETbyrz6V8Da7LFEsX9dRHwcDcXzi8ykKs?=
- =?us-ascii?Q?VFa7MJbZt3AsDLLTBQWs5U/frso4YzYwmzr78Km7L4ob2IyEq1Z6KbybfR0J?=
- =?us-ascii?Q?ZMHDTc9D/lHybYqCHZXXXbmk3AU=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e8b365d5-1b05-4194-7597-08d9eabe0803
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 04:46:55.0016
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dznHMM0A6hoYH7bScXoJNl7NeaMGbsQpdsz68DKlKNW/MGyJPRKINtQNGRM2QpqcHMD4/4Y3stKWqox6AFytA0O3gfi85+BF8m6BNt+bdhI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB4394
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH 1/2] net: tap: track dropped skb via kfree_skb_reason()
+Content-Language: en-US
+To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
+        joao.m.martins@oracle.com, joe.jin@oracle.com
+References: <20220208035510.1200-1-dongli.zhang@oracle.com>
+ <20220208035510.1200-2-dongli.zhang@oracle.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220208035510.1200-2-dongli.zhang@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the ocelot.h file, several read / write macros were split across
-multiple lines, while others weren't. Split all macros that exceed the 80
-character column width and match the style of the rest of the file.
+On 2/7/22 7:55 PM, Dongli Zhang wrote:
+> diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+> index 8e3a28ba6b28..232572289e63 100644
+> --- a/drivers/net/tap.c
+> +++ b/drivers/net/tap.c
+> @@ -322,6 +322,7 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
+>  	struct tap_dev *tap;
+>  	struct tap_queue *q;
+>  	netdev_features_t features = TAP_FEATURES;
+> +	int drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
 
-Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
----
- include/soc/mscc/ocelot.h | 44 ++++++++++++++++++++++++++-------------
- 1 file changed, 29 insertions(+), 15 deletions(-)
+maybe I missed an exit path, but I believe drop_reason is always set
+before a goto jump, so this init is not needed.
 
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 62cd61d4142e..14a6f4de8e1f 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -744,25 +744,39 @@ struct ocelot_policer {
- 	u32 burst; /* bytes */
- };
- 
--#define ocelot_read_ix(ocelot, reg, gi, ri) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
--#define ocelot_read_gix(ocelot, reg, gi) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi))
--#define ocelot_read_rix(ocelot, reg, ri) __ocelot_read_ix(ocelot, reg, reg##_RSZ * (ri))
--#define ocelot_read(ocelot, reg) __ocelot_read_ix(ocelot, reg, 0)
--
--#define ocelot_write_ix(ocelot, val, reg, gi, ri) __ocelot_write_ix(ocelot, val, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
--#define ocelot_write_gix(ocelot, val, reg, gi) __ocelot_write_ix(ocelot, val, reg, reg##_GSZ * (gi))
--#define ocelot_write_rix(ocelot, val, reg, ri) __ocelot_write_ix(ocelot, val, reg, reg##_RSZ * (ri))
-+#define ocelot_read_ix(ocelot, reg, gi, ri) \
-+	__ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
-+#define ocelot_read_gix(ocelot, reg, gi) \
-+	__ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi))
-+#define ocelot_read_rix(ocelot, reg, ri) \
-+	__ocelot_read_ix(ocelot, reg, reg##_RSZ * (ri))
-+#define ocelot_read(ocelot, reg) \
-+	__ocelot_read_ix(ocelot, reg, 0)
-+
-+#define ocelot_write_ix(ocelot, val, reg, gi, ri) \
-+	__ocelot_write_ix(ocelot, val, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
-+#define ocelot_write_gix(ocelot, val, reg, gi) \
-+	__ocelot_write_ix(ocelot, val, reg, reg##_GSZ * (gi))
-+#define ocelot_write_rix(ocelot, val, reg, ri) \
-+	__ocelot_write_ix(ocelot, val, reg, reg##_RSZ * (ri))
- #define ocelot_write(ocelot, val, reg) __ocelot_write_ix(ocelot, val, reg, 0)
- 
--#define ocelot_rmw_ix(ocelot, val, m, reg, gi, ri) __ocelot_rmw_ix(ocelot, val, m, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
--#define ocelot_rmw_gix(ocelot, val, m, reg, gi) __ocelot_rmw_ix(ocelot, val, m, reg, reg##_GSZ * (gi))
--#define ocelot_rmw_rix(ocelot, val, m, reg, ri) __ocelot_rmw_ix(ocelot, val, m, reg, reg##_RSZ * (ri))
-+#define ocelot_rmw_ix(ocelot, val, m, reg, gi, ri) \
-+	__ocelot_rmw_ix(ocelot, val, m, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
-+#define ocelot_rmw_gix(ocelot, val, m, reg, gi) \
-+	__ocelot_rmw_ix(ocelot, val, m, reg, reg##_GSZ * (gi))
-+#define ocelot_rmw_rix(ocelot, val, m, reg, ri) \
-+	__ocelot_rmw_ix(ocelot, val, m, reg, reg##_RSZ * (ri))
- #define ocelot_rmw(ocelot, val, m, reg) __ocelot_rmw_ix(ocelot, val, m, reg, 0)
- 
--#define ocelot_field_write(ocelot, reg, val) regmap_field_write((ocelot)->regfields[(reg)], (val))
--#define ocelot_field_read(ocelot, reg, val) regmap_field_read((ocelot)->regfields[(reg)], (val))
--#define ocelot_fields_write(ocelot, id, reg, val) regmap_fields_write((ocelot)->regfields[(reg)], (id), (val))
--#define ocelot_fields_read(ocelot, id, reg, val) regmap_fields_read((ocelot)->regfields[(reg)], (id), (val))
-+#define ocelot_field_write(ocelot, reg, val) \
-+	regmap_field_write((ocelot)->regfields[(reg)], (val))
-+#define ocelot_field_read(ocelot, reg, val) \
-+	regmap_field_read((ocelot)->regfields[(reg)], (val))
-+#define ocelot_fields_write(ocelot, id, reg, val) \
-+	regmap_fields_write((ocelot)->regfields[(reg)], (id), (val))
-+#define ocelot_fields_read(ocelot, id, reg, val) \
-+	regmap_fields_read((ocelot)->regfields[(reg)], (id), (val))
- 
- #define ocelot_target_read_ix(ocelot, target, reg, gi, ri) \
- 	__ocelot_target_read_ix(ocelot, target, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
--- 
-2.25.1
+>  
+>  	tap = tap_dev_get_rcu(dev);
+>  	if (!tap)
+> @@ -343,12 +344,16 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
+>  		struct sk_buff *segs = __skb_gso_segment(skb, features, false);
+>  		struct sk_buff *next;
+>  
+> -		if (IS_ERR(segs))
+> +		if (IS_ERR(segs)) {
+> +			drop_reason = SKB_DROP_REASON_SKB_GSO_SEGMENT;
 
+This reason points to a line of code, not the real reason for the drop.
+If you unwind __skb_gso_segment the only failure there is ENOMEM. The
+reason code needs to be meaningful to users, not just code references.
+
+
+>  			goto drop;
+> +		}
+>  
+>  		if (!segs) {
+> -			if (ptr_ring_produce(&q->ring, skb))
+> +			if (ptr_ring_produce(&q->ring, skb)) {
+> +				drop_reason = SKB_DROP_REASON_PTR_FULL;
+
+similar comment to Eric - PTR_FULL needs to be more helpful.
+
+>  				goto drop;
+> +			}
+>  			goto wake_up;
+>  		}
+>  
+> @@ -369,10 +374,14 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
+>  		 */
+>  		if (skb->ip_summed == CHECKSUM_PARTIAL &&
+>  		    !(features & NETIF_F_CSUM_MASK) &&
+> -		    skb_checksum_help(skb))
+> +		    skb_checksum_help(skb)) {
+> +			drop_reason = SKB_DROP_REASON_SKB_CHECKSUM;
+
+That is not helpful explanation of the root cause; it is more of a code
+reference.
+
+
+>  			goto drop;
+> -		if (ptr_ring_produce(&q->ring, skb))
+> +		}
+> +		if (ptr_ring_produce(&q->ring, skb)) {
+> +			drop_reason = SKB_DROP_REASON_PTR_FULL;
+
+ditto above comment
+
+>  			goto drop;
+> +		}
+>  	}
+>  
+>  wake_up:
+> @@ -383,7 +392,7 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
+>  	/* Count errors/drops only here, thus don't care about args. */
+>  	if (tap->count_rx_dropped)
+>  		tap->count_rx_dropped(tap);
+> -	kfree_skb(skb);
+> +	kfree_skb_reason(skb, drop_reason);
+>  	return RX_HANDLER_CONSUMED;
+>  }
+>  EXPORT_SYMBOL_GPL(tap_handle_frame);
+> @@ -632,6 +641,7 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
+>  	int depth;
+>  	bool zerocopy = false;
+>  	size_t linear;
+> +	int drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+>  
+>  	if (q->flags & IFF_VNET_HDR) {
+>  		vnet_hdr_len = READ_ONCE(q->vnet_hdr_sz);
+> @@ -696,8 +706,10 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
+>  	else
+>  		err = skb_copy_datagram_from_iter(skb, 0, from, len);
+>  
+> -	if (err)
+> +	if (err) {
+> +		drop_reason = SKB_DROP_REASON_SKB_COPY_DATA;
+
+As mentioned above, plus unwind the above functions and give a more
+explicit description of why the above fails.
+
+>  		goto err_kfree;
+> +	}
+>  
+>  	skb_set_network_header(skb, ETH_HLEN);
+>  	skb_reset_mac_header(skb);
+> @@ -706,8 +718,10 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
+>  	if (vnet_hdr_len) {
+>  		err = virtio_net_hdr_to_skb(skb, &vnet_hdr,
+>  					    tap_is_little_endian(q));
+> -		if (err)
+> +		if (err) {
+> +			drop_reason = SKB_DROP_REASON_VIRTNET_HDR;
+
+and here too.
