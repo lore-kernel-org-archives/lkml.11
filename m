@@ -2,103 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35440C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0845C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351348AbiBHInR (ORCPT
+        id S1351396AbiBHInU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:43:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
+        Tue, 8 Feb 2022 03:43:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351157AbiBHImr (ORCPT
+        with ESMTP id S1351081AbiBHIms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:42:47 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411C4C03FEC1
+        Tue, 8 Feb 2022 03:42:48 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22F5C0401F6
         for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:42:46 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id b9so31872776lfq.6
+Received: by mail-pf1-x42c.google.com with SMTP id g8so7815051pfq.9
         for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:42:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20210112.gappssmtp.com; s=20210112;
+        d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=OqsnPBD75OEIg0YKhpWxP7ylQrnXYC+DLarhM8bDSAE=;
-        b=3MWbe0vi62zn/YVDnF5AtSjnMWk8c4SBFKMTP6yKlW3QOxcHBOzJnAJuDxR7FCvAGs
-         Ps1jDNA7iChEK/zGZ7XUHry/uWERzhbiHUYdDpQjU2KjSMsmrlXrCF5s/LcYL3Ixpwoi
-         awrIfufh4k7dLcivn5jOg2y2BbEbiAtCWZ0USyrE9hXvvZON6+yHTGjy9fblj3HTzsEh
-         TiC2cYjWPffoFw3xbdE4jq6adsp2ji2X5N16P/WDZVtc66nlOiRL+WnFAydGbuBquRV7
-         WP0IEiZjvq7h0IC+JrttRh7CnsEACVKT4o2Rz61YE04PQ/uvfFoeX6Kc0W0kA3jd/gqC
-         /JOQ==
+        bh=RKltf19DtHiRc15a3iaZ/NnDb+6ppKujiVxWZQto3YU=;
+        b=O2UDOpBeBJRbX3+DaQG7mIxxaEO05L1HTD48WquGaDuYWsSttm9JTTNF7a+lc8KdMj
+         tJRuDchff9o48V7UXFNQVgoxZ/rNJPLVl8KQxtPWFS7zVK0sOis64KFrKb3J8stVpjkN
+         Pk7y7Sj69FXDSqgG4hJ/qiPJrJRpnz6L6YEME=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=OqsnPBD75OEIg0YKhpWxP7ylQrnXYC+DLarhM8bDSAE=;
-        b=TCcLZPdDK+8xbQTd5E7HFftowQGGXMrDzLPuXm1m2+y54BxPB/w/GDQabiUYF45l2q
-         u8eAKY0jlJIrmFiqv8CVzD5CDEgQm1dsRzelcjGvUwAQtFMoVt30HIQ08SBu12Nv3h39
-         4la/TGaE5ylZrN+Rc0bt0tnL2Fa2NZzanlOkKgFAsWRdZoXrB0nIfsjfhVnM8urDeHkH
-         0yGenrPwj30jE5v1SBteD7SM38BMVLCuXcULpMI2cnUNlvPQI6juwizQ6zJuRqn/NOYl
-         n7ExJFlcrxiHPHbqfGXE/GK3XXDlOVnHzhn+Et+Boq/w3Fj3x+tMSLw4GQch4o8AObr7
-         3rrg==
-X-Gm-Message-State: AOAM530RyUUvCm6O00zRjELupUJ6YOUL4xyBso2svfM5lVzkYDfspEpu
-        buT6kzzDzR/ua5XMplH83EDCdA==
-X-Google-Smtp-Source: ABdhPJyRjmxFsSQKhUcZklAkzKieZBtNVZ0fLTFeF4+lWwQjOFe79DqlC62orWr4LAzCsom/vZ4HFw==
-X-Received: by 2002:ac2:46ed:: with SMTP id q13mr2283630lfo.99.1644309764661;
-        Tue, 08 Feb 2022 00:42:44 -0800 (PST)
-Received: from cobook.home (nikaet.starlink.ru. [94.141.168.29])
-        by smtp.gmail.com with ESMTPSA id o12sm1830361lfu.96.2022.02.08.00.42.43
+        bh=RKltf19DtHiRc15a3iaZ/NnDb+6ppKujiVxWZQto3YU=;
+        b=aEtUVs54xvOMR9LReIHQng1490nssXpSKyKEaBE31Siehl0kpe8aa7SA1TdHKbYxsG
+         I4oth3lOB55vKWzw1MCzRvB23RxXgzEwjEyJWJerUu1I2isttxRWRDrkylBa6lryh0eV
+         pUAneUeGvc/azfGgXqSpg1tKAFd7Z+EMzh556Ev+81luEGytgpEDgfHMnlZ83B1PKDTC
+         BZdjQlhS2/0tIsT7/SqFPjsOpo9OGJ6b5Me/c66mIhuf+3V1Ztj33+s1XP1UNZAwXhMa
+         FXSLvqtMm1kNP3WFx635sTys2IuEijqtu8wQxqQ8+xyhrvq9X3lqZ+H26qgb/ercLEO3
+         MAKA==
+X-Gm-Message-State: AOAM530++vD4wehyt3oWeIurn65cUINYOXicpEDzJWnLKpCDppzMdYAi
+        /EmQnoEXoRaggX0pQUHudCyYhw==
+X-Google-Smtp-Source: ABdhPJxJuhyNGgn/8M1tkfbfnImy5ANlW87FCMT9C5ygmikEd8cwYFifi2WHJ+zYaY+iMKeTEIBo9Q==
+X-Received: by 2002:a63:2ad6:: with SMTP id q205mr2651010pgq.46.1644309766435;
+        Tue, 08 Feb 2022 00:42:46 -0800 (PST)
+Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:7d9a:166e:9d34:ff4f])
+        by smtp.gmail.com with ESMTPSA id m14sm15362390pfc.170.2022.02.08.00.42.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 00:42:44 -0800 (PST)
-From:   Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Subject: [PATCH 4/4] ASoC: pcm3168a: remove numeric PCM3168A_NUM_SUPPLIES
-Date:   Tue,  8 Feb 2022 11:42:20 +0300
-Message-Id: <20220208084220.1289836-5-nikita.yoush@cogentembedded.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220208084220.1289836-1-nikita.yoush@cogentembedded.com>
-References: <20220208084220.1289836-1-nikita.yoush@cogentembedded.com>
+        Tue, 08 Feb 2022 00:42:46 -0800 (PST)
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+To:     dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org
+Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Sean Paul <sean@poorly.run>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Simon Ser <contact@emersion.fr>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>
+Subject: [PATCH v8 3/3] arm64: dts: mt8183: Add panel rotation
+Date:   Tue,  8 Feb 2022 16:42:34 +0800
+Message-Id: <20220208084234.1684930-3-hsinyi@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208084234.1684930-1-hsinyi@chromium.org>
+References: <20220208084234.1684930-1-hsinyi@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just use ARRAY_SIZE() instead.
+krane, kakadu, and kodama boards have a default panel rotation.
 
-Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Reviewed-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 ---
- sound/soc/codecs/pcm3168a.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/pcm3168a.c b/sound/soc/codecs/pcm3168a.c
-index 1d3821f2c5f1..7417cf45d916 100644
---- a/sound/soc/codecs/pcm3168a.c
-+++ b/sound/soc/codecs/pcm3168a.c
-@@ -34,8 +34,7 @@
- #define PCM3168A_FMT_I2S_TDM		0x6
- #define PCM3168A_FMT_LEFT_J_TDM		0x7
- 
--#define PCM3168A_NUM_SUPPLIES 6
--static const char *const pcm3168a_supply_names[PCM3168A_NUM_SUPPLIES] = {
-+static const char *const pcm3168a_supply_names[] = {
- 	"VDD1",
- 	"VDD2",
- 	"VCCAD1",
-@@ -57,7 +56,7 @@ struct pcm3168a_io_params {
- };
- 
- struct pcm3168a_priv {
--	struct regulator_bulk_data supplies[PCM3168A_NUM_SUPPLIES];
-+	struct regulator_bulk_data supplies[ARRAY_SIZE(pcm3168a_supply_names)];
- 	struct regmap *regmap;
- 	struct clk *scki;
- 	struct gpio_desc *gpio_rst;
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+index b42d81d26d7211..d29d4378170971 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+@@ -276,6 +276,7 @@ panel: panel@0 {
+ 		avee-supply = <&ppvarp_lcd>;
+ 		pp1800-supply = <&pp1800_lcd>;
+ 		backlight = <&backlight_lcd0>;
++		rotation = <270>;
+ 		port {
+ 			panel_in: endpoint {
+ 				remote-endpoint = <&dsi_out>;
 -- 
-2.30.2
+2.35.0.263.gb82422642f-goog
 
