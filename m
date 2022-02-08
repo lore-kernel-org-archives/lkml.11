@@ -2,165 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39AF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 23:04:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5FCFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 23:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234048AbiBHXE2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 18:04:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60874 "EHLO
+        id S234369AbiBHXGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 18:06:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233841AbiBHXE0 (ORCPT
+        with ESMTP id S231215AbiBHXGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 18:04:26 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07391C061577
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 15:04:25 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id p21so931902ljn.13
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 15:04:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EzIha971yQLAyJxRSkUf/hABp2vPytSC8H1yQIf41M4=;
-        b=YGW9z4jPHGEGB7AelMTYwtJgbPRFRhbuibumAkUcs2kET7uSzj0LFBI25AXPW+xNc6
-         HczGoJGlDK4ursC38hCqf9s+rZO6Y1zdPccy02agz/BQaOnMg6CQgPmxNmSD8tn7wrct
-         EB8XCyQFkWo4Azox2+rGnJ1SPDhnaRy78ijqXbB34xLcK5n2S0oInGOb8rk/55KwF+mo
-         9sJ/oG3eKAasIhPSicxbZS3mbtLbwzO5f5BLTSNj155I5Yqy7Vjz2omOt1tyc8if7c7q
-         4HV1j9jX7vssStw5LLeTXcJiZhkcF9AR4shHC1B4oB7Ht77nbfdw7H0ieDgBRQzms/RO
-         VYqg==
+        Tue, 8 Feb 2022 18:06:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17B4FC061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 15:06:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644361594;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9Hq44IoeTfJkZkwVY9Vl9iSJryds5VqEFOHSRWPT7XY=;
+        b=QiUhzl8g5640Obe+GZgf0gNwBjbtgl8qFFwRmRNEgNQ6PeWIgE7zIavZ62MjPaOMc2b/aL
+        tHnJE/6qy+uvgX8UwlXRTjGspIzauy2m2bXAflHuo8mImsdNyc3qgqbPcXu8Eik/5vH4Nz
+        7lwHEdauqDWQUdfJ13FqmsRhDGdcv8w=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-28-e4zHUg_tNwCIc0Z--TC3tg-1; Tue, 08 Feb 2022 18:06:33 -0500
+X-MC-Unique: e4zHUg_tNwCIc0Z--TC3tg-1
+Received: by mail-wr1-f70.google.com with SMTP id v9-20020adfa1c9000000b001e33e5dbd5fso244138wrv.17
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 15:06:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EzIha971yQLAyJxRSkUf/hABp2vPytSC8H1yQIf41M4=;
-        b=I8SlMXrfzUlIaNStl4JTIX839KjUOE3hRcH+VMFLDZU3g2cm9FUR4Gc7M61rT1Q58h
-         g+fJeD/UH0sCmdCHCM9cHKhoJvOv1YR3dzh/x+wZpgyAbrfEM3XnqmoKJL+fD3yGGvxJ
-         wxSGh9cM1aMvd+IaUCvvXL130QpijLssI/atkW3iFyhNcNg4FSFTda+L3RqcbCy5VpV9
-         PMvZQBmX2ATF7SvgPq7ac+6BTcfQfZgP2NeA/ITh2NJkDvdY9C3SzFLMAslxD6aCxd1q
-         HR2IzV2t6Ngzf1lKg1ninoFHZIGIcAnScs79RnrTnv9fCCRrTvVoFUf+5+azeZJMce/d
-         8hKg==
-X-Gm-Message-State: AOAM530Zh7vENVQtFI3DyJ9ZWgYUbBuwlIa8KttpY+zsb/NK0GEOdWhm
-        MrlIj48cbhDYzGZK78X6BqJNpUS/k/KBfu8RDPPzbA==
-X-Google-Smtp-Source: ABdhPJxP5RnTeIivtuPxdGjyUFL4anyqlXhyUsssJcaDCNV+jLzk/FxRspMMf+Y6WdUndcOZ8hOIZy/bqTlM7xi+l4Q=
-X-Received: by 2002:a2e:954:: with SMTP id 81mr4120299ljj.198.1644361463072;
- Tue, 08 Feb 2022 15:04:23 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9Hq44IoeTfJkZkwVY9Vl9iSJryds5VqEFOHSRWPT7XY=;
+        b=J9LF8irszOzKNaQ5FDcKzYFORlKw8uVnDEAc2Bz3MpwomeHed5/eTq8oC18fdy0rb3
+         LTCtNeuoXnXjUmJ7lAmpvnSwE9JtqRCShfZP5Jiv22DlMfwLhVGQN6GAmTIolY1jskIh
+         Ec9+VJaAUSBV4wUmseW4pWwAnBKJy9QboLXbh0Ep9lq6fXXfl3I+9Hy2KrpZd+YoPh1/
+         JyF1KWke9I/t025Hv5Ei3+LEzD3NxMOpCMSio12nJHuitP1BJyoJmWMSKm2e9bMEDBzP
+         1q/yj279oGhFYWGjYwugfyoZefaBScUCuZ2aINNIDPjy8LXOh0GB0Mh26uBwIIvAIclq
+         ObKg==
+X-Gm-Message-State: AOAM532HiTvRycfQFUUHHyJ2VUe8Jei9I97M6bRVbrakTcVdoRz5TYLa
+        9ETO2aHK/pjITbTYmi/ZEzYEZY6I0c44gYea4WPjy50UaHv7ohiOgcpUAE00vrNWnB1InS4618a
+        HJWnGnuMn+ZCjPlI3uvf6wKmX
+X-Received: by 2002:a05:600c:1f06:: with SMTP id bd6mr188782wmb.98.1644361591937;
+        Tue, 08 Feb 2022 15:06:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwmNuGMQwcN6QexrJL10FFKZYDdF5TN06r7ebrBGFi7sK9RD4aMR2dVzQHHgAbW45sC7ClvFg==
+X-Received: by 2002:a05:600c:1f06:: with SMTP id bd6mr188768wmb.98.1644361591694;
+        Tue, 08 Feb 2022 15:06:31 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id l26sm2975339wmp.31.2022.02.08.15.06.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 15:06:31 -0800 (PST)
+Message-ID: <4f5a94f9-404f-e803-1b61-41653c9de388@redhat.com>
+Date:   Wed, 9 Feb 2022 00:06:30 +0100
 MIME-Version: 1.0
-References: <20220208225350.1331628-1-keescook@chromium.org> <20220208225350.1331628-7-keescook@chromium.org>
-In-Reply-To: <20220208225350.1331628-7-keescook@chromium.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 8 Feb 2022 15:04:11 -0800
-Message-ID: <CAKwvOdnY9kOfmGEusrA9Sgjv5oL0WuTxMpQA9bWDaEPtj90ngA@mail.gmail.com>
-Subject: Re: [PATCH v7 6/8] fortify: Use __diagnose_as() for better diagnostic coverage
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        George Burgess IV <gbiv@google.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 02/19] fbcon: Move fbcon_bmove(_rec) functions
+Content-Language: en-US
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        DRI Development <dri-devel@lists.freedesktop.org>
+Cc:     linux-fbdev@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Claudio Suarez <cssk@net-c.es>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Helge Deller <deller@gmx.de>
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+ <20220208210824.2238981-3-daniel.vetter@ffwll.ch>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <20220208210824.2238981-3-daniel.vetter@ffwll.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 2:53 PM Kees Cook <keescook@chromium.org> wrote:
->
-> In preparation for using Clang's __pass_object_size, add __diagnose_as()
-> attributes to mark the functions as being the same as the indicated
-> builtins. When __daignose_as() is available, Clang will have a more
-> complete ability to apply its own diagnostic analysis to callers of these
-> functions, as if they were the builtins themselves. Without __diagnose_as,
-> Clang's compile time diagnostic messages won't be as precise as they
-> could be, but at least users of older toolchains will still benefit from
-> having fortified routines.
+On 2/8/22 22:08, Daniel Vetter wrote:
+> Avoids two forward declarations, and more importantly, matches what
+> I've done in my fbcon scrolling restore patches - so I need this to
+> avoid a bunch of conflicts in rebasing since we ended up merging
+> Helge's series instead.
+> 
+> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
 
-Yes, much easier to review split up. Thanks for taking the time to do so!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
 
->
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  include/linux/fortify-string.h | 21 ++++++++++++++-------
->  1 file changed, 14 insertions(+), 7 deletions(-)
->
-> diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
-> index f874ada4b9af..db1ad1c1c79a 100644
-> --- a/include/linux/fortify-string.h
-> +++ b/include/linux/fortify-string.h
-> @@ -50,7 +50,8 @@ extern char *__underlying_strncpy(char *p, const char *q, __kernel_size_t size)
->  #define __underlying_strncpy   __builtin_strncpy
->  #endif
->
-> -__FORTIFY_INLINE char *strncpy(char * const p, const char *q, __kernel_size_t size)
-> +__FORTIFY_INLINE __diagnose_as(__builtin_strncpy, 1, 2, 3)
-> +char *strncpy(char * const p, const char *q, __kernel_size_t size)
->  {
->         size_t p_size = __builtin_object_size(p, 1);
->
-> @@ -61,7 +62,8 @@ __FORTIFY_INLINE char *strncpy(char * const p, const char *q, __kernel_size_t si
->         return __underlying_strncpy(p, q, size);
->  }
->
-> -__FORTIFY_INLINE char *strcat(char * const p, const char *q)
-> +__FORTIFY_INLINE __diagnose_as(__builtin_strcat, 1, 2)
-> +char *strcat(char * const p, const char *q)
->  {
->         size_t p_size = __builtin_object_size(p, 1);
->
-> @@ -94,7 +96,8 @@ __FORTIFY_INLINE __kernel_size_t strnlen(const char * const p, __kernel_size_t m
->  }
->
->  /* defined after fortified strnlen to reuse it. */
-> -__FORTIFY_INLINE __kernel_size_t strlen(const char * const p)
-> +__FORTIFY_INLINE __diagnose_as(__builtin_strlen, 1)
-> +__kernel_size_t strlen(const char * const p)
->  {
->         __kernel_size_t ret;
->         size_t p_size = __builtin_object_size(p, 1);
-> @@ -183,7 +186,8 @@ __FORTIFY_INLINE ssize_t strscpy(char * const p, const char * const q, size_t si
->  }
->
->  /* defined after fortified strlen and strnlen to reuse them */
-> -__FORTIFY_INLINE char *strncat(char * const p, const char * const q, __kernel_size_t count)
-> +__FORTIFY_INLINE __diagnose_as(__builtin_strncat, 1, 2, 3)
-> +char *strncat(char * const p, const char * const q, __kernel_size_t count)
->  {
->         size_t p_len, copy_len;
->         size_t p_size = __builtin_object_size(p, 1);
-> @@ -365,7 +369,8 @@ __FORTIFY_INLINE void *memscan(void * const p, int c, __kernel_size_t size)
->         return __real_memscan(p, c, size);
->  }
->
-> -__FORTIFY_INLINE int memcmp(const void * const p, const void * const q, __kernel_size_t size)
-> +__FORTIFY_INLINE __diagnose_as(__builtin_memcmp, 1, 2, 3)
-> +int memcmp(const void * const p, const void * const q, __kernel_size_t size)
->  {
->         size_t p_size = __builtin_object_size(p, 0);
->         size_t q_size = __builtin_object_size(q, 0);
-> @@ -381,7 +386,8 @@ __FORTIFY_INLINE int memcmp(const void * const p, const void * const q, __kernel
->         return __underlying_memcmp(p, q, size);
->  }
->
-> -__FORTIFY_INLINE void *memchr(const void * const p, int c, __kernel_size_t size)
-> +__FORTIFY_INLINE __diagnose_as(__builtin_memchr, 1, 2, 3)
-> +void *memchr(const void * const p, int c, __kernel_size_t size)
->  {
->         size_t p_size = __builtin_object_size(p, 0);
->
-> @@ -417,7 +423,8 @@ __FORTIFY_INLINE void *kmemdup(const void * const p, size_t size, gfp_t gfp)
->  }
->
->  /* Defined after fortified strlen to reuse it. */
-> -__FORTIFY_INLINE char *strcpy(char * const p, const char * const q)
-> +__FORTIFY_INLINE __diagnose_as(__builtin_strcpy, 1, 2)
-> +char *strcpy(char * const p, const char * const q)
->  {
->         size_t p_size = __builtin_object_size(p, 1);
->         size_t q_size = __builtin_object_size(q, 1);
-> --
-> 2.30.2
->
-
-
+Best regards,
 -- 
-Thanks,
-~Nick Desaulniers
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
