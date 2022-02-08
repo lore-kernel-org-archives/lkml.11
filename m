@@ -2,86 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21096C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:35:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03493C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:35:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386812AbiBHWev (ORCPT
+        id S1344301AbiBHWfC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:34:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
+        Tue, 8 Feb 2022 17:35:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387141AbiBHWCZ (ORCPT
+        with ESMTP id S1386329AbiBHUJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 17:02:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1541AC0612BC
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:02:23 -0800 (PST)
+        Tue, 8 Feb 2022 15:09:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82F60C0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:09:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644357742;
+        s=mimecast20190719; t=1644350961;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=v+/tNcBi1hqQ3zAZ+kreP8zrjRNSZd5An8aAqUlnWDs=;
-        b=ExJ0+p7vaRbH+dUZ6MoGanoV76XMzIcKjmmTJcrdpS1T+087S6tg9QzkZo771YA9V2fm18
-        72VU4BHPVx6Wc1fv2UJAkpv/tXnb15KjzDkKnd6Y5X7eEN707DRXh+Ojpo5VlL0FWlTEkC
-        EB28nZSL/MEENUQZNpSMJxXCdaoVeqU=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=I3/8UwtTiLaHjDIsw5ToTGGU9VaJhcJtecxqfQCO+Kg=;
+        b=E1dQBbkrtUDbVwISoUl0RLNImuuiSrzaSnxvSn3I3awcmPwNPyg3S2hwTbaPsl1h5W9qc5
+        85eOds5djgpWZrUMek338uxDyNImSzYVPKMw6EY1+j23+leiosSENPjj3bLFh+6TBEmMC0
+        XqvpZm2cWyuuiLjfRr6YjJLkwCCpMXY=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-126-mpKvkRn2NK-N-qiSwhyuWQ-1; Tue, 08 Feb 2022 17:02:21 -0500
-X-MC-Unique: mpKvkRn2NK-N-qiSwhyuWQ-1
-Received: by mail-qk1-f199.google.com with SMTP id g26-20020a05620a13da00b0047e14765148so171568qkl.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 14:02:21 -0800 (PST)
+ us-mta-85-P0WKLpGEOLemn0qd87L29A-1; Tue, 08 Feb 2022 15:09:18 -0500
+X-MC-Unique: P0WKLpGEOLemn0qd87L29A-1
+Received: by mail-qk1-f200.google.com with SMTP id bj2-20020a05620a190200b005084968bb24so8093619qkb.23
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 12:09:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
          :references:organization:user-agent:mime-version
          :content-transfer-encoding;
-        bh=v+/tNcBi1hqQ3zAZ+kreP8zrjRNSZd5An8aAqUlnWDs=;
-        b=gr5nF73HzLftpGUt2L+PHEsGiWc0IU6A7Eo5hc/P71tnncAOlx5MXePpWa98xE7boT
-         pQRbaOYRHivCYDUd+VzKQOUQKpsFVdK9YzvVXYuLfxx3BWSn27eK+tx1RMpVX/YHoabr
-         ZGhOyJlM/L/+SvzsUT8qQWyAVbdA/eZU1IWv1BgLH2oWlfIdcB0HG76d3MwX7O14AYCV
-         ToW67MQg01rV2MTSMhn8asuLCFE1p+UTBmTgohvKVt0/HCv3eSuZwW/ChpbnbGHgZWGp
-         t5ce8EgkUKXlxOX86v5iF8KgeYzOsCEiNYHxZ/yEnw0kN7d74Ks6+GjR8tmfLjz+hjy4
-         tQmg==
-X-Gm-Message-State: AOAM530PzJA/DXCq3lLPV9NrXqpXkuGzNrhDSbrZtnDNrrHxSDONnBHj
-        bc1GpqPiJ+OQSahK3PqaULt3cJkNKqNChjVpo1QKjtU4TF+EezBzuqCfxrT4jrIqJ/2Ysg9WPdq
-        +Zzd6Lr9DdrTIOi5dTmwBUaOz
-X-Received: by 2002:a05:6214:62b:: with SMTP id a11mr4576797qvx.99.1644357741261;
-        Tue, 08 Feb 2022 14:02:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxzDmob0mRw3m+J1LeJvrujTFW2KQpp8qCWQ71N6Q6IhmpZwPecRLzOaHkQFsysr2sKjwHqKQ==
-X-Received: by 2002:a05:6214:62b:: with SMTP id a11mr4576772qvx.99.1644357741022;
-        Tue, 08 Feb 2022 14:02:21 -0800 (PST)
+        bh=I3/8UwtTiLaHjDIsw5ToTGGU9VaJhcJtecxqfQCO+Kg=;
+        b=ceFrSWczA3GbFg2a6npnWP7i8suOn3QcJS3rSWJoi80d5GzivmwnT7YIQ2+LRf3R6y
+         FEb/Bdg4P8QmXPO+LKve1+6vSO5RlL/O1pRMkr3q4qHh6yxi7CWAFeykeOVLVF1ssISk
+         Cm/WM6gsDd6NFmGyg0KFqctcFleXufEyrWCAr7Rug54eTvgl7LKzoW3NEgPqY4PqO7as
+         3RkBaNilvuU6VZVng8ydcQwylwP8FhXCl0wjaaXnlQX+eSyTgelZswcE0mPL6Awevmyy
+         mi1OHQOVqEQJSMJzAdkOC8QxcupxPh6XAkji1RREmLtCLvH2OnNIB2rYBGdNgh/lHcgq
+         Dvqg==
+X-Gm-Message-State: AOAM533d8AmBqOlVV266zVcBvIVE6NGKVb1wHR/rfR2pA97DFfsECJbt
+        2m/J9Qjpe8Ra1+mJ1XDROKhEuraRUmgz1dNGqkNv0Hx2VjFkF+tgOZI1lGOTYeN/eO7xhSIH4+w
+        5HjJ9uuzQwiL+202fUY63FWXR
+X-Received: by 2002:a05:6214:4111:: with SMTP id kc17mr4417586qvb.61.1644350957409;
+        Tue, 08 Feb 2022 12:09:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxsREE/wlVXhB/X8tBjZ+cErEBHMvIYU1EUljfRg7HUFF85vJYIMBgalTBx0/F2MZWG8LFj8g==
+X-Received: by 2002:a05:6214:4111:: with SMTP id kc17mr4417571qvb.61.1644350957203;
+        Tue, 08 Feb 2022 12:09:17 -0800 (PST)
 Received: from [192.168.8.138] (pool-96-230-100-15.bstnma.fios.verizon.net. [96.230.100.15])
-        by smtp.gmail.com with ESMTPSA id d6sm8080823qtb.55.2022.02.08.14.02.19
+        by smtp.gmail.com with ESMTPSA id p70sm7253061qka.62.2022.02.08.12.09.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 14:02:20 -0800 (PST)
-Message-ID: <10bfefe40b9cb82610d4f1e8d3e7293824fac03b.camel@redhat.com>
-Subject: Re: [PATCH] drm/i915/psr: Disable PSR2 selective fetch for all TGL
- steps
+        Tue, 08 Feb 2022 12:09:16 -0800 (PST)
+Message-ID: <58cc03e21bdf8665f402c7eb9beed557f19a4be2.camel@redhat.com>
+Subject: Re: [PATCH][next] nouveau/svm: Use struct_size() helper in
+ nouveau_pfns_map()
 From:   Lyude Paul <lyude@redhat.com>
-To:     "Souza, Jose" <jose.souza@intel.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>
-Cc:     "airlied@linux.ie" <airlied@linux.ie>,
-        "ville.syrjala@linux.intel.com" <ville.syrjala@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        "joonas.lahtinen@linux.intel.com" <joonas.lahtinen@linux.intel.com>,
-        "Mun, Gwan-gyeong" <gwan-gyeong.mun@intel.com>,
-        "Roper, Matthew D" <matthew.d.roper@intel.com>,
-        "tvrtko.ursulin@linux.intel.com" <tvrtko.ursulin@linux.intel.com>,
-        "Kahola, Mika" <mika.kahola@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
-        "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        "Hogander, Jouni" <jouni.hogander@intel.com>,
-        "De Marchi, Lucas" <lucas.demarchi@intel.com>
-Date:   Tue, 08 Feb 2022 17:02:18 -0500
-In-Reply-To: <47eed687da699a6abbfd7726439fd307786c9d93.camel@intel.com>
-References: <20220207213923.3605-1-lyude@redhat.com>
-         <47eed687da699a6abbfd7726439fd307786c9d93.camel@intel.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Date:   Tue, 08 Feb 2022 15:09:04 -0500
+In-Reply-To: <20220207233923.GA524723@embeddedor>
+References: <20220207233923.GA524723@embeddedor>
 Organization: Red Hat Inc.
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
@@ -91,72 +80,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Opened the issue at https://gitlab.freedesktop.org/drm/intel/-/issues/5077 ,
-included dmesg + video. Feel free to let me know if you need any more info, or
-need me to try any patches
+Reviewed-by: Lyude Paul <lyude@redhat.com>
 
-On Tue, 2022-02-08 at 13:06 +0000, Souza, Jose wrote:
-> On Mon, 2022-02-07 at 16:38 -0500, Lyude Paul wrote:
-> > As we've unfortunately started to come to expect from PSR on Intel
-> > platforms, PSR2 selective fetch is not at all ready to be enabled on
-> > Tigerlake as it results in severe flickering issues - at least on this
-> > ThinkPad X1 Carbon 9th generation. The easiest way I've found of
-> > reproducing these issues is to just move the cursor around the left border
-> > of the screen (suspicious…).
+Will push this to drm-misc-next, thanks!
+
+On Mon, 2022-02-07 at 17:39 -0600, Gustavo A. R. Silva wrote:
+> Make use of the struct_size() helper instead of an open-coded version,
+> in order to avoid any potential type mistakes or integer overflows that,
+> in the worse scenario, could lead to heap overflows.
 > 
-> Where is the bug for that? Where is the logs?
-> We can't go from enabled to disabled without any debug and because of a
-> single device.
-> In the mean time you have the option to set the i915 parameter to disable
-> it.
+> Link: https://github.com/KSPP/linux/issues/160
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> ---
+>  drivers/gpu/drm/nouveau/nouveau_svm.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> > 
-> > So, fix people's displays again and turn PSR2 selective fetch off for all
-> > steppings of Tigerlake. This can be re-enabled again if someone from Intel
-> > finds the time to fix this functionality on OEM machines.
-> > 
-> > Signed-off-by: Lyude Paul <lyude@redhat.com>
-> > Fixes: 7f6002e58025 ("drm/i915/display: Enable PSR2 selective fetch by
-> > default")
-> > Cc: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-> > Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-> > Cc: José Roberto de Souza <jose.souza@intel.com>
-> > Cc: Jani Nikula <jani.nikula@linux.intel.com>
-> > Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-> > Cc: intel-gfx@lists.freedesktop.org
-> > Cc: <stable@vger.kernel.org> # v5.16+
-> > ---
-> >  drivers/gpu/drm/i915/display/intel_psr.c | 10 +++++++---
-> >  1 file changed, 7 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/gpu/drm/i915/display/intel_psr.c
-> > b/drivers/gpu/drm/i915/display/intel_psr.c
-> > index a1a663f362e7..25c16abcd9cd 100644
-> > --- a/drivers/gpu/drm/i915/display/intel_psr.c
-> > +++ b/drivers/gpu/drm/i915/display/intel_psr.c
-> > @@ -737,10 +737,14 @@ static bool intel_psr2_sel_fetch_config_valid(struct
-> > intel_dp *intel_dp,
-> >                 return false;
-> >         }
-> >  
-> > -       /* Wa_14010254185 Wa_14010103792 */
-> > -       if (IS_TGL_DISPLAY_STEP(dev_priv, STEP_A0, STEP_C0)) {
-> > +       /*
-> > +        * There's two things stopping this from being enabled on TGL:
-> > +        * For steps A0-C0: workarounds Wa_14010254185 Wa_14010103792 are
-> > missing
-> > +        * For all steps: PSR2 selective fetch causes screen flickering
-> > +        */
-> > +       if (IS_TIGERLAKE(dev_priv)) {
-> >                 drm_dbg_kms(&dev_priv->drm,
-> > -                           "PSR2 sel fetch not enabled, missing the
-> > implementation of WAs\n");
-> > +                           "PSR2 sel fetch not enabled, currently broken
-> > on TGL\n");
-> >                 return false;
-> >         }
-> >  
-> 
+> diff --git a/drivers/gpu/drm/nouveau/nouveau_svm.c
+> b/drivers/gpu/drm/nouveau/nouveau_svm.c
+> index 266809e511e2..46a5a1016e37 100644
+> --- a/drivers/gpu/drm/nouveau/nouveau_svm.c
+> +++ b/drivers/gpu/drm/nouveau/nouveau_svm.c
+> @@ -925,8 +925,8 @@ nouveau_pfns_map(struct nouveau_svmm *svmm, struct
+> mm_struct *mm,
+>  
+>         mutex_lock(&svmm->mutex);
+>  
+> -       ret = nvif_object_ioctl(&svmm->vmm->vmm.object, args, sizeof(*args)
+> +
+> -                               npages * sizeof(args->p.phys[0]), NULL);
+> +       ret = nvif_object_ioctl(&svmm->vmm->vmm.object, args,
+> +                               struct_size(args, p.phys, npages), NULL);
+>  
+>         mutex_unlock(&svmm->mutex);
+>  }
 
 -- 
 Cheers,
