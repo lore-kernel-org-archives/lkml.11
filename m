@@ -2,133 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF75CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 04:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D766C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 04:26:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346911AbiBHEYl (ORCPT
+        id S1346929AbiBHE04 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 23:24:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48648 "EHLO
+        Mon, 7 Feb 2022 23:26:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346871AbiBHEYj (ORCPT
+        with ESMTP id S234088AbiBHE0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 23:24:39 -0500
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85C9C0401EA;
-        Mon,  7 Feb 2022 20:24:37 -0800 (PST)
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 2184O8tY026277;
-        Tue, 8 Feb 2022 13:24:09 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 2184O8tY026277
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1644294249;
-        bh=19uR+JQrTDSNjb/M+uvq075l3b28UXxtfZ5ZKrtYtzw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=k640Df3SrCi6fK+IspeoU5KOGEeWwlg3V0VARZ5jpH+hr622BV+dar0DE7tkD4ftM
-         Nl8bp7u1erlyxLSu7DOS28i/BOL9BBocT+yIqqO7x9ZpcSkjsj+n9yvxR4KvIayebH
-         8CvETzc3aKM1ewcrZCpzZ5q3npOMgarvQjNQzmwWYbLHbozp/qZbEIQP8kVXptxpts
-         YzYU6N2O/jGo/3gqJdnr2ZkNdRl1cEtBqTBLLrtZIsfzqTvO7xvhq6S6y1SidE9aV4
-         /LCU14Cc8LW50UKekJ/LMXcHcDbfM8FCjJDb6kxxozk8tZvjnq2yCERk2OTRQgr0Yd
-         L7TBqmYiSvgPA==
-X-Nifty-SrcIP: [209.85.214.171]
-Received: by mail-pl1-f171.google.com with SMTP id y7so7560887plp.2;
-        Mon, 07 Feb 2022 20:24:09 -0800 (PST)
-X-Gm-Message-State: AOAM531RgVJZ+A9WM1ZLG1XjKixD4UM5vQADJkBYYfHk6Qg/EnmBFXDI
-        VVsGhGZIASjueIUHKlLrYEOujnWPK0/+QjUM4Lo=
-X-Google-Smtp-Source: ABdhPJz2z9KXlrVLO5E7bA267/kU9GqMyolRq34mQQWWV79UiH2n6X5+/PWBXovs/xUvLsayHJ/bKqkNLxzPi6m7E1k=
-X-Received: by 2002:a17:902:6948:: with SMTP id k8mr2866496plt.136.1644294248161;
- Mon, 07 Feb 2022 20:24:08 -0800 (PST)
+        Mon, 7 Feb 2022 23:26:54 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70084.outbound.protection.outlook.com [40.107.7.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F98C0401DC;
+        Mon,  7 Feb 2022 20:26:51 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XF9+dsho7EBDage0BLPsty6KLlfpVfaoOB1uUgbN1VfoDQ93pWzgre/2mDby61t0988+QynY2Li6S8cXO9x9lg7451o4ZYH7SV2BEeIVoWHGZuogs9p5uh0cy9vv8M4j0iY1JnbB3yNS9a9Oe+pVXgEEUN2gGQzdX73yvLJapG4pa8olqDrsHKUQyjSB0K7y0vMMdwxZFTLIruL/0FxRRICIgByEqauBZpSKNdc4sqgwGsBWLtNcij3LYhdDT7BtZmZtHnHOZbt4KHK0afebIdIAP380k7G020aHil31IX6Sg+zRqFLYFjNkwUPRPwkz9+8BamuONvyUfthQAMIe7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HaHd8lD7fvxaJareGyb5km/meuO3dkg/xY7w7oRQwBo=;
+ b=GRwyTAD0b2habWODqeItYa7kFHwjawUW0/7ZW5QTDFcz90n3avMHkoyKi7XCSIjWaqDGwiO/KoQwyuafqcTJnrM0OHinUWlyUh5pas3FuKPwKBoEaJDxDCcsP3IWyz4QJPleypo6rbQjEKpvJwLL6jWxnfLBXy2BjvOSrn1knEV17B3+iKfl2r7u0wAB8asLbpM4BgSoem5qNMy+t7AJVYFO7W6P2NDYUdHxxYDEnbBz0Y8hs5pj4MOH+vJ7uR4LU4k7oaQhK7MVPa96uwc+pJpisEwG06RTUNMgU65b13XDuSfTx6ZbX2f8akKRYmP6kEVzvEqU7KpWwcNXtqtusw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HaHd8lD7fvxaJareGyb5km/meuO3dkg/xY7w7oRQwBo=;
+ b=UtEHkKWb9vF6devi+qTagb5nROCny8hixMvCyesOwcaCezz61NW8XZ2RmCo95EY1yA4VtAsRVAnTyiIS9mNtjqKToHkkrYJ0O3qWMulY9XJGK5qb+TZglM9l51CEgGFElih5+eLjJOOTd3ELpeRfI9od4dpwT5Pri0m3C6DA4p4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VE1PR04MB6477.eurprd04.prod.outlook.com (2603:10a6:803:11e::14)
+ by AM4PR0401MB2369.eurprd04.prod.outlook.com (2603:10a6:200:53::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.19; Tue, 8 Feb
+ 2022 04:26:48 +0000
+Received: from VE1PR04MB6477.eurprd04.prod.outlook.com
+ ([fe80::800d:a31e:1d6:9be9]) by VE1PR04MB6477.eurprd04.prod.outlook.com
+ ([fe80::800d:a31e:1d6:9be9%5]) with mapi id 15.20.4951.019; Tue, 8 Feb 2022
+ 04:26:48 +0000
+From:   Changming Huang <jerry.huang@nxp.com>
+To:     shawnguo@kernel.org, leoyang.li@nxp.com, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Changming Huang <jerry.huang@nxp.com>,
+        Jianchao Wang <jianchao.wang@nxp.com>
+Subject: [PATCH] arm64: dts: fsl-ls1028a: add dspi2 support
+Date:   Tue,  8 Feb 2022 12:26:10 +0800
+Message-Id: <20220208042610.2026531-1-jerry.huang@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR02CA0015.apcprd02.prod.outlook.com
+ (2603:1096:4:194::16) To VE1PR04MB6477.eurprd04.prod.outlook.com
+ (2603:10a6:803:11e::14)
 MIME-Version: 1.0
-References: <20220202230515.2931333-1-nathan@kernel.org> <CAKwvOdkQ__2A3NohrcJgF+JABSDnSyEKzD97qVa4cpM==GPONQ@mail.gmail.com>
-In-Reply-To: <CAKwvOdkQ__2A3NohrcJgF+JABSDnSyEKzD97qVa4cpM==GPONQ@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 8 Feb 2022 13:23:32 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASCGbLWkDXYqyCf08sFHjGqvqSgmFsJ741MHGSKzkifLg@mail.gmail.com>
-Message-ID: <CAK7LNASCGbLWkDXYqyCf08sFHjGqvqSgmFsJ741MHGSKzkifLg@mail.gmail.com>
-Subject: Re: [PATCH v2] Makefile.extrawarn: Move -Wunaligned-access to W=1
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev, stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: da57ca69-f25c-4c38-69dc-08d9eabb3899
+X-MS-TrafficTypeDiagnostic: AM4PR0401MB2369:EE_
+X-Microsoft-Antispam-PRVS: <AM4PR0401MB23697FC68CD1CA7B789BDBDEFE2D9@AM4PR0401MB2369.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:296;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hADPdzTL9itEgjeUYGafKHJpS9fz/Y8gRaNRg8WrH/utJoDv1PVudcyuCPyMpzdkGFeQl/BQwJzK3BnYoQoHHk2dVzb5plmVkqQqiEkfWZv2m7MwOQhOgtmOr4jIf98iNXpaRjj0G0tW9IOYC9lFPjzzoA3dwO9YUte6NdNw5uH5UTcVQu34F3P6+KA/1ZeaaKjJSUDW65zE5tRWfyDgLjXvsjtvuZWO7+C7qvJjgxUdGcQfTs5Yu/+K0fZEOpAf00g4D0XvPJAE5bZr/yMijTUd9+Gq2vaqctNlUKsnVmAwpxppXQxlw1Vib7VaOyz254hPErqrDuwy0Vy0wICtbkWztTg+EvJs3DD1vLem+s/Es0XZIwRZnxGH9b+RMySfp8ianKhBkNMpXwHl2v9As3TDi2rpHO573/Hk6VxMDc7uCDnHfFU/BG38rTZR9g/Em5aTD1wh4ePVN9VUeRG1lBMejzEjhsJ1IFmTfk5CrCFNwFc5lze/68A+huOraaG+tVGZXy/Nz1tfLTk1adGgOA47WcErfVp5Kxpzh6Aj8lK4dyOPvvzu8mFWPcC0WXy0y//6CqL6/GRI0qsWTSdYlzcr55H4wdImhgoe1HrQInLLGN8yaOZJoMbMc/gOewAo0TPXdq+8x7OsMtTgZpDJONlsF8GSK6cgQpW7FGOhBAMFWQBLDqdMIGO8xnViCKl/AfXzkXVxa5yTrLmM7lzDcQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6477.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(38350700002)(38100700002)(8936002)(8676002)(4326008)(66946007)(316002)(66556008)(54906003)(66476007)(6486002)(5660300002)(4744005)(6512007)(508600001)(186003)(2906002)(6506007)(2616005)(6666004)(1076003)(52116002)(26005)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?As2eT2p0+cFVWB8zomImWcrP0d5ncOYBXMR6VTyvtxr0fYGE36Rk0/nj+tQr?=
+ =?us-ascii?Q?gCOUl8O5broNMuxqgXGYkXFY+B0TBwhE+tMorTDE2CsWpxcPcsmnVJnxHxQ7?=
+ =?us-ascii?Q?kLP5phMoOMEgRC+8B4CbMCl/AZ5hrXJ+H3DNg1yky6SRswOERnxKQbhDUMW6?=
+ =?us-ascii?Q?l0u5OYR1B6Gpxb29XcqDnZ73lAEpppybajcCoNOmO4L1AGvmlS/WO7rA01L0?=
+ =?us-ascii?Q?tNs6RmuVk/1dugu6LCo+nXQVwxGkTq3pFA960Uz96AxtZnhy5R3gbjyE6qv8?=
+ =?us-ascii?Q?kY5hv0UJVMaxhhnlwc3lzdMqgHostoxKZQlcvfB7XgY+thFOz3yXcZCyH/d1?=
+ =?us-ascii?Q?slgDBi8CWKcoEspRKjq3qBj8UybXc05Ya9HbymihdDS0d/Wi9ycchMbhklJD?=
+ =?us-ascii?Q?KuYw7vDReI+WhK5QMxeHydY/75+boOuEeaYUc9QCxMrKtt5phL4RV2LOimYg?=
+ =?us-ascii?Q?uSoOOaC7+gz4pzYKiVrFSs4qjfS74XdejhWxJayABD6MYLH3+teFCIqOtICL?=
+ =?us-ascii?Q?5tm0EyUqyy/hQm+/2O8cLmVmRTFV5mWyWlq4ir1NHY+RjLxL7weBv7ef5Dko?=
+ =?us-ascii?Q?ufHxY5A3343QMGZXZBSCDbBbBCnq3HoAlQ/vhJGO9JfjwL+kchn7lq4zkS7a?=
+ =?us-ascii?Q?sa7nQJ3abuOmdQT9uXEYhezUXlKmaIEBx0hpoVo+kCHaJ80ODgyygB2sERq6?=
+ =?us-ascii?Q?Hj1LmDE6hxNA7C5OB6z8rPP7rTCpc+wE5FUNEujz5xvrLFCOj/1YpqRfya8+?=
+ =?us-ascii?Q?lLmNsz37PN7JB0NonrAQjUdquDb339r6qza+CG2WsI0OSME4caLHfur6DLLC?=
+ =?us-ascii?Q?5g2NVe1hg7m9WHPU3URBhybzYgGJ221W1H0fuL8kPURHxSxR31rYntAGc3Kn?=
+ =?us-ascii?Q?xIl+480sqHWuuPUnCF4nMqD9YtpopMu/iduv+jC2U3y2n1Bxu9+sDI9kGiR6?=
+ =?us-ascii?Q?epIr85wWsGOmJSVfNSxFT7RTU5HIIRtO0WDJ1uwhZ0CgOOybQyeKLSToHsQV?=
+ =?us-ascii?Q?d2S6c85ZminCbWlLOvmR/BUvYAbVwpQ9QEecEltaesAL4nlm0BAyjxD/6bC9?=
+ =?us-ascii?Q?8jlt1xxsRxN+FlXN2TxRjaYNvFKq37+0yMiculNy1gV+1uE/4bgKpqNiIeIB?=
+ =?us-ascii?Q?f7a1wsgNSarh66Hrw2TO5ztlHnwvmmD597JDoPOB6VcpovsEtXuWWngBtHuh?=
+ =?us-ascii?Q?zhJ1AOMt0q8NJSdwDb9h1XPmfOsD5iRj+QW6iRns33hqsyMMAS9xtmo91DhZ?=
+ =?us-ascii?Q?gDlo95H+Wkqa+OEolMVX/wKzV9KR8gEAZTB0BezfTH7WJDqbH04T0LoXmb4T?=
+ =?us-ascii?Q?Stm0TLZL6yAFZgQ0JOlax+cyLWqe1DxFaZeShXcDBuaJCyqAPnKl+m7v6U7e?=
+ =?us-ascii?Q?6tXSALWC3H4WnvCDKh/pRGWhJnPBnWadgHo25jVketE5sZ4efAANtztQzyvP?=
+ =?us-ascii?Q?2XY/iu2ixG1x+VYNpLU8moQEscjffVSLY1woIYPWn/VrBxaNKYwz+bY6qyp7?=
+ =?us-ascii?Q?ac+cAeXyYYK9Db74843hIqbBUS9jFs9dBawvJJcrmXVWhU5pjdAyrKs70TJ7?=
+ =?us-ascii?Q?KGlTc6NbxJoHDM7u+sfv12CwFgyJaJ/SMPOFQYfEiwqkFBPUivEaQtux6dzH?=
+ =?us-ascii?Q?qjPNId7JHxrJwHJeqVBP9cE=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: da57ca69-f25c-4c38-69dc-08d9eabb3899
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6477.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 04:26:48.2591
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SOVKFtdcxIiVytTBa/eaKboDbwTKWuEjzUMwa1LbUA1v+9sahSxaim6DABmvJxLEyWiWe6SWanGT1gvPKyjLcQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0401MB2369
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 8:12 AM Nick Desaulniers <ndesaulniers@google.com> wrote:
->
-> On Wed, Feb 2, 2022 at 3:07 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > -Wunaligned-access is a new warning in clang that is default enabled for
-> > arm and arm64 under certain circumstances within the clang frontend (see
-> > LLVM commit below). On v5.17-rc2, an ARCH=arm allmodconfig build shows
-> > 1284 total/70 unique instances of this warning (most of the instances
-> > are in header files), which is quite noisy.
-> >
-> > To keep a normal build green through CONFIG_WERROR, only show this
-> > warning with W=1, which will allow automated build systems to catch new
-> > instances of the warning so that the total number can be driven down to
-> > zero eventually since catching unaligned accesses at compile time would
-> > be generally useful.
-> >
-> > Cc: stable@vger.kernel.org
-> > Link: https://github.com/llvm/llvm-project/commit/35737df4dcd28534bd3090157c224c19b501278a
-> > Link: https://github.com/ClangBuiltLinux/linux/issues/1569
-> > Link: https://github.com/ClangBuiltLinux/linux/issues/1576
-> > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
->
-> Thanks to you and Arnd for working out whether this is important to
-> pursue. Sounds like it is.
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
->
-> > ---
+Enable MikroBUS SPI port.
 
+Signed-off-by: Jianchao Wang <jianchao.wang@nxp.com>
+Signed-off-by: Changming Huang <jerry.huang@nxp.com>
+---
+ arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-I assume this should be considered as a bug fix
-to avoid the error for the combination of CONFIG_WERROR=y
-and the latest Clang.
-
-Applied to linux-kbuild/fixes.
-Thanks.
-
-
-
-> >
-> > v1 -> v2: https://lore.kernel.org/r/20220201232229.2992968-1-nathan@kernel.org/
-> >
-> > * Move to W=1 instead of W=2 so that new instances are caught (Arnd).
-> > * Add links to the ClangBuiltLinux issue tracker.
-> >
-> >  scripts/Makefile.extrawarn | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
-> > index d53825503874..8be892887d71 100644
-> > --- a/scripts/Makefile.extrawarn
-> > +++ b/scripts/Makefile.extrawarn
-> > @@ -51,6 +51,7 @@ KBUILD_CFLAGS += -Wno-sign-compare
-> >  KBUILD_CFLAGS += -Wno-format-zero-length
-> >  KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
-> >  KBUILD_CFLAGS += -Wno-tautological-constant-out-of-range-compare
-> > +KBUILD_CFLAGS += $(call cc-disable-warning, unaligned-access)
-> >  endif
-> >
-> >  endif
-> >
-> > base-commit: 26291c54e111ff6ba87a164d85d4a4e134b7315c
-> > --
-> > 2.35.1
-> >
->
->
-> --
-> Thanks,
-> ~Nick Desaulniers
-
-
-
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
+index 68c31cb8eead..af2c7eb07eaf 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
+@@ -93,6 +93,19 @@ simple-audio-card,codec {
+ 	};
+ };
+ 
++&dspi2 {
++	bus-num = <2>;
++	status = "okay";
++
++	mikrobus@0 {
++		compatible = "semtech,sx1301";
++		reg = <0>;
++		spi-max-frequency = <2000000>;
++		fsl,spi-cs-sck-delay = <1000000>;
++		fsl,spi-sck-cs-delay = <50>;
++	};
++};
++
+ &can0 {
+ 	status = "okay";
+ 
 -- 
-Best Regards
-Masahiro Yamada
+2.25.1
+
