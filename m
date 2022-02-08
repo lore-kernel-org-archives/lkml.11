@@ -2,124 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93CBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:29:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1F0C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346880AbiBHL2A (ORCPT
+        id S1345552AbiBHL2a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:28:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56836 "EHLO
+        Tue, 8 Feb 2022 06:28:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347690AbiBHKdW (ORCPT
+        with ESMTP id S1346573AbiBHKhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:33:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3241C03FEC0;
-        Tue,  8 Feb 2022 02:33:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 843B5B819D3;
-        Tue,  8 Feb 2022 10:33:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED721C004E1;
-        Tue,  8 Feb 2022 10:33:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644316399;
-        bh=NjZVvFDpCokRsNYFmGbL6uf2PEi0paLoaM6pmwUfwg4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DoPDojkRCyKyurVc6+Z9NuA5N9T34Vwzlt3a6NyhBVNOn/kmJC2NSKmBQj2dGmO3n
-         dPC0czljcJMtg4zX9ygXDe8Y5qJXeR6eyvxdPgcMCqytu3n6SX2VNWWBuvMErhrSmr
-         OnZappvVotQnJAJkZ3/AvykVzgIiRF2//hY5rZT3aFuBRkX3mWaTxVhw3vxLjuV3Bk
-         AEh4ZSFrocpqOFVJDAA9CvNN7lcN79EAxrNuUQIcatkWVmh9sf6gZbiDflNGoG1PxN
-         I9kBQh7d0L9cRkQSPGtthSFuJrtwqo9UUJovWsIFsqx63gajuQCQjj9iK5aE42APlW
-         X/bm9Dd0uMDBg==
-Date:   Tue, 8 Feb 2022 10:33:09 +0000
-From:   Will Deacon <will@kernel.org>
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>
-Subject: Re: [PATCH v7 01/12] mm: x86, arm64: add arch_has_hw_pte_young()
-Message-ID: <20220208103309.GB1002@willie-the-truck>
-References: <20220208081902.3550911-1-yuzhao@google.com>
- <20220208081902.3550911-2-yuzhao@google.com>
+        Tue, 8 Feb 2022 05:37:11 -0500
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBAA5C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:37:10 -0800 (PST)
+Received: by mail-il1-f197.google.com with SMTP id a3-20020a92d103000000b002bdfc5108dfso5710176ilb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 02:37:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=s1PNm5djIS6qdcwvWGHb5jgHYc9VO4i1eWOq/HeqpHo=;
+        b=r8k070McfFWUhR0TfgHfq4gx+97BmXnLrK77GjUKL0UuWRRHJltsNg+feYgKOTIxWh
+         xoMKlgdqx9HFJnMam0kpOCOe/HZm9598bKzge/newJo/h1S8N5RYgjCK+hUbWusceTHL
+         c/PK1+N/c2OHgaKF9445ia3x2++iViOwXqNFm4JckcDCmS9+o1uRFOsY3ectAXkHNFrS
+         JEh+/OIosI70uHHXCTBEIy3J0Zpbn9rujTfx8VyFm7YgoxjncJ64z8IfckyWqKIp1yZv
+         5az4XymF8EQUzkj1np9vaJ7AxviMW7ldJZm1C5/3mw4yNQwO2rKGOUPqhWN20GxxmLui
+         V3fw==
+X-Gm-Message-State: AOAM530tufDZZHxskAnO+dARmCf4PHsLSLKsqFeYvJRjRPiUw0fRtIRL
+        yIDTRsjXyHcLpTSvhxBab05BBLNt6Zb8sbas5LFCcs4zF3Ap
+X-Google-Smtp-Source: ABdhPJyuhkq3Z+KM32g7YrW1hV94/DEbXl88pMemh2o/ooGqFyjOFEFF2+yyE6X78BsHCDlMaOQSPJVZ92cXoPYfTIMy20+V1vSQ
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220208081902.3550911-2-yuzhao@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a02:b047:: with SMTP id q7mr1742130jah.35.1644316630022;
+ Tue, 08 Feb 2022 02:37:10 -0800 (PST)
+Date:   Tue, 08 Feb 2022 02:37:10 -0800
+In-Reply-To: <00000000000016f4ae05d5cec832@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a17f2305d77f4cb7@google.com>
+Subject: Re: [syzbot] WARNING in component_del
+From:   syzbot <syzbot+60df062e1c41940cae0f@syzkaller.appspotmail.com>
+To:     andriy.shevchenko@linux.intel.com, dri-devel@lists.freedesktop.org,
+        gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com,
+        linux-kernel@vger.kernel.org, rafael.j.wysocki@intel.com,
+        rafael@kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 01:18:51AM -0700, Yu Zhao wrote:
-> Some architectures automatically set the accessed bit in PTEs, e.g.,
-> x86 and arm64 v8.2. On architectures that don't have this capability,
-> clearing the accessed bit in a PTE usually triggers a page fault
-> following the TLB miss of this PTE (to emulate the accessed bit).
-> 
-> Being aware of this capability can help make better decisions, e.g.,
-> whether to spread the work out over a period of time to reduce bursty
-> page faults when trying to clear the accessed bit in many PTEs.
-> 
-> Note that theoretically this capability can be unreliable, e.g.,
-> hotplugged CPUs might be different from builtin ones. Therefore it
-> shouldn't be used in architecture-independent code that involves
-> correctness, e.g., to determine whether TLB flushes are required (in
-> combination with the accessed bit).
-> 
-> Signed-off-by: Yu Zhao <yuzhao@google.com>
-> Acked-by: Brian Geffon <bgeffon@google.com>
-> Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
-> Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-> Acked-by: Steven Barrett <steven@liquorix.net>
-> Acked-by: Suleiman Souhlal <suleiman@google.com>
-> Tested-by: Daniel Byrne <djbyrne@mtu.edu>
-> Tested-by: Donald Carr <d@chaos-reins.com>
-> Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
-> Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
-> Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
-> Tested-by: Sofia Trinh <sofia.trinh@edi.works>
-> ---
->  arch/arm64/include/asm/pgtable.h | 14 ++------------
->  arch/x86/include/asm/pgtable.h   |  6 +++---
->  include/linux/pgtable.h          | 13 +++++++++++++
->  mm/memory.c                      | 14 +-------------
->  4 files changed, 19 insertions(+), 28 deletions(-)
+syzbot has bisected this issue to:
 
-For the arm64 bit:
+commit 8c67d06f3fd9639c44d8147483fb1c132d71388f
+Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Date:   Thu Dec 23 08:23:49 2021 +0000
 
-Acked-by: Will Deacon <will@kernel.org>
+    usb: Link the ports to the connectors they are attached to
 
-Will
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14063168700000
+start commit:   555f3d7be91a Merge tag '5.17-rc3-ksmbd-server-fixes' of gi..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=16063168700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12063168700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=266de9da75c71a45
+dashboard link: https://syzkaller.appspot.com/bug?extid=60df062e1c41940cae0f
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15880d84700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14de0c77b00000
+
+Reported-by: syzbot+60df062e1c41940cae0f@syzkaller.appspotmail.com
+Fixes: 8c67d06f3fd9 ("usb: Link the ports to the connectors they are attached to")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
