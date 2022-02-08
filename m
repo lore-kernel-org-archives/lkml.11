@@ -2,144 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EF2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:37:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E290CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:38:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357652AbiBHNhb (ORCPT
+        id S1357998AbiBHNiP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:37:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
+        Tue, 8 Feb 2022 08:38:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357839AbiBHNh2 (ORCPT
+        with ESMTP id S234428AbiBHNiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:37:28 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B253C03FEDE
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:37:25 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id i15so8390834wrb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:37:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lcWfuffsHlkwnL+NX13z4fIGG38SkjTMAyUWe1hrS/s=;
-        b=ax89RcggFkFd1mkVOO4bbwwgJ2uBJIJ2Q3fJKhK2Sc4cUFhsuW3ihJFdynqkkKSgeO
-         fJjANcgbdR4JgM+ypugbaaa20LLd7KYcQ4+NwJZilXEMXE1px2Fi/oRL3Z+Wlic/KVtb
-         Pm3mBBFsisPBls4E9AmEI0yeHbuyadvvCM2vhrHxznL9qJhnZXnX1AW6/qjr135qRUK+
-         yOEu57BN7KgVC9CG4Q8L8N2Jy4giKEq66gDWFalRjDfZ3PIWuaip5DsbaRsi/ob0ciTX
-         7FUFic8jt2bertiXzJFl6bXz22pPFQAE8WREXskUGWldKms34kXs2xRwkKDpE5eaJUhx
-         xmsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lcWfuffsHlkwnL+NX13z4fIGG38SkjTMAyUWe1hrS/s=;
-        b=SHkYBdtqP3eTa5QEcs5pryTfnd3doYPxt7dXpfrOfhiYGQXi3HsDTTdDtTY0tp6Xr2
-         mPsAKjCKUroglYTum7ByqlT89jiP5CDSH5iWf2dT47sDu6F/yGRrpkHX10vgTjQQ+vps
-         QGiBn4vyoi0+6ZAke9xGGz2XjeJrrFd69MAsVPLVRCEorTqFrkPE4atJZwitLF1AIvGz
-         pmyngys3P6911997/T46UCZSVseAc1Z8tB0cJS9/0KMkJJMG0n03XBBJc+Iz9UZxl5+L
-         42uVvchYPSUIaGOjr8lglb1V23z9GMGQWbSoUnS7tuG0Hvcf73hr9UzB/MGkZQrHDgnM
-         DSvg==
-X-Gm-Message-State: AOAM531MS5LtlUoKopXiCwjqBSGdJWCopOD83FE8zy9vtc6oaS+EnNYd
-        wazS+qtstDut/bJoGF30ChsnHA==
-X-Google-Smtp-Source: ABdhPJzyK9POHUMwimAGW7OLwuIips21giBJNRXYRkQB5rSKYcfCh573Ny7ugpEOgQXzUz6NhceNAg==
-X-Received: by 2002:a5d:4411:: with SMTP id z17mr1561790wrq.384.1644327444049;
-        Tue, 08 Feb 2022 05:37:24 -0800 (PST)
-Received: from ?IPv6:2a02:6b6d:f804:0:e066:3489:1ae2:dec1? ([2a02:6b6d:f804:0:e066:3489:1ae2:dec1])
-        by smtp.gmail.com with ESMTPSA id v9sm1975681wrw.84.2022.02.08.05.37.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 05:37:23 -0800 (PST)
-Subject: Re: [External] [PATCH] io_uring: Fix use of uninitialized ret in
- io_eventfd_register()
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>, trix@redhat.com,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     io-uring@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-References: <20220207162410.1013466-1-nathan@kernel.org>
-From:   Usama Arif <usama.arif@bytedance.com>
-Message-ID: <2af2d61f-bd3d-5288-7bd2-4768ebe266d7@bytedance.com>
-Date:   Tue, 8 Feb 2022 13:37:22 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 8 Feb 2022 08:38:14 -0500
+X-Greylist: delayed 666 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 05:38:12 PST
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA702C03FED3;
+        Tue,  8 Feb 2022 05:38:12 -0800 (PST)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 218DIhQO046504;
+        Tue, 8 Feb 2022 07:18:43 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644326324;
+        bh=iStzcmCeH6NHwwtYWkOdsTwcq37ww3bknEMWCmn2Jrc=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=vcx15+9AT4rhPas6/wWk1ODpYYXV+uZMoqYJ8UU7TIRIDLRH6RNE/CxFGR4MtnrHP
+         WHER/Svea9IW00Wnf+O/MRARAy1PEQQBqQloe4YKKU65uO5RAMQIKqod3BxcwFUKWa
+         BDoR5j2byOThq/CnBk4sxK5acksp58I2Rrt9PoCg=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 218DIhLW044502
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 8 Feb 2022 07:18:43 -0600
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 8
+ Feb 2022 07:18:43 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 8 Feb 2022 07:18:43 -0600
+Received: from ula0132425.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 218DIUCi117228;
+        Tue, 8 Feb 2022 07:18:40 -0600
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 3/5] dt-bindings: pinctrl: k3: Introduce pinmux definitions for AM62
+Date:   Tue, 8 Feb 2022 18:48:25 +0530
+Message-ID: <20220208131827.1430086-4-vigneshr@ti.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220208131827.1430086-1-vigneshr@ti.com>
+References: <20220208131827.1430086-1-vigneshr@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <20220207162410.1013466-1-nathan@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Suman Anna <s-anna@ti.com>
 
+Add pinctrl macros for AM62x SoCs. These macro definitions are similar
+to that of previous platforms, but adding new definitions to avoid any
+naming confusions in the SoC dts files.
 
-On 07/02/2022 16:24, Nathan Chancellor wrote:
-> Clang warns:
-> 
->    fs/io_uring.c:9396:9: warning: variable 'ret' is uninitialized when used here [-Wuninitialized]
->            return ret;
->                   ^~~
->    fs/io_uring.c:9373:13: note: initialize the variable 'ret' to silence this warning
->            int fd, ret;
->                       ^
->                        = 0
->    1 warning generated.
-> 
-> Just return 0 directly and reduce the scope of ret to the if statement,
-> as that is the only place that it is used, which is how the function was
-> before the fixes commit.
-> 
-> Fixes: 1a75fac9a0f9 ("io_uring: avoid ring quiesce while registering/unregistering eventfd")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1579
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> ---
->   fs/io_uring.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
->
+checkpatch insists the following error exists:
+ERROR: Macros with complex values should be enclosed in parentheses
 
-Thanks for pointing this out. Just for some background in earlier 
-revisions of the patch for "io_uring: avoid ring quiesce while 
-registering/unregistering eventfd" the error return part was being 
-handled differently, but ended up looking similar to before in the final 
-revision that got merged, but i forgot to change this part back. Would 
-it be possible to fold the below diff into the patch as well Jens?
-Thanks and sorry for missing this!
+However, we do not need parentheses enclosing the values for this
+macro as we do intend it to generate two separate values as has been
+done for other similar platforms.
 
-Regards,
-Usama
+Signed-off-by: Suman Anna <s-anna@ti.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+---
+ include/dt-bindings/pinctrl/k3.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> diff --git a/fs/io_uring.c b/fs/io_uring.c
-> index 5479f0607430..7ef04bb66da1 100644
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@ -9370,7 +9370,7 @@ static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg,
->   {
->   	struct io_ev_fd *ev_fd;
->   	__s32 __user *fds = arg;
-> -	int fd, ret;
-> +	int fd;
->   
->   	ev_fd = rcu_dereference_protected(ctx->io_ev_fd,
->   					lockdep_is_held(&ctx->uring_lock));
-> @@ -9386,14 +9386,14 @@ static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg,
->   
->   	ev_fd->cq_ev_fd = eventfd_ctx_fdget(fd);
->   	if (IS_ERR(ev_fd->cq_ev_fd)) {
-> -		ret = PTR_ERR(ev_fd->cq_ev_fd);
-> +		int ret = PTR_ERR(ev_fd->cq_ev_fd);
->   		kfree(ev_fd);
->   		return ret;
->   	}
->   	ev_fd->eventfd_async = eventfd_async;
->   
->   	rcu_assign_pointer(ctx->io_ev_fd, ev_fd);
-> -	return ret;
-> +	return 0;
->   }
->   
->   static void io_eventfd_put(struct rcu_head *rcu)
-> 
-> base-commit: 88a0394bc27de2dd8a8715970f289c5627052532
-> 
+diff --git a/include/dt-bindings/pinctrl/k3.h b/include/dt-bindings/pinctrl/k3.h
+index 63e038e36ca3..a5204ab91d3e 100644
+--- a/include/dt-bindings/pinctrl/k3.h
++++ b/include/dt-bindings/pinctrl/k3.h
+@@ -41,4 +41,7 @@
+ #define J721S2_IOPAD(pa, val, muxmode)		(((pa) & 0x1fff)) ((val) | (muxmode))
+ #define J721S2_WKUP_IOPAD(pa, val, muxmode)	(((pa) & 0x1fff)) ((val) | (muxmode))
+ 
++#define AM62X_IOPAD(pa, val, muxmode)		(((pa) & 0x1fff)) ((val) | (muxmode))
++#define AM62X_MCU_IOPAD(pa, val, muxmode)	(((pa) & 0x1fff)) ((val) | (muxmode))
++
+ #endif
+-- 
+2.35.1
+
