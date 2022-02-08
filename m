@@ -2,102 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF17C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B64ABC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358745AbiBHLbG (ORCPT
+        id S1358861AbiBHLbM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:31:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
+        Tue, 8 Feb 2022 06:31:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356582AbiBHKwF (ORCPT
+        with ESMTP id S1348189AbiBHKxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:52:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AADBEC03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:52:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 8 Feb 2022 05:53:00 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C411C03FEC3;
+        Tue,  8 Feb 2022 02:52:58 -0800 (PST)
+Received: from localhost.localdomain (ip5f5aebc2.dynamic.kabel-deutschland.de [95.90.235.194])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46E1461538
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:52:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64169C004E1;
-        Tue,  8 Feb 2022 10:52:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644317523;
-        bh=LOsnrHhtZ02v5wdKdIpP4CXhD4olCp1tiNeKEg5L2bY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ZGsO2CWjFjH85KytSFltbGoyHDgWbO/Dc/g9b7Td1eDR+IV2ALxBKXIFYLDwZK1Oj
-         cNWK2Xn/hl9E9p/B80AnW7flcfVTu6EU4bLsC+2fnlC/uww4gzRwUADmy44COeqpuY
-         dhF1evwfHhsJcpvWXM/1UzZ9MKMmNl3/g7dDYR+N/0GP9NPCCc7VmaYBFJlAMvwKUE
-         HeIUUW7Dl4xWGT7OgYqZZNBKTZX/B+7ZezvtKLJv+1px5zczdsr8BAOZsSbw3kYlPc
-         JCx0o4fb+u0TjaNH51THr+tkcq2ozqk4LN2Cj3vuuNTmb/7p212imlyhO6r5ZBtq7g
-         6fDvlM/G1q22w==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>
-Subject: [PATCH RFC] f2fs: sync node page without cp_rwsem during block_operations()
-Date:   Tue,  8 Feb 2022 18:51:56 +0800
-Message-Id: <20220208105156.3810115-1-chao@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 1742661E64846;
+        Tue,  8 Feb 2022 11:52:57 +0100 (CET)
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+To:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>, rcu@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] rcutorture: Add missing - to `--do-allmodconfig` in usage
+Date:   Tue,  8 Feb 2022 11:52:40 +0100
+Message-Id: <20220208105240.43600-1-pmenzel@molgen.mpg.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's avoid holding cp_rwsem write lock during f2fs_sync_node_pages()
-in block_operations(), then cp_rwsem write lock's coverage in checkpoint
-can be shrunk, then it expects there will be more opportunity that
-foreground operator can grab cp_rwsem read lock.
+The usage currently lists `--doallmodconfig`, resulting in:
 
-Signed-off-by: Chao Yu <chao@kernel.org>
+    $ tools/testing/selftests/rcutorture/bin/torture.sh --doallmodconfig
+    Unknown argument --doallmodconfig
+    […]
+
+Add the missing dash for `--do-allmodconfig`.
+
+Fixes: a115a775a8d5 ("torture: Add "make allmodconfig" to torture.sh")
+Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
 ---
- fs/f2fs/checkpoint.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ tools/testing/selftests/rcutorture/bin/torture.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
-index f7cb4277de70..7596faa0be45 100644
---- a/fs/f2fs/checkpoint.c
-+++ b/fs/f2fs/checkpoint.c
-@@ -1190,6 +1190,8 @@ static int block_operations(struct f2fs_sb_info *sbi)
- 		.for_reclaim = 0,
- 	};
- 	int err = 0, cnt = 0;
-+	bool sync_lockless = true;
-+	unsigned int retry_cnt = 3;
- 
- 	/*
- 	 * Let's flush inline_data in dirty node pages.
-@@ -1249,15 +1251,25 @@ static int block_operations(struct f2fs_sb_info *sbi)
- 
- 	if (get_pages(sbi, F2FS_DIRTY_NODES)) {
- 		f2fs_up_write(&sbi->node_write);
-+		if (!retry_cnt--)
-+			sync_lockless = false;
-+		if (sync_lockless) {
-+			f2fs_up_write(&sbi->node_change);
-+			f2fs_unlock_all(sbi);
-+		}
- 		atomic_inc(&sbi->wb_sync_req[NODE]);
- 		err = f2fs_sync_node_pages(sbi, &wbc, false, FS_CP_NODE_IO);
- 		atomic_dec(&sbi->wb_sync_req[NODE]);
- 		if (err) {
--			f2fs_up_write(&sbi->node_change);
--			f2fs_unlock_all(sbi);
-+			if (!sync_lockless) {
-+				f2fs_up_write(&sbi->node_change);
-+				f2fs_unlock_all(sbi);
-+			}
- 			return err;
- 		}
- 		cond_resched();
-+		if (sync_lockless)
-+			goto retry_flush_quotas;
- 		goto retry_flush_nodes;
- 	}
- 
+diff --git a/tools/testing/selftests/rcutorture/bin/torture.sh b/tools/testing/selftests/rcutorture/bin/torture.sh
+index eae88aacca2a..3adcc83dd55d 100755
+--- a/tools/testing/selftests/rcutorture/bin/torture.sh
++++ b/tools/testing/selftests/rcutorture/bin/torture.sh
+@@ -72,7 +72,7 @@ usage () {
+ 	echo "       --configs-locktorture \"config-file list w/ repeat factor (10*LOCK01)\""
+ 	echo "       --configs-scftorture \"config-file list w/ repeat factor (2*CFLIST)\""
+ 	echo "       --doall"
+-	echo "       --doallmodconfig / --do-no-allmodconfig"
++	echo "       --do-allmodconfig / --do-no-allmodconfig"
+ 	echo "       --do-clocksourcewd / --do-no-clocksourcewd"
+ 	echo "       --do-kasan / --do-no-kasan"
+ 	echo "       --do-kcsan / --do-no-kcsan"
 -- 
-2.25.1
+2.34.1
 
