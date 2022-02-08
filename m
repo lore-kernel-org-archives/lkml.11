@@ -2,135 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3202FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91328C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348762AbiBHIFz (ORCPT
+        id S1348787AbiBHIGg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:05:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
+        Tue, 8 Feb 2022 03:06:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236001AbiBHIFw (ORCPT
+        with ESMTP id S236001AbiBHIGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:05:52 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6509C0401EF;
-        Tue,  8 Feb 2022 00:05:51 -0800 (PST)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JtFnG68VGz6F92x;
-        Tue,  8 Feb 2022 16:00:50 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Tue, 8 Feb 2022 09:05:49 +0100
-Received: from [10.47.24.125] (10.47.24.125) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 8 Feb
- 2022 08:05:35 +0000
-Message-ID: <4f6f6e0f-4398-3018-cc35-6aa7ea1305fe@huawei.com>
-Date:   Tue, 8 Feb 2022 08:05:29 +0000
+        Tue, 8 Feb 2022 03:06:35 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923EBC0401EF
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:06:34 -0800 (PST)
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 5E94D3F1C6
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 08:06:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644307593;
+        bh=aIg1Mnd0MsRuc0b6irLRzxjnBZ54DYRs4G49zbj+BN8=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=Pq9qtTaAdCIQMvmypimTLZK+57hC+xGI7atOVLJHEAdlmRgQwpMP3RbgxmuVB+nGY
+         LICu1GJoBDo5S6i9EstwBzl5ibPvVLt3v30az2pVzEao2lswGKH2EVhMO41/yEhkcS
+         BxcOgU7H3kC7qCI+RKOND8BC+SnX2kEoP/l6tc3Tj4oYv2YWXKem1aEPvzzMSK5GrD
+         OhbwJJmzSpI21O3Mu6N2COKL7AmRmRJfOwiPqGSO+1CWzd8+AXKXqlK5ewO8KL369p
+         E9M64JzobaoGJWw5mBkaSC4lC+31ZSq/nZogf9t0MVG+Eg/Eh1fSB+ElC4aOlmnFfn
+         TEO8L6FOwGjCg==
+Received: by mail-ej1-f69.google.com with SMTP id mp5-20020a1709071b0500b0069f2ba47b20so5306817ejc.19
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:06:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=aIg1Mnd0MsRuc0b6irLRzxjnBZ54DYRs4G49zbj+BN8=;
+        b=LQ36wfVGPYAojU0IlZTRfofgww81fZUIdW52okSKUbBpLxSORzrP7U2sI0U45Wpaby
+         s8Ma549+P2Jf8lueVOq9mRpQWbvo7nbCtJF4bV4Y2fA5gxXUNRBeVRNKx3DgSQAJpG6u
+         kUF/4pE5Rgaf36XM2tcWxsDtpj1oAF/tU54zMs1tEjZ5Kvf1BGjOTE0whgbZWKqZVer3
+         T6J7xjaYLyN6tyl1REsBU65NywtNdz21hFYFg1jhkjyib4043pVXdcAXxeWbI6C20Yki
+         tD1JY0rwrppK7LORYjFU3ySFIWdcHJGFIwscKJOBHECgIw5LmUNIqEgMkKiVsqITpW2l
+         WaCg==
+X-Gm-Message-State: AOAM5332DbWMBKepztKzrSMA0UmbsSW9hcOjoNiqY1HA6pqqvDZVpWDl
+        AHMKZ53UaVwh7LSV5asv10nUILIk1L04OW43ZifzuxFpbIrpTMcKP/Ga3vwc5D4zPwFmxvx6bpd
+        KdOInaTZGJkXI6RfmDQrxWyAsIidl5gmyLIj74kEh4w==
+X-Received: by 2002:a05:6402:3608:: with SMTP id el8mr3063568edb.193.1644307592986;
+        Tue, 08 Feb 2022 00:06:32 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwUnXSjO8YsYH4lTQanThADpWVbnUnKzPBIL4Kb+jInbdPZKr0jkNmWBDoAZPQEa2lUtSr5jw==
+X-Received: by 2002:a05:6402:3608:: with SMTP id el8mr3063558edb.193.1644307592844;
+        Tue, 08 Feb 2022 00:06:32 -0800 (PST)
+Received: from [192.168.0.92] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id o18sm6312104edw.102.2022.02.08.00.06.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 00:06:32 -0800 (PST)
+Message-ID: <9d31db2f-6754-6e9d-3bef-57cf9d5f9cf6@canonical.com>
+Date:   Tue, 8 Feb 2022 09:06:31 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v3 8/8] iommu/arm-smmu-v3: Make default domain type of
- HiSilicon PTT device to identity
-To:     Yicong Yang <yangyicong@hisilicon.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "helgaas@kernel.org" <helgaas@kernel.org>,
-        "alexander.shishkin@linux.intel.com" 
-        <alexander.shishkin@linux.intel.com>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "mathieu.poirier@linaro.org" <mathieu.poirier@linaro.org>,
-        "suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
-        "mike.leach@linaro.org" <mike.leach@linaro.org>,
-        "leo.yan@linaro.org" <leo.yan@linaro.org>,
-        "Jonathan Cameron" <jonathan.cameron@huawei.com>,
-        "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "Shameerali Kolothum Thodi" <shameerali.kolothum.thodi@huawei.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "coresight@lists.linaro.org" <coresight@lists.linaro.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-CC:     "Zengtao (B)" <prime.zeng@hisilicon.com>,
-        "liuqi (BA)" <liuqi115@huawei.com>,
-        Zhangshaokun <zhangshaokun@hisilicon.com>,
-        Linuxarm <linuxarm@huawei.com>,
-        yangyicong <yangyicong@huawei.com>,
-        "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-References: <20220124131118.17887-1-yangyicong@hisilicon.com>
- <20220124131118.17887-9-yangyicong@hisilicon.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220124131118.17887-9-yangyicong@hisilicon.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH V2 2/4] dt-bindings: mailbox: imx-mu: add i.MX93 S4 MU
+ support
+Content-Language: en-US
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, jassisinghbrar@gmail.com,
+        robh+dt@kernel.org, shawnguo@kernel.org
+Cc:     s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Peng Fan <peng.fan@nxp.com>
+References: <20220208063046.2265537-1-peng.fan@oss.nxp.com>
+ <20220208063046.2265537-3-peng.fan@oss.nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220208063046.2265537-3-peng.fan@oss.nxp.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.24.125]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/01/2022 13:11, Yicong Yang wrote:
-> The DMA of HiSilicon PTT device can only work with identical
-> mapping. So add a quirk for the device to force the domain
-> passthrough.
-
-This patch should be earlier in the series, before the PTT driver, and 
-the comment on hisi_ptt_check_iommu_mapping() should mention what is 
-going on here.
-
+On 08/02/2022 07:30, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
 > 
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> Similar to i.MX8ULP S4 MU, i.MX93 MU is dedicated for communication
+> between Sentinel and Cortex-A cores from hardware design, it could not be
+> reused for other purpose.
+> 
+> However i.MX93 S4 MU use separate tx/rx interrupt, so update
+> interrupts and add interrupt-names property.
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 > ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
->   1 file changed, 16 insertions(+)
+>  .../devicetree/bindings/mailbox/fsl,mu.yaml   | 21 +++++++++++++++++++
+>  1 file changed, 21 insertions(+)
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 6dc6d8b6b368..6f67a2b1dd27 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2838,6 +2838,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
->   	}
->   }
->   
-> +#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
-> +					 (pdev)->device == 0xa12e)
 
-I assume that not all revisions will require this check, right?
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-> +
-> +static int arm_smmu_def_domain_type(struct device *dev)
-> +{
-> +	if (dev_is_pci(dev)) {
-> +		struct pci_dev *pdev = to_pci_dev(dev);
-> +
-> +		if (IS_HISI_PTT_DEVICE(pdev))
-> +			return IOMMU_DOMAIN_IDENTITY;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->   static struct iommu_ops arm_smmu_ops = {
->   	.capable		= arm_smmu_capable,
->   	.domain_alloc		= arm_smmu_domain_alloc,
-> @@ -2863,6 +2878,7 @@ static struct iommu_ops arm_smmu_ops = {
->   	.sva_unbind		= arm_smmu_sva_unbind,
->   	.sva_get_pasid		= arm_smmu_sva_get_pasid,
->   	.page_response		= arm_smmu_page_response,
-> +	.def_domain_type	= arm_smmu_def_domain_type,
->   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
->   	.owner			= THIS_MODULE,
->   };
 
+Best regards,
+Krzysztof
