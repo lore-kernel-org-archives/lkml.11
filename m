@@ -2,128 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 331ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3032BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236012AbiBHBHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:07:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51970 "EHLO
+        id S236017AbiBHBHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:07:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241527AbiBHANv (ORCPT
+        with ESMTP id S1343967AbiBHAR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 19:13:51 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3259AC061355;
-        Mon,  7 Feb 2022 16:13:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644279231; x=1675815231;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=BPhMCShSVCOniHzYsoSxv9XqF3MkYnnOdHCV78VWtYE=;
-  b=WoUOH0XueyPf6viG/SvNCzthgcBzOXDApLFisYC5ny5vXAcSqYlCTzUY
-   MWg57ImYiaTSm4bnYeJjVaiG6ej90jV4hUuRogP0+LAdgAwB/zTdo+02I
-   oxzrGZVDcyaQmYlHrc0/kyIlRkXe4SScCA2oXcGKs1GOXcghBxFv8aMXS
-   Pp25DJ33kDdvEKwthR19EGC7zF8TJvK/ZVi+jJZMpgg/8uWq+y56JuGty
-   LDI+UmF6bbZCrUxPiswXn29mRbkt/qfWqGxAeIPxqLzdolV0GoKdoesNZ
-   jyCu+7ngti/x3fFuLLCRNJxBHhUrOsbZWEbqUG0Bzq1Gf8ZI6+cPdZAak
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="312134685"
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="312134685"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:13:49 -0800
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="525332786"
-Received: from hgrunes-mobl1.amr.corp.intel.com (HELO [10.251.3.57]) ([10.251.3.57])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:13:48 -0800
-Message-ID: <672fa390-c88c-4e2a-aa42-52d171acfd62@intel.com>
-Date:   Mon, 7 Feb 2022 16:13:45 -0800
+        Mon, 7 Feb 2022 19:17:27 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BDDC061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 16:17:26 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id s14so899615pfw.3
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 16:17:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qa8nRRq7La+ePNvAYQN25AB/Dkqw4RLGBac/uizNapc=;
+        b=BYCyTLpFbAjJTU6RHckyUagUkCaBidw8jqLtHxiBGZ/TMfCh+6O/0Snj0cMZ1puh0S
+         uYDNk0hTL+QekX34gKoIEa0F1tt4xC3CHNWKNfr9b0ETucRKUrr3yeblGqHNAUur7Bis
+         bflpEEt3adM3BKkVN71bUHSUbIJXEC1hpB194=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qa8nRRq7La+ePNvAYQN25AB/Dkqw4RLGBac/uizNapc=;
+        b=BhVI4v8e57IMxSLxotr2hogq23C6lTdDgQC1Y2G3x8sATHE9qDPCwbDXDPhvF2m9cq
+         s1x8fLS4aMgX4kBSGSRr4yYZIMKbrl6ANie299nIjI4w0INTD4MpDB5f2DJKY8sjAtsK
+         t29VluWK3vlVs1EFzJFbQXc+8D1mYKzVg4Bz+xmgTOrlUNfGcDDcW8R8bXTRht3eFc1c
+         t6RNxYUAie0MNOOIiqUZ975eC9ykYEa5DDGkTu45FsQWObjoUeU7kujdjo9jGQXWIKz2
+         slMeHxmI1pU2tt+DWPgkGOjCQbQ/D+a6gRYdlkScfS5tS94zyybfy25luyuXBIWG/OOv
+         rnfg==
+X-Gm-Message-State: AOAM533BDnS0GacIj7lN6AJHKOvLwVQ8tJGiKD/L9gco1fiNkkvQTKqc
+        cY3wvcNlGbTdrM6LQ3ZAT3rSfQ==
+X-Google-Smtp-Source: ABdhPJygKdc6xNR6j7YG2/jk9p/HVmxGlPDfdBoX3re4AlFyciQoFr9C4uvoSniH6pqktdxztYyKlw==
+X-Received: by 2002:a63:b207:: with SMTP id x7mr1470669pge.392.1644279446187;
+        Mon, 07 Feb 2022 16:17:26 -0800 (PST)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:6c4d:c442:5b4:f597])
+        by smtp.gmail.com with ESMTPSA id mz4sm456185pjb.53.2022.02.07.16.17.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 16:17:25 -0800 (PST)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     quic_mkrishn@quicinc.com, linux-arm-msm@vger.kernel.org,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        robdclark@gmail.com, quic_khsieh@quicinc.com,
+        quic_abhinavk@quicinc.com, linux-phy@lists.infradead.org,
+        Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [REPOST PATCH v1 0/3] Add support for eDP PHY on SC7280 platform
+Date:   Mon,  7 Feb 2022 16:17:01 -0800
+Message-Id: <20220208001704.367069-1-dianders@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Balbir Singh <bsingharora@gmail.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cyrill Gorcunov <gorcunov@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Eugene Syromiatnikov <esyr@redhat.com>,
-        Florian Weimer <fweimer@redhat.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
-        Dave Martin <Dave.Martin@arm.com>,
-        Weijiang Yang <weijiang.yang@intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
-        kcc@google.com, eranian@google.com
-Cc:     Yu-cheng Yu <yu-cheng.yu@intel.com>, Christoph Hellwig <hch@lst.de>
-References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
- <20220130211838.8382-8-rick.p.edgecombe@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH 07/35] x86/mm: Remove _PAGE_DIRTY from kernel RO pages
-In-Reply-To: <20220130211838.8382-8-rick.p.edgecombe@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/30/22 13:18, Rick Edgecombe wrote:
-> The x86 family of processors do not directly create read-only and Dirty
-> PTEs.  These PTEs are created by software.
+This is a repost of the patch series that Sankeerth Billakanti posted
+back in November. As Stephen pointed out [1] a few days ago, it wasn't
+posted to the right place.
 
-That's not strictly correct.
+I've tested this and it seems to bring the eDP up on my sc7280 board,
+so I'm re-posting it in the hopes that it can land soon-ish unless
+there's something terribly wrong with it. ;-)
 
-There's nothing in the architecture today to prevent the CPU from
-creating Write=0,Dirty=1 PTEs.  In fact, some CPUs do this in weird
-situations.  It wouldn't be wrong to say:
+If it makes folks happier, I have no objections to Sankeerth's
+original patches landing. These are the exact same thing but simply
+with the addition of my Signed-off-by.
 
-	Processors sometimes directly create read-only and Dirty PTEs.
+[1] https://lore.kernel.org/r/CAE-0n50sONq+URcWwvDH=UPshgy6+XZEB3sK_4n+5jNktHsEhg@mail.gmail.com
 
-which is the opposite of what is written above.  This is why the CET
-spec has the blurb about shadow-stack-supporting CPUs promise not to do
-this any more.
 
-> One such case is that kernel
-> read-only pages are historically setup as Dirty.
+Sankeerth Billakanti (3):
+  dt-bindings: phy: Add eDP PHY compatible for sc7280
+  phy: qcom: Add support for eDP PHY on sc7280
+  phy: qcom: Program SSC only if supported by sink
 
-				   ^ set up
+ Documentation/devicetree/bindings/phy/qcom,edp-phy.yaml | 4 +++-
+ drivers/phy/qualcomm/phy-qcom-edp.c                     | 9 ++++++---
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
-> New processors that support Shadow Stack regard read-only and Dirty PTEs as
-> shadow stack pages.
+-- 
+2.35.0.263.gb82422642f-goog
 
-This also isn't *quite* correct.  It's not just having a new processor,
-it includes enabling shadow stacks.
-
-> This results in ambiguity between shadow stack and kernel read-only
-> pages.  To resolve this, removed Dirty from kernel read- only pages.
-One thing that's not clear from the spec: does this cause an *actual*
-problem?  For instance, does setting:
-
-	IA32_U_CET.SH_STK_EN=1
-but
-	IA32_S_CET.SH_STK_EN=0
-
-means that shadow stacks are enforced in user *MODE* or on
-user-paging-permission (U=0) PTEs?
-
-I think it's modes, but it would be nice to be clear.  *BUT*, if this is
-accurate, doesn't it also mean that this patch is not strictly necessary?
-
-Don't get me wrong, the patch is probably still a good idea, but let's
-make sure we get the exact reasoning clear.
