@@ -2,69 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64247C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A59C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385830AbiBHTHw (ORCPT
+        id S1385842AbiBHTLP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 14:07:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56134 "EHLO
+        Tue, 8 Feb 2022 14:11:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352581AbiBHTHu (ORCPT
+        with ESMTP id S244714AbiBHTLN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:07:50 -0500
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C38C0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:07:49 -0800 (PST)
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nHVq1-000S8r-Iw; Tue, 08 Feb 2022 19:07:41 +0000
-Date:   Tue, 8 Feb 2022 19:07:41 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Christian Brauner <brauner@kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alexey Gladkov <legion@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Jann Horn <jannh@google.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] copy_process(): Move fd_install() out of
- sighand->siglock critical section
-Message-ID: <YgK/fdYWi0wWysci@zeniv-ca.linux.org.uk>
-References: <20220208163912.1084752-1-longman@redhat.com>
- <YgKziblMKsmHkP4f@zeniv-ca.linux.org.uk>
- <bd83aca3-059f-92dd-e094-b27f51f9481a@redhat.com>
+        Tue, 8 Feb 2022 14:11:13 -0500
+X-Greylist: delayed 1168 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 11:11:12 PST
+Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB65C0613CB;
+        Tue,  8 Feb 2022 11:11:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:
+        Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=xNLD+ohNcz8s+M2ZfwyQWaMV388U5TWtk0mAuxq0Jls=; b=Bxl9XAIFTDWKUHGroQRpuDasjd
+        tgS8OvU0Ps+B9IqBwitqXm9eg19pxboo4/Axod6x1zS4fckWDK7q1i6YVIOE0PF3nd2Czd1T922lK
+        vkgK4IOJsxJSUqHDVL1B2rKP4uXhln6//lz8dcD3fEUi7rl2Hxoo6lkjwVQzhoq7DHJdnKwDJd1Ih
+        Nbm18MDVU0HRU34Lz8xy2LkOSLZb0WkZtp/cHYVyc/jtH+rYhi1v6+MMxc5N7Njv7L0nJu26GqRIJ
+        rEGXZiZz0RyZId5QIeK/XcgG627jXQ0ia6lkNvhBhvMnWSO9fo/Iqj2JNkF0pxzQBEjrNtVCyc7uv
+        e5NuYKIA==;
+Received: from 201-27-34-10.dsl.telesp.net.br ([201.27.34.10] helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nHUyS-000CHM-Ta; Tue, 08 Feb 2022 19:12:21 +0100
+Message-ID: <c10fc4fc-58c9-0b3f-5f1e-6f44b0c190d2@igalia.com>
+Date:   Tue, 8 Feb 2022 15:12:04 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bd83aca3-059f-92dd-e094-b27f51f9481a@redhat.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 3/3] panic: Allow printing extra panic information on
+ kdump
+Content-Language: en-US
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     Petr Mladek <pmladek@suse.com>, akpm@linux-foundation.org,
+        Dave Young <dyoung@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-doc@vger.kernel.org, mcgrof@kernel.org,
+        keescook@chromium.org, yzaikin@google.com, feng.tang@intel.com,
+        siglesias@igalia.com, kernel@gpiccoli.net
+References: <20211109202848.610874-1-gpiccoli@igalia.com>
+ <20211109202848.610874-4-gpiccoli@igalia.com> <Yd/qmyz+qSuoUwbs@alley>
+ <7c516696-be5b-c280-7f4e-554834f5e472@igalia.com>
+In-Reply-To: <7c516696-be5b-c280-7f4e-554834f5e472@igalia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 01:51:35PM -0500, Waiman Long wrote:
-> On 2/8/22 13:16, Al Viro wrote:
-> > On Tue, Feb 08, 2022 at 11:39:12AM -0500, Waiman Long wrote:
-> > 
-> > > One way to solve this problem is to move the fd_install() call out of
-> > > the sighand->siglock critical section.
-> > > 
-> > > Before commit 6fd2fe494b17 ("copy_process(): don't use ksys_close()
-> > > on cleanups"), the pidfd installation was done without holding both
-> > > the task_list lock and the sighand->siglock. Obviously, holding these
-> > > two locks are not really needed to protect the fd_install() call.
-> > > So move the fd_install() call down to after the releases of both locks.
-> > 	Umm... That assumes we can delay it that far.  IOW, that nothing
-> > relies upon having pidfd observable in /proc/*/fd as soon as the child
-> > becomes visible there in the first place.
-> > 
-> > 	What warranties are expected from CLONE_PIDFD wrt observation of
-> > child's descriptor table?
-> > 
-> I think the fd_install() call can be moved after the release of
-> sighand->siglock but before the release the tasklist_lock. Will that be good
-> enough?
+On 27/01/2022 13:53, Guilherme G. Piccoli wrote:
+> Hi Andrew, can I ask you to please remove this patch from linux-next?
+> 
+> It shows here:
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=56439cb78293
+> 
+> Baoquan has concerns, and we're discussing that in another thread [0],
+> after I submit another change on top of this one. So, I guess it's
+> simpler to just drop it.
+> 
+> My apologies for this, I should have definitely loop the kexec list in
+> this one , but I forgot.
+> 
+> Cheers,
+> 
+> 
+> Guilherme
+> 
+> 
+> [0]
+> https://lore.kernel.org/lkml/7b93afff-66a0-44ee-3bb7-3d1e12dd47c2@igalia.com/
 
-Looks like it should, but I'd rather hear from the CLONE_PIDFD authors first...
-Christian, could you comment on that?
+
+Hi Stephen / Andrew, sorry for the annoyance, but can you please remove
+this patch from linux-next?
+
+Today it shows as commit
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=d691651735f1
+- this commit is subject to concern from Baoquan and we are discussing
+better ways to achieve that, through a refactor.
+
+Thanks in advance,
+
+
+Guilherme
