@@ -2,96 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D717C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D71DAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379044AbiBHPB5 (ORCPT
+        id S1379138AbiBHPCS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:01:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53798 "EHLO
+        Tue, 8 Feb 2022 10:02:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244705AbiBHPBz (ORCPT
+        with ESMTP id S1350967AbiBHPCP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:01:55 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D820DC061576
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 07:01:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644332514; x=1675868514;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XpENSQQtkROfpCO6JNc1kJzZlo2IByE0DAYnUc+WpfQ=;
-  b=A7kY21nEHqX4r2iLL8eAc3fAvR13hBwtRbTrbv+ON95bt7PLAxrCAcUj
-   8AURkC4Uf9wgqMWQTZcB1DWY1fCViB/VtSQoJC9tAMqqlZj0CHOvA8yJz
-   0fSzCzxou9dhQ3Z0uQCN1LiwQsZj7HANO8So2BOK5dfB+nVvm8v8G91iH
-   JSIc7jW+RpEhTQVeOJHXXje5a6nqj0CeJExGN+poB7esTmGGSLV52Q7C/
-   7v7o2+T/Z06BykpMB569YcZAyus0wYQHH77OEFEHPQENNG2jkPY2+ZRkQ
-   edP17UrllOycXYpLTyVvg5EjxHfI+BtF9/eITOFoUZNkRfEbvaRlcbDhZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="248910907"
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="248910907"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 07:01:54 -0800
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="484835940"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 07:01:53 -0800
-Date:   Tue, 8 Feb 2022 07:01:44 -0800
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
+        Tue, 8 Feb 2022 10:02:15 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41B2C061576;
+        Tue,  8 Feb 2022 07:02:13 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id DE2981EC053F;
+        Tue,  8 Feb 2022 16:02:07 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644332528;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=PmHLjCv8QPKB/e0+L9sQuWzLs6/HCLu3AQwtoLxemqY=;
+        b=cJ+v1YVsVB5ysTBNNKVmP99U334P0+41QjVaIkHm37ZZu0pzwjEgVIAgukztHCJgE2F/PO
+        hQoUIH1TReaIabKCaPXeoP8tiEZpWM2lFT8soN7USRwTa8yQgE+fdaVrHtV/SUlbm6aVVm
+        K9pkhVbpBPWSCiDhwDpLe4oaZ7nng1U=
+Date:   Tue, 8 Feb 2022 16:02:02 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Michael Roth <michael.roth@amd.com>
+Cc:     Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
         Andy Lutomirski <luto@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <YgKF2NDMURGq1JD1@otcwcpicx3.sc.intel.com>
-References: <20220207230254.3342514-1-fenghua.yu@intel.com>
- <20220207230254.3342514-6-fenghua.yu@intel.com>
- <139b9789-403f-c599-de02-3092847952c0@linux.intel.com>
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: Re: [PATCH v9 33/43] x86/compressed: Add SEV-SNP feature
+ detection/setup
+Message-ID: <YgKF6kzR87WuXj/a@zn.tnic>
+References: <20220128171804.569796-1-brijesh.singh@amd.com>
+ <20220128171804.569796-34-brijesh.singh@amd.com>
+ <Yf/6NhnS50UDv4xV@zn.tnic>
+ <20220208135009.7rfrau33kxivx5h3@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <139b9789-403f-c599-de02-3092847952c0@linux.intel.com>
+In-Reply-To: <20220208135009.7rfrau33kxivx5h3@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 10:41:39AM +0800, Lu Baolu wrote:
-> On 2/8/22 7:02 AM, Fenghua Yu wrote:
-> > PASIDs are process wide. It was attempted to use refcounted PASIDs to
-> > free them when the last thread drops the refcount. This turned out to
-> > be complex and error prone. Given the fact that the PASID space is 20
-> > bits, which allows up to 1M processes to have a PASID associated
-> > concurrently, PASID resource exhaustion is not a realistic concern.
-> > 
-> > Therefore it was decided to simplify the approach and stick with lazy
-> > on demand PASID allocation, but drop the eager free approach and make
-> > a allocated PASID lifetime bound to the life time of the process.
-> > 
-> > Get rid of the refcounting mechanisms and replace/rename the interfaces
-> > to reflect this new approach.
-> > 
-> > Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-> > Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-> > Reviewed-by: Tony Luck <tony.luck@intel.com>
-> > ---
-> > v4:
-> > - Update the commit message (Thomas).
+On Tue, Feb 08, 2022 at 07:50:09AM -0600, Michael Roth wrote:
+> I'm assuming that would be considered 'non-static' since it would need
+> to be exported if sev-shared.c was compiled separately instead of
+> directly #include'd.
+
+No, that one can lose the prefix too. We'll cross that bridge when we
+get to it.
+
+> And then there's also these which are static helpers that are only used
+> within sev-shared.c:
 > 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+>   snp_cpuid_info_get_ptr()
 
-Thank you very much for your review, Baolu!
+So looking at that one - and it felt weird reading that code because it
+said "cpuid_info" but that's not an "info" - that should be:
 
--Fenghua
+struct snp_cpuid_table {
+        u32 count;
+        u32 __reserved1;
+        u64 __reserved2;
+        struct snp_cpuid_fn fn[SNP_CPUID_COUNT_MAX];
+} __packed;
+
+just call it what it is - a SNP CPUID *table*.
+
+And then you can have
+
+	const struct snp_cpuid_table *cpuid_tbl = snp_cpuid_get_table();
+
+and that makes it crystal clear what this does.
+
+>   snp_cpuid_calc_xsave_size()
+>   snp_cpuid_get_validated_func()
+>
+>   snp_cpuid_check_range()
+
+You can merge that small function into its only call site and put a
+comment above the code:
+
+	/* Check function is within the supported CPUID leafs ranges */
+
+>   snp_cpuid_hv()
+>   snp_cpuid_postprocess()
+>   snp_cpuid()
+> 
+> but in those cases it seems useful to keep them grouped under the
+> snp_cpuid_* prefix since they become ambiguous otherwise, and
+> just using cpuid_* as a prefix (or suffix/etc) makes it unclear
+> that they are only used for SNP and not for general CPUID handling.
+> Should we leave those as-is?
+
+Yap, the rest make sense to denote to what functionality they belong to.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
