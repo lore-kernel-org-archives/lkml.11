@@ -2,107 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70851C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:23:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351263AbiBHNWx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:22:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
+        id S236298AbiBHNXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:23:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358860AbiBHMls (ORCPT
+        with ESMTP id S1376443AbiBHNJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:48 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D5BC03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:47 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id r19so2897368pfh.6
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2a4Zov6E++VeMpVDqW+bpg0HKHZjA85AGbm7eJFVTok=;
-        b=UK5/1wa6pFIEPSGIZaow9B/7baK1t3FJYJLgwb//r3zSSqpTXDRnxHEtqo3e0adC3V
-         3aFMXbNUsIQLBfSowdTPw9DEb+wFWm8V8JuIkNw+9K9ajSZSe3Vko+pogXCBEENcmzOi
-         uPGk6nvYOoXU/ewsdDAwwCjd3kCEl8FyF1iks=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2a4Zov6E++VeMpVDqW+bpg0HKHZjA85AGbm7eJFVTok=;
-        b=InYtsej2iY1kEzkdZ7mT2TFZHfA4sn6usFGaBxTFYgefZXWnP8RGz46gUu7w38OZNT
-         AC0bK040Fj7IdPMdhOdIrlSvlSQBAAdstaZtv6cQemRRzCJmu2DIsg8THxGntUStjgI3
-         flSBQZctvoOBQeA2mv3LA8qz2gsbQTeGIqimTdsySi0Xc/w3P2RiQg3NUJwg5rhSWcSJ
-         RIow26qvGFm9itu5Zbm+e4DzEa3d50c1UglexsqgJhfzGfjl84Nx57lqJciARJjpz2i3
-         D0Q/tA63rAyYm3s3CzXodZo9h55M44i60Wb0qPL9/CfjO1KYF8mg3EGzb6lF/C4Tkuib
-         iZXA==
-X-Gm-Message-State: AOAM530AUYcnrgRx2RQSgFo1kEVwDKuFd3c7u6D2bk/Etjp0/Y9U8V5z
-        Vl+OO10HFoaKjWFk/Be9ZqlcRQ==
-X-Google-Smtp-Source: ABdhPJxFX/826gPUwmwjQsBpabmmOS6aCRXpKBLH1nSGwHhUQ3qT7hUm02w9dIiJLfy6PTmB2Rv/SQ==
-X-Received: by 2002:a63:d943:: with SMTP id e3mr3365014pgj.427.1644324107392;
-        Tue, 08 Feb 2022 04:41:47 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:47 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 27/31] clk: mediatek: Unregister clks in mtk_clk_simple_probe() error path
-Date:   Tue,  8 Feb 2022 20:40:30 +0800
-Message-Id: <20220208124034.414635-28-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
+        Tue, 8 Feb 2022 08:09:29 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86045C03FECE;
+        Tue,  8 Feb 2022 05:09:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=vBzNRRge3X1+Mavkxmg8iAd7YgBffeeNExkeU6FzfYg=; b=DoNZOqTyBm6m4hoaTz5lSwxf8I
+        pLSsWzf4vaa2KuXeiUj5jdq1nsWj0ZcSePDcbIPqfyew6H0+Ourt/hD7eE5mval55Zpzoaz8lQTKL
+        JOUkl6p9xkbEPaILcg2oHusNrBAqUA+vrK/uaGhoyyx/Wdj8rzjyt8zFRQLw+Xuh8GRw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nHQF9-004rMM-PX; Tue, 08 Feb 2022 14:09:15 +0100
+Date:   Tue, 8 Feb 2022 14:09:15 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     netdev@vger.kernel.org, olteanv@gmail.com, robh+dt@kernel.org,
+        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v8 net-next 03/10] net: phy: Add support for LAN937x T1
+ phy driver
+Message-ID: <YgJre2C9jpfMCXSZ@lunn.ch>
+References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
+ <20220207172204.589190-4-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207172204.589190-4-prasanna.vengateshan@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Until now the mediatek clk driver library did not have any way to
-unregister clks, and so all drivers did not do proper cleanup in
-their error paths.
+On Mon, Feb 07, 2022 at 10:51:57PM +0530, Prasanna Vengateshan wrote:
+> Added support for Microchip LAN937x T1 phy driver. The sequence of
+> initialization is used commonly for both LAN87xx and LAN937x
+> drivers. The new initialization sequence is an improvement to
+> existing LAN87xx and it is shared with LAN937x.
+> 
+> Also relevant comments are added in the existing code and existing
+> soft-reset customized code has been replaced with
+> genphy_soft_reset().
+> 
+> access_ereg_clr_poll_timeout() API is introduced for polling phy
+> bank write and this is linked with PHYACC_ATTR_MODE_POLL.
+> 
+> Finally introduced function table for LAN937X_T1_PHY_ID along with
+> microchip_t1_phy_driver struct.
 
-Now that the library does have APIs to unregister clks, use them
-in the error path of mtk_clk_simple_probe() to do proper cleanup.
+Hi Prasanna
 
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-mtk.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+That is a lot of changes in one patch.
 
-diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
-index 8f15e9de742e..0e027be0d5fc 100644
---- a/drivers/clk/mediatek/clk-mtk.c
-+++ b/drivers/clk/mediatek/clk-mtk.c
-@@ -439,12 +439,14 @@ int mtk_clk_simple_probe(struct platform_device *pdev)
- 
- 	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
- 	if (r)
--		goto free_data;
-+		goto unregister_clks;
- 
- 	platform_set_drvdata(pdev, clk_data);
- 
- 	return r;
- 
-+unregister_clks:
-+	mtk_clk_unregister_gates(mcd->clks, mcd->num_clks, clk_data);
- free_data:
- 	mtk_free_clk_data(clk_data);
- 	return r;
--- 
-2.35.0.263.gb82422642f-goog
+I would suggest you make this a patch series of its own. It should be
+independent of the switch changes. And then you can break this patch
+up into a number of smaller patches.
 
+Thanks
+	Andrew
