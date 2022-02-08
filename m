@@ -2,81 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D59A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244281AbiBHLe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:34:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38030 "EHLO
+        id S1355470AbiBHLfE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:35:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245094AbiBHLMw (ORCPT
+        with ESMTP id S236598AbiBHLNT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 06:12:52 -0500
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 03:12:51 PST
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1313AC03FEC0;
-        Tue,  8 Feb 2022 03:12:50 -0800 (PST)
-Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
-  by mx.socionext.com with ESMTP; 08 Feb 2022 20:11:46 +0900
-Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id B20DD2006F53;
-        Tue,  8 Feb 2022 20:11:46 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 8 Feb 2022 20:11:46 +0900
-Received: from [10.212.182.146] (unknown [10.212.182.146])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id A4949C1E22;
-        Tue,  8 Feb 2022 20:11:45 +0900 (JST)
-Subject: Re: [PATCH 2/3] PCI: uniphier-ep: Add support for non-legacy SoC
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220204160616.GA183849@bhelgaas>
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Message-ID: <664a23d0-7646-3c50-fe4d-d29b6ce99a35@socionext.com>
-Date:   Tue, 8 Feb 2022 20:11:45 +0900
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Tue, 8 Feb 2022 06:13:19 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AECB3C03FEC0;
+        Tue,  8 Feb 2022 03:13:18 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id z13so640698pfa.3;
+        Tue, 08 Feb 2022 03:13:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=jT1cKosXcRAQ3QgcohgO2Lw1KpFQbKWn6saHhs1RKHA=;
+        b=lj/XmEGsyYOviX8Ubzy8vnxlCH4B3X5gXp8BQ4iYG8FxHjtJqU29xFPQUBNV3uTr8q
+         FyEWO6FAoRy9hFENyGTMdp2oo49IlOk9TmOHenmQXdaKZ4yy3nVgIOtPxUb1B+UJ10f4
+         cdkr1AWz0VfCm9xRKPL7htfXKHMtaCxYkDHzulU21jFlEkmbttO0PDakAsaGqwZHaVpc
+         lClPrf0p4eBUilZdeaJEnhDrtxxWUJxNR/ZS70y8Y0WmBkZj3mZoWDhuUTOwV4jOKiRA
+         ZxX08P7jH8pGt8ccDZR1eg7eBIXleA0IbJH2lmFZIGS5Zy3XG/RX1nfVhdZ5WfMlPbmh
+         eMhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=jT1cKosXcRAQ3QgcohgO2Lw1KpFQbKWn6saHhs1RKHA=;
+        b=z07O4ULcxNTPTCg9t7BKokYFCrqqNdrMhHTltqUDUQwXSRAzyOosVn2QZmxwhOAwnE
+         eiNYQ1LlWSzubHT+5cvSQnR0gPlFF3h2A878XyVSDaxmBYfAYlXNKD9hJ48wwJ6VJ7U7
+         lVbA8eWL1UIl3j/bAOzPgUOOV74moAAhxfi2EQRGwZuatqB/Hjx4PLTNhTyiOmmoAijs
+         /koOOSOZUgjA14gvB0BPSpfB5Up6DJgcYwvhlN8blH8XHjIH6XJCEGw8fOZ7JhIFADdk
+         PMLyLbPqOpIg4RpOmLgzCX/KsapmaYACK78Dm5TXrj8XWNsEiCYPCBxhsJP+m8Zzi63H
+         Z1vQ==
+X-Gm-Message-State: AOAM5318s//PoN6UrvDJ8w3INSugOm5toD3EOT7O5jyY04Nhe/ClUWSJ
+        GcY/8wCIG9ej4p5N/EukfIV/ZJYzY8s=
+X-Google-Smtp-Source: ABdhPJzdPftreTii6GmmT++vd2facGVqjUbf4A6ncaTkAs98QhKLW+qK8LqOjFuc4VSa+LQe0eyH7Q==
+X-Received: by 2002:a63:ad44:: with SMTP id y4mr3097759pgo.160.1644318797989;
+        Tue, 08 Feb 2022 03:13:17 -0800 (PST)
+Received: from [192.168.1.100] ([166.111.139.99])
+        by smtp.gmail.com with ESMTPSA id rj1sm2581464pjb.49.2022.02.08.03.13.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 03:13:17 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     pontus.fuchs@gmail.com, Kalle Valo <kvalo@codeaurora.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: [BUG] ar5523: possible deadlocks involving locking and waiting
+ operations
+Message-ID: <7c9bb278-5042-3bdc-9598-95a10e42f78d@gmail.com>
+Date:   Tue, 8 Feb 2022 19:13:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20220204160616.GA183849@bhelgaas>
-Content-Type: text/plain; charset=gbk; format=flowed
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
+Hello,
 
-Thank you for your comment.
+My static analysis tool reports two possible deadlocks in the ar5523 
+driver in Linux 5.16:
 
-On 2022/02/05 1:06, Bjorn Helgaas wrote:
-> On Thu, Feb 03, 2022 at 11:36:25AM +0900, Kunihiko Hayashi wrote:
->> Define SoC data that includes pci_epc_features and boolean 'is_legacy'
->> to distinguish between legacy SoC (ex. Pro5) and non-legacy SoC.
-> 
-> I'm not a big fan of "legacy" as a description because it conveys very
-> little information.  You're adding support for a "non-legacy" SoC, so
-> now there are "legacy" ones and "non-legacy" ones.  Next year there
-> will be another new SoC, and then there will be *two* kinds of
-> "legacy" ones that must be distinguished plus the next "non-legacy"
-> one.
+#BUG 1
+ar5523_hwconfig()
+   mutex_lock(&ar->mutex); --> Line 1135 (Lock A)
+   ar5523_flush_tx()
+     wait_event_timeout(ar->tx_flush_waitq, ...) --> Line 926 (Wait X)
 
-Make sense. There will be multiple different "legacy", so it isn't
-desirable to distinguish SoCs by legacy and non-legacy.
+ar5523_tx_work()
+   mutex_lock(&ar->mutex); --> Line 888 (Lock A)
+   ar5523_tx_work_locked()
+     ar5523_data_tx_pkt_put()
+       wake_up(&ar->tx_flush_waitq); --> Line 727 (Wake X)
 
-> You mentioned "Pro5" as an example of "legacy," which is a good start.
-> Are there any others?  If Pro5 is the only one, you could just use
-> "pro5" where you now use "legacy."
-I see. In consideration of the future, I'll define callback functions
-and prepare functions for each SoC.
-And the "gio" clocks/resets are distinguished by the flag "has_gio".
+#BUG 2
+ar5523_configure_filter()
+   mutex_lock(&ar->mutex); --> Line 1331 (Lock A)
+   ar5523_flush_tx()
+     wait_event_timeout(ar->tx_flush_waitq, ...) --> Line 926 (Wait X)
 
-Thank you,
+ar5523_tx_work()
+   mutex_lock(&ar->mutex); --> Line 888 (Lock A)
+   ar5523_tx_work_locked()
+     ar5523_data_tx_pkt_put()
+       wake_up(&ar->tx_flush_waitq); --> Line 727 (Wake X)
 
----
-Best Regards
-Kunihiko Hayashi
+When ar5523_hwconfig()/ar5523_configure_filter() is executed, "Wait X" 
+is performed by holding "Lock A". If ar5523_tx_work() is executed at 
+this time, "Wake X" cannot be performed to wake up "Wait X", because 
+"Lock A" has been already held, causing possible deadlock.
+I find that "Wait X" is performed with a timeout, to relieve the 
+possible deadlocks; but I think this timeout can cause inefficient 
+execution.
+
+I am not quite sure whether these possible problems are real.
+Any feedback would be appreciated, thanks :)
+
+
+Best wishes,
+Jia-Ju Bai
