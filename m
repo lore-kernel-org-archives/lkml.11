@@ -2,586 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B8B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C2B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345067AbiBHBu1 (ORCPT
+        id S1344590AbiBHBub (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:50:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58826 "EHLO
+        Mon, 7 Feb 2022 20:50:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241704AbiBHB1l (ORCPT
+        with ESMTP id S1344883AbiBHBm1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:27:41 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17925C061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:27:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644283660; x=1675819660;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xFxV3FwAnpydDENbVAtQKuNvQsT3jO7UeOEfBjt59z0=;
-  b=Slu40mNBJbc18v1yI4hMuMW3BYmt8tR76OGjlXFpuJFgoKlXWYPWhH/9
-   8KsodfIgTVVmgG65iKpYy9XN+nAKKfwx8MJIeDkjhgZN4SStk7dxaNXk3
-   DoLI72CbCXfPy6CycioYhf8/DRbRIQZIQmtJ9YIpZcWcjvniS0iPrvPX6
-   aKOxRfGYeJBO1QDhn7yxrqQ6NklR/f6Ceu2zgU4UXfyeyqe3xbni89i++
-   b1TulW67LIzgdiOZwmZ90MgnUHJ9+HKKP5V6/t2DG+y63Zhg6nSLT1m59
-   QABuxWa4OIsNkfBEMVSIGIt/7LQ0d5fxu3DaVzV1Et7gHBlWjHN50f2Tk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="236251959"
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="236251959"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 17:27:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="677948819"
-Received: from allen-box.sh.intel.com ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 07 Feb 2022 17:27:35 -0800
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v2 03/10] iommu/vt-d: Remove aux-domain related callbacks
-Date:   Tue,  8 Feb 2022 09:25:52 +0800
-Message-Id: <20220208012559.1121729-4-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
-References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
+        Mon, 7 Feb 2022 20:42:27 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE64C061A73;
+        Mon,  7 Feb 2022 17:42:25 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id g8so6299030pfq.9;
+        Mon, 07 Feb 2022 17:42:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ERgffSEEPMLOF4G7ZYojvcW38QDY6fucM35wyOznqkc=;
+        b=K/Ew1OAJMRm0RkQoio72L75verKVe0mAGhqnut8B94/tnHyzTlON8O9FmqZODYWXrM
+         F7ncbAMwYF1FfB0kRTROHnTt1yhnmnpNknHY1xzds9BujqRfHhBhVWg2QFsd+bOKkfP+
+         v3mYVJA5QZuW5Ka6+fEr14Alf7luEKUMG6zXov4NB00gU9++bqRn/hKCnLzRMonOxsl+
+         iF0HepvNE0ND/hHDUpkm8RqkhepeSnHCLkigmDExeAWE14vidYkca4n1C5UPswi1xHvj
+         zZ3pW1Gso7mLzV9nKBDnXAVBb5Sa4ziPbJO4cea+sabcCh2fOOrySTInoaFItHqxjO1p
+         9Plg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ERgffSEEPMLOF4G7ZYojvcW38QDY6fucM35wyOznqkc=;
+        b=NgdVYbnTbA86tgG+hKOyRRTgFDlInuxSwOiOMygXipID9qzV7Tmd1ZnD38rW6GwfE3
+         DWj6woy9vgOnEx2EJ8F4J9lWQKwEtMgtuZI0ntC1ZXHOgkHCHr7WoxeR8rVprMkLhkjY
+         ax22IyfMmUeUjSb2Avac2LDnW0Hipiei4122anOylYpZeo8qb1xpQAzZs5QkWRvu+9Jr
+         elcArbS0ETGc3IWvGv42mSPdmgYbGNYePIZIFXY6s27ZVRvij2YHrEChLNnyJNTzIoJB
+         RA76jpH3ABEetj5pYcEIyr1CZ/Np3Ls6VozIlXojXqVxqiRGeN7V0RSKgFoMx55mgRaL
+         wUfg==
+X-Gm-Message-State: AOAM531s/WzhciyR/eupRpOe82ODy34ArxpFcuHZLmBJmQm2l2BG6hgG
+        nGXlHvggqU4ormNZBr5gLqjCfO9VyQY=
+X-Google-Smtp-Source: ABdhPJzBMUGlrinPYhS7qO91vdKuoMmKA6EhpqQRC/TwKj+cCfAyp2TrpLsIw6K7g/m3ifpWX1USpg==
+X-Received: by 2002:a05:6a00:158c:: with SMTP id u12mr2152508pfk.18.1644284544759;
+        Mon, 07 Feb 2022 17:42:24 -0800 (PST)
+Received: from shinobu (113x37x72x24.ap113.ftth.ucom.ne.jp. [113.37.72.24])
+        by smtp.gmail.com with ESMTPSA id d20sm13411388pfu.9.2022.02.07.17.42.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 17:42:24 -0800 (PST)
+Date:   Tue, 8 Feb 2022 10:42:18 +0900
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     linux-iio@vger.kernel.org,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-kernel@vger.kernel.org,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH] counter: Stop using dev_get_drvdata() to get the counter
+ device
+Message-ID: <YgHKekl9rJ2jH5j4@shinobu>
+References: <YfzPcyusGwAOkys6@shinobu>
+ <20220204082556.370348-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3c1sPSk/V9KyhHkf"
+Content-Disposition: inline
+In-Reply-To: <20220204082556.370348-1-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The aux-domain related callbacks are not called in the tree. Remove them
-to avoid dead code.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
----
- include/linux/intel-iommu.h   |  17 --
- drivers/iommu/intel/debugfs.c |   3 +-
- drivers/iommu/intel/iommu.c   | 309 +---------------------------------
- 3 files changed, 3 insertions(+), 326 deletions(-)
+--3c1sPSk/V9KyhHkf
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index beaacb589abd..5cfda90b2cca 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -542,7 +542,6 @@ struct dmar_domain {
- 	u8 iommu_snooping: 1;		/* indicate snooping control feature */
- 
- 	struct list_head devices;	/* all devices' list */
--	struct list_head subdevices;	/* all subdevices' list */
- 	struct iova_domain iovad;	/* iova's that belong to this domain */
- 
- 	struct dma_pte	*pgd;		/* virtual address */
-@@ -557,11 +556,6 @@ struct dmar_domain {
- 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
- 	u64		max_addr;	/* maximum mapped address */
- 
--	u32		default_pasid;	/*
--					 * The default pasid used for non-SVM
--					 * traffic on mediated devices.
--					 */
--
- 	struct iommu_domain domain;	/* generic domain data structure for
- 					   iommu core */
- };
-@@ -614,21 +608,11 @@ struct intel_iommu {
- 	void *perf_statistic;
- };
- 
--/* Per subdevice private data */
--struct subdev_domain_info {
--	struct list_head link_phys;	/* link to phys device siblings */
--	struct list_head link_domain;	/* link to domain siblings */
--	struct device *pdev;		/* physical device derived from */
--	struct dmar_domain *domain;	/* aux-domain */
--	int users;			/* user count */
--};
--
- /* PCI domain-device relationship */
- struct device_domain_info {
- 	struct list_head link;	/* link to domain siblings */
- 	struct list_head global; /* link to global list */
- 	struct list_head table;	/* link to pasid table */
--	struct list_head subdevices; /* subdevices sibling */
- 	u32 segment;		/* PCI segment number */
- 	u8 bus;			/* PCI bus number */
- 	u8 devfn;		/* PCI devfn number */
-@@ -639,7 +623,6 @@ struct device_domain_info {
- 	u8 pri_enabled:1;
- 	u8 ats_supported:1;
- 	u8 ats_enabled:1;
--	u8 auxd_enabled:1;	/* Multiple domains per device */
- 	u8 ats_qdep;
- 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
- 	struct intel_iommu *iommu; /* IOMMU used by this device */
-diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
-index 62e23ff3c987..db7a0ca73626 100644
---- a/drivers/iommu/intel/debugfs.c
-+++ b/drivers/iommu/intel/debugfs.c
-@@ -351,8 +351,7 @@ static int show_device_domain_translation(struct device *dev, void *data)
- 	if (!domain)
- 		return 0;
- 
--	seq_printf(m, "Device %s with pasid %d @0x%llx\n",
--		   dev_name(dev), domain->default_pasid,
-+	seq_printf(m, "Device %s @0x%llx\n", dev_name(dev),
- 		   (u64)virt_to_phys(domain->pgd));
- 	seq_puts(m, "IOVA_PFN\t\tPML5E\t\t\tPML4E\t\t\tPDPE\t\t\tPDE\t\t\tPTE\n");
- 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 4f9d95067c8f..2b5f4e57a8bb 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1573,18 +1573,6 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- 			break;
- 		}
- 
--	if (!has_iotlb_device) {
--		struct subdev_domain_info *sinfo;
--
--		list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
--			info = get_domain_info(sinfo->pdev);
--			if (info && info->ats_enabled) {
--				has_iotlb_device = true;
--				break;
--			}
--		}
--	}
--
- 	domain->has_iotlb_device = has_iotlb_device;
- }
- 
-@@ -1682,7 +1670,6 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- {
- 	unsigned long flags;
- 	struct device_domain_info *info;
--	struct subdev_domain_info *sinfo;
- 
- 	if (!domain->has_iotlb_device)
- 		return;
-@@ -1691,27 +1678,9 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 	list_for_each_entry(info, &domain->devices, link)
- 		__iommu_flush_dev_iotlb(info, addr, mask);
- 
--	list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
--		info = get_domain_info(sinfo->pdev);
--		__iommu_flush_dev_iotlb(info, addr, mask);
--	}
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- }
- 
--static void domain_flush_piotlb(struct intel_iommu *iommu,
--				struct dmar_domain *domain,
--				u64 addr, unsigned long npages, bool ih)
--{
--	u16 did = domain->iommu_did[iommu->seq_id];
--
--	if (domain->default_pasid)
--		qi_flush_piotlb(iommu, did, domain->default_pasid,
--				addr, npages, ih);
--
--	if (!list_empty(&domain->devices))
--		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr, npages, ih);
--}
--
- static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 				  struct dmar_domain *domain,
- 				  unsigned long pfn, unsigned int pages,
-@@ -1727,7 +1696,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 		ih = 1 << 6;
- 
- 	if (domain_use_first_level(domain)) {
--		domain_flush_piotlb(iommu, domain, addr, pages, ih);
-+		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr, pages, ih);
- 	} else {
- 		/*
- 		 * Fallback to domain selective flush if no PSI support or
-@@ -1776,7 +1745,7 @@ static void intel_flush_iotlb_all(struct iommu_domain *domain)
- 		u16 did = dmar_domain->iommu_did[iommu->seq_id];
- 
- 		if (domain_use_first_level(dmar_domain))
--			domain_flush_piotlb(iommu, dmar_domain, 0, -1, 0);
-+			qi_flush_piotlb(iommu, did, PASID_RID2PASID, 0, -1, 0);
- 		else
- 			iommu->flush.flush_iotlb(iommu, did, 0, 0,
- 						 DMA_TLB_DSI_FLUSH);
-@@ -1983,7 +1952,6 @@ static struct dmar_domain *alloc_domain(unsigned int type)
- 		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
- 	domain->has_iotlb_device = false;
- 	INIT_LIST_HEAD(&domain->devices);
--	INIT_LIST_HEAD(&domain->subdevices);
- 
- 	return domain;
- }
-@@ -2676,8 +2644,6 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	info->domain = domain;
- 	info->iommu = iommu;
- 	info->pasid_table = NULL;
--	info->auxd_enabled = 0;
--	INIT_LIST_HEAD(&info->subdevices);
- 
- 	if (dev && dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(info->dev);
-@@ -4637,183 +4603,6 @@ static void intel_iommu_domain_free(struct iommu_domain *domain)
- 		domain_exit(to_dmar_domain(domain));
- }
- 
--/*
-- * Check whether a @domain could be attached to the @dev through the
-- * aux-domain attach/detach APIs.
-- */
--static inline bool
--is_aux_domain(struct device *dev, struct iommu_domain *domain)
--{
--	struct device_domain_info *info = get_domain_info(dev);
--
--	return info && info->auxd_enabled &&
--			domain->type == IOMMU_DOMAIN_UNMANAGED;
--}
--
--static inline struct subdev_domain_info *
--lookup_subdev_info(struct dmar_domain *domain, struct device *dev)
--{
--	struct subdev_domain_info *sinfo;
--
--	if (!list_empty(&domain->subdevices)) {
--		list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
--			if (sinfo->pdev == dev)
--				return sinfo;
--		}
--	}
--
--	return NULL;
--}
--
--static int auxiliary_link_device(struct dmar_domain *domain,
--				 struct device *dev)
--{
--	struct device_domain_info *info = get_domain_info(dev);
--	struct subdev_domain_info *sinfo = lookup_subdev_info(domain, dev);
--
--	assert_spin_locked(&device_domain_lock);
--	if (WARN_ON(!info))
--		return -EINVAL;
--
--	if (!sinfo) {
--		sinfo = kzalloc(sizeof(*sinfo), GFP_ATOMIC);
--		if (!sinfo)
--			return -ENOMEM;
--		sinfo->domain = domain;
--		sinfo->pdev = dev;
--		list_add(&sinfo->link_phys, &info->subdevices);
--		list_add(&sinfo->link_domain, &domain->subdevices);
--	}
--
--	return ++sinfo->users;
--}
--
--static int auxiliary_unlink_device(struct dmar_domain *domain,
--				   struct device *dev)
--{
--	struct device_domain_info *info = get_domain_info(dev);
--	struct subdev_domain_info *sinfo = lookup_subdev_info(domain, dev);
--	int ret;
--
--	assert_spin_locked(&device_domain_lock);
--	if (WARN_ON(!info || !sinfo || sinfo->users <= 0))
--		return -EINVAL;
--
--	ret = --sinfo->users;
--	if (!ret) {
--		list_del(&sinfo->link_phys);
--		list_del(&sinfo->link_domain);
--		kfree(sinfo);
--	}
--
--	return ret;
--}
--
--static int aux_domain_add_dev(struct dmar_domain *domain,
--			      struct device *dev)
--{
--	int ret;
--	unsigned long flags;
--	struct intel_iommu *iommu;
--
--	iommu = device_to_iommu(dev, NULL, NULL);
--	if (!iommu)
--		return -ENODEV;
--
--	if (domain->default_pasid <= 0) {
--		u32 pasid;
--
--		/* No private data needed for the default pasid */
--		pasid = ioasid_alloc(NULL, PASID_MIN,
--				     pci_max_pasids(to_pci_dev(dev)) - 1,
--				     NULL);
--		if (pasid == INVALID_IOASID) {
--			pr_err("Can't allocate default pasid\n");
--			return -ENODEV;
--		}
--		domain->default_pasid = pasid;
--	}
--
--	spin_lock_irqsave(&device_domain_lock, flags);
--	ret = auxiliary_link_device(domain, dev);
--	if (ret <= 0)
--		goto link_failed;
--
--	/*
--	 * Subdevices from the same physical device can be attached to the
--	 * same domain. For such cases, only the first subdevice attachment
--	 * needs to go through the full steps in this function. So if ret >
--	 * 1, just goto out.
--	 */
--	if (ret > 1)
--		goto out;
--
--	/*
--	 * iommu->lock must be held to attach domain to iommu and setup the
--	 * pasid entry for second level translation.
--	 */
--	spin_lock(&iommu->lock);
--	ret = domain_attach_iommu(domain, iommu);
--	if (ret)
--		goto attach_failed;
--
--	/* Setup the PASID entry for mediated devices: */
--	if (domain_use_first_level(domain))
--		ret = domain_setup_first_level(iommu, domain, dev,
--					       domain->default_pasid);
--	else
--		ret = intel_pasid_setup_second_level(iommu, domain, dev,
--						     domain->default_pasid);
--	if (ret)
--		goto table_failed;
--
--	spin_unlock(&iommu->lock);
--out:
--	spin_unlock_irqrestore(&device_domain_lock, flags);
--
--	return 0;
--
--table_failed:
--	domain_detach_iommu(domain, iommu);
--attach_failed:
--	spin_unlock(&iommu->lock);
--	auxiliary_unlink_device(domain, dev);
--link_failed:
--	spin_unlock_irqrestore(&device_domain_lock, flags);
--	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
--		ioasid_put(domain->default_pasid);
--
--	return ret;
--}
--
--static void aux_domain_remove_dev(struct dmar_domain *domain,
--				  struct device *dev)
--{
--	struct device_domain_info *info;
--	struct intel_iommu *iommu;
--	unsigned long flags;
--
--	if (!is_aux_domain(dev, &domain->domain))
--		return;
--
--	spin_lock_irqsave(&device_domain_lock, flags);
--	info = get_domain_info(dev);
--	iommu = info->iommu;
--
--	if (!auxiliary_unlink_device(domain, dev)) {
--		spin_lock(&iommu->lock);
--		intel_pasid_tear_down_entry(iommu, dev,
--					    domain->default_pasid, false);
--		domain_detach_iommu(domain, iommu);
--		spin_unlock(&iommu->lock);
--	}
--
--	spin_unlock_irqrestore(&device_domain_lock, flags);
--
--	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
--		ioasid_put(domain->default_pasid);
--}
--
- static int prepare_domain_attach_device(struct iommu_domain *domain,
- 					struct device *dev)
- {
-@@ -4866,9 +4655,6 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 		return -EPERM;
- 	}
- 
--	if (is_aux_domain(dev, domain))
--		return -EPERM;
--
- 	/* normally dev is not mapped */
- 	if (unlikely(domain_context_mapped(dev))) {
- 		struct dmar_domain *old_domain;
-@@ -4885,33 +4671,12 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 	return domain_add_dev_info(to_dmar_domain(domain), dev);
- }
- 
--static int intel_iommu_aux_attach_device(struct iommu_domain *domain,
--					 struct device *dev)
--{
--	int ret;
--
--	if (!is_aux_domain(dev, domain))
--		return -EPERM;
--
--	ret = prepare_domain_attach_device(domain, dev);
--	if (ret)
--		return ret;
--
--	return aux_domain_add_dev(to_dmar_domain(domain), dev);
--}
--
- static void intel_iommu_detach_device(struct iommu_domain *domain,
- 				      struct device *dev)
- {
- 	dmar_remove_one_dev_info(dev);
- }
- 
--static void intel_iommu_aux_detach_device(struct iommu_domain *domain,
--					  struct device *dev)
--{
--	aux_domain_remove_dev(to_dmar_domain(domain), dev);
--}
--
- static int intel_iommu_map(struct iommu_domain *domain,
- 			   unsigned long iova, phys_addr_t hpa,
- 			   size_t size, int iommu_prot, gfp_t gfp)
-@@ -5205,46 +4970,6 @@ static struct iommu_group *intel_iommu_device_group(struct device *dev)
- 	return generic_device_group(dev);
- }
- 
--static int intel_iommu_enable_auxd(struct device *dev)
--{
--	struct device_domain_info *info;
--	struct intel_iommu *iommu;
--	unsigned long flags;
--	int ret;
--
--	iommu = device_to_iommu(dev, NULL, NULL);
--	if (!iommu || dmar_disabled)
--		return -EINVAL;
--
--	if (!sm_supported(iommu) || !pasid_supported(iommu))
--		return -EINVAL;
--
--	ret = intel_iommu_enable_pasid(iommu, dev);
--	if (ret)
--		return -ENODEV;
--
--	spin_lock_irqsave(&device_domain_lock, flags);
--	info = get_domain_info(dev);
--	info->auxd_enabled = 1;
--	spin_unlock_irqrestore(&device_domain_lock, flags);
--
--	return 0;
--}
--
--static int intel_iommu_disable_auxd(struct device *dev)
--{
--	struct device_domain_info *info;
--	unsigned long flags;
--
--	spin_lock_irqsave(&device_domain_lock, flags);
--	info = get_domain_info(dev);
--	if (!WARN_ON(!info))
--		info->auxd_enabled = 0;
--	spin_unlock_irqrestore(&device_domain_lock, flags);
--
--	return 0;
--}
--
- static int intel_iommu_enable_sva(struct device *dev)
- {
- 	struct device_domain_info *info = get_domain_info(dev);
-@@ -5301,9 +5026,6 @@ static int
- intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
- {
- 	switch (feat) {
--	case IOMMU_DEV_FEAT_AUX:
--		return intel_iommu_enable_auxd(dev);
--
- 	case IOMMU_DEV_FEAT_IOPF:
- 		return intel_iommu_enable_iopf(dev);
- 
-@@ -5319,9 +5041,6 @@ static int
- intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
- {
- 	switch (feat) {
--	case IOMMU_DEV_FEAT_AUX:
--		return intel_iommu_disable_auxd(dev);
--
- 	case IOMMU_DEV_FEAT_IOPF:
- 		return 0;
- 
-@@ -5333,26 +5052,6 @@ intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
- 	}
- }
- 
--static bool
--intel_iommu_dev_feat_enabled(struct device *dev, enum iommu_dev_features feat)
--{
--	struct device_domain_info *info = get_domain_info(dev);
--
--	if (feat == IOMMU_DEV_FEAT_AUX)
--		return scalable_mode_support() && info && info->auxd_enabled;
--
--	return false;
--}
--
--static int
--intel_iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
--{
--	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
--
--	return dmar_domain->default_pasid > 0 ?
--			dmar_domain->default_pasid : -EINVAL;
--}
--
- static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
- 					   struct device *dev)
- {
-@@ -5397,9 +5096,6 @@ const struct iommu_ops intel_iommu_ops = {
- 	.domain_free		= intel_iommu_domain_free,
- 	.attach_dev		= intel_iommu_attach_device,
- 	.detach_dev		= intel_iommu_detach_device,
--	.aux_attach_dev		= intel_iommu_aux_attach_device,
--	.aux_detach_dev		= intel_iommu_aux_detach_device,
--	.aux_get_pasid		= intel_iommu_aux_get_pasid,
- 	.map_pages		= intel_iommu_map_pages,
- 	.unmap_pages		= intel_iommu_unmap_pages,
- 	.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
-@@ -5412,7 +5108,6 @@ const struct iommu_ops intel_iommu_ops = {
- 	.get_resv_regions	= intel_iommu_get_resv_regions,
- 	.put_resv_regions	= generic_iommu_put_resv_regions,
- 	.device_group		= intel_iommu_device_group,
--	.dev_feat_enabled	= intel_iommu_dev_feat_enabled,
- 	.dev_enable_feat	= intel_iommu_dev_enable_feat,
- 	.dev_disable_feat	= intel_iommu_dev_disable_feat,
- 	.is_attach_deferred	= intel_iommu_is_attach_deferred,
--- 
-2.25.1
+On Fri, Feb 04, 2022 at 09:25:56AM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> dev_get_drvdata() returns NULL since commit b56346ddbd82 ("counter: Use
+> container_of instead of drvdata to track counter_device") which wrongly
+> claimed there were no users of drvdata. Convert to container_of() to
+> fix a null pointer dereference.
+>=20
+> Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Fixes: b56346ddbd82 ("counter: Use container_of instead of drvdata to tra=
+ck counter_device")
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 
+I'll pick this up and apply it to my tree.
+
+Thanks,
+
+William Breathitt Gray
+
+> ---
+>  drivers/counter/counter-sysfs.c | 17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/counter/counter-sysfs.c b/drivers/counter/counter-sy=
+sfs.c
+> index 7cc4d1d523ea..04eac41dad33 100644
+> --- a/drivers/counter/counter-sysfs.c
+> +++ b/drivers/counter/counter-sysfs.c
+> @@ -19,6 +19,11 @@
+> =20
+>  #include "counter-sysfs.h"
+> =20
+> +static inline struct counter_device *counter_from_dev(struct device *dev)
+> +{
+> +	return container_of(dev, struct counter_device, dev);
+> +}
+> +
+>  /**
+>   * struct counter_attribute - Counter sysfs attribute
+>   * @dev_attr:	device attribute for sysfs
+> @@ -90,7 +95,7 @@ static ssize_t counter_comp_u8_show(struct device *dev,
+>  				    struct device_attribute *attr, char *buf)
+>  {
+>  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
+> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
+> +	struct counter_device *const counter =3D counter_from_dev(dev);
+>  	int err;
+>  	u8 data =3D 0;
+> =20
+> @@ -122,7 +127,7 @@ static ssize_t counter_comp_u8_store(struct device *d=
+ev,
+>  				     const char *buf, size_t len)
+>  {
+>  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
+> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
+> +	struct counter_device *const counter =3D counter_from_dev(dev);
+>  	int err;
+>  	bool bool_data =3D 0;
+>  	u8 data =3D 0;
+> @@ -158,7 +163,7 @@ static ssize_t counter_comp_u32_show(struct device *d=
+ev,
+>  				     struct device_attribute *attr, char *buf)
+>  {
+>  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
+> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
+> +	struct counter_device *const counter =3D counter_from_dev(dev);
+>  	const struct counter_available *const avail =3D a->comp.priv;
+>  	int err;
+>  	u32 data =3D 0;
+> @@ -221,7 +226,7 @@ static ssize_t counter_comp_u32_store(struct device *=
+dev,
+>  				      const char *buf, size_t len)
+>  {
+>  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
+> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
+> +	struct counter_device *const counter =3D counter_from_dev(dev);
+>  	struct counter_count *const count =3D a->parent;
+>  	struct counter_synapse *const synapse =3D a->comp.priv;
+>  	const struct counter_available *const avail =3D a->comp.priv;
+> @@ -281,7 +286,7 @@ static ssize_t counter_comp_u64_show(struct device *d=
+ev,
+>  				     struct device_attribute *attr, char *buf)
+>  {
+>  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
+> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
+> +	struct counter_device *const counter =3D counter_from_dev(dev);
+>  	int err;
+>  	u64 data =3D 0;
+> =20
+> @@ -309,7 +314,7 @@ static ssize_t counter_comp_u64_store(struct device *=
+dev,
+>  				      const char *buf, size_t len)
+>  {
+>  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
+> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
+> +	struct counter_device *const counter =3D counter_from_dev(dev);
+>  	int err;
+>  	u64 data =3D 0;
+> =20
+>=20
+> base-commit: e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+> --=20
+> 2.34.1
+>=20
+
+--3c1sPSk/V9KyhHkf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmIBynoACgkQhvpINdm7
+VJLqTBAA3J43JaLbnlYQQ3Mn19/LJiIcHZtxbbHnK8eoOuTLJdALEfHllZD95xe1
+liOz7WRh9fSKcMNna392DMKGLUrofvoi+RIxFNePDCpQfEPj9+1W2veb9SL+4kz9
+v3wI/3o1iFKn+U2ZUXh3egGyCoOLtDa0r4a6Jr7IRNBe2whvnWJrLwaP9DYuH28D
+SnkLNYENIjarUmlr61ybKRAYQjVUTM2okKLMIRaNsA6A24UdzmvgSV4Wu7SD8Jm/
+G52W6ceQy9JK9k7NHGmSD1AJTHf9fkhrYXkmawJrbrOdJgn77Wckr6HjS2j/wQmF
+Czg59/n8fgDB3V/agHolLKkk9G9naO46HbXUOVOnePVCpvh8NGz9GwuDDg+EjsaG
+netNzXiqSZb7qeGhDDr/d1fO52GfZrsX4jOJWjbhHLNlogDwhCnNSEBT2GbzguEA
+Wxr+r52WXoQ9fE/AW2ScC8eFEreZy1PFfXPAzFwGeIAllhJArPkQE3oIkGOdgaB6
+vCDFrTB7NL9mW09Uc7jR+1aQ7MrOEw82ymiXgAeRsqd9ActLYmvjMs1C8MsuJDcl
+aMkgqrJcGnrAUfvu8jJYvfKHsYuuJhvEFpmHMl17aWFVPYDoTfGFWfFb/7JKE/8o
+xLjJjr/ulxr4S5p5AQ6HxmgQQsRiptAtWdc4TDcAu8ZNiG3Vv6E=
+=wD26
+-----END PGP SIGNATURE-----
+
+--3c1sPSk/V9KyhHkf--
