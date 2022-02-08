@@ -2,434 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA107C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:29:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E68BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354705AbiBHN3i (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:29:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53272 "EHLO
+        id S229829AbiBHN35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:29:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358161AbiBHN27 (ORCPT
+        with ESMTP id S1356765AbiBHN3j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:28:59 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C215AC03E90D
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:25:41 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id i17so7211006lfg.11
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:25:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lny4ffeOmlAWmAhhC6w2MPb+qvylm9VN3ou4FJF3FSg=;
-        b=VirhubwIxhdEGMhodDk5heZJzVB9TwaU53Glaxv1T4m4hj3BRsGW2kAYXgr501KNYy
-         9h9t+PsxWqNPSyOif6GQN20ZewpkPxf/xFcEzZGF7Q6WbFh0z7HNmbCa6z8pPPKrb4dY
-         ANRn72yJKENQLCGcDrBQ1D1wIk91MmGbUaTUspgG4bCZsSm+CEdCnniT8aIjZBXTuxiv
-         J7PIUbhaeadIMiFCxXevHGKKD/0Wy3ivoFI42MafrI56DnwyWi6ECtx55hwIZTdIf7oO
-         rfRbSIfoqGLiJ8wiMWeFI7DCasHclVX0qEhnbrIxRhuuynv67lKAVDZi4OixMwH5m8Dq
-         YzaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lny4ffeOmlAWmAhhC6w2MPb+qvylm9VN3ou4FJF3FSg=;
-        b=cJi3TNZF8JX6NLv9OMn8Y9JiAX/hmeFBLjf8Hclm06qdvw9xLxaw5cXWIbsU+jvG0k
-         3ZoWVyTOYSq4/OOLouNIrqWcVK3+KSeXZcWl3ENypEWa7O3svupjVfDQfpns4sv13N/E
-         gatzjjVTCPVsP/at0q9eLYPPx7VYtAWbGaRE2ZsTn/jm44m9AY5zWgbSR0hVbDvbKvBH
-         DLIbEs36cVk/BdNqqIhmtTXjhyIn13WQcamKlcjHwg+5BYNJiYvf8mL9O1+umXoq3amg
-         CKKeWi8nb/tbjtLhMVrw6VLmktvItJ4x+kYEySscFmH3LWnB0sUwlomnssClRri4BHwU
-         4WNw==
-X-Gm-Message-State: AOAM533zHgCzDSSrnLNsOYK8GaukqPRDSsJ9U9rNsQz3ZWd0HEBlUsTe
-        q6Vd+0MSsnSR8mr2Uouo6kD/YCFH2fDUg+1+y9hiBQ==
-X-Google-Smtp-Source: ABdhPJyJ6T3HU6OfDNL2sbGfrmpzh/eSy47DFkiQaOugIQYubbrvneRYk88T5Q0+nDcL0tq7IldBBWoSHcjwbnS8SMA=
-X-Received: by 2002:a05:6512:33c8:: with SMTP id d8mr2975541lfg.41.1644326739962;
- Tue, 08 Feb 2022 05:25:39 -0800 (PST)
+        Tue, 8 Feb 2022 08:29:39 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D57C03C1B8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:27:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644326858; x=1675862858;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=E0fRGxEtVkvT2lzqv/+khnEIYsQeeeV/q/5k7RPHcpo=;
+  b=UE1OT6burG/wUDAwTL1dCrX1fF6JvK7P8bG9m9xq2+hedYWNcr9fm6Gv
+   0pVWtTl+k3pj8a7m981lHHDQuxC2zyvTaUvUMKBuKX9bBfiEJMEc8Sag7
+   FlGfXalgiyQn/wkqNoyyHyQ/R9l1yKw+p+uYYN1A1f3flHLnD7qsvKTVF
+   0Z7zfZ7DSFoYVVCtPr8VV4rKTZkSqX8FfVpnp7QFej4ue1Sdu8R5dSCGj
+   e1y7lO7iqUc+UFRY+VkpeDNHzDentJLVseHKLaS5cRa4a8Chno8N4kdYB
+   da5xopDHDgDajmzmLG8GMl4M3gN328HbeIRBed7epIKWRe6yLPctBQfWq
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="228914040"
+X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
+   d="scan'208";a="228914040"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 05:27:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
+   d="scan'208";a="484810419"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 08 Feb 2022 05:27:36 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nHQWt-0000Ez-NO; Tue, 08 Feb 2022 13:27:35 +0000
+Date:   Tue, 8 Feb 2022 21:27:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guixin Liu <kanie@linux.alibaba.com>, gregkh@linuxfoundation.org
+Cc:     kbuild-all@lists.01.org, xiaoguang.wang@linux.alibaba.com,
+        xlpang@linux.alibaba.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] uio: Replace mutex info_lock with percpu_ref to improve
+ performance
+Message-ID: <202202082111.R18zUEHK-lkp@intel.com>
+References: <1644304760-11862-1-git-send-email-kanie@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220126114452.692512-1-apatel@ventanamicro.com>
- <20220126114452.692512-9-apatel@ventanamicro.com> <CAJF2gTQsSn1KBgX2bg2LiSUbCmbGD3oF5KcmK5gq2Dd49BWDBQ@mail.gmail.com>
- <CAAhSdy3Dkv6ga0ZMp5rMFa8nV9EDHgOMBwuJ4z4-w52T8EaUag@mail.gmail.com> <CAJF2gTSLmBcgUUE3VGsEq0JCWV74Yy-pkduS66rk=VPVwxk59g@mail.gmail.com>
-In-Reply-To: <CAJF2gTSLmBcgUUE3VGsEq0JCWV74Yy-pkduS66rk=VPVwxk59g@mail.gmail.com>
-From:   Anup Patel <apatel@ventanamicro.com>
-Date:   Tue, 8 Feb 2022 18:55:28 +0530
-Message-ID: <CAK9=C2WqczG=tH1u9zcLt7Em+fPD1ZZwtDhf1yHJ70-o-HL8OQ@mail.gmail.com>
-Subject: Re: [PATCH v10 8/8] RISC-V: Enable RISC-V SBI CPU Idle driver for
- QEMU virt machine
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Anup Patel <anup@brainfault.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Sandeep Tripathy <milun.tripathy@gmail.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Liush <liush@allwinnertech.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        kvm-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644304760-11862-1-git-send-email-kanie@linux.alibaba.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 3:47 PM Guo Ren <guoren@kernel.org> wrote:
->
-> On Tue, Feb 8, 2022 at 4:54 PM Anup Patel <anup@brainfault.org> wrote:
-> >
-> > On Tue, Feb 8, 2022 at 12:16 PM Guo Ren <guoren@kernel.org> wrote:
-> > >
-> > > Another question:
-> > >
-> > > Have you put "idle-states {" in qemu's DTS? or how do you test your patches?
-> >
-> > I usually do the following:
-> > 1) Dump QEMU virt machine DTB
-> > 2) Convert QEMU virt machine DTB into DTS
-> > 3) Add "idle-states" in QEMU virt machine DTS
-> > 4) Create QEMU virt machine DTB with "idle-states"
-> > 5) Use the new QEMU virt machine DTB for testing this series.
-> >
-> > Here's one of the DTS files which I used for testing on QEMU virt machine:
-> >
-> > /dts-v1/;
-> >
-> > / {
-> >     #address-cells = <0x02>;
-> >     #size-cells = <0x02>;
-> >     compatible = "riscv-virtio";
-> >     model = "riscv-virtio,qemu";
-> >
-> >     chosen {
-> >         linux,initrd-end = <0x8855d200>;
-> >         linux,initrd-start = <0x88200000>;
-> >         bootargs = "root=/dev/ram rw console=ttyS0 earlycon";
-> >         stdout-path = "/soc/uart@10000000";
-> >     };
-> >
-> >     memory@80000000 {
-> >         device_type = "memory";
-> >         reg = <0x00 0x80000000 0x00 0x10000000>;
-> >     };
-> >
-> >     cpus {
-> >         #address-cells = <0x01>;
-> >         #size-cells = <0x00>;
-> >         timebase-frequency = <0x989680>;
-> >
-> >         cpu@0 {
-> >             phandle = <0x07>;
-> >             device_type = "cpu";
-> >             reg = <0x00>;
-> >             status = "okay";
-> >             compatible = "riscv";
-> >             riscv,isa = "rv64imafdcsu";
-> >             mmu-type = "riscv,sv48";
-> >             cpu-idle-states = <&CPU_NONRET_DEF>;
-> >
-> >             interrupt-controller {
-> >                 #interrupt-cells = <0x01>;
-> >                 interrupt-controller;
-> >                 compatible = "riscv,cpu-intc";
-> >                 phandle = <0x08>;
-> >             };
-> >         };
-> >
-> >         cpu@1 {
-> >             phandle = <0x05>;
-> >             device_type = "cpu";
-> >             reg = <0x01>;
-> >             status = "okay";
-> >             compatible = "riscv";
-> >             riscv,isa = "rv64imafdcsu";
-> >             mmu-type = "riscv,sv48";
-> >             cpu-idle-states = <&CPU_RET_DEF>;
-> >
-> >             interrupt-controller {
-> >                 #interrupt-cells = <0x01>;
-> >                 interrupt-controller;
-> >                 compatible = "riscv,cpu-intc";
-> >                 phandle = <0x06>;
-> >             };
-> >         };
-> >
-> >         cpu@2 {
-> >             phandle = <0x03>;
-> >             device_type = "cpu";
-> >             reg = <0x02>;
-> >             status = "okay";
-> >             compatible = "riscv";
-> >             riscv,isa = "rv64imafdcsu";
-> >             mmu-type = "riscv,sv48";
-> >             cpu-idle-states = <&CPU_NONRET_DEF>;
-> >
-> >             interrupt-controller {
-> >                 #interrupt-cells = <0x01>;
-> >                 interrupt-controller;
-> >                 compatible = "riscv,cpu-intc";
-> >                 phandle = <0x04>;
-> >             };
-> >         };
-> >
-> >         cpu@3 {
-> >             phandle = <0x01>;
-> >             device_type = "cpu";
-> >             reg = <0x03>;
-> >             status = "okay";
-> >             compatible = "riscv";
-> >             riscv,isa = "rv64imafdcsu";
-> >             mmu-type = "riscv,sv48";
-> >             cpu-idle-states = <&CPU_RET_DEF>;
-> >
-> >             interrupt-controller {
-> >                 #interrupt-cells = <0x01>;
-> >                 interrupt-controller;
-> >                 compatible = "riscv,cpu-intc";
-> >                 phandle = <0x02>;
-> >             };
-> >         };
-> >
-> >         cpu-map {
-> >
-> >             cluster0 {
-> >
-> >                 core0 {
-> >                     cpu = <0x07>;
-> >                 };
-> >
-> >                 core1 {
-> >                     cpu = <0x05>;
-> >                 };
-> >
-> >                 core2 {
-> >                     cpu = <0x03>;
-> >                 };
-> >
-> >                 core3 {
-> >                     cpu = <0x01>;
-> >                 };
-> >             };
-> >         };
-> >
-> >         idle-states {
-> >             CPU_RET_DEF: cpu-retentive-default {
-> >                 compatible = "riscv,idle-state";
-> >                 riscv,sbi-suspend-param = <0x00000000>;
-> >                 entry-latency-us = <10>;
-> >                 exit-latency-us = <10>;
-> >                 min-residency-us = <100>;
-> >             };
-> >
-> >             CPU_NONRET_DEF: cpu-nonretentive-default {
-> >                 compatible = "riscv,idle-state";
-> >                 riscv,sbi-suspend-param = <0x80000000>;
-> >                 entry-latency-us = <100>;
-> >                 exit-latency-us = <100>;
-> >                 min-residency-us = <1000>;
-> >             };
-> >         };
-> >     };
-> >
-> >     soc {
-> >         #address-cells = <0x02>;
-> >         #size-cells = <0x02>;
-> >         compatible = "simple-bus";
-> >         ranges;
-> >
-> >         flash@20000000 {
-> >             bank-width = <0x04>;
-> >             reg = <0x00 0x20000000 0x00 0x2000000 0x00 0x22000000 0x00
-> > 0x2000000>;
-> >             compatible = "cfi-flash";
-> >         };
-> >
-> >         rtc@101000 {
-> >             interrupts = <0x0b>;
-> >             interrupt-parent = <0x09>;
-> >             reg = <0x00 0x101000 0x00 0x1000>;
-> >             compatible = "google,goldfish-rtc";
-> >         };
-> >
-> >         uart@10000000 {
-> >             interrupts = <0x0a>;
-> >             interrupt-parent = <0x09>;
-> >             clock-frequency = <0x384000>;
-> >             reg = <0x00 0x10000000 0x00 0x100>;
-> >             compatible = "ns16550a";
-> >         };
-> >
-> >         poweroff {
-> >             value = <0x5555>;
-> >             offset = <0x00>;
-> >             regmap = <0x0a>;
-> >             compatible = "syscon-poweroff";
-> >         };
-> >
-> >         reboot {
-> >             value = <0x7777>;
-> >             offset = <0x00>;
-> >             regmap = <0x0a>;
-> >             compatible = "syscon-reboot";
-> >         };
-> >
-> >         test@100000 {
-> >             phandle = <0x0a>;
-> >             reg = <0x00 0x100000 0x00 0x1000>;
-> >             compatible = "sifive,test1\0sifive,test0\0syscon";
-> >         };
-> >
-> >         pci@30000000 {
-> >             interrupt-map-mask = <0x1800 0x00 0x00 0x07>;
-> >             interrupt-map = <0x00 0x00 0x00 0x01 0x09 0x20 0x00 0x00
-> > 0x00 0x02 0x09 0x21 0x00 0x00 0x00 0x03 0x09 0x22 0x00 0x00 0x00 0x04
-> > 0x09 0x23 0x800 0x00 0x00 0x01 0x09 0x21 0x800 0x00 0x00 0x02 0x09
-> > 0x22 0x800 0x00 0x00 0x03 0x09 0x23 0x800 0x00 0x00 0x04 0x09 0x20
-> > 0x1000 0x00 0x00 0x01 0x09 0x22 0x1000 0x00 0x00 0x02 0x09 0x23 0x1000
-> > 0x00 0x00 0x03 0x09 0x20 0x1000 0x00 0x00 0x04 0x09 0x21 0x1800 0x00
-> > 0x00 0x01 0x09 0x23 0x1800 0x00 0x00 0x02 0x09 0x20 0x1800 0x00 0x00
-> > 0x03 0x09 0x21 0x1800 0x00 0x00 0x04 0x09 0x22>;
-> >             ranges = <0x1000000 0x00 0x00 0x00 0x3000000 0x00 0x10000
-> > 0x2000000 0x00 0x40000000 0x00 0x40000000 0x00 0x40000000>;
-> >             reg = <0x00 0x30000000 0x00 0x10000000>;
-> >             dma-coherent;
-> >             bus-range = <0x00 0xff>;
-> >             linux,pci-domain = <0x00>;
-> >             device_type = "pci";
-> >             compatible = "pci-host-ecam-generic";
-> >             #size-cells = <0x02>;
-> >             #interrupt-cells = <0x01>;
-> >             #address-cells = <0x03>;
-> >         };
-> >
-> >         virtio_mmio@10008000 {
-> >             interrupts = <0x08>;
-> >             interrupt-parent = <0x09>;
-> >             reg = <0x00 0x10008000 0x00 0x1000>;
-> >             compatible = "virtio,mmio";
-> >         };
-> >
-> >         virtio_mmio@10007000 {
-> >             interrupts = <0x07>;
-> >             interrupt-parent = <0x09>;
-> >             reg = <0x00 0x10007000 0x00 0x1000>;
-> >             compatible = "virtio,mmio";
-> >         };
-> >
-> >         virtio_mmio@10006000 {
-> >             interrupts = <0x06>;
-> >             interrupt-parent = <0x09>;
-> >             reg = <0x00 0x10006000 0x00 0x1000>;
-> >             compatible = "virtio,mmio";
-> >         };
-> >
-> >         virtio_mmio@10005000 {
-> >             interrupts = <0x05>;
-> >             interrupt-parent = <0x09>;
-> >             reg = <0x00 0x10005000 0x00 0x1000>;
-> >             compatible = "virtio,mmio";
-> >         };
-> >
-> >         virtio_mmio@10004000 {
-> >             interrupts = <0x04>;
-> >             interrupt-parent = <0x09>;
-> >             reg = <0x00 0x10004000 0x00 0x1000>;
-> >             compatible = "virtio,mmio";
-> >         };
-> >
-> >         virtio_mmio@10003000 {
-> >             interrupts = <0x03>;
-> >             interrupt-parent = <0x09>;
-> >             reg = <0x00 0x10003000 0x00 0x1000>;
-> >             compatible = "virtio,mmio";
-> >         };
-> >
-> >         virtio_mmio@10002000 {
-> >             interrupts = <0x02>;
-> >             interrupt-parent = <0x09>;
-> >             reg = <0x00 0x10002000 0x00 0x1000>;
-> >             compatible = "virtio,mmio";
-> >         };
-> >
-> >         virtio_mmio@10001000 {
-> >             interrupts = <0x01>;
-> >             interrupt-parent = <0x09>;
-> >             reg = <0x00 0x10001000 0x00 0x1000>;
-> >             compatible = "virtio,mmio";
-> >         };
-> >
-> >         plic@c000000 {
-> >             phandle = <0x09>;
-> >             riscv,ndev = <0x35>;
-> >             reg = <0x00 0xc000000 0x00 0x210000>;
-> >             interrupts-extended = <0x08 0x0b 0x08 0x09 0x06 0x0b 0x06
-> > 0x09 0x04 0x0b 0x04 0x09 0x02 0x0b 0x02 0x09>;
-> >             interrupt-controller;
-> >             compatible = "riscv,plic0";
-> >             #interrupt-cells = <0x01>;
-> >             #address-cells = <0x00>;
-> >         };
-> >
-> >         clint@2000000 {
-> >             interrupts-extended = <0x08 0x03 0x08 0x07 0x06 0x03 0x06
-> > 0x07 0x04 0x03 0x04 0x07 0x02 0x03 0x02 0x07>;
-> >             reg = <0x00 0x2000000 0x00 0x10000>;
-> >             compatible = "riscv,clint0";
-> >         };
-> >     };
-> > };
->
-> Thx Anup, but it still couldn't work for testing suspend.
->
-> # echo mem > /sys/power/state
-> sh: write error: Function not implemented
->
-> Why there is no ARCH_SUSPEND_POSSIBLE in the patch series?
+Hi Guixin,
 
-You are referring to system-level suspend to RAM support whereas
-this series adds CPU idle power management support.
+Thank you for the patch! Perhaps something to improve:
 
-Adding system-level suspend to RAM will be a separate series
-and it will re-use the non-retentive suspend infrastructure added
-by this series.
+[auto build test WARNING on char-misc/char-misc-testing]
+[also build test WARNING on v5.17-rc3 next-20220208]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Regards,
-Anup
+url:    https://github.com/0day-ci/linux/commits/Guixin-Liu/uio-Replace-mutex-info_lock-with-percpu_ref-to-improve-performance/20220208-152119
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git b86f32951d173b43d1db8de883473fc53dc3c772
+config: parisc-randconfig-s032-20220208 (https://download.01.org/0day-ci/archive/20220208/202202082111.R18zUEHK-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/271c7d04f21a7c880e9dfb056eca51835576833d
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Guixin-Liu/uio-Replace-mutex-info_lock-with-percpu_ref-to-improve-performance/20220208-152119
+        git checkout 271c7d04f21a7c880e9dfb056eca51835576833d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=parisc SHELL=/bin/bash drivers/uio/
 
->
-> ref arm64's:
-> commit 166936bace056dfc11452d794209f39a5e9b0fb4
-> Author: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Date:   Thu Nov 7 18:37:14 2013 +0000
->
->     arm64: kernel: add PM build infrastructure
->
->     This patch adds the required makefile and kconfig entries to enable PM
->     for arm64 systems.
->
->     The kernel relies on the cpu_{suspend}/{resume} infrastructure to
->     properly save the context for a CPU and put it to sleep, hence this
->     patch adds the config option required to enable cpu_{suspend}/{resume}
->     API.
->
->     In order to rely on the CPU PM implementation for saving and restoring
->     of CPU subsystems like GIC and PMU, the arch Kconfig must be also
->     augmented to select the CONFIG_CPU_PM option when SUSPEND or CPU_IDLE
->     kernel implementations are selected.
->
-> >
-> > Regards,
-> > Anup
->
->
->
-> --
-> Best Regards
->  Guo Ren
->
-> ML: https://lore.kernel.org/linux-csky/
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/uio/uio.c:564:24: sparse: sparse: incorrect type in return expression (different base types) @@     expected restricted __poll_t @@     got int @@
+   drivers/uio/uio.c:564:24: sparse:     expected restricted __poll_t
+   drivers/uio/uio.c:564:24: sparse:     got int
+   drivers/uio/uio.c:567:21: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __poll_t [usertype] ret @@     got int @@
+   drivers/uio/uio.c:567:21: sparse:     expected restricted __poll_t [usertype] ret
+   drivers/uio/uio.c:567:21: sparse:     got int
+>> drivers/uio/uio.c:699:24: sparse: sparse: incorrect type in return expression (different base types) @@     expected restricted vm_fault_t @@     got int @@
+   drivers/uio/uio.c:699:24: sparse:     expected restricted vm_fault_t
+   drivers/uio/uio.c:699:24: sparse:     got int
+
+vim +564 drivers/uio/uio.c
+
+   556	
+   557	static __poll_t uio_poll(struct file *filep, poll_table *wait)
+   558	{
+   559		struct uio_listener *listener = filep->private_data;
+   560		struct uio_device *idev = listener->dev;
+   561		__poll_t ret = 0;
+   562	
+   563		if (!percpu_ref_tryget_live(&idev->info_ref))
+ > 564			return -EINVAL;
+   565	
+   566		if (!idev->info || !idev->info->irq)
+   567			ret = -EIO;
+   568		percpu_ref_put(&idev->info_ref);
+   569	
+   570		if (ret)
+   571			return ret;
+   572	
+   573		poll_wait(filep, &idev->wait, wait);
+   574		if (listener->event_count != atomic_read(&idev->event))
+   575			return EPOLLIN | EPOLLRDNORM;
+   576		return 0;
+   577	}
+   578	
+   579	static ssize_t uio_read(struct file *filep, char __user *buf,
+   580				size_t count, loff_t *ppos)
+   581	{
+   582		struct uio_listener *listener = filep->private_data;
+   583		struct uio_device *idev = listener->dev;
+   584		DECLARE_WAITQUEUE(wait, current);
+   585		ssize_t retval = 0;
+   586		s32 event_count;
+   587	
+   588		if (count != sizeof(s32))
+   589			return -EINVAL;
+   590	
+   591		add_wait_queue(&idev->wait, &wait);
+   592	
+   593		do {
+   594			if (!percpu_ref_tryget_live(&idev->info_ref)) {
+   595				retval = -EINVAL;
+   596				break;
+   597			}
+   598	
+   599			if (!idev->info || !idev->info->irq) {
+   600				retval = -EIO;
+   601				percpu_ref_put(&idev->info_ref);
+   602				break;
+   603			}
+   604			percpu_ref_put(&idev->info_ref);
+   605	
+   606			set_current_state(TASK_INTERRUPTIBLE);
+   607	
+   608			event_count = atomic_read(&idev->event);
+   609			if (event_count != listener->event_count) {
+   610				__set_current_state(TASK_RUNNING);
+   611				if (copy_to_user(buf, &event_count, count))
+   612					retval = -EFAULT;
+   613				else {
+   614					listener->event_count = event_count;
+   615					retval = count;
+   616				}
+   617				break;
+   618			}
+   619	
+   620			if (filep->f_flags & O_NONBLOCK) {
+   621				retval = -EAGAIN;
+   622				break;
+   623			}
+   624	
+   625			if (signal_pending(current)) {
+   626				retval = -ERESTARTSYS;
+   627				break;
+   628			}
+   629			schedule();
+   630		} while (1);
+   631	
+   632		__set_current_state(TASK_RUNNING);
+   633		remove_wait_queue(&idev->wait, &wait);
+   634	
+   635		return retval;
+   636	}
+   637	
+   638	static ssize_t uio_write(struct file *filep, const char __user *buf,
+   639				size_t count, loff_t *ppos)
+   640	{
+   641		struct uio_listener *listener = filep->private_data;
+   642		struct uio_device *idev = listener->dev;
+   643		ssize_t retval;
+   644		s32 irq_on;
+   645	
+   646		if (count != sizeof(s32))
+   647			return -EINVAL;
+   648	
+   649		if (copy_from_user(&irq_on, buf, count))
+   650			return -EFAULT;
+   651	
+   652		if (!percpu_ref_tryget_live(&idev->info_ref))
+   653			return -EINVAL;
+   654	
+   655		if (!idev->info) {
+   656			retval = -EINVAL;
+   657			goto out;
+   658		}
+   659	
+   660		if (!idev->info->irq) {
+   661			retval = -EIO;
+   662			goto out;
+   663		}
+   664	
+   665		if (!idev->info->irqcontrol) {
+   666			retval = -ENOSYS;
+   667			goto out;
+   668		}
+   669	
+   670		retval = idev->info->irqcontrol(idev->info, irq_on);
+   671	
+   672	out:
+   673		percpu_ref_put(&idev->info_ref);
+   674		return retval ? retval : sizeof(s32);
+   675	}
+   676	
+   677	static int uio_find_mem_index(struct vm_area_struct *vma)
+   678	{
+   679		struct uio_device *idev = vma->vm_private_data;
+   680	
+   681		if (vma->vm_pgoff < MAX_UIO_MAPS) {
+   682			if (idev->info->mem[vma->vm_pgoff].size == 0)
+   683				return -1;
+   684			return (int)vma->vm_pgoff;
+   685		}
+   686		return -1;
+   687	}
+   688	
+   689	static vm_fault_t uio_vma_fault(struct vm_fault *vmf)
+   690	{
+   691		struct uio_device *idev = vmf->vma->vm_private_data;
+   692		struct page *page;
+   693		unsigned long offset;
+   694		void *addr;
+   695		vm_fault_t ret = 0;
+   696		int mi;
+   697	
+   698		if (!percpu_ref_tryget_live(&idev->info_ref))
+ > 699			return -EINVAL;
+   700	
+   701		if (!idev->info) {
+   702			ret = VM_FAULT_SIGBUS;
+   703			goto out;
+   704		}
+   705	
+   706		mi = uio_find_mem_index(vmf->vma);
+   707		if (mi < 0) {
+   708			ret = VM_FAULT_SIGBUS;
+   709			goto out;
+   710		}
+   711	
+   712		/*
+   713		 * We need to subtract mi because userspace uses offset = N*PAGE_SIZE
+   714		 * to use mem[N].
+   715		 */
+   716		offset = (vmf->pgoff - mi) << PAGE_SHIFT;
+   717	
+   718		addr = (void *)(unsigned long)idev->info->mem[mi].addr + offset;
+   719		if (idev->info->mem[mi].memtype == UIO_MEM_LOGICAL)
+   720			page = virt_to_page(addr);
+   721		else
+   722			page = vmalloc_to_page(addr);
+   723		get_page(page);
+   724		vmf->page = page;
+   725	
+   726	out:
+   727		percpu_ref_put(&idev->info_ref);
+   728		return ret;
+   729	}
+   730	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
