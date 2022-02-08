@@ -2,211 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F5BC35272
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C295BC41535
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359427AbiBHLgz (ORCPT
+        id S1358849AbiBHLgo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:36:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45558 "EHLO
+        Tue, 8 Feb 2022 06:36:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358831AbiBHL1l (ORCPT
+        with ESMTP id S229574AbiBHLXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 06:27:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17471C03FEEA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 03:27:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A293D615C2
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:27:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DF72C004E1;
-        Tue,  8 Feb 2022 11:27:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644319648;
-        bh=CGQqY63qbTyT2OHCC+vjreP6q7CXq083TbLUBIE3Ys4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kjpJt2OsYIINrFQNdlgDkPgBgtcrP3piCf+lio35QnYefp7hORiCgi4zQcWWj/gv2
-         ENk345IS7+ZFd3tOaLrMM1rsBluQQ7xWW1vnEoQVK5IdnkX+LmJvd7/8vFz6NHyAVL
-         DHWYZaci5OnbDbzidTk3ITZfAk09yhrvL2XYfmoA=
-Date:   Tue, 8 Feb 2022 12:27:25 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     tj@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 1/2] kernfs: use hashed mutex and spinlock in place of
- global ones.
-Message-ID: <YgJTndUA7iK/UIao@kroah.com>
-References: <20220206010925.1033990-1-imran.f.khan@oracle.com>
- <20220206010925.1033990-2-imran.f.khan@oracle.com>
+        Tue, 8 Feb 2022 06:23:06 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2AEC03FEC0;
+        Tue,  8 Feb 2022 03:23:05 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id m7so15894133pjk.0;
+        Tue, 08 Feb 2022 03:23:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:from:subject:cc:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=yGdvePtA5J3T6k1Kw9exNjT0dNJZhtguuHy3n/iDjLY=;
+        b=Hr8wTdnT0O/0KmLlu487Qb/smC8jLqUcQsEX+G/dEgowpk3OTwYmXeDqiUOJpYrqKO
+         QY/XWRsLEwFCRIqQ0QabaOlDkfBiAK0dr3Dr8VOxX+l/iOiWzi6OngzUa8SrrdwSH02m
+         IdF0zT5OuQbiB3Cic3wycyEzIi6jMlK1Lekth1+wi/TQp55IwHgucgjpKn2F04xedVC1
+         inSUvte4ZyZjszTKJtllQL4VjLvAzuVLeJnzulIZdeznsr29VzrZ55nyXc5wTlR7JzL2
+         XwBPQihX1k8gBTfbraXTFuz35qX5YIgJdxGwF6tnkmRLa+8Cifcl/8knjpJvdZXFcced
+         SVlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:to:from:subject:cc:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=yGdvePtA5J3T6k1Kw9exNjT0dNJZhtguuHy3n/iDjLY=;
+        b=Wl8/C7WZMEicbmD4s45A2IA/f9o7z7wvO+rY5kPwElHnlDP54c91VUnIzStB3rVxtB
+         RnAe56Bz7kaHymY8PXS6TOFJXQr1oxpKmggSpwSZzN647uUT+lxTTHTiwklkpn4WlEL8
+         k4umEhVyT8pXbFado9Qy6eoLW+5TOPkA4J9u4F2bUCdZjaQhotsA32/f9Hg8teV4gv6I
+         Q6h9ega0eing1uV1yGpU6XrNkQfFWt+ULigVpwNLuiMpWqU30xlLW0/Fd79gYcD7oi1c
+         scD8bg9ccN/6lXb3wCQfuNVLGtyuyfXuFRzHHHyagJfYC+4LjI7agDjHjHCsKUgdLxHO
+         cY0Q==
+X-Gm-Message-State: AOAM5320Xl9KScxlmX/BJi1atNJzM2c4zhx8EfQ3HABsLyxAn72X+LTI
+        BFeNQzFYRcrK0e/PTdVy2JbTcrUxlnY=
+X-Google-Smtp-Source: ABdhPJxxkZQCGQ/F57OmjRz+c/13EOwyHYr+V5dIqqaQ0+VjrV3Y5rzJ8tsWGJ+tYNXh3eXzWO8HPQ==
+X-Received: by 2002:a17:902:cec4:: with SMTP id d4mr3923507plg.158.1644319384555;
+        Tue, 08 Feb 2022 03:23:04 -0800 (PST)
+Received: from [192.168.1.100] ([166.111.139.99])
+        by smtp.gmail.com with ESMTPSA id c7sm15437310pfp.164.2022.02.08.03.23.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 03:23:03 -0800 (PST)
+To:     njavali@marvell.com, mrangankar@marvell.com,
+        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [BUG] scsi: qedi: possible ABBA deadlock in qedi_process_tmf_resp()
+ and qedi_process_cmd_cleanup_resp()
+Cc:     linux-scsi@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Message-ID: <e468fdcb-f47f-e01a-da65-68da79020165@gmail.com>
+Date:   Tue, 8 Feb 2022 19:23:01 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220206010925.1033990-2-imran.f.khan@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 06, 2022 at 12:09:24PM +1100, Imran Khan wrote:
-> diff --git a/fs/kernfs/kernfs-internal.h b/fs/kernfs/kernfs-internal.h
-> index f9cc912c31e1b..cc49a6cd94154 100644
-> --- a/fs/kernfs/kernfs-internal.h
-> +++ b/fs/kernfs/kernfs-internal.h
-> @@ -31,6 +31,7 @@ struct kernfs_iattrs {
->  	atomic_t		user_xattr_size;
->  };
->  
-> +
->  /* +1 to avoid triggering overflow warning when negating it */
->  #define KN_DEACTIVATED_BIAS		(INT_MIN + 1)
->  
+Hello,
 
-Nit, the above change isn't needed :)
+My static analysis tool reports a possible ABBA deadlock in the qedi 
+driver in Linux 5.16:
 
-> @@ -147,4 +148,54 @@ void kernfs_drain_open_files(struct kernfs_node *kn);
->   */
->  extern const struct inode_operations kernfs_symlink_iops;
->  
-> +static inline spinlock_t *kernfs_open_node_lock_ptr(struct kernfs_node *kn)
-> +{
-> +	struct kernfs_root *root;
-> +	int idx = hash_ptr(kn, NR_KERNFS_LOCK_BITS);
-> +
-> +	root = kernfs_root(kn);
-> +
-> +	return &root->open_node_locks[idx].lock;
-> +}
-> +
-> +static inline spinlock_t *kernfs_open_node_lock(struct kernfs_node *kn)
-> +{
-> +	struct kernfs_root *root;
-> +	spinlock_t *lock;
-> +	int idx = hash_ptr(kn, NR_KERNFS_LOCK_BITS);
-> +
-> +	root = kernfs_root(kn);
-> +
-> +	lock = &root->open_node_locks[idx].lock;
-> +
-> +	spin_lock_irq(lock);
-> +
-> +	return lock;
-> +}
+qedi_process_tmf_resp()
+   spin_lock(&session->back_lock); --> Line 201 (Lock A)
+   spin_lock(&qedi_conn->tmf_work_lock); --> Line 230 (Lock B)
 
-Can't you use kernfs_open_node_lock_ptr() in kernfs_open_node_lock() to
-make this use less duplicated code?
+qedi_process_cmd_cleanup_resp()
+   spin_lock_bh(&qedi_conn->tmf_work_lock); --> Line 752 (Lock B)
+   spin_lock_bh(&conn->session->back_lock); --> Line 784 (Lock A)
+
+When qedi_process_tmf_resp() and qedi_process_cmd_cleanup_resp() are 
+concurrently executed, the deadlock can occur.
+
+I am not quite sure whether this possible deadlock is real and how to 
+fix it if it is real.
+Any feedback would be appreciated, thanks :)
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
 
 
-> +
-> +static inline struct mutex *kernfs_open_file_mutex_ptr(struct kernfs_node *kn)
-> +{
-> +	struct kernfs_root *root;
-> +	int idx = hash_ptr(kn, NR_KERNFS_LOCK_BITS);
-> +
-> +	root = kernfs_root(kn);
-> +
-> +	return &root->open_file_mutex[idx].lock;
-> +}
-> +
-> +static inline struct mutex *kernfs_open_file_mutex_lock(struct kernfs_node *kn)
-> +{
-> +	struct kernfs_root *root;
-> +	struct mutex *lock;
-> +	int idx = hash_ptr(kn, NR_KERNFS_LOCK_BITS);
-> +
-> +	root = kernfs_root(kn);
-> +
-> +	lock = &root->open_file_mutex[idx].lock;
-> +
-> +	mutex_lock(lock);
-> +
-> +	return lock;
-> +}
-
-Same thing here.
-
-
-
-> +
->  #endif	/* __KERNFS_INTERNAL_H */
-> diff --git a/include/linux/kernfs.h b/include/linux/kernfs.h
-> index 861c4f0f8a29f..5bf9f02ce9dce 100644
-> --- a/include/linux/kernfs.h
-> +++ b/include/linux/kernfs.h
-> @@ -18,6 +18,8 @@
->  #include <linux/uidgid.h>
->  #include <linux/wait.h>
->  #include <linux/rwsem.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/cache.h>
->  
->  struct file;
->  struct dentry;
-> @@ -34,6 +36,40 @@ struct kernfs_fs_context;
->  struct kernfs_open_node;
->  struct kernfs_iattrs;
->  
-> +/*
-> + * NR_KERNFS_LOCK_BITS determines size (NR_KERNFS_LOCKS) of hash
-> + * table of locks.
-> + * Having a small hash table would impact scalability, since
-> + * more and more kernfs_node objects will end up using same lock
-> + * and having a very large hash table would waste memory.
-> + *
-> + * At the moment size of hash table of locks is being set based on
-> + * the number of CPUs as follows:
-> + *
-> + * NR_CPU      NR_KERNFS_LOCK_BITS      NR_KERNFS_LOCKS
-> + *   1                  1                       2
-> + *  2-3                 2                       4
-> + *  4-7                 4                       16
-> + *  8-15                6                       64
-> + *  16-31               8                       256
-> + *  32 and more         10                      1024
-> + */
-> +#ifdef CONFIG_SMP
-> +#define NR_KERNFS_LOCK_BITS (2 * (ilog2(NR_CPUS < 32 ? NR_CPUS : 32)))
-> +#else
-> +#define NR_KERNFS_LOCK_BITS     1
-> +#endif
-> +
-> +#define NR_KERNFS_LOCKS     (1 << NR_KERNFS_LOCK_BITS)
-> +
-> +struct kernfs_open_node_lock {
-> +	spinlock_t lock;
-> +} ____cacheline_aligned_in_smp;
-> +
-> +struct kernfs_open_file_mutex {
-> +	struct mutex lock;
-> +} ____cacheline_aligned_in_smp;
-> +
->  enum kernfs_node_type {
->  	KERNFS_DIR		= 0x0001,
->  	KERNFS_FILE		= 0x0002,
-> @@ -90,6 +126,7 @@ enum kernfs_root_flag {
->  	KERNFS_ROOT_SUPPORT_USER_XATTR		= 0x0008,
->  };
->  
-> +
->  /* type-specific structures for kernfs_node union members */
->  struct kernfs_elem_dir {
->  	unsigned long		subdirs;
-> @@ -201,6 +238,8 @@ struct kernfs_root {
->  
->  	wait_queue_head_t	deactivate_waitq;
->  	struct rw_semaphore	kernfs_rwsem;
-> +	struct kernfs_open_node_lock open_node_locks[NR_KERNFS_LOCKS];
-> +	struct kernfs_open_file_mutex open_file_mutex[NR_KERNFS_LOCKS];
->  };
-
-I think struct kernfs_root can be declared locally inside fs/kernfs/ to
-keep other subsystems/files from having to see this structure, right?
-That would make this a bit less of a "rebuild the world" type of change
-and could be done in a patch before this one.
-
-Overall, this looks sane to me, nice work.
-
-Tejun, any comments?
-
-thanks,
-
-greg k-h
+Best wishes,
+Jia-Ju Bai
