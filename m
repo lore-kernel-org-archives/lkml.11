@@ -2,82 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F26C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233168AbiBHFkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 00:40:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38306 "EHLO
+        id S235002AbiBHFl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 00:41:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234083AbiBHFhS (ORCPT
+        with ESMTP id S231899AbiBHFkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 00:37:18 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2E0C03FEF2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 21:33:14 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id qe15so5684906pjb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 21:33:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VGd6HWV0yqMQeeGM8GVnBobXYQMdfcC12IoRPz2yYaw=;
-        b=oP2byjRZAi5hESJPONGrGc2WSkRkCT6bDoBZ+TLZKcK6dM0DtVYhdV7QeWI4psiPfo
-         CsBBTWCpSt93N7U+YkE+PUY3osuPKCxDapOXQvtRMtGQhWVpaGcz5/IKKm/j6E9On2po
-         PpcTrDx7MvE3U8wF1USqzf0jhcUzGEdBvQA1aw/x31MvVpSPqKMmm7+VyaoNorJNdqgl
-         bc0rCF+KWWlSKMduQ9gvYEDxs/XdHokDMUoHLOzV1W4cUnI2pcauGVpSbAATOgFG185D
-         62zBwGOAO7dUK7Ib+AWN2SQHqc7sT263q29OTcB/B/n/pyC7qYDudqPkUnrErOzunf5s
-         vTSw==
+        Tue, 8 Feb 2022 00:40:32 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD210C0401F0
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 21:40:30 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id n20-20020a6bed14000000b0060faa0aefd3so10626531iog.20
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 21:40:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VGd6HWV0yqMQeeGM8GVnBobXYQMdfcC12IoRPz2yYaw=;
-        b=6XjDqRzgvJbstJDkyuNPdFY++2G6fNdxYYIZ1oo5iSOxbFqImsognxt/qhONMUEG/Y
-         f+Kq89k6gZJvhexEx+uczs2Vv1/9EKSJx6ApQFniG8PaUYBTwkfTFwtmc72ALbC7BNij
-         Y/0ekenN/AOg4TKdaOretntYsTQ3V+ZCm1vFxO3MAO6z+RjuZkwrpS4hnbAToi+ShCWb
-         GFHTVg9/sw42h87o2vJjzSNXpQEVBNSxCGd6cLYxF+lCJQ9WKNFf03p88XzqS5LM7pki
-         4bzd44B3jBuKuRBKPWVOn7TtJ469107nSFCk9biwRvYlIlqN+AgTrb0wA+JpzcpPmaON
-         x29w==
-X-Gm-Message-State: AOAM532qm5j/KYwLHMPJEsWVmhItgQfLDa2Rca627teSq/U4Sd2ekY4U
-        hcgbyoceEtQFT24JQEtHnTXm3w==
-X-Google-Smtp-Source: ABdhPJx+ZX3FQoFvCoRWstQ5b1GqhHj7gcqWkX68TI0XRke0VrZStlxNEMKUGTCHUcqJNFkafXh8gg==
-X-Received: by 2002:a17:90b:1c83:: with SMTP id oo3mr2642964pjb.6.1644298393853;
-        Mon, 07 Feb 2022 21:33:13 -0800 (PST)
-Received: from google.com ([2401:fa00:1:10:4b6f:f14d:be50:86a])
-        by smtp.gmail.com with ESMTPSA id m14sm14470811pfc.170.2022.02.07.21.33.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 21:33:13 -0800 (PST)
-Date:   Tue, 8 Feb 2022 13:33:11 +0800
-From:   Tzung-Bi Shih <tzungbi@google.com>
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
-        "open list:CHROMEOS EC USB TYPE-C DRIVER" 
-        <chrome-platform@lists.linux.dev>,
-        Guenter Roeck <groeck@chromium.org>
-Subject: Re: [PATCH 1/4] platform/chrome: cros_ec_typec: Move mux flag checks
-Message-ID: <YgIAl8do1/b1Dru9@google.com>
-References: <20220207214026.1526151-1-pmalani@chromium.org>
- <20220207214026.1526151-2-pmalani@chromium.org>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=NVEYrJM0C3B0DWqVYowPI6bzh3KUToVqmgGzHv+vXCQ=;
+        b=jajnMVKgR3D8r9j+sAQ36qWyCWPMsb7Se00AjRDVRtRhi7OJA1gGJnWSlDe/Sq6DAc
+         fAbtukZ6cLkhjqu7oPoxfhQBM5nQjqjfZwNmGvw/NDsU4IpUFBbugZJKjX/bir+Ej/m8
+         l776wQcH9Rp+DaYBVUk7KAWtbamwhCVnUFd6S9jhrVtkZAELo6wog9cZDCbWtWGD6bsY
+         Jw3+caKxMjq4qxkZlecIfm9RyFYlolgvJpuC9n23V95gGH9vfug6TVr1l+bh3xL/YSby
+         N45iq3CWacdJVz3O1BK6RTGRRR1vluXIyJNAgtGgretNQZZA3naN7nIWUiSmMnvPZujk
+         B0bQ==
+X-Gm-Message-State: AOAM532edbneMNy/YX9bAvRScbROLIZo/S9mpV2H0eNtih0NaroDQhPp
+        La4PTm36AHSfYH/carbgXGMhGIIs5gNofvls+qhh+N1yO2BT
+X-Google-Smtp-Source: ABdhPJwLZLDaZfItvI/FjsAH813l0hh7diG5+FTlYeAhKB9UntHVkhqPOESjyLXH9GxA56pxarOniC87xi34KrKsGbjRmS+msCyo
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207214026.1526151-2-pmalani@chromium.org>
+X-Received: by 2002:a05:6638:1348:: with SMTP id u8mr1445462jad.204.1644298830219;
+ Mon, 07 Feb 2022 21:40:30 -0800 (PST)
+Date:   Mon, 07 Feb 2022 21:40:30 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ae0f7b05d77b27b5@google.com>
+Subject: [syzbot] WARNING in blk_register_tracepoints
+From:   syzbot <syzbot+c54ded83396afee31eb1@syzkaller.appspotmail.com>
+To:     axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mingo@redhat.com,
+        rostedt@goodmis.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 09:40:24PM +0000, Prashant Malani wrote:
-> Move mux and role flag checks inside of cros_typec_configure_mux(),
-> which is a more logical location for them.
+Hello,
 
-nit: s/Move/Moves/.
+syzbot found the following issue on:
 
-> @@ -519,7 +519,14 @@ static int cros_typec_configure_mux(struct cros_typec_data *typec, int port_num,
->  	struct cros_typec_port *port = typec->ports[port_num];
->  	struct ec_params_usb_pd_mux_ack mux_ack;
->  	enum typec_orientation orientation;
-> -	int ret;
-> +	int ret = 0;
+HEAD commit:    d8ad2ce873ab Merge tag 'ext4_for_linus_stable' of git://gi..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15665db2700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ee3797346aa03884
+dashboard link: https://syzkaller.appspot.com/bug?extid=c54ded83396afee31eb1
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11e00d84700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=119fd0c2700000
 
-The change looks irrelevant to the patch.
+Bisection is inconclusive: the issue happens on the oldest tested release.
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=171a984fb00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=149a984fb00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=109a984fb00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c54ded83396afee31eb1@syzkaller.appspotmail.com
+
+RBP: 00007ffc2d88d100 R08: 0000000000000002 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3595 at kernel/trace/blktrace.c:1090 blk_register_tracepoints+0x2dc/0x3a0 kernel/trace/blktrace.c:1090
+Modules linked in:
+CPU: 0 PID: 3595 Comm: syz-executor147 Not tainted 5.17.0-rc2-syzkaller-00398-gd8ad2ce873ab #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:blk_register_tracepoints+0x2dc/0x3a0 kernel/trace/blktrace.c:1090
+Code: 48 c7 c7 00 3d 82 8d e8 f2 69 fb ff 31 ff 89 c3 89 c6 e8 e7 a8 f9 ff 85 db 0f 85 ba 00 00 00 5b e9 b9 a6 f9 ff e8 b4 a6 f9 ff <0f> 0b e9 4b fd ff ff e8 a8 a6 f9 ff 0f 0b e9 6c fd ff ff e8 9c a6
+RSP: 0018:ffffc9000279fbc0 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 00000000fffffff4 RCX: 0000000000000000
+RDX: ffff888023011d00 RSI: ffffffff817ed1dc RDI: 0000000000000003
+RBP: ffff8881469d4300 R08: 0000000000000000 R09: ffffc9000279fa67
+R10: ffffffff817ecf26 R11: 0000000000000000 R12: ffffc9000279fc70
+R13: ffff8881469d4328 R14: ffff8881470196d0 R15: ffff8881469d4330
+FS:  0000555556142300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffc2d88d0c8 CR3: 00000000715ef000 CR4: 0000000000350ee0
+Call Trace:
+ <TASK>
+ get_probe_ref kernel/trace/blktrace.c:326 [inline]
+ do_blk_trace_setup+0x9c3/0xc80 kernel/trace/blktrace.c:570
+ __blk_trace_setup+0xca/0x180 kernel/trace/blktrace.c:589
+ blk_trace_setup+0x43/0x60 kernel/trace/blktrace.c:607
+ sg_ioctl_common drivers/scsi/sg.c:1123 [inline]
+ sg_ioctl+0x257/0x2780 drivers/scsi/sg.c:1165
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f7e080026d9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc2d88d0e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f7e080026d9
+RDX: 0000000020000140 RSI: 00000000c0481273 RDI: 0000000000000003
+RBP: 00007ffc2d88d100 R08: 0000000000000002 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
