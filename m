@@ -2,195 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68AB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381445AbiBHPmZ (ORCPT
+        id S1381506AbiBHPpL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:42:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
+        Tue, 8 Feb 2022 10:45:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381476AbiBHPmR (ORCPT
+        with ESMTP id S236426AbiBHPpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:42:17 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46794C0612B9;
-        Tue,  8 Feb 2022 07:42:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644334933; x=1675870933;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4GFjvUMiVMcumvdOgAlzmh492IdarzKncsOwfSSWUls=;
-  b=d3ZHEdZ3XkH+gQrXw5FmwH3LcJoGIB/nc4KwuJoSDSiYaD/oXfHH6XJn
-   uM8jv8A80rqFyYgxO/5LzqnAD8aHpwzAkNLASD6dqmR99hf1PYdKNqdpy
-   hZ5WJjlRhk5n9bnIJFtoA/7U48QxjS7RBjdU5WLZ9h50aaMAUkj4BlWnp
-   VX9QHuAWekNhld3LfkTQ869E2APSUmBLTGd6VuD1/Cq4kPlp+ySWnVvyp
-   zmZG14lnYg4ryoBElIYHvVc9xH/HAlTcL1kdPBPF21scIeKUciJPBpLeU
-   jIgohHIg9IsuErx4LHM4V0x3hVRYiPwRHJHVRtOLJqki/mX0AtUxZVk6i
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="228940640"
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="228940640"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 07:42:13 -0800
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="601273985"
-Received: from mgorzkow-mobl1.ger.corp.intel.com (HELO localhost) ([10.249.139.232])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 07:42:07 -0800
-From:   Iwona Winiarska <iwona.winiarska@intel.com>
-To:     linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Borislav Petkov <bp@alien8.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Zev Weiss <zweiss@equinix.com>,
-        David Muller <d.mueller@elsoft.ch>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Billy Tsai <billy_tsai@aspeedtech.com>,
-        Iwona Winiarska <iwona.winiarska@intel.com>
-Subject: [PATCH v8 13/13] docs: Add PECI documentation
-Date:   Tue,  8 Feb 2022 16:36:39 +0100
-Message-Id: <20220208153639.255278-14-iwona.winiarska@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208153639.255278-1-iwona.winiarska@intel.com>
-References: <20220208153639.255278-1-iwona.winiarska@intel.com>
+        Tue, 8 Feb 2022 10:45:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54823C061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 07:45:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644335106;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5c6BokZGpjxZJfiqo2/4IGY86UdM0DHCzeepgSZdBO4=;
+        b=gmcMstuU52ZwnCV68nKfxM/TPV7A5LTxiBexqgoPJGBR2reUmzj+gRGEIMVdjusLn3TrOc
+        DNFNxv9qYKcsr58o4vbWvcTpndXBi43KJxTisHHI27TIBynhmYIwXqvvfSur6FnsC2L2la
+        w86SF5X6qKq1rBU23luRO4jSM0S0M54=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-173-4lDkcB_5NYykzZO5OFEJhQ-1; Tue, 08 Feb 2022 10:45:05 -0500
+X-MC-Unique: 4lDkcB_5NYykzZO5OFEJhQ-1
+Received: by mail-qk1-f199.google.com with SMTP id b204-20020a3767d5000000b004b2a0d2e930so11167264qkc.15
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 07:45:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5c6BokZGpjxZJfiqo2/4IGY86UdM0DHCzeepgSZdBO4=;
+        b=J0tRp14j6EaxKybkvpku8UgN3lCL/Did8X4mrGey9HN5gpVIXCbAsR8YaQ3Q6BA7bw
+         mQLMJbc9vJjQF4IK0o6FL8wjE5yqetBoL4dP/UqZlwJIinp5a6wo2RZm5KVrRD6uzgfK
+         uOG6Vt12p7zqJZsk5IeB7fs+UOZ4wynjgY1gxX2CjAfZZ8wG7dWZX4X+gmFoiv7Hkwo8
+         JC1yDt4LjE/sBpmsl07L2OnheAcccVhI9hs14OOiVNa7Hm//MuRGuwRA7bTA5Nvvxa6g
+         kHZdT8dlyZ/pj8y/VuAB6y6NATr+UGsOFvE922xZ/HbGLxbvQeJ3xRa2wXL1ca0gvHcl
+         othw==
+X-Gm-Message-State: AOAM5320o/4vcDlMBZgQMZQKcpTQ63q+PzcwpPvmYLVdpTd9Rrrb+gtw
+        vEZRwWkbbCv4UWGzYv95J0U7hMwRmO3VPigb49Ux5ePlKEEHyYlbnA9wsyA+5YIZEBEvxH2MI4y
+        tzGmtDn348llHmIXjwLi/7keB
+X-Received: by 2002:a05:620a:1a82:: with SMTP id bl2mr2924990qkb.360.1644335104014;
+        Tue, 08 Feb 2022 07:45:04 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwPdAD8h7XP4irSwKpgb8bE8kYshYN6EWQP1VYm2uzSHInxS6E2UNAok247/mFO4RH8j4wVOg==
+X-Received: by 2002:a05:620a:1a82:: with SMTP id bl2mr2924977qkb.360.1644335103780;
+        Tue, 08 Feb 2022 07:45:03 -0800 (PST)
+Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
+        by smtp.gmail.com with ESMTPSA id 5sm7649569qtp.81.2022.02.08.07.45.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 07:45:03 -0800 (PST)
+Subject: Re: [PATCH v2] livepatch: Skip livepatch tests if ftrace cannot be
+ configured
+To:     David Vernet <void@manifault.com>, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
+        pmladek@suse.com, jikos@kernel.org, mbenes@suse.cz, corbet@lwn.net
+Cc:     kernel-team@fb.com
+References: <20220203233205.1554034-1-void@manifault.com>
+ <20220204205625.2628328-1-void@manifault.com>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <89a430e9-6da4-761a-68aa-187a3faa9c53@redhat.com>
+Date:   Tue, 8 Feb 2022 10:45:02 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220204205625.2628328-1-void@manifault.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a brief overview of PECI and PECI wire interface.
-The documentation also contains kernel-doc for PECI subsystem internals
-and PECI CPU Driver API.
+On 2/4/22 3:56 PM, David Vernet wrote:
+> livepatch has a set of selftests that are used to validate the behavior of
+> the livepatching subsystem.  One of the testcases in the livepatch
+> testsuite is test-ftrace.sh, which among other things, validates that
+> livepatching gracefully fails when ftrace is disabled.  In the event that
+> ftrace cannot be disabled using 'sysctl kernel.ftrace_enabled=0', the test
+> will fail later due to it unexpectedly successfully loading the
+> test_klp_livepatch module.
+> 
+> While the livepatch selftests are careful to remove any of the livepatch
+> test modules between testcases to avoid this situation, ftrace may still
+> fail to be disabled if another trace is active on the system that was
+> enabled with FTRACE_OPS_FL_PERMANENT.  For example, any active BPF programs
+> that use trampolines will cause this test to fail due to the trampoline
+> being implemented with register_ftrace_direct().  The following is an
+> example of such a trace:
+> 
+> tcp_drop (1) R I D      tramp: ftrace_regs_caller+0x0/0x58
+> (call_direct_funcs+0x0/0x30)
+>         direct-->bpf_trampoline_6442550536_0+0x0/0x1000
+> 
+> In order to make the test more resilient to system state that is out of its
+> control, this patch adds a check to set_ftrace_enabled() to skip the tests
+> if the sysctl invocation fails.
+> 
+> Signed-off-by: David Vernet <void@manifault.com>
+> ---
+> v2:
+>   - Fix typo in newly added comment (s/permament/permanent).
+>   - Adjust the location of the added newline to be before the new comment
+>     rather than that the end of the function.
+>   - Make the failure-path check a bit less brittle by checking for the
+>     exact expected string, rather than specifically for "Device or resource
+>     busy".
+> 
+>  tools/testing/selftests/livepatch/functions.sh | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
+> index 846c7ed71556..32970324dd7e 100644
+> --- a/tools/testing/selftests/livepatch/functions.sh
+> +++ b/tools/testing/selftests/livepatch/functions.sh
+> @@ -78,6 +78,12 @@ function set_ftrace_enabled() {
+>  	result=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1 && \
+>  		 sysctl kernel.ftrace_enabled 2>&1)
+>  	echo "livepatch: $result" > /dev/kmsg
+> +
+> +	# Skip the test if ftrace is busy.  This can happen under normal system
+> +	# conditions if a trace is marked as permanent.
+> +	if [[ "$result" != "kernel.ftrace_enabled = $1" ]]; then
+> +		skip "failed to set kernel.ftrace_enabled=$1"
+> +	fi
+>  }
+>  
+>  function cleanup() {
+> 
 
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
----
- Documentation/index.rst      |  1 +
- Documentation/peci/index.rst | 16 +++++++++++
- Documentation/peci/peci.rst  | 51 ++++++++++++++++++++++++++++++++++++
- MAINTAINERS                  |  1 +
- 4 files changed, 69 insertions(+)
- create mode 100644 Documentation/peci/index.rst
- create mode 100644 Documentation/peci/peci.rst
+Thanks for updating.
 
-diff --git a/Documentation/index.rst b/Documentation/index.rst
-index b58692d687f6..1988c19d9daf 100644
---- a/Documentation/index.rst
-+++ b/Documentation/index.rst
-@@ -138,6 +138,7 @@ needed).
-    scheduler/index
-    mhi/index
-    tty/index
-+   peci/index
- 
- Architecture-agnostic documentation
- -----------------------------------
-diff --git a/Documentation/peci/index.rst b/Documentation/peci/index.rst
-new file mode 100644
-index 000000000000..989de10416e7
---- /dev/null
-+++ b/Documentation/peci/index.rst
-@@ -0,0 +1,16 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+====================
-+Linux PECI Subsystem
-+====================
-+
-+.. toctree::
-+
-+   peci
-+
-+.. only::  subproject and html
-+
-+   Indices
-+   =======
-+
-+   * :ref:`genindex`
-diff --git a/Documentation/peci/peci.rst b/Documentation/peci/peci.rst
-new file mode 100644
-index 000000000000..331b1ec00e22
---- /dev/null
-+++ b/Documentation/peci/peci.rst
-@@ -0,0 +1,51 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+========
-+Overview
-+========
-+
-+The Platform Environment Control Interface (PECI) is a communication
-+interface between Intel processor and management controllers
-+(e.g. Baseboard Management Controller, BMC).
-+PECI provides services that allow the management controller to
-+configure, monitor and debug platform by accessing various registers.
-+It defines a dedicated command protocol, where the management
-+controller is acting as a PECI originator and the processor - as
-+a PECI responder.
-+PECI can be used in both single processor and multiple-processor based
-+systems.
-+
-+NOTE:
-+Intel PECI specification is not released as a dedicated document,
-+instead it is a part of External Design Specification (EDS) for given
-+Intel CPU. External Design Specifications are usually not publicly
-+available.
-+
-+PECI Wire
-+---------
-+
-+PECI Wire interface uses a single wire for self-clocking and data
-+transfer. It does not require any additional control lines - the
-+physical layer is a self-clocked one-wire bus signal that begins each
-+bit with a driven, rising edge from an idle near zero volts. The
-+duration of the signal driven high allows to determine whether the bit
-+value is logic '0' or logic '1'. PECI Wire also includes variable data
-+rate established with every message.
-+
-+For PECI Wire, each processor package will utilize unique, fixed
-+addresses within a defined range and that address should
-+have a fixed relationship with the processor socket ID - if one of the
-+processors is removed, it does not affect addresses of remaining
-+processors.
-+
-+PECI subsystem internals
-+------------------------
-+
-+.. kernel-doc:: include/linux/peci.h
-+.. kernel-doc:: drivers/peci/internal.h
-+.. kernel-doc:: drivers/peci/core.c
-+.. kernel-doc:: drivers/peci/request.c
-+
-+PECI CPU Driver API
-+-------------------
-+.. kernel-doc:: drivers/peci/cpu.c
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c666ef7ea5a5..9d248d55ac30 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15122,6 +15122,7 @@ M:	Iwona Winiarska <iwona.winiarska@intel.com>
- L:	openbmc@lists.ozlabs.org (moderated for non-subscribers)
- S:	Supported
- F:	Documentation/devicetree/bindings/peci/
-+F:	Documentation/peci/
- F:	drivers/peci/
- F:	include/linux/peci-cpu.h
- F:	include/linux/peci.h
+Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
+
 -- 
-2.34.1
+Joe
 
