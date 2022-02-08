@@ -2,109 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F78C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 23:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB616C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 23:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238465AbiBHXsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 18:48:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51774 "EHLO
+        id S238597AbiBHXup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 18:50:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238260AbiBHXsk (ORCPT
+        with ESMTP id S238488AbiBHXun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 18:48:40 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0990C061576
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 15:48:39 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id a39so350347pfx.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 15:48:39 -0800 (PST)
+        Tue, 8 Feb 2022 18:50:43 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE43C06157B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 15:50:42 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id r27so808948oiw.4
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 15:50:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=EQW9/+RZogYh703IuTOkdvN8ZBL4saxG1Lh7/q0hvoU=;
-        b=FAEKTjopxXcIpR64eAjnUudiMds0fOmTb8dmx4oEdm4vkuH3aUvgu/bcaP4w8DudaQ
-         aCmTUVMhuAMQFuR2d4un9QvPCE7H4IJKvLP829fNbzl7BNqhpOe0l/3v5wvR5NWd6onW
-         IWwJ7XrnbFuofM8ClCMdocuygG2Mrndj3R7wk=
+        bh=ZfjRDOxBlYHHE14BCEgNLKQP/YKV4fajU6/9Z4+F+7A=;
+        b=BS1mRT/hnJZLCPbRnmOQrH/RP9NXql41p4yiX3I3vTpbaWa9H2QX9ueT/PbbIIpBuO
+         wKqnqoM3msoIl9hG3IiOugSaK1fQ8hoYA+r15JyTQPHg8hfVsy9t1ilb+jSAzpn6wcMK
+         gAS/tWHJXvWOtI1yFKDxXFYr2mF3e/kdxYNAAeEeMGFHRkJwhl3TCK59jaVEx76efa3A
+         DaCnejo/My5XGJocCbE3m5k8l7o9LKYrF0frYXql9fHASVIExKIvafASKEGaBPqk/WJR
+         /4Tthh1oC+i21lhVB8JNUmUR187U/N30084/wUF/y8Noy8UWZtM8jrTTKwcemIGn34+C
+         AIjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=EQW9/+RZogYh703IuTOkdvN8ZBL4saxG1Lh7/q0hvoU=;
-        b=Pooj9UA5h1sm23nvnamsGOQtcDUXGJY5GtNSDg0OXPsPHe1z9kLA+N2aDjyCn7u5K1
-         IvfqpOzTtOeLpREWdXBIFV+5omUan3szXDBwJZWR1e6W/A9AFLEM+256Jc3w9kak7eiW
-         YtqKxJF2waWgTisIwLpSjGCd0BmqvIJvnBukQyoa+61G2ukaW1enPvjrvw+hP1GueBw2
-         wG6ixRqCA/0KdpGM6lOPosQnsU3MFDT2qRJ1nCyzIu21mzvjNgZy6+wM+MImM4FYMDQ4
-         eQzv9UgWwlFGQAamuRU95PsuJ8zUm2uRKHYTqqUIGWfV6Xc6/qPO/otKDWgA6W8TU3KJ
-         CkeQ==
-X-Gm-Message-State: AOAM533FAqfeuhnCQpyZnUeKP6fmz8C6ky4snh6t6V7OjNrZadKjpur1
-        CoK7b+l+sbGwlmGkYlnEObZflQ==
-X-Google-Smtp-Source: ABdhPJzMAKazgkQ9W3sC+zrddFZCCMcUN8d+F+2QgDe2A93wwYdv6zu2aMc2VBQfetdRUUkF3EwvVw==
-X-Received: by 2002:a63:f709:: with SMTP id x9mr5367873pgh.428.1644364119427;
-        Tue, 08 Feb 2022 15:48:39 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id on14sm3995861pjb.34.2022.02.08.15.48.39
+        bh=ZfjRDOxBlYHHE14BCEgNLKQP/YKV4fajU6/9Z4+F+7A=;
+        b=2sBS1MCCsB4f/GIxEWuxdcc+D6E+zSpxXsu6OVfsAy+vKQjTsuyaqmeLAxyOGwUbuK
+         jG+mvJ7xsyorC9ZcKscYNbXwuIVAP/LLPTMhZ5GgcoemD5TKw/XDAbWJ7ovk7rwjmCud
+         M3lzyRMWnWNRCUSnaNEo2aOXL1rCYuHNY7B//TVG7LJdeR522zvZusrmcbltDsbp9wkc
+         w+rIAYS66SZmAySyXIYAGP3MYZscaXhiTxDzb4QHWIKx8tOZShnSHWtVVoQKd+Gm3JdC
+         /FpDZvaow9V8ito+I3MywZpPAvjiqQwmvp9gvJlmOfsF2BubZz6vjatizjxzGtWGHPF7
+         vGDg==
+X-Gm-Message-State: AOAM5306tGn/P3SDAj+RQcuOG6q1AAczQdSOuGO/i6MygjHxkgsCeeTt
+        X6WZu6fxUzFaGP9MXzSQ7ghjuw==
+X-Google-Smtp-Source: ABdhPJwsbbOsQ2Ax/QBE65F8Xax4Q1ry58y4ohjRKiITBFnYm47y1u0Jiw5XKGU8I+Mz56JLFI6/nA==
+X-Received: by 2002:a05:6808:1920:: with SMTP id bf32mr177216oib.304.1644364241902;
+        Tue, 08 Feb 2022 15:50:41 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id d22sm5729003otp.79.2022.02.08.15.50.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 15:48:39 -0800 (PST)
-Date:   Tue, 8 Feb 2022 15:48:38 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        samitolvanen@google.com
-Subject: Re: [RFC][PATCH 0/6] x86: Kernel IBT beginnings
-Message-ID: <202202081543.5C4EF7F9DE@keescook>
-References: <20211122170301.764232470@infradead.org>
+        Tue, 08 Feb 2022 15:50:41 -0800 (PST)
+Date:   Tue, 8 Feb 2022 15:52:59 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, agross@kernel.org, robh+dt@kernel.org,
+        robdclark@gmail.com, seanpaul@chromium.org, swboyd@chromium.org,
+        dianders@chromium.org, krzysztof.kozlowski@canonical.com,
+        thierry.reding@gmail.com, sam@ravnborg.org, airlied@linux.ie,
+        daniel@ffwll.ch, quic_kalyant@quicinc.com,
+        quic_abhinavk@quicinc.com, quic_khsieh@quicinc.com,
+        quic_mkrishn@quicinc.com
+Subject: Re: [PATCH v2 2/4] arm64: dts: qcom: sc7280: Add support for eDP
+ panel on CRD
+Message-ID: <YgMCW9GrY6SRteOU@ripper>
+References: <1644333525-30920-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1644333525-30920-3-git-send-email-quic_sbillaka@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211122170301.764232470@infradead.org>
+In-Reply-To: <1644333525-30920-3-git-send-email-quic_sbillaka@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Nov 22, 2021 at 06:03:01PM +0100, Peter Zijlstra wrote:
-> It is the very bare beginnings of kernel IBT support. Since I'm lacking any
-> sort of actual hardware it even lacks fun things like code to write to the MSRs
-> to enable the IBT tracker etc..
+On Tue 08 Feb 07:18 PST 2022, Sankeerth Billakanti wrote:
 
-Heh. I have hardware to test with -- recent laptops all have the
-support. I haven't checked in QEMU can emulate it, though. Bochs seems
-to.
-
-> However, it should have most of the ENDBR instructions in the right place -- I
-> hope :-) That said; I would *really* like compiler support for this stuff to be
-> improved, the amount of fixups done by objtool is obscene.
+> Enable the eDP display panel support without HPD on sc7280 platform.
 > 
-> The end result still boots on ancient x86-64 hardware, for whatever that's
-> worth (when built with the below turd included that is).
-
-Should the below roughly be patch 7?
-
-> 
-> Enjoy!
-> 
+> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
 > ---
 > 
-> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-> index 5cdd9bc5c385..1d180bbe7b28 100755
-> --- a/scripts/link-vmlinux.sh
-> +++ b/scripts/link-vmlinux.sh
-> @@ -142,6 +142,11 @@ objtool_link()
->  		info OBJTOOL ${1}
->  		tools/objtool/objtool ${objtoolcmd} ${objtoolopt} ${1}
->  	fi
-> +
-> +	if [ "${CONFIG_X86_IBT}" = "y" ]; then
-> +		# XXX less ugleh
-> +		tools/objtool/objtool check --no-fp --retpoline --uaccess --vmlinux --duplicate --ibt --ibt-fix-direct --ibt-seal ${1}
-> +	fi
->  }
->  
->  # Link of vmlinux
+> Changes in v2:
+>   - sort node references alphabetically
+>   - improve readability
+>   - move the pwm pinctrl to pwm node
+>   - move the regulators to root
+>   - define backlight power
+>   - remove dummy regulator node
+>   - cleanup pinctrl definitions
 > 
+>  arch/arm64/boot/dts/qcom/sc7280-crd.dts | 122 ++++++++++++++++++++++++++++++++
+>  arch/arm64/boot/dts/qcom/sc7280.dtsi    |   2 -
+>  2 files changed, 122 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+> index e2efbdd..bff2707 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+> @@ -21,6 +21,34 @@
+>  	chosen {
+>  		stdout-path = "serial0:115200n8";
+>  	};
+> +
+> +	backlight_power: backlight-power {
+> +		compatible = "regulator-fixed";
+> +		regulator-name = "backlight_power";
+> +
+> +		regulator-min-microvolt = <1800000>;
+> +		regulator-max-microvolt = <1800000>;
+> +
+> +		gpio = <&pm8350c_gpios 7 GPIO_ACTIVE_HIGH>;
+> +		enable-active-high;
+> +
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&edp_bl_power>;
+> +	};
+> +
+> +	edp_power: edp-power {
+> +		compatible = "regulator-fixed";
+> +		regulator-name = "edp_power";
+> +
+> +		regulator-min-microvolt = <3300000>;
+> +		regulator-max-microvolt = <3300000>;
+> +
+> +		gpio = <&tlmm 80 GPIO_ACTIVE_HIGH>;
+> +		enable-active-high;
+> +
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&edp_panel_power>;
+> +	};
+>  };
+>  
+>  &apps_rsc {
+> @@ -76,6 +104,42 @@ ap_ts_pen_1v8: &i2c13 {
+>  	};
+>  };
+>  
+> +&edp_out {
 
-Have you had a chance to get this into shape for a v1?
+Sorry for missing this while merging changes in sc7280.dtsi. But it
+would be really nice if this was labeled mdss_edp_out instead (or
+possibly defined within the &mdss_edp node).
 
--- 
-Kees Cook
+Now you will have &edp_out and &dp_out floating around away from the edp
+and dp nodes...
+
+> +	remote-endpoint = <&edp_panel_in>;
+> +};
+> +
+> +&mdss {
+> +	status = "okay";
+> +};
+> +
+> +&mdss_edp {
+> +	status = "okay";
+> +
+> +	vdda-1p2-supply = <&vreg_l6b_1p2>;
+> +	vdda-0p9-supply = <&vreg_l10c_0p8>;
+> +};
+> +
+> +&mdss_edp_phy {
+> +	status = "okay";
+> +
+> +	vdda-1p2-supply = <&vreg_l6b_1p2>;
+> +	vdda-0p9-supply = <&vreg_l10c_0p8>;
+> +};
+> +
+> +&mdss_dp {
+> +	status = "okay";
+> +
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&dp_hot_plug_det>;
+> +	data-lanes = <0 1>;
+> +	vdda-1p2-supply = <&vreg_l6b_1p2>;
+> +	vdda-0p9-supply = <&vreg_l1b_0p8>;
+> +};
+> +
+> +&mdss_mdp {
+> +	status = "okay";
+> +};
+> +
+>  &nvme_3v3_regulator {
+>  	gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+>  };
+> @@ -84,7 +148,65 @@ ap_ts_pen_1v8: &i2c13 {
+>  	pins = "gpio51";
+>  };
+>  
+> +&pm8350c_pwm {
+
+This label doesn't exist, so I won't be able to merge this patch.
+
+> +	status = "okay";
+> +
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&edp_bl_pwm>;
+> +};
+> +
+> +&pm8350c_gpios {
+> +	edp_bl_power: edp-bl-power {
+> +		pins = "gpio7";
+> +		function = "normal";
+> +		qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
+> +		bias-disable;
+> +		output-low;
+> +	};
+> +
+> +	edp_bl_pwm: edp-bl-pwm {
+> +		pins = "gpio8";
+> +		function = "func1";
+> +		qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
+> +		bias-disable;
+> +		output-low;
+> +	};
+> +};
+> +
+> +&soc {
+> +	edp_backlight: edp-backlight {
+> +		compatible = "pwm-backlight";
+
+This is not a device on the mmio bus, so it should not love within the
+&soc.
+
+> +
+> +		power-supply = <&backlight_power>;
+> +		pwms = <&pm8350c_pwm 3 65535>;
+> +	};
+> +
+> +	edp_panel: edp_panel {
+
+Ditto.
+
+Regards,
+Bjorn
+
+> +		compatible = "sharp,lq140m1jw46";
+> +
+> +		power-supply = <&edp_power>;
+> +		backlight = <&edp_backlight>;
+> +
+> +		ports {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			port@0 {
+> +				reg = <0>;
+> +				edp_panel_in: endpoint {
+> +					remote-endpoint = <&edp_out>;
+> +				};
+> +			};
+> +		};
+> +	};
+> +};
+> +
+>  &tlmm {
+> +	edp_panel_power: edp-panel-power {
+> +		pins = "gpio80";
+> +		function = "gpio";
+> +		bias-pull-down;
+> +	};
+> +
+>  	tp_int_odl: tp-int-odl {
+>  		pins = "gpio7";
+>  		function = "gpio";
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> index 3572399..f8fa716 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> @@ -3012,8 +3012,6 @@
+>  
+>  			mdss_edp: edp@aea0000 {
+>  				compatible = "qcom,sc7280-edp";
+> -				pinctrl-names = "default";
+> -				pinctrl-0 = <&edp_hot_plug_det>;
+>  
+>  				reg = <0 0xaea0000 0 0x200>,
+>  				      <0 0xaea0200 0 0x200>,
+> -- 
+> 2.7.4
+> 
