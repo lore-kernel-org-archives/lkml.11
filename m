@@ -2,161 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB33FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:59:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:00:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353263AbiBHR7D (ORCPT
+        id S1383961AbiBHSAO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 12:59:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40964 "EHLO
+        Tue, 8 Feb 2022 13:00:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384579AbiBHR4W (ORCPT
+        with ESMTP id S234348AbiBHSAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 12:56:22 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0BDC03E954;
-        Tue,  8 Feb 2022 09:55:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644342958; x=1675878958;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=0EfJtKCZ8TJq755vIcGTyhzoNvB2w+5Eip9S5NA3BHI=;
-  b=R/s5A6GpgIaoA987GxdS7TyPRnAgQDmqFaA+MuOMfVaeCg8cVTNUi21K
-   sPdQu5Ap3fBnIbL/nsgoLUcAy7lWarWKdw11oj0R0HG3ChyM6vksndvjv
-   ZQSsWcuZFYnaewrxc4G+FtZ2O3Q51UJ30zbriZgsapcO5jiWy1ALtaNYE
-   A=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 09:55:45 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 09:55:44 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 09:55:24 -0800
-Received: from blr-ubuntu-525.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 09:55:19 -0800
-From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-To:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <pure.logic@nexus-software.ie>,
-        <bjorn.andersson@linaro.org>, <greg@kroah.com>, <robh@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <quic_tsoni@quicinc.com>,
-        <quic_psodagud@quicinc.com>, <quic_satyap@quicinc.com>,
-        <quic_pheragu@quicinc.com>, <quic_rjendra@quicinc.com>,
-        <quic_sibis@quicinc.com>, <quic_saipraka@quicinc.com>,
-        <quic_schowdhu@quicinc.com>
-Subject: [PATCH V6 1/6] dt-bindings: Add the yaml bindings for EUD
-Date:   Tue, 8 Feb 2022 23:24:24 +0530
-Message-ID: <e6a490c5eab9750decd5204d284b9b163b9be187.1644339918.git.quic_schowdhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1644339918.git.quic_schowdhu@quicinc.com>
-References: <cover.1644339918.git.quic_schowdhu@quicinc.com>
+        Tue, 8 Feb 2022 13:00:11 -0500
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C02C061576;
+        Tue,  8 Feb 2022 10:00:10 -0800 (PST)
+Received: by mail-yb1-f177.google.com with SMTP id bt13so28200818ybb.2;
+        Tue, 08 Feb 2022 10:00:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ii2RoA70hyPFpWjpQOIgYWVQ0Wgfgxw0SgqMO+aO1f0=;
+        b=uuG3OZAleDzvPcCeNVi/PAaL5gysBLxLhgWxySnchelsXxph5tki0dERPRQlIFTb5v
+         aXacVFuNFqqwaCw6Tw7R6jO2rdkEbyAlCXqbUYmSnsJ7uFz7lzpLceZ0lBtlMvnGfPC4
+         VNUz1MY5LPWBdU74soncENJ82yEe7fpRGfluysj90zg7p+nP4qHIBI7vpdBczYa1OOs6
+         DBK3Tg4H7gI0yFciM78krrnH6Nqx/wuXFZ4AAqXGPIFYYlvnbGhO81+XtWrWRzhf+CuS
+         EcqhENZM+u4H90yQ3C0X0nCs7rYezpReoYxHeAJBCIJ7Z5fzAHMwysOVU+RYsJ+jGqvt
+         aAXw==
+X-Gm-Message-State: AOAM533uuDZ6pUDHaD9JOEIEPxUkyHAhiUFqWA0z3Uhugb9zJWXSYEnz
+        EWsoTyY+i7n/pn3hLKv6RlHG7N1l3fsuATKqljw=
+X-Google-Smtp-Source: ABdhPJxCnkDYQnltfASHHSHrKRxUmAdvsZvnR3ypuO8fhN3qkWtd7TI0tmHnLmkOZf2qb+oEnqgjgxSy6dkjHXlS3/I=
+X-Received: by 2002:a05:6902:1545:: with SMTP id r5mr6035694ybu.475.1644343209557;
+ Tue, 08 Feb 2022 10:00:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <b177cb21-aa01-2408-9b26-164c028b6593@molgen.mpg.de> <31603144-edec-df2d-fb46-283692c67420@leemhuis.info>
+In-Reply-To: <31603144-edec-df2d-fb46-283692c67420@leemhuis.info>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 8 Feb 2022 18:59:58 +0100
+Message-ID: <CAJZ5v0hyp1nR5id02abZh4cjw=sT0J_nf9spbUHfuwzjdJb5KA@mail.gmail.com>
+Subject: Re: 100 ms boot time increase regression in acpi_init()/acpi_scan_bus()
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        regressions@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Documentation for Embedded USB Debugger(EUD) device tree
-bindings in yaml format.
+On Tue, Feb 8, 2022 at 1:03 PM Thorsten Leemhuis
+<regressions@leemhuis.info> wrote:
+>
+> Hi, this is your Linux kernel regression tracker speaking.
+>
+> Top-posting for once, to make this easy accessible to everyone.
+>
+> @Rafael or any other @acpi/@pm developer: what's the status here?
+> Neither in this thread nor in the bug ticket anything happened afaics.
+> Or is a 100ms boot time increase considered "not a regression"?
 
-Signed-off-by: Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/soc/qcom/qcom,eud.yaml     | 77 ++++++++++++++++++++++
- 1 file changed, 77 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,eud.yaml
+It is on my list of things to look into, because it used to work
+faster, so depending on what change made it work slower, it may be
+possible to restore the previous performance without sacrificing too
+much.
 
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,eud.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,eud.yaml
-new file mode 100644
-index 0000000..c98aab2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,eud.yaml
-@@ -0,0 +1,77 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/soc/qcom/qcom,eud.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Qualcomm Embedded USB Debugger
-+
-+maintainers:
-+  - Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-+
-+description:
-+  This binding is used to describe the Qualcomm Embedded USB Debugger, which is
-+  mini USB-hub implemented on chip to support USB-based debug capabilities.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - qcom,sc7280-eud
-+      - const: qcom,eud
-+
-+  reg:
-+    items:
-+      - description: EUD Base Register Region
-+      - description: EUD Mode Manager Register
-+
-+  interrupts:
-+    description: EUD interrupt
-+    maxItems: 1
-+
-+  ports:
-+    $ref: /schemas/graph.yaml#/properties/ports
-+    description:
-+      These ports is to be attached to the endpoint of the DWC3 controller node
-+      and type C connector node. The controller has the "usb-role-switch"
-+      property.
-+
-+    properties:
-+      port@0:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: This port is to be attached to the DWC3 controller.
-+
-+      port@1:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: This port is to be attached to the type C connector.
-+
-+required:
-+  - compatible
-+  - reg
-+  - ports
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    eud@88e0000 {
-+           compatible = "qcom,sc7280-eud","qcom,eud";
-+           reg = <0x88e0000 0x2000>,
-+                 <0x88e2000 0x1000>;
-+           ports {
-+                   #address-cells = <1>;
-+                   #size-cells = <0>;
-+                   port@0 {
-+                           reg = <0>;
-+                           eud_ep: endpoint {
-+                                   remote-endpoint = <&usb2_role_switch>;
-+                           };
-+                   };
-+                   port@1 {
-+                           reg = <1>;
-+                           eud_con: endpoint {
-+                                   remote-endpoint = <&con_eud>;
-+                           };
-+                   };
-+           };
-+    };
--- 
-2.7.4
-
+I honestly don't think that it is a noticeable issue for users in the
+field, though.
