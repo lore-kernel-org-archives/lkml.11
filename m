@@ -2,111 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 445D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378119AbiBHOU0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:20:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60426 "EHLO
+        id S240596AbiBHOUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 09:20:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378114AbiBHOUV (ORCPT
+        with ESMTP id S1378140AbiBHOUa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 09:20:21 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A0BC03FED7;
-        Tue,  8 Feb 2022 06:20:18 -0800 (PST)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21870EL5014985;
-        Tue, 8 Feb 2022 07:39:59 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=nkkxloxaF4pUquRyB1WrPUg/qAN5/QHz1+sCxGlhwFs=;
- b=ixcsMq48PQq2gk2+7pRw/0kThEXBPt6PtTBAXRttzDhrymsiFXhuYTW458wqH4WzvPKn
- ZKll9m2izwvudmETtqODuqKIt6QP0IGamHmUSUCPqeXN9+nCBcpB4PEafuPnDQtEJDeU
- ukcDEbaBQyVe0+zaGn59lmy70PiMew1Y+1xxkEZH5uv4dVML0dYdnswBd6WqzrH+HDK5
- qdXgwSwZGITdu4ZD4EOGdKn21CA9KT8MkHfMI+amCzsUUyuQwckoL0tEUzYj38aZ/c11
- /+V2sI2ySIAT2SGRSW7Kb/zkqdTt5omY2rgzjKOm+SP26JyGUY0VO4e2QNq5lHQYWylz 6A== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3e34y5sc49-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 08 Feb 2022 07:39:58 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Feb
- 2022 13:39:57 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Tue, 8 Feb 2022 13:39:57 +0000
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 43AE3B13;
-        Tue,  8 Feb 2022 13:39:57 +0000 (UTC)
-Date:   Tue, 8 Feb 2022 13:39:57 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-CC:     Prasad Kumpatla <quic_pkumpatl@quicinc.com>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Subject: Re: [PATCH v2] regmap-irq: Use regmap_irq_update_bits instead of
- regmap_write
-Message-ID: <20220208133957.GC112838@ediswmail.ad.cirrus.com>
-References: <20220119142953.1804-1-quic_pkumpatl@quicinc.com>
- <CGME20220208122955eucas1p2d4e32f51224242e9ebd0bce58b9c04ca@eucas1p2.samsung.com>
- <39f1b598-58ca-1e3d-3065-8dd692ee7c9f@samsung.com>
+        Tue, 8 Feb 2022 09:20:30 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B8CC03FED2;
+        Tue,  8 Feb 2022 06:20:29 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 74D0B210F6;
+        Tue,  8 Feb 2022 14:20:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644330028; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4WJJhP7jK0DOQJQHtTPx5EKq+DTMvkwZuP4aNJjiaLw=;
+        b=OmWrblqdPiugw9YHUSDri6EPj9V5dG5thraHw1pYjL02hVWsJnvtcxjcmpTPtaaPKLkzGJ
+        AFfo9yT3fn9o2OXs6e+cnrMiIjteYbnxLO52Y5XGK++KwNqwID7vj1Ro7IDzZLYnlJX6i9
+        Id6c0c2HXRYZd1xzXY9wJZE5ckHJ0Y8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644330028;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4WJJhP7jK0DOQJQHtTPx5EKq+DTMvkwZuP4aNJjiaLw=;
+        b=TZqH/rbrNg8iqMzfqld1VwhzWyENulmGhmXa1niWC3JcjL9iJoPZ5owP1LuKxe8n4ThGzS
+        ORoCGEDbUcPvb0Dg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E441113C79;
+        Tue,  8 Feb 2022 14:20:27 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id IcMaNit8AmKmfgAAMHmgww
+        (envelope-from <jdelvare@suse.de>); Tue, 08 Feb 2022 14:20:27 +0000
+Date:   Tue, 8 Feb 2022 15:20:25 +0100
+From:   Jean Delvare <jdelvare@suse.de>
+To:     Wolfram Sang <wsa@kernel.org>
+Cc:     Terry Bowman <terry.bowman@amd.com>, linux@roeck-us.net,
+        linux-watchdog@vger.kernel.org, linux-i2c@vger.kernel.org,
+        andy.shevchenko@gmail.com, rafael.j.wysocki@intel.com,
+        linux-kernel@vger.kernel.org, wim@linux-watchdog.org,
+        rrichter@amd.com, thomas.lendacky@amd.com, sudheesh.mavila@amd.com,
+        Nehal-bakulchandra.Shah@amd.com, Basavaraj.Natikar@amd.com,
+        Shyam-sundar.S-k@amd.com, Mario.Limonciello@amd.com
+Subject: Re: [PATCH v4 0/4] Watchdog: sp5100_tco: Replace cd6h/cd7h port I/O
+ accesses with MMIO accesses
+Message-ID: <20220208152025.00d8e7ec@endymion.delvare>
+In-Reply-To: <YgI/P754rQyA9bpM@ninjato>
+References: <20220130191225.303115-1-terry.bowman@amd.com>
+        <20220207134416.72c22504@endymion.delvare>
+        <YgEYjOwoxtbkBdfq@shikoro>
+        <20220208104535.468198f0@endymion.delvare>
+        <YgI/P754rQyA9bpM@ninjato>
+Organization: SUSE Linux
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <39f1b598-58ca-1e3d-3065-8dd692ee7c9f@samsung.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-GUID: r7QGDAE2Izqj91E9qdhI8ZHoSsKTYhwg
-X-Proofpoint-ORIG-GUID: r7QGDAE2Izqj91E9qdhI8ZHoSsKTYhwg
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 01:29:55PM +0100, Marek Szyprowski wrote:
-> Hi Prasad,
+On Tue, 8 Feb 2022 11:00:31 +0100, Wolfram Sang wrote:
+> > I'm still reviewing these, sorry. I only picked the first patch of the
+> > series so that the sp5100_tco patches would build so I could test them.  
 > 
-> On 19.01.2022 15:29, Prasad Kumpatla wrote:
-> > With the existing logic by using regmap_write() all the bits in
-> > the register are being updated which is not expected. To update only the
-> > interrupt raised bit and not tocuhing other bits, replace regmap_write()
-> > with regmap_irq_update_bits().
-> >
-> > This patch is to fix the issue observed in MBHC button press/release events.
-> >
-> > Fixes: 3a6f0fb7b8eb ("regmap: irq: Add support to clear ack registers")
-> > Signed-off-by: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
-> 
-> There is something wrong with this patch. Since it landed in linux-next 
-> (20220204) I get an interrupt storm on two of my test devices:
-> 
-> 1. ARM 32bit Exynos4412-based Trats2 ("wm8994-codec wm8994-codec: FIFO 
-> error" message)
-> 
-> 2. ARM 64bit Exynos5433-based TM2e ("arizona spi1.0: Mixer dropped 
-> sample" message)
-> 
-> Definitely the interrupts are not acknowledged properly. Once I find 
-> some spare time, I will check it further which regmap configuration 
-> triggers the issue, but it is definitely related to this patch. 
-> Reverting it on top of current linux-next fixes the issue.
-> 
+> Ah, I see. I thought more than the first patch was needed for testing.
 
-Yeah I was just looking at this patch it looks a bit weird. Like
-most IRQ acks are write 1 to clear, so doing an update_bits seems
-unlikely to work, as it will ack every pending interrupt. As the
-whole idea of doing a regmap_write was to only write 1 to the bits
-that need ACKed.
+You need the full series to be on the safe side, otherwise there's a
+risk that the two drivers will access the same registers using
+different methods (legacy I/O vs MMIO) so there's no synchronization
+and they could step on each other's toes.
 
-I suspect what is needed here is the inverted case wants an
-update bits but the normal case needs to stay as a regmap_write.
+However as I knew about this limitation, I was careful to not use the
+SMBus driver while I was testing the watchdog driver :-)
 
-Thanks,
-Charles
+-- 
+Jean Delvare
+SUSE L3 Support
