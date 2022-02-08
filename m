@@ -2,136 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF30DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B9BC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 23:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiBHWuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:50:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
+        id S232678AbiBHXAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 18:00:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243270AbiBHWs1 (ORCPT
+        with ESMTP id S231519AbiBHXAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 17:48:27 -0500
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFEFC04A4C6
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:36:16 -0800 (PST)
-Received: by mail-qv1-xf2f.google.com with SMTP id h9so458581qvm.0
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 14:36:16 -0800 (PST)
+        Tue, 8 Feb 2022 18:00:43 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2EEC061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 15:00:39 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id i34so859905lfv.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 15:00:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4N/VNg4Z4S2yqwqo7lo1EjNg6APRg3vzTZff0H8mfjg=;
-        b=talymFDqCzEUp4aHHWidFmuLQAjI7ib4UgEt38u23rP/AK6rIrytCEjeQZQh3RU080
-         LPJe8b6QR0MHHR+TGcPrW08xNorYwQdYxPrj5gIqRh/Fn+ts37j7rrgcDpyMSXHpVyIq
-         UA3ZMQ+8R9NiO946F3uG01eWoF61WgKLRkQ9lMD4DkAsJ89tfB0gq7BrXjuLwA8VSoFg
-         VIohx2OoJk7bOWu8UnVAcyGyzXeY96nI3KsFWqDL7cMtm80M9gfVx4IiYcAVy3aWv0Qf
-         K4YOmtSq+AXmcw2M/DN1ye6a8nuh0FdRmgMZ2DqlIS5jJ9pem5fnbtyU0+CAyQjSxfWF
-         lQ4w==
+        bh=MQGz6t0law5MVgqGGrzII5NWEt2DOl/FdzL0iPkOG9k=;
+        b=E9TiYK6DZsY1U5F0Tz/ZT9q4LEvVWT6mkphsbB6E0Y1n5Dlkxhz4SP8L5DIe0g0vw0
+         TBjFERjJM/SoPlnnskAFnDAxXbaaA/VBkK3AwKQZZQoeH0aXbtWhAa4ckS8Msfw9sMt/
+         L/hwgWpDqGuZ26Xz3UnMuQ0f1DPRvr8rAwZpmJYC3SezqbcKajn15tKuUHb/A4Kq6NtJ
+         I8jIqfhBUMKDLr0ovEbwGyHpY7X8wJB35ug8ElrKLDs/jIZGeIop6uAXzkxw3U0KSBRP
+         HRW0PcDbqGlJDKpseICjPdFOfuyB2wOlgkYr3/iFjOdIE6/GrzEpdpJLM2ZvF146Jr3D
+         ToMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4N/VNg4Z4S2yqwqo7lo1EjNg6APRg3vzTZff0H8mfjg=;
-        b=E/LVhWDYob9U6u6vrXIWDMjJJg/k+tlTrLKTSIk6Gjt0/UqBc4cnm4YzPgNNLMEPzr
-         FiVcFCxKT8aUGdIL+bNax05h+c5uyXYTyK3MhHajQjpGEN7NeQWNnReei5YIJrEFvJW2
-         JqeWsAYkeifN6CvCBceBnAEpn/Oj/Zbqtga/AJGxtlWmhXSlUXsDyDzeSx9t6LSM/K9/
-         2AUl6eEyvLbBN6mlm5SayDI7+uT7654mKzwV96C9UHPPsUZ9UpnV4lBPHyD+RjYCaI+y
-         aDimuSTPiNR6pD3qt/gKUMqGEmvDXYwRGpcFlWS0oE+s1KPWzzMpqxoKSYqZiC0OsQGK
-         ohYQ==
-X-Gm-Message-State: AOAM531nSxmDUrK4AAITjxfA3XFmpZu7IFOY3d/JbEK650r63LZfsbYA
-        GtoNgz2JOr2+qLoxXT109Q89F8hUN7/dp0VJ4Q+TYw==
-X-Google-Smtp-Source: ABdhPJyF46u8KAMmRWmD7rrzZKsobdyPRpM8YW1eiuvtHbLOEyo4TZh7sHhOrBLHCinn/AeeEBBrZcDWnwWA1wUxHI0=
-X-Received: by 2002:a05:6214:2aa2:: with SMTP id js2mr4831360qvb.55.1644359775256;
- Tue, 08 Feb 2022 14:36:15 -0800 (PST)
+        bh=MQGz6t0law5MVgqGGrzII5NWEt2DOl/FdzL0iPkOG9k=;
+        b=3gaffxUPanDAwHNufbE/Ru1/YtHr9q1vsvsyPu2hrM1zUejDGrRzPJLVxHXkIeMVI/
+         XSn0M5jDpo4IL8EIIMBFJvtFzyszJtNLwylV4feGE9cuSf2KdxR2OxUzczRKr5XFisdL
+         FhobBheZDSDZm3bdlBiF/RWfPUgudlTsWlgkfxV5yU4uXPCGYfh1dKkZrREeh+swhTT7
+         GGyvQ98f+MCmaE4kNe7aPJYdxc3HO/T6XYkAAOsAP4jREaJRg7iWllbycJPPCxVeSI/N
+         ILsmp6lzL6rtSPxSXuSnPTXwoUInHkxwlX9/hloLYB5j8ikuOX9k1GbWlTmns+lzqeF2
+         PTWQ==
+X-Gm-Message-State: AOAM532h709kOcn5ebDS1DdiBQrA+wI9QLXuhGpokNUmJAUN3YzKC7F/
+        gnhSbLaWibW4AiJPYrgMEhT2/RQa+M5ecWo0+vb6Tw==
+X-Google-Smtp-Source: ABdhPJx8HIMe+XoTHDDgW/Bf8ZuBvIj0tal1BRdAYtu9iAQbllOd6YD7uh/lhTuv7ckF9ZyKCebOEGMWskDEAM7zE8g=
+X-Received: by 2002:a05:6512:3f97:: with SMTP id x23mr2035026lfa.550.1644361237277;
+ Tue, 08 Feb 2022 15:00:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20211228045934.1524865-1-bjorn.andersson@linaro.org>
- <176fb0bc-2f09-df3b-86be-ef69b8e6cea8@linaro.org> <YgLff2ZFjEN3I3M2@ripper>
-In-Reply-To: <YgLff2ZFjEN3I3M2@ripper>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Wed, 9 Feb 2022 01:36:04 +0300
-Message-ID: <CAA8EJpqtb90V6oN_d7_MYXvTNyt2NhLudJ-iJAbPb-ymX6JLQw@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm/dp: Add DisplayPort controller for SM8350
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Herring <robh+dt@kernel.org>, Sean Paul <sean@poorly.run>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220208225350.1331628-1-keescook@chromium.org> <20220208225350.1331628-3-keescook@chromium.org>
+In-Reply-To: <20220208225350.1331628-3-keescook@chromium.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 8 Feb 2022 15:00:25 -0800
+Message-ID: <CAKwvOdn0huB+HYMCkO9VEryg0AwPA2gpwaUJHGEvV+4846ytSw@mail.gmail.com>
+Subject: Re: [PATCH v7 2/8] Compiler Attributes: Add __pass_object_size for Clang
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        Miguel Ojeda <ojeda@kernel.org>,
+        George Burgess IV <gbiv@google.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Feb 2022 at 00:21, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
+On Tue, Feb 8, 2022 at 2:53 PM Kees Cook <keescook@chromium.org> wrote:
 >
-> On Wed 19 Jan 15:14 PST 2022, Dmitry Baryshkov wrote:
+> In order to gain greater visibility to type information when using
+> __builtin_object_size(), Clang has a function attribute "pass_object_size"
+> that will make size information available for marked arguments in
+> a function by way of implicit additional function arguments that are
+> then wired up the __builtin_object_size().
 >
-> > On 28/12/2021 07:59, Bjorn Andersson wrote:
-> > > The Qualcomm SM8350 platform comes with a single DisplayPort controller,
-> > > add support for this in the DisplayPort driver.
-> > >
-> > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> >
-> > Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> >
+> This is needed to implement FORTIFY_SOURCE in Clang, as a workaround
+> to Clang's __builtin_object_size() having limited visibility[1] into types
+> across function calls (even inlines).
 >
-> I don't see this in linux-next, would it be possible to pick it up now
-> that we're past the merge window etc?
+> This attribute has an additional benefit that it can be used even on
+> non-inline functions to gain argument size information.
+>
+> [1] https://github.com/llvm/llvm-project/issues/53516
 
-I'll work on my staging tree (and send it to Rob) before the EoW.
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
 >
-> Regards,
-> Bjorn
+> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> Cc: Nathan Chancellor <nathan@kernel.org>
+> Cc: llvm@lists.linux.dev
+> Reviewed-by: Miguel Ojeda <ojeda@kernel.org>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  include/linux/compiler_attributes.h | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
 >
-> > > ---
-> > >   .../devicetree/bindings/display/msm/dp-controller.yaml    | 1 +
-> > >   drivers/gpu/drm/msm/dp/dp_display.c                       | 8 ++++++++
-> > >   2 files changed, 9 insertions(+)
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
-> > > index 5457612ab136..cd05cfd76536 100644
-> > > --- a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
-> > > +++ b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
-> > > @@ -21,6 +21,7 @@ properties:
-> > >         - qcom,sc7280-edp
-> > >         - qcom,sc8180x-dp
-> > >         - qcom,sc8180x-edp
-> > > +      - qcom,sm8350-dp
-> > >     reg:
-> > >       items:
-> > > diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-> > > index 8d9c19dbf33e..fd0fd03f8fed 100644
-> > > --- a/drivers/gpu/drm/msm/dp/dp_display.c
-> > > +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-> > > @@ -143,10 +143,18 @@ static const struct msm_dp_config sc7280_dp_cfg = {
-> > >     .num_descs = 2,
-> > >   };
-> > > +static const struct msm_dp_config sm8350_dp_cfg = {
-> > > +   .descs = (const struct msm_dp_desc[]) {
-> > > +           [MSM_DP_CONTROLLER_0] = { .io_start = 0x0ae90000, .connector_type = DRM_MODE_CONNECTOR_DisplayPort },
-> > > +   },
-> > > +   .num_descs = 1,
-> > > +};
-> > > +
-> > >   static const struct of_device_id dp_dt_match[] = {
-> > >     { .compatible = "qcom,sc7180-dp", .data = &sc7180_dp_cfg },
-> > >     { .compatible = "qcom,sc7280-dp", .data = &sc7280_dp_cfg },
-> > >     { .compatible = "qcom,sc7280-edp", .data = &sc7280_dp_cfg },
-> > > +   { .compatible = "qcom,sm8350-dp", .data = &sm8350_dp_cfg },
-> > >     {}
-> > >   };
-> >
-> >
-> > --
-> > With best wishes
-> > Dmitry
-
+> diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler_attributes.h
+> index 37e260020221..d0c503772061 100644
+> --- a/include/linux/compiler_attributes.h
+> +++ b/include/linux/compiler_attributes.h
+> @@ -263,6 +263,20 @@
+>   */
+>  #define __packed                        __attribute__((__packed__))
+>
+> +/*
+> + * Note: the "type" argument should match any __builtin_object_size(p, type) usage.
+> + *
+> + * Optional: not supported by gcc.
+> + * Optional: not supported by icc.
+> + *
+> + * clang: https://clang.llvm.org/docs/AttributeReference.html#pass-object-size-pass-dynamic-object-size
+> + */
+> +#if __has_attribute(__pass_object_size__)
+> +# define __pass_object_size(type)      __attribute__((__pass_object_size__(type)))
+> +#else
+> +# define __pass_object_size(type)
+> +#endif
+> +
+>  /*
+>   *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-pure-function-attribute
+>   */
+> --
+> 2.30.2
+>
+>
 
 
 -- 
-With best wishes
-Dmitry
+Thanks,
+~Nick Desaulniers
