@@ -2,63 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE51C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBD9C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:48:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233098AbiBHBXj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:23:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
+        id S240908AbiBHBsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:48:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343873AbiBHBXa (ORCPT
+        with ESMTP id S239539AbiBHBgj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:23:30 -0500
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E59C053987;
-        Mon,  7 Feb 2022 17:23:25 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V3tTUEL_1644283402;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V3tTUEL_1644283402)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 08 Feb 2022 09:23:23 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     daniel@ffwll.ch
-Cc:     airlied@linux.ie, sean@poorly.run, robdclark@gmail.com,
-        quic_abhinavk@quicinc.com, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] drm/msm/dpu: clean up some inconsistent indenting
-Date:   Tue,  8 Feb 2022 09:23:21 +0800
-Message-Id: <20220208012321.43587-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Mon, 7 Feb 2022 20:36:39 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C87CC061355;
+        Mon,  7 Feb 2022 17:36:38 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id A7B1F340;
+        Tue,  8 Feb 2022 02:36:36 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644284196;
+        bh=QPrFMFxjzU7YGJv65FQNezHMqIiPR8D8MwVPLoKhFRE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ty5Hr6oafXPAdfTKW9KW/lWJOjLTgKdYv7um/mBX3I12M9iHtgC/p6v4dFaz9CLo+
+         cBhEL4YARfhEoQbu1jWXdv4HTbf8ed8k4zhAwJittDaQEE0koRPgAigjtE0m3pk5EI
+         /Ss+XZA3c1mCCQC6E7hamFkyz/oX/aHH9cun7yGg=
+Date:   Tue, 8 Feb 2022 03:36:34 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     jeanmichel.hautbois@ideasonboard.com,
+        linux-arm-kernel@lists.infradead.org,
+        dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
+        kernel-list@raspberrypi.com, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        lukasz@jany.st, mchehab@kernel.org, naush@raspberrypi.com,
+        robh@kernel.org, tomi.valkeinen@ideasonboard.com,
+        nsaenz@kernel.org, bcm-kernel-feedback-list@broadcom.com
+Subject: Re: (EXT) Re: (EXT) [RFC PATCH v4 03/12] dt-bindings: media: Add
+ bindings for bcm2835-unicam
+Message-ID: <YgHJIsZSrDFp9xvF@pendragon.ideasonboard.com>
+References: <20220203175009.558868-1-jeanmichel.hautbois@ideasonboard.com>
+ <7954256.DvuYhMxLoT@steina-w>
+ <Yf3fe2F88SNcl2Jd@pendragon.ideasonboard.com>
+ <5541132.DvuYhMxLoT@steina-w>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <5541132.DvuYhMxLoT@steina-w>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eliminate the follow smatch warning:
-drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c:411
-_dpu_crtc_blend_setup_mixer() warn: inconsistent indenting
+Hi Alexander,
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Mon, Feb 07, 2022 at 07:30:25AM +0100, Alexander Stein wrote:
+> Am Samstag, 5. Februar 2022, 03:22:51 CET schrieb Laurent Pinchart:
+> > On Fri, Feb 04, 2022 at 09:50:06AM +0100, Alexander Stein wrote:
+> > > Am Donnerstag, 3. Februar 2022, 18:50:00 CET schrieb Jean-Michel Hautbois:
+> > > > Introduce the dt-bindings documentation for bcm2835 CCP2/CSI2 Unicam
+> > > > camera interface. Also add a MAINTAINERS entry for it.
+> > > > 
+> > > > Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+> > > > Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+> > > > Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+> > > > 
+> > > > ---
+> > > > v4:
+> > > > - make MAINTAINERS its own patch
+> > > > - describe the reg and clocks correctly
+> > > > - use a vendor entry for the number of data lanes
+> > > > ---
+> > > > 
+> > > >  .../bindings/media/brcm,bcm2835-unicam.yaml   | 110 ++++++++++++++++++
+> > > >  1 file changed, 110 insertions(+)
+> > > >  create mode 100644
+> > > > 
+> > > > Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> > > > 
+> > > > diff --git
+> > > > a/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> > > > b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> > > > new file mode 100644
+> > > > index 000000000000..0725a0267c60
+> > > > --- /dev/null
+> > > > +++ b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> > > > @@ -0,0 +1,110 @@
+> > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > > +%YAML 1.2
+> > > > +---
+> > > > +$id: http://devicetree.org/schemas/media/brcm,bcm2835-unicam.yaml#
+> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > +
+> > > > +title: Broadcom BCM283x Camera Interface (Unicam)
+> > > > +
+> > > > +maintainers:
+> > > > +  - Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>
+> > > > +
+> > > > +description: |-
+> > > > +  The Unicam block on BCM283x SoCs is the receiver for either
+> > > > +  CSI-2 or CCP2 data from image sensors or similar devices.
+> > > > +
+> > > > +  The main platform using this SoC is the Raspberry Pi family of boards.
+> > > > +  On the Pi the VideoCore firmware can also control this hardware block,
+> > > > +  and driving it from two different processors will cause issues.
+> > > > +  To avoid this, the firmware checks the device tree configuration
+> > > > +  during boot. If it finds device tree nodes starting by csi then
+> > > > +  it will stop the firmware accessing the block, and it can then
+> > > > +  safely be used via the device tree binding.
+> > > > +
+> > > > +properties:
+> > > > +  compatible:
+> > > > +    const: brcm,bcm2835-unicam
+> > > > +
+> > > > +  reg:
+> > > > +    items:
+> > > > +      - description: Unicam block.
+> > > > +      - description: Clock Manager Image (CMI) block.
+> > > > +
+> > > > +  interrupts:
+> > > > +    maxItems: 1
+> > > > +
+> > > > +  clocks:
+> > > > +    items:
+> > > > +      - description: Clock to drive the LP state machine of Unicam.
+> > > > +      - description: Clock for the vpu (core clock).
+> > > > +
+> > > > +  clock-names:
+> > > > +    items:
+> > > > +      - const: lp
+> > > > +      - const: vpu
+> > > > +
+> > > > +  power-domains:
+> > > > +    items:
+> > > > +      - description: Unicam power domain
+> > > > +
+> > > > +  brcm,num-data-lanes:
+> > > > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > > > +    enum: [ 2, 4 ]
+> > > > +    description: Number of data lanes on the csi bus
+> > > 
+> > > There is already data-lanes in
+> > > Documentation/devicetree/bindings/media/video- interfaces.yaml. AFAICS
+> > > these two are identical. Can't the video-
+> > > interface.yaml be used for this? I'm no expert TBH.
+> > 
+> > This is the number of data lanes that the Unicam instance supports.
+> > There are two Unicam instances, and they can have 2 or 4 data lanes
+> > depending on the SoC. The data-lanes endpoint property indicates the
+> > number of lanes used on a particular board.
+> 
+> Thanks for the explanation. Isn't this something which could be derived from 
+> the compatible, e.g. having 2 different ones for 2 and 4 lanes respectively?
+> See [1] for a similar situation in the SPI subsystem.
+> I don't have a strong opinion, just want to share my feedback.
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-index e7c9fe1a250f..662b7bc9c219 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-@@ -408,7 +408,7 @@ static void _dpu_crtc_blend_setup_mixer(struct drm_crtc *crtc,
- 	if (ctl->ops.set_active_pipes)
- 		ctl->ops.set_active_pipes(ctl, fetch_active);
- 
--	 _dpu_crtc_program_lm_output_roi(crtc);
-+	_dpu_crtc_program_lm_output_roi(crtc);
- }
- 
- /**
+Yes, it could also be done through compatible strings, but in this case
+I think a vendor-specific property is better. The number of lanes routed
+from the Unicam IP core to the external of the SoC depends on the exact
+SoC model, so we would need to create different compatible strings for
+essentially the same IP core.
+
+> [1] https://patchwork.kernel.org/project/spi-devel-general/patch/20211207104114.2720764-1-alexander.stein@ew.tq-group.com/#24641405
+
 -- 
-2.20.1.7.g153144c
+Regards,
 
+Laurent Pinchart
