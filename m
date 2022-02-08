@@ -2,93 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32ACFC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D04C3527A
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357517AbiBHLXF (ORCPT
+        id S1355442AbiBHLWy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:23:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
+        Tue, 8 Feb 2022 06:22:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355551AbiBHJpj (ORCPT
+        with ESMTP id S239854AbiBHJnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:45:39 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A068C03FEC0;
-        Tue,  8 Feb 2022 01:45:38 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 329DE1F383;
-        Tue,  8 Feb 2022 09:45:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644313537; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=phKy/GYR8AFrOcYtM7KfuK7BlbUn4X8F4JX+JrNNqQk=;
-        b=c5r86d+mvOPETQEeH4ZvGpRU0TNuc5nbdOM6G6xscdL7XZWTbOhkkDLYcJPAzOA4kblFyK
-        nMgb9yGYMbx5czOY/kfQqG5FSTZHwIFH7NpUQMSWJ22ZuwG6yPh3PYkyKFlvf8w1KRX1d7
-        3DOBHCdLpBarcjAwbQGf7Djk4O9yBpQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644313537;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=phKy/GYR8AFrOcYtM7KfuK7BlbUn4X8F4JX+JrNNqQk=;
-        b=vSX94O3lmfcAJOzIgHi2dJwsx6/Lg+/9BtUjJ4mae/aaOa1XM+O7riDHeIR0Rr2U0pecOk
-        cFMJWcT4eseWfaAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A5B8413BA0;
-        Tue,  8 Feb 2022 09:45:36 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id K7nHJsA7AmKmZAAAMHmgww
-        (envelope-from <jdelvare@suse.de>); Tue, 08 Feb 2022 09:45:36 +0000
-Date:   Tue, 8 Feb 2022 10:45:35 +0100
-From:   Jean Delvare <jdelvare@suse.de>
-To:     Wolfram Sang <wsa@kernel.org>
-Cc:     Terry Bowman <terry.bowman@amd.com>, linux@roeck-us.net,
-        linux-watchdog@vger.kernel.org, linux-i2c@vger.kernel.org,
-        andy.shevchenko@gmail.com, rafael.j.wysocki@intel.com,
-        linux-kernel@vger.kernel.org, wim@linux-watchdog.org,
-        rrichter@amd.com, thomas.lendacky@amd.com, sudheesh.mavila@amd.com,
-        Nehal-bakulchandra.Shah@amd.com, Basavaraj.Natikar@amd.com,
-        Shyam-sundar.S-k@amd.com, Mario.Limonciello@amd.com
-Subject: Re: [PATCH v4 0/4] Watchdog: sp5100_tco: Replace cd6h/cd7h port I/O
- accesses with MMIO accesses
-Message-ID: <20220208104535.468198f0@endymion.delvare>
-In-Reply-To: <YgEYjOwoxtbkBdfq@shikoro>
-References: <20220130191225.303115-1-terry.bowman@amd.com>
-        <20220207134416.72c22504@endymion.delvare>
-        <YgEYjOwoxtbkBdfq@shikoro>
-Organization: SUSE Linux
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        Tue, 8 Feb 2022 04:43:18 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07927C03FEC0;
+        Tue,  8 Feb 2022 01:43:17 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id j14so27115517ejy.6;
+        Tue, 08 Feb 2022 01:43:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Lq+dKx41RUjgzj8JvU9gnjviVgG4UdA+iyRcp+19UfA=;
+        b=kzTiv9B2U7Wc0fxzGKxQg8uhdYfgfO/xIoYNmhC/rgC3OhSFBPSSSVQO2K03kmbWfV
+         +UGcT+3CXBaxmU4wl8vygy23F0/n2OIZj2wwoZZ6M8tTxHSy5w2XasdRhToXb6F0ZJL/
+         5huGHAex9ROgFLbGyHXavnKHmZg06VqvEs+lU3tVrec1MwOb4gQ+YZnPEYUEScn8yWtG
+         WF55TzQTCmLzqEGG4Wwt1SN9T/qVgfgZxo3olqp4twStPc8Fvlq9EMbnn/OX0tq+yMTp
+         Nu1gS0AV+TRUTP19KVXQYe2RVt0OjPTJ8exsji8O9JmPiZQToxuJaegip/FXmkOFrhBJ
+         PJzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Lq+dKx41RUjgzj8JvU9gnjviVgG4UdA+iyRcp+19UfA=;
+        b=q5js+0T8YuxD/PeJk01Wx/XllnlZgCF/Zj1js5uulnlweydHDse+Jmyzk6pi+Z178R
+         GY1xrd4G1PYw7fjh2Bt84dsMCdyqkP1AdpgokWUegGQId6/hDq0ZAiAzcI0+wpv3gatL
+         5alRv6j8uVKhZfgc9VJFPp4Aubskx17aSri7qKsN54e2cDLk+LvTFolwHnf0zNwkqTiM
+         0ZQiSQesn0mtB+ZwiQvliQ8NyMcJaYUI8uefN/+YDHe6aUOde1ju35IKWIuIehaB4p4x
+         GAnClsUMLqz0kdLXbFg7lpNVwOxaaOeVIjmoxPCKomJK24tK040U8fw7O24OXRFzL5xP
+         BZPg==
+X-Gm-Message-State: AOAM532l7rVUk+WT/IYG/IIZYuBNZeqHps3bPT6ovJITC+OkKdJ+P6TB
+        dK/MDRN0+s0LeSyWUhpp3ts=
+X-Google-Smtp-Source: ABdhPJwAZUEHLlmX1IkuCQdKZVNT6gCfYtB0CZnvNZIAtRmMvtzYnBBVouYUplHQTTxgvw/iOFbdAA==
+X-Received: by 2002:a17:907:1115:: with SMTP id qu21mr2996031ejb.192.1644313395453;
+        Tue, 08 Feb 2022 01:43:15 -0800 (PST)
+Received: from tiger.museclub.art (p200300cf9f235800e668694710673d4b.dip0.t-ipconnect.de. [2003:cf:9f23:5800:e668:6947:1067:3d4b])
+        by smtp.googlemail.com with ESMTPSA id v14sm585931edq.13.2022.02.08.01.43.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 01:43:14 -0800 (PST)
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+To:     eugene.shalygin@gmail.com
+Cc:     Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Denis Pauk <pauk.denis@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] hwmon: (asus-ec-sensors) add CPU core voltage
+Date:   Tue,  8 Feb 2022 10:42:43 +0100
+Message-Id: <20220208094244.1106312-1-eugene.shalygin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 14:03:08 +0100, Wolfram Sang wrote:
-> > Confirmed. I reviewed the 4 patches of this version of the series and
-> > I'm fine with them. I also tested the result successfully on my laptop.
-> > 
-> > Reviewed-by: Jean Delvare <jdelvare@suse.de>
-> > Tested-by: Jean Delvare <jdelvare@suse.de>  
-> 
-> Does that mean you are happy with the i2c-piix4 changes as well?
+A user discovered [1] the CPU Core voltage sensor, which spans 2
+registers and provides output in mV. Althroug the discovery was made
+with a X470 chipset, the sensor is present in X570 (tested with C8H).
+For now simply add it to each board with the CPU current sensor present.
 
-I'm still reviewing these, sorry. I only picked the first patch of the
-series so that the sp5100_tco patches would build so I could test them.
-I hope to be done by the end of the day.
+[1] https://github.com/zeule/asus-ec-sensors/issues/12
 
+Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
+---
+ Documentation/hwmon/asus_ec_sensors.rst |  1 +
+ drivers/hwmon/asus-ec-sensors.c         | 29 ++++++++++++++++---------
+ 2 files changed, 20 insertions(+), 10 deletions(-)
+
+diff --git a/Documentation/hwmon/asus_ec_sensors.rst b/Documentation/hwmon/asus_ec_sensors.rst
+index 22de1b037cfb..e7e8f1640f45 100644
+--- a/Documentation/hwmon/asus_ec_sensors.rst
++++ b/Documentation/hwmon/asus_ec_sensors.rst
+@@ -39,6 +39,7 @@ The driver is aware of and reads the following sensors:
+ 9. Readings from the "Water flow meter" header (RPM)
+ 10. Readings from the "Water In" and "Water Out" temperature headers
+ 11. CPU current
++12. CPU core voltage
+ 
+ Sensor values are read from EC registers, and to avoid race with the board
+ firmware the driver acquires ACPI mutex, the one used by the WMI when its
+diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
+index dd7b207d062f..bfac08a5dc57 100644
+--- a/drivers/hwmon/asus-ec-sensors.c
++++ b/drivers/hwmon/asus-ec-sensors.c
+@@ -18,6 +18,7 @@
+  * - VRM Heat Sink fan RPM
+  * - Water Flow fan RPM
+  * - CPU current
++ * - CPU core voltage
+  */
+ 
+ #include <linux/acpi.h>
+@@ -100,6 +101,8 @@ enum ec_sensors {
+ 	ec_sensor_temp_t_sensor,
+ 	/* VRM temperature [℃] */
+ 	ec_sensor_temp_vrm,
++	/* CPU Core voltage [mV] */
++	ec_sensor_in_cpu_core,
+ 	/* CPU_Opt fan [RPM] */
+ 	ec_sensor_fan_cpu_opt,
+ 	/* VRM heat sink fan [RPM] */
+@@ -121,6 +124,7 @@ enum ec_sensors {
+ #define SENSOR_TEMP_MB BIT(ec_sensor_temp_mb)
+ #define SENSOR_TEMP_T_SENSOR BIT(ec_sensor_temp_t_sensor)
+ #define SENSOR_TEMP_VRM BIT(ec_sensor_temp_vrm)
++#define SENSOR_IN_CPU_CORE BIT(ec_sensor_in_cpu_core)
+ #define SENSOR_FAN_CPU_OPT BIT(ec_sensor_fan_cpu_opt)
+ #define SENSOR_FAN_VRM_HS BIT(ec_sensor_fan_vrm_hs)
+ #define SENSOR_FAN_CHIPSET BIT(ec_sensor_fan_chipset)
+@@ -139,6 +143,8 @@ static const struct ec_sensor_info known_ec_sensors[] = {
+ 	[ec_sensor_temp_t_sensor] =
+ 		EC_SENSOR("T_Sensor", hwmon_temp, 1, 0x00, 0x3d),
+ 	[ec_sensor_temp_vrm] = EC_SENSOR("VRM", hwmon_temp, 1, 0x00, 0x3e),
++	[ec_sensor_in_cpu_core] =
++		EC_SENSOR("CPU Core", hwmon_in, 2, 0x00, 0xa2),
+ 	[ec_sensor_fan_cpu_opt] =
+ 		EC_SENSOR("CPU_Opt", hwmon_fan, 2, 0x00, 0xb0),
+ 	[ec_sensor_fan_vrm_hs] = EC_SENSOR("VRM HS", hwmon_fan, 2, 0x00, 0xb2),
+@@ -172,32 +178,34 @@ static const struct dmi_system_id asus_ec_dmi_table[] __initconst = {
+ 		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "Pro WS X570-ACE",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
+-		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
++		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+ 			      "ROG CROSSHAIR VIII DARK HERO",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+ 		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+-		SENSOR_FAN_CPU_OPT | SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
++		SENSOR_FAN_CPU_OPT | SENSOR_FAN_WATER_FLOW |
++		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+ 			      "ROG CROSSHAIR VIII FORMULA",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+ 		SENSOR_TEMP_VRM | SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
+-		SENSOR_CURR_CPU),
++		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG CROSSHAIR VIII HERO",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+ 		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+ 		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
+-		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
++		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+ 			      "ROG CROSSHAIR VIII HERO (WI-FI)",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+ 		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+ 		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
+-		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
++		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+ 			      "ROG CROSSHAIR VIII IMPACT",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
++		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET |
++		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX B550-E GAMING",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+ 		SENSOR_TEMP_T_SENSOR |
+@@ -205,17 +213,19 @@ static const struct dmi_system_id asus_ec_dmi_table[] __initconst = {
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX B550-I GAMING",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+ 		SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_FAN_VRM_HS | SENSOR_CURR_CPU),
++		SENSOR_TEMP_VRM | SENSOR_FAN_VRM_HS |
++		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-E GAMING",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+ 		SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
++		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET |
++		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-F GAMING",
+ 		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+ 		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET),
+ 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-I GAMING",
+ 		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_VRM_HS |
+-		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
++		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+ 	{}
+ };
+ 
+@@ -467,7 +477,6 @@ static long scale_sensor_value(s32 value, int data_type)
+ 	switch (data_type) {
+ 	case hwmon_curr:
+ 	case hwmon_temp:
+-	case hwmon_in:
+ 		return value * MILLI;
+ 	default:
+ 		return value;
 -- 
-Jean Delvare
-SUSE L3 Support
+2.35.1
+
