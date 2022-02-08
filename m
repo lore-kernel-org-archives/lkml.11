@@ -2,89 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 680F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A81C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353240AbiBHTR4 (ORCPT
+        id S1385977AbiBHTUL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 14:17:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60162 "EHLO
+        Tue, 8 Feb 2022 14:20:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385929AbiBHTRz (ORCPT
+        with ESMTP id S1385964AbiBHTUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:17:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7A7C0612C0;
-        Tue,  8 Feb 2022 11:17:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8228DB81CBE;
-        Tue,  8 Feb 2022 19:17:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E30DDC004E1;
-        Tue,  8 Feb 2022 19:17:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644347872;
-        bh=tM3+yTNfndQKhKxV0q8n28hJCRchdQiyxSD4fHX/LUs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bxWFxuFCPOdRvgaYNBs/mKRcWsM4tX71d978uaf5gB+B2EP+NuYva09aLB2QafYS6
-         heBjMhyM254fh69jsPIxS4xUX8sFXMNA1X7OdziR18Qn4FR5Iw2KLd/JWYcvEHg1LL
-         S5zLxThkyfJuvI/Cs0MPeufE6F4f1q53XaqcDBu1zZRgQPf8a5MQgWzS2mwNkItGnW
-         pQ8lidZqtYxa0Lekfun8QLLkVfwB5wlfUKh7UvIOK/VvHcE43sH72h3HwojK7XkuwH
-         6pTLLtlLkOMvAsI+Aq4zi/CpdAYttZ4GOWHpQ3rh8gcXlQvkxygr5n3Ay9rPScmZuB
-         uFOW1mO7mqo5Q==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] MIPS: Malta: Enable BLK_DEV_INITRD
-Date:   Tue,  8 Feb 2022 12:17:26 -0700
-Message-Id: <20220208191726.1304731-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Tue, 8 Feb 2022 14:20:08 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8056CC0612C0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:20:06 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id bt13so28807807ybb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:20:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4JxTFoE10Xqe5d3z4zOPiFNFHsiuqJzkr1QYZntPRQM=;
+        b=GTHGYForIk5Fc+B3ly6NQIqzu76350nZw/zcVJV1GYoex90pIOQWA5cBUqP0smIYOa
+         HoI4ymg+6rnCuRF0IYyh2u8IB3AN7ya9qi1ZcKuD0JhuFUjll+OYHAemD5SRnJ0u3G2w
+         cpY6mwL4z3I7a3vVzUU/4NI9HcfSvwHaNLUH4nEynWyqhoaKFIvaRzHSDEcXjNPolrw1
+         Z5gyGFKMgPcanS5YHmm3T1UzXQHrVwk7PD5lFHrHIIbrjTtDMnKIsST02C+7PqDe/OWZ
+         fpPH7qXeuZ7u4FAjrwZvMT4oxhZ8xlYN6n/RXkTjwhverTuHFhg3ZMfVs5WU/j0MCByG
+         +5og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4JxTFoE10Xqe5d3z4zOPiFNFHsiuqJzkr1QYZntPRQM=;
+        b=iYRnPmRstVbibBhpfWhq3KnLbmH63oTl6XqJwDHCM8HZ++U+gTM8j9hdf4ZZZiKgAA
+         CRjvVsprcVL/X9FtQIWYmxD7mHHqA08t3MSZfxjGYWdRNeZ0M/3NfMnE7QzdobQI8On2
+         nwvcd/AZ1iHi41/FCwJSdwZAC7d8BQb/cEAK2USxZNaDprUhhzFkp37P3yqcsVdYwRrp
+         zdwK7frBUXO6gu0G/1T+0WGTa9a1GVJiOzDkg90xDXZKrZqUfoYEtLskX/uzNiita89Y
+         c9RKoj0P0pC8RQL+qUM+wx3LWRFY8r6KQ0Cf36ggRCWFvBwUsn6AhMFZ5O3fekxVCHfJ
+         KAtA==
+X-Gm-Message-State: AOAM531AFAE9xQp9NECy9qyZmf3Jioznw5mDw9IDA9r1x4kkp+VUgikv
+        vyCk/QHg0dbOEgp8YMEA2iHQ8u+ENA+grbf0HJFKE2+B88ylbg==
+X-Google-Smtp-Source: ABdhPJy/2ZJsdNIpfT19XC99EZa++n0vY+09GTEwdIyYzwjIrajZCMmDIQh50dNobDk17ev42L4L5l7uya+oNR03sQ0=
+X-Received: by 2002:a0d:e305:: with SMTP id m5mr6327794ywe.375.1644348005640;
+ Tue, 08 Feb 2022 11:20:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220126161832.3193805-1-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220126161832.3193805-1-benjamin.tissoires@redhat.com>
+From:   Angela Czubak <acz@semihalf.com>
+Date:   Tue, 8 Feb 2022 20:19:54 +0100
+Message-ID: <CAB4aORW_b+6=a-fXCL-MJoM9uNvjeYL01W85Rb=6rMP-Nm11QQ@mail.gmail.com>
+Subject: Re: [PATCH 00/12] HID: fix for generic input processing
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Ahelenia_Ziemia=C5=84ska?= 
+        <nabijaczleweli@nabijaczleweli.xyz>,
+        Ping Cheng <pinglinux@gmail.com>,
+        Aaron Armstrong Skomra <skomra@gmail.com>,
+        Jason Gerecke <killertofu@gmail.com>,
+        Peter Hutterer <peter.hutterer@who-t.net>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This configuration is useful for boot testing malta_defconfig in QEMU
-with just a simple cpio initrd, instead of a full ext4 rootfs.
+Hi Benjamin,
 
-This results in an increase of ~164KB of vmlinux (with GCC 11.2.0):
+On Wed, Jan 26, 2022 at 5:18 PM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
+>
+> Hi,
+>
+> This is a followup of the discussion we had between Wacom and
+> the maintainers, and a followup of those 2 patch series:
+>
+> https://lore.kernel.org/r/20211022232837.18988-1-ping.cheng@wacom.com/
+> https://lore.kernel.org/r/2ca91ac7cf92e3048a236db3cd519f04e12c1e61.1615224800.git.nabijaczleweli@nabijaczleweli.xyz/
+>
+> It took me a while to get it right, but I finally can submit the
+> series:
+>
+> - the first 8 patches are some cleanup in the hid-input.c and
+>   hid-core.c code. They also create a list of input fields that
+>   is then used to process the event, in the priority we think
+>   is good.
+>
+>   For instance, on multitouch devices, it is better to have
+>   Contact Count before processing all touches, and in each
+>   touch, having Contact ID first is better. This series doesn't
+>   cover hid-multitouch, but I have a series on top of this one that
+>   does cover it.
+>
+>   Anyway, in our case, here, we need to process Invert before
+>   In Range for tablets so we can make a decision whether the user
+>   has the intend to erase or not.
+>
+> - patch 9 enforces the invert usage before In Range as mentioned
+>   above
+>
+> - patch 10 is the actual bulk of processing that should fix the
+>   generic tablet handling. Now that we have a reliable ordering
+>   of the fields, we can compute the state of the tool in a reliable
+>   way, and be kinder to userspace by not sending to it 2 tools at
+>   the same time.
+>
+>   This patch has been extensively tested by hid-tools with the new
+>   MR I submitted that add tests for tablets [0].
+>
+> - patch 11 is a nice to have that I need for my second series regarding
+>   hid-multitouch. It is not mandatory with that series, but given
+>   that it changes the format of the priorities in hid-input.c I thought
+>   it would be best to send it as part of this series.
+>
+>   Note that now we are tagging the *reports* and the individual fields
+>   when they are part of a multitouch collection, which should help
+>   the drivers that implement this processing (hid-multitouch and wacom).
+>
+> - last, patch 12 is an attempt at fixing the documentation regarding
+>   BTN_TOOL_* (requested by Peter).
+>
+>   Dmitry, feel free to take this one through your tree if you prefer
+>   to do so (and if you are happy with it), otherwise we can take it
+>   through the hid tree.
+>
+> As mentioned above, I have a followup series not entirely tidied up
+> that implements the processing of Win8 mutltiouch devices in
+> hid-input.c.
+> There are several benefits for that: we should be able to drop the
+> multitouch code in wacom.ko, we can simplify part of hid-multitouch,
+> and we will be able to quirk a particular device in a separate module,
+> without touching at the generic code (in hid-multitouch or hid-input).
+>
+> Anyway, I am missing a few bits for that so that's coming in later.
+>
 
-$ diskus vmlinux.before
-11.19 MB (11,194,368 bytes)
+Is there any timeline for the followup series? I am wondering how that
+would affect haptic support implementation.
 
-$ diskus vmlinux.after
-11.36 MB (11,358,208 bytes)
+> Cheers,
+> Benjamin
+>
+>
+> [0] https://gitlab.freedesktop.org/libevdev/hid-tools/-/merge_requests/127
+>
+> Benjamin Tissoires (12):
+>   HID: core: statically allocate read buffers
+>   HID: core: de-duplicate some code in hid_input_field()
+>   HID: core: split data fetching from processing in hid_input_field()
+>   HID: input: tag touchscreens as such if the physical is not there
+>   HID: input: rework spaghetti code with switch statements
+>   HID: input: move up out-of-range processing of input values
+>   HID: compute an ordered list of input fields to process
+>   HID: core: for input reports, process the usages by priority list
+>   HID: input: enforce Invert usage to be processed before InRange
+>   HID: input: remove the need for HID_QUIRK_INVERT
+>   HID: input: accommodate priorities for slotted devices
+>   Input: docs: add more details on the use of BTN_TOOL
+>
+>  Documentation/input/event-codes.rst |   5 +-
+>  drivers/hid/hid-core.c              | 280 ++++++++++++++++++++---
+>  drivers/hid/hid-input.c             | 330 ++++++++++++++++++++++------
+>  include/linux/hid.h                 |  23 +-
+>  4 files changed, 533 insertions(+), 105 deletions(-)
+>
+> --
+> 2.33.1
+>
 
-This size increase comes from the fact that usr/Kconfig is sourced when
-CONFIG_BLK_DEV_INITRD is enabled, which defaults to supporting several
-decompression algorithms for compressed initrds. This seems like a
-reasonable tradeoff but these configurations could be disabled in the
-future if there are complaints about the size increase.
-
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- arch/mips/configs/malta_defconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/mips/configs/malta_defconfig b/arch/mips/configs/malta_defconfig
-index 3321bb576944..3456ac8ded6c 100644
---- a/arch/mips/configs/malta_defconfig
-+++ b/arch/mips/configs/malta_defconfig
-@@ -4,6 +4,7 @@ CONFIG_HIGH_RES_TIMERS=y
- CONFIG_LOG_BUF_SHIFT=15
- CONFIG_NAMESPACES=y
- CONFIG_RELAY=y
-+CONFIG_BLK_DEV_INITRD=y
- CONFIG_EXPERT=y
- # CONFIG_COMPAT_BRK is not set
- CONFIG_SLAB=y
-
-base-commit: dfd42facf1e4ada021b939b4e19c935dcdd55566
--- 
-2.35.1
-
+Does this patch series introduce the leaf driver support you mentioned
+in the haptic review?
