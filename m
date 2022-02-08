@@ -2,90 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6269DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 359E2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232068AbiBHJY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 04:24:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
+        id S241301AbiBHJYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 04:24:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233472AbiBHJYX (ORCPT
+        with ESMTP id S233472AbiBHJYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:24:23 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02555C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:24:22 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id l67-20020a1c2546000000b00353951c3f62so1135311wml.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:24:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=U4eTC6qoUMprkOAPi/nq4R8RnDpnU3YMicKdHmccZLQ=;
-        b=OjSkWWAHIdktAsoxsPi8byPQ2FeJ3bEHJsUZ77uP4OKAnFUO5xzu8gJgEUWd9BJvBz
-         aO9juV01Jl+Jg51nPtatv0IZ7mhfSBtVI2MgFLAD7hRQhDhCKaCghTlC7XJOB4AytX2/
-         UAC8qQsvDpuYIsar6dqeLQttRFVBOCGRSP/kOjCVp0iPeQVX5eWrBKnmGyMClgEKMPaQ
-         uRN+U37PNeVifs+mA5ddKOWgc4VOK+8xIYZhqyAJQgcBY5ZQN+1I5Ajxr+QzVIjxBQax
-         q7lAMPJoX4Cm4+OenG6xR9SaqiNfcTMbrnGzlg7YTuXhm7VnbLDUwDnsqIjtdsDoePeS
-         agyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=U4eTC6qoUMprkOAPi/nq4R8RnDpnU3YMicKdHmccZLQ=;
-        b=Uo1C3WdUJyOEOjbJSlqEcsnQz4syi0S62TBK8vJq4tHU7Kn+gyyudSONyyLYjY7hRQ
-         DgnfGPQh2UlWksDXpxUpauhhzoCL2FbWkA4GGiA3pP/laDxb3750FjE1s4JksOzEluLA
-         6DiKbVUQ1MHSueSQZb4HltKQJ76porFsci1scEGNxpEkqMvWONXIgt6EIu/QLH3wXApG
-         DAfZ6n/g34EHLNvQKE+DFspLYYjJoTmeRmaOnqP+rvrVwOSV6hXnA5OMb9zyRXM+ujyH
-         y4DLUXEXjuq233YKEE+b/9OXyKlLmIRI2sN8KbA7cRdTbemBM5KbbfJgEjucA/B3wBkE
-         aj5Q==
-X-Gm-Message-State: AOAM533Ofi1UAAHz5HE/sYxKRaM0KZE/kpMfcmxS3O9Q7G4neXTpJp/I
-        l0mHglS0yLOUhLpegrI/9aKwHQ==
-X-Google-Smtp-Source: ABdhPJyETs0h54mjP52R9i4urCVEkYxAlnNZHIWK+XSjvKFVpOSKSwgint1uilZINo2Imx/EJawJvw==
-X-Received: by 2002:a05:600c:4e90:: with SMTP id f16mr274231wmq.175.1644312260622;
-        Tue, 08 Feb 2022 01:24:20 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id j46sm27994wrj.58.2022.02.08.01.24.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 01:24:19 -0800 (PST)
-Date:   Tue, 8 Feb 2022 09:24:17 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Luca Weiss <luca.weiss@fairphone.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] backlight: qcom-wled: Add PM6150L compatible
-Message-ID: <YgI2wXYHjrcsF40f@google.com>
-References: <20211229170358.2457006-1-luca.weiss@fairphone.com>
- <20211229170358.2457006-3-luca.weiss@fairphone.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211229170358.2457006-3-luca.weiss@fairphone.com>
+        Tue, 8 Feb 2022 04:24:50 -0500
+Received: from mail-m17635.qiye.163.com (mail-m17635.qiye.163.com [59.111.176.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B37C03FEC5;
+        Tue,  8 Feb 2022 01:24:48 -0800 (PST)
+Received: from localhost.localdomain (unknown [58.22.7.114])
+        by mail-m17635.qiye.163.com (Hmail) with ESMTPA id 6C7A2400393;
+        Tue,  8 Feb 2022 17:13:33 +0800 (CST)
+From:   Yifeng Zhao <yifeng.zhao@rock-chips.com>
+To:     heiko@sntech.de
+Cc:     robh+dt@kernel.org, jbx6244@gmail.com, devicetree@vger.kernel.org,
+        vkoul@kernel.org, michael.riesch@wolfvision.net,
+        linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, kishon@ti.com,
+        p.zabel@pengutronix.de, cl@rock-chips.com,
+        kever.yang@rock-chips.com, lee.jones@linaro.org,
+        wulf@rock-chips.com, david.wu@rock-chips.com,
+        Yifeng Zhao <yifeng.zhao@rock-chips.com>
+Subject: [PATCH v8 0/4] Add Naneng combo PHY support for RK3568
+Date:   Tue,  8 Feb 2022 17:13:22 +0800
+Message-Id: <20220208091326.12495-1-yifeng.zhao@rock-chips.com>
+X-Mailer: git-send-email 2.17.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUNLQkhWH0lKTUIfGB9JQ0
+        pPVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWVVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6My46Ihw*Fz4MLCEQMjlKLwwp
+        FAMKFBVVSlVKTU9PSEpKTUpPTk5MVTMWGhIXVQISHR4VHFUBExoUOwkUGBBWGBMSCwhVGBQWRVlX
+        WRILWUFZTkNVSUlVTFVKSk9ZV1kIAVlBSE1NTjcG
+X-HM-Tid: 0a7ed89c11e5d991kuws6c7a2400393
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 29 Dec 2021, Luca Weiss wrote:
 
-> PM6150L contains WLED of version 5. Add support ofr it to the driver.
-> 
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-> ---
->  drivers/video/backlight/qcom-wled.c | 1 +
->  1 file changed, 1 insertion(+)
+This phy can be used as pcie-phy, usb3-phy, sata-phy or sgmii-phy.
 
-Applied, thanks.
+Changes in v8:
+- rename 'mode' to 'type'
+- using devm_reset_control_array_get_exclusive
+- move rockchip_combphy_set_mode into rockchip_combphy_init
+
+Changes in v7:
+- remove u3otg0_port_en, u3otg1_port_en and pipe_sgmii_mac_sel
+- rename regs
+
+Changes in v5:
+- modify description for ssc and ext-refclk
+- remove apb reset
+- add rockchip_combphy_updatel()
+- restyle
+
+Changes in v4:
+- restyle
+- remove some minItems
+- add more properties
+- remove reset-names
+- move #phy-cells
+- add rockchip,rk3568-pipe-grf
+- add rockchip,rk3568-pipe-phy-grf
+- add devm_reset_control_array_get()
+- remove clk structure
+- change refclk DT parse
+- change dev_err message
+- add dot to phrase
+- add ext_refclk variable
+- add enable_ssc variable
+- rename rockchip_combphy_param_write
+- remove param_read
+- replace rockchip-naneng-combphy driver name
+- rename node name
+
+Changes in v3:
+- Using api devm_reset_control_get_optional_exclusive and dev_err_probe.
+- Remove apb_rst.
+- Redefine registers address.
+- Move pipe_phy_grf0 to rk3568.dtsi
+
+Changes in v2:
+- Fix dtschema/dtc warnings/errors
+- Using api devm_platform_get_and_ioremap_resource.
+- Modify rockchip_combphy_set_Mode.
+- Add some PHY registers definition.
+- Move phy0 to rk3568.dtsi
+
+Johan Jonker (1):
+  dt-bindings: soc: grf: add naneng combo phy register compatible
+
+Yifeng Zhao (3):
+  dt-bindings: phy: rockchip: Add Naneng combo PHY bindings
+  phy: rockchip: add naneng combo phy for RK3568
+  arm64: dts: rockchip: add naneng combo phy nodes for rk3568
+
+ .../phy/phy-rockchip-naneng-combphy.yaml      | 109 ++++
+ .../devicetree/bindings/soc/rockchip/grf.yaml |   2 +
+ arch/arm64/boot/dts/rockchip/rk3568.dtsi      |  21 +
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi      |  47 ++
+ drivers/phy/rockchip/Kconfig                  |   8 +
+ drivers/phy/rockchip/Makefile                 |   1 +
+ .../rockchip/phy-rockchip-naneng-combphy.c    | 581 ++++++++++++++++++
+ 7 files changed, 769 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml
+ create mode 100644 drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.17.1
+
