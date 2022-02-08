@@ -2,54 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A42C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C58C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380672AbiBHPfr (ORCPT
+        id S1380740AbiBHPgl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:35:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
+        Tue, 8 Feb 2022 10:36:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380673AbiBHPfk (ORCPT
+        with ESMTP id S1377107AbiBHPgj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:35:40 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CD0C061576;
-        Tue,  8 Feb 2022 07:35:40 -0800 (PST)
+        Tue, 8 Feb 2022 10:36:39 -0500
+X-Greylist: delayed 122 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 07:36:38 PST
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCCAC061576;
+        Tue,  8 Feb 2022 07:36:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644334540; x=1675870540;
+  t=1644334598; x=1675870598;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=7ZQlDQCf+14boNm4JKmpv2b7alWc5ogeZKII3lt9FVc=;
-  b=ATJC8mKoYZXRWX5UewVay5NGs1EZLo73ao02c2SnegWqSNAinFaScGYK
-   GUd7y7bgn8gBitBwWbLFi0Tj+T1MiQdwRLHCjTmSDdcp2xrnC31jSnrDf
-   sY1O+A8/YNPAEsxkmkiNHg2kkwgScLt9Es/9L7K4V94WVRwv7AZJtmx7D
-   4=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 07:35:39 -0800
+  bh=40L17z1hVZaJzNlebR2WYgcAZBEqUhNi3RANKgIqJOs=;
+  b=jKry3YfkdAPAsljgUAjf9ALAsE8ny82I9jnxne2nwInnCF3l95OSBSyD
+   tbPcS0FGzZeCLRwSObKFgPUHLOMV0+up2PUko05Fcg5ToL6JB8M0KpBWU
+   fQtAJpyK4PqPhRWlVz+KF2LlqPOwf7BXEhXAYlwN2miizwlB92p2VbFGi
+   A=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Feb 2022 07:34:35 -0800
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 07:35:40 -0800
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 07:34:34 -0800
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 07:35:39 -0800
-Received: from kathirav-linux.qualcomm.com (10.80.80.8) by
+ 15.2.922.19; Tue, 8 Feb 2022 07:34:34 -0800
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 07:35:36 -0800
-From:   Kathiravan T <quic_kathirav@quicinc.com>
+ 15.2.922.19; Tue, 8 Feb 2022 07:34:30 -0800
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Kathiravan T <quic_kathirav@quicinc.com>
-Subject: [PATCH 1/2] arm64: dts: qcom: ipq8074: enable the GICv2m support
-Date:   Tue, 8 Feb 2022 21:05:24 +0530
-Message-ID: <1644334525-11577-2-git-send-email-quic_kathirav@quicinc.com>
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <rohitkr@codeaurora.org>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v2 1/3] arm64: dts: qcom: sc7280: Add pinmux for I2S speaker and Headset
+Date:   Tue, 8 Feb 2022 21:04:12 +0530
+Message-ID: <1644334454-16719-2-git-send-email-quic_srivasam@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644334525-11577-1-git-send-email-quic_kathirav@quicinc.com>
-References: <1644334525-11577-1-git-send-email-quic_kathirav@quicinc.com>
+In-Reply-To: <1644334454-16719-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1644334454-16719-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
@@ -59,37 +64,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GIC used in the IPQ8074 SoCs has one instance of the GICv2m extension,
-which supports upto 32 MSI interrupts. Lets add support for the same.
+Add AMP enable node and pinmux for primary and secondary I2S
+for SC7280 based platforms.
 
-Signed-off-by: Kathiravan T <quic_kathirav@quicinc.com>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 ---
- arch/arm64/boot/dts/qcom/ipq8074.dtsi | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 40 ++++++++++++++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sc7280.dtsi     | 40 ++++++++++++++++++++++++++++++++
+ 2 files changed, 80 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index 26ba7ce9222c..7b0258407d10 100644
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -620,9 +620,18 @@
- 
- 		intc: interrupt-controller@b000000 {
- 			compatible = "qcom,msm-qgic2";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
- 			interrupt-controller;
- 			#interrupt-cells = <0x3>;
- 			reg = <0x0b000000 0x1000>, <0x0b002000 0x1000>;
-+			ranges = <0 0xb00a000 0xffd>;
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index d623d71..c7d6c46 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -436,6 +436,39 @@
+ 		qcom,drive-strength = <3>;
+ 	};
+ };
++&pri_mi2s_data0 {
++	drive-strength = <6>;
++};
 +
-+			v2m@0 {
-+				compatible = "arm,gic-v2m-frame";
-+				msi-controller;
-+				reg = <0x0 0xffd>;
-+			};
- 		};
++&pri_mi2s_data1 {
++	drive-strength = <6>;
++};
++
++&pri_mi2s_mclk {
++	drive-strength = <6>;
++};
++
++&pri_mi2s_sclk {
++	drive-strength = <6>;
++};
++
++&pri_mi2s_ws {
++	drive-strength = <6>;
++};
++
++&sec_mi2s_data0 {
++	drive-strength = <6>;
++	bias-disable;
++};
++
++&sec_mi2s_sclk {
++	drive-strength = <6>;
++	bias-disable;
++};
++
++&sec_mi2s_ws {
++	drive-strength = <6>;
++};
  
- 		timer {
+ &qspi_cs0 {
+ 	bias-disable;
+@@ -491,6 +524,13 @@
+ };
+ 
+ &tlmm {
++	amp_en: amp-en {
++		pins = "gpio63";
++		function = "gpio";
++		bias-disable;
++		drive-strength = <2>;
++	};
++
+ 	nvme_pwren: nvme-pwren {
+ 		function = "gpio";
+ 	};
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index 937c2e0..76e73e9 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -3461,6 +3461,46 @@
+ 				};
+ 			};
+ 
++			pri_mi2s_data0: pri-mi2s-data0 {
++				pins = "gpio98";
++				function = "mi2s0_data0";
++			};
++
++			pri_mi2s_data1: pri-mi2s-data1 {
++				pins = "gpio99";
++				function = "mi2s0_data1";
++			};
++
++			pri_mi2s_mclk: pri-mi2s-mclk {
++				pins = "gpio96";
++				function = "pri_mi2s";
++			};
++
++			pri_mi2s_sclk: pri-mi2s-sclk {
++				pins = "gpio97";
++				function = "mi2s0_sck";
++			};
++
++			pri_mi2s_ws: pri-mi2s-ws {
++				pins = "gpio100";
++				function = "mi2s0_ws";
++			};
++
++			sec_mi2s_data0: sec-mi2s-data0 {
++				pins = "gpio107";
++				function = "mi2s1_data0";
++			};
++
++			sec_mi2s_sclk: sec-mi2s-sclk {
++				pins = "gpio106";
++				function = "mi2s1_sck";
++			};
++
++			sec_mi2s_ws: sec-mi2s-ws {
++				pins = "gpio108";
++				function = "mi2s1_ws";
++			};
++
+ 			qup_uart8_cts: qup-uart8-cts {
+ 				pins = "gpio32";
+ 				function = "qup10";
 -- 
 2.7.4
 
