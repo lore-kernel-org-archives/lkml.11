@@ -2,112 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D131C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4772C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354124AbiBHJXu (ORCPT
+        id S1354166AbiBHJXz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 04:23:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
+        Tue, 8 Feb 2022 04:23:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354117AbiBHJXr (ORCPT
+        with ESMTP id S1354115AbiBHJXu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:23:47 -0500
-X-Greylist: delayed 1294 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 01:23:46 PST
-Received: from qproxy4-pub.mail.unifiedlayer.com (qproxy4-pub.mail.unifiedlayer.com [66.147.248.250])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EBBC03FEC6
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:23:45 -0800 (PST)
-Received: from gproxy1-pub.mail.unifiedlayer.com (gproxy1-pub.mail.unifiedlayer.com [69.89.25.95])
-        by qproxy4.mail.unifiedlayer.com (Postfix) with ESMTP id 4BD6C802E59B
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:02:11 +0000 (UTC)
-Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
-        by progateway3.mail.pro1.eigbox.com (Postfix) with ESMTP id 97D1E1004733B
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:02:10 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id HMO2nh862EaNCHMO2nc4Bf; Tue, 08 Feb 2022 09:02:10 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=fNX8YbWe c=1 sm=1 tr=0 ts=62023192
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=oGFeUVbbRNcA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=NjNOBljHOn0YkUJ5KKXki1nVeez07hjn+mmexGx7Yz8=; b=szxKvTH9Pmt57WEcUfEdeo1hxA
-        bHEhYdQuukSVdWmTpIvQeU1h5D52VKzHVamntCgdl3HeAzidkQ7TDaPchJr3XkIEVAidrJjXb5FX6
-        rJyXOl4YkucwYtETw2SGuEl6O;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:53772 helo=[10.0.1.23])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1nHMO1-0021xE-QM; Tue, 08 Feb 2022 02:02:09 -0700
-Message-ID: <8986fe5b-edf5-3511-0ff9-eb0e5b0e672a@w6rz.net>
-Date:   Tue, 8 Feb 2022 01:02:08 -0800
+        Tue, 8 Feb 2022 04:23:50 -0500
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB41C0401F0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:23:48 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id m6so47970796ybc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:23:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SZ03WaXjCB1/PPBbkHxtR46rnb83dwuwKCXnSai0rXM=;
+        b=DX6memat2HqLjnAS7y2wJyGBIcCSvFCIX2diIwxjvhawJUk0LEiOSud3eWKg/HfoUS
+         oSapkRfQ0X/ZKBOYklGLL0IaB9h4LVBJ1Ur2FLvxxUw/3FMb4OcNmqtvwycvLxWU6KMS
+         Rd566JfVkltr+QiWcpINNZD1CqFEuAz/Q4oC2eRwxOQ7mBcv4wtOZ3U2/sTBBz2FVmr0
+         Ff+PyYntSVmqgjqEvpKWkDMMdrJB9wGHyqJCGD7MNsJbzQIRAazsw6Y4iUU8a18m1f8R
+         BXQDyHHykItCDUT8uFRcEtXaynI6CqnAtEM0gTTE++wFTBlM1OKYndIWGP12KcjkkOP4
+         zhsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SZ03WaXjCB1/PPBbkHxtR46rnb83dwuwKCXnSai0rXM=;
+        b=FIxKLx6698Ru1CvKiG8rvD6u8WM6cJmxXQ8zIJOF/O0VbTHccylFcXRcPf3V7HCKQn
+         Y1tjUGhXAyLVYZ4pxrOrS0p0GLi7EttavnjkA8swsSZM4ZTEO2I6eTrxUnk6DwuOwSgd
+         jq/+wK41bmuKtCnjO1oMmlA9RPqKxfFkv435I6UmnZ8OZmthLDhUAoDdeAU43o4mepvW
+         nhXOnLZf7Hms1txoUE6lyjFpJICcCrGG1mH0r2kARWdRiaOT+OCIzh6bszkwpR5lDwVl
+         /gBUmC3Fd+YQxNZWvj/t3Gi8DTqHcVkoR8Oo71PhtKtRGhYc8aTgMCGSttin094+gcwy
+         yNXQ==
+X-Gm-Message-State: AOAM533Omwtp0Dz+gZIY9QQDExdJk7VjqZemx4iThAQpIGf1R6zpXgxm
+        YeEB99QpfznuY3132b6lopCdGxPMYyHdpP7/zqQlbQ==
+X-Google-Smtp-Source: ABdhPJzNZwdpI7As6Vcl3IKOUiJJV1tZVDiYb3vcfuX75N4c8Kg8o1c5tMFwig+CS4CJqOmwSxhH8K0omIBZ/ht3AkU=
+X-Received: by 2002:a0d:ec04:: with SMTP id q4mr3914719ywn.412.1644312227704;
+ Tue, 08 Feb 2022 01:23:47 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5.16 000/127] 5.16.8-rc2 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220207133856.644483064@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-In-Reply-To: <20220207133856.644483064@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1nHMO1-0021xE-QM
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:53772
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 13
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+References: <e10b79cf-d6d5-ffcc-bce4-edd92b7cb6b9@molgen.mpg.de>
+ <CAHmME9pktmNpcBS_DJhJ5Z+6xO9P1wroQ9_gwx8KZMBxk1FBeQ@mail.gmail.com>
+ <CAG48ez17i5ObZ62BtDFF5UguO-n_0qvcvrsqVp4auvq2R4NPTA@mail.gmail.com>
+ <CANpmjNPVJP_Y6TjsHAR9dm=RpjY5V-=O5u7iP61dBjH2ePGrRw@mail.gmail.com> <CAHmME9oPGnAQ23ZGGJg+ZZRDjG8M+hkqvTko1Zkrc5+zQYUvVg@mail.gmail.com>
+In-Reply-To: <CAHmME9oPGnAQ23ZGGJg+ZZRDjG8M+hkqvTko1Zkrc5+zQYUvVg@mail.gmail.com>
+From:   Marco Elver <elver@google.com>
+Date:   Tue, 8 Feb 2022 10:23:36 +0100
+Message-ID: <CANpmjNNoAEqab7Zi2bB7=3FVpajXe_4jmVV-orCO=DzT1Ber9w@mail.gmail.com>
+Subject: Re: BUG: KCSAN: data-race in add_device_randomness+0x20d/0x290
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Jann Horn <jannh@google.com>, Dmitry Vyukov <dvyukov@google.com>,
+        kasan-dev <kasan-dev@googlegroups.com>, pmenzel@molgen.mpg.de,
+        "Theodore Y. Ts'o" <tytso@mit.edu>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 06:04, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.8 release.
-> There are 127 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Tue, 8 Feb 2022 at 01:36, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
 >
-> Responses should be made by Wed, 09 Feb 2022 13:38:34 +0000.
-> Anything received after that time might be too late.
+> Hi Marco,
 >
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.8-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
+> On 2/8/22, Marco Elver <elver@google.com> wrote:
+> > Jason - if you're interested in KCSAN data race reports in some
+> > subsystems you maintain (I see a few in Wireguard), let me know, and
+> > I'll release them from syzbot's moderation queue. The way we're trying
+> > to do it with KCSAN is that we pre-moderate and ask maintainers if
+> > they're happy to be forwarded all reports that syzbot finds (currently
+> > some Networking and RCU, though the latter finds almost all data races
+> > via KCSAN-enabled rcutorture).
 >
-> thanks,
->
-> greg k-h
+> Oh that'd be great. Please feel free to forward whatever for WireGuard
+> or random.c to jason@zx2c4.com and I'll gladly try to fix what needs
+> fixing.
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+Great! I've released everything I could see right now.
 
-Tested-by: Ron Economos <re@w6rz.net>
-
+Thanks,
+-- Marco
