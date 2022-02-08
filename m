@@ -2,190 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54369C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82785C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356455AbiBHLYn (ORCPT
+        id S1346344AbiBHLYz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:24:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49856 "EHLO
+        Tue, 8 Feb 2022 06:24:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355952AbiBHKDZ (ORCPT
+        with ESMTP id S243254AbiBHKEb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:03:25 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27F1C03FEC1
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:03:23 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id z35so935396pfw.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 02:03:23 -0800 (PST)
+        Tue, 8 Feb 2022 05:04:31 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CBAC03FEC0;
+        Tue,  8 Feb 2022 02:04:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9a3aAuOX50mvJsMuY1a5GIiQFDm5tr+cq08+mjsTm/A=;
-        b=jO+m7uXJ0ZUsSfU096+lVi4qrs6BxSoRtlFtzYxMtb6l884fj4D4haoyEmKRMYQh9t
-         wsH5X2j6OfZBEcejNWSwnjUuKY8iS5FMjYo/t58fLaUQPcPNVpKy4yyy3OrH9NG3TFLg
-         r3gPtFIyX16vftj8Baq1dxYLHHOIDXyPBMWa89uhcMMtKpdkazzaf0F0IfcT2izHvzl0
-         P4hfEnOhRCWl1Bfzo7o/QtcNu8hvlG9pOboAdpGINN8wYbYecb9d2bPhdlhBzv9IZ65g
-         B0uPsjm7U1jHLX/gJMGiUjwkoqXYDAAK/QQr+BLB248VzAwJHF0gsYTtOZ0PL6d/75DR
-         dCbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9a3aAuOX50mvJsMuY1a5GIiQFDm5tr+cq08+mjsTm/A=;
-        b=a3EippkrQNlR+8H3BAnsxohLaIS+31DJoSKk/t2ObAWdw3Zwzfv4KkMrt5EAxP5B4o
-         6UYgcD4XJjl47gfIr79G2a7hO+HdxUeirci2mPDN9LHvsy48O8YPTZbxfgYvVoLgo9im
-         Pvol8wYmEVc+2i57wiwKjjhdXlbmEAASZUbW81sUB7l/UrCwqoMJXHet+05cNYBkM4uX
-         rjEok38fRuxUqo14sAr9mc3f6pZwdBwdF1IYwH6GkZLCVwJsV/BPpXsqXXL1JIta8aG/
-         5jgbX4fxBbJ7Tyf+snLnXAnjs9wELEH1mu0amlvdoYUfRaO5nxXy96qZhSOPDjeStDsD
-         Qz0g==
-X-Gm-Message-State: AOAM532EqvGdRzURgJmkpT/d9geFMpCYhBXn5x1bhX7vHYebxb5d6qKw
-        DsUMLSOToC/v/CNLC+Sc5WiXjH25EiOejGYugZQ9Tw==
-X-Google-Smtp-Source: ABdhPJzM1hWIXSKOwV6kGVpFedZHrHLLv1V3cuWj33KBZJnMAZXYl7Qh3XGfqDHsnPuc/C0mPbz0ojj4DRX9max7+mM=
-X-Received: by 2002:a63:4a49:: with SMTP id j9mr2877151pgl.178.1644314603174;
- Tue, 08 Feb 2022 02:03:23 -0800 (PST)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644314671; x=1675850671;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=FDupWd2GNrhG73l1IP8maOM/OD173X5J2JD8dNdxWlI=;
+  b=vjp7fRjtWlkpApX6/Q2fO4CGAfzbkv0cMksiOaV6/sfDhgy8kY8nDMrH
+   7hLXrTkbo6GuFdGh2Ufn6Mruw4psV543v7lKsp6FCQ2mFD/P0BrLegHpL
+   z6H2Xrgv9xq00UCB8S+Cs70VQmUgSBxt5SYSraclJXYSvMByRjI8/CTWY
+   0=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 02:04:31 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 02:04:30 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 8 Feb 2022 02:04:29 -0800
+Received: from [10.216.24.23] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 8 Feb 2022
+ 02:04:26 -0800
+Message-ID: <ca306d7c-d816-3cbd-8c65-2c3619739d47@quicinc.com>
+Date:   Tue, 8 Feb 2022 15:34:22 +0530
 MIME-Version: 1.0
-References: <89456fcd-a113-4c82-4b10-a9bcaefac68f@google.com>
- <YgF/0QGFN4SppLKg@shikoro> <CACK8Z6Etj-gq1VKpkUBstiXEETekPWG9p9gKBtuFaZF05pQEvQ@mail.gmail.com>
- <CACK8Z6FUsceYgBoaAtN8o4m9HpZaBZMt0Nqtvw0a1Z3EuD_nWg@mail.gmail.com>
- <YgHTYrODoo2ou49J@google.com> <b76771e5-b8e-54c9-2474-d5a73d236cba@google.com>
-In-Reply-To: <b76771e5-b8e-54c9-2474-d5a73d236cba@google.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 8 Feb 2022 11:02:47 +0100
-Message-ID: <CAMZdPi8PBd6RJ4BSoS_Vfb8CCv16nApLZA4n6a4fBbs5CjeMxw@mail.gmail.com>
-Subject: Re: 5.17-rc regression: rmi4 clients cannot deal with asynchronous
- suspend? (was: X1 Carbon touchpad not resumed)
-To:     Hugh Dickins <hughd@google.com>, Rajat Jain <rajatja@google.com>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Derek Basehore <dbasehore@chromium.org>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Andrew Duggan <aduggan@synaptics.com>,
-        vincent.huang@tw.synaptics.com, cheiny@synaptics.com,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-input <linux-input@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5] usb: host: xhci-plat: Set XHCI_SKIP_PHY_INIT quirk for
+ DWC3 controller
+Content-Language: en-US
+From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        "Doug Anderson" <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>
+References: <1640153383-21036-1-git-send-email-quic_c_sanm@quicinc.com>
+ <Ydb79/twbxLDJB8/@kroah.com>
+ <d17330f1-d85e-b8c2-9e87-10d109c25abb@quicinc.com>
+ <YfE9s06CIv1P3bA/@kroah.com>
+ <f45f5952-e31c-5e9d-2560-064199beb29f@quicinc.com>
+In-Reply-To: <f45f5952-e31c-5e9d-2560-064199beb29f@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi folks,
+Hi Greg,
 
-On Tue, 8 Feb 2022 at 03:50, Hugh Dickins <hughd@google.com> wrote:
+On 1/27/2022 10:28 AM, Sandeep Maheswaram wrote:
 >
-> On Mon, 7 Feb 2022, Dmitry Torokhov wrote:
-> > On Mon, Feb 07, 2022 at 01:41:36PM -0800, Rajat Jain wrote:
-> > > +linux-input@vger.kernel.org
-> > >
-> > > On Mon, Feb 7, 2022 at 1:09 PM Rajat Jain <rajatja@google.com> wrote:
-> > > >
-> > > > +Rafael (for any inputs on asynchronous suspend / resume)
-> > > > +Dmitry Torokhov (since no other maintainer of rmi4 in MAINTAINERS file)
-> > > > +loic.poulain@linaro.org (who fixed RMI device hierarchy recently)
-> > > > + Some Synaptics folks (from recent commits - Vincent Huang, Andrew
-> > > > Duggan, Cheiny)
-> > > >
-> > > > On Mon, Feb 7, 2022 at 12:23 PM Wolfram Sang <wsa@kernel.org> wrote:
-> > > > >
-> > > > > Hello Hugh,
-> > > > >
-> > > > > > Bisection led to 172d931910e1db800f4e71e8ed92281b6f8c6ee2
-> > > > > > ("i2c: enable async suspend/resume on i2c client devices")
-> > > > > > and reverting that fixes it for me.
-> > > > >
-> > > > > Thank you for the report plus bisection and sorry for the regression!
-> > > >
-> > > > +1, Thanks for the bisection, and apologies for the inconveniences.
-> > > >
-> > > > The problem here seems to be that for some reason, some devices (all
-> > > > connected to rmi4 adapter) failed to resume, but only when
-> > > > asynchronous suspend is enabled (by 172d931910e1):
-> > > >
-> > > > [   79.221064] rmi4_smbus 6-002c: failed to get SMBus version number!
-
-Looks like this is the initial issue. Does the rmi device lose power
-while suspended? if so could it be that enabling async_suspend makes
-the device resuming earlier, at a time it is not yet ready? What if
-you simply start with a naive msleep(200) in rmi_smb_resume()?
-
-The rmi4 bus does not rely on generic device suspend/resume
-infrastructure for its subdevices, so async_suspend should only impact
-the moment at which the smbus rmi4 root device is resumed, but not the
-way it and its subdevices are resumed.
-
-Would be interesting to get some pm_debug/pm_trace to compare the
-good/bad cases.
-
-
-
-
-> > > > [   79.265074] rmi4_physical rmi4-00: rmi_driver_reset_handler: Failed
-> > > > to read current IRQ mask.
-> > > > [   79.308330] rmi4_f01 rmi4-00.fn01: Failed to restore normal operation: -6.
-> > > > [   79.308335] rmi4_f01 rmi4-00.fn01: Resume failed with code -6.
-> > > > [   79.308339] rmi4_physical rmi4-00: Failed to suspend functions: -6
-> > > > [   79.308342] rmi4_smbus 6-002c: Failed to resume device: -6
-> > > > [   79.351967] rmi4_physical rmi4-00: Failed to read irqs, code=-6
-> > > >
-> > > > A resume failure that only shows up during asynchronous resume,
-> > > > typically means that the device is dependent on some other device to
-> > > > resume first, but this dependency is NOT established in a parent child
-> > > > relationship (which is wrong and needs to be fixed, perhaps using
-> > > > device_add_link()). Thus the kernel may be resuming these devices
-> > > > without first resuming some other device that these devices need to
-> > > > depend on.
-> > > >
-> > > > TBH, I'm not sure how to fix this. The only hint I see is that all of
-> > > > these devices seem to be attached to rmi4 device so perhaps something
-> > > > there? I see 6e4860410b828f recently fixed device hierarchy for rmi4,
-> > > > and so seemingly should have fixed this very issue (as also seen in
-> > > > commit message)?
-> > > >
-> > > > >
-> > > > > I will wait a few days if people come up with a fix. If not, I will
-> > > > > revert the offending commit.
-> > > >
-> > > > While I'll be sad because this means no i2c-client can now resume in
-> > > > parallel and increases resume latency by a *LOT* (hundreds of ms on
-> > > > all Linux systems), I understand that this needs to be done unless
-> > > > someone comes up with a fix.
-> >
-> > There is intricate dance happening switching touchpad from legacy PS/2
-> > into RMI mode, with touchpad being dependent not only on SMbus
-> > controller, but also on i8042 keyboard controller and its PS/2 port (or
-> > rather their emulation by the system firmware).
-> >
-> > I wonder if we could apply a little bit more targeted patch:
-> >
-> > diff --git a/drivers/input/rmi4/rmi_smbus.c b/drivers/input/rmi4/rmi_smbus.c
-> > index 2407ea43de59..3901d06d38ca 100644
-> > --- a/drivers/input/rmi4/rmi_smbus.c
-> > +++ b/drivers/input/rmi4/rmi_smbus.c
-> > @@ -335,6 +335,7 @@ static int rmi_smb_probe(struct i2c_client *client,
-> >               return error;
-> >       }
-> >
-> > +     device_disable_async_suspend(&client->dev);
-> >       return 0;
-> >  }
-> >
-> >
-> > ... and if that works then we cant try to establish proper dependencies
-> > via device links later.
-> >
-> > Hugh, could you please try this out and see if it helps?
+> On 1/26/2022 5:55 PM, Greg Kroah-Hartman wrote:
+>> On Fri, Jan 07, 2022 at 10:27:59AM +0530, Sandeep Maheswaram wrote:
+>>> On 1/6/2022 7:55 PM, Greg Kroah-Hartman wrote:
+>>>> On Wed, Dec 22, 2021 at 11:39:43AM +0530, Sandeep Maheswaram wrote:
+>>>>> Set XHCI_SKIP_PHY_INIT quirk to avoid phy initialization twice.
+>>>>> Runtime suspend of phy drivers was failing from DWC3 driver as 
+>>>>> runtime
+>>>>> usage value is 2 because the phy is initialized from DWC3 and HCD 
+>>>>> core.
+>>>>> DWC3 manages phy in their core drivers. Set this quirk to avoid phy
+>>>>> initialization in HCD core.
+>>>>>
+>>>>> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+>>>>> ---
+>>>>> v5:
+>>>>> Added comment to explain the change done.
+>>>>> v4:
+>>>>> Changed pdev->dev.parent->of_node to sysdev->of_node
+>>>>>
+>>>>>    drivers/usb/host/xhci-plat.c | 8 ++++++++
+>>>>>    1 file changed, 8 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/usb/host/xhci-plat.c 
+>>>>> b/drivers/usb/host/xhci-plat.c
+>>>>> index c1edcc9..e6014d4 100644
+>>>>> --- a/drivers/usb/host/xhci-plat.c
+>>>>> +++ b/drivers/usb/host/xhci-plat.c
+>>>>> @@ -327,6 +327,14 @@ static int xhci_plat_probe(struct 
+>>>>> platform_device *pdev)
+>>>>>                         &xhci->imod_interval);
+>>>>>        }
+>>>>> +    /*
+>>>>> +     * Set XHCI_SKIP_PHY_INIT quirk to avoid phy initialization 
+>>>>> twice.
+>>>>> +     * DWC3 manages phy in their core drivers. Set this quirk to 
+>>>>> avoid phy
+>>>>> +     * initialization in HCD core.
+>>>>> +     */
+>>>>> +    if (of_device_is_compatible(sysdev->of_node, "snps,dwc3"))
+>>>>> +        xhci->quirks |= XHCI_SKIP_PHY_INIT;
+>>>>> +
+>>>> Why is this function caring about dwc3 stuff?  Shoudn't this be a
+>>>> "generic" device property instead of this device-specific one?
+>>>>
+>>>> thanks,
+>>>>
+>>>> greg k-h
+>>> This quirk is set only if required for some controllers (eg: dwc3 & 
+>>> cdns3).
+>>>
+>>> Please check below commit.
+>>>
+>>> https://lore.kernel.org/all/20200918131752.16488-5-mathias.nyman@linux.intel.com/ 
+>>>
+>> That commit has nothing to do with a specific "dwc3" quirk anywhere.
+>> Why not set this flag in the specific platform xhci driver instead where
+>> it belongs?
+>>
+>> thanks,
+>>
+>> greg k-h
 >
-> Yes, that works nicely, thanks Dmitry.
+> There is no specific xhci platform driver for dwc3 controllers.
 >
-> By the way, my memory's been jogged by "rmi4" and the discussion above:
-> I had a similar-ish problem with it a year ago, discussed with PM guys,
+> dwc3 controllers use xhci-plat driver .
 >
-> https://lore.kernel.org/linux-pm/alpine.LSU.2.11.2101102010200.25762@eggly.anvils/
+> We can add this quirk in usb/dwc3/host.c as cdns3 does but that 
+> requires tying dwc3 and xhci driver .
 >
-> I'm not saying you have to read through that thread, but you may find
-> some relevance in it - Saravana concluded rmi4 driver isn't capturing
-> parent/child relationship correctly (at that time, anyway).
+> https://patchwork.kernel.org/project/linux-arm-msm/patch/1633946518-13906-1-git-send-email-sanm@codeaurora.org/ 
+>
+>
+> Regards
+>
+> Sandeep
+>
+>
+Can you suggest any other method to set this quirk for dwc3 controllers.
+
+Regards
+
+Sandeep
+
