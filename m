@@ -2,133 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AFB8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:40:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC78DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358837AbiBHNkf (ORCPT
+        id S1359320AbiBHNmc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:40:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38896 "EHLO
+        Tue, 8 Feb 2022 08:42:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243023AbiBHNke (ORCPT
+        with ESMTP id S243023AbiBHNma (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:40:34 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13AEC03FED0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:40:32 -0800 (PST)
+        Tue, 8 Feb 2022 08:42:30 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89349C03FED0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:42:29 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id p24so14640674ejo.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:42:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644327633; x=1675863633;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Q4G/SZPJo4bllBcLYXaoB9cwYQmtRawt9cIr4MkpgHo=;
-  b=gGGv/KWinz9aUxQcKmOIzK22oVCITGuce2AfUdYu/tIT60gKziz9JXKz
-   Cmpn/y9s519RR59K8KokEUvLFbg43On0rRIc+4UyIgLGJDdczNk6kdexE
-   99rAWCeI7Fp7hQexO4KOcJo2O5YBq73+L4t3lLepvY+UMRJ1wwxw7M3Om
-   Y=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 05:40:32 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 05:40:32 -0800
-Received: from [10.216.32.197] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 8 Feb 2022
- 05:40:29 -0800
-Message-ID: <4b8ae129-45f9-33f9-673e-b134b4c36324@quicinc.com>
-Date:   Tue, 8 Feb 2022 19:10:22 +0530
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6maJYITlPCb5At2tK8fKqUeOaLx2xzFZeuz9bTxWtaA=;
+        b=NXKKgezbC9q9uaMIRiYHTN4bTXXumjui8I6ooy0xz8c5Emc2s/AqQ2WgPMbFEB1JPi
+         tt2C2CyOwM6xd/DPqgbd6nefn2Px3gvIEKg1+9NggBp29xPz1qIXxCAlvt5pzhWXmxWM
+         zG6YqnU4MScmVN6BImvTWU9YxJONaSzMmUzyU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=6maJYITlPCb5At2tK8fKqUeOaLx2xzFZeuz9bTxWtaA=;
+        b=qtYWFjp69CFWXRVKTTs/nX+sBxugll/BYXlttqVC95tLR2sjbiMNRjNveGOE1mojTp
+         tlXXJlEA9m4FmlLsKhmStTQkGyddoV+/LAbbqjH0LWFraG1UWQEPpUnEslXWCIrGQo0r
+         kWzaPq84kb7psmks7sEKoAUWmmgVOVI4nyudMeJumBtbJAEIcOtuRSMdxtXYDd0+9J+c
+         wWU0br99Y5WA1VZlnAW0zgejxS0p6qLkVD7qOhblCIQ27PYXyXSHJ4vA79/xA32ozUuV
+         ylB2LTP3QA+sfoGc3ys9Pdyi9/gd1O5bs4w3iVyaUpVd2SJPhn7FJUOqTxjzJwn5GEKS
+         wgWw==
+X-Gm-Message-State: AOAM533WHIXfMo8On2oDJwGIGraBuqwCkaAHlnDcMWMffF6WdhImex9O
+        YZfTt1rEagN0mCsOGscp6BO3r2ldEYW/yg==
+X-Google-Smtp-Source: ABdhPJyjB58jfzpksRF1ZWcvHtyXk7I9BbvVV9xbDrzhC2PMVDFWercPTHr2GmACQLgZcvydqAOBYg==
+X-Received: by 2002:a17:907:760a:: with SMTP id jx10mr3810310ejc.713.1644327748049;
+        Tue, 08 Feb 2022 05:42:28 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id i6sm4831019eja.132.2022.02.08.05.42.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 05:42:27 -0800 (PST)
+Date:   Tue, 8 Feb 2022 14:42:25 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Sam Ravnborg <sam@ravnborg.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Claudio Suarez <cssk@net-c.es>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH 06/21] fbcon: delete delayed loading code
+Message-ID: <YgJzQboE3VVj6OL7@phenom.ffwll.local>
+Mail-Followup-To: Sam Ravnborg <sam@ravnborg.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>, Claudio Suarez <cssk@net-c.es>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Helge Deller <deller@gmx.de>
+References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+ <20220131210552.482606-7-daniel.vetter@ffwll.ch>
+ <Yfw+6VUOX6xcf664@ravnborg.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] softirq: Remove raise_softirq from
- tasklet_action_common()
-Content-Language: en-US
-To:     <linux-kernel@vger.kernel.org>
-CC:     <peterz@infradead.org>, <tglx@linutronix.de>, <paulmck@kernel.org>,
-        <will@kernel.org>, <dave@stgolabs.net>, <frederic@kernel.org>
-References: <1644066805-17212-1-git-send-email-quic_mojha@quicinc.com>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <1644066805-17212-1-git-send-email-quic_mojha@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.47.97.222)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yfw+6VUOX6xcf664@ravnborg.org>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+On Thu, Feb 03, 2022 at 09:45:29PM +0100, Sam Ravnborg wrote:
+> Hi Daniel,
+> 
+> On Mon, Jan 31, 2022 at 10:05:37PM +0100, Daniel Vetter wrote:
+> > Before
+> > 
+> > commit 6104c37094e729f3d4ce65797002112735d49cd1
+> > Author: Daniel Vetter <daniel.vetter@ffwll.ch>
+> > Date:   Tue Aug 1 17:32:07 2017 +0200
+> > 
+> >     fbcon: Make fbcon a built-time depency for fbdev
+> > 
+> > it was possible to load fbcon and fbdev drivers in any order, which
+> > means that fbcon init had to handle the case where fbdev drivers where
+> > already registered.
+> > 
+> > This is no longer possible, hence delete that code.
+> > 
+> > Note that the exit case is a bit more complex and will be done in a
+> > separate patch.
+> > 
+> > Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+> > Cc: Helge Deller <deller@gmx.de>
+> > Cc: Daniel Vetter <daniel@ffwll.ch>
+> > Cc: Claudio Suarez <cssk@net-c.es>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> > Cc: Du Cheng <ducheng2@gmail.com>
+> > ---
+> >  drivers/video/fbdev/core/fbcon.c | 13 +------------
+> >  1 file changed, 1 insertion(+), 12 deletions(-)
+> > 
+> > diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+> > index 8f971de35885..814b648e8f09 100644
+> > --- a/drivers/video/fbdev/core/fbcon.c
+> > +++ b/drivers/video/fbdev/core/fbcon.c
+> > @@ -942,7 +942,7 @@ static const char *fbcon_startup(void)
+> >  		return display_desc;
+> >  	/*
+> >  	 * Instead of blindly using registered_fb[0], we use info_idx, set by
+> > -	 * fb_console_init();
+> > +	 * fbcon_fb_registered();
+> >  	 */
+> This comment change looks like it does not belong in this patch.
+> Also, the comment is wrong as info_idx is set in several places.
+> Like set_con2fb_map(), fbcon_remap_all(), and more.
 
-Sorry for the reminder so quickly as we are hitting this issue more 
-frequently.
-Please suggest if whether below patch will have any side-effect.
+Yeah I can split this out into a separate patch, but I spotted this wrong
+comment as part of reviewing this code change here - essentially you have
+to check how fb_info for fbcon are registered and fbcon init happens to
+validate that deleting the below code is correct.
 
--Mukesh
+Ok if I put this explainer into the commit message, or do you want me to
+split this out fully?
+-Daniel
 
-On 2/5/2022 6:43 PM, Mukesh Ojha wrote:
-> Think about a scenario when all other cores are in suspend
-> and one core is only running ksoftirqd and it is because
-> some client has invoked tasklet_hi_schedule() only once
-> during that phase.
->
-> tasklet_action_common() handles that softirq and marks the
-> same softirq as pending again. And due to that core keeps
-> running the softirq handler [1] forever and it is not able to
-> go to suspend.
->
-> We can get rid of raising softirq from tasklet handler.
->
-> [1]
-> <idle>-0    [003]   13058.769081:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13058.769085: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13058.769087:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13058.769091:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13058.769094: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13058.769097:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13058.769100:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13058.769103: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13058.769106:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13058.769109:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058923:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> ...
-> ..
-> ..
-> ..
->
-> <idle>-0    [003]   13059.058951:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.058954: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.058957:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058960:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.058963: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.058966:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058969:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.058972: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.058975:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058978:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.058981: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.058984:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058987:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.058990: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.058993:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058996:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.059000: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.059002:  softirq_exit   vec=0  action=HI_SOFTIRQ
->
-> Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
-> ---
->   kernel/softirq.c | 1 -
->   1 file changed, 1 deletion(-)
->
-> diff --git a/kernel/softirq.c b/kernel/softirq.c
-> index 41f4709..d3e6fb9 100644
-> --- a/kernel/softirq.c
-> +++ b/kernel/softirq.c
-> @@ -795,7 +795,6 @@ static void tasklet_action_common(struct softirq_action *a,
->   		t->next = NULL;
->   		*tl_head->tail = t;
->   		tl_head->tail = &t->next;
-> -		__raise_softirq_irqoff(softirq_nr);
->   		local_irq_enable();
->   	}
->   }
+> 
+> Though it is not set by fb_console_init - so partly OK.
+> 
+> With the comment adjustment dropped.
+> Acked-by: Sam Ravnborg <sam@ravnborg.org>
+> 
+> at least the code deletion looked OK, I failed to follow all the logic.
+> So would be good if someone else could ack it too.
+> 
+> 	Sam
+> 
+> 
+> 
+> >  	info = registered_fb[info_idx];
+> >  	if (!info)
+> > @@ -3316,17 +3316,6 @@ static void fbcon_start(void)
+> >  		return;
+> >  	}
+> >  #endif
+> > -
+> > -	if (num_registered_fb) {
+> > -		int i;
+> > -
+> > -		for_each_registered_fb(i) {
+> > -			info_idx = i;
+> > -			break;
+> > -		}
+> > -
+> > -		do_fbcon_takeover(0);
+> > -	}
+> >  }
+> >  
+> >  static void fbcon_exit(void)
+> > -- 
+> > 2.33.0
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
