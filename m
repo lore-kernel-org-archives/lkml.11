@@ -2,103 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53448C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:17:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39303C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343555AbiBHNRX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:17:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
+        id S239056AbiBHNRa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:17:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357179AbiBHMce (ORCPT
+        with ESMTP id S1358164AbiBHMlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:32:34 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87271C03FECE
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:32:32 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id i14so806280wrc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:32:32 -0800 (PST)
+        Tue, 8 Feb 2022 07:41:09 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3093C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:08 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id z13so1008012pfa.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod-ie.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:cc:from:in-reply-to:content-transfer-encoding;
-        bh=SBicExt4GJTldUNDteIIq7T7+TNr7gj099np1oZzyZ0=;
-        b=5H3MsgPIhqt39HG1qoEatzD0Vc2QJlQKfqrcrh67yioOodrsd6sq49SPYaA/6sd5Zt
-         TOy+pHA35I7ps67O93O29P57x0fxd2LOGb3w32L1+tKcxd39UzblOtVEy/igA0IFquTp
-         B9L6yj862CsH3lBhGxDWuzOSXwIkMdBXICIC6RRwev2VRYGuTbAjd9Hipev7lizyO92A
-         5G2pXnT9Tca5zRzi3NoFLZma5Vt0wOIExMGFk4ObG3UnLr4zedy+xPDsmOkOg+PupyAj
-         gPIOlUvzqYiDccI3Z66cS8rnCdQCTECCDNPGctqOAQXe6KLs4N5xzEta+q+pQjHN329W
-         34PQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6xS+neFrZyvEZNRNB9ZEba3UAvEdbGsDMRKP0HcrjcY=;
+        b=S07qFfLfXlPlsPEig0kql0KSa3Jwo8SnBQAniFpfSEt9bWaC7EuaBBykud2oDeT8G6
+         bWdAShALpo3BV05Wa4VxHyeKeKxQDfw48INJq9ihtQsnkh9uY8EGClLBviYeRIMV/hcK
+         c/Wk9uji3P9bOqNUWYUwA/ukYeig7GR8nG0Fc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:cc:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SBicExt4GJTldUNDteIIq7T7+TNr7gj099np1oZzyZ0=;
-        b=SH6gMT9oYLeCmpkDe7wnfFbbVum8X1BBBzkR9cV3H5ZcgWAfKlUSMojwrmolhUCMQS
-         SZfB/suedZBoJN4rQrGL7k7xEhy2U8g633oBLxPlIEZvw97MT6lU3XpgdQDxCTPfqIrD
-         gGrFXRxuSXX9YF0UL3R6x79xCpb5cWdpSuWOAWYvPckis6g//0A/j8tCpluHqlkg6fI4
-         sC8F1WYpAOwX5kXb+olClm1YTVzOGz80xBOndwxaO7JlWI7b9OpLniUNovaGZk4jetVn
-         aafcZjyhqvHs06x/37/PJUX3YhNOdLcTcDG6bJmCvaoh87pPdzwRm2u44RE08MfcgRDh
-         hCww==
-X-Gm-Message-State: AOAM533oEhbTlfYVZl+vvO9v8Gz04an/Eve46c7xyuBXADEYrA9QrlEe
-        iaWKEUMPh/XMvH2yAb3x6SRfRg==
-X-Google-Smtp-Source: ABdhPJy3fWhX+fR9E4HyMnwmqx7EtColZdvMB80eL5FvssCvOs3KJLS4r509AHx9ak5lZBQdqv+rhQ==
-X-Received: by 2002:a05:6000:2c5:: with SMTP id o5mr3345728wry.130.1644323551043;
-        Tue, 08 Feb 2022 04:32:31 -0800 (PST)
-Received: from [192.168.2.116] ([109.78.72.167])
-        by smtp.gmail.com with ESMTPSA id v9sm1831062wrw.84.2022.02.08.04.32.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 04:32:29 -0800 (PST)
-Message-ID: <afb346dc-5119-fcf0-d95e-d7e4bd91f92f@conchuod.ie>
-Date:   Tue, 8 Feb 2022 12:32:27 +0000
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6xS+neFrZyvEZNRNB9ZEba3UAvEdbGsDMRKP0HcrjcY=;
+        b=BgSIhX8Dp4UVWrr+yabWu9TNc9BQUE5iL3ohxii5JYrrlyHeTPkF+8sfGpApi9keTI
+         CkBUXf9XFPqXuog+TtMc0yDAuAs/AxRj/S1iztq9Mz4G2zJPLZpIYIQYuJdVBswMKICB
+         VH8BbPbyp/RjFgQSFggjdi4p6ZBTgfD8lv64amKrQzzQx7+QH7nX22lFt1mvlNCiRaZl
+         d55BlWGIEpl/p3hAFnGk3H+xNdlN6KSLPPB1HMxRJIy8L8gQ7jvlJ96gIjqEVJDHqyYE
+         3UAo21UOSN1QxhwaYs7ZTWoHaJy94shooDVPFmpiSurS691iTST1/m/TGxqvxpqJ7R3A
+         nIlg==
+X-Gm-Message-State: AOAM53394+Wi09zlmnRhPpr4ugu5rymBUCndhtmP74wXIT08t+JwhC8c
+        hZah8QjtwWKXUOXu3lg1UBfxi1+mzQ1wpQ==
+X-Google-Smtp-Source: ABdhPJyVSydPTJsnGkAvXxmo8hgAw+u0iFkTHDeyOosu8dCP1EYmO/Ag1a/kFhiD/Fw6iflEFWaCjg==
+X-Received: by 2002:a63:5144:: with SMTP id r4mr3338517pgl.382.1644324068384;
+        Tue, 08 Feb 2022 04:41:08 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:41:08 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 09/31] clk: mediatek: mux: Implement unregister API
+Date:   Tue,  8 Feb 2022 20:40:12 +0800
+Message-Id: <20220208124034.414635-10-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v6 03/12] dt-bindings: i2c: add bindings for microchip
- mpfs i2c
-Content-Language: en-US
-To:     Wolfram Sang <wsa@kernel.org>, conor.dooley@microchip.com
-References: <20220207162637.1658677-1-conor.dooley@microchip.com>
- <20220207162637.1658677-4-conor.dooley@microchip.com>
- <YgJfl5CmepRMb5He@ninjato>
-Cc:     paul.walmsley@sifive.com, linus.walleij@linaro.org, brgl@bgdev.pl,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-gpio@vger.kernel.org,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
-        aou@eecs.berkeley.edu, palmer@dabbelt.com,
-        linux-riscv@lists.infradead.org, lee.jones@linaro.org,
-        heiko@sntech.de, Palmer Dabbelt <palmer@rivosinc.com>,
-        Rob Herring <robh@kernel.org>, atishp@rivosinc.com,
-        ivan.griffin@microchip.com, daire.mcnamara@microchip.com,
-        linux-pwm@vger.kernel.org, bin.meng@windriver.com,
-        jassisinghbrar@gmail.com, u.kleine-koenig@pengutronix.de,
-        a.zummo@towertech.it, alexandre.belloni@bootlin.com,
-        geert@linux-m68k.org, thierry.reding@gmail.com,
-        linux-rtc@vger.kernel.org, lewis.hanly@microchip.com
-From:   Conor Dooley <mail@conchuod.ie>
-In-Reply-To: <YgJfl5CmepRMb5He@ninjato>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/02/2022 12:18, Wolfram Sang wrote:
-> On Mon, Feb 07, 2022 at 04:26:29PM +0000, conor.dooley@microchip.com wrote:
->> From: Conor Dooley <conor.dooley@microchip.com>
->>
->> Add device tree bindings for the i2c controller on
->> the Microchip PolarFire SoC.
->>
->> Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
->> Reviewed-by: Rob Herring <robh@kernel.org>
->> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
->> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-> 
-> Shall this go via DT (Rob) or I2C (me) or some riscv tree?
-If you could take it, that'd be great. Rob had said via subsystems was 
-his preference for the bindings in this series.
+The mux clk type within the MediaTek clk driver library only has a
+register function, and no corresponding unregister function. This
+means there is no way for its users to properly implement cleanup
+and removal.
 
-Thanks,
-Conor.
+Add a matching unregister function for the mux type clk.
+
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/clk/mediatek/clk-mux.c | 35 ++++++++++++++++++++++++++++++++++
+ drivers/clk/mediatek/clk-mux.h |  3 +++
+ 2 files changed, 38 insertions(+)
+
+diff --git a/drivers/clk/mediatek/clk-mux.c b/drivers/clk/mediatek/clk-mux.c
+index 89f23e111d91..6f0c22a699c3 100644
+--- a/drivers/clk/mediatek/clk-mux.c
++++ b/drivers/clk/mediatek/clk-mux.c
+@@ -164,6 +164,21 @@ static struct clk *mtk_clk_register_mux(const struct mtk_mux *mux,
+ 	return clk;
+ }
+ 
++static void mtk_clk_unregister_mux(struct clk *clk)
++{
++	struct mtk_clk_mux *mux;
++	struct clk_hw *hw;
++
++	hw = __clk_get_hw(clk);
++	if (!hw)
++		return;
++
++	mux = to_mtk_clk_mux(hw);
++
++	clk_unregister(clk);
++	kfree(mux);
++}
++
+ int mtk_clk_register_muxes(const struct mtk_mux *muxes,
+ 			   int num, struct device_node *node,
+ 			   spinlock_t *lock,
+@@ -198,4 +213,24 @@ int mtk_clk_register_muxes(const struct mtk_mux *muxes,
+ }
+ EXPORT_SYMBOL_GPL(mtk_clk_register_muxes);
+ 
++void mtk_clk_unregister_muxes(const struct mtk_mux *muxes, int num,
++			      struct clk_onecell_data *clk_data)
++{
++	int i;
++
++	if (!clk_data)
++		return;
++
++	for (i = num; i > 0; i--) {
++		const struct mtk_mux *mux = &muxes[i - 1];
++
++		if (IS_ERR_OR_NULL(clk_data->clks[mux->id]))
++			continue;
++
++		mtk_clk_unregister_mux(clk_data->clks[mux->id]);
++		clk_data->clks[mux->id] = ERR_PTR(-ENOENT);
++	}
++}
++EXPORT_SYMBOL_GPL(mtk_clk_unregister_muxes);
++
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/clk/mediatek/clk-mux.h b/drivers/clk/mediatek/clk-mux.h
+index 27841d649118..cb2ac4f04c58 100644
+--- a/drivers/clk/mediatek/clk-mux.h
++++ b/drivers/clk/mediatek/clk-mux.h
+@@ -88,4 +88,7 @@ int mtk_clk_register_muxes(const struct mtk_mux *muxes,
+ 			   spinlock_t *lock,
+ 			   struct clk_onecell_data *clk_data);
+ 
++void mtk_clk_unregister_muxes(const struct mtk_mux *muxes, int num,
++			      struct clk_onecell_data *clk_data);
++
+ #endif /* __DRV_CLK_MTK_MUX_H */
+-- 
+2.35.0.263.gb82422642f-goog
+
