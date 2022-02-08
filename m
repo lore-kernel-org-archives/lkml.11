@@ -2,204 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C2B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F81C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344590AbiBHBub (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:50:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34728 "EHLO
+        id S245701AbiBHBug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:50:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344883AbiBHBm1 (ORCPT
+        with ESMTP id S1344901AbiBHBm1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Feb 2022 20:42:27 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE64C061A73;
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086A2C043180;
         Mon,  7 Feb 2022 17:42:25 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id g8so6299030pfq.9;
-        Mon, 07 Feb 2022 17:42:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ERgffSEEPMLOF4G7ZYojvcW38QDY6fucM35wyOznqkc=;
-        b=K/Ew1OAJMRm0RkQoio72L75verKVe0mAGhqnut8B94/tnHyzTlON8O9FmqZODYWXrM
-         F7ncbAMwYF1FfB0kRTROHnTt1yhnmnpNknHY1xzds9BujqRfHhBhVWg2QFsd+bOKkfP+
-         v3mYVJA5QZuW5Ka6+fEr14Alf7luEKUMG6zXov4NB00gU9++bqRn/hKCnLzRMonOxsl+
-         iF0HepvNE0ND/hHDUpkm8RqkhepeSnHCLkigmDExeAWE14vidYkca4n1C5UPswi1xHvj
-         zZ3pW1Gso7mLzV9nKBDnXAVBb5Sa4ziPbJO4cea+sabcCh2fOOrySTInoaFItHqxjO1p
-         9Plg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ERgffSEEPMLOF4G7ZYojvcW38QDY6fucM35wyOznqkc=;
-        b=NgdVYbnTbA86tgG+hKOyRRTgFDlInuxSwOiOMygXipID9qzV7Tmd1ZnD38rW6GwfE3
-         DWj6woy9vgOnEx2EJ8F4J9lWQKwEtMgtuZI0ntC1ZXHOgkHCHr7WoxeR8rVprMkLhkjY
-         ax22IyfMmUeUjSb2Avac2LDnW0Hipiei4122anOylYpZeo8qb1xpQAzZs5QkWRvu+9Jr
-         elcArbS0ETGc3IWvGv42mSPdmgYbGNYePIZIFXY6s27ZVRvij2YHrEChLNnyJNTzIoJB
-         RA76jpH3ABEetj5pYcEIyr1CZ/Np3Ls6VozIlXojXqVxqiRGeN7V0RSKgFoMx55mgRaL
-         wUfg==
-X-Gm-Message-State: AOAM531s/WzhciyR/eupRpOe82ODy34ArxpFcuHZLmBJmQm2l2BG6hgG
-        nGXlHvggqU4ormNZBr5gLqjCfO9VyQY=
-X-Google-Smtp-Source: ABdhPJzBMUGlrinPYhS7qO91vdKuoMmKA6EhpqQRC/TwKj+cCfAyp2TrpLsIw6K7g/m3ifpWX1USpg==
-X-Received: by 2002:a05:6a00:158c:: with SMTP id u12mr2152508pfk.18.1644284544759;
-        Mon, 07 Feb 2022 17:42:24 -0800 (PST)
-Received: from shinobu (113x37x72x24.ap113.ftth.ucom.ne.jp. [113.37.72.24])
-        by smtp.gmail.com with ESMTPSA id d20sm13411388pfu.9.2022.02.07.17.42.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 17:42:24 -0800 (PST)
-Date:   Tue, 8 Feb 2022 10:42:18 +0900
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     linux-iio@vger.kernel.org,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH] counter: Stop using dev_get_drvdata() to get the counter
- device
-Message-ID: <YgHKekl9rJ2jH5j4@shinobu>
-References: <YfzPcyusGwAOkys6@shinobu>
- <20220204082556.370348-1-u.kleine-koenig@pengutronix.de>
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217N07g4008411;
+        Tue, 8 Feb 2022 01:42:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=ZkAUTm1/apHsIeGC+rUBYprsexmqQUVKekNpN96fr4g=;
+ b=fby4EGydPoLPGmVIlgov9YABugnRn+YY1cDRBTmMHPIR7W810tE+70G2rSmk6+tKFV5O
+ +U6yE9ghwBzlqGF4vUr1r7zhfWZT7rQEUf0qfPoPM034Mx35s6PbrgxUAgqNmx6rj/+A
+ l7idRoBxSbzC5DOHSEwL8C7/SN37B4eQfey5EXQYpj0fSNjx6ZkJT7BWt0/Td3VUKPW2
+ YvVM6qBjPHx4qF8VnY62hJ8oiZOIOmx5PBiVheDR1bHmv0zqisiYjX38vfc5uMeJVkRB
+ wKEm86RtWEvsvYKZ1LXqqOG9w3vcy7xlomVF7oIOhMxY769/8Um+Upz2jbeqnGpF0fKC Jw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e2319kt51-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 01:42:23 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2181gMJW027043;
+        Tue, 8 Feb 2022 01:42:22 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e2319kt4f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 01:42:22 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2181WjmI025448;
+        Tue, 8 Feb 2022 01:42:20 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma06fra.de.ibm.com with ESMTP id 3e1ggj0pr5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 01:42:20 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2181gHrk28574120
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 8 Feb 2022 01:42:17 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1E6F7A405E;
+        Tue,  8 Feb 2022 01:42:17 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CF8B4A4040;
+        Tue,  8 Feb 2022 01:42:15 +0000 (GMT)
+Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com.com (unknown [9.65.90.153])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  8 Feb 2022 01:42:15 +0000 (GMT)
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     linux-integrity@vger.kernel.org
+Cc:     Mimi Zohar <zohar@linux.ibm.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Biggers <ebiggers@google.com>
+Subject: [PATCH v4 3/8] fs-verity: define a function to return the integrity protected file digest
+Date:   Mon,  7 Feb 2022 20:41:35 -0500
+Message-Id: <20220208014140.483447-4-zohar@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220208014140.483447-1-zohar@linux.ibm.com>
+References: <20220208014140.483447-1-zohar@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3c1sPSk/V9KyhHkf"
-Content-Disposition: inline
-In-Reply-To: <20220204082556.370348-1-u.kleine-koenig@pengutronix.de>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: ccn-ac4UJ2J5k0InDhmbs7B2jK2j4FNq
+X-Proofpoint-GUID: dS6vBAoZfwHG20G-k67Og73X0uyxYrcN
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_07,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 malwarescore=0 impostorscore=0 adultscore=0
+ mlxlogscore=999 suspectscore=0 spamscore=0 bulkscore=0 mlxscore=0
+ phishscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202080006
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Define a function named fsverity_get_digest() to return the verity file
+digest and the associated hash algorithm (enum hash_algo).
 
---3c1sPSk/V9KyhHkf
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Acked-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+---
+ fs/verity/Kconfig            |  1 +
+ fs/verity/fsverity_private.h |  7 ------
+ fs/verity/measure.c          | 41 ++++++++++++++++++++++++++++++++++++
+ include/linux/fsverity.h     | 18 ++++++++++++++++
+ 4 files changed, 60 insertions(+), 7 deletions(-)
 
-On Fri, Feb 04, 2022 at 09:25:56AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> dev_get_drvdata() returns NULL since commit b56346ddbd82 ("counter: Use
-> container_of instead of drvdata to track counter_device") which wrongly
-> claimed there were no users of drvdata. Convert to container_of() to
-> fix a null pointer dereference.
->=20
-> Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Fixes: b56346ddbd82 ("counter: Use container_of instead of drvdata to tra=
-ck counter_device")
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+diff --git a/fs/verity/Kconfig b/fs/verity/Kconfig
+index 24d1b54de807..54598cd80145 100644
+--- a/fs/verity/Kconfig
++++ b/fs/verity/Kconfig
+@@ -3,6 +3,7 @@
+ config FS_VERITY
+ 	bool "FS Verity (read-only file-based authenticity protection)"
+ 	select CRYPTO
++	select CRYPTO_HASH_INFO
+ 	# SHA-256 is implied as it's intended to be the default hash algorithm.
+ 	# To avoid bloat, other wanted algorithms must be selected explicitly.
+ 	# Note that CRYPTO_SHA256 denotes the generic C implementation, but
+diff --git a/fs/verity/fsverity_private.h b/fs/verity/fsverity_private.h
+index a7920434bae5..c6fb62e0ef1a 100644
+--- a/fs/verity/fsverity_private.h
++++ b/fs/verity/fsverity_private.h
+@@ -14,7 +14,6 @@
+ 
+ #define pr_fmt(fmt) "fs-verity: " fmt
+ 
+-#include <crypto/sha2.h>
+ #include <linux/fsverity.h>
+ #include <linux/mempool.h>
+ 
+@@ -26,12 +25,6 @@ struct ahash_request;
+  */
+ #define FS_VERITY_MAX_LEVELS		8
+ 
+-/*
+- * Largest digest size among all hash algorithms supported by fs-verity.
+- * Currently assumed to be <= size of fsverity_descriptor::root_hash.
+- */
+-#define FS_VERITY_MAX_DIGEST_SIZE	SHA512_DIGEST_SIZE
+-
+ /* A hash algorithm supported by fs-verity */
+ struct fsverity_hash_alg {
+ 	struct crypto_ahash *tfm; /* hash tfm, allocated on demand */
+diff --git a/fs/verity/measure.c b/fs/verity/measure.c
+index f0d7b30c62db..f832aaa41326 100644
+--- a/fs/verity/measure.c
++++ b/fs/verity/measure.c
+@@ -57,3 +57,44 @@ int fsverity_ioctl_measure(struct file *filp, void __user *_uarg)
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(fsverity_ioctl_measure);
++
++/**
++ * fsverity_get_digest() - get a verity file's digest
++ * @inode: inode to get digest of
++ * @digest: (out) pointer to the digest
++ * @alg: (out) pointer to the hash algorithm enumeration
++ *
++ * Return the file hash algorithm and digest of an fsverity protected file.
++ *
++ * Return: 0 on success, -errno on failure
++ */
++int fsverity_get_digest(struct inode *inode,
++			u8 digest[FS_VERITY_MAX_DIGEST_SIZE],
++			enum hash_algo *alg)
++{
++	const struct fsverity_info *vi;
++	const struct fsverity_hash_alg *hash_alg;
++	int i;
++
++	vi = fsverity_get_info(inode);
++	if (!vi)
++		return -ENODATA; /* not a verity file */
++
++	hash_alg = vi->tree_params.hash_alg;
++	memset(digest, 0, FS_VERITY_MAX_DIGEST_SIZE);
++
++	/* convert the verity hash algorithm name to a hash_algo_name enum */
++	i = match_string(hash_algo_name, HASH_ALGO__LAST, hash_alg->name);
++	if (i < 0)
++		return -EINVAL;
++	*alg = i;
++
++	if (WARN_ON_ONCE(hash_alg->digest_size != hash_digest_size[*alg]))
++		return -EINVAL;
++	memcpy(digest, vi->file_digest, hash_alg->digest_size);
++
++	pr_debug("file digest %s:%*phN\n", hash_algo_name[*alg],
++		 hash_digest_size[*alg], digest);
++
++	return 0;
++}
+diff --git a/include/linux/fsverity.h b/include/linux/fsverity.h
+index b568b3c7d095..9a1b70cc7318 100644
+--- a/include/linux/fsverity.h
++++ b/include/linux/fsverity.h
+@@ -12,8 +12,16 @@
+ #define _LINUX_FSVERITY_H
+ 
+ #include <linux/fs.h>
++#include <crypto/hash_info.h>
++#include <crypto/sha2.h>
+ #include <uapi/linux/fsverity.h>
+ 
++/*
++ * Largest digest size among all hash algorithms supported by fs-verity.
++ * Currently assumed to be <= size of fsverity_descriptor::root_hash.
++ */
++#define FS_VERITY_MAX_DIGEST_SIZE	SHA512_DIGEST_SIZE
++
+ /* Verity operations for filesystems */
+ struct fsverity_operations {
+ 
+@@ -131,6 +139,9 @@ int fsverity_ioctl_enable(struct file *filp, const void __user *arg);
+ /* measure.c */
+ 
+ int fsverity_ioctl_measure(struct file *filp, void __user *arg);
++int fsverity_get_digest(struct inode *inode,
++			u8 digest[FS_VERITY_MAX_DIGEST_SIZE],
++			enum hash_algo *alg);
+ 
+ /* open.c */
+ 
+@@ -170,6 +181,13 @@ static inline int fsverity_ioctl_measure(struct file *filp, void __user *arg)
+ 	return -EOPNOTSUPP;
+ }
+ 
++static inline int fsverity_get_digest(struct inode *inode,
++				      u8 digest[FS_VERITY_MAX_DIGEST_SIZE],
++				      enum hash_algo *alg)
++{
++	return -EOPNOTSUPP;
++}
++
+ /* open.c */
+ 
+ static inline int fsverity_file_open(struct inode *inode, struct file *filp)
+-- 
+2.27.0
 
-I'll pick this up and apply it to my tree.
-
-Thanks,
-
-William Breathitt Gray
-
-> ---
->  drivers/counter/counter-sysfs.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/counter/counter-sysfs.c b/drivers/counter/counter-sy=
-sfs.c
-> index 7cc4d1d523ea..04eac41dad33 100644
-> --- a/drivers/counter/counter-sysfs.c
-> +++ b/drivers/counter/counter-sysfs.c
-> @@ -19,6 +19,11 @@
-> =20
->  #include "counter-sysfs.h"
-> =20
-> +static inline struct counter_device *counter_from_dev(struct device *dev)
-> +{
-> +	return container_of(dev, struct counter_device, dev);
-> +}
-> +
->  /**
->   * struct counter_attribute - Counter sysfs attribute
->   * @dev_attr:	device attribute for sysfs
-> @@ -90,7 +95,7 @@ static ssize_t counter_comp_u8_show(struct device *dev,
->  				    struct device_attribute *attr, char *buf)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	int err;
->  	u8 data =3D 0;
-> =20
-> @@ -122,7 +127,7 @@ static ssize_t counter_comp_u8_store(struct device *d=
-ev,
->  				     const char *buf, size_t len)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	int err;
->  	bool bool_data =3D 0;
->  	u8 data =3D 0;
-> @@ -158,7 +163,7 @@ static ssize_t counter_comp_u32_show(struct device *d=
-ev,
->  				     struct device_attribute *attr, char *buf)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	const struct counter_available *const avail =3D a->comp.priv;
->  	int err;
->  	u32 data =3D 0;
-> @@ -221,7 +226,7 @@ static ssize_t counter_comp_u32_store(struct device *=
-dev,
->  				      const char *buf, size_t len)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	struct counter_count *const count =3D a->parent;
->  	struct counter_synapse *const synapse =3D a->comp.priv;
->  	const struct counter_available *const avail =3D a->comp.priv;
-> @@ -281,7 +286,7 @@ static ssize_t counter_comp_u64_show(struct device *d=
-ev,
->  				     struct device_attribute *attr, char *buf)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	int err;
->  	u64 data =3D 0;
-> =20
-> @@ -309,7 +314,7 @@ static ssize_t counter_comp_u64_store(struct device *=
-dev,
->  				      const char *buf, size_t len)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	int err;
->  	u64 data =3D 0;
-> =20
->=20
-> base-commit: e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
-> --=20
-> 2.34.1
->=20
-
---3c1sPSk/V9KyhHkf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmIBynoACgkQhvpINdm7
-VJLqTBAA3J43JaLbnlYQQ3Mn19/LJiIcHZtxbbHnK8eoOuTLJdALEfHllZD95xe1
-liOz7WRh9fSKcMNna392DMKGLUrofvoi+RIxFNePDCpQfEPj9+1W2veb9SL+4kz9
-v3wI/3o1iFKn+U2ZUXh3egGyCoOLtDa0r4a6Jr7IRNBe2whvnWJrLwaP9DYuH28D
-SnkLNYENIjarUmlr61ybKRAYQjVUTM2okKLMIRaNsA6A24UdzmvgSV4Wu7SD8Jm/
-G52W6ceQy9JK9k7NHGmSD1AJTHf9fkhrYXkmawJrbrOdJgn77Wckr6HjS2j/wQmF
-Czg59/n8fgDB3V/agHolLKkk9G9naO46HbXUOVOnePVCpvh8NGz9GwuDDg+EjsaG
-netNzXiqSZb7qeGhDDr/d1fO52GfZrsX4jOJWjbhHLNlogDwhCnNSEBT2GbzguEA
-Wxr+r52WXoQ9fE/AW2ScC8eFEreZy1PFfXPAzFwGeIAllhJArPkQE3oIkGOdgaB6
-vCDFrTB7NL9mW09Uc7jR+1aQ7MrOEw82ymiXgAeRsqd9ActLYmvjMs1C8MsuJDcl
-aMkgqrJcGnrAUfvu8jJYvfKHsYuuJhvEFpmHMl17aWFVPYDoTfGFWfFb/7JKE/8o
-xLjJjr/ulxr4S5p5AQ6HxmgQQsRiptAtWdc4TDcAu8ZNiG3Vv6E=
-=wD26
------END PGP SIGNATURE-----
-
---3c1sPSk/V9KyhHkf--
