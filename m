@@ -2,83 +2,312 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13508C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC393C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376446AbiBHNrK (ORCPT
+        id S1376465AbiBHNsi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:47:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42664 "EHLO
+        Tue, 8 Feb 2022 08:48:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348721AbiBHNrH (ORCPT
+        with ESMTP id S242978AbiBHNse (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:47:07 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0D4C03FECE;
-        Tue,  8 Feb 2022 05:47:05 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id s7so10929328edd.3;
-        Tue, 08 Feb 2022 05:47:05 -0800 (PST)
+        Tue, 8 Feb 2022 08:48:34 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94653C03FECE
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:48:33 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id q7so2678246wrc.13
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:48:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1Uu1nmskTHfo9hf/W5wz6SlkksAW9cfa8fGOqXsoeu0=;
-        b=Gk264vUVXqULqzqf8r/V2hhm+hrlBz33ptFcQz961+WAYCu63lke2girCZMbuqBNVo
-         wQCza+VJ/CWrAWTDsf9opfmeHeZdOMPCEYWK13gurn9ek/yD7yRPAmomj0572H5kn2eX
-         FwLrdPQOhTD6SZkpLlxM7amzIjLfH0Ss/vhceG5nA/1i6PVchCUE9tWGyIIrlGnqNwlU
-         SVDhFdLdHHO1adtLeGj00RtBsyIuOdUdh8J+tYLGUtmu0v/DHfTpSocddpCVXgTzmZpf
-         LXiF8vS1aXYt/a1HakbTNovY6pOptFhAaFHlvEjXDke9KLyD9iIT52OytpJT+rk48QSN
-         PBZw==
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nslAfgWjfqYp0waeOKiDWtWcAv4ct0cP72o0N9rmy7Q=;
+        b=RVIn/c29r62kMCw+PwceylGcVE56vaOTYXBMo7yGwFYmI8E/MTom7AJHaMcxowN+sf
+         rpC298MEwoj91lA8w//3v+cDFu7X5dyGZYyd3MLAQTNU8RUeQAdbDz8LzlZMp2QrHCFs
+         oDG6vKBMITYf8mcdxmktG34fLsh6fvX9XHqVU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1Uu1nmskTHfo9hf/W5wz6SlkksAW9cfa8fGOqXsoeu0=;
-        b=f5pylbW5EjMAhjDKg83m3fpnbCLfhnonREJzXG31Ak5XNQUdw8X9C0TNLgxIgzjv8j
-         CJ8A3+Y76X0s0lK25sHxYXJMNUtP/GpavlglQ193MldVNzt+L4jtF7taVKNgv4omm3XY
-         7mB9UYTs7DZMuKM6lECMZgY3bO7KLBV87Aay+KP5MDdieqGYuxg5wMVPIVYDt4k1+rf1
-         ZRsQ8+cU+lFq4axBtHc9uRpQ2VOxcuPF5SilTEEjeGD1tdS7y1OTS+2IN0KDOYGye72J
-         5Pfjs5z6AM/Fa2BMZGe5b4Ps68iWyqUL9TZSdsXRFRMh8r1SlVxZF0eyUFHZtIGrLfyY
-         kESg==
-X-Gm-Message-State: AOAM532JiByC42LZEE8E78NneAYSYgj/sxEuBCzOPgNpXuTQxhYy7+5N
-        fEopzdCLQ/YuoUsc8RwWY8J7pXoF+ScPRJOovsI=
-X-Google-Smtp-Source: ABdhPJz2GmTrp8kspjWPIrO//kFaIZIY6zuZ3x2Mu5vF8Z/DPZ7MBkknv+oLENEgrJA6ASawew8rshblrdr780Qg7Wc=
-X-Received: by 2002:aa7:c413:: with SMTP id j19mr3709836edq.200.1644328023983;
- Tue, 08 Feb 2022 05:47:03 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=nslAfgWjfqYp0waeOKiDWtWcAv4ct0cP72o0N9rmy7Q=;
+        b=7EXqkg0I8EXbAQl43eeUVeCyFAzLdnaejBuha2tM7PvEcDMKlxqRATvTkuh6yGSvzD
+         RruAmBEhyglDyu3JhGC80oytYr75lDfckNrat2JNqPbbjyG8cMz8AO8UCtip6Wog5MyM
+         BFdgrTFZZ+ZBmvLVNiTohqUMzloovd0TIvDg6OfSooiLgN0Ol/9od7lgrWCnZ6rg0k2/
+         bbsAWWLdbDdLjJyyrSfIWhNCuFT51pcCka7gtCfJts20YY7ttp/KrXjak7VGng8ye8wP
+         DS7LTBgR3Oiw2s2RbDuHQVAPJ+8DgSu4dbjIqCXJqiE5BA6rGvcIR4etHYheFBJd4vxB
+         /uig==
+X-Gm-Message-State: AOAM533P/A30jVg8BHSg32xZOB9GKL2ueJI1Z6loaBb//VGDXe79bqCm
+        kTMhaHvXWmRaTAYxmS2zX5mlLw==
+X-Google-Smtp-Source: ABdhPJw7G5oiEdPQQHMsx5o7YqF02G82AktiOMw1OdSWIr3bQc7+i+V4qkXnq0ZbIMa6QMBDktOQiQ==
+X-Received: by 2002:a5d:6d4b:: with SMTP id k11mr3503996wri.623.1644328112201;
+        Tue, 08 Feb 2022 05:48:32 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id f25sm2097908wml.16.2022.02.08.05.48.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 05:48:31 -0800 (PST)
+Date:   Tue, 8 Feb 2022 14:48:29 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Sam Ravnborg <sam@ravnborg.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Claudio Suarez <cssk@net-c.es>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@intel.com>
+Subject: Re: [PATCH 11/21] fbcon: Extract fbcon_open/release helpers
+Message-ID: <YgJ0relUFpnxRvhg@phenom.ffwll.local>
+Mail-Followup-To: Sam Ravnborg <sam@ravnborg.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>, Claudio Suarez <cssk@net-c.es>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@intel.com>
+References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+ <20220131210552.482606-12-daniel.vetter@ffwll.ch>
+ <YfxF4jq7BLX5rJe5@ravnborg.org>
 MIME-Version: 1.0
-References: <20220208020441.3081162-1-liambeguin@gmail.com> <20220208020441.3081162-10-liambeguin@gmail.com>
-In-Reply-To: <20220208020441.3081162-10-liambeguin@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 8 Feb 2022 15:46:27 +0200
-Message-ID: <CAHp75Vf+FkofvC3_jvNadGed+eH7mQvVYXTOiWKCzwinJ3-2-w@mail.gmail.com>
-Subject: Re: [PATCH v14 09/11] iio: afe: rescale: add temperature transducers
-To:     Liam Beguin <liambeguin@gmail.com>
-Cc:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfxF4jq7BLX5rJe5@ravnborg.org>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 4:04 AM Liam Beguin <liambeguin@gmail.com> wrote:
->
-> A temperature transducer is a device that converts a thermal quantity
-> into any other physical quantity. This patch adds support for
-> temperature to voltage (like the LTC2997) and temperature to current
-> (like the AD590) linear transducers.
-> In both cases these are assumed to be connected to a voltage ADC.
+On Thu, Feb 03, 2022 at 10:15:14PM +0100, Sam Ravnborg wrote:
+> Hi Daniel,
+> 
+> On Mon, Jan 31, 2022 at 10:05:42PM +0100, Daniel Vetter wrote:
+> > There's two minor behaviour changes in here:
+> > - in error paths we now consistently call fb_ops->fb_release
+> > - fb_release really can't fail (fbmem.c ignores it too) and there's no
+> >   reasonable cleanup we can do anyway.
+> > 
+> > Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+> > Cc: Daniel Vetter <daniel@ffwll.ch>
+> > Cc: Claudio Suarez <cssk@net-c.es>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> > Cc: Du Cheng <ducheng2@gmail.com>
+> > ---
+> >  drivers/video/fbdev/core/fbcon.c | 107 +++++++++++++++----------------
+> >  1 file changed, 53 insertions(+), 54 deletions(-)
+> > 
+> > diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+> > index fa30e1909164..eea2ee14b64c 100644
+> > --- a/drivers/video/fbdev/core/fbcon.c
+> > +++ b/drivers/video/fbdev/core/fbcon.c
+> > @@ -680,19 +680,37 @@ static int fbcon_invalid_charcount(struct fb_info *info, unsigned charcount)
+> >  
+> >  #endif /* CONFIG_MISC_TILEBLITTING */
+> >  
+> > +static int fbcon_open(struct fb_info *info)
+> > +{
+> > +	if (!try_module_get(info->fbops->owner))
+> > +		return -ENODEV;
+> > +
+> > +	if (info->fbops->fb_open &&
+> > +	    info->fbops->fb_open(info, 0)) {
+> > +		module_put(info->fbops->owner);
+> > +		return -ENODEV;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static void fbcon_release(struct fb_info *info)
+> > +{
+> > +	if (info->fbops->fb_release)
+> > +		info->fbops->fb_release(info, 0);
+> > +
+> > +	module_put(info->fbops->owner);
+> > +}
+> >  
+> >  static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
+> >  				  int unit, int oldidx)
+> >  {
+> >  	struct fbcon_ops *ops = NULL;
+> > -	int err = 0;
+> > -
+> > -	if (!try_module_get(info->fbops->owner))
+> > -		err = -ENODEV;
+> > +	int err;
+> >  
+> > -	if (!err && info->fbops->fb_open &&
+> > -	    info->fbops->fb_open(info, 0))
+> > -		err = -ENODEV;
+> > +	err = fbcon_open(info);
+> > +	if (err)
+> > +		return err;
+> >  
+> >  	if (!err) {
+> >  		ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
+> > @@ -713,7 +731,7 @@ static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
+> >  
+> >  	if (err) {
+> >  		con2fb_map[unit] = oldidx;
+> > -		module_put(info->fbops->owner);
+> > +		fbcon_release(info);
+> >  	}
+> >  
+> >  	return err;
+> > @@ -724,45 +742,34 @@ static int con2fb_release_oldinfo(struct vc_data *vc, struct fb_info *oldinfo,
+> >  				  int oldidx, int found)
+> >  {
+> >  	struct fbcon_ops *ops = oldinfo->fbcon_par;
+> > -	int err = 0, ret;
+> > +	int ret;
+> >  
+> > -	if (oldinfo->fbops->fb_release &&
+> > -	    oldinfo->fbops->fb_release(oldinfo, 0)) {
+> > -		con2fb_map[unit] = oldidx;
+> The old code assigns con2fb_map[unit] before is calls
+> newinfo->fbops->fb_release).
+> I wonder if there can be any callback to fbcon where the value
+> of con2fb_map[unit] matters?
 
-...
+It's all protected by console_lock, so other threads cannot see the
+inconsistent state.
 
-> +       rescale->offset = div_s64((s64)offset * rescale->denominator,
-> +                                 rescale->numerator);
+Essentially everything in fbcon.c is protected by console_lock().
 
-Wonder if we can use mult_frac() here. Would it require 64-bit division?
+Do you want me to hammer this in somewhere (maybe in the commit message),
+or good enough for your ack?
+-Daniel
+
+> 
+> 
+> > -		if (!found && newinfo->fbops->fb_release)
+> > -			newinfo->fbops->fb_release(newinfo, 0);
+> > -		if (!found)
+> > -			module_put(newinfo->fbops->owner);
+> > -		err = -ENODEV;
+> > -	}
+> > +	fbcon_release(oldinfo);
+> >  
+> > -	if (!err) {
+> > -		fbcon_del_cursor_work(oldinfo);
+> > -		kfree(ops->cursor_state.mask);
+> > -		kfree(ops->cursor_data);
+> > -		kfree(ops->cursor_src);
+> > -		kfree(ops->fontbuffer);
+> > -		kfree(oldinfo->fbcon_par);
+> > -		oldinfo->fbcon_par = NULL;
+> > -		module_put(oldinfo->fbops->owner);
+> > -		/*
+> > -		  If oldinfo and newinfo are driving the same hardware,
+> > -		  the fb_release() method of oldinfo may attempt to
+> > -		  restore the hardware state.  This will leave the
+> > -		  newinfo in an undefined state. Thus, a call to
+> > -		  fb_set_par() may be needed for the newinfo.
+> > -		*/
+> > -		if (newinfo && newinfo->fbops->fb_set_par) {
+> > -			ret = newinfo->fbops->fb_set_par(newinfo);
+> > +	fbcon_del_cursor_work(oldinfo);
+> 
+> 
+> > +	kfree(ops->cursor_state.mask);
+> > +	kfree(ops->cursor_data);
+> > +	kfree(ops->cursor_src);
+> > +	kfree(ops->fontbuffer);
+> > +	kfree(oldinfo->fbcon_par);
+> > +	oldinfo->fbcon_par = NULL;
+> These all look like candidates to stuff into fbcon_release()
+> That would drop the nice symmetry but make it more consistent.
+> 
+> I think we miss freeing ops->cursor_data in fbcon_exit(),
+> but I did not follow all the code.
+> 
+> With my ramblings considered the patch is
+> Acked-by: Sam Ravnborg <sam@ravnborg.org>
+> 
+> 	Sam
+> 
+> > +	/*
+> > +	  If oldinfo and newinfo are driving the same hardware,
+> > +	  the fb_release() method of oldinfo may attempt to
+> > +	  restore the hardware state.  This will leave the
+> > +	  newinfo in an undefined state. Thus, a call to
+> > +	  fb_set_par() may be needed for the newinfo.
+> > +	*/
+> > +	if (newinfo && newinfo->fbops->fb_set_par) {
+> > +		ret = newinfo->fbops->fb_set_par(newinfo);
+> >  
+> > -			if (ret)
+> > -				printk(KERN_ERR "con2fb_release_oldinfo: "
+> > -					"detected unhandled fb_set_par error, "
+> > -					"error code %d\n", ret);
+> > -		}
+> > +		if (ret)
+> > +			printk(KERN_ERR "con2fb_release_oldinfo: "
+> > +				"detected unhandled fb_set_par error, "
+> > +				"error code %d\n", ret);
+> >  	}
+> >  
+> > -	return err;
+> > +	return 0;
+> >  }
+> >  
+> >  static void con2fb_init_display(struct vc_data *vc, struct fb_info *info,
+> > @@ -917,7 +924,6 @@ static const char *fbcon_startup(void)
+> >  	struct fbcon_display *p = &fb_display[fg_console];
+> >  	struct vc_data *vc = vc_cons[fg_console].d;
+> >  	const struct font_desc *font = NULL;
+> > -	struct module *owner;
+> >  	struct fb_info *info = NULL;
+> >  	struct fbcon_ops *ops;
+> >  	int rows, cols;
+> > @@ -936,17 +942,12 @@ static const char *fbcon_startup(void)
+> >  	if (!info)
+> >  		return NULL;
+> >  	
+> > -	owner = info->fbops->owner;
+> > -	if (!try_module_get(owner))
+> > +	if (fbcon_open(info))
+> >  		return NULL;
+> > -	if (info->fbops->fb_open && info->fbops->fb_open(info, 0)) {
+> > -		module_put(owner);
+> > -		return NULL;
+> > -	}
+> >  
+> >  	ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
+> >  	if (!ops) {
+> > -		module_put(owner);
+> > +		fbcon_release(info);
+> >  		return NULL;
+> >  	}
+> >  
+> > @@ -3331,10 +3332,6 @@ static void fbcon_exit(void)
+> >  		}
+> >  
+> >  		if (mapped) {
+> > -			if (info->fbops->fb_release)
+> > -				info->fbops->fb_release(info, 0);
+> > -			module_put(info->fbops->owner);
+> > -
+> >  			if (info->fbcon_par) {
+> >  				struct fbcon_ops *ops = info->fbcon_par;
+> >  
+> > @@ -3344,6 +3341,8 @@ static void fbcon_exit(void)
+> >  				kfree(info->fbcon_par);
+> >  				info->fbcon_par = NULL;
+> >  			}
+> > +
+> > +			fbcon_release(info);
+> >  		}
+> >  	}
+> >  }
+> > -- 
+> > 2.33.0
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
