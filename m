@@ -2,102 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D237FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46A76C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376347AbiBHNo5 (ORCPT
+        id S1376422AbiBHNql (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:44:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41598 "EHLO
+        Tue, 8 Feb 2022 08:46:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235437AbiBHNo4 (ORCPT
+        with ESMTP id S1357586AbiBHNqk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:44:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C049C03FECE;
-        Tue,  8 Feb 2022 05:44:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29D5560B23;
-        Tue,  8 Feb 2022 13:44:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0BA3C004E1;
-        Tue,  8 Feb 2022 13:44:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644327892;
-        bh=gu1lM0Rv9DCMR8zhSFa7X6w8lK33nztv12R7zJr4ESA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZwNc1cccdB41SwRmW9HutUa3OWLDVHqsUVOjmyhH29h4OlwGahcPp8QWDuQ3x1IIh
-         LTmYuUWLsdybJSNiJF4lvGIxHqpJCA1FVG3xuL6Z4K7g81FuiIZKE76gTl5jmJ+5ME
-         bhTtcBHaRYGYESr1JWOPlZxEdf0gpa/pQon3RzsgJ2KRjUKU5SWY83NB9mj8vaAz3x
-         iDh4U8daYSrCHfC2QsLWHEJ3YXXSYDEqBjE3EgfsWDeqYq0Q+AzBsc8dKExJkPUt2G
-         YqPFlF8x50XG7CWcz35yEb8d0ZxzrgpcefdLBf1hx+U70fMADJf87jdHcmUEY8jbD8
-         QpOtYjX4d5zvg==
-Date:   Tue, 8 Feb 2022 13:44:47 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     Prasad Kumpatla <quic_pkumpatl@quicinc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Subject: Re: [PATCH v2] regmap-irq: Use regmap_irq_update_bits instead of
- regmap_write
-Message-ID: <YgJzz5GFsKBteYyg@sirena.org.uk>
-References: <20220119142953.1804-1-quic_pkumpatl@quicinc.com>
- <CGME20220208122955eucas1p2d4e32f51224242e9ebd0bce58b9c04ca@eucas1p2.samsung.com>
- <39f1b598-58ca-1e3d-3065-8dd692ee7c9f@samsung.com>
+        Tue, 8 Feb 2022 08:46:40 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E1FC03FED0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:46:36 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id y3so31604567ejf.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:46:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=n+LaJyZileNVYfrYaX66cB1MBmYgBiVsCyxJAwLVUMM=;
+        b=lI+BZuVcaX39tM3Hzn6AV7cMAOYQiuorb7ECkjKy19ZLPsqgt5HccWa6JVE5WSOUzf
+         zkF5zK1pNUirlIF9c0I6rmjLcjRY61AIgt0gVX3PzKHHihcmAvkzPuyk6Vsiwh52MJlx
+         nJbFdhibExMF4h5Vct0UMFUcQtBrt70JaaTJ0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=n+LaJyZileNVYfrYaX66cB1MBmYgBiVsCyxJAwLVUMM=;
+        b=SheVDckCffvyiuHD8DSyHPDsULKgpk66LRB9ZXj1GkTru9yWChJP7ySNQm2X/KUn/g
+         NSdfccm+SHtmAJqJgJVwQNosIWOY9xmRiPpsEUkbS+jiZeorlpW7kl5/Ks9RgFj/KsBe
+         w1mWfYn0oEyqMHylQRmhqXIO+nkbh8jvbNOhYUY8K1Lg69v+ij/uWEb5f4S0LlK+xSga
+         cLJxEPk+g/9yQw8CNXkfinJIF4l/dzuIfSYNy1cPRp6iL+mxhoG4hFEw/uwQ+/KQkqFl
+         lceGw9pxz4t6El4LYxaUf/dXlMwiWYVkwbtp7YlyEqaGeKRzVB3sJBS0mFK+gonslCw1
+         3SvQ==
+X-Gm-Message-State: AOAM532zXXvwpKhm8euTegLJLu2Lng3KklnptAHlyOsW31AY8yE/XyJI
+        EjhM3g01F1XxWUl90WQOgbFFYQ==
+X-Google-Smtp-Source: ABdhPJxVk+yKuksCrmEzucsFv8fLMfNwj3TQ4MGzWAZDuSk8mMV/chycYqMAJ3qCJ8UZgxkmkgB4aw==
+X-Received: by 2002:a17:907:da3:: with SMTP id go35mr3771651ejc.456.1644327995333;
+        Tue, 08 Feb 2022 05:46:35 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id e7sm331032ejm.133.2022.02.08.05.46.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 05:46:34 -0800 (PST)
+Date:   Tue, 8 Feb 2022 14:46:33 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Sam Ravnborg <sam@ravnborg.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH 10/21] fb: Delete fb_info->queue
+Message-ID: <YgJ0OQxt4KIPD9uz@phenom.ffwll.local>
+Mail-Followup-To: Sam Ravnborg <sam@ravnborg.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Helge Deller <deller@gmx.de>
+References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+ <20220131210552.482606-11-daniel.vetter@ffwll.ch>
+ <YfxJlH2NDnLk/GUw@ravnborg.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="bGkYXeNT7w8NEyD+"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <39f1b598-58ca-1e3d-3065-8dd692ee7c9f@samsung.com>
-X-Cookie: This is your fortune.
+In-Reply-To: <YfxJlH2NDnLk/GUw@ravnborg.org>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Feb 03, 2022 at 10:31:00PM +0100, Sam Ravnborg wrote:
+> On Mon, Jan 31, 2022 at 10:05:41PM +0100, Daniel Vetter wrote:
+> > It was only used by fbcon, and that now switched to its own,
+> > private work.
+> > 
+> > Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+> > Cc: Helge Deller <deller@gmx.de>
+> > Cc: linux-fbdev@vger.kernel.org
+> I would merge this with the patch that drops the usage
 
---bGkYXeNT7w8NEyD+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Yeah, but I like to split these out so that if this does break something,
+it's much easier to revert. In case I overlooked something somewhere.
 
-On Tue, Feb 08, 2022 at 01:29:55PM +0100, Marek Szyprowski wrote:
-> Hi Prasad,
->=20
-> On 19.01.2022 15:29, Prasad Kumpatla wrote:
-> > With the existing logic by using regmap_write() all the bits in
-> > the register are being updated which is not expected. To update only the
-> > interrupt raised bit and not tocuhing other bits, replace regmap_write()
-> > with regmap_irq_update_bits().
-> >
-> > This patch is to fix the issue observed in MBHC button press/release ev=
-ents.
-> >
-> > Fixes: 3a6f0fb7b8eb ("regmap: irq: Add support to clear ack registers")
-> > Signed-off-by: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
->=20
-> There is something wrong with this patch. Since it landed in linux-next=
-=20
-> (20220204) I get an interrupt storm on two of my test devices:
+It's imo different if the cleanup is directly related to the preceeding
+prep work, but this is a generic workqueue, and the cursor logic is rather
+unrelated. And if I remember my history digging right, there were actually
+other uses of this.
+-Daniel
 
-I'll just revert it for now.
+> 
+> > ---
+> >  include/linux/fb.h | 1 -
+> >  1 file changed, 1 deletion(-)
+> > 
+> > diff --git a/include/linux/fb.h b/include/linux/fb.h
+> > index 02f362c661c8..a8a00d2ba1f3 100644
+> > --- a/include/linux/fb.h
+> > +++ b/include/linux/fb.h
+> > @@ -449,7 +449,6 @@ struct fb_info {
+> >  	struct fb_var_screeninfo var;	/* Current var */
+> >  	struct fb_fix_screeninfo fix;	/* Current fix */
+> >  	struct fb_monspecs monspecs;	/* Current Monitor specs */
+> > -	struct work_struct queue;	/* Framebuffer event queue */
+> >  	struct fb_pixmap pixmap;	/* Image hardware mapper */
+> >  	struct fb_pixmap sprite;	/* Cursor hardware mapper */
+> >  	struct fb_cmap cmap;		/* Current cmap */
+> > -- 
+> > 2.33.0
 
---bGkYXeNT7w8NEyD+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmICc84ACgkQJNaLcl1U
-h9Dcpwf/ZuoJ3isPhFf8jelGmKPzrCWi40feOyhm3CWL/l7usejsTkiUPR7NpV8g
-QjGdxc+NJaaIcuFGf30EL7r/xZmOfw7rwEBj/tWH56YJS2xKxIRuT/T59WOHbe1c
-+7geKmc8uCPErb/5J8PJWLpSurDpsqIDu3O/o6WfgF5FfIJeRjE30uhvdklEpy1o
-XjMq1+8C4Bzp2FrKQLmMuEAem29GJb7FTgdMslly/MEKSXoQZtDY+ToF96flLg6w
-UCx4up1xa852G9gTXvKvNqtCJvyw/fC6Fdu1EUbabDVz35yiCmLPVePtBhdzgIVl
-ig8kR6VmcKsbsrze0yB1Sm4MuqdQhQ==
-=RHEL
------END PGP SIGNATURE-----
-
---bGkYXeNT7w8NEyD+--
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
