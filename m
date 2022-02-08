@@ -2,215 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CB2C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB90C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352039AbiBHIwn (ORCPT
+        id S1352110AbiBHIx3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:52:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46086 "EHLO
+        Tue, 8 Feb 2022 03:53:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232577AbiBHIwl (ORCPT
+        with ESMTP id S231657AbiBHIxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:52:41 -0500
-Received: from first.geanix.com (first.geanix.com [116.203.34.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B32C03FEC0;
-        Tue,  8 Feb 2022 00:52:40 -0800 (PST)
-Received: from zen.. (unknown [185.17.218.86])
-        by first.geanix.com (Postfix) with ESMTPSA id A64FDE28FB;
-        Tue,  8 Feb 2022 08:52:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1644310357; bh=IfhFtV9h7TZeyZofkNglQMWg6AkUIHKmkWYK/JylW0g=;
-        h=From:To:Cc:Subject:Date;
-        b=js/n16a0zimkjRoS2heJRpgLxJGxRQ3w5s1bEzO1ieNAumVGSI7w5G1GH1QKZmRzw
-         +wXhb4jTDUu+AqSO6al4a2SXOVm1Sy8xyOBERiMG9w5WZjCLMBtPqxPRU2ebUKkIdG
-         wRJ35PC28Vyq+EcrPH3T7Fsp9Tx1LZMuktC0w1Wa47zbo4XuHqi0cOtkz1gxeP24vT
-         SK4Wm18IMHuqeyeuQs7CKIcz58NJu2UMGYugELMimgyqzbazH3cSawSHqZSq/FK0ID
-         PuYv3quhdyGmzRxlbcQe90tZdtbv0bIAXe+5cJkwyzPI04AnAlXVFtEc9YYnLd3/Jy
-         G7XFHn7oxmv6g==
-From:   Sean Nyekjaer <sean@geanix.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Boris Brezillon <bbrezillon@kernel.org>
-Cc:     Sean Nyekjaer <sean@geanix.com>,
-        Boris Brezillon <boris.brezillon@collabora.com>,
-        stable@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4] mtd: rawnand: protect access to rawnand devices while in suspend
-Date:   Tue,  8 Feb 2022 09:52:13 +0100
-Message-Id: <20220208085213.1838273-1-sean@geanix.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 8 Feb 2022 03:53:24 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70ED3C03FEC0;
+        Tue,  8 Feb 2022 00:53:23 -0800 (PST)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JtGwh4xFCzbkKJ;
+        Tue,  8 Feb 2022 16:52:20 +0800 (CST)
+Received: from [10.67.110.173] (10.67.110.173) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 16:53:20 +0800
+Message-ID: <e852660c-17fa-cd75-e361-45dd77b8884d@huawei.com>
+Date:   Tue, 8 Feb 2022 16:53:20 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Mimi Zohar <zohar@linux.ibm.com>
+CC:     Roberto Sassu <roberto.sassu@huawei.com>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        wangweiyang <wangweiyang2@huawei.com>,
+        "xiujianfeng@huawei.com" <xiujianfeng@huawei.com>
+From:   "Guozihua (Scott)" <guozihua@huawei.com>
+Subject: Problem with commit ccf11dbaa07b ("evm: Fix memleak in init_desc")
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.173]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500024.china.huawei.com (7.185.36.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prevent rawnand access while in a suspended state.
+Hi Mimi,
 
-Commit 013e6292aaf5 ("mtd: rawnand: Simplify the locking") allows the
-rawnand layer to return errors rather than waiting in a blocking wait.
+I found an issue with commit ccf11dbaa07b ("evm: Fix memleak in init_desc").
 
-Tested on a iMX6ULL.
+This commit tries to free variable "tmp_tfm" if something went wrong 
+after the "alloc" label in function init_desc, which would potentially 
+cause a user-after-free issue
 
-Fixes: 013e6292aaf5 ("mtd: rawnand: Simplify the locking")
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
-Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
-Cc: stable@vger.kernel.org
----
+The codes are as follows:
 
-Changes since v1:
- - fixed uninitialized return
+   1 static struct shash_desc *init_desc(char type, uint8_t hash_algo)
+   2 {
+   3 	long rc;
+   4 	const char *algo;
+   5 	struct crypto_shash **tfm, *tmp_tfm = NULL;
+   6 	struct shash_desc *desc;
+   7
+   8 	if (type == EVM_XATTR_HMAC) {
+   9 		if (!(evm_initialized & EVM_INIT_HMAC)) {
+  10 			pr_err_once("HMAC key is not set\n");
+  11 			return ERR_PTR(-ENOKEY);
+  12 		}
+  13 		tfm = &hmac_tfm;
+  14 		algo = evm_hmac;
+  15 	} else {
+  16 		if (hash_algo >= HASH_ALGO__LAST)
+  17 			return ERR_PTR(-EINVAL);
+  18
+  19 		tfm = &evm_tfm[hash_algo];
+  20 		algo = hash_algo_name[hash_algo];
+  21 	}
+  22
+  23 	if (*tfm)
+  24 		goto alloc;
+  25 	mutex_lock(&mutex);
+  26 	if (*tfm)
+  27 		goto unlock;
+  28
+  29 	tmp_tfm = crypto_alloc_shash(algo, 0, CRYPTO_NOLOAD);
+  30 	if (IS_ERR(tmp_tfm)) {
+  31 		pr_err("Can not allocate %s (reason: %ld)\n", algo,
+  32 		       PTR_ERR(tmp_tfm));
+  33 		mutex_unlock(&mutex);
+  34 		return ERR_CAST(tmp_tfm);
+  35 	}
+  36 	if (type == EVM_XATTR_HMAC) {
+  37 		rc = crypto_shash_setkey(tmp_tfm, evmkey, evmkey_len);
+  38 		if (rc) {
+  39 			crypto_free_shash(tmp_tfm);
+  40 			⋅mutex_unlock(&mutex);
+  41 			return ERR_PTR(rc);
+  42 		}
+  43 	}
+  44 	*tfm = tmp_tfm;
+  45 unlock:
+  46 	mutex_unlock(&mutex);
+  47 alloc:
+  48 	desc = kmalloc(sizeof(*desc) + crypto_shash_descsize(*tfm),
+  49 			GFP_KERNEL);
+  50 	if (!desc) {
+  51 		crypto_free_shash(tmp_tfm);
+  52 		return ERR_PTR(-ENOMEM);
+  53 	}
+  54
+  55 	desc->tfm = *tfm;
+  56
+  57 	rc = crypto_shash_init(desc);
+  58 	if (rc) {
+  59 		crypto_free_shash(tmp_tfm);
+  60 		kfree(desc);
+  61 		return ERR_PTR(rc);
+  62 	}
+  63 	return desc;
+  64 }
 
-Changes since v2:
- - fixed wait queue description
+As we can see, variable *tfm points to one of the two global variable 
+hmac_tfm or evm_tfm[hash_algo]. tmp_tfm is used as an intermediate 
+variable for initializing these global variables. Freeing tmp_tfm after 
+line 44 would invalidate these global variables and potentially cause a 
+user-after-free issue.
 
-Changes since v3:
- - fixed typo in commit msg
- - added stable tag in signoff area
+I think this commit should be reverted.
 
- drivers/mtd/nand/raw/nand_base.c | 44 +++++++++++++++-----------------
- include/linux/mtd/rawnand.h      |  2 ++
- 2 files changed, 22 insertions(+), 24 deletions(-)
+Reference: commit 843385694721 ("evm: Fix a small race in init_desc()")
 
-diff --git a/drivers/mtd/nand/raw/nand_base.c b/drivers/mtd/nand/raw/nand_base.c
-index e7b2ba016d8c..8daaba96edb2 100644
---- a/drivers/mtd/nand/raw/nand_base.c
-+++ b/drivers/mtd/nand/raw/nand_base.c
-@@ -338,16 +338,19 @@ static int nand_isbad_bbm(struct nand_chip *chip, loff_t ofs)
-  *
-  * Return: -EBUSY if the chip has been suspended, 0 otherwise
-  */
--static int nand_get_device(struct nand_chip *chip)
-+static void nand_get_device(struct nand_chip *chip)
- {
--	mutex_lock(&chip->lock);
--	if (chip->suspended) {
-+	/* Wait until the device is resumed. */
-+	while (1) {
-+		mutex_lock(&chip->lock);
-+		if (!chip->suspended) {
-+			mutex_lock(&chip->controller->lock);
-+			return;
-+		}
- 		mutex_unlock(&chip->lock);
--		return -EBUSY;
--	}
--	mutex_lock(&chip->controller->lock);
- 
--	return 0;
-+		wait_event(chip->resume_wq, !chip->suspended);
-+	}
- }
- 
- /**
-@@ -576,9 +579,7 @@ static int nand_block_markbad_lowlevel(struct nand_chip *chip, loff_t ofs)
- 		nand_erase_nand(chip, &einfo, 0);
- 
- 		/* Write bad block marker to OOB */
--		ret = nand_get_device(chip);
--		if (ret)
--			return ret;
-+		nand_get_device(chip);
- 
- 		ret = nand_markbad_bbm(chip, ofs);
- 		nand_release_device(chip);
-@@ -3826,9 +3827,7 @@ static int nand_read_oob(struct mtd_info *mtd, loff_t from,
- 	    ops->mode != MTD_OPS_RAW)
- 		return -ENOTSUPP;
- 
--	ret = nand_get_device(chip);
--	if (ret)
--		return ret;
-+	nand_get_device(chip);
- 
- 	if (!ops->datbuf)
- 		ret = nand_do_read_oob(chip, from, ops);
-@@ -4415,13 +4414,11 @@ static int nand_write_oob(struct mtd_info *mtd, loff_t to,
- 			  struct mtd_oob_ops *ops)
- {
- 	struct nand_chip *chip = mtd_to_nand(mtd);
--	int ret;
-+	int ret = 0;
- 
- 	ops->retlen = 0;
- 
--	ret = nand_get_device(chip);
--	if (ret)
--		return ret;
-+	nand_get_device(chip);
- 
- 	switch (ops->mode) {
- 	case MTD_OPS_PLACE_OOB:
-@@ -4481,9 +4478,7 @@ int nand_erase_nand(struct nand_chip *chip, struct erase_info *instr,
- 		return -EIO;
- 
- 	/* Grab the lock and see if the device is available */
--	ret = nand_get_device(chip);
--	if (ret)
--		return ret;
-+	nand_get_device(chip);
- 
- 	/* Shift to get first page */
- 	page = (int)(instr->addr >> chip->page_shift);
-@@ -4570,7 +4565,7 @@ static void nand_sync(struct mtd_info *mtd)
- 	pr_debug("%s: called\n", __func__);
- 
- 	/* Grab the lock and see if the device is available */
--	WARN_ON(nand_get_device(chip));
-+	nand_get_device(chip);
- 	/* Release it and go back */
- 	nand_release_device(chip);
- }
-@@ -4587,9 +4582,7 @@ static int nand_block_isbad(struct mtd_info *mtd, loff_t offs)
- 	int ret;
- 
- 	/* Select the NAND device */
--	ret = nand_get_device(chip);
--	if (ret)
--		return ret;
-+	nand_get_device(chip);
- 
- 	nand_select_target(chip, chipnr);
- 
-@@ -4660,6 +4653,8 @@ static void nand_resume(struct mtd_info *mtd)
- 			__func__);
- 	}
- 	mutex_unlock(&chip->lock);
-+
-+	wake_up_all(&chip->resume_wq);
- }
- 
- /**
-@@ -5437,6 +5432,7 @@ static int nand_scan_ident(struct nand_chip *chip, unsigned int maxchips,
- 	chip->cur_cs = -1;
- 
- 	mutex_init(&chip->lock);
-+	init_waitqueue_head(&chip->resume_wq);
- 
- 	/* Enforce the right timings for reset/detection */
- 	chip->current_interface_config = nand_get_reset_interface_config();
-diff --git a/include/linux/mtd/rawnand.h b/include/linux/mtd/rawnand.h
-index 5b88cd51fadb..dcf90144d70b 100644
---- a/include/linux/mtd/rawnand.h
-+++ b/include/linux/mtd/rawnand.h
-@@ -1240,6 +1240,7 @@ struct nand_secure_region {
-  * @lock: Lock protecting the suspended field. Also used to serialize accesses
-  *        to the NAND device
-  * @suspended: Set to 1 when the device is suspended, 0 when it's not
-+ * @resume_wq: wait queue to sleep if rawnand is in suspended state.
-  * @cur_cs: Currently selected target. -1 means no target selected, otherwise we
-  *          should always have cur_cs >= 0 && cur_cs < nanddev_ntargets().
-  *          NAND Controller drivers should not modify this value, but they're
-@@ -1294,6 +1295,7 @@ struct nand_chip {
- 	/* Internals */
- 	struct mutex lock;
- 	unsigned int suspended : 1;
-+	wait_queue_head_t resume_wq;
- 	int cur_cs;
- 	int read_retries;
- 	struct nand_secure_region *secure_regions;
 -- 
-2.34.1
-
+Best
+GUO Zihua
