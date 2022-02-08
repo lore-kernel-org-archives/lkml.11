@@ -2,111 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE61FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4DABC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352729AbiBHJB0 (ORCPT
+        id S1352742AbiBHJBo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 04:01:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
+        Tue, 8 Feb 2022 04:01:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241271AbiBHJBY (ORCPT
+        with ESMTP id S1352732AbiBHJBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:01:24 -0500
-X-Greylist: delayed 503 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 01:01:22 PST
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07F5C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:01:22 -0800 (PST)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2187FPYI029207;
-        Tue, 8 Feb 2022 09:52:35 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=v3Nw6M+6Dsi+fs1JPP1dSSIm9lpFQHB7g75gslpbKeY=;
- b=Mgq5P9NB3nwoHZdVJ6tMjysBImyErUzr19msvPqqz/FQ5su4diuk4I96fqnfOhnwlDhv
- lB7cKCACz3Sc6atiQ8xnt6n52YdWoAJh2M+QrQqiCwt9NoCNku+bZwbyjSulSmTUWgxR
- i1KICRpFL5346yegj5hlh6oEk9gNN2NWdxRAETo4tqc+QUE0ejJARTpaCkMkNGlgqGNM
- 49v0iGD21x+9DC1dQ9KuskABfbYRzmuWZUmR37xtkwCz4/u/9P0VldiHLtEXU/htZ3Q1
- WnZ4MJliElInn3GE4UIJge/z8id89T9piEoLjrMVCEJkxSREAs1fUx/VSKF7cXwDFMT+ xQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e3kyhgmje-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 09:52:35 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B7C1A10002A;
-        Tue,  8 Feb 2022 09:52:33 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A885E211F3D;
-        Tue,  8 Feb 2022 09:52:33 +0100 (CET)
-Received: from [10.129.7.145] (10.75.127.51) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 8 Feb
- 2022 09:52:33 +0100
-Message-ID: <4f666fe5-080e-6c82-5bef-c0b52cb57207@foss.st.com>
-Date:   Tue, 8 Feb 2022 09:52:32 +0100
+        Tue, 8 Feb 2022 04:01:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 00D6CC03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:01:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644310900;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=teClNrONiYXVnmCwa1h1q0ixCqq3xRiV2+FUHXxwnkg=;
+        b=XJr+XUCnlX3t14kvQdmGWTGKPMg/sEMcoLKkpkChaA+qcpIg4EvAtjZlqqayhSIgmwIWjy
+        rry18MLDincWHsjXykq1nUjxPSY6C7tTZAQVWlJCRcLMnnirqOL0SgCjEfPEk1b2oopkb4
+        cAt/A7sSsjpnE3qZxHww4anMZ26gm5E=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-144-mdkJlDz9Ore6Q7Kp9E1Y6Q-1; Tue, 08 Feb 2022 04:01:36 -0500
+X-MC-Unique: mdkJlDz9Ore6Q7Kp9E1Y6Q-1
+Received: by mail-wm1-f70.google.com with SMTP id u14-20020a05600c210e00b0037bddd0562eso271513wml.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:01:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=teClNrONiYXVnmCwa1h1q0ixCqq3xRiV2+FUHXxwnkg=;
+        b=3ObVY7AuNl+zN56J5kjZIl0zSju+uSs3092KbFCZgbdRCsqIgs2x/7MNAfw8B8an79
+         CklP08wGi7WRJsu5lF9cxREhaGVPVvskT3E/sw56xMHubeY1J2/IDwYcwnfO6WEB+EhJ
+         Nsa+DQYcpq6D1xMbd5PLQ1whopKMLg/vAzuqegmUzaNNsxK85d/gWxdjjsWvGutPKFra
+         Eaa2Gz7ckZ3s7ca5nApHRpnmP+2zMmsGxqkLUnDWLdF/yFlekLvh/1DWKh4QTHoWLLnJ
+         Lb6W9RnuUSebGe7NSRPWdM5RjdlIzxu4mUk2NxleiK0HoeKDBS3EhneyPGP+w60WT3Re
+         Pq9g==
+X-Gm-Message-State: AOAM5313++uzD7YTSfMTbMNAy7iKMhKhEhHgC6xmNGvDccVW8lxh5B/E
+        8Y/2MOhRfbL/9IG10+9Dj7TK3INoYRtjlge3wgv0Hh8qz6WahDYo1LpiQVi447zSPk0Hg0/3QTM
+        VOLD9QV4U4V5awdLu6Oeq9aos
+X-Received: by 2002:a05:600c:35c5:: with SMTP id r5mr179779wmq.195.1644310895805;
+        Tue, 08 Feb 2022 01:01:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyrVaaJIU8wUcTZyPhODOggfPw3ee0UatWxMSdfB4lHP3hYokLnrCC49IDRTBsBo3R5aJzqjQ==
+X-Received: by 2002:a05:600c:35c5:: with SMTP id r5mr179756wmq.195.1644310895582;
+        Tue, 08 Feb 2022 01:01:35 -0800 (PST)
+Received: from ?IPV6:2003:cb:c712:a800:a1a0:a823:5301:d1af? (p200300cbc712a800a1a0a8235301d1af.dip0.t-ipconnect.de. [2003:cb:c712:a800:a1a0:a823:5301:d1af])
+        by smtp.gmail.com with ESMTPSA id e13sm13822419wrq.35.2022.02.08.01.01.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 01:01:34 -0800 (PST)
+Message-ID: <dcb5d9c7-ae5c-e0c5-adee-37f5b92281e0@redhat.com>
+Date:   Tue, 8 Feb 2022 10:01:32 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] drm/stm: Avoid using val uninitialized in
- ltdc_set_ycbcr_config()
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] mm/damon: Add option to monitor only writes
 Content-Language: en-US
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Yannick Fertre <yannick.fertre@foss.st.com>,
-        Philippe Cornu <philippe.cornu@foss.st.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>
-CC:     <llvm@lists.linux.dev>, Nick Desaulniers <ndesaulniers@google.com>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20220207165304.1046867-1-nathan@kernel.org>
-From:   Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
-In-Reply-To: <20220207165304.1046867-1-nathan@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-08_02,2022-02-07_02,2021-12-02_01
+To:     Pedro Gomes <pedrodemargomes@gmail.com>
+Cc:     SeongJae Park <sj@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, John Hubbard <jhubbard@nvidia.com>
+References: <20220203131237.298090-1-pedrodemargomes@gmail.com>
+ <c4128a09-1dc7-24b3-8ff2-eaf61f3de5e5@redhat.com>
+ <CACpbsfapGSbno_n7ZJYJ2E4KkqWdWe_Wz8PuECBa3PZBp2Xnxw@mail.gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <CACpbsfapGSbno_n7ZJYJ2E4KkqWdWe_Wz8PuECBa3PZBp2Xnxw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Nathan,
+On 08.02.22 03:05, Pedro Gomes wrote:
+> On Mon, Feb 7, 2022 at 7:32 AM David Hildenbrand <david@redhat.com> wrote:
+>>
+>> Just like clearrefs, this can race against GUP-fast to detect pinned
+>> pages. And just like clearrefs, we're not handling PMDs properly. And
+>> just like anything that write-protects random anon pages right now, this
+>> does not consider O_DIRECT as is.
+>>
+>> Fortunately, there are not too many users of clearreefs/softdirty
+>> tracking out there (my search a while ago returned no open source
+>> users). My assumption is that your feature might see more widespread use.
+>>
+>> Adding more random write protection until we fixed the COW issues [1]
+>> really makes my stomach hurt on a Monday morning.
+> 
+> I was not aware of these issues.
+> 
+>> Please, let's defer any more features that rely on write-protecting
+>> random anon pages until we have ways in place to not corrupt random user
+>> space.
+>>
+>> That is:
+>> 1) Teaching the COW logic to not copy pages that are pinned -- I'm
+>> working on that.
+>> 2) Converting O_DIRECT to use FOLL_PIN instead of FOLL_GET. John is
+>> working on that.
+>>
+>> So I'm not against this change. I'm against this change at this point in
+>> time.
+> 
+> I agree. I will wait until the COW problems are solved to send this patch.
+> 
+> 
 
+I'll put you on CC once I have something ready to at least handle pinned
+pages (FOLL_PIN) as expected, to not get them accidentally COWed.
 
-On 2/7/22 17:53, Nathan Chancellor wrote:
-> Clang warns:
->
->   drivers/gpu/drm/stm/ltdc.c:625:2: warning: variable 'val' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
->           default:
->           ^~~~~~~
->   drivers/gpu/drm/stm/ltdc.c:635:2: note: uninitialized use occurs here
->           val |= LxPCR_YCEN;
->           ^~~
->   drivers/gpu/drm/stm/ltdc.c:600:9: note: initialize the variable 'val' to silence this warning
->           u32 val;
->                  ^
->                   = 0
->   1 warning generated.
->
-> Use a return instead of break in the default case to fix the warning.
-> Add an error message so that this return is not silent, which could hide
-> issues in the future.
->
-> Fixes: 484e72d3146b ("drm/stm: ltdc: add support of ycbcr pixel formats")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1575
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> ---
->  drivers/gpu/drm/stm/ltdc.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-
-
-Reviewed-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
-
-
+-- 
 Thanks,
 
-Raphaël
+David / dhildenb
 
