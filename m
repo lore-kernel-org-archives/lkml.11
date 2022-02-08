@@ -2,87 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A33C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:24:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3479EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386406AbiBHWY3 (ORCPT
+        id S1387526AbiBHWYk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:24:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37510 "EHLO
+        Tue, 8 Feb 2022 17:24:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386838AbiBHVQ5 (ORCPT
+        with ESMTP id S1387027AbiBHVsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:16:57 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B900CC0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:16:56 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id q199-20020a252ad0000000b0061e113c9953so254768ybq.18
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:16:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=ITTJ1A6lXvS57TZRz+Myy0dfx6nkaF0DnZNJ01aeefk=;
-        b=R8njhaB+c1wmWoG0XOQ9y15iLwF8nqIFMc++mJHiv8K6Y14SMIgc2E5W7t/1d2x4bl
-         jSPfZeX8JfkXAz5jqGvXyDm/WJUh3TIwx/xarNaSTYjsFmPST6lb1vhExTPJbkeSyx5z
-         vBaO6RnGFRPqICmEa5HqbHTo77y3B/tDX8FuI3vWa6zHue7poO/K/8YoYUW+XhpoLMQZ
-         ne9rwQhfZWr40hQw2bx/cJuo4J/55zUrF55PFthaJpnhmtNroU8YooetYYYdjIj0XEcQ
-         nSsKv5o5dsxZQGhj5Ukc6zM+I63aHw+AYe/lljVMAbMKbQnEu/vvkr004fLFxve2E0fi
-         0jiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=ITTJ1A6lXvS57TZRz+Myy0dfx6nkaF0DnZNJ01aeefk=;
-        b=Yjhz60UqcriXasOW2+jC3rvs/6vAHwYdZuuhM1xGiq4kaOB2Sy0O05YrTTWOCHE1ap
-         S/1NRbwhJuPZ2IHYajJikCCDj5c7pw1BiJZp1H2+7/u1My4ffwOH8Yxb2ZraTy0btFgn
-         /y1PTuj6mm13crRmaMRR4jmx4PR89wvyErVLj+MPnOSEpzZlVbyEtO+LbKb2M6iVD7fk
-         MTiFLqB+V9kcwV4NpRdxR2xfff8HtXT3W/ZBEN6JRQw3CajYAxLFm2X7zn+XOZuzTZ22
-         DyaCpZIwe7TaBDmsR1ilWNRcy4rdKn88ZkORCek4u2W/xyvq+F35/f2oxJRwOnL8r+iI
-         1CDg==
-X-Gm-Message-State: AOAM530LMMhWPH1G9l8TibvJ6sE7+Al7KWN0QjODm5o902s3W/BKCadO
-        TcVQ/0qx5z1QOsOx/isKvz+E9rZIoAWmMKaWoe9lqEftpXgrVW/9nCTZQIZhrp8Tk64wLPhRn9P
-        psrV/UC4/aIHHxjL7uwFUkI7o2P4lYJRP4buulP9dSzBEsW4Xy6Xgo7R3KQ0cZEVnbf8Vv4ai
-X-Google-Smtp-Source: ABdhPJxQG0xikzGnUvz90O/VQxJVyp/N/4fcLoZFSygdHqkxNqNdoRbL1nu8C1hVgS2iVkIFX6h3jydmX8b3
-X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:6875:3c51:69be:6e2c])
- (user=eranian job=sendgmr) by 2002:a25:2086:: with SMTP id
- g128mr6605100ybg.759.1644355015927; Tue, 08 Feb 2022 13:16:55 -0800 (PST)
-Date:   Tue,  8 Feb 2022 13:16:27 -0800
-In-Reply-To: <20220208211637.2221872-1-eranian@google.com>
-Message-Id: <20220208211637.2221872-3-eranian@google.com>
-Mime-Version: 1.0
-References: <20220208211637.2221872-1-eranian@google.com>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-Subject: [PATCH v6 02/12] x86/cpufeatures: add AMD Fam19h Branch Sampling feature
-From:   Stephane Eranian <eranian@google.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
-        jolsa@redhat.com, songliubraving@fb.com
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 8 Feb 2022 16:48:52 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67B6C0612BA;
+        Tue,  8 Feb 2022 13:48:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644356930; x=1675892930;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=HEBg2eQcO7Fk1Q3mMJehGhu8DX1HWgw88BE5sdLZ/f0=;
+  b=Agr68XLFtPCLJKAx5j9/jgRuOciH2gMbQav2Et9YID3WWU6spM5foaQ9
+   VMRINiRO7V/cdEhvRimw7bllIQEul264gty30ZJT/S2WtNC/8pX7vSnW5
+   B5f7ZclsLARzKBKQJv6his9K9GhQNbDSf8NBcG4KxPWhl54ScLblbPNAz
+   jhkxHG7Zb21Ym4rSwWP1juRfDPv/HOitgptdeDIoVMlceE28thq3bX/rc
+   AwmWoYUwrUiJX22I7ID38hKVH2KZQJJHuo3qDXbstcxw0piDWtMqQ6FO3
+   RGJp38M1hEKtu44ljKZBHq1XUvIJstizUZBijMxkjFoj8FopgSD4qhWv9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="309805366"
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="309805366"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 13:48:49 -0800
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="632992865"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 13:48:49 -0800
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org, shuah@kernel.org
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH V3 1/4] selftests/sgx: Fix NULL-pointer-dereference upon early test failure
+Date:   Tue,  8 Feb 2022 13:48:39 -0800
+Message-Id: <90a31dfd640ea756fa324712e7cbab4a90fa7518.1644355600.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1644355600.git.reinette.chatre@intel.com>
+References: <cover.1644355600.git.reinette.chatre@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a cpu feature for AMD Fam19h Branch Sampling feature as bit
-31 of EBX on CPUID leaf function 0x80000008.
+== Background ==
 
-Signed-off-by: Stephane Eranian <eranian@google.com>
+The SGX selftests track parts of the enclave binaries in an array:
+encl->segment_tbl[]. That array is dynamically allocated early
+(but not first) in the test's lifetime. The array is referenced
+at the end of the test in encl_delete().
+
+== Problem ==
+
+encl->segment_tbl[] can be NULL if the test fails before its
+allocation. That leads to a NULL-pointer-dereference in encl_delete().
+This is triggered during early failures of the selftest like if the
+enclave binary ("test_encl.elf") is deleted.
+
+== Solution ==
+
+Ensure encl->segment_tbl[] is valid before attempting to access
+its members. The offset with which it is accessed, encl->nr_segments,
+is initialized before encl->segment_tbl[] and thus considered valid
+to use after the encl->segment_tbl[] check succeeds.
+
+Fixes: 3200505d4de6 ("selftests/sgx: Create a heap for the test enclave")
+Acked-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
- arch/x86/include/asm/cpufeatures.h | 1 +
- 1 file changed, 1 insertion(+)
+Changes since V2:
+- Add Acked by from Shuah.
 
-diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 4cc0ef96152c..a3e895aded02 100644
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -315,6 +315,7 @@
- #define X86_FEATURE_VIRT_SSBD		(13*32+25) /* Virtualized Speculative Store Bypass Disable */
- #define X86_FEATURE_AMD_SSB_NO		(13*32+26) /* "" Speculative Store Bypass is fixed in hardware. */
- #define X86_FEATURE_CPPC		(13*32+27) /* Collaborative Processor Performance Control */
-+#define X86_FEATURE_BRS			(13*32+31) /* Branch Sampling available */
+Changes since V1:
+- Rewrite commit message (Dave).
+
+ tools/testing/selftests/sgx/load.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/tools/testing/selftests/sgx/load.c b/tools/testing/selftests/sgx/load.c
+index 9d4322c946e2..006b464c8fc9 100644
+--- a/tools/testing/selftests/sgx/load.c
++++ b/tools/testing/selftests/sgx/load.c
+@@ -21,7 +21,7 @@
  
- /* Thermal and Power Management Leaf, CPUID level 0x00000006 (EAX), word 14 */
- #define X86_FEATURE_DTHERM		(14*32+ 0) /* Digital Thermal Sensor */
+ void encl_delete(struct encl *encl)
+ {
+-	struct encl_segment *heap_seg = &encl->segment_tbl[encl->nr_segments - 1];
++	struct encl_segment *heap_seg;
+ 
+ 	if (encl->encl_base)
+ 		munmap((void *)encl->encl_base, encl->encl_size);
+@@ -32,10 +32,11 @@ void encl_delete(struct encl *encl)
+ 	if (encl->fd)
+ 		close(encl->fd);
+ 
+-	munmap(heap_seg->src, heap_seg->size);
+-
+-	if (encl->segment_tbl)
++	if (encl->segment_tbl) {
++		heap_seg = &encl->segment_tbl[encl->nr_segments - 1];
++		munmap(heap_seg->src, heap_seg->size);
+ 		free(encl->segment_tbl);
++	}
+ 
+ 	memset(encl, 0, sizeof(*encl));
+ }
 -- 
-2.35.0.263.gb82422642f-goog
+2.25.1
 
