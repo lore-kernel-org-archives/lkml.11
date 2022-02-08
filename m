@@ -2,120 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 681DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243011AbiBHNTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:19:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
+        id S1345133AbiBHNTN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:19:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358725AbiBHMlf (ORCPT
+        with ESMTP id S1349783AbiBHMNT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:35 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED043C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:34 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id v13-20020a17090ac90d00b001b87bc106bdso1939348pjt.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=haCUKocersM2g//bqn162Qgjk6DgHWiyvTJMF5LIhWw=;
-        b=M5jgrIfhxC3Ll3awR5T/EnAv44rvXW+k+Lm7AQnR3Voo/+J434lWom64lKJIfHW/cl
-         bbJ4/NkcAMG7j9u2VNGPeha843F9tsH16GYZcBXjNE1AifaS85v+HaHEIl1Evh2aglFz
-         VWZ5L03Ul4UGHHUuej8bAw7/iQcTu3MZubKqg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=haCUKocersM2g//bqn162Qgjk6DgHWiyvTJMF5LIhWw=;
-        b=ZyhAOU1V5c8mv0t2qoMg2XN9qa7jxGAPppNCktHLBlZAXCvCtMgJu4mTCkyjkfMzsl
-         qVVy2xkVWSJHKoXc14VRC5MiPgtXYAuXZ/w3LKGSEMkwYbidetO8d5mGHk/UnGKZTJuf
-         jtu+A+TsWVvTRShP5KhzYYCHBXiHwwVwkH2RoJUPJ0I5/2Frd3No8v9zXyotZRwxS9x6
-         3HWoQp55MRm5ivaVAoK1QuZuwKYoIbbe/ijxgquGb1vubUDppm/0t9LnQB/jRpJGqEUg
-         JrCJt5fa/wUiU9zJgT56BxNtqCBhIW6jAtHH759MUMrw9uBsauKPZq1F7IBUoQIEBOwi
-         d/gg==
-X-Gm-Message-State: AOAM531Y3tiiNm8wJektuNblj8OgU/MGblzQ63LfW6hyEt31Plu/QbXF
-        8GNIX5h6vTMDFw56zE3YSt0Lag==
-X-Google-Smtp-Source: ABdhPJwC7im+Wu7WK7r8anEyQqm3GCI3zaun1ihNvzqAS141M0dKaySmYd4Yoapf0HcUrCF7/0wMeg==
-X-Received: by 2002:a17:903:187:: with SMTP id z7mr4252301plg.123.1644324094451;
-        Tue, 08 Feb 2022 04:41:34 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:34 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 21/31] clk: mediatek: cpumux: Implement error handling in register API
-Date:   Tue,  8 Feb 2022 20:40:24 +0800
-Message-Id: <20220208124034.414635-22-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
+        Tue, 8 Feb 2022 07:13:19 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E10C03FEC0;
+        Tue,  8 Feb 2022 04:13:16 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 7554C1F383;
+        Tue,  8 Feb 2022 12:13:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644322395; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QLOYwEHWVSzw5MCgmxkNKcSwN+xc3CSk3rKsHEFXQ0w=;
+        b=umK5/28r4Ry0plkxqSGj9jm/h56veWrz8pKMp5ppf56ETUdrsuH1hb86FdlcFXeoSoulaz
+        lFOqeYg0yKPsQLWHc2dl8AHyW3Z0SGNQaJUUnjkpcUPE824yWe2B0B5R3iQOcbdFzLrhCJ
+        ik3wNbCbeuoS3QIUfYl3YJI1RMqv5xo=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D93CAA3B8C;
+        Tue,  8 Feb 2022 12:13:14 +0000 (UTC)
+Date:   Tue, 8 Feb 2022 13:13:14 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Roman Gushchin <guro@fb.com>,
+        Rafael Aquini <aquini@redhat.com>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCH v5 3/4] mm/page_owner: Print memcg information
+Message-ID: <YgJeWth50eP9L0PK@dhcp22.suse.cz>
+References: <20220208000532.1054311-1-longman@redhat.com>
+ <20220208000532.1054311-4-longman@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208000532.1054311-4-longman@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cpumux clk type registration function does not stop or return errors
-if any clk failed to be registered, nor does it implement an error
-handling path. This may result in a partially working device if any
-step failed.
+On Mon 07-02-22 19:05:31, Waiman Long wrote:
+> It was found that a number of dying memcgs were not freed because
+> they were pinned by some charged pages that were present. Even "echo 1 >
+> /proc/sys/vm/drop_caches" wasn't able to free those pages. These dying
+> but not freed memcgs tend to increase in number over time with the side
+> effect that percpu memory consumption as shown in /proc/meminfo also
+> increases over time.
 
-Make the register function return proper error codes, and bail out if
-errors occur. Proper cleanup, i.e. unregister any clks that were
-successfully registered, is done in the new error path.
+I still believe that this is very suboptimal way to debug offline memcgs
+but memcg information can be useful in other contexts and it doesn't
+cost us anything except for an additional output so I am fine with this.
+ 
+> In order to find out more information about those pages that pin
+> dying memcgs, the page_owner feature is extended to print memory
+> cgroup information especially whether the cgroup is dying or not.
+> RCU read lock is taken when memcg is being accessed to make sure
+> that it won't be freed.
+> 
+> Signed-off-by: Waiman Long <longman@redhat.com>
+> Acked-by: David Rientjes <rientjes@google.com>
+> Acked-by: Roman Gushchin <guro@fb.com>
+> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-cpumux.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+With few comments/questions below.
 
-diff --git a/drivers/clk/mediatek/clk-cpumux.c b/drivers/clk/mediatek/clk-cpumux.c
-index 658aee789f44..499c60432280 100644
---- a/drivers/clk/mediatek/clk-cpumux.c
-+++ b/drivers/clk/mediatek/clk-cpumux.c
-@@ -123,13 +123,26 @@ int mtk_clk_register_cpumuxes(struct device_node *node,
- 		clk = mtk_clk_register_cpumux(mux, regmap);
- 		if (IS_ERR(clk)) {
- 			pr_err("Failed to register clk %s: %pe\n", mux->name, clk);
--			continue;
-+			goto err;
- 		}
- 
- 		clk_data->clks[mux->id] = clk;
- 	}
- 
- 	return 0;
-+
-+err:
-+	while (--i >= 0) {
-+		const struct mtk_composite *mux = &clks[i];
-+
-+		if (IS_ERR_OR_NULL(clk_data->clks[mux->id]))
-+			continue;
-+
-+		mtk_clk_unregister_cpumux(clk_data->clks[mux->id]);
-+		clk_data->clks[mux->id] = ERR_PTR(-ENOENT);
-+	}
-+
-+	return PTR_ERR(clk);
- }
- 
- void mtk_clk_unregister_cpumuxes(const struct mtk_composite *clks, int num,
+> ---
+>  mm/page_owner.c | 44 ++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 44 insertions(+)
+> 
+> diff --git a/mm/page_owner.c b/mm/page_owner.c
+> index 28dac73e0542..d4c311455753 100644
+> --- a/mm/page_owner.c
+> +++ b/mm/page_owner.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/migrate.h>
+>  #include <linux/stackdepot.h>
+>  #include <linux/seq_file.h>
+> +#include <linux/memcontrol.h>
+>  #include <linux/sched/clock.h>
+>  
+>  #include "internal.h"
+> @@ -325,6 +326,47 @@ void pagetypeinfo_showmixedcount_print(struct seq_file *m,
+>  	seq_putc(m, '\n');
+>  }
+>  
+> +/*
+> + * Looking for memcg information and print it out
+> + */
+
+I am not sure this is particularly useful comment.
+
+> +static inline int print_page_owner_memcg(char *kbuf, size_t count, int ret,
+> +					 struct page *page)
+> +{
+> +#ifdef CONFIG_MEMCG
+> +	unsigned long memcg_data;
+> +	struct mem_cgroup *memcg;
+> +	bool dying;
+> +
+> +	rcu_read_lock();
+> +	memcg_data = READ_ONCE(page->memcg_data);
+> +	if (!memcg_data)
+> +		goto out_unlock;
+> +
+> +	if (memcg_data & MEMCG_DATA_OBJCGS)
+> +		ret += scnprintf(kbuf + ret, count - ret,
+> +				"Slab cache page\n");
+> +
+> +	memcg = page_memcg_check(page);
+> +	if (!memcg)
+> +		goto out_unlock;
+> +
+> +	dying = (memcg->css.flags & CSS_DYING);
+
+Is there any specific reason why you haven't used mem_cgroup_online?
+
+> +	ret += scnprintf(kbuf + ret, count - ret,
+> +			"Charged %sto %smemcg ",
+> +			PageMemcgKmem(page) ? "(via objcg) " : "",
+> +			dying ? "dying " : "");
+> +
+> +	/* Write cgroup name directly into kbuf */
+> +	cgroup_name(memcg->css.cgroup, kbuf + ret, count - ret);
+> +	ret += strlen(kbuf + ret);
+
+cgroup_name should return the length of the path added to the buffer.
+
+> +	ret += scnprintf(kbuf + ret, count - ret, "\n");
+
+I do not see any overflow prevention here. I believe you really need to
+check ret >= count after each scnprintf/cgroup_name.
 -- 
-2.35.0.263.gb82422642f-goog
-
+Michal Hocko
+SUSE Labs
