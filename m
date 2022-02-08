@@ -2,200 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 848C4C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4206C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358346AbiBHLgX (ORCPT
+        id S1358662AbiBHLgd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:36:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40670 "EHLO
+        Tue, 8 Feb 2022 06:36:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236625AbiBHLWQ (ORCPT
+        with ESMTP id S1357472AbiBHLWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 06:22:16 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769A0C03FEC0;
-        Tue,  8 Feb 2022 03:22:12 -0800 (PST)
-Received: from kwepemi100023.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JtL8k2YPDzZfSH;
-        Tue,  8 Feb 2022 19:17:58 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100023.china.huawei.com (7.221.188.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 19:22:09 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 8 Feb
- 2022 19:22:08 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <ming.lei@redhat.com>, <tj@kernel.org>, <axboe@kernel.dk>
-CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH v8] block: cancel all throttled bios in del_gendisk()
-Date:   Tue, 8 Feb 2022 19:38:08 +0800
-Message-ID: <20220208113808.1401601-1-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 8 Feb 2022 06:22:48 -0500
+Received: from APC01-HK2-obe.outbound.protection.outlook.com (mail-eopbgr1300094.outbound.protection.outlook.com [40.107.130.94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E458C03FEC9;
+        Tue,  8 Feb 2022 03:22:47 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GqdxFlCfSXMxOaiH30ddkrfRQaIdzxUM+ojgLGnmkFlijhEbJI3kCxBfhEJ8hIU9oQTi5gPY4fPs0Zr48yfRUg1xq9BVPlssXQTKyU7hF5z346mOv7BTvB2gl3mpRdYblL8mynxi70fA5MPP7L1a9uUdKXheps6w0FygSFzt+5I07K7dVSX2XD4nstZUqeafNUimrXBqMywZGrUDNvSl4lq9NZfBe3hinG61U9Wa93OnKdHlLrxslMK7w83iKrEAtzk7hv6yUAabcyG26ntdV10AOm8K+2Ya16D015gCFqyYbb5FdE4J0cNXormGsJeIXK8GeEkP8Mr99Jm5HhFsOg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uekJxh1tQ7952yJtKrgo3y5Evjjxfb7/STpLoY/VKOE=;
+ b=g9gywf9TfdXCHbbWZmFl/18yo5R6UDc6y/4ig8oK2lB9nUX/11jaYBahwcvgt1Tyu1FVf9qEhGbEZj2sKO60D4deZTrVIaT89TXKmkrqwqY6Ik864fJpEt7Id0r/m5bIfY14f0D6hLefWTdE/3FewJ96IWohPYRoGpsuWDsQCdujw/pNJ/OHE2Xx0E6ZFA5E2rSV0BATG+tR5hU7zy74U3rDZQfSWOQGOcLimYQO/pBkUJsFKpVjW1mrNNc+nVXNKFsatqW9decVk/5ji6IwHdvDf7kjkW8vV5XP8R5aAMxhK1KsTunOzH+oNLEpm2+uKhTvf1NX4f6cFv3KiaRHmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=quantacorp.onmicrosoft.com; s=selector2-quantacorp-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uekJxh1tQ7952yJtKrgo3y5Evjjxfb7/STpLoY/VKOE=;
+ b=soKrtgKChQI1WdFIz0CXLelP1dVMWy6gMIqv/EqtwlIJiMLu6wE2v0+/gSHMTPTcNeDlsr//kH5jzzT9lfrJkYLEKIw/hhYoU6iHXuy+WEKt5/2QpZ7ERSSlh9T7UFU/y4aN3rC1amPkwVtkFOOtCROrNIbgWekzN0dy8lcbVAs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=quantatw.com;
+Received: from HK0PR04MB3282.apcprd04.prod.outlook.com (2603:1096:203:89::17)
+ by TY2PR04MB3805.apcprd04.prod.outlook.com (2603:1096:404:f7::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.14; Tue, 8 Feb
+ 2022 11:22:42 +0000
+Received: from HK0PR04MB3282.apcprd04.prod.outlook.com
+ ([fe80::8160:1a0:97e1:9e53]) by HK0PR04MB3282.apcprd04.prod.outlook.com
+ ([fe80::8160:1a0:97e1:9e53%3]) with mapi id 15.20.4951.019; Tue, 8 Feb 2022
+ 11:22:42 +0000
+From:   Potin Lai <potin.lai@quantatw.com>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>
+Subject: [PATCH v2 1/2] usb: typec: tcpm: add interface for passing supported_pd_rev from tcpc_dev
+Date:   Tue,  8 Feb 2022 19:22:25 +0800
+Message-Id: <20220208112226.9108-2-potin.lai@quantatw.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220208112226.9108-1-potin.lai@quantatw.com>
+References: <20220208082026.4855-1-potin.lai@quantatw.com>
+ <20220208112226.9108-1-potin.lai@quantatw.com>
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR02CA0143.apcprd02.prod.outlook.com
+ (2603:1096:202:16::27) To HK0PR04MB3282.apcprd04.prod.outlook.com
+ (2603:1096:203:89::17)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6fb8e16f-bb1f-4cde-008e-08d9eaf5520f
+X-MS-TrafficTypeDiagnostic: TY2PR04MB3805:EE_
+X-Microsoft-Antispam-PRVS: <TY2PR04MB3805977B5947592F70A938078E2D9@TY2PR04MB3805.apcprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EPD4MKOA2OxqtQDSpCB1+/EQmZjt4C9HC1KQpAFrIMkxfz3Fvi5bun2s7gtb5C3YGQAEK/bJKCNG8bU2i4jo7tuTyOB3D9cCKJVlRC0RzGm+S1gxGrzY81eqvu5UX8VnUWKMx+i6mekf9f4jKxJPxHBP0LqQHzS5X9WSoEU4gh0cNCjq+HK4MD7KyduzuKKVrc3BlTmB+DsyMKHTzitbOkAtQluHZWgkArcoX40UMYiwdydQHcJ6VfY25bEJqh6iI7EpuPlD2HS1h/utstQa8GLZPNtHGStGEGmfeMU44B3msTz8UZd2e2YjNN5xTkFQA+Mxil4jD1W7nV4l13zUVlKgHo2bFJYirFoAggh+LKCUyvtpo6nkFhyDzh5O2rDWv9jc5daO0CpTSgE5QFHl3mwf8IvDWVa1NCCzQKuGSWK4IIH1eK68QEjMqimFQawrMou9EvaZftyUHuoACvHzf7JBZgj7lrjrePrRs1oW8M9du47DzrxZwxMd/MjfXn/uUpQ83l3cPwyzJBfRkSyE4dE6zTouZk2ZJwqBLvkhK2KaH9BKsVXkgnF2c8uuZ5TWuUneq5c7jDFFpT9uZWD3WAy+RF3fPFwHYn3X+QMl79AWP1c02BRWzEeZlDLCpOfxWFTyozFkoPL1RJW5rHz/cVkUFZA0iWvte6AfioefFauE2Mei1Up9oZdU6SVAFRkOZpjeeB6zHjVL10YBkxy5Uw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR04MB3282.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(1076003)(6486002)(38350700002)(38100700002)(2906002)(186003)(44832011)(107886003)(86362001)(2616005)(36756003)(8676002)(8936002)(52116002)(5660300002)(66476007)(66556008)(66946007)(54906003)(110136005)(6506007)(6512007)(6666004)(4326008)(508600001)(316002)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZNLbUzXMvwiOZEDMS08T8x7lz/LukVueJWdtftiKb/SZoXuCf8brDU+XPW/z?=
+ =?us-ascii?Q?ad0GIxG6lRspEeyQAXwFJtbEP4oErFjg6GHYLThhfqKHBwG/UmfrcQeTcOiw?=
+ =?us-ascii?Q?tI2YRj/u+IHBH3LMkBJnwH373btTR00/mEixzuDePU7Bz5SX47fkJODkwmmj?=
+ =?us-ascii?Q?ikB3fzc5qjUXIS3Hxoqlb4/wQWwl6PH6uVtNy8F3T2hnuecXcMh598LzvOCn?=
+ =?us-ascii?Q?w72OIBRvPsnYtDcbj+tNejWr1yXMe94HLmuhHTS8uxJ97Tn3gx/bh2gnUOUc?=
+ =?us-ascii?Q?/FsDlBiHwPxfasLcp3hlsF+hcJ0ZTO2fobEQ5PvdvWBm2es0Bp5HxpJJha1A?=
+ =?us-ascii?Q?Ka/Bkc0+TiK1zjsc2CK5yVp8FDyQLWgGgwtOnrzz8WJqMb7tdjUSPMivSvdT?=
+ =?us-ascii?Q?Yk9snNQ1AmC6ojog10nZlII2UY6IlOzZrvIU8IptxKb3bdCojujQcbcGxdgo?=
+ =?us-ascii?Q?zZFgd8Vp6Pum0mvNnBybTLnn5N5b+3vjny1liiqEXr+uwcfB5tuhYiERMaOq?=
+ =?us-ascii?Q?SGOWjhSO5VgSMH9kr7cy1wTvMofLQvdTkVCLSCP1YMZQt2plVpJT5LyPBAK2?=
+ =?us-ascii?Q?TGnrqzxNGTTg32ZuP344uUK3Sl6awn/eP3+QP5LgUH+JDQWGWe836QUER3tD?=
+ =?us-ascii?Q?j+JP5ApYitAsvtN+UbB8+NCy3GUg3RAHR8R+sRuC/fZRcD+SNp8hYj58Duto?=
+ =?us-ascii?Q?uhu0SUVCuQYF900L4KMIpqYw0SjnuBwMqP4uIQrxPgeDo70kVnrrwnlkcjlR?=
+ =?us-ascii?Q?CADz+eVSmekuFyLBB3vPisLVuLzfsGq3/vyhHpzSvI+XWiWquJB+wy+GDYDB?=
+ =?us-ascii?Q?UVMQIAum6P7Rl8cIoC2Hb8vDejW+SZGZobYkxDAhocsJolYlMHZvj5jrQv2/?=
+ =?us-ascii?Q?xL+Ho9ZNBJy0h7o9NO4uCbjAmki200GBsOOJ1fhrKcNu4/08rOygmCRAKL/8?=
+ =?us-ascii?Q?U+UEtet4DclMicx9yy8rfTwC2NxVGUpPxWYAhKUoXTVGgHrYUXiZ1TcW6vqX?=
+ =?us-ascii?Q?7ZmE/2OotC7ompWFnm9fKMkLTvo2R+ifEIoGc7UTxdBPrfXVIAKP4GowaJU3?=
+ =?us-ascii?Q?tEyGci9lxFr+JeF5hqAiyFTcpckl52WCXrctPUZzEa+bT4ICZ0usKM/0d3kf?=
+ =?us-ascii?Q?DXopdUvBnb/3Dm4mLXSDi/Hu+/eO/4+H9NjQth9G1XcKbsHFhZUTJaVLmrCi?=
+ =?us-ascii?Q?UrAmchRqkbQTVmQvR4bJsDSdNAINNiZ4J623rM+fc0EUg0mJYAx2Zm5q+f7D?=
+ =?us-ascii?Q?OEaRSghMDHVbRIBEHrJ9WKi+GwDjFpaua8eEO9WM9NlSsY/Q96gajLp+SGR9?=
+ =?us-ascii?Q?Z6WewJtQvP+9l8UjqwPkr6cDjxdD8DOT4CSNNUAMVuO8kOhyoRskYULaucp9?=
+ =?us-ascii?Q?TcEImzr/rZmF+5vvhred9F0323LeNZ8h2BzI9oZ5GBwvFZsgHl8MMwvq/55A?=
+ =?us-ascii?Q?cM5D34OixoaRONfidcHOZiDF2iFPeZyGCOLnabkAkJgmQCYIklbi0Ysjoi3r?=
+ =?us-ascii?Q?o5HzDRSZm6wsxQsA0mDbnuoTVGc3AI+GVUimkRIN4cSgO37i1M/XVigm99qY?=
+ =?us-ascii?Q?LipJtSZOsof+61PiNyoss87sDhDybpG4HATDdd+1spzR/xpYlCrD6DlUudyA?=
+ =?us-ascii?Q?COF5F40HkwHkjJ3is4uvYoc=3D?=
+X-OriginatorOrg: quantatw.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6fb8e16f-bb1f-4cde-008e-08d9eaf5520f
+X-MS-Exchange-CrossTenant-AuthSource: HK0PR04MB3282.apcprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 11:22:41.6112
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 179b0327-07fc-4973-ac73-8de7313561b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FkV0pvcNaJwGx3rFbDpABC0RB7YE/KkLIvO9V8p6Qb8+mV4rEm4VdbPQTrIaXqAYGbVGyOBgBOtbQol9+uBw2Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR04MB3805
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Throttled bios can't be issued after del_gendisk() is done, thus
-it's better to cancel them immediately rather than waiting for
-throttle is done.
+Current TCPM allways assume using PD_MAX_REV for negotiation,
+but for some USB controller only support PD 2.0, adding an interface
+for passing supported_pd_rev from tcpc_dev.
 
-For example, if user thread is throttled with low bps while it's
-issuing large io, and the device is deleted. The user thread will
-wait for a long time for io to return.
-
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Signed-off-by: Potin Lai <potin.lai@quantatw.com>
 ---
-Changes in v8:
- - fold two patches into one
-Changes in v7:
- - use the new solution as suggested by Ming.
+ drivers/usb/typec/tcpm/tcpm.c | 14 ++++++++++++--
+ include/linux/usb/tcpm.h      |  4 ++++
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
- block/blk-throttle.c | 49 ++++++++++++++++++++++++++++++++++++++++----
- block/blk-throttle.h |  2 ++
- block/genhd.c        |  2 ++
- 3 files changed, 49 insertions(+), 4 deletions(-)
-
-diff --git a/block/blk-throttle.c b/block/blk-throttle.c
-index 7c462c006b26..557d20796157 100644
---- a/block/blk-throttle.c
-+++ b/block/blk-throttle.c
-@@ -43,8 +43,12 @@
- static struct workqueue_struct *kthrotld_workqueue;
- 
- enum tg_state_flags {
--	THROTL_TG_PENDING	= 1 << 0,	/* on parent's pending tree */
--	THROTL_TG_WAS_EMPTY	= 1 << 1,	/* bio_lists[] became non-empty */
-+	/* on parent's pending tree */
-+	THROTL_TG_PENDING	= 1 << 0,
-+	/* bio_lists[] became non-empty */
-+	THROTL_TG_WAS_EMPTY	= 1 << 1,
-+	/* starts to cancel all bios, will be set if the disk is deleted */
-+	THROTL_TG_CANCELING	= 1 << 2,
- };
- 
- #define rb_entry_tg(node)	rb_entry((node), struct throtl_grp, rb_node)
-@@ -871,7 +875,8 @@ static bool tg_may_dispatch(struct throtl_grp *tg, struct bio *bio,
- 	       bio != throtl_peek_queued(&tg->service_queue.queued[rw]));
- 
- 	/* If tg->bps = -1, then BW is unlimited */
--	if (bps_limit == U64_MAX && iops_limit == UINT_MAX) {
-+	if ((bps_limit == U64_MAX && iops_limit == UINT_MAX) ||
-+	    tg->flags & THROTL_TG_CANCELING) {
- 		if (wait)
- 			*wait = 0;
- 		return true;
-@@ -974,6 +979,9 @@ static void tg_update_disptime(struct throtl_grp *tg)
- 	unsigned long read_wait = -1, write_wait = -1, min_wait = -1, disptime;
- 	struct bio *bio;
- 
-+	if (tg->flags & THROTL_TG_CANCELING)
-+		goto update;
-+
- 	bio = throtl_peek_queued(&sq->queued[READ]);
- 	if (bio)
- 		tg_may_dispatch(tg, bio, &read_wait);
-@@ -983,9 +991,10 @@ static void tg_update_disptime(struct throtl_grp *tg)
- 		tg_may_dispatch(tg, bio, &write_wait);
- 
- 	min_wait = min(read_wait, write_wait);
--	disptime = jiffies + min_wait;
- 
-+update:
- 	/* Update dispatch time */
-+	disptime = jiffies + min_wait;
- 	throtl_dequeue_tg(tg);
- 	tg->disptime = disptime;
- 	throtl_enqueue_tg(tg);
-@@ -1763,6 +1772,38 @@ static bool throtl_hierarchy_can_upgrade(struct throtl_grp *tg)
- 	return false;
+diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
+index 59d4fa2443f2..22e7d226826e 100644
+--- a/drivers/usb/typec/tcpm/tcpm.c
++++ b/drivers/usb/typec/tcpm/tcpm.c
+@@ -571,6 +571,16 @@ static bool tcpm_port_is_disconnected(struct tcpm_port *port)
+ 				    port->cc2 == TYPEC_CC_OPEN)));
  }
  
-+void blk_throtl_cancel_bios(struct request_queue *q)
++static u32 tcpm_pd_supported_rev(struct tcpm_port *port)
 +{
-+	struct cgroup_subsys_state *pos_css;
-+	struct blkcg_gq *blkg;
++	u32 rev = PD_MAX_REV;
 +
-+	spin_lock_irq(&q->queue_lock);
-+	/*
-+	 * queue_lock is held, rcu lock is not needed here technically.
-+	 * However, rcu lock is still held to emphasize that following
-+	 * path need RCU protection and to prevent warning from lockdep.
-+	 */
-+	rcu_read_lock();
-+	blkg_for_each_descendant_post(blkg, pos_css, q->root_blkg) {
-+		struct throtl_grp *tg = blkg_to_tg(blkg);
-+		struct throtl_service_queue *sq = &tg->service_queue;
++	if (port->tcpc->supported_pd_rev)
++		rev = port->tcpc->supported_pd_rev(port->tcpc);
 +
-+		/*
-+		 * Set disptime in the past to make sure
-+		 * throtl_select_dispatch() won't exit without dispatching.
-+		 */
-+		tg->disptime = jiffies - 1;
-+		/*
-+		 * Set the flag to make sure throtl_pending_timer_fn() won't
-+		 * stop until all throttled bios are dispatched.
-+		 */
-+		blkg_to_tg(blkg)->flags |= THROTL_TG_CANCELING;
-+		throtl_schedule_pending_timer(sq, jiffies + 1);
-+	}
-+	rcu_read_unlock();
-+	spin_unlock_irq(&q->queue_lock);
++	return min(rev, PD_MAX_REV);
 +}
 +
- static bool throtl_can_upgrade(struct throtl_data *td,
- 	struct throtl_grp *this_tg)
- {
-diff --git a/block/blk-throttle.h b/block/blk-throttle.h
-index 175f03abd9e4..2ae467ac17ea 100644
---- a/block/blk-throttle.h
-+++ b/block/blk-throttle.h
-@@ -160,12 +160,14 @@ static inline void blk_throtl_exit(struct request_queue *q) { }
- static inline void blk_throtl_register_queue(struct request_queue *q) { }
- static inline void blk_throtl_charge_bio_split(struct bio *bio) { }
- static inline bool blk_throtl_bio(struct bio *bio) { return false; }
-+static inline void blk_throtl_cancel_bios(struct request_queue *q) { }
- #else /* CONFIG_BLK_DEV_THROTTLING */
- int blk_throtl_init(struct request_queue *q);
- void blk_throtl_exit(struct request_queue *q);
- void blk_throtl_register_queue(struct request_queue *q);
- void blk_throtl_charge_bio_split(struct bio *bio);
- bool __blk_throtl_bio(struct bio *bio);
-+void blk_throtl_cancel_bios(struct request_queue *q);
- static inline bool blk_throtl_bio(struct bio *bio)
- {
- 	struct throtl_grp *tg = blkg_to_tg(bio->bi_blkg);
-diff --git a/block/genhd.c b/block/genhd.c
-index 9589d1d59afa..6acc98cd0365 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -29,6 +29,7 @@
- #include "blk.h"
- #include "blk-mq-sched.h"
- #include "blk-rq-qos.h"
-+#include "blk-throttle.h"
+ /*
+  * Logging
+  */
+@@ -3932,7 +3942,7 @@ static void run_state_machine(struct tcpm_port *port)
+ 		typec_set_pwr_opmode(port->typec_port, opmode);
+ 		port->pwr_opmode = TYPEC_PWR_MODE_USB;
+ 		port->caps_count = 0;
+-		port->negotiated_rev = PD_MAX_REV;
++		port->negotiated_rev = tcpm_pd_supported_rev(port);
+ 		port->message_id = 0;
+ 		port->rx_msgid = -1;
+ 		port->explicit_contract = false;
+@@ -4167,7 +4177,7 @@ static void run_state_machine(struct tcpm_port *port)
+ 					      port->cc2 : port->cc1);
+ 		typec_set_pwr_opmode(port->typec_port, opmode);
+ 		port->pwr_opmode = TYPEC_PWR_MODE_USB;
+-		port->negotiated_rev = PD_MAX_REV;
++		port->negotiated_rev = tcpm_pd_supported_rev(port);
+ 		port->message_id = 0;
+ 		port->rx_msgid = -1;
+ 		port->explicit_contract = false;
+diff --git a/include/linux/usb/tcpm.h b/include/linux/usb/tcpm.h
+index bffc8d3e14ad..36282b2a9d9c 100644
+--- a/include/linux/usb/tcpm.h
++++ b/include/linux/usb/tcpm.h
+@@ -114,6 +114,9 @@ enum tcpm_transmit_type {
+  *              Optional; The USB Communications Capable bit indicates if port
+  *              partner is capable of communication over the USB data lines
+  *              (e.g. D+/- or SS Tx/Rx). Called to notify the status of the bit.
++ * @supported_pd_rev:
++ *              Optional; TCPM call this function to get supported PD revesion
++ *              from lower level driver.
+  */
+ struct tcpc_dev {
+ 	struct fwnode_handle *fwnode;
+@@ -148,6 +151,7 @@ struct tcpc_dev {
+ 						 bool pps_active, u32 requested_vbus_voltage);
+ 	bool (*is_vbus_vsafe0v)(struct tcpc_dev *dev);
+ 	void (*set_partner_usb_comm_capable)(struct tcpc_dev *dev, bool enable);
++	u32 (*supported_pd_rev)(struct tcpc_dev *dev);
+ };
  
- static struct kobject *block_depr;
- 
-@@ -625,6 +626,7 @@ void del_gendisk(struct gendisk *disk)
- 
- 	blk_mq_freeze_queue_wait(q);
- 
-+	blk_throtl_cancel_bios(disk->queue);
- 	rq_qos_exit(q);
- 	blk_sync_queue(q);
- 	blk_flush_integrity();
+ struct tcpm_port;
 -- 
-2.31.1
+2.17.1
 
