@@ -2,107 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA7FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D806C3527C
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387846AbiBHW3S (ORCPT
+        id S1388052AbiBHW32 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:29:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43124 "EHLO
+        Tue, 8 Feb 2022 17:29:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387000AbiBHVkd (ORCPT
+        with ESMTP id S1386211AbiBHTnx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:40:33 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E22DC0612B8;
-        Tue,  8 Feb 2022 13:40:32 -0800 (PST)
+        Tue, 8 Feb 2022 14:43:53 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CFEC0612C0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:43:52 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id i186so376051pfe.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:43:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644356432; x=1675892432;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=81EhCrIS85r447vT38r3+hOQsy/Ae4x5VMVVwLgPxDU=;
-  b=eIJaJveWresab3hxkX0aQizJkKFtJuI1u2fgkj9titdZ608Yfz0Nj+wW
-   hbgVT6YgM06GATpG13UOoj8nqbFz3507qZpasEAFq4fKHWAQXZtYpICn2
-   R1Wb3Ak5+RzzydO4vfJ40z9Oy0t7H/Um7qI4LbiIkhfNQFpvXp12eHKnM
-   w=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 13:40:32 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 13:40:31 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 13:40:31 -0800
-Received: from [10.111.162.111] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 8 Feb 2022
- 13:40:28 -0800
-Message-ID: <a280fec2-754a-88ec-acc7-337e069e9148@quicinc.com>
-Date:   Tue, 8 Feb 2022 13:40:26 -0800
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=bV0qidYdKe49UwnnplwX5EgJUDf8zdhBMjx8WUJKWzs=;
+        b=eGq2LniziG9CjJRR2kTkUUuXbdtcfXwGY3muW0HW5G6quReyWc8n0x/6jxJm4o6G9e
+         MigJKTIYPndMz6+XXV4Z/wNFIeXVhetAdOwSuPpcY63ffM8enPP/S6vrfJCJIgumNNpN
+         d8LVPIWU9RYH6Fg0TWL/DErpNecQCxtzz4OajZM09Ztmmut3hoI0NYZakKJJZdb32xpj
+         p8mPEWS03LuOi7GMBUMX4aGJynBMiraEr1N4gAwhZpWZZ+QJklVcwhzWMbSe81zPoDcY
+         RrmOlUBijIBUGcAWoVwwl4qPDYaN9uMWcsiX8+S34/M06LEz3b1dF44r6laiwL3KXNJT
+         mzyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=bV0qidYdKe49UwnnplwX5EgJUDf8zdhBMjx8WUJKWzs=;
+        b=u0CPWeFM7CVrKmvbMY0hwqxR/qc+VANSAZmdDHXVDXjXRaDLEMLVC2BULjD+UMutcC
+         76yU9ofJw8bVTPpKRPjCXdrn4CXuOMEKVuqRlu/gASV9EOJaxvUqJZoE42j8zhFeJdmO
+         VO4vW+a309m5+DojYTOM+3gtkRaBAdwvFKd6Up3piBhQGzh8Zq61UKw2lOzPEDCKZh2S
+         y7583Wv19Cm9Ods/6LDq2Ua/XQBzUV9et7v4WdNNdiKdunYAswU3sqQOdcGWiW9aX6wO
+         /Z89StcHXuQCk3BYv4ixjnXSec0yUtC7wmyHySk9GfYegWMIzH4p25KaXCVw3Kmz9KUp
+         AFKA==
+X-Gm-Message-State: AOAM531KI1xQs7T9WIfV/+wGnC1S/gT93xTcJP3hmVaHGqzncpW3tmf/
+        jfBPFAYrNxxJRi2xYkceN/g=
+X-Google-Smtp-Source: ABdhPJwwj1bI0GWTB5NFt+lgqtppvKAhgRCsL3+JuDgFUYN27r8SV7aTKy49jo1clxPqwm+ioSRXlA==
+X-Received: by 2002:a63:6b81:: with SMTP id g123mr4707638pgc.562.1644349432191;
+        Tue, 08 Feb 2022 11:43:52 -0800 (PST)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
+        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 11:43:51 -0800 (PST)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Radoslaw Burny <rburny@google.com>
+Subject: [PATCH 08/12] locking/mutex: Init name properly w/ CONFIG_LOCK_INFO
+Date:   Tue,  8 Feb 2022 11:43:20 -0800
+Message-Id: <20220208194324.85333-9-namhyung@kernel.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
+References: <20220208194324.85333-1-namhyung@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] devcoredump: increase the device delete timeout to 10
- mins
-Content-Language: en-US
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        <linux-kernel@vger.kernel.org>
-CC:     <rafael@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <swboyd@chromium.org>,
-        <khsieh@codeaurora.org>, <nganji@codeaurora.org>,
-        <seanpaul@chromium.org>, <gregkh@linuxfoundation.org>,
-        <dmitry.baryshkov@linaro.org>, <aravindh@codeaurora.org>,
-        <freedreno@lists.freedesktop.org>
-References: <1644349472-31077-1-git-send-email-quic_abhinavk@quicinc.com>
- <8d67484c7e4b9fb4560d2eca1f71c75fde8bae0d.camel@sipsolutions.net>
- <ebd340e4-2a02-d484-2ed0-9ee738d5b5c5@quicinc.com>
- <c59bc1af9974484075091333a3c98a2088251321.camel@sipsolutions.net>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <c59bc1af9974484075091333a3c98a2088251321.camel@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Johannes
+The mutex.dep_map.name was set in debug_mutex_init() which is defined
+only if CONFIG_DEBUG_MUTEXES is on.  Let's fix it to work with
+CONFIG_LOCK_INFO as well.
 
-On 2/8/2022 1:12 PM, Johannes Berg wrote:
-> On Tue, 2022-02-08 at 13:04 -0800, Abhinav Kumar wrote:
->>
->> It opened the file rightaway but could not finish reading.
->>
->> The device gets deleted so the corresponding /data will disappear too (
->> as the data node is under devcd*/data)
-> 
-> Yeah but even if the file disappears, the open file descriptor is still
-> there, no? Does sysfs somehow make those disappear? I know debugfs does
-> (now, to some extent, it didn't always), but I thought sysfs was
-> refcounting things and didn't do that?
-> 
-> What did the userspace actually see? read() returned 0 so EOF?
-> 
-> (I guess I could test it, but it's getting late)
-> 
-> Your other questions are related - you need to consider the file in
-> sysfs and the open file descriptor separately.
-> 
-> johannes
-> 
-I am checking what usermode sees and will get back ( I didnt see an 
-error do most likely it was EOF ). I didnt follow the second part.
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ kernel/locking/mutex.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-If the file descriptor read returns EOF, even if we consider them 
-separate how will it resolve this issue?
+diff --git a/kernel/locking/mutex.h b/kernel/locking/mutex.h
+index 0b2a79c4013b..b7b584ecdfef 100644
+--- a/kernel/locking/mutex.h
++++ b/kernel/locking/mutex.h
+@@ -41,5 +41,12 @@ extern void debug_mutex_init(struct mutex *lock, const char *name,
+ # define debug_mutex_add_waiter(lock, waiter, ti)	do { } while (0)
+ # define debug_mutex_remove_waiter(lock, waiter, ti)	do { } while (0)
+ # define debug_mutex_unlock(lock)			do { } while (0)
++
++#ifdef CONFIG_LOCK_INFO
++# define debug_mutex_init(lock, name, key)			\
++		lockdep_set_class_and_name(lock, key, name)
++#else
+ # define debug_mutex_init(lock, name, key)		do { } while (0)
++#endif /* !CONFIG_LOCK_INFO */
++
+ #endif /* !CONFIG_DEBUG_MUTEXES */
+-- 
+2.35.0.263.gb82422642f-goog
 
-My earlier questions were related to fixing it in devcoredump to detect
-and fix it there. Are you suggesting to fix in usermode instead? How?
-
-Thanks
-
-Abhinav
