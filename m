@@ -2,128 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B55C3526E
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20333C35270
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387260AbiBHW1k (ORCPT
+        id S1387434AbiBHW1u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:27:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43256 "EHLO
+        Tue, 8 Feb 2022 17:27:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386199AbiBHTnn (ORCPT
+        with ESMTP id S1386759AbiBHVI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:43:43 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1487C0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:43:42 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id c8-20020a17090a674800b001b91184b732so477022pjm.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:43:42 -0800 (PST)
+        Tue, 8 Feb 2022 16:08:59 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F8AC0612B8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:58 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id v12so616650wrv.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+        d=ffwll.ch; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IzYAh6mtxyAZ2drjtva0WxDIoe1TxiIdW6u31Cu1VZ0=;
-        b=Z59AvqUCCa7UbRG2nJztf5OxSI9qQovj8CB7b/+6lPnCSxvE10jTasby5VST/dsbG1
-         OVAlzmtRVmJN3/xEluUeFGgv1tku1k8Nky1bf3K3UyyMEpAv+4GM/d3AktiTvQIyazqO
-         5j10K6DkStDMQzABmX4PqlAbgIRA6ciTLM7NS6tIMDt/dmzNEbNc3VkwyT9Qn+EJxZ85
-         ktaf1EYyxRpltgGfKwJJdoDhXWsasI/9JyvWq2tCFdcmgLPYumpRIDSQiOnjS8z/KHie
-         7ZKsxkOiOyeOUpXGax2FJI5NkjnTyMtx31xhASonu1EuJA+sL7BBAK3xT03dxNzO4c6a
-         8g8g==
+        bh=rydNRJgI2Eov1WWIN57pE5aUhiOSvoU+VTOBFAHrkb4=;
+        b=F+hzmxnzOc+718goX4Cs58QWOUfTIDiKrkUB1v+ufkg3+6n7DOvGRg91mu8FfXCAMf
+         FGj9W8B++N5wBz1YYmQT7i0CVcluacCT4V2Jc/ZISCEMgByjOv4cyK77LyJT/v7Slbjx
+         Q/yRK4s31cta8TArkXSJ37qhNy2sB4V2Oyxa8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=IzYAh6mtxyAZ2drjtva0WxDIoe1TxiIdW6u31Cu1VZ0=;
-        b=798saKTHREHNW+qICWqHQ8FXa3iqOvuVjDPa3yU2ABYor4A+nVFeKlTtrK4GXGfeqB
-         L9xpoNvvU7qoCVOQk+WlW5BjjXQy0MXKjhL4D6z/GIgAJkFeFcLjJN2uuLkSON83SHLS
-         K4ir4Ug0ytSqxjtRwMhvsnDtGBlHCGUZKWBUh33YC3/AV1BLov/Y5pNhTPgJ4Tntvpim
-         5H7xjvjsYGMfw66pnjp2H9MmGI1eyEZDAae07+l9rpjVb6O37vtujO/5ZH00FLiV3tBA
-         AplvbzclveJzWXBAuPiRmYU5luvITDTVD8badcV6IexTlwM8/ynm9/34YydhDxkNKgX7
-         1dnA==
-X-Gm-Message-State: AOAM53172iod4rzI5P7vFZiJ9hSOFhpShT+MTHNhCGnQnyXfgkNyZzH+
-        0PTRY9C98fzsESp4N3rPm+8=
-X-Google-Smtp-Source: ABdhPJxHfW73Un1j2m77knqGc5baEAyVhu9540XuJH25WpcdoAtQ7dfy05NOE3I/jDz5uR2KU/cH5w==
-X-Received: by 2002:a17:903:248:: with SMTP id j8mr3728183plh.123.1644349422264;
-        Tue, 08 Feb 2022 11:43:42 -0800 (PST)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
-        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.40
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rydNRJgI2Eov1WWIN57pE5aUhiOSvoU+VTOBFAHrkb4=;
+        b=HGmVobRA0HujRp+Vd21hDLrLXoile+skXUHzHrKaFwZZMwr5N1+VXP/l5f3o1mqIl4
+         0mjfBZnKgn0B5GzyJv5AaDnDNn17LpA/zb1CMxPf29u4E9FamG4D6NtEz5p2rk+GrL10
+         sIgIHAN+NuGs5/ZCDZd+HhewoYx92/fYavZ32MYR90mjYc0jBckob2PHOis8NOrL7FGv
+         5XGGJzJ/QQ3tu2nOoepwyXT+1c3sgbPy+05t3byr87UDqevZzpNXuNctoMGoXAxDsPyD
+         b0c8cspL8Xoqk5w2ypmQnGfbSmvoHfavtVSILjyYQf8Ia74nXna8c2YPD54gpSC9VUr1
+         WQQw==
+X-Gm-Message-State: AOAM531pTHPZVfYghrsjuGJ10YwOnWC27sfOprPRfulog+6aYTclR6vJ
+        IK/eOKKkDyEoYV67VcEdX9t/8jrDAHzNEQ==
+X-Google-Smtp-Source: ABdhPJzxKjz/b2hfgAxYxrOdvg7rGwL2KTseqSZXjP4oQ90LBl4N2T/XH7Zn2NUo7poLdZ1hEUURuQ==
+X-Received: by 2002:a5d:6da8:: with SMTP id u8mr5135544wrs.362.1644354537326;
+        Tue, 08 Feb 2022 13:08:57 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 11:43:41 -0800 (PST)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>
-Subject: [PATCH 03/12] timer: Protect lockdep functions with #ifdef
-Date:   Tue,  8 Feb 2022 11:43:15 -0800
-Message-Id: <20220208194324.85333-4-namhyung@kernel.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
-References: <20220208194324.85333-1-namhyung@kernel.org>
+        Tue, 08 Feb 2022 13:08:56 -0800 (PST)
+From:   Daniel Vetter <daniel.vetter@ffwll.ch>
+To:     DRI Development <dri-devel@lists.freedesktop.org>
+Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Zack Rusin <zackr@vmware.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Ilya Trukhanov <lahvuun@gmail.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Peter Jones <pjones@redhat.com>
+Subject: [PATCH v2 18/19] Revert "fbdev: Prevent probing generic drivers if a FB is already registered"
+Date:   Tue,  8 Feb 2022 22:08:23 +0100
+Message-Id: <20220208210824.2238981-19-daniel.vetter@ffwll.ch>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With upcoming lock tracepoints config, it'd define some of lockdep
-functions without enabling CONFIG_LOCKDEP actually.  The existing code
-assumes those functions will be removed by the preprocessor but it's
-not the case anymore.  Let's protect the code with #ifdef's explicitly.
+This reverts commit fb561bf9abde49f7e00fdbf9ed2ccf2d86cac8ee.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+With
+
+commit 27599aacbaefcbf2af7b06b0029459bbf682000d
+Author: Thomas Zimmermann <tzimmermann@suse.de>
+Date:   Tue Jan 25 10:12:18 2022 +0100
+
+    fbdev: Hot-unplug firmware fb devices on forced removal
+
+this should be fixed properly and we can remove this somewhat hackish
+check here (e.g. this won't catch drm drivers if fbdev emulation isn't
+enabled).
+
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Zack Rusin <zackr@vmware.com>
+Cc: Javier Martinez Canillas <javierm@redhat.com>
+Cc: Zack Rusin <zackr@vmware.com>
+Cc: Hans de Goede <hdegoede@redhat.com>
+Cc: Ilya Trukhanov <lahvuun@gmail.com>
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Peter Jones <pjones@redhat.com>
+Cc: linux-fbdev@vger.kernel.org
 ---
- kernel/time/timer.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/efifb.c    | 11 -----------
+ drivers/video/fbdev/simplefb.c | 11 -----------
+ 2 files changed, 22 deletions(-)
 
-diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 85f1021ad459..4af95dbf6435 100644
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -794,7 +794,10 @@ static void do_init_timer(struct timer_list *timer,
- 	if (WARN_ON_ONCE(flags & ~TIMER_INIT_FLAGS))
- 		flags &= TIMER_INIT_FLAGS;
- 	timer->flags = flags | raw_smp_processor_id();
-+
-+#ifdef CONFIG_LOCKDEP
- 	lockdep_init_map(&timer->lockdep_map, name, key, 0);
-+#endif
- }
+diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
+index ea42ba6445b2..edca3703b964 100644
+--- a/drivers/video/fbdev/efifb.c
++++ b/drivers/video/fbdev/efifb.c
+@@ -351,17 +351,6 @@ static int efifb_probe(struct platform_device *dev)
+ 	char *option = NULL;
+ 	efi_memory_desc_t md;
  
- /**
-@@ -1409,19 +1412,22 @@ static void call_timer_fn(struct timer_list *timer,
- 	struct lockdep_map lockdep_map;
+-	/*
+-	 * Generic drivers must not be registered if a framebuffer exists.
+-	 * If a native driver was probed, the display hardware was already
+-	 * taken and attempting to use the system framebuffer is dangerous.
+-	 */
+-	if (num_registered_fb > 0) {
+-		dev_err(&dev->dev,
+-			"efifb: a framebuffer is already registered\n");
+-		return -EINVAL;
+-	}
+-
+ 	if (screen_info.orig_video_isVGA != VIDEO_TYPE_EFI || pci_dev_disabled)
+ 		return -ENODEV;
  
- 	lockdep_copy_map(&lockdep_map, &timer->lockdep_map);
--#endif
-+
- 	/*
- 	 * Couple the lock chain with the lock chain at
- 	 * del_timer_sync() by acquiring the lock_map around the fn()
- 	 * call here and in del_timer_sync().
- 	 */
- 	lock_map_acquire(&lockdep_map);
-+#endif
+diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
+index 94fc9c6d0411..0ef41173325a 100644
+--- a/drivers/video/fbdev/simplefb.c
++++ b/drivers/video/fbdev/simplefb.c
+@@ -413,17 +413,6 @@ static int simplefb_probe(struct platform_device *pdev)
+ 	struct simplefb_par *par;
+ 	struct resource *res, *mem;
  
- 	trace_timer_expire_entry(timer, baseclk);
- 	fn(timer);
- 	trace_timer_expire_exit(timer);
+-	/*
+-	 * Generic drivers must not be registered if a framebuffer exists.
+-	 * If a native driver was probed, the display hardware was already
+-	 * taken and attempting to use the system framebuffer is dangerous.
+-	 */
+-	if (num_registered_fb > 0) {
+-		dev_err(&pdev->dev,
+-			"simplefb: a framebuffer is already registered\n");
+-		return -EINVAL;
+-	}
+-
+ 	if (fb_get_options("simplefb", NULL))
+ 		return -ENODEV;
  
-+#ifdef CONFIG_LOCKDEP
- 	lock_map_release(&lockdep_map);
-+#endif
- 
- 	if (count != preempt_count()) {
- 		WARN_ONCE(1, "timer: %pS preempt leak: %08x -> %08x\n",
 -- 
-2.35.0.263.gb82422642f-goog
+2.34.1
 
