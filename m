@@ -2,221 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD46C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32BEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384502AbiBHRzi (ORCPT
+        id S1384525AbiBHRzu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 12:55:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
+        Tue, 8 Feb 2022 12:55:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384457AbiBHRzX (ORCPT
+        with ESMTP id S1384471AbiBHRzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 12:55:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4065FC0612C1;
-        Tue,  8 Feb 2022 09:55:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03C37B81CB8;
-        Tue,  8 Feb 2022 17:55:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B49BC340EC;
-        Tue,  8 Feb 2022 17:55:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644342914;
-        bh=UuVL8Z7/jrC5OnVPB6PgBHDeub2K7lCzr9ygqM9zNXg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=NDOVcnz/oO7BLRPcbN6FBZy9u7xujyM6D6lDtZw6t1eDPatkmxGrxh2WEIyoi2EmI
-         JTfhw7qhF5+SR7XnD43tVND+Yb/FmigQ7ZycwIV7NbHrG3XbhLoXNT0/0VsMU7PfB4
-         eLGNuBclnx5IToI+PaXWkFEDk5BhRmHRhzJI4lNw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.4.178
-Date:   Tue,  8 Feb 2022 18:54:56 +0100
-Message-Id: <16443428969390@kroah.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 8 Feb 2022 12:55:24 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823F2C061578;
+        Tue,  8 Feb 2022 09:55:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ztOs9rdQFcLSesu9yn9FzljZLdIAbRP2bvIGIa+5XDE=; b=y7RsM5q/MionYV9yNSbokVw3Ms
+        ZCSQEuC1mHxLIgf1BdIDSMfT9mUN13eCx8/7PdaSsrjzKp49TQ6GrAaWBcg/0VX1np+OQ4emzhUBr
+        WA4jyZBEJeSoIAW5RbQ9MogoX4LlyUmLiVbhhkvea4HvcA5mKjy3mRUxfO5YsuILrtnQV6/BlHgvi
+        +BuNSc7r6ZIibuEenR//5rmcy+Yg27k1z8XzBYl9sn/06g4BxcV3sXgmMXfTw+YqD5Hln6xu+c16G
+        woSFyjYnWcDc8aZGryVR5Siz7GSAqz/9PnTzwyVaalG2Dbry3Vfw1Mp+lZDr3uFgR7iD4J6KveHGP
+        LxKLdaYA==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nHUhs-00FAzD-De; Tue, 08 Feb 2022 17:55:12 +0000
+Date:   Tue, 8 Feb 2022 09:55:12 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Vimal Agrawal <avimalin@gmail.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Jan Beulich <JBeulich@suse.com>, Jeff Mahoney <jeffm@suse.com>,
+        Sam Ravnborg <sam@ravnborg.org>, linux-kbuild@vger.kernel.org,
+        jeyu@kernel.org, linux-kernel@vger.kernel.org,
+        nishit.shah@sophos.com, Vimal Agrawal <vimal.agrawal@sophos.com>,
+        Dirk VanDerMerwe <Dirk.VanDerMerwe@sophos.com>,
+        gregkh@linuxfoundation.org
+Subject: Re: [PATCH v5] modules: add heuristic when stripping unneeded symbols
+Message-ID: <YgKugFcF1kkWPsNa@bombadil.infradead.org>
+References: <20220203060641.119522-1-vimal.agrawal@sophos.com>
+ <20220204083933.136096-1-vimal.agrawal@sophos.com>
+ <Yf2fB4mzdLiWtoki@bombadil.infradead.org>
+ <CALkUMdRv0tMuLpi3Syw7MndBTa9b0xRLGdb6QvM8Q69zXnmUkw@mail.gmail.com>
+ <YgGYL1MKEX9t/ciO@bombadil.infradead.org>
+ <CALkUMdSVV=Vju3TtryObKney7Q1TJLgGd7G7OB4X3FW9eJf4-w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALkUMdSVV=Vju3TtryObKney7Q1TJLgGd7G7OB4X3FW9eJf4-w@mail.gmail.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.4.178 kernel.
+On Tue, Feb 08, 2022 at 10:22:06AM +0530, Vimal Agrawal wrote:
+> > > Actually I had it  under (!best) in my first patch. I had to change it
+> > > because it was resolving the address to symbols like __this_module for
+> > > init address at times which is not correct for text address.
+> >
+> > Can you say that again?
+> 
+> I hit this a few times later after the first patch. Basically there
+> are all symbols in symbol table and best could be none zero ( means it
+> matched some symbol) but it may not be match to .text symbol for text
+> address ( esp. when --strip-unneeded is used as there are very few
+> symbols left after stripping)
 
-All users of the 5.4 kernel series must upgrade.
+You are saying that sometimes having "best" evaluated to non zero
+yields incorrect results, where the symbol found is actualy not a .text
+symbol for a text address? If so, is this really true for cases where
+no stripping is used? If so this is bigger news and I'd like to address
+this separately in another commit but we need proof, not just
+speculation.
 
-The updated 5.4.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.4.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+And you seem to be suggesting that this seems to hold more true when
+"--strip-unneeded" is used given there are fewer symbols left after
+striping?
 
-thanks,
+Did I comprehend what you are trying to say correctly?
 
-greg k-h
+> > OK so you're saying sometimes "best" is not true when we use
+> > INSTALL_MOD_STRIP="--strip-unneeded"? This is news.
+> >
+> yes, best can be non zero and may not resolve to .text address when
+> --strip-unneeded is used. 
 
-------------
+OK.
 
- Makefile                                              |    2 
- block/bio-integrity.c                                 |    2 
- drivers/edac/altera_edac.c                            |    2 
- drivers/edac/xgene_edac.c                             |    2 
- drivers/gpu/drm/i915/display/intel_overlay.c          |    3 
- drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c       |    2 
- drivers/infiniband/hw/mlx4/main.c                     |    2 
- drivers/infiniband/sw/rdmavt/qp.c                     |    2 
- drivers/infiniband/sw/siw/siw.h                       |    7 --
- drivers/infiniband/sw/siw/siw_qp_rx.c                 |   20 +++--
- drivers/iommu/amd_iommu_init.c                        |    2 
- drivers/iommu/intel_irq_remapping.c                   |   13 ++-
- drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h       |    1 
- drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c  |   19 ++++-
- drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c |   19 +++--
- drivers/net/ieee802154/ca8210.c                       |    1 
- drivers/net/ieee802154/mac802154_hwsim.c              |    1 
- drivers/net/ieee802154/mcr20a.c                       |    4 -
- drivers/net/macsec.c                                  |    9 ++
- drivers/pinctrl/bcm/pinctrl-bcm2835.c                 |   23 ++++--
- drivers/rtc/rtc-mc146818-lib.c                        |    2 
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c                     |   21 +++---
- drivers/soc/mediatek/mtk-scpsys.c                     |   15 +---
- drivers/spi/spi-bcm-qspi.c                            |    2 
- drivers/spi/spi-meson-spicc.c                         |    5 +
- drivers/spi/spi-mt65xx.c                              |    2 
- fs/btrfs/qgroup.c                                     |   21 +++++-
- fs/ext4/inline.c                                      |   10 ++
- fs/fs_context.c                                       |    4 -
- fs/nfsd/nfs4state.c                                   |    4 -
- kernel/audit.c                                        |   62 ++++++++++++------
- kernel/cgroup/cpuset.c                                |   10 ++
- mm/kmemleak.c                                         |   13 ++-
- net/ieee802154/nl802154.c                             |    8 +-
- sound/pci/hda/patch_realtek.c                         |    6 +
- sound/soc/codecs/cpcap.c                              |    2 
- sound/soc/codecs/max9759.c                            |    3 
- sound/soc/fsl/pcm030-audio-fabric.c                   |   11 ++-
- sound/soc/soc-ops.c                                   |   29 +++++++-
- sound/soc/xilinx/xlnx_formatter_pcm.c                 |   27 ++++++-
- sound/usb/quirks-table.h                              |   10 ++
- tools/testing/selftests/futex/Makefile                |    4 -
- 42 files changed, 294 insertions(+), 113 deletions(-)
+> without stripping, it will definitely
+> resolve to some .text address closely matching in case of no stripping
 
-Albert Geantă (1):
-      ALSA: hda/realtek: Add quirk for ASUS GU603
+OK so there is no issue when stripping is used.
 
-Benjamin Gaignard (1):
-      spi: mediatek: Avoid NULL pointer crash in interrupt
+> but it can go wrong with stripping. I have seen it a few times post
+> the first patch during testing.
 
-Bernard Metzler (1):
-      RDMA/siw: Fix broken RDMA Read Fence/Resume logic.
+OK then we need to take care your added heuristics do not affect
+non-stripping.
 
-Camel Guo (1):
-      net: stmmac: dump gmac4 DMA registers correctly
+> > In particulr you seem to be suggesting that if --strip-unneeded was
+> > used "best" could be incorrect for !is_module_text_address().
+> >
+> best could be incorrect even for text address when --strip-unneeded is used.
+> e.g. in my case, it is resolving .init.text address to __this_module
 
-Christian Lachner (3):
-      ALSA: hda/realtek: Add missing fixup-model entry for Gigabyte X570 ALC1220 quirks
-      ALSA: hda/realtek: Fix silent output on Gigabyte X570S Aorus Master (newer chipset)
-      ALSA: hda/realtek: Fix silent output on Gigabyte X570 Aorus Xtreme after reboot from Windows
+You should be explicit about this in your commit log.
 
-Dai Ngo (1):
-      nfsd: nfsd4_setclientid_confirm mistakenly expires confirmed client.
+> > In any case, you completely changed things in your patch and did not
+> > mention *any* of this in your follow up patch, leaving me to question
+> > the validity of all this work.
+> >
+> The Only change I did from the first patch was to move this hunk out of (!best).
+> Yes, I missed commenting it in the code.
 
-Dan Carpenter (2):
-      drm/i915/overlay: Prevent divide by zero bugs in scaling
-      ASoC: max9759: fix underflow in speaker_gain_control_put()
+When you submit a v2 patch and you change something like that you must
+clarify changes which are not clear either in the commit log or below
+the --- lines after the diffstat and before the actual patch. Each new
+patch iteration should have a set of bullets with all the changes you
+have made so that the maintainer can track what you have done
+differently on each iteration.
 
-Florian Fainelli (1):
-      pinctrl: bcm2835: Fix a few error paths
+Right now you are not making any of this easy on me so I ask that you
+stop submitting new patches willy nilly until we have actualy discussed
+each item, and we decide what to do. I also ask that you keep track of
+each change you are making on each new patch iteration on the patch
+after the --- lines and before the patch, so I can easily tell all the
+changes you have made on each new iteration.
 
-Greg Kroah-Hartman (1):
-      Linux 5.4.178
-
-Guenter Roeck (1):
-      Revert "ASoC: mediatek: Check for error clk pointer"
-
-Guoqing Jiang (1):
-      iommu/vt-d: Fix potential memory leak in intel_setup_irq_remapping()
-
-Jiasheng Jiang (1):
-      ASoC: cpcap: Check for NULL pointer after calling of_get_child_by_name
-
-Joerg Roedel (1):
-      iommu/amd: Fix loop timeout issue in iommu_ga_log_enable()
-
-John Meneghini (1):
-      scsi: bnx2fc: Make bnx2fc_recv_frame() mp safe
-
-Kamal Dasu (1):
-      spi: bcm-qspi: check for valid cs before applying chip select
-
-Lang Yu (1):
-      mm/kmemleak: avoid scanning potential huge holes
-
-Leon Romanovsky (1):
-      RDMA/mlx4: Don't continue event handler after memory allocation failure
-
-Lior Nahmanson (1):
-      net: macsec: Verify that send_sci is on when setting Tx sci explicitly
-
-Mark Brown (3):
-      ASoC: ops: Reject out of bounds values in snd_soc_put_volsw()
-      ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
-      ASoC: ops: Reject out of bounds values in snd_soc_put_xr_sx()
-
-Martin K. Petersen (1):
-      block: bio-integrity: Advance seed correctly for larger interval sizes
-
-Miaoqian Lin (2):
-      spi: meson-spicc: add IRQ check in meson_spicc_probe
-      ASoC: fsl: Add missing error handling in pcm030_fabric_probe
-
-Mike Marciniszyn (1):
-      IB/rdmavt: Validate remote_addr during loopback atomic tests
-
-Miquel Raynal (4):
-      net: ieee802154: hwsim: Ensure proper channel selection at probe time
-      net: ieee802154: mcr20a: Fix lifs/sifs periods
-      net: ieee802154: ca8210: Stop leaking skb's
-      net: ieee802154: Return meaningful error codes from the netlink helpers
-
-Muhammad Usama Anjum (1):
-      selftests: futex: Use variable MAKE instead of make
-
-Nick Lopez (1):
-      drm/nouveau: fix off by one in BIOS boundary checking
-
-Paul Moore (1):
-      audit: improve audit queue handling when "audit=1" on cmdline
-
-Ritesh Harjani (1):
-      ext4: fix error handling in ext4_restore_inline_data()
-
-Riwen Lu (1):
-      rtc: cmos: Evaluate century appropriate
-
-Robert Hancock (1):
-      ASoC: xilinx: xlnx_formatter_pcm: Make buffer bytes multiple of period bytes
-
-Sergey Shtylyov (2):
-      EDAC/altera: Fix deferred probing
-      EDAC/xgene: Fix deferred probing
-
-Shin'ichiro Kawasaki (1):
-      btrfs: fix deadlock between quota disable and qgroup rescan worker
-
-Takashi Iwai (1):
-      ALSA: usb-audio: Simplify quirk entries with a macro
-
-Waiman Long (1):
-      cgroup/cpuset: Fix "suspicious RCU usage" lockdep warning
-
-Yannick Vignon (1):
-      net: stmmac: ensure PTP time register reads are consistent
-
-Yutian Yang (1):
-      memcg: charge fs_context and legacy_fs_context
-
+  Luis
