@@ -2,143 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6481C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 12:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB1E2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:15:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346824AbiBHMDz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 07:03:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48688 "EHLO
+        id S233541AbiBHNP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:15:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233096AbiBHMDw (ORCPT
+        with ESMTP id S238900AbiBHM2j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:03:52 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B312DC03FEC0;
-        Tue,  8 Feb 2022 04:03:51 -0800 (PST)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nHPDo-00048U-9h; Tue, 08 Feb 2022 13:03:48 +0100
-Message-ID: <31603144-edec-df2d-fb46-283692c67420@leemhuis.info>
-Date:   Tue, 8 Feb 2022 13:03:47 +0100
+        Tue, 8 Feb 2022 07:28:39 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8CEC03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:28:38 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id eg42so21333213edb.7
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:28:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NoHwUXlnI/2+4GtIY3B1wFAlk61LjWDTsV6HYfSmeLw=;
+        b=jStChDdMyGG/3ayUzbTzNYlnwxLMllmGeEpkJs6CGf6RRNXXrXPhGDRdHajcPbEmqE
+         H2DdMc34jqTdSGv+yO9e+d1+mcAZAwF0dv23gQg7pAlGRBFhHcNaiq4ABOqAXmmsuiqc
+         zqjXzEnlHvvLUC1fv4wlOHsvBg14LJ1hMK0Oo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=NoHwUXlnI/2+4GtIY3B1wFAlk61LjWDTsV6HYfSmeLw=;
+        b=oeGoQwBfym5nrKhM2fdEsJEPVhu1trDG35IKZf+ZkP0vtgToJuAIURclHUDBHd93PW
+         QlPaTcuGMBStlIWwjBl4V3rDZb/vZyoI1k+PQRmD8RwPB5f6eJnAKek1rHj55bUw0TB0
+         bNA8Zt+NM0SfSha7bruwseFHlcveo3LMmendil8cmEs/vYdiMXyyyor+t+rITPCtdw9o
+         rIiaVA86jBhgfUETBtsKzg+NjRVr+DPI9eXT9iiW92KQFutX7uPKGbvesQzMLKghfptW
+         80p3kr1oI5Fx4HnZzVSSgoBoPXzv2dI7rv1fWKsPGMK6rmSTeB7SdsswKtJio5zdKxvF
+         /Bkg==
+X-Gm-Message-State: AOAM533+CQ2LgV57bMcawqDGMwCE+x9bcevtVYnUAWphcZuyFsKhAt7h
+        8Gnq4L+joalM1WVFkGRFEpUsp9G/yR0nlA==
+X-Google-Smtp-Source: ABdhPJz8CNq0yQJBtVXBnnXD7f1N+EwgFfAJSauIO2DyR45BhacerVDpgbvWItlXedF2YCVy901D6A==
+X-Received: by 2002:a05:6402:1601:: with SMTP id f1mr4223183edv.165.1644323316920;
+        Tue, 08 Feb 2022 04:28:36 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id ee23sm4753981edb.19.2022.02.08.04.28.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:28:36 -0800 (PST)
+Date:   Tue, 8 Feb 2022 13:28:34 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Iouri Tarassov <iourit@linux.microsoft.com>
+Cc:     Daniel Vetter <daniel@ffwll.ch>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        spronovo@microsoft.com, gregkh@linuxfoundation.org,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        jenatali@microsoft.com
+Subject: Re: [PATCH v1 9/9] drivers: hv: dxgkrnl: Implement DXGSYNCFILE
+Message-ID: <YgJh8kdz47wmZJxH@phenom.ffwll.local>
+Mail-Followup-To: Iouri Tarassov <iourit@linux.microsoft.com>,
+        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, spronovo@microsoft.com,
+        gregkh@linuxfoundation.org,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        jenatali@microsoft.com
+References: <cover.1641937419.git.iourit@linux.microsoft.com>
+ <e04c8e820bc166d9d4fe8e388aace731bb3255b0.1641937420.git.iourit@linux.microsoft.com>
+ <YeG6+Crv/Bg4h3u1@phenom.ffwll.local>
+ <e472cbe8-44ec-110a-1ad7-bc561cd0be88@linux.microsoft.com>
+ <CAKMK7uFkVvfXM7QsgSfP4OLk9b_cSwNsi3s3_7EFuL+Pa1s7eQ@mail.gmail.com>
+ <deb33dd6-06c8-13c1-8d37-4c4f36248d96@linux.microsoft.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-BS
-To:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-pci@vger.kernel.org,
-        regressions@lists.linux.dev
-References: <b177cb21-aa01-2408-9b26-164c028b6593@molgen.mpg.de>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-Subject: Re: 100 ms boot time increase regression in
- acpi_init()/acpi_scan_bus()
-In-Reply-To: <b177cb21-aa01-2408-9b26-164c028b6593@molgen.mpg.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1644321831;57ba252d;
-X-HE-SMSGID: 1nHPDo-00048U-9h
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <deb33dd6-06c8-13c1-8d37-4c4f36248d96@linux.microsoft.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker speaking.
+On Fri, Feb 04, 2022 at 04:35:55PM -0800, Iouri Tarassov wrote:
+> 
+> On 1/17/2022 1:35 AM, Daniel Vetter wrote:
+> > On Mon, Jan 17, 2022 at 9:34 AM Iouri Tarassov
+> > <iourit@linux.microsoft.com> wrote:
+> > >
+> > >
+> > btw another idea I had over the w/e: Another option might be to allow
+> > different backends for sync_file, and then making sure that you cannot
+> > ever mix dma_fence and hv_dxg_fence type sync_file up (in e.g. the
+> > merge ioctl).
+> > 
+> > The issue is that fundamentally dma_fence and memory fences (or umf
+> > for userspace memory fences as we tend to call them) aren't
+> > compatible, but some of the interop plans we have is to allow stuffing
+> > either of them into fence container objects like sync_file. So going
+> > that route for wddm monitored fence support too could be a really
+> > future-proof approach, plus it'd allow you to still share the
+> > sync_file interface code. Not that it's going to be much code sharing,
+> > since all the implementation code needs to be distinct.
+> > -Daniel
+> 
+> Thanks Daniel!
+> 
+> I will remove the patch for dxgsyncfile from the next set of upstream
+> patches.
+> 
+> It will be added later after a re-design.
 
-Top-posting for once, to make this easy accessible to everyone.
-
-@Rafael or any other @acpi/@pm developer: what's the status here?
-Neither in this thread nor in the bug ticket anything happened afaics.
-Or is a 100ms boot time increase considered "not a regression"?
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-reports on my table. I can only look briefly into most of them and lack
-knowledge about most of the areas they concern. I thus unfortunately
-will sometimes get things wrong or miss something important. I hope
-that's not the case here; if you think it is, don't hesitate to tell me
-in a public reply, it's in everyone's interest to set the public record
-straight.
-
-#regzbot poke
-
-On 10.01.22 12:29, Paul Menzel wrote:
-> #regzbot introduced: v5.13..v5.14-rc1
-> #regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215419
-> 
-> 
-> Dear Linux folks,
-> 
-> 
-> On the Intel T4500 laptop Acer TravelMate 5735Z with Debian
-> sid/unstable, there is a 100 ms introduced between Linux 5.10.46 and
-> 5.13.9, and is still present in Linux 5.15.5.
-> 
->     [    0.000000] microcode: microcode updated early to revision 0xa0b,
-> date = 2010-09-28
->     [    0.000000] Linux version 5.15.0-2-amd64
-> (debian-kernel@lists.debian.org) (gcc-11 (Debian 11.2.0-13) 11.2.0, GNU
-> ld (GNU Binutils for Debian) 2.37) #1 SMP Debian 5.15.5-2 (2021-12-18)
->     [    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-5.15.0-2-amd64
-> root=UUID=e17cec4f-d2b8-4cc3-bd39-39a10ed422f4 ro quiet noisapnp
-> cryptomgr.notests random.trust_cpu=on initcall_debug log_buf_len=4M
->     […]
->     [    0.262243] calling  acpi_init+0x0/0x487 @ 1
->     […]
->     [    0.281655] ACPI: Enabled 15 GPEs in block 00 to 3F
->     [    0.394855] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
->     […]
->     [    0.570908] initcall acpi_init+0x0/0x487 returned 0 after 300781
-> usecs
-> 
-> I attached all the log files to the Kernel.org Bugzilla bug report
-> #215419 [1].
-> 
-> Unfortunately, I am unable to bisect the issue, as it’s not my machine,
-> and I do not have a lot of access to it.
-> 
-> Using ftrace, unfortunately, I didn’t save all of them, I think the path is
-> 
->     acpi_init() → acpi_scan_init() → acpi_bus_scan(ACPI_ROOT_OBJECT)
-> 
-> But this path hasn’t changed as far as I can see. Anyway, from that
-> path, somehow
-> 
->     acpi_bus_check_add_1() → acpi_bus_check_add() → … →
-> acpi_bus_check_add() → acpi_add_single_object() → acpi_bus_get_status()
-> 
-> is called, and the `acpi_bus_get_status()` call takes 100 ms on the
-> system – also the cause for bug #208705 [2] –, but that code path wasn’t
-> taken before.
-> 
-> Do you know from the top of your head, what changed? I am going to have
-> short access to the system every two weeks or so, so debugging is
-> unfortunately quite hard.
-> 
-> What is already on my to-do list:
-> 
-> 1.  Use dynamic debug `drivers/acpi/scan.c`
-> 2.  Trace older Linux kernel (5.10.46) to see the differences
-> 3.  Booting some GNU/Linux system to test 5.11 (Ubuntu 20.10) and 5.12
-> 4.  Unrelated to the regression, but trace `acpi_bus_get_status()` to
-> understand the 100 ms delay to solve bug #208705 [2]
-> 
-> 
-> Kind regards,
-> 
-> Paul
-> 
-> 
-> PS: Do you know of GNU/Linux live systems that are available for all
-> Linux kernel releases and have an initrd, that just stores/uploads the
-> output of `dmesg`?
-> 
-> 
-> [1]: https://bugzilla.kernel.org/show_bug.cgi?id=215419
->      "100 ms regression in boottime before `ACPI: PCI Root Bridge [PCI0]"
-> [2]: https://bugzilla.kernel.org/show_bug.cgi?id=208705
->      "boot performance: 100 ms delay in PCI initialization - Acer
-> TravelMate 5735Z"
-> 
-> 
+Yeah sounds like a good plan forward to not hold up everything else
+meanwhile.
+-Daniel
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
