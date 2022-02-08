@@ -2,127 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0310C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38608C47088
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357501AbiBHLXB (ORCPT
+        id S1346836AbiBHLXI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:23:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45584 "EHLO
+        Tue, 8 Feb 2022 06:23:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355545AbiBHJpe (ORCPT
+        with ESMTP id S1355593AbiBHJrk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:45:34 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E403C03FEC0;
-        Tue,  8 Feb 2022 01:45:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ENzT/RzkRmS/DYmUEXIfRgv3NjIzEKRzAqT9YgQoCgY=; b=Endl4vNlP+MiAxjcwTTB300pzx
-        XEiU9Pw5DTd+cLTuKVE+nBViNEMcyypASHvYt+DmPHUXYtr9AVC1fetom5+AyTvj551sCr9m5tGmk
-        HSNquIumVFx5I9KUogbn4sbsKKM3/uohWvZY651083QYgkgzKbaivDg0Lp68WATSVDmnXLxmewIso
-        aFke0Xg+PB0spouEso4SyYU541F6STghZ+3KT7henUcC472V5tgVxqfzwgs0kokxwAvlILI1JylRx
-        ssM0S5+V6w9i1cPRqnhCTyusyrmIancx0EcTA8C9YO7WA54KaTHcwpOgThR4thkATpH2c4bV0b8JP
-        QrDuTksw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57150)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nHN3k-0002wf-3I; Tue, 08 Feb 2022 09:45:16 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nHN3h-0000TF-SB; Tue, 08 Feb 2022 09:45:13 +0000
-Date:   Tue, 8 Feb 2022 09:45:13 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Raag Jadav <raagjadav@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
-Message-ID: <YgI7qcO1qjicYqUm@shell.armlinux.org.uk>
-References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
- <Yf6QbbqaxZhZPUdC@lunn.ch>
- <20220206171234.GA5778@localhost>
- <YgANBQjsrmK+T/N+@lunn.ch>
- <20220207174948.GA5183@localhost>
+        Tue, 8 Feb 2022 04:47:40 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D56FAC03FEC1;
+        Tue,  8 Feb 2022 01:47:39 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9DBCC11D4;
+        Tue,  8 Feb 2022 01:47:39 -0800 (PST)
+Received: from [10.57.15.144] (unknown [10.57.15.144])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1CB873F718;
+        Tue,  8 Feb 2022 01:47:35 -0800 (PST)
+Subject: Re: [PATCH 0/2] Ignore Energy Model with abstract scale in IPA and
+ DTPM
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     amit.kachhap@gmail.com, viresh.kumar@linaro.org, rafael@kernel.org,
+        amitk@kernel.org, rui.zhang@intel.com, dietmar.eggemann@arm.com,
+        Pierre.Gondois@arm.com, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org
+References: <20220207073036.14901-1-lukasz.luba@arm.com>
+ <0d2217e0-44f7-8587-3e1f-a73d301ab166@linaro.org>
+ <616307f7-b419-8e36-6879-6cf6f4e02d5a@arm.com>
+ <f63be987-a1a5-cf7e-8302-4ae6e87b6699@linaro.org>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+Message-ID: <eed90b35-4556-963d-f6c2-8c645896c158@arm.com>
+Date:   Tue, 8 Feb 2022 09:47:29 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220207174948.GA5183@localhost>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <f63be987-a1a5-cf7e-8302-4ae6e87b6699@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 11:19:48PM +0530, Raag Jadav wrote:
-> On Sun, Feb 06, 2022 at 07:01:41PM +0100, Andrew Lunn wrote:
-> > On Sun, Feb 06, 2022 at 10:42:34PM +0530, Raag Jadav wrote:
-> > > On Sat, Feb 05, 2022 at 03:57:49PM +0100, Andrew Lunn wrote:
-> > > > On Sat, Feb 05, 2022 at 12:14:52PM +0530, Raag Jadav wrote:
-> > > > > Enable MAC SerDes autonegotiation to distinguish between
-> > > > > 1000BASE-X, SGMII and QSGMII MAC.
-> > > > 
-> > > > How does autoneg help you here? It just tells you about duplex, pause
-> > > > etc. It does not indicate 1000BaseX, SGMII etc. The PHY should be
-> > > > using whatever mode it was passed in phydev->interface, which the MAC
-> > > > sets when it calls the connection function. If the PHY dynamically
-> > > > changes its host side mode as a result of what that line side is
-> > > > doing, it should also change phydev->interface. However, as far as i
-> > > > can see, the mscc does not do this.
-> > > >
-> > > 
-> > > Once the PHY auto-negotiates parameters such as speed and duplex mode
-> > > with its link partner over the copper link as per IEEE 802.3 Clause 27,
-> > > the link partner’s capabilities are then transferred by PHY to MAC
-> > > over 1000BASE-X or SGMII link using the auto-negotiation functionality
-> > > defined in IEEE 802.3z Clause 37.
-> > 
-> > None of this allows you to distinguish between 1000BASE-X, SGMII and
-> > QSGMII, which is what the commit message says.
-> > 
-> 
-> I agree, the current commit message is misleading.
-> 
-> > It does allow you to get duplex, pause, and maybe speed via in band
-> > signalling. But you should also be getting the same information out of
-> > band, via the phylib callback.
-> > 
-> > There are some MACs which don't seem to work correctly without the in
-> > band signalling, so maybe that is your problem? Please could you give
-> > more background about your problem, what MAC and PHY combination are
-> > you using, what problem you are seeing, etc.
-> > 
-> 
-> MAC implementation[1] in a lot of NXP SoCs comes with in-band aneg enabled
-> by default, and it does expect Clause 37 auto-negotiation to complete
-> between MAC and PHY before the actual data transfer happens.
-> 
-> [1] https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/t-series/3241/1/AN3869(1).pdf
-> 
-> I faced such issue while integrating VSC85xx PHY
-> with one of the recent NXP SoC having similar MAC implementation.
-> Not sure if this is a problem on MAC side or PHY side,
-> But having Clause 37 support should help in most cases I believe.
 
-Clause 37 is 1000BASE-X negotiation, which is different from SGMII - a
-point which is even made in your PDF above in section 1.1.
 
-You will need both ends to be operating in SGMII mode for 10M and 100M
-to work. If one end is in 1000BASE-X mdoe and the other is in SGMII,
-it can appear to work, but it won't be working correctly.
+On 2/8/22 7:39 AM, Daniel Lezcano wrote:
+> On 07/02/2022 12:44, Lukasz Luba wrote:
+>>
+>>
+>> On 2/7/22 10:41 AM, Daniel Lezcano wrote:
+>>> On 07/02/2022 08:30, Lukasz Luba wrote:
+>>>> Hi all,
+>>>>
+>>>> The Energy Model supports abstract scale power values. This might cause
+>>>> issues for some mechanisms like thermal governor IPA or DTPM, which
+>>>> expect that all devices provide sane power values. This patch set 
+>>>> prevents
+>>>> from registering such devices for IPA and DTPM.
+>>>
+>>>
+>>> Does it mean for example big and little have both 0-100 ?
+>>>
+>>>
+>>
+>> Unfortunately, these can be any numbers. I hope at least the CPUs
+>> Big and Little power have sense: Little power is not higher
+>> than Big power. The purpose of EM is to enable EAS, so this power
+>> relation between Big and Little should have sense. Someone
+>> who is not willing to or cannot expose real power values, still
+>> wants the EAS to operate (my assumption and hope). The SCMI FW can
+>> provide abstract power values. It's in the SCMI spec. Thus,
+>> creating these abstract scale power values for big.LITTLE the right
+>> way should result in properly working EAS.
+>>
+>> I can also have hope for GPU vs. Big power, but it is a weaker hope.
+>> The second is more tricky to distinguish even if you have a domain
+>> knowledge, but not the real measurements with you. The GPU power
+>> values is also a 'sensitive' knowledge to share. Open source guys can do
+>> that (after measurements), but some vendor's engineers probably can't.
+> 
+> So basically, we don't know, right ?
 
-Please get the terminology correct here when talking about SGMII or
-1000BASE-X.
+Well, we know - power is not in milli-Watts.
+The PowerCap and DTPM have this sysfs contract of providing micro-Watts.
+Don't we break this if we know for sure that the power values in EM
+are not in milli-Watts?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> 
+> At this point the different subsystems (cpufreq cooling device and dtpm) 
+> disabled by these patches can deal with abstract scale values, like they 
+> do today with the very approximate power numbers we have defined in the DT.
+> 
+> Let's wait and see how the different SoC vendors implement the SCMI spec.
+> 
+
+I'm not sure if that would be visible to us. The current path to feed
+abstract power values from SCMI cpufreq already exists and is based
+on protocol response. The DT is not involved in this configuration.
