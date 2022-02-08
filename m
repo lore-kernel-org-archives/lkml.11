@@ -2,113 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6826CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238676AbiBHJNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 04:13:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
+        id S1353359AbiBHJOz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 04:14:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353221AbiBHJNX (ORCPT
+        with ESMTP id S240554AbiBHJOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:13:23 -0500
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04917C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:13:23 -0800 (PST)
-Received: by mail-io1-f72.google.com with SMTP id q5-20020a0566022f0500b00638278a161fso5402578iow.11
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:13:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=d853FYKiMfJBLFjIJPTK0l7nRNte7hxVebJY6lt/Hww=;
-        b=zQuMLi0QbxQoWWSRrkBml6IFAVtwUBCvr94KDWiHgRnCtRlSRMD8wvPxULoVWP84/B
-         vrJUiNdeLsz6FgGEbYKN91PFbZATu0Ja6Qc3COjDro5IWdSjX584W6s4wUiiidPiuZl/
-         1R+QdUeiDnqTbkwaM11JDm82/Nqh8SI+dOtpM++U6LsMwJsnHeH9fL2215mHcriRtMBG
-         FI4uDuyOpjNIt0U6D1QrMlSOQlPf++DxC+01Pgotg7ZJxJtqtTUXePzBBy7BCjvj/XxP
-         80QUm/FLeDu6rMhruUZdTdr6RWzNjeaUqlLnLr1WUpwemDMW+DaPU2s+4dplFBXjHwNw
-         QFYg==
-X-Gm-Message-State: AOAM533DMAh4vO0v/KZxwF8aMdIWsTuUg/nqXv5zqqg0M7RSgYy1uVLY
-        firn3rxUb4tNNIcm8YgSWAXGPV8pILCrPcZWcuoAyLcTFfLC
-X-Google-Smtp-Source: ABdhPJyl5someFze/leMXY+UMeZB6KyqLyKyMR1xHO5v+gqxDic6OW0E2pPO816147akPaw6tPNqw/l+tSUjpJorZcF2e+VR7EY+
+        Tue, 8 Feb 2022 04:14:53 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9E768C0401F0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:14:52 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-20-tTBzvubUOWqiQLjk6umxoA-1; Tue, 08 Feb 2022 09:14:49 +0000
+X-MC-Unique: tTBzvubUOWqiQLjk6umxoA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Tue, 8 Feb 2022 09:14:49 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Tue, 8 Feb 2022 09:14:49 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Nick Desaulniers' <ndesaulniers@google.com>,
+        Bill Wendling <morbo@google.com>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Nathan Chancellor" <nathan@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v3] x86: use builtins to read eflags
+Thread-Topic: [PATCH v3] x86: use builtins to read eflags
+Thread-Index: AQHYHG/CSK+t8Kagc0eLuNqaUHH4EKyJWp+w
+Date:   Tue, 8 Feb 2022 09:14:49 +0000
+Message-ID: <0d93ea4d847b42ca9c5603cb97cbda8a@AcuMS.aculab.com>
+References: <20211229021258.176670-1-morbo@google.com>
+ <20220204005742.1222997-1-morbo@google.com>
+ <CAKwvOdk=VdDo1fhWJVa4eO0UjuQwtV9kC-cJd0J9-6guU2vafA@mail.gmail.com>
+In-Reply-To: <CAKwvOdk=VdDo1fhWJVa4eO0UjuQwtV9kC-cJd0J9-6guU2vafA@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:2182:: with SMTP id j2mr1752703ila.304.1644311602369;
- Tue, 08 Feb 2022 01:13:22 -0800 (PST)
-Date:   Tue, 08 Feb 2022 01:13:22 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f5988505d77e20e4@google.com>
-Subject: [syzbot] KCSAN: data-race in wg_packet_handshake_receive_worker /
- wg_packet_rx_poll (3)
-From:   syzbot <syzbot+ed414b05fe54c96947f8@syzkaller.appspotmail.com>
-To:     Jason@zx2c4.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, wireguard@lists.zx2c4.com
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+RnJvbTogTmljayBEZXNhdWxuaWVycw0KPiBTZW50OiAwNyBGZWJydWFyeSAyMDIyIDIyOjEyDQo+
+IA0KPiBPbiBUaHUsIEZlYiAzLCAyMDIyIGF0IDQ6NTcgUE0gQmlsbCBXZW5kbGluZyA8bW9yYm9A
+Z29vZ2xlLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBHQ0MgYW5kIENsYW5nIGJvdGggaGF2ZSBidWls
+dGlucyB0byByZWFkIGFuZCB3cml0ZSB0aGUgRUZMQUdTIHJlZ2lzdGVyLg0KPiA+IFRoaXMgYWxs
+b3dzIHRoZSBjb21waWxlciB0byBkZXRlcm1pbmUgdGhlIGJlc3Qgd2F5IHRvIGdlbmVyYXRlIHRo
+aXMNCj4gPiBjb2RlLCB3aGljaCBjYW4gaW1wcm92ZSBjb2RlIGdlbmVyYXRpb24uDQo+ID4NCj4g
+PiBUaGlzIGlzc3VlIGFyb3NlIGR1ZSB0byBDbGFuZydzIGlzc3VlIHdpdGggdGhlICI9cm0iIGNv
+bnN0cmFpbnQuICBDbGFuZw0KPiA+IGNob29zZXMgdG8gYmUgY29uc2VydmF0aXZlIGluIHRoZXNl
+IHNpdHVhdGlvbnMsIGFuZCBzbyB1c2VzIG1lbW9yeQ0KPiA+IGluc3RlYWQgb2YgcmVnaXN0ZXJz
+LiBUaGlzIGlzIGEga25vd24gaXNzdWUsIHdoaWNoIGlzIGN1cnJlbnRseSBiZWluZw0KPiA+IGFk
+ZHJlc3NlZC4NCg0KSG93IG11Y2ggcGVyZm9ybWFuY2Ugd291bGQgYmUgbG9zdCBieSBqdXN0IHVz
+aW5nICI9ciI/DQoNCllvdSBnZXQgdHdvIGluc3RydWN0aW9ucyBpZiB0aGUgYWN0dWFsIHRhcmdl
+dCBpcyBtZW1vcnkuDQpUaGlzIG1pZ2h0IGJlIGEgbWFyZ2luYWwgY29kZSBzaXplIGluY3JlYXNl
+IC0gYnV0IG5vdCBtdWNoLA0KSXQgbWlnaHQgYWxzbyBzbG93IHRoaW5ncyBkb3duIGlmIHRoZSBl
+eGVjdXRpb24gaXMgbGltaXRlZA0KYnkgdGhlIGluc3RydWN0aW9uIGRlY29kZXIuDQoNCkJ1dCBv
+biBJbnRlbCBjcHUgJ3BvcCBtZW1vcnknIGlzIDIgdW9wcywgZXhhY3RseSB0aGUgc2FtZQ0KYXMg
+J3BvcCByZWdpc3RlcicgJ3N0b3JlIHJlZ2lzdGVyJyAoYW5kIEkgdGhpbmsgYW1kIGlzIHNpbWls
+YXIpLg0KU28gdGhlIGFjdHVhbCBleGVjdXRpb24gdGltZSBpcyBleGFjdGx5IHRoZSBzYW1lIGZv
+ciBib3RoLg0KDQpBbHNvIGl0IGxvb2tzIGxpa2UgY2xhbmcncyBidWlsdGluIGlzIGVmZmVjdGl2
+ZWx5ICI9ciIuDQpDb21waWxpbmc6DQpsb25nIGZsOw0Kdm9pZCBuYXRpdmVfc2F2ZV9mbCh2b2lk
+KSB7DQogICAgICAgZmwgPSBfX2J1aWx0aW5faWEzMl9yZWFkZWZsYWdzX3U2NCgpOw0KfQ0KTm90
+IG9ubHkgZ2VuZXJhdGVzIGEgc3RhY2sgZnJhbWUsIGl0IGFsc28gZ2VuZXJhdGVzOg0KcHVzaGY7
+IHBvcCAlcmF4OyBtb3YgbWVtLCAlcmF4Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRy
+ZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1L
+MSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-syzbot found the following issue on:
-
-HEAD commit:    455e73a07f6e Merge tag 'clk-for-linus' of git://git.kernel..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=131009feb00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e1f9a6122410716
-dashboard link: https://syzkaller.appspot.com/bug?extid=ed414b05fe54c96947f8
-compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ed414b05fe54c96947f8@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KCSAN: data-race in wg_packet_handshake_receive_worker / wg_packet_rx_poll
-
-read to 0xffff88813238a9e0 of 8 bytes by interrupt on cpu 1:
- update_rx_stats drivers/net/wireguard/receive.c:28 [inline]
- wg_packet_consume_data_done drivers/net/wireguard/receive.c:365 [inline]
- wg_packet_rx_poll+0xf6b/0x11f0 drivers/net/wireguard/receive.c:481
- __napi_poll+0x65/0x3f0 net/core/dev.c:6365
- napi_poll net/core/dev.c:6432 [inline]
- net_rx_action+0x29e/0x650 net/core/dev.c:6519
- __do_softirq+0x158/0x2de kernel/softirq.c:558
- do_softirq+0xb1/0xf0 kernel/softirq.c:459
- __local_bh_enable_ip+0x68/0x70 kernel/softirq.c:383
- __raw_spin_unlock_bh include/linux/spinlock_api_smp.h:167 [inline]
- _raw_spin_unlock_bh+0x33/0x40 kernel/locking/spinlock.c:210
- spin_unlock_bh include/linux/spinlock.h:394 [inline]
- ptr_ring_consume_bh include/linux/ptr_ring.h:367 [inline]
- wg_packet_decrypt_worker+0x73c/0x780 drivers/net/wireguard/receive.c:506
- process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
- worker_thread+0x616/0xa70 kernel/workqueue.c:2454
- kthread+0x2c7/0x2e0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30
-
-write to 0xffff88813238a9e0 of 8 bytes by task 5035 on cpu 0:
- update_rx_stats drivers/net/wireguard/receive.c:28 [inline]
- wg_receive_handshake_packet drivers/net/wireguard/receive.c:205 [inline]
- wg_packet_handshake_receive_worker+0x54a/0x6e0 drivers/net/wireguard/receive.c:220
- process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
- worker_thread+0x616/0xa70 kernel/workqueue.c:2454
- kthread+0x2c7/0x2e0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30
-
-value changed: 0x0000000000000aa8 -> 0x0000000000000ac8
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 5035 Comm: kworker/0:60 Not tainted 5.16.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: wg-kex-wg2 wg_packet_handshake_receive_worker
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
