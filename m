@@ -2,209 +2,271 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F852C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A24C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387723AbiBHWbc (ORCPT
+        id S1387749AbiBHWbg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:31:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52596 "EHLO
+        Tue, 8 Feb 2022 17:31:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386399AbiBHUXa (ORCPT
+        with ESMTP id S1386721AbiBHVIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:23:30 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D473C0613CB;
-        Tue,  8 Feb 2022 12:23:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644351808; x=1675887808;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=WqU6zu/piZ7pErZnk7XAOAepB5mxM3G9Dv3lFzsvKNE=;
-  b=Ii1gwbRSJDn8E66SVaP9yNC/311B+BYkpCjAQeP+/saOpKEg26azw9ed
-   yq7Wd8u7JzPFpyTua+QPHH9xjPZaNl14evt/Df9UtPZ5iW6AL68JaLzuF
-   jKtepI34a+LbjZa+DKN24ER9jYM3s6m5+MF540Vh0g2Is5soqj+5qXaB6
-   tnBakGdHot6AG9r6WnsaLIVUp05YirCryvCw5NBi8cQyrr2RLWiHmeBbS
-   A4igP6P+NrkFdBK8KPf0WUcZTa5Z0BwFpsZpYOsIE5XYLnXd7iL2iL8Fs
-   3a2yf+209/m+Up5mQyySyLPUBId2Zkg//kE3uvyvHf/ExdNj0Rqh2VsZ5
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="248993782"
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="248993782"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 12:23:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="525694951"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by orsmga007.jf.intel.com with ESMTP; 08 Feb 2022 12:23:28 -0800
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 8 Feb 2022 12:23:27 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 8 Feb 2022 12:23:27 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Tue, 8 Feb 2022 12:23:27 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.103)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Tue, 8 Feb 2022 12:23:26 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WiHsNJla0wjULPMGyimQqXfL5WZvb/Z6WvSQWZFPtnjDB9QnUs4boKFT5gFWrcQ3IVn7xsxQzk0H4NahhRFhAAz52vIBS0DNHru5IvMz0UN/ifZpZPfE6Sih0Ya58JCtC5/EioUSgJbAM3GmGFNFbDBRhirP8fKxf3aasNhxrjBPJPcKiCg21mnmHYeou3A5LjwfCIJf19pYr+pCf1d4E2fn0dK9str7PT8BICKYUykiypS+ThGK/EHHgHLllvmuVR4uL5Yk5mFEiCvN5ThbkTP8UzTmXIl6Yz2noza6jeDuUkjg+pDxz/uHxVD5MdVho/kzzelh1yCfC8uDKLcxkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WqU6zu/piZ7pErZnk7XAOAepB5mxM3G9Dv3lFzsvKNE=;
- b=ZoJs3JNEIUfpMDnhL5X85WrBUES47YA7T4SUUMvq9YtwoxWKcnhn0/X6g+2A4/B/Jx/tqM9uwLfZqmIHKRIrHQwIBzA/fAO9c4FWQO4GexOZ/jlYZE9RBFhAlf8v6rObOZCPfUb8nLIXyMtQAUcIks/ko6h8D4rO8Z5XKRkjxplYuwyUDiHBJMd+MUz27LxytJO0k2EG+h0N/LcluvIr9JfzeWKh8lYZx9+bobHuRaKj6tMxRkD44reIzkj4oOa78sMRXWpYPO4zxEsUiv7UYbqf3/6kP4f0QdsxVq03z7/jgQVNVmOQi2cbmzAEgxzb1h8+KfiH7dBULlvKIpjZfA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from MWHPR11MB1392.namprd11.prod.outlook.com (2603:10b6:300:24::14)
- by DM6PR11MB3866.namprd11.prod.outlook.com (2603:10b6:5:199::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Tue, 8 Feb
- 2022 20:23:24 +0000
-Received: from MWHPR11MB1392.namprd11.prod.outlook.com
- ([fe80::250a:7e8f:1f3d:de15]) by MWHPR11MB1392.namprd11.prod.outlook.com
- ([fe80::250a:7e8f:1f3d:de15%4]) with mapi id 15.20.4951.019; Tue, 8 Feb 2022
- 20:23:24 +0000
-From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To:     "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "bsingharora@gmail.com" <bsingharora@gmail.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "Syromiatnikov, Eugene" <esyr@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "Eranian, Stephane" <eranian@google.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "fweimer@redhat.com" <fweimer@redhat.com>,
-        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
-        "jannh@google.com" <jannh@google.com>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "kcc@google.com" <kcc@google.com>, "bp@alien8.de" <bp@alien8.de>,
-        "oleg@redhat.com" <oleg@redhat.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "Yang, Weijiang" <weijiang.yang@intel.com>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "pavel@ucw.cz" <pavel@ucw.cz>, "arnd@arndb.de" <arnd@arndb.de>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "Dave.Martin@arm.com" <Dave.Martin@arm.com>,
-        "john.allen@amd.com" <john.allen@amd.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "gorcunov@gmail.com" <gorcunov@gmail.com>
-CC:     "Yu, Yu-cheng" <yu-cheng.yu@intel.com>
-Subject: Re: [PATCH 03/35] x86/cpufeatures: Add CET CPU feature flags for
- Control-flow Enforcement Technology (CET)
-Thread-Topic: [PATCH 03/35] x86/cpufeatures: Add CET CPU feature flags for
- Control-flow Enforcement Technology (CET)
-Thread-Index: AQHYFh9qehmK3wcY5UaZCHx6w6958KyIvI0AgAFqpIA=
-Date:   Tue, 8 Feb 2022 20:23:24 +0000
-Message-ID: <f1fe9c992131dfa989c6d321097642cce5f4830a.camel@intel.com>
-References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
-         <20220130211838.8382-4-rick.p.edgecombe@intel.com>
-         <b9d48ed0-699b-585c-a52c-46d789c11dc9@intel.com>
-In-Reply-To: <b9d48ed0-699b-585c-a52c-46d789c11dc9@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e9cbcf59-abb1-4213-a6ff-08d9eb40db9b
-x-ms-traffictypediagnostic: DM6PR11MB3866:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <DM6PR11MB38669BE51DE221200A73C268C92D9@DM6PR11MB3866.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UhhsW7hc4wyQ8eAetO1XjGUOTG4Z0ACnB20Z50r9xwLzzo7jl5IX0E1g2dvdEdeo9muEq0EPZVSG/KTok9pBKBCZg2pTZOVRk9EsNx1kWNIiSoAaCVfFrrRWjeTzhJAQQPMAi0FmWDWxqzAHJk/rvEVm9fzujOyPnTXWKhHHE2AyTjQbAEZI+pdMb76JhuUOcR3wZMtiavtn52uShf8FhRmpCb3O8lT39ClUhRDkhYdzWtj6oqdUkEO76hUKTAGrnikjGRwRmk2I1fV0MkiKnUyCvsJBbX+Fn3hNo5hwm0R2zTZp9iUwUoLL+UkeVM90q+LmTyi5cYyObJ0qTCWXFP3DtJXRcTQmqXW2ox25VJpfK4xkslL7zH9aTSFg8uTerS2Ma6vZONKK9ugVGAaZgZQBxilRWEV+J3xC4835LXpgkmMbTCC0NfOVm716/kv4gW5l3HUQwoMHUDMoM+OhUS2+WxfEcCwhplBbmcVHLyzKCA2cz8Ac2JPvXoBVUq1RhuWfsWF1yO8C6C1HKkSfciiSzqgjEXkhEbujUXMSoficoihgLB3zjMu6VJdmbdx09fBPwBRQ5/MvGH1r8BtHsA20ZpLC+LxUAowOqXAWwv+pERWa+X3nBdgEAJJWOYCWfjHw6oDYPd/QFjjypvpgfIW1eVhqjxySTRQWlOCbPFRY6EtZvnGD5fKFeDwoNqGm5JEuIPvhg3v1gbCwbAJ5PgYXGzwsF1ZQNhmWJeV8MMKcQP8sR8712tVEFYTJbso3
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(186003)(5660300002)(316002)(71200400001)(83380400001)(6506007)(7406005)(7416002)(6512007)(66476007)(38100700002)(26005)(76116006)(66556008)(66946007)(8936002)(8676002)(4326008)(66446008)(86362001)(64756008)(2906002)(122000001)(36756003)(6486002)(508600001)(2616005)(921005)(38070700005)(82960400001)(4744005)(110136005)(99106002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TWdPQmRtT0ZCbURROGQ2NEFRTVg2L1BzWGIwSklZQ3B4NmtuRFpmNVBkcmV1?=
- =?utf-8?B?dzZXaFpaV3h0aDlOWndPZXlmQnB2NUd0SWt6cjR3eEJDTHhlRmE5cHR3c056?=
- =?utf-8?B?NDNHZTRBOXF2Sm1hVDVBbVFnV1pJZGlJQUVwK3RZeEtFaytVTTJPZjlZaXVV?=
- =?utf-8?B?c1VlcTUxb0p0RTdoUmxqNVJrTkl4QUdydXlkY3FoYlc3Yit4Zmk3ZDczdFNZ?=
- =?utf-8?B?eXd2ZHFmaFZJU3dZaExEYWY1UTRKYmRObHRPVXBkTmd4ckk0WGtRTUdwUEhE?=
- =?utf-8?B?Tmw1Vm0waCtrNVpSUktZOXJKd1BwdGJ2UW0ySHczclpQRC9mekhsWjhRb2RT?=
- =?utf-8?B?eG9HOEFnZFNad0JtZFRPN1E3UldPSWpUREU2NGFJR0hFMEtkczdCNGVFNVhH?=
- =?utf-8?B?cXMrclBrUzRMQkMySU1zTUUzOXpMZmpPUjVRdlFIRU1KRDVqTDlQa3ZWNEdB?=
- =?utf-8?B?bFFEVTZSbHBFRVg2NytZeEVIY1JaaVAxU0d0cTRwMmlOb2VoVVlVWCtkR09k?=
- =?utf-8?B?cDdPUjhYbFhqdGYyekh3akI3Vk5zdVdVM0xBc1VocjhPeHpBQkFoYXFzdlpG?=
- =?utf-8?B?eWFtcHovYzlWT1V0dVZCL2RSWVZaOE5NWHFPUnd5K3RndFZuQ3o4TjVnd1Ux?=
- =?utf-8?B?OGFHUkxteGZKYnpzWkFRMUtxWHRzZTZxYWdiSnM3eXFuZDl4TFZLQkk4TWZi?=
- =?utf-8?B?SUFKc2xoaWZPVGpBUGErQytmR1lUQTJZUEE0NE1MaWRLWjBzZFJHc1d1RStx?=
- =?utf-8?B?bDdES05SWlZOT3dOUnU5OVMwR2lqVmZGWFJaZ0tSRm8rUTZkNW5WR3RKL0Yr?=
- =?utf-8?B?WVFJaWJqTGgyaWlQRUo1dURqOU02c0g2TEpjSkV2YWhwcUJOZTVkclpyUnhz?=
- =?utf-8?B?QURBT0pZTURIVHAzUDM1Rlc1NnZ0dlk2THo2bUFUbHhyUXkxTW5tV1hwUDIr?=
- =?utf-8?B?SlZaSnp5QUYwTnZ6NG5NM0x2ZTZtVGhwYTluQW03a0RGclJLQ2ZuSkNaaG1P?=
- =?utf-8?B?dW5Wb29UcnhhODMrOERFTXpjWTdrQ0xxZFJyamhuY3pZb1V0dUt3cWN5SG13?=
- =?utf-8?B?WHZPSGhVV2NkdzRYV0dHVDAySVFNRGxqWWdoZDlGWWZjWklkU3hhUTdROVcr?=
- =?utf-8?B?NG0zS2loREZPOGRpOUFLRmppbnNZRkJnSlNKMWVWSkNTQjVKbFdYdGpPQjU2?=
- =?utf-8?B?V1VlZkFXaUdRSXBJRDlyNmJrRlhqSHdoZW4rR3VXem1QR1RESEx3V1ZVUG1T?=
- =?utf-8?B?bTlFSG0rWXVRczZwMmZ4MG01YUdaSjFnNjFtcGZNQ2ZCY0lsUVRZUTFLN3JJ?=
- =?utf-8?B?SnNUZThFelh5TUtxMHNTK3kyNTRKWkM1d1pIZzFLRk5NWVpiY0xOYjZnUllm?=
- =?utf-8?B?UmJTRTdFZU94RE5EK1o4Nk5oc2o1aWNVditDWGJ5RHdGaWRDV1Q3YWF4ZDFk?=
- =?utf-8?B?TkpaTUZkSDBSVHBZZlBPNDU2SysxK2E5M3VVSkZqaUNFYktZMFhXNDFleEo2?=
- =?utf-8?B?STFFY0I3UGJLUHJwY2VCR0xkYXh4MU5uNTdFNnNqSGlJdTNJbE1tZEJkQlln?=
- =?utf-8?B?M095RUN0d3AxM2dtT2lCQ0JvaE9Ld2o4Ym5GaklwOFdKWnBMMUJoT2NycnRs?=
- =?utf-8?B?aUIxTWordmoyU3g3elA1ZjZhaEdQL0dGRnNCMXpFUHVPa25xQkJhMlc0ZGJs?=
- =?utf-8?B?WE81Mm1yZTBmWjAwdFNjdGRYU1M3SCtLVTc5bytBU2t6amhISWcyUmhzaFds?=
- =?utf-8?B?MVZWNGFXRWdMT1FZTm9sc3AyaURpUVBHOXlnREtjVUlJblNOREhHTTVWb1R0?=
- =?utf-8?B?VDUxWVd0UllDaXV4R1VNMUliU2tYdVIrUmhkUERzck91cUFCWEFKdG84UGxF?=
- =?utf-8?B?aVM0MStFVC9tc0E4bi9YWkptT0N5U1pzdng0RlZ1TUlWOWdvNkwxb0wwckJT?=
- =?utf-8?B?dEFtcTJUN250K0lsNnd2Njh5aTMzemZ2QW5uQlhKMEtuN0JHb2xVZlRlcCtU?=
- =?utf-8?B?UkovWER0QWp2Z0FQQ296ZHE2U2dSUTBTNXBEVzlaRG1kSUhHTXk3NDFCV0c1?=
- =?utf-8?B?dHZjeHQvNThpZ3d5Y0UzbXhCYTI4dEtaSE04WDF6aXRaOTB6U0Z2Vk9sMith?=
- =?utf-8?B?d0ovYk91UFBaaEN2NmJWQU8ydmZ5cmZJTDdXUU42U09YSVFVa0dzRnBxdUtP?=
- =?utf-8?B?L29YNHpRVzVNdEVJemQvWEpnRnBFRmsvZ1VrZzY0K0xzelJGWjZ6ZkRxclRt?=
- =?utf-8?Q?AngwxVRvh8a/z/IyZdvVMWl3nC1gwjTyUd9aRxP6tg=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8E70C5EB498AEB479A8EAE5C219F6942@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Tue, 8 Feb 2022 16:08:48 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173AFC0612B8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:48 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id m126-20020a1ca384000000b0037bb8e379feso1986185wme.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ZpkV0RtV6b+qoZSx1q7At4dbITHQdztu2MpUTGszUSQ=;
+        b=XBxwj0okLWcXjnLZC8VylTpr8kVr/cRQvzFH0baQxLV3Ag48btF75FnQSiNzw2+6VD
+         mv4OqAjPHJGITMkt/3V8/uxvtQ0r4+UQCO5GX+qxMgmsCuyTs0uabU9J7oJGYb8c6Iow
+         n/zSAwN9FJlnot4fK6xQ8YNOvjOBpzPLNjj0c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZpkV0RtV6b+qoZSx1q7At4dbITHQdztu2MpUTGszUSQ=;
+        b=L21pFy/dzozmNxgvh4yAamQs5yGCPYthH+RTAVQOLJ5o+raTU4Dvo49oXgv/b7fEI0
+         T6WAwvc7r1/3zJ0vRLNvg8jF47va+Uol86qDwGpb5lZ2zngt/GFdOwVnGUyMHN7TW4IS
+         xtCwa8VpGCWT+6gCey9hRgJe2W1PoSgYZTHavmFRWUldkmda0hoeQp2G42fd0NYtiQDA
+         0RTSmsisq3qlNcnkkDm3lquYDvqRjFFuKnPj5ovYZUqwlGMro+arEkZ5UMBjZt2ukFfr
+         cGvj2Qi/yuZfdTPNFqqcXk0K1ElvzYUAgcPgyzevzCawmyuYr9qqJV7v+/Rfg5E8LFLK
+         T43w==
+X-Gm-Message-State: AOAM532BfReVwEpAX2fo0w0SeCws5JmnpRrB1ygwcJDr6CXoCkjgJIrO
+        x91RhrX4nh4qjGJyfBArQd4XEw==
+X-Google-Smtp-Source: ABdhPJynSn4cJJu2QmKl6qJIPVpol64suJAmeSMzFGBHBZrxWj3fvOdAZeounKrNlr8/sZP5nXwPjQ==
+X-Received: by 2002:a05:600c:308:: with SMTP id q8mr2548459wmd.71.1644354526664;
+        Tue, 08 Feb 2022 13:08:46 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 13:08:44 -0800 (PST)
+From:   Daniel Vetter <daniel.vetter@ffwll.ch>
+To:     DRI Development <dri-devel@lists.freedesktop.org>
+Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Claudio Suarez <cssk@net-c.es>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Du Cheng <ducheng2@gmail.com>
+Subject: [PATCH v2 09/19] fbcon: Extract fbcon_open/release helpers
+Date:   Tue,  8 Feb 2022 22:08:14 +0100
+Message-Id: <20220208210824.2238981-10-daniel.vetter@ffwll.ch>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1392.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9cbcf59-abb1-4213-a6ff-08d9eb40db9b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Feb 2022 20:23:24.3231
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +Jq4mlOe6jtvhB5kvEzg+xmvJkSuB0jKzxiUXwBBk+0GWwuUc4JazxS/7SAuW6EyTowRM91pyBuoT49pRAQfHngMLSjrXFWkwFCKfeC2IBk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3866
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gTW9uLCAyMDIyLTAyLTA3IGF0IDE0OjQ1IC0wODAwLCBEYXZlIEhhbnNlbiB3cm90ZToNCj4g
-UGxlYXNlIGFkZCBhIGNodW5rIHRvIHRoZSBjaGFuZ2Vsb2cgdGhhdCBleHBsYWlucyB0aGUgZGVw
-ZW5kZW5jeS4gDQo+IFRoaXMNCj4gd291bGQgc3VmZmljZToNCj4gDQo+ICAgICAgICAgVG8gcHJv
-dGVjdCBzaGFkb3cgc3RhY2sgc3RhdGUgZnJvbSBtYWxpY2lvdXMgbW9kaWZpY2F0aW9uLA0KPiB0
-aGUNCj4gICAgICAgICByZWdpc3RlcnMgYXJlIG9ubHkgYWNjZXNzaWJsZSBpbiBzdXBlcnZpc29y
-IG1vZGUuICBUaGlzDQo+ICAgICAgICAgaW1wbGVtZW50YXRpb24gY29udGV4dC1zd2l0Y2hlcyB0
-aGUgcmVnaXN0ZXJzIHdpdGggWFNBVkVTLiANCj4gTWFrZQ0KPiAgICAgICAgIFg4Nl9GRUFUVVJF
-X1NIU1RLIGRlcGVuZCBvbiBYU0FWRVMuDQoNClRoYW5rcy4gWWVhLCBJIGRvbid0IHRoaW5rIHRo
-YXQgcGFydCBvZiB0aGUgZGVzaWduIGlzIHJlYWxseSBlbGFib3JhdGVkDQpvbiBhbnl3aGVyZS4g
-SXQgY2FuIGJlIHNvbWUgZm9yZXNoYWRvd2luZyBmb3IgdGhlIHNpZ25hbCBzdHVmZiBsYXRlcg0K
-dG9vLg0K
+There's two minor behaviour changes in here:
+- in error paths we now consistently call fb_ops->fb_release
+- fb_release really can't fail (fbmem.c ignores it too) and there's no
+  reasonable cleanup we can do anyway.
+
+Note that everything in fbcon.c is protected by the big console_lock()
+lock (especially all the global variables), so the minor changes in
+ordering of setup/cleanup do not matter.
+
+v2: Explain a bit better why this is all correct (Sam)
+
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Claudio Suarez <cssk@net-c.es>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Du Cheng <ducheng2@gmail.com>
+---
+ drivers/video/fbdev/core/fbcon.c | 107 +++++++++++++++----------------
+ 1 file changed, 53 insertions(+), 54 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index 058e885d24f6..3e1a3e7bf527 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -682,19 +682,37 @@ static int fbcon_invalid_charcount(struct fb_info *info, unsigned charcount)
+ 
+ #endif /* CONFIG_MISC_TILEBLITTING */
+ 
++static int fbcon_open(struct fb_info *info)
++{
++	if (!try_module_get(info->fbops->owner))
++		return -ENODEV;
++
++	if (info->fbops->fb_open &&
++	    info->fbops->fb_open(info, 0)) {
++		module_put(info->fbops->owner);
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
++static void fbcon_release(struct fb_info *info)
++{
++	if (info->fbops->fb_release)
++		info->fbops->fb_release(info, 0);
++
++	module_put(info->fbops->owner);
++}
+ 
+ static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
+ 				  int unit, int oldidx)
+ {
+ 	struct fbcon_ops *ops = NULL;
+-	int err = 0;
+-
+-	if (!try_module_get(info->fbops->owner))
+-		err = -ENODEV;
++	int err;
+ 
+-	if (!err && info->fbops->fb_open &&
+-	    info->fbops->fb_open(info, 0))
+-		err = -ENODEV;
++	err = fbcon_open(info);
++	if (err)
++		return err;
+ 
+ 	if (!err) {
+ 		ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
+@@ -715,7 +733,7 @@ static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
+ 
+ 	if (err) {
+ 		con2fb_map[unit] = oldidx;
+-		module_put(info->fbops->owner);
++		fbcon_release(info);
+ 	}
+ 
+ 	return err;
+@@ -726,45 +744,34 @@ static int con2fb_release_oldinfo(struct vc_data *vc, struct fb_info *oldinfo,
+ 				  int oldidx, int found)
+ {
+ 	struct fbcon_ops *ops = oldinfo->fbcon_par;
+-	int err = 0, ret;
++	int ret;
+ 
+-	if (oldinfo->fbops->fb_release &&
+-	    oldinfo->fbops->fb_release(oldinfo, 0)) {
+-		con2fb_map[unit] = oldidx;
+-		if (!found && newinfo->fbops->fb_release)
+-			newinfo->fbops->fb_release(newinfo, 0);
+-		if (!found)
+-			module_put(newinfo->fbops->owner);
+-		err = -ENODEV;
+-	}
++	fbcon_release(oldinfo);
+ 
+-	if (!err) {
+-		fbcon_del_cursor_work(oldinfo);
+-		kfree(ops->cursor_state.mask);
+-		kfree(ops->cursor_data);
+-		kfree(ops->cursor_src);
+-		kfree(ops->fontbuffer);
+-		kfree(oldinfo->fbcon_par);
+-		oldinfo->fbcon_par = NULL;
+-		module_put(oldinfo->fbops->owner);
+-		/*
+-		  If oldinfo and newinfo are driving the same hardware,
+-		  the fb_release() method of oldinfo may attempt to
+-		  restore the hardware state.  This will leave the
+-		  newinfo in an undefined state. Thus, a call to
+-		  fb_set_par() may be needed for the newinfo.
+-		*/
+-		if (newinfo && newinfo->fbops->fb_set_par) {
+-			ret = newinfo->fbops->fb_set_par(newinfo);
++	fbcon_del_cursor_work(oldinfo);
++	kfree(ops->cursor_state.mask);
++	kfree(ops->cursor_data);
++	kfree(ops->cursor_src);
++	kfree(ops->fontbuffer);
++	kfree(oldinfo->fbcon_par);
++	oldinfo->fbcon_par = NULL;
++	/*
++	  If oldinfo and newinfo are driving the same hardware,
++	  the fb_release() method of oldinfo may attempt to
++	  restore the hardware state.  This will leave the
++	  newinfo in an undefined state. Thus, a call to
++	  fb_set_par() may be needed for the newinfo.
++	*/
++	if (newinfo && newinfo->fbops->fb_set_par) {
++		ret = newinfo->fbops->fb_set_par(newinfo);
+ 
+-			if (ret)
+-				printk(KERN_ERR "con2fb_release_oldinfo: "
+-					"detected unhandled fb_set_par error, "
+-					"error code %d\n", ret);
+-		}
++		if (ret)
++			printk(KERN_ERR "con2fb_release_oldinfo: "
++				"detected unhandled fb_set_par error, "
++				"error code %d\n", ret);
+ 	}
+ 
+-	return err;
++	return 0;
+ }
+ 
+ static void con2fb_init_display(struct vc_data *vc, struct fb_info *info,
+@@ -919,7 +926,6 @@ static const char *fbcon_startup(void)
+ 	struct fbcon_display *p = &fb_display[fg_console];
+ 	struct vc_data *vc = vc_cons[fg_console].d;
+ 	const struct font_desc *font = NULL;
+-	struct module *owner;
+ 	struct fb_info *info = NULL;
+ 	struct fbcon_ops *ops;
+ 	int rows, cols;
+@@ -938,17 +944,12 @@ static const char *fbcon_startup(void)
+ 	if (!info)
+ 		return NULL;
+ 	
+-	owner = info->fbops->owner;
+-	if (!try_module_get(owner))
++	if (fbcon_open(info))
+ 		return NULL;
+-	if (info->fbops->fb_open && info->fbops->fb_open(info, 0)) {
+-		module_put(owner);
+-		return NULL;
+-	}
+ 
+ 	ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
+ 	if (!ops) {
+-		module_put(owner);
++		fbcon_release(info);
+ 		return NULL;
+ 	}
+ 
+@@ -3314,10 +3315,6 @@ static void fbcon_exit(void)
+ 		}
+ 
+ 		if (mapped) {
+-			if (info->fbops->fb_release)
+-				info->fbops->fb_release(info, 0);
+-			module_put(info->fbops->owner);
+-
+ 			if (info->fbcon_par) {
+ 				struct fbcon_ops *ops = info->fbcon_par;
+ 
+@@ -3327,6 +3324,8 @@ static void fbcon_exit(void)
+ 				kfree(info->fbcon_par);
+ 				info->fbcon_par = NULL;
+ 			}
++
++			fbcon_release(info);
+ 		}
+ 	}
+ }
+-- 
+2.34.1
+
