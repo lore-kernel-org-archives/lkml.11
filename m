@@ -2,89 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5499C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245678AbiBHNSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:18:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
+        id S1344193AbiBHNSK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:18:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233560AbiBHNGB (ORCPT
+        with ESMTP id S1345748AbiBHMjh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:06:01 -0500
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B22C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:05:59 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id F3BEE20000A;
-        Tue,  8 Feb 2022 13:05:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644325557;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=II38vjLqRQLg/txnWaGaYMH5G+TMjmxUgp39Q+KTFOI=;
-        b=cg78R25fOkgb5ywOTBX32Ds9RDk2APYA7e1uYvGLZfPi06/mTEq8+GkVPwGTaR1fLB1WVs
-        MeA+3P/QBgqREUS/55SrecEY7vmpaW579tgSxLcqqHTqoO1BDIommGnumCSg+8i2aZNL5O
-        m4E4t5GhKA6ICt0hiBOdfqaVhVhFCKj00Np/wM7cfEJjZrh22izqYdMuF3he0kmw7z5Cwm
-        zcMMF++SjVytXqfTbvC3aprnLqBdYO/RWujfqLSLVQHiozdu7DAc0JckuC2AlQrnRykiE9
-        ejCHAzAkhskQWJP59w3q/fys6innvYxgNfqEB/0ajLCHg8OQcMlC9/WzFn3lkw==
-Date:   Tue, 8 Feb 2022 14:05:51 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
-Cc:     <vigneshr@ti.com>, <richard@nod.at>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <git@xilinx.com>
-Subject: Re: [PATCH] mtd: rawnand: pl353: Set the nand chip node as the
- flash node
-Message-ID: <20220208140551.6271f976@xps13>
-In-Reply-To: <20220208125738.32162-1-amit.kumar-mahapatra@xilinx.com>
-References: <20220208125738.32162-1-amit.kumar-mahapatra@xilinx.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Tue, 8 Feb 2022 07:39:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7942CC03FEC0;
+        Tue,  8 Feb 2022 04:39:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3EF67B81886;
+        Tue,  8 Feb 2022 12:39:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A81FC004E1;
+        Tue,  8 Feb 2022 12:39:33 +0000 (UTC)
+Message-ID: <37c856c6-caa3-b908-9cda-25a50a50ef03@xs4all.nl>
+Date:   Tue, 8 Feb 2022 13:39:32 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] Add check for READ ONLY flag
+Content-Language: en-US
+To:     Dikshita Agarwal <quic_dikshita@quicinc.com>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        vgarodia@codeaurora.org
+References: <1643957268-6365-1-git-send-email-quic_dikshita@quicinc.com>
+From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
+In-Reply-To: <1643957268-6365-1-git-send-email-quic_dikshita@quicinc.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Amit,
 
-amit.kumar-mahapatra@xilinx.com wrote on Tue, 8 Feb 2022 18:27:38 +0530:
 
-> In devicetree the flash information is embedded within nand chip node,
-> so during nand chip initialization the nand chip node should be passed
-> to nand_set_flash_node() api, instead of nand controller node.
->=20
-> Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+On 2/4/22 07:47, Dikshita Agarwal wrote:
+> Add a check for V4L2_CTRL_FLAG_READ_ONLY to avoid request
+> testing for such controls.
 
-Can you please add Fixes tag?
+Missing Signed-off-by!
+
+Regards,
+
+	Hans
 
 > ---
-> BRANCH: nand/next
-> ---
->  drivers/mtd/nand/raw/pl35x-nand-controller.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/mtd/nand/raw/pl35x-nand-controller.c b/drivers/mtd/n=
-and/raw/pl35x-nand-controller.c
-> index 8a91e069ee2e..3c6f6aff649f 100644
-> --- a/drivers/mtd/nand/raw/pl35x-nand-controller.c
-> +++ b/drivers/mtd/nand/raw/pl35x-nand-controller.c
-> @@ -1062,7 +1062,7 @@ static int pl35x_nand_chip_init(struct pl35x_nandc =
-*nfc,
->  	chip->controller =3D &nfc->controller;
->  	mtd =3D nand_to_mtd(chip);
->  	mtd->dev.parent =3D nfc->dev;
-> -	nand_set_flash_node(chip, nfc->dev->of_node);
-> +	nand_set_flash_node(chip, np);
->  	if (!mtd->name) {
->  		mtd->name =3D devm_kasprintf(nfc->dev, GFP_KERNEL,
->  					   "%s", PL35X_NANDC_DRIVER_NAME);
-
-yup, that was wrong.
-
-Thanks,
-Miqu=C3=A8l
+>  utils/v4l2-compliance/v4l2-test-buffers.cpp | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/utils/v4l2-compliance/v4l2-test-buffers.cpp b/utils/v4l2-compliance/v4l2-test-buffers.cpp
+> index fa8c37c..b8de7af 100644
+> --- a/utils/v4l2-compliance/v4l2-test-buffers.cpp
+> +++ b/utils/v4l2-compliance/v4l2-test-buffers.cpp
+> @@ -2032,7 +2032,8 @@ int testRequests(struct node *node, bool test_streaming)
+>  		if (qctrl.type != V4L2_CTRL_TYPE_INTEGER &&
+>  		    qctrl.type != V4L2_CTRL_TYPE_BOOLEAN)
+>  			continue;
+> -		if (qctrl.flags & V4L2_CTRL_FLAG_WRITE_ONLY)
+> +		if (qctrl.flags & V4L2_CTRL_FLAG_WRITE_ONLY ||
+> +		    qctrl.flags & V4L2_CTRL_FLAG_READ_ONLY)
+>  			continue;
+>  		if (is_vivid && V4L2_CTRL_ID2WHICH(qctrl.id) == V4L2_CTRL_CLASS_VIVID)
+>  			continue;
