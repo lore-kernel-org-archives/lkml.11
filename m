@@ -2,57 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB7CC352A8
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:23:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0310C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237748AbiBHLXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:23:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45904 "EHLO
+        id S1357501AbiBHLXB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:23:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355586AbiBHJqv (ORCPT
+        with ESMTP id S1355545AbiBHJpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:46:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B06C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:46:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62F44B81990
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:46:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86753C004E1;
-        Tue,  8 Feb 2022 09:46:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644313608;
-        bh=8UbAjj/H6avAWOylioig6EnD0MGcFmQgIPkZQYteBMI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NL4mPYiCgOPwGpLfECYMdrXx3UnBrMG1x8wFtDUHy63Yp9jTV2gbwD65NwdCBr+LQ
-         yDQuC8cCfuCJtkdD1Dehs3YIBY8/jAa4RrVpIyyA/S3OQf3zj1e8gjf86MmYGwHXtu
-         gn/ibnf871eQ+VlCXDQLN1HXJ1z5Fhb5yxcdFvDU=
-Date:   Tue, 8 Feb 2022 10:46:45 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, insop.song@gainspeed.com,
-        devel@driverdev.osuosl.org, dan.carpenter@oracle.com
-Subject: Re: [PATCH] staging: drop fpgaboot driver
-Message-ID: <YgI8BQlUa671AvkY@kroah.com>
-References: <Yf025dphJw2rUVR5@kroah.com>
- <20220204190847.3809405-1-ztong0001@gmail.com>
+        Tue, 8 Feb 2022 04:45:34 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E403C03FEC0;
+        Tue,  8 Feb 2022 01:45:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ENzT/RzkRmS/DYmUEXIfRgv3NjIzEKRzAqT9YgQoCgY=; b=Endl4vNlP+MiAxjcwTTB300pzx
+        XEiU9Pw5DTd+cLTuKVE+nBViNEMcyypASHvYt+DmPHUXYtr9AVC1fetom5+AyTvj551sCr9m5tGmk
+        HSNquIumVFx5I9KUogbn4sbsKKM3/uohWvZY651083QYgkgzKbaivDg0Lp68WATSVDmnXLxmewIso
+        aFke0Xg+PB0spouEso4SyYU541F6STghZ+3KT7henUcC472V5tgVxqfzwgs0kokxwAvlILI1JylRx
+        ssM0S5+V6w9i1cPRqnhCTyusyrmIancx0EcTA8C9YO7WA54KaTHcwpOgThR4thkATpH2c4bV0b8JP
+        QrDuTksw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57150)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nHN3k-0002wf-3I; Tue, 08 Feb 2022 09:45:16 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nHN3h-0000TF-SB; Tue, 08 Feb 2022 09:45:13 +0000
+Date:   Tue, 8 Feb 2022 09:45:13 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Raag Jadav <raagjadav@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
+Message-ID: <YgI7qcO1qjicYqUm@shell.armlinux.org.uk>
+References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
+ <Yf6QbbqaxZhZPUdC@lunn.ch>
+ <20220206171234.GA5778@localhost>
+ <YgANBQjsrmK+T/N+@lunn.ch>
+ <20220207174948.GA5183@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220204190847.3809405-1-ztong0001@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220207174948.GA5183@localhost>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 11:08:35AM -0800, Tong Zhang wrote:
-> The gs_fpgaboot driver is totally broken since 2014 and no one even
-> noticed the driver is not probing. Given the quality of the driver
-> and its current state it makes sense to drop it.
+On Mon, Feb 07, 2022 at 11:19:48PM +0530, Raag Jadav wrote:
+> On Sun, Feb 06, 2022 at 07:01:41PM +0100, Andrew Lunn wrote:
+> > On Sun, Feb 06, 2022 at 10:42:34PM +0530, Raag Jadav wrote:
+> > > On Sat, Feb 05, 2022 at 03:57:49PM +0100, Andrew Lunn wrote:
+> > > > On Sat, Feb 05, 2022 at 12:14:52PM +0530, Raag Jadav wrote:
+> > > > > Enable MAC SerDes autonegotiation to distinguish between
+> > > > > 1000BASE-X, SGMII and QSGMII MAC.
+> > > > 
+> > > > How does autoneg help you here? It just tells you about duplex, pause
+> > > > etc. It does not indicate 1000BaseX, SGMII etc. The PHY should be
+> > > > using whatever mode it was passed in phydev->interface, which the MAC
+> > > > sets when it calls the connection function. If the PHY dynamically
+> > > > changes its host side mode as a result of what that line side is
+> > > > doing, it should also change phydev->interface. However, as far as i
+> > > > can see, the mscc does not do this.
+> > > >
+> > > 
+> > > Once the PHY auto-negotiates parameters such as speed and duplex mode
+> > > with its link partner over the copper link as per IEEE 802.3 Clause 27,
+> > > the link partner’s capabilities are then transferred by PHY to MAC
+> > > over 1000BASE-X or SGMII link using the auto-negotiation functionality
+> > > defined in IEEE 802.3z Clause 37.
+> > 
+> > None of this allows you to distinguish between 1000BASE-X, SGMII and
+> > QSGMII, which is what the commit message says.
+> > 
 > 
-> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+> I agree, the current commit message is misleading.
+> 
+> > It does allow you to get duplex, pause, and maybe speed via in band
+> > signalling. But you should also be getting the same information out of
+> > band, via the phylib callback.
+> > 
+> > There are some MACs which don't seem to work correctly without the in
+> > band signalling, so maybe that is your problem? Please could you give
+> > more background about your problem, what MAC and PHY combination are
+> > you using, what problem you are seeing, etc.
+> > 
+> 
+> MAC implementation[1] in a lot of NXP SoCs comes with in-band aneg enabled
+> by default, and it does expect Clause 37 auto-negotiation to complete
+> between MAC and PHY before the actual data transfer happens.
+> 
+> [1] https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/t-series/3241/1/AN3869(1).pdf
+> 
+> I faced such issue while integrating VSC85xx PHY
+> with one of the recent NXP SoC having similar MAC implementation.
+> Not sure if this is a problem on MAC side or PHY side,
+> But having Clause 37 support should help in most cases I believe.
 
-Thanks, now dropped!
+Clause 37 is 1000BASE-X negotiation, which is different from SGMII - a
+point which is even made in your PDF above in section 1.1.
 
+You will need both ends to be operating in SGMII mode for 10M and 100M
+to work. If one end is in 1000BASE-X mdoe and the other is in SGMII,
+it can appear to work, but it won't be working correctly.
+
+Please get the terminology correct here when talking about SGMII or
+1000BASE-X.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
