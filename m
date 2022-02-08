@@ -2,108 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 251BCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C3CDC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240197AbiBHL20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:28:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57408 "EHLO
+        id S1358290AbiBHL3G (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:29:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243943AbiBHKfr (ORCPT
+        with ESMTP id S239869AbiBHKpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:35:47 -0500
-Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C86DC03FEC0;
-        Tue,  8 Feb 2022 02:35:46 -0800 (PST)
-Received: by mail-vk1-f175.google.com with SMTP id l14so9464848vko.12;
-        Tue, 08 Feb 2022 02:35:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mQCnieYTAMPEclL2frn3xkAlJaOGccBzHxec4vAosRY=;
-        b=A+5F1kJtFxegZxyohp6kSvs3FBQZM17ZNZXUH9/cYOxfN2OxcgNLeAzb2EHodp7r8h
-         GK9IA1v75pW0OPXksB21vxXcU84PmnRqnyEsa/winrFyMXOvae9u8L7CSeVRgxybBbqi
-         gb3MIpEeThTSg9e3U72QfhUaZ9+vGrm2rjSrubli5nb+dzTl+htrCA6khYGTubH7Vosn
-         Xv4+TfwxO+Lccb0fXYWJEfvQ300PDEQSlb3Ylu0mwtqEDJV+jRtFHw4a7SJGitweLuJb
-         8PeJYFpuJ7AvUYk5upGoBt6bSe7xWlify73Nm1XEvPd8GrEI4lJIGc1ChdPl1rAYNyk3
-         KRwA==
-X-Gm-Message-State: AOAM531iDYlIPtMIHN0LI9QW6UiOskhduRCc4isQK/gDrEvvqBJ13pv5
-        +C32lHszJ/iOdPv2ExCdMa6LoFJG0KT7bg==
-X-Google-Smtp-Source: ABdhPJzM1P4dsJuDJGkXrZGp+EirQ4+TATuxUtO0HtCjV6AlDqM2LBEIKoC7N3DAXTdx8g036BUkRA==
-X-Received: by 2002:a05:6122:50d:: with SMTP id x13mr1494642vko.40.1644316545569;
-        Tue, 08 Feb 2022 02:35:45 -0800 (PST)
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com. [209.85.217.51])
-        by smtp.gmail.com with ESMTPSA id j8sm2762854vki.48.2022.02.08.02.35.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 02:35:45 -0800 (PST)
-Received: by mail-vs1-f51.google.com with SMTP id m24so2830682vsp.7;
-        Tue, 08 Feb 2022 02:35:45 -0800 (PST)
-X-Received: by 2002:a67:c198:: with SMTP id h24mr1221464vsj.5.1644316545025;
- Tue, 08 Feb 2022 02:35:45 -0800 (PST)
+        Tue, 8 Feb 2022 05:45:12 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8EFC03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:45:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644317111; x=1675853111;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=mN9K51vTDl0W52W7ywGb05QpC05SBH0LiTQxmYECtEA=;
+  b=nvVQpxODBIPorvhWQVGC1QDjJygFK5Qocn3bYPvSctMPdTtUwI53Jh1O
+   rUzzddEhjfFrH7hSbhsC93sSyCCk6HpJrIB2VnoMVxX01x7YEhX9fTxVN
+   n41Bcf7EfvWmcmusTr4spi5zispno4CTQC6b/Ud9leOdAxiT+6Z57eJ/h
+   NMpQrKearOlGMGBhFw6qs/Wtu++y5YF+extc/FG/oYr/Il2jFpGbOwELm
+   1c1HjbctWDEkTPLXmdl1wwxkNv0a3dBBP98S+4jtbl14gDw+nzeWRmaSQ
+   2v9X5CbpNguRJ65+dJlK8J8TN/JjxOc7ouvziBu9F8P+etcTIvbWUTyDM
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="228890724"
+X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
+   d="scan'208";a="228890724"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 02:45:10 -0800
+X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
+   d="scan'208";a="700804108"
+Received: from lucas-s2600cw.jf.intel.com ([10.165.21.202])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 02:45:09 -0800
+From:   Lucas De Marchi <lucas.demarchi@intel.com>
+To:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Cc:     John Harrison <John.C.Harrison@Intel.com>,
+        Matthew Brost <matthew.brost@intel.com>,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 01/18] iosys-map: Add offset to iosys_map_memcpy_to()
+Date:   Tue,  8 Feb 2022 02:45:07 -0800
+Message-Id: <20220208104524.2516209-2-lucas.demarchi@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220208104524.2516209-1-lucas.demarchi@intel.com>
+References: <20220208104524.2516209-1-lucas.demarchi@intel.com>
 MIME-Version: 1.0
-References: <20220204161806.3126321-1-jjhiblot@traphandler.com>
- <20220204161806.3126321-2-jjhiblot@traphandler.com> <CAMuHMdUsWSXqQ6oOP8c0XBJpAoMUg74kTJN1rU8uiq7UXRiKkw@mail.gmail.com>
- <89c0a032-3124-fc56-607c-5aeaac73fdc4@traphandler.com>
-In-Reply-To: <89c0a032-3124-fc56-607c-5aeaac73fdc4@traphandler.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 8 Feb 2022 11:35:33 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVvrs-p4Tz2m7R8g7gXJRetTGKJNaQPEO_DYKDzu5u64A@mail.gmail.com>
-Message-ID: <CAMuHMdVvrs-p4Tz2m7R8g7gXJRetTGKJNaQPEO_DYKDzu5u64A@mail.gmail.com>
-Subject: Re: [PATCH 1/6] clk: renesas: r9a06g032: Enable the watchdog reset sources
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean-Jacques,
+In certain situations it's useful to be able to write to an
+offset of the mapping. Add a dst_offset to iosys_map_memcpy_to().
 
-On Tue, Feb 8, 2022 at 11:25 AM Jean-Jacques Hiblot
-<jjhiblot@traphandler.com> wrote:
-> On 07/02/2022 16:34, Geert Uytterhoeven wrote:
-> > On Fri, Feb 4, 2022 at 5:18 PM Jean-Jacques Hiblot
-> > <jjhiblot@traphandler.com> wrote:
-> >> The watchdog reset sources are not enabled by default.
-> >> Enabling them here to make sure that the system resets when the watchdog
-> >> timers expire.
-> >>
-> >> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-> > Thanks for your patch!
-> >
-> > R-Car Gen3 and RZ/G2 SoCs have a similar mechanism.
-> > On these SoCs, the boot loader takes care of the configuration, as this
-> > is a system policy that goes beyond the Linux realm.
-> > Perhaps the RZ/N1 boot loader can do the same?
-> >
-> > Gr{oetje,eeting}s,
->
-> Thanks for you reviews and comments.
->
-> I'm not conformable with the idea that the safety induced by the
-> watchdog is removed because the bootloader didn't set the register.
+Cc: Sumit Semwal <sumit.semwal@linaro.org>
+Cc: Christian König <christian.koenig@amd.com>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+---
+ drivers/gpu/drm/drm_cache.c     |  2 +-
+ drivers/gpu/drm/drm_fb_helper.c |  2 +-
+ include/linux/iosys-map.h       | 17 +++++++++--------
+ 3 files changed, 11 insertions(+), 10 deletions(-)
 
-What if the CM33 is the master, and the CM33 just wants to receive an
-interrupt when one of the CA7 watchdog timers times out?
+diff --git a/drivers/gpu/drm/drm_cache.c b/drivers/gpu/drm/drm_cache.c
+index 66597e411764..c3e6e615bf09 100644
+--- a/drivers/gpu/drm/drm_cache.c
++++ b/drivers/gpu/drm/drm_cache.c
+@@ -218,7 +218,7 @@ static void memcpy_fallback(struct iosys_map *dst,
+ 	if (!dst->is_iomem && !src->is_iomem) {
+ 		memcpy(dst->vaddr, src->vaddr, len);
+ 	} else if (!src->is_iomem) {
+-		iosys_map_memcpy_to(dst, src->vaddr, len);
++		iosys_map_memcpy_to(dst, 0, src->vaddr, len);
+ 	} else if (!dst->is_iomem) {
+ 		memcpy_fromio(dst->vaddr, src->vaddr_iomem, len);
+ 	} else {
+diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
+index 238f815cb2a0..bf5cc9a42e5a 100644
+--- a/drivers/gpu/drm/drm_fb_helper.c
++++ b/drivers/gpu/drm/drm_fb_helper.c
+@@ -385,7 +385,7 @@ static void drm_fb_helper_damage_blit_real(struct drm_fb_helper *fb_helper,
+ 	iosys_map_incr(dst, offset); /* go to first pixel within clip rect */
+ 
+ 	for (y = clip->y1; y < clip->y2; y++) {
+-		iosys_map_memcpy_to(dst, src, len);
++		iosys_map_memcpy_to(dst, 0, src, len);
+ 		iosys_map_incr(dst, fb->pitches[0]);
+ 		src += fb->pitches[0];
+ 	}
+diff --git a/include/linux/iosys-map.h b/include/linux/iosys-map.h
+index f4186f91caa6..edd730b1e899 100644
+--- a/include/linux/iosys-map.h
++++ b/include/linux/iosys-map.h
+@@ -220,22 +220,23 @@ static inline void iosys_map_clear(struct iosys_map *map)
+ }
+ 
+ /**
+- * iosys_map_memcpy_to - Memcpy into iosys mapping
++ * iosys_map_memcpy_to - Memcpy into offset of iosys_map
+  * @dst:	The iosys_map structure
++ * @dst_offset:	The offset from which to copy
+  * @src:	The source buffer
+  * @len:	The number of byte in src
+  *
+- * Copies data into a iosys mapping. The source buffer is in system
+- * memory. Depending on the buffer's location, the helper picks the correct
+- * method of accessing the memory.
++ * Copies data into a iosys_map with an offset. The source buffer is in
++ * system memory. Depending on the buffer's location, the helper picks the
++ * correct method of accessing the memory.
+  */
+-static inline void iosys_map_memcpy_to(struct iosys_map *dst, const void *src,
+-				       size_t len)
++static inline void iosys_map_memcpy_to(struct iosys_map *dst, size_t dst_offset,
++				       const void *src, size_t len)
+ {
+ 	if (dst->is_iomem)
+-		memcpy_toio(dst->vaddr_iomem, src, len);
++		memcpy_toio(dst->vaddr_iomem + dst_offset, src, len);
+ 	else
+-		memcpy(dst->vaddr, src, len);
++		memcpy(dst->vaddr + dst_offset, src, len);
+ }
+ 
+ /**
+-- 
+2.35.1
 
-> I'd rather that the kernel is able to enable the watchdog reset source.
-> If it is acceptable, we could use a new DTS entry to force the policy.
-
-DT describes hardware. not software policy.
-Although I agree e.g. the watchdog timeout value is software policy.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
