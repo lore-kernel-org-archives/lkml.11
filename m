@@ -2,100 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0845C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12319C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351396AbiBHInU (ORCPT
+        id S1351430AbiBHIno (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:43:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39516 "EHLO
+        Tue, 8 Feb 2022 03:43:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351081AbiBHIms (ORCPT
+        with ESMTP id S1351856AbiBHInW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:42:48 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22F5C0401F6
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:42:46 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id g8so7815051pfq.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:42:46 -0800 (PST)
+        Tue, 8 Feb 2022 03:43:22 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0C1C03FED4
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:43:08 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id p63so20166753iod.11
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:43:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RKltf19DtHiRc15a3iaZ/NnDb+6ppKujiVxWZQto3YU=;
-        b=O2UDOpBeBJRbX3+DaQG7mIxxaEO05L1HTD48WquGaDuYWsSttm9JTTNF7a+lc8KdMj
-         tJRuDchff9o48V7UXFNQVgoxZ/rNJPLVl8KQxtPWFS7zVK0sOis64KFrKb3J8stVpjkN
-         Pk7y7Sj69FXDSqgG4hJ/qiPJrJRpnz6L6YEME=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Co3BUFT9beNFmBZeCDmBd4UzULJVNB7vW9mGtuUcPnM=;
+        b=ohrEubPZBSY43eIQ5NQCK0B4O7CFbJ/HpKhbez278dzMobVWnfF2oOF3sOrc74B4QQ
+         U41143EltG56aXzdjjzZm/GU4cXZGtH83mvjb2qCX+F563MQ3fpmYtycdSu5kzshBVG8
+         DqWBAyQynUJHXWlGwhPQOK9if98mUmdwJ8Ir1N0avBzJ6forpYNFs3XqdV58s5cnDsMU
+         W4bwCOSsmJHJTrTl6UvTk9gc5iIIE+0JWF2n38A2tLyC+ff1QK0lTH4UBYtz+UVESmVG
+         gAIT3JizZEMLq6e110ENj51HMCyTWq0cX5c1QvY5BLrH4EK1/TJW9WkstrnYoO1NG7hG
+         geNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RKltf19DtHiRc15a3iaZ/NnDb+6ppKujiVxWZQto3YU=;
-        b=aEtUVs54xvOMR9LReIHQng1490nssXpSKyKEaBE31Siehl0kpe8aa7SA1TdHKbYxsG
-         I4oth3lOB55vKWzw1MCzRvB23RxXgzEwjEyJWJerUu1I2isttxRWRDrkylBa6lryh0eV
-         pUAneUeGvc/azfGgXqSpg1tKAFd7Z+EMzh556Ev+81luEGytgpEDgfHMnlZ83B1PKDTC
-         BZdjQlhS2/0tIsT7/SqFPjsOpo9OGJ6b5Me/c66mIhuf+3V1Ztj33+s1XP1UNZAwXhMa
-         FXSLvqtMm1kNP3WFx635sTys2IuEijqtu8wQxqQ8+xyhrvq9X3lqZ+H26qgb/ercLEO3
-         MAKA==
-X-Gm-Message-State: AOAM530++vD4wehyt3oWeIurn65cUINYOXicpEDzJWnLKpCDppzMdYAi
-        /EmQnoEXoRaggX0pQUHudCyYhw==
-X-Google-Smtp-Source: ABdhPJxJuhyNGgn/8M1tkfbfnImy5ANlW87FCMT9C5ygmikEd8cwYFifi2WHJ+zYaY+iMKeTEIBo9Q==
-X-Received: by 2002:a63:2ad6:: with SMTP id q205mr2651010pgq.46.1644309766435;
-        Tue, 08 Feb 2022 00:42:46 -0800 (PST)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:7d9a:166e:9d34:ff4f])
-        by smtp.gmail.com with ESMTPSA id m14sm15362390pfc.170.2022.02.08.00.42.43
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Co3BUFT9beNFmBZeCDmBd4UzULJVNB7vW9mGtuUcPnM=;
+        b=WAFfTvfVoz5fRDdYyEpUyWRQZyFEu3rb1M4xLoO5nK8DkFbt6000D3tGWNV1PXxWb+
+         aYFR4jprb9FjldkxKj4SQ/enBN8kjRFIJAH3nFUw3NXf1bFrvUT8OYPqh1T0lvDBCyNw
+         +O/9yZI64GGICqgoo24fPTrdo0NX9qt65+/3KghfZldXLvn8QuH+YIDMvXKnf+J/vtAN
+         iniYAbn2pJRO5WSfSllHpO4DRMNman1PwtFeNHpicN4Iuzodx+aB4xLQzTZYsdsNXiS2
+         J56zXkEe4oHK/kn9maPzoA5kD5l+0eeVqlYzqCfSKir9hI5Ej5FiVBONOnCVKhnkWaKM
+         1Lyg==
+X-Gm-Message-State: AOAM530/oIJ8RalVxl7L3Ca7LOuF3LoUG3XbQZ+x5cxeO24uFKFJT7lC
+        iRnpEEjnbeqj6aBo0G11lOkjrw==
+X-Google-Smtp-Source: ABdhPJzBcDi7EsMql8HPyIUlcRBl/OsFwSyoeS5mkLvsu+udWvl2GtuObFdyWK2J++yBEFuvf+uvKg==
+X-Received: by 2002:a05:6638:1501:: with SMTP id b1mr1620304jat.251.1644309787998;
+        Tue, 08 Feb 2022 00:43:07 -0800 (PST)
+Received: from google.com ([2620:15c:183:200:5f31:19c3:21f5:7300])
+        by smtp.gmail.com with ESMTPSA id x7sm3011504ilp.88.2022.02.08.00.43.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 00:42:46 -0800 (PST)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org
-Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Sean Paul <sean@poorly.run>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Simon Ser <contact@emersion.fr>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>
-Subject: [PATCH v8 3/3] arm64: dts: mt8183: Add panel rotation
-Date:   Tue,  8 Feb 2022 16:42:34 +0800
-Message-Id: <20220208084234.1684930-3-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208084234.1684930-1-hsinyi@chromium.org>
-References: <20220208084234.1684930-1-hsinyi@chromium.org>
+        Tue, 08 Feb 2022 00:43:07 -0800 (PST)
+Date:   Tue, 8 Feb 2022 01:43:03 -0700
+From:   Yu Zhao <yuzhao@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@kernel.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        page-reclaim@google.com, x86@kernel.org,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>
+Subject: Re: [PATCH v7 10/12] mm: multigenerational LRU: thrashing prevention
+Message-ID: <YgItF/LcaTC6mpLN@google.com>
+References: <20220208081902.3550911-1-yuzhao@google.com>
+ <20220208081902.3550911-11-yuzhao@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208081902.3550911-11-yuzhao@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-krane, kakadu, and kodama boards have a default panel rotation.
+On Tue, Feb 08, 2022 at 01:19:00AM -0700, Yu Zhao wrote:
+> Add /sys/kernel/mm/lru_gen/min_ttl_ms for thrashing prevention, as
+> requested by many desktop users [1].
+> 
+> When set to value N, it prevents the working set of N milliseconds
+> from getting evicted. The OOM killer is triggered if this working set
+> can't be kept in memory. Based on the average human detectable lag
+> (~100ms), N=1000 usually eliminates intolerable lags due to thrashing.
+> Larger values like N=3000 make lags less noticeable at the risk of
+> premature OOM kills.
 
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
----
- arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+Refactored min_ttl into a separate patch as requested here:
+https://lore.kernel.org/linux-mm/YdxSUuDc3OC4pe+f@dhcp22.suse.cz/
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-index b42d81d26d7211..d29d4378170971 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-@@ -276,6 +276,7 @@ panel: panel@0 {
- 		avee-supply = <&ppvarp_lcd>;
- 		pp1800-supply = <&pp1800_lcd>;
- 		backlight = <&backlight_lcd0>;
-+		rotation = <270>;
- 		port {
- 			panel_in: endpoint {
- 				remote-endpoint = <&dsi_out>;
--- 
-2.35.0.263.gb82422642f-goog
-
+<snipped>
