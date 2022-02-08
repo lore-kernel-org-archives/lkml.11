@@ -2,73 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:18:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344193AbiBHNSK (ORCPT
+        id S1347619AbiBHNSO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:18:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58434 "EHLO
+        Tue, 8 Feb 2022 08:18:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345748AbiBHMjh (ORCPT
+        with ESMTP id S1351538AbiBHMUS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:39:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7942CC03FEC0;
-        Tue,  8 Feb 2022 04:39:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3EF67B81886;
-        Tue,  8 Feb 2022 12:39:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A81FC004E1;
-        Tue,  8 Feb 2022 12:39:33 +0000 (UTC)
-Message-ID: <37c856c6-caa3-b908-9cda-25a50a50ef03@xs4all.nl>
-Date:   Tue, 8 Feb 2022 13:39:32 +0100
+        Tue, 8 Feb 2022 07:20:18 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE35C03FEC0;
+        Tue,  8 Feb 2022 04:20:16 -0800 (PST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JtMWN5SFgzbkJT;
+        Tue,  8 Feb 2022 20:19:12 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 20:20:12 +0800
+CC:     "Zengtao (B)" <prime.zeng@hisilicon.com>,
+        "liuqi (BA)" <liuqi115@huawei.com>,
+        Zhangshaokun <zhangshaokun@hisilicon.com>,
+        Linuxarm <linuxarm@huawei.com>,
+        "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
+Subject: Re: [PATCH v3 8/8] iommu/arm-smmu-v3: Make default domain type of
+ HiSilicon PTT device to identity
+To:     John Garry <john.garry@huawei.com>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "helgaas@kernel.org" <helgaas@kernel.org>,
+        "alexander.shishkin@linux.intel.com" 
+        <alexander.shishkin@linux.intel.com>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "mathieu.poirier@linaro.org" <mathieu.poirier@linaro.org>,
+        "suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+        "mike.leach@linaro.org" <mike.leach@linaro.org>,
+        "leo.yan@linaro.org" <leo.yan@linaro.org>,
+        Jonathan Cameron <jonathan.cameron@huawei.com>,
+        "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "acme@kernel.org" <acme@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "coresight@lists.linaro.org" <coresight@lists.linaro.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+References: <20220124131118.17887-1-yangyicong@hisilicon.com>
+ <20220124131118.17887-9-yangyicong@hisilicon.com>
+ <4f6f6e0f-4398-3018-cc35-6aa7ea1305fe@huawei.com>
+ <ae45a637-2c67-4126-3007-6829320d5659@huawei.com>
+ <144329a3-8125-1975-7f23-a247343a679e@huawei.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <d92c9d64-6a89-b7d5-02e3-519ca32f27e9@huawei.com>
+Date:   Tue, 8 Feb 2022 20:20:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] Add check for READ ONLY flag
-Content-Language: en-US
-To:     Dikshita Agarwal <quic_dikshita@quicinc.com>
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        vgarodia@codeaurora.org
-References: <1643957268-6365-1-git-send-email-quic_dikshita@quicinc.com>
-From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
-In-Reply-To: <1643957268-6365-1-git-send-email-quic_dikshita@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <144329a3-8125-1975-7f23-a247343a679e@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2/4/22 07:47, Dikshita Agarwal wrote:
-> Add a check for V4L2_CTRL_FLAG_READ_ONLY to avoid request
-> testing for such controls.
-
-Missing Signed-off-by!
-
-Regards,
-
-	Hans
-
-> ---
->  utils/v4l2-compliance/v4l2-test-buffers.cpp | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+On 2022/2/8 19:56, John Garry wrote:
+> On 08/02/2022 11:21, Yicong Yang wrote:
+>>> This patch should be earlier in the series, before the PTT driver, and the comment on hisi_ptt_check_iommu_mapping() should mention what is going on here.
+>>>
+>> ok I'll reorder the serives and modify the comments of hisi_ptt_check_iommu_mapping() like:
+>>
+>> /*
+>>   * The DMA of PTT trace can only use direct mapping, due to some
+>>   * hardware restriction. Check whether there is an iommu or the
+>>   * policy of the iommu domain is passthrough, otherwise the trace
+>>   * cannot work.
 > 
-> diff --git a/utils/v4l2-compliance/v4l2-test-buffers.cpp b/utils/v4l2-compliance/v4l2-test-buffers.cpp
-> index fa8c37c..b8de7af 100644
-> --- a/utils/v4l2-compliance/v4l2-test-buffers.cpp
-> +++ b/utils/v4l2-compliance/v4l2-test-buffers.cpp
-> @@ -2032,7 +2032,8 @@ int testRequests(struct node *node, bool test_streaming)
->  		if (qctrl.type != V4L2_CTRL_TYPE_INTEGER &&
->  		    qctrl.type != V4L2_CTRL_TYPE_BOOLEAN)
->  			continue;
-> -		if (qctrl.flags & V4L2_CTRL_FLAG_WRITE_ONLY)
-> +		if (qctrl.flags & V4L2_CTRL_FLAG_WRITE_ONLY ||
-> +		    qctrl.flags & V4L2_CTRL_FLAG_READ_ONLY)
->  			continue;
->  		if (is_vivid && V4L2_CTRL_ID2WHICH(qctrl.id) == V4L2_CTRL_CLASS_VIVID)
->  			continue;
+> IOMMU, capitalize acronyms
+> 
+
+ok.
+
+>>   *
+>>   * The PTT device is supposed to behind the arm smmu v3, which
+>>   * should have passthrough the device by a quirk. Otherwise user
+>>   * should manually set the iommu domain type to identity through
+>>   * sysfs.
+> 
+> Sorry, but I don't really understand your meaning here.
+> 
+> I did not think that if we have a default domain then we can change via sysfs to anything else.
+> 
+
+ok I think the last sentence maybe misleading and better drop it.
+
+>>   */
+>>
+>>>> Signed-off-by: Yicong Yang<yangyicong@hisilicon.com>
+>>>> ---
+>>>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
+>>>>    1 file changed, 16 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> index 6dc6d8b6b368..6f67a2b1dd27 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> @@ -2838,6 +2838,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+>>>>        }
+>>>>    }
+>>>>    +#define IS_HISI_PTT_DEVICE(pdev)    ((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
+>>>> +                     (pdev)->device == 0xa12e)
+>>> I assume that not all revisions will require this check, right?
+> 
+> So if you are very confident that the next revision will be fixed then I would add a check for this current broken revision.
+> 
+>>>
+>> For current revisions it's necessary.
+>>
+> 
+> .
