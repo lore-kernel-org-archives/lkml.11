@@ -2,97 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B88AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88161C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:39:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386248AbiBHWhS (ORCPT
+        id S1386543AbiBHWe1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:37:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
+        Tue, 8 Feb 2022 17:34:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388500AbiBHWdC (ORCPT
+        with ESMTP id S1387244AbiBHWLZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 17:33:02 -0500
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06373C01CB14
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:25:12 -0800 (PST)
-Received: from in02.mta.xmission.com ([166.70.13.52]:50410)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nHYv9-00DAOc-CY; Tue, 08 Feb 2022 15:25:11 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:41898 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nHYv7-00CSCi-GT; Tue, 08 Feb 2022 15:25:10 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Waiman Long <longman@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alexey Gladkov <legion@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Jann Horn <jannh@google.com>, linux-kernel@vger.kernel.org
-References: <20220208163912.1084752-1-longman@redhat.com>
-        <YgKziblMKsmHkP4f@zeniv-ca.linux.org.uk>
-        <bd83aca3-059f-92dd-e094-b27f51f9481a@redhat.com>
-        <YgK/fdYWi0wWysci@zeniv-ca.linux.org.uk>
-        <874k59f2ad.fsf@email.froward.int.ebiederm.org>
-        <YgLr2GEXgz/TxdUA@zeniv-ca.linux.org.uk>
-Date:   Tue, 08 Feb 2022 16:25:02 -0600
-In-Reply-To: <YgLr2GEXgz/TxdUA@zeniv-ca.linux.org.uk> (Al Viro's message of
-        "Tue, 8 Feb 2022 22:16:56 +0000")
-Message-ID: <87czjxdmip.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 8 Feb 2022 17:11:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E54C0612B8;
+        Tue,  8 Feb 2022 14:11:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5831B81AFA;
+        Tue,  8 Feb 2022 22:11:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33ECEC004E1;
+        Tue,  8 Feb 2022 22:11:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644358281;
+        bh=PjxTNsP9bD1JDK5Yw86+t2N+2x7ro0uvm/lVgqLSSjM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=B2rqGFysMw+kjL94kZTf4z4W3FIWk/nbVwdfz/gqNF6+x70aBH0zUsLVj0OZx4Rqx
+         +2q7NId8Er5wnZnUcKWJi8YgXZSu1lrQq4adfazaT9fJjwRYdKn1XVVXX1xZB/2hu8
+         GVbciMkPCQCVG2oZ5GpcrQJb8MKpZgtLNxJbv1y4jsvzeV0c4BatMtXsQCz0RF+Y9Y
+         N4CSayv2xo+/CsYqCnhOze7sbjKtWpFtYlkZmGYw0iErEVfRiBvqyzRqMGbNIop6WP
+         iTfGISf1g2GRrdztJlHya/iLccs+Z1s5wK2steN8G7VgiZWdmGn29ZiDq5kC6zI+29
+         8IDhMyjcfh2/g==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     lkml <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: Update Jiri's email address
+Date:   Tue,  8 Feb 2022 23:11:17 +0100
+Message-Id: <20220208221117.710405-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nHYv7-00CSCi-GT;;;mid=<87czjxdmip.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX182oeJyc/2QUC0MDFcVTea6z+qieDuOmFk=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH] copy_process(): Move fd_install() out of
- sighand->siglock critical section
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Al Viro <viro@zeniv.linux.org.uk> writes:
+Using my kernel.org email.
 
-> On Tue, Feb 08, 2022 at 03:59:06PM -0600, Eric W. Biederman wrote:
->
->> The fd is being installed in the fdtable of the parent process,
->> and the siglock and tasklist_lock are held to protect the child.
->> 
->> 
->> Further fd_install is exposing the fd to userspace where it can be used
->> by the process_madvise and the process_mrelease system calls, from
->> anything that shares the fdtable of the parent thread.  Which means it
->> needs to be guaranteed that kernel_clone will call wake_up_process
->> before it is safe to call fd_install.
->
-> You mean "no calling fd_install() until after we are past the last possible
-> failure exit, by which point we know that wake_up_process() will eventually
-> be called", hopefully?  If so (as I assumed all along), anything downstream
-> of
->         if (fatal_signal_pending(current)) {
-> 		retval = -EINTR;
-> 		goto bad_fork_cancel_cgroup;
-> 	}
->
-> should be fine...
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Except for the problems of calling fd_install under siglock, and
-tasklist_lock, which protect nothing and cause lockdep splats.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ea3e6c914384..d4248b02515b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15123,7 +15123,7 @@ M:	Ingo Molnar <mingo@redhat.com>
+ M:	Arnaldo Carvalho de Melo <acme@kernel.org>
+ R:	Mark Rutland <mark.rutland@arm.com>
+ R:	Alexander Shishkin <alexander.shishkin@linux.intel.com>
+-R:	Jiri Olsa <jolsa@redhat.com>
++R:	Jiri Olsa <jolsa@kernel.org>
+ R:	Namhyung Kim <namhyung@kernel.org>
+ L:	linux-perf-users@vger.kernel.org
+ L:	linux-kernel@vger.kernel.org
+-- 
+2.34.1
 
-There may also be assumptions on the task actually being fully setup,
-if not today then in a future use pidfd.  So I am not particularly
-comfortable with fd_install coming before we drop tasklist_lock.
-
-I was pointing out that to resolve the locking issue we fundamentally
-can not move the fd_install earlier, to resolve the locking issues.
-
-Eric
