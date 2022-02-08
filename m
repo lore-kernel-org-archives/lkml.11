@@ -2,266 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55363C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:13:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:13:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353187AbiBHJNG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 04:13:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56454 "EHLO
+        id S231569AbiBHJN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 04:13:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240331AbiBHJNB (ORCPT
+        with ESMTP id S1353220AbiBHJNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:13:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F75CC03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:12:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644311576;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=F+Wu/sGGNFwRVA6o9CxafTUWjc6Pw1cGgpDABPbC3kU=;
-        b=gH5poQNAp+psXERXpBdlDDmVN7Wi5FwHHIVbsZJRTY/eKGQVeEI4KMfF5Q9IsfuGexHBsK
-        J0gzp7tYhAtAf+XuZhMqjZkvvOLuFS+jCLl9/JI4xhbcPImz8xEf8gvg0wdHLGUp5BO/2c
-        oFoxtvJhYAM/sneCGR5/uhPt3ooK+OY=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-37-avGnWjRdOimiTs_D6DsVVg-1; Tue, 08 Feb 2022 04:12:54 -0500
-X-MC-Unique: avGnWjRdOimiTs_D6DsVVg-1
-Received: by mail-ed1-f70.google.com with SMTP id f9-20020a056402354900b0040fb9c35a02so228204edd.18
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:12:54 -0800 (PST)
+        Tue, 8 Feb 2022 04:13:23 -0500
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316F0C03FEC1
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:13:23 -0800 (PST)
+Received: by mail-il1-f200.google.com with SMTP id i7-20020a056e020ec700b002be118c9b21so4404652ilk.20
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:13:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=F+Wu/sGGNFwRVA6o9CxafTUWjc6Pw1cGgpDABPbC3kU=;
-        b=1xQ87bFMAVKnBGrBGQSohdX2sQwjUuLhpwwkSZE9962yg4Ax0nORYKwKV/98tyXOIz
-         LM8u2WZWDzwp0mPLdKSghYRoXzJiHhh9VEgg4oQHCnQUnORIrEynmhw9MFhRhjLBf5XI
-         kpnsSLo7IYP72MbpGD++KzdnuK1oLDq9wyvssnP2p5C5B1CxMU5qm+0CuFRZekoX9Dq4
-         cu1gTcVLdJNh0L5C1EVGP6cF0QXu2mBAyrr5vyYpAbygan2HXneYGxdivwbxLMvWJcd4
-         vMKPiJoCQsRMGR7Y6IEJ8mhVZA49n8vK8jsbVep1O0IKdElht888duHXydY8yeMOHJsy
-         gvTg==
-X-Gm-Message-State: AOAM5301k6oUccnGtOLRoeEQ0CzhhUgIrJbBMqY6wm8fyw1j2CWDRXYp
-        hNZBcb9i4QOpf+m4LPgfJV3x6t44bFSFXJGTPRzug3M4gbb5cVOrzruPy8Ydc3AB0npIgWnzwuX
-        +N3wErqAncAHRsmBxzlh4OClI
-X-Received: by 2002:a17:906:4fc1:: with SMTP id i1mr2822062ejw.248.1644311573609;
-        Tue, 08 Feb 2022 01:12:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwYBF44TL/lfB6QHqHH1Nak9YF+ZhC2FLFpMGaXqPMTlTXjPgdPNfD12GOzYHV1JeeVLqiaiA==
-X-Received: by 2002:a17:906:4fc1:: with SMTP id i1mr2822039ejw.248.1644311573396;
-        Tue, 08 Feb 2022 01:12:53 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id l7sm5760193edb.53.2022.02.08.01.12.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 01:12:52 -0800 (PST)
-Date:   Tue, 8 Feb 2022 10:12:51 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jiri Olsa <olsajiri@gmail.com>
-Subject: Re: [PATCH 6/8] libbpf: Add bpf_program__attach_kprobe_opts for
- multi kprobes
-Message-ID: <YgI0E1D6v0RZa5/Z@krava>
-References: <20220202135333.190761-1-jolsa@kernel.org>
- <20220202135333.190761-7-jolsa@kernel.org>
- <CAEf4BzZPSYzyoxrPC4uNHedhTr_75b2Qa8h3OC7GCK-n6mYrdg@mail.gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=fmKzwHE9y2F6412F2hvJKw1swsIkm5oQWcI9LLxHYNM=;
+        b=r7ABGE6jAEZTQAwgq9GUZZs+xzhjQr7JSvcg+W7gpsniLock61lASHpI5qNO0/Q7m8
+         wd5GBisvFvOZN1+oUR3rEFXG5LbYah7UBtwCbdCLadafqWXf9P1Z7dVuKAS/FWjhvRKd
+         Fmk5hzHiSN7ANOxqXpMGqaauowmj19/oXPNdFlJTEbSTO1QF838diw0E31ilMc2stjLX
+         QUzl//habK+fbQWd37yzHIorE4MGYgSqCKGtcFXMyyICdaG8yD7o4k6Wu70LTUcKLIaX
+         eXw1vUlEPoHAOGmconR6vhqQKlluAMO0vdJQLFBavlu6DBXmXlWbwz9qlvYKM8rpSoml
+         hurQ==
+X-Gm-Message-State: AOAM533CehR1vNDROk73LquU/h9U1EwWoZkMq0HqAvppHTo8JLlycvOS
+        TLc9d2nvWgkhh0tIs1sNlPJFNnumdgWPXfcXIjdoP92azajW
+X-Google-Smtp-Source: ABdhPJwJFN2ywyl3Ztm6XamwcrU4BWSBBwyGIGQ0RFICRB4abjdE45+rX21ZCaG4FTlpyAbnRjEg2ygdzgf8G3U9mETEPNi4BdlB
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZPSYzyoxrPC4uNHedhTr_75b2Qa8h3OC7GCK-n6mYrdg@mail.gmail.com>
+X-Received: by 2002:a05:6602:1347:: with SMTP id i7mr1627681iov.141.1644311602582;
+ Tue, 08 Feb 2022 01:13:22 -0800 (PST)
+Date:   Tue, 08 Feb 2022 01:13:22 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f8dc8805d77e202f@google.com>
+Subject: [syzbot] KCSAN: data-race in dev_get_tstats64 / wg_packet_rx_poll (3)
+From:   syzbot <syzbot+5d8276c437d9827c1fbf@syzkaller.appspotmail.com>
+To:     Jason@zx2c4.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, wireguard@lists.zx2c4.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 10:59:29AM -0800, Andrii Nakryiko wrote:
+Hello,
 
-SNIP
+syzbot found the following issue on:
 
-> > +struct fprobe_resolve {
-> > +       const char *name;
-> > +       __u64 *addrs;
-> > +       __u32 alloc;
-> > +       __u32 cnt;
-> > +};
-> > +
-> > +static bool glob_matches(const char *glob, const char *s)
-> 
-> we've since added more generic glob_match() implementation (see
-> test_progs.c), let's copy/paste that one (it's actually shorter and
-> doesn't do hacky input args modification). Let's maybe also add '?'
-> handling (it's trivial). Both original code in perf and the one in
-> test_progs.c are GPL-2.0-only, so let's also get acks from original
-> authors.
+HEAD commit:    79e06c4c4950 Merge tag 'for-linus' of git://git.kernel.org..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1642e837b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d443ab22c440893a
+dashboard link: https://syzkaller.appspot.com/bug?extid=5d8276c437d9827c1fbf
+compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
 
-ok, will check
+Unfortunately, I don't have any reproducer for this issue yet.
 
-> 
-> > +{
-> > +       int n = strlen(glob);
-> > +
-> > +       if (n == 1 && glob[0] == '*')
-> > +               return true;
-> > +
-> > +       if (glob[0] == '*' && glob[n - 1] == '*') {
-> > +               const char *subs;
-> > +               /* substring match */
-> > +
-> > +               /* this is hacky, but we don't want to allocate
-> > +                * for no good reason
-> > +                */
-> > +               ((char *)glob)[n - 1] = '\0';
-> > +               subs = strstr(s, glob + 1);
-> > +               ((char *)glob)[n - 1] = '*';
-> > +
-> > +               return subs != NULL;
-> > +       } else if (glob[0] == '*') {
-> > +               size_t nn = strlen(s);
-> > +               /* suffix match */
-> > +
-> > +               /* too short for a given suffix */
-> > +               if (nn < n - 1)
-> > +                       return false;
-> > +               return strcmp(s + nn - (n - 1), glob + 1) == 0;
-> > +       } else if (glob[n - 1] == '*') {
-> > +               /* prefix match */
-> > +               return strncmp(s, glob, n - 1) == 0;
-> > +       } else {
-> > +               /* exact match */
-> > +               return strcmp(glob, s) == 0;
-> > +       }
-> > +}
-> > +
-> > +static int resolve_fprobe_cb(void *arg, unsigned long long sym_addr,
-> > +                            char sym_type, const char *sym_name)
-> > +{
-> > +       struct fprobe_resolve *res = arg;
-> > +       __u64 *p;
-> > +
-> > +       if (!glob_matches(res->name, sym_name))
-> > +               return 0;
-> > +
-> > +       if (res->cnt == res->alloc) {
-> > +               res->alloc = max((__u32) 16, res->alloc * 3 / 2);
-> > +               p = libbpf_reallocarray(res->addrs, res->alloc, sizeof(__u32));
-> > +               if (!p)
-> > +                       return -ENOMEM;
-> > +               res->addrs = p;
-> > +       }
-> 
-> please use libbpf_ensure_mem() instead
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5d8276c437d9827c1fbf@syzkaller.appspotmail.com
 
-ok
+==================================================================
+BUG: KCSAN: data-race in dev_get_tstats64 / wg_packet_rx_poll
 
-> 
-> 
-> > +       res->addrs[res->cnt++] = sym_addr;
-> > +       return 0;
-> > +}
-> > +
-> > +static struct bpf_link *
-> > +attach_fprobe_opts(const struct bpf_program *prog,
-> > +                  const char *func_name,
-> 
-> func_glob or func_pattern?
+write to 0xffffe8ffffc39fe0 of 8 bytes by interrupt on cpu 0:
+ update_rx_stats drivers/net/wireguard/receive.c:26 [inline]
+ wg_packet_consume_data_done drivers/net/wireguard/receive.c:365 [inline]
+ wg_packet_rx_poll+0xf37/0x11f0 drivers/net/wireguard/receive.c:481
+ __napi_poll+0x65/0x3f0 net/core/dev.c:6365
+ napi_poll net/core/dev.c:6432 [inline]
+ net_rx_action+0x29e/0x650 net/core/dev.c:6519
+ __do_softirq+0x158/0x2de kernel/softirq.c:558
+ do_softirq+0xb1/0xf0 kernel/softirq.c:459
+ __local_bh_enable_ip+0x68/0x70 kernel/softirq.c:383
+ __raw_spin_unlock_bh include/linux/spinlock_api_smp.h:167 [inline]
+ _raw_spin_unlock_bh+0x33/0x40 kernel/locking/spinlock.c:210
+ spin_unlock_bh include/linux/spinlock.h:394 [inline]
+ ptr_ring_consume_bh include/linux/ptr_ring.h:367 [inline]
+ wg_packet_decrypt_worker+0x73c/0x780 drivers/net/wireguard/receive.c:506
+ process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
+ worker_thread+0x616/0xa70 kernel/workqueue.c:2454
+ kthread+0x2c7/0x2e0 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30
 
-ok
+read to 0xffffe8ffffc39fe0 of 8 bytes by task 7601 on cpu 1:
+ dev_fetch_sw_netstats net/core/dev.c:10050 [inline]
+ dev_get_tstats64+0x117/0x1e0 net/core/dev.c:10075
+ dev_get_stats+0x65/0x180 net/core/dev.c:10017
+ rtnl_fill_stats+0x45/0x320 net/core/rtnetlink.c:1203
+ rtnl_fill_ifinfo+0xf16/0x25b0 net/core/rtnetlink.c:1776
+ rtmsg_ifinfo_build_skb+0xa8/0x130 net/core/rtnetlink.c:3833
+ rtmsg_ifinfo_event net/core/rtnetlink.c:3865 [inline]
+ rtmsg_ifinfo+0x58/0xc0 net/core/rtnetlink.c:3874
+ __dev_notify_flags+0x63/0x3b0 net/core/dev.c:8173
+ dev_change_flags+0xa2/0xc0 net/core/dev.c:8215
+ do_setlink+0x820/0x2500 net/core/rtnetlink.c:2729
+ __rtnl_newlink net/core/rtnetlink.c:3412 [inline]
+ rtnl_newlink+0xfad/0x13b0 net/core/rtnetlink.c:3527
+ rtnetlink_rcv_msg+0x745/0x7e0 net/core/rtnetlink.c:5592
+ netlink_rcv_skb+0x14e/0x250 net/netlink/af_netlink.c:2494
+ rtnetlink_rcv+0x18/0x20 net/core/rtnetlink.c:5610
+ netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+ netlink_unicast+0x602/0x6d0 net/netlink/af_netlink.c:1343
+ netlink_sendmsg+0x728/0x850 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ __sys_sendto+0x21e/0x2c0 net/socket.c:2040
+ __do_sys_sendto net/socket.c:2052 [inline]
+ __se_sys_sendto net/socket.c:2048 [inline]
+ __x64_sys_sendto+0x74/0x90 net/socket.c:2048
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-> 
-> > +                  const struct bpf_kprobe_opts *kopts)
-> > +{
-> > +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
-> > +       struct fprobe_resolve res = {
-> > +               .name = func_name,
-> > +       };
-> > +       struct bpf_link *link = NULL;
-> > +       char errmsg[STRERR_BUFSIZE];
-> > +       int err, link_fd, prog_fd;
-> > +       bool retprobe;
-> > +
-> > +       err = libbpf__kallsyms_parse(&res, resolve_fprobe_cb);
-> > +       if (err)
-> > +               goto error;
-> > +       if (!res.cnt) {
-> > +               err = -ENOENT;
-> > +               goto error;
-> > +       }
-> > +
-> > +       retprobe = OPTS_GET(kopts, retprobe, false);
-> > +
-> > +       opts.fprobe.addrs = (__u64) res.addrs;
-> 
-> ptr_to_u64()
+value changed: 0x0000000000000001 -> 0x0000000000000002
 
-ok
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 7601 Comm: syz-executor.0 Not tainted 5.16.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+==================================================================
 
-> 
-> > +       opts.fprobe.cnt = res.cnt;
-> > +       opts.flags = retprobe ? BPF_F_FPROBE_RETURN : 0;
-> > +
-> > +       link = calloc(1, sizeof(*link));
-> > +       if (!link) {
-> > +               err = -ENOMEM;
-> > +               goto error;
-> > +       }
-> > +       link->detach = &bpf_link__detach_fd;
-> > +
-> > +       prog_fd = bpf_program__fd(prog);
-> > +       link_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_FPROBE, &opts);
-> > +       if (link_fd < 0) {
-> > +               err = -errno;
-> > +               pr_warn("prog '%s': failed to attach to %s: %s\n",
-> > +                       prog->name, res.name,
-> > +                       libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-> > +               goto error;
-> > +       }
-> > +       link->fd = link_fd;
-> > +       free(res.addrs);
-> > +       return link;
-> > +
-> > +error:
-> > +       free(link);
-> > +       free(res.addrs);
-> > +       return libbpf_err_ptr(err);
-> > +}
-> > +
-> >  struct bpf_link *
-> >  bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
-> >                                 const char *func_name,
-> > @@ -10047,6 +10166,9 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
-> >         if (!OPTS_VALID(opts, bpf_kprobe_opts))
-> >                 return libbpf_err_ptr(-EINVAL);
-> >
-> > +       if (prog->expected_attach_type == BPF_TRACE_FPROBE)
-> > +               return attach_fprobe_opts(prog, func_name, opts);
-> > +
-> >         retprobe = OPTS_GET(opts, retprobe, false);
-> >         offset = OPTS_GET(opts, offset, 0);
-> >         pe_opts.bpf_cookie = OPTS_GET(opts, bpf_cookie, 0);
-> > @@ -10112,6 +10234,14 @@ struct bpf_link *bpf_program__attach_kprobe(const struct bpf_program *prog,
-> >         return bpf_program__attach_kprobe_opts(prog, func_name, &opts);
-> >  }
-> >
-> > +static int init_kprobe(struct bpf_program *prog, long cookie)
-> > +{
-> > +       /* If we have wildcard, switch to fprobe link. */
-> > +       if (strchr(prog->sec_name, '*'))
-> 
-> ugh... :( maybe let's have a separate SEC("kprobe.multi/<glob>") and
-> same for kretprobe?
 
-I agree new SEC type is more clear ;-) ok
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-thanks,
-jirka
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
