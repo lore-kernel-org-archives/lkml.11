@@ -2,117 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3145FC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E8B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235031AbiBHFd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 00:33:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33720 "EHLO
+        id S231642AbiBHFdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 00:33:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231747AbiBHFOu (ORCPT
+        with ESMTP id S232225AbiBHFUS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 00:14:50 -0500
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 42312C0401E9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 21:14:49 -0800 (PST)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 2185EhAW019039;
-        Tue, 8 Feb 2022 06:14:43 +0100
-Date:   Tue, 8 Feb 2022 06:14:43 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "Paul E . McKenney" <paulmck@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 11/42] tools/nolibc/types: move the FD_* functions to
- macros in types.h
-Message-ID: <20220208051443.GB18521@1wt.eu>
-References: <20220207162354.14293-1-w@1wt.eu>
- <20220207162354.14293-12-w@1wt.eu>
- <083fac943c8c422a9f667f6b0371153c@AcuMS.aculab.com>
+        Tue, 8 Feb 2022 00:20:18 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF811C0401DC;
+        Mon,  7 Feb 2022 21:20:16 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id e6so16916645pfc.7;
+        Mon, 07 Feb 2022 21:20:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=ZMzyOA5LAs9QBtjWwJ8XKKlrb5J3zKHcDX+OTPYW99A=;
+        b=HWXLFjlW7P1qAc0DN5m7D8fICX4t7Y48xTyFDGVKktNAaVKRt8CvAuxqWXwUcYZayv
+         bnnj409Ku+sDmpcfF+1wRuvnG5ra0PsZPCvGXkTjMFiL0GEsjTC3jfda7nKjjKganglP
+         9DhMDx9AlVOyG1k+VlHkuYSzr+ZoEGKpm9/PW8wxjJ6EQgTnqKdnzPBD2wuvz5CZgsS+
+         23v2GB6PrO/PxZHaF3MiU71RUYGxjQJA6bSBmZSXzirDOn0m7diX70DvrRYTf5Jv+5GU
+         2+8TO1BhKQKrI76ZqA0h2c3iTinDKiDBSXoqS7+SEdMIQsHXKCrdHTMUb2noAkz+Bp9X
+         HEpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=ZMzyOA5LAs9QBtjWwJ8XKKlrb5J3zKHcDX+OTPYW99A=;
+        b=ZNlDtqj8vy3EPCnLranL5D7OgSGVaxVsjd3GTlvtajfni6LubsUFcyIRzG3hQPzsMy
+         zFem+8dzKiB0ML60EUNYUPBm0xyzOmSCfnAOz4xDT+umZ6k2o2kasMNjjeoa3vPoYo8b
+         d1raSizeHLMjhzjP1Ex/1MBlfsL6lXDHkiYAeLSubpuRh0SzKRt9bOUn41d9AbyhSIRZ
+         J/shaq1dpsx1+V87dWwEU7eDSzLLJsW61IlUpLHpZRXjYKUdhrJuBKSaYRInYyXUDVHG
+         hg25o8dm8hDSRJsa68z0/+Uj32LbeVTcl3pPkt0REYUpHrKH7+mCswFdog+OztUJuZh+
+         YSdQ==
+X-Gm-Message-State: AOAM532VS+LseOFX09M6O3zwbIHilWddwUuZmZC+zWUh8HmNJ+E8A3vu
+        0ph37UJQs63ela7vIcTZM9A=
+X-Google-Smtp-Source: ABdhPJyeI7iNgPA7uQpNmExmMfX8EIICD67Xr83rhNxp5evM53CXvnHv461Uu7hCBf2BiC+H9iUMCQ==
+X-Received: by 2002:a63:4003:: with SMTP id n3mr1528061pga.279.1644297616263;
+        Mon, 07 Feb 2022 21:20:16 -0800 (PST)
+Received: from [192.168.43.80] (subs32-116-206-28-20.three.co.id. [116.206.28.20])
+        by smtp.gmail.com with ESMTPSA id om18sm1128306pjb.39.2022.02.07.21.20.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 21:20:15 -0800 (PST)
+Message-ID: <168761dc-af22-8093-b308-50d3d1fcdc55@gmail.com>
+Date:   Tue, 8 Feb 2022 12:20:10 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <083fac943c8c422a9f667f6b0371153c@AcuMS.aculab.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: Re: [PATCH 5.15 000/111] 5.15.22-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220207133903.595766086@linuxfoundation.org>
+Content-Language: en-US
+In-Reply-To: <20220207133903.595766086@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
-
-On Mon, Feb 07, 2022 at 05:05:21PM +0000, David Laight wrote:
-> From: Willy Tarreau
-> > Sent: 07 February 2022 16:23
-> > 
-> > FD_SET, FD_CLR, FD_ISSET, FD_ZERO are supposed to be macros and not
-> > functions.
+On 07/02/22 21.04, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.22 release.
+> There are 111 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Are you sure?
-> I'd have thought they could be either.
-> There are certainly systems where they are functions.
 
-I've rechecked and you're right, they can be both. But I now remember
-why I mentioned this, I used to have some early userland code that used
-to redefine these based on #ifndef FD_CLR and that started to fail to
-build depending on the include order (i.e. macro defined first, then
-nolibc being included from another file).
+Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0) and
+powerpc (ps3_defconfig).
 
-> They can be implemented as an array of fd numbers rather than a bitmap.
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-I didn't think about the array of FDs but I see how that can be done,
-indeed!
-
-> > In addition we already have a file dedicated to such macros
-> > and types used by syscalls, it's types.h, so let's move them
-> > there and turn them to macros. FD_CLR() and FD_ISSET() were missing,
-> > so they were added. FD_ZERO() now deals with its own loop so that it
-> > doesn't rely on memset() that sets one byte at a time.
-> > 
-> ....
-> > +#define FD_CLR(fd, set) do {                                            \
-> > +		int __fd = (int)(fd);                                   \
-> > +		fd_set *__set = (fd_set *)(set);                        \
-> 
-> I'm not sure you really want either cast.
-> They are just likely to hide some horrid bugs.
-
-I generally hate casts exactly for the reason you mentioned, but wanted
-to stick as close as possible to the equivalent of the original function.
-However now that there are these local variables the casts are not needed
-anymore at all and I agree we should drop them. I'll do that.
-
-> +		if (__fd >= 0 && __fd < FD_SETSIZE)                     \
-> +			__set->fd32[__fd / 32] &= ~(1U << (__fd & 31)); \
-> +	} while (0)
-> +
-> 
-> Do you need the range check?
-> I don't think glibc has one.
-> Things just break in obscure ways when you use select on big fd.
-
-Sadly, some versions of glibc have enforced such checks "recently".
-I've seen code that used to work fine for 20 years with arbitrary
-fd_set array lengths start to break because the libc was seeing some
-out-of-bounds accesses, to the point that I finally completely stopped
-using select() around 2013, and also stopped using FD_SET/FD_CLR to
-manipulate arbitrary bitmaps and implement my own instead (see the
-__FD_ELT macro in glibc for this).
-
-The select(2) man page says:
-
-  An fd_set is a fixed size buffer.  Executing FD_CLR() or FD_SET() with
-  a value of fd that is negative or is equal to or larger than FD_SETSIZE
-  will result in undefined behavior.  
-
-The main reason for the check here in fact is to avoid annoying compiler
-warnings such as -Warray-bounds and limit side effects if FDs are not
-tested immediately before being passed to FD_SET (we're supposed to be
-dealing with ugly early code where tests are often non-existent). I
-think it's a reasonable compromise. I would also be fine with only
-keeping the test on (fd >= 0) and dropping the one on FD_SETSIZE though.
-
-Paul, I'll send a V2 of that patch once updated.
-
-Thank you!
-Willy
+-- 
+An old man doll... just what I always wanted! - Clara
