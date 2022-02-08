@@ -2,104 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EACE1C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA273C35278
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387787AbiBHW3I (ORCPT
+        id S1386932AbiBHW1h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:29:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
+        Tue, 8 Feb 2022 17:27:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386796AbiBHVM4 (ORCPT
+        with ESMTP id S1386733AbiBHVIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:12:56 -0500
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F812C0612BC
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:12:55 -0800 (PST)
-Received: by mail-ot1-x32b.google.com with SMTP id g15-20020a9d6b0f000000b005a062b0dc12so159217otp.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:12:55 -0800 (PST)
+        Tue, 8 Feb 2022 16:08:53 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150F5C0612BA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:53 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id q7so506724wrc.13
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=LL/sflvxWaUAXAGdJC51C+uyHW63BSfpyz0nzMbF71k=;
-        b=CEBp4Xx8m8+Si17VtgJS4H6OHPFDA0zrEDV8RrC5debX5KP6YuoJZoHfsTZSGIGdn0
-         mCjGsM7KaQmRWwkNEkTxNj6lhcuNYXJ4TRFVZm/w2OjQZqurlvrEd+FsnXaBl2us/wgd
-         tgVrgJ62dJmq+1AVM6QvyPpJtwLWNydDIsL9A=
+        d=ffwll.ch; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Ox4yXC0LP8o2wCPaioNRgnQjoBr7m6vhS+hT+ChhFWw=;
+        b=S5BqVNPSpXHrqviuw3HJUVHCNuXrwfZETQgddkSqec9Q51qTu/X1Dy3DHTTT/LagCc
+         TdfBUwokFJF0o/5jKLoZI4jM9BwZ4q0H1RYvw+h1/Ibn+wlkQIVyJ99QoReMwJFgFFyb
+         hL6uv3nX42Ve284n0fZhP+uQl2c3CEhq0yFcA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=LL/sflvxWaUAXAGdJC51C+uyHW63BSfpyz0nzMbF71k=;
-        b=55sFIhu57v9gL5clM5jJPFIM1ClCFag3qMAmsRrgJ5M8YGGrtJZKzn8mfnILPm4tDK
-         IThCDs7+FuaGmt/MGZtudGCJwQlrnwJ6fw4kvC61toiVFtXH2lT7ZYch30+DUGuFmicM
-         cWbo/I7fSxX50ljRgOt+WbvPaSn9klpI1JENcbW7Zf0tpOKQz544tco45yw8MDXXDPil
-         nn0aSywlx1jMD54MAR2H7zMJU8lG7iOGDkUfVhJf5k0o+6hP36Apq9TLYhxPX1daajsP
-         abiVAc9Hyfq1utTFnmgY93DUccQaQJ4ir0jBGBeTVPnEhfy/6uxTC1J0jw37oXJXx/2p
-         TpNA==
-X-Gm-Message-State: AOAM531TyiSEX+GRNqmrCP1j3tfMTD88THD7sCkQ3kK42tYe8ZIrXeoy
-        zeL9NCx5Ht2veto1xr+f7gDNnfAWjez7CskkQrqJqQ==
-X-Google-Smtp-Source: ABdhPJzCuIPxXVr4pSaHx7DsFzXUIFhOeCbBT/GM9KO4xXxbzYDyI03OS2TzgivV+6Xt/+YIkRe9EP9XpZAU90SSNpQ=
-X-Received: by 2002:a05:6830:1d8f:: with SMTP id y15mr2602969oti.77.1644354774846;
- Tue, 08 Feb 2022 13:12:54 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 8 Feb 2022 13:12:54 -0800
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Ox4yXC0LP8o2wCPaioNRgnQjoBr7m6vhS+hT+ChhFWw=;
+        b=Pn57n67Oh4AKJXzwZI/yApHLI1Tw1cEd49FnqdD99PFc/EhIQMv1adjOaEuWUygQ5E
+         9vixJcaHIdASXl0aqSvLdpnp6da87ZXopRUscMwbkaczlrLQNcrghowSv7WdaZzkhMRc
+         lE2w9jUsgECBXY+2ClNA8TuoEdaSRbtdSF4nhqG3qlE+9UUeYuvxwWbAM3ylGpmistcR
+         CbxfeFctjwo1BIcZL5hr2D8fphRUpeAeMfmg1w26uZSDX0erN93tlisGvZHyW053EMBg
+         K/157KvKq1m1i9JUuJwhIhVLvL04sDHkKh62Hslk3yxzYL8PJYCGMZde96b5fmQnMmj/
+         EbOA==
+X-Gm-Message-State: AOAM530tiNzWmA3KRS3Q1mmMgiVZx1/JQV5Br3gyc06oefpmOyMMQFbH
+        DvHl4zGZt6f4+Qe3G4Rre+hwpQ==
+X-Google-Smtp-Source: ABdhPJz+CmlVndGXlugGb0ahxfiZBUSbHrx3Tg5Zrm6dge27t3XQoa5XtM7kt+nVAKioCX2KEMo9QQ==
+X-Received: by 2002:a5d:4c41:: with SMTP id n1mr4989076wrt.128.1644354531674;
+        Tue, 08 Feb 2022 13:08:51 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 13:08:50 -0800 (PST)
+From:   Daniel Vetter <daniel.vetter@ffwll.ch>
+To:     DRI Development <dri-devel@lists.freedesktop.org>
+Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Claudio Suarez <cssk@net-c.es>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH v2 13/19] fbcon: Consistently protect deferred_takeover with console_lock()
+Date:   Tue,  8 Feb 2022 22:08:18 +0100
+Message-Id: <20220208210824.2238981-14-daniel.vetter@ffwll.ch>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
 MIME-Version: 1.0
-In-Reply-To: <1644334454-16719-4-git-send-email-quic_srivasam@quicinc.com>
-References: <1644334454-16719-1-git-send-email-quic_srivasam@quicinc.com> <1644334454-16719-4-git-send-email-quic_srivasam@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Tue, 8 Feb 2022 13:12:54 -0800
-Message-ID: <CAE-0n50jBeOnkpogPFm+zqTf8bqQs-Bo0Gma658uFE6aA=Edxg@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] arm64: dts: qcom: sc7280: Add wcd9380 pinmux
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        devicetree@vger.kernel.org, dianders@chromium.org,
-        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org
-Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Srinivasa Rao Mandadapu (2022-02-08 07:34:14)
-> Add pinmux to reset wcd codec, conneceted on SC7280 based platforms.
->
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> index 4704a93..6b38fa1 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> @@ -594,6 +594,21 @@
->                  */
->                 bias-pull-up;
->         };
-> +
-> +       wcd938x_reset_active: wcd938x_reset_active {
+This shouldn't be a problem in practice since until we've actually
+taken over the console there's nothing we've registered with the
+console/vt subsystem, so the exit/unbind path that check this can't
+do the wrong thing. But it's confusing, so fix it by moving it a tad
+later.
 
-No underscore in node names.
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Du Cheng <ducheng2@gmail.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Claudio Suarez <cssk@net-c.es>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+---
+ drivers/video/fbdev/core/fbcon.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-> +                       pins = "gpio83";
-> +                       function = "gpio";
-> +                       drive-strength = <16>;
-> +                       output-high;
-> +       };
-> +
-> +       wcd938x_reset_sleep: wcd938x_reset_sleep {
-> +                       pins = "gpio83";
-> +                       function = "gpio";
-> +                       drive-strength = <16>;
-> +                       bias-disable;
-> +                       output-low;
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index cc960bf49991..4f9752ee9189 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -3227,6 +3227,9 @@ static void fbcon_register_existing_fbs(struct work_struct *work)
+ 
+ 	console_lock();
+ 
++	deferred_takeover = false;
++	logo_shown = FBCON_LOGO_DONTSHOW;
++
+ 	for_each_registered_fb(i)
+ 		fbcon_fb_registered(registered_fb[i]);
+ 
+@@ -3244,8 +3247,6 @@ static int fbcon_output_notifier(struct notifier_block *nb,
+ 	pr_info("fbcon: Taking over console\n");
+ 
+ 	dummycon_unregister_output_notifier(&fbcon_output_nb);
+-	deferred_takeover = false;
+-	logo_shown = FBCON_LOGO_DONTSHOW;
+ 
+ 	/* We may get called in atomic context */
+ 	schedule_work(&fbcon_deferred_takeover_work);
+-- 
+2.34.1
 
-Why doesn't the device drive the reset gpio by requesting the gpio and
-asserting and deasserting it? We shouldn't need to use pinctrl settings
-to toggle reset gpios.
