@@ -2,178 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C35C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A44C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378873AbiBHOzW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:55:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
+        id S236686AbiBHOz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 09:55:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378846AbiBHOzQ (ORCPT
+        with ESMTP id S1378716AbiBHOzQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Feb 2022 09:55:16 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225C1C03FEF8;
-        Tue,  8 Feb 2022 06:55:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644332114; x=1675868114;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=Yk6+mIAqQXnUtLkl5ADbRsIGvIy+eYl6I/IwK+2zswc=;
-  b=V1xUOyS2mb9FYEMDvymlQNOsVoEEKbHroiwNoCabeYV7rd1HqkErDrVG
-   A+7Rb8EaKdq6Bxk2Nm1YAmikjJM+yWwoMFmRUwh5ABtGs9whnu8ze5pcA
-   x62gx5bIN8YYmCbjOLM4ZCy+7/wrZpMXavyvU370BcWWaHt6ZCsfOBaPz
-   o=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 06:55:14 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 06:55:13 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 06:55:13 -0800
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 06:55:08 -0800
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Das Srinagesh <gurus@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V5 6/6] arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
-Date:   Tue, 8 Feb 2022 20:22:20 +0530
-Message-ID: <1644331940-18986-7-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com>
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B51C03FEEE
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 06:55:12 -0800 (PST)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id BE7163F33A
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:55:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644332110;
+        bh=s1IMl3bQpWn4BmhYXFrJkGqIg7SbAYtbaNCslVtkn9A=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=HMAz8B7Dwmmca22gRczJKVzfb1knOeIvmBsbxZreOTVJVcaaT3db50py4DW/FlxuD
+         PFFg1TLTIazeQ31Vyj0G1PiCPf597wcdHPLiwr3Ri1ulaZAJ0KpkGRLbhDg9URsP64
+         aOUODZm98XB+vg39V84E3jvyumQvdLY7DgKouH4upi/GKkWA2OOpvqqej3AHGEfxwj
+         9uoLnLGjumotGTq4sTXu8i81kieYfwAjJjT9z7hlhJpPusfRLIMzrJZ6VkK2OvzKq5
+         +GvEPINRZMjxl8QUeurHsMR9ToW4vTThNwh1dxGKZJ+TaIA4cFGyZNo3hEupnBO7oI
+         11fttRKcpHGrQ==
+Received: by mail-ej1-f71.google.com with SMTP id aj9-20020a1709069a4900b006cd205be806so956744ejc.18
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 06:55:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=s1IMl3bQpWn4BmhYXFrJkGqIg7SbAYtbaNCslVtkn9A=;
+        b=SmfSU5yQzJbl/hBhgtkJGK7K+9aoxMSn95QxIUC2sK5fM+N38Fn5HTbK9z40EsK0pd
+         5accPw52yWwOARj6CjdprkOgKO6+i1MwMgnwodL0zltxCtWW0fU547p6houv7u2RZLRe
+         6rL7DLtl8iWryg0uME4qunCnBZnUzEserJBr0qix+4/sOG61bGHFjicu47SBLwi+c5fN
+         dPnJteuLkRdyhJDGWNDKTAFwzAr2rXEIBP+9Ti+29o4rzoi0hboYGJefVWtdlreCaUQm
+         6R3W85aikzJ2ARJm3IWaJUaTxXbNsXfB43tCsue06bzGmfNVcX6EKdZM6h5zvbM/hU3p
+         Nn5A==
+X-Gm-Message-State: AOAM530GrBEBeBAGMRE27RbzvMB9tD5o8NiKwkWSH4R87BqMnFRAqFwd
+        FDSKVSe3SAIp5nBL4jeA46KUXbnhxewHujeHF58IPcUAcZxvHJOnxSPtsDlihgIDgKCH+NSELJo
+        3C8j5/1Pmo2tETMmvT0A4nMpVyISh60Q2ni9i3fXBhg==
+X-Received: by 2002:a17:907:1c01:: with SMTP id nc1mr4166734ejc.659.1644332110288;
+        Tue, 08 Feb 2022 06:55:10 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzBDSawfyjI97i8H3epieO8DgpiikxUatxwAPQp6uSpUnl0g6llplmwOmXOOamh8buC1ms3Yg==
+X-Received: by 2002:a17:907:1c01:: with SMTP id nc1mr4166711ejc.659.1644332110105;
+        Tue, 08 Feb 2022 06:55:10 -0800 (PST)
+Received: from [192.168.0.93] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id o11sm7026147edh.75.2022.02.08.06.55.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 06:55:09 -0800 (PST)
+Message-ID: <bca78043-d552-a7e4-149b-087c6226d8bf@canonical.com>
+Date:   Tue, 8 Feb 2022 15:55:08 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/3] dt-bindings: crypto: Convert Atmel AES to yaml
+Content-Language: en-US
+To:     Tudor.Ambarus@microchip.com, herbert@gondor.apana.org.au
+Cc:     Nicolas.Ferre@microchip.com, Claudiu.Beznea@microchip.com,
+        alexandre.belloni@bootlin.com, linux-crypto@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Kavyasree.Kotagiri@microchip.com, devicetree@vger.kernel.org
+References: <20220208104918.226156-1-tudor.ambarus@microchip.com>
+ <20220208104918.226156-2-tudor.ambarus@microchip.com>
+ <f5563605-7b61-c23e-68ec-6e315efb268d@canonical.com>
+ <d72a96a9-f99c-5204-00d0-00f78ea96772@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <d72a96a9-f99c-5204-00d0-00f78ea96772@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add pm8008_infra and pm8008_regulators support for sc7280 idp.
+On 08/02/2022 15:40, Tudor.Ambarus@microchip.com wrote:
+> On 2/8/22 13:58, Krzysztof Kozlowski wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>
+>> On 08/02/2022 11:49, Tudor Ambarus wrote:
+>>> Convert Atmel AES documentation to yaml format. With the conversion the
+>>> clock and clock-names properties are made mandatory. The driver returns
+>>> -EINVAL if "aes_clk" is not found, reflect that in the bindings and make
+>>> the clock and clock-names properties mandatory. Update the example to
+>>> better describe how one should define the dt node.
+>>>
+>>> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+>>> ---
+>>>  .../crypto/atmel,at91sam9g46-aes.yaml         | 65 +++++++++++++++++++
+>>>  .../bindings/crypto/atmel-crypto.txt          | 20 ------
+>>>  2 files changed, 65 insertions(+), 20 deletions(-)
+>>>  create mode 100644 Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-aes.yaml
+>>>
+>>
+>> I understand that you keep the license GPL-2.0 (not recommended mix)
+>> because of example coming from previous bindings or from DTS (both GPL-2.0)?
+>>
+> 
+> The previous bindings did not have a license specified. We have DTS files with
+> these nodes that are either (GPL-2.0+ OR MIT) or GPL-2.0-or-later. The drivers
+> are GPL-2.0. I thought to follow the drivers. I see the example in [1] uses
+> (GPL-2.0-only OR BSD-2-Clause). I see the crypto bindings that are converted
+> to yaml are either (GPL-2.0-only OR BSD-2-Clause) or GPL-2.0-only. Is there
+> another guideline that I miss?
+> 
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
----
-Changes in V2:
- - As per Stephen's comments, replaced '_' with '-' for node names.
+Yes, there is. Run checkpatch (your question kinds of point to the fact
+that you did not run it...):
+WARNING: DT binding documents should be licensed (GPL-2.0-only OR
+BSD-2-Clause)
 
-Changes in V3:
- - Changed the regulator node names as l1, l2 etc
- - Changed "pm8008-regulators" to "regulators"
- - Changed "qcom,min-dropout-voltage" to "regulator-min-dropout-voltage-microvolt"
 
-Changes in V4:
- - Moved all common stuff to pm8008.dtsi and added board specific configurations here.
+If your new bindings use copied/derivative description or DTS code which
+is licensed as only GPL-2.0, the bindings itself as derivative work
+might need to stay as GPL-2.0 as well. Unless copyright holders agree to
+re-license this as GPL2-OR-BSD. As representing company, your patch
+might be enough to re-license, but maybe other people contributed. I
+don't know.
 
-Changes in V5:
- - Changed the node names as per pm8008.dtsi
- - Moved supply nodes to chip level (mfd node).
- - Removed the regulator-mindropout property.
+I just wanted to be sure that you use GPL-2.0 in purpose, because
+GPL2-OR-BSD cannot be used.
 
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 66 ++++++++++++++++++++++++++++++++
- 1 file changed, 66 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index ecbf2b8..371ad19 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -263,6 +263,62 @@
- 	};
- };
- 
-+&i2c1 {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	status = "okay";
-+
-+	#include "pm8008.dtsi"
-+};
-+
-+&pm8008_infra {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pm8008_active>;
-+};
-+
-+&pm8008_regulators {
-+	vdd_l1_l2-supply = <&vreg_s8b_1p2>;
-+	vdd_l3_l4-supply = <&vreg_s1b_1p8>;
-+	vdd_l5-supply = <&vreg_bob>;
-+	vdd_l6-supply = <&vreg_bob>;
-+	vdd_l7-supply = <&vreg_bob>;
-+};
-+
-+&pm8008_l1 {
-+	regulator-min-microvolt = <950000>;
-+	regulator-max-microvolt = <1300000>;
-+};
-+
-+&pm8008_l2 {
-+	regulator-min-microvolt = <950000>;
-+	regulator-max-microvolt = <1250000>;
-+};
-+
-+&pm8008_l3 {
-+	regulator-min-microvolt = <1650000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l4 {
-+	regulator-min-microvolt = <1504000>;
-+	regulator-max-microvolt = <1600000>;
-+};
-+
-+&pm8008_l5 {
-+	regulator-min-microvolt = <2600000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l6 {
-+	regulator-min-microvolt = <2600000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l7 {
-+	regulator-min-microvolt = <3000000>;
-+	regulator-max-microvolt = <3544000>;
-+};
-+
- &qfprom {
- 	vcc-supply = <&vreg_l1c_1p8>;
- };
-@@ -375,6 +431,16 @@
- 	drive-strength = <2>;
- };
- 
-+&pm8350c_gpios {
-+	pm8008_active: pm8008_active {
-+		pins = "gpio4";
-+		function = "normal";
-+		bias-disable;
-+		output-high;
-+		power-source = <0>;
-+	};
-+};
-+
- &qspi_cs0 {
- 	bias-disable;
- };
--- 
-2.7.4
-
+Best regards,
+Krzysztof
