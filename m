@@ -2,106 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D028C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B97C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385550AbiBHSzh (ORCPT
+        id S1385555AbiBHS41 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:55:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
+        Tue, 8 Feb 2022 13:56:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385532AbiBHSzc (ORCPT
+        with ESMTP id S244274AbiBHS4Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:55:32 -0500
-Received: from mx1.smtp.larsendata.com (mx1.smtp.larsendata.com [91.221.196.215])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFD6C0612C1
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:55:30 -0800 (PST)
-Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
-        by mx1.smtp.larsendata.com (Halon) with ESMTPS
-        id d4e32d3c-8910-11ec-b20b-0050568c148b;
-        Tue, 08 Feb 2022 18:56:32 +0000 (UTC)
-Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sam@ravnborg.org)
-        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 26746194B43;
-        Tue,  8 Feb 2022 19:55:29 +0100 (CET)
-Date:   Tue, 8 Feb 2022 19:55:26 +0100
-X-Report-Abuse-To: abuse@mxhotel.dk
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     DRI Development <dri-devel@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Claudio Suarez <cssk@net-c.es>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel.vetter@intel.com>
-Subject: Re: [PATCH 19/21] fbcon: Maintain a private array of fb_info
-Message-ID: <YgK8nugB7HO2d6r1@ravnborg.org>
-References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
- <20220131210552.482606-20-daniel.vetter@ffwll.ch>
- <Yf2JbCP6dtHVZS3c@ravnborg.org>
- <YgJ4MC1IJL7AOgSK@phenom.ffwll.local>
+        Tue, 8 Feb 2022 13:56:24 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDD3C0613CB;
+        Tue,  8 Feb 2022 10:56:23 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id t14-20020a17090a3e4e00b001b8f6032d96so2625213pjm.2;
+        Tue, 08 Feb 2022 10:56:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=yeJo/5hRrRCyM2Jlw/wQyb6VESGf89gzXf+99lk7a3A=;
+        b=FgXOB2hB2inJYKtI8UTi1vhmT/jH47kpKuzq3ZMCZb5yW1Yur9p0av+LCMiF0KmOCm
+         8uj8z+CeQrwdAXzc99xk9QOR43b/6OV4H9IDViFxOF9JIpk67dSU3t+67ax9WJcZeIvb
+         Cnu4pChuxVQ+IkuMOUdlP6g0nfsG/Y7CZbroTNarO5AZMV/pUkua1pULsJpmRjFJrzDb
+         Jdy49h0K2QW5qQNM7joc55BAMkbWWIfdvZZftvLPG2Z1pNbl9qRXeR5W8hly0TZbZwlJ
+         QwjqmeubH6D8bZkLrwXMf7t9ShWiajbusghkt0ayHmnDnnG/bNaspO0S4LAM2fqZZObb
+         Toiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=yeJo/5hRrRCyM2Jlw/wQyb6VESGf89gzXf+99lk7a3A=;
+        b=yf+RaRC0AHB+WsNI2IPajlXpbwOTAU6HDX8d0dUbCAshdwPtsiZGc4y0D+UQDPunGd
+         F1X/TWABYf0j1fJno+uNkKm6nqxpAIYAZMNdu6yt37sCAWIeDpzNmu0vXTZTN663q70b
+         S55mjfZ1G48pgDH2BbVMmMJlT6Q+C+5uI1gntm6pbvZup/bmbwQa4KrGZqCrGiVSGK5F
+         FabLLmJmDj0J+QQ2haGA1QWwt41Afbml2wl5oxS+JoU/OK+Hf0ixx8NPwgwdxolMHRfm
+         hB4fIugn1UuqipZvjW0MUDjD5W/wyROo1cL/IRHk7bZgCQLt7qJ8egB1WS9fTugeQEMv
+         VszQ==
+X-Gm-Message-State: AOAM5327Hvbw0+Iama/2Vfdre4K65egLscVCI/C5K9ZsiEbucM6yqkbr
+        MUv0xuAxnrqN6CmNptwAimOKJu4/NV8=
+X-Google-Smtp-Source: ABdhPJzNZbZrbclkhIGMjgr6jnTBCIGd7035cZq8xL4tSAq9c/zh578nWHZgv101gyl1ot5pbnemMg==
+X-Received: by 2002:a17:90a:8e84:: with SMTP id f4mr2828258pjo.215.1644346582712;
+        Tue, 08 Feb 2022 10:56:22 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id z13sm17177810pfj.23.2022.02.08.10.56.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 10:56:22 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 8 Feb 2022 08:56:20 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, rostedt@goodmis.org,
+        Mukesh Ojha <quic_mojha@quicinc.com>
+Subject: Re: [PATCH rcu 3/3] rcu: Allow expedited RCU grace periods on
+ incoming CPUs
+Message-ID: <YgK81N+w/zsW12N9@slm.duckdns.org>
+References: <20220204225409.GA4193020@paulmck-ThinkPad-P17-Gen-1>
+ <20220204225507.4193113-3-paulmck@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YgJ4MC1IJL7AOgSK@phenom.ffwll.local>
+In-Reply-To: <20220204225507.4193113-3-paulmck@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+On Fri, Feb 04, 2022 at 02:55:07PM -0800, Paul E. McKenney wrote:
+> Although it is usually safe to invoke synchronize_rcu_expedited() from a
+> preemption-enabled CPU-hotplug notifier, if it is invoked from a notifier
+> between CPUHP_AP_RCUTREE_ONLINE and CPUHP_AP_ACTIVE, its attempts to
+> invoke a workqueue handler will hang due to RCU waiting on a CPU that
+> the scheduler is not paying attention to.  This commit therefore expands
+> use of the existing workqueue-independent synchronize_rcu_expedited()
+> from early boot to also include CPUs that are being hotplugged.
+> 
+> Link: https://lore.kernel.org/lkml/7359f994-8aaf-3cea-f5cf-c0d3929689d6@quicinc.com/
+> Reported-by: Mukesh Ojha <quic_mojha@quicinc.com>
+> Cc: Tejun Heo <tj@kernel.org>
+> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 
-On Tue, Feb 08, 2022 at 03:03:28PM +0100, Daniel Vetter wrote:
-> On Fri, Feb 04, 2022 at 09:15:40PM +0100, Sam Ravnborg wrote:
-> > Hi Daniel,
-> > 
-> > On Mon, Jan 31, 2022 at 10:05:50PM +0100, Daniel Vetter wrote:
-> > > Accessing the one in fbmem.c without taking the right locks is a bad
-> > > idea. Instead maintain our own private copy, which is fully protected
-> > > by console_lock() (like everything else in fbcon.c). That copy is
-> > > serialized through fbcon_fb_registered/unregistered() calls.
-> > 
-> > I fail to see why we can make a private copy of registered_fb
-> > just like that - are they not somehow shared between fbcon and fbmem.
-> > So when fbmem updates it, then fbcon will use the entry or such?
-> > 
-> > I guess I am just ignorant of how registered_fb is used - but please
-> > explain.
-> 
-> The private copy is protected under console_lock, and hence safe to access
-> from fbcon.c code.
-> 
-> The main registered_fb array is protected by a different mutex, so we
-> could indeed end up with hilarious corruption because the value is
-> inconsistent while we try to access it (e.g. we check for !NULL, but later
-> on gcc decides to reload the value and now it's suddenly become NULL and
-> we blow up).
-> 
-> The two are synchronized by fbmem.c calling fbcon_register/unregister, so
-> aside from the different locks if there's no race going on, they will
-> always be identical.
-IT was this part that I missed, and it is already spelled out in the
-commit message.
+Acked-by: Tejun Heo <tj@kernel.org>
 
-> 
-> Other option would be to roll out get_fb_info() to fbcon.c, but since
-> fbcon.c is fully protected by console_lock that would add complexity in
-> the code flow that we don't really need. And we'd have to wire fb_info
-> through all call chains, since the right way to use get_fb_info is to look
-> it up once and then only drop it when your callback has finished.
-> 
-> Since the current code just assume it's all protected by console_lock and
-> we never drop that during a callback this would mean major surgery and
-> essentially refactoring all of fbcon.c to only access the fbcon stuff
-> through fb_info, i.e. to get rid of _all_ the global arrays we have more
-> or less. I'm not volunteering for that (despite that really this would be
-> the right thing to do if we'd have infinite engineering time).
-> 
-> Ack with that explainer added to the commit message?
+Thanks.
 
-I consider the current commit message fine - it helps when you actually
-read it.
-
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
+-- 
+tejun
