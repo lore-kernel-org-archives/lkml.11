@@ -2,188 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D19F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 03:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2288C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 03:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346068AbiBHDJh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 22:09:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47326 "EHLO
+        id S242885AbiBHDPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 22:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238531AbiBHDJf (ORCPT
+        with ESMTP id S232087AbiBHDPR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 22:09:35 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E9AC061A73
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 19:09:34 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso980649pjg.0
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 19:09:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MHD6q+Bg1CAZFEstaZFHsulOzcBrpeMzXQI3VG7uoNM=;
-        b=XJRcGlNT0cBC2DmG39HOUGpo9qN5/1Cz3pdW6NxY6e/wELu6IC29R0W/n3DdG6Kc8s
-         YnyWU10ZuVrBs1aFfIiLaun5+HIaEKTMS+fp5dQEZCOuiYAa4fcJg+XaX9aoducLDvRz
-         IKMl9X7l6jvykRysYNEIixCpuActzIJVqC6I4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MHD6q+Bg1CAZFEstaZFHsulOzcBrpeMzXQI3VG7uoNM=;
-        b=AkzMWzdfivFmn3ufpfYlvtL87qz+n4Mt5vujYEUiz4/H8pzC3MENRholBCcQvRAKZ+
-         B5gLlRpRy2tyx7s96RWf28jLD0UQ91PQL1LOmVeiE0f5/J8rD7BRXtUKXem8rD1VSDbG
-         o26IjNVkyVa/UXdOUwzwwaihkvEab3W5uxrMGIs5vMwKP0MCBFfq1yUQz414dv4oVZQ5
-         BIzx4B32qV/JD68MThDlAROIVe4eKy1pldJ0fAAfy+QS2uQNabfIaJvoTO3DI5i+GqWR
-         qgav9DX44UilmgoajWOhldc4KXLuRR/c36P9qWxCqjoplg6CwBj4mfp0PWuBdCQ7JEAQ
-         xwgg==
-X-Gm-Message-State: AOAM533uvh8qtCuZTrW7IBO1dlC+K7tYY8Xpbd84QHmabQ7bK0fCfJ3r
-        5MtvDdb1qAoA2sSXZ993VYGe1Q==
-X-Google-Smtp-Source: ABdhPJzLkZBnlG17z1SKnOBJtO48AA5tnV6wY4N8E4knuC0jCuJMbcSKNnSJbDaVwVOpDPLET8djog==
-X-Received: by 2002:a17:902:f70c:: with SMTP id h12mr2557265plo.53.1644289774153;
-        Mon, 07 Feb 2022 19:09:34 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id n13sm10099487pfv.212.2022.02.07.19.09.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 19:09:33 -0800 (PST)
-Date:   Mon, 7 Feb 2022 19:09:32 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Arvind Sankar <nivedita@alum.mit.edu>,
-        Fangrui Song <maskray@google.com>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        lkp@intel.com, kernel test robot <oliver.sang@intel.com>
-Subject: Re: [x86] 1099ce55b0: BUG:kernel_NULL_pointer_dereference,address
-Message-ID: <202202071858.0B5538E7CB@keescook>
-References: <20220204123740.GA4077@xsang-OptiPlex-9020>
- <CAKwvOdm0+bB=UY91V=ai2TPg3XCbNUZQfBzxrSUA0AtW=zM=LA@mail.gmail.com>
+        Mon, 7 Feb 2022 22:15:17 -0500
+X-Greylist: delayed 1891 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 19:15:13 PST
+Received: from m159.mail.126.com (m159.mail.126.com [220.181.15.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9DA4C061A73
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 19:15:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=5HZAe
+        cUcBPRUdlmANLyfCJQ7HLdWBlaUrPt5Gc2l46Q=; b=USvsa+sbqhCANcMn8797r
+        sH32k0TNdowlTqlkTbR4lupHCsiSl3eHy3UuTfvk6GUrJY9YHOLqbgESc6cefCAP
+        pXFReqNKeYnHg5EjjERVHs07G42fzZ0XAie/FOA+PPe5rXtGw2nEryad0/3UKIVY
+        eEF/kBKlXqUBxDDV66+QIA=
+Received: from wonder_rock$126.com ( [61.177.116.114] ) by
+ ajax-webmail-wmsvr9 (Coremail) ; Tue, 8 Feb 2022 10:43:07 +0800 (CST)
+X-Originating-IP: [61.177.116.114]
+Date:   Tue, 8 Feb 2022 10:43:07 +0800 (CST)
+From:   "Deyan Wang" <wonder_rock@126.com>
+To:     keescook@chromium.org, anton@enomsg.org, ccross@android.com,
+        tony.luck@intel.com
+Cc:     linux-kernel@vger.kernel.org, "Deyan Wang" <wonder_rock@126.com>
+Subject: [PATCH] pstore/ram: Use reminder directly
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210622(1d4788a8)
+ Copyright (c) 2002-2022 www.mailtech.cn 126com
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKwvOdm0+bB=UY91V=ai2TPg3XCbNUZQfBzxrSUA0AtW=zM=LA@mail.gmail.com>
+Message-ID: <131fd0c6.14a8.17ed7369c1b.Coremail.wonder_rock@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: CcqowAC38Di72AFiEz8fAA--.32993W
+X-CM-SenderInfo: xzrqvv5ubu0ubn6rjloofrz/1tbiYB6hgVpEGG6odAABsr
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 04:23:06PM -0800, Nick Desaulniers wrote:
-> On Fri, Feb 4, 2022 at 4:37 AM kernel test robot <oliver.sang@intel.com> wrote:
-> > FYI, we noticed the following commit (built with clang-15):
-> >
-> > commit: 1099ce55b0530ff429312dc37362ad43aee8c5c0 ("x86: don't build CONFIG_X86_32 as -ffreestanding")
-> > https://git.kernel.org/cgit/linux/kernel/git/kees/linux.git for-next/memcpy
-> >
-> > in testcase: boot
-> [...]
-> I've been having a hard time pinpointing via bisection when this
-> stopped working.  I suspect it's actually the change on llvm's side
-> that would replace memcmp with bcmp.  With this diff, we can boot
-> ARCH=i386 defconfig
-
-Thanks for spending the time on this!
-
-> 
-> ```
-> diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-> index 7ef211865239..5e4570495206 100644
-> --- a/arch/x86/Makefile
-> +++ b/arch/x86/Makefile
-> @@ -88,6 +88,8 @@ ifeq ($(CONFIG_X86_32),y)
->          include $(srctree)/arch/x86/Makefile_32.cpu
->          KBUILD_CFLAGS += $(cflags-y)
-> 
-> +        KBUILD_CFLAGS += -fno-builtin-bcmp
-> +
->         ifeq ($(CONFIG_STACKPROTECTOR),y)
->                 ifeq ($(CONFIG_SMP),y)
->                         KBUILD_CFLAGS +=
-> -mstack-protector-guard-reg=fs
-> -mstack-protector-guard-symbol=__stack_chk_guard
-> ```
-> 
-> It looks like the call argument setup in the _callers_ of memcmp is messed up.
-> 
-> Before:
-> pushl %ecx
-> pushl %ebx
-> pushl -24(%ebp)
-> calll bcmp
-> 
-> After:
-> movl  %ebx, %eax
-> movl  %esi, %edx
-> movl  %ecx, %ebx
-> calll memcmp
-> 
-> it looks like they're not obeying `-mregparm=3`.
-> 
-> https://godbolt.org/z/z3fjveP4h
-> 
-> Diffing the IR between `-mregparm=3` vs not, it looks like there's an
-> LLVM IR function argument attribute inreg.
-> https://llvm.org/docs/LangRef.html#parameter-attributes
-> >> This indicates that this parameter or return value should be treated in a
-> >> special target-dependent fashion while emitting code for a function call
-> >> or return (usually, by putting it in a register as opposed to memory,
-> >> though some targets use it to distinguish between two different kinds of
-> >> registers). Use of this attribute is target-specific.
-> 
-> As is tradition, instcombine is not checking+carrying over the
-> function argument attributes when replacing calls to memcmp w/ bcmp.
-> 
-> Before:
->   %4 = call i32 @memcmp(i8* inreg noundef %3, i8* inreg noundef %0,
-> i32 inreg noundef %1) #4, !dbg !22
-> 
-> After:
->   %bcmp = call i32 @bcmp(i8* %3, i8* %0, i32 %1), !dbg !22
-> 
-> Filed:
-> https://github.com/llvm/llvm-project/issues/53645
-> 
-> So I think the best course of action is to disable memcmp to bcmp
-> BEFORE the removal of -ffreestanding, and only for clang until we have
-> a fix in hand.
-
-What do you mean about BEFORE the removal of -ffreestanding? As in, add
-two patches, one to add -fno-builtin-bcmp and the next to remove
--ffreestanding? i.e.:
-
-
-diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index e84cdd409b64..c92f69e916b4 100644
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -90,6 +90,9 @@ ifeq ($(CONFIG_X86_32),y)
- 
-         # temporary until string.h is fixed
-         KBUILD_CFLAGS += -ffreestanding
-+        ifdef CONFIG_CC_IS_CLANG
-+                KBUILD_CFLAGS += -fno-builtin-bcmp
-+        endif
- 
- 	ifeq ($(CONFIG_STACKPROTECTOR),y)
- 		ifeq ($(CONFIG_SMP),y)
-
-
-then:
-
-
-
-diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index c92f69e916b4..f56936aeed9e 100644
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -88,8 +88,6 @@ ifeq ($(CONFIG_X86_32),y)
-         include $(srctree)/arch/x86/Makefile_32.cpu
-         KBUILD_CFLAGS += $(cflags-y)
- 
--        # temporary until string.h is fixed
--        KBUILD_CFLAGS += -ffreestanding
-         ifdef CONFIG_CC_IS_CLANG
-                 KBUILD_CFLAGS += -fno-builtin-bcmp
-         endif
-
-?
-
--- 
-Kees Cook
+RnJvbTogRGV5YW4gV2FuZyA8d29uZGVyX3JvY2tAMTI2LmNvbT4KClRoZSByZW1haW5kZXIgaXMg
+bW9yZSBlZmZpY2llbnQsIHdlIGRpcmVjdGx5IHVzZSB0aGUgcmVtYWluZGVyLgoKU2lnbmVkLW9m
+Zi1ieTogRGV5YW4gV2FuZyA8d29uZGVyX3JvY2tAMTI2LmNvbT4KLS0tCiBmcy9wc3RvcmUvcmFt
+X2NvcmUuYyB8IDQgKystLQogMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxl
+dGlvbnMoLSkKCmRpZmYgLS1naXQgYS9mcy9wc3RvcmUvcmFtX2NvcmUuYyBiL2ZzL3BzdG9yZS9y
+YW1fY29yZS5jCmluZGV4IGZlNTMwNTAyOGM2ZS4uNjk5MjhhNTllMjhiIDEwMDY0NAotLS0gYS9m
+cy9wc3RvcmUvcmFtX2NvcmUuYworKysgYi9mcy9wc3RvcmUvcmFtX2NvcmUuYwpAQCAtNjEsOCAr
+NjEsOCBAQCBzdGF0aWMgc2l6ZV90IGJ1ZmZlcl9zdGFydF9hZGQoc3RydWN0IHBlcnNpc3RlbnRf
+cmFtX3pvbmUgKnByeiwgc2l6ZV90IGEpCiAKIAlvbGQgPSBhdG9taWNfcmVhZCgmcHJ6LT5idWZm
+ZXItPnN0YXJ0KTsKIAluZXcgPSBvbGQgKyBhOwotCXdoaWxlICh1bmxpa2VseShuZXcgPj0gcHJ6
+LT5idWZmZXJfc2l6ZSkpCi0JCW5ldyAtPSBwcnotPmJ1ZmZlcl9zaXplOworCWlmICh1bmxpa2Vs
+eShuZXcgPj0gcHJ6LT5idWZmZXJfc2l6ZSkpCisJCW5ldyAlPSBwcnotPmJ1ZmZlcl9zaXplOwog
+CWF0b21pY19zZXQoJnByei0+YnVmZmVyLT5zdGFydCwgbmV3KTsKIAogCWlmICghKHByei0+Zmxh
+Z3MgJiBQUlpfRkxBR19OT19MT0NLKSkKLS0gCjIuMjUuMQo=
