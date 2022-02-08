@@ -2,207 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFF5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5CFC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355643AbiBHNVE (ORCPT
+        id S1356782AbiBHNVL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:21:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
+        Tue, 8 Feb 2022 08:21:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357085AbiBHMbN (ORCPT
+        with ESMTP id S1359783AbiBHMyF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:31:13 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFD3C03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:31:12 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id j2so49559653ybu.0
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:31:11 -0800 (PST)
+        Tue, 8 Feb 2022 07:54:05 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C36CC03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:54:04 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id s13so51894923ejy.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:54:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yfYLtbVg7Jphgpqo5l2mfLMwKt3fmTcNOyyPV835z9U=;
-        b=X73BVSASthoFh71ZUYqhPOBlmWD6VlnN6mtxlLeUi48uyVMU0ZaQsH/cmXLKhp1Jui
-         4usjsDrOE/K++FH8OeqG4WNNAOcG9B+4N4GSjY7QwCYxcbUEhBC2Y/nh2OUlwsgnjeox
-         eUtinaYsaItLRMZrGl5DhrtfLCm02TgJMPJqc=
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EdOABUNENMY5hYtYPGRPZmVz5tXWbGx6V9rHvVTwsTo=;
+        b=KgFzVhnS+WwfF4ySk8R2/5G/qaN9zSc7f1Btrik8l3ywATzIA1H3npms8IV/EEj2KI
+         IEWyrGEr/Q+oBaB+rZIL/nu2xrfklQucAehi0E2n5WYRj0scoAYhI4cerIdykx1YxOFA
+         bOMwE/D9+192GSVfQxod36C2LT3HZ1niWajoU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yfYLtbVg7Jphgpqo5l2mfLMwKt3fmTcNOyyPV835z9U=;
-        b=YDAE2jFtQaLP1dq6eh212i/hz+mQMNrHN9sMFm2ykWWeqKdVexwBGOIWV2PBmTVhHb
-         vJCCzxdNoI7iy4BWBzOyEI2emlImoAysUb4j+ZFq3kJNY+ml9TrDCKOw4dE07LhKldAK
-         Cx47yisrhzmg2qelMbpsscH1U7a32xahsKBbSXjhO4ThrhBjzSyIRG92QaBMljDLX/Vb
-         rYK/BUm8uWVKG9OoNyBenbaTy83kBWiqkDnKh8yOKgSOWP4phy3DpVnJ/DA2LwTWYHTd
-         U7r3WOZRaVmXoVXbxqtte2Iyiq5mKZ+Qe7bJrKNojaY7sp4S4WaC2jIjW2zmFtFlJ5L2
-         pvPw==
-X-Gm-Message-State: AOAM5316RL3k+4t+wdsxFSv/8wAyAi7mrBf1EqoGh4YXOU1fEuF1Fdl+
-        cXx9Z25sGnH0cGHkQpyOmjybvnGn9LV3kiakPgExVA==
-X-Google-Smtp-Source: ABdhPJyCCYOYwDckY357tk7CH1jqmHDW4BUZPjfdeuj7J3jv7vIaHKcjBTuE6IB72wx2P7IBnypp3hlrdAC/yjDoo7g=
-X-Received: by 2002:a81:1b4e:: with SMTP id b75mr4316368ywb.295.1644323471148;
- Tue, 08 Feb 2022 04:31:11 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=EdOABUNENMY5hYtYPGRPZmVz5tXWbGx6V9rHvVTwsTo=;
+        b=eyTprKEQRbzCbd1CcNQ0RgpAx3/hjath6W7bCC++9wSrOzyWGUeFkcuv6FdqvrAzc1
+         Ga4QPlB6Q0D37+NmceZ1WlCFusx60j3EZjAlrkxQN02icL/qTGPFbCm7pLEjCqdFpzAV
+         IaA6kW9t8L5Re/cl9nj8kq/y/LmkDBiF99gRwUe7vW80rh9AAvDpAlzxd56XgNZjZkfo
+         t46MHzEXMQ0xDo9zvJhraeCIofSwr6D4xMZ/a5Bc7ZKfVXBKAR45Cyocl/S+TFYtWkAo
+         ABJ6bpC0X+wlRjJQq6gC4x1mJ1AewuCPCI2W9bD6OEYHdh84GI/BtU6P6Fi0fhFAN3XR
+         SaeQ==
+X-Gm-Message-State: AOAM533txU0lyfTfHsH4/oZ8ggqATrVgKfEhSKT4iemadR/smXii4Q0+
+        lFOeAs6dmRX4TiO9gu8huN+pdstUYA/BVA==
+X-Google-Smtp-Source: ABdhPJyjoXx7TZnQW6xw4xjBqA0XWuDhxN1WRj0W2ugU65gZDBqDw0EPp6tl28mczrKVDEoZQx+16g==
+X-Received: by 2002:a17:906:94e:: with SMTP id j14mr3514523ejd.369.1644324842613;
+        Tue, 08 Feb 2022 04:54:02 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id d18sm4740261ejd.95.2022.02.08.04.54.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:54:01 -0800 (PST)
+Date:   Tue, 8 Feb 2022 13:53:59 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        Saravana Kannan <saravanak@google.com>
+Subject: Re: [PATCH v6 02/35] component: Introduce the aggregate bus_type
+Message-ID: <YgJn57s8u2OsBGnW@phenom.ffwll.local>
+Mail-Followup-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        Saravana Kannan <saravanak@google.com>
+References: <20220127200141.1295328-1-swboyd@chromium.org>
+ <20220127200141.1295328-3-swboyd@chromium.org>
+ <YffoqgmeUdxZ56zB@kroah.com>
+ <CAKMK7uFYyQ9siB5ENHku+yVPWWM1H=TEn-NZofEKqpJnuEvMmw@mail.gmail.com>
+ <YfgPkliOLorgXwVE@kroah.com>
 MIME-Version: 1.0
-References: <20220208105456.321294-1-wenst@chromium.org>
-In-Reply-To: <20220208105456.321294-1-wenst@chromium.org>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Tue, 8 Feb 2022 20:30:59 +0800
-Message-ID: <CAGXv+5HT84sEv9TFV1H=mMEO4oqz4OdwXQGMhwrOf5dtMrjOBQ@mail.gmail.com>
-Subject: Re: [PATCH RFC] media: hantro: Implement support for encoder commands
-To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfgPkliOLorgXwVE@kroah.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 6:55 PM Chen-Yu Tsai <wenst@chromium.org> wrote:
->
-> The V4L2 stateful encoder uAPI specification requires that drivers
-> support the ENCODER_CMD ioctl to allow draining of buffers. This
-> however was not implemented, and causes issues for some userspace
-> applications.
->
-> Implement support for the ENCODER_CMD ioctl using v4l2-mem2mem helpers.
-> This is entirely based on existing code found in the vicodec test
-> driver.
->
-> Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-> ---
->
-> This is based on linux-next-20220207, and was tested on RK3399 with
-> Gstreamer running the JPEG encoder. It was also tested on ChromeOS
-> 5.10 on Kevin with the video encoder used in ChromeOS ARC, which
-> requires this.
->
-> Everything works OK, but since I'm not very familiar with the mem2mem
-> framework, I might be missing something, causing resource leaks.
-> Hence this patch is labeled RFC.
+On Mon, Jan 31, 2022 at 05:34:26PM +0100, Greg Kroah-Hartman wrote:
+> On Mon, Jan 31, 2022 at 04:15:09PM +0100, Daniel Vetter wrote:
+> > On Mon, Jan 31, 2022 at 2:48 PM Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Thu, Jan 27, 2022 at 12:01:08PM -0800, Stephen Boyd wrote:
+> > > > The component framework only provides 'bind' and 'unbind' callbacks to
+> > > > tell the host driver that it is time to assemble the aggregate driver
+> > > > now that all the components have probed. The component framework doesn't
+> > > > attempt to resolve runtime PM or suspend/resume ordering, and explicitly
+> > > > mentions this in the code. This lack of support leads to some pretty
+> > > > gnarly usages of the 'prepare' and 'complete' power management hooks in
+> > > > drivers that host the aggregate device, and it fully breaks down when
+> > > > faced with ordering shutdown between the various components, the
+> > > > aggregate driver, and the host driver that registers the whole thing.
+> > > >
+> > > > In a concrete example, the MSM display driver at drivers/gpu/drm/msm is
+> > > > using 'prepare' and 'complete' to call the drm helpers
+> > > > drm_mode_config_helper_suspend() and drm_mode_config_helper_resume()
+> > > > respectively, so that it can move the aggregate driver suspend/resume
+> > > > callbacks to be before and after the components that make up the drm
+> > > > device call any suspend/resume hooks they have. This only works as long
+> > > > as the component devices don't do anything in their own 'prepare' and
+> > > > 'complete' callbacks. If they did, then the ordering would be incorrect
+> > > > and we would be doing something in the component drivers before the
+> > > > aggregate driver could do anything. Yuck!
+> > > >
+> > > > Similarly, when trying to add shutdown support to the MSM driver we run
+> > > > across a problem where we're trying to shutdown the drm device via
+> > > > drm_atomic_helper_shutdown(), but some of the devices in the encoder
+> > > > chain have already been shutdown. This time, the component devices
+> > > > aren't the problem (although they could be if they did anything in their
+> > > > shutdown callbacks), but there's a DSI to eDP bridge in the encoder
+> > > > chain that has already been shutdown before the driver hosting the
+> > > > aggregate device runs shutdown. The ordering of driver probe is like
+> > > > this:
+> > > >
+> > > >  1. msm_pdev_probe() (host driver)
+> > > >  2. DSI bridge
+> > > >  3. aggregate bind
+> > > >
+> > > > When it comes to shutdown we have this order:
+> > > >
+> > > >  1. DSI bridge
+> > > >  2. msm_pdev_shutdown() (host driver)
+> > > >
+> > > > and so the bridge is already off, but we want to communicate to it to
+> > > > turn things off on the display during msm_pdev_shutdown(). Double yuck!
+> > > > Unfortunately, this time we can't split shutdown into multiple phases
+> > > > and swap msm_pdev_shutdown() with the DSI bridge.
+> > > >
+> > > > Let's make the component_master_ops into an actual device driver that has
+> > > > probe/remove/shutdown functions. The driver will only be bound to the
+> > > > aggregate device once all component drivers have called component_add()
+> > > > to indicate they're ready to assemble the aggregate driver. This allows
+> > > > us to attach shutdown logic (and in the future runtime PM logic) to the
+> > > > aggregate driver so that it runs the hooks in the correct order.
+> > >
+> > > I know I asked before, but I can not remember the answer.
+> > >
+> > > This really looks like it is turning into the aux bus code.  Why can't
+> > > you just use that instead here for this type of thing?  You are creating
+> > > another bus and drivers for that bus that are "fake" which is great, but
+> > > that's what the aux bus code was supposed to help out with, so we
+> > > wouldn't have to write more of these.
+> > >
+> > > So, if this really is different, can you document it here so I remember
+> > > next time you resend this patch series?
+> > 
+> > aux takes a device and splits it into a lot of sub-devices, each with
+> > their own driver.
+> > 
+> > This takes a pile of devices, and turns it into a single logical
+> > device with a single driver.
+> > 
+> > So aux is 1:N, component is N:1.
+> > 
+> > And yes you asked this already, I typed this up already :-)
+> 
+> Ok, thanks.  But then why is a bus needed if there's a single driver?
+> I guess a bus for that driver?  So one bus, one driver, and one device?
 
-And it seems I failed to handle the case where the last capture buffer
-is empty.
+Maybe? I have honestly no idea how this should be best modelled in the
+linux device model.
 
-Will rework and send a new version tomorrow.
+> I think we need better documentation here...
 
+https://dri.freedesktop.org/docs/drm/driver-api/component.html?highlight=component_del#component-helper-for-aggregate-drivers
 
-ChenYu
+There's a kerneldoc overview for component, but it's for driver authors
+that want to use component to glue different hw pieces into a logical
+driver, so it skips over these internals.
 
-> ---
->  drivers/staging/media/hantro/hantro_drv.c  | 10 +++++
->  drivers/staging/media/hantro/hantro_v4l2.c | 44 ++++++++++++++++++++++
->  2 files changed, 54 insertions(+)
->
-> diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
-> index bc9bcb4eaf46..ccd47eee5c43 100644
-> --- a/drivers/staging/media/hantro/hantro_drv.c
-> +++ b/drivers/staging/media/hantro/hantro_drv.c
-> @@ -56,6 +56,10 @@ dma_addr_t hantro_get_ref(struct hantro_ctx *ctx, u64 ts)
->         return hantro_get_dec_buf_addr(ctx, buf);
->  }
->
-> +static const struct v4l2_event hantro_eos_event = {
-> +       .type = V4L2_EVENT_EOS
-> +};
-> +
->  static void hantro_job_finish_no_pm(struct hantro_dev *vpu,
->                                     struct hantro_ctx *ctx,
->                                     enum vb2_buffer_state result)
-> @@ -73,6 +77,12 @@ static void hantro_job_finish_no_pm(struct hantro_dev *vpu,
->         src->sequence = ctx->sequence_out++;
->         dst->sequence = ctx->sequence_cap++;
->
-> +       if (v4l2_m2m_is_last_draining_src_buf(ctx->fh.m2m_ctx, src)) {
-> +               dst->flags |= V4L2_BUF_FLAG_LAST;
-> +               v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
-> +               v4l2_m2m_mark_stopped(ctx->fh.m2m_ctx);
-> +       }
-> +
->         v4l2_m2m_buf_done_and_job_finish(ctx->dev->m2m_dev, ctx->fh.m2m_ctx,
->                                          result);
->  }
-> diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
-> index 67148ba346f5..8c6746637236 100644
-> --- a/drivers/staging/media/hantro/hantro_v4l2.c
-> +++ b/drivers/staging/media/hantro/hantro_v4l2.c
-> @@ -628,6 +628,39 @@ static int vidioc_s_selection(struct file *file, void *priv,
->         return 0;
->  }
->
-> +static const struct v4l2_event hantro_eos_event = {
-> +       .type = V4L2_EVENT_EOS
-> +};
-> +
-> +static int vidioc_encoder_cmd(struct file *file, void *priv,
-> +                             struct v4l2_encoder_cmd *ec)
-> +{
-> +       struct hantro_ctx *ctx = fh_to_ctx(priv);
-> +       int ret;
-> +
-> +       ret = v4l2_m2m_ioctl_try_encoder_cmd(file, priv, ec);
-> +       if (ret < 0)
-> +               return ret;
-> +
-> +       if (!vb2_is_streaming(v4l2_m2m_get_src_vq(ctx->fh.m2m_ctx)) ||
-> +           !vb2_is_streaming(v4l2_m2m_get_dst_vq(ctx->fh.m2m_ctx)))
-> +               return 0;
-> +
-> +       ret = v4l2_m2m_ioctl_encoder_cmd(file, priv, ec);
-> +       if (ret < 0)
-> +               return ret;
-> +
-> +       if (ec->cmd == V4L2_ENC_CMD_STOP &&
-> +           v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
-> +               v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
-> +
-> +       if (ec->cmd == V4L2_ENC_CMD_START &&
-> +           v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
-> +               vb2_clear_last_buffer_dequeued(&ctx->fh.m2m_ctx->cap_q_ctx.q);
-> +
-> +       return 0;
-> +}
-> +
->  const struct v4l2_ioctl_ops hantro_ioctl_ops = {
->         .vidioc_querycap = vidioc_querycap,
->         .vidioc_enum_framesizes = vidioc_enum_framesizes,
-> @@ -657,6 +690,9 @@ const struct v4l2_ioctl_ops hantro_ioctl_ops = {
->
->         .vidioc_g_selection = vidioc_g_selection,
->         .vidioc_s_selection = vidioc_s_selection,
-> +
-> +       .vidioc_try_encoder_cmd = v4l2_m2m_ioctl_try_encoder_cmd,
-> +       .vidioc_encoder_cmd = vidioc_encoder_cmd,
->  };
->
->  static int
-> @@ -759,6 +795,8 @@ static int hantro_start_streaming(struct vb2_queue *q, unsigned int count)
->         struct hantro_ctx *ctx = vb2_get_drv_priv(q);
->         int ret = 0;
->
-> +       v4l2_m2m_update_start_streaming_state(ctx->fh.m2m_ctx, q);
-> +
->         if (V4L2_TYPE_IS_OUTPUT(q->type))
->                 ctx->sequence_out = 0;
->         else
-> @@ -831,6 +869,12 @@ static void hantro_stop_streaming(struct vb2_queue *q)
->                 hantro_return_bufs(q, v4l2_m2m_src_buf_remove);
->         else
->                 hantro_return_bufs(q, v4l2_m2m_dst_buf_remove);
-> +
-> +       v4l2_m2m_update_stop_streaming_state(ctx->fh.m2m_ctx, q);
-> +
-> +       if (V4L2_TYPE_IS_OUTPUT(q->type) &&
-> +           v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
-> +               v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
->  }
->
->  static void hantro_buf_request_complete(struct vb2_buffer *vb)
-> --
-> 2.35.0.263.gb82422642f-goog
->
+And I'm honestly not sure how we want to leak implementation internals
+like the bus/driver/device structure ot users of component.c.
+-Daniel
+
+> 
+> thanks,
+> 
+> greg k-h
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
