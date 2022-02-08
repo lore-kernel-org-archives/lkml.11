@@ -2,100 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F1F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C8AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385647AbiBHS5r (ORCPT
+        id S1385650AbiBHS6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:57:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48494 "EHLO
+        Tue, 8 Feb 2022 13:58:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385562AbiBHS5K (ORCPT
+        with ESMTP id S1385660AbiBHS6e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:57:10 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FAEBC0612BD;
-        Tue,  8 Feb 2022 10:57:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 20703CE1BF0;
-        Tue,  8 Feb 2022 18:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84655C34102;
-        Tue,  8 Feb 2022 18:57:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644346625;
-        bh=ffXhP80bXiWm6QZsRgVzkuhQFwsVc53UEqMBTezk5bA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QF3gwDPyWo5uLsZKvReJhYDDmS23LwS9BmP1BgkrGVfPcMqj6qaE8uEDETAyJyU3j
-         Owkf6EVUXzWHNsdIhsB4msAz4BnJRKqnMXmHR4UJL5oHn4VPrfsETDSdhGiFfhR45/
-         Iiny68Le5ygiThMaMsMDnJzrA94GJIoVdVUkTHXYDNCQ5GAdln24QU4Uz/5YFbiIow
-         7t54QrKr5hsrYfWol7xUizMxRdsH3pHdgwkwodsGJGvhs0ZHEwPnvAYlzCc5NfMqdr
-         67FG9ca8WiHP/9PR3P71NI4SLPMg+4wM2de/RIZ43uKPpvl9y/+efQCPWuXI6OJPrW
-         yIdx+a2SFCK3A==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nHVfj-006MEi-JJ; Tue, 08 Feb 2022 18:57:03 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Mark Rutland <mark.rutland@arm.com>, Will Deacon <will@kernel.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dougall <dougallj@gmail.com>, kernel-team@android.com
-Subject: [PATCH v5 06/10] arm64: dts: apple: Add t8103 PMU interrupt affinities
-Date:   Tue,  8 Feb 2022 18:56:00 +0000
-Message-Id: <20220208185604.1097957-7-maz@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220208185604.1097957-1-maz@kernel.org>
-References: <20220208185604.1097957-1-maz@kernel.org>
+        Tue, 8 Feb 2022 13:58:34 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D23C03FEEC
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:58:18 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id y5so72541pfe.4
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 10:58:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NuDVKcupWPWZQzgU6U8buer2ersgmbuGRKW8s6KtZbI=;
+        b=ZR0NoryWPniq+EVBewnvk2KsPHdygfYYI9dNoCF/9m61vF5whsv+I2/jV8p/Qbgx+P
+         7jRNFL5zyq+Jb5WyrcDtB1sb9qHvDUO64EksOXJLFpU3KB0w0ZTDLgz3BFQWyQA/Vz7x
+         NRIrn0Ofuzm1CYeL2Z/7vtT09huxe9rD9Yfwo+mDu2VPTjWKVoTwXJE/ELSlqvQZs31G
+         Nf2b667cbUfgtRJdBtGkxW6NS7ypZ6EB5TtSXgc8uJvuM02lnF2DR7huVV/1L2i4ZBLZ
+         VB1OWlbBxmCtkhzkqNisMa64BoAV6F68Zd/KaIX+W3B0G+m3oTDTybQIMqnmkpC+nM2j
+         sPkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NuDVKcupWPWZQzgU6U8buer2ersgmbuGRKW8s6KtZbI=;
+        b=zpN6cQefVPZ+n0wqYAbNisVn9/dvZSqpfMVaFw9LfUW6HBo5e3NCJUc/eewHNiMKFz
+         cFgAGwGAnRDRhBslOQoRXZnABg5SowAgmvcKyUyjmUhf2yhjE4ECQKQBsOq3Q+lCsCQM
+         vR/tzSCOWJFFAyFR21Xvo5azBaWFbS7xfsMLBblj4UxCUfrtOYBgiQq6VoWxj4tbeWpO
+         jjQk/yhVY6jNOBxNDHLxntrE5U/i/Z70kk9yy/ShbN0K7QY6GbgBsPOxft09oZ8KM+mI
+         tjqlCLjHYgcqrEREiyCoK21f0iF4iTvWLUVZTW/xNN4UwGz7M9e7Qh24YWHm5bjWDKkf
+         K4Ag==
+X-Gm-Message-State: AOAM5337OvZcWrnocZjou5pvvAetF4oD4AARjV64xHXRdpT/QCjD36oo
+        v2aQOXCPUp/VSCW+a9mbuFkWRg==
+X-Google-Smtp-Source: ABdhPJw8VHoJtAoqxATZi1GTIrqeRrywDXg1regOzdAutz7/rUf4XHuenfExCHOS2dvxIIgT6JrTsg==
+X-Received: by 2002:aa7:9528:: with SMTP id c8mr5554106pfp.85.1644346697738;
+        Tue, 08 Feb 2022 10:58:17 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id ip5sm3690253pjb.13.2022.02.08.10.58.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 10:58:16 -0800 (PST)
+Date:   Tue, 8 Feb 2022 11:58:14 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        leo.yan@linaro.com, mike.leach@linaro.org,
+        Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 15/15] coresight: Make ETM4x TRCRSCTLRn register
+ accesses consistent with sysreg.h
+Message-ID: <20220208185814.GA3508773@p14s>
+References: <20220203120604.128396-1-james.clark@arm.com>
+ <20220203120604.128396-16-james.clark@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mark.rutland@arm.com, will@kernel.org, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, robh+dt@kernel.org, tglx@linutronix.de, dougallj@gmail.com, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220203120604.128396-16-james.clark@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The two PMU pseudo interrupts have specific affinities. One set
-is affine to the small cores, and the other set affine to the
-big ones.
+On Thu, Feb 03, 2022 at 12:06:03PM +0000, James Clark wrote:
+> This is a no-op change for style and consistency and has no effect on the
+> binary produced by gcc-11.
+> 
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>  drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 7 +++++--
+>  drivers/hwtracing/coresight/coresight-etm4x.h       | 9 +++++++++
+>  2 files changed, 14 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> index a0cdd2cd978a..c876a63fa84d 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> @@ -1728,8 +1728,11 @@ static ssize_t res_ctrl_store(struct device *dev,
+>  	/* For odd idx pair inversal bit is RES0 */
+>  	if (idx % 2 != 0)
+>  		/* PAIRINV, bit[21] */
+> -		val &= ~BIT(21);
+> -	config->res_ctrl[idx] = val & GENMASK(21, 0);
+> +		val &= ~TRCRSCTLRn_PAIRINV;
+> +	config->res_ctrl[idx] = val & (TRCRSCTLRn_PAIRINV |
+> +				       TRCRSCTLRn_INV |
+> +				       (TRCRSCTLRn_GROUP_MASK << TRCRSCTLRn_GROUP_SHIFT) |
+> +				       (TRCRSCTLRn_SELECT_MASK << TRCRSCTLRn_SELECT_SHIFT));
+>  	spin_unlock(&drvdata->spinlock);
+>  	return size;
+>  }
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
+> index 4d943faade33..dd2156a5e70b 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x.h
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
+> @@ -258,6 +258,15 @@
+>  #define TRCBBCTLR_RANGE_SHIFT			0
+>  #define TRCBBCTLR_RANGE_MASK			GENMASK(7, 0)
+>  
+> +#define TRCRSCTLRn_PAIRINV			BIT(21)
+> +#define TRCRSCTLRn_INV				BIT(20)
+> +#define TRCRSCTLRn_GROUP_SHIFT			16
+> +#define TRCRSCTLRn_GROUP_MASK			GENMASK(3, 0)
+> +#define TRCRSCTLRn_SELECT_SHIFT			0
+> +#define TRCRSCTLRn_SELECT_MASK			GENMASK(15, 0)
+> +
+> +
+> +
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- arch/arm64/boot/dts/apple/t8103.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Two extra newlines.
 
-diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
-index 19afbc91020a..a2e006538c56 100644
---- a/arch/arm64/boot/dts/apple/t8103.dtsi
-+++ b/arch/arm64/boot/dts/apple/t8103.dtsi
-@@ -213,6 +213,18 @@ aic: interrupt-controller@23b100000 {
- 			interrupt-controller;
- 			reg = <0x2 0x3b100000 0x0 0x8000>;
- 			power-domains = <&ps_aic>;
-+
-+			affinities {
-+				e-core-pmu-affinity {
-+					apple,fiq-index = <AIC_CPU_PMU_E>;
-+					cpus = <&cpu0 &cpu1 &cpu2 &cpu3>;
-+				};
-+
-+				p-core-pmu-affinity {
-+					apple,fiq-index = <AIC_CPU_PMU_P>;
-+					cpus = <&cpu4 &cpu5 &cpu6 &cpu7>;
-+				};
-+			};
- 		};
- 
- 		pmgr: power-management@23b700000 {
--- 
-2.30.2
+With the above and for patches 02 to 15:
 
+Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+
+>  /*
+>   * System instructions to access ETM registers.
+>   * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
+> -- 
+> 2.28.0
+> 
