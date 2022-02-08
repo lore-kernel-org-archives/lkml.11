@@ -2,275 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C32CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B88AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384158AbiBHWhM (ORCPT
+        id S1386248AbiBHWhS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:37:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54184 "EHLO
+        Tue, 8 Feb 2022 17:37:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386563AbiBHW1Y (ORCPT
+        with ESMTP id S1388500AbiBHWdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 17:27:24 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C88AC03C1BE
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:23:46 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id x4so566687plb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 14:23:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vMaF5jT9/UaEWAfDk+2t6KL6ikIYvAUy+840Rteop/E=;
-        b=j7gQSdsIWiZdmU//a2QwO46EbQ5SIOH5fWGlAvhnBWPyFq4bLW/fWbmZlxZwzUEr4f
-         8jomGnNxVxG+1yeClJtxG+wNefH84zBQj8X1Q+/CXgcqGY0ThDT1+d0SNl+SrNbcDLGZ
-         9bNGdlRDRHEbDB/cx8WWmOR4hrIdnDY9Pb6jo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vMaF5jT9/UaEWAfDk+2t6KL6ikIYvAUy+840Rteop/E=;
-        b=U4eLfijAck9ldjUsvSTDRG2QnXHKxdDT/4PV3tIW5COMbbhtk/CEZFYfRtmfff10Wk
-         WFuLUJjqUhvEWNcybIKGLaMu2TuUYpbiGNaD1iEW79LeuCdSH5NT4/Ux3X0KsA/X9Iiy
-         Ei/y9oJzu9xQrIEzlKZMzqljyQRpuLr29NYP6NCR3YF+kgZMPSDdoa/qHiMTeeWU2xhB
-         7OnN+ZSsmwe7rJem48s1YeA0p5pxnJzqDdjEYzIhMzXHi4z6KQZmPyQ4C1CngB04HZIf
-         bxH6DJqEbWx4lJZBBdsaTNpl1MKg/QLwGZZyhMKaztXbNA/Yoctr/EMYF+XMFNps06Eg
-         KibA==
-X-Gm-Message-State: AOAM533Kgsgu1PgOybncwrdofKGjvrbcjlfQytv6IyLX5LT1Q+9i3uaD
-        KCC7czKn+rfFjcJ+YKaspj8J6w==
-X-Google-Smtp-Source: ABdhPJxcJ61KROyKtZBAr6c9l+ods/Vf3fMBBg9aC+tckxuWCgMKjcQOdpiGoKC76Uo39dfbYIvJFQ==
-X-Received: by 2002:a17:90a:4811:: with SMTP id a17mr99117pjh.159.1644359025755;
-        Tue, 08 Feb 2022 14:23:45 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:23dc:d215:b887:777d])
-        by smtp.gmail.com with UTF8SMTPSA id q2sm3684055pjj.32.2022.02.08.14.23.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 14:23:45 -0800 (PST)
-Date:   Tue, 8 Feb 2022 14:23:43 -0800
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        robdclark@gmail.com, seanpaul@chromium.org, swboyd@chromium.org,
-        dianders@chromium.org, krzysztof.kozlowski@canonical.com,
-        thierry.reding@gmail.com, sam@ravnborg.org, airlied@linux.ie,
-        daniel@ffwll.ch, quic_kalyant@quicinc.com,
-        quic_abhinavk@quicinc.com, quic_khsieh@quicinc.com,
-        quic_mkrishn@quicinc.com
-Subject: Re: [PATCH v2 2/4] arm64: dts: qcom: sc7280: Add support for eDP
- panel on CRD
-Message-ID: <YgLtb8NCGKDi2uh4@google.com>
-References: <1644333525-30920-1-git-send-email-quic_sbillaka@quicinc.com>
- <1644333525-30920-3-git-send-email-quic_sbillaka@quicinc.com>
+        Tue, 8 Feb 2022 17:33:02 -0500
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06373C01CB14
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:25:12 -0800 (PST)
+Received: from in02.mta.xmission.com ([166.70.13.52]:50410)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nHYv9-00DAOc-CY; Tue, 08 Feb 2022 15:25:11 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:41898 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nHYv7-00CSCi-GT; Tue, 08 Feb 2022 15:25:10 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Waiman Long <longman@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Alexey Gladkov <legion@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Jann Horn <jannh@google.com>, linux-kernel@vger.kernel.org
+References: <20220208163912.1084752-1-longman@redhat.com>
+        <YgKziblMKsmHkP4f@zeniv-ca.linux.org.uk>
+        <bd83aca3-059f-92dd-e094-b27f51f9481a@redhat.com>
+        <YgK/fdYWi0wWysci@zeniv-ca.linux.org.uk>
+        <874k59f2ad.fsf@email.froward.int.ebiederm.org>
+        <YgLr2GEXgz/TxdUA@zeniv-ca.linux.org.uk>
+Date:   Tue, 08 Feb 2022 16:25:02 -0600
+In-Reply-To: <YgLr2GEXgz/TxdUA@zeniv-ca.linux.org.uk> (Al Viro's message of
+        "Tue, 8 Feb 2022 22:16:56 +0000")
+Message-ID: <87czjxdmip.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1644333525-30920-3-git-send-email-quic_sbillaka@quicinc.com>
+Content-Type: text/plain
+X-XM-SPF: eid=1nHYv7-00CSCi-GT;;;mid=<87czjxdmip.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX182oeJyc/2QUC0MDFcVTea6z+qieDuOmFk=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH] copy_process(): Move fd_install() out of
+ sighand->siglock critical section
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 08:48:43PM +0530, Sankeerth Billakanti wrote:
-> Enable the eDP display panel support without HPD on sc7280 platform.
-> 
-> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-> ---
-> 
-> Changes in v2:
->   - sort node references alphabetically
->   - improve readability
->   - move the pwm pinctrl to pwm node
->   - move the regulators to root
->   - define backlight power
->   - remove dummy regulator node
->   - cleanup pinctrl definitions
-> 
->  arch/arm64/boot/dts/qcom/sc7280-crd.dts | 122 ++++++++++++++++++++++++++++++++
->  arch/arm64/boot/dts/qcom/sc7280.dtsi    |   2 -
->  2 files changed, 122 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-> index e2efbdd..bff2707 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-> @@ -21,6 +21,34 @@
->  	chosen {
->  		stdout-path = "serial0:115200n8";
->  	};
-> +
-> +	backlight_power: backlight-power {
+Al Viro <viro@zeniv.linux.org.uk> writes:
 
-nit: the other fixed regulator in sc7280-idp.dtsi is called
-'nvme_3v3_regulator', if you wanted to be consistent you
-could call this backlight_3v3_regulator.
+> On Tue, Feb 08, 2022 at 03:59:06PM -0600, Eric W. Biederman wrote:
+>
+>> The fd is being installed in the fdtable of the parent process,
+>> and the siglock and tasklist_lock are held to protect the child.
+>> 
+>> 
+>> Further fd_install is exposing the fd to userspace where it can be used
+>> by the process_madvise and the process_mrelease system calls, from
+>> anything that shares the fdtable of the parent thread.  Which means it
+>> needs to be guaranteed that kernel_clone will call wake_up_process
+>> before it is safe to call fd_install.
+>
+> You mean "no calling fd_install() until after we are past the last possible
+> failure exit, by which point we know that wake_up_process() will eventually
+> be called", hopefully?  If so (as I assumed all along), anything downstream
+> of
+>         if (fatal_signal_pending(current)) {
+> 		retval = -EINTR;
+> 		goto bad_fork_cancel_cgroup;
+> 	}
+>
+> should be fine...
 
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "backlight_power";
-> +
-> +		regulator-min-microvolt = <1800000>;
-> +		regulator-max-microvolt = <1800000>;
-> +
-> +		gpio = <&pm8350c_gpios 7 GPIO_ACTIVE_HIGH>;
-> +		enable-active-high;
-> +
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&edp_bl_power>;
-> +	};
-> +
-> +	edp_power: edp-power {
+Except for the problems of calling fd_install under siglock, and
+tasklist_lock, which protect nothing and cause lockdep splats.
 
-nit: see above
+There may also be assumptions on the task actually being fully setup,
+if not today then in a future use pidfd.  So I am not particularly
+comfortable with fd_install coming before we drop tasklist_lock.
 
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "edp_power";
-> +
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +
-> +		gpio = <&tlmm 80 GPIO_ACTIVE_HIGH>;
-> +		enable-active-high;
-> +
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&edp_panel_power>;
-> +	};
->  };
->  
->  &apps_rsc {
-> @@ -76,6 +104,42 @@ ap_ts_pen_1v8: &i2c13 {
->  	};
->  };
->  
-> +&edp_out {
-> +	remote-endpoint = <&edp_panel_in>;
-> +};
-> +
-> +&mdss {
-> +	status = "okay";
-> +};
-> +
-> +&mdss_edp {
-> +	status = "okay";
-> +
-> +	vdda-1p2-supply = <&vreg_l6b_1p2>;
-> +	vdda-0p9-supply = <&vreg_l10c_0p8>;
-> +};
-> +
-> +&mdss_edp_phy {
-> +	status = "okay";
-> +
-> +	vdda-1p2-supply = <&vreg_l6b_1p2>;
-> +	vdda-0p9-supply = <&vreg_l10c_0p8>;
-> +};
-> +
-> +&mdss_dp {
+I was pointing out that to resolve the locking issue we fundamentally
+can not move the fd_install earlier, to resolve the locking issues.
 
-should be before 'mdss_edp'.
-
-> +	status = "okay";
-> +
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&dp_hot_plug_det>;
-> +	data-lanes = <0 1>;
-> +	vdda-1p2-supply = <&vreg_l6b_1p2>;
-> +	vdda-0p9-supply = <&vreg_l1b_0p8>;
-> +};
-> +
-> +&mdss_mdp {
-> +	status = "okay";
-> +};
-> +
->  &nvme_3v3_regulator {
->  	gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
->  };
-> @@ -84,7 +148,65 @@ ap_ts_pen_1v8: &i2c13 {
->  	pins = "gpio51";
->  };
->  
-> +&pm8350c_pwm {
-> +	status = "okay";
-> +
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&edp_bl_pwm>;
-> +};
-> +
-> +&pm8350c_gpios {
-
-should be before 'pm8350c_pwm'
-
-> +	edp_bl_power: edp-bl-power {
-> +		pins = "gpio7";
-> +		function = "normal";
-> +		qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
-> +		bias-disable;
-> +		output-low;
-> +	};
-> +
-> +	edp_bl_pwm: edp-bl-pwm {
-> +		pins = "gpio8";
-> +		function = "func1";
-> +		qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
-> +		bias-disable;
-> +		output-low;
-> +	};
-> +};
-> +
-> +&soc {
-> +	edp_backlight: edp-backlight {
-> +		compatible = "pwm-backlight";
-> +
-> +		power-supply = <&backlight_power>;
-> +		pwms = <&pm8350c_pwm 3 65535>;
-> +	};
-> +
-> +	edp_panel: edp_panel {
-
-in difference to labels node names should use dashes as separator, not
-underscores (i.e. 'edp-panel')
-
-> +		compatible = "sharp,lq140m1jw46";
-> +
-> +		power-supply = <&edp_power>;
-> +		backlight = <&edp_backlight>;
-> +
-> +		ports {
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			port@0 {
-> +				reg = <0>;
-> +				edp_panel_in: endpoint {
-> +					remote-endpoint = <&edp_out>;
-> +				};
-> +			};
-> +		};
-> +	};
-> +};
-> +
->  &tlmm {
-> +	edp_panel_power: edp-panel-power {
-> +		pins = "gpio80";
-> +		function = "gpio";
-> +		bias-pull-down;
-> +	};
-> +
->  	tp_int_odl: tp-int-odl {
->  		pins = "gpio7";
->  		function = "gpio";
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> index 3572399..f8fa716 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> @@ -3012,8 +3012,6 @@
->  
->  			mdss_edp: edp@aea0000 {
->  				compatible = "qcom,sc7280-edp";
-> -				pinctrl-names = "default";
-> -				pinctrl-0 = <&edp_hot_plug_det>;
-
-This was just added a few days ago by commit 118cd3b8ec0d ("arm64: dts: qcom:
-sc7280: Add edp_out port and HPD lines"). The patch assumes that the 'Hot
-Plug Detect line (which functions as "panel ready" in eDP) is highly likely
-to be used by boards.'. If that is indeed the case and the CRD is the
-exception then it seems that deleting the two properties from the CRD DT
-would be a better solution.
+Eric
