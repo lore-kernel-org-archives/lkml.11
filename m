@@ -2,105 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA18C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245737AbiBHBzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:55:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43870 "EHLO
+        id S1344593AbiBHB4W (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:56:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235279AbiBHBzc (ORCPT
+        with ESMTP id S1345806AbiBHB4R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:55:32 -0500
-X-Greylist: delayed 1014 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 17:55:31 PST
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C934C061355;
-        Mon,  7 Feb 2022 17:55:30 -0800 (PST)
-Received: from kwepemi100021.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jt5CM6X25zZdZp;
-        Tue,  8 Feb 2022 09:34:23 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100021.china.huawei.com (7.221.188.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 09:38:34 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 09:38:34 +0800
-Subject: Re: [PATCH -next] blk-throttle: enable io throttle for root in cgroup
- v2
-To:     Tejun Heo <tj@kernel.org>
-CC:     <axboe@kernel.dk>, <cgroups@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yi.zhang@huawei.com>
-References: <20220114093000.3323470-1-yukuai3@huawei.com>
- <YfGE9L4i7DtNTo08@slm.duckdns.org>
- <235b0757-d322-2b6e-3ab6-ecc8c82f8f1e@huawei.com>
- <Yflr4FzUTWsiLTC/@slm.duckdns.org>
-From:   "yukuai (C)" <yukuai3@huawei.com>
-Message-ID: <32b6949d-60b1-82ce-ae44-1cf089a78276@huawei.com>
-Date:   Tue, 8 Feb 2022 09:38:33 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Mon, 7 Feb 2022 20:56:17 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50B4C061355;
+        Mon,  7 Feb 2022 17:56:15 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id m25so12606713qka.9;
+        Mon, 07 Feb 2022 17:56:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5iD3JAv2NJY5TryKV7Dj3UeZLdxf5ObNApLJn3kqghU=;
+        b=pI2HVe8/S4Y+G8xDNV/doYes7BMdmEzKOwMNl7CDEObwsbuznhLtxXks2G0+fmmtqk
+         OSyX7Z8b5Cw098Dal46LDTktIPK7mkbN9+/iqg0/oz2SC6OyjrfsxvjIG+1eI+S2pRLe
+         LN0MuicP9WdOvLvvxpWVtJeHt5nsFOgC5KiRzkgPHe1Glk4rl5+NVOc0ErrapRH1RLxm
+         N/4eiaijhDREgdPR3442hjLOZ88Y0dRiXhbXqLf4LY1CNZGO0AB6qIwhcUzflIGsP4Xs
+         lq9LKc7x/Jmuec8Rn6XmyylUnXgWfFD65WnYLKkObMGsrzSTnIkVpB+mdvGGkjz9lEgt
+         +pdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5iD3JAv2NJY5TryKV7Dj3UeZLdxf5ObNApLJn3kqghU=;
+        b=cv4hckLoF2iUh7WP44PHeoc7PHVd1XtJtjMgbT0MPMRmJEIDR2WmhADKtF9TvBtDAm
+         MC/d0O4TDj/t6+3kzV57DERzJ90MjBCRjNjB85MAgyri9CsMFRuo/ebldCjPwyJ1Kbgl
+         joSdZkKO8qr3lYJ+bqJUzG/SGeUBitgO26vAJBj05tANzZLBUTlay9DmydlZYWUJOiwN
+         IyVP18aqzLCjMhC/ncQuGx6gli3UlAAfUxYqDEzgIZn7JmlZQPw8np9CwZ/QaV+2FWav
+         MWEe2oYSGutIIaJjOY0/NC8a0gfNhoo5Ti2cGrVO9j8HFM9eahqGmIhcDzkL4A9aH56h
+         CdDA==
+X-Gm-Message-State: AOAM531KcDTU4Q52aU1SkkQud2XqbpAS9l1DmG0KKxd5NkogwDR+HyYb
+        kFXWs76XtmOybi9R5uiA3SGy3JvDpic=
+X-Google-Smtp-Source: ABdhPJxFhOahqPUMM3z6x7O2UdmmKk2bvzsAtCng2yMFFMl9tpErPaNvbD7C4dAkwpclDF1KH6PNaQ==
+X-Received: by 2002:a37:a707:: with SMTP id q7mr1512997qke.229.1644285374971;
+        Mon, 07 Feb 2022 17:56:14 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id f14sm6395153qko.117.2022.02.07.17.56.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 17:56:14 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     kvalo@kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH V2] wcn36xx: use struct_size over open coded arithmetic
+Date:   Tue,  8 Feb 2022 01:56:06 +0000
+Message-Id: <20220208015606.1514022-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <Yflr4FzUTWsiLTC/@slm.duckdns.org>
-Content-Type: text/plain; charset="gbk"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ÔÚ 2022/02/02 1:20, Tejun Heo Ð´µÀ:
-> Hello,
-> 
-> On Thu, Jan 27, 2022 at 10:36:38AM +0800, yukuai (C) wrote:
->> In our case, the disk is provided by server, and such disk can be shared
->> by multipul clients. Thus for the client side, the server is a higher
->> level parent.
->>
->> Theoretically, limit the io from server for each client is feasible,
->> however, the main reason we don't want to do this is the following
->> shortcoming:
->>
->> client can still send io to server unlimited, we can just limit the
->> amount of io that can complete from server, which might cause too much
->> pressure on the server side.
-> 
-> I don't quite follow the "send io to server unlimited" part. Doesn't that
-> get limited by available number of requests? 
+From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
 
-Hi, Tejun
+Replace zero-length array with flexible-array member and make use
+of the struct_size() helper in kmalloc(). For example:
 
-Here I mean that io is not limited through io throttle from client. Of
-course io must be limited by avaliable number of requests.
+struct wcn36xx_hal_ind_msg {
+    struct list_head list;
+    size_t msg_len;
+    u8 msg[];
+};
 
-> ie. if the server throttles,
-> the in-flight requests will take longer to complete which exhausts the
-> available requests and thus slows down the client.
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes.
 
-For example, if we have 8 clients, and available requests is 64.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+---
+ drivers/net/wireless/ath/wcn36xx/smd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-1) If we don't limit iops, and each client send 64 io to server, some
-client might have performance issue.
+diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
+index caeb68901326..59ad332156ae 100644
+--- a/drivers/net/wireless/ath/wcn36xx/smd.c
++++ b/drivers/net/wireless/ath/wcn36xx/smd.c
+@@ -3347,7 +3347,7 @@ int wcn36xx_smd_rsp_process(struct rpmsg_device *rpdev,
+ 	case WCN36XX_HAL_DELETE_STA_CONTEXT_IND:
+ 	case WCN36XX_HAL_PRINT_REG_INFO_IND:
+ 	case WCN36XX_HAL_SCAN_OFFLOAD_IND:
+-		msg_ind = kmalloc(sizeof(*msg_ind) + len, GFP_ATOMIC);
++		msg_ind = kmalloc(struct_size(msg_ind, msg, len), GFP_ATOMIC);
+ 		if (!msg_ind) {
+ 			wcn36xx_err("Run out of memory while handling SMD_EVENT (%d)\n",
+ 				    msg_header->msg_type);
+-- 
+2.25.1
 
-2) If we limit iops to 8 from clients, then server can receive 64 io at
-most at the same time, both client and server should work fine.
-
-3) If we limit iops to 8 for each client from server, client should work
-fine, however, server can receive 64 x 8 = 512 io at most at the same
-time, which might cause too much pressure on the server.(maybe bps is
-more appropriate to explain the high pressure).
-
-Thus I prefer to limit io from client.
-
-Thanks,
-Kuai
-> That's how it's supposed
-> to work on the local machine too.
-> 
-> Thanks.
-> 
