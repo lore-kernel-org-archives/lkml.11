@@ -2,81 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 912E5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA33C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:55:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243251AbiBHFwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 00:52:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50396 "EHLO
+        id S244325AbiBHFze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 00:55:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241616AbiBHFwD (ORCPT
+        with ESMTP id S240505AbiBHFzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 00:52:03 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE44C0401ED;
-        Mon,  7 Feb 2022 21:52:03 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id u130so17068011pfc.2;
-        Mon, 07 Feb 2022 21:52:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZLuzhS9mpAsa68IzrkcFELBJbuL/U6yaQdmHB+sIbmQ=;
-        b=pJ5k9u7DsQhT4m3WLMULPqmPvLDCOPemnJy+LVyt6UblDhM3h+9ChipQWwkxML/qmL
-         qIcROrJ1tGf4Rwd0i3idG0eGzmhkYgI4I8m/JlfHflITQnaDcv8+xbQdXM0gWTr3HpxK
-         h1AkXmEHQOgpUjUaV0PsFuUMwCw6bkA0XMu2N6FfobRYE+VKAtyApH9Fv7jE4lGY+EOX
-         byXzhqzEUVoxGJpFelZMOQp/SJ/nM6nFv7tc8eGcVLax9/silgoJJ7UXwczEhsMeyaZW
-         8+TvU2SCcA0YwWXtI8pOEoQr0JhwKJ5UOXpvKdD6NtPbCrm7dFH5DJBqBhIGRW1RKqtk
-         rqHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZLuzhS9mpAsa68IzrkcFELBJbuL/U6yaQdmHB+sIbmQ=;
-        b=0zISPWDPY3hAeX0vYi75TJ+gbjOFVD7z5KdDWMMYul2F1Q9fg67doF3HgQtTmwlrO0
-         C6dAF4mc753et/OBpaQDMxlmp7JB7fPd9NyUI25ty0mr1mzdKe+B6wtq1Kh/ZVvUV0Yu
-         Kvx6JRxINv/2UQmn85GxQvvg1iNNqf1BbTTlC0pWApzDdDJFDOde5Hp77p1LJzbwleZ6
-         Ee7ZlT4TAkg3dhG/EhA5N1d78rB9LzMbxP+9uI4Hl3uSpaMPvtxcgU6WexPphktQavf4
-         9qpPyNJy3Sc3NaSxIN1qA3m2QR+wD5JkCrttsQPZ86o48xW8+7s5k2IkLfjttyi/g8+g
-         psLQ==
-X-Gm-Message-State: AOAM5318FLwUTjEu5YjgFDWTtJRrZZrnM0sWOVuabQxJGKiPXfkjEHZC
-        /o05P3u//JC9Nrr/uyV9ePw=
-X-Google-Smtp-Source: ABdhPJw/qE/ac6I/582HmyblUw3dJARRiZ5C8iGiN7CAokxqsV9kIAnmQMwIT5uMXuvibt0EYldZ0g==
-X-Received: by 2002:a05:6a00:1709:: with SMTP id h9mr2786398pfc.23.1644299522547;
-        Mon, 07 Feb 2022 21:52:02 -0800 (PST)
-Received: from google.com ([2620:15c:202:201:7164:d581:d7ee:53bb])
-        by smtp.gmail.com with ESMTPSA id gb5sm1273066pjb.16.2022.02.07.21.52.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 21:52:01 -0800 (PST)
-Date:   Mon, 7 Feb 2022 21:51:59 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/4] Input: mtk-pmic-keys - add support for MT6358
-Message-ID: <YgIE/806gDmRJYCn@google.com>
-References: <20220121140323.4080640-1-mkorpershoek@baylibre.com>
- <20220121140323.4080640-4-mkorpershoek@baylibre.com>
+        Tue, 8 Feb 2022 00:55:33 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49834C0401DC;
+        Mon,  7 Feb 2022 21:55:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644299732; x=1675835732;
+  h=message-id:subject:from:reply-to:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=hB8ZdgEN7x8JNCd2gvp3JSiGkG5Iwv8cQ5qYdVOM6l8=;
+  b=cSJ7G+XubQ9DFD/BacwZUzIwnChHlZ5r17TmdGKraX8nOvNinPyq6ngE
+   nPqP2vavc0KWkt/7sZACLR6/nTobB45utK9cZJjx+s/JDjrYW7BiBbnKo
+   3KUSg3xHaFgKLRmbFzg2g3l/rYVyhUpGdjUPB4/lCLis5MCHoSQkEGB21
+   uu5SQiNJH9ltdN8xv6/G0Tf3BpN1Pu5OJyKgvQD7UMhfDH0TGs840zuw1
+   SpluE/UVl+UBHy89DKPr9KzKA5EMfoQjjqXwdvV++D9bScy9NEfhXb8Gh
+   Mfla0DDDfMZfskpnnIB9B2uMqw3/j4KV1DBmbwvldcpHf+OEKssdOqDvH
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="249088180"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="249088180"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 21:55:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="567739156"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga001.jf.intel.com with ESMTP; 07 Feb 2022 21:55:31 -0800
+Received: from cbaldes-mobl.amr.corp.intel.com (unknown [10.212.183.65])
+        by linux.intel.com (Postfix) with ESMTP id 7BAC5580970;
+        Mon,  7 Feb 2022 21:55:31 -0800 (PST)
+Message-ID: <89dacc424a729c247f6431e393b89dbf8901c4c8.camel@linux.intel.com>
+Subject: Re: [PATCH V6 1/3] platform/x86: Add Intel Software Defined Silicon
+ driver
+From:   "David E. Box" <david.e.box@linux.intel.com>
+Reply-To: david.e.box@linux.intel.com
+To:     Joe Perches <joe@perches.com>, hdegoede@redhat.com,
+        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
+        srinivas.pandruvada@intel.com, mgross@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        Mark Gross <markgross@kernel.org>
+Date:   Mon, 07 Feb 2022 21:55:31 -0800
+In-Reply-To: <dd4150af8858115c96ebab690182190556669050.camel@perches.com>
+References: <20220208005444.487209-1-david.e.box@linux.intel.com>
+         <20220208005444.487209-2-david.e.box@linux.intel.com>
+         <103681860759d72b1acf712eed334b1d4ef6b7d5.camel@perches.com>
+         <d52b50f3b704280e476e60417323c98f45baf54a.camel@linux.intel.com>
+         <dd4150af8858115c96ebab690182190556669050.camel@perches.com>
+Organization: David E. Box
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121140323.4080640-4-mkorpershoek@baylibre.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 03:03:22PM +0100, Mattijs Korpershoek wrote:
-> MT6358 pmic keys behave differently than mt6397 and mt6323: there are
-> two interrupts per key: one for press, the other one for release (_r)
+On Mon, 2022-02-07 at 21:34 -0800, Joe Perches wrote:
+> On Mon, 2022-02-07 at 18:54 -0800, David E. Box wrote:
+> > On Mon, 2022-02-07 at 17:40 -0800, Joe Perches wrote:
+> > > On Mon, 2022-02-07 at 16:54 -0800, David E. Box wrote:
+> > > > Intel Software Defined Silicon (SDSi) is a post manufacturing mechanism
+> > > > for
+> > > > activating additional silicon features. Features are enabled through a
+> > > > license activation process.  The SDSi driver provides a per socket,
+> > > > sysfs
+> > > > attribute interface for applications to perform 3 main provisioning
+> > > > functions:
+> []
+> > > > +static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct
+> > > > sdsi_mbox_info
+> > > > *info,
+> > > > +			      size_t *data_size)
+> > > > +{
+> > > > +	struct device *dev = priv->dev;
+> > > > +	u32 total, loop, eom, status, message_size;
+> > > []
+> > > > +		if (packet_size > SDSI_SIZE_MAILBOX) {
+> > > > +			dev_err(dev, "Packet size to large\n");
+> > > 
+> > > too
+> > 
+> > Sorry, I'm missing the question here. If it's whether packet_size could also
+> > not
+> > be a multiple of sizeof(u64) the answer here is yes. But I don't see how
+> > that
+> > matters. packet_size is a value read from the hardware. This is just a
+> > sanity
+> > check.
 > 
-> Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+> just a to/too typo.
+> 
+> "Packet size too large\n"
 
-Applied, thank you.
+Doh!
 
--- 
-Dmitry
+> 
+> 
+
