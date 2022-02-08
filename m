@@ -2,93 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA39CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF03C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357832AbiBHNb7 (ORCPT
+        id S1348814AbiBHNff (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:31:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53128 "EHLO
+        Tue, 8 Feb 2022 08:35:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378148AbiBHNbB (ORCPT
+        with ESMTP id S234534AbiBHNfb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:31:01 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD3CC0085A1;
-        Tue,  8 Feb 2022 05:30:10 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id v5-20020a17090a4ec500b001b8b702df57so2063940pjl.2;
-        Tue, 08 Feb 2022 05:30:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=xB1NXJm/hSKDkAp5uvY7mCj2m7DP3RBYPb/PrnHZ/F0=;
-        b=U9PDIsquqkjhFvbqaVGOsHi//xTum/Othq5fIF5gO7qTVFAazvz84mdHt9EulDmD5B
-         4+uaHBh9uLS1Gf5se6ZWe4nVmgnRqdKIzbL9vNSdGR347jC2w/e4g5Sjk04GBDeSRk16
-         qCEn1V9RUi4ewlLxYhaUGN4GDFUh4jtHjOkn+Y69nLduFTtLVLl9TLd0b5PEswHvxfMZ
-         r7lBg7OZ/Ad6agOGUAATJuR4TF9UMoYVQFMV/EM/hZGDsXG4PV1k4Lm9MQzvZ9SURdRd
-         M5GmiPhc1vNwX2xwO5Wdq8TZBnCEFd91OdJj7XOC8itYVCru0jtJmx6jwH30Euj4KBRU
-         /Nlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=xB1NXJm/hSKDkAp5uvY7mCj2m7DP3RBYPb/PrnHZ/F0=;
-        b=DLczjz5O7MdAzYT1vX0qht/hxLBxJ7Ccwx41MVro3gb9DQGmK/Cg47n2KBasR86fds
-         pmug92DWe2cjTJ3wJpCk3hy1j6KzNCTtEJMhquPoHIye83/01l60HuzSzUVJdx4WP17z
-         XeUKUBTbz5v8WzdYFsWer870vzJji4YzV4T58DPKU5530aAjMII/+Yezec6Hr+FspmyD
-         KULv2BhYa+Vi8hDkUUTCVWL5W/aUQRNhTo21/3BZuJtAM3QzIWwkWngUM0R8sVVPPW1A
-         0id847xQCZFMwQTkX4R+I6+FbRQOjctMZyjogBhbiU8RtcYZBglnIf4Q+FYaGn9YAseI
-         bZOQ==
-X-Gm-Message-State: AOAM531lRceIjnFDH2up3h5EPDVco/TuV0R54p5I9ieXXrUyA7vGjsXa
-        rL+x2KkBywBpxPUMamJNZ2uwU/cB/hIFYLw4mB8=
-X-Google-Smtp-Source: ABdhPJxQrxFY5lG5Z7jL/Ry8i/+9mnFdAHla8n6Qy1qJHVR27ottI155JllEx8V1L8ONpdHYn+sDxg==
-X-Received: by 2002:a17:90b:3a90:: with SMTP id om16mr1354914pjb.111.1644327009355;
-        Tue, 08 Feb 2022 05:30:09 -0800 (PST)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [71.19.144.195])
-        by smtp.gmail.com with ESMTPSA id l21sm16263274pfu.120.2022.02.08.05.30.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 05:30:08 -0800 (PST)
-Message-ID: <62027060.1c69fb81.bd18b.8223@mx.google.com>
-Date:   Tue, 08 Feb 2022 05:30:08 -0800 (PST)
-X-Google-Original-Date: Tue, 08 Feb 2022 13:30:02 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220207133856.644483064@linuxfoundation.org>
-Subject: RE: [PATCH 5.16 000/127] 5.16.8-rc2 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        Tue, 8 Feb 2022 08:35:31 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9B6C03FECE;
+        Tue,  8 Feb 2022 05:35:29 -0800 (PST)
+Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JtPBX6x53z67Zjj;
+        Tue,  8 Feb 2022 21:34:44 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 14:35:26 +0100
+Received: from A2006125610.china.huawei.com (10.202.227.178) by
+ lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 13:35:20 +0000
+From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>
+CC:     <alex.williamson@redhat.com>, <jgg@nvidia.com>,
+        <cohuck@redhat.com>, <mgurtovoy@nvidia.com>, <yishaih@nvidia.com>,
+        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
+        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
+        <wangzhou1@hisilicon.com>
+Subject: [RFC v4 0/8] vfio/hisilicon: add ACC live migration driver
+Date:   Tue, 8 Feb 2022 13:34:17 +0000
+Message-ID: <20220208133425.1096-1-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.202.227.178]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  7 Feb 2022 15:04:44 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.16.8 release.
-> There are 127 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 09 Feb 2022 13:38:34 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.8-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Hi,
 
-5.16.8-rc2 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+This series attempts to add vfio live migration support for
+HiSilicon ACC VF devices based on the new v2 migration protocol
+definition and mlx5 v7 series discussed here[0]. Many thanks to
+everyone involved in the v2 protocol discussions.
+
+Since the v2 protocol is still under discussion, this is provided
+as a RFC for now. This migration driver supports only the
+VFIO_MIGRATION_STOP_COPY and doesn't have the support for optional
+VFIO_MIGRATION_P2P or VFIO_MIGRATION_PRE_COPY features.
+
+Since we are not making use of the PRE_COPY state as used in v1,
+the compatibility check for source and destination devices is now
+done once the migration data transfer is finished. As discussed
+here[1], this is not ideal as it will delay reporting the error
+in case of a mismatch.
+
+This is sanity tested on a HiSilicon platform using the Qemu branch
+provided here[2].
+
+Please take a look and let know your feedback.
+
+Thanks,
+Shameer
+[0] https://lore.kernel.org/netdev/20220207172216.206415-1-yishaih@nvidia.com/
+[1] https://lore.kernel.org/kvm/20220202103041.2b404d13.alex.williamson@redhat.com/
+[2] https://github.com/jgunthorpe/qemu/commits/vfio_migration_v2 
+
+
+v3 --> RFCv4
+-Based on migration v2 protocol and mlx5 v7 series.
+-Added RFC tag again as migration v2 protocol is still under discussion.
+-Added new patch #6 to retrieve the PF QM data.
+-PRE_COPY compatibility check is now done after the migration data
+ transfer. This is not ideal and needs discussion.
+
+RFC v2 --> v3
+ -Dropped RFC tag as the vfio_pci_core subsystem framework is now
+  part of 5.15-rc1.
+ -Added override methods for vfio_device_ops read/write/mmap calls
+  to limit the access within the functional register space.
+ -Patches 1 to 3 are code refactoring to move the common ACC QM
+  definitions and header around.
+
+RFCv1 --> RFCv2
+
+ -Adds a new vendor-specific vfio_pci driver(hisi-acc-vfio-pci)
+  for HiSilicon ACC VF devices based on the new vfio-pci-core
+  framework proposal.
+
+ -Since HiSilicon ACC VF device MMIO space contains both the
+  functional register space and migration control register space,
+  override the vfio_device_ops ioctl method to report only the
+  functional space to VMs.
+
+ -For a successful migration, we still need access to VF dev
+  functional register space mainly to read the status registers.
+  But accessing these while the Guest vCPUs are running may leave
+  a security hole. To avoid any potential security issues, we
+  map/unmap the MMIO regions on a need basis and is safe to do so.
+  (Please see hisi_acc_vf_ioremap/unmap() fns in patch #4).
+ 
+ -Dropped debugfs support for now.
+ -Uses common QM functions for mailbox access(patch #3).
+
+Longfang Liu (2):
+  crypto: hisilicon/qm: Move few definitions to common header
+  hisi_acc_vfio_pci: Add support for VFIO live migration
+
+Shameer Kolothum (6):
+  crypto: hisilicon/qm: Move the QM header to include/linux
+  hisi_acc_qm: Move PCI device IDs to common header
+  hisi_acc_vfio_pci: add new vfio_pci driver for HiSilicon ACC devices
+  hisi_acc_vfio_pci: Restrict access to VF dev BAR2 migration region
+  crypto: hisilicon/qm: Add helper to retrieve the PF qm data
+  hisi_acc_vfio_pci: Use its own PCI reset_done error handler
+
+ drivers/crypto/hisilicon/hpre/hpre.h          |    2 +-
+ drivers/crypto/hisilicon/hpre/hpre_main.c     |   18 +-
+ drivers/crypto/hisilicon/qm.c                 |   72 +-
+ drivers/crypto/hisilicon/sec2/sec.h           |    2 +-
+ drivers/crypto/hisilicon/sec2/sec_main.c      |   20 +-
+ drivers/crypto/hisilicon/sgl.c                |    2 +-
+ drivers/crypto/hisilicon/zip/zip.h            |    2 +-
+ drivers/crypto/hisilicon/zip/zip_main.c       |   17 +-
+ drivers/vfio/pci/Kconfig                      |    9 +
+ drivers/vfio/pci/Makefile                     |    3 +
+ drivers/vfio/pci/hisi_acc_vfio_pci.c          | 1232 +++++++++++++++++
+ drivers/vfio/pci/hisi_acc_vfio_pci.h          |  121 ++
+ .../qm.h => include/linux/hisi_acc_qm.h       |   44 +
+ include/linux/pci_ids.h                       |    6 +
+ 14 files changed, 1496 insertions(+), 54 deletions(-)
+ create mode 100644 drivers/vfio/pci/hisi_acc_vfio_pci.c
+ create mode 100644 drivers/vfio/pci/hisi_acc_vfio_pci.h
+ rename drivers/crypto/hisilicon/qm.h => include/linux/hisi_acc_qm.h (87%)
+
+-- 
+2.17.1
 
