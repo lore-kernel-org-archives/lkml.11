@@ -2,417 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 474BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F82C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:27:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351358AbiBHL07 (ORCPT
+        id S1358241AbiBHL1Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:26:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
+        Tue, 8 Feb 2022 06:27:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356156AbiBHKRw (ORCPT
+        with ESMTP id S1347472AbiBHK2H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:17:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207FDC03FEC0;
-        Tue,  8 Feb 2022 02:17:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D5C761559;
-        Tue,  8 Feb 2022 10:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED064C340F5;
-        Tue,  8 Feb 2022 10:17:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644315470;
-        bh=B5kPKaKPj6WPHi2c1HyJFZySKtUKUS+F4wL45+EXYc8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=RabgyLZ3czHUYu9eQfVMsqKQjd28oIC2eAxgZIC/cMV5+hibcqoT2NuQmD7DOvK9P
-         GnRyg8wnvdKLog6dXkCzWblnagSXKBQck0iCu0oHCN3Ua0XyfVEoxg+uWlBd/oAQDt
-         rHBvl98IaSWDWY6FHyzInN0UsRrhTjDnogCM9Qa7l7kp94NkYHvumML5idokK2waW/
-         xrCoRrsEfriZZmjoX4JOgHOTZHMrPKXIz0qzqEElQ6EuLqleaKsW8xmLJSTvnFFVe3
-         xVd+g8G1mWmnWNc6aFYJwDtirwlqQ9A8ckL6chYsh34iLWS5JfJ/LSUQVthh0Q28q+
-         dxaweMMQtijaw==
-Received: by mail-vs1-f41.google.com with SMTP id l14so2786942vsm.3;
-        Tue, 08 Feb 2022 02:17:49 -0800 (PST)
-X-Gm-Message-State: AOAM530nG/Fh3hSF6uA3ihqocqhnCuZ0SEksEqPZLmy0BjTIE2cURkX/
-        vJninW//Pc1E/WVzzq2f64W3MmC4YpB5OAOw3bw=
-X-Google-Smtp-Source: ABdhPJw9ojF+FsTHyx00YzSyU8RZae2avCJuBYfyZzZ4Ycd7H1q1FgS5AkGIyag/uQm+hXTMiI6TevIA1CXIxIuiWe8=
-X-Received: by 2002:a67:ea4e:: with SMTP id r14mr840479vso.51.1644315468769;
- Tue, 08 Feb 2022 02:17:48 -0800 (PST)
+        Tue, 8 Feb 2022 05:28:07 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B33C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:28:06 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id y129so12122144ybe.7
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 02:28:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=VAes0K6H43qfG6qT4tOIU7yUDpw4vagrCK/oQ0t1jOI=;
+        b=oAr6eSm3TD8rCF2JEmCTotEPI8lh7hDCZ5jBdG5Msbv5GWN8OQ1N/WoO8HNAjrEtoq
+         CGG+0Tdqd/oSgjBBVpGa7dL9D/QvmXoiNwhulQfyxnyUV+EvIi6+zwS1BjiMrgwCSqR2
+         LsdeCcyqfltn+pdi5YhbvjdXYJw8sMZRYDZh6OGH/BT180m76xMtkOaXWdERlN/AAe5f
+         OYjigrRSoul3oIBCLbM4uaX1SHafJoAMEFmZLwKeea2Kb5xChKNSdzWGfPSyt9XYUbT/
+         luRhfitKVY4ckdo5bPuAi3gH2NnNGdbfKBNJBTS5QnN4226362crEBhksXj2AfWQuyuT
+         gGzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=VAes0K6H43qfG6qT4tOIU7yUDpw4vagrCK/oQ0t1jOI=;
+        b=wDvgYpYHLSUeh3XJQHZo1khFOPD/5KMM19HSCwjajTWPijqwsawDBlbmvp/ggEXfja
+         khQh0xIxnkzGMajHtuAY8OpOLfCwfo0KW3HBGvxgJwMmk/OJT6/rCLVv6PXsPkKj3U8P
+         qe/0ScHvLj+2A51b1N0ZNpEphUF+FgllIJ3F9zNOxbK3lwyGzcdIjCGKAZ1LdvwikoeY
+         NPfop58RwY3JZ7UvBVSZtTgiY2HAQvGZWf9oz/5KQNEGi23le+2LRDQDYBbNeo2L5h+C
+         Ub2l7v5I5kiYgiob+Srh+T7/IjJR9FbgFP/XHuAEhdmSkz1ZK3f1A19V407NU1WwUj/i
+         tznA==
+X-Gm-Message-State: AOAM53146FwUgAVauHw8bbRthnr44y+G+5Ij9SFc/v1x02C/M6+OkOS8
+        FdZ7AkBA00PTLgDimkqzYTrbHh7nPUNmhEX7Mc7DjA==
+X-Google-Smtp-Source: ABdhPJyVazHeiw1TonQOpILqoVJAAKrGDCS+kDoFH7vl2vrRGlIkkpXy2B9+8Kkjwpil5ybXXYiUHTiXPGRsSLsUzP4=
+X-Received: by 2002:a25:6b45:: with SMTP id o5mr3696692ybm.704.1644316085503;
+ Tue, 08 Feb 2022 02:28:05 -0800 (PST)
 MIME-Version: 1.0
-References: <20220126114452.692512-1-apatel@ventanamicro.com>
- <20220126114452.692512-9-apatel@ventanamicro.com> <CAJF2gTQsSn1KBgX2bg2LiSUbCmbGD3oF5KcmK5gq2Dd49BWDBQ@mail.gmail.com>
- <CAAhSdy3Dkv6ga0ZMp5rMFa8nV9EDHgOMBwuJ4z4-w52T8EaUag@mail.gmail.com>
-In-Reply-To: <CAAhSdy3Dkv6ga0ZMp5rMFa8nV9EDHgOMBwuJ4z4-w52T8EaUag@mail.gmail.com>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Tue, 8 Feb 2022 18:17:37 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTSLmBcgUUE3VGsEq0JCWV74Yy-pkduS66rk=VPVwxk59g@mail.gmail.com>
-Message-ID: <CAJF2gTSLmBcgUUE3VGsEq0JCWV74Yy-pkduS66rk=VPVwxk59g@mail.gmail.com>
-Subject: Re: [PATCH v10 8/8] RISC-V: Enable RISC-V SBI CPU Idle driver for
- QEMU virt machine
-To:     Anup Patel <anup@brainfault.org>
-Cc:     Anup Patel <apatel@ventanamicro.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Sandeep Tripathy <milun.tripathy@gmail.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Liush <liush@allwinnertech.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        kvm-riscv@lists.infradead.org
+References: <20220207103752.341184175@linuxfoundation.org>
+In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 8 Feb 2022 15:57:54 +0530
+Message-ID: <CA+G9fYssiwEbu2oyVo-uQ+gQLL8kpc+v+2CGg5+tr7NTydS1dQ@mail.gmail.com>
+Subject: Re: [PATCH 4.9 00/48] 4.9.300-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 4:54 PM Anup Patel <anup@brainfault.org> wrote:
+On Mon, 7 Feb 2022 at 16:38, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> On Tue, Feb 8, 2022 at 12:16 PM Guo Ren <guoren@kernel.org> wrote:
-> >
-> > Another question:
-> >
-> > Have you put "idle-states {" in qemu's DTS? or how do you test your patches?
+> This is the start of the stable review cycle for the 4.9.300 release.
+> There are 48 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
-> I usually do the following:
-> 1) Dump QEMU virt machine DTB
-> 2) Convert QEMU virt machine DTB into DTS
-> 3) Add "idle-states" in QEMU virt machine DTS
-> 4) Create QEMU virt machine DTB with "idle-states"
-> 5) Use the new QEMU virt machine DTB for testing this series.
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
 >
-> Here's one of the DTS files which I used for testing on QEMU virt machine:
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.9.300-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.9.y
+> and the diffstat can be found below.
 >
-> /dts-v1/;
+> thanks,
 >
-> / {
->     #address-cells = <0x02>;
->     #size-cells = <0x02>;
->     compatible = "riscv-virtio";
->     model = "riscv-virtio,qemu";
->
->     chosen {
->         linux,initrd-end = <0x8855d200>;
->         linux,initrd-start = <0x88200000>;
->         bootargs = "root=/dev/ram rw console=ttyS0 earlycon";
->         stdout-path = "/soc/uart@10000000";
->     };
->
->     memory@80000000 {
->         device_type = "memory";
->         reg = <0x00 0x80000000 0x00 0x10000000>;
->     };
->
->     cpus {
->         #address-cells = <0x01>;
->         #size-cells = <0x00>;
->         timebase-frequency = <0x989680>;
->
->         cpu@0 {
->             phandle = <0x07>;
->             device_type = "cpu";
->             reg = <0x00>;
->             status = "okay";
->             compatible = "riscv";
->             riscv,isa = "rv64imafdcsu";
->             mmu-type = "riscv,sv48";
->             cpu-idle-states = <&CPU_NONRET_DEF>;
->
->             interrupt-controller {
->                 #interrupt-cells = <0x01>;
->                 interrupt-controller;
->                 compatible = "riscv,cpu-intc";
->                 phandle = <0x08>;
->             };
->         };
->
->         cpu@1 {
->             phandle = <0x05>;
->             device_type = "cpu";
->             reg = <0x01>;
->             status = "okay";
->             compatible = "riscv";
->             riscv,isa = "rv64imafdcsu";
->             mmu-type = "riscv,sv48";
->             cpu-idle-states = <&CPU_RET_DEF>;
->
->             interrupt-controller {
->                 #interrupt-cells = <0x01>;
->                 interrupt-controller;
->                 compatible = "riscv,cpu-intc";
->                 phandle = <0x06>;
->             };
->         };
->
->         cpu@2 {
->             phandle = <0x03>;
->             device_type = "cpu";
->             reg = <0x02>;
->             status = "okay";
->             compatible = "riscv";
->             riscv,isa = "rv64imafdcsu";
->             mmu-type = "riscv,sv48";
->             cpu-idle-states = <&CPU_NONRET_DEF>;
->
->             interrupt-controller {
->                 #interrupt-cells = <0x01>;
->                 interrupt-controller;
->                 compatible = "riscv,cpu-intc";
->                 phandle = <0x04>;
->             };
->         };
->
->         cpu@3 {
->             phandle = <0x01>;
->             device_type = "cpu";
->             reg = <0x03>;
->             status = "okay";
->             compatible = "riscv";
->             riscv,isa = "rv64imafdcsu";
->             mmu-type = "riscv,sv48";
->             cpu-idle-states = <&CPU_RET_DEF>;
->
->             interrupt-controller {
->                 #interrupt-cells = <0x01>;
->                 interrupt-controller;
->                 compatible = "riscv,cpu-intc";
->                 phandle = <0x02>;
->             };
->         };
->
->         cpu-map {
->
->             cluster0 {
->
->                 core0 {
->                     cpu = <0x07>;
->                 };
->
->                 core1 {
->                     cpu = <0x05>;
->                 };
->
->                 core2 {
->                     cpu = <0x03>;
->                 };
->
->                 core3 {
->                     cpu = <0x01>;
->                 };
->             };
->         };
->
->         idle-states {
->             CPU_RET_DEF: cpu-retentive-default {
->                 compatible = "riscv,idle-state";
->                 riscv,sbi-suspend-param = <0x00000000>;
->                 entry-latency-us = <10>;
->                 exit-latency-us = <10>;
->                 min-residency-us = <100>;
->             };
->
->             CPU_NONRET_DEF: cpu-nonretentive-default {
->                 compatible = "riscv,idle-state";
->                 riscv,sbi-suspend-param = <0x80000000>;
->                 entry-latency-us = <100>;
->                 exit-latency-us = <100>;
->                 min-residency-us = <1000>;
->             };
->         };
->     };
->
->     soc {
->         #address-cells = <0x02>;
->         #size-cells = <0x02>;
->         compatible = "simple-bus";
->         ranges;
->
->         flash@20000000 {
->             bank-width = <0x04>;
->             reg = <0x00 0x20000000 0x00 0x2000000 0x00 0x22000000 0x00
-> 0x2000000>;
->             compatible = "cfi-flash";
->         };
->
->         rtc@101000 {
->             interrupts = <0x0b>;
->             interrupt-parent = <0x09>;
->             reg = <0x00 0x101000 0x00 0x1000>;
->             compatible = "google,goldfish-rtc";
->         };
->
->         uart@10000000 {
->             interrupts = <0x0a>;
->             interrupt-parent = <0x09>;
->             clock-frequency = <0x384000>;
->             reg = <0x00 0x10000000 0x00 0x100>;
->             compatible = "ns16550a";
->         };
->
->         poweroff {
->             value = <0x5555>;
->             offset = <0x00>;
->             regmap = <0x0a>;
->             compatible = "syscon-poweroff";
->         };
->
->         reboot {
->             value = <0x7777>;
->             offset = <0x00>;
->             regmap = <0x0a>;
->             compatible = "syscon-reboot";
->         };
->
->         test@100000 {
->             phandle = <0x0a>;
->             reg = <0x00 0x100000 0x00 0x1000>;
->             compatible = "sifive,test1\0sifive,test0\0syscon";
->         };
->
->         pci@30000000 {
->             interrupt-map-mask = <0x1800 0x00 0x00 0x07>;
->             interrupt-map = <0x00 0x00 0x00 0x01 0x09 0x20 0x00 0x00
-> 0x00 0x02 0x09 0x21 0x00 0x00 0x00 0x03 0x09 0x22 0x00 0x00 0x00 0x04
-> 0x09 0x23 0x800 0x00 0x00 0x01 0x09 0x21 0x800 0x00 0x00 0x02 0x09
-> 0x22 0x800 0x00 0x00 0x03 0x09 0x23 0x800 0x00 0x00 0x04 0x09 0x20
-> 0x1000 0x00 0x00 0x01 0x09 0x22 0x1000 0x00 0x00 0x02 0x09 0x23 0x1000
-> 0x00 0x00 0x03 0x09 0x20 0x1000 0x00 0x00 0x04 0x09 0x21 0x1800 0x00
-> 0x00 0x01 0x09 0x23 0x1800 0x00 0x00 0x02 0x09 0x20 0x1800 0x00 0x00
-> 0x03 0x09 0x21 0x1800 0x00 0x00 0x04 0x09 0x22>;
->             ranges = <0x1000000 0x00 0x00 0x00 0x3000000 0x00 0x10000
-> 0x2000000 0x00 0x40000000 0x00 0x40000000 0x00 0x40000000>;
->             reg = <0x00 0x30000000 0x00 0x10000000>;
->             dma-coherent;
->             bus-range = <0x00 0xff>;
->             linux,pci-domain = <0x00>;
->             device_type = "pci";
->             compatible = "pci-host-ecam-generic";
->             #size-cells = <0x02>;
->             #interrupt-cells = <0x01>;
->             #address-cells = <0x03>;
->         };
->
->         virtio_mmio@10008000 {
->             interrupts = <0x08>;
->             interrupt-parent = <0x09>;
->             reg = <0x00 0x10008000 0x00 0x1000>;
->             compatible = "virtio,mmio";
->         };
->
->         virtio_mmio@10007000 {
->             interrupts = <0x07>;
->             interrupt-parent = <0x09>;
->             reg = <0x00 0x10007000 0x00 0x1000>;
->             compatible = "virtio,mmio";
->         };
->
->         virtio_mmio@10006000 {
->             interrupts = <0x06>;
->             interrupt-parent = <0x09>;
->             reg = <0x00 0x10006000 0x00 0x1000>;
->             compatible = "virtio,mmio";
->         };
->
->         virtio_mmio@10005000 {
->             interrupts = <0x05>;
->             interrupt-parent = <0x09>;
->             reg = <0x00 0x10005000 0x00 0x1000>;
->             compatible = "virtio,mmio";
->         };
->
->         virtio_mmio@10004000 {
->             interrupts = <0x04>;
->             interrupt-parent = <0x09>;
->             reg = <0x00 0x10004000 0x00 0x1000>;
->             compatible = "virtio,mmio";
->         };
->
->         virtio_mmio@10003000 {
->             interrupts = <0x03>;
->             interrupt-parent = <0x09>;
->             reg = <0x00 0x10003000 0x00 0x1000>;
->             compatible = "virtio,mmio";
->         };
->
->         virtio_mmio@10002000 {
->             interrupts = <0x02>;
->             interrupt-parent = <0x09>;
->             reg = <0x00 0x10002000 0x00 0x1000>;
->             compatible = "virtio,mmio";
->         };
->
->         virtio_mmio@10001000 {
->             interrupts = <0x01>;
->             interrupt-parent = <0x09>;
->             reg = <0x00 0x10001000 0x00 0x1000>;
->             compatible = "virtio,mmio";
->         };
->
->         plic@c000000 {
->             phandle = <0x09>;
->             riscv,ndev = <0x35>;
->             reg = <0x00 0xc000000 0x00 0x210000>;
->             interrupts-extended = <0x08 0x0b 0x08 0x09 0x06 0x0b 0x06
-> 0x09 0x04 0x0b 0x04 0x09 0x02 0x0b 0x02 0x09>;
->             interrupt-controller;
->             compatible = "riscv,plic0";
->             #interrupt-cells = <0x01>;
->             #address-cells = <0x00>;
->         };
->
->         clint@2000000 {
->             interrupts-extended = <0x08 0x03 0x08 0x07 0x06 0x03 0x06
-> 0x07 0x04 0x03 0x04 0x07 0x02 0x03 0x02 0x07>;
->             reg = <0x00 0x2000000 0x00 0x10000>;
->             compatible = "riscv,clint0";
->         };
->     };
-> };
+> greg k-h
 
-Thx Anup, but it still couldn't work for testing suspend.
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-# echo mem > /sys/power/state
-sh: write error: Function not implemented
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-Why there is no ARCH_SUSPEND_POSSIBLE in the patch series?
+## Build
+* kernel: 4.9.300-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-4.9.y
+* git commit: fa39f098578af99470f3762bca8001c0db1c3335
+* git describe: v4.9.299-49-gfa39f098578a
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.9.y/build/v4.9.2=
+99-49-gfa39f098578a
 
-ref arm64's:
-commit 166936bace056dfc11452d794209f39a5e9b0fb4
-Author: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Date:   Thu Nov 7 18:37:14 2013 +0000
+## Test Regressions (compared to v4.9.299-33-g5e40da2b7be3)
+No test regressions found.
 
-    arm64: kernel: add PM build infrastructure
+## Metric Regressions (compared to v4.9.299-33-g5e40da2b7be3)
+No metric regressions found.
 
-    This patch adds the required makefile and kconfig entries to enable PM
-    for arm64 systems.
+## Test Fixes (compared to v4.9.299-33-g5e40da2b7be3)
+No test fixes found.
 
-    The kernel relies on the cpu_{suspend}/{resume} infrastructure to
-    properly save the context for a CPU and put it to sleep, hence this
-    patch adds the config option required to enable cpu_{suspend}/{resume}
-    API.
+## Metric Fixes (compared to v4.9.299-33-g5e40da2b7be3)
+No metric fixes found.
 
-    In order to rely on the CPU PM implementation for saving and restoring
-    of CPU subsystems like GIC and PMU, the arch Kconfig must be also
-    augmented to select the CONFIG_CPU_PM option when SUSPEND or CPU_IDLE
-    kernel implementations are selected.
+## Test result summary
+total: 62346, pass: 50123, fail: 394, skip: 10326, xfail: 1503
 
->
-> Regards,
-> Anup
+## Build Summary
+* arm: 254 total, 238 passed, 16 failed
+* arm64: 32 total, 32 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 19 total, 19 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 22 total, 22 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 31 total, 31 passed, 0 failed
 
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-arm64
+* kselftest-arm64/arm64.btitest.bti_c_func
+* kselftest-arm64/arm64.btitest.bti_j_func
+* kselftest-arm64/arm64.btitest.bti_jc_func
+* kselftest-arm64/arm64.btitest.bti_none_func
+* kselftest-arm64/arm64.btitest.nohint_func
+* kselftest-arm64/arm64.btitest.paciasp_func
+* kselftest-arm64/arm64.nobtitest.bti_c_func
+* kselftest-arm64/arm64.nobtitest.bti_j_func
+* kselftest-arm64/arm64.nobtitest.bti_jc_func
+* kselftest-arm64/arm64.nobtitest.bti_none_func
+* kselftest-arm64/arm64.nobtitest.nohint_func
+* kselftest-arm64/arm64.nobtitest.paciasp_func
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kvm-unit-tests
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* ssuite
+* v4l2-compliance
 
-
--- 
-Best Regards
- Guo Ren
-
-ML: https://lore.kernel.org/linux-csky/
+--
+Linaro LKFT
+https://lkft.linaro.org
