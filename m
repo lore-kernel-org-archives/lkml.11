@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5067C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:10:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:10:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345673AbiBHCKE (ORCPT
+        id S1345313AbiBHCKH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 21:10:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
+        Mon, 7 Feb 2022 21:10:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345423AbiBHCEy (ORCPT
+        with ESMTP id S1345440AbiBHCFB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 21:04:54 -0500
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339AFC061A73;
-        Mon,  7 Feb 2022 18:04:54 -0800 (PST)
-Received: by mail-qt1-x82e.google.com with SMTP id s1so13625527qtw.9;
-        Mon, 07 Feb 2022 18:04:54 -0800 (PST)
+        Mon, 7 Feb 2022 21:05:01 -0500
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A676C061355;
+        Mon,  7 Feb 2022 18:05:00 -0800 (PST)
+Received: by mail-qv1-xf30.google.com with SMTP id g3so8328815qvb.8;
+        Mon, 07 Feb 2022 18:05:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=A3rHofytIHL6hqd3yZWm4UUK7FUFMg5OI+YIKcI4+yE=;
-        b=n6A3CQsLf20f3kv2RMwudyWlMDW9dto76/g0Hm7lKUP1SR1LiHMG8uZfiyI1yIyaP3
-         4CKzZASKDcfEMaVk6/3YF/3x4G2Rwd0y8vRDg6FI7zDGoSuWboAAIKVUkg4sRDl/pmQu
-         64m8Wmg11YKID+fAMZqBJmE9SX9AG0Ay4rES6gi0y1HMd8UqAQOyMmpqbKp8cin+y2WZ
-         jE1IMiQWLrwVe4iSxZBs6kqbF0OGxGyc20r8SH021xiKLCXoH5Z7yXs/muVmApivt8rT
-         K+2XBr4m6j1XsTNKWFEmx/5+rRBxgAD2DdAnCNPyDulKpHeg+9W0CuGMd+udc5EyCa6e
-         AcWw==
+        bh=QJ4snz0cur4JK5tD6GVF0n87Yz4vTpK9iTHizeDj3iE=;
+        b=L0wRbH7Uwc/sRu0vXoICLt5omtZ5lBc+QgBAEuGEXNU5O6E+dxsM7IwvfPXhw3/2dJ
+         xT6VG28FHURrt/VwUaZcu6DBJkVITDd1JzLtzwrwFYWB6bvtsoCEdDkxoc0/LAAnsTpO
+         2OQSES+lb8qwJ6f/BY6S4V0PcjtGd/01jOhKyifadF0LeJmsXBojPEbpGxY3cx9qh7fV
+         kdjmgDCxse1pkQy+sOgX9Jb1xPEKrdYNDodCIY+3NFv0NarlsNzG8NjOQZPPU9rc+AwB
+         AD+McFFt+wXce0r1Oh5lV7O5RR0NMZqLdErpDk0evS7Xbz/uWXk1uJLHZ8GuhDN5luJ4
+         oVPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=A3rHofytIHL6hqd3yZWm4UUK7FUFMg5OI+YIKcI4+yE=;
-        b=L8SWpVEPox5r8nqsGelLrE3ozrlZr8XyAwI9UDyZZIlDLnDSW84q7AoDVhx7eY5j4t
-         HOrC34g31uzA1fJGOErK7yq6tDQuSiZ1LGxzYPcO0sc6kj2KYK+bPjDquGyytVYXAlMg
-         ROV0uSSTZlrmHH7bvwJGR3JN0QdKkqrC1DtKLfEzD3y15GKxFG9mjTW5ChdZbJucEXHt
-         S+C5AHFda4jvTLVJDEVC5iW1tQzvjub0hM/6ywFj6hERx5KzyhoEh4wmZd8aahjwKfmM
-         0ifMZT7lAw7OPbpYRJraamGshmU1XNxpwb7vyG0dLP1gjIJnJpX3wpIPgpiF7RLSNOZc
-         XB6w==
-X-Gm-Message-State: AOAM533VVd1QgqJGANMkCml9jQKRq/JB0ZYlYspoLiz6gatU4TlqarSK
-        uStGIMAtETRQd5TP99BF6B3Gpxewuzo=
-X-Google-Smtp-Source: ABdhPJzEcQkwqQ4iRPCPNJdtO9sLm61x0xXKzmQMgQ2HwUTbMRTJpEd3gEIdgUfwymeRG53c3jMFqA==
-X-Received: by 2002:ac8:5d91:: with SMTP id d17mr1675104qtx.341.1644285893393;
-        Mon, 07 Feb 2022 18:04:53 -0800 (PST)
+        bh=QJ4snz0cur4JK5tD6GVF0n87Yz4vTpK9iTHizeDj3iE=;
+        b=B7M9Y84Opp7yDUTXqc8F2ApQ8N119Ee8or/N9lR3Me2ibwenk5/eMl1SOh9LUcwJhG
+         8qc3/Bfkhha6RjR+gM3UOsHv6HZVbsDo7VXJZ2aeFdeZn9zYlQvPVh+7cahat5w6J08O
+         DIwQyYn2+HSdqJIMfgyR6Znpvr0IYDjokkAb4vnKVaWS5LVf3ivwoaAjjU1z0U6iADst
+         jvjrqroapRbY7CbONTWvWRIO3fUTBSQaZ+ZrleoCFIdtnf72HDbztn7QBuZuoV61mmCk
+         zS/9joZi53Wlcju1QCaOyfRX0WwPfXhWG7OZAFojMHuF+V8CoQ3NlZyOHTjFEWzyk966
+         eXGg==
+X-Gm-Message-State: AOAM533QboUwoZq2hqcidMVBecGCCSPMkCbbb65flpZU7IWIBxicMZ11
+        jVmXQEfpU0vd0EgrKQuBNq0=
+X-Google-Smtp-Source: ABdhPJyThlm/sDXXRznW7Ix7lmYnOUWfGj++ZzQMOFLCmprbbPy92fDJE1ReHLw9Fw4XHHghnVsDAg==
+X-Received: by 2002:a05:6214:29e5:: with SMTP id jv5mr1709294qvb.64.1644285899487;
+        Mon, 07 Feb 2022 18:04:59 -0800 (PST)
 Received: from shaak.. (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id u9sm1416055qko.130.2022.02.07.18.04.52
+        by smtp.gmail.com with ESMTPSA id u9sm1416055qko.130.2022.02.07.18.04.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 18:04:52 -0800 (PST)
+        Mon, 07 Feb 2022 18:04:58 -0800 (PST)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         andy.shevchenko@gmail.com, lars@metafoo.de
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v14 05/11] iio: afe: rescale: reduce risk of integer overflow
-Date:   Mon,  7 Feb 2022 21:04:35 -0500
-Message-Id: <20220208020441.3081162-6-liambeguin@gmail.com>
+Subject: [PATCH v14 10/11] dt-bindings: iio: afe: add bindings for temperature-sense-rtd
+Date:   Mon,  7 Feb 2022 21:04:40 -0500
+Message-Id: <20220208020441.3081162-11-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.35.1.4.g5d01301f2b86
 In-Reply-To: <20220208020441.3081162-1-liambeguin@gmail.com>
 References: <20220208020441.3081162-1-liambeguin@gmail.com>
@@ -66,68 +66,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reduce the risk of integer overflow by doing the scale calculation on
-a 64-bit integer. Since the rescaling is only performed on *val, reuse
-the IIO_VAL_FRACTIONAL_LOG2 case.
+An ADC is often used to measure other quantities indirectly. This
+binding describe one case, the measurement of a temperature through the
+voltage across an RTD resistor such as a PT1000.
 
 Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/afe/iio-rescale.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+ .../iio/afe/temperature-sense-rtd.yaml        | 101 ++++++++++++++++++
+ 1 file changed, 101 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
 
-diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index 468e6c345bd1..67273de46843 100644
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -25,21 +25,31 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 			  int *val, int *val2)
- {
- 	s64 tmp;
-+	int _val, _val2;
- 	s32 rem, rem2;
- 	u32 mult;
- 	u32 neg;
- 
- 	switch (scale_type) {
--	case IIO_VAL_FRACTIONAL:
--		*val *= rescale->numerator;
--		*val2 *= rescale->denominator;
--		return scale_type;
- 	case IIO_VAL_INT:
- 		*val *= rescale->numerator;
- 		if (rescale->denominator == 1)
- 			return scale_type;
- 		*val2 = rescale->denominator;
- 		return IIO_VAL_FRACTIONAL;
-+	case IIO_VAL_FRACTIONAL:
-+		/*
-+		 * When the product of both scales doesn't overflow, avoid
-+		 * potential accuracy loss (for in kernel consumers) by
-+		 * keeping a fractional representation.
-+		 */
-+		if (!check_mul_overflow(*val, rescale->numerator, &_val) &&
-+		    !check_mul_overflow(*val2, rescale->denominator, &_val2)) {
-+			*val = _val;
-+			*val2 = _val2;
-+			return IIO_VAL_FRACTIONAL;
-+		}
-+		fallthrough;
- 	case IIO_VAL_FRACTIONAL_LOG2:
- 		tmp = (s64)*val * 1000000000LL;
- 		tmp = div_s64(tmp, rescale->denominator);
-@@ -51,7 +61,10 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 		if (!rem)
- 			return scale_type;
- 
--		tmp = 1 << *val2;
-+		if (scale_type == IIO_VAL_FRACTIONAL)
-+			tmp = *val2;
-+		else
-+			tmp = ULL(1) << *val2;
- 
- 		rem2 = *val % (int)tmp;
- 		*val = *val / (int)tmp;
+diff --git a/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml b/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
+new file mode 100644
+index 000000000000..336ce96371db
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
+@@ -0,0 +1,101 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/afe/temperature-sense-rtd.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Temperature Sense RTD
++
++maintainers:
++  - Liam Beguin <liambeguin@gmail.com>
++
++description: |
++  RTDs (Resistance Temperature Detectors) are a kind of temperature sensors
++  used to get a linear voltage to temperature reading within a give range
++  (usually 0 to 100 degrees Celsius).
++
++  When an io-channel measures the output voltage across an RTD such as a
++  PT1000, the interesting measurement is almost always the corresponding
++  temperature, not the voltage output. This binding describes such a circuit.
++
++  The general transfer function here is (using SI units)
++
++    V = R(T) * iexc
++    R(T) = r0 * (1 + alpha * T)
++    T = 1 / (alpha * r0 * iexc) * (V - r0 * iexc)
++
++  The following circuit matches what's in the examples section.
++
++           5V0
++          -----
++            |
++        +---+----+
++        |  R 5k  |
++        +---+----+
++            |
++            V 1mA
++            |
++            +---- Vout
++            |
++        +---+----+
++        | PT1000 |
++        +---+----+
++            |
++          -----
++           GND
++
++properties:
++  compatible:
++    const: temperature-sense-rtd
++
++  io-channels:
++    maxItems: 1
++    description: |
++      Channel node of a voltage io-channel.
++
++  '#io-channel-cells':
++    const: 0
++
++  excitation-current-microamp:
++    description: The current fed through the RTD sensor.
++
++  alpha-ppm-per-celsius:
++    description: |
++      alpha can also be expressed in micro-ohms per ohm Celsius. It's a linear
++      approximation of the resistance versus temperature relationship
++      between 0 and 100 degrees Celsius.
++
++      alpha = (R_100 - R_0) / (100 * R_0)
++
++      Where, R_100 is the resistance of the sensor at 100 degrees Celsius, and
++      R_0 (or r-naught-ohms) is the resistance of the sensor at 0 degrees
++      Celsius.
++
++      Pure platinum has an alpha of 3925. Industry standards such as IEC60751
++      and ASTM E-1137 specify an alpha of 3850.
++
++  r-naught-ohms:
++    description: |
++      Resistance of the sensor at 0 degrees Celsius.
++      Common values are 100 for PT100, 500 for PT500, and 1000 for PT1000
++
++additionalProperties: false
++required:
++  - compatible
++  - io-channels
++  - excitation-current-microamp
++  - alpha-ppm-per-celsius
++  - r-naught-ohms
++
++examples:
++  - |
++    pt1000_1: temperature-sensor0 {
++        compatible = "temperature-sense-rtd";
++        #io-channel-cells = <0>;
++        io-channels = <&temp_adc1 0>;
++
++        excitation-current-microamp = <1000>; /* i = U/R = 5 / 5000 */
++        alpha-ppm-per-celsius = <3908>;
++        r-naught-ohms = <1000>;
++    };
++...
 -- 
 2.35.1.4.g5d01301f2b86
 
