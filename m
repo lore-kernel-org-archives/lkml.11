@@ -2,186 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 003B6C3526E
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFA8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356438AbiBHLad (ORCPT
+        id S1356764AbiBHLan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:30:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60592 "EHLO
+        Tue, 8 Feb 2022 06:30:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356476AbiBHKtg (ORCPT
+        with ESMTP id S1349455AbiBHKvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:49:36 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE9BC03FEC3;
-        Tue,  8 Feb 2022 02:49:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644317375; x=1675853375;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=M55KZu2QZB5/Dm64TNCQxn9MG29ddQ39+nhh37gfD/I=;
-  b=BqstaFSOLY1KkJexNH83pnHkmNAI4LioEIyNv4q6a0Kclvi8BAQwLVio
-   BlOJuAxjhUfqXxt3WFcruYYiBfVa7sdT/QtfAlzZif+aidfkuoyWqRaJV
-   2RKv8ZEGNB6/Bsoc7Egl3i1m6/qtCP+ydIkdhuKlmgMaY0+1MPhBqvDCq
-   UEREsFvKQfTdM+uVx3OtNqBNcH67Rlz/TiaKB/r/qcOqQwiDMzChDv+mj
-   mrRtcUx/zgr8E+wUspne/tURReqoylgOe3fxBQQNvY/J+7XdwDlxaDbpe
-   hVECXustUV+kZAx8qbUdIqFwQ18ZiGw2VaBZw6yo9jMwTI8u9AePRfScO
-   g==;
-IronPort-SDR: EkrbKHP3uOk0uVFmPiAseSDf13NtILToVfRQw/p4mx2PLqPCRMmClxA9SIXmw2bPFcX6uI0v2D
- eU0oISWnIgyX/qx2bllIvdDxFpSOa5AER2i703hAyKUO2v8OTCXZoWi0qwbs7N+ESs+FzxIdfL
- SmO5SG1LeCQh6fiGu00tc0l7mU82nWS21qKNJ5TaLMrHfGdCwgak+QukN0sgdLnmF9l3VqvzCA
- UsXj9UZev5aWaqRMZ7iqODWkijTcmtwqfqP6Xpid3RYMCQKEJnpzvo9RmkPxtgVvirFFHZTymJ
- PddesnsKnjKuKSRsCCsPOcd7
-X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
-   d="scan'208";a="152299954"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Feb 2022 03:49:32 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 8 Feb 2022 03:49:30 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 8 Feb 2022 03:49:27 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <herbert@gondor.apana.org.au>, <krzysztof.kozlowski@canonical.com>
-CC:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <linux-crypto@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <kavyasree.kotagiri@microchip.com>,
-        <devicetree@vger.kernel.org>,
-        "Tudor Ambarus" <tudor.ambarus@microchip.com>
-Subject: [PATCH v2 2/3] dt-bindings: crypto: Convert Atmel TDES to yaml
-Date:   Tue, 8 Feb 2022 12:49:17 +0200
-Message-ID: <20220208104918.226156-3-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220208104918.226156-1-tudor.ambarus@microchip.com>
-References: <20220208104918.226156-1-tudor.ambarus@microchip.com>
+        Tue, 8 Feb 2022 05:51:00 -0500
+X-Greylist: delayed 3344 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 02:50:57 PST
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F3BAC03FEC0;
+        Tue,  8 Feb 2022 02:50:57 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2187sJBI000850;
+        Tue, 8 Feb 2022 01:55:05 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=HmDmdaqFc6mlTNUc6VCJQyDSkG97ZNkiLElcbfGwqAk=;
+ b=eDyU2vLiTM7XXbJXbRyBD5O1qWYRnFe4LNgXmQUygzAGZ8RsNLZJlaqYOGtrzC/yrbb8
+ dUOj7Gkp2gr1CSkKttB0CohruVHeYPb2wBTYV16zhw4Hk8FwILrQB94AFzFqsuVuSXXb
+ X1WEUBuMm+Fq+a/rrSxy0tmRuPfFXyToKDCbePXO0r6DqsRaObMeJMyFZepqgGdNEoCt
+ bBjjnyt9N4NPXXz5koR9+28AEVljbFge/LNx1r7RLIuec5ENVfaUZqgO7rhetpHCh8KA
+ 1rUeV41NM4Fsi/MtllWY+kKppcg4pH4RAN4K3sSGFnmGvt8FfJ1prlyBD/xfXofmH6Uc Kw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3e3mhsgecj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 01:55:05 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 8 Feb
+ 2022 01:55:04 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 8 Feb 2022 01:55:04 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 6790F3F7095;
+        Tue,  8 Feb 2022 01:55:01 -0800 (PST)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>
+Subject: [net-next PATCH 1/4] octeontx2-af: Don't enable Pause frames by default
+Date:   Tue, 8 Feb 2022 15:24:53 +0530
+Message-ID: <20220208095456.6122-2-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220208095456.6122-1-hkelam@marvell.com>
+References: <20220208095456.6122-1-hkelam@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: NhRb48mfvg2dtnJoguAMUZXaqINnOXEQ
+X-Proofpoint-GUID: NhRb48mfvg2dtnJoguAMUZXaqINnOXEQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-08_02,2022-02-07_02,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert Atmel TDES documentation to yaml format. With the conversion the
-clock and clock-names properties are made mandatory. The driver returns
--EINVAL if "tdes_clk" is not found, reflect that in the bindings and make
-the clock and clock-names properties mandatory. Update the example to
-better describe how one should define the dt node.
+Current implementation is such that 802.3x pause frames are
+enabled by default.  As CGX and RPM blocks support PFC
+(priority flow control) also, instead of driver enabling one
+between them enable them upon request from PF or its VFs.
+Also add support to disable pause frames in driver unbind.
 
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 ---
- .../crypto/atmel,at91sam9g46-tdes.yaml        | 63 +++++++++++++++++++
- .../bindings/crypto/atmel-crypto.txt          | 23 -------
- 2 files changed, 63 insertions(+), 23 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-tdes.yaml
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   | 41 ++++++----------
+ .../net/ethernet/marvell/octeontx2/af/rpm.c   | 47 +++++--------------
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  8 ----
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  | 15 +++---
+ .../ethernet/marvell/octeontx2/nic/otx2_vf.c  | 12 +++--
+ 5 files changed, 43 insertions(+), 80 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-tdes.yaml b/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-tdes.yaml
-new file mode 100644
-index 000000000000..8a71f3feb6a3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-tdes.yaml
-@@ -0,0 +1,63 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/crypto/atmel,at91sam9g46-tdes.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Atmel Triple Data Encryption Standard (TDES) HW cryptographic accelerator
-+
-+maintainers:
-+  - Tudor Ambarus <tudor.ambarus@microchip.com>
-+
-+properties:
-+  compatible:
-+    const: atmel,at91sam9g46-tdes
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: tdes_clk
-+
-+  dmas:
-+    items:
-+      - description: TX DMA Channel
-+      - description: RX DMA Channel
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/at91.h>
-+    #include <dt-bindings/dma/at91.h>
-+
-+    tdes: crypto@e2014000 {
-+      compatible = "atmel,at91sam9g46-tdes";
-+      reg = <0xe2014000 0x100>;
-+      interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
-+      clocks = <&pmc PMC_TYPE_PERIPHERAL 96>;
-+      clock-names = "tdes_clk";
-+      dmas = <&dma0 AT91_XDMAC_DT_PERID(54)>,
-+             <&dma0 AT91_XDMAC_DT_PERID(53)>;
-+      dma-names = "tx", "rx";
-+    };
-diff --git a/Documentation/devicetree/bindings/crypto/atmel-crypto.txt b/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-index 1353ebd0dcaa..5c6541cfcc4a 100644
---- a/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-+++ b/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-@@ -2,29 +2,6 @@
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index 3631d612aaca..fb7069c757f5 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -782,21 +782,8 @@ static void cgx_lmac_pause_frm_config(void *cgxd, int lmac_id, bool enable)
  
- These are the HW cryptographic accelerators found on some Atmel products.
+ 	if (!is_lmac_valid(cgx, lmac_id))
+ 		return;
+-	if (enable) {
+-		/* Enable receive pause frames */
+-		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
+-		cfg |= CGX_SMUX_RX_FRM_CTL_CTL_BCK;
+-		cgx_write(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL, cfg);
+-
+-		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
+-		cfg |= CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
+-		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
+-
+-		/* Enable pause frames transmission */
+-		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
+-		cfg |= CGX_SMUX_TX_CTL_L2P_BP_CONV;
+-		cgx_write(cgx, lmac_id, CGXX_SMUX_TX_CTL, cfg);
  
--* Triple Data Encryption Standard (Triple DES)
--
--Required properties:
--- compatible : Should be "atmel,at91sam9g46-tdes".
--- reg: Should contain TDES registers location and length.
--- interrupts: Should contain the IRQ line for the TDES.
--
--Optional properties:
--- dmas: List of two DMA specifiers as described in
--        atmel-dma.txt and dma.txt files.
--- dma-names: Contains one identifier string for each DMA specifier
--             in the dmas property.
--
--Example:
--tdes@f803c000 {
--	compatible = "atmel,at91sam9g46-tdes";
--	reg = <0xf803c000 0x100>;
--	interrupts = <44 4 0>;
--	dmas = <&dma1 2 20>,
--	       <&dma1 2 21>;
--	dma-names = "tx", "rx";
--};
--
- * Secure Hash Algorithm (SHA)
++	if (enable) {
+ 		/* Set pause time and interval */
+ 		cgx_write(cgx, lmac_id, CGXX_SMUX_TX_PAUSE_PKT_TIME,
+ 			  DEFAULT_PAUSE_TIME);
+@@ -813,21 +800,21 @@ static void cgx_lmac_pause_frm_config(void *cgxd, int lmac_id, bool enable)
+ 		cfg &= ~0xFFFFULL;
+ 		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_TX_PAUSE_PKT_INTERVAL,
+ 			  cfg | (DEFAULT_PAUSE_TIME / 2));
+-	} else {
+-		/* ALL pause frames received are completely ignored */
+-		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
+-		cfg &= ~CGX_SMUX_RX_FRM_CTL_CTL_BCK;
+-		cgx_write(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL, cfg);
++	}
  
- Required properties:
+-		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
+-		cfg &= ~CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
+-		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
++	/* ALL pause frames received are completely ignored */
++	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
++	cfg &= ~CGX_SMUX_RX_FRM_CTL_CTL_BCK;
++	cgx_write(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL, cfg);
+ 
+-		/* Disable pause frames transmission */
+-		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
+-		cfg &= ~CGX_SMUX_TX_CTL_L2P_BP_CONV;
+-		cgx_write(cgx, lmac_id, CGXX_SMUX_TX_CTL, cfg);
+-	}
++	cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
++	cfg &= ~CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
++	cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
++
++	/* Disable pause frames transmission */
++	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
++	cfg &= ~CGX_SMUX_TX_CTL_L2P_BP_CONV;
++	cgx_write(cgx, lmac_id, CGXX_SMUX_TX_CTL, cfg);
+ }
+ 
+ void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+index 9ea2f6ac38ec..8c0b35a868cf 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+@@ -167,26 +167,6 @@ void rpm_lmac_pause_frm_config(void *rpmd, int lmac_id, bool enable)
+ 	u64 cfg;
+ 
+ 	if (enable) {
+-		/* Enable 802.3 pause frame mode */
+-		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+-		cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_PFC_MODE;
+-		rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
+-
+-		/* Enable receive pause frames */
+-		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+-		cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE;
+-		rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
+-
+-		/* Enable forward pause to TX block */
+-		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+-		cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_IGNORE;
+-		rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
+-
+-		/* Enable pause frames transmission */
+-		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+-		cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
+-		rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
+-
+ 		/* Set pause time and interval */
+ 		cfg = rpm_read(rpm, lmac_id,
+ 			       RPMX_MTI_MAC100X_CL01_PAUSE_QUANTA);
+@@ -199,23 +179,22 @@ void rpm_lmac_pause_frm_config(void *rpmd, int lmac_id, bool enable)
+ 		cfg &= ~0xFFFFULL;
+ 		rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_CL01_QUANTA_THRESH,
+ 			  cfg | (RPM_DEFAULT_PAUSE_TIME / 2));
++	}
+ 
+-	} else {
+-		/* ALL pause frames received are completely ignored */
+-		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+-		cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE;
+-		rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
++	/* ALL pause frames received are completely ignored */
++	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
++	cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE;
++	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
+ 
+-		/* Disable forward pause to TX block */
+-		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+-		cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_IGNORE;
+-		rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
++	/* Disable forward pause to TX block */
++	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
++	cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_IGNORE;
++	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
+ 
+-		/* Disable pause frames transmission */
+-		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+-		cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
+-		rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
+-	}
++	/* Disable pause frames transmission */
++	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
++	cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
++	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
+ }
+ 
+ int rpm_get_rx_stats(void *rpmd, int lmac_id, int idx, u64 *rx_stat)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 97fb61915379..811d775a9752 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -296,7 +296,6 @@ static int nix_interface_init(struct rvu *rvu, u16 pcifunc, int type, int nixlf,
+ 	struct rvu_hwinfo *hw = rvu->hw;
+ 	struct sdp_node_info *sdp_info;
+ 	int pkind, pf, vf, lbkid, vfid;
+-	struct mac_ops *mac_ops;
+ 	u8 cgx_id, lmac_id;
+ 	bool from_vf;
+ 	int err;
+@@ -326,13 +325,6 @@ static int nix_interface_init(struct rvu *rvu, u16 pcifunc, int type, int nixlf,
+ 		cgx_set_pkind(rvu_cgx_pdata(cgx_id, rvu), lmac_id, pkind);
+ 		rvu_npc_set_pkind(rvu, pkind, pfvf);
+ 
+-		mac_ops = get_mac_ops(rvu_cgx_pdata(cgx_id, rvu));
+-
+-		/* By default we enable pause frames */
+-		if ((pcifunc & RVU_PFVF_FUNC_MASK) == 0)
+-			mac_ops->mac_enadis_pause_frm(rvu_cgx_pdata(cgx_id,
+-								    rvu),
+-						      lmac_id, true, true);
+ 		break;
+ 	case NIX_INTF_TYPE_LBK:
+ 		vf = (pcifunc & RVU_PFVF_FUNC_MASK) - 1;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 86c1c2f77bd7..67fbe6ec0030 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1697,9 +1697,6 @@ int otx2_open(struct net_device *netdev)
+ 	if (pf->linfo.link_up && !(pf->pcifunc & RVU_PFVF_FUNC_MASK))
+ 		otx2_handle_link_event(pf);
+ 
+-	/* Restore pause frame settings */
+-	otx2_config_pause_frm(pf);
+-
+ 	/* Install DMAC Filters */
+ 	if (pf->flags & OTX2_FLAG_DMACFLTR_SUPPORT)
+ 		otx2_dmacflt_reinstall_flows(pf);
+@@ -2782,10 +2779,6 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	/* Enable link notifications */
+ 	otx2_cgx_config_linkevents(pf, true);
+ 
+-	/* Enable pause frames by default */
+-	pf->flags |= OTX2_FLAG_RX_PAUSE_ENABLED;
+-	pf->flags |= OTX2_FLAG_TX_PAUSE_ENABLED;
+-
+ 	return 0;
+ 
+ err_pf_sriov_init:
+@@ -2929,6 +2922,14 @@ static void otx2_remove(struct pci_dev *pdev)
+ 	if (pf->flags & OTX2_FLAG_RX_TSTAMP_ENABLED)
+ 		otx2_config_hw_rx_tstamp(pf, false);
+ 
++	/* Disable 802.3x pause frames */
++	if (pf->flags & OTX2_FLAG_RX_PAUSE_ENABLED ||
++	    (pf->flags & OTX2_FLAG_TX_PAUSE_ENABLED)) {
++		pf->flags &= ~OTX2_FLAG_RX_PAUSE_ENABLED;
++		pf->flags &= ~OTX2_FLAG_TX_PAUSE_ENABLED;
++		otx2_config_pause_frm(pf);
++	}
++
+ 	cancel_work_sync(&pf->reset_task);
+ 	/* Disable link notifications */
+ 	otx2_cgx_config_linkevents(pf, false);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index d96c8903c67e..c154b09ec12f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -702,10 +702,6 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (err)
+ 		goto err_unreg_netdev;
+ 
+-	/* Enable pause frames by default */
+-	vf->flags |= OTX2_FLAG_RX_PAUSE_ENABLED;
+-	vf->flags |= OTX2_FLAG_TX_PAUSE_ENABLED;
+-
+ 	return 0;
+ 
+ err_unreg_netdev:
+@@ -740,6 +736,14 @@ static void otx2vf_remove(struct pci_dev *pdev)
+ 
+ 	vf = netdev_priv(netdev);
+ 
++	/* Disable 802.3x pause frames */
++	if (vf->flags & OTX2_FLAG_RX_PAUSE_ENABLED ||
++	    (vf->flags & OTX2_FLAG_TX_PAUSE_ENABLED)) {
++		vf->flags &= ~OTX2_FLAG_RX_PAUSE_ENABLED;
++		vf->flags &= ~OTX2_FLAG_TX_PAUSE_ENABLED;
++		otx2_config_pause_frm(vf);
++	}
++
+ 	cancel_work_sync(&vf->reset_task);
+ 	otx2_unregister_dl(vf);
+ 	unregister_netdev(netdev);
 -- 
-2.25.1
+2.17.1
 
