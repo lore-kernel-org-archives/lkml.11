@@ -2,116 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 110FBC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D547C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358551AbiBHNVl (ORCPT
+        id S1356919AbiBHNVP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:21:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53728 "EHLO
+        Tue, 8 Feb 2022 08:21:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354305AbiBHMVf (ORCPT
+        with ESMTP id S1358790AbiBHMlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:21:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27C10C03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:21:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644322893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+Mdb5Ebivxr6jzHOzSN/tIiK6XfSCOdpNYf9wIWORf4=;
-        b=WuW6p77VAqLuteBfFWAbrbaAHkECQ9ZGu1LuSNak8lrZbeWxXynP/gazhd2ZBkCRNDvVzY
-        /Ct+593wp4eD9S7l874zPtWm7xfWCv1KsNmAIXunyiy+oXh7D+8vrsNO5kfZjtFow1rAhr
-        LhsV8nT0YqB0egt8k1UikwHTtNdMDws=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-397-qT6QavVNNGij7L-10S9VwQ-1; Tue, 08 Feb 2022 07:21:32 -0500
-X-MC-Unique: qT6QavVNNGij7L-10S9VwQ-1
-Received: by mail-wr1-f71.google.com with SMTP id h24-20020adfaa98000000b001e33eb81e71so274026wrc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:21:32 -0800 (PST)
+        Tue, 8 Feb 2022 07:41:39 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48882C03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:39 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id e28so18651077pfj.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ga+gjzrzR/LMbGVHXMahoAG4teobfaMr0L0SPMOkFuM=;
+        b=RZ9aNJj6d+PjwBnU0ZJr9mX0nqK+z2KPKSE1hVDOXS6VR7K79uaqtUSEcm7xi/csiT
+         PWkXmSg1lDYbXRJVyBHvI8LGnEa9ps7DiMTFIno+JyB6kH8xzJ+339+ev6Rsm53OTn79
+         B3I6j48uRr2+5wLm760I9Q9pCw2Z3sZkrOEYQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+Mdb5Ebivxr6jzHOzSN/tIiK6XfSCOdpNYf9wIWORf4=;
-        b=wz5Diq/7kCltxWZw3UTAVCK7WlHQGm/lTavcECielXS7PMQzi1wriJxPpUFOgYT2SN
-         Qnvuj4LPj2PP7eZcFuhGNkllU3aj/TgPJDusugh9L2SkQmTAHr9DDXqAQu335WQwepoo
-         n30lVPfr54ZtiwH52dSSWuGUTd3tz5JoVB/OJYa3R+ivtdCcNFBeqFyaLYnSeVq4eiJh
-         Nj9n+4Q3JpZrGM+XrIY9fzS6qXQ5bXhtfheC6DyAQjg9YCm8oSdgApbQ5gbOU/vZy63X
-         qb1/1Hq1ThH8YZd4zfgxjrSrom71RmB3Y9BfxcQR3p2g2ZdqBLDKyVVoQnqPt/k+rMBD
-         /OFw==
-X-Gm-Message-State: AOAM532sOo+GIIaFM18yeNOwAO5il2KfenqMyWd+js3tgr2wR3bt2pUY
-        yWa91FnT3+jXpnGjRiZ0LetXw5k6cmSDOwwU1GJ+hNKbdkuPdzeljPUb4fF2UYI+3gFNvbEY1UI
-        /ivw5wVS+WZRbt8VXreGMdlNS92kWSVmUBWtaaqA0
-X-Received: by 2002:adf:e281:: with SMTP id v1mr3333547wri.308.1644322890907;
-        Tue, 08 Feb 2022 04:21:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyLlALWJQvkTxajX4mY5wFPC0i9Cbyibc6vh+dA8xRid1wKDVpfMqtwnuSqGnDZsRaAsQEg1IKxzDseghgHQVU=
-X-Received: by 2002:adf:e281:: with SMTP id v1mr3333537wri.308.1644322890725;
- Tue, 08 Feb 2022 04:21:30 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ga+gjzrzR/LMbGVHXMahoAG4teobfaMr0L0SPMOkFuM=;
+        b=FoYAMbmg7nfKosPs3suttsuknXm3ObgBsYVG48d9Zt4sDCKa8WSJjYMffHVfbwPrw5
+         IZu8eiQYptq/XRS9ECQ9xLYkYO5MIeUQItflulComA0stbiy3xTPooJxRGjpOGb9EdoG
+         jnio9lnOJty6jZdA/WoZJZYnSA7bY/QIRuCE7Lx9akIYUS6RO9PfIYhPFVJfsoyyNhXA
+         XiY0ECDBhEby999EZE5r43tUqsTlrvvH+Bjh3wtOGfmJONEHn9QywAjeT9fOjLrl3cBR
+         QjKGcDy+YsleuM6ia7Giaxo2zxnBlJ4E/tFrvVmycmn922KgLezfc4M4xdRjjwStBlFO
+         ydYg==
+X-Gm-Message-State: AOAM533/T4WVcooSjXdJq3G6YHILpxNX7cM87YtqQvJLAHg7nNGJxC45
+        WmZ46Z3LArOAwVmx1OU4KyLZbQ==
+X-Google-Smtp-Source: ABdhPJw8d0noYcaqrmuUm0oYUt6VCRIRuANK5szIhgF5+nvEpUNbWJNicRVw/Rm/sTOyay6sR7vcPA==
+X-Received: by 2002:a63:2a86:: with SMTP id q128mr3374314pgq.53.1644324098777;
+        Tue, 08 Feb 2022 04:41:38 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:41:38 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 23/31] clk: mediatek: mux: Reverse check for existing clk to reduce nesting level
+Date:   Tue,  8 Feb 2022 20:40:26 +0800
+Message-Id: <20220208124034.414635-24-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
 MIME-Version: 1.0
-References: <20220204180504.328999-1-lyude@redhat.com>
-In-Reply-To: <20220204180504.328999-1-lyude@redhat.com>
-From:   Karol Herbst <kherbst@redhat.com>
-Date:   Tue, 8 Feb 2022 13:21:12 +0100
-Message-ID: <CACO55ttjtNW9Gx6pJegGD+r37j53Do+jc5xoyTFf8aXaBt5y-g@mail.gmail.com>
-Subject: Re: [PATCH] drm/nouveau/backlight: Fix LVDS backlight detection on
- some laptops
-To:     Lyude Paul <lyude@redhat.com>
-Cc:     nouveau <nouveau@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        stable@vger.kernel.org, Ben Skeggs <bskeggs@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 4, 2022 at 7:05 PM Lyude Paul <lyude@redhat.com> wrote:
->
-> It seems that some laptops will report having both an eDP and LVDS
-> connector, even though only the LVDS connector is actually hooked up. This
-> can lead to issues with backlight registration if the eDP connector ends up
-> getting registered before the LVDS connector, as the backlight device will
-> then be registered to the eDP connector instead of the LVDS connector.
->
-> So, fix this by only registering the backlight on connectors that are
-> reported as being connected.
->
+The clk registration code here currently does:
 
-I think the patch might risk breaking muxed systems where we have two
-GPUs, but.. the systems I know of have different ways of controlling
-the backlight anyway. So unless there is something I missed this is
+    if (IS_ERR_OR_NULL(clk_data->clks[mux->id])) {
+            ... do clk registration ...
+    }
 
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
+This extra level of nesting wastes screen real estate.
 
-> Signed-off-by: Lyude Paul <lyude@redhat.com>
-> Fixes: 6eca310e8924 ("drm/nouveau/kms/nv50-: Add basic DPCD backlight support for nouveau")
-> Bugzilla: https://gitlab.freedesktop.org/drm/nouveau/-/issues/137
-> Cc: <stable@vger.kernel.org> # v5.15+
-> ---
->  drivers/gpu/drm/nouveau/nouveau_backlight.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-> index ae2f2abc8f5a..6af12dc99d7f 100644
-> --- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
-> +++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-> @@ -294,7 +294,8 @@ nv50_backlight_init(struct nouveau_backlight *bl,
->         struct nouveau_drm *drm = nouveau_drm(nv_encoder->base.base.dev);
->         struct nvif_object *device = &drm->client.device.object;
->
-> -       if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)))
-> +       if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)) ||
-> +           nv_conn->base.status != connector_status_connected)
->                 return -ENODEV;
->
->         if (nv_conn->type == DCB_CONNECTOR_eDP) {
-> --
-> 2.34.1
->
+Reduce the nesting level by reversing the conditional shown above.
+Other than that, functionality is not changed.
+
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/clk/mediatek/clk-mux.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/clk/mediatek/clk-mux.c b/drivers/clk/mediatek/clk-mux.c
+index 01af6a52711a..70aa42144632 100644
+--- a/drivers/clk/mediatek/clk-mux.c
++++ b/drivers/clk/mediatek/clk-mux.c
+@@ -208,16 +208,17 @@ int mtk_clk_register_muxes(const struct mtk_mux *muxes,
+ 	for (i = 0; i < num; i++) {
+ 		const struct mtk_mux *mux = &muxes[i];
+ 
+-		if (IS_ERR_OR_NULL(clk_data->clks[mux->id])) {
+-			clk = mtk_clk_register_mux(mux, regmap, lock);
++		if (!IS_ERR_OR_NULL(clk_data->clks[mux->id]))
++			continue;
+ 
+-			if (IS_ERR(clk)) {
+-				pr_err("Failed to register clk %s: %pe\n", mux->name, clk);
+-				continue;
+-			}
++		clk = mtk_clk_register_mux(mux, regmap, lock);
+ 
+-			clk_data->clks[mux->id] = clk;
++		if (IS_ERR(clk)) {
++			pr_err("Failed to register clk %s: %pe\n", mux->name, clk);
++			continue;
+ 		}
++
++		clk_data->clks[mux->id] = clk;
+ 	}
+ 
+ 	return 0;
+-- 
+2.35.0.263.gb82422642f-goog
 
