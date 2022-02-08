@@ -2,110 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7922C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F77C3526E
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388069AbiBHWcO (ORCPT
+        id S1388038AbiBHWcI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:32:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
+        Tue, 8 Feb 2022 17:32:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386205AbiBHTnt (ORCPT
+        with ESMTP id S1386961AbiBHVfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:43:49 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AD6C0613CB;
-        Tue,  8 Feb 2022 11:43:48 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id y15-20020a17090a474f00b001b88562650aso2203146pjg.0;
-        Tue, 08 Feb 2022 11:43:48 -0800 (PST)
+        Tue, 8 Feb 2022 16:35:16 -0500
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BBDC0612BA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:35:11 -0800 (PST)
+Received: by mail-qt1-x836.google.com with SMTP id x5so245306qtw.10
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:35:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=47Zt1ciDlAfZ4CsVaghTCf8CTxEeHu+p/hM6Ax63pg8=;
-        b=SMmHEK9AqUbqZLIwucjvRyGysfK96AdDbYtNYRCgagZmSxwc1w2HIUufH1A8ItRgep
-         Jz5mDipLmvR9OY5cEMy1DwAGNkeDaQQn8Reuo1OukFlRbZB+oN+A1Q9D7cLj9Mbid/G7
-         R3DxXDARvZCk6cSJL4vMoQduuaAowtBA/tRJtoqA5ha8uM2TW4qXxT/GVLp9w73Dv/n7
-         3d5yBVIg8yaLMeshP38X1FNuWWahuIsRvFClqT+LI52wWuuToWlLAF9RzkdHnWbT8zdF
-         BcA/Me+ULcQlKO1W4biSCA9doeTMeXKKfNQ+72B2MxdxTiF6pYTzdxDNRYV028gfR1nq
-         Sq7A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1QB55jMTplcdYlabtTc/ZFlq8sXgFtNSlzk1Cu5qXMA=;
+        b=iZduEqW1Fq+secAshROZBw3TS9gDpmD3ryna/5cqGsaGJ2+QnzS41ZgwQTjZUQ9aJR
+         gX8vqmN5e/c3fNvEwjNsFvWwtwGJ0tN6K+2iBQQa9yPiLYoq+h0h2jytu8l8Xh9JR+yl
+         FX7eiRLxeZHfZ1NtJnwq2v7AlL8+Peu4U8ZYlxe1iibUlnaJKvqp0hQrGbVkYWys0pOY
+         drREZeKDwvBhuwBivdtTiFFuCdXozrp5Ti1v383N2E+6Y2wUGxQCbChlwXTf/siJuzV6
+         v4nV5jyJhhWELNECeTjhYEayNGj/ks0Rt0irlfGha9y6oBckQxbD69Ub4SDCQVn3KpKm
+         xzVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=47Zt1ciDlAfZ4CsVaghTCf8CTxEeHu+p/hM6Ax63pg8=;
-        b=Vskd9rXTdoWmq77k7M2RTdDJTGZbF4qUWwI4TPST5GLM5xg23Kp/p0+WhsyT/Nc1QL
-         jSw7rjP8pdGO79iBoTnYZ9XQuBP2USw354lehNg02C4HhLRlV5mu5zjsnY7CnO4AJ7SZ
-         YyApipqbMWOo41cPoKal5Vo72hHtO3POjpZW37zxnEmPlQAT5CpHph1gxg/edBCsHOSz
-         iH/nf07Xj5zKNirzTD/U3iw5FdR7mN0JAZTqjf1huhvjzg3qKk+F9Rpk5FFGu5W9VIid
-         T+hu6I4GgYfVpZy83tGqRjNUz0XWfv6EU95UKEYlVJjErzHdahVu7IgofWvIwO70w+J/
-         kGHw==
-X-Gm-Message-State: AOAM532I5eoe59PwKwPwavNRtQkEIfSuxf4iTqk4R/RWbeQKwpwpdQds
-        Ir84hqDjbDhr//cNv4XTQpI=
-X-Google-Smtp-Source: ABdhPJzd2Xi0GuGR4M7cbShojHTa5914O2E9YTB2ynvlq39JbRXCTw81IBVhXHOA5wx+3FrqqomSiQ==
-X-Received: by 2002:a17:902:9343:: with SMTP id g3mr5950056plp.11.1644349428375;
-        Tue, 08 Feb 2022 11:43:48 -0800 (PST)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
-        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 11:43:47 -0800 (PST)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        linux-btrfs@vger.kernel.org, David Sterba <dsterba@suse.com>
-Subject: [PATCH 06/12] btrfs: change lockdep class size check using ks->names
-Date:   Tue,  8 Feb 2022 11:43:18 -0800
-Message-Id: <20220208194324.85333-7-namhyung@kernel.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
-References: <20220208194324.85333-1-namhyung@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1QB55jMTplcdYlabtTc/ZFlq8sXgFtNSlzk1Cu5qXMA=;
+        b=7qG+jJAO2W2WumKF1AlEtA4+uJK4F+sbqaHBMdmpdoos1tIcmI3+b3w+dVTiGSXD+S
+         OqWn5WUJ106jVLzC+84b/r3QWKl0YGjXiAdGvA0317DsaFkx3DZ8F9ejHDrOscSUtJzl
+         j+l9gKMG0TWFJQXLPDoHBHYlPokAotdrKYc5+djQJ7v7mCs+GGa2Qu5mGpEiTnHWtrDq
+         a3rDGDkotcq6f19tpuyIH2RHmvLw9JAhJo2fQiMmK8TeAKwdx3rX/otyo6os3XOneLFZ
+         cJqOi0woj+NAQKno82HQ3TnB2ZewaAJYnDRlsGEKEu7tVbWs2V0l7jTFq+iILbG41OZF
+         4yTQ==
+X-Gm-Message-State: AOAM531wFuvHGPX7dlXzlDsLz8NdWaH89G5eblpFMJdJmGmbCIox9bGP
+        F54PUfg1pVPQjofQgqUTYq0I76UTZU9eND+1/EmcMQ==
+X-Google-Smtp-Source: ABdhPJyXNmgVa1X/Pv0CtstbtUswazDKyzLAkCK1vpTiTSNw68kUrI19g5f1phL6dQvakDtVGrP6eaEHW7qWfUirjOY=
+X-Received: by 2002:ac8:5aca:: with SMTP id d10mr4450416qtd.565.1644356110551;
+ Tue, 08 Feb 2022 13:35:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220201205534.1962784-1-haoluo@google.com> <20220201205534.1962784-6-haoluo@google.com>
+ <20220203180414.blk6ou3ccmod2qck@ast-mbp.dhcp.thefacebook.com>
+ <CA+khW7jkJbvQrTx4oPJAoBZ0EOCtr3C2PKbrzhxj-7euBK8ojg@mail.gmail.com>
+ <CAADnVQLZZ3SM2CDxnzgOnDgRtGU7+6wT9u5v4oFas5MnZF6DsQ@mail.gmail.com>
+ <CA+khW7i+TScwPZ6-rcFKiXtxMm8hiZYJGH-wYb=7jBvDWg8pJQ@mail.gmail.com>
+ <CAADnVQ+-29CS7nSXghKMgZjKte84L0nRDegUE0ObFm3d7E=eWw@mail.gmail.com>
+ <CA+khW7iWd5MzZW_mCfgqHESi8okjNRiRMr0TM=CQzLkMsa_a5g@mail.gmail.com> <CAADnVQJcTAgcbwrOWO8EnbTdAcQ91HQmtpn7aKJGwHc=mEpJ1g@mail.gmail.com>
+In-Reply-To: <CAADnVQJcTAgcbwrOWO8EnbTdAcQ91HQmtpn7aKJGwHc=mEpJ1g@mail.gmail.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Tue, 8 Feb 2022 13:34:59 -0800
+Message-ID: <CA+khW7h1n9Np3O3DvMYc272ivPwCHtWVy=1cvQZMLzekfhpeZg@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next v2 5/5] selftests/bpf: test for pinning for
+ cgroup_view link
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Joe Burton <jevburton.kernel@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With upcoming lock tracepoints config, it'd allow some lockdep
-annotation code without enabling CONFIG_LOCKDEP actually.  In that
-config, size of the struct lock_class_key would be 0.
+On Tue, Feb 8, 2022 at 1:20 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Feb 8, 2022 at 12:07 PM Hao Luo <haoluo@google.com> wrote:
+> >
+> > On Sat, Feb 5, 2022 at 8:29 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Fri, Feb 4, 2022 at 10:27 AM Hao Luo <haoluo@google.com> wrote:
+> > > > >
+> > > > > > In our use case, we can't ask the users who create cgroups to do the
+> > > > > > pinning. Pinning requires root privilege. In our use case, we have
+> > > > > > non-root users who can create cgroup directories and still want to
+> > > > > > read bpf stats. They can't do pinning by themselves. This is why
+> > > > > > inheritance is a requirement for us. With inheritance, they only need
+> > > > > > to mkdir in cgroupfs and bpffs (unprivileged operations), no pinning
+> > > > > > operation is required. Patch 1-4 are needed to implement inheritance.
+> > > > > >
+> > > > > > It's also not a good idea in our use case to add a userspace
+> > > > > > privileged process to monitor cgroupfs operations and perform the
+> > > > > > pinning. It's more complex and has a higher maintenance cost and
+> > > > > > runtime overhead, compared to the solution of asking whoever makes
+> > > > > > cgroups to mkdir in bpffs. The other problem is: if there are nodes in
+> > > > > > the data center that don't have the userspace process deployed, the
+> > > > > > stats will be unavailable, which is a no-no for some of our users.
+> > > > >
+> > > > > The commit log says that there will be a daemon that does that
+> > > > > monitoring of cgroupfs. And that daemon needs to mkdir
+> > > > > directories in bpffs when a new cgroup is created, no?
+> > > > > The kernel is only doing inheritance of bpf progs into
+> > > > > new dirs. I think that daemon can pin as well.
+> > > > >
+> > > > > The cgroup creation is typically managed by an agent like systemd.
+> > > > > Sounds like you have your own agent that creates cgroups?
+> > > > > If so it has to be privileged and it can mkdir in bpffs and pin too ?
+> > > >
+> > > > Ah, yes, we have our own daemon to manage cgroups. That daemon creates
+> > > > the top-level cgroup for each job to run inside. However, the job can
+> > > > create its own cgroups inside the top-level cgroup, for fine grained
+> > > > resource control. This doesn't go through the daemon. The job-created
+> > > > cgroups don't have the pinned objects and this is a no-no for our
+> > > > users.
+> > >
+> > > We can whitelist certain tracepoints to be sleepable and extend
+> > > tp_btf prog type to include everything from prog_type_syscall.
+> > > Such prog would attach to cgroup_mkdir and cgroup_release
+> > > and would call bpf_sys_bpf() helper to pin progs in new bpffs dirs.
+> > > We can allow prog_type_syscall to do mkdir in bpffs as well.
+> > >
+> > > This feature could be useful for similar monitoring/introspection tasks.
+> > > We can write a program that would monitor bpf prog load/unload
+> > > and would pin an iterator prog that would show debug info about a prog.
+> > > Like cat /sys/fs/bpf/progs.debug shows a list of loaded progs.
+> > > With this feature we can implement:
+> > > ls /sys/fs/bpf/all_progs.debug/
+> > > and each loaded prog would have a corresponding file.
+> > > The file name would be a program name, for example.
+> > > cat /sys/fs/bpf/all_progs.debug/my_prog
+> > > would pretty print info about 'my_prog' bpf program.
+> > >
+> > > This way the kernfs/cgroupfs specific logic from patches 1-4
+> > > will not be necessary.
+> > >
+> > > wdyt?
+> >
+> > Thanks Alexei. I gave it more thought in the last couple of days.
+> > Actually I think it's a good idea, more flexible. It gets rid of the
+> > need of a user space daemon for monitoring cgroup creation and
+> > destruction. We could monitor task creations and exits as well, so
+> > that we can export per-task information (e.g. task_vma_iter) more
+> > efficiently.
+>
+> Yep. Monitoring task creation and exposing via bpf_iter sounds
+> useful too.
+>
+> > A couple of thoughts when thinking about the details:
+> >
+> > - Regarding parameterized pinning, I don't think we can have one
+> > single bpf_iter_link object, but with different parameters. Because
+> > parameters are part of the bpf_iter_link (bpf_iter_aux_info). So every
+> > time we pin, we have to attach iter in order to get a new link object
+> > first. So we need to add attach and detach in bpf_sys_bpf().
+>
+> Makes sense.
+> I'm adding bpf_link_create to bpf_sys_bpf as part of
+> the "lskel for kernel" patch set.
+> The detach is sys_close. It's already available.
+>
+> > - We also need to add those syscalls for cleanup: (1) unlink for
+> > removing pinned obj and (2) rmdir for removing the directory in
+> > prog_type_syscall.
+>
+> Yes. These two would be needed.
+> And obj_pin too.
+>
+> > With these extensions, we can shift some of the bpf operations
+> > currently performed in system daemons into the kernel. IMHO it's a
+> > great thing, making system monitoring more flexible.
+>
+> Awesome. Sounds like we're converging :)
 
-But it'd cause divide-by-zero in btrfs_set_buffer_lockdep_class() due
-to ARRAY_SIZE macro.  Let's change it to use ks->names[] instead.  It
-should have the same size as with ks->keys[].
+Right. :)
 
-Cc: Chris Mason <clm@fb.com>
-Cc: Josef Bacik <josef@toxicpanda.com>
-Cc: linux-btrfs@vger.kernel.org
-Acked-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- fs/btrfs/disk-io.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
-index 87a5addbedf6..be41e35bee92 100644
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -190,7 +190,7 @@ void btrfs_set_buffer_lockdep_class(u64 objectid, struct extent_buffer *eb,
- {
- 	struct btrfs_lockdep_keyset *ks;
- 
--	BUG_ON(level >= ARRAY_SIZE(ks->keys));
-+	BUG_ON(level >= ARRAY_SIZE(ks->names));
- 
- 	/* find the matching keyset, id 0 is the default entry */
- 	for (ks = btrfs_lockdep_keysets; ks->id; ks++)
--- 
-2.35.0.263.gb82422642f-goog
-
+Thank you for proposing this solution. This really helps! I'm going to
+work on a prototype.
