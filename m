@@ -2,128 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF91C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC20C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376751AbiBHNWF (ORCPT
+        id S1376349AbiBHNWB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:22:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57360 "EHLO
+        Tue, 8 Feb 2022 08:22:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343808AbiBHMfj (ORCPT
+        with ESMTP id S241781AbiBHMPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:35:39 -0500
-Received: from mail-oo1-xc2a.google.com (mail-oo1-xc2a.google.com [IPv6:2607:f8b0:4864:20::c2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26598C03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:35:38 -0800 (PST)
-Received: by mail-oo1-xc2a.google.com with SMTP id u25-20020a4ad0d9000000b002e8d4370689so17360966oor.12
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:35:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kali.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=TibP6ie0mJ0/x/QbIt21htQ4eMNZGXf+QIIH3Lwii8M=;
-        b=ELjNWqAAw36iAjwGcykP/O5E9o6Sr3VD2lcXqWUmwJ/tc7cOcMB7Qld0H5PRI9TIxx
-         JXO07ztlGnyGWZhZ/sj82/DTLoiXL7bD3Ko9lrH8Din1wGfHER/z7TCXPIalLs2voVto
-         tXQD1CcvONKj2bjnolF302VkJiyqtpUXnrbEWYHmuvHrNmej5gEvC044L2eh+X+3DC0T
-         6YTle+j1xNDzwqyp20JpmmeboLB1CPLfSCh7GnM1d3q4lWz02sCtzftB/sDpDMZrxtDN
-         0Ud85klN73qhmujwAImq6cIjWTEXDozm4zStJ7h5+3OlQmFCepQB1lL28LomwWfHK0ks
-         5mJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TibP6ie0mJ0/x/QbIt21htQ4eMNZGXf+QIIH3Lwii8M=;
-        b=jK9GKcxiOi9oVklOzg9RV38J/TnBrXqe7Jf/3dZYvzj7dqI00MkrvLHu+IoUPZuUu2
-         hfm0ygzPhdXrB4X4OdqbXmJKb2LCQhfH49Y11UB8Qsj6DEqO08bzobVQ3b6HU6QKuKpx
-         HUi3f+Yp72AaqJa7UeSLKQ2JPksEi/tCmJTPDLnB5y7YZApnb0Bqno4P3r7XznEkf0K6
-         0HT6TYe5CUblcZWIaxzpgYVM4w6IlekYOwiFgzcdwUWVsZu1czWSGAzkdmA9Cqds+u+3
-         mhl2upX0NlBCSd/k7+xCUUZN7AtnsenubCbHguvuqGaJejpFjCMg3bFQnwPQjAnCD2Ub
-         lMIg==
-X-Gm-Message-State: AOAM533nNrnBOQmSpsRo280iy7f6058JCfQASCOlUpWydZaWwdX1jOe6
-        TrP/i78++KrLcUw92ZM6tSCDsg==
-X-Google-Smtp-Source: ABdhPJwxy3nlHmLtPKWVPWEwDZFjz82rjVAuDsY6yy6xrZXojf6s8g60+PrtEYvpCh0StlXMn9aDiw==
-X-Received: by 2002:a4a:4344:: with SMTP id l4mr1643290ooj.14.1644323737531;
-        Tue, 08 Feb 2022 04:35:37 -0800 (PST)
-Received: from [192.168.11.51] (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
-        by smtp.gmail.com with ESMTPSA id t16sm5138950otc.29.2022.02.08.04.35.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 04:35:37 -0800 (PST)
-Message-ID: <f64782c3-b249-f381-9f1f-203fb0aac5d7@kali.org>
-Date:   Tue, 8 Feb 2022 06:35:35 -0600
+        Tue, 8 Feb 2022 07:15:48 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB9FCC03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:15:47 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6DB36ED1;
+        Tue,  8 Feb 2022 04:15:47 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.89.190])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C99F93F70D;
+        Tue,  8 Feb 2022 04:15:44 -0800 (PST)
+Date:   Tue, 8 Feb 2022 12:15:37 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, ardb@kernel.org,
+        bp@alien8.de, catalin.marinas@arm.com, dave.hansen@linux.intel.com,
+        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
+        peterz@infradead.org, tglx@linutronix.de,
+        valentin.schneider@arm.com, will@kernel.org
+Subject: Re: [PATCH v2 5/7] sched/preempt: add PREEMPT_DYNAMIC using static
+ keys
+Message-ID: <YgJe6aij3iwvgRAS@FVFF77S0Q05N>
+References: <20220204150557.434610-1-mark.rutland@arm.com>
+ <20220204150557.434610-6-mark.rutland@arm.com>
+ <20220207115708.GA514319@lothringen>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH 2/2] arm64: dts: qcom: c630: Move panel to aux-bus
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220208041606.144039-1-bjorn.andersson@linaro.org>
- <20220208041606.144039-2-bjorn.andersson@linaro.org>
-From:   Steev Klimaszewski <steev@kali.org>
-In-Reply-To: <20220208041606.144039-2-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207115708.GA514319@lothringen>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 07, 2022 at 12:57:08PM +0100, Frederic Weisbecker wrote:
+> On Fri, Feb 04, 2022 at 03:05:55PM +0000, Mark Rutland wrote:
+> > diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+> > index dfd84c59b144..141952f4fee8 100644
+> > --- a/include/linux/entry-common.h
+> > +++ b/include/linux/entry-common.h
+> > @@ -456,13 +456,19 @@ irqentry_state_t noinstr irqentry_enter(struct pt_regs *regs);
+> >   */
+> >  void raw_irqentry_exit_cond_resched(void);
+> >  #ifdef CONFIG_PREEMPT_DYNAMIC
+> > +#if defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
+> >  #define irqentry_exit_cond_resched_dynamic_enabled	raw_irqentry_exit_cond_resched
+> >  #define irqentry_exit_cond_resched_dynamic_disabled	NULL
+> >  DECLARE_STATIC_CALL(irqentry_exit_cond_resched, raw_irqentry_exit_cond_resched);
+> >  #define irqentry_exit_cond_resched()	static_call(irqentry_exit_cond_resched)()
+> > -#else
+> > -#define irqentry_exit_cond_resched()	raw_irqentry_exit_cond_resched()
+> > +#elif defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
+> > +DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
+> 
+> If CONFIG_PREEMPT && CONFIG_PREEMPT_DYNAMIC and no "preempt=" parameter is
+> passed, nothing is overriden on boot. So you need to either have cond_resched
+> and might_resched initially disabled (STATIC_KEY_FALSE?) or call
+> sched_dynamic_update() from preempt_dynamic_init() also when CONFIG_PREEMPT=y.
 
-On 2/7/22 10:16 PM, Bjorn Andersson wrote:
-> With the newly introduced aux-bus under the TI SN65DSI86 the panel
-> node should be described as a child instead of a standalone node, move
-> it there.
->
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->   .../boot/dts/qcom/sdm850-lenovo-yoga-c630.dts | 27 +++++++++----------
->   1 file changed, 13 insertions(+), 14 deletions(-)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
-> index 55fb7302245b..fd1261901ab5 100644
-> --- a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
-> +++ b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
-> @@ -56,20 +56,6 @@ mode {
->   		};
->   	};
->   
-> -	panel {
-> -		compatible = "boe,nv133fhm-n61";
-> -		no-hpd;
-> -		backlight = <&backlight>;
-> -
-> -		ports {
-> -			port {
-> -				panel_in_edp: endpoint {
-> -					remote-endpoint = <&sn65dsi86_out>;
-> -				};
-> -			};
-> -		};
-> -	};
-> -
->   	/* Reserved memory changes for IPA */
->   	reserved-memory {
->   		wlan_msa_mem: memory@8c400000 {
-> @@ -446,6 +432,19 @@ sn65dsi86_out: endpoint {
->   				};
->   			};
->   		};
-> +
-> +		aux-bus {
-> +			panel: panel {
-> +				compatible = "boe,nv133fhm-n61";
-> +				backlight = <&backlight>;
-> +
-> +				port {
-> +					panel_in_edp: endpoint {
-> +						remote-endpoint = <&sn65dsi86_out>;
-> +					};
-> +				};
-> +			};
-> +		};
->   	};
->   };
->   
-Tested-by: Steev Klimaszewski <steev@kali.org>
+Ah; good spot. I'd missed that those were initialized to RET0.
+
+I've changed those two to DECLARE_STATIC_KEY_FALSE(), which defaults those to
+disabled, e.g.
+
+| <dynamic_cond_resched>:
+|        bti     c
+|        nop     // <-------- `b <dynamic_cond_resched+0x10>` when enabled
+|        mov     w0, #0x0
+|        ret
+|        mrs     x0, sp_el0
+|        ldr     x0, [x0, #8]
+|        cbnz    x0, 9d8 <dynamic_cond_resched+0x8>
+|        paciasp
+|        stp     x29, x30, [sp, #-16]!
+|        mov     x29, sp
+|        bl      900 <preempt_schedule_common>
+|        mov     w0, #0x1
+|        ldp     x29, x30, [sp], #16
+|        autiasp
+|        ret
+
+Thanks,
+Mark.
