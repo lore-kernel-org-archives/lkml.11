@@ -2,77 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 838DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350726AbiBHNUY (ORCPT
+        id S1349923AbiBHNUa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:20:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59590 "EHLO
+        Tue, 8 Feb 2022 08:20:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245690AbiBHMmp (ORCPT
+        with ESMTP id S1358359AbiBHMlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:42:45 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF99AC03FEC0;
-        Tue,  8 Feb 2022 04:42:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=qti.qualcomm.com; i=@qti.qualcomm.com; q=dns/txt;
-  s=qcdkim; t=1644324165; x=1675860165;
-  h=from:to:cc:subject:date:message-id;
-  bh=2RhWuRylgy7FQta6UTPTHtX3kQLdhFq81B4ywAgmIdE=;
-  b=JZ6o8zMW0F/HcmLR4UjHYicVC+1lIscZLIaRmyIGZ6FGRwy8P/4HlyGd
-   USwlz+07J7Ks+0ZaTxmLhl94bq0KXlosOEw1LrqzerKa0ZdrLh5p/vTjc
-   2P3cROPLjQgKdNXwK7sDn1oWDz/q2j5gQaVmq+K601+43Nuew7UEfS9pb
-   g=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 04:42:44 -0800
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 08 Feb 2022 04:42:43 -0800
-X-QCInternal: smtphost
-Received: from hu-dikshita-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.110.13])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 08 Feb 2022 18:12:34 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 347544)
-        id 54F624567; Tue,  8 Feb 2022 18:12:33 +0530 (+0530)
-From:   Dikshita Agarwal <dikshita@qti.qualcomm.com>
-To:     hverkuil-cisco@xs4all.nl
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        vgarodia@codeaurora.org,
-        Dikshita Agarwal <quic_dikshita@quicinc.com>,
-        Dikshita Agarwal <dikshita@qti.qualcomm.com>
-Subject: [PATCH v2] Add check for READ ONLY flag
-Date:   Tue,  8 Feb 2022 18:12:21 +0530
-Message-Id: <1644324141-27180-1-git-send-email-dikshita@qti.qualcomm.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 8 Feb 2022 07:41:20 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F65C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:19 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id i30so18631883pfk.8
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=VHqh/ijWzTkcfpqZcH5Nz4N1ISUlPyaJ60Q4OawbBT8=;
+        b=VnE41xebylDSIYGhpkKNh6ZSVZj7DTmMZVRnyN0MXW4J5q0SI5huCttg3YkTT/ADYt
+         3DheENGasIAUHE7ketk881llrCYZtC31y558+C3G/eh93+rEmIPR374s5tVphnYIuS50
+         EcGL+mY2csHY5WHy0gsEFrhBXtCv3+HUfvyEI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VHqh/ijWzTkcfpqZcH5Nz4N1ISUlPyaJ60Q4OawbBT8=;
+        b=2ldXuYTg2wYxcLTywfZslyQ6/gTsgg23wAv+rM7vfcyS+QAbElKcsMI3ffXcgTxUFg
+         eJgpfYiZNKWjXKLH1vezuAa7YAe+V3dcslrDlKGnfa2SpUhrkuhZvpVgWogRJGSwVIEW
+         T5228Vgj6JPHG52/dIygcO+ZNx+M6EpVhriSkZqwoAhHkOo7o+ovex1+BJAY4H0ibEbP
+         n7dvdRjjrZNilGck/f/vd7ioUkqZzxRHF8dT2mPchdj6boh8RQXINIpKSU+2v/shlhHM
+         08N+0X/GOcKQMgXPD3qmPoeowisxIpbEmQRUqAzlrtOdbeWgSwTvqP6dIoieby3OO3ig
+         PByA==
+X-Gm-Message-State: AOAM532wt8hoAymxHF9kl36kIOlHcbCdLtoVzDSBSZnPxXW1QXVO6Xek
+        94e8XQCYnLzpujJy0x/sNt4t9A==
+X-Google-Smtp-Source: ABdhPJzo0Dp/SCBcUkYHyRIcTeVZXRqv8ziFNxicZ9SLxGT7dPNBKPsfl76t0sK8wZgzQsmDxW8paw==
+X-Received: by 2002:a65:4b82:: with SMTP id t2mr3342176pgq.607.1644324079445;
+        Tue, 08 Feb 2022 04:41:19 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:41:19 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 14/31] clk: mediatek: pll: Clean up included headers
+Date:   Tue,  8 Feb 2022 20:40:17 +0800
+Message-Id: <20220208124034.414635-15-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dikshita Agarwal <quic_dikshita@quicinc.com>
+Some included headers aren't actually used anywhere, while other headers
+with the declaration of functions and structures aren't directly
+included.
 
-Add a check for V4L2_CTRL_FLAG_READ_ONLY to avoid request
-testing for such controls.
+Get rid of the unused ones, and add the ones that should be included
+directly.
 
-Signed-off-by: Dikshita Agarwal <dikshita@qti.qualcomm.com>
+Also, copy the MHZ macro from clk-mtk.h, and drop clk-mtk.h from the
+included headers.
+
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- utils/v4l2-compliance/v4l2-test-buffers.cpp | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/clk/mediatek/clk-pll.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/utils/v4l2-compliance/v4l2-test-buffers.cpp b/utils/v4l2-compliance/v4l2-test-buffers.cpp
-index fa8c37c..b8de7af 100644
---- a/utils/v4l2-compliance/v4l2-test-buffers.cpp
-+++ b/utils/v4l2-compliance/v4l2-test-buffers.cpp
-@@ -2032,7 +2032,8 @@ int testRequests(struct node *node, bool test_streaming)
- 		if (qctrl.type != V4L2_CTRL_TYPE_INTEGER &&
- 		    qctrl.type != V4L2_CTRL_TYPE_BOOLEAN)
- 			continue;
--		if (qctrl.flags & V4L2_CTRL_FLAG_WRITE_ONLY)
-+		if (qctrl.flags & V4L2_CTRL_FLAG_WRITE_ONLY ||
-+		    qctrl.flags & V4L2_CTRL_FLAG_READ_ONLY)
- 			continue;
- 		if (is_vivid && V4L2_CTRL_ID2WHICH(qctrl.id) == V4L2_CTRL_CLASS_VIVID)
- 			continue;
+diff --git a/drivers/clk/mediatek/clk-pll.c b/drivers/clk/mediatek/clk-pll.c
+index b54e33b75d4e..8439d37e354d 100644
+--- a/drivers/clk/mediatek/clk-pll.c
++++ b/drivers/clk/mediatek/clk-pll.c
+@@ -4,17 +4,19 @@
+  * Author: James Liao <jamesjj.liao@mediatek.com>
+  */
+ 
+-#include <linux/of.h>
+-#include <linux/of_address.h>
++#include <linux/clk-provider.h>
++#include <linux/container_of.h>
++#include <linux/delay.h>
++#include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
++#include <linux/of_address.h>
+ #include <linux/slab.h>
+-#include <linux/clkdev.h>
+-#include <linux/delay.h>
+ 
+-#include "clk-mtk.h"
+ #include "clk-pll.h"
+ 
++#define MHZ			(1000 * 1000)
++
+ #define REG_CON0		0
+ #define REG_CON1		4
+ 
 -- 
-2.7.4
+2.35.0.263.gb82422642f-goog
 
