@@ -2,144 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 891CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06284C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344979AbiBHBt6 (ORCPT
+        id S1345053AbiBHBuE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:49:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
+        Mon, 7 Feb 2022 20:50:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345053AbiBHBnt (ORCPT
+        with ESMTP id S230232AbiBHBms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:43:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 91397C061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:43:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644284627;
+        Mon, 7 Feb 2022 20:42:48 -0500
+X-Greylist: delayed 419 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 17:42:47 PST
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894AEC061355;
+        Mon,  7 Feb 2022 17:42:47 -0800 (PST)
+Date:   Tue, 8 Feb 2022 09:28:36 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1644283742;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gMDvDoEbO/rD1x32YWplF1Fz9lP4H196sTYmBtGIooA=;
-        b=YgQLKQ5WjjCqAfHns21KJgdK8Kxt5d/AUQeUgA7OugM5uZloNzekoetT1LgHO3AYFSYBVf
-        pCFbdANoVlBg+egO9QtpsqjtkhucFFCB3+IsKmOKLPhfdH1tFxQjTp9C6iSHvItTSv8bfV
-        Dbub6W1nBdK13I+TdthKKabqWiE9RWs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-551-DRUqT-IqMT6jLWYXW_CfFg-1; Mon, 07 Feb 2022 20:43:44 -0500
-X-MC-Unique: DRUqT-IqMT6jLWYXW_CfFg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5587C64140;
-        Tue,  8 Feb 2022 01:43:40 +0000 (UTC)
-Received: from localhost (ovpn-12-95.pek2.redhat.com [10.72.12.95])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 650F65F707;
-        Tue,  8 Feb 2022 01:43:10 +0000 (UTC)
-Date:   Tue, 8 Feb 2022 09:43:07 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: Re: [PATCH v20 1/5] arm64: Use insert_resource() to simplify code
-Message-ID: <YgHKq7o2Efb1JK7H@MiWiFi-R3L-srv>
-References: <20220124084708.683-1-thunder.leizhen@huawei.com>
- <20220124084708.683-2-thunder.leizhen@huawei.com>
+        bh=CBZrZTZQLMab60F64iv26tpNim6K99BBtJF8+iTwoVU=;
+        b=NqTfGr8PC+Sb9bqsTj61J6OCI/euKLYU8oHkev3w5UFcs8XeQpJ5stv63wXKd1nDl3mIMR
+        X3PATFhRKhvD/ImrOemyKtoP7tHkSjWbY9GS0u4jzIMMpDJadOVw2E/7v/gYKk+ZEx9SdB
+        U6qbtIqYrRFpGOdtmm3fkq0CbUaeIgE=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: ethernet: litex: Add the dependency on HAS_IOMEM
+Message-ID: <20220208012836.GA6024@chq-T47>
+References: <20220207084912.9309-1-cai.huoqing@linux.dev>
+ <CACPK8Xcs-qsO5COcSPZBsShhJWtDwfhreuYfkBy1pLXh8nz3Ow@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220124084708.683-2-thunder.leizhen@huawei.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACPK8Xcs-qsO5COcSPZBsShhJWtDwfhreuYfkBy1pLXh8nz3Ow@mail.gmail.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/24/22 at 04:47pm, Zhen Lei wrote:
-> insert_resource() traverses the subtree layer by layer from the root node
-> until a proper location is found. Compared with request_resource(), the
-> parent node does not need to be determined in advance.
+On 07 2月 22 09:25:42, Joel Stanley wrote:
+> On Mon, 7 Feb 2022 at 08:49, Cai Huoqing <cai.huoqing@linux.dev> wrote:
+> >
+> > The helper function devm_platform_ioremap_resource_xxx()
+> > needs HAS_IOMEM enabled, so add the dependency on HAS_IOMEM.
+> >
+> > Fixes: 464a57281f29 ("net/mlxbf_gige: Make use of devm_platform_ioremap_resourcexxx()")
 > 
-> In addition, move the insertion of node 'crashk_res' into function
-> reserve_crashkernel() to make the associated code close together.
-
-This is nice cleanup.
-
-Acked-by: Baoquan He <bhe@redhat.com>
-
+> That looks wrong...
 > 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  arch/arm64/kernel/setup.c | 17 +++--------------
->  arch/arm64/mm/init.c      |  1 +
->  2 files changed, 4 insertions(+), 14 deletions(-)
+> $ git show --oneline --stat  464a57281f29
+> 464a57281f29 net/mlxbf_gige: Make use of devm_platform_ioremap_resourcexxx()
+>  drivers/net/ethernet/litex/litex_liteeth.c                 |  7 ++-----
+>  drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c | 21
+> +++------------------
+>  drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c |  7 +------
+>  drivers/net/ethernet/ni/nixge.c
 > 
-> diff --git a/arch/arm64/kernel/setup.c b/arch/arm64/kernel/setup.c
-> index f70573928f1bff0..a81efcc359e4e78 100644
-> --- a/arch/arm64/kernel/setup.c
-> +++ b/arch/arm64/kernel/setup.c
-> @@ -225,6 +225,8 @@ static void __init request_standard_resources(void)
->  	kernel_code.end     = __pa_symbol(__init_begin - 1);
->  	kernel_data.start   = __pa_symbol(_sdata);
->  	kernel_data.end     = __pa_symbol(_end - 1);
-> +	insert_resource(&iomem_resource, &kernel_code);
-> +	insert_resource(&iomem_resource, &kernel_data);
->  
->  	num_standard_resources = memblock.memory.cnt;
->  	res_size = num_standard_resources * sizeof(*standard_resources);
-> @@ -246,20 +248,7 @@ static void __init request_standard_resources(void)
->  			res->end = __pfn_to_phys(memblock_region_memory_end_pfn(region)) - 1;
->  		}
->  
-> -		request_resource(&iomem_resource, res);
-> -
-> -		if (kernel_code.start >= res->start &&
-> -		    kernel_code.end <= res->end)
-> -			request_resource(res, &kernel_code);
-> -		if (kernel_data.start >= res->start &&
-> -		    kernel_data.end <= res->end)
-> -			request_resource(res, &kernel_data);
-> -#ifdef CONFIG_KEXEC_CORE
-> -		/* Userspace will find "Crash kernel" region in /proc/iomem. */
-> -		if (crashk_res.end && crashk_res.start >= res->start &&
-> -		    crashk_res.end <= res->end)
-> -			request_resource(res, &crashk_res);
-> -#endif
-> +		insert_resource(&iomem_resource, res);
->  	}
->  }
->  
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index db63cc885771a52..90f276d46b93bc6 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -109,6 +109,7 @@ static void __init reserve_crashkernel(void)
->  	kmemleak_ignore_phys(crash_base);
->  	crashk_res.start = crash_base;
->  	crashk_res.end = crash_base + crash_size - 1;
-> +	insert_resource(&iomem_resource, &crashk_res);
->  }
->  #else
->  static void __init reserve_crashkernel(void)
-> -- 
-> 2.25.1
+> That's a strange commit message for the litex driver. Similarly for
+> the ni driver. Did something go wrong there?
+no, ni driver has the dependency on HAS_IOMEM in
+drivers/net/ethernet/ni/Kconfig.
 > 
-
+> A better fixes line would be ee7da21ac4c3be1f618b6358e0a38739a5d1773e,
+ok.
+Thanks
+Cai
+> as the original driver addition also has the iomem dependency.
+> 
+> > Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+> > ---
+> >  drivers/net/ethernet/litex/Kconfig | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
+> > index f99adbf26ab4..04345b929d8e 100644
+> > --- a/drivers/net/ethernet/litex/Kconfig
+> > +++ b/drivers/net/ethernet/litex/Kconfig
+> > @@ -17,7 +17,7 @@ if NET_VENDOR_LITEX
+> >
+> >  config LITEX_LITEETH
+> >         tristate "LiteX Ethernet support"
+> > -       depends on OF
+> > +       depends on OF && HAS_IOMEM
+> >         help
+> >           If you wish to compile a kernel for hardware with a LiteX LiteEth
+> >           device then you should answer Y to this.
+> > --
+> > 2.25.1
+> >
