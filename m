@@ -2,90 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D530C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378941AbiBHO4w (ORCPT
+        id S1379050AbiBHO5g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:56:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
+        Tue, 8 Feb 2022 09:57:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378807AbiBHO4u (ORCPT
+        with ESMTP id S1378991AbiBHO51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 09:56:50 -0500
-X-Greylist: delayed 123 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 06:56:48 PST
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B922C06157A;
-        Tue,  8 Feb 2022 06:56:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644332208; x=1675868208;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=YQGb+3b6pl3pqDKbO+wrZjMeCmySRkEdSxC5xyXLuEc=;
-  b=KlI9zmOFC/S7hr78bVnncpHCMT7CLCGxzZq3x3p77oWRwCv0HMbR2Wkk
-   OwDrilLZ5EbHocb7FKpyGpctMZs0NNhFsH2n7Xe3kvDOA5YuLRyifholp
-   xU2JuDiEVPGnkFRqY+s58WXwN3TuD378cqtYf0DibloZlGIHDwdAs911o
-   E=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Feb 2022 06:54:45 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 06:54:44 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 06:54:43 -0800
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 06:54:38 -0800
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Das Srinagesh <gurus@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V5 0/6] Add Qualcomm Technologies, Inc. PM8008 regulator driver
-Date:   Tue, 8 Feb 2022 20:22:14 +0530
-Message-ID: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 8 Feb 2022 09:57:27 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE08C06157A;
+        Tue,  8 Feb 2022 06:57:26 -0800 (PST)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 218EfT69029974;
+        Tue, 8 Feb 2022 14:57:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=YIELr6G77NKbsfwh+N0gl4RoNyBwUD/wqOTeC2MHvk8=;
+ b=Pj11Ydg7PLoNTBbkwm7aEp/YqyrrD8SLXrFgtmJLN5KiSjUNmaA9OL+a2g9EC/siBfzO
+ MCK1OqIgUwqBxhq0lgkP12EF6iN37BdZaMm3n2iRhjnTxlTkG+C6imMiIASAQ7iq7H2V
+ 4mzQWP5ZJdAgXdTRVVXK3OWT4VI1QL3cskGX+jmDjjRz0hBQg7M4SKAUydxeNlEtvRkw
+ AcGx5mGyUl2Z1xwzVZs2YMRC6TN2JZnyPqLV+Y8M8MOkHYtlTvYnom/38+GhtzCf8fRQ
+ 4nji+4wTtQCnoVuzX1CiMeG0iTO/TIkAE3TRxbOs2SFNBfUhM1tEy3g3qEPa48+7uEDx PA== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e231a2h54-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 14:57:23 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 218EqWTt028404;
+        Tue, 8 Feb 2022 14:57:22 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma01fra.de.ibm.com with ESMTP id 3e1gv9dme0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 14:57:22 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 218ElE9u34472284
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 8 Feb 2022 14:47:14 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 59582A405B;
+        Tue,  8 Feb 2022 14:57:19 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 76450A405C;
+        Tue,  8 Feb 2022 14:57:18 +0000 (GMT)
+Received: from sig-9-65-88-92.ibm.com (unknown [9.65.88.92])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  8 Feb 2022 14:57:18 +0000 (GMT)
+Message-ID: <329b719e7fe302a9fa13325687061634a8d99977.camel@linux.ibm.com>
+Subject: Re: [PATCH v4 0/8] ima: support fs-verity digests and signatures
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 08 Feb 2022 09:57:17 -0500
+In-Reply-To: <YgIEsLsoe/sHsjBr@sol.localdomain>
+References: <20220208014140.483447-1-zohar@linux.ibm.com>
+         <YgIEsLsoe/sHsjBr@sol.localdomain>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: dNHKBCjZs7DhyG0jU034nOodRBFZCB1R
+X-Proofpoint-GUID: dNHKBCjZs7DhyG0jU034nOodRBFZCB1R
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-08_04,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 malwarescore=0 impostorscore=0 adultscore=0
+ mlxlogscore=999 suspectscore=0 spamscore=0 bulkscore=0 mlxscore=0
+ phishscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202080090
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Satya Priya (6):
-  dt-bindings: regulator: Add pm8008 regulator bindings
-  dt-bindings: mfd: pm8008: Add regulators node
-  mfd: pm8008: Add mfd cell struct to register LDOs
-  regulator: Add a regulator driver for the PM8008 PMIC
-  arm64: dts: qcom: pm8008: Add base dts file
-  arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
+On Mon, 2022-02-07 at 21:50 -0800, Eric Biggers wrote:
+> On Mon, Feb 07, 2022 at 08:41:32PM -0500, Mimi Zohar wrote:
+> > Support for including fs-verity file digests and signatures in the IMA
+> > measurement list as well as verifying the fs-verity file digest based
+> > signatures, both based on IMA policy rules, was discussed prior to
+> > fs-verity being upstreamed[1,2].
+> > 
+> > Support for including fs-verity file digests in the 'd-ng' template field
+> > is based on a new policy rule option named 'digest_type=verity'.  A new
+> > template field named 'd-type' as well as a new template named 'ima-ngv2'
+> > are defined to differentiate between the regular IMA file hashes from the
+> > fs-verity file digests (tree-hash based file hashes) stored in the 'd-ng'
+> > template field.
+> > 
+> > Support for verifying fs-verity based file signatures stored in the
+> > 'security.ima' xattr is similarly based on the policy rule option
+> > 'digest_type=verity'.
+> > 
+> > To differentiate IMA from fs-verity file signatures a new xattr_type
+> > named IMA_VERITY_DIGSIG is defined.  Signature version 3, which is a hash
+> > of the ima_file_id struct, disambiguates the signatures stored as
+> > 'security.ima' xattr.  fs-verity only supports the new signature format
+> > (version 3).  To prevent abuse of the different signature formats, policy
+> > rules must be limited to a specific signature version.
+> > 
+> > [1] https://events19.linuxfoundation.org/wp-content/uploads/2017/11/fs-verify_Mike-Halcrow_Eric-Biggers.pdf
+> > [2] Documentation/filesystems/fsverity.rst
+> 
+> What does this patchset apply to?  I'm no longer able to apply it.  I tried
+> both v5.17-rc3, and the next-integrity branch of
+> https://git.kernel.org/pub/scm/linux/kernel/git/zohar/linux-integrity.git.
 
- .../devicetree/bindings/mfd/qcom,pm8008.yaml       |  49 ++++-
- .../bindings/regulator/qcom,pm8008-regulator.yaml  |  31 +++
- arch/arm64/boot/dts/qcom/pm8008.dtsi               |  46 ++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi           |  66 ++++++
- drivers/mfd/qcom-pm8008.c                          |  59 +++++-
- drivers/regulator/Kconfig                          |   9 +
- drivers/regulator/Makefile                         |   1 +
- drivers/regulator/qcom-pm8008-regulator.c          | 234 +++++++++++++++++++++
- 8 files changed, 485 insertions(+), 10 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/regulator/qcom,pm8008-regulator.yaml
- create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
- create mode 100644 drivers/regulator/qcom-pm8008-regulator.c
+Just refreshed 'next-integrity' now.
 
 -- 
-2.7.4
+thanks,
+
+Mimi
 
