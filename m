@@ -2,84 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F315C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 123B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348879AbiBHIHw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:07:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47590 "EHLO
+        id S245604AbiBHIIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 03:08:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbiBHIHs (ORCPT
+        with ESMTP id S229833AbiBHII2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:07:48 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32457C0401EF
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:07:45 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id y203so7041969yby.11
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:07:45 -0800 (PST)
+        Tue, 8 Feb 2022 03:08:28 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F4FC0401EF
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:08:27 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id v5-20020a17090a4ec500b001b8b702df57so1410391pjl.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:08:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PXxGXqL0fSEKZMDAAFA60E1Rbs/msz2tQymkFw5ax8o=;
-        b=qlzWW2qtvfYAAanbEMYNLuRx8ZSraE6ZerXTO+z8zhvTvhhuYlpIgqjAKGiZyn03oe
-         dobQls8uADFSdqKk74wWyKhvtGm+6ci7zMlOM/25PMWhbnesE0+5XQtQJ1DQ4BSmrIVR
-         KXs5u2kjzPM5yfRm+Agx/SxngcjD9ixaxLZX1vw+RU3PzkOEaYN8IUkGN+VCPNNtWbRa
-         OkYOtxUahGsG7+n6hO78zD3yqAbAhOS+2yz1YaW3MqVv7bTnB7WgJxSZvd7dRu/1CoqZ
-         ioyre/8Cv4eirgKtPsl7phMdGqzPgirLv2toaU5HewuA29ykBKN/lcY8q2AtU/epI3VH
-         FJsA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=icZsox5sq6ultu6TBsIJo70bSWmvRrOrYh40bnoCXSA=;
+        b=f7BLPpX9Kdcp6c+XKww27RgznlN9w7vJ/rwnYc8aXFfbhuPjTKndfj98aEe9aGp/H0
+         gDW0Pbxs49VUqPYttoU+IDhO88/znyPoQFDeWB7NEEoAttwom3pdt7Xf6CXIpp9ToWmH
+         CXUhHUtr2zA9exLVlapzmyY5arLAdeyZgG6fnhps8gJiedratNKwoa6lisn53DHrCdjx
+         drF4YV3XNcz/DRTLYi8EKs9oWPIpGofhQpe+OAUP5ShZFW/l2AC+6ZFgz5VFyvVDf/tO
+         93TZDufIftMx1+LivUOiuw4moCgCviWOLRQuM/YNE1k3L1DSd9/8M8dlFl9vOr/TAjfh
+         JbTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PXxGXqL0fSEKZMDAAFA60E1Rbs/msz2tQymkFw5ax8o=;
-        b=m1lcFTok0nzCCmw5Ev6DvnjVHj3SS8ilEb9Q/7qfYYz37KLRFOQm74bHB5QQoHCdWG
-         zykLMd7McamEwcVZKYDK5uuLp+9ExRynOeoAqPKgYVjdGr8IIUe4endTLNZV78NeqjJz
-         nn6fznoWHQBDTSv8ghM9e7K6ATX4JiEIl8zE6dPQtTzLFXhAzWXgzKIuHB/bzW8c5fzA
-         PdfTe4oCAqFHu3a7n/kL1hQW+hs4nN6KD7ppQOdU+TuR03NY3mi3CArmo/GmNdhDx3JC
-         jcN1LSmbFiPZ9XPraqFZyb4+9eDhHow9EsYGoug7uwfqUS7o8sdwQvUH9c5rdLXi9tYq
-         LHEA==
-X-Gm-Message-State: AOAM533ZHB9zeWOlcFdapF+GTVTkUbl6NbHfLbKtDPanapF4pJIuj+RY
-        aaGFPZKgd0YOh/vIQxPEeePVg7ZBlOIp2DNgVDKHXQ==
-X-Google-Smtp-Source: ABdhPJxrFiobqvBhVclJNZluCx9G58Pv+JirZ6BIfPGVufYPFT03Bj1OgbKZjqvNPQBBROocQXaDN+k+XywWU2el4os=
-X-Received: by 2002:a25:4742:: with SMTP id u63mr3440116yba.523.1644307664507;
- Tue, 08 Feb 2022 00:07:44 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=icZsox5sq6ultu6TBsIJo70bSWmvRrOrYh40bnoCXSA=;
+        b=mDIPvgGS4IcapT2e+F+zc4ZFY/5fkH3cWW4qJ71RBLA7weu9GJU8bffVo1ft9YnhmG
+         hZFh+KlARENPurZO0Jz87y/8vlNRtqto/yLKq769brq6A3HjSwTeonTGcjuP+uWmWYoS
+         8W32ME1GT01x5H0y0AxbEiUTehDd0Fx1ZLObMTea6RJ4tDzDh5JjngytjRW+WFXw9Gn2
+         ed9rg4fwiTzUXj4N2GdtpVNIPIiRp3DBuP9znjdikMqoncBtPK+4AVtHyBiwDO+osSof
+         sBqZuMkxnHnmdtk3MRXFKLMVQ4ZQMLl8UCZgMjF+w7eeVIqZZn3pVynvGyiMUQ3aSMtZ
+         ZzhQ==
+X-Gm-Message-State: AOAM530IZdAxS5uT03DKU/xz5uK0VbxijnbbbLlfi+zqXgew+QVygvio
+        WmcdmZqri1MVuWB1EKoADUM=
+X-Google-Smtp-Source: ABdhPJz+3oXn7aGYiRSFAyWkWE8xU9mGG0mXjlBNYy3tYZjcQz67PEbxPu/fK6PzUMZpvm6ZKiQmOg==
+X-Received: by 2002:a17:90b:4c8e:: with SMTP id my14mr23545pjb.243.1644307707177;
+        Tue, 08 Feb 2022 00:08:27 -0800 (PST)
+Received: from [192.168.255.10] ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id p1sm15875187pfh.98.2022.02.08.00.08.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 00:08:26 -0800 (PST)
+Message-ID: <1105cf7d-0d61-3ae2-f372-3b1f80c08c60@gmail.com>
+Date:   Tue, 8 Feb 2022 16:08:17 +0800
 MIME-Version: 1.0
-References: <20220207063249.1833066-1-hch@lst.de> <20220207063249.1833066-3-hch@lst.de>
-In-Reply-To: <20220207063249.1833066-3-hch@lst.de>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 8 Feb 2022 16:07:07 +0800
-Message-ID: <CAMZfGtWA3M+ck8WduwxyoDiXpjC1kXs=irVZ1m-SMSREJG17Mg@mail.gmail.com>
-Subject: Re: [PATCH 2/8] mm: remove the __KERNEL__ guard from <linux/mm.h>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Alistair Popple <apopple@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, nvdimm@lists.linux.dev,
-        Linux Memory Management List <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH] x86/cpufeatures: Move the definition of X86_FEATURE_AMX_*
+ to the word 18
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Jing Liu <jing2.liu@intel.com>, linux-kernel@vger.kernel.org,
+        "Bae, Chang Seok" <chang.seok.bae@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <20220117062344.58862-1-likexu@tencent.com>
+ <8b274c5f-6b68-aed9-117d-f89249e57e18@intel.com>
+ <47362220-30d5-c513-a2aa-61187ee91c41@redhat.com>
+ <bc272301-af11-621a-3bda-ee398754fd0a@gmail.com> <YfVM+xdDS76E3d6r@zn.tnic>
+From:   Like Xu <like.xu.linux@gmail.com>
+Organization: Tencent
+In-Reply-To: <YfVM+xdDS76E3d6r@zn.tnic>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 2:42 PM Christoph Hellwig <hch@lst.de> wrote:
->
-> __KERNEL__ ifdefs don't make sense outside of include/uapi/.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+On 29/1/2022 10:19 pm, Borislav Petkov wrote:
+> On Wed, Jan 19, 2022 at 11:41:31AM +0800, Like Xu wrote:
+>> Thanks Dave and Paolo.  Just for your convenience:
+>>
+>>  From 588c2221999c1f5860188a7cbaeb0d4f80c6d727 Mon Sep 17 00:00:00 2001
+>> From: Like Xu <likexu@tencent.com>
+>> Date: Mon, 17 Jan 2022 14:23:44 +0800
+>> Subject: [PATCH v2] x86/cpufeatures: Move AMX CPU feature defines to correct
+>>   word location
+>>
+>> From: Like Xu <likexu@tencent.com>
+>>
+>> The word 18 for Intel-defined CPU features from CPUID level 0x00000007:0 (EDX)
+>> has been defined in the same file. Move the definitions of X86_FEATURE_AMX_* to
+>> the right entry to prevent misinterpretation. No functional change intended.
+>>
+>> Signed-off-by: Like Xu <likexu@tencent.com>
+>> Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+>> ---
+>> v1 -> v2 Changelog:
+>> - Refine the commit message and subject; (Dave)
+>>
+>>   arch/x86/include/asm/cpufeatures.h | 6 +++---
+>>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> $ test-apply.sh /tmp/urgent.01
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Emm, are you willing to make "test-apply.sh" public (or have done) and let 
+others benefit ?
 
-Thanks.
+> checking file arch/x86/include/asm/cpufeatures.h
+> Hunk #1 FAILED at 299.
+> patch: **** malformed patch at line 45: IBPB) */
+> 
+> Don't ever send patches from
+
+Got you.
+
+> 
+> User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0) Gecko/20100101 Thunderbird/91.5.0
+> 
+> That thing mangles them.
+> 
+> See Documentation/process/email-clients.rst for further info.
+> 
+
+Sorry for the late reply, and here's a new version from git-send-email:
+
+https://lore.kernel.org/lkml/20220208080103.8119-1-likexu@tencent.com/
