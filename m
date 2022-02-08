@@ -2,90 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E28B3C46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F86C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359246AbiBHLgv (ORCPT
+        id S1359845AbiBHLg7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:36:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
+        Tue, 8 Feb 2022 06:36:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354263AbiBHLXg (ORCPT
+        with ESMTP id S1357032AbiBHL2j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 06:23:36 -0500
-Received: from vulcan.natalenko.name (vulcan.natalenko.name [IPv6:2001:19f0:6c00:8846:5400:ff:fe0c:dfa0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6971AC03FED5
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 03:23:30 -0800 (PST)
-Received: from spock.localnet (unknown [83.148.33.151])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 8 Feb 2022 06:28:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3CEC03FEF3;
+        Tue,  8 Feb 2022 03:28:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id 8B816DB9038;
-        Tue,  8 Feb 2022 12:23:23 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1644319403;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=my5/8th5a1G7ebhyaPdVtVtFmJbJrOhNxNQVFvXgC40=;
-        b=Fnhwtslj8SYrkR8v0r6PKFfWgEtB3HXbPMoKJXMvRmOemwUCnV61p8NyytmFYHIxsngfbx
-        X6J0GZxqNznkUW8ewaCtXL4RgXBRrqb+incxzeMpQl4thLb8d+AOBKEcNWcQJ7mKr9JL9X
-        QPzs5JWZ/G/ywB8xYdBUfoeEoMukvMM=
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Mel Gorman <mgorman@suse.de>, Yu Zhao <yuzhao@google.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD374B81A4A;
+        Tue,  8 Feb 2022 11:28:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2927C004E1;
+        Tue,  8 Feb 2022 11:28:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644319711;
+        bh=S/OkajaK//lhGgvpH8Fw06Nx4ATm9sAyJIS5raQ2bvQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=t0ybZeeHBJKmL5e5GBklD/SFNg2ORM9tj6Uo94eWeAyDaZznYCaSGBMNaoKafm9Rx
+         o26RX7aXd2Niprs6HcmE6Xc+k1+wpuIvcCGKjthZfKnrVjNwbyTlR6uWsSW7lg2Sgn
+         rVoqZL/xTG2Nwq7Q4um8qFYpeVKRyLKz3iFMsY8o=
+Date:   Tue, 8 Feb 2022 12:28:29 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     Iwona Winiarska <iwona.winiarska@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
         Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org
-Subject: Re: [PATCH v7 00/12] Multigenerational LRU Framework
-Date:   Tue, 08 Feb 2022 12:23:22 +0100
-Message-ID: <2228442.ElGaqSPkdT@natalenko.name>
-In-Reply-To: <YgJQeBUDaPbuDHi+@dhcp22.suse.cz>
-References: <20220208081902.3550911-1-yuzhao@google.com> <4714886.31r3eYUQgx@natalenko.name> <YgJQeBUDaPbuDHi+@dhcp22.suse.cz>
+        Borislav Petkov <bp@alien8.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Zev Weiss <zweiss@equinix.com>,
+        David Muller <d.mueller@elsoft.ch>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Billy Tsai <billy_tsai@aspeedtech.com>
+Subject: Re: [PATCH v7 07/13] peci: Add sysfs interface for PECI bus
+Message-ID: <YgJT3bd8Uj8omVYz@kroah.com>
+References: <20220202144838.163875-1-iwona.winiarska@intel.com>
+ <20220202144838.163875-8-iwona.winiarska@intel.com>
+ <YgJPFlr18AmWiTRY@kroah.com>
+ <CACPK8Xc0Mo-eAH3bv1uAWxAsPFkLk0gZr9Sx0T0An68Lt2+c+Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACPK8Xc0Mo-eAH3bv1uAWxAsPFkLk0gZr9Sx0T0An68Lt2+c+Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello.
+On Tue, Feb 08, 2022 at 11:15:30AM +0000, Joel Stanley wrote:
+> On Tue, 8 Feb 2022 at 11:08, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Wed, Feb 02, 2022 at 03:48:32PM +0100, Iwona Winiarska wrote:
+> > > PECI devices may not be discoverable at the time when PECI controller is
+> > > being added (e.g. BMC can boot up when the Host system is still in S5).
+> > > Since we currently don't have the capabilities to figure out the Host
+> > > system state inside the PECI subsystem itself, we have to rely on
+> > > userspace to do it for us.
+> > >
+> > > In the future, PECI subsystem may be expanded with mechanisms that allow
+> > > us to avoid depending on userspace interaction (e.g. CPU presence could
+> > > be detected using GPIO, and the information on whether it's discoverable
+> > > could be obtained over IPMI).
+> > > Unfortunately, those methods may ultimately not be available (support
+> > > will vary from platform to platform), which means that we still need
+> > > platform independent method triggered by userspace.
+> > >
+> > > Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
+> > > ---
+> > >  Documentation/ABI/testing/sysfs-bus-peci | 16 +++++
+> > >  drivers/peci/Makefile                    |  2 +-
+> > >  drivers/peci/core.c                      |  3 +-
+> > >  drivers/peci/device.c                    |  1 +
+> > >  drivers/peci/internal.h                  |  5 ++
+> > >  drivers/peci/sysfs.c                     | 82 ++++++++++++++++++++++++
+> > >  6 files changed, 107 insertions(+), 2 deletions(-)
+> > >  create mode 100644 Documentation/ABI/testing/sysfs-bus-peci
+> > >  create mode 100644 drivers/peci/sysfs.c
+> > >
+> > > diff --git a/Documentation/ABI/testing/sysfs-bus-peci b/Documentation/ABI/testing/sysfs-bus-peci
+> > > new file mode 100644
+> > > index 000000000000..56c2b2216bbd
+> > > --- /dev/null
+> > > +++ b/Documentation/ABI/testing/sysfs-bus-peci
+> > > @@ -0,0 +1,16 @@
+> > > +What:                /sys/bus/peci/rescan
+> > > +Date:                July 2021
+> > > +KernelVersion:       5.15
+> >
+> > 5.15 was a long time ago :(
+> >
+> >
+> > Other than this nit, these all look semi-sane to me.  What tree are you
+> > wanting these to go through, mine?  If so, can you fix this up (both
+> > places in this file) and resend?
+> 
+> Yes, I recommend Iwona send these through your tree.
+> 
+> Thanks for taking another look over them. Thanks to Iwona and Intel
+> for doing this work.
 
-On =FAter=FD 8. =FAnora 2022 12:14:00 CET Michal Hocko wrote:
-> On Tue 08-02-22 11:11:02, Oleksandr Natalenko wrote:
-> [...]
-> > Is the patch submission broken for everyone, or for me only? I see raw
-> > emails cluttered with some garbage like =3D2D, and hence I cannot apply
-> > those neither from my email client nor from lore.
->=20
-> The patchset seems to be OK both in my inbox and b4[1] has downloaded
-> the full thread without any issues and I could apply all the patches
-> just fine
->=20
-> [1] https://git.kernel.org/pub/scm/utils/b4/b4.git
+Can you provide an ack or reviewed-by for them when they are reposted so
+I know this?
 
-Thanks, b4 worked for me as well.
+thanks,
 
-=2D-=20
-Oleksandr Natalenko (post-factum)
-
-
+greg k-h
