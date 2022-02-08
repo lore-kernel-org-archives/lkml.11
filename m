@@ -2,85 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24580C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DBBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348828AbiBHIHT (ORCPT
+        id S1348864AbiBHIHa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:07:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47026 "EHLO
+        Tue, 8 Feb 2022 03:07:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348863AbiBHIHP (ORCPT
+        with ESMTP id S1348858AbiBHIH0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:07:15 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809C2C03FECD
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:07:07 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id m6so47493171ybc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:07:07 -0800 (PST)
+        Tue, 8 Feb 2022 03:07:26 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC539C03FEC1
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:07:25 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id o10so13317408ilh.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:07:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lrJ/uUGCKgoKFH52TnhTE0iJcbWnNbC2//ZX4wls2Dw=;
-        b=kNP/DVt8Qf+7bUY3UT5ZfqP8u/Zt0jSOyRJstDT02WFgtxz0uQpIo4XqdFFTnYfT/M
-         F2Df9FQ1s1DpZs0sKfObwDOAAXfKQ7/T2yeAjlKR3i/reWmzZVjWKP3xdxDfOd3jfA7b
-         tz5+cjBNS6/V6VXodt+MN/KM9Uxi0esuP7iu1e3jkfmQt4QdsMTpVKtJq5SLYiKaO6wV
-         GdLTObr64l6FVPZjPzvdKBJR2Rjj+n9hO45a68l8DCZafC6+U2M4uJdIA6MbLvDKJRJZ
-         DYHtfhyDzmb+GdSk9jY5Magnd6SN2eMgQm2n0M1xh1E5HMRa0EDjVN/rUBMFIXJjqzfO
-         gYMA==
+         :cc:content-transfer-encoding;
+        bh=2nn1yw6s4IptKKkqexjsVuYGnZXdnpYECt5wmy4nCLI=;
+        b=RbemnSrhXrKKcmiNAQChCDTCfg6l6ls5LgDIaRQkZLTLaWYDjG6MM8osL8JkLF3bCp
+         /Kq4sd9uU0NEZm+Wz8RgynFJAbap5ItA1CILACu+hFiwrULXgQ7eCzkQ14TNBanKSWIw
+         TjONrz2gQtSvRje+DKUublwrHeFhbhnyVgZ3k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lrJ/uUGCKgoKFH52TnhTE0iJcbWnNbC2//ZX4wls2Dw=;
-        b=aVHINfNgMXms4sj3Omj6xWQXQGPuNri5D+rWi6nxW8HwVlb+L88V6wWAhAiKJSoj6T
-         AWHpuo0YZbnjPe6jcXK+n0Rb/LcQf0M4jwV/1bSnmjlBKdU2pSZ4F4TanF3Yfks1T2Fy
-         XbfMmqZVaJRZRJjd+Kwzo+e9Yn2e1o7tV5X4pTGjqpTkQN7NoeWFb+Xm7UuzD4Y1ZWIS
-         5kQdq2pJ4ORsZTgK65jYJbD85e8oYn4sVeLjZAQDfF8I/w7AN7RpaJ3hZvZPviWVBWeK
-         Jt6xeplX6zP+tThsP/9Nnj/24+dW0OQUKLoXHWPD6mZ7Xup1nQyKuwEs5fAXHuJZz61q
-         l3Rw==
-X-Gm-Message-State: AOAM531pUyzFb1bZg4Vl2OrlYDoS9961xMt6JyIwF6Doyn0T7/TsQxvj
-        k6suZrxNZP3r2vHEe3WL7BKr94j/NgNQXfUltp+8dA==
-X-Google-Smtp-Source: ABdhPJyc0mkGJILuXoiCncxc7dUnInOYzU71tTwuAgOjc/Gz6ioJ07N3R1Qa59huN3y/0lYz2j4xsFCGHPxb7jwVlxY=
-X-Received: by 2002:a25:e406:: with SMTP id b6mr3405161ybh.703.1644307626738;
- Tue, 08 Feb 2022 00:07:06 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2nn1yw6s4IptKKkqexjsVuYGnZXdnpYECt5wmy4nCLI=;
+        b=v1E/qBxVFI3XWHWZNXlcPLD1FqqzgXmSgyz5FdQDbhX8yOZbr6SrB1EBz5LqFDdoaK
+         cskxaUAIZ4L73jL+kCcCldo09baSdev/gETAgTuXjsmElfdiAz6WEA8cmvSHRmnwL/AF
+         pYBdTdArzLKVJ/u2Ij0/YmNwQ8hz9BRgaeIu5c8EtfmnhLXUFY5tevgVj5YoL7mIDb7x
+         /jLW/oytxbZGTgsWHe+YvLdeDKd2htEN1AI/XfZdOeiBFAQGrR/qW2dTviLI+rGNnnYL
+         lAB5uUl/170OuHZyc08tBmThFmiewnvZwu5XqslvGdJSNGd2EBou7pAUP8O52/EFK13F
+         p3dw==
+X-Gm-Message-State: AOAM530M5Lb60PLSlgXMesyPODeSWqXYYDXFxnC4tcAFHskVFxEsoj7x
+        6AmV3GiQyavidTb7XmbrT3yrmLsMKLqIVPIogGZgTA==
+X-Google-Smtp-Source: ABdhPJzX6bk4eNvEnp69aytew5yHADtPJVvGPNtbE4EZRnOFljwbLJwfYxI5lISAClkMzxAfRIq8Gdm85/RAs5cGYNM=
+X-Received: by 2002:a05:6e02:18c6:: with SMTP id s6mr1637885ilu.230.1644307645048;
+ Tue, 08 Feb 2022 00:07:25 -0800 (PST)
 MIME-Version: 1.0
-References: <20220207063249.1833066-1-hch@lst.de> <20220207063249.1833066-2-hch@lst.de>
-In-Reply-To: <20220207063249.1833066-2-hch@lst.de>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 8 Feb 2022 16:06:30 +0800
-Message-ID: <CAMZfGtUfqoaJ7L7rLP2Vdfy_nvr30qppRX-RfTFUh8TeO3ZznA@mail.gmail.com>
-Subject: Re: [PATCH 1/8] mm: remove a pointless CONFIG_ZONE_DEVICE check in memremap_pages
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
+References: <20220208073714.1540390-1-hsinyi@chromium.org> <YgIhJb3+MckKD4dC@intel.com>
+In-Reply-To: <YgIhJb3+MckKD4dC@intel.com>
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+Date:   Tue, 8 Feb 2022 16:06:59 +0800
+Message-ID: <CAJMQK-hzjtZrXC+sdcs39kF6nvUzkNcgNXFXPzTUQHzr8f6ZkA@mail.gmail.com>
+Subject: Re: [Intel-gfx] [PATCH v7 1/3] gpu: drm: separate panel orientation
+ property creating and value setting
+To:     =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>
+Cc:     dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        devicetree@vger.kernel.org, Simon Ser <contact@emersion.fr>,
+        linux-kernel@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
         Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Alistair Popple <apopple@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, nvdimm@lists.linux.dev,
-        Linux Memory Management List <linux-mm@kvack.org>
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 2:36 PM Christoph Hellwig <hch@lst.de> wrote:
+On Tue, Feb 8, 2022 at 3:52 PM Ville Syrj=C3=A4l=C3=A4
+<ville.syrjala@linux.intel.com> wrote:
 >
-> memremap.c is only built when CONFIG_ZONE_DEVICE is set, so remove
-> the superflous extra check.
+> On Tue, Feb 08, 2022 at 03:37:12PM +0800, Hsin-Yi Wang wrote:
+> > +int drm_connector_init_panel_orientation_property(
+> > +     struct drm_connector *connector)
+> > +{
+> > +     struct drm_device *dev =3D connector->dev;
+> > +     struct drm_property *prop;
+> > +
+> > +     prop =3D drm_property_create_enum(dev, DRM_MODE_PROP_IMMUTABLE,
+> > +                     "panel orientation",
+> > +                     drm_panel_orientation_enum_list,
+> > +                     ARRAY_SIZE(drm_panel_orientation_enum_list));
+> > +     if (!prop)
+> > +             return -ENOMEM;
+> > +
+> > +     dev->mode_config.panel_orientation_property =3D prop;
 >
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Leak when called multiple times. I guess you could just put
+> this into drm_connector_create_standard_properties() instead
+> and avoid that issue entirely.
+>
+I'll add a check for dev->mode_config.panel_orientation_property to
+avoid the leak issue if called multiple times.
+If we add in drm_connector_create_standard_properties(), we still need
+another function to attach the property earlier for bridge/connectors
+that require this property, since not all bridge/connectors need this
+property.
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-
-Thanks.
+> --
+> Ville Syrj=C3=A4l=C3=A4
+> Intel
