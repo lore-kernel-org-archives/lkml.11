@@ -2,146 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20333C35270
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF7AC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387434AbiBHW1u (ORCPT
+        id S1386762AbiBHWYI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:27:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
+        Tue, 8 Feb 2022 17:24:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386759AbiBHVI7 (ORCPT
+        with ESMTP id S1386788AbiBHVLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:08:59 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F8AC0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:58 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id v12so616650wrv.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:58 -0800 (PST)
+        Tue, 8 Feb 2022 16:11:49 -0500
+Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2188C0612BC
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:11:48 -0800 (PST)
+Received: by mail-oo1-xc2d.google.com with SMTP id u25-20020a4ad0d9000000b002e8d4370689so104469oor.12
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:11:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rydNRJgI2Eov1WWIN57pE5aUhiOSvoU+VTOBFAHrkb4=;
-        b=F+hzmxnzOc+718goX4Cs58QWOUfTIDiKrkUB1v+ufkg3+6n7DOvGRg91mu8FfXCAMf
-         FGj9W8B++N5wBz1YYmQT7i0CVcluacCT4V2Jc/ZISCEMgByjOv4cyK77LyJT/v7Slbjx
-         Q/yRK4s31cta8TArkXSJ37qhNy2sB4V2Oyxa8=
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=IolIE8DlbmDNUe3gGgG48U1O9vWoP4C6TXSIdX5Tgvs=;
+        b=AbUPMmzJT8mciX3qYbx/Wy97gl16cigP99mpGQx48PAxS+kyG4yRLTtflI4z6/QkEC
+         NPV2/hIi1bb5CMFGGAiFPrYcYTMQZp3w8o2qpSc/sZypMyS7ySM4bDmZ8+4uIr4iJCMb
+         LookcqAXmZ2p25+haf3s1l+u0dqp1Ozm+G878=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rydNRJgI2Eov1WWIN57pE5aUhiOSvoU+VTOBFAHrkb4=;
-        b=HGmVobRA0HujRp+Vd21hDLrLXoile+skXUHzHrKaFwZZMwr5N1+VXP/l5f3o1mqIl4
-         0mjfBZnKgn0B5GzyJv5AaDnDNn17LpA/zb1CMxPf29u4E9FamG4D6NtEz5p2rk+GrL10
-         sIgIHAN+NuGs5/ZCDZd+HhewoYx92/fYavZ32MYR90mjYc0jBckob2PHOis8NOrL7FGv
-         5XGGJzJ/QQ3tu2nOoepwyXT+1c3sgbPy+05t3byr87UDqevZzpNXuNctoMGoXAxDsPyD
-         b0c8cspL8Xoqk5w2ypmQnGfbSmvoHfavtVSILjyYQf8Ia74nXna8c2YPD54gpSC9VUr1
-         WQQw==
-X-Gm-Message-State: AOAM531pTHPZVfYghrsjuGJ10YwOnWC27sfOprPRfulog+6aYTclR6vJ
-        IK/eOKKkDyEoYV67VcEdX9t/8jrDAHzNEQ==
-X-Google-Smtp-Source: ABdhPJzxKjz/b2hfgAxYxrOdvg7rGwL2KTseqSZXjP4oQ90LBl4N2T/XH7Zn2NUo7poLdZ1hEUURuQ==
-X-Received: by 2002:a5d:6da8:: with SMTP id u8mr5135544wrs.362.1644354537326;
-        Tue, 08 Feb 2022 13:08:57 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 13:08:56 -0800 (PST)
-From:   Daniel Vetter <daniel.vetter@ffwll.ch>
-To:     DRI Development <dri-devel@lists.freedesktop.org>
-Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Zack Rusin <zackr@vmware.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ilya Trukhanov <lahvuun@gmail.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Peter Jones <pjones@redhat.com>
-Subject: [PATCH v2 18/19] Revert "fbdev: Prevent probing generic drivers if a FB is already registered"
-Date:   Tue,  8 Feb 2022 22:08:23 +0100
-Message-Id: <20220208210824.2238981-19-daniel.vetter@ffwll.ch>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=IolIE8DlbmDNUe3gGgG48U1O9vWoP4C6TXSIdX5Tgvs=;
+        b=ZYB9tDkMiQFo4bsQRKS4SPJeP47eh5qHZSTLCz5K60CdvHHp/GukMANb7LkUpyitJS
+         76eBVGcInTreAmkzRzDNrzQpM/BtVPz9ZlL1E5FS1qkDacohx49p/2pvDv6oRnJnm29P
+         Wum1uhmxRn574Jwf3k9XiTWKiA1S6tO7VlKjn1OGHywoEDzggLiG+3Zxi7R4LlCW4Hjk
+         YZds0InXw6Tu+5oWB5B4KvF3s0RYzpwForQk1WeLAWpMjsqh8dmKu+s1CFWAarkr8cNg
+         n9TqCGx4L03gr1AGd0QktOKALxaDUh+pkHQwheBn4Mz+DOI5NLLwdrKTc0qghbPdwbur
+         Kcsg==
+X-Gm-Message-State: AOAM532XcMIl45tC7zJmpA7yazRSeJcpbJrbwwWBTb08W3tax2AQ14TX
+        FZrIZzwH81hfE9s6ry64r5hr4pIQHG/SRrv1/+13Qw==
+X-Google-Smtp-Source: ABdhPJwHNoxydd/t2CaA3EqBCm15INeCVbhxeoynL95/uM/C6nBW9vtMXvetlz1uGTkYLWiossI7SRfqhKSAUbviamc=
+X-Received: by 2002:a4a:b001:: with SMTP id f1mr2473858oon.25.1644354708042;
+ Tue, 08 Feb 2022 13:11:48 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 8 Feb 2022 13:11:47 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1644334454-16719-3-git-send-email-quic_srivasam@quicinc.com>
+References: <1644334454-16719-1-git-send-email-quic_srivasam@quicinc.com> <1644334454-16719-3-git-send-email-quic_srivasam@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 8 Feb 2022 13:11:47 -0800
+Message-ID: <CAE-0n52LGY2amCKo+40D4BoSsANs7JeQ0t_4QfeXNC5q64Ccwg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] arm64: dts: qcom: sc7280: add lpass lpi pin
+ controller node
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        devicetree@vger.kernel.org, dianders@chromium.org,
+        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit fb561bf9abde49f7e00fdbf9ed2ccf2d86cac8ee.
+Quoting Srinivasa Rao Mandadapu (2022-02-08 07:34:13)
+> Add LPASS LPI pinctrl node required for Audio functionality on sc7280
+> based platforms.
+>
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 150 +++++++++++++++++++++++++++++++
+>  1 file changed, 150 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> index c7d6c46..4704a93 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> @@ -638,3 +638,153 @@
+>                 bias-pull-up;
+>         };
+>  };
 
-With
+Newline here.
 
-commit 27599aacbaefcbf2af7b06b0029459bbf682000d
-Author: Thomas Zimmermann <tzimmermann@suse.de>
-Date:   Tue Jan 25 10:12:18 2022 +0100
+> +&soc {
+> +       lpass_tlmm: pinctrl@33c0000 {
+> +               compatible = "qcom,sc7280-lpass-lpi-pinctrl";
+> +               reg = <0 0x33c0000 0x0 0x20000>,
+> +                       <0 0x3550000 0x0 0x10000>;
+> +               gpio-controller;
+> +               #gpio-cells = <2>;
+> +               gpio-ranges = <&lpass_tlmm 0 0 15>;
+> +
+> +               #clock-cells = <1>;
 
-    fbdev: Hot-unplug firmware fb devices on forced removal
+Presumably this doesn't change so it should be moved to the sc7280.dtsi
+file as part of the soc node. It can be marked status = "disabled" if
+it's not commonly used, but I suspect it is commonly used on sc7280?
 
-this should be fixed properly and we can remove this somewhat hackish
-check here (e.g. this won't catch drm drivers if fbdev emulation isn't
-enabled).
+> +
+> +               dmic01_active: dmic01-active-pins {
 
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Zack Rusin <zackr@vmware.com>
-Cc: Javier Martinez Canillas <javierm@redhat.com>
-Cc: Zack Rusin <zackr@vmware.com>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Ilya Trukhanov <lahvuun@gmail.com>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Peter Jones <pjones@redhat.com>
-Cc: linux-fbdev@vger.kernel.org
----
- drivers/video/fbdev/efifb.c    | 11 -----------
- drivers/video/fbdev/simplefb.c | 11 -----------
- 2 files changed, 22 deletions(-)
+The '-pins' suffix is redundant. Please remove it.
 
-diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
-index ea42ba6445b2..edca3703b964 100644
---- a/drivers/video/fbdev/efifb.c
-+++ b/drivers/video/fbdev/efifb.c
-@@ -351,17 +351,6 @@ static int efifb_probe(struct platform_device *dev)
- 	char *option = NULL;
- 	efi_memory_desc_t md;
- 
--	/*
--	 * Generic drivers must not be registered if a framebuffer exists.
--	 * If a native driver was probed, the display hardware was already
--	 * taken and attempting to use the system framebuffer is dangerous.
--	 */
--	if (num_registered_fb > 0) {
--		dev_err(&dev->dev,
--			"efifb: a framebuffer is already registered\n");
--		return -EINVAL;
--	}
--
- 	if (screen_info.orig_video_isVGA != VIDEO_TYPE_EFI || pci_dev_disabled)
- 		return -ENODEV;
- 
-diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
-index 94fc9c6d0411..0ef41173325a 100644
---- a/drivers/video/fbdev/simplefb.c
-+++ b/drivers/video/fbdev/simplefb.c
-@@ -413,17 +413,6 @@ static int simplefb_probe(struct platform_device *pdev)
- 	struct simplefb_par *par;
- 	struct resource *res, *mem;
- 
--	/*
--	 * Generic drivers must not be registered if a framebuffer exists.
--	 * If a native driver was probed, the display hardware was already
--	 * taken and attempting to use the system framebuffer is dangerous.
--	 */
--	if (num_registered_fb > 0) {
--		dev_err(&pdev->dev,
--			"simplefb: a framebuffer is already registered\n");
--		return -EINVAL;
--	}
--
- 	if (fb_get_options("simplefb", NULL))
- 		return -ENODEV;
- 
--- 
-2.34.1
+> +                       clk {
+> +                               pins = "gpio6";
+> +                               function = "dmic1_clk";
+> +                               drive-strength = <8>;
+> +                               output-high;
+> +                       };
 
+Please be consistent and have a newline between nodes.
+
+> +                       data {
+> +                               pins = "gpio7";
+> +                               function = "dmic1_data";
+> +                               drive-strength = <8>;
+> +                               input-enable;
+> +                       };
+> +               };
+> +
+> +               dmic01_sleep: dmic01-sleep-pins {
+> +                       clk {
+> +                               pins = "gpio6";
+> +                               function = "dmic1_clk";
+> +                               drive-strength = <2>;
+> +                               bias-disable;
+> +                               output-low;
+> +                       };
+> +
+> +                       data {
+> +                               pins = "gpio7";
+> +                               function = "dmic1_data";
+> +                               drive-strength = <2>;
+> +                               pull-down;
+> +                               input-enable;
+
+Why does input-enable matter? It's not a gpio.
+
+> +                       };
+> +               };
+> +
+> +               dmic23_active: dmic02-active-pins {
+> +                       clk {
+> +                               pins = "gpio8";
+> +                               function = "dmic2_clk";
+> +                               drive-strength = <8>;
+> +                               output-high;
+> +                       };
+> +                       data {
+> +                               pins = "gpio9";
+> +                               function = "dmic2_data";
+> +                               drive-strength = <8>;
+> +                               input-enable;
+> +                       };
+> +               };
+> +
+> +               dmic23_sleep: dmic02-sleep-pins {
+> +                       clk {
+> +                               pins = "gpio8";
+> +                               function = "dmic2_clk";
+> +                               drive-strength = <2>;
+> +                               bias-disable;
+> +                               output-low;
+> +                       };
+> +
+> +                       data {
+> +                               pins = "gpio9";
+> +                               function = "dmic2_data";
+> +                               drive-strength = <2>;
+> +                               pull-down;
+> +                               input-enable;
+> +                       };
+> +               };
+> +
+> +               rx_swr_active: rx_swr-active-pins {
+> +                       clk {
+> +                               pins = "gpio3";
+> +                               function = "swr_rx_clk";
+> +                               drive-strength = <2>;
+> +                               slew-rate = <1>;
+> +                               bias-disable;
+> +                       };
+> +
+> +                       data {
+> +                               pins = "gpio4", "gpio5";
+> +                               function = "swr_rx_data";
+> +                               drive-strength = <2>;
+> +                               slew-rate = <1>;
+> +                               bias-bus-hold;
+> +                       };
+> +               };
+> +
+> +               rx_swr_sleep: rx_swr-sleep-pins {
+> +                       clk {
+> +                               pins = "gpio3";
+> +                               function = "swr_rx_clk";
+> +                               drive-strength = <2>;
+> +                               input-enable;
+> +                               bias-pull-down;
+> +                       };
+> +
+> +                       data {
+> +                               pins = "gpio4", "gpio5";
+> +                               function = "swr_rx_data";
+> +                               drive-strength = <2>;
+> +                               input-enable;
+> +                               bias-pull-down;
+> +                       };
+> +               };
+> +
+> +               tx_swr_active: tx_swr-active-pins {
+> +                       clk {
+> +                               pins = "gpio0";
+> +                               function = "swr_tx_clk";
+> +                               drive-strength = <2>;
+> +                               slew-rate = <1>;
+> +                               bias-disable;
+> +                       };
+> +
+> +                       data {
+> +                               pins = "gpio1", "gpio2", "gpio14";
+> +                               function = "swr_tx_data";
+> +                               drive-strength = <2>;
+> +                               slew-rate = <1>;
+> +                               bias-bus-hold;
+> +                       };
+> +               };
+> +
+> +               tx_swr_sleep: tx_swr-sleep-pins {
+
+No underscore in node names.
+
+> +                       clk {
+> +                               pins = "gpio0";
+> +                               function = "swr_tx_clk";
+> +                               drive-strength = <2>;
+> +                               input-enable;
+> +                               bias-pull-down;
+> +                       };
+> +
+> +                       data {
+> +                               pins = "gpio1", "gpio2", "gpio14";
+> +                               function = "swr_tx_data";
+> +                               drive-strength = <2>;
+> +                               input-enable;
+> +                               bias-bus-hold;
+> +                       };
+> +               };
+> +       };
+> +};
+> --
+> 2.7.4
+>
