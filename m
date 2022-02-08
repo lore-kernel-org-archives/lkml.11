@@ -2,132 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD8E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:19:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379787AbiBHPTd (ORCPT
+        id S1379791AbiBHPTm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:19:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36076 "EHLO
+        Tue, 8 Feb 2022 10:19:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379708AbiBHPTa (ORCPT
+        with ESMTP id S1379804AbiBHPTk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:19:30 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB95C061579;
-        Tue,  8 Feb 2022 07:19:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644333569; x=1675869569;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=AehZw/m0Nas6LkoMeQNIU5pK46BRtTYHOumWG56ikG0=;
-  b=hgOJBvAlxmLb6nUD6tlDoriP0Zd2ycn9SAir6pqC6cSfeWj4D0Eg4wFK
-   KYSTkDxIFzeamgFC9sywTM354BPXsFPDXyFRWwDQ7CvVaFCPQxgAEl2mD
-   jWz0wK4TFL2MSSxvqYlk8X+B4mGsYhlVH0VdQ+JFjg3ALZry5FDJ8+14t
-   c=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 08 Feb 2022 07:19:29 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 07:19:30 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 07:19:28 -0800
-Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 07:19:22 -0800
-From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <robh+dt@kernel.org>,
-        <robdclark@gmail.com>, <seanpaul@chromium.org>,
-        <swboyd@chromium.org>, <dianders@chromium.org>,
-        <krzysztof.kozlowski@canonical.com>, <thierry.reding@gmail.com>,
-        <sam@ravnborg.org>, <airlied@linux.ie>, <daniel@ffwll.ch>
-CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        <quic_kalyant@quicinc.com>, <quic_abhinavk@quicinc.com>,
-        <quic_khsieh@quicinc.com>, <quic_mkrishn@quicinc.com>
-Subject: [PATCH v2 3/4] drm/panel-edp: Add eDP sharp panel support
-Date:   Tue, 8 Feb 2022 20:48:44 +0530
-Message-ID: <1644333525-30920-4-git-send-email-quic_sbillaka@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644333525-30920-1-git-send-email-quic_sbillaka@quicinc.com>
-References: <1644333525-30920-1-git-send-email-quic_sbillaka@quicinc.com>
+        Tue, 8 Feb 2022 10:19:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927A9C0613CA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 07:19:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28D9861476
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 15:19:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62CEBC004E1;
+        Tue,  8 Feb 2022 15:19:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644333578;
+        bh=fIjxqOup6OwNvRXLtgfT5VcCzdLMcW360tWbTxHYLyo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A691zmXwYzGeuKQXa/N6uWG/wsfSLBJIJOtIyoGzTkIcBq2+cKkBle4kAQZ3gf+LW
+         6sbg9V+g9m17lomD+4XR/Fq0Nz1KWjzZJ2z9bvoABFRKK4CWEsDwTS+j9diztxWY5U
+         5UXR0x7A7qrV8mSM9G9B1Thn/AKdWiSATfqkKb9Oq0w8I+1x5yQItdfX9CJ3aHyB0u
+         c+ouxKI86H33fVqpGBCrVmopDZImiC4X5ciw2dWYaI6AzSGK48MqDIEisJYMwKA0h3
+         FqxURq4I9v4S9ZRK+D6/wRH6yQ9iL48Qy1h7Yr29kRktyncaj9v2KXS2q3qHR2ftsQ
+         7290lS/6N5klA==
+Date:   Tue, 8 Feb 2022 15:19:32 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Rob Clark <robdclark@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, Xin Tan <tanxin.ctf@gmail.com>,
+        Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+        "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Subject: Re: [PATCH 1/2] iommu/arm-smmu: Use platform_irq_count() to get the
+ interrupt count
+Message-ID: <20220208151932.GB1802@willie-the-truck>
+References: <20211223130046.9365-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20211223130046.9365-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <f9efc8e8-9dc6-8a80-15bb-bc2d9aaf60cb@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f9efc8e8-9dc6-8a80-15bb-bc2d9aaf60cb@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the 14" sharp,lq140m1jw46 eDP panel.
+On Thu, Dec 23, 2021 at 02:14:35PM +0000, Robin Murphy wrote:
+> On 2021-12-23 13:00, Lad Prabhakar wrote:
+> > platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+> > allocation of IRQ resources in DT core code, this causes an issue
+> > when using hierarchical interrupt domains using "interrupts" property
+> > in the node as this bypasses the hierarchical setup and messes up the
+> > irq chaining.
+> > 
+> > In preparation for removal of static setup of IRQ resource from DT core
+> > code use platform_get_irq_count().
+> 
+> Nit: platform_irq_count()
+> 
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > ---
+> >   drivers/iommu/arm/arm-smmu/arm-smmu.c | 12 ++++++------
+> >   1 file changed, 6 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > index 4bc75c4ce402..4844cd075644 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > @@ -2105,12 +2105,12 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> >   	if (IS_ERR(smmu))
+> >   		return PTR_ERR(smmu);
+> > -	num_irqs = 0;
+> > -	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, num_irqs))) {
+> > -		num_irqs++;
+> > -		if (num_irqs > smmu->num_global_irqs)
+> > -			smmu->num_context_irqs++;
+> > -	}
+> > +	num_irqs = platform_irq_count(pdev);
+> > +	if (num_irqs < 0)
+> > +		return num_irqs;
+> > +
+> > +	if (num_irqs > smmu->num_global_irqs)
+> > +		smmu->num_context_irqs += (num_irqs - smmu->num_global_irqs);
+> 
+> This seems a bit overcomplicated. I reckon:
+> 
+> 	smmu->num_context_irqs = num_irqs - smmu->num_global_irqs;
+> 	if (num_irqs <= smmu->num_global_irqs) {
+> 		dev_err(...
+> 
+> should do it.
+> 
+> However, FYI I have some patches refactoring most of the IRQ stuff here that
+> I plan to post next cycle (didn't quite have time to get them done for 5.17
+> as I'd hoped...), so unless this needs to go in right now as an urgent fix,
+> I'm happy to take care of removing platform_get_resource() as part of that
+> if it's easier.
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
----
+Did you get anywhere with this? December 23rd is long forgotten by now ;)
 
-Changes in v2:
-  - add mode when not using hpd
-  - add delays
-  - put dt-bindings
-
- drivers/gpu/drm/panel/panel-edp.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
-
-diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-index a394a15..5d13ccc 100644
---- a/drivers/gpu/drm/panel/panel-edp.c
-+++ b/drivers/gpu/drm/panel/panel-edp.c
-@@ -1605,6 +1605,34 @@ static const struct panel_desc sharp_lq123p1jx31 = {
- 	},
- };
- 
-+static const struct drm_display_mode sharp_lq140m1jw46_mode = {
-+	.clock = 144370,
-+	.hdisplay = 1920,
-+	.hsync_start = 1920 + 48,
-+	.hsync_end = 1920 + 48 + 32,
-+	.htotal = 1920 + 48 + 32 + 80,
-+	.vdisplay = 1080,
-+	.vsync_start = 1080 + 3,
-+	.vsync_end = 1080 + 3 + 5,
-+	.vtotal = 1080 + 3 + 5 + 69,
-+	.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
-+};
-+
-+static const struct panel_desc sharp_lq140m1jw46 = {
-+	.modes = &sharp_lq140m1jw46_mode,
-+	.num_modes = 1,
-+	.bpc = 8,
-+	.size = {
-+		.width = 309,
-+		.height = 174,
-+	},
-+	.delay = {
-+		.hpd_absent = 80,
-+		.enable = 50,
-+		.unprepare = 500,
-+	},
-+};
-+
- static const struct drm_display_mode starry_kr122ea0sra_mode = {
- 	.clock = 147000,
- 	.hdisplay = 1920,
-@@ -1719,6 +1747,9 @@ static const struct of_device_id platform_of_match[] = {
- 		.compatible = "sharp,lq123p1jx31",
- 		.data = &sharp_lq123p1jx31,
- 	}, {
-+		.compatible = "sharp,lq140m1jw46",
-+		.data = &sharp_lq140m1jw46,
-+	}, {
- 		.compatible = "starry,kr122ea0sra",
- 		.data = &starry_kr122ea0sra,
- 	}, {
--- 
-2.7.4
-
+Will
