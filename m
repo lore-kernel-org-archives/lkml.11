@@ -2,88 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:49:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385490AbiBHStY (ORCPT
+        id S1385503AbiBHSt1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:49:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
+        Tue, 8 Feb 2022 13:49:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385487AbiBHStN (ORCPT
+        with ESMTP id S1385498AbiBHStO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:49:13 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3652AC0612B8;
+        Tue, 8 Feb 2022 13:49:14 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 835D2C0612BA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:49:13 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2C2701FB;
         Tue,  8 Feb 2022 10:49:13 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id 10so147054plj.1;
-        Tue, 08 Feb 2022 10:49:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HzqJzWy6/gVejSAN5h5m+QbHqL8I+Ih3BBbS9yeEwMQ=;
-        b=N4MKN8A1dy9x/0fQ3O5ZkWlr8CY4zUnafoD5iZJ2GzR2vHrPtZ9c3Augj8QVTK/AOB
-         6/Q0T9TxM0VSWHm37lP2a4E0TiBrzrW1EhYPumJszYBdF7eUpgZwahZdkzXGgG8+uijN
-         EmyFn0npWdJy1OTjwf8aZ/+9k7emBiOHVNUqPcClPbMfn2VqEkoBj+u0tEthGor79MHU
-         Q+YzcmqT/YYt5W56qTcPGLmXCR1cUCzJMQ48WnZQUTxPcgO02slV04kbISsKtoFvVS58
-         LCwvTK7xcTi0/LT7PubbSs8+5waC1a9C1PTTqMm+3ZHp1Zz7rUdlBA27X4l7qSY3SA+s
-         X3fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=HzqJzWy6/gVejSAN5h5m+QbHqL8I+Ih3BBbS9yeEwMQ=;
-        b=hwvykU9bmAc/p0UI6F9n1Ejt1CydCGSwo4r6zeHykeC9a3PFFxCWHwqT4XNl1fXiKf
-         TXfICQVb92wYwEoLIGkH6zs6F3zjtQR/19VgTW3lIxbGYA8LdegUV5J3+Kmz0/8NzOmr
-         br5coWkjh1fGYTExJYhS8jGtk6j2uo1F0Xi1fKkK38NL9ktJdrAJkstKcxRKgsA7DnvB
-         Qp5ntZk4G41xBrO9igCnLY2MvzSdc/INJ2ZJjhZsBtHxdrAOXeoOghYYggVSbOlR6G5I
-         ivebrghptl3lrY+/kZxEm09xZ9aGoF5t9VO6LgFlV6EMJ1XbBT3bKifNGYQZFmtlF2V2
-         bxjw==
-X-Gm-Message-State: AOAM530kv13r38qx43OTWIZb1/vYAu6uIQbUid4QNZUbaeM1QCviUAe/
-        ipZ8S4d23dDa2ydhUKUicb4=
-X-Google-Smtp-Source: ABdhPJwX12I2MBOXbiu6oZugVdwTIBUKqfSF8p3wK6Ebq2mwkYOwoYeKHHg4Oha5uOUJ0yedv0L0SQ==
-X-Received: by 2002:a17:902:e788:: with SMTP id cp8mr6038172plb.172.1644346152598;
-        Tue, 08 Feb 2022 10:49:12 -0800 (PST)
-Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
-        by smtp.gmail.com with ESMTPSA id kb18sm3983061pjb.30.2022.02.08.10.49.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 10:49:12 -0800 (PST)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 8 Feb 2022 08:49:11 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     "yukuai (C)" <yukuai3@huawei.com>
-Cc:     axboe@kernel.dk, cgroups@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH -next] blk-throttle: enable io throttle for root in
- cgroup v2
-Message-ID: <YgK7J8TFyFvp/rv1@slm.duckdns.org>
-References: <20220114093000.3323470-1-yukuai3@huawei.com>
- <YfGE9L4i7DtNTo08@slm.duckdns.org>
- <235b0757-d322-2b6e-3ab6-ecc8c82f8f1e@huawei.com>
- <Yflr4FzUTWsiLTC/@slm.duckdns.org>
- <32b6949d-60b1-82ce-ae44-1cf089a78276@huawei.com>
+Received: from FVFF77S0Q05N (unknown [10.57.89.190])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 53D813F73B;
+        Tue,  8 Feb 2022 10:49:12 -0800 (PST)
+Date:   Tue, 8 Feb 2022 18:49:07 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [peterz-queue:sched/core 32/32]
+ arch/arm64/include/asm/preempt.h:85:1: error: type defaults to 'int' in
+ declaration of 'DECLARE_STATIC_KEY_TRUE'
+Message-ID: <YgK7I2bMJQA8IPmt@FVFF77S0Q05N>
+References: <202202081918.RDLHzFHh-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <32b6949d-60b1-82ce-ae44-1cf089a78276@huawei.com>
+In-Reply-To: <202202081918.RDLHzFHh-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Tue, Feb 08, 2022 at 07:08:33PM +0800, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git sched/core
+> head:   ac7695a93a578befdcf4900a90860bf19e057e1b
+> commit: ac7695a93a578befdcf4900a90860bf19e057e1b [32/32] arm64: support PREEMPT_DYNAMIC
 
-On Tue, Feb 08, 2022 at 09:38:33AM +0800, yukuai (C) wrote:
-> 3) If we limit iops to 8 for each client from server, client should work
-> fine, however, server can receive 64 x 8 = 512 io at most at the same
-> time, which might cause too much pressure on the server.(maybe bps is
-> more appropriate to explain the high pressure).
+> >> arch/arm64/include/asm/preempt.h:85:1: warning: data definition has no type or storage class
+>       85 | DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
+>          | ^~~~~~~~~~~~~~~~~~~~~~~
 
-I don't follow this part. Why can't the server control however it wanna
-control?
+This is because I forgot to include <linux/jump_label.h>, so GCC has no idea
+what `DECLARE_STATIC_KEY_TRUE` means.
 
-Thanks.
+I'll go add that where needed and check that doesn't introduce a circular
+dependency.
 
--- 
-tejun
+Thanks,
+Mark.
