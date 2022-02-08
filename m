@@ -2,151 +2,405 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C9BC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4194EC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387934AbiBHWb5 (ORCPT
+        id S1387855AbiBHWby (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:31:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37610 "EHLO
+        Tue, 8 Feb 2022 17:31:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386858AbiBHVRO (ORCPT
+        with ESMTP id S1386699AbiBHVIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:17:14 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24FDC0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:17:13 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id s73-20020a25aa4f000000b0061d764d3c13so453028ybi.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:17:13 -0800 (PST)
+        Tue, 8 Feb 2022 16:08:36 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654EAC0612BE
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:35 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id l67-20020a1c2546000000b00353951c3f62so153508wml.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=4dR1yNXtmyr78XdAPm6ZMGJLtvP6soDdLw1TSPN/FsI=;
-        b=Lrj1tvUasnQmtz5WlTQQZ+9yjaP4dfMnodiJ+cdc9TVnGgD+jiZkyTV1ILXS7CXJ2n
-         2JW9VQmmg2xrspIg+IA9NKrIVZ3S8MvlVjsxcipXTlz4M/sDb9vFKioxlrQLh3ujav47
-         bA4YWHFqx3mNZodX4jPA3QenKxCjrEci+xMD+soLPt51+d9r/v3BrtapNaI14XjX9W0s
-         C9gYXs1pQuq5m3CWtnw+ENKZVFu3FCQpr8mMsfpqw5TdtPLZkxCEKQDD6BJU3KuIpJiX
-         0zV6Zlj6C7ii79ob9tsAVzCJ7M8bmNP1JDhfW0TwQb/NiFYQewuwEHMZRi/QqycTh3L7
-         eAmw==
+        d=ffwll.ch; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=a5WrS/1rmXvD/BYbGf8gVLMNVbqD+GkBVWeKUPnYEUE=;
+        b=W8SZ9ZT9lnqf674qYwX61QIIXfYPpz5TT8FNFquYqMWF60Zr1NxVSo67LFUIumhY/b
+         g4X3DWnYQ4E9O0TT9I27jrKoBmg4rpZuW34qAkgkfckRl0rxiOId6Jms4FaL+TttstLl
+         RZw/gE3MZ7mAZ0AStwQU91DCKbDEAy83Zt1DU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=4dR1yNXtmyr78XdAPm6ZMGJLtvP6soDdLw1TSPN/FsI=;
-        b=bckyKYRlEcSpzxl9R8OR+CQfGNaCpWQofRi/NA1eowDB0wzjOxoqkxQPtsMC8ReX1P
-         bsvIQ68nK2QME8SsjGqwZgs3Sil4xuSdFwa6poIYx+JIZcKwC1k901iQeXxd5K2VMo6e
-         34Csq8XwfC34Xk+Yi3yFvRyj/YSiq+T574NPMQbVBWOoVKP1/51Yg/YxkEJXb+JnWi1T
-         FYb1VRG0MFMgfFC/f8y7qXi989fnAmOOfLWNBnwja3Em3mh1DZNni4NDViwYhH3GgSdD
-         hb34cBaX+j3wAFawMVyXZSfUcJjeyHG2dPOiL4r0VfNg9stIoXkQzSdGvMYWGZ20Wok/
-         3NJA==
-X-Gm-Message-State: AOAM533Wo3g8t9vSEYinCb9VgQvNDzA5vOZT/6bk0Rn9Tw5GVgoEGF6B
-        DnIclOEbdMIZU4oCwp21ZjvEmB4rtsa9n4jxsauNBs0MXT0UQ45R2ya3m4RtCnvl2PlGZP9s2n9
-        AA4pyS97TRodCW9xDzffc3yioDdhKflwapwk8fEXCqhOoHQpef/GYNkDr350eXRoSVSQALUZ5
-X-Google-Smtp-Source: ABdhPJyl9fK0SIMuiVRlhtI77KWnRTLqUU5cOlzF7J9P/p0y4WhEaMJnqOPrg56OWApJUCep4obNtjt/2ZgM
-X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:6875:3c51:69be:6e2c])
- (user=eranian job=sendgmr) by 2002:a25:c5c4:: with SMTP id
- v187mr6638764ybe.643.1644355032864; Tue, 08 Feb 2022 13:17:12 -0800 (PST)
-Date:   Tue,  8 Feb 2022 13:16:33 -0800
-In-Reply-To: <20220208211637.2221872-1-eranian@google.com>
-Message-Id: <20220208211637.2221872-9-eranian@google.com>
-Mime-Version: 1.0
-References: <20220208211637.2221872-1-eranian@google.com>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-Subject: [PATCH v6 08/12] ACPI: add perf low power callback
-From:   Stephane Eranian <eranian@google.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
-        jolsa@redhat.com, songliubraving@fb.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=a5WrS/1rmXvD/BYbGf8gVLMNVbqD+GkBVWeKUPnYEUE=;
+        b=UtQBa8h1at7l9jWbsrqc7CYjlEb0DQyvpSRB5heVOK04Ja0ni+6DnwCAMGMOs/ZnSd
+         i3Ez20sNwvdMDP0vqadOMXCplEmMogRUHOdcJU0rXzLFY1WAaq7r4wzCpuIBMW/ysGNG
+         0AfopRfhJp3LnwtcwoH71wz3dI/HzOEQrn1HySUz2Xaraxs8h06NN6M+M17k55aj+s7w
+         6FFzQDQq+MwAV3NYScLY07iy1UxHNf1Evup7CF+b8g94mmfWj+DSARUhVzNUuhkDHkKA
+         KJ19izyUWdKot4nbBRjDkle4KCCWTCOYRYLzF1mjAs90Kx/K9jH6j9dx4xHvHlyOQmi+
+         tkNw==
+X-Gm-Message-State: AOAM531y9zTJnxxPM+RIuCQ5k6t2BkfjSvduLmGZLqJKe/BI/138vdun
+        EEMlrNJgTXPXxfAwolxy/ks1sg==
+X-Google-Smtp-Source: ABdhPJymquC64RJAFkzllw/eFz8WLOUKu7ZMOr++7kAYlKbVxvjPxIJXICIuvaEML/N2TifrI9Fp2w==
+X-Received: by 2002:a05:600c:4f85:: with SMTP id n5mr2579212wmq.64.1644354513896;
+        Tue, 08 Feb 2022 13:08:33 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 13:08:32 -0800 (PST)
+From:   Daniel Vetter <daniel.vetter@ffwll.ch>
+To:     DRI Development <dri-devel@lists.freedesktop.org>
+Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Helge Deller <deller@gmx.de>, Daniel Vetter <daniel@ffwll.ch>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Du Cheng <ducheng2@gmail.com>, Claudio Suarez <cssk@net-c.es>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH v2 03/19] fbcon: Introduce wrapper for console->fb_info lookup
+Date:   Tue,  8 Feb 2022 22:08:08 +0100
+Message-Id: <20220208210824.2238981-4-daniel.vetter@ffwll.ch>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an optional callback needed by some PMU features, e.g., AMD
-BRS, to give a chance to the perf_events code to change its state before
-a CPU goes to low power and after it comes back.
+Half of it is protected by console_lock, but the other half is a lot
+more awkward: Registration/deregistration of fbdev are serialized, but
+we don't really clear out anything in con2fb_map and so there's
+potential for use-after free mixups.
 
-The callback is void when the PERF_NEEDS_LOPWR_CB flag is not set.
-This flag must be set in arch specific perf_event.h header whenever needed.
-When not set, there is no impact on the ACPI code.
+First step is to encapsulate the lookup.
 
-Signed-off-by: Stephane Eranian <eranian@google.com>
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Du Cheng <ducheng2@gmail.com>
+Cc: Claudio Suarez <cssk@net-c.es>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
 ---
- drivers/acpi/acpi_pad.c       | 6 ++++++
- drivers/acpi/processor_idle.c | 5 +++++
- include/linux/perf_event.h    | 6 ++++++
- 3 files changed, 17 insertions(+)
+ drivers/video/fbdev/core/fbcon.c | 76 ++++++++++++++++++--------------
+ 1 file changed, 44 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/acpi/acpi_pad.c b/drivers/acpi/acpi_pad.c
-index f45979aa2d64..a306a07a60b5 100644
---- a/drivers/acpi/acpi_pad.c
-+++ b/drivers/acpi/acpi_pad.c
-@@ -164,6 +164,9 @@ static int power_saving_thread(void *data)
- 				tsc_marked_unstable = 1;
- 			}
- 			local_irq_disable();
-+
-+			perf_lopwr_cb(true);
-+
- 			tick_broadcast_enable();
- 			tick_broadcast_enter();
- 			stop_critical_timings();
-@@ -172,6 +175,9 @@ static int power_saving_thread(void *data)
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index e925bb608e25..b75e638cb83d 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -110,6 +110,18 @@ static struct fbcon_display fb_display[MAX_NR_CONSOLES];
+ static signed char con2fb_map[MAX_NR_CONSOLES];
+ static signed char con2fb_map_boot[MAX_NR_CONSOLES];
  
- 			start_critical_timings();
- 			tick_broadcast_exit();
-+
-+			perf_lopwr_cb(false);
-+
- 			local_irq_enable();
- 
- 			if (time_before(expire_time, jiffies)) {
-diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
-index 86560a28751b..880c0a43a529 100644
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -21,6 +21,7 @@
- #include <linux/cpuidle.h>
- #include <linux/cpu.h>
- #include <linux/minmax.h>
-+#include <linux/perf_event.h>
- #include <acpi/processor.h>
- 
- /*
-@@ -544,6 +545,8 @@ static void wait_for_freeze(void)
-  */
- static void __cpuidle acpi_idle_do_entry(struct acpi_processor_cx *cx)
- {
-+	perf_lopwr_cb(true);
-+
- 	if (cx->entry_method == ACPI_CSTATE_FFH) {
- 		/* Call into architectural FFH based C-state */
- 		acpi_processor_ffh_cstate_enter(cx);
-@@ -554,6 +557,8 @@ static void __cpuidle acpi_idle_do_entry(struct acpi_processor_cx *cx)
- 		inb(cx->address);
- 		wait_for_freeze();
- 	}
-+
-+	perf_lopwr_cb(false);
- }
- 
- /**
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index 496eb6aa6e54..1b98e46588bc 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -1676,4 +1676,10 @@ typedef int (perf_snapshot_branch_stack_t)(struct perf_branch_entry *entries,
- 					   unsigned int cnt);
- DECLARE_STATIC_CALL(perf_snapshot_branch_stack, perf_snapshot_branch_stack_t);
- 
-+#ifndef PERF_NEEDS_LOPWR_CB
-+static inline void perf_lopwr_cb(bool mode)
++static struct fb_info *fbcon_info_from_console(int console)
 +{
-+}
-+#endif
++	WARN_CONSOLE_UNLOCKED();
 +
- #endif /* _LINUX_PERF_EVENT_H */
++	/*
++	 * Note that only con2fb_map is protected by the console lock,
++	 * registered_fb is protected by a separate mutex. This lookup can
++	 * therefore race.
++	 */
++	return registered_fb[con2fb_map[console]];
++}
++
+ static int logo_lines;
+ /* logo_shown is an index to vc_cons when >= 0; otherwise follows FBCON_LOGO
+    enums.  */
+@@ -199,7 +211,7 @@ static void fbcon_rotate(struct fb_info *info, u32 rotate)
+ 	if (!ops || ops->currcon == -1)
+ 		return;
+ 
+-	fb_info = registered_fb[con2fb_map[ops->currcon]];
++	fb_info = fbcon_info_from_console(ops->currcon);
+ 
+ 	if (info == fb_info) {
+ 		struct fbcon_display *p = &fb_display[ops->currcon];
+@@ -226,7 +238,7 @@ static void fbcon_rotate_all(struct fb_info *info, u32 rotate)
+ 	for (i = first_fb_vc; i <= last_fb_vc; i++) {
+ 		vc = vc_cons[i].d;
+ 		if (!vc || vc->vc_mode != KD_TEXT ||
+-		    registered_fb[con2fb_map[i]] != info)
++		    fbcon_info_from_console(i) != info)
+ 			continue;
+ 
+ 		p = &fb_display[vc->vc_num];
+@@ -356,7 +368,7 @@ static void fb_flashcursor(struct work_struct *work)
+ 		vc = vc_cons[ops->currcon].d;
+ 
+ 	if (!vc || !con_is_visible(vc) ||
+- 	    registered_fb[con2fb_map[vc->vc_num]] != info ||
++	    fbcon_info_from_console(vc->vc_num) != info ||
+ 	    vc->vc_deccm != 1) {
+ 		console_unlock();
+ 		return;
+@@ -791,7 +803,7 @@ static void con2fb_init_display(struct vc_data *vc, struct fb_info *info,
+ 	if (show_logo) {
+ 		struct vc_data *fg_vc = vc_cons[fg_console].d;
+ 		struct fb_info *fg_info =
+-			registered_fb[con2fb_map[fg_console]];
++			fbcon_info_from_console(fg_console);
+ 
+ 		fbcon_prepare_logo(fg_vc, fg_info, fg_vc->vc_cols,
+ 				   fg_vc->vc_rows, fg_vc->vc_cols,
+@@ -1014,7 +1026,7 @@ static void fbcon_init(struct vc_data *vc, int init)
+ 	if (con2fb_map[vc->vc_num] == -1)
+ 		con2fb_map[vc->vc_num] = info_idx;
+ 
+-	info = registered_fb[con2fb_map[vc->vc_num]];
++	info = fbcon_info_from_console(vc->vc_num);
+ 
+ 	if (logo_shown < 0 && console_loglevel <= CONSOLE_LOGLEVEL_QUIET)
+ 		logo_shown = FBCON_LOGO_DONTSHOW;
+@@ -1231,7 +1243,7 @@ static void fbcon_deinit(struct vc_data *vc)
+ static void fbcon_clear(struct vc_data *vc, int sy, int sx, int height,
+ 			int width)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+@@ -1269,7 +1281,7 @@ static void fbcon_clear(struct vc_data *vc, int sy, int sx, int height,
+ static void fbcon_putcs(struct vc_data *vc, const unsigned short *s,
+ 			int count, int ypos, int xpos)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 
+@@ -1289,7 +1301,7 @@ static void fbcon_putc(struct vc_data *vc, int c, int ypos, int xpos)
+ 
+ static void fbcon_clear_margins(struct vc_data *vc, int bottom_only)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 
+ 	if (!fbcon_is_inactive(vc, info))
+@@ -1298,7 +1310,7 @@ static void fbcon_clear_margins(struct vc_data *vc, int bottom_only)
+ 
+ static void fbcon_cursor(struct vc_data *vc, int mode)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+  	int c = scr_readw((u16 *) vc->vc_pos);
+ 
+@@ -1392,7 +1404,7 @@ static void fbcon_set_disp(struct fb_info *info, struct fb_var_screeninfo *var,
+ 
+ static __inline__ void ywrap_up(struct vc_data *vc, int count)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 
+@@ -1411,7 +1423,7 @@ static __inline__ void ywrap_up(struct vc_data *vc, int count)
+ 
+ static __inline__ void ywrap_down(struct vc_data *vc, int count)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 
+@@ -1430,7 +1442,7 @@ static __inline__ void ywrap_down(struct vc_data *vc, int count)
+ 
+ static __inline__ void ypan_up(struct vc_data *vc, int count)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 
+@@ -1454,7 +1466,7 @@ static __inline__ void ypan_up(struct vc_data *vc, int count)
+ 
+ static __inline__ void ypan_up_redraw(struct vc_data *vc, int t, int count)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 
+@@ -1478,7 +1490,7 @@ static __inline__ void ypan_up_redraw(struct vc_data *vc, int t, int count)
+ 
+ static __inline__ void ypan_down(struct vc_data *vc, int count)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 
+@@ -1502,7 +1514,7 @@ static __inline__ void ypan_down(struct vc_data *vc, int count)
+ 
+ static __inline__ void ypan_down_redraw(struct vc_data *vc, int t, int count)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 
+@@ -1666,7 +1678,7 @@ static void fbcon_redraw(struct vc_data *vc, struct fbcon_display *p,
+ static void fbcon_bmove_rec(struct vc_data *vc, struct fbcon_display *p, int sy, int sx,
+ 			    int dy, int dx, int height, int width, u_int y_break)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 	u_int b;
+ 
+@@ -1708,7 +1720,7 @@ static void fbcon_bmove_rec(struct vc_data *vc, struct fbcon_display *p, int sy,
+ static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
+ 			int height, int width)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 
+ 	if (fbcon_is_inactive(vc, info))
+@@ -1731,7 +1743,7 @@ static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
+ static bool fbcon_scroll(struct vc_data *vc, unsigned int t, unsigned int b,
+ 		enum con_scroll dir, unsigned int count)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 	int scroll_partial = info->flags & FBINFO_PARTIAL_PAN_OK;
+ 
+@@ -1996,7 +2008,7 @@ static void updatescrollmode(struct fbcon_display *p,
+ static int fbcon_resize(struct vc_data *vc, unsigned int width, 
+ 			unsigned int height, unsigned int user)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 	struct fb_var_screeninfo var = info->var;
+@@ -2065,7 +2077,7 @@ static int fbcon_switch(struct vc_data *vc)
+ 	struct fb_var_screeninfo var;
+ 	int i, ret, prev_console;
+ 
+-	info = registered_fb[con2fb_map[vc->vc_num]];
++	info = fbcon_info_from_console(vc->vc_num);
+ 	ops = info->fbcon_par;
+ 
+ 	if (logo_shown >= 0) {
+@@ -2079,7 +2091,7 @@ static int fbcon_switch(struct vc_data *vc)
+ 
+ 	prev_console = ops->currcon;
+ 	if (prev_console != -1)
+-		old_info = registered_fb[con2fb_map[prev_console]];
++		old_info = fbcon_info_from_console(prev_console);
+ 	/*
+ 	 * FIXME: If we have multiple fbdev's loaded, we need to
+ 	 * update all info->currcon.  Perhaps, we can place this
+@@ -2202,7 +2214,7 @@ static void fbcon_generic_blank(struct vc_data *vc, struct fb_info *info,
+ 
+ static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 
+ 	if (mode_switch) {
+@@ -2244,7 +2256,7 @@ static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch)
+ 
+ static int fbcon_debug_enter(struct vc_data *vc)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 
+ 	ops->save_graphics = ops->graphics;
+@@ -2257,7 +2269,7 @@ static int fbcon_debug_enter(struct vc_data *vc)
+ 
+ static int fbcon_debug_leave(struct vc_data *vc)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 
+ 	ops->graphics = ops->save_graphics;
+@@ -2393,7 +2405,7 @@ static void set_vc_hi_font(struct vc_data *vc, bool set)
+ static int fbcon_do_set_font(struct vc_data *vc, int w, int h, int charcount,
+ 			     const u8 * data, int userfont)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+ 	int resize;
+@@ -2447,7 +2459,7 @@ static int fbcon_do_set_font(struct vc_data *vc, int w, int h, int charcount,
+ static int fbcon_set_font(struct vc_data *vc, struct console_font *font,
+ 			  unsigned int flags)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	unsigned charcount = font->charcount;
+ 	int w = font->width;
+ 	int h = font->height;
+@@ -2511,7 +2523,7 @@ static int fbcon_set_font(struct vc_data *vc, struct console_font *font,
+ 
+ static int fbcon_set_def_font(struct vc_data *vc, struct console_font *font, char *name)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	const struct font_desc *f;
+ 
+ 	if (!name)
+@@ -2535,7 +2547,7 @@ static struct fb_cmap palette_cmap = {
+ 
+ static void fbcon_set_palette(struct vc_data *vc, const unsigned char *table)
+ {
+-	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
++	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	int i, j, k, depth;
+ 	u8 val;
+ 
+@@ -2651,7 +2663,7 @@ static void fbcon_modechanged(struct fb_info *info)
+ 		return;
+ 	vc = vc_cons[ops->currcon].d;
+ 	if (vc->vc_mode != KD_TEXT ||
+-	    registered_fb[con2fb_map[ops->currcon]] != info)
++	    fbcon_info_from_console(ops->currcon) != info)
+ 		return;
+ 
+ 	p = &fb_display[vc->vc_num];
+@@ -2691,7 +2703,7 @@ static void fbcon_set_all_vcs(struct fb_info *info)
+ 	for (i = first_fb_vc; i <= last_fb_vc; i++) {
+ 		vc = vc_cons[i].d;
+ 		if (!vc || vc->vc_mode != KD_TEXT ||
+-		    registered_fb[con2fb_map[i]] != info)
++		    fbcon_info_from_console(i) != info)
+ 			continue;
+ 
+ 		if (con_is_visible(vc)) {
+@@ -2954,7 +2966,7 @@ void fbcon_fb_blanked(struct fb_info *info, int blank)
+ 
+ 	vc = vc_cons[ops->currcon].d;
+ 	if (vc->vc_mode != KD_TEXT ||
+-			registered_fb[con2fb_map[ops->currcon]] != info)
++			fbcon_info_from_console(ops->currcon) != info)
+ 		return;
+ 
+ 	if (con_is_visible(vc)) {
+@@ -2974,7 +2986,7 @@ void fbcon_new_modelist(struct fb_info *info)
+ 	const struct fb_videomode *mode;
+ 
+ 	for (i = first_fb_vc; i <= last_fb_vc; i++) {
+-		if (registered_fb[con2fb_map[i]] != info)
++		if (fbcon_info_from_console(i) != info)
+ 			continue;
+ 		if (!fb_display[i].mode)
+ 			continue;
 -- 
-2.35.0.263.gb82422642f-goog
+2.34.1
 
