@@ -2,129 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 110A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 681DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349492AbiBHNTG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:19:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
+        id S243011AbiBHNTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:19:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376349AbiBHM52 (ORCPT
+        with ESMTP id S1358725AbiBHMlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:57:28 -0500
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CA5C03FECE
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:57:27 -0800 (PST)
-Received: by mail-vs1-xe30.google.com with SMTP id t10so3242789vsp.8
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:57:27 -0800 (PST)
+        Tue, 8 Feb 2022 07:41:35 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED043C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:34 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id v13-20020a17090ac90d00b001b87bc106bdso1939348pjt.4
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QZ2ThHzP4ksA4NOQgohi764WWAj9VnjVAoaKOn8fduI=;
-        b=EMNBfmRp2wjXy+C2nQjYiC4DxNdDT0Ya2c9ZJSm2s/IK+XPPjo+cGsdCTvp9u90FsG
-         tRqCGtNC3wCccHPKhPWChFxncjU99ntTEaBdEPB03bc9P8/U8FYgUFY7vdSZAP+LL66n
-         8muVbJxDU+xxi+GmHrXwjsvugC3kqxn9ef9hdQsp10IXD+NVENGlrxBTWY+UFPNoHPf4
-         RHbN11vXN69TDV8BidyZ8l4EP8cJ2ab/NHOkJSAN5IKDoyD0sZA7xP4PaeLcrr5DiYd4
-         g91AF4JgLxIiEs01Ea2luKoKeXr9sBtd2/KBDK+xVx2Jy59x8WCPTibulnNVsHC01Xk4
-         ZNtw==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=haCUKocersM2g//bqn162Qgjk6DgHWiyvTJMF5LIhWw=;
+        b=M5jgrIfhxC3Ll3awR5T/EnAv44rvXW+k+Lm7AQnR3Voo/+J434lWom64lKJIfHW/cl
+         bbJ4/NkcAMG7j9u2VNGPeha843F9tsH16GYZcBXjNE1AifaS85v+HaHEIl1Evh2aglFz
+         VWZ5L03Ul4UGHHUuej8bAw7/iQcTu3MZubKqg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QZ2ThHzP4ksA4NOQgohi764WWAj9VnjVAoaKOn8fduI=;
-        b=iNmiXjeQSM/PCaeCHOr1ayfOaLJoSx4OCk3oLwYKOiLudLKtmn9EFCcsZ/JhvJFVwh
-         3fQp1PP31AuYwuID+WgfKAhoaleMoFRCYEREyyMNZv1fsxz5GiKhCUsVrUYHX9URBfMF
-         /UyuYTNz2fAk4C9NAptHTUBcIrFkaTbhwGRaL7wbIePLvnLN8qVrMmKoQ0qDIBDYl+Ww
-         kDqdSUDfvCAoK0QjTZb62Fd6ggOW6epoK5hfHdS3DJVqJkeYNE1GKDeXcyhsOlzCLRQ3
-         SUIbFo8o7+M5rHuvc9s1oGI6ahJnncSB1C0v9tr3Z7Gfu5IzVHcVVeRpPJjl3MSnKiwv
-         LIYQ==
-X-Gm-Message-State: AOAM532w4WW3rES0RUkwB8xbdIl93B83BjmJhfdMjElKogpT4WAtq++E
-        8n75Fb3Ct6i4xGTSbeez4S7NZ6Ds/SGtwH8IymP/AQ==
-X-Google-Smtp-Source: ABdhPJwzYnmI8xSLok/uyBrzIkBQJkWypFop0Iw7jyMCJjojRBeCCoicMZcYrBL6mMytDpkckHcQi/Zv4nuSY6mysaM=
-X-Received: by 2002:a67:e146:: with SMTP id o6mr1574855vsl.12.1644325046779;
- Tue, 08 Feb 2022 04:57:26 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=haCUKocersM2g//bqn162Qgjk6DgHWiyvTJMF5LIhWw=;
+        b=ZyhAOU1V5c8mv0t2qoMg2XN9qa7jxGAPppNCktHLBlZAXCvCtMgJu4mTCkyjkfMzsl
+         qVVy2xkVWSJHKoXc14VRC5MiPgtXYAuXZ/w3LKGSEMkwYbidetO8d5mGHk/UnGKZTJuf
+         jtu+A+TsWVvTRShP5KhzYYCHBXiHwwVwkH2RoJUPJ0I5/2Frd3No8v9zXyotZRwxS9x6
+         3HWoQp55MRm5ivaVAoK1QuZuwKYoIbbe/ijxgquGb1vubUDppm/0t9LnQB/jRpJGqEUg
+         JrCJt5fa/wUiU9zJgT56BxNtqCBhIW6jAtHH759MUMrw9uBsauKPZq1F7IBUoQIEBOwi
+         d/gg==
+X-Gm-Message-State: AOAM531Y3tiiNm8wJektuNblj8OgU/MGblzQ63LfW6hyEt31Plu/QbXF
+        8GNIX5h6vTMDFw56zE3YSt0Lag==
+X-Google-Smtp-Source: ABdhPJwC7im+Wu7WK7r8anEyQqm3GCI3zaun1ihNvzqAS141M0dKaySmYd4Yoapf0HcUrCF7/0wMeg==
+X-Received: by 2002:a17:903:187:: with SMTP id z7mr4252301plg.123.1644324094451;
+        Tue, 08 Feb 2022 04:41:34 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:41:34 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 21/31] clk: mediatek: cpumux: Implement error handling in register API
+Date:   Tue,  8 Feb 2022 20:40:24 +0800
+Message-Id: <20220208124034.414635-22-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
 MIME-Version: 1.0
-References: <20220208025511.1019-1-lina.wang@mediatek.com> <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
-In-Reply-To: <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Tue, 8 Feb 2022 04:57:14 -0800
-Message-ID: <CANP3RGe8ko=18F2cr0_hVMKw99nhTyOCf4Rd_=SMiwBtQ7AmrQ@mail.gmail.com>
-Subject: Re: [PATCH] net: fix wrong network header length
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Lina Wang <lina.wang@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Kernel hackers <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Willem Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 12:25 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> Hello,
->
-> On Tue, 2022-02-08 at 10:55 +0800, Lina Wang wrote:
-> > When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
-> > several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
-> > ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
-> > network_header\transport_header\mac_header have been updated as ipv4 acts,
-> > but other skbs in frag_list didnot update anything, just ipv6 packets.
-> >
-> > udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
-> > frag_list and make sure right udp payload is delivered to user space.
-> > Unfortunately, other skbs in frag_list who are still ipv6 packets are
-> > updated like the first skb and will have wrong transport header length.
-> >
-> > e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
-> > has the same network_header(24)& transport_header(64), after
-> > bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
-> > skb's network_header is 44,transport_header is 64, other skbs in frag_list
-> > didnot change.After skb_segment_list, the other skbs in frag_list has
-> > different network_header(24) and transport_header(44), so there will be 20
-> > bytes difference,that is difference between ipv6 header and ipv4 header.
->
-> > Actually, there are two solutions to fix it, one is traversing all skbs
-> > and changing every skb header in bpf_skb_proto_6_to_4, the other is
-> > modifying frag_list skb's header in skb_segment_list.
->
-> I don't think the above should be addressed into the GSO layer. The
-> ebpf program is changing the GRO packet in arbitrary way violating the
-> GSO packet constraint - arguably, it's corrupting the packet.
->
-> I think it would be better change the bpf_skb_proto_6_to_4() to
-> properly handle FRAGLIST GSO packets.
->
-> If traversing the segments become too costly, you can try replacing
-> GRO_FRAGLIST with GRO_UDP_FWD.
+The cpumux clk type registration function does not stop or return errors
+if any clk failed to be registered, nor does it implement an error
+handling path. This may result in a partially working device if any
+step failed.
 
-Yeah, I don't know...
+Make the register function return proper error codes, and bail out if
+errors occur. Proper cleanup, i.e. unregister any clks that were
+successfully registered, is done in the new error path.
 
-I've considered that we could perhaps fix the 6to4 helper, and 4to6 helper...
-but then I think every *other* helper / code path that plays games
-with the packet header needs fixing as well,
-ie. everything dealing with encap/decap, vlan, etc..
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/clk/mediatek/clk-cpumux.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-At that point it seems to me like it's worth fixing here rather than
-in all those other places.
+diff --git a/drivers/clk/mediatek/clk-cpumux.c b/drivers/clk/mediatek/clk-cpumux.c
+index 658aee789f44..499c60432280 100644
+--- a/drivers/clk/mediatek/clk-cpumux.c
++++ b/drivers/clk/mediatek/clk-cpumux.c
+@@ -123,13 +123,26 @@ int mtk_clk_register_cpumuxes(struct device_node *node,
+ 		clk = mtk_clk_register_cpumux(mux, regmap);
+ 		if (IS_ERR(clk)) {
+ 			pr_err("Failed to register clk %s: %pe\n", mux->name, clk);
+-			continue;
++			goto err;
+ 		}
+ 
+ 		clk_data->clks[mux->id] = clk;
+ 	}
+ 
+ 	return 0;
++
++err:
++	while (--i >= 0) {
++		const struct mtk_composite *mux = &clks[i];
++
++		if (IS_ERR_OR_NULL(clk_data->clks[mux->id]))
++			continue;
++
++		mtk_clk_unregister_cpumux(clk_data->clks[mux->id]);
++		clk_data->clks[mux->id] = ERR_PTR(-ENOENT);
++	}
++
++	return PTR_ERR(clk);
+ }
+ 
+ void mtk_clk_unregister_cpumuxes(const struct mtk_composite *clks, int num,
+-- 
+2.35.0.263.gb82422642f-goog
 
-In general it seems gro fraglist as implemented is just a bad idea...
-Packets (and things we treat like packets) really should only have 1 header.
-GRO fraglist - as implemented - violates this pretty fundamental assumption.
-As such it seems to be on the gro fraglist implementation to deal with it.
-That to me seems to mean it should be fixed here, and not elsewhere.
-
-(btw. wrt. this commit itself, it seems like the diff should be a signed int)
