@@ -2,91 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CE7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 23:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FDD1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 23:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234991AbiBHXHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 18:07:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
+        id S235164AbiBHXIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 18:08:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231215AbiBHXH3 (ORCPT
+        with ESMTP id S234994AbiBHXID (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 18:07:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B6EC061576;
-        Tue,  8 Feb 2022 15:07:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB26BB81D15;
-        Tue,  8 Feb 2022 23:07:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 425C2C340ED;
-        Tue,  8 Feb 2022 23:07:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644361645;
-        bh=L4k/srAhw9AuTrpWegTohSDP66SMe5MK538ECj9wpYA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jl+kudIu+dYHRMx4t2Sn/sg0eij0lkiu9ywDCP6ZNX0F2MfKn1ljhD9MzmZO6zRG/
-         i4YbWAFceFyncEtHV2NrbYwCQnuYS48QLaD84XlnAaVPhZqLDjjw9x/4/nmSt1Glwd
-         v1UNaDtPvH7xZ7bBJG/gizvKcePFDny5hO2pzrqZatN83X8UBiZoM2B8XSSGkgNTYf
-         0yYS19JccU8HNVEHhXEiFXbnIDuh20TOShCO8eJyeDANyUr7D4h+gBraxTb/HcFjqR
-         uP36lHUQqQQzOIyW+CHd1gESCwOyHzxGM6tmyYSVQARlYWM/BCMrBAvqu3H7O8a/9I
-         nOMmFFNASygDw==
-Date:   Tue, 8 Feb 2022 15:07:12 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [PATCH v1 1/7] random: use RDSEED instead of RDRAND in entropy
- extraction
-Message-ID: <YgL3oCXDPB8dEUlU@sol.localdomain>
-References: <20220208155335.378318-1-Jason@zx2c4.com>
- <20220208155335.378318-2-Jason@zx2c4.com>
+        Tue, 8 Feb 2022 18:08:03 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA861C061577;
+        Tue,  8 Feb 2022 15:08:02 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 74F8221107;
+        Tue,  8 Feb 2022 23:08:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1644361681;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uiS+i+Yi/MMxlJxriyCYJVbMBk32ERqDOJ25GJCQbRc=;
+        b=UklAC60NoSQMJKh2xX5ZaEu0/SBWz31YETthCnXLKA9ZjOXV0UZpwyXG4hdVC0T/DHIzB7
+        WN/9ww9x5VUiBRwUuuPQRubP72Jrd01RUHszuF4p+rODIQtNE5NDJxsbhSimU1dyobqX1f
+        xv5ihVkzMgfmqvE1mJ9KRH1aA+iYVjY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1644361681;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uiS+i+Yi/MMxlJxriyCYJVbMBk32ERqDOJ25GJCQbRc=;
+        b=ClYkgGbTQO0gh5nT0MhzEyJxDDF62O4PGlIzebj9vaM86LezgE3BGvjubR+ZbyQ3yFSCfa
+        T9ccYw19FeZ+KeDQ==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 6BD3AA3B88;
+        Tue,  8 Feb 2022 23:08:01 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id DFEB4DAB3E; Wed,  9 Feb 2022 00:04:20 +0100 (CET)
+Date:   Wed, 9 Feb 2022 00:04:20 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     =?utf-8?B?RMSBdmlzIE1vc8SBbnM=?= <davispuh@gmail.com>
+Cc:     linux-btrfs@vger.kernel.org, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] btrfs: send: in case of IO error log it
+Message-ID: <20220208230420.GJ12643@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        =?utf-8?B?RMSBdmlzIE1vc8SBbnM=?= <davispuh@gmail.com>,
+        linux-btrfs@vger.kernel.org, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
+        linux-kernel@vger.kernel.org
+References: <20220202201437.7718-1-davispuh@gmail.com>
+ <20220205184822.2968-1-davispuh@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220208155335.378318-2-Jason@zx2c4.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220205184822.2968-1-davispuh@gmail.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 04:53:29PM +0100, Jason A. Donenfeld wrote:
-> When /dev/random was directly connected with entropy extraction, without
-> any expansion stage, extract_buf() was called for every 10 bytes of data
-> read from /dev/random. For that reason, RDRAND was used rather than
-> RDSEED. At the same time, crng_reseed() was still only called every 5
-> minutes, so there RDSEED made sense.
+On Sat, Feb 05, 2022 at 08:48:23PM +0200, Dāvis Mosāns wrote:
+> Currently if we get IO error while doing send then we abort without
+> logging information about which file caused issue.
+> So log it to help with debugging.
 > 
-> Those olden days were also a time when the entropy collector did not use
-> a cryptographic hash function, which meant most bets were off in terms
-> of real preimage resistance. For that reason too it didn't matter
-> _that_ much whether RDSEED was mixed in before or after entropy
-> extraction; both choices were sort of bad.
-> 
-> But now we have a cryptographic hash function at work, and with that we
-> get real preimage resistance. We also now only call extract_entropy()
-> every 5 minutes, rather than every 10 bytes. This allows us to do two
-> important things.
-> 
-> First, we can switch to using RDSEED in extract_entropy(), as Dominik
-> suggested. Second, we can ensure that RDSEED input always goes into the
-> cryptographic hash function with other things before being used
-> directly. This eliminates a category of attacks in which the CPU knows
-> the current state of the crng and knows that we're going to xor RDSEED
-> into it, and so it computes a malicious RDSEED. By going through our
-> hash function, it would require the CPU to compute a preimage on the
-> fly, which isn't going to happen.
-> 
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Suggested-by: Dominik Brodowski <linux@dominikbrodowski.net>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
+
+Added to misc-next, thanks.
+
 > ---
->  drivers/char/random.c | 22 +++++++++-------------
->  1 file changed, 9 insertions(+), 13 deletions(-)
+>  fs/btrfs/send.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/fs/btrfs/send.c b/fs/btrfs/send.c
+> index d8ccb62aa7d2..b1f75fde4a19 100644
+> --- a/fs/btrfs/send.c
+> +++ b/fs/btrfs/send.c
+> @@ -4999,6 +4999,8 @@ static int put_file_data(struct send_ctx *sctx, u64 offset, u32 len)
+>  			lock_page(page);
+>  			if (!PageUptodate(page)) {
+>  				unlock_page(page);
+> +				btrfs_err(fs_info, "send: IO error at offset=%llu for inode=%llu root=%llu",
+> +					page_offset(page), sctx->cur_ino, sctx->send_root->root_key.objectid);
+>  				put_page(page);
 
-Looks good,
-
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-
-- Eric
+Good point in v2, using page must be before put_page. I've slightly
+reformatted the message so the lines fit to the limit.
