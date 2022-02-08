@@ -2,76 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88161C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386543AbiBHWe1 (ORCPT
+        id S1386752AbiBHWed (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:34:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
+        Tue, 8 Feb 2022 17:34:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387244AbiBHWLZ (ORCPT
+        with ESMTP id S1386466AbiBHUg4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 17:11:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E54C0612B8;
-        Tue,  8 Feb 2022 14:11:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5831B81AFA;
-        Tue,  8 Feb 2022 22:11:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33ECEC004E1;
-        Tue,  8 Feb 2022 22:11:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644358281;
-        bh=PjxTNsP9bD1JDK5Yw86+t2N+2x7ro0uvm/lVgqLSSjM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=B2rqGFysMw+kjL94kZTf4z4W3FIWk/nbVwdfz/gqNF6+x70aBH0zUsLVj0OZx4Rqx
-         +2q7NId8Er5wnZnUcKWJi8YgXZSu1lrQq4adfazaT9fJjwRYdKn1XVVXX1xZB/2hu8
-         GVbciMkPCQCVG2oZ5GpcrQJb8MKpZgtLNxJbv1y4jsvzeV0c4BatMtXsQCz0RF+Y9Y
-         N4CSayv2xo+/CsYqCnhOze7sbjKtWpFtYlkZmGYw0iErEVfRiBvqyzRqMGbNIop6WP
-         iTfGISf1g2GRrdztJlHya/iLccs+Z1s5wK2steN8G7VgiZWdmGn29ZiDq5kC6zI+29
-         8IDhMyjcfh2/g==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        linux-perf-users@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: Update Jiri's email address
-Date:   Tue,  8 Feb 2022 23:11:17 +0100
-Message-Id: <20220208221117.710405-1-jolsa@kernel.org>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 8 Feb 2022 15:36:56 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472CDC0613CB;
+        Tue,  8 Feb 2022 12:36:56 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so169733pjb.1;
+        Tue, 08 Feb 2022 12:36:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=xeyhe9pInui/Mmw1ol2pyh/uR5BpYVyzJYI1oiXg1WY=;
+        b=Y9XA+T/riyUHpvQLnQGw/qm+72MJeFpJm/HAncuFyV7c8/OCT/5+XXcg9I8bDShxyn
+         BixYfPfH+zliCgwOmlk0HsxGftR0f5UzRSCm6zboHzQwRc0IQ/xdqtD3pEpZwOXaX1wP
+         qr0BiMk5L5uDU/BWHDb+APvfgk9iLmpGz203hm6+dp2ZRV2ysIH/y6Xu/1J30auHDW7s
+         ISbwx7SVNGaE1ThLXD8bDDsqJrQH5q3xCM4ef0JXggsOfBr2EpErllSs6Gdu1+GGe/0N
+         YivIRIDpgWw2Im6lEuN3z4N15xf4xmTU8kfpgdEWHCo7ThxIWq2Rtm3wrAz/DHXBPLiJ
+         zQUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=xeyhe9pInui/Mmw1ol2pyh/uR5BpYVyzJYI1oiXg1WY=;
+        b=lTGne2OQfMK4/ol/avyjWo80ESCaoPwAip/XzSVAi/RzQdhixnFXT3ByJtuZ7OIdVb
+         4ZOKO06qTfKjZnmpAu81DsD2z6c23BiRdzQioquiNsi223FOEZ2G2q+VHTW116YRNP7v
+         bKCdUjW+TNE5Q4JSy4eV8sPfPQ6+uQiT4rYmXZ7NT2NHvfCHxi7t7n9LF19oTxReKJIU
+         mKqYP32CQN5r/zw9BiIL8aJJno5UiT45MrUGMSctayH2jFOPZ2SD/O6Al8QtFbfHVRgu
+         1En69yqU3zNcqplmyTrFmrUohs9hAhBEnZq8vctBCZvxBpfqXjOrMWSliETmqKdA+p4X
+         ftUA==
+X-Gm-Message-State: AOAM532qcAkzIpXYuQeTXVKpJfnqbclBiznEBJtDb7Az3KW6GA/Zx8W6
+        nvsqYdxIdapv6m79NAnTfcHXj/Iu8iBB4dS2UIMsMQ==
+X-Google-Smtp-Source: ABdhPJzcVrWIXwOzcvjHsPmxVzf5MPfVFZ2DhOIiCh0tPe0Fs27W1qv14d39RTc7cZmZ8ZvJIVV/1Q==
+X-Received: by 2002:a17:902:694c:: with SMTP id k12mr6491550plt.98.1644352615151;
+        Tue, 08 Feb 2022 12:36:55 -0800 (PST)
+Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [71.19.144.195])
+        by smtp.gmail.com with ESMTPSA id t11sm12939746pgi.90.2022.02.08.12.36.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 12:36:54 -0800 (PST)
+Message-ID: <6202d466.1c69fb81.e678c.15d6@mx.google.com>
+Date:   Tue, 08 Feb 2022 12:36:54 -0800 (PST)
+X-Google-Original-Date: Tue, 08 Feb 2022 20:36:47 GMT
+From:   Fox Chen <foxhlchen@gmail.com>
+In-Reply-To: <20220207103757.232676988@linuxfoundation.org>
+Subject: RE: [PATCH 5.10 00/74] 5.10.99-rc1 review
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Fox Chen <foxhlchen@gmail.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using my kernel.org email.
+On Mon,  7 Feb 2022 12:05:58 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> This is the start of the stable review cycle for the 5.10.99 release.
+> There are 74 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.99-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ea3e6c914384..d4248b02515b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15123,7 +15123,7 @@ M:	Ingo Molnar <mingo@redhat.com>
- M:	Arnaldo Carvalho de Melo <acme@kernel.org>
- R:	Mark Rutland <mark.rutland@arm.com>
- R:	Alexander Shishkin <alexander.shishkin@linux.intel.com>
--R:	Jiri Olsa <jolsa@redhat.com>
-+R:	Jiri Olsa <jolsa@kernel.org>
- R:	Namhyung Kim <namhyung@kernel.org>
- L:	linux-perf-users@vger.kernel.org
- L:	linux-kernel@vger.kernel.org
--- 
-2.34.1
+5.10.99-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
+                
+Tested-by: Fox Chen <foxhlchen@gmail.com>
 
