@@ -2,116 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB1E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F03C3526E
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:15:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233541AbiBHNP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:15:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
+        id S238120AbiBHNPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:15:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238900AbiBHM2j (ORCPT
+        with ESMTP id S242371AbiBHMlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:28:39 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8CEC03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:28:38 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id eg42so21333213edb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:28:38 -0800 (PST)
+        Tue, 8 Feb 2022 07:41:00 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC92C03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:00 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id y15-20020a17090a474f00b001b88562650aso1536478pjg.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NoHwUXlnI/2+4GtIY3B1wFAlk61LjWDTsV6HYfSmeLw=;
-        b=jStChDdMyGG/3ayUzbTzNYlnwxLMllmGeEpkJs6CGf6RRNXXrXPhGDRdHajcPbEmqE
-         H2DdMc34jqTdSGv+yO9e+d1+mcAZAwF0dv23gQg7pAlGRBFhHcNaiq4ABOqAXmmsuiqc
-         zqjXzEnlHvvLUC1fv4wlOHsvBg14LJ1hMK0Oo=
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Rg7A4+9l27NSY42Qe+sFkyiXBBTKwVjr3yLAs4KlFxg=;
+        b=mlwzzpOJIyTPenSMBs+vzWOWF4s11a2iKpFwkjBFPNJ2wIbzWSCm8BTUlwqJX+N1Cu
+         DAaDL0V7f8HlDhF8CB7YxNR7wAJCaLZbAsPEdi1EBt+rrzIFaTDaUeoFbcQryratNDJV
+         YBaoXUES6ZVTjN7uqH5rf2Bc0DEByC092aAME=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=NoHwUXlnI/2+4GtIY3B1wFAlk61LjWDTsV6HYfSmeLw=;
-        b=oeGoQwBfym5nrKhM2fdEsJEPVhu1trDG35IKZf+ZkP0vtgToJuAIURclHUDBHd93PW
-         QlPaTcuGMBStlIWwjBl4V3rDZb/vZyoI1k+PQRmD8RwPB5f6eJnAKek1rHj55bUw0TB0
-         bNA8Zt+NM0SfSha7bruwseFHlcveo3LMmendil8cmEs/vYdiMXyyyor+t+rITPCtdw9o
-         rIiaVA86jBhgfUETBtsKzg+NjRVr+DPI9eXT9iiW92KQFutX7uPKGbvesQzMLKghfptW
-         80p3kr1oI5Fx4HnZzVSSgoBoPXzv2dI7rv1fWKsPGMK6rmSTeB7SdsswKtJio5zdKxvF
-         /Bkg==
-X-Gm-Message-State: AOAM533+CQ2LgV57bMcawqDGMwCE+x9bcevtVYnUAWphcZuyFsKhAt7h
-        8Gnq4L+joalM1WVFkGRFEpUsp9G/yR0nlA==
-X-Google-Smtp-Source: ABdhPJz8CNq0yQJBtVXBnnXD7f1N+EwgFfAJSauIO2DyR45BhacerVDpgbvWItlXedF2YCVy901D6A==
-X-Received: by 2002:a05:6402:1601:: with SMTP id f1mr4223183edv.165.1644323316920;
-        Tue, 08 Feb 2022 04:28:36 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id ee23sm4753981edb.19.2022.02.08.04.28.35
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Rg7A4+9l27NSY42Qe+sFkyiXBBTKwVjr3yLAs4KlFxg=;
+        b=5PUaRBTHOQQb1cy0psmjRs5Iigc4oXld2UsB67/r0+d5OKoICPSr+bi34RtHsflOuy
+         IuWe0liL2E31ZOK3lk/NLqGqFZCkuERamN0LmC1/CeInc4/dlJ8PM0YTkVbmHwcfr3Oz
+         UsTItiem5nRzyemeoMp6Z8Sss33TSArrwBbIjaQlJmGQfzYP98R5xro3aqwuA5+jLwF7
+         03IuUyxzRq74RpSP3QxW2zxwRzlv4fjbM5clZyRum7Lw6IwTshb81NQ+CN7OJzHLg3vC
+         13fpLh95212YHIBEI0+zVVtStbG6VdrJzb2mh/AJKJHp9Sj9UjJ50srQADhnaXiquFIf
+         rMsw==
+X-Gm-Message-State: AOAM530N+yeLxe2aXOyEZrd+YSqUhe/IUzFAwJSQFfbdy/BAHAoP3tyq
+        WkHULdFZvDJtIPwQ/zDCw29VPA==
+X-Google-Smtp-Source: ABdhPJwyIYewICHmp67Gv493qjDoHahQ0wtK5N12U7VeDgZpqQE8uKBp4aXA9WxD/jUC6YVuudwbvQ==
+X-Received: by 2002:a17:90a:7a82:: with SMTP id q2mr1183088pjf.40.1644324059938;
+        Tue, 08 Feb 2022 04:40:59 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.40.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:28:36 -0800 (PST)
-Date:   Tue, 8 Feb 2022 13:28:34 +0100
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Iouri Tarassov <iourit@linux.microsoft.com>
-Cc:     Daniel Vetter <daniel@ffwll.ch>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        spronovo@microsoft.com, gregkh@linuxfoundation.org,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        jenatali@microsoft.com
-Subject: Re: [PATCH v1 9/9] drivers: hv: dxgkrnl: Implement DXGSYNCFILE
-Message-ID: <YgJh8kdz47wmZJxH@phenom.ffwll.local>
-Mail-Followup-To: Iouri Tarassov <iourit@linux.microsoft.com>,
-        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, spronovo@microsoft.com,
-        gregkh@linuxfoundation.org,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        jenatali@microsoft.com
-References: <cover.1641937419.git.iourit@linux.microsoft.com>
- <e04c8e820bc166d9d4fe8e388aace731bb3255b0.1641937420.git.iourit@linux.microsoft.com>
- <YeG6+Crv/Bg4h3u1@phenom.ffwll.local>
- <e472cbe8-44ec-110a-1ad7-bc561cd0be88@linux.microsoft.com>
- <CAKMK7uFkVvfXM7QsgSfP4OLk9b_cSwNsi3s3_7EFuL+Pa1s7eQ@mail.gmail.com>
- <deb33dd6-06c8-13c1-8d37-4c4f36248d96@linux.microsoft.com>
+        Tue, 08 Feb 2022 04:40:59 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 05/31] clk: mediatek: gate: Clean up included headers
+Date:   Tue,  8 Feb 2022 20:40:08 +0800
+Message-Id: <20220208124034.414635-6-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <deb33dd6-06c8-13c1-8d37-4c4f36248d96@linux.microsoft.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 04:35:55PM -0800, Iouri Tarassov wrote:
-> 
-> On 1/17/2022 1:35 AM, Daniel Vetter wrote:
-> > On Mon, Jan 17, 2022 at 9:34 AM Iouri Tarassov
-> > <iourit@linux.microsoft.com> wrote:
-> > >
-> > >
-> > btw another idea I had over the w/e: Another option might be to allow
-> > different backends for sync_file, and then making sure that you cannot
-> > ever mix dma_fence and hv_dxg_fence type sync_file up (in e.g. the
-> > merge ioctl).
-> > 
-> > The issue is that fundamentally dma_fence and memory fences (or umf
-> > for userspace memory fences as we tend to call them) aren't
-> > compatible, but some of the interop plans we have is to allow stuffing
-> > either of them into fence container objects like sync_file. So going
-> > that route for wddm monitored fence support too could be a really
-> > future-proof approach, plus it'd allow you to still share the
-> > sync_file interface code. Not that it's going to be much code sharing,
-> > since all the implementation code needs to be distinct.
-> > -Daniel
-> 
-> Thanks Daniel!
-> 
-> I will remove the patch for dxgsyncfile from the next set of upstream
-> patches.
-> 
-> It will be added later after a re-design.
+Some included headers aren't actually used anywhere, while other headers
+with the declaration of functions and structures aren't directly
+included.
 
-Yeah sounds like a good plan forward to not hold up everything else
-meanwhile.
--Daniel
+Get rid of the unused ones, and add the ones that should be included
+directly.
+
+On the header side, replace headers that are included purely for data
+structure definitions with forward declarations. This decreases the
+amount of preprocessing and compilation effort required for each
+inclusion.
+
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/clk/mediatek/clk-gate.c | 11 +++--------
+ drivers/clk/mediatek/clk-gate.h | 10 +++++++---
+ 2 files changed, 10 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/clk/mediatek/clk-gate.c b/drivers/clk/mediatek/clk-gate.c
+index ed1ad5535d41..e8881ae1489a 100644
+--- a/drivers/clk/mediatek/clk-gate.c
++++ b/drivers/clk/mediatek/clk-gate.c
+@@ -4,18 +4,13 @@
+  * Author: James Liao <jamesjj.liao@mediatek.com>
+  */
+ 
+-#include <linux/of.h>
+-#include <linux/of_address.h>
+-
+-#include <linux/io.h>
+-#include <linux/slab.h>
+-#include <linux/delay.h>
+-#include <linux/clkdev.h>
+ #include <linux/clk-provider.h>
+-#include <linux/container_of.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/module.h>
++#include <linux/printk.h>
+ #include <linux/regmap.h>
++#include <linux/slab.h>
++#include <linux/types.h>
+ 
+ #include "clk-gate.h"
+ 
+diff --git a/drivers/clk/mediatek/clk-gate.h b/drivers/clk/mediatek/clk-gate.h
+index 344adffb6578..6b5738826a22 100644
+--- a/drivers/clk/mediatek/clk-gate.h
++++ b/drivers/clk/mediatek/clk-gate.h
+@@ -7,9 +7,13 @@
+ #ifndef __DRV_CLK_GATE_H
+ #define __DRV_CLK_GATE_H
+ 
+-#include <linux/clk-provider.h>
+-#include <linux/device.h>
+-#include <linux/of.h>
++#include <linux/types.h>
++
++struct clk;
++struct clk_onecell_data;
++struct clk_ops;
++struct device;
++struct device_node;
+ 
+ extern const struct clk_ops mtk_clk_gate_ops_setclr;
+ extern const struct clk_ops mtk_clk_gate_ops_setclr_inv;
 -- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+2.35.0.263.gb82422642f-goog
+
