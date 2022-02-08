@@ -2,225 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 964EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 101C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:22:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384215AbiBHRWZ (ORCPT
+        id S1384212AbiBHRWt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 12:22:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53464 "EHLO
+        Tue, 8 Feb 2022 12:22:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384195AbiBHRWU (ORCPT
+        with ESMTP id S1384210AbiBHRWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 12:22:20 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B718CC0613C9;
-        Tue,  8 Feb 2022 09:22:18 -0800 (PST)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 218GqPD1022763;
-        Tue, 8 Feb 2022 17:22:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=5u5/fqZd6VZeY+yASRLeyY+z+vX4LQ+GCflHnSEGOfk=;
- b=ax0UynyOJyphOHV31hieVXDhowTvUwlJIYFW0Xr9QLqYo4n8rQxIU4ghw3dS+h6zpc57
- 7Kyeivk8rvrsCcTd0sAHDWKaqcOQGHJrdiACBh5HwFL3AlSDWAsYWRt38xZKCf7Q8BBI
- 6Ajcd82FB1QU8anXTMaH4X81jAgCHIyj6Zhy39Qe6S2XvQsBEzQvB8in9cnYX0VOimqa
- tddcV6OvPQmqOHASUz2zcZBwGyGatX0vhK5GeSh8iI8sCXOQXysrjyKnfjyiWbFLOrmz
- dq3a4yhcj4t2ZdYEwrNCi8zHTCxiQLz2GEYETcnzUrDfN7wL+5Zm+cdboR6jI2g1QrQW Sw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e231a6nes-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 17:22:14 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 218Gtqtr004314;
-        Tue, 8 Feb 2022 17:22:14 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e231a6ndx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 17:22:14 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 218HIpqY024921;
-        Tue, 8 Feb 2022 17:22:12 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04fra.de.ibm.com with ESMTP id 3e2ygq5tur-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 17:22:12 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 218HMAW243778550
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 8 Feb 2022 17:22:10 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0DB5FA4053;
-        Tue,  8 Feb 2022 17:22:10 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A5EF1A4051;
-        Tue,  8 Feb 2022 17:22:09 +0000 (GMT)
-Received: from [9.145.157.102] (unknown [9.145.157.102])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  8 Feb 2022 17:22:09 +0000 (GMT)
-Message-ID: <ab98ad0a-4c37-0ab7-02e2-a9bb439646f3@linux.ibm.com>
-Date:   Tue, 8 Feb 2022 18:22:09 +0100
+        Tue, 8 Feb 2022 12:22:48 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A6EC061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:22:47 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id y15-20020a17090a474f00b001b88562650aso1981607pjg.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 09:22:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vkwsMg8JIcYCvuRxCKyZKhniS3wznCIEfN9JuWpZlzs=;
+        b=MkXyom8xyiPG/WxwzZZXl1x8vpzzXwe2JoYx8oz1Jl8dQTST0raqTCSmKisnBq5O30
+         xCNDZaSb/+kMjKLx7lS0YJZWnbJ3/t0zgZXtSeBANnhLzPP9lMLNuoroIURJbszDGK7Y
+         8TzyFbpmmqjLTquQPirjmezBA6bMoSHBtouYbA+FfTbSUEVLGFYe7lrbExAzSfEQiWJV
+         iLCN5Ev61nBRm+oGiUKq4wnTkTCBlN0In/QIgQtko/aF9geOr/Vrd85K6/EBoR5oyqTg
+         X7VsQLg9M+AJPvFhh2v8qRnJn4F6sVHJVvSoLGxWD2BMEC6bNl2SXwF8Xy9AJnY114e+
+         dE8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=vkwsMg8JIcYCvuRxCKyZKhniS3wznCIEfN9JuWpZlzs=;
+        b=DqmVIMDcfduKNRp/Kb0RF+RXrwGFZ359DKntHn4ryNOHh//iIHYSFQw71L3OMsScq0
+         43F8uhc6qtbRA09MVFd92ZBXX6dPy0FpaLqT39C1jABvntjTJmK2aBqnGSvjY7xz3IlU
+         39Ka2/wtsP1eKycR3Wh0K8gSdIbEJXPWo0k2yHMORrNxCFIIHha5zsvm/4Bc0es/b//u
+         hjBVdxXMPIdX5NDR/AfcYDvmP4vfj0cUGHBvn0PSLEBSukfvf2YTl9bt5P2wUL7utWaH
+         zMXBmFKIPXwpz1+ybHrBiCwSX0OHXi3d6S61/VmTh1mneLbaccoOg1HRZKfspPgfRhL2
+         ksHA==
+X-Gm-Message-State: AOAM530yIZc2AntQL6fnco/Wy2V8IUePqIoFcPeafKYCtiZ36xw07ul/
+        V3AHxzREU4BKYF4rrVOVjKw=
+X-Google-Smtp-Source: ABdhPJwqlB30dQX15Oaai5+7g929yw7jkaWgYZ12YXs+8s1KV43MFfoX3A8c22QQMTw8g1kSNyogLQ==
+X-Received: by 2002:a17:903:41d0:: with SMTP id u16mr5490152ple.144.1644340967022;
+        Tue, 08 Feb 2022 09:22:47 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id f3sm16813620pfe.43.2022.02.08.09.22.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 09:22:46 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 8 Feb 2022 07:22:45 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/2] kernfs: use hashed mutex and spinlock in place of
+ global ones.
+Message-ID: <YgKm5aSCcCYWkck2@slm.duckdns.org>
+References: <20220206010925.1033990-1-imran.f.khan@oracle.com>
+ <20220206010925.1033990-2-imran.f.khan@oracle.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [BUG] net: smc: possible deadlock in smc_lgr_free() and
- smc_link_down_work()
-Content-Language: en-US
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org
-References: <11fe65b8-eda4-121e-ec32-378b918d0909@gmail.com>
- <0936d5f3-aef2-0553-408b-07b3bb47e36b@linux.ibm.com>
- <9a27b497-80d7-ec6f-c8f1-69bee340f2e1@gmail.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <9a27b497-80d7-ec6f-c8f1-69bee340f2e1@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: XlLh24rejcyL6ndLdX-53BXHdS8CP7kw
-X-Proofpoint-GUID: 8DrBZJo71Y4TSMRvil0BF1oLr35lD110
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-08_06,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 malwarescore=0 impostorscore=0 adultscore=0
- mlxlogscore=999 suspectscore=0 spamscore=0 bulkscore=0 mlxscore=0
- phishscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202080103
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220206010925.1033990-2-imran.f.khan@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/02/2022 16:09, Jia-Ju Bai wrote:
-> 
-> 
-> On 2022/2/2 1:06, Karsten Graul wrote:
->> On 01/02/2022 08:51, Jia-Ju Bai wrote:
->>> Hello,
->>>
->>> My static analysis tool reports a possible deadlock in the smc module in Linux 5.16:
->>>
->>> smc_lgr_free()
->>>    mutex_lock(&lgr->llc_conf_mutex); --> Line 1289 (Lock A)
->>>    smcr_link_clear()
->>>      smc_wr_free_link()
->>>        wait_event(lnk->wr_tx_wait, ...); --> Line 648 (Wait X)
->>>
->>> smc_link_down_work()
->>>    mutex_lock(&lgr->llc_conf_mutex); --> Line 1683 (Lock A)
->>>    smcr_link_down()
->>>      smcr_link_clear()
->>>        smc_wr_free_link()
->>>          smc_wr_wakeup_tx_wait()
->>>            wake_up_all(&lnk->wr_tx_wait); --> Line 78 (Wake X)
->>>
->>> When smc_lgr_free() is executed, "Wait X" is performed by holding "Lock A". If smc_link_down_work() is executed at this time, "Wake X" cannot be performed to wake up "Wait X" in smc_lgr_free(), because "Lock A" has been already hold by smc_lgr_free(), causing a possible deadlock.
->>>
->>> I am not quite sure whether this possible problem is real and how to fix it if it is real.
->>> Any feedback would be appreciated, thanks :)
-> 
-> Hi Karsten,
-> 
-> Thanks for the reply and explanation :)
-> 
->> A deeper analysis showed up that this reported possible deadlock is actually not a problem.
->>
->> The wait on line 648 in smc_wr.c
->>     wait_event(lnk->wr_tx_wait, (!atomic_read(&lnk->wr_tx_refcnt)));
->> waits as long as the refcount wr_tx_refcnt is not zero.
->>
->> Every time when a caller stops using a link wr_tx_refcnt is decreased, and when it reaches
->> zero the wr_tx_wait is woken up in smc_wr_tx_link_put() in smc_wr.h, line 70:
->>         if (atomic_dec_and_test(&link->wr_tx_refcnt))
->>             wake_up_all(&link->wr_tx_wait);
-> 
-> Okay, you mean that wake_up_all(&link->wr_tx_wait) in smc_wr_tx_link_put() is used to wake up wait_event() in smc_wr_free_link().
-> But I wonder whether wake_up_all(&lnk->wr_tx_wait) in smc_wr_wakeup_tx_wait() can wake up this wait_event()?
-> If so, my report is in this case.
-> 
+On Sun, Feb 06, 2022 at 12:09:24PM +1100, Imran Khan wrote:
+> +/*
+> + * NR_KERNFS_LOCK_BITS determines size (NR_KERNFS_LOCKS) of hash
+> + * table of locks.
+> + * Having a small hash table would impact scalability, since
+> + * more and more kernfs_node objects will end up using same lock
+> + * and having a very large hash table would waste memory.
+> + *
+> + * At the moment size of hash table of locks is being set based on
+> + * the number of CPUs as follows:
+> + *
+> + * NR_CPU      NR_KERNFS_LOCK_BITS      NR_KERNFS_LOCKS
+> + *   1                  1                       2
+> + *  2-3                 2                       4
+> + *  4-7                 4                       16
+> + *  8-15                6                       64
+> + *  16-31               8                       256
+> + *  32 and more         10                      1024
+> + */
+> +#ifdef CONFIG_SMP
+> +#define NR_KERNFS_LOCK_BITS (2 * (ilog2(NR_CPUS < 32 ? NR_CPUS : 32)))
+> +#else
+> +#define NR_KERNFS_LOCK_BITS     1
+> +#endif
+> +
+> +#define NR_KERNFS_LOCKS     (1 << NR_KERNFS_LOCK_BITS)
 
-Nope, due to the link state handling there is no current caller of smc_wr_wakeup_tx_wait() when 
-smc_wr_free_link() starts to wait for the link to become free. First the link state is set to DOWN, 
-then all waiters are woken up (and no one will start a new wait) and finally smc_wr_free_link()
-"re-uses" the wait queue entry to wait for the link to become free.
+I have a couple questions:
 
-I think its that reusing of the wait queue entry that confuses the tool.
+* How did you come up with the above numbers? Are they based on some
+  experimentation? It'd be nice if the comment explains why the numbers are
+  like that.
 
->> Multiple callers of smc_wr_tx_link_put() do not run under the llc_conf_mutex lock, and those
->> who run under this mutex are saved against the wait_event() in smc_wr_free_link().
-> 
-> In fact, my tool also reports some other possible deadlocks invovling smc_wr_tx_link_put(), which can be called by holding llc_conf_mutex.
-> There are three examples:
-> 
-> #BUG 1
-> smc_lgr_free()
->   mutex_lock(&lgr->llc_conf_mutex); --> Line 1289 (Lock A)
->   smcr_link_clear()
->     smc_wr_free_link()
->       wait_event(lnk->wr_tx_wait, ...); --> Line 648 (Wait X)
-> 
-> smcr_buf_unuse()
->   mutex_lock(&lgr->llc_conf_mutex); --> Line 1087 (Lock A)
->   smc_llc_do_delete_rkey()
->     smc_llc_send_delete_rkey()
->       smc_wr_tx_link_put()
->         wake_up_all(&link->wr_tx_wait); --> Line 73 (Wake X)
-> 
-> #BUG 2
-> smc_lgr_free()
->   mutex_lock(&lgr->llc_conf_mutex); --> Line 1289 (Lock A)
->   smcr_link_clear()
->     smc_wr_free_link()
->       wait_event(lnk->wr_tx_wait, ...); --> Line 648 (Wait X)
-> 
-> smc_link_down_work()
->   mutex_lock(&lgr->llc_conf_mutex); --> Line 1683 (Lock A)
->   smcr_link_down()
->     smc_llc_send_delete_link()
->       smc_wr_tx_link_put()
->         wake_up_all(&link->wr_tx_wait); --> Line 73 (Wake X)
-> 
-> #BUG 3
-> smc_llc_process_cli_delete_link()
->   mutex_lock(&lgr->llc_conf_mutex); --> Line 1578 (Lock A)
->   smc_llc_send_message()
->     smc_llc_add_pending_send()
->       smc_wr_tx_get_free_slot()
->         wait_event_interruptible_timeout(link->wr_tx_wait, ...); --> Line 219 (Wake X)
-> 
-> smc_llc_process_cli_add_link()
->   mutex_lock(&lgr->llc_conf_mutex); --> Line 1198 (Lock A)
->   smc_llc_cli_add_link_invite()
->     smc_llc_send_add_link()
->       smc_wr_tx_link_put()
->         wake_up_all(&link->wr_tx_wait); --> Line 73 (Wake X)
-> 
-> I am not quite sure whether these possible problems are real.
-> Any feedback would be appreciated, thanks :)
+* IIRC, we split these locks to per kernfs instance recently as a way to
+  mitigate lock contention occurring across kernfs instances. I don't think
+  it's beneficial to keep these hashed locks separate. It'd be both simpler
+  and less contended to double one shared hashtable than splitting the table
+  into two separate half sized ones. So, maybe switch to global hashtables
+  and increase the size?
 
-Same here, because the wait queue entry is used in two scenarios and some processing separates
-those scenarios, the code checker finds problems that 'should' never happen.
-
-I wonder if it would be acceptable to introduce an extra wait queue entry only for the processing in
-smc_wr_free_link(), I reused an existing one to save some memory... but a cleaner code also counts.
-Not sure what to prefer.
-
-> 
->>
->> Thank you for reporting this finding! Which tool did you use for this analysis?
-> 
-> Thanks for your interest :)
-> I have implemented a static analysis tool based on LLVM, to detect deadlocks caused by locking cycles and improper waiting/waking operations.
-> However, this tool still reports some false positives, and thus I am still improving the accuracy of this tool.
-> Suggestions on deadlock detection (especially new/infrequent patterns causing deadlocks) or the tool are welcome ;)
-> 
-> 
-> Best wishes,
-> Jia-Ju Bai
-> 
+Thanks.
 
 -- 
-Karsten
+tejun
