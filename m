@@ -2,60 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35210C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:00:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77580C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348721AbiBHIAt (ORCPT
+        id S1348719AbiBHIBD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:00:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43540 "EHLO
+        Tue, 8 Feb 2022 03:01:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348723AbiBHIAp (ORCPT
+        with ESMTP id S1348684AbiBHIA4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:00:45 -0500
-Received: from out199-12.us.a.mail.aliyun.com (out199-12.us.a.mail.aliyun.com [47.90.199.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA86C0401F6
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:00:44 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R931e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=kanie@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V3vYOvJ_1644307232;
-Received: from 30.178.81.201(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0V3vYOvJ_1644307232)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 08 Feb 2022 16:00:40 +0800
-Message-ID: <d528b122-bace-5318-f6a5-ec7af6eb14d7@linux.alibaba.com>
-Date:   Tue, 8 Feb 2022 16:00:31 +0800
+        Tue, 8 Feb 2022 03:00:56 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94760C0401EF;
+        Tue,  8 Feb 2022 00:00:55 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5F50911D4;
+        Tue,  8 Feb 2022 00:00:55 -0800 (PST)
+Received: from e126645.home (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 72AE63F718;
+        Tue,  8 Feb 2022 00:00:53 -0800 (PST)
+From:   Pierre Gondois <Pierre.Gondois@arm.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ionela.Voinescu@arm.com, Lukasz.Luba@arm.com,
+        Morten.Rasmussen@arm.com, Pierre Gondois <Pierre.Gondois@arm.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        linux-pm@vger.kernel.org
+Subject: [PATCH v3] cpufreq: CPPC: Fix performance/frequency conversion
+Date:   Tue,  8 Feb 2022 09:01:09 +0100
+Message-Id: <20220208080109.697904-1-Pierre.Gondois@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.0
-From:   kanie <kanie@linux.alibaba.com>
-Subject: Re: [PATCH] uio: Replace mutex info_lock with percpu_ref to improve
- performance
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     xiaoguang.wang@linux.alibaba.com, xlpang@linux.alibaba.com,
-        linux-kernel@vger.kernel.org
-References: <1644304760-11862-1-git-send-email-kanie@linux.alibaba.com>
- <YgIa+W6kAsWMUdj3@kroah.com>
-In-Reply-To: <YgIa+W6kAsWMUdj3@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+CPUfreq governors request CPU frequencies using information
+on current CPU usage. The CPPC driver converts them to
+performance requests. Frequency targets are computed as:
+	target_freq = (util / cpu_capacity) * max_freq
+target_freq is then clamped between [policy->min, policy->max].
 
-在 2022/2/8 15:25, Greg KH 写道:
-> On Tue, Feb 08, 2022 at 03:19:20PM +0800, Guixin Liu wrote:
->> This patch includes a modification to repace mutex info_lock with
->> percpu_ref, in order to improve uio performance.
-> How does it improve performance?  What benchmark are you using and what
-> are the results?
->
-> These changes are quite complex, you need to better describe these in
-> order to be able to have them accepted.
->
-> thanks,
->
-> greg k-h
+The CPPC driver converts performance values to frequencies
+(and vice-versa) using cppc_cpufreq_perf_to_khz() and
+cppc_cpufreq_khz_to_perf(). These functions both use two different
+factors depending on the range of the input value. For
+cppc_cpufreq_khz_to_perf():
+- (NOMINAL_PERF / NOMINAL_FREQ) or
+- (LOWEST_PERF / LOWEST_FREQ)
+and for cppc_cpufreq_perf_to_khz():
+- (NOMINAL_FREQ / NOMINAL_PERF) or
+- ((NOMINAL_PERF - LOWEST_FREQ) / (NOMINAL_PERF - LOWEST_PERF))
 
-okay, I will supplement the performance-test result later.
+This means:
+1- the functions are not inverse for some values:
+   (perf_to_khz(khz_to_perf(x)) != x)
+2- cppc_cpufreq_perf_to_khz(LOWEST_PERF) can sometimes give
+   a different value from LOWEST_FREQ due to integer approximation
+3- it is implied that performance and frequency are proportional
+   (NOMINAL_FREQ / NOMINAL_PERF) == (LOWEST_PERF / LOWEST_FREQ)
 
-Guixin Liu
+This patch changes the conversion functions to an affine function.
+This fixes the 3 points above.
+
+Suggested-by: Lukasz Luba <lukasz.luba@arm.com>
+Suggested-by: Morten Rasmussen <morten.rasmussen@arm.com>
+Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
+---
+ drivers/cpufreq/cppc_cpufreq.c | 43 +++++++++++++++++-----------------
+ 1 file changed, 21 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
+index d4c27022b9c9..e0ff09d66c96 100644
+--- a/drivers/cpufreq/cppc_cpufreq.c
++++ b/drivers/cpufreq/cppc_cpufreq.c
+@@ -303,52 +303,48 @@ static u64 cppc_get_dmi_max_khz(void)
+ 
+ /*
+  * If CPPC lowest_freq and nominal_freq registers are exposed then we can
+- * use them to convert perf to freq and vice versa
+- *
+- * If the perf/freq point lies between Nominal and Lowest, we can treat
+- * (Low perf, Low freq) and (Nom Perf, Nom freq) as 2D co-ordinates of a line
+- * and extrapolate the rest
+- * For perf/freq > Nominal, we use the ratio perf:freq at Nominal for conversion
++ * use them to convert perf to freq and vice versa. The conversion is
++ * extrapolated as an affine function passing by the 2 points:
++ *  - (Low perf, Low freq)
++ *  - (Nominal perf, Nominal perf)
+  */
+ static unsigned int cppc_cpufreq_perf_to_khz(struct cppc_cpudata *cpu_data,
+ 					     unsigned int perf)
+ {
+ 	struct cppc_perf_caps *caps = &cpu_data->perf_caps;
++	s64 retval, offset = 0;
+ 	static u64 max_khz;
+ 	u64 mul, div;
+ 
+ 	if (caps->lowest_freq && caps->nominal_freq) {
+-		if (perf >= caps->nominal_perf) {
+-			mul = caps->nominal_freq;
+-			div = caps->nominal_perf;
+-		} else {
+-			mul = caps->nominal_freq - caps->lowest_freq;
+-			div = caps->nominal_perf - caps->lowest_perf;
+-		}
++		mul = caps->nominal_freq - caps->lowest_freq;
++		div = caps->nominal_perf - caps->lowest_perf;
++		offset = caps->nominal_freq - div64_u64(caps->nominal_perf * mul, div);
+ 	} else {
+ 		if (!max_khz)
+ 			max_khz = cppc_get_dmi_max_khz();
+ 		mul = max_khz;
+ 		div = caps->highest_perf;
+ 	}
+-	return (u64)perf * mul / div;
++
++	retval = offset + div64_u64(perf * mul, div);
++	if (retval >= 0)
++		return retval;
++	return 0;
+ }
+ 
+ static unsigned int cppc_cpufreq_khz_to_perf(struct cppc_cpudata *cpu_data,
+ 					     unsigned int freq)
+ {
+ 	struct cppc_perf_caps *caps = &cpu_data->perf_caps;
++	s64 retval, offset = 0;
+ 	static u64 max_khz;
+ 	u64  mul, div;
+ 
+ 	if (caps->lowest_freq && caps->nominal_freq) {
+-		if (freq >= caps->nominal_freq) {
+-			mul = caps->nominal_perf;
+-			div = caps->nominal_freq;
+-		} else {
+-			mul = caps->lowest_perf;
+-			div = caps->lowest_freq;
+-		}
++		mul = caps->nominal_perf - caps->lowest_perf;
++		div = caps->nominal_freq - caps->lowest_freq;
++		offset = caps->nominal_perf - div64_u64(caps->nominal_freq * mul, div);
+ 	} else {
+ 		if (!max_khz)
+ 			max_khz = cppc_get_dmi_max_khz();
+@@ -356,7 +352,10 @@ static unsigned int cppc_cpufreq_khz_to_perf(struct cppc_cpudata *cpu_data,
+ 		div = max_khz;
+ 	}
+ 
+-	return (u64)freq * mul / div;
++	retval = offset + div64_u64(freq * mul, div);
++	if (retval >= 0)
++		return retval;
++	return 0;
+ }
+ 
+ static int cppc_cpufreq_set_target(struct cpufreq_policy *policy,
+-- 
+2.25.1
 
