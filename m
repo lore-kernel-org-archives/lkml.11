@@ -2,207 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D04C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4213AC3527C
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355442AbiBHLWy (ORCPT
+        id S1349594AbiBHLXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:22:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45054 "EHLO
+        Tue, 8 Feb 2022 06:23:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239854AbiBHJnS (ORCPT
+        with ESMTP id S243292AbiBHJsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:43:18 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07927C03FEC0;
-        Tue,  8 Feb 2022 01:43:17 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id j14so27115517ejy.6;
-        Tue, 08 Feb 2022 01:43:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Lq+dKx41RUjgzj8JvU9gnjviVgG4UdA+iyRcp+19UfA=;
-        b=kzTiv9B2U7Wc0fxzGKxQg8uhdYfgfO/xIoYNmhC/rgC3OhSFBPSSSVQO2K03kmbWfV
-         +UGcT+3CXBaxmU4wl8vygy23F0/n2OIZj2wwoZZ6M8tTxHSy5w2XasdRhToXb6F0ZJL/
-         5huGHAex9ROgFLbGyHXavnKHmZg06VqvEs+lU3tVrec1MwOb4gQ+YZnPEYUEScn8yWtG
-         WF55TzQTCmLzqEGG4Wwt1SN9T/qVgfgZxo3olqp4twStPc8Fvlq9EMbnn/OX0tq+yMTp
-         Nu1gS0AV+TRUTP19KVXQYe2RVt0OjPTJ8exsji8O9JmPiZQToxuJaegip/FXmkOFrhBJ
-         PJzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Lq+dKx41RUjgzj8JvU9gnjviVgG4UdA+iyRcp+19UfA=;
-        b=q5js+0T8YuxD/PeJk01Wx/XllnlZgCF/Zj1js5uulnlweydHDse+Jmyzk6pi+Z178R
-         GY1xrd4G1PYw7fjh2Bt84dsMCdyqkP1AdpgokWUegGQId6/hDq0ZAiAzcI0+wpv3gatL
-         5alRv6j8uVKhZfgc9VJFPp4Aubskx17aSri7qKsN54e2cDLk+LvTFolwHnf0zNwkqTiM
-         0ZQiSQesn0mtB+ZwiQvliQ8NyMcJaYUI8uefN/+YDHe6aUOde1ju35IKWIuIehaB4p4x
-         GAnClsUMLqz0kdLXbFg7lpNVwOxaaOeVIjmoxPCKomJK24tK040U8fw7O24OXRFzL5xP
-         BZPg==
-X-Gm-Message-State: AOAM532l7rVUk+WT/IYG/IIZYuBNZeqHps3bPT6ovJITC+OkKdJ+P6TB
-        dK/MDRN0+s0LeSyWUhpp3ts=
-X-Google-Smtp-Source: ABdhPJwAZUEHLlmX1IkuCQdKZVNT6gCfYtB0CZnvNZIAtRmMvtzYnBBVouYUplHQTTxgvw/iOFbdAA==
-X-Received: by 2002:a17:907:1115:: with SMTP id qu21mr2996031ejb.192.1644313395453;
-        Tue, 08 Feb 2022 01:43:15 -0800 (PST)
-Received: from tiger.museclub.art (p200300cf9f235800e668694710673d4b.dip0.t-ipconnect.de. [2003:cf:9f23:5800:e668:6947:1067:3d4b])
-        by smtp.googlemail.com with ESMTPSA id v14sm585931edq.13.2022.02.08.01.43.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 01:43:14 -0800 (PST)
-From:   Eugene Shalygin <eugene.shalygin@gmail.com>
-To:     eugene.shalygin@gmail.com
-Cc:     Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Denis Pauk <pauk.denis@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] hwmon: (asus-ec-sensors) add CPU core voltage
-Date:   Tue,  8 Feb 2022 10:42:43 +0100
-Message-Id: <20220208094244.1106312-1-eugene.shalygin@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 8 Feb 2022 04:48:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A96C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:48:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3110B8199B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:48:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 044BDC004E1;
+        Tue,  8 Feb 2022 09:48:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644313723;
+        bh=Jr+sZHpsrK0CTn986hnaOkGXEBbNrbNjqqaLRgclFz0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CFlMNBOoX0IJ4AnR+xh58Q35hh38kR33v1i+6vHYOEdz2LeOUdWwkY1mZi+1DhGIx
+         UJqwwK7nck0KMH0W1av45J37PQx1ANyhi7LIvH+x/uxJ05uvEkvH7/T6QqYp5o04A+
+         MGQKexaEBmNNKg+BuvUCNsDTosMhK9Vi2TCkc7GI=
+Date:   Tue, 8 Feb 2022 10:48:40 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Leonardo Araujo <leonardo.aa88@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: Re: [PATCH] Staging : android: Struct file_operations should be const
+Message-ID: <YgI8eO4T+CAmcAlc@kroah.com>
+References: <20220207031711.13644-1-leonardo.aa88@gmail.com>
+ <YgFCPbnqs40wS+j1@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgFCPbnqs40wS+j1@zeniv-ca.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A user discovered [1] the CPU Core voltage sensor, which spans 2
-registers and provides output in mV. Althroug the discovery was made
-with a X470 chipset, the sensor is present in X570 (tested with C8H).
-For now simply add it to each board with the CPU current sensor present.
+On Mon, Feb 07, 2022 at 04:01:01PM +0000, Al Viro wrote:
+> On Mon, Feb 07, 2022 at 12:17:11AM -0300, Leonardo Araujo wrote:
+> > From: "Leonardo Araujo" <leonardo.aa88@gmail.com>
+> > 
+> > WARNING: struct file_operations should normally be const
+> > 
+> > Signed-off-by: Leonardo Araujo <leonardo.aa88@gmail.com>
+> > ---
+> >  drivers/staging/android/ashmem.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/staging/android/ashmem.c b/drivers/staging/android/ashmem.c
+> > index ddbde3f8430e..4c6b420fbf4d 100644
+> > --- a/drivers/staging/android/ashmem.c
+> > +++ b/drivers/staging/android/ashmem.c
+> > @@ -377,7 +377,7 @@ ashmem_vmfile_get_unmapped_area(struct file *file, unsigned long addr,
+> >  
+> >  static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
+> >  {
+> > -	static struct file_operations vmfile_fops;
+> > +	static const struct file_operations vmfile_fops;
+> >  	struct ashmem_area *asma = file->private_data;
+> >  	int ret = 0;
+> 
+> Wait a minute.  Why the hell would it possibly want a private instance
+> of all-NULLs file_operations?  Odd...
+> <checks>
+>                 if (!vmfile_fops.mmap) {
+>                         vmfile_fops = *vmfile->f_op;
+>                         vmfile_fops.mmap = ashmem_vmfile_mmap;
+>                         vmfile_fops.get_unmapped_area =
+>                                         ashmem_vmfile_get_unmapped_area;
+>                 }
+> Er...  So it *is* modified down the road.  What, in your opinion, is signified
+> by the const you are adding?
+> 
+> Folks, could we please have the first "WARNING" in checkpatch.pl output replaced
+> with
+> "I'm a dumb script; this line looks like there might be something fishy in the
+> area.  Somebody smarter than me might want to take a look and figure out if
+> there's something wrong going on there.  From now on I'll mark all such places
+> with 'WARNING' (with the summary of heuristics that pointed to them), to avoid
+> repeating the above".
+> 
+> Pretty please?  This exact trap keeps snagging newbies - folks misinterpret
+> "this place might be worth looking into" for "great (s)tool says: this is
+> what's wrong there; must propitiate the great (s)tool!"
+> 
+> In this case the damage is minimal - the resulting change would be instantly
+> caught by compiler, so it's just a matter of mild embarrassment for poster.
+> In other cases results had been nowhere near as mild.
 
-[1] https://github.com/zeule/asus-ec-sensors/issues/12
+It's a great "catch" for people who try to modify the kernel and then
+never actually test-build their changes.  So for that reason alone I
+like it as it does reinforce the need for drive-by people to at least
+build the kernel tree.
 
-Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
----
- Documentation/hwmon/asus_ec_sensors.rst |  1 +
- drivers/hwmon/asus-ec-sensors.c         | 29 ++++++++++++++++---------
- 2 files changed, 20 insertions(+), 10 deletions(-)
+> Incidentally, the place those heuristics had pointed too _DOES_ look fishy,
+> indeed.  What happens, AFAICS, is that the first time we hit that branch
+> (asma->file being NULL) we stash a copy of whatever file_operations we get
+> on file obtained by shmem_setup_file() (IOW, shmem_file_operations),
+> with ->mmap and ->get_unmapped_area replaced with local functions.
+> This is a bloody convoluted way to do things, not to mention being rather
+> brittle...
+> 
 
-diff --git a/Documentation/hwmon/asus_ec_sensors.rst b/Documentation/hwmon/asus_ec_sensors.rst
-index 22de1b037cfb..e7e8f1640f45 100644
---- a/Documentation/hwmon/asus_ec_sensors.rst
-+++ b/Documentation/hwmon/asus_ec_sensors.rst
-@@ -39,6 +39,7 @@ The driver is aware of and reads the following sensors:
- 9. Readings from the "Water flow meter" header (RPM)
- 10. Readings from the "Water In" and "Water Out" temperature headers
- 11. CPU current
-+12. CPU core voltage
- 
- Sensor values are read from EC registers, and to avoid race with the board
- firmware the driver acquires ACPI mutex, the one used by the WMI when its
-diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
-index dd7b207d062f..bfac08a5dc57 100644
---- a/drivers/hwmon/asus-ec-sensors.c
-+++ b/drivers/hwmon/asus-ec-sensors.c
-@@ -18,6 +18,7 @@
-  * - VRM Heat Sink fan RPM
-  * - Water Flow fan RPM
-  * - CPU current
-+ * - CPU core voltage
-  */
- 
- #include <linux/acpi.h>
-@@ -100,6 +101,8 @@ enum ec_sensors {
- 	ec_sensor_temp_t_sensor,
- 	/* VRM temperature [℃] */
- 	ec_sensor_temp_vrm,
-+	/* CPU Core voltage [mV] */
-+	ec_sensor_in_cpu_core,
- 	/* CPU_Opt fan [RPM] */
- 	ec_sensor_fan_cpu_opt,
- 	/* VRM heat sink fan [RPM] */
-@@ -121,6 +124,7 @@ enum ec_sensors {
- #define SENSOR_TEMP_MB BIT(ec_sensor_temp_mb)
- #define SENSOR_TEMP_T_SENSOR BIT(ec_sensor_temp_t_sensor)
- #define SENSOR_TEMP_VRM BIT(ec_sensor_temp_vrm)
-+#define SENSOR_IN_CPU_CORE BIT(ec_sensor_in_cpu_core)
- #define SENSOR_FAN_CPU_OPT BIT(ec_sensor_fan_cpu_opt)
- #define SENSOR_FAN_VRM_HS BIT(ec_sensor_fan_vrm_hs)
- #define SENSOR_FAN_CHIPSET BIT(ec_sensor_fan_chipset)
-@@ -139,6 +143,8 @@ static const struct ec_sensor_info known_ec_sensors[] = {
- 	[ec_sensor_temp_t_sensor] =
- 		EC_SENSOR("T_Sensor", hwmon_temp, 1, 0x00, 0x3d),
- 	[ec_sensor_temp_vrm] = EC_SENSOR("VRM", hwmon_temp, 1, 0x00, 0x3e),
-+	[ec_sensor_in_cpu_core] =
-+		EC_SENSOR("CPU Core", hwmon_in, 2, 0x00, 0xa2),
- 	[ec_sensor_fan_cpu_opt] =
- 		EC_SENSOR("CPU_Opt", hwmon_fan, 2, 0x00, 0xb0),
- 	[ec_sensor_fan_vrm_hs] = EC_SENSOR("VRM HS", hwmon_fan, 2, 0x00, 0xb2),
-@@ -172,32 +178,34 @@ static const struct dmi_system_id asus_ec_dmi_table[] __initconst = {
- 		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET),
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "Pro WS X570-ACE",
- 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
--		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
-+		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
- 			      "ROG CROSSHAIR VIII DARK HERO",
- 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
- 		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
--		SENSOR_FAN_CPU_OPT | SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
-+		SENSOR_FAN_CPU_OPT | SENSOR_FAN_WATER_FLOW |
-+		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
- 			      "ROG CROSSHAIR VIII FORMULA",
- 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
- 		SENSOR_TEMP_VRM | SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
--		SENSOR_CURR_CPU),
-+		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG CROSSHAIR VIII HERO",
- 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
- 		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
- 		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
--		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
-+		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
- 			      "ROG CROSSHAIR VIII HERO (WI-FI)",
- 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
- 		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
- 		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
--		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU),
-+		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
- 			      "ROG CROSSHAIR VIII IMPACT",
- 		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
--		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
-+		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET |
-+		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX B550-E GAMING",
- 		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
- 		SENSOR_TEMP_T_SENSOR |
-@@ -205,17 +213,19 @@ static const struct dmi_system_id asus_ec_dmi_table[] __initconst = {
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX B550-I GAMING",
- 		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
- 		SENSOR_TEMP_T_SENSOR |
--		SENSOR_TEMP_VRM | SENSOR_FAN_VRM_HS | SENSOR_CURR_CPU),
-+		SENSOR_TEMP_VRM | SENSOR_FAN_VRM_HS |
-+		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-E GAMING",
- 		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
- 		SENSOR_TEMP_T_SENSOR |
--		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
-+		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET |
-+		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-F GAMING",
- 		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
- 		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET),
- 	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-I GAMING",
- 		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_VRM_HS |
--		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
-+		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
- 	{}
- };
- 
-@@ -467,7 +477,6 @@ static long scale_sensor_value(s32 value, int data_type)
- 	switch (data_type) {
- 	case hwmon_curr:
- 	case hwmon_temp:
--	case hwmon_in:
- 		return value * MILLI;
- 	default:
- 		return value;
--- 
-2.35.1
+Ashmem is horrid and is not used by the Android project anymore, except
+by really old userspace programs.  I think we could just delete it
+entirely now, I'll go ask the Android developers about it.
 
+thanks,
+
+greg k-h
