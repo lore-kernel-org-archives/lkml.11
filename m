@@ -2,206 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBB2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:16:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 974FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:16:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353386AbiBHJQF (ORCPT
+        id S1353438AbiBHJQd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 04:16:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
+        Tue, 8 Feb 2022 04:16:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353379AbiBHJQD (ORCPT
+        with ESMTP id S232179AbiBHJQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:16:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B7AB2C0401F0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:16:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644311761;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vWTeTtK7QuygKDGNGhC3/zMgZotQ2ldpExYYNODBF4o=;
-        b=QOigSa2uIUIC/0ykjaVnbD/d364QDOazpWy1cSTwmKjQeQCEdWkVqSiWRixE9A9fvA8EuG
-        eR9qhOZ3UuCN7v200VFdV7w8fx4HQlrvSNzGCt6JNLYBNCUyZJNemEwSjIgFaWVtIy34A3
-        sj82scfrxazI+hu7OmHTx2qYFvmUm/Q=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-518-3nhrpAfIPayu3v3wGSzHDA-1; Tue, 08 Feb 2022 04:16:00 -0500
-X-MC-Unique: 3nhrpAfIPayu3v3wGSzHDA-1
-Received: by mail-ej1-f71.google.com with SMTP id v2-20020a170906292200b006a94a27f903so5479827ejd.8
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:15:59 -0800 (PST)
+        Tue, 8 Feb 2022 04:16:31 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C32C03FEC3
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:16:29 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id d188so20286670iof.7
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:16:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=O/lx//nLUVMx2EI4vj5HKtagrUsb3ZYCM82TQ4lEins=;
+        b=GNZIO6/kuk+ic9l6Cd+p/G1mclOH/q3G/vT9SOJqWStL42meaNn/c/wFxfOu3vH9z1
+         uOLAzQrhJq95IkE+TOApdAN1ebRCQvgTw7uDwp8aJjVbau9Q2hRunsd/UW0wOVvjYwd1
+         LcpnpZOyuC0DTMEJBpVE1aNfStAYiHEPBjeyFGgD6lSx1oXM4Le3EOGAoBFH3e2WoeDV
+         uIQBx1oy/xTb+3xXbPXk86a1+F/MI5UOjandFhzeQffQ3GTJisprjuAegNuPLc1FAiS7
+         JphN+alAke3aQBct32r7k9yuTI6pGb/AYKbCAvQdosBGvl25eO7UHSAH5rqstI1IASX8
+         bjWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vWTeTtK7QuygKDGNGhC3/zMgZotQ2ldpExYYNODBF4o=;
-        b=EEjxgSYvZX2OyVNCD4ncOdH01u3ZX6Dy82WmGrDN+xMJp2uDb/xG+yT7DNiiwV1SwW
-         OGTIbVmz0zzaoKR3aJbl7h0cMINLyyluoFa5+mWTzIBQwgQjC7ag6hCaUCmSaEJlwfqh
-         jGT5lgAHMiRI4oT5ls9fve54yCwNAMUiAmsQAyHKndA7nofvYWS+ScWTkYrUynONMoft
-         muqCZNw0Nzt9lhWzv+ZM+TJb0CxZY/7+BTKkpZeuGF9uHn5kv6UyM8990U8SNu9XLHOH
-         6L5a5lUqCQuuuZz/TrirBV/vfR6T6mAxN8DC474s5U7DeCNk6o37u+/bs6oMjYEb9AXJ
-         C9Pg==
-X-Gm-Message-State: AOAM5319kLN6YUT1w709Fpvj1IW5XxkYnrZ5HbbBUycm/JLtgrBN2ioD
-        R9gmsTJGpwjhr9KhT5WkUK/5ElbMb2nrpEMM+u+i5WFF7NrclXV1i0WXmk6LtPRbbwPxqk7nuaX
-        FeSrsaAVplG2zBrdQn4ZRF1rY
-X-Received: by 2002:aa7:cb87:: with SMTP id r7mr3496505edt.284.1644311758859;
-        Tue, 08 Feb 2022 01:15:58 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx7Lki8J0+DYZKgA0Sje1wqEXoOop45PfSQdqu2TcaABmDndUbGA3rwRkTpJzzLLbClyqFLTw==
-X-Received: by 2002:aa7:cb87:: with SMTP id r7mr3496479edt.284.1644311758630;
-        Tue, 08 Feb 2022 01:15:58 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id r6sm4025782ejd.100.2022.02.08.01.15.57
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=O/lx//nLUVMx2EI4vj5HKtagrUsb3ZYCM82TQ4lEins=;
+        b=a+iV7S5ZEDzWxsNf7r6fwl+Z5TqHXf0GUrJAbYFeAuKsgDP4XNvCcjefjz5jhbCx2C
+         NuQpiY337y7n7UCA1C4C18sQCRqBgBgcJrwwcyidI4OmTHIqOAIIRIQzahcbF3GTx4g9
+         Z1ufQ2AjFbIWgqdyzjceXJN4U8J0Aeuv0gPGQhXpHs/jpo3sXHUnSdRSQHZ/1G96EMLM
+         D/PzyiEfVYrZ/dm/NiZbgcHnMSl1cpm41ILT0m8NL0to0X6b2rgMZcrUCdgR0JOpsl5w
+         2f1TYfl3eq0/T9UL+mouAEN4ZiNk+6GhHur7DKub5KFlJh7pV0ldE2PWxGt4zMkUmpYI
+         7M/g==
+X-Gm-Message-State: AOAM530alzpM0e7dcsv8Oxcw70js+ih/5XXiDGU74Mfs0jBQz0PgbMNJ
+        tltAUG42HSb/PgUOcaDAiuJO7A==
+X-Google-Smtp-Source: ABdhPJw5yaI9Ui9SJAQTv5l/nY/N9q1YxRO/3oThR7TlMGDQjGNGWfY/7ovjRm8eOUtzjrPfeX8IwA==
+X-Received: by 2002:a05:6638:1028:: with SMTP id n8mr1757754jan.318.1644311788671;
+        Tue, 08 Feb 2022 01:16:28 -0800 (PST)
+Received: from google.com ([2620:15c:183:200:5f31:19c3:21f5:7300])
+        by smtp.gmail.com with ESMTPSA id k11sm7556042iob.23.2022.02.08.01.16.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 01:15:58 -0800 (PST)
-Date:   Tue, 8 Feb 2022 10:15:56 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jiri Olsa <olsajiri@gmail.com>
-Subject: Re: [PATCH 8/8] selftest/bpf: Add fprobe test for bpf_cookie values
-Message-ID: <YgI0zJDJ3jrb3q49@krava>
-References: <20220202135333.190761-1-jolsa@kernel.org>
- <20220202135333.190761-9-jolsa@kernel.org>
- <CAEf4Bzbi3t_zZL2=8NyBeJ9q95ODH7pXF+EybtgBQp7LTyfr6Q@mail.gmail.com>
+        Tue, 08 Feb 2022 01:16:27 -0800 (PST)
+Date:   Tue, 8 Feb 2022 02:16:24 -0700
+From:   Yu Zhao <yuzhao@google.com>
+To:     Barry Song <21cnbao@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, page-reclaim@google.com,
+        x86 <x86@kernel.org>
+Subject: Re: [PATCH v6 0/9] Multigenerational LRU Framework
+Message-ID: <YgI06D8MbEpchooF@google.com>
+References: <20220104202227.2903605-1-yuzhao@google.com>
+ <CAGsJ_4zULJ5vPwn73Z5Bap3eRkAX+Yv24c-n41+zC7fN8xG60g@mail.gmail.com>
+ <Ye+dPmO17JN2bNLL@google.com>
+ <CAGsJ_4w5GM5r916XEz+gj=33A+b98kyJONLNpEnBMmX5XnPRmg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAEf4Bzbi3t_zZL2=8NyBeJ9q95ODH7pXF+EybtgBQp7LTyfr6Q@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAGsJ_4w5GM5r916XEz+gj=33A+b98kyJONLNpEnBMmX5XnPRmg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 10:59:32AM -0800, Andrii Nakryiko wrote:
-> On Wed, Feb 2, 2022 at 5:54 AM Jiri Olsa <jolsa@redhat.com> wrote:
+On Fri, Jan 28, 2022 at 09:54:09PM +1300, Barry Song wrote:
+> On Tue, Jan 25, 2022 at 7:48 PM Yu Zhao <yuzhao@google.com> wrote:
 > >
-> > Adding bpf_cookie test for kprobe attached by fprobe link.
+> > On Sun, Jan 23, 2022 at 06:43:06PM +1300, Barry Song wrote:
+> > > On Wed, Jan 5, 2022 at 7:17 PM Yu Zhao <yuzhao@google.com> wrote:
 > >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  .../selftests/bpf/prog_tests/bpf_cookie.c     | 73 +++++++++++++++++++
-> >  .../selftests/bpf/progs/fprobe_bpf_cookie.c   | 62 ++++++++++++++++
-> >  2 files changed, 135 insertions(+)
-> >  create mode 100644 tools/testing/selftests/bpf/progs/fprobe_bpf_cookie.c
+> > <snipped>
 > >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-> > index cd10df6cd0fc..bf70d859c598 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-> > @@ -7,6 +7,7 @@
-> >  #include <unistd.h>
-> >  #include <test_progs.h>
-> >  #include "test_bpf_cookie.skel.h"
-> > +#include "fprobe_bpf_cookie.skel.h"
+> > > > Large-scale deployments
+> > > > -----------------------
+> > > > We've rolled out MGLRU to tens of millions of Chrome OS users and
+> > > > about a million Android users. Google's fleetwide profiling [13] shows
+> > > > an overall 40% decrease in kswapd CPU usage, in addition to
+> > >
+> > > Hi Yu,
+> > >
+> > > Was the overall 40% decrease of kswap CPU usgae seen on x86 or arm64?
+> > > And I am curious how much we are taking advantage of NONLEAF_PMD_YOUNG.
+> > > Does it help a lot in decreasing the cpu usage?
 > >
-> >  /* uprobe attach point */
-> >  static void trigger_func(void)
-> > @@ -63,6 +64,76 @@ static void kprobe_subtest(struct test_bpf_cookie *skel)
-> >         bpf_link__destroy(retlink2);
-> >  }
+> > Hi Barry,
 > >
-> > +static void fprobe_subtest(void)
-> > +{
-> > +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
-> > +       int err, prog_fd, link1_fd = -1, link2_fd = -1;
-> > +       struct fprobe_bpf_cookie *skel = NULL;
-> > +       __u32 duration = 0, retval;
-> > +       __u64 addrs[8], cookies[8];
-> > +
-> > +       skel = fprobe_bpf_cookie__open_and_load();
-> > +       if (!ASSERT_OK_PTR(skel, "fentry_raw_skel_load"))
-> > +               goto cleanup;
-> > +
-> > +       kallsyms_find("bpf_fentry_test1", &addrs[0]);
-> > +       kallsyms_find("bpf_fentry_test2", &addrs[1]);
-> > +       kallsyms_find("bpf_fentry_test3", &addrs[2]);
-> > +       kallsyms_find("bpf_fentry_test4", &addrs[3]);
-> > +       kallsyms_find("bpf_fentry_test5", &addrs[4]);
-> > +       kallsyms_find("bpf_fentry_test6", &addrs[5]);
-> > +       kallsyms_find("bpf_fentry_test7", &addrs[6]);
-> > +       kallsyms_find("bpf_fentry_test8", &addrs[7]);
-> > +
-> > +       cookies[0] = 1;
-> > +       cookies[1] = 2;
-> > +       cookies[2] = 3;
-> > +       cookies[3] = 4;
-> > +       cookies[4] = 5;
-> > +       cookies[5] = 6;
-> > +       cookies[6] = 7;
-> > +       cookies[7] = 8;
-> > +
-> > +       opts.fprobe.addrs = (__u64) &addrs;
+> > The fleet-wide profiling data I shared was from x86. For arm64, I only
+> > have data from synthetic benchmarks at the moment, and it also shows
+> > similar improvements.
+> >
+> > For Chrome OS (individual users), walk_pte_range(), the function that
+> > would benefit from ARCH_HAS_NONLEAF_PMD_YOUNG, only uses a small
+> > portion (<4%) of kswapd CPU time. So ARCH_HAS_NONLEAF_PMD_YOUNG isn't
+> > that helpful.
 > 
-> we should have ptr_to_u64() for test_progs, but if not, let's either
-> add it or it should be (__u64)(uintptr_t)&addrs. Otherwise we'll be
-> getting compilation warnings on some architectures.
-
-there's one in btf.c, bpf.c and libbpf.c ;-) so I guess it could go to bpf.h
-
+> Hi Yu,
+> Thanks!
 > 
-> > +       opts.fprobe.cnt = 8;
-> > +       opts.fprobe.bpf_cookies = (__u64) &cookies;
-> > +       prog_fd = bpf_program__fd(skel->progs.test2);
-> > +
-> > +       link1_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_FPROBE, &opts);
-> > +       if (!ASSERT_GE(link1_fd, 0, "link1_fd"))
-> > +               return;
-> > +
-> > +       cookies[0] = 8;
-> > +       cookies[1] = 7;
-> > +       cookies[2] = 6;
-> > +       cookies[3] = 5;
-> > +       cookies[4] = 4;
-> > +       cookies[5] = 3;
-> > +       cookies[6] = 2;
-> > +       cookies[7] = 1;
-> > +
-> > +       opts.flags = BPF_F_FPROBE_RETURN;
-> > +       prog_fd = bpf_program__fd(skel->progs.test3);
-> > +
-> > +       link2_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_FPROBE, &opts);
-> > +       if (!ASSERT_GE(link2_fd, 0, "link2_fd"))
-> > +               goto cleanup;
-> > +
-> > +       prog_fd = bpf_program__fd(skel->progs.test1);
-> > +       err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-> > +                               NULL, NULL, &retval, &duration);
-> > +       ASSERT_OK(err, "test_run");
-> > +       ASSERT_EQ(retval, 0, "test_run");
-> > +
-> > +       ASSERT_EQ(skel->bss->test2_result, 8, "test2_result");
-> > +       ASSERT_EQ(skel->bss->test3_result, 8, "test3_result");
-> > +
-> > +cleanup:
-> > +       close(link1_fd);
-> > +       close(link2_fd);
-> > +       fprobe_bpf_cookie__destroy(skel);
-> > +}
-> > +
-> >  static void uprobe_subtest(struct test_bpf_cookie *skel)
-> >  {
-> >         DECLARE_LIBBPF_OPTS(bpf_uprobe_opts, opts);
-> > @@ -249,6 +320,8 @@ void test_bpf_cookie(void)
+> In the current kernel, depending on reverse mapping, while memory is
+> under pressure,
+> the cpu usage of kswapd can be very very high especially while a lot of pages
+> have large mapcount, thus a huge reverse mapping cost.
+
+Agreed. I've posted v7 which includes kswapd profiles collected from an
+arm64 v8.2 laptop under memory pressure.
+
+> Regarding  <4%, I guess the figure came from machines with NONLEAF_PMD_YOUNG？
+
+No, it's from Snapdragon 7c. Please see the kswapd profiles in v7.
+
+> In this case, we can skip many PTE scans while PMD has no accessed bit
+> set. But for
+> a machine without NONLEAF, will the figure of cpu usage be much larger?
+
+So NONLEAF_PMD_YOUNG at most can save 4% CPU usage from kswapd. But
+this definitely can vary, depending on the workloads.
+
+> > > If so, this might be
+> > > a good proof that arm64 also needs this hardware feature?
+> > > In short, I am curious how much the improvement in this patchset depends
+> > > on the hardware ability of NONLEAF_PMD_YOUNG.
 > >
-> >         if (test__start_subtest("kprobe"))
-> >                 kprobe_subtest(skel);
-> > +       if (test__start_subtest("rawkprobe"))
+> > For data centers, I do think ARCH_HAS_NONLEAF_PMD_YOUNG has some value.
+> > In addition to cold/hot memory scanning, there are other use cases like
+> > dirty tracking, which can benefit from the accessed bit on non-leaf
+> > entries. I know some proprietary software uses this capability on x86
+> > for different purposes than this patchset does. And AFAIK, x86 is the
+> > only arch that supports this capability, e.g., risc-v and ppc can only
+> > set the accessed bit in PTEs.
 > 
-> kprobe.multi?
+> Yep. NONLEAF is a nice feature.
+> 
+> btw, page table should have a separate DIRTY bit, right?
 
-yes
+Yes.
 
-thanks,
-jirka
+> wouldn't dirty page
+> tracking depend on the DIRTY bit rather than the accessed bit?
 
+It depends on the goal.
+
+> so x86 also has
+> NONLEAF dirty bit?
+
+No.
+
+> Or they are scanning accessed bit of PMD before
+> scanning DIRTY bits of PTEs?
+
+A mandatory sync to disk must use the dirty bit to ensure data
+integrity. But for a voluntary sync to disk, it can use the accessed
+bit to narrow the search of dirty pages.
+
+A mandatory sync is used to free specific dirty pages. A voluntary sync
+is used to keep the number of dirty pages low in general and it doesn't
+target any specific dirty pages.
+
+> > In fact, I've discussed this with one of the arm maintainers Will. So
+> > please check with him too if you are interested in moving forward with
+> > the idea. I might be able to provide with additional data if you need
+> > it to make a decision.
+> 
+> I am interested in running it and have some data without NONLEAF
+> especially while free memory is very limited and the system has memory
+> thrashing.
+
+The v7 has a switch to disable this feature on x86. If you can run your
+workloads on x86, then it might be able to help you measure the difference.
