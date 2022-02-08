@@ -2,540 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6549C35275
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72537C35280
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388421AbiBHWcz (ORCPT
+        id S1388954AbiBHWdo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:32:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34314 "EHLO
+        Tue, 8 Feb 2022 17:33:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386658AbiBHVEx (ORCPT
+        with ESMTP id S1386918AbiBHVU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:04:53 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C16CC0612BD
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:04:51 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id on2so299724pjb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:04:51 -0800 (PST)
+        Tue, 8 Feb 2022 16:20:56 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118A8C0612B8;
+        Tue,  8 Feb 2022 13:20:56 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id e28so672764pfj.5;
+        Tue, 08 Feb 2022 13:20:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=eclypsium.com; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=afzJpCERAmk3yFBzidPNdDx8rS5idfCgJ4X6kw/EPaM=;
-        b=eEUrW4OF40G7F+WuRB6qBYML3NnN8jyRLUuDZQ36/XwjKQrosY7EncGqdoZ56goO11
-         xq22cEWlVcV/nfTZEgwOl4cltBYzFo5qBDhHsxZIXIfbl/ev31PA89aerwPLPjquVt41
-         bY0xhOiHnke5u4XhoMvSuQatKLPM9ope1sJvXd2uTxspzkQiDP8VZ4s1wrfo6tk5IrOU
-         A6r85p6t3+zI13d14ceOdn91Vz20yvAhdXYKsJQULVcHMNuj5RsQfYF+P5tX1QutEYJE
-         6qCcVAOXut7WXPhiIObuboj20J0WcrVEUKTbTC8X33BIepw3pq1fHPDyOd0Q5SaN7CQI
-         k9Nw==
+        bh=ZM1nSLJ2yy0XCOnwkMPhCfHL7dFUtelFO2BPDuqjW0Y=;
+        b=GGu0TYe+F6jFKwY3Qz7/AocnUpRrUOF913L1zofAIQt1UG6+oeIoLnQhezQdyrf5FW
+         twYJEH+murJL4QGvZhN9YOrUs8cf5dTvrKSdk66ZzFDoSmXXqCXOSHErIsApOXJxLgns
+         sH5nFwMY56z1kyzyMMCQpSLCKozzdDBJ+VH3JX7a284jJKbJBxUrWqXSNnXnfZw893Ev
+         J+mJiR32sX9jYB5tocb0ij60fqujUeR2oFQlxebhCKvJ+tEJi9tV8Axtj5xQD5/67uoQ
+         mYT1/siSGgv2yACF0F1vMDB2pDB+VYNgx8gl1dva0NwzLjv5Vg73lwoTgJkjCvoQ2fp2
+         2GxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=afzJpCERAmk3yFBzidPNdDx8rS5idfCgJ4X6kw/EPaM=;
-        b=pyUZdb1k+v+yHigG7pjZnluteD4ZrVK0bFfYNMqM3kL2IhXMrOHBpFQQytbaWiFh3x
-         CUK/jOJQuMWP36VhXQKGKJv23fr8qADAytUYrpvBBrcxWXgx2NWY0vQBKtXP3BHkS6YF
-         dSpKhfuqtoBpJopuPAK288JhlCDcCBtOXeOqXofHQNL7SMhzo+jgNBqru6QdvgRE9IBF
-         8Vu8DcT3Ngn/KoB3jEOzBsxRGJxBvkCubLEIeTOfYekEx6/StBTkMjRJYd62mjBHBM1S
-         NU408Re02YRk0YSBbfA5YwNoW6Dzxguz9DbQJWH/8MBjT4j1HsyCebjInHe7fMQUN3Pk
-         wXig==
-X-Gm-Message-State: AOAM532uR0BnBPvTrZWW0RnDbJxENZvfmpo48EnBHgS8Ah6HYXVMrg4P
-        ewrATvPzyRZDn8IS8iRv/kFLVW51lJ411XxRFxfgoA==
-X-Google-Smtp-Source: ABdhPJzhPgIonUJWKRLCbon/hP7emWLkYkN+Dx+b87pFcCzMzBNuU1ZCEMqTrJ+4QIVkDxz93NlatPENKIsESM0QRxo=
-X-Received: by 2002:a17:902:ab53:: with SMTP id ij19mr6335813plb.45.1644354290468;
- Tue, 08 Feb 2022 13:04:50 -0800 (PST)
+        bh=ZM1nSLJ2yy0XCOnwkMPhCfHL7dFUtelFO2BPDuqjW0Y=;
+        b=JRe7Op2GL6zGANzYfNI8h+v0DisF1pxFRvxxYEMun88jShZ2yhcPaq9Nk4RLQdqCVe
+         E1cSwgFKybobQZH/shOaPHVM4V4L63ff3T0x6AcJNloTzyC/gnYfBUHEx/7+NNkcaKcu
+         5g+Pq2WCEUtn4g9HFmVeW5xXIKvH0zAyfCOWDXEKEhAv86ZBjKJ6TkD0VYZJSfljriRf
+         n1CxULMG+ksFnwoIC6EIY+IaiGpPfH/8Aqt7rCoZQzz2H7s0g1tt8i+NtyBgD52+MCYy
+         eXu2ANX6LuOSG9jH4uJG7H9Xp+0AotM8LOlZs/t2BJzKI6alXj2dJMFkvqZE7eGC5KsG
+         MGyw==
+X-Gm-Message-State: AOAM532OK7OdjnMS+yaIJ9u5CDRUwmGrHUdlx+5tqVyhdkJgTrxYLXgo
+        FsgNfdMHJ3w0/DfScD8m5UFTwRT60JdwGiFPWrU=
+X-Google-Smtp-Source: ABdhPJzLQ5OiBxETJ/n/pCVvGcsULw94LLCVu0lToYc6JXrDk7g5/B162zMjS/B4zCByuRgoxv3Qm0ohGX36u9EmKz0=
+X-Received: by 2002:a05:6a00:2301:: with SMTP id h1mr6195909pfh.77.1644355255463;
+ Tue, 08 Feb 2022 13:20:55 -0800 (PST)
 MIME-Version: 1.0
-References: <20220203164328.203629-1-martin.fernandez@eclypsium.com> <20220203164328.203629-4-martin.fernandez@eclypsium.com>
-In-Reply-To: <20220203164328.203629-4-martin.fernandez@eclypsium.com>
-From:   Daniel Gutson <daniel.gutson@eclypsium.com>
-Date:   Tue, 8 Feb 2022 18:04:39 -0300
-Message-ID: <CAFmMkTHUZr8MY0ddgPvnkuo03KwxO_G=bnhEs6QbxUwK+XK=NA@mail.gmail.com>
-Subject: Re: [PATCH v6 3/6] x86/e820: Refactor range_update and range_remove
-To:     Martin Fernandez <martin.fernandez@eclypsium.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-mm@kvack.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, ardb@kernel.org,
-        dvhart@infradead.org, andy@infradead.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rafael@kernel.org, rppt@kernel.org, akpm@linux-foundation.org,
-        Richard Hughes <hughsient@gmail.com>,
-        Alex Bazhaniuk <alex.bazhaniuk@eclypsium.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Kees Cook <keescook@chromium.org>
+References: <20220201205534.1962784-1-haoluo@google.com> <20220201205534.1962784-6-haoluo@google.com>
+ <20220203180414.blk6ou3ccmod2qck@ast-mbp.dhcp.thefacebook.com>
+ <CA+khW7jkJbvQrTx4oPJAoBZ0EOCtr3C2PKbrzhxj-7euBK8ojg@mail.gmail.com>
+ <CAADnVQLZZ3SM2CDxnzgOnDgRtGU7+6wT9u5v4oFas5MnZF6DsQ@mail.gmail.com>
+ <CA+khW7i+TScwPZ6-rcFKiXtxMm8hiZYJGH-wYb=7jBvDWg8pJQ@mail.gmail.com>
+ <CAADnVQ+-29CS7nSXghKMgZjKte84L0nRDegUE0ObFm3d7E=eWw@mail.gmail.com> <CA+khW7iWd5MzZW_mCfgqHESi8okjNRiRMr0TM=CQzLkMsa_a5g@mail.gmail.com>
+In-Reply-To: <CA+khW7iWd5MzZW_mCfgqHESi8okjNRiRMr0TM=CQzLkMsa_a5g@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 8 Feb 2022 13:20:44 -0800
+Message-ID: <CAADnVQJcTAgcbwrOWO8EnbTdAcQ91HQmtpn7aKJGwHc=mEpJ1g@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next v2 5/5] selftests/bpf: test for pinning for
+ cgroup_view link
+To:     Hao Luo <haoluo@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Joe Burton <jevburton.kernel@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 1:44 PM Martin Fernandez
-<martin.fernandez@eclypsium.com> wrote:
+On Tue, Feb 8, 2022 at 12:07 PM Hao Luo <haoluo@google.com> wrote:
 >
-> __e820__range_update and e820__range_remove had a very similar
-> implementation with a few lines different from each other, the lines
-> that actually perform the modification over the e820_table. The
-> similiraties were found in the checks for the different cases on how
-> each entry intersects with the given range (if it does at all). These
-> checks were very presice and error prone so it was not a good idea to
-> have them in both places.
+> On Sat, Feb 5, 2022 at 8:29 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Fri, Feb 4, 2022 at 10:27 AM Hao Luo <haoluo@google.com> wrote:
+> > > >
+> > > > > In our use case, we can't ask the users who create cgroups to do the
+> > > > > pinning. Pinning requires root privilege. In our use case, we have
+> > > > > non-root users who can create cgroup directories and still want to
+> > > > > read bpf stats. They can't do pinning by themselves. This is why
+> > > > > inheritance is a requirement for us. With inheritance, they only need
+> > > > > to mkdir in cgroupfs and bpffs (unprivileged operations), no pinning
+> > > > > operation is required. Patch 1-4 are needed to implement inheritance.
+> > > > >
+> > > > > It's also not a good idea in our use case to add a userspace
+> > > > > privileged process to monitor cgroupfs operations and perform the
+> > > > > pinning. It's more complex and has a higher maintenance cost and
+> > > > > runtime overhead, compared to the solution of asking whoever makes
+> > > > > cgroups to mkdir in bpffs. The other problem is: if there are nodes in
+> > > > > the data center that don't have the userspace process deployed, the
+> > > > > stats will be unavailable, which is a no-no for some of our users.
+> > > >
+> > > > The commit log says that there will be a daemon that does that
+> > > > monitoring of cgroupfs. And that daemon needs to mkdir
+> > > > directories in bpffs when a new cgroup is created, no?
+> > > > The kernel is only doing inheritance of bpf progs into
+> > > > new dirs. I think that daemon can pin as well.
+> > > >
+> > > > The cgroup creation is typically managed by an agent like systemd.
+> > > > Sounds like you have your own agent that creates cgroups?
+> > > > If so it has to be privileged and it can mkdir in bpffs and pin too ?
+> > >
+> > > Ah, yes, we have our own daemon to manage cgroups. That daemon creates
+> > > the top-level cgroup for each job to run inside. However, the job can
+> > > create its own cgroups inside the top-level cgroup, for fine grained
+> > > resource control. This doesn't go through the daemon. The job-created
+> > > cgroups don't have the pinned objects and this is a no-no for our
+> > > users.
+> >
+> > We can whitelist certain tracepoints to be sleepable and extend
+> > tp_btf prog type to include everything from prog_type_syscall.
+> > Such prog would attach to cgroup_mkdir and cgroup_release
+> > and would call bpf_sys_bpf() helper to pin progs in new bpffs dirs.
+> > We can allow prog_type_syscall to do mkdir in bpffs as well.
+> >
+> > This feature could be useful for similar monitoring/introspection tasks.
+> > We can write a program that would monitor bpf prog load/unload
+> > and would pin an iterator prog that would show debug info about a prog.
+> > Like cat /sys/fs/bpf/progs.debug shows a list of loaded progs.
+> > With this feature we can implement:
+> > ls /sys/fs/bpf/all_progs.debug/
+> > and each loaded prog would have a corresponding file.
+> > The file name would be a program name, for example.
+> > cat /sys/fs/bpf/all_progs.debug/my_prog
+> > would pretty print info about 'my_prog' bpf program.
+> >
+> > This way the kernfs/cgroupfs specific logic from patches 1-4
+> > will not be necessary.
+> >
+> > wdyt?
 >
-> I propose a refactor of those functions, given that I need to create a
-> similar one for this patchset.
->
-> Add a function to modify a E820 table in a given range. This
-> modification is done backed up by two helper structs:
-> e820_entry_updater and e820_*_data.
->
-> The first one, e820_entry_updater, carries 3 callbacks which function
-> as the actions to take on the table.
->
-> The other one, e820_*_data carries information needed by the
-> callbacks, for example in the case of range_update it will carry the
-> type that we are targeting.
->
-> Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
-> ---
->  arch/x86/kernel/e820.c | 383 ++++++++++++++++++++++++++++++-----------
->  1 file changed, 283 insertions(+), 100 deletions(-)
->
-> diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
-> index bc0657f0deed..89b78c6b345b 100644
-> --- a/arch/x86/kernel/e820.c
-> +++ b/arch/x86/kernel/e820.c
-> @@ -459,144 +459,327 @@ static int __init append_e820_table(struct boot_e820_entry *entries, u32 nr_entr
->         return __append_e820_table(entries, nr_entries);
->  }
->
-> +/**
-> + * e820_entry_updater - Helper type for __e820__handle_range_update().
-> + * @should_update: Return true if @entry needs to be updated, false
-> + * otherwise.
-> + * @update: Apply desired actions to an @entry that is inside the
-> + * range and satisfies @should_update.
-> + * @new: Create new entry in the table with information gathered from
-> + * @original and @data.
-> + *
-> + * Each function corresponds to an action that
-> + * __e820__handle_range_update() does. Callbacks need to cast @data back
-> + * to the corresponding type.
-> + */
-> +struct e820_entry_updater {
-> +       bool (*should_update)(const struct e820_entry *entry, const void *data);
-> +       void (*update)(struct e820_entry *entry, const void *data);
-> +       void (*new)(struct e820_table *table, u64 new_start, u64 new_size,
-> +                   const struct e820_entry *original, const void *data);
-> +};
-> +
-> +/**
-> + * e820_remove_data - Helper type for e820__range_remove().
-> + * @old_type: old_type parameter of e820__range_remove().
-> + * @check_type: check_type parameter of e820__range_remove().
-> + *
-> + * This is intended to be used as the @data argument for the
-> + * e820_entry_updater callbacks.
-> + */
-> +struct e820_remover_data {
-> +       enum e820_type old_type;
-> +       bool check_type;
-> +};
-> +
-> +/**
-> + * e820_type_updater_data - Helper type for __e820__range_update().
-> + * @old_type: old_type parameter of __e820__range_update().
-> + * @new_type: new_type parameter of __e820__range_update().
-> + *
-> + * This is intended to be used as the @data argument for the
-> + * e820_entry_updater callbacks.
-> + */
-> +struct e820_type_updater_data {
-> +       enum e820_type old_type;
-> +       enum e820_type new_type;
-> +};
-> +
-> +/**
-> + * __e820__handle_intersected_range_update() - Helper function for
-> + * __e820__handle_range_update().
-> + * @table: Target e820_table.
-> + * @start: Start of the range.
-> + * @size: Size of the range.
-> + * @entry: Current entry that __e820__handle_range_update() was
-> + * looking into.
-> + * @updater: updater parameter of __e820__handle_range_update().
-> + * @data: data parameter of __e820__handle_range_update().
-> + *
-> + * Helper for __e820__handle_range_update to handle the case where
-> + * neither the entry completely covers the range nor the range
-> + * completely covers the entry.
-> + *
-> + * Return: The updated size.
-> + */
->  static u64 __init
-> -__e820__range_update(struct e820_table *table, u64 start, u64 size, enum e820_type old_type, enum e820_type new_type)
-> +__e820__handle_intersected_range_update(struct e820_table *table,
-> +                                       u64 start,
-> +                                       u64 size,
-> +                                       struct e820_entry *entry,
-> +                                       const struct e820_entry_updater *updater,
-> +                                       const void *data)
->  {
->         u64 end;
-> -       unsigned int i;
-> -       u64 real_updated_size = 0;
-> -
-> -       BUG_ON(old_type == new_type);
-> +       u64 entry_end = entry->addr + entry->size;
-> +       u64 inner_start;
-> +       u64 inner_end;
-> +       u64 updated_size = 0;
->
->         if (size > (ULLONG_MAX - start))
->                 size = ULLONG_MAX - start;
->
->         end = start + size;
-> -       printk(KERN_DEBUG "e820: update [mem %#010Lx-%#010Lx] ", start, end - 1);
-> -       e820_print_type(old_type);
-> -       pr_cont(" ==> ");
-> -       e820_print_type(new_type);
-> -       pr_cont("\n");
-> -
-> -       for (i = 0; i < table->nr_entries; i++) {
-> -               struct e820_entry *entry = &table->entries[i];
-> -               u64 final_start, final_end;
-> -               u64 entry_end;
-> +       inner_start = max(start, entry->addr);
-> +       inner_end = min(end, entry_end);
-> +
-> +       /* Range and entry do intersect and... */
-> +       if (inner_start < inner_end) {
-> +               /* Entry is on the left */
-> +               if (entry->addr < inner_start) {
-> +                       /* Resize current entry */
-> +                       entry->size = inner_start - entry->addr;
-> +               /* Entry is on the right */
-> +               } else {
-> +                       /* Resize and move current section */
-> +                       entry->addr = inner_end;
-> +                       entry->size = entry_end - inner_end;
-> +               }
-> +               /* Create new entry with intersected region */
-> +               updater->new(table, inner_start, inner_end - inner_start, entry, data);
->
-> -               if (entry->type != old_type)
-> -                       continue;
-> +               updated_size += inner_end - inner_start;
-> +       } /* Else: [start, end) doesn't cover entry */
->
-> -               entry_end = entry->addr + entry->size;
-> +       return updated_size;
-> +}
->
-> -               /* Completely covered by new range? */
-> -               if (entry->addr >= start && entry_end <= end) {
-> -                       entry->type = new_type;
-> -                       real_updated_size += entry->size;
-> -                       continue;
-> -               }
-> +/** __e820__handle_range_update(): Helper function to update a address
-> + * range in a e820_table
-> + * @table: e820_table that we want to modify.
-> + * @start: Start of the range.
-> + * @size: Size of the range.
-> + * @updater: Callbacks to modify the table.
-> + * @data: Information to modify the table.
-> + *
-> + * Update the table @table in [@start, @start + @size) doing the
-> + * actions given in @updater.
-> + *
-> + * Return: The updated size.
-> + */
-> +static u64 __init
-> +__e820__handle_range_update(struct e820_table *table,
-> +                           u64 start,
-> +                           u64 size,
-> +                           const struct e820_entry_updater *updater,
-> +                           const void *data)
-> +{
-> +       u64 updated_size = 0;
-> +       u64 end;
-> +       unsigned int i;
->
-> -               /* New range is completely covered? */
-> -               if (entry->addr < start && entry_end > end) {
-> -                       __e820__range_add(table, start, size, new_type);
-> -                       __e820__range_add(table, end, entry_end - end, entry->type);
-> -                       entry->size = start - entry->addr;
-> -                       real_updated_size += size;
-> -                       continue;
-> -               }
-> +       if (size > (ULLONG_MAX - start))
-> +               size = ULLONG_MAX - start;
->
-> -               /* Partially covered: */
-> -               final_start = max(start, entry->addr);
-> -               final_end = min(end, entry_end);
-> -               if (final_start >= final_end)
-> -                       continue;
-> +       end = start + size;
->
-> -               __e820__range_add(table, final_start, final_end - final_start, new_type);
-> +       for (i = 0; i < table->nr_entries; i++) {
-> +               struct e820_entry *entry = &table->entries[i];
-> +               u64 entry_end = entry->addr + entry->size;
-> +
-> +               if (updater->should_update(data, entry)) {
-> +                       /* Range completely covers entry */
-> +                       if (entry->addr >= start && entry_end <= end) {
-> +                               updater->update(entry, data);
-> +                               updated_size += entry->size;
-> +                       /* Entry completely covers range */
-> +                       } else if (start > entry->addr && end < entry_end) {
-> +                               /* Resize current entry */
-> +                               entry->size = start - entry->addr;
-> +
-> +                               /* Create new entry with intersection region */
-> +                               updater->new(table, start, size, entry, data);
-> +
-> +                               /*
-> +                                * Create a new entry for the leftover
-> +                                * of the current entry
-> +                                */
-> +                               __e820__range_add(table, end, entry_end - end,
-> +                                                 entry->type);
-> +
-> +                               updated_size += size;
-> +                       } else {
-> +                               updated_size =
-> +                                       __e820__handle_intersected_range_update(table, start, size,
-> +                                                                               entry, updater, data);
-> +                       }
-> +               }
-> +       }
->
-> -               real_updated_size += final_end - final_start;
-> +       return updated_size;
-> +}
->
-> -               /*
-> -                * Left range could be head or tail, so need to update
-> -                * its size first:
-> -                */
-> -               entry->size -= final_end - final_start;
-> -               if (entry->addr < final_start)
-> -                       continue;
-> +static bool __init type_updater__should_update(const struct e820_entry *entry,
-> +                                              const void *data)
-> +{
-> +       struct e820_type_updater_data *type_updater_data =
-> +               (struct e820_type_updater_data *)data;
+> Thanks Alexei. I gave it more thought in the last couple of days.
+> Actually I think it's a good idea, more flexible. It gets rid of the
+> need of a user space daemon for monitoring cgroup creation and
+> destruction. We could monitor task creations and exits as well, so
+> that we can export per-task information (e.g. task_vma_iter) more
+> efficiently.
 
-Please preserve const correctness. You are removing the const qualifier.
+Yep. Monitoring task creation and exposing via bpf_iter sounds
+useful too.
 
+> A couple of thoughts when thinking about the details:
 >
-> -               entry->addr = final_end;
-> -       }
-> -       return real_updated_size;
-> +       return entry->type == type_updater_data->old_type;
->  }
->
-> -u64 __init e820__range_update(u64 start, u64 size, enum e820_type old_type, enum e820_type new_type)
-> +static void __init type_updater__update(struct e820_entry *entry,
-> +                                       const void *data)
->  {
-> -       return __e820__range_update(e820_table, start, size, old_type, new_type);
-> +       struct e820_type_updater_data *type_updater_data =
-> +               (struct e820_type_updater_data *)data;
-> +
-> +       entry->type = type_updater_data->new_type;
->  }
->
-> -static u64 __init e820__range_update_kexec(u64 start, u64 size, enum e820_type old_type, enum e820_type  new_type)
-> +static void __init type_updater__new(struct e820_table *table, u64 new_start,
-> +                                    u64 new_size,
-> +                                    const struct e820_entry *original,
-> +                                    const void *data)
->  {
-> -       return __e820__range_update(e820_table_kexec, start, size, old_type, new_type);
-> +       struct e820_type_updater_data *type_updater_data =
-> +               (struct e820_type_updater_data *)data;
-> +
-> +       __e820__range_add(table, new_start, new_size,
-> +                         type_updater_data->new_type);
->  }
->
-> -/* Remove a range of memory from the E820 table: */
-> -u64 __init e820__range_remove(u64 start, u64 size, enum e820_type old_type, bool check_type)
-> +static u64 __init __e820__range_update(struct e820_table *table, u64 start,
-> +                                      u64 size, enum e820_type old_type,
-> +                                      enum e820_type new_type)
->  {
-> -       int i;
-> -       u64 end;
-> -       u64 real_removed_size = 0;
-> +       struct e820_entry_updater updater = {
-> +               .should_update = type_updater__should_update,
-> +               .update = type_updater__update,
-> +               .new = type_updater__new
-> +       };
->
-> -       if (size > (ULLONG_MAX - start))
-> -               size = ULLONG_MAX - start;
-> +       struct e820_type_updater_data data = {
-> +               .old_type = old_type,
-> +               .new_type = new_type
-> +       };
->
-> -       end = start + size;
-> -       printk(KERN_DEBUG "e820: remove [mem %#010Lx-%#010Lx] ", start, end - 1);
-> -       if (check_type)
-> -               e820_print_type(old_type);
-> +       BUG_ON(old_type == new_type);
-> +
-> +       printk(KERN_DEBUG "e820: update [mem %#018Lx-%#018Lx] ", start,
-> +              start + size - 1);
-> +       e820_print_type(old_type);
-> +       pr_cont(" ==> ");
-> +       e820_print_type(new_type);
->         pr_cont("\n");
->
-> -       for (i = 0; i < e820_table->nr_entries; i++) {
-> -               struct e820_entry *entry = &e820_table->entries[i];
-> -               u64 final_start, final_end;
-> -               u64 entry_end;
-> +       return __e820__handle_range_update(table, start, size, &updater, &data);
-> +}
->
-> -               if (check_type && entry->type != old_type)
-> -                       continue;
-> +static bool __init remover__should_update(const struct e820_entry *entry,
-> +                                         const void *data)
-> +{
-> +       struct e820_remover_data *remover_data =
-> +               (struct e820_remover_data *)data;
->
-> -               entry_end = entry->addr + entry->size;
-> +       return !remover_data->check_type ||
-> +              entry->type == remover_data->old_type;
-> +}
->
-> -               /* Completely covered? */
-> -               if (entry->addr >= start && entry_end <= end) {
-> -                       real_removed_size += entry->size;
-> -                       memset(entry, 0, sizeof(*entry));
-> -                       continue;
-> -               }
-> +static void __init remover__update(struct e820_entry *entry, const void *data)
-> +{
-> +       memset(entry, 0, sizeof(*entry));
-> +}
->
-> -               /* Is the new range completely covered? */
-> -               if (entry->addr < start && entry_end > end) {
-> -                       e820__range_add(end, entry_end - end, entry->type);
-> -                       entry->size = start - entry->addr;
-> -                       real_removed_size += size;
-> -                       continue;
-> -               }
-> +static void __init remover__new(struct e820_table *table, u64 new_start,
-> +                               u64 new_size, const struct e820_entry *original,
-> +                               const void *data)
-> +{
-> +}
->
-> -               /* Partially covered: */
-> -               final_start = max(start, entry->addr);
-> -               final_end = min(end, entry_end);
-> -               if (final_start >= final_end)
-> -                       continue;
-> +/**
-> + * e820__range_remove() - Remove an address range from e820_table.
-> + * @start: Start of the address range.
-> + * @size: Size of the address range.
-> + * @old_type: Type of the entries that we want to remove.
-> + * @check_type: Bool to decide if ignore @old_type or not.
-> + *
-> + * Remove [@start, @start + @size) from e820_table. If @check_type is
-> + * true remove only entries with type @old_type.
-> + *
-> + * Return: The size removed.
-> + */
-> +u64 __init e820__range_remove(u64 start, u64 size, enum e820_type old_type,
-> +                             bool check_type)
-> +{
-> +       struct e820_entry_updater updater = {
-> +               .should_update = remover__should_update,
-> +               .update = remover__update,
-> +               .new = remover__new
-> +       };
-> +
-> +       struct e820_remover_data data = {
-> +               .check_type = check_type,
-> +               .old_type = old_type
-> +       };
-> +
-> +       printk(KERN_DEBUG "e820: remove [mem %#018Lx-%#018Lx] ", start,
-> +              start + size - 1);
-> +       if (check_type)
-> +               e820_print_type(old_type);
-> +       pr_cont("\n");
->
-> -               real_removed_size += final_end - final_start;
-> +       return __e820__handle_range_update(e820_table, start, size, &updater,
-> +                                           &data);
-> +}
->
-> -               /*
-> -                * Left range could be head or tail, so need to update
-> -                * the size first:
-> -                */
-> -               entry->size -= final_end - final_start;
-> -               if (entry->addr < final_start)
-> -                       continue;
-> +/**
-> + * e820__range_update() - Update the type of a given address range in
-> + * e820_table.
-> + * @start: Start of the range.
-> + * @size: Size of the range.
-> + * @old_type: Type that we want to change.
-> + * @new_type: New type to replace @old_type.
-> + *
-> + * Update type of addresses in [@start, @start + @size) from @old_type
-> + * to @new_type in e820_table.
-> + *
-> + * Return: The size updated.
-> + */
-> +u64 __init e820__range_update(u64 start, u64 size, enum e820_type old_type,
-> +                             enum e820_type new_type)
-> +{
-> +       return __e820__range_update(e820_table, start, size, old_type, new_type);
-> +}
->
-> -               entry->addr = final_end;
-> -       }
-> -       return real_removed_size;
-> +/**
-> + * e820__range_update_kexec() - Update the type of a given address
-> + * range in e820_table_kexec.
-> + * @start: Start of the range.
-> + * @size: Size of the range.
-> + * @old_type: Type that we want to change.
-> + * @new_type: New type to replace @old_type.
-> + *
-> + * Update type of addresses in [@start, @start + @size) from @old_type
-> + * to @new_type in e820_table_kexec.
-> + *
-> + * Return: The size updated.
-> + */
-> +static u64 __init e820__range_update_kexec(u64 start, u64 size,
-> +                                          enum e820_type old_type,
-> +                                          enum e820_type new_type)
-> +{
-> +       return __e820__range_update(e820_table_kexec, start, size, old_type, new_type);
->  }
->
->  void __init e820__update_table_print(void)
-> --
-> 2.30.2
->
+> - Regarding parameterized pinning, I don't think we can have one
+> single bpf_iter_link object, but with different parameters. Because
+> parameters are part of the bpf_iter_link (bpf_iter_aux_info). So every
+> time we pin, we have to attach iter in order to get a new link object
+> first. So we need to add attach and detach in bpf_sys_bpf().
+
+Makes sense.
+I'm adding bpf_link_create to bpf_sys_bpf as part of
+the "lskel for kernel" patch set.
+The detach is sys_close. It's already available.
+
+> - We also need to add those syscalls for cleanup: (1) unlink for
+> removing pinned obj and (2) rmdir for removing the directory in
+> prog_type_syscall.
+
+Yes. These two would be needed.
+And obj_pin too.
+
+> With these extensions, we can shift some of the bpf operations
+> currently performed in system daemons into the kernel. IMHO it's a
+> great thing, making system monitoring more flexible.
+
+Awesome. Sounds like we're converging :)
