@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E362C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D153CC4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388007AbiBHWcE (ORCPT
+        id S1388094AbiBHWcS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:32:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55146 "EHLO
+        Tue, 8 Feb 2022 17:32:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386450AbiBHUej (ORCPT
+        with ESMTP id S1386440AbiBHUee (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:34:39 -0500
+        Tue, 8 Feb 2022 15:34:34 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94483C0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:34:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FE2C0612C0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:34:33 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: bbeckett)
-        with ESMTPSA id 558071F450AA
+        with ESMTPSA id BAA4B1F450A7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644352476;
-        bh=7xQvHqE5JkxFe/B6GU5XOuYuw6gmCUNHi1lLN9/W+eo=;
+        s=mail; t=1644352470;
+        bh=wakhSFcVMZevZPcycdryY+hpEED54NWm/zeUvW6H0hU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M6+FjTNxa/BvKG9ip0I4YpTexVKfHVNgZrLnLDrKoh2FEb1ow32Rhn2d064vk+fta
-         kSh8BujX0yQb0TbeKk/+AAaWtc4wO/vu5Ud1I2Wo6RIeImLmJNGDPMU4YS5aEu5yle
-         IlfvvaHz8MTq2xUl/phMYahYiIdjCiK9etvvRacW2iJOywExOSgWe8giMwPL06iJ1c
-         oX4u3r+cV/c+D85+pqq4kzw8J1P3jJoZFGnZ+iYATBeLSVUAGvRuqhlYlstRjGa/TF
-         acoy5vh6mbPEFBPSQiQmyYbRZWrQQ2mhz7Gom5JW43l3W9gxlGw5AZIPJgX/WSbDbR
-         hFunc0nxpxAhw==
+        b=eSOcjbckKYxUTCfS9q/Ko+ezw2Q4el1TXEyYaTKOwEDcUvNE0ZRARFfjYKh8g3cWt
+         9AhfgwPEgBNM0zXi7ddIk+TfsXVMPOMXSVIRrfvMw96ePAyVJNvRpYtBJr0lR+rFOR
+         rWRsk+EI7ca/MRN7TttCtiS1Ecot6MmUNHtMlRE6+AxueQE5Jk5YlFxni/4zJdjNWV
+         6dT0zD0O831WNFd3LCbI04XuiT2CBtNZZaa1ClE1jsQRQqCYx62qiCdgvQh7YRFW4t
+         FEPJP9Nq/FHc63jBIjFFc04986crC55yMeNqitXe4w/cztMlOGORnYjFONgXZejkM4
+         qMjhcrMCoMB5A==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
@@ -36,22 +36,16 @@ To:     Jani Nikula <jani.nikula@linux.intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>
-Cc:     Matthew Auld <matthew.auld@intel.com>,
-        Ramalingam C <ramalingam.c@intel.com>,
+Cc:     Ramalingam C <ramalingam.c@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
         Robert Beckett <bob.beckett@collabora.com>,
-        Jordan Justen <jordan.l.justen@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>,
-        Simon Ser <contact@emersion.fr>,
-        Pekka Paalanen <ppaalanen@gmail.com>,
-        Kenneth Graunke <kenneth@whitecape.org>,
-        mesa-dev@lists.freedesktop.org, Tony Ye <tony.ye@intel.com>,
-        Slawomir Milczarek <slawomir.milczarek@intel.com>,
         intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v8 5/5] drm/i915/uapi: document behaviour for DG2 64K support
-Date:   Tue,  8 Feb 2022 20:34:19 +0000
-Message-Id: <20220208203419.1094362-6-bob.beckett@collabora.com>
+Subject: [PATCH v8 1/5] drm/i915: add needs_compact_pt flag
+Date:   Tue,  8 Feb 2022 20:34:15 +0000
+Message-Id: <20220208203419.1094362-2-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220208203419.1094362-1-bob.beckett@collabora.com>
 References: <20220208203419.1094362-1-bob.beckett@collabora.com>
@@ -62,98 +56,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Auld <matthew.auld@intel.com>
+From: Ramalingam C <ramalingam.c@intel.com>
 
-On discrete platforms like DG2, we need to support a minimum page size
-of 64K when dealing with device local-memory. This is quite tricky for
-various reasons, so try to document the new implicit uapi for this.
+Add a new platform flag, needs_compact_pt, to mark the requirement of
+compact pt layout support for the ppGTT when using 64K GTT pages.
 
-v3: fix typos and less emphasis
-v2: Fixed suggestions on formatting [Daniel]
+With this flag has_64k_pages will only indicate requirement of 64K
+GTT page sizes or larger for device local memory access.
 
-Signed-off-by: Matthew Auld <matthew.auld@intel.com>
+v6:
+	* minor doc formatting
+
+Suggested-by: Matthew Auld <matthew.auld@intel.com>
 Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-Acked-by: Jordan Justen <jordan.l.justen@intel.com>
-Reviewed-by: Ramalingam C <ramalingam.c@intel.com>
 Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-cc: Simon Ser <contact@emersion.fr>
-cc: Pekka Paalanen <ppaalanen@gmail.com>
-Cc: Jordan Justen <jordan.l.justen@intel.com>
-Cc: Kenneth Graunke <kenneth@whitecape.org>
-Cc: mesa-dev@lists.freedesktop.org
-Cc: Tony Ye <tony.ye@intel.com>
-Cc: Slawomir Milczarek <slawomir.milczarek@intel.com>
 ---
- include/uapi/drm/i915_drm.h | 44 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 39 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/i915/i915_drv.h          | 11 ++++++++---
+ drivers/gpu/drm/i915/i915_pci.c          |  2 ++
+ drivers/gpu/drm/i915/intel_device_info.h |  1 +
+ 3 files changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/include/uapi/drm/i915_drm.h b/include/uapi/drm/i915_drm.h
-index 5e678917da70..77e5e74c32c1 100644
---- a/include/uapi/drm/i915_drm.h
-+++ b/include/uapi/drm/i915_drm.h
-@@ -1118,10 +1118,16 @@ struct drm_i915_gem_exec_object2 {
- 	/**
- 	 * When the EXEC_OBJECT_PINNED flag is specified this is populated by
- 	 * the user with the GTT offset at which this object will be pinned.
-+	 *
- 	 * When the I915_EXEC_NO_RELOC flag is specified this must contain the
- 	 * presumed_offset of the object.
-+	 *
- 	 * During execbuffer2 the kernel populates it with the value of the
- 	 * current GTT offset of the object, for future presumed_offset writes.
-+	 *
-+	 * See struct drm_i915_gem_create_ext for the rules when dealing with
-+	 * alignment restrictions with I915_MEMORY_CLASS_DEVICE, on devices with
-+	 * minimum page sizes, like DG2.
- 	 */
- 	__u64 offset;
+diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
+index 00e7594b59c9..4afdfa5fd3b3 100644
+--- a/drivers/gpu/drm/i915/i915_drv.h
++++ b/drivers/gpu/drm/i915/i915_drv.h
+@@ -1512,12 +1512,17 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
  
-@@ -3145,11 +3151,39 @@ struct drm_i915_gem_create_ext {
- 	 *
- 	 * The (page-aligned) allocated size for the object will be returned.
- 	 *
--	 * Note that for some devices we have might have further minimum
--	 * page-size restrictions(larger than 4K), like for device local-memory.
--	 * However in general the final size here should always reflect any
--	 * rounding up, if for example using the I915_GEM_CREATE_EXT_MEMORY_REGIONS
--	 * extension to place the object in device local-memory.
-+	 *
-+	 * DG2 64K min page size implications:
-+	 *
-+	 * On discrete platforms, starting from DG2, we have to contend with GTT
-+	 * page size restrictions when dealing with I915_MEMORY_CLASS_DEVICE
-+	 * objects.  Specifically the hardware only supports 64K or larger GTT
-+	 * page sizes for such memory. The kernel will already ensure that all
-+	 * I915_MEMORY_CLASS_DEVICE memory is allocated using 64K or larger page
-+	 * sizes underneath.
-+	 *
-+	 * Note that the returned size here will always reflect any required
-+	 * rounding up done by the kernel, i.e 4K will now become 64K on devices
-+	 * such as DG2.
-+	 *
-+	 * Special DG2 GTT address alignment requirement:
-+	 *
-+	 * The GTT alignment will also need to be at least 2M for such objects.
-+	 *
-+	 * Note that due to how the hardware implements 64K GTT page support, we
-+	 * have some further complications:
-+	 *
-+	 *   1) The entire PDE (which covers a 2MB virtual address range), must
-+	 *   contain only 64K PTEs, i.e mixing 4K and 64K PTEs in the same
-+	 *   PDE is forbidden by the hardware.
-+	 *
-+	 *   2) We still need to support 4K PTEs for I915_MEMORY_CLASS_SYSTEM
-+	 *   objects.
-+	 *
-+	 * To keep things simple for userland, we mandate that any GTT mappings
-+	 * must be aligned to and rounded up to 2MB. As this only wastes virtual
-+	 * address space and avoids userland having to copy any needlessly
-+	 * complicated PDE sharing scheme (coloring) and only affects DG2, this
-+	 * is deemed to be a good compromise.
- 	 */
- 	__u64 size;
- 	/**
+ /*
+  * Set this flag, when platform requires 64K GTT page sizes or larger for
+- * device local memory access. Also this flag implies that we require or
+- * at least support the compact PT layout for the ppGTT when using the 64K
+- * GTT pages.
++ * device local memory access.
+  */
+ #define HAS_64K_PAGES(dev_priv) (INTEL_INFO(dev_priv)->has_64k_pages)
+ 
++/*
++ * Set this flag when platform doesn't allow both 64k pages and 4k pages in
++ * the same PT. this flag means we need to support compact PT layout for the
++ * ppGTT when using the 64K GTT pages.
++ */
++#define NEEDS_COMPACT_PT(dev_priv) (INTEL_INFO(dev_priv)->needs_compact_pt)
++
+ #define HAS_IPC(dev_priv)		 (INTEL_INFO(dev_priv)->display.has_ipc)
+ 
+ #define HAS_REGION(i915, i) (INTEL_INFO(i915)->memory_regions & (i))
+diff --git a/drivers/gpu/drm/i915/i915_pci.c b/drivers/gpu/drm/i915/i915_pci.c
+index 2df2db0a5d70..ce6ae6a3cbdf 100644
+--- a/drivers/gpu/drm/i915/i915_pci.c
++++ b/drivers/gpu/drm/i915/i915_pci.c
+@@ -1028,6 +1028,7 @@ static const struct intel_device_info xehpsdv_info = {
+ 	PLATFORM(INTEL_XEHPSDV),
+ 	.display = { },
+ 	.has_64k_pages = 1,
++	.needs_compact_pt = 1,
+ 	.platform_engine_mask =
+ 		BIT(RCS0) | BIT(BCS0) |
+ 		BIT(VECS0) | BIT(VECS1) | BIT(VECS2) | BIT(VECS3) |
+@@ -1046,6 +1047,7 @@ static const struct intel_device_info dg2_info = {
+ 	PLATFORM(INTEL_DG2),
+ 	.has_guc_deprivilege = 1,
+ 	.has_64k_pages = 1,
++	.needs_compact_pt = 1,
+ 	.platform_engine_mask =
+ 		BIT(RCS0) | BIT(BCS0) |
+ 		BIT(VECS0) | BIT(VECS1) |
+diff --git a/drivers/gpu/drm/i915/intel_device_info.h b/drivers/gpu/drm/i915/intel_device_info.h
+index abf1e103c558..d8da40d01dca 100644
+--- a/drivers/gpu/drm/i915/intel_device_info.h
++++ b/drivers/gpu/drm/i915/intel_device_info.h
+@@ -130,6 +130,7 @@ enum intel_ppgtt_type {
+ 	/* Keep has_* in alphabetical order */ \
+ 	func(has_64bit_reloc); \
+ 	func(has_64k_pages); \
++	func(needs_compact_pt); \
+ 	func(gpu_reset_clobbers_display); \
+ 	func(has_reset_engine); \
+ 	func(has_global_mocs); \
 -- 
 2.25.1
 
