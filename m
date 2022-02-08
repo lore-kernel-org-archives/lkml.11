@@ -2,175 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242562AbiBHBIs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:08:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58244 "EHLO
+        id S1343837AbiBHBIx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:08:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344098AbiBHAlc (ORCPT
+        with ESMTP id S1344132AbiBHAqL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 19:41:32 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1EEDC061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 16:41:31 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id r19so208248pfh.6
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 16:41:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tnW+AMT0bzmJt9s/qVFSN3WYeENH2dyykBrGoab/BrM=;
-        b=o9dyHhiSKKS1oD48nFCm6E5qNlZ7J7/EoAyK9sbp16tYtQOjrwF0XCFkihCikwViiW
-         WI0+wyey2Lg5ukHD6jb2gyoRFm5fBevFZJYZHnFiy0Y9bO0AGpb+krQkpmW962nd3PQ3
-         dx57tGM137LsMgNMEQP7iUeUQPuyDGkbsvvOTcBvFeGCnJbHGB1FEFjiV7aks1L00TCS
-         IdXY9jrjzmZOT2MkJDnEDuGFJcVbtRHUogNJZV1aB9fkTBtgWp3GhFGUTqPhw1CVJR3R
-         8bMvcHptBPpbDE0fy533/yC9fSShi49kxPxIFTXby8mJ0uOx6OGIddk6UGKhHnx+zP50
-         e25Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tnW+AMT0bzmJt9s/qVFSN3WYeENH2dyykBrGoab/BrM=;
-        b=77fhpJwUcX6GEWA45Uc4ua3UtHYdA3PnVMLuvxgAf/0CNijxVqGpYacbAi7zNeY1Up
-         alnmdTeCZ5gLDS/7r+dnoiYrkToXzlqywIv4bb+6ul5jJQGiMfYHYYkRVIN+wSkPJEJ2
-         r3rr33fMoWhWem9hONjmeXQIRJ+AWGqOcuNpFwjzEgElyLUv3om1ROAAprNOXUCnqZ6b
-         7LSeAuLT7U6cz9/t33P/sNPVSVbs5VLC9mFcMKfI/bruP8MP1PoZbdDxjSirEvQoCnIM
-         MM798TZfQH0alB0PdnGd8hbQHjaowBTpIwvUX/OSI/qgwy6Ofu45ujQb5x7CNSdRroLz
-         OEgQ==
-X-Gm-Message-State: AOAM533UPrd8BLCPcHQCUvtyEGY0kAtQbrot4pAiIPsxEeAXcy1RxTiV
-        x+6ElQggMrdSe/zeOwXpcsm6ZDiadNJr9g==
-X-Google-Smtp-Source: ABdhPJyXwpSFwRk5+HqDL0kuIPNcLN8f838l8FWl7PO8Fk1ddjxhboaJnB02Lx8r6hmtEazU5nPSsA==
-X-Received: by 2002:a63:8b42:: with SMTP id j63mr1523035pge.551.1644280891124;
-        Mon, 07 Feb 2022 16:41:31 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h10sm13604853pfc.103.2022.02.07.16.41.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 16:41:30 -0800 (PST)
-Date:   Tue, 8 Feb 2022 00:41:26 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH 0/5] kvm: x86: better handling of NULL-able kvm_x86_ops
-Message-ID: <YgG8NoP1FaVLcj0C@google.com>
-References: <20220202181813.1103496-1-pbonzini@redhat.com>
+        Mon, 7 Feb 2022 19:46:11 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137ABC06109E;
+        Mon,  7 Feb 2022 16:46:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644281171; x=1675817171;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=q0vphHXpAQ7cBGzaSnch/i7jIsfuQCmDvKVvEhi6WfE=;
+  b=DqhAG0o/3gNfJdXRAurh4XCfhf0A1afodJ1xbUNkTk+ZJrfjD7NnGd8l
+   I9w5oSzPrVel+bb0ZYhQy0nvJ7NSI+g8ypV7RK33QKb65AblQkP3bUaRt
+   XofMGYwVK4HkShJM8alyhwpVz5Kq1WNGa6mIsqXXEPL14DANGOmrD6CEr
+   3FmXcrFf2cYJ7EN/EM4jnWzscKsv8BRHqaPURUpH6XzBGCA6KTcTQHEEm
+   SQ6CMV+py8stsDx4OMszqB8WORr5mUGFmFNynSZMCTJVdyumwzU0sWApq
+   MbjSSauO6ZM5qIwn2OxjYo07EZDHGjhwCdoYi26lEEK3yA48/mzui0IPP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="232407937"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="232407937"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:08 -0800
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="499389473"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:08 -0800
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V2 03/32] x86/sgx: Add wrapper for SGX2 EMODT function
+Date:   Mon,  7 Feb 2022 16:45:25 -0800
+Message-Id: <794af0e3cfe04cf886304b3dd644f9b4787b7125.1644274683.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1644274683.git.reinette.chatre@intel.com>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202181813.1103496-1-pbonzini@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022, Paolo Bonzini wrote:
-> This series is really two changes:
-> 
-> - patch 1 to 4 clean up NULLable kvm_x86_ops so that they are marked
->   in kvm-x86-ops.h and the non-NULLable ones WARN if used incorrectly.
->   As an additional outcome of the review, a few more uses of
->   static_call_cond are introduced.
-> 
-> - patch 5 allows to NULL a few kvm_x86_ops that return a value, by
->   using __static_call_ret0.
-> 
-> Paolo Bonzini (5):
->   KVM: x86: use static_call_cond for optional callbacks
->   KVM: x86: mark NULL-able kvm_x86_ops
->   KVM: x86: warn on incorrectly NULL static calls
->   KVM: x86: change hwapic_{irr,isr}_update to NULLable calls
->   KVM: x86: allow defining return-0 static calls
+Add a wrapper for the EMODT ENCLS leaf function used to
+change the type of an enclave page as maintained in the
+SGX hardware's Enclave Page Cache Map (EPCM).
 
-I belatedly remembered the other thing about "NULL" that I don't like:
+EMODT:
+1) Updates the EPCM page type of the enclave page.
+2) Sets the MODIFIED bit in the EPCM entry of the enclave page.
+   This bit is reset by the enclave by invoking ENCLU leaf
+   function EACCEPT or EACCEPTCOPY.
 
-        #define KVM_X86_OP(func)                                             \
-                DEFINE_STATIC_CALL_NULL(kvm_x86_##func,                      \
-                                        *(((struct kvm_x86_ops *)0)->func));
-        #define KVM_X86_OP_NULL KVM_X86_OP
+Access from within the enclave to the enclave page is not possible
+while the MODIFIED bit is set.
 
-That's bound to be confusing for folks that aren't already familiar with the
-code, especially if they don't have a good handle on static_call() magic.
+After changing the enclave page type by issuing EMODT the kernel
+needs to collaborate with the hardware to ensure that no logical
+processor continues to hold a reference to the changed page. This
+is required to ensure no required security checks are circumvented
+and is required for the enclave's EACCEPT/EACCEPTCOPY to succeed.
+Ensuring that no references to the changed page remain is
+accomplished with the ETRACK flow.
 
-Side topic, the above doesn't handle KVM_X86_OP_RET0, no idea how that doesn't
-fail at link time.  The BUILD_BUG_ON(1) in kvm-x86-ops.h also needs to be updated,
-and the comment too.
-
-Anyways, back to NULL.  KVM_X86_OP_RET0 also doesn't capture that the hook can
-be NULL in that case; if the reader is familiar with static_call() then they'll
-understand the full meaning, but I doubt that covers the majority of readers.
-
-TL;DR: what about using more verbose names KVM_X86_OP_OPTIONAL and
-KVM_X86_OP_OPTIONAL_RET0[*]?  And also tweak kvm_ops_static_call_update()'s
-defines so that KVM_X86_OP never routes through KVM_X86_OP_OPTIONAL (as syntactic
-sugar to avoid confusion.
-
-Other than that, I like the WARN on KVM_X86_OPS with a NULL implementation.
-
-[*] The OP_OPTIONAL kills me, but I can't think of a better alternative.
-
-
-E.g. sans the kvm-x86-ops.h changes...
-
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
- arch/x86/include/asm/kvm_host.h | 11 ++++++-----
- arch/x86/kvm/x86.c              | 11 +++++++++--
- 2 files changed, 15 insertions(+), 7 deletions(-)
+Changes since V1:
+- Split original patch ("x86/sgx: Add wrappers for SGX2 functions")
+  in three to introduce the SGX2 functions separately (Jarkko).
+- Rewrite commit message to include how the EPCM within the hardware
+  is changed by the SGX2 function as well as the calling
+  conditions (Jarkko).
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index e7e5bd9a984d..055b3a2419f7 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1539,17 +1539,18 @@ extern struct kvm_x86_ops kvm_x86_ops;
+ arch/x86/kernel/cpu/sgx/encls.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
- #define KVM_X86_OP(func) \
- 	DECLARE_STATIC_CALL(kvm_x86_##func, *(((struct kvm_x86_ops *)0)->func));
--#define KVM_X86_OP_NULL KVM_X86_OP
--#define KVM_X86_OP_RET0 KVM_X86_OP
-+#define KVM_X86_OP_OPTIONAL KVM_X86_OP
-+#define KVM_X86_OP_OPTIONAL_RET0 KVM_X86_OP
- #include <asm/kvm-x86-ops.h>
-
- static inline void kvm_ops_static_call_update(void)
- {
--#define KVM_X86_OP_NULL(func) \
-+#define __KVM_X86_OP(func) \
- 	static_call_update(kvm_x86_##func, kvm_x86_ops.func);
- #define KVM_X86_OP(func) \
--	WARN_ON(!kvm_x86_ops.func); KVM_X86_OP_NULL(func)
--#define KVM_X86_OP_RET0(func) \
-+	WARN_ON(!kvm_x86_ops.func); __KVM_X86_OP(func)
-+#define KVM_X86_OP_OPTIONAL __KVM_X86_OP
-+#define KVM_X86_OP_OPTIONAL_RET0(func) \
- 	static_call_update(kvm_x86_##func, kvm_x86_ops.func ? : \
- 			   (typeof(kvm_x86_ops.func)) __static_call_return0);
- #include <asm/kvm-x86-ops.h>
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 657aa646871e..337e39dec3c4 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -125,11 +125,18 @@ static void __get_sregs2(struct kvm_vcpu *vcpu, struct kvm_sregs2 *sregs2);
-
- struct kvm_x86_ops kvm_x86_ops __read_mostly;
-
-+/*
-+ * All ops are filled by vendor code, thus the default function is NULL for
-+ * both mandatory and optional hooks.  The exception are optional RET0 hooks,
-+ * which obviously default to __static_call_return0.
-+ */
- #define KVM_X86_OP(func)					     \
- 	DEFINE_STATIC_CALL_NULL(kvm_x86_##func,			     \
- 				*(((struct kvm_x86_ops *)0)->func));
--#define KVM_X86_OP_NULL KVM_X86_OP
--#define KVM_X86_OP_RET0 KVM_X86_OP
-+#define KVM_X86_OP_OPTIONAL KVM_X86_OP
-+#define KVM_X86_OP_OPTIONAL_RET0(func)				     \
-+	DEFINE_STATIC_CALL_RET0(kvm_x86_##func,			     \
-+				*(((struct kvm_x86_ops *)0)->func));
- #include <asm/kvm-x86-ops.h>
- EXPORT_STATIC_CALL_GPL(kvm_x86_get_cs_db_l_bits);
- EXPORT_STATIC_CALL_GPL(kvm_x86_cache_reg);
-
-base-commit: 347f6a965596211726c39eb6bc320e8375f80b52
---
-
+diff --git a/arch/x86/kernel/cpu/sgx/encls.h b/arch/x86/kernel/cpu/sgx/encls.h
+index 2b091912f038..7a1ecf704ec1 100644
+--- a/arch/x86/kernel/cpu/sgx/encls.h
++++ b/arch/x86/kernel/cpu/sgx/encls.h
+@@ -221,4 +221,10 @@ static inline int __emodpr(struct sgx_secinfo *secinfo, void *addr)
+ 	return __encls_ret_2(EMODPR, secinfo, addr);
+ }
+ 
++/* Change the type of an EPC page. */
++static inline int __emodt(struct sgx_secinfo *secinfo, void *addr)
++{
++	return __encls_ret_2(EMODT, secinfo, addr);
++}
++
+ #endif /* _X86_ENCLS_H */
+-- 
+2.25.1
 
