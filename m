@@ -2,150 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39303C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F35C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239056AbiBHNRa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:17:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58896 "EHLO
+        id S1345804AbiBHNRi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:17:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358164AbiBHMlJ (ORCPT
+        with ESMTP id S1357628AbiBHMfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:09 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3093C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:08 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id z13so1008012pfa.3
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:08 -0800 (PST)
+        Tue, 8 Feb 2022 07:35:13 -0500
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D5EC03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:35:11 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id r27so20349253oiw.4
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:35:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6xS+neFrZyvEZNRNB9ZEba3UAvEdbGsDMRKP0HcrjcY=;
-        b=S07qFfLfXlPlsPEig0kql0KSa3Jwo8SnBQAniFpfSEt9bWaC7EuaBBykud2oDeT8G6
-         bWdAShALpo3BV05Wa4VxHyeKeKxQDfw48INJq9ihtQsnkh9uY8EGClLBviYeRIMV/hcK
-         c/Wk9uji3P9bOqNUWYUwA/ukYeig7GR8nG0Fc=
+        d=kali.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DCySzda80keBjyEDz1S/bpNT7VXpJeMj45VaQ6BvJBU=;
+        b=GYXq0lDGikvfNxjZHaTsvUsWpAWeKdn/6UGfEb3FFoeFYlD6bUY/0nlap/7s/pq9z0
+         3APdNRdEg8kXTQRccdTBPHnxP3GBaS0NEchX/eBUqUR4B92jiN87Z4wHKHI93W+h1GYZ
+         O01ad+euhCHLjSgemVx7XVtX2vVMua5t5NA/HKNu/iBinrg6OW/pUCc0JBP8TDRLmCMr
+         ZKk6vQVBcB2EhjBtCbdEacoZR+NRfxwQhTZxe37GS23drZkY2ti8E6eQYLVWDrMG1Vzo
+         V5ubSMJ8oprLEnkCN0Jeu1iX3/Hc0ivMOH7TFz1fxkcyb/1RylYGfs6YEKfxH6vmadAF
+         kx6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6xS+neFrZyvEZNRNB9ZEba3UAvEdbGsDMRKP0HcrjcY=;
-        b=BgSIhX8Dp4UVWrr+yabWu9TNc9BQUE5iL3ohxii5JYrrlyHeTPkF+8sfGpApi9keTI
-         CkBUXf9XFPqXuog+TtMc0yDAuAs/AxRj/S1iztq9Mz4G2zJPLZpIYIQYuJdVBswMKICB
-         VH8BbPbyp/RjFgQSFggjdi4p6ZBTgfD8lv64amKrQzzQx7+QH7nX22lFt1mvlNCiRaZl
-         d55BlWGIEpl/p3hAFnGk3H+xNdlN6KSLPPB1HMxRJIy8L8gQ7jvlJ96gIjqEVJDHqyYE
-         3UAo21UOSN1QxhwaYs7ZTWoHaJy94shooDVPFmpiSurS691iTST1/m/TGxqvxpqJ7R3A
-         nIlg==
-X-Gm-Message-State: AOAM53394+Wi09zlmnRhPpr4ugu5rymBUCndhtmP74wXIT08t+JwhC8c
-        hZah8QjtwWKXUOXu3lg1UBfxi1+mzQ1wpQ==
-X-Google-Smtp-Source: ABdhPJyVSydPTJsnGkAvXxmo8hgAw+u0iFkTHDeyOosu8dCP1EYmO/Ag1a/kFhiD/Fw6iflEFWaCjg==
-X-Received: by 2002:a63:5144:: with SMTP id r4mr3338517pgl.382.1644324068384;
-        Tue, 08 Feb 2022 04:41:08 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:08 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 09/31] clk: mediatek: mux: Implement unregister API
-Date:   Tue,  8 Feb 2022 20:40:12 +0800
-Message-Id: <20220208124034.414635-10-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DCySzda80keBjyEDz1S/bpNT7VXpJeMj45VaQ6BvJBU=;
+        b=3uz5jl8yQu7S4x7ZLt8NeOJxfAI/Bc5IsGZFBg6kHujm1Dtzaj60HU+t7uCyoTYpfS
+         HgdO4KCE9+VXkyux+TpW9vdIO5+60/Bjwiusn2TdBFguIX4CItoHeTh+L1WsqeQ3yX/d
+         zzSgjmfVIiMTCQlrblbJ9L0MRsOekWWQMKtGmQgIACO7GyxjjP+Vfw0SJZMNYpcn1pQm
+         tC1hW6kdMge2Jpz78pflzJBmzL2qkNbLuwikYSJ3j/Cxhbz31hdExBqwUNLXyHt1Kh6l
+         q+n7Nw7kmaS32RhC3HTdDbH5K+tIdCms9p26RRWCgptG+9eUwOWyqkTtGk5CI9x0/OCH
+         xMbw==
+X-Gm-Message-State: AOAM532T/fpYAeQPZHyfC2v7SF/7D5NerxikzoxfoJgGT2iIhKIOTAaF
+        FlW0eqFRxb+M6MxYsD6JEj7eAQ==
+X-Google-Smtp-Source: ABdhPJxMAYh+r5RkZzZHsVmSNGS1wg9WOJ//Irolb0godaB76n0KtYv/ryyD2/ywrLKHBEIpmQyf+w==
+X-Received: by 2002:a05:6808:211e:: with SMTP id r30mr411574oiw.6.1644323710858;
+        Tue, 08 Feb 2022 04:35:10 -0800 (PST)
+Received: from [192.168.11.51] (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
+        by smtp.gmail.com with ESMTPSA id bc36sm5211916oob.45.2022.02.08.04.35.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 04:35:10 -0800 (PST)
+Message-ID: <300f9ec9-da52-235f-ea3c-b49bdc8bfb75@kali.org>
+Date:   Tue, 8 Feb 2022 06:35:08 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH 1/2] arm64: dts: qcom: c630: Add backlight controller
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220208041606.144039-1-bjorn.andersson@linaro.org>
+From:   Steev Klimaszewski <steev@kali.org>
+In-Reply-To: <20220208041606.144039-1-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The mux clk type within the MediaTek clk driver library only has a
-register function, and no corresponding unregister function. This
-means there is no way for its users to properly implement cleanup
-and removal.
 
-Add a matching unregister function for the mux type clk.
-
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-mux.c | 35 ++++++++++++++++++++++++++++++++++
- drivers/clk/mediatek/clk-mux.h |  3 +++
- 2 files changed, 38 insertions(+)
-
-diff --git a/drivers/clk/mediatek/clk-mux.c b/drivers/clk/mediatek/clk-mux.c
-index 89f23e111d91..6f0c22a699c3 100644
---- a/drivers/clk/mediatek/clk-mux.c
-+++ b/drivers/clk/mediatek/clk-mux.c
-@@ -164,6 +164,21 @@ static struct clk *mtk_clk_register_mux(const struct mtk_mux *mux,
- 	return clk;
- }
- 
-+static void mtk_clk_unregister_mux(struct clk *clk)
-+{
-+	struct mtk_clk_mux *mux;
-+	struct clk_hw *hw;
-+
-+	hw = __clk_get_hw(clk);
-+	if (!hw)
-+		return;
-+
-+	mux = to_mtk_clk_mux(hw);
-+
-+	clk_unregister(clk);
-+	kfree(mux);
-+}
-+
- int mtk_clk_register_muxes(const struct mtk_mux *muxes,
- 			   int num, struct device_node *node,
- 			   spinlock_t *lock,
-@@ -198,4 +213,24 @@ int mtk_clk_register_muxes(const struct mtk_mux *muxes,
- }
- EXPORT_SYMBOL_GPL(mtk_clk_register_muxes);
- 
-+void mtk_clk_unregister_muxes(const struct mtk_mux *muxes, int num,
-+			      struct clk_onecell_data *clk_data)
-+{
-+	int i;
-+
-+	if (!clk_data)
-+		return;
-+
-+	for (i = num; i > 0; i--) {
-+		const struct mtk_mux *mux = &muxes[i - 1];
-+
-+		if (IS_ERR_OR_NULL(clk_data->clks[mux->id]))
-+			continue;
-+
-+		mtk_clk_unregister_mux(clk_data->clks[mux->id]);
-+		clk_data->clks[mux->id] = ERR_PTR(-ENOENT);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(mtk_clk_unregister_muxes);
-+
- MODULE_LICENSE("GPL");
-diff --git a/drivers/clk/mediatek/clk-mux.h b/drivers/clk/mediatek/clk-mux.h
-index 27841d649118..cb2ac4f04c58 100644
---- a/drivers/clk/mediatek/clk-mux.h
-+++ b/drivers/clk/mediatek/clk-mux.h
-@@ -88,4 +88,7 @@ int mtk_clk_register_muxes(const struct mtk_mux *muxes,
- 			   spinlock_t *lock,
- 			   struct clk_onecell_data *clk_data);
- 
-+void mtk_clk_unregister_muxes(const struct mtk_mux *muxes, int num,
-+			      struct clk_onecell_data *clk_data);
-+
- #endif /* __DRV_CLK_MTK_MUX_H */
--- 
-2.35.0.263.gb82422642f-goog
-
+On 2/7/22 10:16 PM, Bjorn Andersson wrote:
+> The Lenovo Yoga C630 uses the PWM controller in the TI SN65DSI86 bridge
+> chip to provide a signal for the backlight control and has TLMM GPIO 11
+> attached to some regulator that drives the backlight.
+>
+> Unfortunately the regulator attached to this gpio is also powering the
+> camera, so turning off backlight result in the detachment of the camera
+> as well.
+>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>   arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts | 8 ++++++++
+>   1 file changed, 8 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+> index 58845a14805f..55fb7302245b 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+> +++ b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+> @@ -59,6 +59,7 @@ mode {
+>   	panel {
+>   		compatible = "boe,nv133fhm-n61";
+>   		no-hpd;
+> +		backlight = <&backlight>;
+>   
+>   		ports {
+>   			port {
+> @@ -98,6 +99,12 @@ sn65dsi86_refclk: sn65dsi86-refclk {
+>   
+>   		clock-frequency = <19200000>;
+>   	};
+> +
+> +	backlight: backlight {
+> +		compatible = "pwm-backlight";
+> +		pwms = <&sn65dsi86 1000000>;
+> +		enable-gpios = <&tlmm 11 GPIO_ACTIVE_HIGH>;
+> +	};
+>   };
+>   
+>   &adsp_pas {
+> @@ -419,6 +426,7 @@ sn65dsi86: bridge@2c {
+>   		clock-names = "refclk";
+>   
+>   		no-hpd;
+> +		#pwm-cells = <1>;
+>   
+>   		ports {
+>   			#address-cells = <1>;
+Tested-by: Steev Klimaszewski <steev@kali.org>
