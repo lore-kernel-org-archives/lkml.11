@@ -2,108 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C45A1C35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32ACFC3527B
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357455AbiBHLWp (ORCPT
+        id S1357517AbiBHLXF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:22:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
+        Tue, 8 Feb 2022 06:23:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235141AbiBHJj6 (ORCPT
+        with ESMTP id S1355551AbiBHJpj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:39:58 -0500
-Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920B2C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:39:57 -0800 (PST)
-Received: by mail-vk1-f169.google.com with SMTP id l14so9389324vko.12
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:39:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fZ5YoyypaVIdNJWNBuLZoYFhoOEVTGQBx0XSyV/K64g=;
-        b=jeyr0wuPVimQL0N8PbP6BFhZ3a2R5bQH4kwC87gq6i/LZnldDGPmh3/YESeyUuFlbX
-         vXiyR9iBvdc7HbkTof3iGd4b717M9sRYwL27JRPWFEssWJ2ecaE0Ol1j2GmCygZGn2am
-         HOwkLe0HANyrkghwVAfpjn3PnE+hHBXOQniz4cLJtfgpCAy5qqbgyEWajaZ7krO3GLIV
-         rObrA72+aKAURZJSwV+MZeWqOR5LU5QwEFttf3VPgoGb63FXQVSoKlWrZrQb23v63u/h
-         Q3EgNhxZpds5V2osZcTxxs9Tv01glbND/kt9Oaf4cBVBh6FUz2ku0MXsqDwCHrpj9TGn
-         VRKA==
-X-Gm-Message-State: AOAM531EwJv7VrKxi0DURTz2v7rW3zdgNAcXhxp7CKt/Vo+OwC/uOV4R
-        YNAVButcLGS9GWKfp8dIXW1tCth1A9XelQ==
-X-Google-Smtp-Source: ABdhPJw1ivY13u6iKbBhQWUi/zuhCXaaU9/3fVVSEhZuVNrHJ8Wv5TLnZSnbEEyhJIOCpIJhmzXh2g==
-X-Received: by 2002:a05:6122:218f:: with SMTP id j15mr1321825vkd.20.1644313196491;
-        Tue, 08 Feb 2022 01:39:56 -0800 (PST)
-Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com. [209.85.217.52])
-        by smtp.gmail.com with ESMTPSA id u23sm2512202vsg.25.2022.02.08.01.39.55
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 01:39:55 -0800 (PST)
-Received: by mail-vs1-f52.google.com with SMTP id t10so2697775vsp.8
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:39:55 -0800 (PST)
-X-Received: by 2002:a67:fd63:: with SMTP id h3mr1094926vsa.77.1644313195369;
- Tue, 08 Feb 2022 01:39:55 -0800 (PST)
+        Tue, 8 Feb 2022 04:45:39 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A068C03FEC0;
+        Tue,  8 Feb 2022 01:45:38 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 329DE1F383;
+        Tue,  8 Feb 2022 09:45:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644313537; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=phKy/GYR8AFrOcYtM7KfuK7BlbUn4X8F4JX+JrNNqQk=;
+        b=c5r86d+mvOPETQEeH4ZvGpRU0TNuc5nbdOM6G6xscdL7XZWTbOhkkDLYcJPAzOA4kblFyK
+        nMgb9yGYMbx5czOY/kfQqG5FSTZHwIFH7NpUQMSWJ22ZuwG6yPh3PYkyKFlvf8w1KRX1d7
+        3DOBHCdLpBarcjAwbQGf7Djk4O9yBpQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644313537;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=phKy/GYR8AFrOcYtM7KfuK7BlbUn4X8F4JX+JrNNqQk=;
+        b=vSX94O3lmfcAJOzIgHi2dJwsx6/Lg+/9BtUjJ4mae/aaOa1XM+O7riDHeIR0Rr2U0pecOk
+        cFMJWcT4eseWfaAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A5B8413BA0;
+        Tue,  8 Feb 2022 09:45:36 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id K7nHJsA7AmKmZAAAMHmgww
+        (envelope-from <jdelvare@suse.de>); Tue, 08 Feb 2022 09:45:36 +0000
+Date:   Tue, 8 Feb 2022 10:45:35 +0100
+From:   Jean Delvare <jdelvare@suse.de>
+To:     Wolfram Sang <wsa@kernel.org>
+Cc:     Terry Bowman <terry.bowman@amd.com>, linux@roeck-us.net,
+        linux-watchdog@vger.kernel.org, linux-i2c@vger.kernel.org,
+        andy.shevchenko@gmail.com, rafael.j.wysocki@intel.com,
+        linux-kernel@vger.kernel.org, wim@linux-watchdog.org,
+        rrichter@amd.com, thomas.lendacky@amd.com, sudheesh.mavila@amd.com,
+        Nehal-bakulchandra.Shah@amd.com, Basavaraj.Natikar@amd.com,
+        Shyam-sundar.S-k@amd.com, Mario.Limonciello@amd.com
+Subject: Re: [PATCH v4 0/4] Watchdog: sp5100_tco: Replace cd6h/cd7h port I/O
+ accesses with MMIO accesses
+Message-ID: <20220208104535.468198f0@endymion.delvare>
+In-Reply-To: <YgEYjOwoxtbkBdfq@shikoro>
+References: <20220130191225.303115-1-terry.bowman@amd.com>
+        <20220207134416.72c22504@endymion.delvare>
+        <YgEYjOwoxtbkBdfq@shikoro>
+Organization: SUSE Linux
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-References: <20220203093922.20754-1-tzimmermann@suse.de>
-In-Reply-To: <20220203093922.20754-1-tzimmermann@suse.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 8 Feb 2022 10:39:44 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWykWR4oKahC2GYF5jG4przRQ+MxNNm1BK7o62OhhGYwA@mail.gmail.com>
-Message-ID: <CAMuHMdWykWR4oKahC2GYF5jG4przRQ+MxNNm1BK7o62OhhGYwA@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/panel: Select DRM_DP_HELPER for DRM_PANEL_EDP
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Lyude Paul <lyude@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+On Mon, 7 Feb 2022 14:03:08 +0100, Wolfram Sang wrote:
+> > Confirmed. I reviewed the 4 patches of this version of the series and
+> > I'm fine with them. I also tested the result successfully on my laptop.
+> > 
+> > Reviewed-by: Jean Delvare <jdelvare@suse.de>
+> > Tested-by: Jean Delvare <jdelvare@suse.de>  
+> 
+> Does that mean you are happy with the i2c-piix4 changes as well?
 
-On Mon, Feb 7, 2022 at 12:31 PM Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> As reported in [1], DRM_PANEL_EDP depends on DRM_DP_HELPER. Select
-> the option to fix the build failure. The error message is shown
-> below.
->
->   arm-linux-gnueabihf-ld: drivers/gpu/drm/panel/panel-edp.o: in function
->     `panel_edp_probe': panel-edp.c:(.text+0xb74): undefined reference to
->     `drm_panel_dp_aux_backlight'
->   make[1]: *** [/builds/linux/Makefile:1222: vmlinux] Error 1
->
-> The issue has been reported before, when DisplayPort helpers were
-> hidden behind the option CONFIG_DRM_KMS_HELPER. [2]
->
-> v2:
->         * fix and expand commit description (Arnd)
->
-> Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+I'm still reviewing these, sorry. I only picked the first patch of the
+series so that the sp5100_tco patches would build so I could test them.
+I hope to be done by the end of the day.
 
-Thanks for your patch!
-
-This fixes the build errors I'm seeing, so
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Jean Delvare
+SUSE L3 Support
