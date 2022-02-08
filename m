@@ -2,120 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D547C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD54BC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356919AbiBHNVP (ORCPT
+        id S1357113AbiBHNVQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:21:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59196 "EHLO
+        Tue, 8 Feb 2022 08:21:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358790AbiBHMlj (ORCPT
+        with ESMTP id S1348284AbiBHNKm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:39 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48882C03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:39 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id e28so18651077pfj.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ga+gjzrzR/LMbGVHXMahoAG4teobfaMr0L0SPMOkFuM=;
-        b=RZ9aNJj6d+PjwBnU0ZJr9mX0nqK+z2KPKSE1hVDOXS6VR7K79uaqtUSEcm7xi/csiT
-         PWkXmSg1lDYbXRJVyBHvI8LGnEa9ps7DiMTFIno+JyB6kH8xzJ+339+ev6Rsm53OTn79
-         B3I6j48uRr2+5wLm760I9Q9pCw2Z3sZkrOEYQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ga+gjzrzR/LMbGVHXMahoAG4teobfaMr0L0SPMOkFuM=;
-        b=FoYAMbmg7nfKosPs3suttsuknXm3ObgBsYVG48d9Zt4sDCKa8WSJjYMffHVfbwPrw5
-         IZu8eiQYptq/XRS9ECQ9xLYkYO5MIeUQItflulComA0stbiy3xTPooJxRGjpOGb9EdoG
-         jnio9lnOJty6jZdA/WoZJZYnSA7bY/QIRuCE7Lx9akIYUS6RO9PfIYhPFVJfsoyyNhXA
-         XiY0ECDBhEby999EZE5r43tUqsTlrvvH+Bjh3wtOGfmJONEHn9QywAjeT9fOjLrl3cBR
-         QjKGcDy+YsleuM6ia7Giaxo2zxnBlJ4E/tFrvVmycmn922KgLezfc4M4xdRjjwStBlFO
-         ydYg==
-X-Gm-Message-State: AOAM533/T4WVcooSjXdJq3G6YHILpxNX7cM87YtqQvJLAHg7nNGJxC45
-        WmZ46Z3LArOAwVmx1OU4KyLZbQ==
-X-Google-Smtp-Source: ABdhPJw8d0noYcaqrmuUm0oYUt6VCRIRuANK5szIhgF5+nvEpUNbWJNicRVw/Rm/sTOyay6sR7vcPA==
-X-Received: by 2002:a63:2a86:: with SMTP id q128mr3374314pgq.53.1644324098777;
-        Tue, 08 Feb 2022 04:41:38 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:38 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 23/31] clk: mediatek: mux: Reverse check for existing clk to reduce nesting level
-Date:   Tue,  8 Feb 2022 20:40:26 +0800
-Message-Id: <20220208124034.414635-24-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
+        Tue, 8 Feb 2022 08:10:42 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22905C03FECE;
+        Tue,  8 Feb 2022 05:10:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=SLOtUPizIxEMzl9MHmssXbkKq3wV6EV1FfuM53oIxG8=; b=DBwru8G20qotyb5cEIMslVov3c
+        TGTgULRVMePaSIfKHeCY43YdN05D97O7K37hs8fQc2ETyaYRHlaggWJ1i4R2+qPbs0tePzIB8dysR
+        2Ut7zGGdYP0JPztkbpWaNoCPqIWSBT3GLimeBBpK4pQwhD2i6jFANoSdCZlP7fOzLX3kXhEr83GIu
+        NY4Ki8Y78QebuMiWK+OzrqH0ycgDEaIRYHdOLFmmB42Wn8eu4CyIIsfJ4QO7/q/EQ5tiC1eORudQz
+        +flOWaS1aWhUwXJX+MB+tt/HP4c9lGh9kkAfLl2DEuK1gDKKG2XvNwp2/OSOXymwi2x9kQYLkFXTR
+        W4SeP7SA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nHQGQ-004rIV-A0; Tue, 08 Feb 2022 13:10:34 +0000
+Date:   Tue, 8 Feb 2022 13:10:34 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Julian Andres Klode <julian.klode@canonical.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Ben Hutchings <ben@decadent.org.uk>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        efi@lists.einval.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>, keyrings@vger.kernel.org,
+        David Woodhouse <dwmw2@infradead.org>,
+        debian-kernel <debian-kernel@lists.debian.org>
+Subject: Re: [PATCH v2] builddeb: Support signing kernels with the module
+ signing key
+Message-ID: <YgJrypdQium7AcWV@casper.infradead.org>
+References: <20211218031122.4117631-1-willy@infradead.org>
+ <CAK7LNAQUChvX3NoukBnjBfJJGu+a96pfbM--xHEHOygWPgE9eA@mail.gmail.com>
+ <YdSOV7LL0vWCMcWl@casper.infradead.org>
+ <CAK7LNAQgixJSnDUMfjc+tg90oMdVoh+i5faEn-rqgmHR3Bk6dQ@mail.gmail.com>
+ <20220208110122.2z4cmbqexmnxuxld@jak-t480s>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208110122.2z4cmbqexmnxuxld@jak-t480s>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The clk registration code here currently does:
+On Tue, Feb 08, 2022 at 12:01:22PM +0100, Julian Andres Klode wrote:
+> It's worth pointing out that in Ubuntu, the generated MOK key
+> is for module signing only (extended key usage 1.3.6.1.4.1.2312.16.1.2),
+> kernels signed with it will NOT be bootable.
 
-    if (IS_ERR_OR_NULL(clk_data->clks[mux->id])) {
-            ... do clk registration ...
-    }
-
-This extra level of nesting wastes screen real estate.
-
-Reduce the nesting level by reversing the conditional shown above.
-Other than that, functionality is not changed.
-
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-mux.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/clk/mediatek/clk-mux.c b/drivers/clk/mediatek/clk-mux.c
-index 01af6a52711a..70aa42144632 100644
---- a/drivers/clk/mediatek/clk-mux.c
-+++ b/drivers/clk/mediatek/clk-mux.c
-@@ -208,16 +208,17 @@ int mtk_clk_register_muxes(const struct mtk_mux *muxes,
- 	for (i = 0; i < num; i++) {
- 		const struct mtk_mux *mux = &muxes[i];
- 
--		if (IS_ERR_OR_NULL(clk_data->clks[mux->id])) {
--			clk = mtk_clk_register_mux(mux, regmap, lock);
-+		if (!IS_ERR_OR_NULL(clk_data->clks[mux->id]))
-+			continue;
- 
--			if (IS_ERR(clk)) {
--				pr_err("Failed to register clk %s: %pe\n", mux->name, clk);
--				continue;
--			}
-+		clk = mtk_clk_register_mux(mux, regmap, lock);
- 
--			clk_data->clks[mux->id] = clk;
-+		if (IS_ERR(clk)) {
-+			pr_err("Failed to register clk %s: %pe\n", mux->name, clk);
-+			continue;
- 		}
-+
-+		clk_data->clks[mux->id] = clk;
- 	}
- 
- 	return 0;
--- 
-2.35.0.263.gb82422642f-goog
-
+Why should these be separate keys?  There's no meaningful security
+boundary between a kernel module and the ernel itself; a kernel
+modulecan, for example, write to CR3, and that's game over for
+any pretence at separation.
