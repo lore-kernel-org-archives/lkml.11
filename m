@@ -2,204 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DCCC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC4DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344032AbiBHWWO (ORCPT
+        id S1386300AbiBHWWr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:22:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57852 "EHLO
+        Tue, 8 Feb 2022 17:22:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386509AbiBHUqC (ORCPT
+        with ESMTP id S1386693AbiBHVIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:46:02 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E88C0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:46:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=yF5UcKFGU/samSHsGDregSgKCpT7s6aDPXmfk7zYBtM=; b=XzuhX99mlQKkLO0D7MPlvbCNsT
-        S3nvR89L000uXMP1dF73NgG5R/DKClIfbKDjATU8dyILBRZvZ7ciQBAR5zixVjJR//QA9YNHEx7Yn
-        mMG9ZakZFzDUEw//XZ1DyFbHoG/noPZMwx7F7AE09AzErpwRW3Cw48kQJz1BvN69NncNAfPvHdfFC
-        U3Vp9c/9pNtbRhVLp/PK/yw+/vED7AN+jdX6iw351ri8MOB/no/5JRjjX/DWGbZLp7JBsZhmOP+AM
-        s80dMNqw0gY2sFrJbn8WAa/5fYfcl2foE6qCMRjfQ/D90FooMFBSmCVeLadar6siVCOjHEvcFhsHZ
-        1o4bKxlA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nHXMv-008DTy-C8; Tue, 08 Feb 2022 20:45:46 +0000
-Message-ID: <2434f050-b82c-03e6-ee8f-8c8799119815@infradead.org>
-Date:   Tue, 8 Feb 2022 12:45:38 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: Kconfig CONFIG_FB dependency regression
-Content-Language: en-US
-To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        Arnd Bergmann <arnd@kernel.org>
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
+        Tue, 8 Feb 2022 16:08:32 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D95C0612BD
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:31 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id r7so137850wmq.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1IuiSyqatCt+l1wk5WgkOInkMrehuaZuz9Mxu04TsqY=;
+        b=avHkOSu+x6pfmx4+fLtEewoBxnRMkJmK8t/rEpPIL34bWtfdlDa2+3sCJJZi5z4PuV
+         ckFrSEhaJ0yEOaXqGl9xGK8CTEVT5ZIucUpSjA4gWTpu5UtAWEHI7DaOygEQd+miUzVZ
+         fXH6kBN8oggwje5UwlVqhRF2IcoTAxLW3cqWs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1IuiSyqatCt+l1wk5WgkOInkMrehuaZuz9Mxu04TsqY=;
+        b=xPI02SMXHfUqOVIPCBkmkUycUfHoThxV88MbNC5b9Zze89lf5IbgbqfkmbWlzeQN9G
+         4gLqL+lOrp1Z1+xZvZhp+/tbZZnajNGAqLJIO/4qlZ1oe9BAuFP81+5/WcoL3LEvkRW8
+         QFuzTUU+0+GRLTk6HTh3gL3cWRNcMF4A/Ungg8Pcw9VQ01mTRlQv/1jZZAVPtBzXT45G
+         pU7EMVWh2+ySmjpUXVLgvxY0EtnAcw0Q/YWj+nOKuNiT5IhaMDm7/zYjcN3MrZ4sHv69
+         MJerUdJUkoCppftfUzGES+4UJzk++zp/x2/RGyEkjsuHoAFBqOIxZ1VEXz7wVpRhG1Iy
+         TmIA==
+X-Gm-Message-State: AOAM531Mc+rpcErlt6eJQsdDHjfGZAKrvimaTeuk9Zh4hkqKnDvF5rYS
+        MatuIBur0fRMRQsm3W0Y8NfAXQ==
+X-Google-Smtp-Source: ABdhPJyUoNAHSJRgncTABvPUK493XLqXy+tMNLIpUB+u6ODVBYoOWnDUowuWpfEK97CmfZnMhYogLg==
+X-Received: by 2002:a1c:7915:: with SMTP id l21mr2580207wme.154.1644354510218;
+        Tue, 08 Feb 2022 13:08:30 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 13:08:29 -0800 (PST)
+From:   Daniel Vetter <daniel.vetter@ffwll.ch>
+To:     DRI Development <dri-devel@lists.freedesktop.org>
+Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
         Daniel Vetter <daniel.vetter@ffwll.ch>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        John Youn <John.Youn@synopsys.com>,
-        Bing Yuan <Bing.Yuan@synopsys.com>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <6fc4a81f-1a13-bff9-7b2e-d5bec382cb42@synopsys.com>
- <9bab4777-3034-b789-fdf6-ca8d7e6a8c35@infradead.org>
- <CAOMZO5Aa4WxuadfoFGwwyYyD4UGPm-E258xTWU3-ozp_hwG-7g@mail.gmail.com>
- <d8981e2a-4f61-72bb-e5cc-bf4ded29c08a@synopsys.com>
- <CAK8P3a3ELrSC=KX6cr8UnP6kkJN0AXeAE4EG4oUY=Zz7gG_dgg@mail.gmail.com>
- <b44de208-6d5f-3fcd-0e36-f05745297747@synopsys.com>
- <CAK8P3a27RtHxYwtj=rjxcDzkMdKhC-w9ho=SApHpczma_vU8JQ@mail.gmail.com>
- <6743d6b1-13fe-9c83-f706-82338dd03897@synopsys.com>
- <7ed6137e-cf19-3614-9404-e89389411a8f@infradead.org>
- <992f01cc-eb0c-b503-f9b4-4a037c6cf67a@synopsys.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <992f01cc-eb0c-b503-f9b4-4a037c6cf67a@synopsys.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Sam Ravnborg <sam@ravnborg.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Helge Deller <deller@gmx.de>, Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Claudio Suarez <cssk@net-c.es>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH v2 01/19] fbcon: delete a few unneeded forward decl
+Date:   Tue,  8 Feb 2022 22:08:06 +0100
+Message-Id: <20220208210824.2238981-2-daniel.vetter@ffwll.ch>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
+I didn't bother with any code movement to fix the others, these just
+got a bit in the way.
 
-On 2/8/22 12:10, Thinh Nguyen wrote:
-> Randy Dunlap wrote:
->>
->>
->> On 2/3/22 19:21, Thinh Nguyen wrote:
->>> Arnd Bergmann wrote:
->>>> On Thu, Feb 3, 2022 at 12:55 AM Thinh Nguyen <Thinh.Nguyen@synopsys.com> wrote:
->>>>> Arnd Bergmann wrote:
->>>>>> On Wed, Feb 2, 2022 at 1:14 AM Thinh Nguyen <Thinh.Nguyen@synopsys.com> wrote:
->>>>>>> Fabio Estevam wrote:
->>>>>>
->>>>>> CONFIG_FB should not normally be needed for booting, so unless
->>>>>> you have a graphical application in your initramfs that requires the /dev/fb0
->>>>>> device to work, it is not supposed to make a difference.
->>>>>>
->>>>>
->>>>> I'm not sure, but it seems like the setup we have isn't the only one
->>>>> that needed it. Fabio also noted that the imx_v6_v7_defconfig also needs
->>>>> to have CONFIG_FB set.
->>>>
->>>> No, that one is different: the change for imx_v6_v7_defconfig was
->>>> done because they actually use a framebuffer console on some devices,
->>>> so the patch just adds the symbol to enable the drivers they are using.
->>>>
->>>> This is expected with my original patch that doesn't implicitly enable
->>>> the framebuffer layer any more. What is not expected is for the kernel
->>>> to hang during boot as you reported for your unidentified platform.
->>>>
->>>>>> Are there any other differences in your .config before and after the patch?
->>>>>> It's possible that you use some other driver that in turn depends on
->>>>>> CONFIG_FB. Does your machine have any graphical output device?
->>>>>> If yes, which driver do you use?
->>>>>
->>>>> I don't have the answer to those questions yet. Need more investigation.
->>>>> I'm new to this particular test setup.
->>>>
->>>> Do you mean you don't know if there is a screen attached to the system?
->>>>
->>>
->>> It does have a graphical output device, but I didn't check what it is or
->>> what driver is driving it. I just notice that after the reported commit,
->>> something stopped working.
->>>
->>>>>>
->>>>>> You may also want to make sure that you have 9d6366e743f3 ("drm:
->>>>>> fb_helper: improve CONFIG_FB dependency") in your kernel, which
->>>>>> fixes a minor problem with my original patch.
->>>>>>
->>>>>
->>>>> The issue also occurs in mainline, which has your minor fix commit
->>>>> above. The revert isn't clean for the latest kernel version. I also have
->>>>> to revert some of the changes along with CONFIG_FB. The revert looks
->>>>> more like this for the latest kernel:
->>>>>
->>>>> diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
->>>>> index b1f22e457fd0..7cbc733a8569 100644
->>>>> --- a/drivers/gpu/drm/Kconfig
->>>>> +++ b/drivers/gpu/drm/Kconfig
->>>>> @@ -118,8 +118,9 @@ config DRM_DEBUG_MODESET_LOCK
->>>>>
->>>>>  config DRM_FBDEV_EMULATION
->>>>>         bool "Enable legacy fbdev support for your modesetting driver"
->>>>> -       depends on DRM_KMS_HELPER
->>>>> -       depends on FB=y || FB=DRM_KMS_HELPER
->>>>> +       depends on DRM
->>>>> +       select DRM_KMS_HELPER
->>>>> +       select FB
->>>>>         select FB_CFB_FILLRECT
->>>>>         select FB_CFB_COPYAREA
->>>>>         select FB_CFB_IMAGEBLIT
->>>>>
->>>>>
->>>>>
->>>>> I attached the configs for kernel v5.17-rc1. The "bad" config is without
->>>>> any revert, the "good" config is with the change above.
->>>>
->>>> Looking at the config, I see that this is for an x86 machine,
->>>> and you have the FB_EFI driver and EFI_EARLYCON enabled.
->>>>
->>>> What I suspec is going on is that you are looking at a screen rather
->>>> than a serial console, and the kernel doesn't actually hang but you
->>>> just don't see any more messages after the DRM driver takes
->>>> over from EFI_EARLYCON because there is no console driver.
->>>>
->>>> In this case, what you see is the intended behavior, not a bug.
->>>> If you want a graphical console in your system, you need to
->>>> enable the support for this in your config.
->>>>
->>>
->>> It sounds like that's the case. Unfortunately I'm not familiar with this
->>> subsystem to say that's what happening. If there's nothing actually
->>> broken from review, we can ignore this email thread.
->>
->> Hi,
->> I don't know of anything that is broken...
->>
->> I am curious how CONFIG_FB_EFI came to be set when going from bad.config to
->> good.config.  Can you explain that?
->>
-> 
-> I just use the change above and "make" with olddefconfig option. Is it
-> not expected?
+v2: Rebase on top of Helge's reverts.
 
-Maybe I am not doing the same as you. If I take your previous bad.config
-with kernel v5.17-rc2 and use your Kconfig patch:
+Acked-by: Sam Ravnborg <sam@ravnborg.org> (v1)
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org> (v1)
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Du Cheng <ducheng2@gmail.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Claudio Suarez <cssk@net-c.es>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/video/fbdev/core/fbcon.c | 17 +----------------
+ 1 file changed, 1 insertion(+), 16 deletions(-)
 
-diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
-index b1f22e457fd0..7cbc733a8569 100644
---- a/drivers/gpu/drm/Kconfig
-+++ b/drivers/gpu/drm/Kconfig
-@@ -118,8 +118,9 @@ config DRM_DEBUG_MODESET_LOCK
-
- config DRM_FBDEV_EMULATION
-        bool "Enable legacy fbdev support for your modesetting driver"
--       depends on DRM_KMS_HELPER
--       depends on FB=y || FB=DRM_KMS_HELPER
-+       depends on DRM
-+       select DRM_KMS_HELPER
-+       select FB
-        select FB_CFB_FILLRECT
-        select FB_CFB_COPYAREA
-        select FB_CFB_IMAGEBLIT
-
-and then run
-'make olddefconfig', I see:
-
-# CONFIG_FB_EFI is not set
-
-which is what I would expect to see.
-
-
-thanks.
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index 2fc1b80a26ad..235eaab37d84 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -163,29 +163,14 @@ static int fbcon_cursor_noblink;
+  *  Interface used by the world
+  */
+ 
+-static const char *fbcon_startup(void);
+-static void fbcon_init(struct vc_data *vc, int init);
+-static void fbcon_deinit(struct vc_data *vc);
+-static void fbcon_clear(struct vc_data *vc, int sy, int sx, int height,
+-			int width);
+-static void fbcon_putc(struct vc_data *vc, int c, int ypos, int xpos);
+-static void fbcon_putcs(struct vc_data *vc, const unsigned short *s,
+-			int count, int ypos, int xpos);
+ static void fbcon_clear_margins(struct vc_data *vc, int bottom_only);
+-static void fbcon_cursor(struct vc_data *vc, int mode);
+ static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
+ 			int height, int width);
+-static int fbcon_switch(struct vc_data *vc);
+-static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch);
+ static void fbcon_set_palette(struct vc_data *vc, const unsigned char *table);
+ 
+ /*
+  *  Internal routines
+  */
+-static __inline__ void ywrap_up(struct vc_data *vc, int count);
+-static __inline__ void ywrap_down(struct vc_data *vc, int count);
+-static __inline__ void ypan_up(struct vc_data *vc, int count);
+-static __inline__ void ypan_down(struct vc_data *vc, int count);
+ static void fbcon_bmove_rec(struct vc_data *vc, struct fbcon_display *p, int sy, int sx,
+ 			    int dy, int dx, int height, int width, u_int y_break);
+ static void fbcon_set_disp(struct fb_info *info, struct fb_var_screeninfo *var,
+@@ -194,8 +179,8 @@ static void fbcon_redraw_move(struct vc_data *vc, struct fbcon_display *p,
+ 			      int line, int count, int dy);
+ static void fbcon_modechanged(struct fb_info *info);
+ static void fbcon_set_all_vcs(struct fb_info *info);
+-static void fbcon_start(void);
+ static void fbcon_exit(void);
++
+ static struct device *fbcon_device;
+ 
+ #ifdef CONFIG_FRAMEBUFFER_CONSOLE_ROTATION
 -- 
-~Randy
+2.34.1
+
