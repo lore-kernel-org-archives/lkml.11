@@ -2,139 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48984C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B27B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350772AbiBHNgD (ORCPT
+        id S1350821AbiBHNgL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:36:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33578 "EHLO
+        Tue, 8 Feb 2022 08:36:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344003AbiBHNgA (ORCPT
+        with ESMTP id S1350440AbiBHNgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:36:00 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D63C03FED0;
-        Tue,  8 Feb 2022 05:35:59 -0800 (PST)
-Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JtP7D6RPWz680Bd;
-        Tue,  8 Feb 2022 21:31:52 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 14:35:57 +0100
-Received: from A2006125610.china.huawei.com (10.202.227.178) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 13:35:51 +0000
-From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>
-CC:     <alex.williamson@redhat.com>, <jgg@nvidia.com>,
-        <cohuck@redhat.com>, <mgurtovoy@nvidia.com>, <yishaih@nvidia.com>,
-        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
-        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
-        <wangzhou1@hisilicon.com>
-Subject: [RFC v4 1/8] crypto: hisilicon/qm: Move the QM header to include/linux
-Date:   Tue, 8 Feb 2022 13:34:18 +0000
-Message-ID: <20220208133425.1096-2-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20220208133425.1096-1-shameerali.kolothum.thodi@huawei.com>
-References: <20220208133425.1096-1-shameerali.kolothum.thodi@huawei.com>
+        Tue, 8 Feb 2022 08:36:02 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C57C03FED0;
+        Tue,  8 Feb 2022 05:36:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3D8E3CE1A3E;
+        Tue,  8 Feb 2022 13:35:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0F36C340F3;
+        Tue,  8 Feb 2022 13:35:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644327356;
+        bh=u79a7xGuIOnAI0hmeTWqkoFHjcZXOZRDz+/R4oy2k1k=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=mynva61oT3uZHMDFA069MvSDpcsyx1yMlXE/p+xa6vXqTHok4+/N7a/xNVtabTCFm
+         In2iYnW4vzK/uESK3I9urNHZtMxi1fB9fkN2IQf4jAamEuLuzovvObTU+FDDg+9BTs
+         s+qv+o6otTmMXtoMALrySTUxZXad4qLAAb6wOk9YCwCRtHkqQg7+WviieSIok1mneq
+         SH3auuQApRKdyj6gH7VRcPUx3pUkHuOLQ/vnqX/jNGXFsCXQ4u8uTjmuqI03rYsrKZ
+         AN8XP8Flm/7UjqWFefbbpP2ihy7dJvOKg+3rWDopxCX+nhVpYy8fWA4YmcgXU1ukT8
+         uRh9tnDM5k9/A==
+Received: by mail-wm1-f41.google.com with SMTP id v129so8644702wme.2;
+        Tue, 08 Feb 2022 05:35:56 -0800 (PST)
+X-Gm-Message-State: AOAM533RApj/RWWQhmah+WlKoQLAQcnWgW4vx5N7uFLZklkjcuqax0YA
+        ZuoSqeS51eAlSo81K3b1TvIiXHHL0y9GDJCwZC4=
+X-Google-Smtp-Source: ABdhPJwhL/oOOSs5ddtm4cjVywRdX/vv8D4K4D7Cs1AgelJH4RPgbhf1fkVoFXF1pKq0071dZJCgc6DVhHV7AxenYm4=
+X-Received: by 2002:a05:600c:4f84:: with SMTP id n4mr1204593wmq.106.1644327354967;
+ Tue, 08 Feb 2022 05:35:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.202.227.178]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+References: <20220203083658.559803-1-arnd@kernel.org> <CAMj1kXG5W4nTXP5fXLmWhNfsQ_WigKbhdZz5yh1MNqE_VcD1TA@mail.gmail.com>
+ <CAK8P3a1GeHV4Mj6rcnAY7y0351r-A7imsyWevKfE_qwHMz0D1g@mail.gmail.com>
+In-Reply-To: <CAK8P3a1GeHV4Mj6rcnAY7y0351r-A7imsyWevKfE_qwHMz0D1g@mail.gmail.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Tue, 8 Feb 2022 14:35:43 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXEB95mWGMNDC0LsOXm4o89tbAK83wF1ZBfK5jEozGw9ZA@mail.gmail.com>
+Message-ID: <CAMj1kXEB95mWGMNDC0LsOXm4o89tbAK83wF1ZBfK5jEozGw9ZA@mail.gmail.com>
+Subject: Re: [PATCH] [v2] ARM: sa1100/assabet: move dmabounce hack to ohci driver
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        USB list <linux-usb@vger.kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we are going to introduce VFIO PCI HiSilicon ACC
-driver for live migration in subsequent patches, move
-the ACC QM header file to a common include dir.
+On Tue, 8 Feb 2022 at 13:49, Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> On Thu, Feb 3, 2022 at 9:47 AM Ard Biesheuvel <ardb@kernel.org> wrote:
+> > On Thu, 3 Feb 2022 at 09:38, Arnd Bergmann <arnd@kernel.org> wrote:
+> >
+> > > There are two main downsides:
+> > >
+> > >  - rather than using a dynamically sized pool, this buffer needs
+> > >    to be allocated at probe time using a fixed size. Without
+> > >    having any idea of what it should be, I picked a size of
+> > >    64KB, which is between what the other two OHCI front-ends use
+> > >    in their SRAM. If anyone has a better idea what that size
+> > >    is reasonable, this can be trivially changed.
+> > >
+> >
+> > I suppose this is a problem if the driver falls back to ordinary DRAM
+> > once the allocation runs out?
+>
+> From what I can tell, there is no such fallback. If the localmem_pool
+> runs out, the allocation fails, which may cause other problems, but
+> it never falls back to the wrong DMA address.
+>
 
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/crypto/hisilicon/hpre/hpre.h                         | 2 +-
- drivers/crypto/hisilicon/qm.c                                | 2 +-
- drivers/crypto/hisilicon/sec2/sec.h                          | 2 +-
- drivers/crypto/hisilicon/sgl.c                               | 2 +-
- drivers/crypto/hisilicon/zip/zip.h                           | 2 +-
- drivers/crypto/hisilicon/qm.h => include/linux/hisi_acc_qm.h | 0
- 6 files changed, 5 insertions(+), 5 deletions(-)
- rename drivers/crypto/hisilicon/qm.h => include/linux/hisi_acc_qm.h (100%)
+OK that is the least bad outcome I suppose.
 
-diff --git a/drivers/crypto/hisilicon/hpre/hpre.h b/drivers/crypto/hisilicon/hpre/hpre.h
-index e0b4a1982ee9..9a0558ed82f9 100644
---- a/drivers/crypto/hisilicon/hpre/hpre.h
-+++ b/drivers/crypto/hisilicon/hpre/hpre.h
-@@ -4,7 +4,7 @@
- #define __HISI_HPRE_H
- 
- #include <linux/list.h>
--#include "../qm.h"
-+#include <linux/hisi_acc_qm.h>
- 
- #define HPRE_SQE_SIZE			sizeof(struct hpre_sqe)
- #define HPRE_PF_DEF_Q_NUM		64
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index c5b84a5ea350..ed23e1d3fa27 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -15,7 +15,7 @@
- #include <linux/uacce.h>
- #include <linux/uaccess.h>
- #include <uapi/misc/uacce/hisi_qm.h>
--#include "qm.h"
-+#include <linux/hisi_acc_qm.h>
- 
- /* eq/aeq irq enable */
- #define QM_VF_AEQ_INT_SOURCE		0x0
-diff --git a/drivers/crypto/hisilicon/sec2/sec.h b/drivers/crypto/hisilicon/sec2/sec.h
-index d97cf02b1df7..c2e9b01187a7 100644
---- a/drivers/crypto/hisilicon/sec2/sec.h
-+++ b/drivers/crypto/hisilicon/sec2/sec.h
-@@ -4,7 +4,7 @@
- #ifndef __HISI_SEC_V2_H
- #define __HISI_SEC_V2_H
- 
--#include "../qm.h"
-+#include <linux/hisi_acc_qm.h>
- #include "sec_crypto.h"
- 
- /* Algorithm resource per hardware SEC queue */
-diff --git a/drivers/crypto/hisilicon/sgl.c b/drivers/crypto/hisilicon/sgl.c
-index 057273769f26..534687401135 100644
---- a/drivers/crypto/hisilicon/sgl.c
-+++ b/drivers/crypto/hisilicon/sgl.c
-@@ -3,7 +3,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/module.h>
- #include <linux/slab.h>
--#include "qm.h"
-+#include <linux/hisi_acc_qm.h>
- 
- #define HISI_ACC_SGL_SGE_NR_MIN		1
- #define HISI_ACC_SGL_NR_MAX		256
-diff --git a/drivers/crypto/hisilicon/zip/zip.h b/drivers/crypto/hisilicon/zip/zip.h
-index 517fdbdff3ea..3dfd3bac5a33 100644
---- a/drivers/crypto/hisilicon/zip/zip.h
-+++ b/drivers/crypto/hisilicon/zip/zip.h
-@@ -7,7 +7,7 @@
- #define pr_fmt(fmt)	"hisi_zip: " fmt
- 
- #include <linux/list.h>
--#include "../qm.h"
-+#include <linux/hisi_acc_qm.h>
- 
- enum hisi_zip_error_type {
- 	/* negative compression */
-diff --git a/drivers/crypto/hisilicon/qm.h b/include/linux/hisi_acc_qm.h
-similarity index 100%
-rename from drivers/crypto/hisilicon/qm.h
-rename to include/linux/hisi_acc_qm.h
--- 
-2.17.1
+> > >  - Previously, only USB transfers to unaddressable memory needed
+> > >    to go through the bounce buffer, now all of them do, which may
+> > >    impact runtime performance for USB endpoints that do a lot of
+> > >    transfers.
+> > >
+> > > On the upside, the local_mem support uses write-combining buffers,
+> > > which should be a bit faster for transfers to the device compared to
+> > > normal uncached coherent memory as used in dmabounce.
+> > >
+> >
+> > Talking from past experience using this trick on a NXP ARM9 SoC ~10
+> > years ago, using on-chip SRAM for USB DMA likely results in a
+> > significant performance boost, even without write combining, although
+> > the exact scenario obviously matters.
+>
+> Right, that makes sense, but it won't help here because there is
+> no SRAM. One detail  I noticed is that the localmem pool normally
+> gets mapped as WC, which is what I did in the new code as well, but
+> dma_alloc_flags(..., DMA_ATTR_WRITE_COMBINE) does not always
+> honor this flag. I think it will do it here because a GFP_KERNEL
+> allocation should be served by the remap_allocator, while
+> GFP_ATOMIC allocations would be served by pool_allocator_alloc(),
+> which ignores the flag.
+>
 
+Ah yes, ignore me. For some reason, I thought this was about on-chip SRAM.
