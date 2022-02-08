@@ -2,106 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EFD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BB02C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377518AbiBHODn (ORCPT
+        id S1377517AbiBHOE5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:03:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
+        Tue, 8 Feb 2022 09:04:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377460AbiBHODf (ORCPT
+        with ESMTP id S1359354AbiBHOE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 09:03:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0695C03FED4;
-        Tue,  8 Feb 2022 06:03:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BCBC61019;
-        Tue,  8 Feb 2022 14:03:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE259C340EF;
-        Tue,  8 Feb 2022 14:03:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644329013;
-        bh=Xa3UBrXhuGTsrY6ZL5Pdx4rWJE7m4s0PC5jjWeIEjew=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gRMnHXKD4D83mDb93SFgR40rK+dqWAHmuiZlcspcGEev+KgSKZU9Mq5lhMLuEwOzU
-         hj71f3lKsgUESjNZ/rChvgROSK1ndTz7fryQUzEc2cosLNIr7BInc0v3EXiiSgFb6/
-         VHtHYWBcZAm2ZsWzjnCvkPmbmoKsT4Yi4NhJ+c9CUKAFOUOReYKXTCUH8OyinDht5u
-         16VL1ociMYbXeziEy/bwSvaCqKWJUfDmtmjfiMT0s6hfvBuCwo72dru72gTQRLWhSY
-         mSCDuA3yiBCHtGEC3jDhN5SPFeTxxOQefA7xXaU9Y9Jmo88ZmMJAVvZsNU9yi3ZZj9
-         6z+sxaJ8L43eQ==
-Received: by mail-wr1-f49.google.com with SMTP id e3so16991292wra.0;
-        Tue, 08 Feb 2022 06:03:33 -0800 (PST)
-X-Gm-Message-State: AOAM532j/DSi/DnRyJFtRkozhFwKxtPnnaKIDy+pPSXKw0SKVx5G19Kd
-        6VbD/APTynsFgtRp/Qoo6RxQQ6b/M5nyp/S+hHE=
-X-Google-Smtp-Source: ABdhPJyi+Kijy3/qJKCYBCr9I63+NQlNBMxsy+QBROXXF12wveFBs6WamrDlOJ04QNZaDx+f9yZ34KVqpMmjT9dGhx0=
-X-Received: by 2002:a05:6000:1b88:: with SMTP id r8mr3744166wru.447.1644329012050;
- Tue, 08 Feb 2022 06:03:32 -0800 (PST)
+        Tue, 8 Feb 2022 09:04:56 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF9AC03FECE
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 06:04:56 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id k6-20020a05600c1c8600b003524656034cso1729106wms.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 06:04:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=B6FmlZTmcDzUzTnzs/ZnYmE51lyCgX2/CWAYd99P97c=;
+        b=NRaKMb4NCaHsBJXQvwGqtTS8m1aISo9EPi17EJah39Y03g7CaTHKQott64gc4dVFLo
+         Uhdo9cAUaQPQ0mKLYZByUdJh3JLOVDpX7kQzE7v3+1tAY07cyMvHU22MVI4QEiRD51AZ
+         tVcbf8e3BnqOM6P7zL5YaFtDr+YDwBLbWzPds=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=B6FmlZTmcDzUzTnzs/ZnYmE51lyCgX2/CWAYd99P97c=;
+        b=KfYVplISo+rr7C2eCAYmk6BlvQJ1wpkR1z2d63crYWaC5Q5r4vp7qy29NGJqNlMLQ7
+         Gv7qYS83ooOrR9qsOTKNZcDzwyK2vYEUwD3WYOGQlk6qjDmOaYRsjTuHLSdeqT5ukBrz
+         wm7aZnaCPh2NcMRk2eIhHJMLlqbTDfp1m88oBWL7o+5JMZe9q9WhiiezgrnVFXNfqvqp
+         VYscvpOEAc5TGf4nNMlNUn6lI0IKmMydwYTOFYHYjsEodeLgeiAM0Ol6H1sce7dBsQZ6
+         uecg+wgC2tmQXmAz5JUvIkkyak8zyWi0fHA6zOb1uiEvBlUiB0lYJPcc4hE1k/T3hcfi
+         DCKA==
+X-Gm-Message-State: AOAM531pTxmphdXotGmiQXzW0V2kAs+CY4VkPveY8nfdDZbB1CBPAuxB
+        Zu79uGsDDriAj7ctcCZOrbDXkg==
+X-Google-Smtp-Source: ABdhPJy7VKPSMId+XZSUl+UPzsq7hk9qGy4vC8m7UEqCLa/LPu+gRsdppXdPV+QZ5sHxKub1DOQDkQ==
+X-Received: by 2002:a05:600c:1506:: with SMTP id b6mr1299950wmg.30.1644329094673;
+        Tue, 08 Feb 2022 06:04:54 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id z17sm2262017wml.38.2022.02.08.06.04.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 06:04:54 -0800 (PST)
+Date:   Tue, 8 Feb 2022 15:04:51 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jens Frederich <jfrederich@gmail.com>,
+        Jon Nettleton <jon.nettleton@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Zheyu Ma <zheyuma97@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 21/21] fbdev: Make registered_fb[] private to fbmem.c
+Message-ID: <YgJ4g2BEaeUELmvF@phenom.ffwll.local>
+Mail-Followup-To: Geert Uytterhoeven <geert@linux-m68k.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jens Frederich <jfrederich@gmail.com>,
+        Jon Nettleton <jon.nettleton@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Helge Deller <deller@gmx.de>, Matthew Wilcox <willy@infradead.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>, Zheyu Ma <zheyuma97@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>
+References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+ <20220131210552.482606-22-daniel.vetter@ffwll.ch>
+ <CAMuHMdUm76tT6u+i=A50ffh=k8hX5kgoMqH=t_wfHqH95nVOPA@mail.gmail.com>
 MIME-Version: 1.0
-References: <E5DB4C43-F2AB-412A-9891-C13255374AD9@live.com>
-In-Reply-To: <E5DB4C43-F2AB-412A-9891-C13255374AD9@live.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 8 Feb 2022 15:03:20 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXEUudnnX8FaAhtUmcKB+jt237BUTsMrNC8ZoOepf4P3pQ@mail.gmail.com>
-Message-ID: <CAMj1kXEUudnnX8FaAhtUmcKB+jt237BUTsMrNC8ZoOepf4P3pQ@mail.gmail.com>
-Subject: Re: [BUG SEVERE] Failure to enable EFI Runtime services on T2 Macs
-To:     Aditya Garg <gargaditya08@live.com>
-Cc:     Jeremy Kerr <jk@ozlabs.org>, Matthew Garrett <mjg59@srcf.ucam.org>,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        Aun-Ali Zaidi <admin@kodeit.net>,
-        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdUm76tT6u+i=A50ffh=k8hX5kgoMqH=t_wfHqH95nVOPA@mail.gmail.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Feb 2022 at 14:55, Aditya Garg <gargaditya08@live.com> wrote:
->
-> On using some specific kernel configuration, on Macs with the T2 Security=
- chip, EFI Runtime services fail to start. Some logs which may be useful ar=
-e as follows :-
->
-> Feb 08 17:11:11 MacBook kernel: [Firmware Bug]: Page fault caused by firm=
-ware at PA: 0xffffa79840068000
-> Feb 08 17:11:11 MacBook kernel: WARNING: CPU: 11 PID: 150 at arch/x86/pla=
-tform/efi/quirks.c:735 efi_crash_gracefully_on_page_fault+0x50/0xd0
+On Fri, Feb 04, 2022 at 09:30:56AM +0100, Geert Uytterhoeven wrote:
+> Hi Daniel,
+> 
+> Thanks for your patch!
+> 
+> On Tue, Feb 1, 2022 at 9:50 PM Daniel Vetter <daniel.vetter@ffwll.ch> wrote:
+> > Well except when the olpc dcon fbdev driver is enabled, that thing
+> > digs around in there in rather unfixable ways.
+> 
+> Can't the actual frame buffer driver (which one?) used on olpc export
+> a pointer to its fb_info?
 
-This means the firmware is broken. There is very little we can do
-about this beyond disabling EFI runtime services entirely on such
-systems.
+Yeah that might be the right thing to do, I'll add that as a stagin TODO
+in the next iteration.
 
-...
+> 
+> > --- a/drivers/video/fbdev/core/fbmem.c
+> > +++ b/drivers/video/fbdev/core/fbmem.c
+> > @@ -48,10 +48,14 @@
+> >  static DEFINE_MUTEX(registration_lock);
+> >
+> >  struct fb_info *registered_fb[FB_MAX] __read_mostly;
+> > -EXPORT_SYMBOL(registered_fb);
+> > -
+> >  int num_registered_fb __read_mostly;
+> > +#if IS_ENABLED(CONFIG_OLPC_DCON)
+> 
+> CONFIG_FB_OLPC_DCON (everywhere), cfr. the build failure reported
+> by the robot.
 
-> The kernel configuration where this bug is seen is on https://github.com/=
-t2linux/T2-Ubuntu-Kernel/blob/Mainline/templates/default-config
->
-> I had an old kernel configuration, where I did not face this issue and wa=
-s easily able to write to the NVRAM. That kernel configuration is on https:=
-//github.com/t2linux/T2-Ubuntu-Kernel/blob/b5c20b8c7689251dd943e22dbe02cef9=
-020db8d1/templates/default-config
->
-> I believe these lines in the kernel config, which are present in the form=
-er but absent in the latter are causing the issue :-
->
-...
+Yeah realized that too and fixed it locally.
 
-> Especially CONFIG_LOAD_UEFI_KEYS=3Dy is which I guess may be the culprit.
->
+Cheers, Daniel
 
-Yes, that seems likely.
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
 
-> I request you to reply to my issue as soon as possible
->
-
-Please stop demanding attention like this, even though it is thinly
-veiled as courteous.
-
-If you want to run bleeding edge kernels on non-standard EFI hardware,
-you have to be able to sort yourself out to some extent. I am the
-EFI-on-Linux maintainer, but that doesn't mean I work for you and have
-to be on call to fix your problems.
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
