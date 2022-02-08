@@ -2,122 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3319AC35270
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B61C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386891AbiBHW0n (ORCPT
+        id S1387066AbiBHW0r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:26:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56564 "EHLO
+        Tue, 8 Feb 2022 17:26:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386479AbiBHUkk (ORCPT
+        with ESMTP id S1386584AbiBHU4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:40:40 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DE7C0612AA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:40:38 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id d10so1056559eje.10
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 12:40:38 -0800 (PST)
+        Tue, 8 Feb 2022 15:56:47 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07E7C0612B8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:56:42 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id f17so581397wrx.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 12:56:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=riOd2RA+5KJDbVMnXqZUdH3r+GgY7kzXJ+ElAY7cveY=;
-        b=NaHB/KvNkMyt15RxGmi1HV9jBeCWRKfN/Y/J3QJmYH0O25C91xheRRN24A3kEE+PMy
-         M4gmyTMFy9O490kq/FPlyMXc/lV9CSUBNMigNhTvQRhFmWan3V1t0kkD3+evnzp4LScn
-         KUz4GP3txGZQU0dUO9E/jW69V1HU4TGk/XzfohtEUQJAyA8z1GwZwgOjNHLK9UoAR83Y
-         SAvFbE+ZK7slEi+2HOYKtic9lzwlQ6rGO1pvv57VFsiLJfT1Vk++23lFRw80lxvAgKYe
-         5sogCgzFd1DofXr9bkcLHdNB3jw5BO8P7DczQatrpGBzgOzjtkhX8Vuz5HiCKJ8+8nc/
-         aBXw==
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8rCyE259QoTAuF9ujcMI8WQXkRdDBnGG4G9shkzQjfs=;
+        b=TClcMH3/O8IpIo3td4YsN56mO1iC7OT2x7WX2FMn/DpIGkX8EwvlmyzJbHfyaO9kmA
+         QR+OyCNEr5uu9lVSwWwjtgl0lfk3CYGV3p3l0yw3SkRJWXcGZ93pUtqvBqM9Zhqox2W1
+         OsfUI+doa0d/YIr1nV4EX0pA8AvKm9sFFLitM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=riOd2RA+5KJDbVMnXqZUdH3r+GgY7kzXJ+ElAY7cveY=;
-        b=M+V7n1zHZp2IV3ChfdXHMWdkq5y2Q5GIMIzmBeubURGKUgoYqKk4lyOUYH3MZMnTqk
-         Kuwpt2K/UFaZZM5KTJd0bCUJmO0cML3D/VF19EzXWKDvPsgAX9ruVtdgR92R+nCzIBa2
-         Ib8UYDxNHGPxysVLVEHLEkOdDxYm1Okl9Rt0GP7In1X9IwAzue2VDjdJunK/T/8Vf5Mz
-         5W5f5BHKTwqRsLSDPAkJTV81AKaRHNzvOYOi5MCuiIZgAn6xWTT9h3ri0G5jLZooQAMz
-         qkp62oCI2lW4KMJx0byXHpw7M3GzsCobYDZlyk2Hw5UcHo6ic6id7sTNSEIjWcVW1wVL
-         YZEg==
-X-Gm-Message-State: AOAM531ZJK0PEg8xwYWu5aEfp1/xMR4al0fOPGLfNcUlmPRnNBcWDtFm
-        9M0lIjEL3F9xPc++gilGJCKAEq3Rg2akgO3wMVkEWQ==
-X-Google-Smtp-Source: ABdhPJwDL8sKlWlLmV79N7zGT7H/XWpOJzLRcbYM4AcGKmTz0A/oCJ0vaPRAiaLpIvdkIfGDKfN1O19kAyG0CUw88IQ=
-X-Received: by 2002:a17:907:6d20:: with SMTP id sa32mr5259987ejc.425.1644352836393;
- Tue, 08 Feb 2022 12:40:36 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=8rCyE259QoTAuF9ujcMI8WQXkRdDBnGG4G9shkzQjfs=;
+        b=uT5ulw9Rr8ONw2qblgpoaIgy+uu+XirdIeCEqkikrJrIpMyq+gwpK6u39qzCg1N6w7
+         Pb98TtbYHPdLMxZI1MWOzcBLget3B8trh/HYgyc1Cy7+qL7b7u76CxGPQ+m06jHmpD5o
+         g2Gbbe3gihRJR4RxyKvB8yuYdjFPpJ/Jozk29TveuX+CNbobs4pBwyxk0bJYW5EVrIlp
+         q+RmypOFD0dfFy9Xt2RT1oivpSu65lkQagkQzcZ2edtftoXrHBNpcEZb5tQXsd1sH9jN
+         YNcOOMI0y1lvUm73hQbSKQ+oertTubDFnZPuWTjdsnefu1FXoK/qFLKc9S8ZRFYWo7Mv
+         h+cg==
+X-Gm-Message-State: AOAM532WO+BfkXmrq6AtIkuwlz1IT3Tjk0cCvEmrsp5apXx1F4zHSpWI
+        QrSxfHLN/0r1GkhOoiQMTQrf0ZTWK7ZIVQ==
+X-Google-Smtp-Source: ABdhPJz/N9Po0VxZ50ccE3Hf10GsDJ0883pAqCSvxgXcU5GA5wUMfraP7XMA8MXRBfr2C51K9jlMiQ==
+X-Received: by 2002:a05:6000:1a89:: with SMTP id f9mr5048305wry.573.1644353801125;
+        Tue, 08 Feb 2022 12:56:41 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id b16sm3490549wrj.26.2022.02.08.12.56.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 12:56:40 -0800 (PST)
+Date:   Tue, 8 Feb 2022 21:56:38 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Sam Ravnborg <sam@ravnborg.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Jens Frederich <jfrederich@gmail.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-staging@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Jon Nettleton <jon.nettleton@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH 21/21] fbdev: Make registered_fb[] private to fbmem.c
+Message-ID: <YgLZBlrXW+DYNkFN@phenom.ffwll.local>
+Mail-Followup-To: Sam Ravnborg <sam@ravnborg.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Jens Frederich <jfrederich@gmail.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-staging@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Jon Nettleton <jon.nettleton@gmail.com>,
+        Helge Deller <deller@gmx.de>
+References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+ <20220131210552.482606-22-daniel.vetter@ffwll.ch>
+ <YgK91i6zHWPBwYOq@ravnborg.org>
 MIME-Version: 1.0
-References: <20220208040122.695258-1-davidgow@google.com> <20220208040122.695258-2-davidgow@google.com>
-In-Reply-To: <20220208040122.695258-2-davidgow@google.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Tue, 8 Feb 2022 12:40:23 -0800
-Message-ID: <CAGS_qxqwb=AVyjNQKvzSAGYmQei3ChQLD383=x+RkeCwe5zS-A@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] list: test: Add a test for list_is_head()
-To:     David Gow <davidgow@google.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        kunit-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgK91i6zHWPBwYOq@ravnborg.org>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 8:02 PM David Gow <davidgow@google.com> wrote:
->
-> list_is_head() was added recently[1], and didn't have a KUnit test. The
-> implementation is trivial, so it's not a particularly exciting test, but
-> it'd be nice to get back to full coverage of the list functions.
->
-> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/include/linux/list.h?id=0425473037db40d9e322631f2d4dc6ef51f97e88
->
-> Signed-off-by: David Gow <davidgow@google.com>
+On Tue, Feb 08, 2022 at 08:00:38PM +0100, Sam Ravnborg wrote:
+> Hi Daniel,
+> 
+> On Mon, Jan 31, 2022 at 10:05:52PM +0100, Daniel Vetter wrote:
+> > Well except when the olpc dcon fbdev driver is enabled, that thing
+> > digs around in there in rather unfixable ways.
+> > 
+> > Cc oldc_dcon maintainers as fyi.
+> > 
+> > Cc: Jens Frederich <jfrederich@gmail.com>
+> > Cc: Jon Nettleton <jon.nettleton@gmail.com>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: linux-staging@lists.linux.dev
+> > Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+> > Cc: Daniel Vetter <daniel@ffwll.ch>
+> > Cc: Helge Deller <deller@gmx.de>
+> > Cc: Matthew Wilcox <willy@infradead.org>
+> > Cc: Sam Ravnborg <sam@ravnborg.org>
+> > Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+> > Cc: Zhen Lei <thunder.leizhen@huawei.com>
+> > Cc: Alex Deucher <alexander.deucher@amd.com>
+> > Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+> > Cc: linux-fbdev@vger.kernel.org
+> > Cc: Zheyu Ma <zheyuma97@gmail.com>
+> > Cc: Guenter Roeck <linux@roeck-us.net>
+> 
+> with the build thingy fixed:
+> Acked-by: Sam Ravnborg <sam@ravnborg.org>
+> 
+> I do wonder if there is a more clean way to trigger a blank
+> in the main fbdev driver from the olpc driver.
+> 
+> The current hack is not nice and it would be good to see it gone.
 
-Acked-by: Daniel Latypov <dlatypov@google.com>
+Yeah this is just badly engineered. In drm we'd do this with the self
+refresh helpers, which pretty much give you this exact functionality, but
+in the helpers, while not randomly breaking actual visible behaviour of
+the display driver.
 
-One very optional suggestion below.
+Well ok the illusion is not perfect, since if the display is suspended the
+next page flip will take a tad longer. But that's it.
 
-> ---
->
-> Changes since v1:
-> https://lore.kernel.org/linux-kselftest/20220205061539.273330-2-davidgow@google.com/
-> - Test both non-head elements of the same list and head elements of
->   different lists.
->
-> ---
->  lib/list-test.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->
-> diff --git a/lib/list-test.c b/lib/list-test.c
-> index 976e9ae1f3c5..1960615d1a9f 100644
-> --- a/lib/list-test.c
-> +++ b/lib/list-test.c
-> @@ -252,6 +252,23 @@ static void list_test_list_bulk_move_tail(struct kunit *test)
->         KUNIT_EXPECT_EQ(test, i, 2);
->  }
->
-> +static void list_test_list_is_head(struct kunit *test)
-> +{
-> +       struct list_head a, b, c;
-> +
-> +       /* Two lists: [a] -> b, [c] */
-> +       INIT_LIST_HEAD(&a);
-> +       INIT_LIST_HEAD(&c);
-> +       list_add_tail(&b, &a);
-> +
-> +       KUNIT_EXPECT_TRUE(test, list_is_head(&a, &a));
-> +       /* Non-head element of same list */
-> +       KUNIT_EXPECT_FALSE(test, list_is_head(&a, &b));
-> +       /* Head element of different list */
-> +       KUNIT_EXPECT_FALSE(test, list_is_head(&a, &c));
+I'll also add this to the TODO.
+-Daniel
 
-very optional,
-  KUNIT_EXPECT_FALSE_MSG(test, list_is_head(&a, &c), "Head of a
-different list");
-It goes over 80 char, so probably needs to be line-wrapped, and thus
-doesn't reduce # of lines.
+> 
+> 	Sam
+> 
+> > ---
+> >  drivers/video/fbdev/core/fbmem.c | 8 ++++++--
+> >  include/linux/fb.h               | 7 +++----
+> >  2 files changed, 9 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+> > index 904ef1250677..dad6572942fa 100644
+> > --- a/drivers/video/fbdev/core/fbmem.c
+> > +++ b/drivers/video/fbdev/core/fbmem.c
+> > @@ -48,10 +48,14 @@
+> >  static DEFINE_MUTEX(registration_lock);
+> >  
+> >  struct fb_info *registered_fb[FB_MAX] __read_mostly;
+> > -EXPORT_SYMBOL(registered_fb);
+> > -
+> >  int num_registered_fb __read_mostly;
+> > +#if IS_ENABLED(CONFIG_OLPC_DCON)
+> > +EXPORT_SYMBOL(registered_fb);
+> >  EXPORT_SYMBOL(num_registered_fb);
+> > +#endif
+> > +#define for_each_registered_fb(i)		\
+> > +	for (i = 0; i < FB_MAX; i++)		\
+> > +		if (!registered_fb[i]) {} else
+> >  
+> >  bool fb_center_logo __read_mostly;
+> >  
+> > diff --git a/include/linux/fb.h b/include/linux/fb.h
+> > index a8a00d2ba1f3..e236817502c2 100644
+> > --- a/include/linux/fb.h
+> > +++ b/include/linux/fb.h
+> > @@ -622,16 +622,15 @@ extern int fb_get_color_depth(struct fb_var_screeninfo *var,
+> >  extern int fb_get_options(const char *name, char **option);
+> >  extern int fb_new_modelist(struct fb_info *info);
+> >  
+> > +#if IS_ENABLED(CONFIG_OLPC_DCON)
+> >  extern struct fb_info *registered_fb[FB_MAX];
+> > +
+> >  extern int num_registered_fb;
+> > +#endif
+> >  extern bool fb_center_logo;
+> >  extern int fb_logo_count;
+> >  extern struct class *fb_class;
+> >  
+> > -#define for_each_registered_fb(i)		\
+> > -	for (i = 0; i < FB_MAX; i++)		\
+> > -		if (!registered_fb[i]) {} else
+> > -
+> >  static inline void lock_fb_info(struct fb_info *info)
+> >  {
+> >  	mutex_lock(&info->lock);
+> > -- 
+> > 2.33.0
 
-Given the simplicity of this function (checks that its args are
-equal), I highly doubt it should ever fail, and so better error
-messages aren't really much of a bonus.
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
