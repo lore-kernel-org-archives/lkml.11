@@ -2,230 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353383AbiBHSdl (ORCPT
+        id S1353465AbiBHSe2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:33:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
+        Tue, 8 Feb 2022 13:34:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237383AbiBHSdj (ORCPT
+        with ESMTP id S237383AbiBHSe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:33:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9A7C061576;
-        Tue,  8 Feb 2022 10:33:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A39EC60C03;
-        Tue,  8 Feb 2022 18:33:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76393C004E1;
-        Tue,  8 Feb 2022 18:33:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644345217;
-        bh=LWHpc/GxLkbO/PPq5G6kWt1p0WFNGF+VMiaZ+R5OiWA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZBPy6ZDSXiJOPqw5n1PP34cWsRXUy6DL6ayWnXAD2JTdSLQn98nqP7iIgg4Bxv1yF
-         LcZ8d/VK9bSFPJW/2znOd3119fGcHY9yF0jrKfKdPxMfS5iMNWQbUCAf3JyqGePCEP
-         2fF3BbRinh1rvCdnFHYpUqMR3uROgrKOaOGwBLD2w8YVEWCewf9nIvoP5zv9j4gnMk
-         aQAgqLVRRvslF99zZpZvkQ8qCh5mphgPOuKZd6R0rnHtH6DnfYPGTkELg0DxhiYFyl
-         iLt2EQOL73kQ3yFfASHgJmdcLyEtT3VKD7dQo1Nks4iAJW0mQBeP+Uh4/x5hDpA9vA
-         7Lt3sjfIvCbQg==
-Date:   Tue, 8 Feb 2022 20:33:18 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     linux-api@vger.kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v4 00/12] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <YgK3buC2xes9/lLj@kernel.org>
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
+        Tue, 8 Feb 2022 13:34:26 -0500
+Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021021.outbound.protection.outlook.com [52.101.62.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6EDC061579;
+        Tue,  8 Feb 2022 10:34:24 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AjiM6NUfYLdZEgcKMOa4cSWP22YvVqHD8ioBqVvsVuZNhZGBXx5dmKfTfGN8PadnN0GA0YZCt0EPVWmfV6uT9KOxbjokbGY7s7Fer2LlRNikLGnx4vdfZ+ldyQR3MfRldayT9GcmYNUPGeQ4N2CwCrm9MiieugpX5jXAwPsxj3f2A80SXhWhhPkRjv19hdoBdN9POlHDDplK8l2RHxLvivPPoJhsOG75Y9lw9eXXNov+nx1q6VC8HgXofvzeuXRnQtiPJDoUjI6IuqZQeqI1xDMSDetdl94JEwJKI4I5cy38LF45yl47WNDRzsOYcA7himR7T1tHkvP3alpBIxzPfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ir20g7HJxBGHL6MJOTnKDqQ60Ucy63MEC8bBiNJWBgo=;
+ b=XTgQLKtyR8bI6U55hZm69vGjbB8bdVk0YFsHHjyB/dux9Qq6/gQyqVZbjymxBtQof0ZpHZie3qsHwADpj2kK6Frm8y5VO1mumLe9mErXHxbCDS+Zph5JkMgS+3eeEQKRpqhSFhLK+mqsl32ePH9xcD31BW8nNVNoLWg6kKfLJ8gBvDipT/aVkl6nI2RXsKhQhWFVSWThZwoc28x07xy0OOlPism91aAXPjbkonY3CgM6j1INuNGhJoe4RQTy9/o3IGHnwlwuZypyjKuZMO29ZhUE7tQfsaUUYhXp+3dpMa6xurtwQH8RD5oMHWpQn82FbjnsJLpefBOAgUF69kCR/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ir20g7HJxBGHL6MJOTnKDqQ60Ucy63MEC8bBiNJWBgo=;
+ b=eSfc/I2B2/Qi9/cYAwwi5mY+5uw9iNJfGR8zP2Vmek38FtHPvxoVHgNjquFNK62cXNRWlvPReQlprEeq6PFG3Di0ZnxJuclwmf+5ysCqUxOn87iXUp2OwzesayCUzk9tzDjP2+LIzJuLO+krbRRJX+hVUimsUPV9pL9j4AYgqa4=
+Received: from BYAPR21MB1270.namprd21.prod.outlook.com (2603:10b6:a03:105::15)
+ by DM5PR21MB1815.namprd21.prod.outlook.com (2603:10b6:4:9e::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.4; Tue, 8 Feb
+ 2022 18:34:20 +0000
+Received: from BYAPR21MB1270.namprd21.prod.outlook.com
+ ([fe80::e9fa:3037:e252:66e7]) by BYAPR21MB1270.namprd21.prod.outlook.com
+ ([fe80::e9fa:3037:e252:66e7%5]) with mapi id 15.20.4995.004; Tue, 8 Feb 2022
+ 18:34:20 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     'Oliver Sang' <oliver.sang@intel.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        'Yin Fengwei' <fengwei.yin@intel.com>,
+        "'linux-block@vger.kernel.org'" <linux-block@vger.kernel.org>
+CC:     "'Alex Xu (Hello71)'" <alex_y_xu@yahoo.ca>,
+        "'ming.lei@redhat.com'" <ming.lei@redhat.com>,
+        "'hch@lst.de'" <hch@lst.de>, Long Li <longli@microsoft.com>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        "'linux-kernel@vger.kernel.org'" <linux-kernel@vger.kernel.org>,
+        "'Li, Philip'" <philip.li@intel.com>,
+        Rakesh Ginjupalli <Rakesh.Ginjupalli@microsoft.com>
+Subject: RE: RE: very low IOPS due to "block: reduce
+ kblockd_mod_delayed_work_on() CPU consumption"
+Thread-Topic: RE: very low IOPS due to "block: reduce
+ kblockd_mod_delayed_work_on() CPU consumption"
+Thread-Index: AQHX9OjnI2iGAQwSWUqnCtF9yw5sM6w58EYAgADmHHCADSP+ooAmyATggBuHkFA=
+Date:   Tue, 8 Feb 2022 18:34:19 +0000
+Message-ID: <BYAPR21MB1270046D4FD0521E5C395376BF2D9@BYAPR21MB1270.namprd21.prod.outlook.com>
+References: <1639853092.524jxfaem2.none.ref@localhost>
+ <1639853092.524jxfaem2.none@localhost>
+ <7d1e4bb8-1a73-9529-3191-66df4ff2d5fe@kernel.dk>
+ <12f43a71-713b-a74f-a169-b6ac3d804e50@kernel.dk>
+ <237bd7d8-9e75-01b5-ebe7-8b1eb747474b@kernel.dk>
+ <BYAPR21MB127067C16809209C019BC83BBF7B9@BYAPR21MB1270.namprd21.prod.outlook.com>
+ <27973649-193d-a485-1ca7-983a53c7cf78@intel.com>
+ <20211228134926.GA31268@xsang-OptiPlex-9020>
+ <BYAPR21MB1270F7AC484CBDFD94B10726BF5C9@BYAPR21MB1270.namprd21.prod.outlook.com>
+In-Reply-To: <BYAPR21MB1270F7AC484CBDFD94B10726BF5C9@BYAPR21MB1270.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=f700892c-76ff-4635-b077-305f0a059b71;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-01-22T06:05:50Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9911a153-c921-4bc0-03cb-08d9eb319ef8
+x-ms-traffictypediagnostic: DM5PR21MB1815:EE_
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-ms-exchange-atpmessageproperties: SA|SL
+x-microsoft-antispam-prvs: <DM5PR21MB1815FA2C6AF88AF4A7946BECBF2D9@DM5PR21MB1815.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 41OJHL/4peaWuGAJjWnDpeHil1QhaSNEVK+BeferobJrUyaJi1iN6fZCx2C/A0hXbMYMitwCArC4nKiLSdxp7Bx2MhGW2LhvvsFlI9nNAVFTJhE3Cf26462sxsF21bFDkiNKJImou8R0710Zw14H8pRe2VBF74QHsv4vG5oSGreia5rn6ej7QSczsqwgIYCp4cmxJ26VYZMe9DW0ydAkTo7pMjSYlCeDVoIluW0zRUli27Ts4gbQC2get7vaHYOUwhQ7VDhN+EJOFn9u8xKOS/4HE5PXDzNj8ZncPq/E/t6TWEXfH9CXxBYFjJRv0d6p+Jsfaq1U8xROvbqIYrP0mil9QorT2depimZjC19ujSzilAXH3pv3w/eUxIEbqFphcwHQhf7lRQkqRNEqTnpFtNELw4wzEYMCJNNOfoogyzegs+67Rk6omytAlauUQmFl66Rd2dd6+Zc/eAbmmq05+9UImzS5MAGVb60Aapt3ROcO+jJUKS7QlpvMpX3te4LnZTDwgiwMXppXYkXDh7O/ZDNsqqSJCRTjPn0qQAqEM0T82ZW6jonke6ArAyfOI1ZRtvxKiFJDaC6tkgu1NIOPMNvcKyOXLvM16qNYO3B753Q/nXUUDETfdAKlffyNCtGjUIKgAC1kS2YoG8wtOtTYEbswMkNqIbJG+dDdrVuqZZBOAOcDcHmgwCJW8QxOfJMsgVMGu5iWUA60zRJSvNcf83KnB1r1E9cJMs/JAuakGnQkXEVwv7RdJOdFBPMR/v6hos/PrZXndWitJh35BsyTatB28GW9LhRHHEidfBdw939q7nsU4cIxjyRQaRn6UvIphSuJNq/ouDMxQwFrIFwJlrnBfy671SRwPEKzPr3IqIA=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1270.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(33656002)(10290500003)(186003)(122000001)(316002)(53546011)(38070700005)(38100700002)(7696005)(8676002)(508600001)(66446008)(8990500004)(6506007)(26005)(82950400001)(966005)(82960400001)(83380400001)(9686003)(71200400001)(2906002)(55016003)(54906003)(5660300002)(66556008)(86362001)(52536014)(66476007)(66946007)(110136005)(76116006)(4326008)(8936002)(107886003)(64756008)(491001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?XqHWnQ0bEF1Z2hRxg+0T6/+S/W64Yf/5loZWtUF8+EKuslVy3vNTpz+Ga3t8?=
+ =?us-ascii?Q?nrsPqGb+3qZ8S7FqBNOav5A3Tq5KQCH9pfX9A5tDF4iFrk8RtKNDagLM0W2i?=
+ =?us-ascii?Q?T50EeTXq/1rkzVEnuUBdQzyIy2nrB9Gpmb4EE7wwWWga3s4bUNOI3/gEFALd?=
+ =?us-ascii?Q?D0JufKlCckZ19e0fLJjgIFPyVYT1IrL+89SK0+bq2cIBPVURxE00d6uEl6kt?=
+ =?us-ascii?Q?8VbSDDttJrBq48KqwSEyKcBlkurpisKDMsSHD3wbg2vhF6PH6n/RJIuSGyuY?=
+ =?us-ascii?Q?HAB1oXmBE3LVCuqJP8yrwr9hOheN1AkM36QNM74OqF47SLLXqp2aSzAWScvj?=
+ =?us-ascii?Q?v6IoeML4uaDpG/ulfCDkDwbvOJyqABFoSXCX/m6kNDB868zv30RGsrpgxLIX?=
+ =?us-ascii?Q?zKRUfPxNBf6jp2qS0FXogNnid6CORQjo4Noucoqh693hbhAkjw9guUd3+dtO?=
+ =?us-ascii?Q?kwXsrGebMCgPrTJn/IGnaiZvLIGaUJ484Z7Z8QAGrLxkddrIBoUdcbtt+N7V?=
+ =?us-ascii?Q?G17lxVEnNr4xcB9hgLfp65591pnPy8V1mPv2DWY3fIiVIR2MVdCshTlJS+dJ?=
+ =?us-ascii?Q?F9cz7UZM+3ciO55UGoCxxDWvWkf64xEbV993xDeYHzbx5v8hCKC9F4leUdQf?=
+ =?us-ascii?Q?PczEC0kBsX0hvDRcCc+h/6gvvrrIO1Sg/J1I27wppkWYG1UUu/0uPqv+hlhl?=
+ =?us-ascii?Q?G05M/UA2dXPwv9HH6ZRz7j6wFbIepL301eRMEBYr5DRrIQtrAFgONvnsKt0G?=
+ =?us-ascii?Q?C0XxFBNWv6mB79JVBOe2NWljUJ2JG0S64rA57SMlQL3SjyQHq0eZXkwFvJ2o?=
+ =?us-ascii?Q?zKfjMgyeOdLcYHVN1G+WHo/mvY6h1h33RG9ZPX4BKc9bKZLPpazisRvxH6XO?=
+ =?us-ascii?Q?RL/hqB1QazZ8O0wxIJpLLAP/WMLFqz5FQQ4cZWmJrbI8u1dHz2AzebPzBrKN?=
+ =?us-ascii?Q?UlwNGjToannjEi/KRyXDxxwg/LZh5VFvNElpQo4edODlUCX95XEfKT3RwSvp?=
+ =?us-ascii?Q?P+VoAoDlwmzifglpH4WGhNn2q47lEBwb/oUgLEz/SmR3wRtOsheVYxsIrFCC?=
+ =?us-ascii?Q?YNsAdU+FjNYjf1WVe+f6Jn2YnuX9vSXWIb4LUOqsZpmdKVQsuiPIrFNMKE7o?=
+ =?us-ascii?Q?7VhHlEx2m6FCJKNBzlTFuvto9zCAiuHH6FYDBi3nykB8gzB1Pm+58R3HqB3K?=
+ =?us-ascii?Q?mWWqRoqsNzgKhlUF/8dI5/scFk/zEgnjCSx3dbVxoOHZDYhBR9Ua/TUhuhZk?=
+ =?us-ascii?Q?xeOMGtuWIZ9kan66M4hw3tOOWBB4a87yq83yb+6YkhIWz6MZDtSZtJo9fbf6?=
+ =?us-ascii?Q?fdE6PR573vtZEMYCcgjJPm6wvvxAZTsQ3w3K3pHLHYZ5W1O2QKdx/bTSqVNw?=
+ =?us-ascii?Q?/Fybaem4u+CvrGeeP81BGUp6u5W8tRdUIbOGTpEzr6AOGmwsPHlj3PdAmMkS?=
+ =?us-ascii?Q?QcTw5HPtcw7OLbdhC5Jd6sgwvh49koHAVwZyH8kUCtPg/GzYOsm5Qi8sNFgL?=
+ =?us-ascii?Q?bDJbgxRhARpI4KP3r/crbNnH1fdmW/ajkUyWmJzfWgpNC03exRldILS0DB1a?=
+ =?us-ascii?Q?1i98I++8MhImQSJIDFmTjfMVUJQAWsyjCu0TJr0zLRHmQTzUXyLHZuqAqG2/?=
+ =?us-ascii?Q?KqP/AcBsZpCL1KVjUQuN09E=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1270.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9911a153-c921-4bc0-03cb-08d9eb319ef8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Feb 2022 18:34:20.0014
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ntqIgwhOgE2QcQghPpN3W1Ko6k4o91j+7wr9sA2b0SgjkJ9Ys0a+D6YGdPqqj119WDJM6kUHDUAowSzl+evhAA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR21MB1815
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(addded linux-api)
+> From: Dexuan Cui
+> Sent: Friday, January 21, 2022 10:15 PM
+> To: Oliver Sang <oliver.sang@intel.com>; Jens Axboe <axboe@kernel.dk>; Yi=
+n
+> Fengwei <fengwei.yin@intel.com>; linux-block@vger.kernel.org
+> Cc: Alex Xu (Hello71) <alex_y_xu@yahoo.ca>; ming.lei@redhat.com;
+> hch@lst.de; Long Li <longli@microsoft.com>; Michael Kelley (LINUX)
+> <mikelley@microsoft.com>; linux-kernel@vger.kernel.org; Li, Philip
+> <philip.li@intel.com>; Rakesh Ginjupalli <Rakesh.Ginjupalli@microsoft.com=
+>
+> Subject: RE: RE: very low IOPS due to "block: reduce
+> kblockd_mod_delayed_work_on() CPU consumption"
+>=20
+> > From: Oliver Sang <oliver.sang@intel.com>
+> > Sent: Tuesday, December 28, 2021 5:49 AM
+> >  ...
+> > Hi Jens, Dexuan,
+> >
+> > On Tue, Dec 28, 2021 at 10:30:43AM +0800, Yin Fengwei wrote:
+> > > Hi Jens, Dexuan,
+> > >
+> > > On 12/20/2021 1:15 PM, Dexuan Cui wrote:
+> > > >> From: Jens Axboe <axboe@kernel.dk>
+> > > >> Sent: Sunday, December 19, 2021 7:28 AM
+> > > >>> ...
+> > > >>> Dexuan, can you test this for your test case too? I'm going to qu=
+eue
+> > > >>> up a revert for -rc6 just in case.
+> > > >>
+> > > >> This one should be better...
+> > > >> ...
+> > > >> Jens Axboe
+> > > >
+> > > > Hi Jens, sorry -- unluckily I lost the test environment.. :-(
+> > > > I pinged the user to set up the test environment again, but he's
+> > > > on vacation till the beginning of January.
+> > >
+> > > We hit this issue in our testing env also and will help to verify
+> > > your fixing patch. Thanks.
+> >
+> > as we reported in [1], we found cb2ac2912a cause big regressions in fxm=
+ark
+> > tests.
+> > "[block]  cb2ac2912a:
+> > fxmark.ssd_f2fs_dbench_client_4_bufferedio.works/sec -66.0% regression"
+> >
+> > By applying the patch supplied by Jens Axboe in previous thread directl=
+y
+> > upon cb2ac2912a, we confirmed the regression could be fixed:
+> > ...
+> > > Regards
+> > > Yin, Fengwei
+>=20
+> Hi Jens, Fengwei,
+> I finally regained my test evnironment and tested Jens's Dec-19 patch
+> (see https://www.spinics.net/lists/linux-block/msg78065.html) and it
+> also worked fine for me, i.e. no excessive CPU utilization even with the
+> default dm_mod.dm_mq_queue_depth=3D2048.
+>=20
+> BTW, Jen's patch is not in the mainline yet. I tested it using the linux-=
+block tree.
+>=20
+> Thanks,
+> -- Dexuan
 
-On Tue, Jan 18, 2022 at 09:21:09PM +0800, Chao Peng wrote:
-> This is the v4 of this series which try to implement the fd-based KVM
-> guest private memory. The patches are based on latest kvm/queue branch
-> commit:
-> 
->   fea31d169094 KVM: x86/pmu: Fix available_event_types check for
->                REF_CPU_CYCLES event
-> 
-> Introduction
-> ------------
-> In general this patch series introduce fd-based memslot which provides
-> guest memory through memory file descriptor fd[offset,size] instead of
-> hva/size. The fd can be created from a supported memory filesystem
-> like tmpfs/hugetlbfs etc. which we refer as memory backing store. KVM
-> and the the memory backing store exchange callbacks when such memslot
-> gets created. At runtime KVM will call into callbacks provided by the
-> backing store to get the pfn with the fd+offset. Memory backing store
-> will also call into KVM callbacks when userspace fallocate/punch hole
-> on the fd to notify KVM to map/unmap secondary MMU page tables.
-> 
-> Comparing to existing hva-based memslot, this new type of memslot allows
-> guest memory unmapped from host userspace like QEMU and even the kernel
-> itself, therefore reduce attack surface and prevent bugs.
-> 
-> Based on this fd-based memslot, we can build guest private memory that
-> is going to be used in confidential computing environments such as Intel
-> TDX and AMD SEV. When supported, the memory backing store can provide
-> more enforcement on the fd and KVM can use a single memslot to hold both
-> the private and shared part of the guest memory. 
-> 
-> mm extension
-> ---------------------
-> Introduces new F_SEAL_INACCESSIBLE for shmem and new MFD_INACCESSIBLE
-> flag for memfd_create(), the file created with these flags cannot read(),
-> write() or mmap() etc via normal MMU operations. The file content can
-> only be used with the newly introduced memfile_notifier extension.
-
-It would be great to see man page draft for new ABI flags
- 
-> The memfile_notifier extension provides two sets of callbacks for KVM to
-> interact with the memory backing store:
->   - memfile_notifier_ops: callbacks for memory backing store to notify
->     KVM when memory gets allocated/invalidated.
->   - memfile_pfn_ops: callbacks for KVM to call into memory backing store
->     to request memory pages for guest private memory.
-> 
-> memslot extension
-> -----------------
-> Add the private fd and the fd offset to existing 'shared' memslot so that
-> both private/shared guest memory can live in one single memslot. A page in
-> the memslot is either private or shared. A page is private only when it's
-> already allocated in the backing store fd, all the other cases it's treated
-> as shared, this includes those already mapped as shared as well as those
-> having not been mapped. This means the memory backing store is the place
-> which tells the truth of which page is private.
-> 
-> Private memory map/unmap and conversion
-> ---------------------------------------
-> Userspace's map/unmap operations are done by fallocate() ioctl on the
-> backing store fd.
->   - map: default fallocate() with mode=0.
->   - unmap: fallocate() with FALLOC_FL_PUNCH_HOLE.
-> The map/unmap will trigger above memfile_notifier_ops to let KVM map/unmap
-> secondary MMU page tables.
-> 
-> Test
-> ----
-> To test the new functionalities of this patch TDX patchset is needed.
-> Since TDX patchset has not been merged so I did two kinds of test:
-> 
-> -  Regresion test on kvm/queue (this patch)
->    Most new code are not covered. I only tested building and booting.
-> 
-> -  New Funational test on latest TDX code
->    The patch is rebased to latest TDX code and tested the new
->    funcationalities.
-> 
-> For TDX test please see below repos:
-> Linux: https://github.com/chao-p/linux/tree/privmem-v4.3
-> QEMU: https://github.com/chao-p/qemu/tree/privmem-v4
-> 
-> And an example QEMU command line:
-> -object tdx-guest,id=tdx \
-> -object memory-backend-memfd-private,id=ram1,size=2G \
-> -machine q35,kvm-type=tdx,pic=no,kernel_irqchip=split,memory-encryption=tdx,memory-backend=ram1
-> 
-> Changelog
-> ----------
-> v4:
->   - Decoupled the callbacks between KVM/mm from memfd and use new
->     name 'memfile_notifier'.
->   - Supported register multiple memslots to the same backing store.
->   - Added per-memslot pfn_ops instead of per-system.
->   - Reworked the invalidation part.
->   - Improved new KVM uAPIs (private memslot extension and memory
->     error) per Sean's suggestions.
->   - Addressed many other minor fixes for comments from v3.
-> v3:
->   - Added locking protection when calling
->     invalidate_page_range/fallocate callbacks.
->   - Changed memslot structure to keep use useraddr for shared memory.
->   - Re-organized F_SEAL_INACCESSIBLE and MEMFD_OPS.
->   - Added MFD_INACCESSIBLE flag to force F_SEAL_INACCESSIBLE.
->   - Commit message improvement.
->   - Many small fixes for comments from the last version.
-> 
-> Links of previous discussions
-> -----------------------------
-> [1] Original design proposal:
-> https://lkml.kernel.org/kvm/20210824005248.200037-1-seanjc@google.com/
-> [2] Updated proposal and RFC patch v1:
-> https://lkml.kernel.org/linux-fsdevel/20211111141352.26311-1-chao.p.peng@linux.intel.com/
-> [3] Patch v3: https://lkml.org/lkml/2021/12/23/283
-> 
-> Chao Peng (11):
->   mm/memfd: Introduce MFD_INACCESSIBLE flag
->   mm: Introduce memfile_notifier
->   mm/shmem: Support memfile_notifier
->   KVM: Extend the memslot to support fd-based private memory
->   KVM: Use kvm_userspace_memory_region_ext
->   KVM: Add KVM_EXIT_MEMORY_ERROR exit
->   KVM: Use memfile_pfn_ops to obtain pfn for private pages
->   KVM: Handle page fault for private memory
->   KVM: Register private memslot to memory backing store
->   KVM: Zap existing KVM mappings when pages changed in the private fd
->   KVM: Expose KVM_MEM_PRIVATE
-> 
-> Kirill A. Shutemov (1):
->   mm/shmem: Introduce F_SEAL_INACCESSIBLE
-> 
->  arch/x86/kvm/Kconfig             |   1 +
->  arch/x86/kvm/mmu/mmu.c           |  73 +++++++++++-
->  arch/x86/kvm/mmu/paging_tmpl.h   |  11 +-
->  arch/x86/kvm/x86.c               |  12 +-
->  include/linux/kvm_host.h         |  49 +++++++-
->  include/linux/memfile_notifier.h |  53 +++++++++
->  include/linux/shmem_fs.h         |   4 +
->  include/uapi/linux/fcntl.h       |   1 +
->  include/uapi/linux/kvm.h         |  17 +++
->  include/uapi/linux/memfd.h       |   1 +
->  mm/Kconfig                       |   4 +
->  mm/Makefile                      |   1 +
->  mm/memfd.c                       |  20 +++-
->  mm/memfile_notifier.c            |  99 ++++++++++++++++
->  mm/shmem.c                       | 121 +++++++++++++++++++-
->  virt/kvm/kvm_main.c              | 188 +++++++++++++++++++++++++++----
->  16 files changed, 614 insertions(+), 41 deletions(-)
->  create mode 100644 include/linux/memfile_notifier.h
->  create mode 100644 mm/memfile_notifier.c
-> 
-> -- 
-> 2.17.1
-> 
-> 
-
--- 
-Sincerely yours,
-Mike.
+Hi Jens, any plan to commit your 12/19/2021 patch?=20
+It works great according to Fengwei's and my test.
