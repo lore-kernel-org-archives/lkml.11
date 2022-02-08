@@ -2,226 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85034C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A36ACC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346294AbiBHFcF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 00:32:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54662 "EHLO
+        id S242213AbiBHFcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 00:32:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346997AbiBHEmZ (ORCPT
+        with ESMTP id S1347016AbiBHErB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 23:42:25 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA24C0401DC;
-        Mon,  7 Feb 2022 20:42:23 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jt9NC5CWRz4xdJ;
-        Tue,  8 Feb 2022 15:42:19 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1644295341;
-        bh=eRZDqpJm+0tjFDqYrrOiNYA5VmZuwoSbNIXNIIJXX+o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uxaM8CCCfBZM0mnOeS3Quq5TurjnG5C7TbZwyIZlxjwGigL92WMnqzzoVOEUfN19l
-         7xDeEKFRobiOyaAPmBMPGi4xbBA9sLULZE21T2gvMa3kCCIKypZQeMIchgQCoepFxP
-         +cSXEm9MSgwsSbXqKLl2Sygo77w+/0k9LKa5ppvkpRhHLGKd+K+qeCFGD7IdNhri7V
-         ky8KTZqsMQZ18GevsqZIJlBbDV8vtKKBiqmPVAQoKZchvWxYbVM9s2yPV5eO7WJjXg
-         m/HrsR4/Iy1RSUP39kW3CNqMEQY+WxDqz2P0V8Rb5T/Uij74RXUYXtqRMbsuW5J28r
-         IBJbX+sFIXXGQ==
-Date:   Tue, 8 Feb 2022 15:42:18 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "Bryant G. Ly" <bryantly@linux.vnet.ibm.com>,
-        Michael Cyr <mikecyr@linux.vnet.ibm.com>,
-        Nicholas Bellinger <nab@linux-iscsi.org>,
-        Steven Royer <seroyer@linux.vnet.ibm.com>,
-        Tyrel Datwyler <tyreld@linux.vnet.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        James Bottomley <James.Bottomley@HansenPartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: Re: linux-next: build failure after merge of the kspp tree
-Message-ID: <20220208154218.14c7d414@canb.auug.org.au>
-In-Reply-To: <202201241938.DA2AB1AB4@keescook>
-References: <20220125142430.75c3160e@canb.auug.org.au>
-        <202201241938.DA2AB1AB4@keescook>
+        Mon, 7 Feb 2022 23:47:01 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2097.outbound.protection.outlook.com [40.107.220.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E7FC0401E9;
+        Mon,  7 Feb 2022 20:47:00 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G4fKnY7hkjy6186++n+Nn/VKlf4aGW+VFfgXFDF4bqvAlfdTCZA2Q+I7373NkuTlMGDXMHsv+ynDKVcv4rksB5soPAjiTNR/f5rRUiSMInK4yX4g1gOGMwjZQRFDdnoMIm7dAbYqKUmP9qg8ShSOA8nMHRPxKdnH9/HFN9E+BoTrBokbzcLjEHQuKBtBfqBUs6VGuzQS60Ptd3ThzlRmvJX/1pqvn/pIXOO67Pn5gnD754Jba3bFV2Sam3bOMFjqgAqabGtnT+EBBgyn9Fv3HI1Aj+f+1ghlmBpx+lznLZDkMyP5N864GlwRgc/OiU6Xk9HiAjs597jQfmNNJWPYNw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Gc3k37fgcH4Cy6R5yFs/SVQZ8AteMJL/IRFkIAGwOj0=;
+ b=mooxyRQ1+PCA1Aul1rQlDYv/SH7OXqqFEtoyRtulvCpfs/DM2x3TuN1jE/VyLJFPVLxN9Ufo2gfPGHJfDHuAhxCooJ/dfjDv4q9lKEknE7kLPBkRSytm2EI7qxGCla0Mm3SJWVC6kRgqunWXG5b2aIQC70jJ1sMTvN8vHT20I5nY+8Eo8DLH+Bn+3MoMPh26Fp+ikmB40y/4/5WSSX61K9rVy7ZQskFk4u8p9set8Tm0PKELO1yYD+b/bXE3IYkrymzuWq3LMHIjtbM7SSYWSgSM/oUI5URNuxgtU5S2NJPBnMVqWhWM4mIYEz2ng8ZpO6oPiwYvfeX9CM0mdDI9FQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Gc3k37fgcH4Cy6R5yFs/SVQZ8AteMJL/IRFkIAGwOj0=;
+ b=okSU1O77DiB0T7xeMvx2VCBzYM7FhqZPOsxD7HjV7DOH6rOA/GOgi0p5FD0BGiQi2Z9bBZ3hpPsTCMbgSr6EdPhjiqLpslASHDBnf9e9I+Ap2FKv6DTWnpqk/T0xH+CIYzU7/hVIC3Cz8/Tb5ojl9qPiDA8fUdhHLma8gt9yQ10=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by MWHPR1001MB2176.namprd10.prod.outlook.com
+ (2603:10b6:301:30::39) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Tue, 8 Feb
+ 2022 04:46:57 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4951.018; Tue, 8 Feb 2022
+ 04:46:56 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH v5 net-next 3/3] net: mscc: ocelot: use bulk reads for stats
+Date:   Mon,  7 Feb 2022 20:46:44 -0800
+Message-Id: <20220208044644.359951-4-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220208044644.359951-1-colin.foster@in-advantage.com>
+References: <20220208044644.359951-1-colin.foster@in-advantage.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MWHPR17CA0090.namprd17.prod.outlook.com
+ (2603:10b6:300:c2::28) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/X1IYci1gwgb=64m5IDUZH/b";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f63ab5a8-2bde-47d9-f6f1-08d9eabe0888
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2176:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR1001MB2176D9DF1CC9B2BAB98FAFBEA42D9@MWHPR1001MB2176.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1060;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /kglMlFDvd8WapdwImEJouIXaEQIi0SArH7etynnSs6/xHYJ74wTImr3MrmwCzCfeaEYHLXBiQpM7AEBBeECol2YSn+PZBZNXp88Wnqh1gsAwqC5XDjeQRHtbmOU3IDVi8s7s2f3Ddw9wi+zhd7/Oqd78O0r/MVESkz5osNhfkCdAg0z4or3bAl54xdTuKtI37O2v1zkYXpcBE9kIXgVcz09744I55KibJcSHnpuvun8OGjLiSuRuAvi2bIE1eTFDxp+YTiu19ENozNPllxaY4RKJICJvQaeccAcQ6s1cVhCdV62BSOKPsMV5cSZcIF/tYXNqybcfnW0C64fjORJhm7JWj8/MBwoAkkpwsowfKtJloZd5g1o15VZSmRJWwsTGcBC4bZaDY7XxeVw1b3yyeoy7I2bGT2GEEeT123O+aN0da5+7Sb9FSougkgRFn9y7Uq2II/nGRlisSntjHy3l/r9CGttD6klQqG5loHLs3KZ3bABYxNL92MeH0ID25n+JLiqQxo5JoB5B4ZrvPe8ZLuw6vIaEF74o7KD8LdrazWNukNETLm0XNTIv2iuy0LTyigT8pBp0Ty/h8TubNJjG446tAzPKxL6mI6FxGtK9W6oKN2wD0jlXAlMgxxY3TcCGTT0b5j39aTxG9aN2m2prK55jQ1n3BASHAVBW39UCbrUmbhKU+hnlFY1v33eCBBj7ZxV2U0ohskYvGo2rTYS5A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(376002)(39830400003)(136003)(346002)(42606007)(396003)(54906003)(86362001)(508600001)(6506007)(44832011)(6512007)(52116002)(36756003)(8676002)(8936002)(66556008)(4326008)(66946007)(6486002)(66476007)(83380400001)(316002)(1076003)(186003)(38100700002)(2616005)(38350700002)(26005)(2906002)(5660300002)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9L6MmNNXLO72kpSU3vs3Vs+1/brKx8JyMJYm2ukdDxk2PYpLKcSiVGeQUp6B?=
+ =?us-ascii?Q?F4erSsUD9txGdnsXuGTNR0zn/TeRrRQob26d0KRIHmWXjKm9iRdhCjNitAX7?=
+ =?us-ascii?Q?5JUKfNd8Zktqzovc98lCgWzuz5tETpufXcA9usvL+Z9HcetxwxXr594YcS/5?=
+ =?us-ascii?Q?sUtEQHzWcdh9iOLQOccgdv9mAu7r1YsB9mpEZcjHZ5cwxAv3dyi3gnY0o2FK?=
+ =?us-ascii?Q?8mJRfrJWQrsUGtZFWGTNwDX+4Xr01iUXZjfiVKiQ++TKgko1CQRDHa2y8wLx?=
+ =?us-ascii?Q?CxGnm5GmsTmb4iGrC6Lhg1PbclPe4nVW6l1G5yDA9YAN2RldL0n8Xi5x9qhN?=
+ =?us-ascii?Q?iEIIvvk1ThKgZFPC6bjCSsjn8AY8eeWUw7KeTFTsUGyoeQdN/+2SE0895pn3?=
+ =?us-ascii?Q?/gYuU2s9781iMaYt8LVleA7RVdGg/sp6Sbhe0rVebt6q5YVSuTyXt/n3Vcev?=
+ =?us-ascii?Q?kI8yREfQjWHW5L3u5WQTiQLnUoBoZbb3W6xf4ev2QTRrpP2GUhkTKs6E7Phw?=
+ =?us-ascii?Q?PXpwpjpAoCeXGs4lAcj1IemACKdsxm8kc8PrHa80kDH8LGjTOtb/juTTW0//?=
+ =?us-ascii?Q?don0YZANQcnApB6/EtTbsOivGYABuaVH5GIMnxnCozaHwU6iFTmOsSBGcLxg?=
+ =?us-ascii?Q?fCqey6AIBrhtYtziJpgiUBZawx22y1wOQSnzJsa7yXN98k4hBCggecklPao+?=
+ =?us-ascii?Q?oJ5tWmW5P1M6ccmrPuj7m4uRFEVDaZ+1xKt657BR3PvNRRod6eAhc/yUJPGf?=
+ =?us-ascii?Q?ABXCvB5b9+zo7xSSno9Gp2X6fiXM5PyZJian5IJ0ixliTz8I0su+G0oECnzG?=
+ =?us-ascii?Q?c9amhFUVIfI/DXyFI5cqLogS+AOpyduzdRBwDv5kaQJtx7xgieuenTbwsql/?=
+ =?us-ascii?Q?6Cp7qAqgP33lT/3f3Fbm+LcVOXRyzo7LzBWFpj0gOomBghhpB4TeDHnMUNcv?=
+ =?us-ascii?Q?0KmY6qgjtcisy3fyQDZs5AZHJDF2DVQv25pJOKYf6hTT3m1nytWs6i12rWfH?=
+ =?us-ascii?Q?YrvJc/B5ygNahG2plh+KsdTEbrSwAFU65OCuZKkvVZXEYoxAOOwNVgL9rc5Y?=
+ =?us-ascii?Q?l7qDCVWjVUHzhrIauj0wNkUQmxEum3+3TwqFIxugIeWnusEEdAs8w6TsHjBx?=
+ =?us-ascii?Q?s1HHfviLaG68jgIuH7n3PcM/9NbBJzdvWVEzUT852HdPGdQNUEwzkTGeNGu2?=
+ =?us-ascii?Q?CV+NCWX+Ix9x8kNj09ohwuBhAPMWXUyWX9hbaUPplYRWhnU8DPByd8IkVZKP?=
+ =?us-ascii?Q?eQA6g+YlxqG1bbtPXfvYSLuybQ2XhQa2PeGH3XuFk6zqCXw3G+Nm+5chiMpf?=
+ =?us-ascii?Q?BAu1pNqIIER01507hIjji/MJkxXB6WZQgC30pCpo/l4rDbxMl5b0/Xbds439?=
+ =?us-ascii?Q?RRwTmSo3io909A0YXfWF5Msf7RvNHPLeO89uyZMvAV7G7PCNBSuE0eyHi41K?=
+ =?us-ascii?Q?SmY73bAj7IeLEsBO4+SGN7NHXFrzbl3+6syFK+LdoXAKGGAnL88xCg0gDVq/?=
+ =?us-ascii?Q?i+ZUk1DEPByBmKllR/cXdd52rmIjuahbGnORmRi0DLu3RzWe2aI+3eah2cUF?=
+ =?us-ascii?Q?cZS5g/slDk/6HeALHYlHD99oy/HlH65Au0cs2EvGikH6c8fL5oKKxRlxnBhT?=
+ =?us-ascii?Q?9pdTw2iIflH0ZQtsBFioPEf+eivFxtY/XqXlUK+/GZKvikcbKGbL8hIwoXco?=
+ =?us-ascii?Q?1z0ILA=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f63ab5a8-2bde-47d9-f6f1-08d9eabe0888
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 04:46:55.8609
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bDaV868a27ALZXwIUx+lbZpXVlAUWklc0R/w6crbkewB3/aJrcVT3Iokj2tWFBwGTTazI7meUJDkPbf0FjdMUUknRJDvvUa61iTAWYzAD7A=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1001MB2176
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/X1IYci1gwgb=64m5IDUZH/b
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Create and utilize bulk regmap reads instead of single access for gathering
+stats. The background reading of statistics happens frequently, and over
+a few contiguous memory regions.
 
-Hi all,
+High speed PCIe buses and MMIO access will probably see negligible
+performance increase. Lower speed buses like SPI and I2C could see
+significant performance increase, since the bus configuration and register
+access times account for a large percentage of data transfer time.
 
-[Cc'ing the scsi maintainers.  Sorry I should have done that sooner]
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+---
+ drivers/net/ethernet/mscc/ocelot.c | 78 +++++++++++++++++++++++++-----
+ include/soc/mscc/ocelot.h          |  8 +++
+ 2 files changed, 73 insertions(+), 13 deletions(-)
 
-On Mon, 24 Jan 2022 19:43:44 -0800 Kees Cook <keescook@chromium.org> wrote:
->
-> On Tue, Jan 25, 2022 at 02:24:30PM +1100, Stephen Rothwell wrote:
-> >=20
-> > After merging the kspp tree, today's linux-next build (powerpc
-> > allyesconfig) failed like this:
-> >=20
-> >=20
-> > drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c: In function 'ibmvscsis_send_m=
-essages':
-> > drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1934:44: error: array subscrip=
-t 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'l=
-ong long unsigned int[1]'} [-Werror=3Darray-bounds]
-> >  1934 |                                         crq->valid =3D VALID_CM=
-D_RESP_EL;
-> >       |                                            ^~
-> > drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referenci=
-ng 'msg_hi'
-> >  1875 |         u64 msg_hi =3D 0;
-> >       |             ^~~~~~
-> > drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1935:44: error: array subscrip=
-t 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'l=
-ong long unsigned int[1]'} [-Werror=3Darray-bounds]
-> >  1935 |                                         crq->format =3D cmd->rs=
-p.format;
-> >       |                                            ^~
-> > drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referenci=
-ng 'msg_hi'
-> >  1875 |         u64 msg_hi =3D 0;
-> >       |             ^~~~~~
-> > drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1938:52: error: array subscrip=
-t 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'l=
-ong long unsigned int[1]'} [-Werror=3Darray-bounds]
-> >  1938 |                                                 crq->status =3D=
- VIOSRP_ADAPTER_FAIL;
-> >       |                                                    ^~
-> > drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referenci=
-ng 'msg_hi'
-> >  1875 |         u64 msg_hi =3D 0;
-> >       |             ^~~~~~
-> > drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1940:44: error: array subscrip=
-t 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'l=
-ong long unsigned int[1]'} [-Werror=3Darray-bounds]
-> >  1940 |                                         crq->IU_length =3D cpu_=
-to_be16(cmd->rsp.len);
-> >       |                                            ^~
-> > drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referenci=
-ng 'msg_hi'
-> >  1875 |         u64 msg_hi =3D 0;
-> >       |             ^~~~~~
-> >=20
-> > Exposed by commit
-> >=20
-> >   4ba545781e20 ("Makefile: Enable -Warray-bounds")
-> >=20
-> > Probably introduced by commit
-> >=20
-> >   88a678bbc34c ("ibmvscsis: Initial commit of IBM VSCSI Tgt Driver")
-> >=20
-> > I applied the following hack for now:
-> >=20
-> > From: Stephen Rothwell <sfr@canb.auug.org.au>
-> > Date: Tue, 25 Jan 2022 14:18:36 +1100
-> > Subject: [PATCH] scsi: hack for building with -Warray-bounds
-> >=20
-> > Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > ---
-> >  drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> >=20
-> > diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ib=
-mvscsi_tgt/ibmvscsi_tgt.c
-> > index 61f06f6885a5..89fcf98c61c3 100644
-> > --- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-> > +++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-> > @@ -1872,11 +1872,11 @@ static void srp_snd_msg_failed(struct scsi_info=
- *vscsi, long rc)
-> >   */
-> >  static void ibmvscsis_send_messages(struct scsi_info *vscsi)
-> >  {
-> > -	u64 msg_hi =3D 0;
-> > +	u64 msg_hi[2] =3D { };
-> >  	/* note do not attempt to access the IU_data_ptr with this pointer
-> >  	 * it is not valid
-> >  	 */
-> > -	struct viosrp_crq *crq =3D (struct viosrp_crq *)&msg_hi;
-> > +	struct viosrp_crq *crq =3D (struct viosrp_crq *)msg_hi;
-> >  	struct ibmvscsis_cmd *cmd, *nxt;
-> >  	long rc =3D ADAPT_SUCCESS;
-> >  	bool retry =3D false;
-> > @@ -1940,7 +1940,7 @@ static void ibmvscsis_send_messages(struct scsi_i=
-nfo *vscsi)
-> >  					crq->IU_length =3D cpu_to_be16(cmd->rsp.len);
-> > =20
-> >  					rc =3D h_send_crq(vscsi->dma_dev->unit_address,
-> > -							be64_to_cpu(msg_hi),
-> > +							be64_to_cpu(msg_hi[0]),
-> >  							be64_to_cpu(cmd->rsp.tag));
-> > =20
-> >  					dev_dbg(&vscsi->dev, "send_messages: cmd %p, tag 0x%llx, rc %ld\n=
-", =20
->=20
-> This looks correct to me. struct viosrp_crq is 16 bytes wide. The only
-> suggestion I might make would be either avoid the bare '2':
->=20
-> 	u64 msg_hi[sizeof(struct viosrp_crq) / sizeof(u64)] =3D { };
->=20
-> or adjust struct viosrp_crq so the casting isn't needed at all:
->=20
->=20
-> truct viosrp_crq {
-> 	union {
-> 		u64 hi;
-> 		struct {
-> 		        u8 valid;               /* used by RPA */
-> 		        u8 format;              /* SCSI vs out-of-band */
-> 		        u8 reserved;
-> 		        u8 status;              /* non-scsi failure? (e.g. DMA failure)=
- */
-> 		        __be16 timeout;         /* in seconds */
-> 		        __be16 IU_length;       /* in bytes */
-> 		};
-> 	};
->         __be64 IU_data_ptr;     /* the TCE for transferring data */
-> };
->=20
-> 	struct viosrp_crq crq =3D { };
-> 	...
->  			rc =3D h_send_crq(vscsi->dma_dev->unit_address,
-> 					be64_to_cpu(crq.hi),
-> 					be64_to_cpu(cmd->rsp.tag));
->=20
->=20
->=20
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 455293aa6343..5efb1f3a1410 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1737,32 +1737,41 @@ void ocelot_get_strings(struct ocelot *ocelot, int port, u32 sset, u8 *data)
+ }
+ EXPORT_SYMBOL(ocelot_get_strings);
+ 
+-static void ocelot_update_stats(struct ocelot *ocelot)
++static int ocelot_update_stats(struct ocelot *ocelot)
+ {
+-	int i, j;
++	struct ocelot_stats_region *region;
++	int i, j, err = 0;
+ 
+ 	mutex_lock(&ocelot->stats_lock);
+ 
+ 	for (i = 0; i < ocelot->num_phys_ports; i++) {
++		unsigned int idx = 0;
++
+ 		/* Configure the port to read the stats from */
+ 		ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(i), SYS_STAT_CFG);
+ 
+-		for (j = 0; j < ocelot->num_stats; j++) {
+-			u32 val;
+-			unsigned int idx = i * ocelot->num_stats + j;
++		list_for_each_entry(region, &ocelot->stats_regions, node) {
++			err = ocelot_bulk_read_rix(ocelot, SYS_COUNT_RX_OCTETS,
++						   region->offset, region->buf,
++						   region->count);
++			if (err)
++				goto out;
+ 
+-			val = ocelot_read_rix(ocelot, SYS_COUNT_RX_OCTETS,
+-					      ocelot->stats_layout[j].offset);
++			for (j = 0; j < region->count; j++) {
++				if (region->buf[j] < (ocelot->stats[idx + j] & U32_MAX))
++					ocelot->stats[idx + j] += (u64)1 << 32;
+ 
+-			if (val < (ocelot->stats[idx] & U32_MAX))
+-				ocelot->stats[idx] += (u64)1 << 32;
++				ocelot->stats[idx + j] = (ocelot->stats[idx + j] &
++							~(u64)U32_MAX) + region->buf[j];
++			}
+ 
+-			ocelot->stats[idx] = (ocelot->stats[idx] &
+-					      ~(u64)U32_MAX) + val;
++			idx += region->count;
+ 		}
+ 	}
+ 
++out:
+ 	mutex_unlock(&ocelot->stats_lock);
++	return err;
+ }
+ 
+ static void ocelot_check_stats_work(struct work_struct *work)
+@@ -1779,10 +1788,11 @@ static void ocelot_check_stats_work(struct work_struct *work)
+ 
+ void ocelot_get_ethtool_stats(struct ocelot *ocelot, int port, u64 *data)
+ {
+-	int i;
++	int i, err;
+ 
+ 	/* check and update now */
+-	ocelot_update_stats(ocelot);
++	err = ocelot_update_stats(ocelot);
++	WARN_ONCE(err, "Error %d updating ethtool stats\n", err);
+ 
+ 	/* Copy all counters */
+ 	for (i = 0; i < ocelot->num_stats; i++)
+@@ -1799,6 +1809,41 @@ int ocelot_get_sset_count(struct ocelot *ocelot, int port, int sset)
+ }
+ EXPORT_SYMBOL(ocelot_get_sset_count);
+ 
++static int ocelot_prepare_stats_regions(struct ocelot *ocelot)
++{
++	struct ocelot_stats_region *region = NULL;
++	unsigned int last;
++	int i;
++
++	INIT_LIST_HEAD(&ocelot->stats_regions);
++
++	for (i = 0; i < ocelot->num_stats; i++) {
++		if (region && ocelot->stats_layout[i].offset == last + 1) {
++			region->count++;
++		} else {
++			region = devm_kzalloc(ocelot->dev, sizeof(*region),
++					      GFP_KERNEL);
++			if (!region)
++				return -ENOMEM;
++
++			region->offset = ocelot->stats_layout[i].offset;
++			region->count = 1;
++			list_add_tail(&region->node, &ocelot->stats_regions);
++		}
++
++		last = ocelot->stats_layout[i].offset;
++	}
++
++	list_for_each_entry(region, &ocelot->stats_regions, node) {
++		region->buf = devm_kcalloc(ocelot->dev, region->count,
++					   sizeof(*region->buf), GFP_KERNEL);
++		if (!region->buf)
++			return -ENOMEM;
++	}
++
++	return 0;
++}
++
+ int ocelot_get_ts_info(struct ocelot *ocelot, int port,
+ 		       struct ethtool_ts_info *info)
+ {
+@@ -2799,6 +2844,13 @@ int ocelot_init(struct ocelot *ocelot)
+ 				 ANA_CPUQ_8021_CFG_CPUQ_BPDU_VAL(6),
+ 				 ANA_CPUQ_8021_CFG, i);
+ 
++	ret = ocelot_prepare_stats_regions(ocelot);
++	if (ret) {
++		destroy_workqueue(ocelot->stats_queue);
++		destroy_workqueue(ocelot->owq);
++		return ret;
++	}
++
+ 	INIT_DELAYED_WORK(&ocelot->stats_work, ocelot_check_stats_work);
+ 	queue_delayed_work(ocelot->stats_queue, &ocelot->stats_work,
+ 			   OCELOT_STATS_CHECK_DELAY);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 312b72558659..d3291a5f7e88 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -542,6 +542,13 @@ struct ocelot_stat_layout {
+ 	char name[ETH_GSTRING_LEN];
+ };
+ 
++struct ocelot_stats_region {
++	struct list_head node;
++	u32 offset;
++	int count;
++	u32 *buf;
++};
++
+ enum ocelot_tag_prefix {
+ 	OCELOT_TAG_PREFIX_DISABLED	= 0,
+ 	OCELOT_TAG_PREFIX_NONE,
+@@ -673,6 +680,7 @@ struct ocelot {
+ 	struct regmap_field		*regfields[REGFIELD_MAX];
+ 	const u32 *const		*map;
+ 	const struct ocelot_stat_layout	*stats_layout;
++	struct list_head		stats_regions;
+ 	unsigned int			num_stats;
+ 
+ 	u32				pool_size[OCELOT_SB_NUM][OCELOT_SB_POOL_NUM];
+-- 
+2.25.1
 
-Has there been any progress on this?
-
-Commit 88a678bbc34c mentioned above was merged in v4.8-rc1.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/X1IYci1gwgb=64m5IDUZH/b
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIB9KoACgkQAVBC80lX
-0Gy4+gf+LvPnEiqI43W8ZSDYyqqJ1VpI3frGGWp+CtEtsVR/7zK9TflTyHYttcZN
-7UIkxsarFucQdOdJa5uozVExqDMYQT438j8aeBIqWyFN3n/k9ICsemPTVQcD7g2U
-umLPMVoeJwRA3KQNOtipjuS1M5Fbvjx8cCSDTPWcBlJ/oepRWFRQY6SeKmRMr5OA
-AQ/dxdWgcdqVc9u8kHDeeS66RNrm/6oi5H4FvCLNPbc2mqcXkALuo04k6P6++Ivl
-8P3JuUIuooatVRPoo9jmOLVC3pgd3FqLP/2bhmLHi9Wq8Hx+LT7FM75zXMd/BzvT
-rA/BiuyNLVe9CKaSKS9IF8WBXAlSlA==
-=t8Li
------END PGP SIGNATURE-----
-
---Sig_/X1IYci1gwgb=64m5IDUZH/b--
