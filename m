@@ -2,177 +2,432 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A829C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A83C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385053AbiBHSlR (ORCPT
+        id S1385099AbiBHSlr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:41:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
+        Tue, 8 Feb 2022 13:41:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231149AbiBHSlP (ORCPT
+        with ESMTP id S1385080AbiBHSlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:41:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3D2EC061579
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:41:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644345674;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xML1xNkIw3e0hTYk74bi0fSg0bcnbMZm5u6L4MPv8BA=;
-        b=bck0yfKicJmKETmL+MCTzBS/qgOqMz1tJSizTsus6ltfq9Cp0UGNPIQn/SEu3tSNynlTHH
-        onTPxwk711oQoqxDMFJJzbycFeZldhZVO8NqtHgGeXsREglZo8IUT2ldqiNSjW1ZZzW1mf
-        WlZHGyi6MUlWPl3tfygVWYmD8iZ8wLk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-168-4DGKpYoYNeCJaX4uVE-ldw-1; Tue, 08 Feb 2022 13:41:11 -0500
-X-MC-Unique: 4DGKpYoYNeCJaX4uVE-ldw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 10B42101F003;
-        Tue,  8 Feb 2022 18:41:02 +0000 (UTC)
-Received: from [10.22.35.8] (unknown [10.22.35.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F62710A3945;
-        Tue,  8 Feb 2022 18:40:58 +0000 (UTC)
-Message-ID: <e897adca-168e-13db-8001-4afbef3aa648@redhat.com>
-Date:   Tue, 8 Feb 2022 13:40:57 -0500
+        Tue, 8 Feb 2022 13:41:42 -0500
+X-Greylist: delayed 403 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 10:41:39 PST
+Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491C7C06157B;
+        Tue,  8 Feb 2022 10:41:38 -0800 (PST)
+From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1644345293; bh=C2NGAAeRS1YCWvvrFSmpGAh3DydYiDjAFK9L9+leUpc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=JeiGA/04kSmNIliiS6qURc5WrrHFeD5HM19cMIol+99SI2mbVyrpdy+Au3LNMAU3A
+         4EOxX3eNiNUzgrgZg6dlGaGdtZkhflANXmGEEc9hAYJTGBp0d5XGdE4hKt12o+amcp
+         G26rMrDeEEQKZMT/r0AjxOMfNnGcnEkP5lqJM2XU=
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
+Subject: [PATCH v4 2/3] clk: clk-apple-nco: Add driver for Apple NCO
+Date:   Tue,  8 Feb 2022 19:34:10 +0100
+Message-Id: <20220208183411.61090-3-povik+lin@cutebit.org>
+In-Reply-To: <20220208183411.61090-1-povik+lin@cutebit.org>
+References: <20220208183411.61090-1-povik+lin@cutebit.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v5 3/4] mm/page_owner: Print memcg information
-Content-Language: en-US
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Roman Gushchin <guro@fb.com>,
-        Rafael Aquini <aquini@redhat.com>,
-        Mike Rapoport <rppt@linux.ibm.com>
-References: <20220208000532.1054311-1-longman@redhat.com>
- <20220208000532.1054311-4-longman@redhat.com>
- <YgJeWth50eP9L0PK@dhcp22.suse.cz>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <YgJeWth50eP9L0PK@dhcp22.suse.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam: Yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/8/22 07:13, Michal Hocko wrote:
-> On Mon 07-02-22 19:05:31, Waiman Long wrote:
->> It was found that a number of dying memcgs were not freed because
->> they were pinned by some charged pages that were present. Even "echo 1 >
->> /proc/sys/vm/drop_caches" wasn't able to free those pages. These dying
->> but not freed memcgs tend to increase in number over time with the side
->> effect that percpu memory consumption as shown in /proc/meminfo also
->> increases over time.
-> I still believe that this is very suboptimal way to debug offline memcgs
-> but memcg information can be useful in other contexts and it doesn't
-> cost us anything except for an additional output so I am fine with this.
-I am planning to have a follow-up patch to add a new debugfs file for 
-just printing page information associated with dying memcgs only. It 
-will be based on the existing page_owner code, though. So I need to get 
-this patch in first.
->   
->> In order to find out more information about those pages that pin
->> dying memcgs, the page_owner feature is extended to print memory
->> cgroup information especially whether the cgroup is dying or not.
->> RCU read lock is taken when memcg is being accessed to make sure
->> that it won't be freed.
->>
->> Signed-off-by: Waiman Long <longman@redhat.com>
->> Acked-by: David Rientjes <rientjes@google.com>
->> Acked-by: Roman Gushchin <guro@fb.com>
->> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
-> With few comments/questions below.
->
->> ---
->>   mm/page_owner.c | 44 ++++++++++++++++++++++++++++++++++++++++++++
->>   1 file changed, 44 insertions(+)
->>
->> diff --git a/mm/page_owner.c b/mm/page_owner.c
->> index 28dac73e0542..d4c311455753 100644
->> --- a/mm/page_owner.c
->> +++ b/mm/page_owner.c
->> @@ -10,6 +10,7 @@
->>   #include <linux/migrate.h>
->>   #include <linux/stackdepot.h>
->>   #include <linux/seq_file.h>
->> +#include <linux/memcontrol.h>
->>   #include <linux/sched/clock.h>
->>   
->>   #include "internal.h"
->> @@ -325,6 +326,47 @@ void pagetypeinfo_showmixedcount_print(struct seq_file *m,
->>   	seq_putc(m, '\n');
->>   }
->>   
->> +/*
->> + * Looking for memcg information and print it out
->> + */
-> I am not sure this is particularly useful comment.
-Right, I can remove that.
->
->> +static inline int print_page_owner_memcg(char *kbuf, size_t count, int ret,
->> +					 struct page *page)
->> +{
->> +#ifdef CONFIG_MEMCG
->> +	unsigned long memcg_data;
->> +	struct mem_cgroup *memcg;
->> +	bool dying;
->> +
->> +	rcu_read_lock();
->> +	memcg_data = READ_ONCE(page->memcg_data);
->> +	if (!memcg_data)
->> +		goto out_unlock;
->> +
->> +	if (memcg_data & MEMCG_DATA_OBJCGS)
->> +		ret += scnprintf(kbuf + ret, count - ret,
->> +				"Slab cache page\n");
->> +
->> +	memcg = page_memcg_check(page);
->> +	if (!memcg)
->> +		goto out_unlock;
->> +
->> +	dying = (memcg->css.flags & CSS_DYING);
-> Is there any specific reason why you haven't used mem_cgroup_online?
-Not really. However, I think checking for CSS_DYING makes more sense now 
-that I using the term "dying".
->
->> +	ret += scnprintf(kbuf + ret, count - ret,
->> +			"Charged %sto %smemcg ",
->> +			PageMemcgKmem(page) ? "(via objcg) " : "",
->> +			dying ? "dying " : "");
->> +
->> +	/* Write cgroup name directly into kbuf */
->> +	cgroup_name(memcg->css.cgroup, kbuf + ret, count - ret);
->> +	ret += strlen(kbuf + ret);
-> cgroup_name should return the length of the path added to the buffer.
-I realized that after I sent out the patch. I will remove te redundant 
-strlen() in a future update.
->
->> +	ret += scnprintf(kbuf + ret, count - ret, "\n");
-> I do not see any overflow prevention here. I believe you really need to
-> check ret >= count after each scnprintf/cgroup_name.
+Add a common clock driver for NCO blocks found on Apple SoCs where they
+are typically the generators of audio clocks.
 
-As you have realized, the beauty of using scnprintf() is to not needing 
-an overflow check after each invocation.
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+---
+ drivers/clk/Kconfig         |   9 +
+ drivers/clk/Makefile        |   1 +
+ drivers/clk/clk-apple-nco.c | 333 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 343 insertions(+)
+ create mode 100644 drivers/clk/clk-apple-nco.c
 
-Cheers,
-Longman
+diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
+index 3cdf33470a75..b945d3bb95d6 100644
+--- a/drivers/clk/Kconfig
++++ b/drivers/clk/Kconfig
+@@ -59,6 +59,15 @@ config LMK04832
+ 	  Say yes here to build support for Texas Instruments' LMK04832 Ultra
+ 	  Low-Noise JESD204B Compliant Clock Jitter Cleaner With Dual Loop PLLs
+ 
++config COMMON_CLK_APPLE_NCO
++	bool "Clock driver for Apple SoC NCOs"
++	depends on ARCH_APPLE || COMPILE_TEST
++	default ARCH_APPLE
++	help
++	  This driver supports NCO (Numerically Controlled Oscillator) blocks
++	  found on Apple SoCs such as t8103 (M1). The blocks are typically
++	  generators of audio clocks.
++
+ config COMMON_CLK_MAX77686
+ 	tristate "Clock driver for Maxim 77620/77686/77802 MFD"
+ 	depends on MFD_MAX77686 || MFD_MAX77620 || COMPILE_TEST
+diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
+index 6a98291350b6..45b6d8c51d61 100644
+--- a/drivers/clk/Makefile
++++ b/drivers/clk/Makefile
+@@ -18,6 +18,7 @@ endif
+ 
+ # hardware specific clock types
+ # please keep this section sorted lexicographically by file path name
++obj-$(CONFIG_COMMON_CLK_APPLE_NCO)  	+= clk-apple-nco.o
+ obj-$(CONFIG_MACH_ASM9260)		+= clk-asm9260.o
+ obj-$(CONFIG_COMMON_CLK_AXI_CLKGEN)	+= clk-axi-clkgen.o
+ obj-$(CONFIG_ARCH_AXXIA)		+= clk-axm5516.o
+diff --git a/drivers/clk/clk-apple-nco.c b/drivers/clk/clk-apple-nco.c
+new file mode 100644
+index 000000000000..d985a7be8947
+--- /dev/null
++++ b/drivers/clk/clk-apple-nco.c
+@@ -0,0 +1,333 @@
++// SPDX-License-Identifier: GPL-2.0-only OR MIT
++/*
++ * Driver for an SoC block (Numerically Controlled Oscillator)
++ * found on t8103 (M1) and other Apple chips
++ *
++ * Copyright (C) The Asahi Linux Contributors
++ */
++
++#include <linux/bits.h>
++#include <linux/clk-provider.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/math64.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/spinlock.h>
++
++#define NCO_CHANNEL_STRIDE	0x4000
++#define NCO_CHANNEL_REGSIZE	20
++
++#define REG_CTRL	0
++#define CTRL_ENABLE	BIT(31)
++#define REG_DIV		4
++#define DIV_FINE	GENMASK(1, 0)
++#define DIV_COARSE	GENMASK(12, 2)
++#define REG_INC1	8
++#define REG_INC2	12
++#define REG_ACCINIT	16
++
++/*
++ * Theory of operation (postulated)
++ *
++ * The REG_DIV register indirectly expresses a base integer divisor, roughly
++ * corresponding to twice the desired ratio of input to output clock. This
++ * base divisor is adjusted on a cycle-by-cycle basis based on the state of a
++ * 32-bit phase accumulator to achieve a desired precise clock ratio over the
++ * long term.
++ *
++ * Specifically an output clock cycle is produced after (REG_DIV divisor)/2
++ * or (REG_DIV divisor + 1)/2 input cycles, the latter taking effect when top
++ * bit of the 32-bit accumulator is set. The accumulator is incremented each
++ * produced output cycle, by the value from either REG_INC1 or REG_INC2, which
++ * of the two is selected depending again on the accumulator's current top bit.
++ *
++ * Because the NCO hardware implements counting of input clock cycles in part
++ * in a Galois linear-feedback shift register, the higher bits of divisor
++ * are programmed into REG_DIV by picking an appropriate LFSR state. See
++ * applnco_compute_tables/applnco_div_translate for details on this.
++ */
++
++#define LFSR_POLY	0xa01
++#define LFSR_INIT	0x7ff
++#define LFSR_LEN	11
++#define LFSR_PERIOD	((1 << LFSR_LEN) - 1)
++#define LFSR_TBLSIZE	(1 << LFSR_LEN)
++
++/* The minimal attainable coarse divisor (first value in table) */
++#define COARSE_DIV_OFFSET 2
++
++struct applnco_tables {
++	u16 fwd[LFSR_TBLSIZE];
++	u16 inv[LFSR_TBLSIZE];
++};
++
++struct applnco_channel {
++	void __iomem *base;
++	struct applnco_tables *tbl;
++	struct clk_hw hw;
++
++	spinlock_t lock;
++};
++
++#define to_applnco_channel(_hw) container_of(_hw, struct applnco_channel, hw)
++
++static void applnco_enable_nolock(struct clk_hw *hw)
++{
++	struct applnco_channel *chan = to_applnco_channel(hw);
++	u32 val;
++
++	val = readl_relaxed(chan->base + REG_CTRL);
++	writel_relaxed(val | CTRL_ENABLE, chan->base + REG_CTRL);
++}
++
++static void applnco_disable_nolock(struct clk_hw *hw)
++{
++	struct applnco_channel *chan = to_applnco_channel(hw);
++	u32 val;
++
++	val = readl_relaxed(chan->base + REG_CTRL);
++	writel_relaxed(val & ~CTRL_ENABLE, chan->base + REG_CTRL);
++}
++
++static int applnco_is_enabled(struct clk_hw *hw)
++{
++	struct applnco_channel *chan = to_applnco_channel(hw);
++
++	return (readl_relaxed(chan->base + REG_CTRL) & CTRL_ENABLE) != 0;
++}
++
++static void applnco_compute_tables(struct applnco_tables *tbl)
++{
++	int i;
++	u32 state = LFSR_INIT;
++
++	/*
++	 * Go through the states of a Galois LFSR and build
++	 * a coarse divisor translation table.
++	 */
++	for (i = LFSR_PERIOD; i > 0; i--) {
++		if (state & 1)
++			state = (state >> 1) ^ (LFSR_POLY >> 1);
++		else
++			state = (state >> 1);
++		tbl->fwd[i] = state;
++		tbl->inv[state] = i;
++	}
++
++	/* Zero value is special-cased */
++	tbl->fwd[0] = 0;
++	tbl->inv[0] = 0;
++}
++
++static bool applnco_div_out_of_range(unsigned int div)
++{
++	unsigned int coarse = div / 4;
++
++	return coarse < COARSE_DIV_OFFSET ||
++		coarse >= COARSE_DIV_OFFSET + LFSR_TBLSIZE;
++}
++
++static u32 applnco_div_translate(struct applnco_tables *tbl, unsigned int div)
++{
++	unsigned int coarse = div / 4;
++
++	if (WARN_ON(applnco_div_out_of_range(div)))
++		return 0;
++
++	return FIELD_PREP(DIV_COARSE, tbl->fwd[coarse - COARSE_DIV_OFFSET]) |
++			FIELD_PREP(DIV_FINE, div % 4);
++}
++
++static unsigned int applnco_div_translate_inv(struct applnco_tables *tbl, u32 regval)
++{
++	unsigned int coarse, fine;
++
++	coarse = tbl->inv[FIELD_GET(DIV_COARSE, regval)] + COARSE_DIV_OFFSET;
++	fine = FIELD_GET(DIV_FINE, regval);
++
++	return coarse * 4 + fine;
++}
++
++static int applnco_set_rate(struct clk_hw *hw, unsigned long rate,
++				unsigned long parent_rate)
++{
++	struct applnco_channel *chan = to_applnco_channel(hw);
++	unsigned long flags;
++	u32 div, inc1, inc2;
++	bool was_enabled;
++
++	div = 2 * parent_rate / rate;
++	inc1 = 2 * parent_rate - div * rate;
++	inc2 = inc1 - rate;
++
++	if (applnco_div_out_of_range(div))
++		return -EINVAL;
++
++	div = applnco_div_translate(chan->tbl, div);
++
++	spin_lock_irqsave(&chan->lock, flags);
++	was_enabled = applnco_is_enabled(hw);
++	applnco_disable_nolock(hw);
++
++	writel_relaxed(div,  chan->base + REG_DIV);
++	writel_relaxed(inc1, chan->base + REG_INC1);
++	writel_relaxed(inc2, chan->base + REG_INC2);
++
++	/* Presumably a neutral initial value for accumulator */
++	writel_relaxed(1 << 31, chan->base + REG_ACCINIT);
++
++	if (was_enabled)
++		applnco_enable_nolock(hw);
++	spin_unlock_irqrestore(&chan->lock, flags);
++
++	return 0;
++}
++
++static unsigned long applnco_recalc_rate(struct clk_hw *hw,
++				unsigned long parent_rate)
++{
++	struct applnco_channel *chan = to_applnco_channel(hw);
++	u32 div, inc1, inc2, incbase;
++
++	div = applnco_div_translate_inv(chan->tbl,
++			readl_relaxed(chan->base + REG_DIV));
++
++	inc1 = readl_relaxed(chan->base + REG_INC1);
++	inc2 = readl_relaxed(chan->base + REG_INC2);
++
++	/*
++	 * We don't support wraparound of accumulator
++	 * nor the edge case of both increments being zero
++	 */
++	if (inc1 >= (1 << 31) || inc2 < (1 << 31) || (inc1 == 0 && inc2 == 0))
++		return 0;
++
++	/* Scale both sides of division by incbase to maintain precision */
++	incbase = inc1 - inc2;
++
++	return div64_u64(((u64) parent_rate) * 2 * incbase,
++			((u64) div) * incbase + inc1);
++}
++
++static long applnco_round_rate(struct clk_hw *hw, unsigned long rate,
++				unsigned long *parent_rate)
++{
++	unsigned long lo = *parent_rate / (COARSE_DIV_OFFSET + LFSR_TBLSIZE) + 1;
++	unsigned long hi = *parent_rate / COARSE_DIV_OFFSET;
++
++	return clamp(rate, lo, hi);
++}
++
++static int applnco_enable(struct clk_hw *hw)
++{
++	struct applnco_channel *chan = to_applnco_channel(hw);
++	unsigned long flags;
++
++	spin_lock_irqsave(&chan->lock, flags);
++	applnco_enable_nolock(hw);
++	spin_unlock_irqrestore(&chan->lock, flags);
++
++	return 0;
++}
++
++static void applnco_disable(struct clk_hw *hw)
++{
++	struct applnco_channel *chan = to_applnco_channel(hw);
++	unsigned long flags;
++
++	spin_lock_irqsave(&chan->lock, flags);
++	applnco_disable_nolock(hw);
++	spin_unlock_irqrestore(&chan->lock, flags);
++}
++
++static const struct clk_ops applnco_ops = {
++	.set_rate = applnco_set_rate,
++	.recalc_rate = applnco_recalc_rate,
++	.round_rate = applnco_round_rate,
++	.enable = applnco_enable,
++	.disable = applnco_disable,
++	.is_enabled = applnco_is_enabled,
++};
++
++static int applnco_probe(struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	struct clk_parent_data pdata = { .index = 0 };
++	struct clk_init_data init;
++	struct clk_hw_onecell_data *onecell_data;
++	void __iomem *base;
++	struct resource *res;
++	struct applnco_tables *tbl;
++	unsigned int nchannels;
++	int ret, i;
++
++	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
++	if (IS_ERR(base))
++		return PTR_ERR(base);
++
++	if (resource_size(res) < NCO_CHANNEL_REGSIZE)
++		return -EINVAL;
++	nchannels = (resource_size(res) - NCO_CHANNEL_REGSIZE)
++			/ NCO_CHANNEL_STRIDE + 1;
++
++	onecell_data = devm_kzalloc(&pdev->dev, struct_size(onecell_data, hws,
++							nchannels), GFP_KERNEL);
++	if (!onecell_data)
++		return -ENOMEM;
++	onecell_data->num = nchannels;
++
++	tbl = devm_kzalloc(&pdev->dev, sizeof(*tbl), GFP_KERNEL);
++	if (!tbl)
++		return -ENOMEM;
++	applnco_compute_tables(tbl);
++
++	for (i = 0; i < nchannels; i++) {
++		struct applnco_channel *chan;
++
++		chan = devm_kzalloc(&pdev->dev, sizeof(*chan), GFP_KERNEL);
++		if (!chan)
++			return -ENOMEM;
++		chan->base = base + NCO_CHANNEL_STRIDE * i;
++		chan->tbl = tbl;
++		spin_lock_init(&chan->lock);
++
++		memset(&init, 0, sizeof(init));
++		init.name = devm_kasprintf(&pdev->dev, GFP_KERNEL,
++						"%s-%d", np->name, i);
++		init.ops = &applnco_ops;
++		init.parent_data = &pdata;
++		init.num_parents = 1;
++		init.flags = 0;
++
++		chan->hw.init = &init;
++		ret = devm_clk_hw_register(&pdev->dev, &chan->hw);
++		if (ret)
++			return ret;
++
++		onecell_data->hws[i] = &chan->hw;
++	}
++
++	return devm_of_clk_add_hw_provider(&pdev->dev, of_clk_hw_onecell_get,
++							onecell_data);
++}
++
++static const struct of_device_id applnco_ids[] = {
++	{ .compatible = "apple,nco" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, applnco_ids)
++
++static struct platform_driver applnco_driver = {
++	.driver = {
++		.name = "apple-nco",
++		.of_match_table = applnco_ids,
++	},
++	.probe = applnco_probe,
++};
++module_platform_driver(applnco_driver);
++
++MODULE_AUTHOR("Martin Povišer <povik+lin@cutebit.org>");
++MODULE_DESCRIPTION("Clock driver for NCO blocks on Apple SoCs");
++MODULE_LICENSE("GPL");
+-- 
+2.33.0
 
