@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10991C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6101CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377563AbiBHOFC (ORCPT
+        id S1377616AbiBHOFG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:05:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52640 "EHLO
+        Tue, 8 Feb 2022 09:05:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359354AbiBHOE6 (ORCPT
+        with ESMTP id S1377538AbiBHOE7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 09:04:58 -0500
-X-Greylist: delayed 1806 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 06:04:58 PST
+        Tue, 8 Feb 2022 09:04:59 -0500
 Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19329C03FECE;
-        Tue,  8 Feb 2022 06:04:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF61C03FED0;
+        Tue,  8 Feb 2022 06:04:58 -0800 (PST)
 Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 218DIeSd060742;
-        Tue, 8 Feb 2022 07:18:40 -0600
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 218DIYgn060725;
+        Tue, 8 Feb 2022 07:18:34 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644326320;
-        bh=ZiOjVY7LaUfOv8g+mkFWBADUqQCcc3Bnf8I/9D6ObNc=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=vl/cmvm0SW2BnbrNiXiTnd5fQniR+Wd34c8y0fmNcx4yoN3OZa4pr5u7bCCA7j0rE
-         9+N0QkrlXZpsCeVXZDpdt7xzcErDOIEDiyS1J8c5cgDrrWA28v8/+TFnD7B1YrUkLv
-         4tzLDTTD0dcwygGmqR70MlEq2ZlQEwM72QSSqJ1Q=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 218DIeB0101774
+        s=ti-com-17Q1; t=1644326314;
+        bh=xRVcVuV8frdvsTMRMrVoTHRciwvNKY3EBpUbDlWdNAM=;
+        h=From:To:CC:Subject:Date;
+        b=k3viTOCSJYG7KnYiO9bBDRxt1+Hfzrzkb+i4o3WaFaGnlIqb/4PnuZowLllSGPEgb
+         fJxgqqo2ppZrEpBqPPjRrfRa9eLkSIDLEhy6PaDeh+tzAoIrMqiNcI6sM32dVcC3Gh
+         71IbibbS2uvkHImGdY0eGQkvnQWKsEe7DspOps4Q=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 218DIY3O101729
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 8 Feb 2022 07:18:40 -0600
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 8 Feb 2022 07:18:34 -0600
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 8
- Feb 2022 07:18:40 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ Feb 2022 07:18:33 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 8 Feb 2022 07:18:40 -0600
+ Frontend Transport; Tue, 8 Feb 2022 07:18:33 -0600
 Received: from ula0132425.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 218DIUCh117228;
-        Tue, 8 Feb 2022 07:18:37 -0600
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 218DIUCf117228;
+        Tue, 8 Feb 2022 07:18:31 -0600
 From:   Vignesh Raghavendra <vigneshr@ti.com>
 To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
         Tero Kristo <kristo@kernel.org>,
@@ -50,21 +49,19 @@ To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
         Santosh Shilimkar <ssantosh@kernel.org>
 CC:     <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/5] dt-bindings: arm: ti: Add bindings for AM625 SoC
-Date:   Tue, 8 Feb 2022 18:48:24 +0530
-Message-ID: <20220208131827.1430086-3-vigneshr@ti.com>
+Subject: [PATCH 0/5] arm64: Initial support for Texas Instruments AM62 Platform
+Date:   Tue, 8 Feb 2022 18:48:22 +0530
+Message-ID: <20220208131827.1430086-1-vigneshr@ti.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220208131827.1430086-1-vigneshr@ti.com>
-References: <20220208131827.1430086-1-vigneshr@ti.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nishanth Menon <nm@ti.com>
+This adds AM62 SoC support.
 
 The AM62 SoC family is the follow on AM335x built on K3 Multicore SoC
 architecture platform, providing ultra-low-power modes, dual display,
@@ -95,34 +92,40 @@ Some highlights of this SoC are:
 * Multiple low power modes support, ex: Deep sleep,Standby, MCU-only,
   enabling battery powered system design.
 
-AM625 is the first device of the family. Add DT bindings for the same.
-
 More details can be found in the Technical Reference Manual:
 https://www.ti.com/lit/pdf/spruiv7
 
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
----
- Documentation/devicetree/bindings/arm/ti/k3.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+Log: https://controlc.com/66b0a416
 
-diff --git a/Documentation/devicetree/bindings/arm/ti/k3.yaml b/Documentation/devicetree/bindings/arm/ti/k3.yaml
-index b03c10fa2e7a..64f3db3ea9dd 100644
---- a/Documentation/devicetree/bindings/arm/ti/k3.yaml
-+++ b/Documentation/devicetree/bindings/arm/ti/k3.yaml
-@@ -53,6 +53,12 @@ properties:
-               - ti,am642-sk
-           - const: ti,am642
- 
-+      - description: K3 AM625 SoC
-+        items:
-+          - enum:
-+              - ti,am625-sk
-+          - const: ti,am625
-+
-       - description: K3 J721s2 SoC
-         items:
-           - enum:
+Nishanth Menon (2):
+  dt-bindings: arm: ti: Add bindings for AM625 SoC
+  arm64: dts: ti: Add support for AM62-SK
+
+Suman Anna (1):
+  dt-bindings: pinctrl: k3: Introduce pinmux definitions for AM62
+
+Vignesh Raghavendra (2):
+  soc: ti: k3-socinfo: Add AM62x JTAG ID
+  arm64: dts: ti: Introduce base support for AM62x SoC
+
+ .../devicetree/bindings/arm/ti/k3.yaml        |   6 +
+ arch/arm64/boot/dts/ti/Makefile               |   2 +
+ arch/arm64/boot/dts/ti/k3-am62-main.dtsi      | 263 ++++++++++++++++++
+ arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi       |  36 +++
+ arch/arm64/boot/dts/ti/k3-am62-wakeup.dtsi    |  41 +++
+ arch/arm64/boot/dts/ti/k3-am62.dtsi           | 104 +++++++
+ arch/arm64/boot/dts/ti/k3-am625-sk.dts        | 206 ++++++++++++++
+ arch/arm64/boot/dts/ti/k3-am625.dtsi          | 103 +++++++
+ drivers/soc/ti/k3-socinfo.c                   |   1 +
+ include/dt-bindings/pinctrl/k3.h              |   3 +
+ 10 files changed, 765 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am62-main.dtsi
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am62-wakeup.dtsi
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am62.dtsi
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk.dts
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am625.dtsi
+
 -- 
 2.35.1
 
