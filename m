@@ -2,291 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E8EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 781C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:36:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378250AbiBHOfe (ORCPT
+        id S1378149AbiBHOgN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:35:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37548 "EHLO
+        Tue, 8 Feb 2022 09:36:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378213AbiBHOfa (ORCPT
+        with ESMTP id S229623AbiBHOgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 09:35:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 81DB1C03FEED
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 06:35:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644330927;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Tue, 8 Feb 2022 09:36:10 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6067C03FECE
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 06:36:09 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 7FE7D1F383;
+        Tue,  8 Feb 2022 14:36:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644330968; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=mSRpjshv+kbhfh/GFUgZiARyP3KS+Ne997kfmQ3mHmo=;
-        b=OTjPg+wasgVc3x7treLC9iNCyjYssgbSGodNPTFO5ZyKUIs5EbY8nL5guXgAl3rFd/wq1W
-        tWHNsQZ/qy2Hvt4pvELRBzfB2OzJbg3GkUCrlhuBPnlM/P4Xt+MlymmORiK3ZNotVHIuUE
-        pWjThNHXidF3yqZ0Fit+V5Zc2XQNKkk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-641-p86_F2L_OamJatwilZ8pFg-1; Tue, 08 Feb 2022 09:35:24 -0500
-X-MC-Unique: p86_F2L_OamJatwilZ8pFg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A9280814405;
-        Tue,  8 Feb 2022 14:35:21 +0000 (UTC)
-Received: from starship (unknown [10.40.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BB0387C0C1;
-        Tue,  8 Feb 2022 14:35:15 +0000 (UTC)
-Message-ID: <b35376a91f31256035c361cfaa2456f67c7f797a.camel@redhat.com>
-Subject: Re: [PATCH v3 3/6] KVM: SVM: implement
- force_intercept_exceptions_mask
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Kieran Bingham <kbingham@kernel.org>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Andrew Jones <drjones@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jessica Yu <jeyu@kernel.org>,
-        Jim Mattson <jmattson@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Yang Weijiang <weijiang.yang@intel.com>,
-        linux-kernel@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Date:   Tue, 08 Feb 2022 16:35:14 +0200
-In-Reply-To: <YTELOvhj5lERBKeC@google.com>
-References: <20210811122927.900604-1-mlevitsk@redhat.com>
-         <20210811122927.900604-4-mlevitsk@redhat.com>
-         <73f3eff092ca9624ebd55bc02193b39f248c8877.camel@redhat.com>
-         <YTELOvhj5lERBKeC@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+        bh=w7gtMUxuaQuez2p2NU0gwYSVzb8SS4pccG2VoclEwiU=;
+        b=r6Lri+jQ6r2ENsII3Twwv2v1c/rAfwZszxD5OD02T5ZJ4frY4hodngTm1x8GhLZ/qWuob6
+        h4ijemgWAIO0Fu0FK7k1qrxB/kkimN9/5zLbUnylqWd9ven3McXdZvoc3XIgTyq0JCR+hn
+        EpP3EbNTkoAVysoxEaU67BOPLB92jiE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644330968;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=w7gtMUxuaQuez2p2NU0gwYSVzb8SS4pccG2VoclEwiU=;
+        b=CRndj1fBDXkEUsIDlWAUljevzY4lcwsl2B7HIRc2Lbasoqci228NUdYBaH5n9DLDVJnq0T
+        aApLS2vqaCg1r7Dw==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 37069A3B85;
+        Tue,  8 Feb 2022 14:36:08 +0000 (UTC)
+Date:   Tue, 08 Feb 2022 15:36:08 +0100
+Message-ID: <s5h4k59s9wn.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Alexander Sergeyev <sergeev917@gmail.com>
+Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
+        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
+        Kailang Yang <kailang@realtek.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jian-Hong Pan <jhp@endlessos.org>,
+        Hui Wang <hui.wang@canonical.com>,
+        PeiSen Hou <pshou@realtek.com>
+Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855 G8
+In-Reply-To: <s5htudk9cn3.wl-tiwai@suse.de>
+References: <s5ha6fy46jt.wl-tiwai@suse.de>
+        <20220114183720.n46wealclg6spxkp@localhost.localdomain>
+        <s5hsftp3027.wl-tiwai@suse.de>
+        <20220115152215.kprws5nja2i43qax@localhost.localdomain>
+        <s5hilugw0l0.wl-tiwai@suse.de>
+        <20220119093249.eaxem33bjqjxcher@localhost.localdomain>
+        <20220122190522.ycaygrqcen7d3hj2@localhost.localdomain>
+        <20220122205637.7gzurdu7xl4sthxw@localhost.localdomain>
+        <s5ho83yldu3.wl-tiwai@suse.de>
+        <20220129144704.xlmeylllvy3b3fum@localhost.localdomain>
+        <20220130111020.44gzrm5ckrakjta2@localhost.localdomain>
+        <s5htudk9cn3.wl-tiwai@suse.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2021-09-02 at 17:34 +0000, Sean Christopherson wrote:
-> On Wed, Aug 11, 2021, Maxim Levitsky wrote:
-> > On Wed, 2021-08-11 at 15:29 +0300, Maxim Levitsky wrote:
-> > > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> > > index e45259177009..19f54b07161a 100644
-> > > --- a/arch/x86/kvm/svm/svm.c
-> > > +++ b/arch/x86/kvm/svm/svm.c
-> > > @@ -233,6 +233,8 @@ static const u32 msrpm_ranges[] = {0, 0xc0000000, 0xc0010000};
-> > >  #define MSRS_RANGE_SIZE 2048
-> > >  #define MSRS_IN_RANGE (MSRS_RANGE_SIZE * 8 / 2)
-> > >  
-> > > +static int svm_handle_invalid_exit(struct kvm_vcpu *vcpu, u64 exit_code);
-> > > +
-> > >  u32 svm_msrpm_offset(u32 msr)
-> > >  {
-> > >  	u32 offset;
-> > > @@ -1153,6 +1155,22 @@ static void svm_recalc_instruction_intercepts(struct kvm_vcpu *vcpu,
-> > >  	}
-> > >  }
-> > >  
-> > > +static void svm_init_force_exceptions_intercepts(struct vcpu_svm *svm)
-> > > +{
-> > > +	int exc;
-> > > +
-> > > +	svm->force_intercept_exceptions_mask = force_intercept_exceptions_mask;
+On Mon, 31 Jan 2022 15:57:04 +0100,
+Takashi Iwai wrote:
 > 
-> Ah, the param is being snapshotted on vCPU creation, hence the writable module
-> param.  That works, though it'd be better to snapshot it on a per-VM basic, not
-> per-vCPU, and do so in common x86 code so that the param doesn't need to be
-> exported.
+> On Sun, 30 Jan 2022 12:10:20 +0100,
+> Alexander Sergeyev wrote:
+> > What is also interesting, unbind & bind consistently fails on 31th bind:
+> > 
+> > echo -n '0000:05:00.6' > /sys/bus/pci/drivers/snd_hda_intel/bind
+> > -bash: echo: write error: No such device
+> > 
+> > And does not recover from there until a reboot.
+> 
+> This is intended behavior.  The driver has a static device index that
+> is incremented at each probe, so that the driver may probe multiple
+> instances.  It'll be tricky to reset this for dynamic binding,
+> though.  This problem is not only for HD-audio but for most of other
+> drivers.  But I leave this as is for now, since the dynamic binding is
+> rarely used for PCI and other buses, so far.
 
-I have nothing against that.
-
-> 
-> > > +	for (exc = 0 ; exc < 32 ; exc++) {
-> 
-> for_each_set_bit()
-I used a helper function instead, IMHO a bit cleaner.
-
-> 
-> > > +		if (!(svm->force_intercept_exceptions_mask & (1 << exc)))
-> > > +			continue;
-> > > +
-> > > +		/* Those are defined to have undefined behavior in the SVM spec */
-> > > +		if (exc != 2 && exc != 9)
-> 
-> Maybe add a pr_warn_once() to let the user know they done messed up?
-> 
-> And given that there are already intercepts with undefined behavior, it's probably
-> best to disallow intercepting anything we aren't 100% postive will be handled
-> correctly, e.g. intercepting vector 31 is nonsensical at this time.
-
-Or I think I'll just drop this check altogether - this is a debug feature anyway.
-
-> 
-> > > +			continue;
-> > > +		set_exception_intercept(svm, exc);
-> 
-> ...
-> 
-> > > +static int gen_exc_interception(struct kvm_vcpu *vcpu)
-> > > +{
-> > > +	/*
-> > > +	 * Generic exception intercept handler which forwards a guest exception
-> > > +	 * as-is to the guest.
-> > > +	 * For exceptions that don't have a special intercept handler.
-> > > +	 *
-> > > +	 * Used only for 'force_intercept_exceptions_mask' KVM debug feature.
-> > > +	 */
-> > > +	struct vcpu_svm *svm = to_svm(vcpu);
-> > > +	int exc = svm->vmcb->control.exit_code - SVM_EXIT_EXCP_BASE;
-> > > +
-> > > +	/* SVM doesn't provide us with an error code for the #DF */
-> > > +	u32 err_code = exc == DF_VECTOR ? 0 : svm->vmcb->control.exit_info_1;
-> 
-> Might be better to handle this in the x86_exception_has_error_code() path to
-> avoid confusing readers with respect to exceptions that don't have an error code,
-> e.g.
-> 
-> 	else if (x86_exception_has_error_code(exc)) {
-> 		/* SVM doesn't provide the error code on #DF :-( */
-> 		if (exc == DF_VECTOR)
-> 			kvm_queue_exception_e(vcpu, exc, 0);
-> 		else
-> 			kvm_queue_exception_e(vcpu, exc, svm->vmcb->control.exit_info_1);
-> 	} else {
-> 		...
-> 	}
-> 
-> Alternatively, can we zero svm->vmcb->control.exit_info_1 on #DF to make it more
-> obvious that SVM leaves stale data in exit_info_1 (assuming that's true)?  E.g.
-> 
-> 	...
-> 
-> 	if (exc == TS_VECTOR) {
-> 		...
-> 	} else if (x86_exception_has_error_code(exc)) {
-> 		/* SVM doesn't provide the error code on #DF :-( */
-> 		if (exc == DF_VECTOR)
-> 			svm->vmcb->control.exit_info_1 = 0;
-> 
-> 		kvm_queue_exception_e(vcpu, exc, svm->vmcb->control.exit_info_1);
-> 	} else {
-> 		...
-> 	}
-
-Makes sense.
-
-> 
-> 		
-> > > +
-> > > +	if (!(svm->force_intercept_exceptions_mask & (1 << exc)))
-> 
-> BIT(exc)
-I added a helper function in common x86 code for this.
-
-> 
-> > > +		return svm_handle_invalid_exit(vcpu, svm->vmcb->control.exit_code);
-> > > +
-> > > +	if (exc == TS_VECTOR) {
-> > > +		/*
-> > > +		 * SVM doesn't provide us with an error code to be able to
-> > > +		 * re-inject the #TS exception, so just disable its
-> > > +		 * intercept, and let the guest re-execute the instruction.
-> > > +		 */
-> > > +		vmcb_clr_intercept(&svm->vmcb01.ptr->control,
-> > > +				   INTERCEPT_EXCEPTION_OFFSET + TS_VECTOR);
-> 
-> Maybe just disallow intercepting #TS altogether?  Or does this fall into your
-> Win98 use case? :-)
-
-Win98 does indeed generate few #TS exceptions but so far I haven't noticed
-any issues related to task switches. Anyway I would like to intercept
-as much as possible since this is a debug feature. A single interception
-is still better that nothing.
+... and here is a fix patch for allowing more rebinds.
+Give it a try.
 
 
-> 
-> > > +		recalc_intercepts(svm);
-> > > +	} else if (x86_exception_has_error_code(exc))
-> > > +		kvm_queue_exception_e(vcpu, exc, err_code);
-> > > +	else
-> > > +		kvm_queue_exception(vcpu, exc);
-> > > +	return 1;
-> > > +}
-> > > +
-> > >  static bool is_erratum_383(void)
-> > >  {
-> > >  	int err, i;
-> > > @@ -3065,6 +3131,10 @@ static int (*const svm_exit_handlers[])(struct kvm_vcpu *vcpu) = {
-> > >  	[SVM_EXIT_WRITE_DR5]			= dr_interception,
-> > >  	[SVM_EXIT_WRITE_DR6]			= dr_interception,
-> > >  	[SVM_EXIT_WRITE_DR7]			= dr_interception,
-> > > +
-> > > +	[SVM_EXIT_EXCP_BASE ...
-> > > +	SVM_EXIT_EXCP_BASE + 31]		= gen_exc_interception,
-> 
-> This generates a Sparse warning due to the duplicate initializer.  IMO that's a
-> very good warning as I have zero idea how the compiler actually handles this
-> particular scenario, e.g. do later entries take priority, is it technically
-> "undefined" behavior, etc...
-> 
-> arch/x86/kvm/svm/svm.c:3065:10: warning: Initializer entry defined twice
-> arch/x86/kvm/svm/svm.c:3067:29:   also defined here
-> 
-> I don't have a clever solution though :-('
+Takashi
 
-Good catch. I thought that this would make sense but standards never make sense.
-I'll do this manually.
+-- 8< --
+From: Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH] ALSA: hda: Fix driver index handling at re-binding
 
-> 
-> > > +
-> > >  	[SVM_EXIT_EXCP_BASE + DB_VECTOR]	= db_interception,
-> > >  	[SVM_EXIT_EXCP_BASE + BP_VECTOR]	= bp_interception,
-> > >  	[SVM_EXIT_EXCP_BASE + UD_VECTOR]	= ud_interception,
-> > > diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-> > > index 524d943f3efc..187ada7c5b03 100644
-> > > --- a/arch/x86/kvm/svm/svm.h
-> > > +++ b/arch/x86/kvm/svm/svm.h
-> > > @@ -196,6 +196,7 @@ struct vcpu_svm {
-> > >  	bool ghcb_sa_free;
-> > >  
-> > >  	bool guest_state_loaded;
-> > > +	u32 force_intercept_exceptions_mask;
-> > >  };
-> > >  
-> > >  struct svm_cpu_data {
-> > > @@ -351,8 +352,11 @@ static inline void clr_exception_intercept(struct vcpu_svm *svm, u32 bit)
-> > >  	struct vmcb *vmcb = svm->vmcb01.ptr;
-> > >  
-> > >  	WARN_ON_ONCE(bit >= 32);
-> > > -	vmcb_clr_intercept(&vmcb->control, INTERCEPT_EXCEPTION_OFFSET + bit);
-> > >  
-> > > +	if ((1 << bit) & svm->force_intercept_exceptions_mask)
-> 
-> BIT(bit)
-Fixed with helper function as well.
+HD-audio driver handles the multiple instances and keeps the static
+index that is incremented at each probe.  This becomes a problem when
+user tries to re-bind the device via sysfs multiple times; as the
+device index isn't cleared unlike rmmod case, it points to the next
+element at re-binding, and eventually later you can't probe any more
+when it reaches to SNDRV_CARDS_MAX (usually 32).
 
-> 
-> > > +		return;
-> > > +
-> > > +	vmcb_clr_intercept(&vmcb->control, INTERCEPT_EXCEPTION_OFFSET + bit);
-> > >  	recalc_intercepts(svm);
-> > >  }
+This patch is an attempt to improve the handling at rebinding.
+Instead of a static device index, now we keep a bitmap and assigns to
+the first zero bit position.  At the driver remove, in return, the
+bitmap slot is cleared again, so that it'll be available for the next
+probe.
 
+Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ sound/pci/hda/hda_intel.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-Thanks for the review!
-Best regards,
-	Maxim Levitsky
+diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
+index 4b0338c4c543..a2922233e85f 100644
+--- a/sound/pci/hda/hda_intel.c
++++ b/sound/pci/hda/hda_intel.c
+@@ -2064,14 +2064,16 @@ static const struct hda_controller_ops pci_hda_ops = {
+ 	.position_check = azx_position_check,
+ };
+ 
++static DECLARE_BITMAP(probed_devs, SNDRV_CARDS);
++
+ static int azx_probe(struct pci_dev *pci,
+ 		     const struct pci_device_id *pci_id)
+ {
+-	static int dev;
+ 	struct snd_card *card;
+ 	struct hda_intel *hda;
+ 	struct azx *chip;
+ 	bool schedule_probe;
++	int dev;
+ 	int err;
+ 
+ 	if (pci_match_id(driver_denylist, pci)) {
+@@ -2079,10 +2081,11 @@ static int azx_probe(struct pci_dev *pci,
+ 		return -ENODEV;
+ 	}
+ 
++	dev = find_first_zero_bit(probed_devs, SNDRV_CARDS);
+ 	if (dev >= SNDRV_CARDS)
+ 		return -ENODEV;
+ 	if (!enable[dev]) {
+-		dev++;
++		set_bit(dev, probed_devs);
+ 		return -ENOENT;
+ 	}
+ 
+@@ -2149,7 +2152,7 @@ static int azx_probe(struct pci_dev *pci,
+ 	if (schedule_probe)
+ 		schedule_delayed_work(&hda->probe_work, 0);
+ 
+-	dev++;
++	set_bit(dev, probed_devs);
+ 	if (chip->disabled)
+ 		complete_all(&hda->probe_wait);
+ 	return 0;
+@@ -2372,6 +2375,7 @@ static void azx_remove(struct pci_dev *pci)
+ 		cancel_delayed_work_sync(&hda->probe_work);
+ 		device_lock(&pci->dev);
+ 
++		clear_bit(chip->dev_index, probed_devs);
+ 		pci_set_drvdata(pci, NULL);
+ 		snd_card_free(card);
+ 	}
+-- 
+2.34.1
 
