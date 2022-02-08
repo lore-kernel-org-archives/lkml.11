@@ -2,100 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33653C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352030AbiBHP6B (ORCPT
+        id S1382478AbiBHP7G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:58:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
+        Tue, 8 Feb 2022 10:59:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232350AbiBHP57 (ORCPT
+        with ESMTP id S238913AbiBHP7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:57:59 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2BCC061578;
-        Tue,  8 Feb 2022 07:57:59 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id k17so14221320plk.0;
-        Tue, 08 Feb 2022 07:57:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+/JyyE+URKj87BO7QT8MnRUrWcrYgGPbIYYPz/QVNhY=;
-        b=N4nxQL4kLDKcA34UlvpL/6UjYKpg3lUPka1TZ+URuphai7tRxpXxJHmboJhzQS5Z2U
-         OyHRdBdHWRSvLkKIxDS88p5VRjGX1ptwPN2YO897RK+jnj1YzdoQZxHE2gm8I3q2lC+a
-         4fgaogNHIynEJ9zZk2N5IF4bA1WbZfaCderIMZN4QpWmmYwT8Ds249312Mz47ovII+p9
-         yd0UXpMD7Uf3gwcbiyU82JNQTegW/vw3DvNasO4x9OvqarF0zfvWCp5AoUpfhQCojhww
-         uQif3zXay9ca27TjK+cN69mfcgt0RZpbyAkaEqLkMXXjca9FJJJ1NTubsA2yc04r9WIw
-         CVQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+/JyyE+URKj87BO7QT8MnRUrWcrYgGPbIYYPz/QVNhY=;
-        b=qx83yGREVb7Jh2tzCLUvDDWup6KPBYHpfAsqIhPHHp+D5hiCKT+DgAeQgNheNTaYXj
-         3aB/+UBUXymJQsZKyeupqzML8vIk4JfkkqIc1Xqv7WTOjCdD8vDdlQgNc0bAv2Y+Q6KV
-         D6xxtsjMdQoRVMfDyYmbdi1lv0HPP9Vejuh+8YkYfD80+Kf/2b7ptRkOAygYkNz9i6Bg
-         TpFBy7zVGxjADzeOXY6zs5IBMXwSSeVOYK2uD53qtGt2d71y+90jolnt5+7tRNFqHxrA
-         TY2CAO6YxFWOHFX/dlDLizpm/2Pwk/6AYZ5us4VUXPnqcLtiRY+EJWdsi4QVi7lIzFMw
-         CF+w==
-X-Gm-Message-State: AOAM531ZnYUFZG6PYDR2mqYPEYFPiAHLCekYbduf6B502hMFxyPgd6xA
-        68iLhOyfmlQFH0YyjDL2f4o=
-X-Google-Smtp-Source: ABdhPJw9GI3LmijANA6YNg6ucBYaKBZ1Kmmqr0H5BC9suvjUjyEtX6w/E9WyIaPKUu+RN4l/U0sJLA==
-X-Received: by 2002:a17:902:dac8:: with SMTP id q8mr5025423plx.164.1644335878641;
-        Tue, 08 Feb 2022 07:57:58 -0800 (PST)
-Received: from localhost ([2405:201:2003:b021:6001:8ce1:3e29:705e])
-        by smtp.gmail.com with ESMTPSA id s4sm11481437pgg.80.2022.02.08.07.57.55
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 08 Feb 2022 07:57:58 -0800 (PST)
-Date:   Tue, 8 Feb 2022 21:27:52 +0530
-From:   Raag Jadav <raagjadav@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
-Message-ID: <20220208155752.GB3003@localhost>
-References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
- <Yf6QbbqaxZhZPUdC@lunn.ch>
- <20220206171234.GA5778@localhost>
- <YgANBQjsrmK+T/N+@lunn.ch>
- <20220207174948.GA5183@localhost>
- <YgHQ7Kf+2c9knxk3@lunn.ch>
+        Tue, 8 Feb 2022 10:59:05 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BDBC061576;
+        Tue,  8 Feb 2022 07:59:04 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id A6136A04;
+        Tue,  8 Feb 2022 16:59:02 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644335942;
+        bh=3ZHPiTQ+E4LPkJaFQULINzRsOnPVcUSSNop2nwOFTPM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JI92CtT/N3hjpdjr1ADac9M0ugA0aaKrIwStu+0fYDnuJN8dlmtvUx6h1YJ/BhadC
+         YUW3GZmlIToEVOwxoXRzaj0btlTT40DJ6r3s7yI7lL7GZ8lGw6oLwL6G2OR2fGhSud
+         W9YUqDDmZjl+ienVZWJVQ70ZL/rS8myFT96tvv0s=
+Date:   Tue, 8 Feb 2022 17:58:59 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+Cc:     dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
+        kernel-list@raspberrypi.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org, lukasz@jany.st,
+        mchehab@kernel.org, naush@raspberrypi.com, robh@kernel.org,
+        tomi.valkeinen@ideasonboard.com,
+        bcm-kernel-feedback-list@broadcom.com, stefan.wahren@i2se.com
+Subject: Re: [PATCH v5 05/11] media: MAINTAINERS: add bcm2835 unicam driver
+Message-ID: <YgKTQykit5Lv8i5D@pendragon.ideasonboard.com>
+References: <20220208155027.891055-1-jeanmichel.hautbois@ideasonboard.com>
+ <20220208155027.891055-6-jeanmichel.hautbois@ideasonboard.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YgHQ7Kf+2c9knxk3@lunn.ch>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220208155027.891055-6-jeanmichel.hautbois@ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 03:09:48AM +0100, Andrew Lunn wrote:
-> > MAC implementation[1] in a lot of NXP SoCs comes with in-band aneg enabled
-> > by default, and it does expect Clause 37 auto-negotiation to complete
-> > between MAC and PHY before the actual data transfer happens.
-> > 
-> > [1] https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/t-series/3241/1/AN3869(1).pdf
-> > 
-> > I faced such issue while integrating VSC85xx PHY
-> > with one of the recent NXP SoC having similar MAC implementation.
-> > Not sure if this is a problem on MAC side or PHY side,
-> > But having Clause 37 support should help in most cases I believe.
-> 
-> So please use this information in the commit message.
-> 
-> The only danger with this change is, is the PHY O.K with auto-neg
-> turned on, with a MAC which does not actually perform auto-neg? It
-> could be we have boards which work now because PHY autoneg is turned
-> off.
-> 
+Hi Jean-Michel,
 
-Introducing an optional device tree property could be of any help?
+Thank you for the patch.
 
->       Andrew
+On Tue, Feb 08, 2022 at 04:50:21PM +0100, Jean-Michel Hautbois wrote:
+> Add the BCM2835 Camera driver named Unicam in the list.
+> 
+> Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+> ---
+>  MAINTAINERS | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index c25bc24d58e2..ca84a66c6a9a 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3670,6 +3670,14 @@ N:	bcm113*
+>  N:	bcm216*
+>  N:	kona
+>  
+> +BROADCOM BCM2835 CAMERA DRIVER
+> +M:	Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>
+> +L:	linux-media@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> +F:	arch/arm/boot/dts/bcm283x*
+
+I don't think this entry is needed. With that removed,
+
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+> +F:	drivers/media/platform/bcm2835/
+> +
+>  BROADCOM BCM47XX MIPS ARCHITECTURE
+>  M:	Hauke Mehrtens <hauke@hauke-m.de>
+>  M:	Rafał Miłecki <zajec5@gmail.com>
+
+-- 
+Regards,
+
+Laurent Pinchart
