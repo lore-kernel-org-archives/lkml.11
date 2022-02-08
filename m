@@ -2,76 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE71C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C342C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231797AbiBHLYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:24:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48912 "EHLO
+        id S233822AbiBHLXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:23:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355894AbiBHJ7c (ORCPT
+        with ESMTP id S1355737AbiBHJxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:59:32 -0500
-X-Greylist: delayed 654 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 01:59:29 PST
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3EB1CC03FEC0;
-        Tue,  8 Feb 2022 01:59:29 -0800 (PST)
-HMM_SOURCE_IP: 172.18.0.48:33584.1340775733
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-110.86.5.91 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id A4EC62800A8;
-        Tue,  8 Feb 2022 17:48:27 +0800 (CST)
-X-189-SAVE-TO-SEND: zhenggy@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id 138a66c129c44c58b32f4233f37be3ab for linux-kernel@vger.kernel.org;
-        Tue, 08 Feb 2022 17:48:30 CST
-X-Transaction-ID: 138a66c129c44c58b32f4233f37be3ab
-X-Real-From: zhenggy@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: zhenggy@chinatelecom.cn
-To:     bcrl@kvack.org, viro@zeniv.linux.org.uk, ebiggers@kernel.org,
-        axboe@kernel.dk
-Cc:     linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-From:   zhenggy <zhenggy@chinatelecom.cn>
-Subject: [PATCH] aio: inform block layer of how many requests we are
- submitting
-Message-ID: <8e0186ed-04bb-7bb8-ff09-581a7b9fdf03@chinatelecom.cn>
-Date:   Tue, 8 Feb 2022 17:47:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        Tue, 8 Feb 2022 04:53:01 -0500
+X-Greylist: delayed 552 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 01:52:59 PST
+Received: from outbound-smtp30.blacknight.com (outbound-smtp30.blacknight.com [81.17.249.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA07BC03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:52:59 -0800 (PST)
+Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
+        by outbound-smtp30.blacknight.com (Postfix) with ESMTPS id 9BB69BAFE4
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:43:45 +0000 (GMT)
+Received: (qmail 1402 invoked from network); 8 Feb 2022 09:43:45 -0000
+Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.17.223])
+  by 81.17.254.9 with ESMTPA; 8 Feb 2022 09:43:45 -0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Aubrey Li <aubrey.li@linux.intel.com>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Mike Galbraith <efault@gmx.de>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Gautham Shenoy <gautham.shenoy@amd.com>,
+        K Prateek Nayak <kprateek.nayak@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mel Gorman <mgorman@techsingularity.net>
+Subject: [PATCH v6 0/2] Adjust NUMA imbalance for multiple LLCs
+Date:   Tue,  8 Feb 2022 09:43:32 +0000
+Message-Id: <20220208094334.16379-1-mgorman@techsingularity.net>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After commit 47c122e35d7e ("block: pre-allocate requests if plug is
-started and is a batch"), block layer can make smarter request allocation
-if it know how many requests it need to submit, so switch to use
-blk_start_plug_nr_ios here to pass the number of requests we will submit.
+Changelog sinve v5
+o Fix off-by-one error
 
-Signed-off-by: GuoYong Zheng <zhenggy@chinatelecom.cn>
----
- fs/aio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changelog since V4
+o Scale imbalance based on the top domain that prefers siblings
+o Keep allowed imbalance as 2 up to the point where LLCs can be overloaded
 
-diff --git a/fs/aio.c b/fs/aio.c
-index 4ceba13..7c4935e 100644
---- a/fs/aio.c
-+++ b/fs/aio.c
-@@ -2071,7 +2071,7 @@ static int io_submit_one(struct kioctx *ctx, struct iocb __user *user_iocb,
- 		nr = ctx->nr_events;
+Changelog since V3
+o Calculate imb_numa_nr for multiple SD_NUMA domains
+o Restore behaviour where communicating pairs remain on the same node
 
- 	if (nr > AIO_PLUG_THRESHOLD)
--		blk_start_plug(&plug);
-+		blk_start_plug_nr_ios(&plug, nr);
- 	for (i = 0; i < nr; i++) {
- 		struct iocb __user *user_iocb;
+Commit 7d2b5dd0bcc4 ("sched/numa: Allow a floating imbalance between NUMA
+nodes") allowed an imbalance between NUMA nodes such that communicating
+tasks would not be pulled apart by the load balancer. This works fine when
+there is a 1:1 relationship between LLC and node but can be suboptimal
+for multiple LLCs if independent tasks prematurely use CPUs sharing cache.
+
+The series addresses two problems -- inconsistent logic when allowing a
+NUMA imbalance and sub-optimal performance when there are many LLCs per
+NUMA node.
+
+ include/linux/sched/topology.h |  1 +
+ kernel/sched/fair.c            | 30 ++++++++++---------
+ kernel/sched/topology.c        | 53 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 71 insertions(+), 13 deletions(-)
 
 -- 
-1.8.3.1
+2.31.1
 
