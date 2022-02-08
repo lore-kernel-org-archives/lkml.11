@@ -2,109 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A44C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 201A0C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387644AbiBHWbY (ORCPT
+        id S1387685AbiBHWb2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:31:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37544 "EHLO
+        Tue, 8 Feb 2022 17:31:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386846AbiBHVRD (ORCPT
+        with ESMTP id S1386236AbiBHTsD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:17:03 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5C8C0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:17:02 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id a12-20020a056902056c00b0061dc0f2a94aso387895ybt.6
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:17:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=hpYRwQLRBekfx+PCqt9/1HSAYQriRfUkssje8sUgZSw=;
-        b=sOK4RMt818cUZPOEOHeyV19TBhn5uBFBKquSjktW5SYy6qRp9nBkRB82fA/OVrQjbT
-         zau9QpGFLq0wy5gqkLyktdJ/aVwh/ojsgDGOtbvxJZf1hkv5G/7vXYBwFrpS1Uq3HNEI
-         ue/kBM5PmsKiJMkyb6+pSVEC8gVxrSvyPnpj1zhvFbVmCaT4SVVJ1VUniIDOkdaBGCZi
-         RhIurQT6LcLl3Db57CNeL4P9lc7NX4fzwSg5TwmKlwme9XdHYekJeq5d55zAR6qnAf84
-         nkcHMYvnUwAWz1l4fHySz7vdZYVT+Vh4z/3jNBoPfLTrPKiZeUlfQT4zZ9AE9hlG2A++
-         ftCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=hpYRwQLRBekfx+PCqt9/1HSAYQriRfUkssje8sUgZSw=;
-        b=hGti+he40Usil3qtJAxTfBSNRVnKBk3Kc+TiGa8agcqc7HYWqfeXslM+nm2PK3X94L
-         v5zLsONo9PnK74Dbi60CsLCBRndO20sWP/V9wLaTKPsytDkaCPTsrB0zbhORjh13pVtN
-         SP+1EGlt7fu5yX242mSzgfD0t++7XRhYoYoI9ziAS+nq4cxi4Ny3sZbHVnrtVmvVw6bB
-         xZ3/YxjgM52uzej41gaoGAgP9BZGzzJaXBtRyiO9mkdQDxhK2Y5WE0LbiI3+HNqki8IG
-         Tc6dLhs3ph6T74HhBBTa3XJN8aHCXrptJo+RSDtoekf+xTCH4Caa6ABIrnVNBJm1GSR/
-         wNIA==
-X-Gm-Message-State: AOAM5308KorsR5YhbklsNIe+JUUGWymk6ZSpd7vAa/jX8jJ9S/2KH/Je
-        Iq98h3PtLG/m11xmi8bnuZ/fPvYCD2CrIbGz3l7cCovQkPJAzfncKMHdCds0oHaXEWXq3HQQnZJ
-        +H1m6lt6dl6LkgEsg4d2Uefnc0LmqMFGNjR0i9pSzlX8I4lGUjS/SNKZ1WXYjjGkWeWZ37XEl
-X-Google-Smtp-Source: ABdhPJz4tSKHW4S5Dd8IpdL9PG0xNiIntmhIVsFrDAE+HRTSNUI+YCx8meMBdWzz6F4B/Kf9Z3Kclf0o1xzY
-X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:6875:3c51:69be:6e2c])
- (user=eranian job=sendgmr) by 2002:a25:e803:: with SMTP id
- k3mr6732621ybd.571.1644355021597; Tue, 08 Feb 2022 13:17:01 -0800 (PST)
-Date:   Tue,  8 Feb 2022 13:16:29 -0800
-In-Reply-To: <20220208211637.2221872-1-eranian@google.com>
-Message-Id: <20220208211637.2221872-5-eranian@google.com>
-Mime-Version: 1.0
-References: <20220208211637.2221872-1-eranian@google.com>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-Subject: [PATCH v6 04/12] perf/x86/amd: add branch-brs helper event for Fam19h BRS
-From:   Stephane Eranian <eranian@google.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
-        jolsa@redhat.com, songliubraving@fb.com
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 8 Feb 2022 14:48:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAF1C0613CB;
+        Tue,  8 Feb 2022 11:48:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCE31615DB;
+        Tue,  8 Feb 2022 19:48:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01A1AC004E1;
+        Tue,  8 Feb 2022 19:48:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644349682;
+        bh=c8q0TxHVTjf4aNkQStcXVJSZB5mKfeuVp0Hhu1DcxMk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VJ8gWT14MPgCcP1GFBoBKr73DvfGR5bYwQHRF6+IKxXnNzBDMraPC5jdM2W2PVzVc
+         UEDDOcs828zHRI5VxgF+SK4pnxDWCJDDq7pkBHJLFtwhNMUUBc8Heu+OHRRXUSdl8q
+         e9OMtJQ3G1F6YxQUxM2i5cASx8thwaqIPtcSPhys6Lty3CebQfVOZ4s9ORqCc4/XcN
+         6vsPMwVJFWlzKr8FmUSqx7JT8CIB3OZfOT9lgj4TqTS9zXLXTsrXhJHXj3A4nt1Aph
+         452lraqlJnJY58NqcCC0DptsKFKU9nNBFrhiL3v/OgoXhZxJXerxYOAnS3Ozf1aFa/
+         Se9rQVk1a2fiw==
+From:   anna@kernel.org
+To:     torvalds@linux-foundation.org
+Cc:     linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Please Pull NFS Client Bugfixes for Linux v5.17-rc
+Date:   Tue,  8 Feb 2022 14:48:00 -0500
+Message-Id: <20220208194800.482704-1-anna@kernel.org>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a pseudo event called branch-brs to help use the FAM Fam19h
-Branch Sampling feature (BRS). BRS samples taken branches, so it is best used
-when sampling on a retired taken branch event (0xc4) which is what BRS
-captures.  Instead of trying to remember the event code or actual event name,
-users can simply do:
+Hi Linus,
 
-$ perf record -b -e cpu/branch-brs/ -c 1000037 .....
+The following changes since commit 26291c54e111ff6ba87a164d85d4a4e134b7315c:
 
-Signed-off-by: Stephane Eranian <eranian@google.com>
----
- arch/x86/events/amd/core.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+  Linux 5.17-rc2 (2022-01-30 15:37:07 +0200)
 
-diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index 44d8f618bb3e..597defee1e02 100644
---- a/arch/x86/events/amd/core.c
-+++ b/arch/x86/events/amd/core.c
-@@ -1105,8 +1105,24 @@ static struct attribute_group group_caps_amd_brs = {
- 	.is_visible = amd_brs_is_visible,
- };
- 
-+#define AMD_FAM19H_BRS_EVENT 0xc4 /* Fam19h RETIRED_TAKEN_BRANCH_INSTRUCTIONS */
-+EVENT_ATTR_STR(branch-brs, amd_branch_brs,
-+	       "event=" __stringify(AMD_FAM19H_BRS_EVENT)"\n");
-+
-+static struct attribute *amd_brs_events_attrs[] = {
-+	EVENT_PTR(amd_branch_brs),
-+	NULL,
-+};
-+
-+static struct attribute_group group_events_amd_brs = {
-+	.name       = "events",
-+	.attrs      = amd_brs_events_attrs,
-+	.is_visible = amd_brs_is_visible,
-+};
-+
- static const struct attribute_group *amd_attr_update[] = {
- 	&group_caps_amd_brs,
-+	&group_events_amd_brs,
- 	NULL,
- };
- 
--- 
-2.35.0.263.gb82422642f-goog
+are available in the Git repository at:
 
+  git://git.linux-nfs.org/projects/anna/linux-nfs.git tags/nfs-for-5.17-2
+
+for you to fetch changes up to b49ea673e119f59c71645e2f65b3ccad857c90ee:
+
+  SUNRPC: lock against ->sock changing during sysfs read (2022-02-08 09:14:26 -0500)
+
+----------------------------------------------------------------
+NFS Client Bugfixes for Linux 5.17-rc
+
+- Stable Fixes:
+  - Fix initialization of nfs_client cl_flags
+
+- Other Fixes:
+  - Fix performance issues with uncached readdir calls
+  - Fix potential pointer dereferences in rpcrdma_ep_create
+  - Fix nfs4_proc_get_locations() kernel-doc comment
+  - Fix locking during sunrpc sysfs reads
+  - Update my email address in the MAINTAINERS file to my new kernel.org email
+
+Thanks,
+Anna
+
+----------------------------------------------------------------
+Anna Schumaker (1):
+      MAINTAINERS: Update my email address
+
+Dan Aloni (1):
+      xprtrdma: fix pointer derefs in error cases of rpcrdma_ep_create
+
+NeilBrown (1):
+      SUNRPC: lock against ->sock changing during sysfs read
+
+Trond Myklebust (2):
+      NFS: Avoid duplicate uncached readdir calls on eof
+      NFS: Fix initialisation of nfs_client cl_flags field
+
+Yang Li (1):
+      NFS: Fix nfs4_proc_get_locations() kernel-doc comment
+
+trondmy@kernel.org (2):
+      NFS: Don't overfill uncached readdir pages
+      NFS: Don't skip directory entries when doing uncached readdir
+
+ MAINTAINERS                 |  2 +-
+ fs/nfs/client.c             |  2 +-
+ fs/nfs/dir.c                | 24 ++++++++++++++++++------
+ fs/nfs/nfs4proc.c           |  3 ++-
+ include/linux/nfs_fs.h      |  1 +
+ net/sunrpc/sysfs.c          |  5 ++++-
+ net/sunrpc/xprtrdma/verbs.c |  3 +++
+ net/sunrpc/xprtsock.c       |  7 ++++++-
+ 8 files changed, 36 insertions(+), 11 deletions(-)
