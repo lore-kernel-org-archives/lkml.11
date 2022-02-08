@@ -2,113 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 305E2C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCEBC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358827AbiBHNVn (ORCPT
+        id S1359427AbiBHNVu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:21:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
+        Tue, 8 Feb 2022 08:21:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349841AbiBHMM7 (ORCPT
+        with ESMTP id S1376337AbiBHM5X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:12:59 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655D2C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:12:58 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id DC6C31EC02B9;
-        Tue,  8 Feb 2022 13:12:52 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644322373;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=y/e2GhBcXzHymJgRHX3UzkyGtFMTu3KEOpP5+yH5sGI=;
-        b=sFeWiz2Wkl3Ujq/1CRN9aZeFQY8lvHEBQd5WzF9YEu28REyBhrAwJqpu8nyM7cTEfrBTpu
-        R5xu0eUjuYiH8YFQ0v8VI16iNYPAL8+2CfrCfMB6pNlbNd+JtJ4Zrel3uri6pg7zKHhrRR
-        Ki2MEP8chAEJrpKWIUi7ONPgDXEekUA=
-Date:   Tue, 8 Feb 2022 13:12:45 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 23/29] x86/tdx: Add helper to convert memory between
- shared and private
-Message-ID: <YgJePUqMEzHNqrsR@zn.tnic>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
- <20220124150215.36893-24-kirill.shutemov@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220124150215.36893-24-kirill.shutemov@linux.intel.com>
+        Tue, 8 Feb 2022 07:57:23 -0500
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31312C03FECF;
+        Tue,  8 Feb 2022 04:57:20 -0800 (PST)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxL+M6ZwJik0oIAA--.26524S3;
+        Tue, 08 Feb 2022 20:51:07 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Baoquan He <bhe@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, kexec@lists.infradead.org,
+        linux-doc@vger.kernel.org, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/5] docs: kdump: update description about sysfs file system support
+Date:   Tue,  8 Feb 2022 20:51:02 +0800
+Message-Id: <1644324666-15947-2-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1644324666-15947-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1644324666-15947-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9DxL+M6ZwJik0oIAA--.26524S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7tF1ftr4rurWruF15CFWkXrb_yoW8JFWxpa
+        nYyry29FyxAr1kC3yUAF1IgFy5A3WIkayrG34kAry8Xr1Dur97ZrsI9w47JF1DXry8Gayr
+        XFWSgFyF9a42y3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUPl14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
+        x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+        Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
+        8EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AI
+        xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
+        vE14v26r106r15McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
+        r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04
+        v7MxkIecxEwVAFwVW5JwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC2
+        0s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI
+        0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv2
+        0xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2js
+        IE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZF
+        pf9x0JU8DGOUUUUU=
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 06:02:09PM +0300, Kirill A. Shutemov wrote:
-> +static bool tdx_accept_page(phys_addr_t gpa, enum pg_level pg_level)
+After commit 6a108a14fa35 ("kconfig: rename CONFIG_EMBEDDED to
+CONFIG_EXPERT"), "Configure standard kernel features (for small
+systems)" is not exist, we should use "Configure standard kernel
+features (expert users)" now.
 
-accept_page() as it is a static function.
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+Acked-by: Baoquan He <bhe@redhat.com>
+---
+ Documentation/admin-guide/kdump/kdump.rst | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> +int tdx_hcall_request_gpa_type(phys_addr_t start, phys_addr_t end, bool enc)
-> +{
-> +	u64 ret;
-> +
-> +	if (end <= start)
-> +		return -EINVAL;
-> +
-> +	if (!enc) {
-> +		start |= tdx_shared_mask();
-> +		end |= tdx_shared_mask();
-> +	}
-> +
-> +	/*
-> +	 * Notify the VMM about page mapping conversion. More info about ABI
-> +	 * can be found in TDX Guest-Host-Communication Interface (GHCI),
-> +	 * sec "TDG.VP.VMCALL<MapGPA>"
-> +	 */
-> +	ret = _tdx_hypercall(TDVMCALL_MAP_GPA, start, end - start, 0, 0, NULL);
-> +
-
-
-^ Superfluous newline.
-
-> +	if (ret)
-> +		ret = -EIO;
-> +
-> +	if (ret || !enc)
-
-Is the second case here after the "||" the conversion-to-shared where it
-only needs to notify with MapGPA and return?
-
-Of all the places, this one needs a comment.
-
-> +		return ret;
-> +
-> +	/*
-> +	 * For shared->private conversion, accept the page using
-> +	 * TDX_ACCEPT_PAGE TDX module call.
-> +	 */
-> +	while (start < end) {
-> +		/* Try 2M page accept first if possible */
-> +		if (!(start & ~PMD_MASK) && end - start >= PMD_SIZE &&
-> +		    !tdx_accept_page(start, PG_LEVEL_2M)) {
-
-What happens here if the module doesn't accept the page? No error
-reporting, no error handling, no warning, nada?
-
+diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
+index cb30ca3d..d187df2 100644
+--- a/Documentation/admin-guide/kdump/kdump.rst
++++ b/Documentation/admin-guide/kdump/kdump.rst
+@@ -146,9 +146,9 @@ System kernel config options
+ 	CONFIG_SYSFS=y
+ 
+    Note that "sysfs file system support" might not appear in the "Pseudo
+-   filesystems" menu if "Configure standard kernel features (for small
+-   systems)" is not enabled in "General Setup." In this case, check the
+-   .config file itself to ensure that sysfs is turned on, as follows::
++   filesystems" menu if "Configure standard kernel features (expert users)"
++   is not enabled in "General Setup." In this case, check the .config file
++   itself to ensure that sysfs is turned on, as follows::
+ 
+ 	grep 'CONFIG_SYSFS' .config
+ 
 -- 
-Regards/Gruss,
-    Boris.
+2.1.0
 
-https://people.kernel.org/tglx/notes-about-netiquette
