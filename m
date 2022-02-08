@@ -2,133 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E28C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31033C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385083AbiBHR5l (ORCPT
+        id S1356578AbiBHR6d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 12:57:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41088 "EHLO
+        Tue, 8 Feb 2022 12:58:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384473AbiBHRz5 (ORCPT
+        with ESMTP id S229742AbiBHR6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 12:55:57 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E67C03FEE8;
-        Tue,  8 Feb 2022 09:55:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644342952; x=1675878952;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=sQYj8BI3pdUAV5Nor9CGrZ5tasEBi1/5E/39PYFxV/c=;
-  b=j6gPMUT6d3oi1xbVI2dbKFhIHzYrbMtWL+pE+Mmsya6VqPpFu1SQ5qmX
-   Fc+Kmqi2p95fQ81ERIGyuBsZg+ZnCkjqALO1EU98Psgva85Yfr5wlVGTB
-   xmXukhvzyYQUc2tskZx1cnXN+J9HXEDu26L96HGmvqVgIjnTmbqE2c7WX
-   w=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 09:55:45 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 09:55:44 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 09:55:37 -0800
-Received: from blr-ubuntu-525.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 09:55:33 -0800
-From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-To:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <pure.logic@nexus-software.ie>,
-        <bjorn.andersson@linaro.org>, <greg@kroah.com>, <robh@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <quic_tsoni@quicinc.com>,
-        <quic_psodagud@quicinc.com>, <quic_satyap@quicinc.com>,
-        <quic_pheragu@quicinc.com>, <quic_rjendra@quicinc.com>,
-        <quic_sibis@quicinc.com>, <quic_saipraka@quicinc.com>,
-        <quic_schowdhu@quicinc.com>
-Subject: [PATCH V6 4/6] arm64: dts: qcom: sc7280: Add EUD dt node and dwc3 connector
-Date:   Tue, 8 Feb 2022 23:24:27 +0530
-Message-ID: <b2b6bdf0e7589a7b6a6f9b390b227339636e0da9.1644339918.git.quic_schowdhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1644339918.git.quic_schowdhu@quicinc.com>
-References: <cover.1644339918.git.quic_schowdhu@quicinc.com>
+        Tue, 8 Feb 2022 12:58:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403A3C061576;
+        Tue,  8 Feb 2022 09:58:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD5EB61766;
+        Tue,  8 Feb 2022 17:58:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 357B7C004E1;
+        Tue,  8 Feb 2022 17:58:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644343110;
+        bh=YThmeioGVlRtQGh5OkQwpRe54M5yvmgR9ZY/n50LRIY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=rG+oCYxFv8HGDE6JoDSt9jBuo5VXMBl9ZD21V1pI8Ly2ATbN0U6AihbWH7ZKUxVYg
+         6tqqHIQBN1GXuL1sNGr6qjbG8LiyUCQXR8oyQZNAJRM1tn8EU4h3TglYrk7TwojFOK
+         4ddzUKPQ9CioZw1ibmDZKbSA1qZR/lHo+SPhfnULmYYPeJsvPcplPA8plYyCoPVGir
+         Imi5JWQdKPMqVFWDcrGkp+EiUnZu/As5YvnbCnh6WxPlDBGLgarmCunI4IIyyMYINE
+         NnF4FMHPoUt0ttCsOKTpbMea2wNwXY3or2lEdowsDLIAVZ0TWcZWBEDd9ycxrZvYVy
+         T7YKlonapgbcw==
+Received: by mail-yb1-f172.google.com with SMTP id m6so52102698ybc.9;
+        Tue, 08 Feb 2022 09:58:30 -0800 (PST)
+X-Gm-Message-State: AOAM530JjtYfecX1derNa4s59bdPMH9t+ZeiRn3nd/jQJFoHxOuTJFRI
+        iQHVOp1POjv6uHDOQTynepfzNMo9kOvBajvEOAg=
+X-Google-Smtp-Source: ABdhPJzy11YzMMOoas+Js5GboaV4Yyyap0cbD7IRCueOQVmr35FHuCdTWPMom70FNX4AcXsbM4shWGa8FMe3A0xxqbw=
+X-Received: by 2002:a05:6902:1208:: with SMTP id s8mr6117418ybu.654.1644343109274;
+ Tue, 08 Feb 2022 09:58:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220208152148.48534-1-pmenzel@molgen.mpg.de>
+In-Reply-To: <20220208152148.48534-1-pmenzel@molgen.mpg.de>
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 8 Feb 2022 09:58:18 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5zwFQsOHLOQ9b9eCC6Lh+frtB_c6vTP2yjg=nrAUpSEQ@mail.gmail.com>
+Message-ID: <CAPhsuW5zwFQsOHLOQ9b9eCC6Lh+frtB_c6vTP2yjg=nrAUpSEQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] lib/raid6/test/Makefile: Use `$(pound)` instead of
+ `\#` for Make 4.3
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-raid <linux-raid@vger.kernel.org>,
+        Matt Brown <matthew.brown.dev@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the Embedded USB Debugger(EUD) device tree node. The
-node contains EUD base register region and EUD mode
-manager register regions along with the interrupt entry.
-Also add the typec connector node for EUD which is attached to
-EUD node via port. EUD is also attached to DWC3 node via port.
-Also add the role-switch property to dwc3 node.
+On Tue, Feb 8, 2022 at 7:22 AM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+> Buidling `raid6test` on Ubuntu 21.10 (ppc64le) with GNU Make 4.3 shows th=
+e
+> errors below:
+>
+>     $ cd lib/raid6/test/
+>     $ make
+>     <stdin>:1:1: error: stray =E2=80=98\=E2=80=99 in program
+>     <stdin>:1:2: error: stray =E2=80=98#=E2=80=99 in program
+>     <stdin>:1:11: error: expected =E2=80=98=3D=E2=80=99, =E2=80=98,=E2=80=
+=99, =E2=80=98;=E2=80=99, =E2=80=98asm=E2=80=99 or =E2=80=98__attribute__=
+=E2=80=99 before =E2=80=98<=E2=80=99 token
+>     cp -f ../int.uc int.uc
+>     awk -f ../unroll.awk -vN=3D1 < int.uc > int1.c
+>     gcc -I.. -I ../../../include -g -O2                      -c -o int1.o=
+ int1.c
+>     awk -f ../unroll.awk -vN=3D2 < int.uc > int2.c
+>     gcc -I.. -I ../../../include -g -O2                      -c -o int2.o=
+ int2.c
+>     awk -f ../unroll.awk -vN=3D4 < int.uc > int4.c
+>     gcc -I.. -I ../../../include -g -O2                      -c -o int4.o=
+ int4.c
+>     awk -f ../unroll.awk -vN=3D8 < int.uc > int8.c
+>     gcc -I.. -I ../../../include -g -O2                      -c -o int8.o=
+ int8.c
+>     awk -f ../unroll.awk -vN=3D16 < int.uc > int16.c
+>     gcc -I.. -I ../../../include -g -O2                      -c -o int16.=
+o int16.c
+>     awk -f ../unroll.awk -vN=3D32 < int.uc > int32.c
+>     gcc -I.. -I ../../../include -g -O2                      -c -o int32.=
+o int32.c
+>     rm -f raid6.a
+>     ar cq raid6.a int1.o int2.o int4.o int8.o int16.o int32.o recov.o alg=
+os.o tables.o
+>     ranlib raid6.a
+>     gcc -I.. -I ../../../include -g -O2                      -o raid6test=
+ test.c raid6.a
+>     /usr/bin/ld: raid6.a(algos.o):/dev/shm/linux/lib/raid6/test/algos.c:2=
+8: multiple definition of `raid6_call'; /scratch/local/ccIJjN8s.o:/dev/shm/=
+linux/lib/raid6/test/test.c:22: first defined here
+>     collect2: error: ld returned 1 exit status
+>     make: *** [Makefile:72: raid6test] Error 1
+>
+> The errors come from the `HAS_ALTIVEC` test, which fails, and the POWER
+> optimized versions are not built. That=E2=80=99s also reason nobody notic=
+ed on the
+> other architectures.
+>
+> GNU Make 4.3 does not remove the backslash anymore. From the 4.3 release
+> announcment:
+>
+> > * WARNING: Backward-incompatibility!
+> >   Number signs (#) appearing inside a macro reference or function invoc=
+ation
+> >   no longer introduce comments and should not be escaped with backslash=
+es:
+> >   thus a call such as:
+> >     foo :=3D $(shell echo '#')
+> >   is legal.  Previously the number sign needed to be escaped, for examp=
+le:
+> >     foo :=3D $(shell echo '\#')
+> >   Now this latter will resolve to "\#".  If you want to write makefiles
+> >   portable to both versions, assign the number sign to a variable:
+> >     H :=3D \#
+> >     foo :=3D $(shell echo '$H')
+> >   This was claimed to be fixed in 3.81, but wasn't, for some reason.
+> >   To detect this change search for 'nocomment' in the .FEATURES variabl=
+e.
+>
+> So, do the same as commit 9564a8cf422d ("Kbuild: fix # escaping in .cmd
+> files for future Make") and commit 929bef467771 ("bpf: Use $(pound) inste=
+ad
+> of \# in Makefiles") and define and use a `$(pound)` variable.
+>
+> Reference for the change in make:
+> https://git.savannah.gnu.org/cgit/make.git/commit/?id=3Dc6966b323811c37ac=
+edff05b57
+>
+> Cc: Matt Brown <matthew.brown.dev@gmail.com>
+> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
 
-Signed-off-by: Souradeep Chowdhury <quic_schowdhu@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+I removed all the "`", fixed some unwrapped commit log, shortened some line=
+s
+and applied the set to md-next. Please review that version and let me know =
+if
+anything need to change.
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 937c2e0..96917fe 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2583,6 +2583,12 @@
- 				phys = <&usb_2_hsphy>;
- 				phy-names = "usb2-phy";
- 				maximum-speed = "high-speed";
-+				usb-role-switch;
-+				port {
-+					usb2_role_switch: endpoint {
-+						remote-endpoint = <&eud_ep>;
-+					};
-+				};
- 			};
- 		};
- 
-@@ -2624,6 +2630,36 @@
- 			interrupts = <GIC_SPI 582 IRQ_TYPE_LEVEL_HIGH>;
- 		};
- 
-+		eud: eud@88e0000 {
-+			compatible = "qcom,sc7280-eud","qcom,eud";
-+			reg = <0 0x88e0000 0 0x2000>,
-+			      <0 0x88e2000 0 0x1000>;
-+			interrupts-extended = <&pdc 11 IRQ_TYPE_LEVEL_HIGH>;
-+			ports {
-+				port@0 {
-+					eud_ep: endpoint {
-+						remote-endpoint = <&usb2_role_switch>;
-+					};
-+				};
-+				port@1 {
-+					eud_con: endpoint {
-+						remote-endpoint = <&con_eud>;
-+					};
-+				};
-+			};
-+		};
-+
-+		eud_typec: connector {
-+			compatible = "usb-c-connector";
-+			ports {
-+				port@0 {
-+					con_eud: endpoint {
-+						remote-endpoint = <&eud_con>;
-+					};
-+				};
-+			};
-+		};
-+
- 		nsp_noc: interconnect@a0c0000 {
- 			reg = <0 0x0a0c0000 0 0x10000>;
- 			compatible = "qcom,sc7280-nsp-noc";
--- 
-2.7.4
-
+Thanks,
+Song
