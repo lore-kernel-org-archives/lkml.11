@@ -2,111 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20879C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:40:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9255AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231657AbiBHFkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 00:40:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45414 "EHLO
+        id S232303AbiBHFkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 00:40:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242450AbiBHFkW (ORCPT
+        with ESMTP id S231610AbiBHFhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 00:40:22 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0631DC03FEC1
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 21:40:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644298818; x=1675834818;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=p7wGE0HhuG34EzELTglILtSKY9i/XaqQsSZ4NDo5Owg=;
-  b=SM/gmotNDot8qyHY0KJanU+kl2/ahhUkyrb79cmviN6jspOkp60SJAwU
-   97qzzbICL3ZhsNnHEqmp4SfVNHBeLfH+xvBRczMsfe3kq6k4rfljDNWTQ
-   dy9EZw1OuIfrdfJRT0QXUDBg/D2wnNcwlSeNj/nip6BOFDEO+WA9mB1bn
-   U7awVGO1prhvsKT1MzfidekRZoWd289BuvvzsHO0Z8775CF6aMYbIPjgP
-   qjfB1Hj2wY/gt2m1kke2x2TXIizZOEIy1dKMMW19rHMz/HbHKn6NOrRdc
-   7mETtDnC41r/8bf4e7EFpgrNL9UZFPRvKXbpMYYC4kuzBGcbWJ2La3yz/
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="229525658"
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="229525658"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 21:40:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="567735845"
-Received: from lkp-server01.sh.intel.com (HELO 9dd77a123018) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 07 Feb 2022 21:40:16 -0800
-Received: from kbuild by 9dd77a123018 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nHJEd-0001PW-Mr; Tue, 08 Feb 2022 05:40:15 +0000
-Date:   Tue, 8 Feb 2022 13:39:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Hannes Reinecke <hare@suse.de>
-Subject: drivers/ata/sata_fsl.c:335:6: warning: %d in format string (no. 1)
- requires 'int *' but the argument type is 'unsigned int *'.
- [invalidScanfArgType_int]
-Message-ID: <202202081300.g4MmMWrY-lkp@intel.com>
+        Tue, 8 Feb 2022 00:37:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D269C03BFEC;
+        Mon,  7 Feb 2022 21:33:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D3A1B81851;
+        Tue,  8 Feb 2022 05:33:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1258C004E1;
+        Tue,  8 Feb 2022 05:33:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644298400;
+        bh=GvMavZdaXd2dac9vDfywbs/WRakU62/+ADWBjauPTEM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FyCVw4UtJlJfJfVzCSbizSNBkVvOKCYXhvaTXsaRckYX3CEfCeicvgvj2h6CIxDMz
+         F6ME+Ur9ZyNzCJedKadFMjx9Kp6uTlSzobyQOBQRN5PbL4c8Jcn4qdL9jXU3vWtdFS
+         OYfOpqdp5ZcwLsvY2ZrHqJpCGwZkIcOxfx5LsbCfCYcnecKaa5dRoQRLUNNo2/k5gc
+         Cs6zIT+MkB4+2KcMpd8III82vjMz30p98XB9YQMmLzUAZUk/dLlReYEgyP7j2spHQ1
+         Me4ROB/HWfD9APk8seBn+VP5mz87gJ6TqT8yG6vl9c/bqblGSSMwf60C/thKTI71pG
+         D7+SpyITIm1nQ==
+Date:   Tue, 8 Feb 2022 11:03:16 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        quic_mkrishn@quicinc.com, linux-arm-msm@vger.kernel.org,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        robdclark@gmail.com, quic_khsieh@quicinc.com,
+        quic_abhinavk@quicinc.com, linux-phy@lists.infradead.org,
+        Stephen Boyd <swboyd@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [REPOST PATCH v1 0/3] Add support for eDP PHY on SC7280 platform
+Message-ID: <YgIAnNlrwVZOvWPM@matsya>
+References: <20220208001704.367069-1-dianders@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220208001704.367069-1-dianders@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   555f3d7be91a873114c9656069f1a9fa476ec41a
-commit: 87924c5b4094f195507bebcab96e141e48c947d7 ata: sata_fsl: add compile test support
-date:   5 weeks ago
-compiler: powerpc-linux-gcc (GCC) 11.2.0
+On 07-02-22, 16:17, Douglas Anderson wrote:
+> This is a repost of the patch series that Sankeerth Billakanti posted
+> back in November. As Stephen pointed out [1] a few days ago, it wasn't
+> posted to the right place.
+> 
+> I've tested this and it seems to bring the eDP up on my sc7280 board,
+> so I'm re-posting it in the hopes that it can land soon-ish unless
+> there's something terribly wrong with it. ;-)
+> 
+> If it makes folks happier, I have no objections to Sankeerth's
+> original patches landing. These are the exact same thing but simply
+> with the addition of my Signed-off-by.
+> 
+> [1] https://lore.kernel.org/r/CAE-0n50sONq+URcWwvDH=UPshgy6+XZEB3sK_4n+5jNktHsEhg@mail.gmail.com
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Applied all, thanks
 
-
-cppcheck warnings: (new ones prefixed by >>)
->> drivers/ata/sata_fsl.c:335:6: warning: %d in format string (no. 1) requires 'int *' but the argument type is 'unsigned int *'. [invalidScanfArgType_int]
-    if (sscanf(buf, "%d%d",
-        ^
-   drivers/ata/sata_fsl.c:335:6: warning: %d in format string (no. 2) requires 'int *' but the argument type is 'unsigned int *'. [invalidScanfArgType_int]
-    if (sscanf(buf, "%d%d",
-        ^
-   drivers/ata/sata_fsl.c:376:6: warning: %d in format string (no. 1) requires 'int *' but the argument type is 'unsigned int *'. [invalidScanfArgType_int]
-    if (sscanf(buf, "%d", &rx_watermark) != 1) {
-        ^
-
-vim +335 drivers/ata/sata_fsl.c
-
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  328  
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  329  static ssize_t fsl_sata_intr_coalescing_store(struct device *dev,
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  330  		struct device_attribute *attr,
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  331  		const char *buf, size_t count)
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  332  {
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  333  	unsigned int coalescing_count,	coalescing_ticks;
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  334  
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15 @335  	if (sscanf(buf, "%d%d",
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  336  				&coalescing_count,
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  337  				&coalescing_ticks) != 2) {
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  338  		printk(KERN_ERR "fsl-sata: wrong parameter format.\n");
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  339  		return -EINVAL;
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  340  	}
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  341  
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  342  	fsl_sata_set_irq_coalescing(dev_get_drvdata(dev),
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  343  			coalescing_count, coalescing_ticks);
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  344  
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  345  	return strlen(buf);
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  346  }
-6b4b8fc87dc5cbf Qiang Liu 2012-02-15  347  
-
-:::::: The code at line 335 was first introduced by commit
-:::::: 6b4b8fc87dc5cbfcfb5c749dc200906471fb854c sata_fsl: add support for interrupt coalsecing feature
-
-:::::: TO: Qiang Liu <qiang.liu@freescale.com>
-:::::: CC: Jeff Garzik <jgarzik@redhat.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+~Vinod
