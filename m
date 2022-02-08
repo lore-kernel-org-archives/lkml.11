@@ -2,149 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B6FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C05A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:19:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382949AbiBHQRr (ORCPT
+        id S1382971AbiBHQT3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 11:17:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48600 "EHLO
+        Tue, 8 Feb 2022 11:19:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236852AbiBHQRq (ORCPT
+        with ESMTP id S230326AbiBHQT2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 11:17:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF87AC061579;
-        Tue,  8 Feb 2022 08:17:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B0AB61675;
-        Tue,  8 Feb 2022 16:17:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AF73C340EF;
-        Tue,  8 Feb 2022 16:17:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644337064;
-        bh=jC6VMA8Sjd8HqhTCuSTd/fKRie9Nid3LAIoupAVCfTE=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=mFWGq8uAmEYrM4KqTeIPAKdvUJpkRPXpSvPv8XwE3fiYaMXlMUbLu1WwQN7AL2xGb
-         sRRyeogXF566C+wrWX7L/PCPdoQHFZDwjv5ixiTClH+JX8n/SumavGgUi2JPTvhf4u
-         HJTpMglX6kmleSRSkZe4HeCXS6JBz+W54bs7q63PRyQr6RsP2v2sFEEji+dZaB6fTc
-         xcBN3abEqZKglPSQac6tasuTziU0eEtpsXc3cWYsGH6OT8JFTgcB1G9DOClNQ/TW2G
-         Kl8BnawvDjkNfaLgLHml0AvcTfTcpLopAz/VZVvWPbY10IQhaYYyxsAs1XP5RFQ2+e
-         tnzvW+xcodPhA==
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailauth.nyi.internal (Postfix) with ESMTP id C69D527C0054;
-        Tue,  8 Feb 2022 11:17:41 -0500 (EST)
-Received: from imap48 ([10.202.2.98])
-  by compute5.internal (MEProxy); Tue, 08 Feb 2022 11:17:41 -0500
-X-ME-Sender: <xms:pJcCYmyQ-D4r7f7RLuyn2sI4TJBlIEUTxxo_SsXvxbLw2eShW_DqCw>
-    <xme:pJcCYiSiHDVlmKJ_bx5T8hwv-bnRbpHohpq7r-UjB3CZ2l_vug11UwMX3ykacfI1h
-    UE__rzajT_GlvQLVOE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheejgdekfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedftehnugih
-    ucfnuhhtohhmihhrshhkihdfuceolhhuthhosehkvghrnhgvlhdrohhrgheqnecuggftrf
-    grthhtvghrnheptdfhheettddvtedvtedugfeuuefhtddugedvleevleefvdetleffgfef
-    vdekgeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    eprghnugihodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduudeiudekheei
-    fedvqddvieefudeiiedtkedqlhhuthhopeepkhgvrhhnvghlrdhorhhgsehlihhnuhigrd
-    hluhhtohdruhhs
-X-ME-Proxy: <xmx:pJcCYoW5bf9iA3GFSMYFd0oYfgJCLB5Ur7zWmFzzuVIPO3vjqeuOcA>
-    <xmx:pJcCYsjn5PdnQGjlN3hz12UubnRpK0zb-FEdOwH8r_ZJJWJ0-RdNcA>
-    <xmx:pJcCYoAkWI2J4XKYOtKSffY77Z00QDgVRcp3cNlb2S1qFIHqB7DxXg>
-    <xmx:pZcCYujI_qgvUILAndkfV21ruLnmNvrGzpFCJLTj6ieH_2W8JAqvUoaU-Jw>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 7B8AA21E0073; Tue,  8 Feb 2022 11:17:40 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4748-g31a5b5f50e-fm-cal2020-20220204.001-g31a5b5f5
-Mime-Version: 1.0
-Message-Id: <f4663ec8-7c69-40d7-b2ae-64cde71675b9@www.fastmail.com>
-In-Reply-To: <87mtj1vh50.ffs@tglx>
-References: <87fsozek0j.ffs@tglx>
- <a7e59ae16e0e05579b087caf4045e42b174e2167.camel@intel.com>
- <3421da7fc8474b6db0e265b20ffd28d0@AcuMS.aculab.com>
- <CAMe9rOonepEiRyoAyTGkDMQQhuyuoP4iTZJJhKGxgnq9vv=dLQ@mail.gmail.com>
- <9f948745435c4c9273131146d50fe6f328b91a78.camel@intel.com>
- <6ba06196-0756-37a4-d6c4-2e47e6601dcd@kernel.org> <87mtj1vh50.ffs@tglx>
-Date:   Tue, 08 Feb 2022 08:15:12 -0800
-From:   "Andy Lutomirski" <luto@kernel.org>
-To:     "Thomas Gleixner" <tglx@linutronix.de>,
-        "Rick P Edgecombe" <rick.p.edgecombe@intel.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>,
-        "David Laight" <David.Laight@aculab.com>,
-        "Adrian Reber" <adrian@lisas.de>,
-        "Cyrill Gorcunov" <gorcunov@openvz.org>,
-        "Eugene Syromiatnikov" <esyr@redhat.com>,
-        "Dmitry Safonov" <0x7f454c46@gmail.com>
-Cc:     "Balbir Singh" <bsingharora@gmail.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Randy Dunlap" <rdunlap@infradead.org>,
-        "Kees Cook" <keescook@chromium.org>,
-        "Eranian, Stephane" <eranian@google.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "Florian Weimer" <fweimer@redhat.com>,
-        "Nadav Amit" <nadav.amit@gmail.com>,
-        "Jann Horn" <jannh@google.com>, "kcc@google.com" <kcc@google.com>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "Pavel Machek" <pavel@ucw.cz>, "Oleg Nesterov" <oleg@redhat.com>,
-        "Weijiang Yang" <weijiang.yang@intel.com>,
-        "Borislav Petkov" <bp@alien8.de>, "Arnd Bergmann" <arnd@arndb.de>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "Mike Kravetz" <mike.kravetz@oracle.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "Dave Martin" <Dave.Martin@arm.com>,
-        "john.allen@amd.com" <john.allen@amd.com>,
-        "Ingo Molnar" <mingo@redhat.com>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        "Linux API" <linux-api@vger.kernel.org>,
-        "Cyrill Gorcunov" <gorcunov@gmail.com>
-Subject: Re: [PATCH 00/35] Shadow stacks for userspace
-Content-Type: text/plain
+        Tue, 8 Feb 2022 11:19:28 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2084.outbound.protection.outlook.com [40.107.94.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 863B2C061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 08:19:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mdXC7uACQHIqjrutqG/NJHf83O82LQ8q4S6bq3tCwsUjKpzyS8YjDAFFtxVqBRdAIKxjfeBTBNXSRCl5Iit7XwrqqxRUVtGeuYwJdjNwTniB4L9G1ZFB9X7I957AWEEs4kTu33hKDqzt/OMnlvzJUhdtYqTPuVFoUuH14Jy2VO285tOnYO3RtsyNLfYeaEgBq0Ngznq8noKjA32kDb7mX3XYdLxI+crshzcR3IM7MGTNhzoqNgOcZAlQneL+KnvikHA9hje7Whk/1Q/ylr83UogDLockzWERVq9Kkfp64CSDGa05q89ADa+Zhi5f187PF5jmR4XtVQ0WwYdA8c+fzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aQlOu9dxY4DhPuKLo5kLbKuKfVjYIkcsOttQW7soFBY=;
+ b=N4rOPbG9a4JdYQvwD0pqs64AuHaWZdbtP6QaQtjiYf7mkzd/uji3SxAu40PT5nhLnNoIvKIPaoP1rvl84XxNKTYMNDGU9Gy/NcewyiUQxydIuPKMf33vbablhGpQ+/1qh+mQo/+fy9Mk2CiP20jUlkUJFCnvczHHmpmX40pFDVOqq7WvAM0zgcWRIHzhmDm3Wj3TujGHhQNxU1bnqDqjHZNWk5P87A/pMY1gU3P+OpWnzudzFxqNlGxTKyprJsuU5TY1guyOiEZ4uoY8Vbw96HE/j/ATmNsSUoUBO342m/N+fSCYB78d+bxXTVisyV92FRnVKGpSJkncMnzP7FRMew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aQlOu9dxY4DhPuKLo5kLbKuKfVjYIkcsOttQW7soFBY=;
+ b=LWQSYb7yc9RrQ3PHD48rnVHtsOb3MEOjuB9/o65XjEy/zfvgDjCVyAxNyGQ7iwmm68lpCMhGdYcHhRPNE+xqvlGGMugK6rkgtDsY5DAnxGCiOcv5U9L4mCTbL5AeQtAHHBlJkD7pcdR2csbMmFrRZ0s2vVfmNUr3TBbQ8WN56Y8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BYAPR12MB3286.namprd12.prod.outlook.com (2603:10b6:a03:139::15)
+ by MWHPR1201MB0221.namprd12.prod.outlook.com (2603:10b6:301:56::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Tue, 8 Feb
+ 2022 16:19:25 +0000
+Received: from BYAPR12MB3286.namprd12.prod.outlook.com
+ ([fe80::88e7:cc12:9082:743c]) by BYAPR12MB3286.namprd12.prod.outlook.com
+ ([fe80::88e7:cc12:9082:743c%4]) with mapi id 15.20.4951.019; Tue, 8 Feb 2022
+ 16:19:25 +0000
+Date:   Tue, 8 Feb 2022 21:49:05 +0530
+From:   "Gautham R. Shenoy" <gautham.shenoy@amd.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Aubrey Li <aubrey.li@linux.intel.com>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Mike Galbraith <efault@gmx.de>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        K Prateek Nayak <kprateek.nayak@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] sched/fair: Adjust the allowed NUMA imbalance when
+ SD_NUMA spans multiple LLCs
+Message-ID: <YgKX+cmDDA1VO9kX@BLR-5CG11610CF.amd.com>
+References: <20220208094334.16379-1-mgorman@techsingularity.net>
+ <20220208094334.16379-3-mgorman@techsingularity.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208094334.16379-3-mgorman@techsingularity.net>
+X-ClientProxiedBy: PN3PR01CA0058.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:99::17) To BYAPR12MB3286.namprd12.prod.outlook.com
+ (2603:10b6:a03:139::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4ab1d501-a7ca-4054-0d6b-08d9eb1ec5ff
+X-MS-TrafficTypeDiagnostic: MWHPR1201MB0221:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR1201MB02217117033597706915F91B962D9@MWHPR1201MB0221.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2150;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qBmoJAPFt5koGK1QYmldb3dRp1hTN52/69TzJeIuQHNMmpYOVGQ37d1jbS+Ag0eP/cco/OZrKdpaDj8GkmaR74xoXDIdV2JSUPmEWTWJ9Z7bx7NYoWl9+8RhqLsz5d9yCc5BNBSE02dH+JX7maVbkk26qlgXi8HK8xZo1yByMoy9wTa+jlbFcbZaSrEjHf1MWT6WE9g6kXvHoD9fgHLuHkKX0Ifi97boxZ0Yx6LEnYI4oxHjoiOWbXHQ1CUA/uSGnFBhQsm8kEPj4UUDKL0zQg/bg558xx0ifITsohiuiIdQrD0VcUjvs72LQTwbQizpH+vDlZZiCbZoGfhlBdS6F3mJCWFvb/ou+pupAw8zRppUScfwBROV1JABfzjfi8b1OkGAi/cWXx4wNWbKYAaIIZdgXSzds36dFi3mIj8ky1dZvMkXCamLSyanyhQwaJXmAE3cEUSnDQENrBMBjYnU05GnPtf/Q1L+FVAbMv+6qit8IkcOUq9eDf74CjnJTzXRP8VAprUwcvk2gBEImy9lNVEIP/fPF5zjsE50SJCWLnsP7F40EBQSXDJZdJMKGGmJy8QPIKc6cKyJjM4/M16J4SJGp/rYgBKsocC+xx1hpXbZ2yLAkg5mnZIPWk8eaxOVR5M7jCXjZsiylIqByYITYTDcfIyW8jYTJfzmMWViwoGZV5CuM8kZ/+sVqYE2wdGUYpHy34iRZnHOKJq4KxijsQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3286.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(508600001)(5660300002)(26005)(186003)(66476007)(66946007)(66556008)(8676002)(8936002)(4326008)(2906002)(316002)(6916009)(86362001)(38100700002)(6512007)(6506007)(6666004)(54906003)(7416002)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L+41rlrrd8NfpCSCmG7F1TP2hxBb0eqocdSn02e8eF1pvS6SfayW2CFOIbmG?=
+ =?us-ascii?Q?4MGHiT1tY2DlbQOqEBi1mBh4H3WVj0EqedfVRmr0ujF6M8wPinf3QtpZFC38?=
+ =?us-ascii?Q?c7IdLKffgGtaoeP4d1lPf5Slzc746I8Jw1otUy6WZkqcdhkQ9oUsM10MLkvF?=
+ =?us-ascii?Q?OSO5hJGe/DgXNOCcGtkOchdyeuvAqN9h403ZE03WXYNvp0VSOKc2PINTkENt?=
+ =?us-ascii?Q?jferFYfEKbLOmNSXo9F+qSUCb+pcPCF3yrxU76ntdhxRw7JNeXjnKttsTBEM?=
+ =?us-ascii?Q?8IAPg6dlyr6v/AmCeZelyf5+jbmp8t4vuF7oDYgaUnT9IjVhwMRUmg+3RgLu?=
+ =?us-ascii?Q?PuD7WVQAqLLb2KkAbtfGsh0NtTq55RsR/u+hi50rTKW/TotUxHadmv21BCPE?=
+ =?us-ascii?Q?MVnXhpWSGJMY0rFOZeFIQ2s8V6XHbbTOyzRKcIDlt95ifO/ocfNWIdmolYD4?=
+ =?us-ascii?Q?9sUQx14IdPWxM2zYmv1oY6RAgY3X3w5ZNjTttxNWRHap9KprXsCDF5RAn2j+?=
+ =?us-ascii?Q?CdirN77O9zA6GiSLJRInTpFi48+WjWjVF0N2srQn1YsJL1051672tzmKqkwP?=
+ =?us-ascii?Q?t2K7Ai/sKH4iaJ680TR9v++bqyGCmfXpK41PKMEqsye8Ot3vHZ2blJKV1cR9?=
+ =?us-ascii?Q?jOQvdtgRjOtz/y9gpiYS49EzpSS00+tCR/R8MP+bBKZmhP9pfE043hVj8ttT?=
+ =?us-ascii?Q?4HBR8X4MVjAKwhcIIJudKzrEjkL98MF5mBiXmSWlYaj8FKoK8RNI9Xal0Cuq?=
+ =?us-ascii?Q?Pyw+11UMdSd909VPVeGzcahyR58TmSBvJ+JzsLuTbCowsOcSKhQUA7DId4DH?=
+ =?us-ascii?Q?MQdqNQstWmUlyUCDwkDkGW4O4PpDbKOVbHMfrwugwQvmERPGBdu6Dn8TPY0t?=
+ =?us-ascii?Q?JoDphTQHAyl0t27CSXW3TWYZ/tK/YS1IobLCUvDwdMavNy9lBs6TEgjAS6gt?=
+ =?us-ascii?Q?90WrTwu/K0YhtF4oiJeYjHCiO6RtXpfaGJhXlUcAiyU2Gz/l/evdhCqXdfYw?=
+ =?us-ascii?Q?0dYys67DpZl8V24hqZvoCh5s0HVvT2bRbXIqgU8zEu1HYBXf+YJCkXuOMXH2?=
+ =?us-ascii?Q?p3waOBwlog81dmhLhclLEUEwhxgCkKB/XXV8aYNqd6xqg75Job3wi9W5JMAh?=
+ =?us-ascii?Q?j8q0Nbf5o9fr/oj2AS9i6kNIgs4WYGRVszWmlZOzeVsCi5GutECmbve3tPZ8?=
+ =?us-ascii?Q?YTzmergEKHDsl9QfhZI527vf/xmrFxM/hCaWDyR8EKrEItWk3d+Z24Y6HR2I?=
+ =?us-ascii?Q?WItJm1Ti7QIviJ9g2xTVqz/7dCp8yW/pTStuknMpT4NOD3z9NFJVqR5RAbVP?=
+ =?us-ascii?Q?ZC3pezTRkOCLHNUZkQF2bKTGOYFvqQMOLo5AB9IQtbl6uAZFilwEeqn9ggW2?=
+ =?us-ascii?Q?vo8+GSrWm3iJPEmWSR7YLjHfpXtQ275wOAoNnF2Zp8h7Ky6Z7wlPlJMxf0p+?=
+ =?us-ascii?Q?5gq7R5blxW3bPG/sSu9lroxw1laIDbZEbe6dNkuwO+0RsBnQSrPoQETK590k?=
+ =?us-ascii?Q?Dg0Zhl5+sM2D79yfEraeJvG3F2lGNM5luSY9wNqK53SsJJhfk1sWJSwoodB2?=
+ =?us-ascii?Q?fcfpnH9uppQ7QBmKYAbTCu4MOH75Z50dOvj70xHQrOKI7K7ObLtWeyBYI4Py?=
+ =?us-ascii?Q?FclolTK86B4rjLLbb4dhTJw=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ab1d501-a7ca-4054-0d6b-08d9eb1ec5ff
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3286.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 16:19:25.7070
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: D/xj7GAPYg9wMxVdmMkhUglUiqZcblV2G6iGwiOgQ/+iJUVMfbt5a9/2+eDtLynH1o+9Ko1qJIgcy3e5xdeFjA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0221
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022, at 1:31 AM, Thomas Gleixner wrote:
-> On Mon, Feb 07 2022 at 17:31, Andy Lutomirski wrote:
->> So this leaves altshadowstack.  If we want to allow userspace to handle 
->> a shstk overflow, I think we need altshadowstack.  And I can easily 
->> imagine signal handling in a coroutine or user-threading evironment (Go? 
->> UMCG or whatever it's called?) wanting this.  As noted, this obnoxious 
->> Andy person didn't like putting any shstk-related extensions in the FPU 
->> state.
->>
->> For better or for worse, altshadowstack is (I think) fundamentally a new 
->> API.  No amount of ucontext magic is going to materialize an entire 
->> shadow stack out of nowhere when someone calls sigaltstack().  So the 
->> questions are: should we support altshadowstack from day one and, if so, 
->> what should it look like?
->
-> I think we should support them from day one.
->
->> So I don't have a complete or even almost complete design in mind, but I 
->> think we do need to make a conscious decision either to design this 
->> right or to skip it for v1.
->
-> Skipping it might create a fundamental design fail situation as it might
-> require changes to the shadow stack signal handling in general which
-> becomes a nightmare once a non-altstack API is exposed.
+On Tue, Feb 08, 2022 at 09:43:34AM +0000, Mel Gorman wrote:
 
-It would also expose a range of kernels in which shstk is on but programs that want altshadowstack don't have it.  That would be annoying.
+[..snip..]
 
->
->> As for CRIU, I don't think anyone really expects a new kernel, running 
->> new userspace that takes advantage of features in the new kernel, to 
->> work with old CRIU.
->
-> Yes, CRIU needs updates, but what ensures that CRIU managed user space
-> does not use SHSTK if CRIU is not updated yet?
+> diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+> index d201a7052a29..e6cd55951304 100644
+> --- a/kernel/sched/topology.c
+> +++ b/kernel/sched/topology.c
+> @@ -2242,6 +2242,59 @@ build_sched_domains(const struct cpumask *cpu_map, struct sched_domain_attr *att
+>  		}
+>  	}
+>  
+> +	/*
+> +	 * Calculate an allowed NUMA imbalance such that LLCs do not get
+> +	 * imbalanced.
+> +	 */
+> +	for_each_cpu(i, cpu_map) {
+> +		unsigned int imb = 0;
+> +		unsigned int imb_span = 1;
+> +
+> +		for (sd = *per_cpu_ptr(d.sd, i); sd; sd = sd->parent) {
+> +			struct sched_domain *child = sd->child;
+> +
+> +			if (!(sd->flags & SD_SHARE_PKG_RESOURCES) && child &&
+> +			    (child->flags & SD_SHARE_PKG_RESOURCES)) {
+> +				struct sched_domain *top, *top_p;
+> +				unsigned int nr_llcs;
+> +
+> +				/*
+> +				 * For a single LLC per node, allow an
+> +				 * imbalance up to 25% of the node. This is an
+> +				 * arbitrary cutoff based on SMT-2 to balance
+> +				 * between memory bandwidth and avoiding
+> +				 * premature sharing of HT resources and SMT-4
+> +				 * or SMT-8 *may* benefit from a different
+> +				 * cutoff.
+> +				 *
+> +				 * For multiple LLCs, allow an imbalance
+> +				 * until multiple tasks would share an LLC
+> +				 * on one node while LLCs on another node
+> +				 * remain idle.
+> +				 */
+> +				nr_llcs = sd->span_weight / child->span_weight;
+> +				if (nr_llcs == 1)
+> +					imb = sd->span_weight >> 2;
+> +				else
+> +					imb = nr_llcs;
+> +				sd->imb_numa_nr = imb;
+> +
+> +				/* Set span based on the first NUMA domain. */
+> +				top = sd;
+> +				top_p = top->parent;
+> +				while (top_p && !(top_p->flags & SD_NUMA)) {
+> +					top = top->parent;
+> +					top_p = top->parent;
+> +				}
+> +				imb_span = top_p ? top_p->span_weight : sd->span_weight;
+> +			} else {
+> +				int factor = max(1U, (sd->span_weight / imb_span));
+> +
+> +				sd->imb_numa_nr = imb * factor;
+> +			}
+> +		}
+> +	}
 
-In some sense this is like any other feature.  If a program uses timerfd but CRIU doesn't support timerfd, then it won't work.  SHSTK is a bit unique because it's likely that all programs on a system will start using it all at once.
+
+On a 2 Socket Zen3 servers with 64 cores per socket, the imb_numa_nr
+works out to be as follows for different Node Per Socket (NPS) modes
+
+NPS = 1:
+======
+SMT(span = 2) -- > MC (span = 16) --> DIE (span = 128) --> NUMA (span = 256)
+	 Parent of LLC is DIE. nr_llcs = 128/16 = 8. imb = 8.
+	 top_p = NUMA. imb_span = 256.
+
+for NUMA doman, factor = max(1U, 256/256) = 1. Thus sd->imb_numa_nr = 8.
+
+
+
+NPS = 2
+========
+SMT(span=2)--> MC(span=16)--> NODE(span=64)--> NUMA1(span=128)--> NUMA2(span=256)
+
+Parent of LLC = NODE. nr_llcs = 64/16 = 4. imb = 4.
+top_p = NUMA1. imb_span = 128.
+
+For NUMA1 domain, factor = 1. sd->imb_numa_nr = 4.
+For NUMA2 domain, factor = 2. sd->imb_numa_nr = 8
+
+
+NPS = 4
+========
+SMT(span=2)--> MC(span=16)--> NODE(span=32)--> NUMA1(span=128)--> NUMA2(span=256)
+
+Parent of LLC = NODE. nr_llcs = 32/16 = 2. imb = 2.
+top_p = NUMA1. imb_span = 128.
+
+For NUMA1 domain, factor = 1. sd->imb_numa_nr = 2.
+For NUMA2 domain, factor = 2. sd->imb_numa_nr = 4
+
+
+The imb_numa_nr looks good for all the NPS modes. Furthermore, running
+stream with 16 threads (equal to the number of LLCs in the system)
+yields good results on all the NPS modes with this imb_numa_nr.
+
+Reviewed-by: Gautham R. Shenoy <gautham.shenoy@amd.com>
+
+--
+Thanks and Regards
+gautham.
