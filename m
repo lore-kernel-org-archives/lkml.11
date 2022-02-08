@@ -2,214 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 391B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD16C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:35:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356800AbiBHWeM (ORCPT
+        id S1384465AbiBHWeW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:34:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52852 "EHLO
+        Tue, 8 Feb 2022 17:34:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387272AbiBHWU4 (ORCPT
+        with ESMTP id S1386224AbiBHToD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 17:20:56 -0500
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEC3C0612B8;
-        Tue,  8 Feb 2022 14:20:55 -0800 (PST)
-Received: from localhost.localdomain (ip5f5aebc2.dynamic.kabel-deutschland.de [95.90.235.194])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 4669B61E64846;
-        Tue,  8 Feb 2022 23:20:54 +0100 (CET)
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] Revert "Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg"
-Date:   Tue,  8 Feb 2022 23:19:11 +0100
-Message-Id: <20220208221911.57058-2-pmenzel@molgen.mpg.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208221911.57058-1-pmenzel@molgen.mpg.de>
-References: <20220208221911.57058-1-pmenzel@molgen.mpg.de>
+        Tue, 8 Feb 2022 14:44:03 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14669C0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:44:02 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id n23so321745pfo.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:44:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YblOd1MvT8NiXh69QNSwkAqyNRZA5ZxOXoJicXqw4d8=;
+        b=oFWxPltJgO7Yyjjqxn8nZJZOd67ZLTQvioVscHLVnXkmdXa7iezFJuEhtQLNA1/g3j
+         EFngKn54zgAF+trHsmNcjk3jMcWhVtFT0yX3iEJpoRotKrbKH4Pk7H8n/jr4xIZUF63j
+         1dRyduxXMMhbl1Chu1b/1pvRWwQ7iHNFPsqQDUTCePMPICjmZxRsHur+mIbSI5dLw8CO
+         Nh1NEeFvfcU4jnVlqed/v6LuOdfRyE+zdlI220FrxUoGpFXvLTWeyB44tDkof33lSASK
+         4gPy7MC07EK0zZ/so08sD/vnkTuNpDaSf+5BmQ8QzEbMAwWmmy2HUDdpBKaD0LQuy6XR
+         7RUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=YblOd1MvT8NiXh69QNSwkAqyNRZA5ZxOXoJicXqw4d8=;
+        b=w/y3QK/zmnX7BKzFxExT4AGI1A4Q0DHkAIOhF++tTaVTdLiufkPU8CK3F8WPI4xNyp
+         pIgmhHtVOyd7drzDYVwqFiZK0vWfL4iwr9r5akrm5Iu4E9JtYdlRO2ha6j+877+SdV+v
+         bau1bKx7bvOadtsgMxWqwysnRFPr8FRu9VVfDwCFzHWObm8G5G4KA9xIhdTsDvnAQ66A
+         /r1cjKMWwVX1izWZEROSFmjyH1DoNog56zPe1Km670uNBQqVVqtGPq7XZH1stG3hsX38
+         //LQyyiZkkRNgdPws454BK7+zYpY4WVXSmdth3UH9Wgg4q+7ti9sZHh581ZVU8KoCI8F
+         t7/w==
+X-Gm-Message-State: AOAM533nCzwqU9FxSJ+B9onXsIuBeQHzBsUcfEWxKv9cmwE2M2E4vp6K
+        37KxEFPOzO3UMc3UubWwMpE=
+X-Google-Smtp-Source: ABdhPJwUo0N6U6Zq/adD98J6NPWalNyeAX/ePj0YT7DO2jYUnhPNw4w625Hk8Jxpoa3sLKMzFYhILA==
+X-Received: by 2002:a63:a102:: with SMTP id b2mr4753591pgf.459.1644349441578;
+        Tue, 08 Feb 2022 11:44:01 -0800 (PST)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
+        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 11:44:01 -0800 (PST)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Radoslaw Burny <rburny@google.com>
+Subject: [PATCH 12/12] locking: Move lock_acquired() from the fast path
+Date:   Tue,  8 Feb 2022 11:43:24 -0800
+Message-Id: <20220208194324.85333-13-namhyung@kernel.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
+References: <20220208194324.85333-1-namhyung@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 81be03e026dc0c16dc1c64e088b2a53b73caa895.
+The lock_acquired() function is used by CONFIG_LOCK_STAT to track wait
+time for contended locks.  So it's meaningful only if the given lock
+is in the slow path (contended).  Let's move the call into the if
+block so that we can skip it in the fast path.  This also move the
+tracepoint to be called only after lock_contended().
 
-Since the commit, transferring files greater than some bytes to the
-Nokia N9 (MeeGo) or Jolla (Sailfish OS) is not possible anymore.
+It might affect bounce_acquired stats rarely (if it's on a different
+cpu than when you call lock_acquire) but I'm not sure it's possible in
+uncontended cases.  Otherwise, this should have no functional changes
+in the LOCKDEP and LOCK_STAT.
 
-    # obexctl
-    [NEW] Client /org/bluez/obex
-    [obex]# connect 40:98:4E:5B:CE:XX
-    Attempting to connect to 40:98:4E:5B:CE:XX
-    [NEW] Session /org/bluez/obex/client/session0 [default]
-    [NEW] ObjectPush /org/bluez/obex/client/session0
-    Connection successful
-    [40:98:4E:5B:CE:XX]# send /lib/systemd/systemd
-    Attempting to send /lib/systemd/systemd to /org/bluez/obex/client/session0
-    [NEW] Transfer /org/bluez/obex/client/session0/transfer0
-    Transfer /org/bluez/obex/client/session0/transfer0
-        Status: queued
-        Name: systemd
-        Size: 1841712
-        Filename: /lib/systemd/systemd
-        Session: /org/bluez/obex/client/session0
-    [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: active
-    [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Transferred: 32737 (@32KB/s 00:55)
-    [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: error
-    [DEL] Transfer /org/bluez/obex/client/session0/transfer0
+Userspace tools that use the tracepoint might see the difference, but
+I think most of them can handle the missing lock_acquired() in
+non-contended case properly as it's the case when using a trylock
+function to grab a lock.  At least it seems ok for the perf
+tools ('perf lock' command specifically).
 
-Reverting it, fixes the regression.
+Add similar change in the __mutex_lock_common() so that it can call
+lock_acquired() only after lock_contended().
 
-Link: https://lore.kernel.org/linux-bluetooth/aa3ee7ac-6c52-3861-1798-3cc1a37f6ebf@molgen.mpg.de/T/#m1f9673e4ab0d55a7dccf87905337ab2e67d689f1
-Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- net/bluetooth/rfcomm/core.c | 50 ++++++-------------------------------
- net/bluetooth/rfcomm/sock.c | 46 ++++++++++++++++++++++++++--------
- 2 files changed, 43 insertions(+), 53 deletions(-)
+ Documentation/locking/lockstat.rst |  4 ++--
+ include/linux/lockdep.h            | 12 ++++++------
+ kernel/locking/mutex.c             |  4 +---
+ 3 files changed, 9 insertions(+), 11 deletions(-)
 
-diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
-index 7324764384b6..f2bacb464ccf 100644
---- a/net/bluetooth/rfcomm/core.c
-+++ b/net/bluetooth/rfcomm/core.c
-@@ -549,58 +549,22 @@ struct rfcomm_dlc *rfcomm_dlc_exists(bdaddr_t *src, bdaddr_t *dst, u8 channel)
- 	return dlc;
- }
+diff --git a/Documentation/locking/lockstat.rst b/Documentation/locking/lockstat.rst
+index 536eab8dbd99..3638ad1113c2 100644
+--- a/Documentation/locking/lockstat.rst
++++ b/Documentation/locking/lockstat.rst
+@@ -28,11 +28,11 @@ The graph below shows the relation between the lock functions and the various
+             |    __contended
+             |         |
+             |       <wait>
++            |         |
++            |    __acquired
+             | _______/
+             |/
+             |
+-       __acquired
+-            |
+             .
+           <hold>
+             .
+diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+index 4e728d2957db..63b75ad2e17c 100644
+--- a/include/linux/lockdep.h
++++ b/include/linux/lockdep.h
+@@ -559,8 +559,8 @@ do {								\
+ 	if (!try(_lock)) {					\
+ 		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
+ 		lock(_lock);					\
++		lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
+ 	}							\
+-	lock_acquired(&(_lock)->dep_map, _RET_IP_);			\
+ } while (0)
  
--static int rfcomm_dlc_send_frag(struct rfcomm_dlc *d, struct sk_buff *frag)
--{
--	int len = frag->len;
--
--	BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
--
--	if (len > d->mtu)
--		return -EINVAL;
--
--	rfcomm_make_uih(frag, d->addr);
--	__skb_queue_tail(&d->tx_queue, frag);
--
--	return len;
--}
--
- int rfcomm_dlc_send(struct rfcomm_dlc *d, struct sk_buff *skb)
- {
--	unsigned long flags;
--	struct sk_buff *frag, *next;
--	int len;
-+	int len = skb->len;
+ #define LOCK_CONTENDED_RETURN(_lock, try, lock)			\
+@@ -569,9 +569,9 @@ do {								\
+ 	if (!try(_lock)) {					\
+ 		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
+ 		____err = lock(_lock);				\
++		if (!____err)					\
++			lock_acquired(&(_lock)->dep_map, _RET_IP_); \
+ 	}							\
+-	if (!____err)						\
+-		lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
+ 	____err;						\
+ })
  
- 	if (d->state != BT_CONNECTED)
- 		return -ENOTCONN;
+@@ -600,8 +600,8 @@ do {								\
+ 	if (!try(_lock)) {					\
+ 		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
+ 		lock(_lock);					\
++		lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
+ 	}							\
+-	lock_acquired(&(_lock)->dep_map, _RET_IP_);		\
+ } while (0)
  
--	frag = skb_shinfo(skb)->frag_list;
--	skb_shinfo(skb)->frag_list = NULL;
--
--	/* Queue all fragments atomically. */
--	spin_lock_irqsave(&d->tx_queue.lock, flags);
--
--	len = rfcomm_dlc_send_frag(d, skb);
--	if (len < 0 || !frag)
--		goto unlock;
--
--	for (; frag; frag = next) {
--		int ret;
--
--		next = frag->next;
--
--		ret = rfcomm_dlc_send_frag(d, frag);
--		if (ret < 0) {
--			kfree_skb(frag);
--			goto unlock;
--		}
-+	BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
+ #define LOCK_CONTENDED_RETURN(_lock, try, lock)			\
+@@ -610,9 +610,9 @@ do {								\
+ 	if (!try(_lock)) {					\
+ 		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
+ 		____err = lock(_lock);				\
++		if (!____err)					\
++			lock_acquired(&(_lock)->dep_map, _RET_IP_); \
+ 	}							\
+-	if (!____err)						\
+-		lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
+ 	____err;						\
+ })
  
--		len += ret;
--	}
-+	if (len > d->mtu)
-+		return -EINVAL;
+diff --git a/kernel/locking/mutex.c b/kernel/locking/mutex.c
+index f8bc4ae312a0..e67b5a16440b 100644
+--- a/kernel/locking/mutex.c
++++ b/kernel/locking/mutex.c
+@@ -605,8 +605,6 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
  
--unlock:
--	spin_unlock_irqrestore(&d->tx_queue.lock, flags);
-+	rfcomm_make_uih(skb, d->addr);
-+	skb_queue_tail(&d->tx_queue, skb);
+ 	if (__mutex_trylock(lock) ||
+ 	    mutex_optimistic_spin(lock, ww_ctx, NULL)) {
+-		/* got the lock, yay! */
+-		lock_acquired(&lock->dep_map, ip);
+ 		if (ww_ctx)
+ 			ww_mutex_set_context_fastpath(ww, ww_ctx);
+ 		preempt_enable();
+@@ -708,10 +706,10 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
  
--	if (len > 0 && !test_bit(RFCOMM_TX_THROTTLED, &d->flags))
-+	if (!test_bit(RFCOMM_TX_THROTTLED, &d->flags))
- 		rfcomm_schedule();
- 	return len;
- }
-diff --git a/net/bluetooth/rfcomm/sock.c b/net/bluetooth/rfcomm/sock.c
-index 5938af3e9936..2c95bb58f901 100644
---- a/net/bluetooth/rfcomm/sock.c
-+++ b/net/bluetooth/rfcomm/sock.c
-@@ -575,20 +575,46 @@ static int rfcomm_sock_sendmsg(struct socket *sock, struct msghdr *msg,
- 	lock_sock(sk);
+ 	debug_mutex_free_waiter(&waiter);
  
- 	sent = bt_sock_wait_ready(sk, msg->msg_flags);
-+	if (sent)
-+		goto done;
+-skip_wait:
+ 	/* got the lock - cleanup and rejoice! */
+ 	lock_acquired(&lock->dep_map, ip);
  
--	release_sock(sk);
-+	while (len) {
-+		size_t size = min_t(size_t, len, d->mtu);
-+		int err;
++skip_wait:
+ 	if (ww_ctx)
+ 		ww_mutex_lock_acquired(ww, ww_ctx);
  
--	if (sent)
--		return sent;
-+		skb = sock_alloc_send_skb(sk, size + RFCOMM_SKB_RESERVE,
-+				msg->msg_flags & MSG_DONTWAIT, &err);
-+		if (!skb) {
-+			if (sent == 0)
-+				sent = err;
-+			break;
-+		}
-+		skb_reserve(skb, RFCOMM_SKB_HEAD_RESERVE);
-+
-+		err = memcpy_from_msg(skb_put(skb, size), msg, size);
-+		if (err) {
-+			kfree_skb(skb);
-+			if (sent == 0)
-+				sent = err;
-+			break;
-+		}
-+
-+		skb->priority = sk->sk_priority;
-+
-+		err = rfcomm_dlc_send(d, skb);
-+		if (err < 0) {
-+			kfree_skb(skb);
-+			if (sent == 0)
-+				sent = err;
-+			break;
-+		}
- 
--	skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
--			      RFCOMM_SKB_TAIL_RESERVE);
--	if (IS_ERR_OR_NULL(skb))
--		return PTR_ERR(skb);
-+		sent += size;
-+		len  -= size;
-+	}
- 
--	sent = rfcomm_dlc_send(d, skb);
--	if (sent < 0)
--		kfree_skb(skb);
-+done:
-+	release_sock(sk);
- 
- 	return sent;
- }
 -- 
-2.34.1
+2.35.0.263.gb82422642f-goog
 
