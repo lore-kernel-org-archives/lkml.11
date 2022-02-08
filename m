@@ -2,175 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1063AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 346DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385084AbiBHSkg (ORCPT
+        id S1384997AbiBHSfl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:40:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35810 "EHLO
+        Tue, 8 Feb 2022 13:35:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231149AbiBHSke (ORCPT
+        with ESMTP id S237383AbiBHSfb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:40:34 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EE9C061579;
-        Tue,  8 Feb 2022 10:40:31 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 8DE1D1F387;
-        Tue,  8 Feb 2022 18:40:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644345630; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jdw+TI4CIqxgVnyNgubuTkK3R4ZTBSmLHhOkGr2VwbM=;
-        b=G2S7x10Mrrf2/Pa/VZkTCIlv7iL0i+FD2NbkgDsTy/GD6Vznw+so0ylyvTh9qrR6r7J93J
-        04Ue5FWUdyaq6uRCuCrIoSwIjWj/LQNqtOZKyN/cL79m8zoUd2cQQSWFaHW3YME2Nsl1R1
-        /O6De15sOs6wELkTrUGF3GPKQ8cJHsc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644345630;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jdw+TI4CIqxgVnyNgubuTkK3R4ZTBSmLHhOkGr2VwbM=;
-        b=JP21ChhnYhMUXNASGjs5KkXOyZc8Vg8hIeeV8nPZmnJizD+KuyALDb9msBVTnWZdZTjGOt
-        xeQkzWNQ/EVRJkBA==
-Received: from kunlun.suse.cz (unknown [10.100.128.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 236BDA3B84;
-        Tue,  8 Feb 2022 18:40:30 +0000 (UTC)
-Date:   Tue, 8 Feb 2022 19:40:29 +0100
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Lucas De Marchi <lucas.de.marchi@gmail.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "kgdb-bugreport@lists.sourceforge.net" 
-        <kgdb-bugreport@lists.sourceforge.net>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v3 4/6] modules: Add
- CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
-Message-ID: <20220208184029.GB3113@kunlun.suse.cz>
-References: <cover.1643475473.git.christophe.leroy@csgroup.eu>
- <b59ed8781ef9af995c5bfa762de1f42fdfc57c74.1643475473.git.christophe.leroy@csgroup.eu>
- <YfsbcXD74BwJ9ci2@bombadil.infradead.org>
- <228849f5-f6a4-eb45-5e1e-a9b3eccb28b3@csgroup.eu>
- <YfwyKR1xFaApWjRb@bombadil.infradead.org>
+        Tue, 8 Feb 2022 13:35:31 -0500
+Received: from smtpout1.mo3004.mail-out.ovh.net (smtpout1.mo3004.mail-out.ovh.net [79.137.123.219])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91A2C061576;
+        Tue,  8 Feb 2022 10:35:29 -0800 (PST)
+Received: from pro2.mail.ovh.net (unknown [10.108.1.178])
+        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id E50A7246E7F;
+        Tue,  8 Feb 2022 18:35:27 +0000 (UTC)
+Received: from localhost.localdomain (88.125.132.78) by DAG1EX2.emp2.local
+ (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Feb
+ 2022 19:35:26 +0100
+From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+To:     <linux-renesas-soc@vger.kernel.org>, <geert+renesas@glider.be>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
+CC:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>,
+        <linux-watchdog@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>
+Subject: [PATCH v2 0/6] ARM: r9a06g032: add support for the watchdogs
+Date:   Tue, 8 Feb 2022 19:35:04 +0100
+Message-ID: <20220208183511.2925304-1-jjhiblot@traphandler.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YfwyKR1xFaApWjRb@bombadil.infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [88.125.132.78]
+X-ClientProxiedBy: DAG1EX1.emp2.local (172.16.2.1) To DAG1EX2.emp2.local
+ (172.16.2.2)
+X-Ovh-Tracer-Id: 13254093705174858197
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrheejgdduudduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgtghisehtkeertdertddtnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpeejudfgffelleehheevveeutdejfffgjeekudekkedugfeutdeffeeuhfeuveehieenucffohhmrghinhepghhithhhuhgsrdgtohhmnecukfhppedtrddtrddtrddtpdekkedruddvhedrudefvddrjeeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehprhhovddrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdgtlhhksehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hi all,
 
-On Thu, Feb 03, 2022 at 11:51:05AM -0800, Luis Chamberlain wrote:
-> On Thu, Feb 03, 2022 at 07:05:13AM +0000, Christophe Leroy wrote:
-> > Le 03/02/2022 à 01:01, Luis Chamberlain a écrit :
-> > > On Sat, Jan 29, 2022 at 05:02:09PM +0000, Christophe Leroy wrote:
-> > >> diff --git a/kernel/module.c b/kernel/module.c
-> > >> index 11f51e17fb9f..f3758115ebaa 100644
-> > >> --- a/kernel/module.c
-> > >> +++ b/kernel/module.c
-> > >> @@ -81,7 +81,9 @@
-> > >>   /* If this is set, the section belongs in the init part of the module */
-> > >>   #define INIT_OFFSET_MASK (1UL << (BITS_PER_LONG-1))
-> > >>   
-> > >> +#ifndef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
-> > >>   #define	data_layout core_layout
-> > >> +#endif
-> > >>   
-> > >>   /*
-> > >>    * Mutex protects:
-> > >> @@ -111,6 +113,12 @@ static struct mod_tree_root {
-> > >>   #define module_addr_min mod_tree.addr_min
-> > >>   #define module_addr_max mod_tree.addr_max
-> > >>   
-> > >> +#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
-> > >> +static struct mod_tree_root mod_data_tree __cacheline_aligned = {
-> > >> +	.addr_min = -1UL,
-> > >> +};
-> > >> +#endif
-> > >> +
-> > >>   #ifdef CONFIG_MODULES_TREE_LOOKUP
-> > >>   
-> > >>   /*
-> > >> @@ -186,6 +194,11 @@ static void mod_tree_insert(struct module *mod)
-> > >>   	__mod_tree_insert(&mod->core_layout.mtn, &mod_tree);
-> > >>   	if (mod->init_layout.size)
-> > >>   		__mod_tree_insert(&mod->init_layout.mtn, &mod_tree);
-> > >> +
-> > >> +#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
-> > >> +	mod->data_layout.mtn.mod = mod;
-> > >> +	__mod_tree_insert(&mod->data_layout.mtn, &mod_data_tree);
-> > >> +#endif
-> > > 
-> > > 
-> > > kernel/ directory has quite a few files, module.c is the second to
-> > > largest file, and it has tons of stuff. Aaron is doing work to
-> > > split things out to make code easier to read and so that its easier
-> > > to review changes. See:
-> > > 
-> > > https://lkml.kernel.org/r/20220130213214.1042497-1-atomlin@redhat.com
-> > > 
-> > > I think this is a good patch example which could benefit from that work.
-> > > So I'd much prefer to see that work go in first than this, so to see if
-> > > we can make the below changes more compartamentalized.
-> > > 
-> > > Curious, how much testing has been put into this series?
-> > 
-> > 
-> > I tested the change up to (including) patch 4 to verify it doesn't 
-> > introduce regression when not using 
-> > CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC,
-> 
-> > Then I tested with patch 5. I first tried with the 'hello world' test 
-> > module. After that I loaded several important modules and checked I 
-> > didn't get any regression, both with and without STRICT_MODULES_RWX and 
-> > I checked the consistency in /proc/vmallocinfo
-> >   /proc/modules /sys/class/modules/*
-> 
-> I wonder if we have a test for STRICT_MODULES_RWX.
-> 
-> > I also tested with a hacked module_alloc() to force branch trampolines.
-> 
-> So to verify that reducing these trampolines actually helps on an
-> architecture? I wonder if we can generalize this somehow to let archs
-> verify such strategies can help.
-> 
-> I was hoping for a bit more wider testing, like actually users, etc.
-> It does not seem like so. So we can get to that by merging this soon
-> into modules-next and having this bleed out issues with linux-next.
-> We are in good time to do this now.
-> 
-> The kmod tree has tons of tests:
-> 
-> https://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git/
-> 
-> Can you use that to verify there are no regressions?
+This series adds support for the watchdog timers of the RZ/N1.
+The watchdog driver (rzn1-wdt.c) is derived from the driver available at
+https://github.com/renesas-rz/rzn1_linux.git with a few modifications
 
-openSUSE has the testsuite packaged so it's easy to run on arbitrary
-kernel but only on ppc64(le) because there is no ppc there anymore.
+In order to be able to reset the board when a watchdog timer expires,
+the RSTEN register must be configured. it is the responsability of the
+bootloader to set those bits (or not, depending on the chosen policy).
 
-So yes, it does not regress Book3S/64 as far as kmod testsuite is
-conderned and building s390x non-modular kernel also still worka but
-that's not saying much.
+If the watchdog reset source is not enabled, an interrupt is triggered
+when the watchdog expires. Currently this interrupt doesn't much apart
+from printing a message.
 
-Thanks
+Changes v1 -> v2:
+* Modified the clock driver to not enable the watchdog reset sources.
+  On other renesas platforms, those bits are by the bootloader. The
+  watchdog reset sources are still disabled when the platform is halted
+  to prevent a watchdog reset.
+* Added a SOC-specific compatible "renesas,r9a06g032-wdt"
+* reordered the dts/i entries
+* default timeout is 60 seconds
+* reworked the probe function of the wdt driver to better error cases
+* removed the set_timeout() and use a fixed period computed in probe().
+  This removes the confusion and makes it clear that the period defined
+  by the user space in indeed handled by the watchdog core
 
-Michal
+Jean-Jacques Hiblot (5):
+  dt-bindings: clock: r9a06g032: Add the definition of the the watchdog
+    clock
+  dt-bindings: watchdog: renesas,wdt: Add support for RZ/N1
+  ARM: dts: r9a06g032: Add the watchdog nodes
+  ARM: dts: r9a06g032-rzn1d400-db: Enable watchdog0 with a 60s timeout
+  clk: renesas: r9a06g032: Disable the watchdog reset sources when
+    halting
+
+Phil Edworthy (1):
+  watchdog: Add Renesas RZ/N1 Watchdog driver
+
+ .../bindings/watchdog/renesas,wdt.yaml        |   6 +
+ arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts   |   5 +
+ arch/arm/boot/dts/r9a06g032.dtsi              |  16 ++
+ drivers/clk/renesas/r9a06g032-clocks.c        |  30 +++
+ drivers/watchdog/Kconfig                      |   8 +
+ drivers/watchdog/Makefile                     |   1 +
+ drivers/watchdog/rzn1_wdt.c                   | 208 ++++++++++++++++++
+ include/dt-bindings/clock/r9a06g032-sysctrl.h |   1 +
+ 8 files changed, 275 insertions(+)
+ create mode 100644 drivers/watchdog/rzn1_wdt.c
+
+-- 
+2.25.1
+
