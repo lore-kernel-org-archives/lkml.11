@@ -2,88 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCEBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C75AC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359427AbiBHNVu (ORCPT
+        id S1359769AbiBHNV5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:21:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
+        Tue, 8 Feb 2022 08:21:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376337AbiBHM5X (ORCPT
+        with ESMTP id S1376458AbiBHNJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:57:23 -0500
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31312C03FECF;
-        Tue,  8 Feb 2022 04:57:20 -0800 (PST)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxL+M6ZwJik0oIAA--.26524S3;
-        Tue, 08 Feb 2022 20:51:07 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Baoquan He <bhe@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, kexec@lists.infradead.org,
-        linux-doc@vger.kernel.org, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/5] docs: kdump: update description about sysfs file system support
-Date:   Tue,  8 Feb 2022 20:51:02 +0800
-Message-Id: <1644324666-15947-2-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1644324666-15947-1-git-send-email-yangtiezhu@loongson.cn>
-References: <1644324666-15947-1-git-send-email-yangtiezhu@loongson.cn>
-X-CM-TRANSID: AQAAf9DxL+M6ZwJik0oIAA--.26524S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7tF1ftr4rurWruF15CFWkXrb_yoW8JFWxpa
-        nYyry29FyxAr1kC3yUAF1IgFy5A3WIkayrG34kAry8Xr1Dur97ZrsI9w47JF1DXry8Gayr
-        XFWSgFyF9a42y3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPl14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
-        x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
-        8EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AI
-        xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
-        vE14v26r106r15McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
-        r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04
-        v7MxkIecxEwVAFwVW5JwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC2
-        0s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI
-        0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv2
-        0xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2js
-        IE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZF
-        pf9x0JU8DGOUUUUU=
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Tue, 8 Feb 2022 08:09:33 -0500
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA4DC03FECE
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:09:31 -0800 (PST)
+Received: by mail-qv1-xf32.google.com with SMTP id o5so6311828qvm.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:09:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/s8FiFoNXLlWJsEmo8dsRXHngSoVZR77SSlKzOXt7DI=;
+        b=QohgGiltFrcaDVrGMMj2PZ8boBvyEj0cqCLWL7vcz5XGkiAJ0tuv/Z5UkNsIOyiwMG
+         aaKAT8a83xmJsTJ2pcdAOOM6ZXTv9b8fqJxtB4wP0yuKrBJCSBsfJJkhRFQuwm/1ciE5
+         QqqanCkfFbGJbk264uR9ysMViQXC5fqWfzFvhaxCkMikCe82TMerVEOOxDK0L3kGNATY
+         1f5BxY7lD44t7ZoYNXCNTyY+eVSjDyXfRcrzt7G27POwqZYhmCu2pveGJxzCkv3Y6x+C
+         QTfNUvr8z8I9gPr2hqMHsUTz/VwjPKB51GdPoRFXEXJQ29/J3UxIYjfQh8R66g9h/ZU5
+         oAcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/s8FiFoNXLlWJsEmo8dsRXHngSoVZR77SSlKzOXt7DI=;
+        b=5rULkR3fkNb0blHZWkxF9tEaccrNcsBvgCWlVWe3OzdmRi6Jx1YujAQZjR5PTGxqam
+         WoQMdNFyKfjGDnDlCmGUc6VUij7K4nfC4fJjZGNEhs9qTLOJp5yK0VbPuR62aR5R9KmG
+         XHGLFqWh7Gfq1YevCTJpzOozumTgOky/NOQudIXG2oWOzl0bL+AKpSZTB3ckc03GLvBD
+         JXS11mEVrVF7RoNaAQjrCmvVMRGOrJiC3cw4wH50a6q2EtGeEpUuM9q1UVcOrGIspoY4
+         f4vI9B7hrI3ZvUWdveMRQbIBC2VGqQS54bh4oUupNBYpwlIz/IYRblQ7tX7nDa+D7s2q
+         QpMg==
+X-Gm-Message-State: AOAM533ADF5ysr7ba5bkEDDQpQVdyLaD9FU1BYhefS1vRuyMTp5/7Hlu
+        kKOvxAa7hMHrb4wisl4kRf0=
+X-Google-Smtp-Source: ABdhPJxub5M8X2BfoYXJ/OcdvPF/ttHYF+U/7kF+/8iFMr+Mhgsh7qFlN9/MWHAE93sNGZBtdzD3yg==
+X-Received: by 2002:a05:6214:b66:: with SMTP id ey6mr2827201qvb.131.1644325770607;
+        Tue, 08 Feb 2022 05:09:30 -0800 (PST)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id q12sm7657455qtx.51.2022.02.08.05.09.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 05:09:29 -0800 (PST)
+Message-ID: <62026b89.1c69fb81.b9102.7042@mx.google.com>
+X-Google-Original-Message-ID: <20220208130926.GA1537772@cgel.zte@gmail.com>
+Date:   Tue, 8 Feb 2022 13:09:26 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Hugh Dickins <hughd@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>, akpm@linux-foundation.org,
+        sfr@canb.auug.org.au, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
+Subject: Re: [PATCH] psi: Treat ksm swapping in copy as memstall
+References: <20220116152150.859520-1-yang.yang29@zte.com.cn>
+ <YeVdvVVBvrXH5U0L@cmpxchg.org>
+ <61e7ac25.1c69fb81.e8938.bc67@mx.google.com>
+ <YegK7+oKFG8EPRp9@cmpxchg.org>
+ <61ea820f.1c69fb81.e79d5.09c9@mx.google.com>
+ <YfNG5KAog6fI0kYu@cmpxchg.org>
+ <61f35591.1c69fb81.48dad.3244@mx.google.com>
+ <72532675-d898-9f30-1ba4-318fbd61786@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <72532675-d898-9f30-1ba4-318fbd61786@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After commit 6a108a14fa35 ("kconfig: rename CONFIG_EMBEDDED to
-CONFIG_EXPERT"), "Configure standard kernel features (for small
-systems)" is not exist, we should use "Configure standard kernel
-features (expert users)" now.
+On Mon, Feb 07, 2022 at 07:22:22PM -0800, Hugh Dickins wrote:
+> On Fri, 28 Jan 2022, CGEL wrote:
+> > On Thu, Jan 27, 2022 at 08:29:08PM -0500, Johannes Weiner wrote:
+> > > On Fri, Jan 21, 2022 at 09:51:08AM +0000, CGEL wrote:
+> > > >  Wed, Jan 19, 2022 at 07:58:23AM -0500, Johannes Weiner wrote:
+> > > > > On Wed, Jan 19, 2022 at 06:13:54AM +0000, CGEL wrote:
+> > > > > > I did a test, when we use zram, it takes longer time for ksm copying than
+> > > > > > swap_readpage(). Ksm copying average takes 147263ns, swap_readpage()
+> > > > > > average takes 55639ns. So I think this patch is reasonable.
+> > > > > 
+> > > > > Ok, that sounds reasonable to me as well. Please add the
+> > > > > PageWorkingset() check and resubmit the patch. Thanks!
+> > > > I am a litte confused about adding PageWorkingset(), since I
+> > > > think ksm_might_need_to_copy() memstall is like swap_readpage()
+> > > > memstall and swap_readpage() doesn't add PageWorkingset().
+> > > 
+> > > That's actually a bug! It should do that.
+> > I recently found that too. Please CC to me your new patch, thanks!
+> > And I will send V2 of this patch "psi: Treat ksm swapping in copy
+> > as memstall" with PageWorkingset().
+> 
+> I'm entirely PSI-ignorant, and reluctant to disagree with Johannes,
+> but I don't see how your patch to ksm_might_need_to_copy() could be
+> correct - maybe the "swapping" in your subject is confusing.
+> 
+> There is no PSI enter and exit around the page allocation and copying
+> in wp_page_copy(), so why in the analogous ksm_might_need_to_copy()?
+>
+I think it's two questions, first why PSI didn't treat wp_page_copy() as
+memstall, second why should PSI treat ksm_might_need_to_copy() as memstall.
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-Acked-by: Baoquan He <bhe@redhat.com>
----
- Documentation/admin-guide/kdump/kdump.rst | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+The first question is unrelated with this patch. I think the reason is PSI
+focous on memory contending(see Documentation/accounting/psi.rst), and
+wp_page_copy() is not caused by memory contending. Actually wp_page_copy()
+will still be called if memory is not contending.
 
-diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
-index cb30ca3d..d187df2 100644
---- a/Documentation/admin-guide/kdump/kdump.rst
-+++ b/Documentation/admin-guide/kdump/kdump.rst
-@@ -146,9 +146,9 @@ System kernel config options
- 	CONFIG_SYSFS=y
- 
-    Note that "sysfs file system support" might not appear in the "Pseudo
--   filesystems" menu if "Configure standard kernel features (for small
--   systems)" is not enabled in "General Setup." In this case, check the
--   .config file itself to ensure that sysfs is turned on, as follows::
-+   filesystems" menu if "Configure standard kernel features (expert users)"
-+   is not enabled in "General Setup." In this case, check the .config file
-+   itself to ensure that sysfs is turned on, as follows::
- 
- 	grep 'CONFIG_SYSFS' .config
- 
--- 
-2.1.0
+For the second question, ksm_might_need_to_copy() is called only becaused
+of swapping, and swap is caused by memory contending, so PSI better treat
+it as memstall.
 
+Thanks.
+> Hugh
