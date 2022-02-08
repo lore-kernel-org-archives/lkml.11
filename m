@@ -2,219 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 940D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:44:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60763C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383478AbiBHQoH (ORCPT
+        id S1352311AbiBHQof (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 11:44:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32854 "EHLO
+        Tue, 8 Feb 2022 11:44:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232725AbiBHQoE (ORCPT
+        with ESMTP id S238504AbiBHQoe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 11:44:04 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3091C061576;
-        Tue,  8 Feb 2022 08:44:03 -0800 (PST)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 218EHNcQ026741;
-        Tue, 8 Feb 2022 16:42:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=Iz/B7y2WF54ZNHbEORWqPxMcrX1bsIGFBYPAitr/Vr4=;
- b=BaaqlBQpf4vF7dhvtVjkTk/1HVQw5BfT4JWof/u6hg4VgPssrdYeqpCAyFqOu6IcKzJQ
- 3hikjPVy89P8YdfuayW9eyd5t0Vdc1ES1/K6pELg6GYtAds7SNH3H1xMJYraC6xISBKN
- 9WlJ2/XfotAZTtwVlZViOCAViPjG9G7bIUVJ92zAUcUzhUufDamZQMISOOmkGIS1lKpw
- qaZkOruB2toiiTo7C6AjUAjtpMCeI0D+3qVyok6eHcmwRvQ7LH+Mo9B9uRCqP0Zcjrq6
- 57ech3XxCx0uulPhEVSoJhnWsc+PLgzhgxv48XRa2Eb1dUkPUsVKgZ3JdFU0cJumDyVE oQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e3h28hu2f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 08 Feb 2022 16:42:50 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 218GW62H099370;
-        Tue, 8 Feb 2022 16:42:49 GMT
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2104.outbound.protection.outlook.com [104.47.58.104])
-        by userp3030.oracle.com with ESMTP id 3e1ec0n4b1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 08 Feb 2022 16:42:48 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j58c7IatNGvigBCpP6/FCZWONl9p7Xl66O1KD4nNW0OCy+9URe0uIc9sZSObtwBs2VVDEv3xeMlBkK9BEMcdx0XWuav4RVvyH6/cmx2xNt0gN7ygykgfITWDcQjw4smcU+4SJ69V67EZrUIPHEAgPjeYRqzo4czd04TRrFXs9e3EDG/cOxZNgkof8XJmXvIfQ7V7dRMbyifDTQwgTh2V92JVd+T/yk32CuEhNYTI/g0zAzS+/rWwnYlLVdjilYlYT4A2rdvdNJ5036LWURHz3mugoUvIn8IT1P//idi1sBWkUjqZGb4S0o16SejFYAmYLkph1XPEdYdQ2bJDcYbr8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Iz/B7y2WF54ZNHbEORWqPxMcrX1bsIGFBYPAitr/Vr4=;
- b=irTzrvtAxsq4vq9B+KAbCQqLSHukl/lq0gdHROly40CcOBeJfLuI4Zsd9yhpeqIvnt+wfcat/ZVlkBm4yoBi+K98QZB8hRcgJPpxDXoWWDjyEc767Za9O+s5cH7nUEtlCeEZozZD59iPyhfxFyGlDGYLzcWwCU1aShQAUJb84yrsdyJrx+dophW6PXFQcyyQuKKTALRXaXDQnPiMQzu96FA4DDbQ0RDQ6eyjwKGVX6xpcdDNRwDuwoLPldNisXoob6L9YnnTCOfmv6wKNMlqeQuTQD8UAba9UpvMGvOeGgEQ0FLNQOmD+odqO3r8jW5PUky2fsSl9FHC0fDmk1GrlA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Iz/B7y2WF54ZNHbEORWqPxMcrX1bsIGFBYPAitr/Vr4=;
- b=efh1Wst/zbd1TEFwWAUWDKb/iIAsb6+L0HQL9akgrhT61ahmUhlFk296HeWn7KlslWdZxfYSCZ6ggVB/6hUtOz33+TC6+OZFCrYRxRZlSujIndAJ1d0bYx9PFBO6lDxJaptVe9z9dFH/4Zo2kzzJKmWg7s3pzSuw3H65osWtPgE=
-Received: from BYAPR10MB2663.namprd10.prod.outlook.com (2603:10b6:a02:a9::20)
- by BY5PR10MB3954.namprd10.prod.outlook.com (2603:10b6:a03:1ff::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Tue, 8 Feb
- 2022 16:42:46 +0000
-Received: from BYAPR10MB2663.namprd10.prod.outlook.com
- ([fe80::a0d5:610d:bcf:9b47]) by BYAPR10MB2663.namprd10.prod.outlook.com
- ([fe80::a0d5:610d:bcf:9b47%4]) with mapi id 15.20.4951.019; Tue, 8 Feb 2022
- 16:42:46 +0000
-Subject: Re: [PATCH 1/2] net: tap: track dropped skb via kfree_skb_reason()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Menglong Dong <imagedong@tencent.com>,
-        Joao Martins <joao.m.martins@oracle.com>, joe.jin@oracle.com,
-        David Ahern <dsahern@gmail.com>
-References: <20220208035510.1200-1-dongli.zhang@oracle.com>
- <20220208035510.1200-2-dongli.zhang@oracle.com>
- <CANn89i++X+QBtm=L19PBbGLUJb8ZiTib4AABL_WL+cUfgwVfOA@mail.gmail.com>
-From:   Dongli Zhang <dongli.zhang@oracle.com>
-Message-ID: <a0223152-38bd-6efa-99c8-699a21ca04cd@oracle.com>
-Date:   Tue, 8 Feb 2022 08:42:43 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
-In-Reply-To: <CANn89i++X+QBtm=L19PBbGLUJb8ZiTib4AABL_WL+cUfgwVfOA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR13CA0141.namprd13.prod.outlook.com
- (2603:10b6:a03:2c6::26) To BYAPR10MB2663.namprd10.prod.outlook.com
- (2603:10b6:a02:a9::20)
+        Tue, 8 Feb 2022 11:44:34 -0500
+X-Greylist: delayed 1368 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 08:44:32 PST
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018F1C061579;
+        Tue,  8 Feb 2022 08:44:31 -0800 (PST)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 218GLaqt094798;
+        Tue, 8 Feb 2022 10:21:36 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644337296;
+        bh=pUuWQr+L14zdI+Vc3J1KTPWgbWU9dWvEhXxZKxw3cCk=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=GpDKsn9r44cfaqqMWKNvTVOHoo3C3VZt8oW0UDJ2JEBWbPRyZ1TR2HJO5SBr6FAnV
+         EX5QzWSZdUuaP/HrM7XA4PQX5Ry1D26Ch9V1cs2wpBjtZ6UdnwoYzzAqVlPV4IFBoW
+         Z7CS7ifGsDiyPmlwXT/LNnTr2hAC/ipthtcHSF8U=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 218GLa2k116010
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 8 Feb 2022 10:21:36 -0600
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 8
+ Feb 2022 10:20:24 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 8 Feb 2022 10:20:24 -0600
+Received: from [10.250.233.13] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 218GKLAD068450;
+        Tue, 8 Feb 2022 10:20:22 -0600
+Message-ID: <93916792-67f6-9018-e93b-4bdc8987af20@ti.com>
+Date:   Tue, 8 Feb 2022 21:50:20 +0530
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e2152c19-dad6-462d-67bc-08d9eb2208f8
-X-MS-TrafficTypeDiagnostic: BY5PR10MB3954:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR10MB39540C096082DD97CEAA55CEF02D9@BY5PR10MB3954.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: B3SQvA4KSbmLvlP/VKI7ujUZcwt7OmMEV5mucPDgVvGNjtQDWG+Rb29CBRJg/Irfnwr49GXMoTMPhCc7k54rZ52N80ea9MsItuYsDRVmD9Q56Ogn6CauU+v/qLALZpXxKjpFPsNDBjM9ZhGRyTfrvyEFDTEjJsJRIoJ5J4/VFi96cGiQNjUGSIgPiwLiyOp+362eL/rQat6vhpodRp33dx5c5yoJWJmKdHOiY1zZQBqeGfLn8wS6EgpZvP8kz1/mnFkR1fKZLpEcMpf3KexwVNLiDZJ768ZSVylSyUkSGbO0SGjfVSmgQFgtT3D52aASaIzkFI9gVl9QcbMeEcuQLwbGd4XL8NwRf8FkszR3DK/JN8u+i6kO/1/s76fWZsYV1FZ1ODVkjzO2y/kj+6Gz+qieZ56hitK/fcOMa2Tt+uryQOdR5v14/JccnCuXyGGN7Ri5W5ohXJ9378gBoUSGcnSXVTBEbNVxGEcl4SmgA2BqeFmK6+mLTKzYpS5IRZcmBdtmjtQMMPspOlfSrNPtif3uOpMI4ad48IUgKKr2VGoJ6rwEK251tD96/rQeoXgU8LWbufFodCRXBwtMPtYr165kxQ/M9ZXME8RQ112dPOc3S20uLEsQCDm3cHiknLH0iQMgS3dIzXNIx+esSvrwsxJLafbybGq3vM/YGjOX6ehQ00bgtB0FTXb/tnC/dXN7U653x4QDIRLBSROfREchSF9gfCXfMdLjcaeWIMtLp94=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB2663.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(54906003)(6916009)(8676002)(36756003)(508600001)(38100700002)(6486002)(6506007)(2906002)(31696002)(53546011)(66946007)(83380400001)(31686004)(66556008)(4326008)(8936002)(5660300002)(2616005)(86362001)(66476007)(186003)(7416002)(6512007)(6666004)(44832011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dUhzUmhrN1U2Rk9jcStNaGh1VzhaLzc2R3JlZlJEMXQ5Z1VmSW84STdyb0FU?=
- =?utf-8?B?MWh0a05pRVdBeVpHQVQ5SmUxeGFQbXpzV1RxaEs4MVVKSlZQRDdTREluRFJs?=
- =?utf-8?B?YThHWXFZU3B0SW01U2FLMjRtaVMxb211VUdVVGlOL1hycUZ1cUx2RFYrcmcy?=
- =?utf-8?B?REkrK011d1hzdVhYZTFaS2NrcjJaRndtUm5zL0NEWUp5dDVUMWI4aGdyWEJ6?=
- =?utf-8?B?YzQ3RGc4UjFiUEd2MHR0OVh0bk5rd1NhSW5UWnBOb0phZklKc0FNdElEUlVu?=
- =?utf-8?B?Yk56cmZaZGMwSjdiYlhxUUJLUWJuSHAxaDNqTXU4Sk9tYkdLZmFLeVBOM1RN?=
- =?utf-8?B?R1dMRDcyMXBqbVBvaEkwWElIVXhIQWtNTjdDa2tsWU1QaVQ2RklrTXZHTUR1?=
- =?utf-8?B?YUZkaTlPSjBzYXFLenVuOEo3TmNJeXZKdkR1K1ZNZGZZMTdmcVFqMUhqNW81?=
- =?utf-8?B?UW14TUZydTRZUlRjZ3JHRWZOVkNSbkJZMFIyc1Z6bHVtVUIwemdRdW94Z3pN?=
- =?utf-8?B?d0ZKYmI0ZUlBK0lyY2xqREtpSlM2L0lpbU1kc2dFVm9pRkF1ai9KYzN5dE5U?=
- =?utf-8?B?K05YRHp0Uk9YS3ZPSGZ3bUNYRlFRSE1GZXExYWo3MXJId3JBUFhSK01DT2hH?=
- =?utf-8?B?U1VJV25GVUUya2xNSGtyQlhtMEpuVnBDWk5XT3FacEttZ2JKaXc0OWVlMFRX?=
- =?utf-8?B?OXJPdExzRDF2aWNGazBaRHNtSmUvbWdMMHZaWTJwSUtvOHdwRVNQeTl0RkNn?=
- =?utf-8?B?a3hWQjZybkxmWTdFUVQ3Ymx6eHQ1VjN2L3BObHVkQXJkOGpQMko2S045R05G?=
- =?utf-8?B?TFloQ1R4dXZlKzVuU003SzdyeUROeldwZTZlbWlldkJtTzRMTVhuaDIzbFN4?=
- =?utf-8?B?R0xOUGhuMkg0dlpaOUQ0eEUreVJjVXF2YTdrdnUyS0hSMlprdWZtTzg0Vzdk?=
- =?utf-8?B?MDNaQ3hlSE1kTmkvRkR4Rjk0WlVlbDRJeEI3MjlscWtHcStERTVKMnZqQzd4?=
- =?utf-8?B?S1U2SU5HVGNsWk1zdTZ4QTdzQ0VrU3pZekcvZUtRdTRSU0Y4RVhnS00vdURJ?=
- =?utf-8?B?VG9qTTUrSm14VVprYzYyZTZjVVB5dXR3T1U2ZzdFemVOMURTNnQ2a3lJZEFh?=
- =?utf-8?B?YVB4TE5zdVNMLzVOZTdhd3lveWtIZ3ZUOTV3ZVVNOVVzeHdvNUhObjFhSGRB?=
- =?utf-8?B?NEk3SEJvTU5abWRwMXR1QXBTNkNBVm1RUktUeHBUK0MxYXNOU3l2SFNnOUpy?=
- =?utf-8?B?TkdzeVNzdXF6L0dVZXNQbUZqV200dHlkU1NTUlc3ZWhYNFI0ektGdU1WRDdE?=
- =?utf-8?B?ZTcvLzVZVmtNaW9hYzV2OXZHTmpRMytkYzI2N2pqeTRYY00zS09FOXFKMm1G?=
- =?utf-8?B?ZC9oWWIwRHNpMnM4VGFPYnRFUyt3YmowOElIbjRJTUdHMlRiRFIxSnE1TjNV?=
- =?utf-8?B?Q0JJYTUyT3JuNVIyK084WTNXVWQ4b2tCaGZoaHMxM0N5RFRFaXEzSHIxNk16?=
- =?utf-8?B?dHV2QnBRTE4xYmVmNGR6T3lGVGNzZ1RqUzVBMGZ5eFZCakVsSjVoWHNyUmdr?=
- =?utf-8?B?NGJWTlhid29oa1JhZkRZbThnTzBPa1FFYVJzaDc2Y1A4QnpvK0F3VHhkek9z?=
- =?utf-8?B?UVZJN2VSQjYvbm5LY2pRU3lIQWFiYk03N3M0cWRTd2p2RytBSkViYlRMakRS?=
- =?utf-8?B?OVMwald0bmFXOE1PS3daYTZhd25jRG1aQ3UvVDFKdk5NSEFrVUc5dU5NdHFs?=
- =?utf-8?B?Q2M3aFVZSkplTVBTQSt0NmhOcTRWZDNNVUFrS2M3TTZ2VkpyUHkwWjRXdVh6?=
- =?utf-8?B?S3Y3ZTNYbmQrZWhCUnhNa1lNUnI3eGE4TWdma1lNREUzbHA3Y0twR1JLNXha?=
- =?utf-8?B?dkMyMkxtTzRsd2k3WldtVUNzb2JsRmxWUi9VOTNpbnplNEhZNFhqenErRWZ5?=
- =?utf-8?B?bzJLd2Q2RTQ4elY2MUh5bkFJcVZKRkNrOWdzL3oyVGpZUUpQbk9BOHRTWm1y?=
- =?utf-8?B?ZStOdGhlZWwyTVB1VHRUM2RzakVDUUdjSnJnN1dqRDlYazA1bjBqR3lUS1Fs?=
- =?utf-8?B?UFI2enUzTHZSMG82LzhWUHpPRkIyMGxQb09OQTZLd0cvV2pseTJqWmJuMW5S?=
- =?utf-8?B?ZDN3TnNuL0t0OEVzYnhaZFBFM0tJWjluT1JycHhuc0Y0WkVHRHJmR1RpQUpZ?=
- =?utf-8?Q?jc6/T39U/4x7QkctDKwhYexpTMG4iZrSyEYutrn9B6Iw?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2152c19-dad6-462d-67bc-08d9eb2208f8
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2663.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 16:42:46.3579
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZAWNxz2+u6sVZ3cgfHzOkpkHbAICVZhuCeVne/H6tSiKyPdq/T8BKNEfEy3G/xHZ/d3bFzZkkHa7ugD/DkRJog==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB3954
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10252 signatures=673431
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 suspectscore=0
- mlxlogscore=999 mlxscore=0 adultscore=0 malwarescore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202080101
-X-Proofpoint-ORIG-GUID: UGxLxhIy_utP4gqnexookcKOhGA3goz2
-X-Proofpoint-GUID: UGxLxhIy_utP4gqnexookcKOhGA3goz2
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5] ASoC: dt-bindings: davinci-mcasp: convert McASP
+ bindings to yaml schema
+Content-Language: en-US
+To:     =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <lgirdwood@gmail.com>, <broonie@kernel.org>,
+        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220103074427.4233-1-j-choudhary@ti.com>
+ <2cf3c89c-169f-3421-25d4-c80a6c9737ae@gmail.com>
+ <83c51ee4-ac10-0e44-d1cc-f69cebcbf0b8@gmail.com>
+ <f2bf4959-af15-04ad-78c3-aca883173d65@ti.com>
+ <609b03e1-66e0-9bfd-cbe1-810d816df659@gmail.com>
+From:   Jayesh Choudhary <j-choudhary@ti.com>
+In-Reply-To: <609b03e1-66e0-9bfd-cbe1-810d816df659@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eric,
 
-On 2/7/22 8:32 PM, Eric Dumazet wrote:
-> On Mon, Feb 7, 2022 at 7:55 PM Dongli Zhang <dongli.zhang@oracle.com> wrote:
->>
->> The TAP can be used as vhost-net backend. E.g., the tap_handle_frame() is
->> the interface to forward the skb from TAP to vhost-net/virtio-net.
->>
->> However, there are many "goto drop" in the TAP driver. Therefore, the
->> kfree_skb_reason() is involved at each "goto drop" to help userspace
->> ftrace/ebpf to track the reason for the loss of packets
->>
->> Cc: Joao Martins <joao.m.martins@oracle.com>
->> Cc: Joe Jin <joe.jin@oracle.com>
->> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
->> ---
->>  drivers/net/tap.c          | 30 ++++++++++++++++++++++--------
->>  include/linux/skbuff.h     |  5 +++++
->>  include/trace/events/skb.h |  5 +++++
->>  3 files changed, 32 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/net/tap.c b/drivers/net/tap.c
->> index 8e3a28ba6b28..232572289e63 100644
->> --- a/drivers/net/tap.c
->> +++ b/drivers/net/tap.c
->> @@ -322,6 +322,7 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
->>         struct tap_dev *tap;
->>         struct tap_queue *q;
->>         netdev_features_t features = TAP_FEATURES;
->> +       int drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
->>
->>         tap = tap_dev_get_rcu(dev);
->>         if (!tap)
->> @@ -343,12 +344,16 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
->>                 struct sk_buff *segs = __skb_gso_segment(skb, features, false);
->>                 struct sk_buff *next;
->>
->> -               if (IS_ERR(segs))
->> +               if (IS_ERR(segs)) {
->> +                       drop_reason = SKB_DROP_REASON_SKB_GSO_SEGMENT;
->>                         goto drop;
->> +               }
->>
->>                 if (!segs) {
->> -                       if (ptr_ring_produce(&q->ring, skb))
->> +                       if (ptr_ring_produce(&q->ring, skb)) {
->> +                               drop_reason = SKB_DROP_REASON_PTR_FULL;
+
+On 29/01/22 01:48, Péter Ujfalusi wrote:
 > 
-> PTR_FULL is strange .... How about FULL_RING, or FULL_QUEUE ?
+> On 1/17/22 12:07, Jayesh Choudhary wrote:
+> 
+>>>>> +properties:
+>>>>> +  compatible:
+>>>>> +    enum:
+>>>>> +      - ti,dm646x-mcasp-audio
+>>>>> +      - ti,da830-mcasp-audio
+>>>>> +      - ti,am33xx-mcasp-audio
+>>>>> +      - ti,dra7-mcasp-audio
+>>>>> +      - ti,omap4-mcasp-audio
+>>>
+>>> This is the only thing which bugs me: the pointless '-audio' postfix for
+>>> the compatible string...
+>>>
+>>
+>> Removing the postfix would also require a lot of dts changes which might
+>> be backward incompatible. So it is probably not a good idea.
+> 
+> My plan was to not convert the ti,*-mcasp-audio txt file to yaml in the
+> first place, but do it right with as ti,*-mcasp
+> 
+> One of the outstanding issue is the multiple serializer support. It
+> should be in core as things are just working by luck atm when more than
+> one serializer is in use (via the card node).
+> 
+>> Should we still consider this?
+> 
+> Since we are officially documenting the -mcasp-audio, I don't think it
+> would be a good idea to introduce different binding for the very same IP
+> just for the sake of it.
+> 
+> The new (and imho correct) binding would require quite a bit of work in
+> the driver and in the core level (plus the simple-card family), but I'm
+> afraid, I will not have time for it.
 > 
 
-I will use FULL_RING.
+Peter,
 
-Thank you very much!
-
-Dongli Zhang
+I think all the new changes can be picked up later on.
+For now, to support the current device tree and binding, I am posting a
+v6 patch with 'acked-by' and 'reviewed-by' so that they are not lost in
+this thread and this patch could be merged.
