@@ -2,82 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB91C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 985E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347016AbiBHFiv (ORCPT
+        id S1347093AbiBHFjk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 00:38:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
+        Tue, 8 Feb 2022 00:39:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347038AbiBHFif (ORCPT
+        with ESMTP id S1347189AbiBHFjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 00:38:35 -0500
-Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D9FC03E968;
-        Mon,  7 Feb 2022 21:34:50 -0800 (PST)
-Received: from omf09.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay11.hostedemail.com (Postfix) with ESMTP id 3704080D59;
-        Tue,  8 Feb 2022 05:34:25 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id 8911B20024;
-        Tue,  8 Feb 2022 05:34:23 +0000 (UTC)
-Message-ID: <dd4150af8858115c96ebab690182190556669050.camel@perches.com>
-Subject: Re: [PATCH V6 1/3] platform/x86: Add Intel Software Defined Silicon
- driver
-From:   Joe Perches <joe@perches.com>
-To:     david.e.box@linux.intel.com, hdegoede@redhat.com,
-        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
-        srinivas.pandruvada@intel.com, mgross@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        Mark Gross <markgross@kernel.org>
-Date:   Mon, 07 Feb 2022 21:34:22 -0800
-In-Reply-To: <d52b50f3b704280e476e60417323c98f45baf54a.camel@linux.intel.com>
-References: <20220208005444.487209-1-david.e.box@linux.intel.com>
-         <20220208005444.487209-2-david.e.box@linux.intel.com>
-         <103681860759d72b1acf712eed334b1d4ef6b7d5.camel@perches.com>
-         <d52b50f3b704280e476e60417323c98f45baf54a.camel@linux.intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Tue, 8 Feb 2022 00:39:23 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C494EC03FEC9
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 21:38:10 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id p22-20020a17090adf9600b001b8783b2647so1114132pjv.5
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 21:38:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rVZQRRRcZIvdySc3NwZCT7uSR6arJIL8Zq9GUUOZI4k=;
+        b=K1gzDYX3SbFK6ldfd2O/NmU+kuDtNqSbcy09BOW2CNdaqoz5YU3B20cIl7WoyQQdnb
+         ylFHcebmkeNDFZA0ENi3Q/60FUXtcUvrU53HjKGtbezpcxU+h53TsE2ZXXY649qtftqL
+         y0fLQ3aGARL4CdxpDFLa1WXIFSkZ9jMfHKfrMXB2jhsZZuKKJW3CR8FziESwRfWljo4D
+         C2HzoBMofn8Gb58JNuLin1y/GPfUKVzT8jmbSjlBVgXF1ny2qVjgY9ukzabRXqVlBmI1
+         fAJcdSd0lKkMyB/j6hX9ayC/nXWINOq8rs7iMxoUt4PrSgIdQV9MlmCYgpi49ole2qgm
+         q09w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rVZQRRRcZIvdySc3NwZCT7uSR6arJIL8Zq9GUUOZI4k=;
+        b=LZnDHJcY7Dvy8U1Y1gSoZ27KeoV8bf7TYbic22mmKwyBkfhMxULzMsT0ev42NRdjYd
+         vWL6H293S7wjV2hQzCEqodFIql3GCETIS0Fzyjy+h7+dKKmZkLKmnX2Q8m/MG5COexG6
+         V50xg1mkHkIqkoeIhQy5kdkVHdbkFDGNPzwrAlXLj/u8Yp+2q6WaQl809DINjQOfQDM1
+         AxPYWl7U+GYfJykIH59YtQd5N1Gah35HHYoI9QF7NvhR4G11JI6LzR1Ls38Vj0mK8aSM
+         J3BIQxXFT3zZEZhYsZT0LSq7y8YassZ9xd2rxuXSvltmk+IP2f9PfHHb5xMjepYoPk3L
+         Hrhw==
+X-Gm-Message-State: AOAM531jbzc/oX7bfiNL2LZ0RhcY1G/sNPxH3bxXnSjc5nA1moIhphm+
+        AxbnaXkF4CkJdO2DnL3ZP9RNPg==
+X-Google-Smtp-Source: ABdhPJzayIYRi1rOKJtoeQ2AgpTBrY12q1CwtfUNoU9a1c3DIlBM7Fl9mXtD4LNAmM1qtAY93XWYOA==
+X-Received: by 2002:a17:90a:ab17:: with SMTP id m23mr2609289pjq.212.1644298690076;
+        Mon, 07 Feb 2022 21:38:10 -0800 (PST)
+Received: from google.com ([2401:fa00:1:10:4b6f:f14d:be50:86a])
+        by smtp.gmail.com with ESMTPSA id 20sm1128467pjf.15.2022.02.07.21.38.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 21:38:09 -0800 (PST)
+Date:   Tue, 8 Feb 2022 13:38:07 +0800
+From:   Tzung-Bi Shih <tzungbi@google.com>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "open list:CHROMEOS EC USB TYPE-C DRIVER" 
+        <chrome-platform@lists.linux.dev>
+Subject: Re: [PATCH 3/4] platform/chrome: cros_ec_typec: Configure muxes at
+ start of port update
+Message-ID: <YgIBv2SQdwXm7RLt@google.com>
+References: <20220207214026.1526151-1-pmalani@chromium.org>
+ <20220207214026.1526151-4-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: 9bmhhg7au4o3rkbkfsrjtm3ti5u7dj3q
-X-Rspamd-Server: rspamout03
-X-Rspamd-Queue-Id: 8911B20024
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18nGjmqsA11IvQ+pY/sUSKZek1OHKssEwQ=
-X-HE-Tag: 1644298463-572210
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207214026.1526151-4-pmalani@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-07 at 18:54 -0800, David E. Box wrote:
-> On Mon, 2022-02-07 at 17:40 -0800, Joe Perches wrote:
-> > On Mon, 2022-02-07 at 16:54 -0800, David E. Box wrote:
-> > > Intel Software Defined Silicon (SDSi) is a post manufacturing mechanism for
-> > > activating additional silicon features. Features are enabled through a
-> > > license activation process.  The SDSi driver provides a per socket, sysfs
-> > > attribute interface for applications to perform 3 main provisioning
-> > > functions:
-[]
-> > > +static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct sdsi_mbox_info
-> > > *info,
-> > > +			      size_t *data_size)
-> > > +{
-> > > +	struct device *dev = priv->dev;
-> > > +	u32 total, loop, eom, status, message_size;
-> > []
-> > > +		if (packet_size > SDSI_SIZE_MAILBOX) {
-> > > +			dev_err(dev, "Packet size to large\n");
-> > 
-> > too
+On Mon, Feb 07, 2022 at 09:40:28PM +0000, Prashant Malani wrote:
+> There are situations where the mux state reported by the Embedded
+> Controller (EC), might lag the partner "connected" state. So, the mux
+> state might still suggest that a partner is connected, while the PD
+> "connected" state, being in Try.SNK (for example) suggests that the
+> partner is disconnected.
 > 
-> Sorry, I'm missing the question here. If it's whether packet_size could also not
-> be a multiple of sizeof(u64) the answer here is yes. But I don't see how that
-> matters. packet_size is a value read from the hardware. This is just a sanity
-> check.
+> In such a scenario, we will end up sending a disconnect command to the
+> mux driver, followed by a connect command, since the mux is configured
+> later. Avoid this by configuring the mux before
+> registering/disconnecting a partner.
 
-just a to/too typo.
+I failed to understand the description.  It looks like some protocol details.
+Could you provide some brief explanation in the commit message?
 
-"Packet size too large\n"
+On a related note, followed up the example scenario, which one of the
+understanding is the most applicable:
+1) The disconnect followed by a connect is suboptimal.  The patch cleans it.
+2) The disconnect followed by a connect is a bug.  The patch fixes it.
 
+> @@ -965,6 +965,11 @@ static int cros_typec_port_update(struct cros_typec_data *typec, int port_num)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	/* Update the switches if they exist, according to requested state */
+> +	ret = cros_typec_configure_mux(typec, port_num, &resp);
+> +	if (ret)
+> +		dev_warn(typec->dev, "Configure muxes failed, err = %d\n", ret);
 
+It used the fact that the function returns `ret` at the end.  After the move,
+the block is no longer the last thing before function returns.
+
+Does it make more sense to return earlier if cros_typec_configure_mux() fails?
+Does the rest of code need to be executed even if cros_typec_configure_mux()
+fails?
+
+> @@ -980,11 +985,6 @@ static int cros_typec_port_update(struct cros_typec_data *typec, int port_num)
+>  	if (typec->typec_cmd_supported)
+>  		cros_typec_handle_status(typec, port_num);
+>  
+> -	/* Update the switches if they exist, according to requested state */
+> -	ret = cros_typec_configure_mux(typec, port_num, &resp);
+> -	if (ret)
+> -		dev_warn(typec->dev, "Configure muxes failed, err = %d\n", ret);
+> -
+>  	return ret;
+
+If the function decides to return earlier, it can be `return 0;`.
