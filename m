@@ -2,80 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E38C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 03:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98334C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 03:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244657AbiBHDVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 22:21:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51962 "EHLO
+        id S1346387AbiBHDV3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 22:21:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiBHDVQ (ORCPT
+        with ESMTP id S236142AbiBHDVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 22:21:16 -0500
-X-Greylist: delayed 305 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 19:21:14 PST
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1C5C061A73
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 19:21:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644290473;
-        bh=W4Q+yNoZLcEadH7nKADIjZEALbNNRjNzktVW60BEcl8=;
-        h=X-UI-Sender-Class:Subject:From:To:Cc:Date:In-Reply-To:References;
-        b=HT2tFi7kYQwaf6lGGxISkHfRSMuHvqn2NAW35gZ8eO0qo/Um5MNUG+WuHIvGJHFvW
-         uTt69EgYYCC/y2+T2Iz65QxSyu9+zQXylnVfFQS02HnT3ucq2S42KFI7asPYLF/Pzo
-         nG0VujFqvds2+zXFiEr8LoCWCywPcKy2u6ioXZfo=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from homer.fritz.box ([185.146.48.251]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MHoRK-1nW6wm2fNG-00EswO; Tue, 08
- Feb 2022 04:16:02 +0100
-Message-ID: <83f59bac8286f3348d4c7ccdd93d1ce1ad2f06c9.camel@gmx.de>
-Subject: Re: regression: LTP isofs testcase failure - bisection fingers
- "loop: make autoclear operation asynchronous"
-From:   Mike Galbraith <efault@gmx.de>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     lkml <linux-kernel@vger.kernel.org>
-Date:   Tue, 08 Feb 2022 04:16:01 +0100
-In-Reply-To: <c53285e4-cbd4-5fd0-cbc9-93e2e3d3d88d@I-love.SAKURA.ne.jp>
-References: <4eb771d2b48ee94ba2e3aa8706bce8117d398e80.camel@gmx.de>
-         <c53285e4-cbd4-5fd0-cbc9-93e2e3d3d88d@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 
+        Mon, 7 Feb 2022 22:21:25 -0500
+Received: from spam.unicloud.com (mx.gosinoic.com [220.194.70.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6252AC043188;
+        Mon,  7 Feb 2022 19:21:23 -0800 (PST)
+Received: from eage.unicloud.com ([220.194.70.35])
+        by spam.unicloud.com with ESMTP id 2183Kac4021080;
+        Tue, 8 Feb 2022 11:20:36 +0800 (GMT-8)
+        (envelope-from luofei@unicloud.com)
+Received: from localhost.localdomain (10.10.1.7) by zgys-ex-mb09.Unicloud.com
+ (10.10.0.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2375.17; Tue, 8
+ Feb 2022 11:20:35 +0800
+From:   luofei <luofei@unicloud.com>
+To:     <stable@vger.kernel.org>, <tony.luck@intel.com>, <bp@alien8.de>,
+        <tglx@linutronix.de>, <mingo@redhat.com>, <hpa@zytor.com>,
+        <x86@kernel.org>
+CC:     <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        luofei <luofei@unicloud.com>
+Subject: [PATCH] x86/mm, mm/hwpoison: Fix the unmap kernel 1:1 pages check condition
+Date:   Mon, 7 Feb 2022 22:20:28 -0500
+Message-ID: <20220208032028.852302-1-luofei@unicloud.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Pi7c7Bt/KGRzxamZhlE37B3BVuMcE0BWd1gh16bOF9tQ+pCnOWL
- SobI7n7aU+y6ssJAhT3HEszk0RXg7SsUi0RAKedM0ms5iUTnXyR9U+w/O33/326hKu4f0qA
- 724yikACR+l1Dc80B981XGcyfQloE+wwtbJBNx8boNb9T/EXth3d58r9S86sr0FF12FlJkt
- REUYB2LMIoWAYmc5gvo0Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:gavn2NmWmyw=:DjMMYXS9CXAhUYjg4Z2IJE
- H6UfOyKPsV6T7gESqQwGHDVhyLrr/f8OQrdoA7FzYGHNQ1V43y1nvDfeYpSG+9I/BG5iWNESU
- AhTFU1GUuSy+RLFrUdG7YSJWrugUXdMPNDf7gBM0sJE/zXx/sml+d81LPQdAtONJf99NdmBFy
- r5CmNbFTJWk6/kkQkgHRe/SOUPNLDGBamndY7LPiL4S7HL4uFBP4IqW8YER6qjziasdczsWgz
- gcn03FPImAVipwroLnrJZ9IT28QNXIv/jXDoxxSk2j7S/3n/6b9LWneDjykZv2f12tSbAzabH
- yXo97Ol+ovZyU1U4kFZseB4laNw04QqYhayEmWvU4xt6VlX4h27mxdGXFW3wOv8F7AWFR6fUA
- Rrpk1Z4z08QjfNGN238YacsCUUBtPqJsUj5IhIunleLixm4INPvV9yEb46MoSI0ffYb4cFfe0
- KU24g0/0ozIf/jLA3DW30tInX1SmOzgMAO6ysAfMczhwsf3rxL0cp/sXUd5ZhLGpYEmMLhScY
- xSM2WQ1j0DPK7baMwcFVLaO9SlJj14Rn5tz9f9TkXcxTNQhiNk/jTjGAXzQReT0rkT/oTqsw7
- GUmdNHxd+MJgGL8urzxg/O+X483fXugbt4XT1+3wuS/zm4WnE00vJrWpd1EmNzFd/o3KRSVnU
- rNuktBIO7lWL8ZsBlWYZGZ4Vkz8SzSWZXS/bG2nBoNuFpxz9QH6MqQXL0N/ZCftcQH2CHWbuI
- eZbQ8GsS0Q7tTmeIZ2QGUKFaqAxStHs9v+PWXIf4WdQa/yeSODKs/3toujkHGut7utgiBm+E5
- SWq+SChmg5hLTfeo79E/X53GyCAXiHhRLeLbJR+M99kUd5szdnmStgEI+F/wdPsC3PWLfz+Hd
- aePgsI/B5pS5gQGVrMaTPTLDr9/aIa3o3U2p+C54WVncW7MdIxsgV2x5FFeoBk8M44+XDgcVu
- r9H4mtGKng7Tb+egR4q195exHs+77Q/hSFwIpfYMRGhskSmHNf65dNLki0IHQMjRAxNU+IKVV
- s2yBhvYQNvK0JcDvWsyRCzPn8GUvykD6In5FJhB42/CKCmMRHqNz6XE0funSNIQS6UX/JUL3r
- i9hFkpXyMRz34E=
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.10.1.7]
+X-ClientProxiedBy: zgys-ex-mb10.Unicloud.com (10.10.0.6) To
+ zgys-ex-mb09.Unicloud.com (10.10.0.24)
+X-DNSRBL: 
+X-MAIL: spam.unicloud.com 2183Kac4021080
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-01-18 at 06:57 +0900, Tetsuo Handa wrote:
-> On 2022/01/18 0:34, Mike Galbraith wrote:
-> > Greetings,
-> >
-> > LTP's isofs testcase began failing this cycle, and bisected as below,
-> > which a revert then confirmed.=C2=A0 Full testcase output attached.
-> >
->
-> Thanks for reporting.
-> Discussion is continued at https://lkml.kernel.org/r/cdaf1346-2885-f0da-=
-8878-12264bd48348@I-love.SAKURA.ne.jp=C2=A0.
+[ Upstream commit fd0e786d9d09024f67bd71ec094b110237dc3840 ]
 
-<legalese-disclaimer-font> ping
+This commit solves the problem of unmap kernel 1:1 pages
+unconditionally, it appears in Linus's tree 4.16 and later
+versions, and is backported to 4.14.x and 4.15.x stable branches.
+
+But the backported patch has its logic reversed when calling
+memory_failure() to determine whether it needs to unmap the
+kernel page. Only when memory_failure() returns successfully,
+the kernel page can be unmapped.
+
+Signed-off-by: luofei <luofei@unicloud.com>
+Cc: stable@vger.kernel.org #v4.14.x
+Cc: stable@vger.kernel.org #v4.15.x
+---
+ arch/x86/kernel/cpu/mcheck/mce.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/mcheck/mce.c b/arch/x86/kernel/cpu/mcheck/mce.c
+index 95c09db1bba2..d8399a689165 100644
+--- a/arch/x86/kernel/cpu/mcheck/mce.c
++++ b/arch/x86/kernel/cpu/mcheck/mce.c
+@@ -589,7 +589,7 @@ static int srao_decode_notifier(struct notifier_block *nb, unsigned long val,
+ 
+ 	if (mce_usable_address(mce) && (mce->severity == MCE_AO_SEVERITY)) {
+ 		pfn = mce->addr >> PAGE_SHIFT;
+-		if (memory_failure(pfn, MCE_VECTOR, 0))
++		if (!memory_failure(pfn, MCE_VECTOR, 0))
+ 			mce_unmap_kpfn(pfn);
+ 	}
+ 
+-- 
+2.27.0
+
