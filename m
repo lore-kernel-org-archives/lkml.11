@@ -2,193 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE61FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:01:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352710AbiBHI7h (ORCPT
+        id S1352729AbiBHJB0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:59:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
+        Tue, 8 Feb 2022 04:01:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241271AbiBHI7a (ORCPT
+        with ESMTP id S241271AbiBHJBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:59:30 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3822EC03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:59:30 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id EA50F3F32B
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 08:59:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644310768;
-        bh=5BAaisfFdzHM2Ej8w1LBO0wtundXTJbEqkB562uWwIw=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=PPhUaRVWR5LkrD45qnRaZMftxs7fSWuJnOH5/YoWsKI+uckfHb4OJWuI6IxJZEy85
-         odHf+fN5LxLjoAYAiFiSfCaL/u8Qe/1HuOEFjVXdqAY6edZHtZOMIuUd3cAHvzr6Il
-         rOvHn3ao2TP3z/vdxBL/Q7ZilCkApkFNDmGv2s0La/iT7193ddjlerhxKtCKWi8LZ8
-         pQHEsh/AiJvlFE9z6LFLNHflm5X36BsmuLUznAws26By5oVcsG/rnhJwLFxB/GnCmG
-         e9WYX1lgFXmDuU8lsHgq2g6PcueEYykaxwmnIowpj+kNpfilMiVbxbOD1cZ5ni3y9Q
-         cQJfF0pPVLx8Q==
-Received: by mail-ed1-f72.google.com with SMTP id ee7-20020a056402290700b0040f680071c9so3278692edb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:59:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=5BAaisfFdzHM2Ej8w1LBO0wtundXTJbEqkB562uWwIw=;
-        b=ss4ycnwdPeTFuhsgQclWN2pcNLsK9xYzK8rCR1WvacgEWJHV0Hojw5C0RsifAD2XWN
-         F6RU76AhPG92k2N3/TyDQ54dW+oobUphldLhaDqCmGC9i2b34eJj07ZArwp+0gYQnLXH
-         czc0cQ6XgpmDFwjf5exLAzZIsNv65K0+Q4cyAUZWOamiIy4NwHl01gxnaW09ChoM8wzg
-         YShy32+ME+oQngH9PkcoI/WOFOPDbdQcZQA5hVsDA3im+hC5j5iyaYyru0QRgC5dODNB
-         cTCaIr7Ec50xI5pf0aokcMikTXcuWaxjMfUJp0vGYURpLAEoM3EWF54sYrvSjP6XWLXn
-         6Lvw==
-X-Gm-Message-State: AOAM532DqKQ7OZvMzxmQL1Jd1rFQnAvKus5yD0V1jrFmVAojW1PIG/cT
-        0du6t/ZidSRlvC8xQHyeb9e1/92LJVA/mNGa0vDKHH4a5+zNNqpMLzhVXw8lTEpBp9ax4v+il42
-        b5/tzw71MjDjEQ9RDGm7XESr/PHlu1kYYEtZiAR9PHA==
-X-Received: by 2002:a17:907:724c:: with SMTP id ds12mr2794451ejc.203.1644310768632;
-        Tue, 08 Feb 2022 00:59:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw8tPROloPqm9ioypm8COf+zuHFCcc0iwDjz584JUVDhpmreWZwcurlewohl71zVfFFpTKOZg==
-X-Received: by 2002:a17:907:724c:: with SMTP id ds12mr2794429ejc.203.1644310768388;
-        Tue, 08 Feb 2022 00:59:28 -0800 (PST)
-Received: from [192.168.0.92] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id k14sm2187785ejg.78.2022.02.08.00.59.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 00:59:27 -0800 (PST)
-Message-ID: <7b787aee-ceea-d035-38b1-02ba0bcd3f21@canonical.com>
-Date:   Tue, 8 Feb 2022 09:59:27 +0100
+        Tue, 8 Feb 2022 04:01:24 -0500
+X-Greylist: delayed 503 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 01:01:22 PST
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07F5C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:01:22 -0800 (PST)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2187FPYI029207;
+        Tue, 8 Feb 2022 09:52:35 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=v3Nw6M+6Dsi+fs1JPP1dSSIm9lpFQHB7g75gslpbKeY=;
+ b=Mgq5P9NB3nwoHZdVJ6tMjysBImyErUzr19msvPqqz/FQ5su4diuk4I96fqnfOhnwlDhv
+ lB7cKCACz3Sc6atiQ8xnt6n52YdWoAJh2M+QrQqiCwt9NoCNku+bZwbyjSulSmTUWgxR
+ i1KICRpFL5346yegj5hlh6oEk9gNN2NWdxRAETo4tqc+QUE0ejJARTpaCkMkNGlgqGNM
+ 49v0iGD21x+9DC1dQ9KuskABfbYRzmuWZUmR37xtkwCz4/u/9P0VldiHLtEXU/htZ3Q1
+ WnZ4MJliElInn3GE4UIJge/z8id89T9piEoLjrMVCEJkxSREAs1fUx/VSKF7cXwDFMT+ xQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e3kyhgmje-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 09:52:35 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B7C1A10002A;
+        Tue,  8 Feb 2022 09:52:33 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A885E211F3D;
+        Tue,  8 Feb 2022 09:52:33 +0100 (CET)
+Received: from [10.129.7.145] (10.75.127.51) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 8 Feb
+ 2022 09:52:33 +0100
+Message-ID: <4f666fe5-080e-6c82-5bef-c0b52cb57207@foss.st.com>
+Date:   Tue, 8 Feb 2022 09:52:32 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH 1/3] dt-bindings: crypto: Convert Atmel AES to yaml
+Subject: Re: [PATCH] drm/stm: Avoid using val uninitialized in
+ ltdc_set_ycbcr_config()
 Content-Language: en-US
-To:     Tudor.Ambarus@microchip.com, herbert@gondor.apana.org.au,
-        robh+dt@kernel.org
-Cc:     davem@davemloft.net, Nicolas.Ferre@microchip.com,
-        Claudiu.Beznea@microchip.com, alexandre.belloni@bootlin.com,
-        linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220207032405.70733-1-tudor.ambarus@microchip.com>
- <20220207032405.70733-2-tudor.ambarus@microchip.com>
- <f8387f12-24f9-4a39-e9b8-3b83f1de078d@canonical.com>
- <ec358f0f-e3e2-a97b-e09a-d397edc65c72@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <ec358f0f-e3e2-a97b-e09a-d397edc65c72@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Nathan Chancellor <nathan@kernel.org>,
+        Yannick Fertre <yannick.fertre@foss.st.com>,
+        Philippe Cornu <philippe.cornu@foss.st.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>
+CC:     <llvm@lists.linux.dev>, Nick Desaulniers <ndesaulniers@google.com>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220207165304.1046867-1-nathan@kernel.org>
+From:   Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
+In-Reply-To: <20220207165304.1046867-1-nathan@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.75.127.51]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-08_02,2022-02-07_02,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/02/2022 05:10, Tudor.Ambarus@microchip.com wrote:
-> Hi, Krzysztof,
-> 
-> On 2/7/22 17:56, Krzysztof Kozlowski wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->>
->> On 07/02/2022 04:24, Tudor Ambarus wrote:
->>> Convert Atmel AES documentation to yaml format. With the conversion the
->>> clock and clock-names properties are made mandatory. The driver returns
->>> -EINVAL if "aes_clk" is not found, reflect that in the bindings and make
->>> the clock and clock-names properties mandatory. Update the example to
->>> better describe how one should define the dt node.
->>>
->>> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
->>> ---
->>>  .../devicetree/bindings/crypto/atmel,aes.yaml | 65 +++++++++++++++++++
->>>  .../bindings/crypto/atmel-crypto.txt          | 20 ------
->>>  2 files changed, 65 insertions(+), 20 deletions(-)
->>>  create mode 100644 Documentation/devicetree/bindings/crypto/atmel,aes.yaml
->>>
->>> diff --git a/Documentation/devicetree/bindings/crypto/atmel,aes.yaml b/Documentation/devicetree/bindings/crypto/atmel,aes.yaml
->>> new file mode 100644
->>> index 000000000000..f77ec04dbabe
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/crypto/atmel,aes.yaml
->>> @@ -0,0 +1,65 @@
->>> +# SPDX-License-Identifier: GPL-2.0-only
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/crypto/atmel,aes.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Atmel Advanced Encryption Standard (AES) HW cryptographic accelerator
->>> +
->>> +maintainers:
->>> +  - Tudor Ambarus <tudor.ambarus@microchip.com>
->>> +
->>> +properties:
->>> +  compatible:
->>> +    const: atmel,at91sam9g46-aes
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  interrupts:
->>> +    maxItems: 1
->>> +
->>> +  clocks:
->>> +    maxItems: 1
->>> +
->>> +  clock-names:
->>> +    const: aes_clk
->>> +
->>> +  dmas:
->>> +    items:
->>> +      - description: TX DMA Channel
->>> +      - description: RX DMA Channel
->>> +
->>> +  dma-names:
->>> +    items:
->>> +      - const: tx
->>> +      - const: rx
->>> +
->>> +required:
->>> +  - compatible
->>> +  - reg
->>> +  - interrupts
->>> +  - clocks
->>> +  - clock-names
->>> +  - dmas
->>> +  - dma-names
->>> +
->>> +additionalProperties: false
->>> +
->>> +examples:
->>> +  - |
->>> +    #include <dt-bindings/interrupt-controller/irq.h>
->>> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->>> +    #include <dt-bindings/clock/at91.h>
->>> +    #include <dt-bindings/dma/at91.h>
->>
->> One empty line for readability.
-> 
-> Ok.
-> 
->>
->>> +    aes: aes@f8038000 {
->>
->> Generic node name, so "crypto".
-> 
-> Hm, I'm not convinced why, would you please give more details about this
-> requirement? This IP is capable of doing just AES operations, I find it
-> generic enough. We use the "aes" name on all our SoCs that have a version
-> of this IP, that would be quite a change. So I would prefer to keep the
-> "aes" name if possible.
-> 
-
-The requirement comes from DT specification.
-"The name of a node should be somewhat generic, reflecting the function
-of the device and not its precise programming
- model. If appropriate, the name should be one of the following choice"
-AES is not generic. AES is specific crypto operation. The spec gives
-example - "crypto", so use this one just like others are using. Atmel is
-not special in that matter.
+Hello Nathan,
 
 
-Best regards,
-Krzysztof
+On 2/7/22 17:53, Nathan Chancellor wrote:
+> Clang warns:
+>
+>   drivers/gpu/drm/stm/ltdc.c:625:2: warning: variable 'val' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
+>           default:
+>           ^~~~~~~
+>   drivers/gpu/drm/stm/ltdc.c:635:2: note: uninitialized use occurs here
+>           val |= LxPCR_YCEN;
+>           ^~~
+>   drivers/gpu/drm/stm/ltdc.c:600:9: note: initialize the variable 'val' to silence this warning
+>           u32 val;
+>                  ^
+>                   = 0
+>   1 warning generated.
+>
+> Use a return instead of break in the default case to fix the warning.
+> Add an error message so that this return is not silent, which could hide
+> issues in the future.
+>
+> Fixes: 484e72d3146b ("drm/stm: ltdc: add support of ycbcr pixel formats")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1575
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> ---
+>  drivers/gpu/drm/stm/ltdc.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+
+
+Reviewed-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
+
+
+Thanks,
+
+Raphaël
+
