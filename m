@@ -2,110 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9554AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233118AbiBHWyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:54:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54532 "EHLO
+        id S233443AbiBHWyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 17:54:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231656AbiBHWxz (ORCPT
+        with ESMTP id S232030AbiBHWx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 17:53:55 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96FCC0612C0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:53:53 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id om7so504013pjb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 14:53:53 -0800 (PST)
+        Tue, 8 Feb 2022 17:53:56 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB910C0612C3
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:53:54 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id qe15so513902pjb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 14:53:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ohL8lfypuNocY9N3S5xez4sUrNp/rSZ6lRXmJ/oGIec=;
-        b=a+KQG1Rc2kD1MkbBccinDb5tC/LMA+IHBJ/AdHYEUGUy+hqYnwOKavdBvCixlgVFs+
-         lpYzygVgUqVr+eFBw/19XzjpEVnoti8mL6020TaoDsO7aA2Pt8IYssrSOXVcG8C17mgC
-         uRXilp9yNbGAztDJ7mZmVKu9AyO/QmFf7cz5g=
+        bh=u/PVhh2GGyEZ/OpySoYuE0Voq9bNBLeTXsuiI5yskHY=;
+        b=ZmzxPMF6hBbzUNNzlgL6cg7rdtNMhqny9ks5UBnjgosAkl9T3gHUY4pLvcjQUIykVG
+         xgZH2BNzHJ2VsxUcBoFK5r/TS3Avs2olzzWfMX0FhY++VPdu/VedLwWRFs4f8+3ijpnu
+         4WSBhQnELzGzsTJ51tb/vR7jxubPqsnTZrQEI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ohL8lfypuNocY9N3S5xez4sUrNp/rSZ6lRXmJ/oGIec=;
-        b=EVXy0QMGc8YWp3Knx37ig3/1raHtbvCNx5+FeVxuOsuo+zpC7GvtDM2nQtDBADB9kc
-         bOTJLVQIsNjH5D2zAeoMF1Eth7PF5zcb5iYDHq1aiCcCvct5vf54rtE2zQ/Mcuft6EYr
-         7iDO1qyg/Qfnhd8BFUzXlaBY6FJVF3AZoqzKiYbWMgm228fLBzTFzewx5g7AdoaH9c6m
-         FWj1vefgbvuTml7ZJv5Ifo1hSY9wAbmd7SGC2iEspfkwhGaYvcyie/TUWbgx7EUny70p
-         v/yRHX53v2IWwWPg8mvGO+X7E83NEJrTW0eRy2JNej2974iE3hIaub1cGt+p0vosW1GS
-         UZUA==
-X-Gm-Message-State: AOAM532/8EVcjMlc6Vpd7UkEBDdBUajbFecKrqN8OM0RiCIMwAlq2J25
-        yzUQZPU1BEH/LzpBoyiUMeHpKu7Dtjv/Qg==
-X-Google-Smtp-Source: ABdhPJyBzW5HujTqEYsotAQ7T1nyLaMwVF7t3phNb3c2J9+G9thOWVC2ZpyyU8poAqLA+AeaN2/0OA==
-X-Received: by 2002:a17:90a:348e:: with SMTP id p14mr211451pjb.71.1644360833143;
-        Tue, 08 Feb 2022 14:53:53 -0800 (PST)
+        bh=u/PVhh2GGyEZ/OpySoYuE0Voq9bNBLeTXsuiI5yskHY=;
+        b=jhNIxf5mdhYIDlvcBxHyAg3Giw8nxHoZ+rZlvHsPRoVqdtc79gijYcOx+Lucgz7HMm
+         af1iOwyVZyY/JZpOJsbOE4VgyckwxbUS9jHk5dE6za44wHENU6v8yeEKlHnQr6tAHwxW
+         e+2apFGIet5N5oxYGygeYxxUJNBEndLF1kNjC1bNRC7Fw0XgwAhvbF6t4IUFvKDXXdn2
+         z4w1u3sGll9ay+soqbdh266YQhLBInDpD+SDrI6agbEsGtYs0hUtpaxsA+9rRLs7bUVV
+         7SbqBdFoFFjFtHhmJqwxrnUbWTgTNbB6L0hQZoAwVbJYnPYSJlHuaQRHoZ/nMfahtLFl
+         WJjg==
+X-Gm-Message-State: AOAM532EUDPUmcJ+J8XdZOuaVSXKrRr6kcCcmr3mdJwUVMIh35KDLnJ5
+        oQLNfI2fNOovPn5v6189sQLEQZidNdHchw==
+X-Google-Smtp-Source: ABdhPJxxe2mPIAdq1qIBhh/HsddVIVmPauN8pL832p2JJRZVYQZsJyA04rFHJRX7Qa6uaHLpqAStXg==
+X-Received: by 2002:a17:90b:1b46:: with SMTP id nv6mr206541pjb.105.1644360834076;
+        Tue, 08 Feb 2022 14:53:54 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id b11sm17224199pfv.192.2022.02.08.14.53.51
+        by smtp.gmail.com with ESMTPSA id pf8sm3953732pjb.20.2022.02.08.14.53.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 14:53:52 -0800 (PST)
+        Tue, 08 Feb 2022 14:53:53 -0800 (PST)
 From:   Kees Cook <keescook@chromium.org>
 To:     Kees Cook <keescook@chromium.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        Miguel Ojeda <ojeda@kernel.org>,
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
         George Burgess IV <gbiv@google.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH v7 4/8] Compiler Attributes: Add __diagnose_as for Clang
-Date:   Tue,  8 Feb 2022 14:53:46 -0800
-Message-Id: <20220208225350.1331628-5-keescook@chromium.org>
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH v7 7/8] fortify: Make sure strlen() may still be used as a constant expression
+Date:   Tue,  8 Feb 2022 14:53:49 -0800
+Message-Id: <20220208225350.1331628-8-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220208225350.1331628-1-keescook@chromium.org>
 References: <20220208225350.1331628-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1574; h=from:subject; bh=4SDaw0EWkM/aZ9UdVR0PvLV5ODFDPttxec88Z3EMAPk=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiAvR8XC3tFWBBRxG+54By6AdqIGDcWeT6HebsLJN1 KFjh3N2JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYgL0fAAKCRCJcvTf3G3AJvxLD/ 9nQbvCbm9F4OKB/+IKlUH5zOUgm4XQQrjsbA/gXEIz2JaWFPEiKLEwYc4GDXx9SbISyZjdwuHdfCRj JkXMK4lRAmn+0pPtL/KWwFnRkBJ2bT8rX1i26Ic9tu8eAA9wMX175dnyN8qMDFt0brcfYtIepO3RvH LcN+nMkNOC5zMDvaDlexQ+L9ruB++xyw9HEQRfHOQi2TdTCIJq6s5cP78+oDV5jjl61gAgLDlA955h Kzeq4OHDuXq2pqAua4m3WIy5Ely5EgFrkVJhcIa2v3zAS2vjsCOLP+icxE073Zq1y4KY2wBoh1l441 L/ndDc23VPXqvzaG//0la5sY90k3EIaepcEoVBBMGQvv63y51Vy2YRwz2D9RG/JhemE9sLqn9uhpiq AbNnKxI3vcj2NnkuqsvOnPxwvpRLAkd4nWZt9e8VgnnC6FyOOrvw3ZlaQlKSpOkX2RuCUv67utgSzK aRPhQJNgwXuZBPXIhpwmvP/neAej+qmqQLjFP4KAc//enP/8FfY+gnl6ZmeIEq8zIEb70c1qz+VcV9 HkA2V85gNsgZlxJ1CgO8uTBqnEDEtLT7hq5YZMAZiloJNZ+7Uxh4lAGisHXah5zOlubVKRoeOAWlLR aMzwxhrRj243m/dYFx639mVQRBNJkuSlPtrP7yQw5ZU5Njjut3tkUOMKy2wA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2075; h=from:subject; bh=x0eO+QDq4SY1xj1KazbfZHej8GhFXPKxChBqWEMgyXk=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiAvR98C7j5hKV7f7E3A2woQIyNSxiyRCxHsDAXHnD p1tjCnGJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYgL0fQAKCRCJcvTf3G3AJqUED/ 4/Uw1zXc3soNRZuOJXIGr0vVZQJi8Zs371ZIAhRPRIej8MJHKof1likyWfRx/uf4cv9zccrOpB7mwW DY5ULp9uEtD9Nh/Z4cyIkNyzDFa/p46H8h5ZVT4y3y9IcpUxMaXU2jJ00aNbNNGgCUOx9XjlBoNjM7 AxvxamkuT5MUywf5+raTMeXktKrC7VffAO1cJyaoXANfCXLs3lH5UceD6pcdzxbn+vz0aQZQhDRwMi CrWoevmY9go+zZEUw+hW4cVW8gmedWQ5RMlnWpzepT/294hza9/XVWQ0ugmewmZD3SJFFr95I+KBq0 pmGtNruHMUVHxGY2iexfwareMdWGUVradhj8JCXNFwiKLMdP54kwA3SIzeIAHE0Aa+IBW55XeWeCa8 SILOWmNX1VvxDgBGX8j9KrumiZT9/C+A6/fj8eMBZbcGn3qcrqoKIW2MFNbzY5NFgUG565yZVWBVuS COPv+WauZVejhzLU+vUQYCQ2vJa+pCyMa9yDiaFLkGNEVjdomfJSEGTez9QHoBP+iDLe5/8SOOeMMK ZJ4sYpUKufPja+UGwdx5KBwqmImWNgKF/yeM+oDdwXFeiH6MJjEp112rEYHn1bMX1l2FVej25gREpG FWj1bEtWcTrSgU19gsQPV0/++Q6E2IX6XbOiT6cdN7+NGmEdLuEfEdcem+pQ==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang will perform various compile-time diagnostics on uses of various
-functions (e.g. simple bounds-checking on strcpy(), etc). These
-diagnostics can be assigned to other functions (for example, new
-implementations of the string functions under CONFIG_FORTIFY_SOURCE)
-using the "diagnose_as_builtin" attribute. This allows those functions
-to retain their compile-time diagnostic warnings.
+In preparation for enabling Clang FORTIFY_SOURCE support, redefine
+strlen() as a macro that tests for being a constant expression
+so that strlen() can still be used in static initializers, which is
+lost when adding __pass_object_size and __overloadable.
 
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: llvm@lists.linux.dev
-Reviewed-by: Miguel Ojeda <ojeda@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+An example of this usage can be seen here:
+	https://lore.kernel.org/all/202201252321.dRmWZ8wW-lkp@intel.com/
+
+Notably, this constant expression feature of strlen() is not available
+for architectures that build with -ffreestanding. This means the kernel
+currently does not universally expect strlen() to be used this way, but
+since there _are_ some build configurations that depend on it, retain
+the characteristic for Clang FORTIFY_SOURCE builds too.
+
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- include/linux/compiler_attributes.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ include/linux/fortify-string.h | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler_attributes.h
-index dcaf55f5d1ae..445e80517cab 100644
---- a/include/linux/compiler_attributes.h
-+++ b/include/linux/compiler_attributes.h
-@@ -100,6 +100,19 @@
- # define __copy(symbol)
- #endif
+diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
+index db1ad1c1c79a..f77cf22e2d60 100644
+--- a/include/linux/fortify-string.h
++++ b/include/linux/fortify-string.h
+@@ -2,6 +2,8 @@
+ #ifndef _LINUX_FORTIFY_STRING_H_
+ #define _LINUX_FORTIFY_STRING_H_
  
-+/*
-+ * Optional: not supported by gcc
-+ * Optional: only supported since clang >= 14.0
-+ * Optional: not supported by icc
-+ *
-+ * clang: https://clang.llvm.org/docs/AttributeReference.html#diagnose_as_builtin
-+ */
-+#if __has_attribute(__diagnose_as_builtin__)
-+# define __diagnose_as(builtin...)	__attribute__((__diagnose_as_builtin__(builtin)))
-+#else
-+# define __diagnose_as(builtin...)
-+#endif
++#include <linux/const.h>
 +
- /*
-  * Don't. Just don't. See commit 771c035372a0 ("deprecate the '__deprecated'
-  * attribute warnings entirely and for good") for more information.
+ #define __FORTIFY_INLINE extern __always_inline __gnu_inline
+ #define __RENAME(x) __asm__(#x)
+ 
+@@ -95,9 +97,16 @@ __FORTIFY_INLINE __kernel_size_t strnlen(const char * const p, __kernel_size_t m
+ 	return ret;
+ }
+ 
+-/* defined after fortified strnlen to reuse it. */
++/*
++ * Defined after fortified strnlen to reuse it. However, it must still be
++ * possible for strlen() to be used on compile-time strings for use in
++ * static initializers (i.e. as a constant expression).
++ */
++#define strlen(p)							\
++	__builtin_choose_expr(__is_constexpr(__builtin_strlen(p)),	\
++		__builtin_strlen(p), __fortify_strlen(p))
+ __FORTIFY_INLINE __diagnose_as(__builtin_strlen, 1)
+-__kernel_size_t strlen(const char * const p)
++__kernel_size_t __fortify_strlen(const char * const p)
+ {
+ 	__kernel_size_t ret;
+ 	size_t p_size = __builtin_object_size(p, 1);
 -- 
 2.30.2
 
