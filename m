@@ -2,157 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E82FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345133AbiBHNTN (ORCPT
+        id S1349894AbiBHNTS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:19:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51622 "EHLO
+        Tue, 8 Feb 2022 08:19:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349783AbiBHMNT (ORCPT
+        with ESMTP id S240593AbiBHMtm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:13:19 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E10C03FEC0;
-        Tue,  8 Feb 2022 04:13:16 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 7554C1F383;
-        Tue,  8 Feb 2022 12:13:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644322395; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QLOYwEHWVSzw5MCgmxkNKcSwN+xc3CSk3rKsHEFXQ0w=;
-        b=umK5/28r4Ry0plkxqSGj9jm/h56veWrz8pKMp5ppf56ETUdrsuH1hb86FdlcFXeoSoulaz
-        lFOqeYg0yKPsQLWHc2dl8AHyW3Z0SGNQaJUUnjkpcUPE824yWe2B0B5R3iQOcbdFzLrhCJ
-        ik3wNbCbeuoS3QIUfYl3YJI1RMqv5xo=
-Received: from suse.cz (unknown [10.100.201.86])
+        Tue, 8 Feb 2022 07:49:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62B8C03FEC0;
+        Tue,  8 Feb 2022 04:49:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id D93CAA3B8C;
-        Tue,  8 Feb 2022 12:13:14 +0000 (UTC)
-Date:   Tue, 8 Feb 2022 13:13:14 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Roman Gushchin <guro@fb.com>,
-        Rafael Aquini <aquini@redhat.com>,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCH v5 3/4] mm/page_owner: Print memcg information
-Message-ID: <YgJeWth50eP9L0PK@dhcp22.suse.cz>
-References: <20220208000532.1054311-1-longman@redhat.com>
- <20220208000532.1054311-4-longman@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1082B81AEE;
+        Tue,  8 Feb 2022 12:49:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E1CDC36AE2;
+        Tue,  8 Feb 2022 12:49:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644324579;
+        bh=0n1tSbHGXQRN3Sm9t1TdK+VKkpyIaGj7yXjkA1XeR8M=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=PmxRX3fFyESQfmX1d9x5XYkCI0ms3ReygkYI8sae7khFo1L5ZcHnWyk/jQVUhSj+v
+         Wr9i6RfOxlIT/uINBi5QvK7pfWqFdG1JysR1gGNA2RvANm6fr3jSurh/BEu7jS4Y7T
+         9oIdXIX/IZROp8gU5eQ8LSIBlxvpwm/1th0xmuv5EhPBzihMFXJFYNmzf4uhhbv3Ts
+         GfQQ4MDfx0/aEx/BfOCNdXyEgV9I/dLmplmi4bireCREAj4chK5/KXXOTxFhiJ86Go
+         SNntGi4nqJjVFwq2VSjkd0npuuwy0vwe6zRKiVVpp17a+RU9fkLchm5vzMrWgX11Ha
+         w8ETbGd+wJ+bQ==
+Received: by mail-wr1-f52.google.com with SMTP id f17so30584630wrx.1;
+        Tue, 08 Feb 2022 04:49:39 -0800 (PST)
+X-Gm-Message-State: AOAM532dn12W0ZA1M/MduzW5niOsxdX3MOYMJ0fdMjpx7jPTaVQgrgFn
+        vbywmggTHpBtYZog1o2U0iT+dVERI9ObnP+rJuU=
+X-Google-Smtp-Source: ABdhPJzoyVBYULQ0Fua/eWADY0DsDt4BT5S47X2cvHGkFyMcI+N8rZKbjpqb0HaIxoaKlzO1YYPrVYc5d6FqX/xl8Uk=
+X-Received: by 2002:a5d:568f:: with SMTP id f15mr306677wrv.407.1644324577741;
+ Tue, 08 Feb 2022 04:49:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220208000532.1054311-4-longman@redhat.com>
+References: <20220203083658.559803-1-arnd@kernel.org> <CAMj1kXG5W4nTXP5fXLmWhNfsQ_WigKbhdZz5yh1MNqE_VcD1TA@mail.gmail.com>
+In-Reply-To: <CAMj1kXG5W4nTXP5fXLmWhNfsQ_WigKbhdZz5yh1MNqE_VcD1TA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 8 Feb 2022 13:49:21 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1GeHV4Mj6rcnAY7y0351r-A7imsyWevKfE_qwHMz0D1g@mail.gmail.com>
+Message-ID: <CAK8P3a1GeHV4Mj6rcnAY7y0351r-A7imsyWevKfE_qwHMz0D1g@mail.gmail.com>
+Subject: Re: [PATCH] [v2] ARM: sa1100/assabet: move dmabounce hack to ohci driver
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        USB list <linux-usb@vger.kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 07-02-22 19:05:31, Waiman Long wrote:
-> It was found that a number of dying memcgs were not freed because
-> they were pinned by some charged pages that were present. Even "echo 1 >
-> /proc/sys/vm/drop_caches" wasn't able to free those pages. These dying
-> but not freed memcgs tend to increase in number over time with the side
-> effect that percpu memory consumption as shown in /proc/meminfo also
-> increases over time.
+On Thu, Feb 3, 2022 at 9:47 AM Ard Biesheuvel <ardb@kernel.org> wrote:
+> On Thu, 3 Feb 2022 at 09:38, Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> > There are two main downsides:
+> >
+> >  - rather than using a dynamically sized pool, this buffer needs
+> >    to be allocated at probe time using a fixed size. Without
+> >    having any idea of what it should be, I picked a size of
+> >    64KB, which is between what the other two OHCI front-ends use
+> >    in their SRAM. If anyone has a better idea what that size
+> >    is reasonable, this can be trivially changed.
+> >
+>
+> I suppose this is a problem if the driver falls back to ordinary DRAM
+> once the allocation runs out?
 
-I still believe that this is very suboptimal way to debug offline memcgs
-but memcg information can be useful in other contexts and it doesn't
-cost us anything except for an additional output so I am fine with this.
- 
-> In order to find out more information about those pages that pin
-> dying memcgs, the page_owner feature is extended to print memory
-> cgroup information especially whether the cgroup is dying or not.
-> RCU read lock is taken when memcg is being accessed to make sure
-> that it won't be freed.
-> 
-> Signed-off-by: Waiman Long <longman@redhat.com>
-> Acked-by: David Rientjes <rientjes@google.com>
-> Acked-by: Roman Gushchin <guro@fb.com>
-> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+From what I can tell, there is no such fallback. If the localmem_pool
+runs out, the allocation fails, which may cause other problems, but
+it never falls back to the wrong DMA address.
 
-With few comments/questions below.
+> >  - Previously, only USB transfers to unaddressable memory needed
+> >    to go through the bounce buffer, now all of them do, which may
+> >    impact runtime performance for USB endpoints that do a lot of
+> >    transfers.
+> >
+> > On the upside, the local_mem support uses write-combining buffers,
+> > which should be a bit faster for transfers to the device compared to
+> > normal uncached coherent memory as used in dmabounce.
+> >
+>
+> Talking from past experience using this trick on a NXP ARM9 SoC ~10
+> years ago, using on-chip SRAM for USB DMA likely results in a
+> significant performance boost, even without write combining, although
+> the exact scenario obviously matters.
 
-> ---
->  mm/page_owner.c | 44 ++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 44 insertions(+)
-> 
-> diff --git a/mm/page_owner.c b/mm/page_owner.c
-> index 28dac73e0542..d4c311455753 100644
-> --- a/mm/page_owner.c
-> +++ b/mm/page_owner.c
-> @@ -10,6 +10,7 @@
->  #include <linux/migrate.h>
->  #include <linux/stackdepot.h>
->  #include <linux/seq_file.h>
-> +#include <linux/memcontrol.h>
->  #include <linux/sched/clock.h>
->  
->  #include "internal.h"
-> @@ -325,6 +326,47 @@ void pagetypeinfo_showmixedcount_print(struct seq_file *m,
->  	seq_putc(m, '\n');
->  }
->  
-> +/*
-> + * Looking for memcg information and print it out
-> + */
+Right, that makes sense, but it won't help here because there is
+no SRAM. One detail  I noticed is that the localmem pool normally
+gets mapped as WC, which is what I did in the new code as well, but
+dma_alloc_flags(..., DMA_ATTR_WRITE_COMBINE) does not always
+honor this flag. I think it will do it here because a GFP_KERNEL
+allocation should be served by the remap_allocator, while
+GFP_ATOMIC allocations would be served by pool_allocator_alloc(),
+which ignores the flag.
 
-I am not sure this is particularly useful comment.
-
-> +static inline int print_page_owner_memcg(char *kbuf, size_t count, int ret,
-> +					 struct page *page)
-> +{
-> +#ifdef CONFIG_MEMCG
-> +	unsigned long memcg_data;
-> +	struct mem_cgroup *memcg;
-> +	bool dying;
-> +
-> +	rcu_read_lock();
-> +	memcg_data = READ_ONCE(page->memcg_data);
-> +	if (!memcg_data)
-> +		goto out_unlock;
-> +
-> +	if (memcg_data & MEMCG_DATA_OBJCGS)
-> +		ret += scnprintf(kbuf + ret, count - ret,
-> +				"Slab cache page\n");
-> +
-> +	memcg = page_memcg_check(page);
-> +	if (!memcg)
-> +		goto out_unlock;
-> +
-> +	dying = (memcg->css.flags & CSS_DYING);
-
-Is there any specific reason why you haven't used mem_cgroup_online?
-
-> +	ret += scnprintf(kbuf + ret, count - ret,
-> +			"Charged %sto %smemcg ",
-> +			PageMemcgKmem(page) ? "(via objcg) " : "",
-> +			dying ? "dying " : "");
-> +
-> +	/* Write cgroup name directly into kbuf */
-> +	cgroup_name(memcg->css.cgroup, kbuf + ret, count - ret);
-> +	ret += strlen(kbuf + ret);
-
-cgroup_name should return the length of the path added to the buffer.
-
-> +	ret += scnprintf(kbuf + ret, count - ret, "\n");
-
-I do not see any overflow prevention here. I believe you really need to
-check ret >= count after each scnprintf/cgroup_name.
--- 
-Michal Hocko
-SUSE Labs
+        Arnd
