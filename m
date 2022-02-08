@@ -2,238 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD74CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238882AbiBHByL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:54:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43136 "EHLO
+        id S245737AbiBHBzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:55:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237747AbiBHByD (ORCPT
+        with ESMTP id S235279AbiBHBzc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:54:03 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCD2C061A73
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:54:02 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id D9222340;
-        Tue,  8 Feb 2022 02:53:59 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1644285240;
-        bh=8SOb7WY/C5MVQclIAXnV4Guf5IVY1sW+SVXDe2gIdNg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iePNPe/r1H9kMW1s2sbTf/eQa5OenB0l/iUlAI3czaxLmgKiL0+xcvYKUwrdAQ07Z
-         L5G/oV688qeA8Mn1J3tk0yL+IEDaMXd7zpL0jG6maBUGKOD1tIjn76N4itvHoYhwxX
-         zntncxoe+4wND//hkR7YzPG/LyP7wwyDCnZL0kq4=
-Date:   Tue, 8 Feb 2022 03:53:56 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        robert.foss@linaro.org, lschyi@chromium.org,
-        Sam Ravnborg <sam@ravnborg.org>, jjsu@chromium.org,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] drm: Plumb debugfs_init through to panels
-Message-ID: <YgHNNBShfCh8CuCC@pendragon.ideasonboard.com>
-References: <20220205001342.3155839-1-dianders@chromium.org>
- <20220204161245.v2.2.Ib0bd5346135cbb0b63006b69b61d4c8af6484740@changeid>
+        Mon, 7 Feb 2022 20:55:32 -0500
+X-Greylist: delayed 1014 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 17:55:31 PST
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C934C061355;
+        Mon,  7 Feb 2022 17:55:30 -0800 (PST)
+Received: from kwepemi100021.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jt5CM6X25zZdZp;
+        Tue,  8 Feb 2022 09:34:23 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100021.china.huawei.com (7.221.188.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 09:38:34 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 09:38:34 +0800
+Subject: Re: [PATCH -next] blk-throttle: enable io throttle for root in cgroup
+ v2
+To:     Tejun Heo <tj@kernel.org>
+CC:     <axboe@kernel.dk>, <cgroups@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yi.zhang@huawei.com>
+References: <20220114093000.3323470-1-yukuai3@huawei.com>
+ <YfGE9L4i7DtNTo08@slm.duckdns.org>
+ <235b0757-d322-2b6e-3ab6-ecc8c82f8f1e@huawei.com>
+ <Yflr4FzUTWsiLTC/@slm.duckdns.org>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <32b6949d-60b1-82ce-ae44-1cf089a78276@huawei.com>
+Date:   Tue, 8 Feb 2022 09:38:33 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220204161245.v2.2.Ib0bd5346135cbb0b63006b69b61d4c8af6484740@changeid>
+In-Reply-To: <Yflr4FzUTWsiLTC/@slm.duckdns.org>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Douglas,
-
-Thank you for the patch.
-
-On Fri, Feb 04, 2022 at 04:13:41PM -0800, Douglas Anderson wrote:
-> We'd like panels to be able to add things to debugfs underneath the
-> connector's directory. Let's plumb it through. A panel will be able to
-> put things in a "panel" directory under the connector's
-> directory. Note that debugfs is not ABI and so it's always possible
-> that the location that the panel gets for its debugfs could change in
-> the future.
+ÔÚ 2022/02/02 1:20, Tejun Heo Ð´µÀ:
+> Hello,
 > 
-> NOTE: this currently only works if you're using a modern
-> architecture. Specifically the plumbing relies on _both_
-> drm_bridge_connector and drm_panel_bridge. If you're not using one or
-> both of these things then things won't be plumbed through.
+> On Thu, Jan 27, 2022 at 10:36:38AM +0800, yukuai (C) wrote:
+>> In our case, the disk is provided by server, and such disk can be shared
+>> by multipul clients. Thus for the client side, the server is a higher
+>> level parent.
+>>
+>> Theoretically, limit the io from server for each client is feasible,
+>> however, the main reason we don't want to do this is the following
+>> shortcoming:
+>>
+>> client can still send io to server unlimited, we can just limit the
+>> amount of io that can complete from server, which might cause too much
+>> pressure on the server side.
 > 
-> As a side effect of this change, drm_bridges can also get callbacks to
-> put stuff underneath the connector's debugfs directory. At the moment
-> all bridges in the chain have their debugfs_init() called with the
-> connector's root directory.
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> I don't quite follow the "send io to server unlimited" part. Doesn't that
+> get limited by available number of requests? 
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Hi, Tejun
 
-> ---
-> 
-> Changes in v2:
-> - ("drm: Plumb debugfs_init through to panels") new for v2.
-> 
->  drivers/gpu/drm/bridge/panel.c         | 12 ++++++++++++
->  drivers/gpu/drm/drm_bridge_connector.c | 15 +++++++++++++++
->  drivers/gpu/drm/drm_debugfs.c          |  3 +++
->  include/drm/drm_bridge.h               |  7 +++++++
->  include/drm/drm_connector.h            |  7 +++++++
->  include/drm/drm_panel.h                |  8 ++++++++
->  6 files changed, 52 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/bridge/panel.c b/drivers/gpu/drm/bridge/panel.c
-> index b32295abd9e7..5be057575183 100644
-> --- a/drivers/gpu/drm/bridge/panel.c
-> +++ b/drivers/gpu/drm/bridge/panel.c
-> @@ -138,6 +138,17 @@ static int panel_bridge_get_modes(struct drm_bridge *bridge,
->  	return drm_panel_get_modes(panel_bridge->panel, connector);
->  }
->  
-> +static void panel_bridge_debugfs_init(struct drm_bridge *bridge,
-> +				      struct dentry *root)
-> +{
-> +	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
-> +	struct drm_panel *panel = panel_bridge->panel;
-> +
-> +	root = debugfs_create_dir("panel", root);
-> +	if (panel->funcs->debugfs_init)
-> +		panel->funcs->debugfs_init(panel, root);
-> +}
-> +
->  static const struct drm_bridge_funcs panel_bridge_bridge_funcs = {
->  	.attach = panel_bridge_attach,
->  	.detach = panel_bridge_detach,
-> @@ -150,6 +161,7 @@ static const struct drm_bridge_funcs panel_bridge_bridge_funcs = {
->  	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
->  	.atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
->  	.atomic_get_input_bus_fmts = drm_atomic_helper_bridge_propagate_bus_fmt,
-> +	.debugfs_init = panel_bridge_debugfs_init,
->  };
->  
->  /**
-> diff --git a/drivers/gpu/drm/drm_bridge_connector.c b/drivers/gpu/drm/drm_bridge_connector.c
-> index 791379816837..60923cdfe8e1 100644
-> --- a/drivers/gpu/drm/drm_bridge_connector.c
-> +++ b/drivers/gpu/drm/drm_bridge_connector.c
-> @@ -216,6 +216,20 @@ static void drm_bridge_connector_destroy(struct drm_connector *connector)
->  	kfree(bridge_connector);
->  }
->  
-> +static void drm_bridge_connector_debugfs_init(struct drm_connector *connector,
-> +					      struct dentry *root)
-> +{
-> +	struct drm_bridge_connector *bridge_connector =
-> +		to_drm_bridge_connector(connector);
-> +	struct drm_encoder *encoder = bridge_connector->encoder;
-> +	struct drm_bridge *bridge;
-> +
-> +	list_for_each_entry(bridge, &encoder->bridge_chain, chain_node) {
-> +		if (bridge->funcs->debugfs_init)
-> +			bridge->funcs->debugfs_init(bridge, root);
-> +	}
-> +}
-> +
->  static const struct drm_connector_funcs drm_bridge_connector_funcs = {
->  	.reset = drm_atomic_helper_connector_reset,
->  	.detect = drm_bridge_connector_detect,
-> @@ -223,6 +237,7 @@ static const struct drm_connector_funcs drm_bridge_connector_funcs = {
->  	.destroy = drm_bridge_connector_destroy,
->  	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
->  	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
-> +	.debugfs_init = drm_bridge_connector_debugfs_init,
->  };
->  
->  /* -----------------------------------------------------------------------------
-> diff --git a/drivers/gpu/drm/drm_debugfs.c b/drivers/gpu/drm/drm_debugfs.c
-> index b0a826489488..7f1b82dbaebb 100644
-> --- a/drivers/gpu/drm/drm_debugfs.c
-> +++ b/drivers/gpu/drm/drm_debugfs.c
-> @@ -436,6 +436,9 @@ void drm_debugfs_connector_add(struct drm_connector *connector)
->  	/* vrr range */
->  	debugfs_create_file("vrr_range", S_IRUGO, root, connector,
->  			    &vrr_range_fops);
-> +
-> +	if (connector->funcs->debugfs_init)
-> +		connector->funcs->debugfs_init(connector, root);
->  }
->  
->  void drm_debugfs_connector_remove(struct drm_connector *connector)
-> diff --git a/include/drm/drm_bridge.h b/include/drm/drm_bridge.h
-> index 061d87313fac..f27b4060faa2 100644
-> --- a/include/drm/drm_bridge.h
-> +++ b/include/drm/drm_bridge.h
-> @@ -649,6 +649,13 @@ struct drm_bridge_funcs {
->  	 * the DRM_BRIDGE_OP_HPD flag in their &drm_bridge->ops.
->  	 */
->  	void (*hpd_disable)(struct drm_bridge *bridge);
-> +
-> +	/**
-> +	 * @debugfs_init:
-> +	 *
-> +	 * Allows bridges to create bridge-specific debugfs files.
-> +	 */
-> +	void (*debugfs_init)(struct drm_bridge *bridge, struct dentry *root);
->  };
->  
->  /**
-> diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
-> index 64cf5f88c05b..54429dde744a 100644
-> --- a/include/drm/drm_connector.h
-> +++ b/include/drm/drm_connector.h
-> @@ -1142,6 +1142,13 @@ struct drm_connector_funcs {
->  	 * has been received from a source outside the display driver / device.
->  	 */
->  	void (*oob_hotplug_event)(struct drm_connector *connector);
-> +
-> +	/**
-> +	 * @debugfs_init:
-> +	 *
-> +	 * Allows connectors to create connector-specific debugfs files.
-> +	 */
-> +	void (*debugfs_init)(struct drm_connector *connector, struct dentry *root);
->  };
->  
->  /**
-> diff --git a/include/drm/drm_panel.h b/include/drm/drm_panel.h
-> index 4602f833eb51..1ba2d424a53f 100644
-> --- a/include/drm/drm_panel.h
-> +++ b/include/drm/drm_panel.h
-> @@ -29,6 +29,7 @@
->  #include <linux/list.h>
->  
->  struct backlight_device;
-> +struct dentry;
->  struct device_node;
->  struct drm_connector;
->  struct drm_device;
-> @@ -125,6 +126,13 @@ struct drm_panel_funcs {
->  	 */
->  	int (*get_timings)(struct drm_panel *panel, unsigned int num_timings,
->  			   struct display_timing *timings);
-> +
-> +	/**
-> +	 * @debugfs_init:
-> +	 *
-> +	 * Allows panels to create panels-specific debugfs files.
-> +	 */
-> +	void (*debugfs_init)(struct drm_panel *panel, struct dentry *root);
->  };
->  
->  /**
+Here I mean that io is not limited through io throttle from client. Of
+course io must be limited by avaliable number of requests.
 
--- 
-Regards,
+> ie. if the server throttles,
+> the in-flight requests will take longer to complete which exhausts the
+> available requests and thus slows down the client.
 
-Laurent Pinchart
+For example, if we have 8 clients, and available requests is 64.
+
+1) If we don't limit iops, and each client send 64 io to server, some
+client might have performance issue.
+
+2) If we limit iops to 8 from clients, then server can receive 64 io at
+most at the same time, both client and server should work fine.
+
+3) If we limit iops to 8 for each client from server, client should work
+fine, however, server can receive 64 x 8 = 512 io at most at the same
+time, which might cause too much pressure on the server.(maybe bps is
+more appropriate to explain the high pressure).
+
+Thus I prefer to limit io from client.
+
+Thanks,
+Kuai
+> That's how it's supposed
+> to work on the local machine too.
+> 
+> Thanks.
+> 
