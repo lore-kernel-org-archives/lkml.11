@@ -2,139 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F29CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFF5C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356428AbiBHNVH (ORCPT
+        id S1355643AbiBHNVE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:21:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
+        Tue, 8 Feb 2022 08:21:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358371AbiBHMlW (ORCPT
+        with ESMTP id S1357085AbiBHMbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:22 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05089C03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:22 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id z17so3740951plb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:21 -0800 (PST)
+        Tue, 8 Feb 2022 07:31:13 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFD3C03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:31:12 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id j2so49559653ybu.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:31:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hPoHx0MxVy2mprDlmk7WfXEAU5PM2SDXULV3Mk0XUS0=;
-        b=OfHhLbHzk0vts8tueG1EzqqelkQHhva27fwdv4krb3Fqvz8/E1nF+x19VySsFkliJS
-         QWpDJWRJFXUmL6Vs+5UTz8L/HVVxgqR7JTPnT6sc5tF+oL15DU1X5WddfafuoaVI61Bn
-         UoAL6xF9lxyN/QfNm6ivb7WFoGU109XuRiHx4=
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yfYLtbVg7Jphgpqo5l2mfLMwKt3fmTcNOyyPV835z9U=;
+        b=X73BVSASthoFh71ZUYqhPOBlmWD6VlnN6mtxlLeUi48uyVMU0ZaQsH/cmXLKhp1Jui
+         4usjsDrOE/K++FH8OeqG4WNNAOcG9B+4N4GSjY7QwCYxcbUEhBC2Y/nh2OUlwsgnjeox
+         eUtinaYsaItLRMZrGl5DhrtfLCm02TgJMPJqc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hPoHx0MxVy2mprDlmk7WfXEAU5PM2SDXULV3Mk0XUS0=;
-        b=bV+OKXnMlKuOlP51LHwLydLhDz7cRCZOcvEtiKLz6W37eCkl/j4aFIDAOw7rsahb6n
-         pltucuVoGrhQ+Ab7tNop9B6FPjU7kVGRc0Q6b/ErsVZ25D4QqYxHMrzslHorFmuA4tsB
-         yUhMS/RBspg1ObWilthHrdsF7sshle9gAwS3T7lvx94UqEp2VdPQOyUdH++Zw3J2LekQ
-         GHkZOe3Un5XgpzlfvrBoOi1ALo6kKiCKklr+b0/BiDQ9QhkhCFD5SqCK+oQBm4CMsSVl
-         5FTvgdDzMK0xB1/CIDB2Wwz0VXkbSeEdsbj69f3WDdGUYbPwQRovI70Fsm9Kxp+Xlqvd
-         pI1w==
-X-Gm-Message-State: AOAM533jw/hWxZ70x6VLKaieq8/DsiEMNjLkc9+3IR+NTlLocAy0UPvB
-        +8xwZ6vmNHkxUC1AT6Sm50xtcQ==
-X-Google-Smtp-Source: ABdhPJymp3eMV72+HQHSFM6knL5LU/F4l+dnd3TBAdTXc+SFrQG9SpNis495KvAMIpZm6L+mhFZQBQ==
-X-Received: by 2002:a17:90a:c283:: with SMTP id f3mr1171840pjt.138.1644324081530;
-        Tue, 08 Feb 2022 04:41:21 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:21 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 15/31] clk: mediatek: Implement mtk_clk_unregister_fixed_clks() API
-Date:   Tue,  8 Feb 2022 20:40:18 +0800
-Message-Id: <20220208124034.414635-16-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yfYLtbVg7Jphgpqo5l2mfLMwKt3fmTcNOyyPV835z9U=;
+        b=YDAE2jFtQaLP1dq6eh212i/hz+mQMNrHN9sMFm2ykWWeqKdVexwBGOIWV2PBmTVhHb
+         vJCCzxdNoI7iy4BWBzOyEI2emlImoAysUb4j+ZFq3kJNY+ml9TrDCKOw4dE07LhKldAK
+         Cx47yisrhzmg2qelMbpsscH1U7a32xahsKBbSXjhO4ThrhBjzSyIRG92QaBMljDLX/Vb
+         rYK/BUm8uWVKG9OoNyBenbaTy83kBWiqkDnKh8yOKgSOWP4phy3DpVnJ/DA2LwTWYHTd
+         U7r3WOZRaVmXoVXbxqtte2Iyiq5mKZ+Qe7bJrKNojaY7sp4S4WaC2jIjW2zmFtFlJ5L2
+         pvPw==
+X-Gm-Message-State: AOAM5316RL3k+4t+wdsxFSv/8wAyAi7mrBf1EqoGh4YXOU1fEuF1Fdl+
+        cXx9Z25sGnH0cGHkQpyOmjybvnGn9LV3kiakPgExVA==
+X-Google-Smtp-Source: ABdhPJyCCYOYwDckY357tk7CH1jqmHDW4BUZPjfdeuj7J3jv7vIaHKcjBTuE6IB72wx2P7IBnypp3hlrdAC/yjDoo7g=
+X-Received: by 2002:a81:1b4e:: with SMTP id b75mr4316368ywb.295.1644323471148;
+ Tue, 08 Feb 2022 04:31:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220208105456.321294-1-wenst@chromium.org>
+In-Reply-To: <20220208105456.321294-1-wenst@chromium.org>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Tue, 8 Feb 2022 20:30:59 +0800
+Message-ID: <CAGXv+5HT84sEv9TFV1H=mMEO4oqz4OdwXQGMhwrOf5dtMrjOBQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] media: hantro: Implement support for encoder commands
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mtk_clk_register_fixed_clks(), as the name suggests, is used to register
-a given list of fixed rate clks. However it is lacking a counterpart
-unregister API.
+On Tue, Feb 8, 2022 at 6:55 PM Chen-Yu Tsai <wenst@chromium.org> wrote:
+>
+> The V4L2 stateful encoder uAPI specification requires that drivers
+> support the ENCODER_CMD ioctl to allow draining of buffers. This
+> however was not implemented, and causes issues for some userspace
+> applications.
+>
+> Implement support for the ENCODER_CMD ioctl using v4l2-mem2mem helpers.
+> This is entirely based on existing code found in the vicodec test
+> driver.
+>
+> Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
+> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+> ---
+>
+> This is based on linux-next-20220207, and was tested on RK3399 with
+> Gstreamer running the JPEG encoder. It was also tested on ChromeOS
+> 5.10 on Kevin with the video encoder used in ChromeOS ARC, which
+> requires this.
+>
+> Everything works OK, but since I'm not very familiar with the mem2mem
+> framework, I might be missing something, causing resource leaks.
+> Hence this patch is labeled RFC.
 
-Implement said unregister API so that the various clock platform drivers
-can utilize it to do proper unregistration, cleanup and removal.
+And it seems I failed to handle the case where the last capture buffer
+is empty.
 
-In the header file, the register function's declaration is also
-reformatted to fit code style guidelines.
+Will rework and send a new version tomorrow.
 
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-mtk.c | 20 ++++++++++++++++++++
- drivers/clk/mediatek/clk-mtk.h |  6 ++++--
- 2 files changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
-index 0c5db3c71fdd..7c0d5706eed7 100644
---- a/drivers/clk/mediatek/clk-mtk.c
-+++ b/drivers/clk/mediatek/clk-mtk.c
-@@ -80,6 +80,26 @@ void mtk_clk_register_fixed_clks(const struct mtk_fixed_clk *clks,
- }
- EXPORT_SYMBOL_GPL(mtk_clk_register_fixed_clks);
- 
-+void mtk_clk_unregister_fixed_clks(const struct mtk_fixed_clk *clks, int num,
-+				   struct clk_onecell_data *clk_data)
-+{
-+	int i;
-+
-+	if (!clk_data)
-+		return;
-+
-+	for (i = num; i > 0; i--) {
-+		const struct mtk_fixed_clk *rc = &clks[i - 1];
-+
-+		if (IS_ERR_OR_NULL(clk_data->clks[rc->id]))
-+			continue;
-+
-+		clk_unregister_fixed_rate(clk_data->clks[rc->id]);
-+		clk_data->clks[rc->id] = ERR_PTR(-ENOENT);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(mtk_clk_unregister_fixed_clks);
-+
- void mtk_clk_register_factors(const struct mtk_fixed_factor *clks,
- 		int num, struct clk_onecell_data *clk_data)
- {
-diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
-index 168220f85489..cc7f920eabb4 100644
---- a/drivers/clk/mediatek/clk-mtk.h
-+++ b/drivers/clk/mediatek/clk-mtk.h
-@@ -34,8 +34,10 @@ struct mtk_fixed_clk {
- 		.rate = _rate,				\
- 	}
- 
--void mtk_clk_register_fixed_clks(const struct mtk_fixed_clk *clks,
--		int num, struct clk_onecell_data *clk_data);
-+void mtk_clk_register_fixed_clks(const struct mtk_fixed_clk *clks, int num,
-+				 struct clk_onecell_data *clk_data);
-+void mtk_clk_unregister_fixed_clks(const struct mtk_fixed_clk *clks, int num,
-+				   struct clk_onecell_data *clk_data);
- 
- struct mtk_fixed_factor {
- 	int id;
--- 
-2.35.0.263.gb82422642f-goog
+ChenYu
 
+> ---
+>  drivers/staging/media/hantro/hantro_drv.c  | 10 +++++
+>  drivers/staging/media/hantro/hantro_v4l2.c | 44 ++++++++++++++++++++++
+>  2 files changed, 54 insertions(+)
+>
+> diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
+> index bc9bcb4eaf46..ccd47eee5c43 100644
+> --- a/drivers/staging/media/hantro/hantro_drv.c
+> +++ b/drivers/staging/media/hantro/hantro_drv.c
+> @@ -56,6 +56,10 @@ dma_addr_t hantro_get_ref(struct hantro_ctx *ctx, u64 ts)
+>         return hantro_get_dec_buf_addr(ctx, buf);
+>  }
+>
+> +static const struct v4l2_event hantro_eos_event = {
+> +       .type = V4L2_EVENT_EOS
+> +};
+> +
+>  static void hantro_job_finish_no_pm(struct hantro_dev *vpu,
+>                                     struct hantro_ctx *ctx,
+>                                     enum vb2_buffer_state result)
+> @@ -73,6 +77,12 @@ static void hantro_job_finish_no_pm(struct hantro_dev *vpu,
+>         src->sequence = ctx->sequence_out++;
+>         dst->sequence = ctx->sequence_cap++;
+>
+> +       if (v4l2_m2m_is_last_draining_src_buf(ctx->fh.m2m_ctx, src)) {
+> +               dst->flags |= V4L2_BUF_FLAG_LAST;
+> +               v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
+> +               v4l2_m2m_mark_stopped(ctx->fh.m2m_ctx);
+> +       }
+> +
+>         v4l2_m2m_buf_done_and_job_finish(ctx->dev->m2m_dev, ctx->fh.m2m_ctx,
+>                                          result);
+>  }
+> diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
+> index 67148ba346f5..8c6746637236 100644
+> --- a/drivers/staging/media/hantro/hantro_v4l2.c
+> +++ b/drivers/staging/media/hantro/hantro_v4l2.c
+> @@ -628,6 +628,39 @@ static int vidioc_s_selection(struct file *file, void *priv,
+>         return 0;
+>  }
+>
+> +static const struct v4l2_event hantro_eos_event = {
+> +       .type = V4L2_EVENT_EOS
+> +};
+> +
+> +static int vidioc_encoder_cmd(struct file *file, void *priv,
+> +                             struct v4l2_encoder_cmd *ec)
+> +{
+> +       struct hantro_ctx *ctx = fh_to_ctx(priv);
+> +       int ret;
+> +
+> +       ret = v4l2_m2m_ioctl_try_encoder_cmd(file, priv, ec);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       if (!vb2_is_streaming(v4l2_m2m_get_src_vq(ctx->fh.m2m_ctx)) ||
+> +           !vb2_is_streaming(v4l2_m2m_get_dst_vq(ctx->fh.m2m_ctx)))
+> +               return 0;
+> +
+> +       ret = v4l2_m2m_ioctl_encoder_cmd(file, priv, ec);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       if (ec->cmd == V4L2_ENC_CMD_STOP &&
+> +           v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
+> +               v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
+> +
+> +       if (ec->cmd == V4L2_ENC_CMD_START &&
+> +           v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
+> +               vb2_clear_last_buffer_dequeued(&ctx->fh.m2m_ctx->cap_q_ctx.q);
+> +
+> +       return 0;
+> +}
+> +
+>  const struct v4l2_ioctl_ops hantro_ioctl_ops = {
+>         .vidioc_querycap = vidioc_querycap,
+>         .vidioc_enum_framesizes = vidioc_enum_framesizes,
+> @@ -657,6 +690,9 @@ const struct v4l2_ioctl_ops hantro_ioctl_ops = {
+>
+>         .vidioc_g_selection = vidioc_g_selection,
+>         .vidioc_s_selection = vidioc_s_selection,
+> +
+> +       .vidioc_try_encoder_cmd = v4l2_m2m_ioctl_try_encoder_cmd,
+> +       .vidioc_encoder_cmd = vidioc_encoder_cmd,
+>  };
+>
+>  static int
+> @@ -759,6 +795,8 @@ static int hantro_start_streaming(struct vb2_queue *q, unsigned int count)
+>         struct hantro_ctx *ctx = vb2_get_drv_priv(q);
+>         int ret = 0;
+>
+> +       v4l2_m2m_update_start_streaming_state(ctx->fh.m2m_ctx, q);
+> +
+>         if (V4L2_TYPE_IS_OUTPUT(q->type))
+>                 ctx->sequence_out = 0;
+>         else
+> @@ -831,6 +869,12 @@ static void hantro_stop_streaming(struct vb2_queue *q)
+>                 hantro_return_bufs(q, v4l2_m2m_src_buf_remove);
+>         else
+>                 hantro_return_bufs(q, v4l2_m2m_dst_buf_remove);
+> +
+> +       v4l2_m2m_update_stop_streaming_state(ctx->fh.m2m_ctx, q);
+> +
+> +       if (V4L2_TYPE_IS_OUTPUT(q->type) &&
+> +           v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
+> +               v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
+>  }
+>
+>  static void hantro_buf_request_complete(struct vb2_buffer *vb)
+> --
+> 2.35.0.263.gb82422642f-goog
+>
