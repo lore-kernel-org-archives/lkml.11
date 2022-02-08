@@ -2,96 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F72C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED139C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345963AbiBHCaU (ORCPT
+        id S1345970AbiBHCbH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 21:30:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
+        Mon, 7 Feb 2022 21:31:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345937AbiBHCaO (ORCPT
+        with ESMTP id S1345937AbiBHCbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 21:30:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B27C06109E;
-        Mon,  7 Feb 2022 18:30:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 136236147C;
-        Tue,  8 Feb 2022 02:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 72329C340ED;
-        Tue,  8 Feb 2022 02:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644287412;
-        bh=2NrfmZ5nHmEtw6Xj9n4lzXjnH/mIJFd6e08LaVoVHTA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=haisEjIwxQHs//x1HxPEfguZW7dj1XRID0//W6L8OevWkQM7b3yhKEWew7FrpbFA0
-         VOBHUXXX4p880IG+JYY26jwBfAfAKXGrjlm8i5HIGXtHbUPT+LWdgSEjSIS+3fBHKd
-         QqcsWJ0nN3o6HoPe2Urws+03yueAuL03859xX9FNsvMAemwnjLgR/1V0LBz1e2OWAD
-         Swi39YLTKIxjT07FSThLDul6NhpYHZ6ohIkt22S3yAM+PPpLaLeSbO6fS4X6P2675z
-         dcvsqfVr0s8N6J4Ek3GALKJOidPcjeC8Bi/iTrqzFhfQYAdxmrPf4bk4uTzbCjLc8G
-         I/E4365Fl5NrA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 57C16E6BB76;
-        Tue,  8 Feb 2022 02:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 7 Feb 2022 21:31:05 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6EAC06109E;
+        Mon,  7 Feb 2022 18:31:03 -0800 (PST)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Jt6Qy1T5tz9s2j;
+        Tue,  8 Feb 2022 10:29:30 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 10:31:00 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 8 Feb
+ 2022 10:31:00 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
+CC:     <mchehab@kernel.org>, <jimmy.su@intel.com>
+Subject: [PATCH -next] media: i2c: ov08d10: Fix missing unlock on error in ov08d10_enum_frame_size()
+Date:   Tue, 8 Feb 2022 10:41:45 +0800
+Message-ID: <20220208024145.1994589-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v9 bpf-next 0/9] bpf_prog_pack allocator
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164428741235.20223.1353999217126442524.git-patchwork-notify@kernel.org>
-Date:   Tue, 08 Feb 2022 02:30:12 +0000
-References: <20220204185742.271030-1-song@kernel.org>
-In-Reply-To: <20220204185742.271030-1-song@kernel.org>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kernel-team@fb.com, peterz@infradead.org,
-        x86@kernel.org, iii@linux.ibm.com
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Add the missing unlock before return from function ov08d10_enum_frame_size()
+in the error handling case.
 
-This series was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
+Fixes: 7be91e02ed57 ("media: i2c: Add ov08d10 camera sensor driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/media/i2c/ov08d10.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-On Fri, 4 Feb 2022 10:57:33 -0800 you wrote:
-> Changes v8 => v9:
-> 1. Fix an error with multi function program, in 4/9.
-> 
-> Changes v7 => v8:
-> 1. Rebase and fix conflicts.
-> 2. Lock text_mutex for text_poke_copy. (Daniel)
-> 
-> [...]
-
-Here is the summary with links:
-  - [v9,bpf-next,1/9] x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
-    https://git.kernel.org/bpf/bpf-next/c/fac54e2bfb5b
-  - [v9,bpf-next,2/9] bpf: use bytes instead of pages for bpf_jit_[charge|uncharge]_modmem
-    https://git.kernel.org/bpf/bpf-next/c/3486bedd9919
-  - [v9,bpf-next,3/9] bpf: use size instead of pages in bpf_binary_header
-    https://git.kernel.org/bpf/bpf-next/c/ed2d9e1a26cc
-  - [v9,bpf-next,4/9] bpf: use prog->jited_len in bpf_prog_ksym_set_addr()
-    https://git.kernel.org/bpf/bpf-next/c/d00c6473b1ee
-  - [v9,bpf-next,5/9] x86/alternative: introduce text_poke_copy
-    https://git.kernel.org/bpf/bpf-next/c/0e06b4037168
-  - [v9,bpf-next,6/9] bpf: introduce bpf_arch_text_copy
-    https://git.kernel.org/bpf/bpf-next/c/ebc1415d9b4f
-  - [v9,bpf-next,7/9] bpf: introduce bpf_prog_pack allocator
-    https://git.kernel.org/bpf/bpf-next/c/57631054fae6
-  - [v9,bpf-next,8/9] bpf: introduce bpf_jit_binary_pack_[alloc|finalize|free]
-    https://git.kernel.org/bpf/bpf-next/c/33c9805860e5
-  - [v9,bpf-next,9/9] bpf, x86_64: use bpf_jit_binary_pack_alloc
-    https://git.kernel.org/bpf/bpf-next/c/1022a5498f6f
-
-You are awesome, thank you!
+diff --git a/drivers/media/i2c/ov08d10.c b/drivers/media/i2c/ov08d10.c
+index 1f42dd714ef6..e5ef6466a3ec 100644
+--- a/drivers/media/i2c/ov08d10.c
++++ b/drivers/media/i2c/ov08d10.c
+@@ -1264,8 +1264,10 @@ static int ov08d10_enum_frame_size(struct v4l2_subdev *sd,
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&ov08d10->mutex);
+-	if (fse->code != ov08d10_get_format_code(ov08d10))
++	if (fse->code != ov08d10_get_format_code(ov08d10)) {
++		mutex_unlock(&ov08d10->mutex);
+ 		return -EINVAL;
++	}
+ 	mutex_unlock(&ov08d10->mutex);
+ 
+ 	fse->min_width = ov08d10->priv_lane->sp_modes[fse->index].width;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
