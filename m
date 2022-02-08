@@ -2,114 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E19C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383584AbiBHQyS (ORCPT
+        id S1383601AbiBHQyv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 11:54:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37450 "EHLO
+        Tue, 8 Feb 2022 11:54:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383579AbiBHQyN (ORCPT
+        with ESMTP id S1383579AbiBHQyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 11:54:13 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE8AC06157A
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 08:54:12 -0800 (PST)
-Date:   Tue, 8 Feb 2022 17:54:07 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644339248;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UJc2SLX2D6cRz5yA+A7/ElHCSYMhyOPrKrsCsu+plHY=;
-        b=yJNHilKZDIl/sA8KqcUcvrv6bmZJwcKo5c3WBrBHkg4yy2D6EbjS/HW2BYWHxJnV6dvcJs
-        HotG5id8C5DsWh0XfCTdKqqXnprP1AMCrfxT20xNgY7wMyVOd3jcZc9n4kU4sx7p9af1wr
-        d5QbBxmjGJUJi7Dr0ga8InDR0Owy8en08Bbg+Ps6lHzTRN4eKHrsL/aPXPbMqOI/lpvNIY
-        7lem6X/Cd6RXwK0Tmk/pqesQFXzo1QMIKHd9skNn7IcFIhGH9ZHCYnI1DmIZm7KSuGycDj
-        I+iddXDV53GYxt/QGEQ9ao8q6AvkFbNOjMxkaIvoEzo4xDAG8oVTKnGHnIgdPQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644339248;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UJc2SLX2D6cRz5yA+A7/ElHCSYMhyOPrKrsCsu+plHY=;
-        b=VauLg6cq6mtx3tHkndb3LOofU2dcyCNoLiKkKXrqpPBuotV0wQkPU5F0b/CmwBFVdIO8J5
-        yRtT1fjpLsDFGkBA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v3] smp: Wake ksoftirqd on PREEMPT_RT instead do_softirq().
-Message-ID: <YgKgL6aPj8aBES6G@linutronix.de>
+        Tue, 8 Feb 2022 11:54:49 -0500
+X-Greylist: delayed 451 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 08:54:45 PST
+Received: from markus.defensec.nl (markus.defensec.nl [IPv6:2a10:3781:2099::123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5DE2C061576;
+        Tue,  8 Feb 2022 08:54:45 -0800 (PST)
+Received: from brutus (brutus.lan [IPv6:2a10:3781:2099::438])
+        by markus.defensec.nl (Postfix) with ESMTPSA id F3200FC07E3;
+        Tue,  8 Feb 2022 17:47:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=defensec.nl;
+        s=default; t=1644338827;
+        bh=eRv74+XI594hq5dL4OGUblyk1lqPGFnb0U0Ww0ZWEfg=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=hzs3WgiC2LieAJ+kSe703/DKF1H9tljccbLnmkZ6Uh37e9nMp/3uEvz1r3sFtORQQ
+         6+M/k4iKUqWP+z5HHEWOcHpTzKfg9L/QwylHxC3Uz5fetMqiOLBE8hWuQM+zOENabp
+         Dx73EyMBADClv8GDiZs25lvdx7Qu1FtiRIG/GqhA=
+From:   Dominick Grift <dominick.grift@defensec.nl>
+To:     Chris PeBenito <chpebeni@linux.microsoft.com>
+Cc:     William Roberts <bill.c.roberts@gmail.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Demi Marie Obenour <demiobenour@gmail.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        SElinux list <selinux@vger.kernel.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        selinux-refpolicy@vger.kernel.org
+Subject: Re: [PATCH] SELinux: Always allow FIOCLEX and FIONCLEX
+References: <4df50e95-6173-4ed1-9d08-3c1c4abab23f@gmail.com>
+        <CAHC9VhSjTqT-4TMxBnQOQHkj+djONihfeoPVyy1egrZY2t10XA@mail.gmail.com>
+        <c8a616e4-26a6-af51-212c-31dca0e265cd@gmail.com>
+        <CAHC9VhQTZdeNOx3AXdoc9LXUzDk5n7wyGBX-tV-ZaovhPAdWwQ@mail.gmail.com>
+        <e85dd38b-ef7b-ed7e-882e-124cdf942c44@gmail.com>
+        <CAHC9VhROuJtvNHuVaR6pEekNFacH3Tywx58_hn1f5Mwk+kjC8g@mail.gmail.com>
+        <b7e55304-d114-bcbe-08d2-b54828121a01@gmail.com>
+        <CAHC9VhSdgD4Nfaxbnnn4r-OK8koSZ7+zQoPShDbGi9PvkJFpng@mail.gmail.com>
+        <478e1651-a383-05ff-d011-6dda771b8ce8@linux.microsoft.com>
+        <875ypt5zmz.fsf@defensec.nl>
+        <CAFftDdo9JmbyPzPWRjOYgZBOS9b5d+OGKKf8egS8_ysbbWW87Q@mail.gmail.com>
+        <4be3fef6-63ca-af97-7fc6-d93d85a9b706@linux.microsoft.com>
+Date:   Tue, 08 Feb 2022 17:47:05 +0100
+In-Reply-To: <4be3fef6-63ca-af97-7fc6-d93d85a9b706@linux.microsoft.com> (Chris
+        PeBenito's message of "Tue, 8 Feb 2022 10:47:44 -0500")
+Message-ID: <87ee4dnw52.fsf@defensec.nl>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The softirq implementation on PREEMPT_RT does not provide do_softirq(). The
-softirq can not be handled directly here because migration_cpu_stop() is
-invoked with disabled preemption/ interrupts.
+Chris PeBenito <chpebeni@linux.microsoft.com> writes:
 
-A known user of scheduling softirqs from a remote function call is the block
-layer. It won't happen on PREEMPT_RT because it doesn't make sense for
-latency/ performance reasons and is disabled. Nevertheless this should
-be handled in case of a new user pops up rather than simply ignoring it.
+> On 2/8/2022 09:17, William Roberts wrote:
+>> <snip>
+>> This is getting too long for me.
+>> 
+>>>>
+>>>> I don't have a strong opinion either way.  If one were to allow this
+>>>> using a policy rule, it would result in a major policy breakage.  The
+>>>> rule would turn on extended perm checks across the entire system,
+>>>> which the SELinux Reference Policy isn't written for.  I can't speak
+>>>> to the Android policy, but I would imagine it would be the similar
+>>>> problem there too.
+>>>
+>>> Excuse me if I am wrong but AFAIK adding a xperm rule does not turn on
+>>> xperm checks across the entire system.
+>> It doesn't as you state below its target + class.
+>> 
+>>>
+>>> If i am not mistaken it will turn on xperm checks only for the
+>>> operations that have the same source and target/target class.
+>> That's correct.
+>
+> Just to clarify (Demi Marie also mentioned this earlier in the
+> thread), what I originally meant was how to emulate this patch by
+> using policy rules means you need a rule that allows the two ioctls on
+> all domains for all objects.  That results in xperms checks enabled
+> everywhere.
 
-Waking ksoftirqd unconditionally can be problematic if softirqs were already
-pending but not yet handled. This can happen since the migration thread
-is running at a high priority and able to preempt a threaded-interrupt.
-The woken-up ksoftirqd would catch-up all pending (and later raised)
-softirqs which is not desired on PREEMPT_RT since it is no longer
-handled where it has been originally raised. This in turn delays the
-actual processing until a SCHED_OTHER task can run.
+Thanks. That is clear now. I also learned that is pretty much what
+Android's sepolicy is doing. That is probably not something I would do
+(enable xperms globally). I would probably leverage it only for "devnode"
+chr and maybe blk files and only where they actually are accessed.
 
-Wake the softirq thread on PREEMPT_RT if a remote function call raised
-softirqs. Add warning in this case since this condition is not desired.
+I would not mind removing these two checks, but i am not a big user of
+xperms (i only filter TIOSCTI on terminal chr files and only for the
+entities that write or append them).
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
-v2=E2=80=A6v3:
-   - Only wake ksoftirqd if the softirqs were raised wthin
-     flush_smp_call_function_queue().
-   - Add a warning in the wake case.
-v1=E2=80=A6v2: Drop an empty line.
+>
+>
+>>> This is also why i don't (with the exception TIOSCTI for termdev
+>>> chr_file) use xperms by default.
+>>>
+>>> 1. it is really easy to selectively filter ioctls by adding xperm rules
+>>> for end users (and since ioctls are often device/driver specific they
+>>> know best what is needed and what not)
+>> 
+>>>>>> and FIONCLEX can be trivially bypassed unless fcntl(F_SETFD)
+>>>
+>>> 2. if you filter ioctls in upstream policy for example like i do with
+>>> TIOSCTI using for example (allowx foo bar (ioctl chr_file (not
+>>> (0xXXXX)))) then you cannot easily exclude additional ioctls later where source is
+>>> foo and target/tclass is bar/chr_file because there is already a rule in
+>>> place allowing the ioctl (and you cannot add rules)
+>> Currently, fcntl flag F_SETFD is never checked, it's silently
+>> allowed, but
+>> the equivalent FIONCLEX and FIOCLEX are checked. So if you wrote policy
+>> to block the FIO*CLEX flags, it would be bypassable through F_SETFD and
+>> FD_CLOEXEC. So the patch proposed makes the FIO flags behave like
+>> F_SETFD. Which means upstream policy users could drop this allow, which
+>> could then remove the target/class rule and allow all icotls. Which is easy
+>> to prevent and fix you could be a rule in to allowx 0 as documented in the
+>> wiki: https://selinuxproject.org/page/XpermRules
+>> The questions I think we have here are:
+>> 1. Do we agree that the behavior between SETFD and the FIO flags are equivalent?
+>>    I think they are.
+>> 2. Do we want the interfaces to behave the same?
+>>    I think they should.
+>
+> If you can bypass FIONCLEX and FIOCLEX checks by F_SETFD and
+> FD_CLOEXEC, then I agree that the two FIO checks don't have value and
+> can be skipped as F_SETFD is.
+>
+>> 3. Do upstream users of the policy construct care?
+>>    The patch is backwards compat, but I don't want their to be cruft
+>> floating around with extra allowxperm rules.
+>
+> Reference policy does not have any xperm rules at this time.  I looked
+> at the Fedora policy, and that doesn't have any.
 
- kernel/smp.c |   21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
----
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -691,10 +691,25 @@ void flush_smp_call_function_from_idle(v
- 	cfd_seq_store(this_cpu_ptr(&cfd_seq_local)->idle, CFD_SEQ_NOCPU,
- 		      smp_processor_id(), CFD_SEQ_IDLE);
- 	local_irq_save(flags);
--	flush_smp_call_function_queue(true);
--	if (local_softirq_pending())
--		do_softirq();
-+	if (!IS_ENABLED(CONFIG_PREEMPT_RT)) {
-+		flush_smp_call_function_queue(true);
-+		if (local_softirq_pending())
-+			do_softirq();
-+	} else {
-+		unsigned int pending_prev;
-+		unsigned int pending_post;
-=20
-+		pending_prev =3D local_softirq_pending();
-+		flush_smp_call_function_queue(true);
-+		pending_post =3D local_softirq_pending();
-+
-+		if (WARN_ON_ONCE(!pending_prev && pending_post)) {
-+			struct task_struct *ksoftirqd =3D this_cpu_ksoftirqd();
-+
-+			if (ksoftirqd && !task_is_running(ksoftirqd))
-+				wake_up_process(ksoftirqd);
-+		}
-+	}
- 	local_irq_restore(flags);
- }
-=20
+-- 
+gpg --locate-keys dominick.grift@defensec.nl
+Key fingerprint = FCD2 3660 5D6B 9D27 7FC6  E0FF DA7E 521F 10F6 4098
+Dominick Grift
