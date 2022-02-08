@@ -2,193 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5CFC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F5EC3525C
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356782AbiBHNVL (ORCPT
+        id S1358096AbiBHNV2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:21:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
+        Tue, 8 Feb 2022 08:21:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359783AbiBHMyF (ORCPT
+        with ESMTP id S1376474AbiBHNJf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:54:05 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C36CC03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:54:04 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id s13so51894923ejy.3
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:54:03 -0800 (PST)
+        Tue, 8 Feb 2022 08:09:35 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45411C03FED0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:09:34 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id x193so20562208oix.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:09:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EdOABUNENMY5hYtYPGRPZmVz5tXWbGx6V9rHvVTwsTo=;
-        b=KgFzVhnS+WwfF4ySk8R2/5G/qaN9zSc7f1Btrik8l3ywATzIA1H3npms8IV/EEj2KI
-         IEWyrGEr/Q+oBaB+rZIL/nu2xrfklQucAehi0E2n5WYRj0scoAYhI4cerIdykx1YxOFA
-         bOMwE/D9+192GSVfQxod36C2LT3HZ1niWajoU=
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SbtrRuHy+NSlAeGtvroJmD9+7e6TK8yWL1WcOGDbT60=;
+        b=ipB2P1DX/pWgxuTpermK6N6bN/NM8fq3jGkEyjPKIkXcJpx6XjJ9MZa/NKoDWwrzzR
+         H9zOo26gGXSh73UucCAB3b8IrpsW1y9z8bWdX9TuGNUEUL6P7BodxWlew7CktkYe46lB
+         mTSdFCPQ3OkT1RP1x/cWc1BBjlCdCs9vkvqtGoNIO1KIyvUoux1SlJZUjb+j4n02gssA
+         tpx4yKREirT9e4vk7X0IQqZIvUbeUkL8uwPIArNFxbd4OjMiyavTrZuTe4VqePCEvIIW
+         C/es6W9/nRSRO9vZv0UYJzlCUwVtwQXGAEyGo2tiEFSLhexMFTuNnQ6mlfn+EXqCeeBl
+         yteQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=EdOABUNENMY5hYtYPGRPZmVz5tXWbGx6V9rHvVTwsTo=;
-        b=eyTprKEQRbzCbd1CcNQ0RgpAx3/hjath6W7bCC++9wSrOzyWGUeFkcuv6FdqvrAzc1
-         Ga4QPlB6Q0D37+NmceZ1WlCFusx60j3EZjAlrkxQN02icL/qTGPFbCm7pLEjCqdFpzAV
-         IaA6kW9t8L5Re/cl9nj8kq/y/LmkDBiF99gRwUe7vW80rh9AAvDpAlzxd56XgNZjZkfo
-         t46MHzEXMQ0xDo9zvJhraeCIofSwr6D4xMZ/a5Bc7ZKfVXBKAR45Cyocl/S+TFYtWkAo
-         ABJ6bpC0X+wlRjJQq6gC4x1mJ1AewuCPCI2W9bD6OEYHdh84GI/BtU6P6Fi0fhFAN3XR
-         SaeQ==
-X-Gm-Message-State: AOAM533txU0lyfTfHsH4/oZ8ggqATrVgKfEhSKT4iemadR/smXii4Q0+
-        lFOeAs6dmRX4TiO9gu8huN+pdstUYA/BVA==
-X-Google-Smtp-Source: ABdhPJyjoXx7TZnQW6xw4xjBqA0XWuDhxN1WRj0W2ugU65gZDBqDw0EPp6tl28mczrKVDEoZQx+16g==
-X-Received: by 2002:a17:906:94e:: with SMTP id j14mr3514523ejd.369.1644324842613;
-        Tue, 08 Feb 2022 04:54:02 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id d18sm4740261ejd.95.2022.02.08.04.54.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:54:01 -0800 (PST)
-Date:   Tue, 8 Feb 2022 13:53:59 +0100
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Saravana Kannan <saravanak@google.com>
-Subject: Re: [PATCH v6 02/35] component: Introduce the aggregate bus_type
-Message-ID: <YgJn57s8u2OsBGnW@phenom.ffwll.local>
-Mail-Followup-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Saravana Kannan <saravanak@google.com>
-References: <20220127200141.1295328-1-swboyd@chromium.org>
- <20220127200141.1295328-3-swboyd@chromium.org>
- <YffoqgmeUdxZ56zB@kroah.com>
- <CAKMK7uFYyQ9siB5ENHku+yVPWWM1H=TEn-NZofEKqpJnuEvMmw@mail.gmail.com>
- <YfgPkliOLorgXwVE@kroah.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SbtrRuHy+NSlAeGtvroJmD9+7e6TK8yWL1WcOGDbT60=;
+        b=dHVf5++LQSVBKcKleiDyUrVOBOposbcXhiv9nSkxHqwWKJLkCFx7F6OWKlrmu4Yaq8
+         ltLnZp4zKbl8fTjp9TyTD3Vy31g6I54ZJTq7IuZYsEbFojraiHWBMe5WpzHZp4ZL0rtw
+         8gHbgWnSZH9J8RgfHgharJKq0uzHC3gHB7Zm6JfGy+wYZ2hT27p8XXIGN6MfCCyY/HTK
+         LVLv89MJcJ52/TN6fFebJoKUnm2C/R1GsDv/37RD44JnY+VyqcaUx2ZFN+jTO/S6t5Hk
+         6UkeXdMzIeo8CfUeozAWvuqx2dst4KSVDTLJd/En8mIw4CgyWwT26wx8iw7vj6sGzGuJ
+         Feaw==
+X-Gm-Message-State: AOAM530kP8B7HAxve3veDfkkUbGH5bDdt5FjmwNcLzjIAeoMeuynd7TB
+        upOEEtvsqWWGDRhFkFKo34yLJZcte/ca8NRZfxHY9ojFDIobLA==
+X-Google-Smtp-Source: ABdhPJyJ9Zma2ZEin8GNpdoeNj2ZN7XXaEM/ArByR8cTF7OFgqG6jNtpwnZynRpkSVBbmdgOEJlE7ZQrWSvJLj3ECJY=
+X-Received: by 2002:a05:6808:1819:: with SMTP id bh25mr454334oib.35.1644325772109;
+ Tue, 08 Feb 2022 05:09:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfgPkliOLorgXwVE@kroah.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+References: <20220125084702.3636253-1-andrew@daynix.com> <1643183537.4001389-1-xuanzhuo@linux.alibaba.com>
+ <CAOEp5OcwLiLZuVOAxx+pt6uztP-cGTgqsUSQj7N7HKTZgmyN3w@mail.gmail.com>
+In-Reply-To: <CAOEp5OcwLiLZuVOAxx+pt6uztP-cGTgqsUSQj7N7HKTZgmyN3w@mail.gmail.com>
+From:   Andrew Melnichenko <andrew@daynix.com>
+Date:   Tue, 8 Feb 2022 15:09:21 +0200
+Message-ID: <CABcq3pE43rYojwUCAmpW-FKv5=ABcS47B944Y-3kDqr-PeqLwQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/5] TUN/VirtioNet USO features support.
+To:     Yuri Benditovich <yuri.benditovich@daynix.com>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Yan Vugenfirer <yan@daynix.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 05:34:26PM +0100, Greg Kroah-Hartman wrote:
-> On Mon, Jan 31, 2022 at 04:15:09PM +0100, Daniel Vetter wrote:
-> > On Mon, Jan 31, 2022 at 2:48 PM Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
+Hi people,
+Can you please review this series?
+
+On Wed, Jan 26, 2022 at 10:32 AM Yuri Benditovich
+<yuri.benditovich@daynix.com> wrote:
+>
+> On Wed, Jan 26, 2022 at 9:54 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> >
+> > On Tue, 25 Jan 2022 10:46:57 +0200, Andrew Melnychenko <andrew@daynix.com> wrote:
+> > > Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
+> > > Technically they enable NETIF_F_GSO_UDP_L4
+> > > (and only if USO4 & USO6 are set simultaneously).
+> > > It allows to transmission of large UDP packets.
 > > >
-> > > On Thu, Jan 27, 2022 at 12:01:08PM -0800, Stephen Boyd wrote:
-> > > > The component framework only provides 'bind' and 'unbind' callbacks to
-> > > > tell the host driver that it is time to assemble the aggregate driver
-> > > > now that all the components have probed. The component framework doesn't
-> > > > attempt to resolve runtime PM or suspend/resume ordering, and explicitly
-> > > > mentions this in the code. This lack of support leads to some pretty
-> > > > gnarly usages of the 'prepare' and 'complete' power management hooks in
-> > > > drivers that host the aggregate device, and it fully breaks down when
-> > > > faced with ordering shutdown between the various components, the
-> > > > aggregate driver, and the host driver that registers the whole thing.
-> > > >
-> > > > In a concrete example, the MSM display driver at drivers/gpu/drm/msm is
-> > > > using 'prepare' and 'complete' to call the drm helpers
-> > > > drm_mode_config_helper_suspend() and drm_mode_config_helper_resume()
-> > > > respectively, so that it can move the aggregate driver suspend/resume
-> > > > callbacks to be before and after the components that make up the drm
-> > > > device call any suspend/resume hooks they have. This only works as long
-> > > > as the component devices don't do anything in their own 'prepare' and
-> > > > 'complete' callbacks. If they did, then the ordering would be incorrect
-> > > > and we would be doing something in the component drivers before the
-> > > > aggregate driver could do anything. Yuck!
-> > > >
-> > > > Similarly, when trying to add shutdown support to the MSM driver we run
-> > > > across a problem where we're trying to shutdown the drm device via
-> > > > drm_atomic_helper_shutdown(), but some of the devices in the encoder
-> > > > chain have already been shutdown. This time, the component devices
-> > > > aren't the problem (although they could be if they did anything in their
-> > > > shutdown callbacks), but there's a DSI to eDP bridge in the encoder
-> > > > chain that has already been shutdown before the driver hosting the
-> > > > aggregate device runs shutdown. The ordering of driver probe is like
-> > > > this:
-> > > >
-> > > >  1. msm_pdev_probe() (host driver)
-> > > >  2. DSI bridge
-> > > >  3. aggregate bind
-> > > >
-> > > > When it comes to shutdown we have this order:
-> > > >
-> > > >  1. DSI bridge
-> > > >  2. msm_pdev_shutdown() (host driver)
-> > > >
-> > > > and so the bridge is already off, but we want to communicate to it to
-> > > > turn things off on the display during msm_pdev_shutdown(). Double yuck!
-> > > > Unfortunately, this time we can't split shutdown into multiple phases
-> > > > and swap msm_pdev_shutdown() with the DSI bridge.
-> > > >
-> > > > Let's make the component_master_ops into an actual device driver that has
-> > > > probe/remove/shutdown functions. The driver will only be bound to the
-> > > > aggregate device once all component drivers have called component_add()
-> > > > to indicate they're ready to assemble the aggregate driver. This allows
-> > > > us to attach shutdown logic (and in the future runtime PM logic) to the
-> > > > aggregate driver so that it runs the hooks in the correct order.
+> > > Different features USO4 and USO6 are required for qemu where Windows guests can
+> > > enable disable USO receives for IPv4 and IPv6 separately.
+> > > On the other side, Linux can't really differentiate USO4 and USO6, for now.
+> > > For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
+> > > In the future, there would be a mechanism to control UDP_L4 GSO separately.
 > > >
-> > > I know I asked before, but I can not remember the answer.
+> > > Test it WIP Qemu https://github.com/daynix/qemu/tree/Dev_USOv2
 > > >
-> > > This really looks like it is turning into the aux bus code.  Why can't
-> > > you just use that instead here for this type of thing?  You are creating
-> > > another bus and drivers for that bus that are "fake" which is great, but
-> > > that's what the aux bus code was supposed to help out with, so we
-> > > wouldn't have to write more of these.
+> > > New types for VirtioNet already on mailing:
+> > > https://lists.oasis-open.org/archives/virtio-comment/202110/msg00010.html
+> >
+> > Seems like this hasn't been upvoted yet.
+> >
+> >         https://github.com/oasis-tcs/virtio-spec#use-of-github-issues
+>
+> Yes, correct. This is a reason why this series of patches is RFC.
+>
+> >
+> > Thanks.
+> >
 > > >
-> > > So, if this really is different, can you document it here so I remember
-> > > next time you resend this patch series?
-> > 
-> > aux takes a device and splits it into a lot of sub-devices, each with
-> > their own driver.
-> > 
-> > This takes a pile of devices, and turns it into a single logical
-> > device with a single driver.
-> > 
-> > So aux is 1:N, component is N:1.
-> > 
-> > And yes you asked this already, I typed this up already :-)
-> 
-> Ok, thanks.  But then why is a bus needed if there's a single driver?
-> I guess a bus for that driver?  So one bus, one driver, and one device?
-
-Maybe? I have honestly no idea how this should be best modelled in the
-linux device model.
-
-> I think we need better documentation here...
-
-https://dri.freedesktop.org/docs/drm/driver-api/component.html?highlight=component_del#component-helper-for-aggregate-drivers
-
-There's a kerneldoc overview for component, but it's for driver authors
-that want to use component to glue different hw pieces into a logical
-driver, so it skips over these internals.
-
-And I'm honestly not sure how we want to leak implementation internals
-like the bus/driver/device structure ot users of component.c.
--Daniel
-
-> 
-> thanks,
-> 
-> greg k-h
-
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+> > > Also, there is a known issue with transmitting packages between two guests.
+> > > Without hacks with skb's GSO - packages are still segmented on the host's postrouting.
+> > >
+> > > Andrew Melnychenko (5):
+> > >   uapi/linux/if_tun.h: Added new ioctl for tun/tap.
+> > >   driver/net/tun: Added features for USO.
+> > >   uapi/linux/virtio_net.h: Added USO types.
+> > >   linux/virtio_net.h: Added Support for GSO_UDP_L4 offload.
+> > >   drivers/net/virtio_net.c: Added USO support.
+> > >
+> > >  drivers/net/tap.c               | 18 ++++++++++++++++--
+> > >  drivers/net/tun.c               | 15 ++++++++++++++-
+> > >  drivers/net/virtio_net.c        | 22 ++++++++++++++++++----
+> > >  include/linux/virtio_net.h      | 11 +++++++++++
+> > >  include/uapi/linux/if_tun.h     |  3 +++
+> > >  include/uapi/linux/virtio_net.h |  4 ++++
+> > >  6 files changed, 66 insertions(+), 7 deletions(-)
+> > >
+> > > --
+> > > 2.34.1
+> > >
+> > > _______________________________________________
+> > > Virtualization mailing list
+> > > Virtualization@lists.linux-foundation.org
+> > > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
