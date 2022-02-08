@@ -2,165 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D2CEC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA5EC35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386892AbiBHW10 (ORCPT
+        id S1387670AbiBHW2k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:27:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32888 "EHLO
+        Tue, 8 Feb 2022 17:28:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386608AbiBHU7G (ORCPT
+        with ESMTP id S1386423AbiBHU3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:59:06 -0500
-Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552DAC0612B9
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:59:05 -0800 (PST)
-Received: by mail-vs1-xe2a.google.com with SMTP id m24so376834vsp.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 12:59:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NxB7BzC6ZAoAU/UTQQPI/XYwGHJmUDw1BkVBGKXBE4c=;
-        b=Y3dHeM9K1rCwczLjQBwnOlwAC1lSGX6KBBSSvc9OyYXm6MqTlm+Arx3JxBqbvT2562
-         W0x2T60xfaRmhG7hTPmRYxjsLOT4FN+LbwHOE0BH68Xi/mXCfSwaGROEhPdmrgqDlHqJ
-         JPRWBGOJQ1PS76ChpBJzY0tx4VNWTjdTb5fVBwWSghrT8vsr7qedw4jQ2c13cNgs/aAc
-         e+yl1ENT+jlXNFeDSWDJK7+ZX7++Mr0D+/gQpLUqOG41iNLxTrInsNBCQIyOYpRI8+tI
-         gAz2GORpxqQe3vUVD0C0We+OO0BwCa4LDGZN8KtEOfBlMnFIXOa75bonu1iLcDzr68hi
-         cOrg==
+        Tue, 8 Feb 2022 15:29:46 -0500
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0EFC0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:29:45 -0800 (PST)
+Received: by mail-lj1-f182.google.com with SMTP id j14so552176lja.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 12:29:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=NxB7BzC6ZAoAU/UTQQPI/XYwGHJmUDw1BkVBGKXBE4c=;
-        b=cP9WBqne1z6ClEjvP94L9NiDXVXdLepdvydSC55SlNuPv5/FiPckYN7Ba5nWIzIgDK
-         1WcuaHu1RPqY+xFRD2nMePYiFJ9isxAwQjkUpmvCIV23Tbln54vdO5M5HwGWc1Zh2Tbt
-         cKuJ1H+1weXwKB4/XrnxMlerfaco66m/Nyycp7ZnXt3g41BxMaGVj1MBdKFpGCHsIdpZ
-         BeB6sE2+5UoH/fKrodoRxakDZYjSeH4MmVZpZe58Wgrc25tOfhQtF7hyUx40pq1CYbgy
-         bTDGPkFLcTLvR5Ys3x6+ChhnqzS1YsVDtTv3lUd0lDtQkfl3jkxryBzZvIoUW9My2BLT
-         xzIA==
-X-Gm-Message-State: AOAM530gm00rQCr/RrTkrLroRXIXP/T77N4WpWM6tOyhskaWqPEcXoD4
-        RqXXERjDLIvsAipl81oucjbePA7RFRQFmA==
-X-Google-Smtp-Source: ABdhPJyyfanTQDxZMI+Jy+IyYwdJMxOWexbUN7I0gtgGgqc5bnpDIsiu2xMy3H+xfKxHQx3t7X20aQ==
-X-Received: by 2002:a67:e1c3:: with SMTP id p3mr2029151vsl.31.1644353944505;
-        Tue, 08 Feb 2022 12:59:04 -0800 (PST)
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
-        by smtp.gmail.com with ESMTPSA id k20sm2770518vsg.14.2022.02.08.12.59.03
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 12:59:04 -0800 (PST)
-Received: by mail-ua1-f48.google.com with SMTP id e17so247240uad.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 12:59:03 -0800 (PST)
-X-Received: by 2002:ab0:384c:: with SMTP id h12mr2198570uaw.122.1644353943533;
- Tue, 08 Feb 2022 12:59:03 -0800 (PST)
+        bh=atITRJU41fTqhaKxq/8QmwHxREfuvI3xR+qm2eVMnVQ=;
+        b=0bUOwReI0gSml+ChpQdxxTSWHRdQ7qc283IRrAk3ea4im0CKEu735qtQT1VqwdpqsJ
+         fP95H/4G0UmsfxxG8SI1ZMmVOKaX8MqNzz48CP+qdiR8Q/EzoC25HuHgYFhn2H78bCHk
+         UTtAFfJGGEjugjO02gM62/CxEi2QjiisKQrxwOvwA9QzaHcTr+xNubaBuUx/kHH6xe1e
+         709BjOvV82qgtnrXg1XEWOVjpAeoNjapOvEK/fIJ41x/LHqSROXTspmk24qApeWR7AbW
+         MipeRUDI1vrZJ6kV+KaEaabzDEahYro5w30FuOnY8e+ujMFVWMKmnsQVtieixTB53OS4
+         i3mA==
+X-Gm-Message-State: AOAM533M1cdo5HywNdfLsuoul43cfqyLWdvFoT9bSWOZuQkSOliiN9Rb
+        Y5JL5/lDBn1A0l5CJ+WoRfl6oQ1OEH0Zm1BsYvw=
+X-Google-Smtp-Source: ABdhPJw8tE/avmlvMaM7ky0xK80KvTDExwZg5JqDe5vk5pEjZ+1CjWB5CQ168CO0yoAgdS/6yZg+tfOczu5dXOWSlTk=
+X-Received: by 2002:a2e:7219:: with SMTP id n25mr3651814ljc.204.1644352183755;
+ Tue, 08 Feb 2022 12:29:43 -0800 (PST)
 MIME-Version: 1.0
-References: <20220208181510.787069-1-andrew@daynix.com> <20220208181510.787069-5-andrew@daynix.com>
-In-Reply-To: <20220208181510.787069-5-andrew@daynix.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 8 Feb 2022 15:58:27 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScRp5hhkvETuVRsUxMRCZVU0wVrmd5_=a5UoKNLDv4LnA@mail.gmail.com>
-Message-ID: <CA+FuTScRp5hhkvETuVRsUxMRCZVU0wVrmd5_=a5UoKNLDv4LnA@mail.gmail.com>
-Subject: Re: [PATCH v3 4/4] drivers/net/virtio_net: Added RSS hash report control.
-To:     Andrew Melnychenko <andrew@daynix.com>
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jasowang@redhat.com, mst@redhat.com, yan@daynix.com,
-        yuri.benditovich@daynix.com
+References: <20220208184208.79303-1-namhyung@kernel.org> <20220208184208.79303-4-namhyung@kernel.org>
+ <20220208143641.7850bbc6@gandalf.local.home>
+In-Reply-To: <20220208143641.7850bbc6@gandalf.local.home>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Tue, 8 Feb 2022 12:29:32 -0800
+Message-ID: <CAM9d7cgdauVW+HdpQS_FNG4e3SRR1JP74N1Z-SX+hXZ-yDM5DQ@mail.gmail.com>
+Subject: Re: [PATCH 03/12] timer: Protect lockdep functions with #ifdef
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Byungchul Park <byungchul.park@lge.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Radoslaw Burny <rburny@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 1:19 PM Andrew Melnychenko <andrew@daynix.com> wrote:
+Hi Steve,
+
+On Tue, Feb 8, 2022 at 11:36 AM Steven Rostedt <rostedt@goodmis.org> wrote:
 >
-> Now it's possible to control supported hashflows.
-> Added hashflow set/get callbacks.
-> Also, disabling RXH_IP_SRC/DST for TCP would disable then for UDP.
-
-I don't follow this comment. Can you elaborate?
-
-> TCP and UDP supports only:
-> ethtool -U eth0 rx-flow-hash tcp4 sd
->     RXH_IP_SRC + RXH_IP_DST
-> ethtool -U eth0 rx-flow-hash tcp4 sdfn
->     RXH_IP_SRC + RXH_IP_DST + RXH_L4_B_0_1 + RXH_L4_B_2_3
+> On Tue,  8 Feb 2022 10:41:59 -0800
+> Namhyung Kim <namhyung@kernel.org> wrote:
 >
-> Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
-> ---
->  drivers/net/virtio_net.c | 141 ++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 140 insertions(+), 1 deletion(-)
+> > With upcoming lock tracepoints config, it'd define some of lockdep
+> > functions without enabling CONFIG_LOCKDEP actually.  The existing code
+> > assumes those functions will be removed by the preprocessor but it's
+> > not the case anymore.  Let's protect the code with #ifdef's explicitly.
 >
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 543da2fbdd2d..88759d5e693c 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -231,6 +231,7 @@ struct virtnet_info {
->         u8 rss_key_size;
->         u16 rss_indir_table_size;
->         u32 rss_hash_types_supported;
-> +       u32 rss_hash_types_saved;
+> I wonder if it would be cleaner to have another macro name for these
+> locations to keep out the ugly #ifdef in the code.
+>
+> lockdep_init_map_raw() ?
 
-hash_types_active?
+Yeah, I like that..  Then I also need to add the _raw variants
+for acquire, release and so on.  Is that ok?
 
-> +static bool virtnet_set_hashflow(struct virtnet_info *vi, struct ethtool_rxnfc *info)
-> +{
-> +       u32 new_hashtypes = vi->rss_hash_types_saved;
-> +       bool is_disable = info->data & RXH_DISCARD;
-> +       bool is_l4 = info->data == (RXH_IP_SRC | RXH_IP_DST | RXH_L4_B_0_1 | RXH_L4_B_2_3);
-> +
-> +       /* supports only 'sd', 'sdfn' and 'r' */
-> +       if (!((info->data == (RXH_IP_SRC | RXH_IP_DST)) | is_l4 | is_disable))
-
-maybe add an is_l3
-
-> +               return false;
-> +
-> +       switch (info->flow_type) {
-> +       case TCP_V4_FLOW:
-> +               new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv4 | VIRTIO_NET_RSS_HASH_TYPE_TCPv4);
-> +               if (!is_disable)
-> +                       new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv4
-> +                               | (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_TCPv4 : 0);
-> +               break;
-> +       case UDP_V4_FLOW:
-> +               new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv4 | VIRTIO_NET_RSS_HASH_TYPE_UDPv4);
-> +               if (!is_disable)
-> +                       new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv4
-> +                               | (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_UDPv4 : 0);
-> +               break;
-> +       case IPV4_FLOW:
-> +               new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_IPv4;
-> +               if (!is_disable)
-> +                       new_hashtypes = VIRTIO_NET_RSS_HASH_TYPE_IPv4;
-> +               break;
-> +       case TCP_V6_FLOW:
-> +               new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv6 | VIRTIO_NET_RSS_HASH_TYPE_TCPv6);
-> +               if (!is_disable)
-> +                       new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv6
-> +                               | (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_TCPv6 : 0);
-> +               break;
-> +       case UDP_V6_FLOW:
-> +               new_hashtypes &= ~(VIRTIO_NET_RSS_HASH_TYPE_IPv6 | VIRTIO_NET_RSS_HASH_TYPE_UDPv6);
-> +               if (!is_disable)
-> +                       new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv6
-> +                               | (is_l4 ? VIRTIO_NET_RSS_HASH_TYPE_UDPv6 : 0);
-> +               break;
-> +       case IPV6_FLOW:
-> +               new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_IPv6;
-> +               if (!is_disable)
-> +                       new_hashtypes = VIRTIO_NET_RSS_HASH_TYPE_IPv6;
-> +               break;
-> +       default:
-> +               /* unsupported flow */
-> +               return false;
-> +       }
-> +
-> +       /* if unsupported hashtype was set */
-> +       if (new_hashtypes != (new_hashtypes & vi->rss_hash_types_supported))
-> +               return false;
-> +
-> +       if (new_hashtypes != vi->rss_hash_types_saved) {
-> +               vi->rss_hash_types_saved = new_hashtypes;
-
-should only be updated if the commit function returned success?
+Thanks,
+Namhyung
