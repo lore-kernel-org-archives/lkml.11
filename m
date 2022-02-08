@@ -2,89 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E75C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:25:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B44F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235021AbiBHCZG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 21:25:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57088 "EHLO
+        id S1345913AbiBHC20 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 21:28:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237161AbiBHCZD (ORCPT
+        with ESMTP id S237161AbiBHC2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 21:25:03 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D5C4C061355;
-        Mon,  7 Feb 2022 18:25:02 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id v74so16327533pfc.1;
-        Mon, 07 Feb 2022 18:25:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3G8YOrqUzsTlTI15DjqXBpfXvuVK4sljmpP/LCYK0/c=;
-        b=GKp8kmConophuOANe8xofD+H2P2IqqDnxQizstMBgT0mr/zpm60aXgXA8V1i5SAeqL
-         dIDZrsbqoR9AefzAXd6Hp66IXV/+TwMoBRhU4Su3Cw9CQK7XdIxe1QP4BWXYX9PiyAw2
-         g7C6F6iH+vjdF6LYsV+ZoSnczw9obqXHFMltm9okJCQd0RLUwPJEYhdWz5uxOxIpQ4km
-         pG+WqJ9o9JQIGj3C3ihPSvLodMFu5B8GvMnoknE6gywFFKsXbCemNGNrAWPxSfytb3Gd
-         Zmqy9+6XTT7rR/dFbOwkvOsyaK5UtiDqpeB3EXVV7PyrpSEVhI1Zi++4lSxMsT0NcV46
-         sRWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3G8YOrqUzsTlTI15DjqXBpfXvuVK4sljmpP/LCYK0/c=;
-        b=FoL2cjFufeBwFi7RI9MhOwW511LR6qo1J0CfItAG+jRWxoDo3X5td+t45ALZNBVnPC
-         CR9ppPaK7cU3gYP79j78POxNdHllZECwgIzBm/fcLsfm37bYTa/licbq564h4k5Yi3yV
-         Wu3bfHKonCLq+f0/5PrRVZ70nw2yFRFAxWuaavULKIcFfqtCDTQwGvy9IXpb5fdsGt+B
-         hGRH88Zcwa03m4vmzy7vbLLjYqacAYtHNRbEQx3dsITq2OoY5NrBp3qhDJNMALU3UVyQ
-         SspPY+/EGaw+FN0qC5yEtYz0AMmPNw9+TCe70D+pK65iSEEnA/UJzNxIh+SEed3WcUYD
-         huwQ==
-X-Gm-Message-State: AOAM533rbQfl+h1Nt8Fk+oytMi/0rQGQmZai3ddVyzrqxTWzTAyXd2nq
-        oDIi4Mncp6GbGUGIUi1hKGWIECpYV28=
-X-Google-Smtp-Source: ABdhPJy8CYGVawYIbkv74vc6JHLYnnU8a072YR+KP4Up6fIjNVfCZYvscLQgDmFdi4FGxqNp/9kzRw==
-X-Received: by 2002:a05:6a00:1a50:: with SMTP id h16mr2254023pfv.74.1644287101863;
-        Mon, 07 Feb 2022 18:25:01 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:b5e4])
-        by smtp.gmail.com with ESMTPSA id t24sm13588334pfg.92.2022.02.07.18.25.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 18:25:01 -0800 (PST)
-Date:   Mon, 7 Feb 2022 18:24:59 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kernel-team@fb.com, peterz@infradead.org,
-        x86@kernel.org, iii@linux.ibm.com, Song Liu <songliubraving@fb.com>
-Subject: Re: [PATCH v9 bpf-next 9/9] bpf, x86_64: use
- bpf_jit_binary_pack_alloc
-Message-ID: <20220208022459.ufooz7cjbk6u3k6o@ast-mbp.dhcp.thefacebook.com>
-References: <20220204185742.271030-1-song@kernel.org>
- <20220204185742.271030-10-song@kernel.org>
+        Mon, 7 Feb 2022 21:28:22 -0500
+X-Greylist: delayed 1672 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 18:28:20 PST
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6BCC061355;
+        Mon,  7 Feb 2022 18:28:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=JMHymrZvU08T3r4BdtgDATv2Fh8Jo5X8RbDz8bhcHfM=; b=PD1RoF42O49tywgxC//b8v0Bbb
+        5VYGVygkbqH0eSUMoGyii6i/7Lm6bX7BC5lRZkcSUw1o6LDiyd2rOyOHOIMuozL5ASp+OY5x+kT4H
+        2DwRaaWzjSHb7qHU3yN9UOVFGvKYeL6CGo+eqjY/gmvhKRPVr4RojS6bTJ3D9IwjsFI8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nHFnu-004jlK-0o; Tue, 08 Feb 2022 03:00:26 +0100
+Date:   Tue, 8 Feb 2022 03:00:26 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pawel Dembicki <paweldembicki@gmail.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/2] ARM: dts: kirkwood: Add Ctera C-200 V1 board
+Message-ID: <YgHOup5cKZJyxWFB@lunn.ch>
+References: <20220207212014.28551-1-paweldembicki@gmail.com>
+ <20220207212014.28551-2-paweldembicki@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220204185742.271030-10-song@kernel.org>
+In-Reply-To: <20220207212014.28551-2-paweldembicki@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 10:57:42AM -0800, Song Liu wrote:
->  	if (image) {
->  		if (!prog->is_func || extra_pass) {
-> +			/*
-> +			 * bpf_jit_binary_pack_finalize fails in two scenarios:
-> +			 *   1) header is not pointing to proper module memory;
-> +			 *   2) the arch doesn't support bpf_arch_text_copy().
-> +			 *
-> +			 * Both cases are serious bugs that we should not continue.
-> +			 */
-> +			BUG_ON(bpf_jit_binary_pack_finalize(prog, header, rw_header));
->  			bpf_tail_call_direct_fixup(prog);
-> -			bpf_jit_binary_lock_ro(header);
+On Mon, Feb 07, 2022 at 10:20:14PM +0100, Pawel Dembicki wrote:
+> Ctera C200 V1 is kirkwood-based 2-Bay NAS.
+> 
+> Hardware:
+>   - SoC: Marvell 88F6281-A1 ARMv5TE Processor 1.2GHz
+>   - Ram: 512MB (4x Nanya NT5TU128M8GE-AC)
+>   - NAND Flash: 256MB (Samsung 216 K9F2G08U0C)
+>   - Lan: 1x GBE (Marvell 88E1116R-NNC1)
+>   - Storage: 2x SATA HDD 3.5" Slot
+>   - USB: 2x USB 2.0 port
+>   - Console: Internal J3 connector (1: Vcc, 2: Rx, 3: Tx, 4: GND)
+>   - LEDs: 13x GPIO controlled
+>   - Buttons: 2x GPIO controlled
+> 
+> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
 
-BUG_ON is discouraged.
-It should only be used when the kernel absolutely cannot continue.
-Here ro/rw_headers will be freed. We can WARN and goto out_addrs without drama.
-Please send a follow up.
+Hi Pawel
 
-The rest looks great. Applied to bpf-next.
+It is a good idea to Cc: the mvebu maintainers, since kirkwood is part
+of that.
+
+> +	leds {
+> +		compatible = "gpio-leds";
+> +		pinctrl-0 = <&pmx_leds>;
+> +		pinctrl-names = "default";
+> +
+> +
+
+Please avoid 2 blank lines. This happens a few times in this file.
+
+> +&pciec {
+> +	status = "okay";
+> +};
+
+It would be nice to have a comment about what is on the PCIe bus. Or
+is it just a socket?
+
+> +
+> +&pcie0 {
+> +	status = "okay";
+> +};
+> +
+> +&pinctrl {
+> +	/* buzzer gpios are connected to two pins of buzzer
+> +	 * leave it as is due lack of proper driver
+> +	 */
+> +	pmx_buzzer: pmx-buzzer {
+> +		marvell,pins = "mpp12", "mpp13";
+> +		marvell,function = "gpio";
+> +	};
+
+Is it possible to use "gpio-beeper"?
+
+        beeper: beeper {
+                /* 4KHz Piezoelectric buzzer */
+                compatible = "gpio-beeper";
+                pinctrl-0 = <&pmx_beeper>;
+                pinctrl-names = "default";
+                gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
+        };
+
+	Andrew
