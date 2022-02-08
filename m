@@ -2,528 +2,968 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 345E7C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F91C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352573AbiBHI52 (ORCPT
+        id S1352680AbiBHI6j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:57:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48734 "EHLO
+        Tue, 8 Feb 2022 03:58:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352679AbiBHI5X (ORCPT
+        with ESMTP id S1352625AbiBHI6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:57:23 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23518C03FEC9;
-        Tue,  8 Feb 2022 00:57:20 -0800 (PST)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JtH1D5hm8zcclp;
-        Tue,  8 Feb 2022 16:56:16 +0800 (CST)
-Received: from [10.67.102.169] (10.67.102.169) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Feb 2022 16:57:16 +0800
-CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
-        <song.bao.hua@hisilicon.com>
-Subject: Re: [PATCH v3 1/8] hwtracing: Add trace function support for
- HiSilicon PCIe Tune and Trace device
-To:     John Garry <john.garry@huawei.com>,
-        Yicong Yang <yangyicong@hisilicon.com>,
-        <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
-        <joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
-        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>
-References: <20220124131118.17887-1-yangyicong@hisilicon.com>
- <20220124131118.17887-2-yangyicong@hisilicon.com>
- <40f928c7-5671-ad4e-d208-250aab7d7a9b@huawei.com>
-From:   Yicong Yang <yangyicong@huawei.com>
-Message-ID: <3022ea4c-5088-c622-7a78-53cc67cf7a80@huawei.com>
-Date:   Tue, 8 Feb 2022 16:57:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        Tue, 8 Feb 2022 03:58:35 -0500
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A0FC03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:58:32 -0800 (PST)
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 915831BF204;
+        Tue,  8 Feb 2022 08:58:24 +0000 (UTC)
+Date:   Tue, 8 Feb 2022 09:59:31 +0100
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Eugen.Hristev@microchip.com
+Cc:     robh+dt@kernel.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, jacopo+renesas@jmondi.org,
+        hverkuil-cisco@xs4all.nl, Nicolas.Ferre@microchip.com,
+        sakari.ailus@iki.fi, laurent.pinchart@ideasonboard.com
+Subject: Re: [PATCH v4 03/11] media: atmel: atmel-isc: implement media
+ controller
+Message-ID: <20220208085931.5rf5dueyb57zxlyk@uno.localdomain>
+References: <20220121131416.603972-1-eugen.hristev@microchip.com>
+ <20220121131416.603972-4-eugen.hristev@microchip.com>
+ <20220207124444.giyamcg2dgn6t3hv@uno.localdomain>
+ <b456d5d5-e1ed-c896-482c-00598f92605f@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <40f928c7-5671-ad4e-d208-250aab7d7a9b@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.102.169]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <b456d5d5-e1ed-c896-482c-00598f92605f@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi John,
+Hi Eugen
 
-Thanks for the comments. some replies inline.
+On Mon, Feb 07, 2022 at 01:40:31PM +0000, Eugen.Hristev@microchip.com wrote:
+> On 2/7/22 2:44 PM, Jacopo Mondi wrote:
+> > Hi Eugen
+> >
+> > On Fri, Jan 21, 2022 at 03:14:08PM +0200, Eugen Hristev wrote:
+> >> Implement the support for media-controller.
+> >> This means that the capabilities of the driver have changed and now
+> >> it also advertises the IO_MC .
+> >> The driver will register it's media device, and add the video entity to this
+> >> media device. The subdevices are registered to the same media device.
+> >> The ISC will have a base entity which is auto-detected as atmel_isc_base.
+> >> It will also register a subdevice that allows cropping of the incoming frame
+> >> to the maximum frame size supported by the ISC.
+> >> The ISC will create a link between the subdevice that is asynchronously
+> >> registered and the atmel_isc_scaler entity.
+> >> Then, the atmel_isc_scaler and atmel_isc_base are connected through another
+> >> link.
+> >>
+> >> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+> >> ---
+> >> Changes in v4:
+> >> As suggested by Jacopo:
+> >> - renamed atmel_isc_mc to atmel_isc_scaler.c
+> >> - moved init_mc/clean_mc to isc_base file
+> >>
+> >> Changes in v2:
+> >> - implement try formats
+> >>
+> >>   drivers/media/platform/atmel/Makefile         |   2 +-
+> >>   drivers/media/platform/atmel/atmel-isc-base.c |  73 +++++-
+> >>   .../media/platform/atmel/atmel-isc-scaler.c   | 245 ++++++++++++++++++
+> >>   drivers/media/platform/atmel/atmel-isc.h      |  37 +++
+> >>   .../media/platform/atmel/atmel-sama5d2-isc.c  |  14 +-
+> >>   .../media/platform/atmel/atmel-sama7g5-isc.c  |  12 +-
+> >>   6 files changed, 375 insertions(+), 8 deletions(-)
+> >>   create mode 100644 drivers/media/platform/atmel/atmel-isc-scaler.c
+> >>
+> >> diff --git a/drivers/media/platform/atmel/Makefile b/drivers/media/platform/atmel/Makefile
+> >> index 794e8f739287..f02d03df89d6 100644
+> >> --- a/drivers/media/platform/atmel/Makefile
+> >> +++ b/drivers/media/platform/atmel/Makefile
+> >> @@ -1,7 +1,7 @@
+> >>   # SPDX-License-Identifier: GPL-2.0-only
+> >>   atmel-isc-objs = atmel-sama5d2-isc.o
+> >>   atmel-xisc-objs = atmel-sama7g5-isc.o
+> >> -atmel-isc-common-objs = atmel-isc-base.o atmel-isc-clk.o
+> >> +atmel-isc-common-objs = atmel-isc-base.o atmel-isc-clk.o atmel-isc-scaler.o
+> >>
+> >>   obj-$(CONFIG_VIDEO_ATMEL_ISI) += atmel-isi.o
+> >>   obj-$(CONFIG_VIDEO_ATMEL_ISC_BASE) += atmel-isc-common.o
+> >> diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+> >> index 6b0005987a17..6b482270eb93 100644
+> >> --- a/drivers/media/platform/atmel/atmel-isc-base.c
+> >> +++ b/drivers/media/platform/atmel/atmel-isc-base.c
+> >> @@ -1710,6 +1710,7 @@ static int isc_async_bound(struct v4l2_async_notifier *notifier,
+> >>                                              struct isc_device, v4l2_dev);
+> >>        struct isc_subdev_entity *subdev_entity =
+> >>                container_of(notifier, struct isc_subdev_entity, notifier);
+> >> +     int pad;
+> >>
+> >>        if (video_is_registered(&isc->video_dev)) {
+> >>                v4l2_err(&isc->v4l2_dev, "only supports one sub-device.\n");
+> >> @@ -1718,6 +1719,16 @@ static int isc_async_bound(struct v4l2_async_notifier *notifier,
+> >>
+> >>        subdev_entity->sd = subdev;
+> >>
+> >> +     pad = media_entity_get_fwnode_pad(&subdev->entity, asd->match.fwnode,
+> >> +                                       MEDIA_PAD_FL_SOURCE);
+> >> +     if (pad < 0) {
+> >> +             v4l2_err(&isc->v4l2_dev, "failed to find pad for %s\n",
+> >> +                      subdev->name);
+> >> +             return pad;
+> >> +     }
+> >> +
+> >> +     isc->remote_pad = pad;
+> >> +
+> >>        return 0;
+> >>   }
+> >>
+> >> @@ -1732,8 +1743,8 @@ static void isc_async_unbind(struct v4l2_async_notifier *notifier,
+> >>        v4l2_ctrl_handler_free(&isc->ctrls.handler);
+> >>   }
+> >>
+> >> -static struct isc_format *find_format_by_code(struct isc_device *isc,
+> >> -                                           unsigned int code, int *index)
+> >> +struct isc_format *isc_find_format_by_code(struct isc_device *isc,
+> >> +                                        unsigned int code, int *index)
+> >>   {
+> >>        struct isc_format *fmt = &isc->formats_list[0];
+> >>        unsigned int i;
+> >> @@ -1749,6 +1760,7 @@ static struct isc_format *find_format_by_code(struct isc_device *isc,
+> >>
+> >>        return NULL;
+> >>   }
+> >> +EXPORT_SYMBOL_GPL(isc_find_format_by_code);
+> >>
+> >>   static int isc_formats_init(struct isc_device *isc)
+> >>   {
+> >> @@ -1765,7 +1777,7 @@ static int isc_formats_init(struct isc_device *isc)
+> >>               NULL, &mbus_code)) {
+> >>                mbus_code.index++;
+> >>
+> >> -             fmt = find_format_by_code(isc, mbus_code.code, &i);
+> >> +             fmt = isc_find_format_by_code(isc, mbus_code.code, &i);
+> >>                if (!fmt) {
+> >>                        v4l2_warn(&isc->v4l2_dev, "Mbus code %x not supported\n",
+> >>                                  mbus_code.code);
+> >> @@ -1891,7 +1903,8 @@ static int isc_async_complete(struct v4l2_async_notifier *notifier)
+> >>        vdev->queue             = q;
+> >>        vdev->lock              = &isc->lock;
+> >>        vdev->ctrl_handler      = &isc->ctrls.handler;
+> >> -     vdev->device_caps       = V4L2_CAP_STREAMING | V4L2_CAP_VIDEO_CAPTURE;
+> >> +     vdev->device_caps       = V4L2_CAP_STREAMING | V4L2_CAP_VIDEO_CAPTURE |
+> >> +                               V4L2_CAP_IO_MC;
+> >>        video_set_drvdata(vdev, isc);
+> >>
+> >>        ret = video_register_device(vdev, VFL_TYPE_VIDEO, -1);
+> >> @@ -1901,8 +1914,18 @@ static int isc_async_complete(struct v4l2_async_notifier *notifier)
+> >>                goto isc_async_complete_err;
+> >>        }
+> >>
+> >> +     ret = isc_scaler_link(isc);
+> >> +     if (ret < 0)
+> >> +             goto isc_async_complete_unregister_device;
+> >> +
+> >> +     ret = media_device_register(&isc->mdev);
+> >> +     if (ret < 0)
+> >> +             goto isc_async_complete_unregister_device;
+> >>        return 0;
+> >>
+> >> +isc_async_complete_unregister_device:
+> >> +     video_unregister_device(vdev);
+> >> +
+> >>   isc_async_complete_err:
+> >>        mutex_destroy(&isc->lock);
+> >>        return ret;
+> >> @@ -1969,6 +1992,48 @@ int isc_pipeline_init(struct isc_device *isc)
+> >>   }
+> >>   EXPORT_SYMBOL_GPL(isc_pipeline_init);
+> >>
+> >> +int isc_mc_init(struct isc_device *isc, u32 ver)
+> >> +{
+> >> +     const struct of_device_id *match;
+> >> +     int ret;
+> >> +
+> >> +     isc->video_dev.entity.function = MEDIA_ENT_F_IO_V4L;
+> >> +     isc->video_dev.entity.flags = MEDIA_ENT_FL_DEFAULT;
+> >
+> > Should you set entity.ops.link_validate = v4l2_subdev_link_validate
+> > to be able to have the media pipeline validated at
+> > media_pipeline_start() time ?
+>
+> Hi,
+>
+> I am doing that in a subsequent patch. Things are not completely ready
+> at this moment, because ISC still relies on the old mechanism to call
+> v4l2_subdev_call with set_fmt on the subdevice (which subsequent patch
+> removes and adds checks to the link validate ).
+>
 
-On 2022/2/8 2:11, John Garry wrote:
-> On 24/01/2022 13:11, Yicong Yang wrote:
->> HiSilicon PCIe tune and trace device(PTT) is a PCIe Root Complex
->> integrated Endpoint(RCiEP) device, providing the capability
->> to dynamically monitor and tune the PCIe traffic, and trace
->> the TLP headers.
->>
->> Add the driver for the device to enable the trace function.
->> This patch adds basic function of trace, including the device's
->> probe and initialization, functions for trace buffer allocation
->> and trace enable/disable, register an interrupt handler to
->> simply response to the DMA events. The user interface of trace
->> will be added in the following patch.
->>
->> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
->> ---
->>   drivers/Makefile                 |   1 +
->>   drivers/hwtracing/Kconfig        |   2 +
->>   drivers/hwtracing/ptt/Kconfig    |  11 +
->>   drivers/hwtracing/ptt/Makefile   |   2 +
->>   drivers/hwtracing/ptt/hisi_ptt.c | 398 +++++++++++++++++++++++++++++++
->>   drivers/hwtracing/ptt/hisi_ptt.h | 159 ++++++++++++
->>   6 files changed, 573 insertions(+)
->>   create mode 100644 drivers/hwtracing/ptt/Kconfig
->>   create mode 100644 drivers/hwtracing/ptt/Makefile
->>   create mode 100644 drivers/hwtracing/ptt/hisi_ptt.c
->>   create mode 100644 drivers/hwtracing/ptt/hisi_ptt.h
->>
->> diff --git a/drivers/Makefile b/drivers/Makefile
->> index a110338c860c..ab3411e4eba5 100644
->> --- a/drivers/Makefile
->> +++ b/drivers/Makefile
->> @@ -175,6 +175,7 @@ obj-$(CONFIG_USB4)        += thunderbolt/
->>   obj-$(CONFIG_CORESIGHT)        += hwtracing/coresight/
->>   obj-y                += hwtracing/intel_th/
->>   obj-$(CONFIG_STM)        += hwtracing/stm/
->> +obj-$(CONFIG_HISI_PTT)        += hwtracing/ptt/
->>   obj-$(CONFIG_ANDROID)        += android/
->>   obj-$(CONFIG_NVMEM)        += nvmem/
->>   obj-$(CONFIG_FPGA)        += fpga/
->> diff --git a/drivers/hwtracing/Kconfig b/drivers/hwtracing/Kconfig
->> index 13085835a636..911ee977103c 100644
->> --- a/drivers/hwtracing/Kconfig
->> +++ b/drivers/hwtracing/Kconfig
->> @@ -5,4 +5,6 @@ source "drivers/hwtracing/stm/Kconfig"
->>     source "drivers/hwtracing/intel_th/Kconfig"
->>   +source "drivers/hwtracing/ptt/Kconfig"
->> +
->>   endmenu
->> diff --git a/drivers/hwtracing/ptt/Kconfig b/drivers/hwtracing/ptt/Kconfig
->> new file mode 100644
->> index 000000000000..4f4f2459ac47
->> --- /dev/null
->> +++ b/drivers/hwtracing/ptt/Kconfig
->> @@ -0,0 +1,11 @@
->> +# SPDX-License-Identifier: GPL-2.0-only
->> +config HISI_PTT
->> +    tristate "HiSilicon PCIe Tune and Trace Device"
->> +    depends on ARM64 && PCI && HAS_DMA && HAS_IOMEM
->> +    help
->> +      HiSilicon PCIe Tune and Trace Device exist as a PCIe RCiEP
-> 
-> exists
-> 
->> +      device, provides support for PCIe traffic tuning and
-> 
-> and it provides support...
-> 
+I see.. the subsequent patches are not part of this series, right ?
 
-will fix, thanks.
+I think patches 1, 2, 4, 5 and 6 from this series do not depend on
+the introduction of media controller or the scaler, right ? (I'm not
+sure if the DTS patches do).
 
->> +      tracing TLP headers to the memory.
->> +
->> +      This driver can also be built as a module. If so, the module
->> +      will be called hisi_ptt.
->> diff --git a/drivers/hwtracing/ptt/Makefile b/drivers/hwtracing/ptt/Makefile
->> new file mode 100644
->> index 000000000000..908c09a98161
->> --- /dev/null
->> +++ b/drivers/hwtracing/ptt/Makefile
->> @@ -0,0 +1,2 @@
->> +# SPDX-License-Identifier: GPL-2.0
->> +obj-$(CONFIG_HISI_PTT) += hisi_ptt.o
->> diff --git a/drivers/hwtracing/ptt/hisi_ptt.c b/drivers/hwtracing/ptt/hisi_ptt.c
->> new file mode 100644
->> index 000000000000..6d0a0ca5c0a9
->> --- /dev/null
->> +++ b/drivers/hwtracing/ptt/hisi_ptt.c
->> @@ -0,0 +1,398 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * Driver for HiSilicon PCIe tune and trace device
->> + *
->> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
->> + * Author: Yicong Yang <yangyicong@hisilicon.com>
->> + */
->> +
-[...]
->> +static int hisi_ptt_alloc_trace_buf(struct hisi_ptt *hisi_ptt)
->> +{
->> +    struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
->> +    struct device *dev = &hisi_ptt->pdev->dev;
->> +    struct hisi_ptt_dma_buffer *buffer;
->> +    int i, ret;
->> +
->> +    hisi_ptt->trace_ctrl.buf_index = 0;
->> +
->> +    /* Make sure the trace buffer is empty before allocating */
->> +    if (!list_empty(&ctrl->trace_buf)) {
->> +        list_for_each_entry(buffer, &ctrl->trace_buf, list)
->> +            memset(buffer->addr, 0, buffer->size);
->> +        return 0;
->> +    }
->> +
->> +    for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; ++i) {
->> +        buffer = kzalloc(sizeof(*buffer), GFP_KERNEL);
-> 
-> I may have asked this before: why no devm usage?
-> 
+If that's the case, would it make sense to to fast-track them (as some
+of them are fixes) and then on top plumb the media controller
+infrastructure with this patch and the ones you have been mentioning ?
 
-I remembered I was suggested for not using devm where we may need to manually
-free it as it intends to be freed automically after the driver detachment.
+> >
+> >> +     isc->pads[ISC_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
+> >> +
+> >> +     ret = media_entity_pads_init(&isc->video_dev.entity, ISC_PADS_NUM,
+> >> +                                  isc->pads);
+> >> +     if (ret < 0) {
+> >> +             dev_err(isc->dev, "media entity init failed\n");
+> >> +             return ret;
+> >> +     }
+> >> +
+> >> +     isc->mdev.dev = isc->dev;
+> >> +
+> >> +     match = of_match_node(isc->dev->driver->of_match_table,
+> >> +                           isc->dev->of_node);
+> >> +
+> >> +     strscpy(isc->mdev.driver_name, KBUILD_MODNAME,
+> >> +             sizeof(isc->mdev.driver_name));
+> >> +     strscpy(isc->mdev.model, match->compatible, sizeof(isc->mdev.model));
+> >> +     snprintf(isc->mdev.bus_info, sizeof(isc->mdev.bus_info), "platform:%s",
+> >> +              isc->v4l2_dev.name);
+> >> +     isc->mdev.hw_revision = ver;
+> >> +
+> >> +     media_device_init(&isc->mdev);
+> >> +
+> >> +     isc->v4l2_dev.mdev = &isc->mdev;
+> >> +
+> >> +     return isc_scaler_init(isc);
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(isc_mc_init);
+> >> +
+> >> +void isc_mc_cleanup(struct isc_device *isc)
+> >> +{
+> >> +     media_entity_cleanup(&isc->video_dev.entity);
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(isc_mc_cleanup);
+> >> +
+> >>   /* regmap configuration */
+> >>   #define ATMEL_ISC_REG_MAX    0xd5c
+> >>   const struct regmap_config isc_regmap_config = {
+> >> diff --git a/drivers/media/platform/atmel/atmel-isc-scaler.c b/drivers/media/platform/atmel/atmel-isc-scaler.c
+> >> new file mode 100644
+> >> index 000000000000..ec95c9665883
+> >> --- /dev/null
+> >> +++ b/drivers/media/platform/atmel/atmel-isc-scaler.c
+> >> @@ -0,0 +1,245 @@
+> >> +// SPDX-License-Identifier: GPL-2.0-only
+> >> +/*
+> >> + * Microchip Image Sensor Controller (ISC) Scaler entity support
+> >> + *
+> >> + * Copyright (C) 2021 Microchip Technology, Inc.
+> >
+> > Time flies! It's 2022 already :)
+> >
+> >> + *
+> >> + * Author: Eugen Hristev <eugen.hristev@microchip.com>
+> >> + *
+> >> + */
+> >> +
+> >> +#include <media/media-device.h>
+> >> +#include <media/media-entity.h>
+> >> +#include <media/v4l2-device.h>
+> >> +#include <media/v4l2-subdev.h>
+> >> +
+> >> +#include "atmel-isc-regs.h"
+> >> +#include "atmel-isc.h"
+> >> +
+> >> +static int isc_scaler_get_fmt(struct v4l2_subdev *sd,
+> >> +                           struct v4l2_subdev_state *sd_state,
+> >> +                           struct v4l2_subdev_format *format)
+> >> +{
+> >> +     struct isc_device *isc = container_of(sd, struct isc_device, scaler_sd);
+> >> +     struct v4l2_mbus_framefmt *v4l2_try_fmt;
+> >> +
+> >> +     if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
+> >> +             v4l2_try_fmt = v4l2_subdev_get_try_format(sd, sd_state,
+> >> +                                                       format->pad);
+> >> +             format->format = *v4l2_try_fmt;
+> >> +
+> >> +             return 0;
+> >> +     }
+> >> +
+> >> +     format->format = isc->scaler_format;
+> >
+> > isc->scaler_format is only used inside this file if I'm not mistaken.
+> > I wonder why it lives in the isc_device struct.
+>
+> isc_device is a placeholder for all isc things.
+>
+> I would not create a separate struct in this file that would have to be
+> allocated etc... just for one two things. So I preferred to have it in
+> the same place as all the other things.
+>
+> >
+> >> +
+> >> +     return 0;
+> >> +}
+> >> +
+> >> +static int isc_scaler_set_fmt(struct v4l2_subdev *sd,
+> >> +                           struct v4l2_subdev_state *sd_state,
+> >> +                           struct v4l2_subdev_format *req_fmt)
+> >> +{
+> >> +     struct isc_device *isc = container_of(sd, struct isc_device, scaler_sd);
+> >> +     struct v4l2_mbus_framefmt *v4l2_try_fmt;
+> >> +     struct isc_format *fmt;
+> >> +     unsigned int i;
+> >> +
+> >> +     if (req_fmt->pad == ISC_SCALER_PAD_SOURCE)
+> >> +             v4l_bound_align_image
+> >> +                     (&req_fmt->format.width, 16, isc->max_width, 0,
+> >> +                      &req_fmt->format.height, 16, isc->max_height, 0, 0);
+> >> +     else
+> >> +             v4l_bound_align_image
+> >> +                     (&req_fmt->format.width, 16, 10000, 0,
+> >> +                      &req_fmt->format.height, 16, 10000, 0, 0);
+> >
+> > Where does 10000 come from ?
+>
+> It's a random number. Do you have any suggestion for a better one ?
 
->> +        if (!buffer) {
->> +            ret = -ENOMEM;
->> +            goto err;
->> +        }
->> +
->> +        buffer->addr = dma_alloc_coherent(dev, ctrl->buffer_size,
->> +                          &buffer->dma, GFP_KERNEL);
->> +        if (!buffer->addr) {
->> +            kfree(buffer);
->> +            ret = -ENOMEM;
->> +            goto err;
->> +        }
->> +
->> +        memset(buffer->addr, 0, buffer->size);
->> +
->> +        buffer->index = i;
->> +        buffer->size = ctrl->buffer_size;
-> 
-> please double check if we really need to store this info separately, i.e. is it const and same for all?
-> 
+An actual HW limit ? :)
 
-yes. I stored it for convenience but seems unnecessary now, I'll remove it.
+> Maybe this would be much more clear with my comments below (where I will
+> explain what the isc scaler does )
+> In short, it allows the other entity in the link to 'sink' a huge format
+> into this 'scaler' . Because the scaler can crop anything basically down
+> to the biggest format size the ISC could handle.
+>
 
->> +        list_add_tail(&buffer->list, &ctrl->trace_buf);
->> +    }
->> +
->> +    return 0;
->> +err:
->> +    hisi_ptt_free_trace_buf(hisi_ptt);
->> +    return ret;
->> +}
->> +
->> +static void hisi_ptt_trace_end(struct hisi_ptt *hisi_ptt)
->> +{
->> +    writel(0, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
->> +    hisi_ptt->trace_ctrl.status = HISI_PTT_TRACE_STATUS_OFF;
->> +}
->> +
->> +static int hisi_ptt_trace_start(struct hisi_ptt *hisi_ptt)
->> +{
->> +    struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
->> +    struct hisi_ptt_dma_buffer *cur;
->> +    u32 val;
->> +
->> +    /* Check device idle before start trace */
->> +    if (hisi_ptt_wait_trace_hw_idle(hisi_ptt)) {
->> +        pci_err(hisi_ptt->pdev, "Failed to start trace, the device is still busy.\n");
->> +        return -EBUSY;
->> +    }
->> +
->> +    /* Reset the DMA before start tracing */
->> +    val = readl(hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
->> +    val |= HISI_PTT_TRACE_CTRL_RST;
->> +    writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
->> +
->> +    /*
->> +     * We'll be in the perf context where preemption is disabled,
->> +     * so use busy loop here.
-> 
-> what has preemption is disabled got to do with "busy loop"?
-> 
+doesn't it have any documented input size limit ?
 
-The comment here to notice why we don't use a msleep() or similiar here as
-we're in atomic context. Before we change to use perf, it's msleep() here.
+> >
+> >> +
+> >> +     req_fmt->format.colorspace = V4L2_COLORSPACE_SRGB;
+> >> +     req_fmt->format.field = V4L2_FIELD_NONE;
+> >> +     req_fmt->format.ycbcr_enc = V4L2_YCBCR_ENC_DEFAULT;
+> >> +     req_fmt->format.quantization = V4L2_QUANTIZATION_DEFAULT;
+> >> +     req_fmt->format.xfer_func = V4L2_XFER_FUNC_DEFAULT;
+> >> +
+> >> +     fmt = isc_find_format_by_code(isc, req_fmt->format.code, &i);
+> >
+> > So you rely on the isc format list for the scaler as well ?
+> > I think it's fine as long as they are identical
+>
+> Yes, the scaler is kind of a dummy entity , but it's required by the
+> media controller validation of the pipeline.
+>
 
->> +     */
->> +    mdelay(HISI_PTT_RESET_WAIT_MS);
->> +
->> +    val = readl(hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
->> +    val &= ~HISI_PTT_TRACE_CTRL_RST;
->> +    writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
->> +
->> +    /* Clear the interrupt status */
->> +    writel(HISI_PTT_TRACE_INT_STAT_MASK, hisi_ptt->iobase + HISI_PTT_TRACE_INT_STAT);
->> +    writel(0, hisi_ptt->iobase + HISI_PTT_TRACE_INT_MASK);
->> +
->> +    /* Configure the trace DMA buffer */
->> +    list_for_each_entry(cur, &ctrl->trace_buf, list) {
->> +        writel(lower_32_bits(cur->dma),
->> +               hisi_ptt->iobase + HISI_PTT_TRACE_ADDR_BASE_LO_0 +
->> +               cur->index * HISI_PTT_TRACE_ADDR_STRIDE);
->> +        writel(upper_32_bits(cur->dma),
->> +               hisi_ptt->iobase + HISI_PTT_TRACE_ADDR_BASE_HI_0 +
->> +               cur->index * HISI_PTT_TRACE_ADDR_STRIDE);
->> +    }
->> +    writel(ctrl->buffer_size, hisi_ptt->iobase + HISI_PTT_TRACE_ADDR_SIZE);
->> +
->> +    /* Set the trace control register */
->> +    val = FIELD_PREP(HISI_PTT_TRACE_CTRL_TYPE_SEL, ctrl->type);
->> +    val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_RXTX_SEL, ctrl->direction);
->> +    val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_DATA_FORMAT, ctrl->format);
->> +    val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_TARGET_SEL, hisi_ptt->trace_ctrl.filter);
->> +    if (!hisi_ptt->trace_ctrl.is_port)
->> +        val |= HISI_PTT_TRACE_CTRL_FILTER_MODE;
->> +
->> +    /* Start the Trace */
->> +    val |= HISI_PTT_TRACE_CTRL_EN;
->> +    writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
->> +
->> +    ctrl->status = HISI_PTT_TRACE_STATUS_ON;
->> +
->> +    return 0;
->> +}
->> +
->> +static irqreturn_t hisi_ptt_isr(int irq, void *context)
->> +{
->> +    struct hisi_ptt *hisi_ptt = context;
->> +    u32 status;
->> +
->> +    status = readl(hisi_ptt->iobase + HISI_PTT_TRACE_INT_STAT);
->> +
->> +    /* Clear the interrupt status of buffer @buf_idx */
->> +    writel(status, hisi_ptt->iobase + HISI_PTT_TRACE_INT_STAT);
->> +
->> +    return IRQ_HANDLED;
->> +}
->> +
->> +static irqreturn_t hisi_ptt_irq(int irq, void *context)
->> +{
->> +    struct hisi_ptt *hisi_ptt = context;
->> +    u32 status;
->> +
->> +    status = readl(hisi_ptt->iobase + HISI_PTT_TRACE_INT_STAT);
->> +    if (!(status & HISI_PTT_TRACE_INT_STAT_MASK))
->> +        return IRQ_NONE;
->> +
->> +    return IRQ_WAKE_THREAD;
-> 
-> Adding empty handler like this is not helpful. And from checking the later code, the threaded part does nothing special, i.e nothing time consuming, so I don't know why everything cannot be done in the hard part for simplicity
-> 
+More on this later
 
-In the following patch we're copying and committing data to the AUX buffer so we need a threaded part here. For this
-patch just adding the stub here. Maybe I can add some comments to mention it ?
+> >
+> >> +
+> >> +     if (!fmt)
+> >> +             fmt = &isc->formats_list[0];
+> >> +
+> >> +     req_fmt->format.code = fmt->mbus_code;
+> >> +
+> >> +     if (req_fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+> >> +             v4l2_try_fmt = v4l2_subdev_get_try_format(sd, sd_state,
+> >> +                                                       req_fmt->pad);
+> >> +             *v4l2_try_fmt = req_fmt->format;
+> >> +             /* Trying on the pad sink makes the source sink change too */
+> >> +             if (req_fmt->pad == ISC_SCALER_PAD_SINK) {
+> >> +                     v4l2_try_fmt =
+> >> +                             v4l2_subdev_get_try_format(sd, sd_state,
+> >> +                                                        ISC_SCALER_PAD_SOURCE);
+> >> +                     *v4l2_try_fmt = req_fmt->format;
+> >> +
+> >> +                     v4l_bound_align_image(&v4l2_try_fmt->width,
+> >> +                                           16, isc->max_width, 0,
+> >> +                                           &v4l2_try_fmt->height,
+> >> +                                           16, isc->max_height, 0, 0);
+> >> +             }
+> >> +             /* if we are just trying, we are done */
+> >> +             return 0;
+> >> +     }
+> >> +
+> >> +     isc->scaler_format = req_fmt->format;
+> >
+> > No per-pad format but a global scaler_format ? How do you configure scaling ?
+> >
+> > Actually, I would like to know more about the scaler device
+> > capabilities. What functions can this IP perform ? Does it do
+> > cropping, can it also do (down)scaling or even composition ?
+> >
+> > I think it is worth to read
+> > https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/dev-subdev.html#v4l2-subdev-selections
+> > where it is reported how cropping and scaling are implemented by using
+> > the selection API.
+> >
+> > Figure 4.5 is particularly helpful to explain the simple crop case,
+> > for which you need to implement support to by adding s_selection on
+> > the sink pad TGT_CROP target.
+>
+> The scaler is kind of a dummy entity.
+> The problem is that different subdevices cannot be connected directly to
+> a v4l entity, because the ISC does cropping on the incoming frame.
+> The ISC has a limit on the total number of pixels per frame, thus it
+> will do a crop.
 
->> +}
->> +
->> +static void hisi_ptt_irq_free_vectors(void *pdev)
->> +{
->> +    pci_free_irq_vectors(pdev);
->> +}
->> +
->> +static int hisi_ptt_register_irq(struct hisi_ptt *hisi_ptt)
->> +{
->> +    struct pci_dev *pdev = hisi_ptt->pdev;
->> +    int ret;
->> +
->> +    ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSI);
->> +    if (ret < 0) {
->> +        pci_err(pdev, "failed to allocate irq vector, ret = %d.\n", ret);
->> +        return ret;
->> +    }
->> +
->> +    ret = devm_add_action_or_reset(&pdev->dev, hisi_ptt_irq_free_vectors, pdev);
->> +    if (ret < 0)
->> +        return ret;
->> +
->> +    ret = devm_request_threaded_irq(&pdev->dev,
->> +                    pci_irq_vector(pdev, HISI_PTT_TRACE_DMA_IRQ),
->> +                    hisi_ptt_irq, hisi_ptt_isr, 0,
->> +                    "hisi-ptt", hisi_ptt);
->> +    if (ret) {
->> +        pci_err(pdev, "failed to request irq %d, ret = %d.\n",
->> +            pci_irq_vector(pdev, HISI_PTT_TRACE_DMA_IRQ), ret);
->> +        return ret;
->> +    }
->> +
->> +    return 0;
->> +}
->> +
->> +static int hisi_ptt_init_filters(struct pci_dev *pdev, void *data)
->> +{
->> +    struct hisi_ptt_filter_desc *filter;
->> +    struct hisi_ptt *hisi_ptt = data;
->> +    struct list_head *target_list;
->> +
->> +    target_list = pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ?
->> +              &hisi_ptt->port_filters : &hisi_ptt->req_filters;
->> +
->> +    filter = kzalloc(sizeof(*filter), GFP_KERNEL);
->> +    if (!filter)
->> +        return -ENOMEM;
->> +
->> +    filter->pdev = pdev;
->> +    filter->val = hisi_ptt_get_filter_val(pdev);
-> 
-> why do you need to store this also? if you're storing pdev, you seem to be able to directly get hisi_ptt_get_filter_val() for it
-> 
+What is this limit related to ? I don't know the ISC internals, but is
+the limitation due to the overall image size, or maybe it's due to
+some line buffers being limited in the size they can transfer to
+memory ? Is it a limitation on the size of the image in pixels, or is
+it due to a limitation of the processing bandwidth on the input
+interface and thus depends on the actual size of the image in bytes ?
 
-checked the used places and I think it canbe dropped. thanks.
+> So, if I allow e.g. an entity that sends 3280x2464 , when the ISC can
+> only handle 3264x2464 , then we have two choices:
+> 1/ crop it and output the 3264x2464 -> cannot, because userspace expects
+> 3280x2464, and the whole pipeline fails to configure, there is a
+> mismatch between /dev/video output and what the whole pipeline produces
 
->> +    list_add_tail(&filter->list, target_list);
->> +
->> +    /* Update the available port mask */
->> +    if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT)
->> +        hisi_ptt->port_mask |= filter->val;
->> +
->> +    return 0;
->> +}
->> +
-[...]
->> +/*
->> + * The DMA of PTT trace can only use direct mapping, due to some
->> + * hardware restriction. Check whether there is an iommu or the
->> + * policy of the iommu domain is passthrough, otherwise the trace
->> + * cannot work.
->> + */
->> +static int hisi_ptt_check_iommu_mapping(struct hisi_ptt *hisi_ptt)
->> +{
->> +    struct pci_dev *pdev = hisi_ptt->pdev;
->> +    struct iommu_domain *iommu_domain;
->> +
->> +    iommu_domain = iommu_get_domain_for_dev(&pdev->dev);
->> +    if (!iommu_domain || iommu_domain->type == IOMMU_DOMAIN_IDENTITY)
->> +        return 0;
-> 
-> so what stops us changing the domain type later?
-> 
+I'm confused in first place. If the ISC cannot output anything larger
+than 3264x2464, then if userspace sets a 3280x2464 size on the ISC,
+this should be adjusted to 3264x2464.
 
-sorry but I don't think I got the point.
+Or is the ISC limitation on the -input- side ?
 
->> +
->> +    return -EOPNOTSUPP;
->> +}
->> +
->> +static int hisi_ptt_probe(struct pci_dev *pdev,
->> +              const struct pci_device_id *id)
->> +{
->> +    struct hisi_ptt *hisi_ptt;
->> +    int ret;
->> +
->> +    hisi_ptt = devm_kzalloc(&pdev->dev, sizeof(*hisi_ptt), GFP_KERNEL);
->> +    if (!hisi_ptt)
->> +        return -ENOMEM;
->> +
->> +    mutex_init(&hisi_ptt->mutex);
->> +    hisi_ptt->pdev = pdev;
->> +
->> +    /*
->> +     * Lifetime of pci_dev is longer than hisi_ptt,
->> +     * so directly reference to the pci name string.
->> +     */
->> +    hisi_ptt->name = pci_name(hisi_ptt->pdev);
->> +    pci_set_drvdata(pdev, hisi_ptt);
->> +
->> +    ret = pcim_enable_device(pdev);
->> +    if (ret) {
->> +        pci_err(pdev, "failed to enable device, ret = %d.\n", ret);
->> +        return ret;
->> +    }
->> +
->> +    ret = pcim_iomap_regions(pdev, BIT(2), hisi_ptt->name);
->> +    if (ret) {
->> +        pci_err(pdev, "failed to remap io memory, ret = %d.\n", ret);
->> +        return ret;
->> +    }
->> +
->> +    hisi_ptt->iobase = pcim_iomap_table(pdev)[2];
->> +
->> +    ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
->> +    if (ret) {
->> +        pci_err(pdev, "failed to set 64 bit dma mask, ret = %d.\n", ret);
->> +        return ret;
->> +    }
->> +    pci_set_master(pdev);
->> +
->> +    ret = hisi_ptt_register_irq(hisi_ptt);
->> +    if (ret)
->> +        return ret;
->> +
->> +    hisi_ptt_init_ctrls(hisi_ptt);
->> +
->> +    ret = hisi_ptt_check_iommu_mapping(hisi_ptt);
-> 
-> surely this should be done earlier in the probe
-> 
+> 2/ deny the link, and ask the subdevice to produce the 3264x2464 which
+> the ISC can handle at most -> cannot , because the sensor let's say can
+> *only* produce 3280x2464 and *any* other frame size returns an error.
 
-yes it's a good point. will make it earlier.
+buggy sensor I would say :)
 
->> +    if (ret) {
->> +        pci_err(pdev, "cannot work with non-direct DMA mapping.\n");
->> +        return ret;
->> +    }
->> +
->> +    return 0;
->> +}
->> +
-[...]
->> +/**
->> + * struct hisi_ptt - per PTT device data
->> + * @trace_ctrl:   the control information of PTT trace
->> + * @iobase:       base IO address of the device
->> + * @pdev:         pci_dev of this PTT device
->> + * @mutex:        mutex to protect the filter list and serialize the perf process.
->> + * @name:         name of the PTT device
->> + * @core_id:      PCIe core ID this PTT device locates
-> 
-> please don't put stuff in the common control struct which can be worked out on the fly. This is set in one function and then read in a callee.
-> 
+>
+> The only solution to make both worlds happy, is to have a dummy entity
+> called 'scaler' which in fact now it only performs a simple crop.
+> It accepts any frame size at input (hence the 10000x10000 which you saw
+> earlier), and outputs at most 3264x2464 the isc_max_height and
+> isc_max_width.
 
-ok. will remove this.
+I have a maybe dumb question: can the cropping operation be modeled
+by applying a TGT_CROP rectangle (whose _BOUND size is 3280x2464) to
+the atmel_isc_common entity sink pad and avoid the scaler completely ?
 
-Thanks,
-Yicong
+>
+> So to answer your question, the isc scaler is a software model for a
+> simple cropping, that would make media controller happy, and capture
+> software happy.
+>
+> Here it how it looks :
+>
+> Device topology
+> - entity 1: atmel_isc_scaler (2 pads, 2 links)
+>              type V4L2 subdev subtype Unknown flags 0
+>              device node name /dev/v4l-subdev0
+>          pad0: Sink
+>                  [fmt:SRGGB10_1X10/3280x2464 field:none colorspace:srgb
+>                   crop.bounds:(0,0)/3264x2464
+>                   crop:(0,0)/3264x2464]
+>                  <- "csi2dc":1 [ENABLED,IMMUTABLE]
+>          pad1: Source
+>                  [fmt:SRGGB10_1X10/3280x2464 field:none colorspace:srgb]
+>                  -> "atmel_isc_common":0 [ENABLED,IMMUTABLE]
+>
+> - entity 4: csi2dc (2 pads, 2 links)
+>              type V4L2 subdev subtype Unknown flags 0
+>              device node name /dev/v4l-subdev1
+>          pad0: Sink
+>                  [fmt:SRGGB10_1X10/3280x2464 field:none colorspace:srgb]
+>                  <- "dw-csi.0":1 [ENABLED]
+>          pad1: Source
+>                  [fmt:SRGGB10_1X10/3280x2464 field:none colorspace:srgb]
+>                  -> "atmel_isc_scaler":0 [ENABLED,IMMUTABLE]
+>
+> - entity 7: dw-csi.0 (2 pads, 2 links)
+>              type V4L2 subdev subtype Unknown flags 0
+>              device node name /dev/v4l-subdev2
+>          pad0: Sink
+>                  [fmt:SRGGB10_1X10/3280x2464]
+>                  <- "imx219 1-0010":0 [ENABLED]
+>          pad1: Source
+>                  [fmt:SRGGB10_1X10/3280x2464]
+>                  -> "csi2dc":0 [ENABLED]
+>
+> - entity 12: imx219 1-0010 (1 pad, 1 link)
+>               type V4L2 subdev subtype Sensor flags 0
+>               device node name /dev/v4l-subdev3
+>          pad0: Source
+>                  [fmt:SRGGB10_1X10/3280x2464 field:none colorspace:srgb
+> xfer:srgb ycbcr:601 quantization:full-range
+>                   crop.bounds:(8,8)/3280x2464
+>                   crop:(8,8)/3280x2464]
+>                  -> "dw-csi.0":0 [ENABLED]
+>
+> - entity 24: atmel_isc_common (1 pad, 1 link)
+>               type Node subtype V4L flags 1
+>               device node name /dev/video0
+>          pad0: Sink
+>                  <- "atmel_isc_scaler":1 [ENABLED,IMMUTABLE]
+>
+>
+> Scaler does this one cute little thing :
+>
+>    	pad0: Sink
+>                  [fmt:SRGGB10_1X10/3280x2464 field:none colorspace:srgb
+>                   crop.bounds:(0,0)/3264x2464
+>                   crop:(0,0)/3264x2464]
+>                  <- "csi2dc":1 [ENABLED,IMMUTABLE]
+>          pad1: Source
+>                  [fmt:SRGGB10_1X10/3280x2464 field:none colorspace:srgb]
 
->> + * @sicl_id:      SICL ID this PTT device locates
->> + * @upper:        the upper BDF range of the PCI devices managed by this PTT device
->> + * @lower:        the lower BDF range of the PCI devices managed by this PTT device
->> + * @port_filters: the filter list of root ports
->> + * @req_filters:  the filter list of requester ID
->> + * @port_mask:    port mask of the managed root ports
->> + */
->> +struct hisi_ptt {
->> +    struct hisi_ptt_trace_ctrl trace_ctrl;
->> +    void __iomem *iobase;
->> +    struct pci_dev *pdev;
->> +    struct mutex mutex;
->> +    const char *name;
->> +    u16 core_id;
->> +    u16 sicl_id;
->> +    u32 upper;
->> +    u32 lower;
->> +
->> +    /*
->> +     * The trace TLP headers can either be filtered by certain
->> +     * root port, or by the requester ID. Organize the filters
->> +     * by @port_filters and @req_filters here. The mask of all
->> +     * the valid ports is also cached for doing sanity check
->> +     * of user input.
->> +     */
->> +    struct list_head port_filters;
->> +    struct list_head req_filters;
->> +    u16 port_mask;
->> +};
->> +
->> +#endif /* _HISI_PTT_H */
-> 
-> .
+Shouldn't this be 3264x2464 as that's what the entity outputs after
+the cropping ? And shouldn't then be 3264x2464 the size output from
+the video device too ?
+
+
+>                  -> "atmel_isc_common":0 [ENABLED,IMMUTABLE]
+>
+>
+> Which is what we needed.
+>
+> >
+> >> +
+> >> +     return 0;
+> >> +}
+> >> +
+> >> +static int isc_scaler_enum_mbus_code(struct v4l2_subdev *sd,
+> >> +                                  struct v4l2_subdev_state *sd_state,
+> >> +                                  struct v4l2_subdev_mbus_code_enum *code)
+> >> +{
+> >> +     struct isc_device *isc = container_of(sd, struct isc_device, scaler_sd);
+> >> +     int supported_index = 0;
+> >> +     int i;
+> >> +
+> >> +     for (i = 0; i < isc->formats_list_size; i++) {
+> >> +             if (!isc->formats_list[i].sd_support)
+> >> +                     continue;
+> >
+> > The sd_support flag still doesn't click in my head.
+> >
+> > Shouldn't the enumeration of available formats on the scaler do not
+> > depend on the sensor supproted formats ?
+>
+> You're right. I will have to check it again.
+>
+> >
+> >> +             if (supported_index == code->index) {
+> >> +                     code->code = isc->formats_list[i].mbus_code;
+> >> +                     return 0;
+> >> +             }
+> >> +             supported_index++;
+> >> +     }
+> >> +
+> >> +     return -EINVAL;
+> >> +}
+> >> +
+> >> +static int isc_scaler_g_sel(struct v4l2_subdev *sd,
+> >> +                         struct v4l2_subdev_state *sd_state,
+> >> +                         struct v4l2_subdev_selection *sel)
+> >> +{
+> >> +     struct isc_device *isc = container_of(sd, struct isc_device, scaler_sd);
+> >> +
+> >> +     if (sel->pad == ISC_SCALER_PAD_SOURCE)
+> >> +             return -EINVAL;
+> >> +
+> >> +     if (sel->target != V4L2_SEL_TGT_CROP_BOUNDS &&
+> >> +         sel->target != V4L2_SEL_TGT_CROP)
+> >> +             return -EINVAL;
+> >> +
+> >> +     sel->r.height = isc->max_height;
+> >> +     sel->r.width = isc->max_width;
+> >
+> > The CROP_BOUNDS should be set to the same size as the sink pad image format,
+> > as it represents the maximum valid crop rectangle.
+> >
+> > TGT_CROP should report the configured crop rectangle which can be
+> > intiialized to the same size as CROP_BOUNDS, if my understanding of
+> > the spec is correct
+>
+> So you would like to have this differentiated, and report the
+> CROP_BOUNDS to whatever is on the sink pad, and the TGT_CROP to what is
+> reported now, the maximum size of the ISC frame .
+> My understanding is correct ?
+>
+
+I didn't know you have an HW limitation, so your _BOUNDS is not the
+input image size but rather 3264x2464 ( == max_width x max_height).
+
+What I meant is that _BOUNDS should report the maximum rectangle size
+that can be applied to the _CROP target. In you case you have an HW
+limitation 3264x2464 and that's the largest rectangle you can apply.
+TGT_CROP can be initialized to the same as _BOUND, but if you
+implement s_selection it should report what has been there applied.
+But as you don't implement s_selection yet, I think this is fine for
+now. Maybe a little comment ?
+
+Also, is set->r zeroed by the framework before getting here ?
+Otherwise you should set r.left and r.top to 0
+
+> >
+> >> +
+> >> +     sel->r.left = 0;
+> >> +     sel->r.top = 0;
+> >> +
+> >> +     return 0;
+> >> +}
+> >> +
+> >> +static int isc_scaler_init_cfg(struct v4l2_subdev *sd,
+> >> +                            struct v4l2_subdev_state *sd_state)
+> >> +{
+> >> +     struct v4l2_mbus_framefmt *v4l2_try_fmt =
+> >> +             v4l2_subdev_get_try_format(sd, sd_state, 0);
+> >> +     struct isc_device *isc = container_of(sd, struct isc_device, scaler_sd);
+> >> +
+> >> +     *v4l2_try_fmt = isc->scaler_format;
+> >> +
+> >> +     return 0;
+> >> +}
+> >> +
+> >> +static const struct v4l2_subdev_pad_ops isc_scaler_pad_ops = {
+> >> +     .enum_mbus_code = isc_scaler_enum_mbus_code,
+> >> +     .set_fmt = isc_scaler_set_fmt,
+> >> +     .get_fmt = isc_scaler_get_fmt,
+> >> +     .get_selection = isc_scaler_g_sel,
+> >> +     .init_cfg = isc_scaler_init_cfg,
+> >
+> > .link_validate = v4l2_subdev_link_validate_default,
+> >
+> > To have the formats at the end of links that point to this entity
+> > validated (I think the framework already calls it if not set though,
+> > please check v4l2-subdev.c:v4l2_subdev_link_validate())
+> >
+> >> +};
+> >> +
+> >> +static const struct v4l2_subdev_ops xisc_scaler_subdev_ops = {
+> >> +     .pad = &isc_scaler_pad_ops,
+> >> +};
+> >> +
+> >> +int isc_scaler_init(struct isc_device *isc)
+> >> +{
+> >> +     int ret;
+> >> +
+> >> +     v4l2_subdev_init(&isc->scaler_sd, &xisc_scaler_subdev_ops);
+> >> +
+> >> +     isc->scaler_sd.owner = THIS_MODULE;
+> >> +     isc->scaler_sd.dev = isc->dev;
+> >> +     snprintf(isc->scaler_sd.name, sizeof(isc->scaler_sd.name),
+> >> +              "atmel_isc_scaler");
+> >
+> > I would drop 'atmel' for brevity, unless other entities have this
+> > prefix set already
+>
+> The v4l entity takes it's name from the module name, which is
+> atmel_isc_common, so I thought to keep the prefix
+>
+
+Ack!
+
+> >
+> >> +
+> >> +     isc->scaler_sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
+> >> +     isc->scaler_sd.entity.function = MEDIA_ENT_F_PROC_VIDEO_SCALER;
+> >> +     isc->scaler_pads[ISC_SCALER_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
+> >> +     isc->scaler_pads[ISC_SCALER_PAD_SOURCE].flags = MEDIA_PAD_FL_SOURCE;
+> >> +
+> >> +     isc->scaler_format.height = isc->max_height;
+> >> +     isc->scaler_format.width = isc->max_width;
+> >> +     isc->scaler_format.code = isc->formats_list[0].mbus_code;
+> >> +     isc->scaler_format.colorspace = V4L2_COLORSPACE_SRGB;
+> >> +     isc->scaler_format.field = V4L2_FIELD_NONE;
+> >> +     isc->scaler_format.ycbcr_enc = V4L2_YCBCR_ENC_DEFAULT;
+> >> +     isc->scaler_format.quantization = V4L2_QUANTIZATION_DEFAULT;
+> >> +     isc->scaler_format.xfer_func = V4L2_XFER_FUNC_DEFAULT;
+> >> +
+> >> +     ret = media_entity_pads_init(&isc->scaler_sd.entity,
+> >> +                                  ISC_SCALER_PADS_NUM,
+> >> +                                  isc->scaler_pads);
+> >> +     if (ret < 0) {
+> >> +             dev_err(isc->dev, "scaler sd media entity init failed\n");
+> >> +             return ret;
+> >> +     }
+> >> +     ret = v4l2_device_register_subdev(&isc->v4l2_dev, &isc->scaler_sd);
+> >> +     if (ret < 0) {
+> >> +             dev_err(isc->dev, "scaler sd failed to register subdev\n");
+> >> +             return ret;
+> >> +     }
+> >> +
+> >> +     return ret;
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(isc_scaler_init);
+> >> +
+> >> +int isc_scaler_link(struct isc_device *isc)
+> >> +{
+> >> +     int ret;
+> >> +
+> >> +     ret = media_create_pad_link(&isc->current_subdev->sd->entity,
+> >> +                                 isc->remote_pad, &isc->scaler_sd.entity,
+> >> +                                 ISC_SCALER_PAD_SINK,
+> >> +                                 MEDIA_LNK_FL_ENABLED |
+> >> +                                 MEDIA_LNK_FL_IMMUTABLE);
+> >> +
+> >> +     if (ret < 0) {
+> >> +             v4l2_err(&isc->v4l2_dev,
+> >> +                      "Failed to create pad link: %s to %s\n",
+> >> +                      isc->current_subdev->sd->entity.name,
+> >> +                      isc->scaler_sd.entity.name);
+> >> +             return ret;
+> >> +     }
+> >> +
+> >> +     dev_dbg(isc->dev, "link with %s pad: %d\n",
+> >> +             isc->current_subdev->sd->name, isc->remote_pad);
+> >> +
+> >> +     ret = media_create_pad_link(&isc->scaler_sd.entity,
+> >> +                                 ISC_SCALER_PAD_SOURCE,
+> >> +                                 &isc->video_dev.entity, ISC_PAD_SINK,
+> >> +                                 MEDIA_LNK_FL_ENABLED |
+> >> +                                 MEDIA_LNK_FL_IMMUTABLE);
+> >> +
+> >> +     if (ret < 0) {
+> >> +             v4l2_err(&isc->v4l2_dev,
+> >> +                      "Failed to create pad link: %s to %s\n",
+> >> +                      isc->scaler_sd.entity.name,
+> >> +                      isc->video_dev.entity.name);
+> >> +             return ret;
+> >> +     }
+> >> +
+> >> +     dev_dbg(isc->dev, "link with %s pad: %d\n", isc->scaler_sd.name,
+> >> +             ISC_SCALER_PAD_SOURCE);
+> >> +
+> >> +     return ret;
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(isc_scaler_link);
+> >
+> >  From the DT graph point of view, the ISC appears as a single block
+> > with an CSI-2 input port. It is then in charge of parsing the .dts and
+> > add to its notifier the image sensor remote subdevice.
+>
+> Actually it's only a parallel port.
+> And it can be connected either to a sensor directly or to the csi2dc
+> bridge. (the csi2dc bridge can be connected to a CSI-2 receiver)
+>
+> >
+> > When the sensor subdev registers and the ISC notifier completes, the scaler
+> > entity which was initialized at isc_probe() time is linked in between
+> > the ISC and the image sensor immutably.
+>
+> yes, because this cannot change at runtime, and usually, it can't change
+> without altering the board hardware. (at least this is what my
+> understanding of immutability is )
+>
+> >
+> > I think it is fine for now, but I wonder if you plan to plumb more
+> > components between the ISC video node and the sensor, if it's not
+> > worth changing the DT bindings and their parsing logic to separate the
+> > CSI-2 receiver from the ISC, whcih can create its media graph at probe
+> > time and have the CSI-2 receiver entity as downstream remote. I think
+> > I need to get to know the ISC better to really have an idea. For now,
+> > this seems ok to me, but please check with maintainers if this is fine
+> > with them.
+>
+> In the XISC case (sama7g5-isc), the csi2dc receiver is the subdev (so,
+> the remote subdev).
+> The ISC will register a scaler, and connect the subdev to this scaler
+> first, and then, the scaler to the isc itself (the v4l entity).
+>
+> >
+> >> +
+> >> diff --git a/drivers/media/platform/atmel/atmel-isc.h b/drivers/media/platform/atmel/atmel-isc.h
+> >> index 5fbf52a9080b..c9234c90ae58 100644
+> >> --- a/drivers/media/platform/atmel/atmel-isc.h
+> >> +++ b/drivers/media/platform/atmel/atmel-isc.h
+> >> @@ -183,6 +183,17 @@ struct isc_reg_offsets {
+> >>        u32 his_entry;
+> >>   };
+> >>
+> >> +enum isc_mc_pads {
+> >> +     ISC_PAD_SINK    = 0,
+> >> +     ISC_PADS_NUM    = 1,
+> >> +};
+> >> +
+> >> +enum isc_scaler_pads {
+> >> +     ISC_SCALER_PAD_SINK     = 0,
+> >> +     ISC_SCALER_PAD_SOURCE   = 1,
+> >> +     ISC_SCALER_PADS_NUM     = 2,
+> >> +};
+> >> +
+> >>   /*
+> >>    * struct isc_device - ISC device driver data/config struct
+> >>    * @regmap:          Register map
+> >> @@ -257,6 +268,12 @@ struct isc_reg_offsets {
+> >>    *                   be used as an input to the controller
+> >>    * @controller_formats_size: size of controller_formats array
+> >>    * @formats_list_size:       size of formats_list array
+> >> + * @pads:            media controller pads for isc video entity
+> >> + * @mdev:            media device that is registered by the isc
+> >> + * @remote_pad:              remote pad on the connected subdevice
+> >> + * @scaler_sd:               subdevice for the scaler that isc registers
+> >> + * @scaler_pads:     media controller pads for the scaler subdevice
+> >> + * @scaler_format:   current format for the scaler subdevice
+> >>    */
+> >>   struct isc_device {
+> >>        struct regmap           *regmap;
+> >> @@ -344,6 +361,19 @@ struct isc_device {
+> >>        struct isc_format               *formats_list;
+> >>        u32                             controller_formats_size;
+> >>        u32                             formats_list_size;
+> >> +
+> >> +     struct {
+> >> +             struct media_pad                pads[ISC_PADS_NUM];
+> >> +             struct media_device             mdev;
+> >> +
+> >> +             u32                             remote_pad;
+> >> +     };
+> >> +
+> >> +     struct {
+> >> +             struct v4l2_subdev              scaler_sd;
+> >> +             struct media_pad                scaler_pads[ISC_SCALER_PADS_NUM];
+> >> +             struct v4l2_mbus_framefmt       scaler_format;
+>
+> Here are the scaler stuff which I added, in the same bulk struct for the
+> whole isc device
+>
+>
+> >> +     };
+> >>   };
+> >>
+> >>   extern const struct regmap_config isc_regmap_config;
+> >> @@ -355,4 +385,11 @@ int isc_clk_init(struct isc_device *isc);
+> >>   void isc_subdev_cleanup(struct isc_device *isc);
+> >>   void isc_clk_cleanup(struct isc_device *isc);
+> >>
+> >> +int isc_scaler_link(struct isc_device *isc);
+> >> +int isc_scaler_init(struct isc_device *isc);
+> >> +int isc_mc_init(struct isc_device *isc, u32 ver);
+> >> +void isc_mc_cleanup(struct isc_device *isc);
+> >> +
+> >> +struct isc_format *isc_find_format_by_code(struct isc_device *isc,
+> >> +                                        unsigned int code, int *index);
+> >>   #endif
+> >> diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
+> >> index c5b9563e36cb..c244682ea22f 100644
+> >> --- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
+> >> +++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
+> >> @@ -553,6 +553,12 @@ static int atmel_isc_probe(struct platform_device *pdev)
+> >>                        break;
+> >>        }
+> >>
+> >> +     regmap_read(isc->regmap, ISC_VERSION + isc->offsets.version, &ver);
+> >
+> > I am surprised you can read a register before runtime_pm is
+> > intialized!
+> >
+>
+> Actually I can read any register after the moment of starting the clock
+> on the hardware block.
+
+Ah right then
+
+> Maybe the starting and stopping of the clock needs to be moved to the
+> runtime_pm calls, but this is another story, not related to the media
+> controller.
+
+It's fine, but maybe worth recording with a todo ?
+
+Thanks
+  j
+
+> I moved this line because I had to pass the version to the isc_mc_init call
+>
+> > Thanks
+> >     j
+>
+> Thanks for reviewing !
+> Eugen
+> >
+> >
+> >> +
+> >> +     ret = isc_mc_init(isc, ver);
+> >> +     if (ret < 0)
+> >> +             goto isc_probe_mc_init_err;
+> >> +
+> >>        pm_runtime_set_active(dev);
+> >>        pm_runtime_enable(dev);
+> >>        pm_request_idle(dev);
+> >> @@ -562,7 +568,7 @@ static int atmel_isc_probe(struct platform_device *pdev)
+> >>        ret = clk_prepare_enable(isc->ispck);
+> >>        if (ret) {
+> >>                dev_err(dev, "failed to enable ispck: %d\n", ret);
+> >> -             goto cleanup_subdev;
+> >> +             goto isc_probe_mc_init_err;
+> >>        }
+> >>
+> >>        /* ispck should be greater or equal to hclock */
+> >> @@ -572,7 +578,6 @@ static int atmel_isc_probe(struct platform_device *pdev)
+> >>                goto unprepare_clk;
+> >>        }
+> >>
+> >> -     regmap_read(isc->regmap, ISC_VERSION + isc->offsets.version, &ver);
+> >>        dev_info(dev, "Microchip ISC version %x\n", ver);
+> >>
+> >>        return 0;
+> >> @@ -580,6 +585,9 @@ static int atmel_isc_probe(struct platform_device *pdev)
+> >>   unprepare_clk:
+> >>        clk_disable_unprepare(isc->ispck);
+> >>
+> >> +isc_probe_mc_init_err:
+> >> +     isc_mc_cleanup(isc);
+> >> +
+> >>   cleanup_subdev:
+> >>        isc_subdev_cleanup(isc);
+> >>
+> >> @@ -600,6 +608,8 @@ static int atmel_isc_remove(struct platform_device *pdev)
+> >>
+> >>        pm_runtime_disable(&pdev->dev);
+> >>
+> >> +     isc_mc_cleanup(isc);
+> >> +
+> >>        isc_subdev_cleanup(isc);
+> >>
+> >>        v4l2_device_unregister(&isc->v4l2_dev);
+> >> diff --git a/drivers/media/platform/atmel/atmel-sama7g5-isc.c b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
+> >> index 07a80b08bc54..9dc75eed0098 100644
+> >> --- a/drivers/media/platform/atmel/atmel-sama7g5-isc.c
+> >> +++ b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
+> >> @@ -547,15 +547,23 @@ static int microchip_xisc_probe(struct platform_device *pdev)
+> >>                        break;
+> >>        }
+> >>
+> >> +     regmap_read(isc->regmap, ISC_VERSION + isc->offsets.version, &ver);
+> >> +
+> >> +     ret = isc_mc_init(isc, ver);
+> >> +     if (ret < 0)
+> >> +             goto isc_probe_mc_init_err;
+> >> +
+> >>        pm_runtime_set_active(dev);
+> >>        pm_runtime_enable(dev);
+> >>        pm_request_idle(dev);
+> >>
+> >> -     regmap_read(isc->regmap, ISC_VERSION + isc->offsets.version, &ver);
+> >>        dev_info(dev, "Microchip XISC version %x\n", ver);
+> >>
+> >>        return 0;
+> >>
+> >> +isc_probe_mc_init_err:
+> >> +     isc_mc_cleanup(isc);
+> >> +
+> >>   cleanup_subdev:
+> >>        isc_subdev_cleanup(isc);
+> >>
+> >> @@ -576,6 +584,8 @@ static int microchip_xisc_remove(struct platform_device *pdev)
+> >>
+> >>        pm_runtime_disable(&pdev->dev);
+> >>
+> >> +     isc_mc_cleanup(isc);
+> >> +
+> >>        isc_subdev_cleanup(isc);
+> >>
+> >>        v4l2_device_unregister(&isc->v4l2_dev);
+> >> --
+> >> 2.25.1
+> >>
+>
