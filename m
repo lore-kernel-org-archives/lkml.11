@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2866EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC5CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242212AbiBHBJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:09:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59314 "EHLO
+        id S242284AbiBHBJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:09:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344146AbiBHAqM (ORCPT
+        with ESMTP id S1344145AbiBHAqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Feb 2022 19:46:12 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923FAC043180;
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB19C061355;
         Mon,  7 Feb 2022 16:46:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1644281171; x=1675817171;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=DUQT7lI+0rw2ZoYCPItT9ZLNjMuzptc/VA6Q6/bUMr0=;
-  b=HMZlT6aBD0B5BJrHgAFOgzGhnN2KRSRKQ1jiuLh2rUmEgffx7vdxc84l
-   J3rMF9agilwVZ9bUE8Ye8Sp7gnrMLf+Vkx0y4pSdQ4zhi5+mQUL51pLXl
-   xnMY0X+QoI7k1h1y6oSgYqlCEZTC0E3KhFa9UiQdP+2CIHBV1Xl0CqSmK
-   DTX5udYAaOPIxOjjM7EykdNURVwJZcjG7Q+ePVS7jYrxwDttkpY4tvWwB
-   ATMXytcMXLKKjg9fpJzJuLRfHCTJXKObxymKBMloalpfEgaATKPKJlZX6
-   dOxdEFT9lEfE04a9yTLrtIocE1nAo5y7i6PXsvJXlvwSnGlZTb3qMZW7n
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="249050723"
+  bh=k4hx/Ud/sdDS2pZSrHiW08bbdXJjTQrEHO82BjFrkss=;
+  b=LZj5GX0t2jw0f61o3wgXTsjSHc173A4WccB2vvQg2M0SEsTztiPForKq
+   8MAliPBaSkyuNv8qV1R/xvSdpQ/sRKvKbfa1TYcqxxw43sMygboXtVKz/
+   0ksVBFULZ9dVn8G/iAqx1vUiQW6FCRKnXVc7NFAev5CxswYXtJLNUmshi
+   LLlaTxN4ejICKG6MiY1UypYFwW7uYUKTXpmMOuAY19EBWJIqg5jiiPbyX
+   ULBQV8/WiyHTrJBbX6ux4ZnBuchayL7DJeCHnT4r/ZoTv3NabUXa8MWvF
+   fTYKNPjrxlnkbOWIjorwm3ZoZkFLcf748UJXgjGjF7iFXzkhZ4o6vtipg
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="232407931"
 X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="249050723"
+   d="scan'208";a="232407931"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:09 -0800
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:08 -0800
 X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="499389548"
+   d="scan'208";a="499389468"
 Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:09 -0800
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:08 -0800
 From:   Reinette Chatre <reinette.chatre@intel.com>
 To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
         bp@alien8.de, luto@kernel.org, mingo@redhat.com,
@@ -45,9 +45,9 @@ Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
         cedric.xing@intel.com, haitao.huang@intel.com,
         mark.shanahan@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V2 26/32] selftests/sgx: Introduce TCS initialization enclave operation
-Date:   Mon,  7 Feb 2022 16:45:48 -0800
-Message-Id: <6b6ddf76e1dbb448ce016fd6c6b65beebbf2afc2.1644274683.git.reinette.chatre@intel.com>
+Subject: [PATCH V2 01/32] x86/sgx: Add short descriptions to ENCLS wrappers
+Date:   Mon,  7 Feb 2022 16:45:23 -0800
+Message-Id: <8a76d614dab425c81fc40fd3f7cc5c8649fdaf7a.1644274683.git.reinette.chatre@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1644274683.git.reinette.chatre@intel.com>
 References: <cover.1644274683.git.reinette.chatre@intel.com>
@@ -57,100 +57,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Thread Control Structure (TCS) contains meta-data used by the
-hardware to save and restore thread specific information when
-entering/exiting the enclave. A TCS can be added to an initialized
-enclave by first adding a new regular enclave page, initializing the
-content of the new page from within the enclave, and then changing that
-page's type to a TCS.
+The SGX ENCLS instruction uses EAX to specify an SGX function and
+may require additional registers, depending on the SGX function.
+ENCLS invokes the specified privileged SGX function for managing
+and debugging enclaves. Macros are used to wrap the ENCLS
+functionality and several wrappers are used to wrap the macros to
+make the different SGX functions accessible in the code.
 
-Support the initialization of a TCS from within the enclave.
-The variable information needed that should be provided from outside
-the enclave is the address of the TCS, address of the State Save Area
-(SSA), and the entry point that the thread should use to enter the
-enclave. With this information provided all needed fields of a TCS
-can be initialized.
+The wrappers of the supported SGX functions are cryptic. Add short
+descriptions of each as a comment.
 
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
 Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
-No changes since V1.
+Changes since V1:
+- Fix commit message and subject to not refer to descriptions as
+  "changelog descriptions" or "shortlog descriptions" (Jarkko).
+- Improve all descriptions with guidance from Jarkko.
 
- tools/testing/selftests/sgx/defines.h   |  8 +++++++
- tools/testing/selftests/sgx/test_encl.c | 30 +++++++++++++++++++++++++
- 2 files changed, 38 insertions(+)
+ arch/x86/kernel/cpu/sgx/encls.h | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/tools/testing/selftests/sgx/defines.h b/tools/testing/selftests/sgx/defines.h
-index b638eb98c80c..d8587c971941 100644
---- a/tools/testing/selftests/sgx/defines.h
-+++ b/tools/testing/selftests/sgx/defines.h
-@@ -26,6 +26,7 @@ enum encl_op_type {
- 	ENCL_OP_NOP,
- 	ENCL_OP_EACCEPT,
- 	ENCL_OP_EMODPE,
-+	ENCL_OP_INIT_TCS_PAGE,
- 	ENCL_OP_MAX,
- };
+diff --git a/arch/x86/kernel/cpu/sgx/encls.h b/arch/x86/kernel/cpu/sgx/encls.h
+index fa04a73daf9c..0e22fa8f77c5 100644
+--- a/arch/x86/kernel/cpu/sgx/encls.h
++++ b/arch/x86/kernel/cpu/sgx/encls.h
+@@ -136,57 +136,71 @@ static inline bool encls_failed(int ret)
+ 	ret;						\
+ 	})
  
-@@ -68,4 +69,11 @@ struct encl_op_emodpe {
- 	uint64_t flags;
- };
- 
-+struct encl_op_init_tcs_page {
-+	struct encl_op_header header;
-+	uint64_t tcs_page;
-+	uint64_t ssa;
-+	uint64_t entry;
-+};
-+
- #endif /* DEFINES_H */
-diff --git a/tools/testing/selftests/sgx/test_encl.c b/tools/testing/selftests/sgx/test_encl.c
-index 5b6c65331527..c0d6397295e3 100644
---- a/tools/testing/selftests/sgx/test_encl.c
-+++ b/tools/testing/selftests/sgx/test_encl.c
-@@ -57,6 +57,35 @@ static void *memcpy(void *dest, const void *src, size_t n)
- 	return dest;
++/* Initialize an EPC page into an SGX Enclave Control Structure (SECS) page. */
+ static inline int __ecreate(struct sgx_pageinfo *pginfo, void *secs)
+ {
+ 	return __encls_2(ECREATE, pginfo, secs);
  }
  
-+static void *memset(void *dest, int c, size_t n)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < n; i++)
-+		((char *)dest)[i] = c;
-+
-+	return dest;
-+}
-+
-+static void do_encl_init_tcs_page(void *_op)
-+{
-+	struct encl_op_init_tcs_page *op = _op;
-+	void *tcs = (void *)op->tcs_page;
-+	uint32_t val_32;
-+
-+	memset(tcs, 0, 16);			/* STATE and FLAGS */
-+	memcpy(tcs + 16, &op->ssa, 8);		/* OSSA */
-+	memset(tcs + 24, 0, 4);			/* CSSA */
-+	val_32 = 1;
-+	memcpy(tcs + 28, &val_32, 4);		/* NSSA */
-+	memcpy(tcs + 32, &op->entry, 8);	/* OENTRY */
-+	memset(tcs + 40, 0, 24);		/* AEP, OFSBASE, OGSBASE */
-+	val_32 = 0xFFFFFFFF;
-+	memcpy(tcs + 64, &val_32, 4);		/* FSLIMIT */
-+	memcpy(tcs + 68, &val_32, 4);		/* GSLIMIT */
-+	memset(tcs + 72, 0, 4024);		/* Reserved */
-+}
-+
- static void do_encl_op_put_to_buf(void *op)
++/* Hash a 256 byte region of an enclave page to SECS:MRENCLAVE. */
+ static inline int __eextend(void *secs, void *addr)
  {
- 	struct encl_op_put_to_buf *op2 = op;
-@@ -100,6 +129,7 @@ void encl_body(void *rdi,  void *rsi)
- 		do_encl_op_nop,
- 		do_encl_eaccept,
- 		do_encl_emodpe,
-+		do_encl_init_tcs_page,
- 	};
+ 	return __encls_2(EEXTEND, secs, addr);
+ }
  
- 	struct encl_op_header *op = (struct encl_op_header *)rdi;
++/*
++ * Associate an EPC page to an enclave either as a REG or TCS page
++ * populated with the provided data.
++ */
+ static inline int __eadd(struct sgx_pageinfo *pginfo, void *addr)
+ {
+ 	return __encls_2(EADD, pginfo, addr);
+ }
+ 
++/* Finalize enclave build, initialize enclave for user code execution. */
+ static inline int __einit(void *sigstruct, void *token, void *secs)
+ {
+ 	return __encls_ret_3(EINIT, sigstruct, secs, token);
+ }
+ 
++/* Disassociate EPC page from its enclave and mark it as unused. */
+ static inline int __eremove(void *addr)
+ {
+ 	return __encls_ret_1(EREMOVE, addr);
+ }
+ 
++/* Copy data to an EPC page belonging to a debug enclave. */
+ static inline int __edbgwr(void *addr, unsigned long *data)
+ {
+ 	return __encls_2(EDGBWR, *data, addr);
+ }
+ 
++/* Copy data from an EPC page belonging to a debug enclave. */
+ static inline int __edbgrd(void *addr, unsigned long *data)
+ {
+ 	return __encls_1_1(EDGBRD, *data, addr);
+ }
+ 
++/* Track that software has completed the required TLB address clears. */
+ static inline int __etrack(void *addr)
+ {
+ 	return __encls_ret_1(ETRACK, addr);
+ }
+ 
++/* Load, verify, and unblock an EPC page. */
+ static inline int __eldu(struct sgx_pageinfo *pginfo, void *addr,
+ 			 void *va)
+ {
+ 	return __encls_ret_3(ELDU, pginfo, addr, va);
+ }
+ 
++/* Make EPC page inaccessible to enclave, ready to be written to memory. */
+ static inline int __eblock(void *addr)
+ {
+ 	return __encls_ret_1(EBLOCK, addr);
+ }
+ 
++/* Initialize an EPC page into a Version Array (VA) page. */
+ static inline int __epa(void *addr)
+ {
+ 	unsigned long rbx = SGX_PAGE_TYPE_VA;
+@@ -194,6 +208,7 @@ static inline int __epa(void *addr)
+ 	return __encls_2(EPA, rbx, addr);
+ }
+ 
++/* Invalidate an EPC page and write it out to main memory. */
+ static inline int __ewb(struct sgx_pageinfo *pginfo, void *addr,
+ 			void *va)
+ {
 -- 
 2.25.1
 
