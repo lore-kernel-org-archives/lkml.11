@@ -2,156 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7424C4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD773C35294
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388394AbiBHWcs (ORCPT
+        id S1389101AbiBHWd4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:32:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
+        Tue, 8 Feb 2022 17:33:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386761AbiBHVJB (ORCPT
+        with ESMTP id S1386426AbiBHUcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:09:01 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E272CC0612BA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:59 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id s10so591985wra.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:59 -0800 (PST)
+        Tue, 8 Feb 2022 15:32:16 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87501C0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:32:14 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id j14so1092077ejy.6
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 12:32:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4RkUIVbtXWLMhEgVRprjRhLI7qLO2cMyCi+EhjvzZFw=;
-        b=hTk5ijDHDMgQxKkA9BUrH0F2len3i2uKxb473Xdpw5iK2wSxC9XmwvSbp7bYW0PLPk
-         QbKh5k1BSr/Tz0jA06DfQZya1UO90srY53nLsu9F38wakMDiTM36Bhv99fd2QZrbuYGF
-         DdQESgBxjgKfPc9w3F9JFaETCMViCRldl1gyk=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gtsDfpCrFsnfisbUPJhBruwT+fgEbgdfMntNnmidtvM=;
+        b=OgouE37mlONXTn5boL+/fmyvPcIbs4YGlNMohOcrJSJvZTWscTei0nRrlBlR9sRaU1
+         o+ETGcoKZIRIy5tNRm874mJI2WJBAR2VFhJPclA+G6fbtYgbWRqrR3OGD+Q4ToeWJXlb
+         KZUxeKagOPnpDSBAGcXHUoTBPzK1WOY/8J+NnrsmH7YuGcdOpFu5ENh4JZjnwy0kSIWH
+         iwQPyodsMlEy2e28ISFyrdzj7cfYB3S6JCUyFI1cOT2wCY81pkDnrE9iEB0J7zs1myN8
+         hhLglJfFPBiDBT9ua1Jfm5H7ODAZWluunQCTH4LFMLQhL00YmWRaEtU7nYkPJd6sC4AU
+         jheA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4RkUIVbtXWLMhEgVRprjRhLI7qLO2cMyCi+EhjvzZFw=;
-        b=sTE7lEPAJDIwnYV3XDbOy/1Jpc17/xIE0Avl6gGv0EwGdfED9sh00K+Y2W4Id7xXKV
-         8Z93lp9s/hQwoPKxgCCWLkZLaxy8X55xwV4HCyUw9CEh9VlFKU6JJwNle3Jv0Yj8XUHc
-         57JXFTzyV/xQjPnUHsnKmOk659oev1Pu4vf1X0nHOmoP7/JDsucU2bMY9bZqPs1ltYwT
-         sqGZQi8pO0AEUslwBjhm544RIzGfncjkT4I/jwGOEfIfdwNc6OWCJnkgxnjJ9MbhZuF6
-         cR9GQ6mnHATuu2nSs7FQXxgsfYqpoUdXS/rYnS/fTKAjDhtAUSW/OELYpqhqDMsw3A6e
-         A+CA==
-X-Gm-Message-State: AOAM532GwZX4Kryph144/mWE7QBcdQ/aElVUfwE+DijyhdYSQuMutP6o
-        PO4LLnpFCA8krKi5raYvdAb0BQ==
-X-Google-Smtp-Source: ABdhPJyIfpRc7ZB9NjqbdIphlUwlwXNT2L6vdvwdr3OEGArxXf4a6YivXer2aDFvbp3CRI9pZL06XA==
-X-Received: by 2002:a5d:47af:: with SMTP id 15mr5049471wrb.88.1644354538519;
-        Tue, 08 Feb 2022 13:08:58 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 13:08:58 -0800 (PST)
-From:   Daniel Vetter <daniel.vetter@ffwll.ch>
-To:     DRI Development <dri-devel@lists.freedesktop.org>
-Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        kernel test robot <lkp@intel.com>,
-        Jens Frederich <jfrederich@gmail.com>,
-        Jon Nettleton <jon.nettleton@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
-        Matthew Wilcox <willy@infradead.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Zheyu Ma <zheyuma97@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v2 19/19] fbdev: Make registered_fb[] private to fbmem.c
-Date:   Tue,  8 Feb 2022 22:08:24 +0100
-Message-Id: <20220208210824.2238981-20-daniel.vetter@ffwll.ch>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gtsDfpCrFsnfisbUPJhBruwT+fgEbgdfMntNnmidtvM=;
+        b=LC9G8DoJd1+8+ri4i8QQNbTfRRCHIfmoc5Qr/z90/x2msjaUy23J2EnO2t21goiNlq
+         d6mhao8IKmGE2mZ8mj3mbfecWI5zYYVVwmcbAaa/CHbC++s5V34hBoe1y8rLGfpIWMwD
+         9TJIVUmpJPdgGyuIBg36COx96KKUFcWMYMBQmpHiOWGzYeVOfgyRjLnY2s8WwActMjTU
+         KIjYa1rB08Vi+DofUh50CkfUnss2BUMiCl4laEamlkrVtbK2YkYLDoTwAFlviID1fjyH
+         HB+vvEFjxRfaYWDa59TmHtGRty0fSqfC5wDIIjO8kuR7lSh3kK/QC6H6B17aZlGMCQSV
+         8HOg==
+X-Gm-Message-State: AOAM533/Q5fXY+yVRIiaj7gUwquXGRLxohzbxGeDc6QwBxuBArpRwUnZ
+        GL6ZRQzZKLnBz7s0t7Ae2qQlL7N8YLX+Ceb+gzcN7RU8o9Q=
+X-Google-Smtp-Source: ABdhPJyKX2QCjePrd78NKzT7Vs0ZKfpBWbGmmdWVdIe7lQvwiKYAbFCZ2zFkA5UPbCuFPWzwLZ8OwhUUUp+1Jgv18ZE=
+X-Received: by 2002:a17:906:4fca:: with SMTP id i10mr4866638ejw.542.1644352332735;
+ Tue, 08 Feb 2022 12:32:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220208040122.695258-1-davidgow@google.com>
+In-Reply-To: <20220208040122.695258-1-davidgow@google.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Tue, 8 Feb 2022 12:32:01 -0800
+Message-ID: <CAGS_qxrrgq0v3pXGv+33KkH2NZMhx-Yt_0XEq8P2NAag4DkgLQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] list: test: Add test for list_del_init_careful()
+To:     David Gow <davidgow@google.com>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        kunit-dev@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Well except when the olpc dcon fbdev driver is enabled, that thing
-digs around in there in rather unfixable ways.
+On Mon, Feb 7, 2022 at 8:01 PM David Gow <davidgow@google.com> wrote:
+>
+> The list_del_init_careful() function was added[1] after the list KUnit
+> test. Add a very basic test to cover it.
+>
+> Note that this test only covers the single-threaded behaviour (which
+> matches list_del_init()), as is already the case with the test for
+> list_empty_careful().
+>
+> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c6fe44d96fc1536af5b11cd859686453d1b7bfd1
+>
+> Signed-off-by: David Gow <davidgow@google.com>
+> ---
+>
+> Changes since v1:
+> https://lore.kernel.org/linux-kselftest/20220205061539.273330-1-davidgow@google.com/
+> - Patch 1/3 unchanged
+>
+> ---
+>  lib/list-test.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+>
+> diff --git a/lib/list-test.c b/lib/list-test.c
+> index ee09505df16f..976e9ae1f3c5 100644
+> --- a/lib/list-test.c
+> +++ b/lib/list-test.c
+> @@ -161,6 +161,24 @@ static void list_test_list_del_init(struct kunit *test)
+>         KUNIT_EXPECT_TRUE(test, list_empty_careful(&a));
+>  }
+>
+> +static void list_test_list_del_init_careful(struct kunit *test)
+> +{
+> +       /* This test doesn't check correctness under concurrent access */
 
-Cc oldc_dcon maintainers as fyi.
+nit: I personally didn't read this comment in the intended way at first.
+I'd personally find something like
 
-v2: I typoed the config name (0day)
+NOTE: this doesn't test for concurrency/memory
+ordering/however-you-want-to-word-it issues
 
-Cc: kernel test robot <lkp@intel.com>
-Cc: Jens Frederich <jfrederich@gmail.com>
-Cc: Jon Nettleton <jon.nettleton@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-staging@lists.linux.dev
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Helge Deller <deller@gmx.de>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Cc: linux-fbdev@vger.kernel.org
-Cc: Zheyu Ma <zheyuma97@gmail.com>
-Cc: Guenter Roeck <linux@roeck-us.net>
----
- drivers/video/fbdev/core/fbmem.c | 8 ++++++--
- include/linux/fb.h               | 7 +++----
- 2 files changed, 9 insertions(+), 6 deletions(-)
+a bit more readable.
 
-diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
-index 6f6f7a763969..6f0eb596a2cd 100644
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -49,10 +49,14 @@
- static DEFINE_MUTEX(registration_lock);
- 
- struct fb_info *registered_fb[FB_MAX] __read_mostly;
--EXPORT_SYMBOL(registered_fb);
--
- int num_registered_fb __read_mostly;
-+#if IS_ENABLED(CONFIG_FB_OLPC_DCON)
-+EXPORT_SYMBOL(registered_fb);
- EXPORT_SYMBOL(num_registered_fb);
-+#endif
-+#define for_each_registered_fb(i)		\
-+	for (i = 0; i < FB_MAX; i++)		\
-+		if (!registered_fb[i]) {} else
- 
- bool fb_center_logo __read_mostly;
- 
-diff --git a/include/linux/fb.h b/include/linux/fb.h
-index 23b19cf8bccd..afaa1474a283 100644
---- a/include/linux/fb.h
-+++ b/include/linux/fb.h
-@@ -623,16 +623,15 @@ extern int fb_get_color_depth(struct fb_var_screeninfo *var,
- extern int fb_get_options(const char *name, char **option);
- extern int fb_new_modelist(struct fb_info *info);
- 
-+#if IS_ENABLED(CONFIG_FB_OLPC_DCON)
- extern struct fb_info *registered_fb[FB_MAX];
-+
- extern int num_registered_fb;
-+#endif
- extern bool fb_center_logo;
- extern int fb_logo_count;
- extern struct class *fb_class;
- 
--#define for_each_registered_fb(i)		\
--	for (i = 0; i < FB_MAX; i++)		\
--		if (!registered_fb[i]) {} else
--
- static inline void lock_fb_info(struct fb_info *info)
- {
- 	mutex_lock(&info->lock);
--- 
-2.34.1
+> +       struct list_head a, b;
+> +       LIST_HEAD(list);
+> +
+> +       list_add_tail(&a, &list);
+> +       list_add_tail(&b, &list);
+> +
+> +       /* before: [list] -> a -> b */
+> +       list_del_init(&a);
 
+Is this supposed to use list_del_init_careful(&a)?
+That would make it match the name of the test case.
+
+> +       /* after: [list] -> b, a initialised */
+> +
+> +       KUNIT_EXPECT_PTR_EQ(test, list.next, &b);
+> +       KUNIT_EXPECT_PTR_EQ(test, b.prev, &list);
+> +       KUNIT_EXPECT_TRUE(test, list_empty_careful(&a));
+> +}
+> +
+>  static void list_test_list_move(struct kunit *test)
+>  {
+>         struct list_head a, b;
+> @@ -707,6 +725,7 @@ static struct kunit_case list_test_cases[] = {
+>         KUNIT_CASE(list_test_list_replace_init),
+>         KUNIT_CASE(list_test_list_swap),
+>         KUNIT_CASE(list_test_list_del_init),
+> +       KUNIT_CASE(list_test_list_del_init_careful),
+>         KUNIT_CASE(list_test_list_move),
+>         KUNIT_CASE(list_test_list_move_tail),
+>         KUNIT_CASE(list_test_list_bulk_move_tail),
+> --
+> 2.35.0.263.gb82422642f-goog
+>
