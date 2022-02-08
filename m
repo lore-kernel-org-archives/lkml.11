@@ -2,138 +2,271 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 07:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 07:41:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348503AbiBHHkq (ORCPT
+        id S1348527AbiBHHlq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 02:40:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35646 "EHLO
+        Tue, 8 Feb 2022 02:41:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348497AbiBHHkl (ORCPT
+        with ESMTP id S237648AbiBHHlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 02:40:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559A0C0401EF;
-        Mon,  7 Feb 2022 23:40:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF70761616;
-        Tue,  8 Feb 2022 07:40:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38174C004E1;
-        Tue,  8 Feb 2022 07:40:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644306039;
-        bh=hCaoJ9viHY+9jSGZzSXxNK60/DZEM/xN7vZj/9sKfXA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QjPNGi2j2Y6pYYNZq4wFMBTpYumZsgXxoGwPppPNbtjBXUorM+gdM6Djm98W4TjHr
-         uLW9XzYBtWFjHrwFaLIybU8f7Fx+fnzbIjUsSRSvgZN9yuyWKyidGhLdZcaG/FXlIb
-         u9lvxCXvzTTR6lJIoE07Hjd3xDeKhOIi6qa+ROO0=
-Date:   Tue, 8 Feb 2022 08:40:35 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 2/2] drm/msm/dp: Implement oob_hotplug_event()
-Message-ID: <YgIecy+W/lGzL6ac@kroah.com>
-References: <20220208044328.588860-1-bjorn.andersson@linaro.org>
- <20220208044328.588860-2-bjorn.andersson@linaro.org>
+        Tue, 8 Feb 2022 02:41:44 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CF6C0401EF;
+        Mon,  7 Feb 2022 23:41:42 -0800 (PST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JtFKz0d97zbkH2;
+        Tue,  8 Feb 2022 15:40:39 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 15:41:38 +0800
+CC:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <daniel.thompson@linaro.org>, <joro@8bytes.org>,
+        <john.garry@huawei.com>, <shameerali.kolothum.thodi@huawei.com>,
+        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
+        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
+        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <linuxarm@huawei.com>, <song.bao.hua@hisilicon.com>
+Subject: Re: [PATCH v3 2/8] hisi_ptt: Register PMU device for PTT trace
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        Yicong Yang <yangyicong@hisilicon.com>
+References: <20220124131118.17887-1-yangyicong@hisilicon.com>
+ <20220124131118.17887-3-yangyicong@hisilicon.com>
+ <20220207114228.00002e6f@Huawei.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <b3bf3968-870b-dd93-56c2-2d2e001c2f38@huawei.com>
+Date:   Tue, 8 Feb 2022 15:41:38 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220208044328.588860-2-bjorn.andersson@linaro.org>
+In-Reply-To: <20220207114228.00002e6f@Huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 08:43:28PM -0800, Bjorn Andersson wrote:
-> The Qualcomm DisplayPort driver contains traces of the necessary
-> plumbing to hook up USB HPD, in the form of the dp_hpd module and the
-> dp_usbpd_cb struct. Use this as basis for implementing the
-> oob_hotplug_event() callback, by amending the dp_hpd module with the
-> missing logic.
+On 2022/2/7 19:42, Jonathan Cameron wrote:
+> On Mon, 24 Jan 2022 21:11:12 +0800
+> Yicong Yang <yangyicong@hisilicon.com> wrote:
 > 
-> Overall the solution is similar to what's done downstream, but upstream
-> all the code to disect the HPD notification lives on the calling side of
-> drm_connector_oob_hotplug_event().
+>> Register PMU device of PTT trace, then users can use
+>> trace through perf command. The driver makes use of perf
+>> AUX trace and support following events to configure the
+>> trace:
+>>
+>> - filter: select Root port or Endpoint to trace
+>> - type: select the type of traced TLP headers
+>> - direction: select the direction of traced TLP headers
+>> - format: select the data format of the traced TLP headers
+>>
+>> This patch adds the PMU driver part of PTT trace. The perf
+>> command support of PTT trace is added in the following
+>> patch.
+>>
+>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+>> ---
 > 
-> drm_connector_oob_hotplug_event() performs the lookup of the
-> drm_connector based on fwnode, hence the need to assign the fwnode in
-> dp_drm_connector_init().
 > 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->  drivers/gpu/drm/msm/dp/dp_display.c |  8 ++++++++
->  drivers/gpu/drm/msm/dp/dp_display.h |  2 ++
->  drivers/gpu/drm/msm/dp/dp_drm.c     | 10 ++++++++++
->  drivers/gpu/drm/msm/dp/dp_hpd.c     | 19 +++++++++++++++++++
->  drivers/gpu/drm/msm/dp/dp_hpd.h     |  4 ++++
->  5 files changed, 43 insertions(+)
+>> @@ -294,6 +346,405 @@ static void hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
+>>  	hisi_ptt->trace_ctrl.default_cpu = cpumask_first(cpumask_of_node(dev_to_node(&pdev->dev)));
+>>  }
+>>  
+>> +#define HISI_PTT_PMU_FILTER_IS_PORT	BIT(19)
+>> +#define HISI_PTT_PMU_FILTER_VAL_MASK	GENMASK(15, 0)
+>> +#define HISI_PTT_PMU_DIRECTION_MASK	GENMASK(23, 20)
+>> +#define HISI_PTT_PMU_TYPE_MASK		GENMASK(31, 24)
+>> +#define HISI_PTT_PMU_FORMAT_MASK	GENMASK(35, 32)
+>> +
+>> +static ssize_t available_filters_show(struct device *dev,
+>> +				      struct device_attribute *attr,
+>> +				      char *buf)
+>> +{
+>> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(dev_get_drvdata(dev));
+>> +	struct hisi_ptt_filter_desc *filter;
+>> +	int pos = 0;
+>> +
+>> +	if (list_empty(&hisi_ptt->port_filters))
+>> +		return sysfs_emit(buf, "#### No available filter ####\n");
+>> +
 > 
-> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-> index 7cc4d21f2091..124a2f794382 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_display.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-> @@ -414,6 +414,13 @@ static int dp_display_usbpd_configure_cb(struct device *dev)
->  	return dp_display_process_hpd_high(dp);
->  }
->  
-> +void dp_display_oob_hotplug_event(struct msm_dp *dp_display, bool hpd_state)
-> +{
-> +	struct dp_display_private *dp = container_of(dp_display, struct dp_display_private, dp_display);
-> +
-> +	dp->usbpd->oob_event(dp->usbpd, hpd_state);
-> +}
-> +
->  static int dp_display_usbpd_disconnect_cb(struct device *dev)
->  {
->  	struct dp_display_private *dp = dev_get_dp_display_private(dev);
-> @@ -1251,6 +1258,7 @@ static int dp_display_probe(struct platform_device *pdev)
->  	dp->pdev = pdev;
->  	dp->name = "drm_dp";
->  	dp->dp_display.connector_type = desc->connector_type;
-> +	dp->dp_display.dev = &pdev->dev;
+> This is a very unusual sysfs attribute.
+> They are supposed to be one "thing" per file, so I'd have expected this to
+> be at least two files
+> 
+> root_ports_available_filters
+> request_available_filters
+> and no available filter is indicated by these attribute returning an empty
+> string.
+> 
 
-You did not properly reference count this pointer you just saved.  What
-is to keep that pointer from going away without you knowing about it?
+Split it makes sense to me as indeed we're maintaining two list for root ports
+and requester each. but perhaps below names are better?
 
-And you already have a pointer to pdev, why save another one here?
+available_root_port_filters
+available_requester_filters
 
->  
->  	rc = dp_init_sub_modules(dp);
->  	if (rc) {
-> diff --git a/drivers/gpu/drm/msm/dp/dp_display.h b/drivers/gpu/drm/msm/dp/dp_display.h
-> index e3adcd578a90..1f856b3bca79 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_display.h
-> +++ b/drivers/gpu/drm/msm/dp/dp_display.h
-> @@ -11,6 +11,7 @@
->  #include "disp/msm_disp_snapshot.h"
->  
->  struct msm_dp {
-> +	struct device *dev;
->  	struct drm_device *drm_dev;
->  	struct device *codec_dev;
+And feels we don't need the titles if we split it into two files, so it'll be like
+$ cat available_root_port_filters
+0000:00:10.0	0x80001
+0000:00:11.0	0x80004
+$ cat available_requester_filters
+0000:01:00.0	0x00100
+0000:01:00.1	0x00101
 
-So you now have pointers to 3 different devices here?  What does 'dev'
-point to that the other ones do not?  This needs to be documented really
-well here.
+It's also better for script I think.
 
-thanks,
+> However you need to match convention for hwtracing drivers so if
+> this is common approach perhaps you could point me to a similar
+> example? My grep skills didn't find me one.
+> 
+>> +	mutex_lock(&hisi_ptt->mutex);
+>> +	pos += sysfs_emit_at(buf, pos, "#### Root Ports ####\n");
+>> +	list_for_each_entry(filter, &hisi_ptt->port_filters, list)
+>> +		pos += sysfs_emit_at(buf, pos, "%s	0x%05lx\n",
+>> +				     pci_name(filter->pdev),
+>> +				     hisi_ptt_get_filter_val(filter->pdev) |
+>> +				     HISI_PTT_PMU_FILTER_IS_PORT);
+>> +
+>> +	pos += sysfs_emit_at(buf, pos, "#### Requesters ####\n");
+>> +	list_for_each_entry(filter, &hisi_ptt->req_filters, list)
+>> +		pos += sysfs_emit_at(buf, pos, "%s	0x%05x\n",
+>> +				     pci_name(filter->pdev),
+>> +				     hisi_ptt_get_filter_val(filter->pdev));
+>> +
+>> +	mutex_unlock(&hisi_ptt->mutex);
+>> +	return pos;
+>> +}
+>> +static DEVICE_ATTR_ADMIN_RO(available_filters);
+>> +
+> 
+> ...
+> 
+> 
+>> +static int hisi_ptt_trace_valid_config_onehot(u32 val, u32 *available_list, u32 list_size)
+>> +{
+>> +	int i, ret = -EINVAL;
+>> +
+>> +	for (i = 0; i < list_size; i++)
+>> +		if (val == available_list[i]) {
+>> +			ret = 0;
+> 
+> return 0;
+> 
 
-greg k-h
+ok.
+
+>> +			break;
+>> +		}
+>> +
+>> +	return ret;
+> 
+> return -EINVAL;
+
+ok.
+
+> 
+>> +}
+>> +
+> 
+>> +
+>> +static void hisi_ptt_pmu_free_aux(void *aux)
+>> +{
+>> +	struct hisi_ptt_pmu_buf *buf = aux;
+>> +
+>> +	vunmap(buf->base);
+>> +	kfree(buf);
+>> +}
+>> +
+> 
+> 
+> ...
+> 
+>> +static int hisi_ptt_pmu_add(struct perf_event *event, int flags)
+>> +{
+>> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(event->pmu);
+>> +	struct hw_perf_event *hwc = &event->hw;
+>> +	int cpu = event->cpu;
+>> +
+>> +	if (cpu == -1 && smp_processor_id() != hisi_ptt->trace_ctrl.default_cpu)
+> 
+> This check is not entirely obvious to me. Perhaps a comment would help
+> readers understand why this condition is successful, but doesn't involve
+> actually starting the pmu?
+> 
+
+Not sure I describe it correct and accurate. A perf session will add and start event on
+each cpu, or only a range of cpus if user specified it by -C parameter of perf.
+This information is passed to the PMU driver by the event->cpu, -1 indicates that user
+didn't specify the cpu. This function will be called on every cpu or cpus specified by
+the user.
+
+Since we're not tracing CPUs and we don't need every cpu to start the trace, we add the
+check here to only allow the event on the default cpu to start the trace. Other cpus
+will just return. The default cpu is the 1st cpu of the NUMA nodes the PTT device locates.
+
+>> +		return 0;
+>> +
+>> +	hwc->state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
+>> +
+>> +	if (flags & PERF_EF_START) {
+>> +		hisi_ptt_pmu_start(event, PERF_EF_RELOAD);
+>> +		if (hwc->state & PERF_HES_STOPPED)
+>> +			return -EINVAL;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+> 
+> ...
+> 
+>>  /*
+>>   * The DMA of PTT trace can only use direct mapping, due to some
+>>   * hardware restriction. Check whether there is an iommu or the
+>> @@ -359,6 +810,12 @@ static int hisi_ptt_probe(struct pci_dev *pdev,
+>>  
+>>  	hisi_ptt_init_ctrls(hisi_ptt);
+>>  
+>> +	ret = hisi_ptt_register_pmu(hisi_ptt);
+>> +	if (ret) {
+>> +		pci_err(pdev, "failed to register pmu device, ret = %d", ret);
+> 
+> Given I think this exposes userspace interfaces, it should be the very
+> last thing done in probe(). Otherwise we have a race condition (at least in
+> theory) where someone starts using it before we then fail the iommu mapping check.
+> 
+
+thanks for catching this. I think it'll be a problem and I'll get the iommu mapping check
+in advance.
+
+Thanks.
+
+> 
+>> +		return ret;
+>> +	}
+>> +
+>>  	ret = hisi_ptt_check_iommu_mapping(hisi_ptt);
+>>  	if (ret) {
+>>  		pci_err(pdev, "cannot work with non-direct DMA mapping.\n");
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> .
+> 
