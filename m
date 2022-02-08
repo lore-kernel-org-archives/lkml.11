@@ -2,22 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A5FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:25:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5689CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:25:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239033AbiBHJZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 04:25:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
+        id S1344136AbiBHJZF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 04:25:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352019AbiBHJYu (ORCPT
+        with ESMTP id S233879AbiBHJYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Feb 2022 04:24:50 -0500
 Received: from mail-m17635.qiye.163.com (mail-m17635.qiye.163.com [59.111.176.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E72BC03FEC3;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E267C03FEC1;
         Tue,  8 Feb 2022 01:24:47 -0800 (PST)
 Received: from localhost.localdomain (unknown [58.22.7.114])
-        by mail-m17635.qiye.163.com (Hmail) with ESMTPA id 38422400395;
-        Tue,  8 Feb 2022 17:13:38 +0800 (CST)
+        by mail-m17635.qiye.163.com (Hmail) with ESMTPA id E7D434002DD;
+        Tue,  8 Feb 2022 17:13:35 +0800 (CST)
 From:   Yifeng Zhao <yifeng.zhao@rock-chips.com>
 To:     heiko@sntech.de
 Cc:     robh+dt@kernel.org, jbx6244@gmail.com, devicetree@vger.kernel.org,
@@ -29,160 +30,170 @@ Cc:     robh+dt@kernel.org, jbx6244@gmail.com, devicetree@vger.kernel.org,
         kever.yang@rock-chips.com, lee.jones@linaro.org,
         wulf@rock-chips.com, david.wu@rock-chips.com,
         Yifeng Zhao <yifeng.zhao@rock-chips.com>
-Subject: [PATCH v8 4/4] arm64: dts: rockchip: add naneng combo phy nodes for rk3568
-Date:   Tue,  8 Feb 2022 17:13:26 +0800
-Message-Id: <20220208091326.12495-5-yifeng.zhao@rock-chips.com>
+Subject: [PATCH v8 2/4] dt-bindings: phy: rockchip: Add Naneng combo PHY bindings
+Date:   Tue,  8 Feb 2022 17:13:24 +0800
+Message-Id: <20220208091326.12495-3-yifeng.zhao@rock-chips.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220208091326.12495-1-yifeng.zhao@rock-chips.com>
 References: <20220208091326.12495-1-yifeng.zhao@rock-chips.com>
 X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUMZT0hWGEJNHU1MGhgdQ0
-        lOVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWVVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MEk6Mjo*Dz5WEiFIMjgZL0Me
-        FhMwCz9VSlVKTU9PSEpKTUpCTktPVTMWGhIXVQISHR4VHFUBExoUOwkUGBBWGBMSCwhVGBQWRVlX
-        WRILWUFZTkNVSUlVTFVKSk9ZV1kIAVlBTk1DSjcG
-X-HM-Tid: 0a7ed89c2471d991kuws38422400395
+        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWRpKTkxWGhhJHU1LTh8dHk
+        NMVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWVVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NQw6Ixw*HT5WDiEZSThKL0sK
+        KCowCzpVSlVKTU9PSEpKTUpNQ0lOVTMWGhIXVQISHR4VHFUBExoUOwkUGBBWGBMSCwhVGBQWRVlX
+        WRILWUFZTkNVSUlVTFVKSk9ZV1kIAVlBTUpLQzcG
+X-HM-Tid: 0a7ed89c1b8cd991kuwse7d434002dd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the core dt-node for the rk3568's naneng combo phys.
+Add the compatible strings for the Naneng combo PHY found on rockchip SoC.
 
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
 Signed-off-by: Johan Jonker <jbx6244@gmail.com>
 ---
 
 Changes in v8: None
-Changes in v7: None
+Changes in v7:
+- remove u3otg0_port_en, u3otg1_port_en and pipe_sgmii_mac_sel
+
 Changes in v5:
+- modify description for ssc and ext-refclk
 - remove apb reset
 
 Changes in v4:
-- rename node name
+- restyle
+- remove some minItems
+- add more properties
 - remove reset-names
 - move #phy-cells
 - add rockchip,rk3568-pipe-grf
 - add rockchip,rk3568-pipe-phy-grf
 
-Changes in v3:
-- Move pipe_phy_grf0 to rk3568.dtsi
-
+Changes in v3: None
 Changes in v2:
-- Move phy0 to rk3568.dtsi
+- Fix dtschema/dtc warnings/errors
 
- arch/arm64/boot/dts/rockchip/rk3568.dtsi | 21 +++++++++++
- arch/arm64/boot/dts/rockchip/rk356x.dtsi | 47 ++++++++++++++++++++++++
- 2 files changed, 68 insertions(+)
+ .../phy/phy-rockchip-naneng-combphy.yaml      | 109 ++++++++++++++++++
+ 1 file changed, 109 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-index d91df1cde736..5b0f528d6818 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-@@ -8,6 +8,11 @@
- / {
- 	compatible = "rockchip,rk3568";
- 
-+	pipe_phy_grf0: syscon@fdc70000 {
-+		compatible = "rockchip,rk3568-pipe-phy-grf", "syscon";
-+		reg = <0x0 0xfdc70000 0x0 0x1000>;
-+	};
+diff --git a/Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml b/Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml
+new file mode 100644
+index 000000000000..f14454401419
+--- /dev/null
++++ b/Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml
+@@ -0,0 +1,109 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/phy/phy-rockchip-naneng-combphy.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 	qos_pcie3x1: qos@fe190080 {
- 		compatible = "rockchip,rk3568-qos", "syscon";
- 		reg = <0x0 0xfe190080 0x0 0x20>;
-@@ -69,6 +74,22 @@
- 			queue0 {};
- 		};
- 	};
++title: Rockchip SoC Naneng Combo Phy Device Tree Bindings
 +
-+	combphy0: phy@fe820000 {
-+		compatible = "rockchip,rk3568-naneng-combphy";
-+		reg = <0x0 0xfe820000 0x0 0x100>;
-+		clocks = <&pmucru CLK_PCIEPHY0_REF>,
-+			 <&cru PCLK_PIPEPHY0>,
-+			 <&cru PCLK_PIPE>;
-+		clock-names = "ref", "apb", "pipe";
-+		assigned-clocks = <&pmucru CLK_PCIEPHY0_REF>;
-+		assigned-clock-rates = <100000000>;
-+		resets = <&cru SRST_PIPEPHY0>;
-+		rockchip,pipe-grf = <&pipegrf>;
-+		rockchip,pipe-phy-grf = <&pipe_phy_grf0>;
-+		#phy-cells = <1>;
-+		status = "disabled";
-+	};
- };
- 
- &cpu0_opp_table {
-diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-index bce20729be1a..cae76568e66d 100644
---- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -262,11 +262,26 @@
- 		};
- 	};
- 
-+	pipegrf: syscon@fdc50000 {
-+		compatible = "rockchip,rk3568-pipe-grf", "syscon";
-+		reg = <0x0 0xfdc50000 0x0 0x1000>;
-+	};
++maintainers:
++  - Heiko Stuebner <heiko@sntech.de>
 +
- 	grf: syscon@fdc60000 {
- 		compatible = "rockchip,rk3568-grf", "syscon", "simple-mfd";
- 		reg = <0x0 0xfdc60000 0x0 0x10000>;
- 	};
- 
-+	pipe_phy_grf1: syscon@fdc80000 {
-+		compatible = "rockchip,rk3568-pipe-phy-grf", "syscon";
-+		reg = <0x0 0xfdc80000 0x0 0x1000>;
-+	};
++properties:
++  compatible:
++    enum:
++      - rockchip,rk3568-naneng-combphy
 +
-+	pipe_phy_grf2: syscon@fdc90000 {
-+		compatible = "rockchip,rk3568-pipe-phy-grf", "syscon";
-+		reg = <0x0 0xfdc90000 0x0 0x1000>;
-+	};
++  reg:
++    maxItems: 1
 +
- 	usb2phy0_grf: syscon@fdca0000 {
- 		compatible = "rockchip,rk3568-usb2phy-grf", "syscon";
- 		reg = <0x0 0xfdca0000 0x0 0x8000>;
-@@ -1195,6 +1210,38 @@
- 		status = "disabled";
- 	};
- 
-+	combphy1: phy@fe830000 {
-+		compatible = "rockchip,rk3568-naneng-combphy";
-+		reg = <0x0 0xfe830000 0x0 0x100>;
-+		clocks = <&pmucru CLK_PCIEPHY1_REF>,
-+			 <&cru PCLK_PIPEPHY1>,
-+			 <&cru PCLK_PIPE>;
-+		clock-names = "ref", "apb", "pipe";
-+		assigned-clocks = <&pmucru CLK_PCIEPHY1_REF>;
-+		assigned-clock-rates = <100000000>;
-+		resets = <&cru SRST_PIPEPHY1>;
-+		rockchip,pipe-grf = <&pipegrf>;
-+		rockchip,pipe-phy-grf = <&pipe_phy_grf1>;
-+		#phy-cells = <1>;
-+		status = "disabled";
-+	};
++  clocks:
++    items:
++      - description: reference clock
++      - description: apb clock
++      - description: pipe clock
 +
-+	combphy2: phy@fe840000 {
-+		compatible = "rockchip,rk3568-naneng-combphy";
-+		reg = <0x0 0xfe840000 0x0 0x100>;
-+		clocks = <&pmucru CLK_PCIEPHY2_REF>,
-+			 <&cru PCLK_PIPEPHY2>,
-+			 <&cru PCLK_PIPE>;
-+		clock-names = "ref", "apb", "pipe";
-+		assigned-clocks = <&pmucru CLK_PCIEPHY2_REF>;
-+		assigned-clock-rates = <100000000>;
-+		resets = <&cru SRST_PIPEPHY2>;
-+		rockchip,pipe-grf = <&pipegrf>;
-+		rockchip,pipe-phy-grf = <&pipe_phy_grf2>;
-+		#phy-cells = <1>;
-+		status = "disabled";
-+	};
++  clock-names:
++    items:
++      - const: ref
++      - const: apb
++      - const: pipe
 +
- 	u2phy0: usb2phy@fe8a0000 {
- 		compatible = "rockchip,rk3568-usb2phy";
- 		reg = <0x0 0xfe8a0000 0x0 0x10000>;
++  resets:
++    items:
++      - description: exclusive PHY reset line
++
++  rockchip,enable-ssc:
++    type: boolean
++    description:
++      The option SSC can be enabled for U3, SATA and PCIE.
++      Most commercially available platforms use SSC to reduce EMI.
++
++  rockchip,ext-refclk:
++    type: boolean
++    description:
++      Many PCIe connections, especially backplane connections,
++      require a synchronous reference clock between the two link partners.
++      To achieve this a common clock source, referred to as REFCLK in
++      the PCI Express Card Electromechanical Specification,
++      should be used by both ends of the PCIe link.
++      In PCIe mode one can choose to use an internal or an external reference
++      clock.
++      By default the internal clock is selected. The PCIe PHY provides a 100MHz
++      differential clock output(optional with SSC) for system applications.
++      When selecting this option an externally 100MHz differential
++      reference clock needs to be provided to the PCIe PHY.
++
++  rockchip,pipe-grf:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Some additional phy settings are accessed through GRF regs.
++
++  rockchip,pipe-phy-grf:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Some additional pipe settings are accessed through GRF regs.
++
++  "#phy-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - resets
++  - rockchip,pipe-grf
++  - rockchip,pipe-phy-grf
++  - "#phy-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/rk3568-cru.h>
++
++    pipegrf: syscon@fdc50000 {
++      compatible = "rockchip,rk3568-pipe-grf", "syscon";
++      reg = <0xfdc50000 0x1000>;
++    };
++
++    pipe_phy_grf0: syscon@fdc70000 {
++      compatible = "rockchip,rk3568-pipe-phy-grf", "syscon";
++      reg = <0xfdc70000 0x1000>;
++    };
++
++    combphy0: phy@fe820000 {
++      compatible = "rockchip,rk3568-naneng-combphy";
++      reg = <0xfe820000 0x100>;
++      clocks = <&pmucru CLK_PCIEPHY0_REF>,
++               <&cru PCLK_PIPEPHY0>,
++               <&cru PCLK_PIPE>;
++      clock-names = "ref", "apb", "pipe";
++      assigned-clocks = <&pmucru CLK_PCIEPHY0_REF>;
++      assigned-clock-rates = <100000000>;
++      resets = <&cru SRST_PIPEPHY0>;
++      rockchip,pipe-grf = <&pipegrf>;
++      rockchip,pipe-phy-grf = <&pipe_phy_grf0>;
++      #phy-cells = <1>;
++    };
 -- 
 2.17.1
 
