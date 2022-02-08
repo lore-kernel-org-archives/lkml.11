@@ -2,95 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A59C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385842AbiBHTLP (ORCPT
+        id S1385852AbiBHTLY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 14:11:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57202 "EHLO
+        Tue, 8 Feb 2022 14:11:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244714AbiBHTLN (ORCPT
+        with ESMTP id S1385846AbiBHTLU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:11:13 -0500
-X-Greylist: delayed 1168 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 11:11:12 PST
-Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB65C0613CB;
-        Tue,  8 Feb 2022 11:11:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:
-        Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=xNLD+ohNcz8s+M2ZfwyQWaMV388U5TWtk0mAuxq0Jls=; b=Bxl9XAIFTDWKUHGroQRpuDasjd
-        tgS8OvU0Ps+B9IqBwitqXm9eg19pxboo4/Axod6x1zS4fckWDK7q1i6YVIOE0PF3nd2Czd1T922lK
-        vkgK4IOJsxJSUqHDVL1B2rKP4uXhln6//lz8dcD3fEUi7rl2Hxoo6lkjwVQzhoq7DHJdnKwDJd1Ih
-        Nbm18MDVU0HRU34Lz8xy2LkOSLZb0WkZtp/cHYVyc/jtH+rYhi1v6+MMxc5N7Njv7L0nJu26GqRIJ
-        rEGXZiZz0RyZId5QIeK/XcgG627jXQ0ia6lkNvhBhvMnWSO9fo/Iqj2JNkF0pxzQBEjrNtVCyc7uv
-        e5NuYKIA==;
-Received: from 201-27-34-10.dsl.telesp.net.br ([201.27.34.10] helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nHUyS-000CHM-Ta; Tue, 08 Feb 2022 19:12:21 +0100
-Message-ID: <c10fc4fc-58c9-0b3f-5f1e-6f44b0c190d2@igalia.com>
-Date:   Tue, 8 Feb 2022 15:12:04 -0300
+        Tue, 8 Feb 2022 14:11:20 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFEBDC0612C1;
+        Tue,  8 Feb 2022 11:11:19 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 7250A210E7;
+        Tue,  8 Feb 2022 19:11:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644347478; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yttcmkKs+bAIvSGjq/8ZnP5VxhwV7JekAzQGhUXqisI=;
+        b=dy1JqXXlQZKUE8/PmDrCJFOZy2foFZ/0AkY+ce/Jfjk0EAJ4M/lil/28r3sujk4pPJXcXn
+        LKKg/TAy1nG4NLYKEYKZ7u4qAeV9pJ4PEwZWlGdbQcLwNUB+UQzTgAlm2a5hTKs7NPnirl
+        L7PkvJFco7fjr5MZF52Jd5A6UXJCwLc=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 29580A3B81;
+        Tue,  8 Feb 2022 19:11:18 +0000 (UTC)
+Date:   Tue, 8 Feb 2022 20:11:17 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Roman Gushchin <guro@fb.com>,
+        Rafael Aquini <aquini@redhat.com>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCH v5 3/4] mm/page_owner: Print memcg information
+Message-ID: <YgLAVdYRU6HPl6aF@dhcp22.suse.cz>
+References: <20220208000532.1054311-1-longman@redhat.com>
+ <20220208000532.1054311-4-longman@redhat.com>
+ <YgJeWth50eP9L0PK@dhcp22.suse.cz>
+ <e897adca-168e-13db-8001-4afbef3aa648@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 3/3] panic: Allow printing extra panic information on
- kdump
-Content-Language: en-US
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     Petr Mladek <pmladek@suse.com>, akpm@linux-foundation.org,
-        Dave Young <dyoung@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-doc@vger.kernel.org, mcgrof@kernel.org,
-        keescook@chromium.org, yzaikin@google.com, feng.tang@intel.com,
-        siglesias@igalia.com, kernel@gpiccoli.net
-References: <20211109202848.610874-1-gpiccoli@igalia.com>
- <20211109202848.610874-4-gpiccoli@igalia.com> <Yd/qmyz+qSuoUwbs@alley>
- <7c516696-be5b-c280-7f4e-554834f5e472@igalia.com>
-In-Reply-To: <7c516696-be5b-c280-7f4e-554834f5e472@igalia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e897adca-168e-13db-8001-4afbef3aa648@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/01/2022 13:53, Guilherme G. Piccoli wrote:
-> Hi Andrew, can I ask you to please remove this patch from linux-next?
-> 
-> It shows here:
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=56439cb78293
-> 
-> Baoquan has concerns, and we're discussing that in another thread [0],
-> after I submit another change on top of this one. So, I guess it's
-> simpler to just drop it.
-> 
-> My apologies for this, I should have definitely loop the kexec list in
-> this one , but I forgot.
-> 
-> Cheers,
-> 
-> 
-> Guilherme
-> 
-> 
-> [0]
-> https://lore.kernel.org/lkml/7b93afff-66a0-44ee-3bb7-3d1e12dd47c2@igalia.com/
+On Tue 08-02-22 13:40:57, Waiman Long wrote:
+> On 2/8/22 07:13, Michal Hocko wrote:
+> > On Mon 07-02-22 19:05:31, Waiman Long wrote:
+> > > It was found that a number of dying memcgs were not freed because
+> > > they were pinned by some charged pages that were present. Even "echo 1 >
+> > > /proc/sys/vm/drop_caches" wasn't able to free those pages. These dying
+> > > but not freed memcgs tend to increase in number over time with the side
+> > > effect that percpu memory consumption as shown in /proc/meminfo also
+> > > increases over time.
+> > I still believe that this is very suboptimal way to debug offline memcgs
+> > but memcg information can be useful in other contexts and it doesn't
+> > cost us anything except for an additional output so I am fine with this.
+>
+> I am planning to have a follow-up patch to add a new debugfs file for just
+> printing page information associated with dying memcgs only. It will be
+> based on the existing page_owner code, though. So I need to get this patch
+> in first.
 
+Sure. I would give a shot the drgn approach as this can be much more
+versatile without any additional kernel code.
 
-Hi Stephen / Andrew, sorry for the annoyance, but can you please remove
-this patch from linux-next?
+[...]
 
-Today it shows as commit
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=d691651735f1
-- this commit is subject to concern from Baoquan and we are discussing
-better ways to achieve that, through a refactor.
+> > > +	dying = (memcg->css.flags & CSS_DYING);
+> > Is there any specific reason why you haven't used mem_cgroup_online?
+> Not really. However, I think checking for CSS_DYING makes more sense now
+> that I using the term "dying".
 
-Thanks in advance,
-
-
-Guilherme
+I do not really care much but I though CSS_DYING is a cgroup internal
+thing. We have a highlevel API so I thought it would be used
+preferably.
+-- 
+Michal Hocko
+SUSE Labs
