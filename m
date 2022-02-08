@@ -2,96 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB120C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18592C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:00:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385747AbiBHTAi (ORCPT
+        id S1385586AbiBHSzp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 14:00:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51676 "EHLO
+        Tue, 8 Feb 2022 13:55:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385714AbiBHTAe (ORCPT
+        with ESMTP id S1385551AbiBHSzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:00:34 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88003C0613CB;
-        Tue,  8 Feb 2022 11:00:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8E056CE1C13;
-        Tue,  8 Feb 2022 19:00:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BB42C004E1;
-        Tue,  8 Feb 2022 19:00:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644346828;
-        bh=IEWyJRIAgqOmLk5O/Hy+y+7lLdSHvgPjohDMouOy7Lo=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Po6NiauVK+KqdBgDxAOWFHuthyvLZltYbBs8zrkXk8Lm1oNPzmBBr8kJN20CCzleA
-         TW+Z4PbFeOPorUdE/zXlrY4V89W2wYHUf4/6jRlrJ2icq3qzgsj8O9aKF37236DWKm
-         di/l4sZy+n9DUf0OE2HpJ4l7FB4foOlhpTPbaL4+4zjD94H2FCB6RWcDxLGW9oWEB7
-         QTNkdIKpBnDtID+qF/5+QhOMCzTBG1s5oqD5e1itrMla1UD3OlEUKlt6GcluUYF37j
-         2v2/VX/erSOa+cDRIXWqrLRZ8XRfh+NYhS8MJdIEDLwKO/g7dFVs9yGy1BsV6/ceff
-         Fet+DiSUbfVYQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Leilk Liu <leilk.liu@mediatek.com>
-Cc:     linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-In-Reply-To: <20220125012330.13449-1-leilk.liu@mediatek.com>
-References: <20220125012330.13449-1-leilk.liu@mediatek.com>
-Subject: Re: [PATCH V4 0/3] Add compatible for Mediatek MT8186
-Message-Id: <164434682616.1135514.9519927762573253322.b4-ty@kernel.org>
-Date:   Tue, 08 Feb 2022 19:00:26 +0000
+        Tue, 8 Feb 2022 13:55:37 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5A9C0612C0;
+        Tue,  8 Feb 2022 10:55:36 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id r7so12891811wmq.5;
+        Tue, 08 Feb 2022 10:55:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s2rLFrwGSf/fjUuAvUVyqkzahpLoS6qof5NPWyop7JA=;
+        b=EK3T3ZR1A7H31bUygylx4Ud9sCiarT3y28W/L+LJ7Q2Z8G3xmKezXiw/q9adC1ar4i
+         PRnlYBsJrSSwSAExNZkYsQ+1TYLC+vWf9wo2aLAc+OSbtN3+z8znofX7nmWwdiUlEA1c
+         p3VnU7ENuGTTwEQ25sQZ5R3LlIAf9udJr4YAoTSffFGUWGwG8MDav4aqv9csrZ38uRLZ
+         oCchCrOEqf+jb50ezwbdxdTmlobOkW9rsy5+RHORovdwzpocRiFmqc/ki44CU8cHjJ40
+         jbpwMGzt9GHw8Q/yGzPoSuDIHZeLhEOU4thfyaoEL1aPaY+6U92nL1mCLCGdJVBeOxg1
+         lVmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s2rLFrwGSf/fjUuAvUVyqkzahpLoS6qof5NPWyop7JA=;
+        b=iq8G4XIwNifhsbeZOV8DTgb1QAAreyCiNWPHXb8lqsgFWURp9+WrB1JVemvMO/zYDt
+         m5S70cYmt5Gw8Aa/7e/Qfim66IWVVu8JknW2NuVF+U5TNoN8d5mUY7OejTR6uIuAUPov
+         B39VhPwDsN3+7WHZkCo/crQCoQl4Eh05NCYl5k55V81JZZIz0ljk/d2z6BcNl3Zsq/CX
+         PqMdBw4qrOAge1/Z0/I5Oly+SiDQjjxNOc2n3b3TKQY/yV8+tcUL5/DirmIX3b4lXGCX
+         35EacApmTTxnzLOcLKcYnqVOeh9HiA5SOUUYhwyPl2DBHDfJu0Rcsl9ZIdJBa3D95O8s
+         5pcw==
+X-Gm-Message-State: AOAM530BdrOXyS6bwHB8xT2gLQQVXs5D9UZTgHF4G+J9aZe3he+e5H6H
+        tvFUnpneVtyxmhghQjweYLI=
+X-Google-Smtp-Source: ABdhPJy+NGsLX5KnwKNlbDgAb6Z0yHzKcjQnt/ojyVP35AQc8/ANOmzJAIjSf9RSIaEAtI8uEhhBiA==
+X-Received: by 2002:a05:600c:3552:: with SMTP id i18mr2256601wmq.21.1644346535282;
+        Tue, 08 Feb 2022 10:55:35 -0800 (PST)
+Received: from localhost.localdomain ([94.73.33.246])
+        by smtp.gmail.com with ESMTPSA id w6sm11897613wrp.51.2022.02.08.10.55.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 10:55:35 -0800 (PST)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     jikos@kernel.org
+Cc:     benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH v2] HID: apple: Report Magic Keyboard 2021 with fingerprint reader battery over USB
+Date:   Tue,  8 Feb 2022 19:55:30 +0100
+Message-Id: <20220208185530.51690-1-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 25 Jan 2022 09:23:27 +0800, Leilk Liu wrote:
-> Subject: [PATCH V4 0/3] Add compatible for Mediatek MT8186
-> 
-> V4:
-> 1. add "dt-bindings: spi: Convert spi-slave-mt27xx to json-schema" to
-> this series again.
-> 
-> v3:
-> 1. Fix Rob review comment in v2.
-> 
-> [...]
+Like the Apple Magic Keyboard 2015, when connected over USB, the 2021
+version with fingerprint reader registers 2 different interfaces. One of
+them is used to report the battery level.
 
-Applied to
+However, unlike when connected over Bluetooth, the battery level is not
+reported automatically and it is required to fetch it manually.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+Add the APPLE_RDESC_BATTERY quirk to fix the battery report descriptor
+and manually fetch the battery level.
 
-Thanks!
+Tested with the ANSI variant of the keyboard with and without numpad.
 
-[1/3] dt-bindings: spi: Convert spi-slave-mt27xx to json-schema
-      commit: 60edd652005fe2931565f658f23f86d094f4c1f0
-[2/3] dt-bindings: spi: Convert spi-mt65xx to json-schema
-      commit: 08727dd751234bc878be64e60ea6f0d8ea0d54c0
-[3/3] dt-bindings: spi: Add compatible for Mediatek MT8186
-      commit: ccbc5d0a92c5f1d42d1a1635b53f1987821e9cdd
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+---
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+v2: Rebased on master, it was for-next
+---
+ drivers/hid/hid-apple.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 24802a4a636e..5117d354af18 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -752,11 +752,11 @@ static const struct hid_device_id apple_devices[] = {
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021),
+ 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021),
+-		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
++		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK | APPLE_RDESC_BATTERY },
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021),
+ 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021),
+-		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
++		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK | APPLE_RDESC_BATTERY },
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021),
+ 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
+ 
+-- 
+2.25.1
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
