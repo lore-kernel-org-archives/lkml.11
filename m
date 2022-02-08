@@ -2,146 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9473BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239737AbiBHNSu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:18:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58842 "EHLO
+        id S242834AbiBHNSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:18:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358144AbiBHMlC (ORCPT
+        with ESMTP id S1349825AbiBHMMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:02 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD6BC03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:02 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id on2so7738707pjb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yu5wC4iGlAJptCPwbvLdBvXWnUX/vMCoe837u17t2vE=;
-        b=WYmMFm75NEaKiAQgXHcNywEYl4EfNKMdlnHmbH+Y/S70IQ6WZ9BTZFIM6qXllePpzx
-         VqxfGa3WakmxF3TFYcuEqxxCXNGBaGXzpSF7WpnjK4acriB5IPWJHkzpCdKwAC2iXA2q
-         MpfJH/5jIsHVddh1YI+t3DBLCwl7un6kbnAxA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yu5wC4iGlAJptCPwbvLdBvXWnUX/vMCoe837u17t2vE=;
-        b=iE3AAfV4h7oyBipp3BVgsunnN0Anpqv5z0RQVhUW3p1OElWoek34DcX6F74AfLbgqD
-         ZII0iA/2QycbM0gw9QAvetzZPuhDX+pFCwFcyfQLq3v6wOKa8m/GWNZ3F9ubKl/HNWP5
-         n0KdruDr4l/EfUtZIUM2OvwoudCukd4vzKjBd7ryWG+tha2fevsCLN/o+QvV2NqSBBj4
-         r6s7COniHZ+B1BNkrjAhO0S29EPTHaN09WttA+ciGbCyGMZT7V7rdH4CQAcBT5mXjH1f
-         KuKEjiHImbUPOCmBRI45noWjx6aFrh6QkKjzkK/4zUw1siJ19G0fR9XcOcymuub5GraP
-         M1og==
-X-Gm-Message-State: AOAM533K03assPLpPRI4mdZ/hsRSxrc3JkIL3N1aQTbOvY5Xp8Cb9CHJ
-        89XCt9/7Hc1uYU7ZOP4rR1HQhA==
-X-Google-Smtp-Source: ABdhPJzUeRlYjgcD/Tizn2yiqNMWwskxr1QbMAtRHQShttT8ptqsm5WTOeTXEuEiu4TrR1RbEMFh/Q==
-X-Received: by 2002:a17:902:6b8c:: with SMTP id p12mr4434188plk.51.1644324062033;
-        Tue, 08 Feb 2022 04:41:02 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:01 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 06/31] clk: mediatek: cpumux: Implement unregister API
-Date:   Tue,  8 Feb 2022 20:40:09 +0800
-Message-Id: <20220208124034.414635-7-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
+        Tue, 8 Feb 2022 07:12:31 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F7BC03FEC0;
+        Tue,  8 Feb 2022 04:12:28 -0800 (PST)
+Received: from fraeml737-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JtMLm3sGSz67xNM;
+        Tue,  8 Feb 2022 20:11:44 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml737-chm.china.huawei.com (10.206.15.218) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 13:12:26 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Feb 2022 12:12:24 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <axboe@kernel.dk>
+CC:     <ming.lei@redhat.com>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, John Garry <john.garry@huawei.com>
+Subject: [PATCH] sbitmap: Delete old sbitmap_queue_get_shallow()
+Date:   Tue, 8 Feb 2022 20:07:04 +0800
+Message-ID: <1644322024-105340-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cpumux clk type within the MediaTek clk driver library only has
-a register function, and no corresponding unregister function. This
-means there is no way for its users to properly implement cleanup
-and removal.
+Since __sbitmap_queue_get_shallow() was introduced in commit c05e66733788
+("sbitmap: add sbitmap_get_shallow() operation"), it has not been used.
 
-Add a matching unregister function for the cpumux type clk.
+Delete __sbitmap_queue_get_shallow() and rename public
+__sbitmap_queue_get_shallow() -> sbitmap_queue_get_shallow() as it is odd
+to have public __foo but no foo at all.
 
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-cpumux.c | 31 +++++++++++++++++++++++++++++++
- drivers/clk/mediatek/clk-cpumux.h |  3 +++
- 2 files changed, 34 insertions(+)
+Signed-off-by: John Garry <john.garry@huawei.com>
 
-diff --git a/drivers/clk/mediatek/clk-cpumux.c b/drivers/clk/mediatek/clk-cpumux.c
-index cab5095416b6..99a819e3673f 100644
---- a/drivers/clk/mediatek/clk-cpumux.c
-+++ b/drivers/clk/mediatek/clk-cpumux.c
-@@ -77,6 +77,21 @@ mtk_clk_register_cpumux(const struct mtk_composite *mux,
- 	return clk;
+diff --git a/block/blk-mq-tag.c b/block/blk-mq-tag.c
+index 845f74e8dd7b..0fd409b8e86e 100644
+--- a/block/blk-mq-tag.c
++++ b/block/blk-mq-tag.c
+@@ -107,7 +107,7 @@ static int __blk_mq_get_tag(struct blk_mq_alloc_data *data,
+ 		return BLK_MQ_NO_TAG;
+ 
+ 	if (data->shallow_depth)
+-		return __sbitmap_queue_get_shallow(bt, data->shallow_depth);
++		return sbitmap_queue_get_shallow(bt, data->shallow_depth);
+ 	else
+ 		return __sbitmap_queue_get(bt);
+ }
+diff --git a/include/linux/sbitmap.h b/include/linux/sbitmap.h
+index df3b584b0f0c..dffeb8281c2d 100644
+--- a/include/linux/sbitmap.h
++++ b/include/linux/sbitmap.h
+@@ -135,7 +135,7 @@ struct sbitmap_queue {
+ 
+ 	/**
+ 	 * @min_shallow_depth: The minimum shallow depth which may be passed to
+-	 * sbitmap_queue_get_shallow() or __sbitmap_queue_get_shallow().
++	 * sbitmap_queue_get_shallow()
+ 	 */
+ 	unsigned int min_shallow_depth;
+ };
+@@ -463,7 +463,7 @@ unsigned long __sbitmap_queue_get_batch(struct sbitmap_queue *sbq, int nr_tags,
+ 					unsigned int *offset);
+ 
+ /**
+- * __sbitmap_queue_get_shallow() - Try to allocate a free bit from a &struct
++ * sbitmap_queue_get_shallow() - Try to allocate a free bit from a &struct
+  * sbitmap_queue, limiting the depth used from each word, with preemption
+  * already disabled.
+  * @sbq: Bitmap queue to allocate from.
+@@ -475,8 +475,8 @@ unsigned long __sbitmap_queue_get_batch(struct sbitmap_queue *sbq, int nr_tags,
+  *
+  * Return: Non-negative allocated bit number if successful, -1 otherwise.
+  */
+-int __sbitmap_queue_get_shallow(struct sbitmap_queue *sbq,
+-				unsigned int shallow_depth);
++int sbitmap_queue_get_shallow(struct sbitmap_queue *sbq,
++			      unsigned int shallow_depth);
+ 
+ /**
+  * sbitmap_queue_get() - Try to allocate a free bit from a &struct
+@@ -498,32 +498,6 @@ static inline int sbitmap_queue_get(struct sbitmap_queue *sbq,
+ 	return nr;
  }
  
-+static void mtk_clk_unregister_cpumux(struct clk *clk)
-+{
-+	struct mtk_clk_cpumux *cpumux;
-+	struct clk_hw *hw;
-+
-+	hw = __clk_get_hw(clk);
-+	if (!hw)
-+		return;
-+
-+	cpumux = to_mtk_clk_cpumux(hw);
-+
-+	clk_unregister(clk);
-+	kfree(cpumux);
-+}
-+
- int mtk_clk_register_cpumuxes(struct device_node *node,
- 			      const struct mtk_composite *clks, int num,
- 			      struct clk_onecell_data *clk_data)
-@@ -106,4 +121,20 @@ int mtk_clk_register_cpumuxes(struct device_node *node,
+-/**
+- * sbitmap_queue_get_shallow() - Try to allocate a free bit from a &struct
+- * sbitmap_queue, limiting the depth used from each word.
+- * @sbq: Bitmap queue to allocate from.
+- * @cpu: Output parameter; will contain the CPU we ran on (e.g., to be passed to
+- *       sbitmap_queue_clear()).
+- * @shallow_depth: The maximum number of bits to allocate from a single word.
+- * See sbitmap_get_shallow().
+- *
+- * If you call this, make sure to call sbitmap_queue_min_shallow_depth() after
+- * initializing @sbq.
+- *
+- * Return: Non-negative allocated bit number if successful, -1 otherwise.
+- */
+-static inline int sbitmap_queue_get_shallow(struct sbitmap_queue *sbq,
+-					    unsigned int *cpu,
+-					    unsigned int shallow_depth)
+-{
+-	int nr;
+-
+-	*cpu = get_cpu();
+-	nr = __sbitmap_queue_get_shallow(sbq, shallow_depth);
+-	put_cpu();
+-	return nr;
+-}
+-
+ /**
+  * sbitmap_queue_min_shallow_depth() - Inform a &struct sbitmap_queue of the
+  * minimum shallow depth that will be used.
+diff --git a/lib/sbitmap.c b/lib/sbitmap.c
+index b7cb96ae4701..2eb3de18ded3 100644
+--- a/lib/sbitmap.c
++++ b/lib/sbitmap.c
+@@ -557,14 +557,14 @@ unsigned long __sbitmap_queue_get_batch(struct sbitmap_queue *sbq, int nr_tags,
  	return 0;
  }
  
-+void mtk_clk_unregister_cpumuxes(const struct mtk_composite *clks, int num,
-+				 struct clk_onecell_data *clk_data)
-+{
-+	int i;
-+
-+	for (i = num; i > 0; i--) {
-+		const struct mtk_composite *mux = &clks[i - 1];
-+
-+		if (IS_ERR_OR_NULL(clk_data->clks[mux->id]))
-+			continue;
-+
-+		mtk_clk_unregister_cpumux(clk_data->clks[mux->id]);
-+		clk_data->clks[mux->id] = ERR_PTR(-ENOENT);
-+	}
-+}
-+
- MODULE_LICENSE("GPL");
-diff --git a/drivers/clk/mediatek/clk-cpumux.h b/drivers/clk/mediatek/clk-cpumux.h
-index 2aaf1afd4e5f..fda7770fd803 100644
---- a/drivers/clk/mediatek/clk-cpumux.h
-+++ b/drivers/clk/mediatek/clk-cpumux.h
-@@ -19,4 +19,7 @@ int mtk_clk_register_cpumuxes(struct device_node *node,
- 			      const struct mtk_composite *clks, int num,
- 			      struct clk_onecell_data *clk_data);
+-int __sbitmap_queue_get_shallow(struct sbitmap_queue *sbq,
+-				unsigned int shallow_depth)
++int sbitmap_queue_get_shallow(struct sbitmap_queue *sbq,
++			      unsigned int shallow_depth)
+ {
+ 	WARN_ON_ONCE(shallow_depth < sbq->min_shallow_depth);
  
-+void mtk_clk_unregister_cpumuxes(const struct mtk_composite *clks, int num,
-+				 struct clk_onecell_data *clk_data);
-+
- #endif /* __DRV_CLK_CPUMUX_H */
+ 	return sbitmap_get_shallow(&sbq->sb, shallow_depth);
+ }
+-EXPORT_SYMBOL_GPL(__sbitmap_queue_get_shallow);
++EXPORT_SYMBOL_GPL(sbitmap_queue_get_shallow);
+ 
+ void sbitmap_queue_min_shallow_depth(struct sbitmap_queue *sbq,
+ 				     unsigned int min_shallow_depth)
 -- 
-2.35.0.263.gb82422642f-goog
+2.26.2
 
