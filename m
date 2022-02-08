@@ -2,230 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98914C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE2CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383426AbiBHQcm (ORCPT
+        id S1383448AbiBHQco (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 11:32:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
+        Tue, 8 Feb 2022 11:32:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234343AbiBHQck (ORCPT
+        with ESMTP id S1383420AbiBHQcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 11:32:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95896C061576
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 08:32:39 -0800 (PST)
+        Tue, 8 Feb 2022 11:32:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B434C061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 08:32:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644337958;
+        s=mimecast20190719; t=1644337960;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=L9wKL0mFcQI+dpfyUTo+H+hKAl43nfgO4cY94TcdTW8=;
-        b=Bu/guvaS8zFQft8iBQFzkOt5CITC9WYDYIKLEyboPphirLJtDeSUuIM+1A7DcR5EnQ9rcO
-        2tELa/WFcn7MzZwiSjUFZfseaEson4CyOChBLLaEPyqfYsdZqCUhHMMp7ya5/TKJzlLOcq
-        qHwBFfiRHOdZ1Zq0pSbd/2Z4wa3QBTY=
+        bh=BtkJvAo+N9u8Ul05NhvoL9QDcGnWfbGW9BYYZdFX1lY=;
+        b=IbdOnHsp8rHImQLEuhPnpb1Jl5WRprTEMYOUrokXzG1CxbuDbVY/eAVYw/fe2MzI4Ag7N/
+        RgY/xvguoH/rqU2Wh5pm6TtMUxYXOFbnPftT6rdSQ6MeDQ8MDk4Sq6QrMwDnx/4HqI55vH
+        6ykdwcOiyARWt4MjODgtuCshXDQ+y1g=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-480-yScnzixDNL69_svQtZlp-w-1; Tue, 08 Feb 2022 11:32:37 -0500
-X-MC-Unique: yScnzixDNL69_svQtZlp-w-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-325-Yz1WSJKINhyj0X1oRqdZwg-1; Tue, 08 Feb 2022 11:32:37 -0500
+X-MC-Unique: Yz1WSJKINhyj0X1oRqdZwg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DC72E8519E9;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 189D48519E0;
         Tue,  8 Feb 2022 16:32:35 +0000 (UTC)
 Received: from fuller.cnet (ovpn-112-4.gru2.redhat.com [10.97.112.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AA3641086486;
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6E8B42A174;
         Tue,  8 Feb 2022 16:32:34 +0000 (UTC)
 Received: by fuller.cnet (Postfix, from userid 1000)
-        id 2A618416CE5D; Mon,  7 Feb 2022 12:16:34 -0300 (-03)
-Date:   Mon, 7 Feb 2022 12:16:33 -0300
+        id 5BB70416D5DD; Tue,  8 Feb 2022 12:47:10 -0300 (-03)
+Date:   Tue, 8 Feb 2022 12:47:10 -0300
 From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Oscar Shiang <oscar0225@livemail.tw>
-Subject: Re: [patch v11 05/13] task isolation: sync vmstats on return to
- userspace
-Message-ID: <YgE30X7z8htKWzbS@fuller.cnet>
-References: <20220204173537.429902988@fedora.localdomain>
- <20220204173554.676117258@fedora.localdomain>
- <20220207145718.GA523931@lothringen>
+To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, frederic@kernel.org, tglx@linutronix.de,
+        mgorman@suse.de, linux-rt-users@vger.kernel.org, vbabka@suse.cz,
+        cl@linux.com, paulmck@kernel.org, willy@infradead.org
+Subject: Re: [PATCH 2/2] mm/page_alloc: Add remote draining support to
+ per-cpu lists
+Message-ID: <YgKQfsznPUDN34un@fuller.cnet>
+References: <20220208100750.1189808-1-nsaenzju@redhat.com>
+ <20220208100750.1189808-3-nsaenzju@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220207145718.GA523931@lothringen>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+In-Reply-To: <20220208100750.1189808-3-nsaenzju@redhat.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 03:57:18PM +0100, Frederic Weisbecker wrote:
-> On Fri, Feb 04, 2022 at 02:35:42PM -0300, Marcelo Tosatti wrote:
-> > The logic to disable vmstat worker thread, when entering
-> > nohz full, does not cover all scenarios. For example, it is possible
-> > for the following to happen:
-> > 
-> > 1) enter nohz_full, which calls refresh_cpu_vm_stats, syncing the stats.
-> > 2) app runs mlock, which increases counters for mlock'ed pages.
-> > 3) start -RT loop
-> > 
-> > Since refresh_cpu_vm_stats from nohz_full logic can happen _before_
-> > the mlock, vmstat shepherd can restart vmstat worker thread on
-> > the CPU in question.
-> > 
-> > To fix this, use the task isolation prctl interface to quiesce 
-> > deferred actions when returning to userspace.
-> > 
-> > This patch adds hooks to fork and exit code paths.
-> > 
-> > Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
-> > 
-> > ---
-> > v11: fold patch to add task_isol_exit hooks (Frederic)
-> >      Use _TIF_TASK_ISOL bit on thread flags (Frederic)
-> >      
-> > v6: modify exit_to_user_mode_loop to cover exceptions and interrupts
-> > v5: no changes
-> > v4: add oneshot mode support
-> > 
-> >  include/linux/task_isolation.h |   16 ++++++++++++++++
-> >  include/linux/vmstat.h         |    8 ++++++++
-> >  kernel/entry/common.c          |   15 +++++++++++----
-> >  kernel/task_isolation.c        |   21 +++++++++++++++++++++
-> >  mm/vmstat.c                    |   21 +++++++++++++++++++++
-> >  5 files changed, 77 insertions(+), 4 deletions(-)
-> > 
-> > Index: linux-2.6/include/linux/task_isolation.h
-> > ===================================================================
-> > --- linux-2.6.orig/include/linux/task_isolation.h
-> > +++ linux-2.6/include/linux/task_isolation.h
-> > @@ -27,6 +27,13 @@ static inline void task_isol_free(struct
-> >  		__task_isol_free(tsk);
-> >  }
-> >  
-> > +void __task_isol_exit(struct task_struct *tsk);
-> > +static inline void task_isol_exit(struct task_struct *tsk)
-> > +{
-> > +	if (tsk->task_isol_info)
-> > +		__task_isol_exit(tsk);
-> > +}
-> > +
-> >  int prctl_task_isol_feat_get(unsigned long arg2, unsigned long arg3,
-> >  			     unsigned long arg4, unsigned long arg5);
-> >  int prctl_task_isol_cfg_get(unsigned long arg2, unsigned long arg3,
-> > @@ -40,12 +47,22 @@ int prctl_task_isol_activate_set(unsigne
-> >  
-> >  int __copy_task_isol(struct task_struct *tsk);
-> >  
-> > +void task_isol_exit_to_user_mode(void);
-> > +
-> >  #else
-> >  
-> > +static inline void task_isol_exit_to_user_mode(void)
-> > +{
-> > +}
-> > +
-> >  static inline void task_isol_free(struct task_struct *tsk)
-> >  {
-> >  }
-> >  
-> > +static inline void task_isol_exit(struct task_struct *tsk)
-> > +{
-> > +}
-> > +
-> >  static inline int prctl_task_isol_feat_get(unsigned long arg2,
-> >  					   unsigned long arg3,
-> >  					   unsigned long arg4,
-> > Index: linux-2.6/include/linux/vmstat.h
-> > ===================================================================
-> > --- linux-2.6.orig/include/linux/vmstat.h
-> > +++ linux-2.6/include/linux/vmstat.h
-> > @@ -21,6 +21,14 @@ int sysctl_vm_numa_stat_handler(struct c
-> >  		void *buffer, size_t *length, loff_t *ppos);
-> >  #endif
-> >  
-> > +#if defined(CONFIG_SMP) && defined(CONFIG_TASK_ISOLATION)
-> > +void sync_vmstat(void);
-> > +#else
-> > +static inline void sync_vmstat(void)
-> > +{
-> > +}
-> > +#endif
-> > +
-> >  struct reclaim_stat {
-> >  	unsigned nr_dirty;
-> >  	unsigned nr_unqueued_dirty;
-> > Index: linux-2.6/kernel/entry/common.c
-> > ===================================================================
-> > --- linux-2.6.orig/kernel/entry/common.c
-> > +++ linux-2.6/kernel/entry/common.c
-> > @@ -6,6 +6,7 @@
-> >  #include <linux/livepatch.h>
-> >  #include <linux/audit.h>
-> >  #include <linux/tick.h>
-> > +#include <linux/task_isolation.h>
-> >  
-> >  #include "common.h"
-> >  
-> > @@ -174,6 +175,9 @@ static unsigned long exit_to_user_mode_l
-> >  		if (ti_work & _TIF_NOTIFY_RESUME)
-> >  			tracehook_notify_resume(regs);
-> >  
-> > +		if (ti_work & _TIF_TASK_ISOL)
-> > +			task_isol_exit_to_user_mode();
-> > +
-> >  		/* Architecture specific TIF work */
-> >  		arch_exit_to_user_mode_work(regs, ti_work);
-> >  
-> > Index: linux-2.6/kernel/task_isolation.c
-> > ===================================================================
-> > --- linux-2.6.orig/kernel/task_isolation.c
-> > +++ linux-2.6/kernel/task_isolation.c
-> > @@ -18,6 +18,12 @@
-> >  #include <linux/sysfs.h>
-> >  #include <linux/init.h>
-> >  #include <linux/sched/task.h>
-> > +#include <linux/mm.h>
-> > +#include <linux/vmstat.h>
-> > +
-> > +void __task_isol_exit(struct task_struct *tsk)
-> > +{
-> > +}
-> >  
-> >  void __task_isol_free(struct task_struct *tsk)
-> >  {
-> > @@ -251,6 +257,9 @@ static int cfg_feat_quiesce_set(unsigned
-> >  	task_isol_info->quiesce_mask = i_qctrl->quiesce_mask;
-> >  	task_isol_info->oneshot_mask = i_qctrl->quiesce_oneshot_mask;
-> >  	task_isol_info->conf_mask |= ISOL_F_QUIESCE;
-> > +	if (task_isol_info->quiesce_mask & ISOL_F_QUIESCE_VMSTATS)
-> > +		set_thread_flag(TIF_TASK_ISOL);
+On Tue, Feb 08, 2022 at 11:07:50AM +0100, Nicolas Saenz Julienne wrote:
+> The page allocator's per-cpu page lists (pcplists) are currently
+> protected using local_locks. While performance savvy, this doesn't allow
+> for remote access to these structures. CPUs requiring system-wide
+> changes to the per-cpu lists get around this by scheduling
+> workers on each CPU. That said, some setups like NOHZ_FULL CPUs,
+> aren't well suited to this since they can't handle interruptions
+> of any sort.
 > 
-> Should you check if (i->active_mask == ISOL_F_QUIESCE) before setting the
-> flag?
+> To mitigate this, replace the current draining mechanism with one that
+> allows remotely draining the lists:
 > 
-> > +
-> >  	ret = 0;
-> >  
-> >  out_free:
-> > @@ -303,6 +312,7 @@ int __copy_task_isol(struct task_struct
-> >  		new_info->active_mask = info->active_mask;
-> >  
-> >  	tsk->task_isol_info = new_info;
-> > +	set_ti_thread_flag(task_thread_info(tsk), TIF_TASK_ISOL);
+>  - Each CPU now has two pcplists pointers: one that points to a pcplists
+>    instance that is in-use, 'pcp->lp', another that points to an idle
+>    and empty instance, 'pcp->drain'. CPUs access their local pcplists
+>    through 'pcp->lp' and the pointer is dereferenced atomically.
 > 
-> Same here?
+>  - When a CPU decides it needs to empty some remote pcplists, it'll
+>    atomically exchange the remote CPU's 'pcp->lp' and 'pcp->drain'
+>    pointers. A remote CPU racing with this will either have:
+> 
+>      - An old 'pcp->lp' reference, it'll soon be emptied by the drain
+>        process, we just have to wait for it to finish using it.
+> 
+>      - The new 'pcp->lp' reference, that is, an empty pcplists instance.
+>        rcu_replace_pointer()'s release semantics ensures any prior
+>        changes will be visible by the remote CPU, for example: changes
+>        to 'pcp->high' and 'pcp->batch' when disabling the pcplists.
+> 
+>  - The CPU that started the drain can now wait for an RCU grace period
+>    to make sure the remote CPU is done using the old pcplists.
+>    synchronize_rcu() counts as a full memory barrier, so any changes the
+>    local CPU makes to the soon to be drained pcplists will be visible to
+>    the draining CPU once it returns.
+> 
+>  - Then the CPU can safely free the old pcplists. Nobody else holds a
+>    reference to it. Note that concurrent access to the remote pcplists
+>    drain is protected by the 'pcpu_drain_mutex'.
+> 
+> >From an RCU perspective, we're only protecting access to the pcplists
+> pointer, the drain operation is the writer and the local_lock critical
+> sections are the readers. RCU guarantees atomicity both while
+> dereferencing the pcplists pointer and replacing it. It also checks for
+> RCU critical section/locking correctness, as all readers have to hold
+> their per-cpu pagesets local_lock, which also counts as a critical
+> section from RCU's perspective.
+> 
+> >From a performance perspective, on production configurations, the patch
+> adds an extra dereference to all hot paths (under such circumstances
+> rcu_dereference() will simplify to READ_ONCE()). Extensive measurements
+> have been performed on different architectures to ascertain the
+> performance impact is minimal. Most platforms don't see any difference
+> and the worst-case scenario shows a 1-3% degradation on a page
+> allocation micro-benchmark. See cover letter for in-depth results.
+> 
+> Accesses to the pcplists like the ones in mm/vmstat.c don't require RCU
+> supervision since they can handle outdated data, but they do use
+> rcu_access_pointer() to avoid compiler weirdness make sparse happy.
+> 
+> Note that special care has been taken to verify there are no races with
+> the memory hotplug code paths. Notably with calls to zone_pcp_reset().
+> As Mel Gorman explains in a previous patch[1]: "The existing hotplug
+> paths guarantees the pcplists cannot be used after zone_pcp_enable()
+> [the one in offline_pages()]. That should be the case already because
+> all the pages have been freed and there is no page to put on the PCP
+> lists."
+> 
+> All in all, this technique allows for remote draining on all setups with
+> an acceptable performance impact. It benefits all sorts of use cases:
+> low-latency, real-time, HPC, idle systems, KVM guests.
+> 
+> [1] 8ca559132a2d ("mm/memory_hotplug: remove broken locking of zone PCP
+>     structures during hot remove")
+> 
+> Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+> ---
+> 
+> Changes since RFC:
+>  - Avoid unnecessary spin_lock_irqsave/restore() in free_pcppages_bulk()
+>  - Add more detail to commit and code comments.
+>  - Use synchronize_rcu() instead of synchronize_rcu_expedited(), the RCU
+>    documentation says to avoid it unless really justified. I don't think
+>    it's justified here, if we can schedule and join works, waiting for
+>    an RCU grace period is OK.
 
-Yes, should fix that.
+https://patchwork.ozlabs.org/project/netdev/patch/1306228052.3026.16.camel@edumazet-laptop/
 
-Will wait for more comments before resending -v12.
+Adding 100ms to direct reclaim path might be problematic. It will also
+slowdown kcompactd (note it'll call drain_all_pages for each zone).
 
+>  - Avoid sparse warnings by using rcu_access_pointer() and
+>    rcu_dereference_protected().
+> 
+>  include/linux/mmzone.h |  22 +++++-
+>  mm/page_alloc.c        | 155 ++++++++++++++++++++++++++---------------
+>  mm/vmstat.c            |   6 +-
+>  3 files changed, 120 insertions(+), 63 deletions(-)
+> 
+> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+> index b4cb85d9c6e8..b0b593fd8e48 100644
+> --- a/include/linux/mmzone.h
+> +++ b/include/linux/mmzone.h
+> @@ -388,13 +388,31 @@ struct per_cpu_pages {
+>  	short expire;		/* When 0, remote pagesets are drained */
+>  #endif
+>  
+> -	struct pcplists *lp;
+> +	/*
+> +	 * As a rule of thumb, any access to struct per_cpu_pages's 'lp' has
+> +	 * happen with the pagesets local_lock held and using
+> +	 * rcu_dereference_check(). If there is a need to modify both
+> +	 * 'lp->count' and 'lp->lists' in the same critical section 'pcp->lp'
+> +	 * can only be derefrenced once. See for example:
+
+Typo.
 
