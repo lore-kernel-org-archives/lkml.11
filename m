@@ -2,89 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42EC7C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B399C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233771AbiBHBGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:06:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
+        id S1345279AbiBHBLN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:11:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343753AbiBGX4y (ORCPT
+        with ESMTP id S1344220AbiBHAqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:56:54 -0500
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F3EC061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 15:56:53 -0800 (PST)
-Received: by mail-ot1-x32b.google.com with SMTP id b12-20020a9d754c000000b0059eb935359eso12051089otl.8
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 15:56:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RM60N0Rjf5a1UzUDohM/hVHwY147yFPqeTn24GmliwE=;
-        b=ZfQHzR4lezRx9GD+vjJ10flGdwmXe+MNNuOGxKMK6/5aDP0mnZ5V3Qj66+QY4KWkay
-         jCvVdr+WHrt2D4v55tW3SdLvlFAs03r4SD8k6VpDpuXEGJgO2XmxgbD47gFFzmy5rd9j
-         9qwaQZ/znUULqh5PTElNJ9ySf185m8u30Wq3DCXhYQVOprof0ks1udTtaCjfHdx5qwYz
-         srvz4I53b+jXFbQB7S996k3awzx0H3Mt8Qr/sGghUXc9WUkIdonqenWgC6DKuhuwi7yg
-         6eqAU/6KmCbAu2k+TX2shwIXvTqvMRQRYAJQsklEQo4Gz3IwMRikoYIUQIciSRf5/HaL
-         Rz1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RM60N0Rjf5a1UzUDohM/hVHwY147yFPqeTn24GmliwE=;
-        b=nzwu+YT55veiG1puCpr8IHQckUvuL7PCUZfdBzwh9qoRbj+TyidKrr3CV1zkJRRdMD
-         MjKP2iQkUIZWClQmB89csU8LQoMtneY2d2SCVAcFygWroqHV6HvW70oC9TXWR0Sy0h6q
-         9JOjfwn0exTuyeNbaiKcbnmd+QTIiGxdiCf4e9UIeFuep0JAL+mTiBCKN8JWufKz0Nsl
-         PeEBR1yIKPT/Xb742VexFOBmdoVLmc0QoKBlM9BmmprQqGR2MdqyMTsnvtzId/AEBM+c
-         yMzh0YMrPyHQhM+5Mj3Me/uv0RxitIfvw3HeClG53XgtvNQcDR1Pcn5qZNFUWr+RyAfs
-         JhiQ==
-X-Gm-Message-State: AOAM5322nh4Fb8YajnJ+9lbY5pl9MXyMnEd9+mFJjJoAyU4u0Ua/nSw4
-        VN9rgJ/+nsNwyhcbDcXv7Mw=
-X-Google-Smtp-Source: ABdhPJwGwnxCoyQKJmjQfarqUsvKouiqLlNdaWqGRnQr2hyJ/c17gDhzWz73HyIalUuaQy2yoQzK1A==
-X-Received: by 2002:a05:6830:918:: with SMTP id v24mr873883ott.246.1644278213093;
-        Mon, 07 Feb 2022 15:56:53 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:4cd8:12bf:4134:806a:5a4a:2a88])
-        by smtp.gmail.com with ESMTPSA id 1sm3829020oab.16.2022.02.07.15.56.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 15:56:52 -0800 (PST)
-From:   Leonardo Araujo <leonardo.aa88@gmail.com>
-To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Leonardo Araujo <leonardo.aa88@gmail.com>
-Subject: [PATCH] Staging: r8188eu: core: Concatenated strings should use spaces between elements
-Date:   Mon,  7 Feb 2022 20:56:43 -0300
-Message-Id: <20220207235643.29768-1-leonardo.aa88@gmail.com>
-X-Mailer: git-send-email 2.29.0
+        Mon, 7 Feb 2022 19:46:17 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA7BC0612A4;
+        Mon,  7 Feb 2022 16:46:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644281176; x=1675817176;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=M+2L++RxeQbWVpCBPEiJ91GOEuKMdiIfqq5NEpf476Y=;
+  b=RdggwiEHQwVakfdMA4mcRn5TvnjRhgBJ45i59zXuXENnqDljXVEN1TKk
+   8CYeI89+eY3smr5RqzWtViqNj2/pwAWuDAA+HxtenzjreeoUPowVvyCUO
+   41/CtPcYqr8cbvWbTkI4ZBOC2ibOXSustVg5WonQ1uDG0dJ2leBZCB+VY
+   qyWaUFFIWORMRqDNhgk7XyS/sZMKY3gwNtxjgrnNocU5N3nYrsnquVDw8
+   3uxthjntRde/V7QLFJFYDaipUxC3FCMGLiT+uG/kNbAGNPCUj7YVUXCLB
+   9/vlLhIrhSntpFYCMesqcQRWD9UwMUFJZP+qtlFkyf3X0YwdXK5Lj2wao
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="232407993"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="232407993"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:10 -0800
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="499389554"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:09 -0800
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V2 28/32] selftests/sgx: Test faulty enclave behavior
+Date:   Mon,  7 Feb 2022 16:45:50 -0800
+Message-Id: <640db753d78eed8146523d386fbf6c95e46ea4f4.1644274683.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1644274683.git.reinette.chatre@intel.com>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fixes the following checkpatch.pl warning:
+Removing a page from an initialized enclave involves three steps:
+first the user requests changing the page type to SGX_PAGE_TYPE_TRIM
+via an ioctl(), on success the ENCLU[EACCEPT] instruction needs to be
+run from within the enclave to accept the page removal, finally the
+user requests page removal to be completed via an ioctl(). Only after
+acceptance (ENCLU[EACCEPT]) from within the enclave can the kernel
+remove the page from a running enclave.
 
-CHECK: Concatenated strings should use spaces between elements
+Test the behavior when the user's request to change the page type
+succeeds, but the ENCLU[EACCEPT] instruction is not run before the
+ioctl() requesting page removal is run. This should not be permitted.
 
-Signed-off-by: Leonardo Araujo <leonardo.aa88@gmail.com>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
- drivers/staging/r8188eu/core/rtw_ap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes since V1:
+- Update to support ioctl() name change (SGX_IOC_PAGE_MODT ->
+  SGX_IOC_ENCLAVE_MODIFY_TYPE) and provide secinfo as parameter instead
+  of just page type (Jarkko).
+- Update test to reflect page removal ioctl() and struct name change:
+  SGX_IOC_PAGE_REMOVE->SGX_IOC_ENCLAVE_REMOVE_PAGES,
+  struct sgx_page_remove -> struct sgx_enclave_remove_pages (Jarkko).
+- Use ioctl() instead of ioctl in text (Dave).
 
-diff --git a/drivers/staging/r8188eu/core/rtw_ap.c b/drivers/staging/r8188eu/core/rtw_ap.c
-index c7803144355a..30f5ad4e7ca7 100644
---- a/drivers/staging/r8188eu/core/rtw_ap.c
-+++ b/drivers/staging/r8188eu/core/rtw_ap.c
-@@ -1093,7 +1093,7 @@ int rtw_sta_flush(struct adapter *padapter)
- 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
- 	u8 bc_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+ tools/testing/selftests/sgx/main.c | 116 +++++++++++++++++++++++++++++
+ 1 file changed, 116 insertions(+)
+
+diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
+index 53a581bd56c5..e9513ced1853 100644
+--- a/tools/testing/selftests/sgx/main.c
++++ b/tools/testing/selftests/sgx/main.c
+@@ -1472,4 +1472,120 @@ TEST_F(enclave, tcs_create)
+ 	munmap(addr, 3 * PAGE_SIZE);
+ }
  
--	DBG_88E(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(padapter->pnetdev));
-+	DBG_88E(FUNC_NDEV_FMT "\n", FUNC_NDEV_ARG(padapter->pnetdev));
- 
- 	if ((pmlmeinfo->state & 0x03) != WIFI_FW_AP_STATE)
- 		return ret;
++/*
++ * Ensure sane behavior if user requests page removal, does not run
++ * EACCEPT from within enclave but still attempts to finalize page removal
++ * with the SGX_IOC_ENCLAVE_REMOVE_PAGES ioctl(). The latter should fail
++ * because the removal was not EACCEPTed from within the enclave.
++ */
++TEST_F(enclave, remove_added_page_no_eaccept)
++{
++	struct sgx_enclave_remove_pages remove_ioc;
++	struct encl_op_get_from_addr get_addr_op;
++	struct encl_op_put_to_addr put_addr_op;
++	struct sgx_enclave_modt modt_ioc;
++	struct sgx_secinfo secinfo;
++	unsigned long data_start;
++	int ret, errno_save;
++
++	ASSERT_TRUE(setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata));
++
++	memset(&self->run, 0, sizeof(self->run));
++	self->run.tcs = self->encl.encl_base;
++
++	/*
++	 * Hardware (SGX2) and kernel support is needed for this test. Start
++	 * with check that test has a chance of succeeding.
++	 */
++	memset(&modt_ioc, 0, sizeof(modt_ioc));
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
++
++	if (ret == -1) {
++		if (errno == ENOTTY)
++			SKIP(return, "Kernel does not support SGX_IOC_ENCLAVE_MODIFY_TYPE ioctl()");
++		else if (errno == ENODEV)
++			SKIP(return, "System does not support SGX2");
++	}
++
++	/*
++	 * Invalid parameters were provided during sanity check,
++	 * expect command to fail.
++	 */
++	EXPECT_EQ(ret, -1);
++
++	/*
++	 * Page that will be removed is the second data page in the .data
++	 * segment. This forms part of the local encl_buffer within the
++	 * enclave.
++	 */
++	data_start = self->encl.encl_base +
++		     encl_get_data_offset(&self->encl) + PAGE_SIZE;
++
++	/*
++	 * Sanity check that page at @data_start is writable before
++	 * removing it.
++	 *
++	 * Start by writing MAGIC to test page.
++	 */
++	put_addr_op.value = MAGIC;
++	put_addr_op.addr = data_start;
++	put_addr_op.header.type = ENCL_OP_PUT_TO_ADDRESS;
++
++	EXPECT_EQ(ENCL_CALL(&put_addr_op, &self->run, true), 0);
++
++	EXPECT_EEXIT(&self->run);
++	EXPECT_EQ(self->run.exception_vector, 0);
++	EXPECT_EQ(self->run.exception_error_code, 0);
++	EXPECT_EQ(self->run.exception_addr, 0);
++
++	/*
++	 * Read memory that was just written to, confirming that data
++	 * previously written (MAGIC) is present.
++	 */
++	get_addr_op.value = 0;
++	get_addr_op.addr = data_start;
++	get_addr_op.header.type = ENCL_OP_GET_FROM_ADDRESS;
++
++	EXPECT_EQ(ENCL_CALL(&get_addr_op, &self->run, true), 0);
++
++	EXPECT_EQ(get_addr_op.value, MAGIC);
++	EXPECT_EEXIT(&self->run);
++	EXPECT_EQ(self->run.exception_vector, 0);
++	EXPECT_EQ(self->run.exception_error_code, 0);
++	EXPECT_EQ(self->run.exception_addr, 0);
++
++	/* Start page removal by requesting change of page type to PT_TRIM */
++	memset(&modt_ioc, 0, sizeof(modt_ioc));
++	memset(&secinfo, 0, sizeof(secinfo));
++
++	secinfo.flags = SGX_PAGE_TYPE_TRIM << 8;
++	modt_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
++	modt_ioc.length = PAGE_SIZE;
++	modt_ioc.secinfo = (unsigned long)&secinfo;
++
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
++	errno_save = ret == -1 ? errno : 0;
++
++	EXPECT_EQ(ret, 0);
++	EXPECT_EQ(errno_save, 0);
++	EXPECT_EQ(modt_ioc.result, 0);
++	EXPECT_EQ(modt_ioc.count, 4096);
++
++	/* Skip EACCEPT */
++
++	/* Send final ioctl() to complete page removal */
++	memset(&remove_ioc, 0, sizeof(remove_ioc));
++
++	remove_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
++	remove_ioc.length = PAGE_SIZE;
++
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_REMOVE_PAGES, &remove_ioc);
++	errno_save = ret == -1 ? errno : 0;
++
++	/* Operation not permitted since EACCEPT was omitted. */
++	EXPECT_EQ(ret, -1);
++	EXPECT_EQ(errno_save, EPERM);
++	EXPECT_EQ(remove_ioc.count, 0);
++}
++
+ TEST_HARNESS_MAIN
 -- 
-2.29.0
+2.25.1
 
