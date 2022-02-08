@@ -2,173 +2,398 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B5D1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9055EC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240133AbiBHL0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:26:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51422 "EHLO
+        id S1350151AbiBHL0H (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:26:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356096AbiBHKJx (ORCPT
+        with ESMTP id S1346170AbiBHKLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:09:53 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE13CC03FEC0;
-        Tue,  8 Feb 2022 02:09:51 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id u18so36010057edt.6;
-        Tue, 08 Feb 2022 02:09:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6I/rjvse3Om/FLStiyJ4zPHHDV5qURCXK6IN/dDjA2Y=;
-        b=OYMgQRtALhGTq0ZaHfcxxyRrbOb5s3iySIWCA/41PPc2smh+40ANGf02xr7BdvKXXb
-         9AeaYlj9rC7eC/amw02RLD0FBYilOZDTW6C18E6/HzUinOMBfe5bN+nkveyL1CyKG+lR
-         NUXzjEMWQU3+xBDw7ApVQ2V+jpdW+uibiTerLaLHSXEz/MwhCA7pkdwKgLUmOAIk2bpU
-         J2BEWUPXCp0C6n/FMqvrh2JTkWJWyN2xL8Si+TBcYXmPTcUv1RUpGnFKL1zzSx2n5SS8
-         /JyKLnHvesc0AZ2Ndx4q6HyoWlKoWWL/TswFPEyglorBm/5ZomuMIiWZVBDDFCpHb1An
-         C2wA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6I/rjvse3Om/FLStiyJ4zPHHDV5qURCXK6IN/dDjA2Y=;
-        b=7Po3QKdtE0Buafj58pXdPXoyV4yNCicYTCUZrFwQSga8QYljD+QQ1KeqJ75u/PkKtE
-         NjQpL/RDOafpMBIhhHQXRawesCpGh2yHxLZe8FsuuscdaxKSE9ReaH6K9eIvJwLmxOIr
-         c3EBH5t9oBYMili1iyiRuocR3MmJQS8Nya78tEnLVGgqsxqHvffmn3LKM08foBsSCCHK
-         gtFcuua8+A02iKJK59wdbHvrGBEpekk+NVAMwPS49fK0U5z77l+66w1VxXDwtdtAcjHJ
-         iO5O9r9iVJhqgAfjY2bXBFKbe3ogZgPRvk1Gu/Q+J8Xukgypd8itKLzBI85CpCV2iqc/
-         oZoQ==
-X-Gm-Message-State: AOAM530o3YBbouKKDvb+BS3JGwwhM62AjPjrJ1pqWn+D3BYU1EChUMg2
-        amIzJ7G3+L1/fwLgENNanrAE8u/uEhypBklmtHE=
-X-Google-Smtp-Source: ABdhPJxPKmtRUfGotwhepo8jmbA/Aggq6CASzSYHu7p78ImQqYjC93TuyPlPIPb3l6JBNgwAmzA4p2tLFIf9PS34qIg=
-X-Received: by 2002:aa7:dd0b:: with SMTP id i11mr3621700edv.81.1644314990255;
- Tue, 08 Feb 2022 02:09:50 -0800 (PST)
+        Tue, 8 Feb 2022 05:11:11 -0500
+Received: from vulcan.natalenko.name (vulcan.natalenko.name [IPv6:2001:19f0:6c00:8846:5400:ff:fe0c:dfa0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97BEC03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:11:08 -0800 (PST)
+Received: from spock.localnet (unknown [83.148.33.151])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by vulcan.natalenko.name (Postfix) with ESMTPSA id BA020DB8DE1;
+        Tue,  8 Feb 2022 11:11:03 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
+        s=dkim-20170712; t=1644315064;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lUKq3aS/JCO34HXAzMjjQ0LeWrbNhk6ZHI+ox5ouTPA=;
+        b=kv2BPUKVvaAqoPxmRbZDjV1tniN1Z+GuhaqboeFUxuXlkLYuWmH32MdiIYQWNlu/whqMKM
+        ofZJjRLI5IKpPEx7p1ug0U2Q0dd4+Souq/FY5QoN7WeoiU4FHa7BXfMcnhJkBhNzMz+F7d
+        GDXIauPhUa4rOyCqaFwfr8sm61WFz/s=
+From:   Oleksandr Natalenko <oleksandr@natalenko.name>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@kernel.org>,
+        Yu Zhao <yuzhao@google.com>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        page-reclaim@google.com, x86@kernel.org,
+        Yu Zhao <yuzhao@google.com>
+Subject: Re: [PATCH v7 00/12] Multigenerational LRU Framework
+Date:   Tue, 08 Feb 2022 11:11:02 +0100
+Message-ID: <4714886.31r3eYUQgx@natalenko.name>
+In-Reply-To: <20220208081902.3550911-1-yuzhao@google.com>
+References: <20220208081902.3550911-1-yuzhao@google.com>
 MIME-Version: 1.0
-References: <1644290735-3797-1-git-send-email-hongxing.zhu@nxp.com> <1644290735-3797-8-git-send-email-hongxing.zhu@nxp.com>
-In-Reply-To: <1644290735-3797-8-git-send-email-hongxing.zhu@nxp.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Tue, 8 Feb 2022 07:09:40 -0300
-Message-ID: <CAOMZO5ALthc7zZEYZX2YHam2f3C1RmOr4CHLRjHSip7-44tL6Q@mail.gmail.com>
-Subject: Re: [PATCH v6 7/8] PCI: imx6: Disable enabled clocks and regulators
- after link is down
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     Lucas Stach <l.stach@pengutronix.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>, linux-pci@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Richard,
+Hello.
 
-On Tue, Feb 8, 2022 at 12:57 AM Richard Zhu <hongxing.zhu@nxp.com> wrote:
->
-> Since i.MX PCIe doesn't support the hot-plug, and to save power
-> consumption as much as possible. Return error and disable the enabled
-> clocks and regulators when link is down,.
+On =FAter=FD 8. =FAnora 2022 9:18:50 CET Yu Zhao wrote:
+> What's new
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> 1) Addressed all the comments received on the mailing list and in the
+>    meeting with the stakeholders (will note on individual patches).
+> 2) Measured the performance improvements for each patch between 5-8
+>    (reported in the commit messages).
+>=20
+> TLDR
+> =3D=3D=3D=3D
+> The current page reclaim is too expensive in terms of CPU usage and it
+> often makes poor choices about what to evict. This patchset offers an
+> alternative solution that is performant, versatile and straightforward.
+>=20
+> Patchset overview
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> The design and implementation overview was moved to patch 12 so that
+> people can finish reading this cover letter.
+>=20
+> 1. mm: x86, arm64: add arch_has_hw_pte_young()
+> 2. mm: x86: add CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG
+> Using hardware optimizations when trying to clear the accessed bit in
+> many PTEs.
+>=20
+> 3. mm/vmscan.c: refactor shrink_node()
+> A minor refactor.
+>=20
+> 4. mm: multigenerational LRU: groundwork
+> Adding the basic data structure and the functions that insert/remove
+> pages to/from the multigenerational LRU (MGLRU) lists.
+>=20
+> 5. mm: multigenerational LRU: minimal implementation
+> A minimal (functional) implementation without any optimizations.
+>=20
+> 6. mm: multigenerational LRU: exploit locality in rmap
+> Improving the efficiency when using the rmap.
+>=20
+> 7. mm: multigenerational LRU: support page table walks
+> Adding the (optional) page table scanning.
+>=20
+> 8. mm: multigenerational LRU: optimize multiple memcgs
+> Optimizing the overall performance for multiple memcgs running mixed
+> types of workloads.
+>=20
+> 9. mm: multigenerational LRU: runtime switch
+> Adding a runtime switch to enable or disable MGLRU.
+>=20
+> 10. mm: multigenerational LRU: thrashing prevention
+> 11. mm: multigenerational LRU: debugfs interface
+> Providing userspace with additional features like thrashing prevention,
+> working set estimation and proactive reclaim.
+>=20
+> 12. mm: multigenerational LRU: documentation
+> Adding a design doc and an admin guide.
+>=20
+> Benchmark results
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> Independent lab results
+> -----------------------
+> Based on the popularity of searches [01] and the memory usage in
+> Google's public cloud, the most popular open-source memory-hungry
+> applications, in alphabetical order, are:
+>       Apache Cassandra      Memcached
+>       Apache Hadoop         MongoDB
+>       Apache Spark          PostgreSQL
+>       MariaDB (MySQL)       Redis
+>=20
+> An independent lab evaluated MGLRU with the most widely used benchmark
+> suites for the above applications. They posted 960 data points along
+> with kernel metrics and perf profiles collected over more than 500
+> hours of total benchmark time. Their final reports show that, with 95%
+> confidence intervals (CIs), the above applications all performed
+> significantly better for at least part of their benchmark matrices.
+>=20
+> On 5.14:
+> 1. Apache Spark [02] took 95% CIs [9.28, 11.19]% and [12.20, 14.93]%
+>    less wall time to sort three billion random integers, respectively,
+>    under the medium- and the high-concurrency conditions, when
+>    overcommitting memory. There were no statistically significant
+>    changes in wall time for the rest of the benchmark matrix.
+> 2. MariaDB [03] achieved 95% CIs [5.24, 10.71]% and [20.22, 25.97]%
+>    more transactions per minute (TPM), respectively, under the medium-
+>    and the high-concurrency conditions, when overcommitting memory.
+>    There were no statistically significant changes in TPM for the rest
+>    of the benchmark matrix.
+> 3. Memcached [04] achieved 95% CIs [23.54, 32.25]%, [20.76, 41.61]%
+>    and [21.59, 30.02]% more operations per second (OPS), respectively,
+>    for sequential access, random access and Gaussian (distribution)
+>    access, when THP=3Dalways; 95% CIs [13.85, 15.97]% and
+>    [23.94, 29.92]% more OPS, respectively, for random access and
+>    Gaussian access, when THP=3Dnever. There were no statistically
+>    significant changes in OPS for the rest of the benchmark matrix.
+> 4. MongoDB [05] achieved 95% CIs [2.23, 3.44]%, [6.97, 9.73]% and
+>    [2.16, 3.55]% more operations per second (OPS), respectively, for
+>    exponential (distribution) access, random access and Zipfian
+>    (distribution) access, when underutilizing memory; 95% CIs
+>    [8.83, 10.03]%, [21.12, 23.14]% and [5.53, 6.46]% more OPS,
+>    respectively, for exponential access, random access and Zipfian
+>    access, when overcommitting memory.
+>=20
+> On 5.15:
+> 5. Apache Cassandra [06] achieved 95% CIs [1.06, 4.10]%, [1.94, 5.43]%
+>    and [4.11, 7.50]% more operations per second (OPS), respectively,
+>    for exponential (distribution) access, random access and Zipfian
+>    (distribution) access, when swap was off; 95% CIs [0.50, 2.60]%,
+>    [6.51, 8.77]% and [3.29, 6.75]% more OPS, respectively, for
+>    exponential access, random access and Zipfian access, when swap was
+>    on.
+> 6. Apache Hadoop [07] took 95% CIs [5.31, 9.69]% and [2.02, 7.86]%
+>    less average wall time to finish twelve parallel TeraSort jobs,
+>    respectively, under the medium- and the high-concurrency
+>    conditions, when swap was on. There were no statistically
+>    significant changes in average wall time for the rest of the
+>    benchmark matrix.
+> 7. PostgreSQL [08] achieved 95% CI [1.75, 6.42]% more transactions per
+>    minute (TPM) under the high-concurrency condition, when swap was
+>    off; 95% CIs [12.82, 18.69]% and [22.70, 46.86]% more TPM,
+>    respectively, under the medium- and the high-concurrency
+>    conditions, when swap was on. There were no statistically
+>    significant changes in TPM for the rest of the benchmark matrix.
+> 8. Redis [09] achieved 95% CIs [0.58, 5.94]%, [6.55, 14.58]% and
+>    [11.47, 19.36]% more total operations per second (OPS),
+>    respectively, for sequential access, random access and Gaussian
+>    (distribution) access, when THP=3Dalways; 95% CIs [1.27, 3.54]%,
+>    [10.11, 14.81]% and [8.75, 13.64]% more total OPS, respectively,
+>    for sequential access, random access and Gaussian access, when
+>    THP=3Dnever.
+>=20
+> Our lab results
+> ---------------
+> To supplement the above results, we ran the following benchmark suites
+> on 5.16-rc7 and found no regressions [10]. (These synthetic benchmarks
+> are popular among MM developers, but we prefer large-scale A/B
+> experiments to validate improvements.)
+>       fs_fio_bench_hdd_mq      pft
+>       fs_lmbench               pgsql-hammerdb
+>       fs_parallelio            redis
+>       fs_postmark              stream
+>       hackbench                sysbenchthread
+>       kernbench                tpcc_spark
+>       memcached                unixbench
+>       multichase               vm-scalability
+>       mutilate                 will-it-scale
+>       nginx
+>=20
+> [01] https://trends.google.com
+> [02] https://lore.kernel.org/lkml/20211102002002.92051-1-bot@edi.works/
+> [03] https://lore.kernel.org/lkml/20211009054315.47073-1-bot@edi.works/
+> [04] https://lore.kernel.org/lkml/20211021194103.65648-1-bot@edi.works/
+> [05] https://lore.kernel.org/lkml/20211109021346.50266-1-bot@edi.works/
+> [06] https://lore.kernel.org/lkml/20211202062806.80365-1-bot@edi.works/
+> [07] https://lore.kernel.org/lkml/20211209072416.33606-1-bot@edi.works/
+> [08] https://lore.kernel.org/lkml/20211218071041.24077-1-bot@edi.works/
+> [09] https://lore.kernel.org/lkml/20211122053248.57311-1-bot@edi.works/
+> [10] https://lore.kernel.org/lkml/20220104202247.2903702-1-yuzhao@google.=
+com/
+>=20
+> Read-world applications
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> Third-party testimonials
+> ------------------------
+> Konstantin wrote [11]:
+>    I have Archlinux with 8G RAM + zswap + swap. While developing, I
+>    have lots of apps opened such as multiple LSP-servers for different
+>    langs, chats, two browsers, etc... Usually, my system gets quickly
+>    to a point of SWAP-storms, where I have to kill LSP-servers,
+>    restart browsers to free memory, etc, otherwise the system lags
+>    heavily and is barely usable.
+>   =20
+>    1.5 day ago I migrated from 5.11.15 kernel to 5.12 + the LRU
+>    patchset, and I started up by opening lots of apps to create memory
+>    pressure, and worked for a day like this. Till now I had *not a
+>    single SWAP-storm*, and mind you I got 3.4G in SWAP. I was never
+>    getting to the point of 3G in SWAP before without a single
+>    SWAP-storm.
+>=20
+> An anonymous user wrote [12]:
+>    Using that v5 for some time and confirm that difference under heavy
+>    load and memory pressure is significant.
+>=20
+> Shuang wrote [13]:
+>    With the MGLRU, fio achieved 95% CIs [38.95, 40.26]%, [4.12, 6.64]%
+>    and [9.26, 10.36]% higher throughput, respectively, for random
+>    access, Zipfian (distribution) access and Gaussian (distribution)
+>    access, when the average number of jobs per CPU is 1; 95% CIs
+>    [42.32, 49.15]%, [9.44, 9.89]% and [20.99, 22.86]% higher throughput,
+>    respectively, for random access, Zipfian access and Gaussian access,
+>    when the average number of jobs per CPU is 2.
+>=20
+> Daniel wrote [14]:
+>    With memcached allocating ~100GB of byte-addressable Optante,
+>    performance improvement in terms of throughput (measured as queries
+>    per second) was about 10% for a series of workloads.
+>=20
+> Large-scale deployments
+> -----------------------
+> The downstream kernels that have been using MGLRU include:
+> 1. Android ARCVM [15]
+> 2. Arch Linux Zen [16]
+> 3. Chrome OS [17]
+> 4. Liquorix [18]
+> 5. post-factum [19]
+> 6. XanMod [20]
+>=20
+> We've rolled out MGLRU to tens of millions of Chrome OS users and
+> about a million Android users. Google's fleetwide profiling [21] shows
+> an overall 40% decrease in kswapd CPU usage, in addition to
+> improvements in other UX metrics, e.g., an 85% decrease in the number
+> of low-memory kills at the 75th percentile and an 18% decrease in
+> rendering latency at the 50th percentile.
+>=20
+> [11] https://lore.kernel.org/lkml/140226722f2032c86301fbd326d91baefe3d7d2=
+3.camel@yandex.ru/
+> [12] https://phoronix.com/forums/forum/software/general-linux-open-source=
+/1301258-mglru-is-a-very-enticing-enhancement-for-linux-in-2022?p=3D1301275=
+#post1301275
+> [13] https://lore.kernel.org/lkml/20220105024423.26409-1-szhai2@cs.roches=
+ter.edu/
+> [14] https://lore.kernel.org/linux-mm/CA+4-3vksGvKd18FgRinxhqHetBS1hQekJE=
+2gwco8Ja-bJWKtFw@mail.gmail.com/
+> [15] https://chromium.googlesource.com/chromiumos/third_party/kernel
+> [16] https://archlinux.org
+> [17] https://chromium.org
+> [18] https://liquorix.net
+> [19] https://gitlab.com/post-factum/pf-kernel
+> [20] https://xanmod.org
+> [21] https://research.google/pubs/pub44271/
+>=20
+> Summery
+> =3D=3D=3D=3D=3D=3D=3D
+> The facts are:
+> 1. The independent lab results and the real-world applications
+>    indicate substantial improvements; there are no known regressions.
+> 2. Thrashing prevention, working set estimation and proactive reclaim
+>    work out of the box; there are no equivalent solutions.
+> 3. There is a lot of new code; nobody has demonstrated smaller changes
+>    with similar effects.
+>=20
+> Our options, accordingly, are:
+> 1. Given the amount of evidence, the reported improvements will likely
+>    materialize for a wide range of workloads.
+> 2. Gauging the interest from the past discussions [22][23][24], the
+>    new features will likely be put to use for both personal computers
+>    and data centers.
+> 3. Based on Google's track record, the new code will likely be well
+>    maintained in the long term. It'd be more difficult if not
+>    impossible to achieve similar effects on top of the existing
+>    design.
+>=20
+> [22] https://lore.kernel.org/lkml/20201005081313.732745-1-andrea.righi@ca=
+nonical.com/
+> [23] https://lore.kernel.org/lkml/20210716081449.22187-1-sj38.park@gmail.=
+com/
+> [24] https://lore.kernel.org/lkml/20211130201652.2218636d@mail.inbox.lv/
+>=20
+> Yu Zhao (12):
+>   mm: x86, arm64: add arch_has_hw_pte_young()
+>   mm: x86: add CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG
+>   mm/vmscan.c: refactor shrink_node()
+>   mm: multigenerational LRU: groundwork
+>   mm: multigenerational LRU: minimal implementation
+>   mm: multigenerational LRU: exploit locality in rmap
+>   mm: multigenerational LRU: support page table walks
+>   mm: multigenerational LRU: optimize multiple memcgs
+>   mm: multigenerational LRU: runtime switch
+>   mm: multigenerational LRU: thrashing prevention
+>   mm: multigenerational LRU: debugfs interface
+>   mm: multigenerational LRU: documentation
+>=20
+>  Documentation/admin-guide/mm/index.rst        |    1 +
+>  Documentation/admin-guide/mm/multigen_lru.rst |  121 +
+>  Documentation/vm/index.rst                    |    1 +
+>  Documentation/vm/multigen_lru.rst             |  152 +
+>  arch/Kconfig                                  |    9 +
+>  arch/arm64/include/asm/pgtable.h              |   14 +-
+>  arch/x86/Kconfig                              |    1 +
+>  arch/x86/include/asm/pgtable.h                |    9 +-
+>  arch/x86/mm/pgtable.c                         |    5 +-
+>  fs/exec.c                                     |    2 +
+>  fs/fuse/dev.c                                 |    3 +-
+>  include/linux/cgroup.h                        |   15 +-
+>  include/linux/memcontrol.h                    |   36 +
+>  include/linux/mm.h                            |    8 +
+>  include/linux/mm_inline.h                     |  214 ++
+>  include/linux/mm_types.h                      |   78 +
+>  include/linux/mmzone.h                        |  182 ++
+>  include/linux/nodemask.h                      |    1 +
+>  include/linux/page-flags-layout.h             |   19 +-
+>  include/linux/page-flags.h                    |    4 +-
+>  include/linux/pgtable.h                       |   17 +-
+>  include/linux/sched.h                         |    4 +
+>  include/linux/swap.h                          |    5 +
+>  kernel/bounds.c                               |    3 +
+>  kernel/cgroup/cgroup-internal.h               |    1 -
+>  kernel/exit.c                                 |    1 +
+>  kernel/fork.c                                 |    9 +
+>  kernel/sched/core.c                           |    1 +
+>  mm/Kconfig                                    |   50 +
+>  mm/huge_memory.c                              |    3 +-
+>  mm/memcontrol.c                               |   27 +
+>  mm/memory.c                                   |   39 +-
+>  mm/mm_init.c                                  |    6 +-
+>  mm/page_alloc.c                               |    1 +
+>  mm/rmap.c                                     |    7 +
+>  mm/swap.c                                     |   55 +-
+>  mm/vmscan.c                                   | 2831 ++++++++++++++++-
+>  mm/workingset.c                               |  119 +-
+>  38 files changed, 3908 insertions(+), 146 deletions(-)
+>  create mode 100644 Documentation/admin-guide/mm/multigen_lru.rst
+>  create mode 100644 Documentation/vm/multigen_lru.rst
 
-It is OK to disable clocks and regulators, but I don't think we should
-return an error on dw_pcie_wait_for_link() failure.
+Thanks for the new spin.
 
-Please check:
+Is the patch submission broken for everyone, or for me only? I see raw emai=
+ls cluttered with some garbage like =3D2D, and hence I cannot apply those n=
+either from my email client nor from lore.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/pci.git/commit/?h=pci/imx6&id=f81f095e87715e198471f4653952fe5e3f824874
+Probably, you've got a git repo where things can be pulled from so that we =
+do not depend on mailing systems and/or tools breaking plaintext?
 
-and
+Thanks.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/pci.git/commit/?h=pci/imx6&id=886a9c134755
-
-as to why all the dwc PCI drivers should treat dw_pcie_wait_for_link()
-uniformly.
-
-
+=2D-=20
+Oleksandr Natalenko (post-factum)
 
 
-
-
->
-> Add a new host_exit() callback for i.MX PCIe driver to disable the
-> enabled clocks, regulators and so on in the error handling after
-> host_init is finished.
->
-> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-> ---
->  drivers/pci/controller/dwc/pci-imx6.c | 30 ++++++++++++++++++++++++---
->  1 file changed, 27 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-> index e165ad00989c..7a7d9204c6bc 100644
-> --- a/drivers/pci/controller/dwc/pci-imx6.c
-> +++ b/drivers/pci/controller/dwc/pci-imx6.c
-> @@ -848,7 +848,9 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
->         /* Start LTSSM. */
->         imx6_pcie_ltssm_enable(dev);
->
-> -       dw_pcie_wait_for_link(pci);
-> +       ret = dw_pcie_wait_for_link(pci);
-> +       if (ret)
-> +               goto err_reset_phy;
->
->         if (pci->link_gen == 2) {
->                 /* Allow Gen2 mode after the link is up. */
-> @@ -884,7 +886,9 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
->                 }
->
->                 /* Make sure link training is finished as well! */
-> -               dw_pcie_wait_for_link(pci);
-> +               ret = dw_pcie_wait_for_link(pci);
-> +               if (ret)
-> +                       goto err_reset_phy;
->         } else {
->                 dev_info(dev, "Link: Gen2 disabled\n");
->         }
-> @@ -897,7 +901,6 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
->         dev_dbg(dev, "PHY DEBUG_R0=0x%08x DEBUG_R1=0x%08x\n",
->                 dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG0),
->                 dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG1));
-> -       imx6_pcie_reset_phy(imx6_pcie);
->         return ret;
->  }
->
-> @@ -921,8 +924,29 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
->         return 0;
->  }
->
-> +static void imx6_pcie_host_exit(struct pcie_port *pp)
-> +{
-> +       struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-> +       struct device *dev = pci->dev;
-> +       struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
-> +
-> +       imx6_pcie_reset_phy(imx6_pcie);
-> +       imx6_pcie_clk_disable(imx6_pcie);
-> +       switch (imx6_pcie->drvdata->variant) {
-> +       case IMX8MM:
-> +               if (phy_power_off(imx6_pcie->phy))
-> +                       dev_err(dev, "unable to power off phy\n");
-> +               break;
-> +       default:
-> +               break;
-> +       }
-> +       if (imx6_pcie->vpcie)
-> +               regulator_disable(imx6_pcie->vpcie);
-> +}
-> +
->  static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
->         .host_init = imx6_pcie_host_init,
-> +       .host_exit = imx6_pcie_host_exit,
->  };
->
->  static const struct dw_pcie_ops dw_pcie_ops = {
-> --
-> 2.25.1
->
