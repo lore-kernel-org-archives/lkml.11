@@ -2,105 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE31DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FBB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238287AbiBHBIK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:08:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
+        id S1343597AbiBHBIO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:08:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343980AbiBHARc (ORCPT
+        with ESMTP id S239107AbiBHAS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 19:17:32 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E3BC0612A4
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 16:17:31 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id s14so899896pfw.3
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 16:17:31 -0800 (PST)
+        Mon, 7 Feb 2022 19:18:57 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C1BC061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 16:18:56 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id h7so19156189iof.3
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 16:18:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=U33ZTHwgHmjIzYzVW35GSTUErZveTsvzYRI78IuL0pI=;
-        b=PKAr0GJCu78ei+S4Lat41so9TQfJkESk2YAtsBLsuDgdCKYbchdWWZO0zcikvlM4qp
-         SEL9aoQ+G7EDbuJwajYjmQXILX6hHHyQxcI3O/cOVfV8sA8Da7g621rfx5Mqzcf4Qh5D
-         6SNG+Ui/OunaDApsqN5YkvnAB5mfr8npQe+iw=
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vScBC3jkunPuKV71bwmpHxOhrGxKlBbuYe/cqBu7qF8=;
+        b=TV/KEXy0SdalYrBG9vcyQo4ANXKRqQZpfsevkQCRvDDS3QkNqsAVFK3CiXgrn7BhEC
+         lQZP1zue6xcSxErPJDsPnbnJ7NzZaPCUltMJoeN9SGtNIMM3tb2qVUWD6hCx2/5gvyQb
+         4WVzprlonmdeJ8JUjSQiAOvjj5o67UrS7+Dfc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=U33ZTHwgHmjIzYzVW35GSTUErZveTsvzYRI78IuL0pI=;
-        b=teg8XrJUF0Pg1p9MCrZT1kWCOEm6AvXXhxC34XZ5nePRxbrTsO+bcDLMG0ZnpLMp3P
-         MigFLzP8bHIFBgdrAm2oFsvh2lG/VEQoPb2jaB7UQZTMS+WhkGdagr4oht902KqucJ4h
-         qUsGUmA9J4tgKodTMAHzWwiQ2jVUJIgFbwu+LsqEqDc+Da9zOKHKncY68KspSJlJpBO/
-         g+oLvuo7WkNiirnb2NTachaQGhs+U01gnmlUoSIUcexwWljI92mAkBBdjjSIXOBKAab9
-         aSruFx3OoZwWPGZYH/unDpX2Kb8uT0/i8o3czAJR9nhj45MrtpHIO+PnkIEUMCJ8HJ/B
-         +Wug==
-X-Gm-Message-State: AOAM531NdFT1pjm4IRbqt1vAmQ5NwFZtKY7jtpsrEboABhhxpnjwLnfT
-        kJAOnWW4fDZsoQU+Qm19CmSVYQ==
-X-Google-Smtp-Source: ABdhPJyat6mgLk+B7LHmqgM/oZQI4LpOtABby6iQ3FD5YT8iXzyLG2E7KhwkS5O6kFxtifv6r+5mAg==
-X-Received: by 2002:a65:5801:: with SMTP id g1mr1479962pgr.43.1644279451436;
-        Mon, 07 Feb 2022 16:17:31 -0800 (PST)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:6c4d:c442:5b4:f597])
-        by smtp.gmail.com with ESMTPSA id mz4sm456185pjb.53.2022.02.07.16.17.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 16:17:31 -0800 (PST)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     quic_mkrishn@quicinc.com, linux-arm-msm@vger.kernel.org,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        robdclark@gmail.com, quic_khsieh@quicinc.com,
-        quic_abhinavk@quicinc.com, linux-phy@lists.infradead.org,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [REPOST PATCH v1 3/3] phy: qcom: Program SSC only if supported by sink
-Date:   Mon,  7 Feb 2022 16:17:04 -0800
-Message-Id: <20220207161612.REPOST.v1.3.Ie81d594ec2327dae6410db359cc492484bab171f@changeid>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208001704.367069-1-dianders@chromium.org>
-References: <20220208001704.367069-1-dianders@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vScBC3jkunPuKV71bwmpHxOhrGxKlBbuYe/cqBu7qF8=;
+        b=KIgpeQsoiG9qgIgfLjL01zo1uBCzCoN8syQQ1boEa+lFz+YSu6lU7QS/mNZDSpZdlP
+         YLk7dqz0TPSg8qWAgBgi8c9o6XmUuQv2p8GcZ4Ke3uOvNVnAcU5ClCTjJO/DF4xHyiQa
+         D+pbvxYbDc9SS7SeRhPocKp50P2I3BJyXOdeh143zAOAjNcbbzonGj4V+lC8ie+Or33D
+         /dbK6m1waZoJ+YNNUfXKnWG9OXv9yJJUqHry1PjylfNSvKmuCbFgovomd2GFJBHbylyA
+         fWj9kCw5YntrM0TeNXWhzJDy+TAXZpclz7hNL0yhb2yQzJpJvs+2cwl54g1dPMirTugm
+         m5Kw==
+X-Gm-Message-State: AOAM532qPV485FoC/GCkWs9LBT7VadQhXgo8wq6FMsKWeNwyW1l/ueSt
+        XPxRHGAWADZX6ET8kBR8JrV8Mu0o6PVE2g==
+X-Google-Smtp-Source: ABdhPJynvvnCw6C3BBnpWlHgOnKRayUI93h2fc4k9wcZU9iNvQl0j9cysrP5tFPGOq9fUKU6dQnUkQ==
+X-Received: by 2002:a6b:ef06:: with SMTP id k6mr915591ioh.70.1644279535910;
+        Mon, 07 Feb 2022 16:18:55 -0800 (PST)
+Received: from mail-io1-f45.google.com (mail-io1-f45.google.com. [209.85.166.45])
+        by smtp.gmail.com with ESMTPSA id l12sm6932654iow.48.2022.02.07.16.18.54
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 16:18:54 -0800 (PST)
+Received: by mail-io1-f45.google.com with SMTP id d188so19147847iof.7
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 16:18:54 -0800 (PST)
+X-Received: by 2002:a05:6638:168d:: with SMTP id f13mr980261jat.44.1644279533953;
+ Mon, 07 Feb 2022 16:18:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1637046458-20607-1-git-send-email-quic_sbillaka@quicinc.com> <CAE-0n50sONq+URcWwvDH=UPshgy6+XZEB3sK_4n+5jNktHsEhg@mail.gmail.com>
+In-Reply-To: <CAE-0n50sONq+URcWwvDH=UPshgy6+XZEB3sK_4n+5jNktHsEhg@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 7 Feb 2022 16:18:40 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=VwrO9fpOtpjrsbjkmucvL6NbHMc3jLtjsiRJD6aG0Hkg@mail.gmail.com>
+Message-ID: <CAD=FV=VwrO9fpOtpjrsbjkmucvL6NbHMc3jLtjsiRJD6aG0Hkg@mail.gmail.com>
+Subject: Re: [PATCH v1 0/3] Add support for eDP PHY on SC7280 platform
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>, quic_kalyant@quicinc.com,
+        quic_abhinavk@quicinc.com, quic_khsieh@quicinc.com,
+        quic_mkrishn@quicinc.com, linux-phy@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Hi,
 
-Some legacy eDP sinks may not support SSC. The support for SSC is
-indicated through an opts flag from the controller driver. This
-change will enable SSC only if the sink supports it.
+On Wed, Feb 2, 2022 at 1:54 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> Quoting Sankeerth Billakanti (2021-11-15 23:07:35)
+> > This series adds support for the eDP PHY on Qualcomm SC7280 platform.
+> > The changes are dependent on v4 of the new eDP PHY driver introduced by Bjorn:
+> > https://patchwork.kernel.org/project/linux-arm-msm/list/?series=575135
+> >
+> > Sankeerth Billakanti (3):
+> >   dt-bindings: phy: Add eDP PHY compatible for sc7280
+> >   phy: qcom: Add support for eDP PHY on sc7280
+> >   phy: qcom: Program SSC only if supported by sink
+>
+> This series was sent to the wrong maintainers. It's in the phy
+> framework, not the drm framework. Please use scripts/get_maintainers.pl
+> to find the right email addresses and send this series again.
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
+To help out, I've re-posted this myself, hopefully getting all the
+correct maintainers.
 
- drivers/phy/qualcomm/phy-qcom-edp.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/phy/qualcomm/phy-qcom-edp.c b/drivers/phy/qualcomm/phy-qcom-edp.c
-index 21cafbb623f8..cacd32f6e0cc 100644
---- a/drivers/phy/qualcomm/phy-qcom-edp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-edp.c
-@@ -335,9 +335,11 @@ static int qcom_edp_phy_power_on(struct phy *phy)
- 	writel(0x00, edp->tx0 + TXn_LANE_MODE_1);
- 	writel(0x00, edp->tx1 + TXn_LANE_MODE_1);
- 
--	ret = qcom_edp_configure_ssc(edp);
--	if (ret)
--		return ret;
-+	if (edp->dp_opts.ssc) {
-+		ret = qcom_edp_configure_ssc(edp);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	ret = qcom_edp_configure_pll(edp);
- 	if (ret)
--- 
-2.35.0.263.gb82422642f-goog
-
+https://lore.kernel.org/r/20220208001704.367069-1-dianders@chromium.org
