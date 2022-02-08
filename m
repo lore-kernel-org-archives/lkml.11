@@ -2,155 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B300C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344985AbiBHBuk (ORCPT
+        id S1345332AbiBHBun (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:50:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34734 "EHLO
+        Mon, 7 Feb 2022 20:50:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344906AbiBHBm1 (ORCPT
+        with ESMTP id S1344798AbiBHBkb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:42:27 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB2AC043181;
-        Mon,  7 Feb 2022 17:42:25 -0800 (PST)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217LMWV6013010;
-        Tue, 8 Feb 2022 01:42:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=krtvOcvXF32XPtlhSDQUP5MaKSEcLiroOIXzFu4OWs8=;
- b=YioOwb/jEzudIQpP2lrI2CfU4RzsM2ki5ykifE+j7mq3bR9EBS3qsU7166TJrl7fjqD1
- bIBJ0Y1els8DMbGhgTh+IECf8UsAN/lvr4EMT1kBLeRX/uEdCdTP60Zqzn2AQh6XBlEF
- T0X4v9Zd58NriFwCovSrEmZd5Wm8PXwucNQvKwuG0YdHT/+aBl+TrshEmSwiW2atCjS/
- CRfuxkF3UWpt90YtdEPvQYTAwybosgSbhpvXN898fQCsLFkTtZWUTkysOu0bhKmTqx0F
- UYNl/PgxcNmfauEbH046bx5VtMAvNGOE9OLJTc4qDYx7pnYxYhGg1XNKND4euvzIxRkr PQ== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e22u3ap7b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 01:42:23 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2181gH8I023563;
-        Tue, 8 Feb 2022 01:42:21 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggjsksn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 01:42:21 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2181gIw642926424
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 8 Feb 2022 01:42:18 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1CA3AA4057;
-        Tue,  8 Feb 2022 01:42:18 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4B179A4055;
-        Tue,  8 Feb 2022 01:42:17 +0000 (GMT)
-Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com.com (unknown [9.65.90.153])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  8 Feb 2022 01:42:17 +0000 (GMT)
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     linux-integrity@vger.kernel.org
-Cc:     Mimi Zohar <zohar@linux.ibm.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 4/8] ima: define a new template field 'd-type' and a new template 'ima-ngv2'
-Date:   Mon,  7 Feb 2022 20:41:36 -0500
-Message-Id: <20220208014140.483447-5-zohar@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220208014140.483447-1-zohar@linux.ibm.com>
-References: <20220208014140.483447-1-zohar@linux.ibm.com>
+        Mon, 7 Feb 2022 20:40:31 -0500
+Received: from relay3.hostedemail.com (relay3.hostedemail.com [64.99.140.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3EEFC061A73
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:40:30 -0800 (PST)
+Received: from omf14.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay06.hostedemail.com (Postfix) with ESMTP id 3E6E02282B;
+        Tue,  8 Feb 2022 01:40:29 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf14.hostedemail.com (Postfix) with ESMTPA id EAB782D;
+        Tue,  8 Feb 2022 01:40:12 +0000 (UTC)
+Message-ID: <103681860759d72b1acf712eed334b1d4ef6b7d5.camel@perches.com>
+Subject: Re: [PATCH V6 1/3] platform/x86: Add Intel Software Defined Silicon
+ driver
+From:   Joe Perches <joe@perches.com>
+To:     "David E. Box" <david.e.box@linux.intel.com>, hdegoede@redhat.com,
+        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
+        srinivas.pandruvada@intel.com, mgross@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        Mark Gross <markgross@kernel.org>
+Date:   Mon, 07 Feb 2022 17:40:26 -0800
+In-Reply-To: <20220208005444.487209-2-david.e.box@linux.intel.com>
+References: <20220208005444.487209-1-david.e.box@linux.intel.com>
+         <20220208005444.487209-2-david.e.box@linux.intel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: xZOSJXNdO9DX-DZOxIls-4B0yNkko4y6
-X-Proofpoint-ORIG-GUID: xZOSJXNdO9DX-DZOxIls-4B0yNkko4y6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_07,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
- malwarescore=0 adultscore=0 impostorscore=0 mlxscore=0 priorityscore=1501
- suspectscore=0 bulkscore=0 lowpriorityscore=0 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202080006
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout06
+X-Rspamd-Queue-Id: EAB782D
+X-Stat-Signature: cqp3gnqhxdfm9599fkk1o4kd3ab9ky5j
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/rw6BEZ0kR964qVgcoew+I17VtKpWRSzg=
+X-HE-Tag: 1644284412-993389
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to differentiate between regular IMA file hashes and
-fs-verity's file digests, define a new template field named 'd-type'.
-Define a new template named 'ima-ngv2', which includes the new 'd-type'
-field.
+On Mon, 2022-02-07 at 16:54 -0800, David E. Box wrote:
+> Intel Software Defined Silicon (SDSi) is a post manufacturing mechanism for
+> activating additional silicon features. Features are enabled through a
+> license activation process.  The SDSi driver provides a per socket, sysfs
+> attribute interface for applications to perform 3 main provisioning
+> functions:
+[]
+> ---
+> V6
+>   - Replace,
+>               return (ret < 0) ? ret : size;
+>     with,
+>               if (ret)
+>                    return ret;
+>               return size
+> 
+>     Besides the style change (suggested by GKH) this fixes a klocwork
+>     warning.
 
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
----
- security/integrity/ima/ima_template.c     |  3 +++
- security/integrity/ima/ima_template_lib.c | 13 +++++++++++++
- security/integrity/ima/ima_template_lib.h |  2 ++
- 3 files changed, 18 insertions(+)
+thanks.
 
-diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
-index db1ad6d7a57f..b321342e5bee 100644
---- a/security/integrity/ima/ima_template.c
-+++ b/security/integrity/ima/ima_template.c
-@@ -19,6 +19,7 @@ enum header_fields { HDR_PCR, HDR_DIGEST, HDR_TEMPLATE_NAME,
- static struct ima_template_desc builtin_templates[] = {
- 	{.name = IMA_TEMPLATE_IMA_NAME, .fmt = IMA_TEMPLATE_IMA_FMT},
- 	{.name = "ima-ng", .fmt = "d-ng|n-ng"},
-+	{.name = "ima-ngv2", .fmt = "d-ng|n-ng|d-type"},
- 	{.name = "ima-sig", .fmt = "d-ng|n-ng|sig"},
- 	{.name = "ima-buf", .fmt = "d-ng|n-ng|buf"},
- 	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
-@@ -40,6 +41,8 @@ static const struct ima_template_field supported_fields[] = {
- 	 .field_show = ima_show_template_digest_ng},
- 	{.field_id = "n-ng", .field_init = ima_eventname_ng_init,
- 	 .field_show = ima_show_template_string},
-+	{.field_id = "d-type", .field_init = ima_eventdigest_type_init,
-+	 .field_show = ima_show_template_string},
- 	{.field_id = "sig", .field_init = ima_eventsig_init,
- 	 .field_show = ima_show_template_sig},
- 	{.field_id = "buf", .field_init = ima_eventbuf_init,
-diff --git a/security/integrity/ima/ima_template_lib.c b/security/integrity/ima/ima_template_lib.c
-index 5a5d462ab36d..48c2fcbefacf 100644
---- a/security/integrity/ima/ima_template_lib.c
-+++ b/security/integrity/ima/ima_template_lib.c
-@@ -386,6 +386,19 @@ int ima_eventdigest_ng_init(struct ima_event_data *event_data,
- 					   hash_algo, field_data);
- }
- 
-+/*
-+ * This function writes the digest type of an event.
-+ */
-+int ima_eventdigest_type_init(struct ima_event_data *event_data,
-+			      struct ima_field_data *field_data)
-+{
-+	static const char * const digest_type[] = {"ima"};
-+
-+	return ima_write_template_field_data(digest_type[0],
-+					     strlen(digest_type[0]),
-+					     DATA_FMT_STRING, field_data);
-+}
-+
- /*
-  * This function writes the digest of the file which is expected to match the
-  * digest contained in the file's appended signature.
-diff --git a/security/integrity/ima/ima_template_lib.h b/security/integrity/ima/ima_template_lib.h
-index c71f1de95753..539a5e354925 100644
---- a/security/integrity/ima/ima_template_lib.h
-+++ b/security/integrity/ima/ima_template_lib.h
-@@ -38,6 +38,8 @@ int ima_eventname_init(struct ima_event_data *event_data,
- 		       struct ima_field_data *field_data);
- int ima_eventdigest_ng_init(struct ima_event_data *event_data,
- 			    struct ima_field_data *field_data);
-+int ima_eventdigest_type_init(struct ima_event_data *event_data,
-+			      struct ima_field_data *field_data);
- int ima_eventdigest_modsig_init(struct ima_event_data *event_data,
- 				struct ima_field_data *field_data);
- int ima_eventname_ng_init(struct ima_event_data *event_data,
--- 
-2.27.0
+> diff --git a/drivers/platform/x86/intel/sdsi.c b/drivers/platform/x86/intel/sdsi.c
+
+[]
+
+> +/* SDSi mailbox operations must be performed using 64bit mov instructions */
+> +static __always_inline void
+> +sdsi_memcpy64_toio(u64 __iomem *to, const u64 *from, size_t count_bytes)
+> +{
+> +	size_t count = count_bytes / sizeof(*to);
+> +	int i;
+> +
+> +	for (i = 0; i < count; i++)
+> +		writeq(from[i], &to[i]);
+
+Any chance the byte count is not a multiple of sizeof(u64) ?
+
+> +static __always_inline void
+> +sdsi_memcpy64_fromio(u64 *to, const u64 __iomem *from, size_t count_bytes)
+> +{
+> +	size_t count = count_bytes / sizeof(*to);
+> +	int i;
+> +
+> +	for (i = 0; i < count; i++)
+> +		to[i] = readq(&from[i]);
+> +}
+
+here too.
+
+[]
+
+> +static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct sdsi_mbox_info *info,
+> +			      size_t *data_size)
+> +{
+> +	struct device *dev = priv->dev;
+> +	u32 total, loop, eom, status, message_size;
+[]
+> +		if (packet_size > SDSI_SIZE_MAILBOX) {
+> +			dev_err(dev, "Packet size to large\n");
+
+too
+
+[]
+> +	/* Message size check is only valid for multi-packet transfers */
+> +	if (loop && total != message_size)
+> +		dev_warn(dev, "Read count %d differs from expected count %d\n",
+
+%u
+
+> +			 total, message_size);
+
+
+> +static int sdsi_map_mbox_registers(struct sdsi_priv *priv, struct pci_dev *parent,
+> +				   struct disc_table *disc_table, struct resource *disc_res)
+> +{
+> +	u32 access_type = FIELD_GET(DT_ACCESS_TYPE, disc_table->access_info);
+> +	u32 size = FIELD_GET(DT_SIZE, disc_table->access_info);
+> +	u32 tbir = FIELD_GET(DT_TBIR, disc_table->offset);
+> +	u32 offset = DT_OFFSET(disc_table->offset);
+> +	u32 features_offset;
+> +	struct resource res = {};
+> +
+> +	/* Starting location of SDSi MMIO region based on access type */
+> +	switch (access_type) {
+> +	case ACCESS_TYPE_LOCAL:
+> +		if (tbir) {
+> +			dev_err(priv->dev, "Unsupported BAR index %d for access type %d\n",
+> +				tbir, access_type);
+
+%u here too
+
+[]
+> +		dev_err(priv->dev, "Unrecognized access_type %d\n", access_type);
+
+and here
+
 
