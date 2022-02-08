@@ -2,196 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F012FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE380C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381818AbiBHPqH (ORCPT
+        id S1381805AbiBHPrT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:46:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
+        Tue, 8 Feb 2022 10:47:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381759AbiBHPp0 (ORCPT
+        with ESMTP id S1381703AbiBHPrS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:45:26 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98821C0613CA;
-        Tue,  8 Feb 2022 07:45:23 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 661371FB;
-        Tue,  8 Feb 2022 07:45:23 -0800 (PST)
-Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 70D5C3F73B;
-        Tue,  8 Feb 2022 07:45:21 -0800 (PST)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
-        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
-        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
-        souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
-        igor.skalkin@opensynergy.com, cristian.marussi@arm.com,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org
-Subject: [PATCH v3 8/8] clk: scmi: Support atomic clock enable/disable API
-Date:   Tue,  8 Feb 2022 15:44:52 +0000
-Message-Id: <20220208154452.39428-9-cristian.marussi@arm.com>
+        Tue, 8 Feb 2022 10:47:18 -0500
+X-Greylist: delayed 412 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 07:47:13 PST
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74A27C061579;
+        Tue,  8 Feb 2022 07:47:13 -0800 (PST)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app3 (Coremail) with SMTP id cC_KCgDHzBjRjgJirB7ZDA--.1759S2;
+        Tue, 08 Feb 2022 23:40:06 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org
+Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH] ax25: fix NPD bug in ax25_disconnect
+Date:   Tue,  8 Feb 2022 23:40:00 +0800
+Message-Id: <20220208154000.87070-1-duoming@zju.edu.cn>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220208154452.39428-1-cristian.marussi@arm.com>
-References: <20220208154452.39428-1-cristian.marussi@arm.com>
+X-CM-TRANSID: cC_KCgDHzBjRjgJirB7ZDA--.1759S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7AF17Xry8XF1DJFyktw1UWrg_yoW8AFy3pF
+        ZrGrWxJFWkJFy5JF4fGFykJF18ZFWkK398Gr1xZFn3A34UGwn8XrZ5trWUtayYkFsxAF1U
+        Xa4UG3y5ZF4kAaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r10
+        6r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
+        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VU1a9aPUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwNAVZdtYEE3QAIss
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support also atomic enable/disable clk_ops beside the bare non-atomic one
-(prepare/unprepare) when the underlying SCMI transport is configured to
-support atomic transactions for synchronous commands.
+The ax25_disconnect() in ax25_kill_by_device() is not
+protected by any locks, thus there is a race condition
+between ax25_disconnect() and ax25_destroy_socket().
+when ax25->sk is assigned as NULL by ax25_destroy_socket(),
+a NULL pointer dereference bug will occur if site (1) or (2)
+dereferences ax25->sk.
 
-Compare the SCMI system-wide configured atomic threshold latency time and
-the per-clock advertised enable latency (if any) to choose whether to
-provide sleeping prepare/unprepare vs atomic enable/disable.
+ax25_kill_by_device()                | ax25_release()
+  ax25_disconnect()                  |   ax25_destroy_socket()
+    ...                              |
+    if(ax25->sk != NULL)             |     ...
+      ...                            |     ax25->sk = NULL;
+      bh_lock_sock(ax25->sk); //(1)  |     ...
+      ...                            |
+      bh_unlock_sock(ax25->sk); //(2)|
 
-Cc: Michael Turquette <mturquette@baylibre.com>
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: linux-clk@vger.kernel.org
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+This patch moves ax25_disconnect() into lock_sock(), which can
+synchronize with ax25_destroy_socket() in ax25_release().
+
+Fail log:
+===============================================================
+BUG: kernel NULL pointer dereference, address: 0000000000000088
+...
+RIP: 0010:_raw_spin_lock+0x7e/0xd0
+...
+Call Trace:
+ax25_disconnect+0xf6/0x220
+ax25_device_event+0x187/0x250
+raw_notifier_call_chain+0x5e/0x70
+dev_close_many+0x17d/0x230
+rollback_registered_many+0x1f1/0x950
+unregister_netdevice_queue+0x133/0x200
+unregister_netdev+0x13/0x20
+...
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 ---
-v2 --> v3
-- removed RFC tag
----
- drivers/clk/clk-scmi.c | 71 +++++++++++++++++++++++++++++++++++-------
- 1 file changed, 60 insertions(+), 11 deletions(-)
+ net/ax25/af_ax25.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/clk-scmi.c b/drivers/clk/clk-scmi.c
-index 1e357d364ca2..2c7a830ce308 100644
---- a/drivers/clk/clk-scmi.c
-+++ b/drivers/clk/clk-scmi.c
-@@ -2,7 +2,7 @@
- /*
-  * System Control and Power Interface (SCMI) Protocol based clock driver
-  *
-- * Copyright (C) 2018-2021 ARM Ltd.
-+ * Copyright (C) 2018-2022 ARM Ltd.
-  */
- 
- #include <linux/clk-provider.h>
-@@ -88,21 +88,51 @@ static void scmi_clk_disable(struct clk_hw *hw)
- 	scmi_proto_clk_ops->disable(clk->ph, clk->id);
- }
- 
-+static int scmi_clk_atomic_enable(struct clk_hw *hw)
-+{
-+	struct scmi_clk *clk = to_scmi_clk(hw);
-+
-+	return scmi_proto_clk_ops->enable_atomic(clk->ph, clk->id);
-+}
-+
-+static void scmi_clk_atomic_disable(struct clk_hw *hw)
-+{
-+	struct scmi_clk *clk = to_scmi_clk(hw);
-+
-+	scmi_proto_clk_ops->disable_atomic(clk->ph, clk->id);
-+}
-+
-+/*
-+ * We can provide enable/disable atomic callbacks only if the underlying SCMI
-+ * transport for an SCMI instance is configured to handle SCMI commands in an
-+ * atomic manner.
-+ *
-+ * When no SCMI atomic transport support is available we instead provide only
-+ * the prepare/unprepare API, as allowed by the clock framework when atomic
-+ * calls are not available.
-+ *
-+ * Two distinct sets of clk_ops are provided since we could have multiple SCMI
-+ * instances with different underlying transport quality, so they cannot be
-+ * shared.
-+ */
- static const struct clk_ops scmi_clk_ops = {
- 	.recalc_rate = scmi_clk_recalc_rate,
- 	.round_rate = scmi_clk_round_rate,
- 	.set_rate = scmi_clk_set_rate,
--	/*
--	 * We can't provide enable/disable callback as we can't perform the same
--	 * in atomic context. Since the clock framework provides standard API
--	 * clk_prepare_enable that helps cases using clk_enable in non-atomic
--	 * context, it should be fine providing prepare/unprepare.
--	 */
- 	.prepare = scmi_clk_enable,
- 	.unprepare = scmi_clk_disable,
- };
- 
--static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk)
-+static const struct clk_ops scmi_atomic_clk_ops = {
-+	.recalc_rate = scmi_clk_recalc_rate,
-+	.round_rate = scmi_clk_round_rate,
-+	.set_rate = scmi_clk_set_rate,
-+	.enable = scmi_clk_atomic_enable,
-+	.disable = scmi_clk_atomic_disable,
-+};
-+
-+static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk,
-+			     const struct clk_ops *scmi_ops)
- {
- 	int ret;
- 	unsigned long min_rate, max_rate;
-@@ -110,7 +140,7 @@ static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk)
- 	struct clk_init_data init = {
- 		.flags = CLK_GET_RATE_NOCACHE,
- 		.num_parents = 0,
--		.ops = &scmi_clk_ops,
-+		.ops = scmi_ops,
- 		.name = sclk->info->name,
- 	};
- 
-@@ -139,6 +169,8 @@ static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk)
- static int scmi_clocks_probe(struct scmi_device *sdev)
- {
- 	int idx, count, err;
-+	unsigned int atomic_threshold;
-+	bool is_atomic;
- 	struct clk_hw **hws;
- 	struct clk_hw_onecell_data *clk_data;
- 	struct device *dev = &sdev->dev;
-@@ -168,8 +200,11 @@ static int scmi_clocks_probe(struct scmi_device *sdev)
- 	clk_data->num = count;
- 	hws = clk_data->hws;
- 
-+	is_atomic = handle->is_transport_atomic(handle, &atomic_threshold);
-+
- 	for (idx = 0; idx < count; idx++) {
- 		struct scmi_clk *sclk;
-+		const struct clk_ops *scmi_ops;
- 
- 		sclk = devm_kzalloc(dev, sizeof(*sclk), GFP_KERNEL);
- 		if (!sclk)
-@@ -184,13 +219,27 @@ static int scmi_clocks_probe(struct scmi_device *sdev)
- 		sclk->id = idx;
- 		sclk->ph = ph;
- 
--		err = scmi_clk_ops_init(dev, sclk);
-+		/*
-+		 * Note that when transport is atomic but SCMI protocol did not
-+		 * specify (or support) an enable_latency associated with a
-+		 * clock, we default to use atomic operations mode.
-+		 */
-+		if (is_atomic &&
-+		    sclk->info->enable_latency <= atomic_threshold)
-+			scmi_ops = &scmi_atomic_clk_ops;
-+		else
-+			scmi_ops = &scmi_clk_ops;
-+
-+		err = scmi_clk_ops_init(dev, sclk, scmi_ops);
- 		if (err) {
- 			dev_err(dev, "failed to register clock %d\n", idx);
- 			devm_kfree(dev, sclk);
- 			hws[idx] = NULL;
- 		} else {
--			dev_dbg(dev, "Registered clock:%s\n", sclk->info->name);
-+			dev_dbg(dev, "Registered clock:%s%s\n",
-+				sclk->info->name,
-+				scmi_ops == &scmi_atomic_clk_ops ?
-+				" (atomic ops)" : "");
- 			hws[idx] = &sclk->hw;
- 		}
- 	}
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 3e49d28824e..3d87040d1bf 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -92,8 +92,8 @@ static void ax25_kill_by_device(struct net_device *dev)
+ 			lock_sock(sk);
+ 			s->ax25_dev = NULL;
+ 			ax25_dev_put(ax25_dev);
+-			release_sock(sk);
+ 			ax25_disconnect(s, ENETUNREACH);
++			release_sock(sk);
+ 			spin_lock_bh(&ax25_list_lock);
+ 			sock_put(sk);
+ 			/* The entry could have been deleted from the
 -- 
 2.17.1
 
