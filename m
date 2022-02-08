@@ -2,70 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BADBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC63EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386042AbiBHT3A (ORCPT
+        id S1386053AbiBHT3D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 14:29:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36980 "EHLO
+        Tue, 8 Feb 2022 14:29:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239801AbiBHT25 (ORCPT
+        with ESMTP id S1386036AbiBHT3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:28:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977B5C0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:28:57 -0800 (PST)
+        Tue, 8 Feb 2022 14:29:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E4FC0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:28:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B3D6B81D1C
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:28:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88776C004E1
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:28:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5207C615BE
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:28:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA574C004E1;
+        Tue,  8 Feb 2022 19:28:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644348535;
-        bh=VMSknEIfxSbX3tRwp+KwIrJcLUesBpLa6Ad5UvGTqN8=;
-        h=From:To:Subject:Date:From;
-        b=ThKIFjRVDc/n0/1wRqhEaQrWHvbNQwBosRGQ5TcTmJZrwjR4UdMbwmIW67JTBwH6l
-         L8jgD355l9dWJhMkyjus1xReEBA/Tu4IvEkiMReHto/B96dx8+GlV5Q/5udVfICmo9
-         BX+NEVWl4t2J9e8GzM9fwN8KX3IsxQgEB2xK2ocxlDRKozXFD6n/uTwIhnCx9zxqQK
-         grbDMX2aqKaPutzZg6dv+MBu4trDEP9ME3atXoLbFKojSca6aTFuD3V43t43vVUsqX
-         dX0J9gPAQbVrtbhPjBoTTq8juy0QUBih10unCkHuWNdJs46CrspyRrPzGRrz9I4O0D
-         PaW3DP9FZqLMg==
+        s=k20201202; t=1644348538;
+        bh=apg2zAmxzFAOlQgDzTn4uZYbSkV0Nbg+lunnI4sRxio=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=R/h/iAaT33b+JYQQ+ztHQe4OqsGJl4iKDPfoUOmEw7XurR3kl+s7F6EEqOG+7l/N3
+         sn4gXkaGWl16SH+4cAUQmH6/X2ei1Mja9UUR26Bf/upNwXX2xOZ9tLAlffclbHwSoa
+         04inZUdmY79V2ABzHGy09OAQcN73eAoUBzXEkt2j+801h8zR3fdRGPDLLL7an9alGT
+         +UsBMK7icoeV+Xpyc6YkkxdSCLTZOfaDBCKomxRk9oGYjD46QRXDKcryqFIZQaSfGP
+         ue8GTpW3nYMj1WUrSr2hxSNXoe2hlygcsTEsb35n1R756qTpSZHAHuMEWGAxMnFW72
+         vIKS/ScQF1KqA==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] habanalabs: change function to static
-Date:   Tue,  8 Feb 2022 21:28:47 +0200
-Message-Id: <20220208192850.3526511-1-ogabbay@kernel.org>
+Cc:     Tomer Tayar <ttayar@habana.ai>
+Subject: [PATCH 3/4] habanalabs: use proper max_power variable for device utilization
+Date:   Tue,  8 Feb 2022 21:28:49 +0200
+Message-Id: <20220208192850.3526511-3-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220208192850.3526511-1-ogabbay@kernel.org>
+References: <20220208192850.3526511-1-ogabbay@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-handle_registration_node() is called directly from the irq handler
-in irq.c, so it can be static.
+From: Tomer Tayar <ttayar@habana.ai>
 
+The max_power variable which is used for calculating the device
+utilization is the ASIC specific property which is set during init.
+However, the max value can be modified via sysfs, and thus the updated
+value in the device structure should be used instead.
+
+Signed-off-by: Tomer Tayar <ttayar@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/common/irq.c | 2 +-
+ drivers/misc/habanalabs/common/device.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/misc/habanalabs/common/irq.c b/drivers/misc/habanalabs/common/irq.c
-index c28f3a1c7a03..e2bc128f2291 100644
---- a/drivers/misc/habanalabs/common/irq.c
-+++ b/drivers/misc/habanalabs/common/irq.c
-@@ -175,7 +175,7 @@ static void hl_ts_free_objects(struct work_struct *work)
-  * so here we'll be filling a list with nodes of "put" jobs and then will send this
-  * list to a dedicated workqueue to do the actual put.
-  */
--int handle_registration_node(struct hl_device *hdev, struct hl_user_pending_interrupt *pend,
-+static int handle_registration_node(struct hl_device *hdev, struct hl_user_pending_interrupt *pend,
- 						struct list_head **free_list)
- {
- 	struct timestamp_reg_free_node *free_node;
+diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
+index 60bfd737404b..63e2449ad136 100644
+--- a/drivers/misc/habanalabs/common/device.c
++++ b/drivers/misc/habanalabs/common/device.c
+@@ -614,7 +614,7 @@ int hl_device_utilization(struct hl_device *hdev, u32 *utilization)
+ 	u64 max_power, curr_power, dc_power, dividend;
+ 	int rc;
+ 
+-	max_power = hdev->asic_prop.max_power_default;
++	max_power = hdev->max_power;
+ 	dc_power = hdev->asic_prop.dc_power_default;
+ 	rc = hl_fw_cpucp_power_get(hdev, &curr_power);
+ 
 -- 
 2.25.1
 
