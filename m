@@ -2,129 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F5EC3525C
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 110FBC46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358096AbiBHNV2 (ORCPT
+        id S1358551AbiBHNVl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:21:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
+        Tue, 8 Feb 2022 08:21:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376474AbiBHNJf (ORCPT
+        with ESMTP id S1354305AbiBHMVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:09:35 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45411C03FED0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:09:34 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id x193so20562208oix.0
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:09:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SbtrRuHy+NSlAeGtvroJmD9+7e6TK8yWL1WcOGDbT60=;
-        b=ipB2P1DX/pWgxuTpermK6N6bN/NM8fq3jGkEyjPKIkXcJpx6XjJ9MZa/NKoDWwrzzR
-         H9zOo26gGXSh73UucCAB3b8IrpsW1y9z8bWdX9TuGNUEUL6P7BodxWlew7CktkYe46lB
-         mTSdFCPQ3OkT1RP1x/cWc1BBjlCdCs9vkvqtGoNIO1KIyvUoux1SlJZUjb+j4n02gssA
-         tpx4yKREirT9e4vk7X0IQqZIvUbeUkL8uwPIArNFxbd4OjMiyavTrZuTe4VqePCEvIIW
-         C/es6W9/nRSRO9vZv0UYJzlCUwVtwQXGAEyGo2tiEFSLhexMFTuNnQ6mlfn+EXqCeeBl
-         yteQ==
+        Tue, 8 Feb 2022 07:21:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27C10C03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:21:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644322893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+Mdb5Ebivxr6jzHOzSN/tIiK6XfSCOdpNYf9wIWORf4=;
+        b=WuW6p77VAqLuteBfFWAbrbaAHkECQ9ZGu1LuSNak8lrZbeWxXynP/gazhd2ZBkCRNDvVzY
+        /Ct+593wp4eD9S7l874zPtWm7xfWCv1KsNmAIXunyiy+oXh7D+8vrsNO5kfZjtFow1rAhr
+        LhsV8nT0YqB0egt8k1UikwHTtNdMDws=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-397-qT6QavVNNGij7L-10S9VwQ-1; Tue, 08 Feb 2022 07:21:32 -0500
+X-MC-Unique: qT6QavVNNGij7L-10S9VwQ-1
+Received: by mail-wr1-f71.google.com with SMTP id h24-20020adfaa98000000b001e33eb81e71so274026wrc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:21:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SbtrRuHy+NSlAeGtvroJmD9+7e6TK8yWL1WcOGDbT60=;
-        b=dHVf5++LQSVBKcKleiDyUrVOBOposbcXhiv9nSkxHqwWKJLkCFx7F6OWKlrmu4Yaq8
-         ltLnZp4zKbl8fTjp9TyTD3Vy31g6I54ZJTq7IuZYsEbFojraiHWBMe5WpzHZp4ZL0rtw
-         8gHbgWnSZH9J8RgfHgharJKq0uzHC3gHB7Zm6JfGy+wYZ2hT27p8XXIGN6MfCCyY/HTK
-         LVLv89MJcJ52/TN6fFebJoKUnm2C/R1GsDv/37RD44JnY+VyqcaUx2ZFN+jTO/S6t5Hk
-         6UkeXdMzIeo8CfUeozAWvuqx2dst4KSVDTLJd/En8mIw4CgyWwT26wx8iw7vj6sGzGuJ
-         Feaw==
-X-Gm-Message-State: AOAM530kP8B7HAxve3veDfkkUbGH5bDdt5FjmwNcLzjIAeoMeuynd7TB
-        upOEEtvsqWWGDRhFkFKo34yLJZcte/ca8NRZfxHY9ojFDIobLA==
-X-Google-Smtp-Source: ABdhPJyJ9Zma2ZEin8GNpdoeNj2ZN7XXaEM/ArByR8cTF7OFgqG6jNtpwnZynRpkSVBbmdgOEJlE7ZQrWSvJLj3ECJY=
-X-Received: by 2002:a05:6808:1819:: with SMTP id bh25mr454334oib.35.1644325772109;
- Tue, 08 Feb 2022 05:09:32 -0800 (PST)
+        bh=+Mdb5Ebivxr6jzHOzSN/tIiK6XfSCOdpNYf9wIWORf4=;
+        b=wz5Diq/7kCltxWZw3UTAVCK7WlHQGm/lTavcECielXS7PMQzi1wriJxPpUFOgYT2SN
+         Qnvuj4LPj2PP7eZcFuhGNkllU3aj/TgPJDusugh9L2SkQmTAHr9DDXqAQu335WQwepoo
+         n30lVPfr54ZtiwH52dSSWuGUTd3tz5JoVB/OJYa3R+ivtdCcNFBeqFyaLYnSeVq4eiJh
+         Nj9n+4Q3JpZrGM+XrIY9fzS6qXQ5bXhtfheC6DyAQjg9YCm8oSdgApbQ5gbOU/vZy63X
+         qb1/1Hq1ThH8YZd4zfgxjrSrom71RmB3Y9BfxcQR3p2g2ZdqBLDKyVVoQnqPt/k+rMBD
+         /OFw==
+X-Gm-Message-State: AOAM532sOo+GIIaFM18yeNOwAO5il2KfenqMyWd+js3tgr2wR3bt2pUY
+        yWa91FnT3+jXpnGjRiZ0LetXw5k6cmSDOwwU1GJ+hNKbdkuPdzeljPUb4fF2UYI+3gFNvbEY1UI
+        /ivw5wVS+WZRbt8VXreGMdlNS92kWSVmUBWtaaqA0
+X-Received: by 2002:adf:e281:: with SMTP id v1mr3333547wri.308.1644322890907;
+        Tue, 08 Feb 2022 04:21:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyLlALWJQvkTxajX4mY5wFPC0i9Cbyibc6vh+dA8xRid1wKDVpfMqtwnuSqGnDZsRaAsQEg1IKxzDseghgHQVU=
+X-Received: by 2002:adf:e281:: with SMTP id v1mr3333537wri.308.1644322890725;
+ Tue, 08 Feb 2022 04:21:30 -0800 (PST)
 MIME-Version: 1.0
-References: <20220125084702.3636253-1-andrew@daynix.com> <1643183537.4001389-1-xuanzhuo@linux.alibaba.com>
- <CAOEp5OcwLiLZuVOAxx+pt6uztP-cGTgqsUSQj7N7HKTZgmyN3w@mail.gmail.com>
-In-Reply-To: <CAOEp5OcwLiLZuVOAxx+pt6uztP-cGTgqsUSQj7N7HKTZgmyN3w@mail.gmail.com>
-From:   Andrew Melnichenko <andrew@daynix.com>
-Date:   Tue, 8 Feb 2022 15:09:21 +0200
-Message-ID: <CABcq3pE43rYojwUCAmpW-FKv5=ABcS47B944Y-3kDqr-PeqLwQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/5] TUN/VirtioNet USO features support.
-To:     Yuri Benditovich <yuri.benditovich@daynix.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Yan Vugenfirer <yan@daynix.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
+References: <20220204180504.328999-1-lyude@redhat.com>
+In-Reply-To: <20220204180504.328999-1-lyude@redhat.com>
+From:   Karol Herbst <kherbst@redhat.com>
+Date:   Tue, 8 Feb 2022 13:21:12 +0100
+Message-ID: <CACO55ttjtNW9Gx6pJegGD+r37j53Do+jc5xoyTFf8aXaBt5y-g@mail.gmail.com>
+Subject: Re: [PATCH] drm/nouveau/backlight: Fix LVDS backlight detection on
+ some laptops
+To:     Lyude Paul <lyude@redhat.com>
+Cc:     nouveau <nouveau@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        stable@vger.kernel.org, Ben Skeggs <bskeggs@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi people,
-Can you please review this series?
+On Fri, Feb 4, 2022 at 7:05 PM Lyude Paul <lyude@redhat.com> wrote:
+>
+> It seems that some laptops will report having both an eDP and LVDS
+> connector, even though only the LVDS connector is actually hooked up. This
+> can lead to issues with backlight registration if the eDP connector ends up
+> getting registered before the LVDS connector, as the backlight device will
+> then be registered to the eDP connector instead of the LVDS connector.
+>
+> So, fix this by only registering the backlight on connectors that are
+> reported as being connected.
+>
 
-On Wed, Jan 26, 2022 at 10:32 AM Yuri Benditovich
-<yuri.benditovich@daynix.com> wrote:
+I think the patch might risk breaking muxed systems where we have two
+GPUs, but.. the systems I know of have different ways of controlling
+the backlight anyway. So unless there is something I missed this is
+
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+
+> Signed-off-by: Lyude Paul <lyude@redhat.com>
+> Fixes: 6eca310e8924 ("drm/nouveau/kms/nv50-: Add basic DPCD backlight support for nouveau")
+> Bugzilla: https://gitlab.freedesktop.org/drm/nouveau/-/issues/137
+> Cc: <stable@vger.kernel.org> # v5.15+
+> ---
+>  drivers/gpu/drm/nouveau/nouveau_backlight.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 >
-> On Wed, Jan 26, 2022 at 9:54 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> >
-> > On Tue, 25 Jan 2022 10:46:57 +0200, Andrew Melnychenko <andrew@daynix.com> wrote:
-> > > Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
-> > > Technically they enable NETIF_F_GSO_UDP_L4
-> > > (and only if USO4 & USO6 are set simultaneously).
-> > > It allows to transmission of large UDP packets.
-> > >
-> > > Different features USO4 and USO6 are required for qemu where Windows guests can
-> > > enable disable USO receives for IPv4 and IPv6 separately.
-> > > On the other side, Linux can't really differentiate USO4 and USO6, for now.
-> > > For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
-> > > In the future, there would be a mechanism to control UDP_L4 GSO separately.
-> > >
-> > > Test it WIP Qemu https://github.com/daynix/qemu/tree/Dev_USOv2
-> > >
-> > > New types for VirtioNet already on mailing:
-> > > https://lists.oasis-open.org/archives/virtio-comment/202110/msg00010.html
-> >
-> > Seems like this hasn't been upvoted yet.
-> >
-> >         https://github.com/oasis-tcs/virtio-spec#use-of-github-issues
+> diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+> index ae2f2abc8f5a..6af12dc99d7f 100644
+> --- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
+> +++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+> @@ -294,7 +294,8 @@ nv50_backlight_init(struct nouveau_backlight *bl,
+>         struct nouveau_drm *drm = nouveau_drm(nv_encoder->base.base.dev);
+>         struct nvif_object *device = &drm->client.device.object;
 >
-> Yes, correct. This is a reason why this series of patches is RFC.
+> -       if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)))
+> +       if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)) ||
+> +           nv_conn->base.status != connector_status_connected)
+>                 return -ENODEV;
 >
-> >
-> > Thanks.
-> >
-> > >
-> > > Also, there is a known issue with transmitting packages between two guests.
-> > > Without hacks with skb's GSO - packages are still segmented on the host's postrouting.
-> > >
-> > > Andrew Melnychenko (5):
-> > >   uapi/linux/if_tun.h: Added new ioctl for tun/tap.
-> > >   driver/net/tun: Added features for USO.
-> > >   uapi/linux/virtio_net.h: Added USO types.
-> > >   linux/virtio_net.h: Added Support for GSO_UDP_L4 offload.
-> > >   drivers/net/virtio_net.c: Added USO support.
-> > >
-> > >  drivers/net/tap.c               | 18 ++++++++++++++++--
-> > >  drivers/net/tun.c               | 15 ++++++++++++++-
-> > >  drivers/net/virtio_net.c        | 22 ++++++++++++++++++----
-> > >  include/linux/virtio_net.h      | 11 +++++++++++
-> > >  include/uapi/linux/if_tun.h     |  3 +++
-> > >  include/uapi/linux/virtio_net.h |  4 ++++
-> > >  6 files changed, 66 insertions(+), 7 deletions(-)
-> > >
-> > > --
-> > > 2.34.1
-> > >
-> > > _______________________________________________
-> > > Virtualization mailing list
-> > > Virtualization@lists.linux-foundation.org
-> > > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+>         if (nv_conn->type == DCB_CONNECTOR_eDP) {
+> --
+> 2.34.1
+>
+
