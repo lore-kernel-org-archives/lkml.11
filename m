@@ -2,94 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA87C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0347C3525C
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357638AbiBHL2K (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:28:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56912 "EHLO
+        id S232734AbiBHL1u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:27:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356344AbiBHKdl (ORCPT
+        with ESMTP id S1356333AbiBHKc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:33:41 -0500
-X-Greylist: delayed 499 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 02:33:39 PST
-Received: from smtpout1.mo528.mail-out.ovh.net (smtpout1.mo528.mail-out.ovh.net [46.105.34.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2400C03FEC0;
-        Tue,  8 Feb 2022 02:33:39 -0800 (PST)
-Received: from pro2.mail.ovh.net (unknown [10.109.156.180])
-        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id 7359BE32ED97;
-        Tue,  8 Feb 2022 11:25:18 +0100 (CET)
-Received: from [192.168.1.103] (88.125.132.78) by DAG1EX2.emp2.local
- (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Feb
- 2022 11:25:17 +0100
-Message-ID: <89c0a032-3124-fc56-607c-5aeaac73fdc4@traphandler.com>
-Date:   Tue, 8 Feb 2022 11:25:16 +0100
+        Tue, 8 Feb 2022 05:32:28 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58749C03FEC0;
+        Tue,  8 Feb 2022 02:32:27 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id co28so9394010edb.1;
+        Tue, 08 Feb 2022 02:32:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v3+9Y32cf+Ax3G/iWkV5vM08y7nrpNijPcp38VaOUAE=;
+        b=Kw06RO75rbLUFrLHJ93ga19ZxxshO5/eizKWNfLYjMLV3cJLg4d6s+I98J5q0VdCGo
+         NS6bdVcwDSY89lrxKuzs2BAoT4Fpucs1BIEecy7QnncI/TKM2grUufsKf8mumEt7xgzB
+         gElndbyM+A7LeU83VNqK8dqsVA2jgtQfpn0Ew0uTKWbBmFbbM9waSxznq4LOd2UFOfIi
+         5AoAAcr/B87VPn5AjrWpUQgsdKowxCKuJIGRJwVMstEcDgP+PZ/CajWf3g7IBNv9uLXt
+         1s0Ml5wnJw0nag6BMDmDNPHTcbRIdl6rALNKSZTP67OzwrJaU5Q7Edci0gw/YsRFEyCp
+         XiQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v3+9Y32cf+Ax3G/iWkV5vM08y7nrpNijPcp38VaOUAE=;
+        b=pYlp37jRKIhFlVBCUt9GLmcknxEzsOO1OzQ5+iBlcqzwuXhXFVDTxiM+iInwIvPgiZ
+         FY+Ccuj8mCVzscoQ9M4wCxpLZIvwIa9VPeKCOnrfZ6+dhvnoBw3fVQ2wnmbmseoDT5ic
+         3LfdygKlaQIE+4YZ93iun+XiRbseuig9ynwkIGnryMkcKXxD/Yb3V+KX+ez1mPygIK3x
+         vdk1IUs8hYOEM1PzuhOvNnG1es0tlsRHvay3nQrmloxwAz72wwCEV91WnZj7bnKYgA8i
+         jd0nO4pNIy6aT+0Q44CcuW0KiyNnQ9IPYa4ywj4ETG2VJODz5+qvqC8AgBKy1tdvNVyn
+         RyQw==
+X-Gm-Message-State: AOAM530gdBl8apMDHCHG83EFqJFWjFXFqplOlolnvDo+qwoXsP+Xgfek
+        g/t4Qus1AhnDuI9XyVh0SmIopHrRAbrYMAz6jtY=
+X-Google-Smtp-Source: ABdhPJwz3uJ6NB6o/NiskBls8cso3tajnnfMcijvIzyd4aD0huokx70+fDoPUd5tajwSs1cuxL+FwQ51hqdYoSjLnWo=
+X-Received: by 2002:a05:6402:2741:: with SMTP id z1mr3760419edd.264.1644316345736;
+ Tue, 08 Feb 2022 02:32:25 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/6] clk: renesas: r9a06g032: Enable the watchdog reset
- sources
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220204161806.3126321-1-jjhiblot@traphandler.com>
- <20220204161806.3126321-2-jjhiblot@traphandler.com>
- <CAMuHMdUsWSXqQ6oOP8c0XBJpAoMUg74kTJN1rU8uiq7UXRiKkw@mail.gmail.com>
-From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-In-Reply-To: <CAMuHMdUsWSXqQ6oOP8c0XBJpAoMUg74kTJN1rU8uiq7UXRiKkw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [88.125.132.78]
-X-ClientProxiedBy: CAS3.emp2.local (172.16.1.3) To DAG1EX2.emp2.local
- (172.16.2.2)
-X-Ovh-Tracer-Id: 4975914640143366619
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrheejgdduvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfhfhfgjtgfgihesthejredttdefjeenucfhrhhomheplfgvrghnqdflrggtqhhuvghsucfjihgslhhothcuoehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomheqnecuggftrfgrthhtvghrnhephfeitdehtddtgeeugefgtdejgedtieelfedtgeehuedtteejueeihedtvedvfeeinecukfhppedtrddtrddtrddtpdekkedruddvhedrudefvddrjeeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehprhhovddrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+References: <20220207232129.402882-1-athierry@redhat.com>
+In-Reply-To: <20220207232129.402882-1-athierry@redhat.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 8 Feb 2022 12:31:49 +0200
+Message-ID: <CAHp75VexSp1kijGHoOijSHB44fHTWqj6LZPzhSBhN2ms2huh-g@mail.gmail.com>
+Subject: Re: [PATCH v3] serial: 8250_bcm2835aux: Add ACPI support
+To:     Adrien Thierry <athierry@redhat.com>
+Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 07/02/2022 16:34, Geert Uytterhoeven wrote:
-> Hi Jean-Jacques,
+On Tue, Feb 8, 2022 at 11:13 AM Adrien Thierry <athierry@redhat.com> wrote:
 >
-> On Fri, Feb 4, 2022 at 5:18 PM Jean-Jacques Hiblot
-> <jjhiblot@traphandler.com> wrote:
->> The watchdog reset sources are not enabled by default.
->> Enabling them here to make sure that the system resets when the watchdog
->> timers expire.
->>
->> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-> Thanks for your patch!
->
-> R-Car Gen3 and RZ/G2 SoCs have a similar mechanism.
-> On these SoCs, the boot loader takes care of the configuration, as this
-> is a system policy that goes beyond the Linux realm.
-> Perhaps the RZ/N1 boot loader can do the same?
->
-> Gr{oetje,eeting}s,
+> Add ACPI support to 8250_bcm2835aux driver. This makes it possible to
+> use the miniuart on the Raspberry Pi with the tianocore/edk2 UEFI
 
-Thanks for you reviews and comments.
+TianoCore EDK II
 
-I'm not conformable with the idea that the safety induced by the
+> firmware.
 
-watchdog is removed because the bootloader didn't set the register.
+...
 
-I'd rather that the kernel is able to enable the watchdog reset source.
+>         /* get the clock - this also enables the HW */
+> -       data->clk = devm_clk_get(&pdev->dev, NULL);
 
-If it is acceptable, we could use a new DTS entry to force the policy.
->                          Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                  -- Linus Torvalds
+> -       if (IS_ERR(data->clk))
+> -               return dev_err_probe(&pdev->dev, PTR_ERR(data->clk), "could not get clk\n");
+
+You shouldn't remove the error handling. Even if optional there may be
+other types of errors that need to be reported.
+
+> +       data->clk = devm_clk_get_optional(&pdev->dev, NULL);
+
+...
+
+
+> +       bcm_data = device_get_match_data(&pdev->dev);
+
+Move this closer to the condition where it's used the first time.
+
+> +       /* Some UEFI implementations (e.g. tianocore/edk2 for the Raspberry Pi)
+.
+If there are some not doing that, can we end up in the situation when
+for the same ID we have different offset?
+Also, Why not go and fix that implementation?
+Can you provide a DSDT excerpt to show how it looks there?
+
+TianoCore EDK II
+
+/*
+ * Multi-line comments should look
+ * like this.
+ */
+
+> +        * describe the miniuart with a base address that encompasses the auxiliary
+> +        * registers shared between the miniuart and spi.
+
+SPI
+
+> +        *
+> +        * This is due to historical reasons, see discussion here :
+> +        * https://edk2.groups.io/g/devel/topic/87501357#84349
+> +        *
+> +        * We need to add the offset between the miniuart and auxiliary
+> +        * registers to get the real miniuart base address.
+> +        */
+> +       if (bcm_data)
+> +               offset = bcm_data->offset;
+
+...
+
+> +static const struct acpi_device_id bcm2835aux_serial_acpi_match[] = {
+> +       { "BCM2836", (kernel_ulong_t)&bcm2835_acpi_data },
+> +       { }
+> +};
+
+I believe this ID is allocated by Broadcom. Can we have a confirmation, please?
+
+-- 
+With Best Regards,
+Andy Shevchenko
