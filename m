@@ -2,133 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8111BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4266C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386081AbiBHT3L (ORCPT
+        id S1386091AbiBHTaJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 14:29:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37022 "EHLO
+        Tue, 8 Feb 2022 14:30:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386057AbiBHT3D (ORCPT
+        with ESMTP id S1386082AbiBHTaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:29:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84077C0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:29:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43721B81D41
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:29:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4099DC340ED;
-        Tue,  8 Feb 2022 19:28:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644348540;
-        bh=8nfSl8r7WhFzC+yfSwUCp3GSiZbNVVuBBSfDHLIk7f4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NFEmUzFkHpQpJRZfDK33kIeSusQionqhpWxwhCM7Rbp6qig8Ax0u0qu1Y4+LXpb/v
-         /Np5dOK1Ajbp30/oseLvN0MDcT8FiKD1qEldP6RDK0xgkg/GhPcJxql7C4AV2rdRPh
-         Rb72K5PhV8Y5tQfrj0g4hhGedm2qhWguPQvyaB6eJEWkFMD2vM2g1nSDDoNJ9aHwcc
-         PDjIOEyxKi+rT2as8M3rpP2LedRh10H+sXat88dfD//uznuEK9Be+PK2GvBnCKS/GN
-         O7i7Xrjl0d60geN+zdyHqWuLr68FksqeguA7aAhVBENwGlAMBwAl1JBZzTHk8B3dBk
-         SPX38bXObcZvQ==
-From:   Oded Gabbay <ogabbay@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Tomer Tayar <ttayar@habana.ai>
-Subject: [PATCH 4/4] habanalabs: set max power on device init per ASIC
-Date:   Tue,  8 Feb 2022 21:28:50 +0200
-Message-Id: <20220208192850.3526511-4-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220208192850.3526511-1-ogabbay@kernel.org>
-References: <20220208192850.3526511-1-ogabbay@kernel.org>
+        Tue, 8 Feb 2022 14:30:03 -0500
+X-Greylist: delayed 1350 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 11:30:02 PST
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AE4C0612C0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:30:02 -0800 (PST)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 218J6cbj046485;
+        Tue, 8 Feb 2022 13:06:38 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644347198;
+        bh=6UqkATHFYuKMAaK02BGNEELKOaebX+fdRGwvNctEq64=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=opT1ONKvoXJeiWDy4C7+obV7cOaSEKXJp0DwOGZwB2jKBrjPCWqC3Kvh80OM4HrN5
+         PHjgX3pPUUhVAuJA9cA0M6669bUEwT8DUgejKSFMCEjCnofGhch26ZmzNP1Cv8jSJ5
+         o3QFhE2IOf9vzOSK6uCtXTtapOb0lYGVkgcuUM4Y=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 218J6caC084086
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 8 Feb 2022 13:06:38 -0600
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 8
+ Feb 2022 13:06:37 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 8 Feb 2022 13:06:37 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 218J6axK108441;
+        Tue, 8 Feb 2022 13:06:37 -0600
+Date:   Wed, 9 Feb 2022 00:36:36 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     =?utf-8?Q?C=C3=A9dric?= Le Goater <clg@kaod.org>
+CC:     Patrick Williams <patrick@stwcx.xyz>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-aspeed@lists.ozlabs.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Richard Weinberger <richard@nod.at>,
+        Potin Lai <potin.lai@quantatw.com>,
+        <linux-kernel@vger.kernel.org>, Michael Walle <michael@walle.cc>,
+        <linux-mtd@lists.infradead.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] mtd: aspeed-smc: improve probe resilience
+Message-ID: <20220208190636.h6dubktkmuosvdxo@ti.com>
+References: <Yc3Qav+ULNdF5zRT@heinlein>
+ <20211231102623.izaqlzjvracbbgmp@ti.com>
+ <20220103171721.46c8e697@xps13>
+ <YdSP6tKyQ2ZRUC+2@heinlein>
+ <20220105063244.lno3xur64uepa7i5@ti.com>
+ <d4ba6413-57ce-14c1-ed48-d00db2f74bd3@kaod.org>
+ <20220124153644.m3iwlvq5ld5cpbyz@ti.com>
+ <b222361a-288a-55b2-fc02-04c0b93b4220@kaod.org>
+ <20220124203708.lm23sgsub234wlhq@ti.com>
+ <53d53523-7174-89fd-8661-550346d53141@kaod.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <53d53523-7174-89fd-8661-550346d53141@kaod.org>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomer Tayar <ttayar@habana.ai>
+On 07/02/22 06:13PM, Cédric Le Goater wrote:
+> Hello,
+> 
+> On 1/24/22 21:37, Pratyush Yadav wrote:
+> > On 24/01/22 07:34PM, Cédric Le Goater wrote:
+> > > > > spimem needs an extension I think. Sorry I have not been able to
+> > > > > push that forward. Lack of time and other tasks to address on the
+> > > > > host side of the machine. This is really a software problem, we
+> > > > > have the HW procedures ready. If a spimem expert could get involved
+> > > > > to make a few proposals, I would be happy to help and do some testing.
+> > > > > QEMU models are good enough for the software part. We can do the
+> > > > > training validation on real HW when ready.
+> > > > 
+> > > > What information about the flash do you need for this training?
+> > > 
+> > > Last time I looked, we lacked some post_init handler to setup a slave:
+> > > configure the registers defining the AHB windows for each flash
+> > > slave and perform the read timing calibration. calibration should
+> > > only be done once.
+> > > 
+> > > See how the aspeed_spi_flash_init() routine doing the calibration
+> > > is hooked up under aspeed_spi_claim_bus() in the u-boot driver :
+> > 
+> > My patch series should provide a hook for doing the calibration _after_
+> > the flash is initialized.
+> 
+> You can also use the .dirmap_create handler. The flash device has
+> been scanned when called and the size is available in the spi-mem
+> dirmap descriptor.
 
-For current devices there is a need to send the max power value to F/W
-during device init, for example because there might be several card
-types.
-In future devices, this info will be programmed in the device's EEPROM
-and will be read by F/W, and hence the driver should not send it.
+I feel uncomfortable doing that since the API does not actually make 
+this guarantee. Who knows if a future change will violate that 
+assumption. That is why I added a new API call to explicitly mark the 
+flash as ready. I suppose you can get the op from the .dirmap_create 
+handler, but I guess we can debate that over the patches.
 
-Modify the sending of the relevant message to be done only for ASIC
-types that need it.
+> 
+> I reworked the current Aspeed driver with this approach and it
+> seems sufficient for read calibration.
+> 
+> Thanks,
+> 
+> C.
+> 
 
-Signed-off-by: Tomer Tayar <ttayar@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
----
- drivers/misc/habanalabs/common/device.c     | 3 ++-
- drivers/misc/habanalabs/common/habanalabs.h | 2 ++
- drivers/misc/habanalabs/gaudi/gaudi.c       | 2 ++
- drivers/misc/habanalabs/goya/goya.c         | 2 ++
- 4 files changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
-index 63e2449ad136..8ea9dfe3f79b 100644
---- a/drivers/misc/habanalabs/common/device.c
-+++ b/drivers/misc/habanalabs/common/device.c
-@@ -1541,7 +1541,8 @@ int hl_device_init(struct hl_device *hdev, struct class *hclass)
- 	/* Need to call this again because the max power might change,
- 	 * depending on card type for certain ASICs
- 	 */
--	hl_fw_set_max_power(hdev);
-+	if (hdev->asic_prop.set_max_power_on_device_init)
-+		hl_fw_set_max_power(hdev);
- 
- 	/*
- 	 * hl_hwmon_init() must be called after device_late_init(), because only
-diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index 93116fe71ef6..b5055ab528b8 100644
---- a/drivers/misc/habanalabs/common/habanalabs.h
-+++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -562,6 +562,7 @@ struct hl_hints_range {
-  *                              to the fact that training runs on multiple
-  *                              devices)
-  * @configurable_stop_on_err: is stop-on-error option configurable via debugfs.
-+ * @set_max_power_on_device_init: true if need to set max power in F/W on device init.
-  */
- struct asic_fixed_properties {
- 	struct hw_queue_properties	*hw_queues_props;
-@@ -646,6 +647,7 @@ struct asic_fixed_properties {
- 	u8				supports_soft_reset;
- 	u8				allow_inference_soft_reset;
- 	u8				configurable_stop_on_err;
-+	u8				set_max_power_on_device_init;
- };
- 
- /**
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 61aa6dce6dde..ad640a268a3c 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -671,6 +671,8 @@ static int gaudi_set_fixed_properties(struct hl_device *hdev)
- 
- 	prop->configurable_stop_on_err = true;
- 
-+	prop->set_max_power_on_device_init = true;
-+
- 	return 0;
- }
- 
-diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
-index c8143b6616af..c08d96e43c9f 100644
---- a/drivers/misc/habanalabs/goya/goya.c
-+++ b/drivers/misc/habanalabs/goya/goya.c
-@@ -485,6 +485,8 @@ int goya_set_fixed_properties(struct hl_device *hdev)
- 
- 	prop->configurable_stop_on_err = true;
- 
-+	prop->set_max_power_on_device_init = true;
-+
- 	return 0;
- }
- 
 -- 
-2.25.1
-
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
