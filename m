@@ -2,118 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A19C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B077C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245010AbiBHLdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:33:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36734 "EHLO
+        id S235596AbiBHLdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:33:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232897AbiBHLH4 (ORCPT
+        with ESMTP id S1349098AbiBHLII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 06:07:56 -0500
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D97C03FEC0;
-        Tue,  8 Feb 2022 03:07:55 -0800 (PST)
-Received: by mail-vs1-f51.google.com with SMTP id t20so2924718vsq.12;
-        Tue, 08 Feb 2022 03:07:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zLRCIZiUQ4EqimYPFyGlj6mR3eFhIcoRvYTw8GfHVOA=;
-        b=f9rk8askNLCyFN+IFGlxvGyzf5IZvJzl3QWCWaYjf+eS758Asyr9HREyEsI7QRCHRf
-         DQpOPnOe6zBdDS7Z5WYIcp+G/0dQrXQXr9bjmjPdwdX6eNoA4ZKFsz774DqtXpp9THV8
-         riYuwFUcuC9d0N55h1B+tG5wisMVSrwNXbT/4FX3PY9LfnQd+8SEAio3Qg93hXJUda98
-         zYFIDYLZMpbrNGZSA/+R9xn/n2ITZcD2kWyhrYysOhpq56pdq9JCUe3ipZgbvUj9Xj/4
-         diQTgqT7EVSkmp1ovTC0DUW+LbhMgQ2iqN2e7rI2gZPEXm9L932MSfHzGrHu6skh9wN4
-         kK8g==
-X-Gm-Message-State: AOAM533clf2a5qVCnvffVeN1O5ldf7JFSDCLuROmT83ZuxPKMF7xP+Sy
-        tLdOiHu3PvfoqfaKIachsVfuUL0/298aPw==
-X-Google-Smtp-Source: ABdhPJynYgutMZyg3kc7IdyW4CnWpGz9o52Ng4f+md5Aiw+LyuIHvBNMR8RMYF+nyY3ngLhe29BaVQ==
-X-Received: by 2002:a05:6102:2851:: with SMTP id az17mr1362212vsb.43.1644318474398;
-        Tue, 08 Feb 2022 03:07:54 -0800 (PST)
-Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com. [209.85.221.177])
-        by smtp.gmail.com with ESMTPSA id f9sm2116455uam.3.2022.02.08.03.07.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 03:07:53 -0800 (PST)
-Received: by mail-vk1-f177.google.com with SMTP id m131so9519803vkm.7;
-        Tue, 08 Feb 2022 03:07:53 -0800 (PST)
-X-Received: by 2002:a1f:2555:: with SMTP id l82mr1515140vkl.7.1644318473361;
- Tue, 08 Feb 2022 03:07:53 -0800 (PST)
+        Tue, 8 Feb 2022 06:08:08 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F675C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 03:08:07 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644318484;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=o5MD6xc3wwbgInMsdmlTlr0ItvXqNelSbNX5p3wAhxs=;
+        b=Wj4RFg8r4U5Wvq7S1lY2cf2ALXTBAiTr4v2qubwkpJMcb7/2nWDWLwHk4AlbWM9aEH388C
+        IpTFdO4zPYDLqIc4Vz5KGQhDfSk46rn0bC4D87VKgn0SHxXh7f+6njZYDv7LU1//BMxO2J
+        0af892WKkfD3TZmRnUPITkrtJsJ8wVvIXGNPW3DwF/fhN+REbBzUJVY0IRH4HbHJkRDfgU
+        JxPgAwmwzQf+qr3Y5PvVO2w8jeGRQY9JJdLNlTi+21wxnroKHDPPB1DsGFM97WHviaUyX1
+        RyNaZa3YFp+msM79qLm7XzHtnmDKe/tiI+flv6173gLKkGRnD+0Jp0hf9OZ06Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644318484;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=o5MD6xc3wwbgInMsdmlTlr0ItvXqNelSbNX5p3wAhxs=;
+        b=xpm9uE2KgSevyeWZ1zX0NtBDZYGapp4sNV5rlmJl3V4WWzPWZU564P2M1w8E2fW4oRdYkq
+        Yd0eFsrhgKPN5mBQ==
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH printk v1 10/13] printk: add kthread console printers
+In-Reply-To: <20220208083620.2736-1-hdanton@sina.com>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220208083620.2736-1-hdanton@sina.com>
+Date:   Tue, 08 Feb 2022 12:14:04 +0106
+Message-ID: <87v8xpmx9n.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-References: <164299573337.26253.7538614611220034049.stgit@noble.brown> <164299611278.26253.14950274629759580371.stgit@noble.brown>
-In-Reply-To: <164299611278.26253.14950274629759580371.stgit@noble.brown>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 8 Feb 2022 12:07:42 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXJM0sSo7TCHN4PNq-DURKFEesVTwNpcGQ_dcehN1G=ZQ@mail.gmail.com>
-Message-ID: <CAMuHMdXJM0sSo7TCHN4PNq-DURKFEesVTwNpcGQ_dcehN1G=ZQ@mail.gmail.com>
-Subject: Re: [PATCH 09/23] MM: submit multipage reads for SWP_FS_OPS swap-space
-To:     NeilBrown <neilb@suse.de>
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>,
-        "open list:NFS, SUNRPC, AND..." <linux-nfs@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Neil,
-
-On Mon, Jan 24, 2022 at 5:49 PM NeilBrown <neilb@suse.de> wrote:
-> swap_readpage() is given one page at a time, but maybe called repeatedly
-> in succession.
-> For block-device swapspace, the blk_plug functionality allows the
-> multiple pages to be combined together at lower layers.
-> That cannot be used for SWP_FS_OPS as blk_plug may not exist - it is
-> only active when CONFIG_BLOCK=y.  Consequently all swap reads over NFS
-> are single page reads.
+On 2022-02-08, Hillf Danton <hdanton@sina.com> wrote:
+> On Mon,  7 Feb 2022 20:49:20 +0106 John Ogness wrote:
+>> Create a kthread for each console to perform console printing. During
+>> normal operation (@system_state == SYSTEM_RUNNING), the kthread
+>> printers are responsible for all printing on their respective
+>> consoles.
 >
-> With this patch we pass in a pointer-to-pointer when swap_readpage can
-> store state between calls - much like the effect of blk_plug.  After
-> calling swap_readpage() some number of times, the state will be passed
-> to swap_read_unplug() which can submit the combined request.
->
-> Some caller currently call blk_finish_plug() *before* the final call to
-> swap_readpage(), so the last page cannot be included.  This patch moves
-> blk_finish_plug() to after the last call, and calls swap_read_unplug()
-> there too.
->
-> Signed-off-by: NeilBrown <neilb@suse.de>
+> The code becomes simpler if the kthread is replaced with a workqueue
+> work, given the system workers.
 
-Thanks for your patch!
+We do not want multiple console printers blocking each other. We also
+would not want the consoles blocking non-printk work items for extended
+periods of time. So we would likely need a dedicated worker per
+console. I'm not convinced the code would look simpler just by changing
+the deferred work API. But perhaps the kernel community wants to get
+away from manual kthread management in general. (??)
 
-> --- a/mm/swap.h
-> +++ b/mm/swap.h
+I am now pondering if there is some technical advantages to
+workqueues. I suppose with dedicated workers, you could still easily
+adjust CPU affinities and scheduling policies/priorites from userspace,
+like with kthreads. But is there some advantage over kthreads?
 
-> @@ -53,7 +62,8 @@ static inline unsigned int page_swap_flags(struct page *page)
->         return page_swap_info(page)->flags;
->  }
->  #else /* CONFIG_SWAP */
-> -static inline int swap_readpage(struct page *page, bool do_poll)
-> +static inline int swap_readpage(struct page *page, bool do_poll,
-> +                               struct swap_iocb **plug);
-
-Bogus semicolon.
-
->  {
->         return 0;
->  }
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+John Ogness
