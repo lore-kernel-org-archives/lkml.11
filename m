@@ -2,119 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A057C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:49:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385486AbiBHSsw (ORCPT
+        id S1385490AbiBHStY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:48:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43576 "EHLO
+        Tue, 8 Feb 2022 13:49:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358560AbiBHSst (ORCPT
+        with ESMTP id S1385487AbiBHStN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:48:49 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D4DC0612C1;
-        Tue,  8 Feb 2022 10:48:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644346129; x=1675882129;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=GKYfrOdPKIidCVFdft/pVkcauP1SFgER+aJOOG3WDEA=;
-  b=nvxCrdDs4OeAnUM9i++1tL6hCNiNV1a8ZMXu2s/MV/yWXB2zsl5q/G61
-   cR3AyMXgHkhgE1wdVY7YftNxyMDaCiFAGTERLvGXYD/zrmMDkr5rUoHOR
-   bzZsILWoaMRTBOqBVQCN1uQhEFjJ6PLpOWyb2cbxm+Msg6CGClNMsTkkB
-   D0RqUTQkseeqYgAt9JvJYLEG4idlo1UwKatmXwyzChHR2wG3RHSwNJ9aA
-   IioWmKRt1h5QFFSJ/oDu/nrDG72iwpLLEbjmsgSOIWuVvZG6XRsC4NDSF
-   5uNLZ/UwS1MlXxO3ocA7Iyz/zy9RnqlSAkYHXnMTni+mxnfNLc5X4nt5v
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="236430341"
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="236430341"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 10:48:14 -0800
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="484914385"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 10:48:14 -0800
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     vijay.dhanraj@intel.com, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH V3] x86/sgx: Silence softlockup detection when releasing large enclaves
-Date:   Tue,  8 Feb 2022 10:48:07 -0800
-Message-Id: <ced01cac1e75f900251b0a4ae1150aa8ebd295ec.1644345232.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 8 Feb 2022 13:49:13 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3652AC0612B8;
+        Tue,  8 Feb 2022 10:49:13 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id 10so147054plj.1;
+        Tue, 08 Feb 2022 10:49:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HzqJzWy6/gVejSAN5h5m+QbHqL8I+Ih3BBbS9yeEwMQ=;
+        b=N4MKN8A1dy9x/0fQ3O5ZkWlr8CY4zUnafoD5iZJ2GzR2vHrPtZ9c3Augj8QVTK/AOB
+         6/Q0T9TxM0VSWHm37lP2a4E0TiBrzrW1EhYPumJszYBdF7eUpgZwahZdkzXGgG8+uijN
+         EmyFn0npWdJy1OTjwf8aZ/+9k7emBiOHVNUqPcClPbMfn2VqEkoBj+u0tEthGor79MHU
+         Q+YzcmqT/YYt5W56qTcPGLmXCR1cUCzJMQ48WnZQUTxPcgO02slV04kbISsKtoFvVS58
+         LCwvTK7xcTi0/LT7PubbSs8+5waC1a9C1PTTqMm+3ZHp1Zz7rUdlBA27X4l7qSY3SA+s
+         X3fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=HzqJzWy6/gVejSAN5h5m+QbHqL8I+Ih3BBbS9yeEwMQ=;
+        b=hwvykU9bmAc/p0UI6F9n1Ejt1CydCGSwo4r6zeHykeC9a3PFFxCWHwqT4XNl1fXiKf
+         TXfICQVb92wYwEoLIGkH6zs6F3zjtQR/19VgTW3lIxbGYA8LdegUV5J3+Kmz0/8NzOmr
+         br5coWkjh1fGYTExJYhS8jGtk6j2uo1F0Xi1fKkK38NL9ktJdrAJkstKcxRKgsA7DnvB
+         Qp5ntZk4G41xBrO9igCnLY2MvzSdc/INJ2ZJjhZsBtHxdrAOXeoOghYYggVSbOlR6G5I
+         ivebrghptl3lrY+/kZxEm09xZ9aGoF5t9VO6LgFlV6EMJ1XbBT3bKifNGYQZFmtlF2V2
+         bxjw==
+X-Gm-Message-State: AOAM530kv13r38qx43OTWIZb1/vYAu6uIQbUid4QNZUbaeM1QCviUAe/
+        ipZ8S4d23dDa2ydhUKUicb4=
+X-Google-Smtp-Source: ABdhPJwX12I2MBOXbiu6oZugVdwTIBUKqfSF8p3wK6Ebq2mwkYOwoYeKHHg4Oha5uOUJ0yedv0L0SQ==
+X-Received: by 2002:a17:902:e788:: with SMTP id cp8mr6038172plb.172.1644346152598;
+        Tue, 08 Feb 2022 10:49:12 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id kb18sm3983061pjb.30.2022.02.08.10.49.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 10:49:12 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 8 Feb 2022 08:49:11 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     "yukuai (C)" <yukuai3@huawei.com>
+Cc:     axboe@kernel.dk, cgroups@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH -next] blk-throttle: enable io throttle for root in
+ cgroup v2
+Message-ID: <YgK7J8TFyFvp/rv1@slm.duckdns.org>
+References: <20220114093000.3323470-1-yukuai3@huawei.com>
+ <YfGE9L4i7DtNTo08@slm.duckdns.org>
+ <235b0757-d322-2b6e-3ab6-ecc8c82f8f1e@huawei.com>
+ <Yflr4FzUTWsiLTC/@slm.duckdns.org>
+ <32b6949d-60b1-82ce-ae44-1cf089a78276@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <32b6949d-60b1-82ce-ae44-1cf089a78276@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Vijay reported that the "unclobbered_vdso_oversubscribed" selftest
-triggers the softlockup detector.
+Hello,
 
-Actual SGX systems have 128GB of enclave memory or more.  The
-"unclobbered_vdso_oversubscribed" selftest creates one enclave which
-consumes all of the enclave memory on the system. Tearing down such a
-large enclave takes around a minute, most of it in the loop where
-the EREMOVE instruction is applied to each individual 4k enclave page.
+On Tue, Feb 08, 2022 at 09:38:33AM +0800, yukuai (C) wrote:
+> 3) If we limit iops to 8 for each client from server, client should work
+> fine, however, server can receive 64 x 8 = 512 io at most at the same
+> time, which might cause too much pressure on the server.(maybe bps is
+> more appropriate to explain the high pressure).
 
-Spending one minute in a loop triggers the softlockup detector.
+I don't follow this part. Why can't the server control however it wanna
+control?
 
-Add a cond_resched() to give other tasks a chance to run and placate
-the softlockup detector.
+Thanks.
 
-Cc: stable@vger.kernel.org
-Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
-Reported-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
-Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Tested-by: Jarkko Sakkinen <jarkko@kernel.org>  (kselftest as sanity check)
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
----
-Softlockup message:
-
-watchdog: BUG: soft lockup - CPU#7 stuck for 22s! [test_sgx:11502]
-Kernel panic - not syncing: softlockup: hung tasks
-<snip>
-sgx_encl_release+0x86/0x1c0
-sgx_release+0x11c/0x130
-__fput+0xb0/0x280
-____fput+0xe/0x10
-task_work_run+0x6c/0xc0
-exit_to_user_mode_prepare+0x1eb/0x1f0
-syscall_exit_to_user_mode+0x1d/0x50
-do_syscall_64+0x46/0xb0
-entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Changes since V2:
-- V2: https://lore.kernel.org/lkml/b5e9f218064aa76e3026f778e1ad0a1d823e3db8.1643133224.git.reinette.chatre@intel.com/
-- Add Jarkko's "Reviewed-by" and "Tested-by" tags.
-
-Changes since V1:
-- V1: https://lore.kernel.org/lkml/1aa037705e5aa209d8b7a075873c6b4190327436.1642530802.git.reinette.chatre@intel.com/
-- Add comment provided by Jarkko.
-
- arch/x86/kernel/cpu/sgx/encl.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-index 001808e3901c..48afe96ae0f0 100644
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -410,6 +410,8 @@ void sgx_encl_release(struct kref *ref)
- 		}
- 
- 		kfree(entry);
-+		/* Invoke scheduler to prevent soft lockups. */
-+		cond_resched();
- 	}
- 
- 	xa_destroy(&encl->page_array);
 -- 
-2.25.1
-
+tejun
