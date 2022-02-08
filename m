@@ -2,236 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 548E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:32:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2316EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239961AbiBHFbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 00:31:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54354 "EHLO
+        id S1347092AbiBHFcH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 00:32:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346972AbiBHElL (ORCPT
+        with ESMTP id S1347013AbiBHEq7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 23:41:11 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A9AC0401E5
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 20:41:09 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id l43-20020a9d1cab000000b005aa50ff5869so6587351ota.0
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 20:41:09 -0800 (PST)
+        Mon, 7 Feb 2022 23:46:59 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2125.outbound.protection.outlook.com [40.107.244.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86963C0401DC;
+        Mon,  7 Feb 2022 20:46:58 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k3TztukKWmqbWuD3nCBvuH80EyZGHs6xQ3TAF/KG1paGUxcbR+7GcFCuPZMDGhl6nSilGjqdvxruS6IBq5CQq8Frck+zHJtCRu5nElpg8Ibt4OioONw+oc0iVO5t7KrvgBkcsXuIPAhvFgwFN8+CrPQKyViMOTn2kuSanzESGt86RJ+YNjAsmUpoEh7KqgguWwvFaEoM6n1rFAfzutxm4D4T0XsqAqJ5YsfJ2GH1ycYTPHuA5Ez/Fybkua04uSsS1faDbsCpJNwPT36ITLzOR0ZICl7xl+ZLi16FbyNimTtvegdFGN0NLPU7I1z8Qf3/IWiR9rXCfJykIkYWA+rnog==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=u3Ozhtl3Vm4r+UsISOpZYHXfOOcE7BoKeT217UZplhA=;
+ b=InsgP0sDgQOpUg558aSRFr34fkTXFbfhi88r4zBVSM6SJMhZDn9IfemsaAQa92eU9p8xFZKGBYzU1EW4VgbWEIzGCxXQdlLLdKdYHMRSMtegIhEBqcZoxKZ8/oic0a1RwDCJ9O89Og2o9dEo2h2WRVZjK065k7+Ti6ALhVjdyRTbsHanwFGhZ7jvpViHA8l+Od+ctyp2/sLmPHrLLaXSuO4ydzLs+0Fy+Dqf7gzwKPYdqBz89ft9vWTiAo/9FakHstFRga7k3MmAXuwjVuw2zI/qD3B25mjdF1/I4p4NWazNSKwV5Q075/9yYBUr7vbgytfxyKCmg3ERXm3KTQMh6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=esjcw5J1950tYULEo1Mi5rlx0creI3trE/Z1yqFmq9U=;
-        b=ip03ry5nqNDMKLD/txk0cpnpGu1BvjmtduHQhiYMDZpn5vJRKhomQqMBgVAUV9p5PV
-         3xrn4cnCiRNPB/VaCfnqZhPnd6KJm6T6p/Qwoo2K8DYmR59WBKOjBe05u/COnPxqKiJu
-         EqlHzDIxVCoDeopGi4kwr0th6q3BXHzubpSmeCksw9GLws5mb3eY4eRv5Z4+QKWjOS0Y
-         KPeWUeFJFh6xDAyoWwt5pNIypf7EQ2wDAripNLU9/qsxjaW8t6yQrxYqf/j41O4nfDV+
-         Y+mDQYBT/pqa9wJDrE85riLOVO73QXylarUrOvwHg7M7L1Kpu8vh4YtdNTS7uY5knGR9
-         pv/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=esjcw5J1950tYULEo1Mi5rlx0creI3trE/Z1yqFmq9U=;
-        b=69qZdEB/9RezjvIxziwztCT/uJk+PJ7RP8l1VS3hTHuUGwXc+Tzlkc/ijaWNer1WIt
-         1IVTyyvG9l4Tx4FtsI8ZHKYzu2m3Kf3GvIrvhGbq7jlIJQU1G2Huow+ZPb6NgnEwISsa
-         FKf4beILXN3lgn/ouLx0yNEpY8yAMKrtiV08PA+Ip3QLZchZC5lEyX/il7veJBmH7/RS
-         W1/FOwp4BnuaNSS5nJrlR9HRbJ+p0X5X1jVzzvHNgHCvATuDaWxVPpW4zZiZSaw4Ap4f
-         k9ViGFB0yZiB1A6FqLXRE/YXIzWGEIgBcq6NIfE9W1EXgR0yQ7J5IMyaXGEp9oRSgpae
-         jCdg==
-X-Gm-Message-State: AOAM533kB82uutFNGhfyI8mUwMoyCvxZ3/aaaYPJa+FOUxUSxzm4tKbc
-        avOyPe54hZID6VPkl65KoauVJQ==
-X-Google-Smtp-Source: ABdhPJweY3q0vp0/f4DbyZgWE7ZXp0PpJrKT96m0Flrtcs1E/0Ff8vVW1yzoCSR4VtmcCjJaJS6RUQ==
-X-Received: by 2002:a9d:2c28:: with SMTP id f37mr1162716otb.65.1644295269183;
-        Mon, 07 Feb 2022 20:41:09 -0800 (PST)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id l14sm4709367ooq.12.2022.02.07.20.41.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 20:41:08 -0800 (PST)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-usb@vger.kernel.org
-Subject: [PATCH 1/2] drm: Add HPD state to drm_connector_oob_hotplug_event()
-Date:   Mon,  7 Feb 2022 20:43:27 -0800
-Message-Id: <20220208044328.588860-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.33.1
-MIME-Version: 1.0
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u3Ozhtl3Vm4r+UsISOpZYHXfOOcE7BoKeT217UZplhA=;
+ b=OtOPJDt4LPVO+jlwFF02OJRfVK0QUyC6POEsLb/htRqwWMDwrUyWQdwEmqVR7oSLJD9/C4HEhRiB241FPkUU4oy5C0mFzxDFw5cj+zrlmVTe4Cp2a4RL+SQyHu8/Bsfoeq/N09bLorsbWc0YdRF/7NcpqXvAxOR1J334Kc9JkB8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by DM6PR10MB4394.namprd10.prod.outlook.com
+ (2603:10b6:5:221::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Tue, 8 Feb
+ 2022 04:46:54 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4951.018; Tue, 8 Feb 2022
+ 04:46:54 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH v5 net-next 0/3] use bulk reads for ocelot statistics
+Date:   Mon,  7 Feb 2022 20:46:41 -0800
+Message-Id: <20220208044644.359951-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MWHPR17CA0090.namprd17.prod.outlook.com
+ (2603:10b6:300:c2::28) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 90887445-3aa7-4d9e-c971-08d9eabe07b4
+X-MS-TrafficTypeDiagnostic: DM6PR10MB4394:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB4394B9EDCEDB25812C11CAEBA42D9@DM6PR10MB4394.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:489;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wLR5ZJlHGo9FVZugRzTBWinzKj1qa18yYKMYtBYqmb+cYQFYX3PYv3mqfRjV5t6WaBWCddGpSxaZwpMztWhcj5uFzfJh0+6WT1DJ6I3k36GeN3VorusC1YPZO6l+wRoLRH8I/qd2H7+G1z9vbSq8FAZUVpO16/9EROQx3UaFEzvSKFH+lQ8syj9HNljb+pDp9JtvXuN00h6RkQ0ldfwsxU4E6h/Cv2pMNpYihnMyy3LSao2tNBnmB2fhK7Iwy9Zh+9RY5UhO+CWARG6eVngvfiXqlg8Whp/10T92b2YkebX7LlINBYosA8VP9U6s7iavx6nCko/CT1qPT7ldB5gmNchVG2I1zzUFHiUU8k9A+nZzF3Boa5B6thSJaLTmPuzr+FxcLopvasmFLsJEahVDlX7BULRQ40nQ0sca8cqp+l3aNQE4Yuqedg66VTrIdyIfIA4Z78W296JCptSQLUa4FOEkI/Wzm45ZGBmZozyOhZaS9qoUAH0vFOyyqnuJsN0snHNeHe6KdUkyn0yf9DeYJKaOLPuJbPJlYslFOnCztBESjJFRQ7lswps57K0Y7go/GhfT1Qo3bitGOyg51+eyJ2goVOCT2kCO5D1dYTjjHS2Fr6Bko2JTT/WBpMKuTohsZn0F/78aGMNrqrTeUXRxde/EQlVJGJ/8F1Z5cEJjJid79/8+yDdan5wmcqHK0YMOi2GQnDfVDbRdC49G2ySK/g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(346002)(396003)(376002)(39830400003)(42606007)(136003)(366004)(52116002)(1076003)(186003)(6486002)(6506007)(508600001)(86362001)(26005)(36756003)(2616005)(6666004)(6512007)(54906003)(83380400001)(5660300002)(66946007)(8936002)(2906002)(4326008)(66556008)(8676002)(66476007)(38350700002)(44832011)(38100700002)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QxnwwKl5bfgpExOpxdI4CnrQ+2VmrS1Ksttn/ISn7FEHHVQpuFiL8NJRTViV?=
+ =?us-ascii?Q?1ayoSMJQ9KDkbk76vRa+zFNzMQQDsurUVX2AI23jB9/IAP9v4BirmlxrQngA?=
+ =?us-ascii?Q?7w2Zlo2K3Ao+2KP1qz+aUBV814NKs0uxEVeMWKC3DTxlHrMWWoJ28NBaaTiO?=
+ =?us-ascii?Q?gO07CUFAU6At2RUZsXuAzCCiCjTDnQPQ0DmgaWyfEJif9WxK6c+4BN+3eCkF?=
+ =?us-ascii?Q?Vjv58qoLLnfGH91F/28z1k42w9mqq3zHRI8m7TSuJOiuIkzZXvQ+zDZGmFLK?=
+ =?us-ascii?Q?NYSytRdcYsFonesw6Fxp72I4Yr3nDBrRpnZ2vhlY2iNP+fSsqNAMifYpb9yI?=
+ =?us-ascii?Q?hEovlRa8pg1w/7R/tFhgOwwT2YkWqT9pkxYV7QMfBWc/ZQagogjK/QL7o3j7?=
+ =?us-ascii?Q?E0h+nCYED4tMKOVmGcH5YSY3Rpaw3lI8xz6sw5BDheJwWakf+Zq1Ars6EE98?=
+ =?us-ascii?Q?toPtLDTkL/54aNdCW4+JD5Ppu8KHbe4Ti1AognUedRYHAIX1jX5o1un6yXG1?=
+ =?us-ascii?Q?rryBl356z2v64AegG+t33yK0ASGmzGY/3XLZ6V/2DzMhZe2JCj9s7y4/i6AB?=
+ =?us-ascii?Q?ry/TUhBloidmGIpHL0q9+AmDgn+zgdggnXZg6dSf6S2s8nb8R+MqwdT7p3q9?=
+ =?us-ascii?Q?vlurvh1AL4RnqSunB7imfwLGH2knFKpoKOhvqput8uHmr2/T5R5LnxWzmMwV?=
+ =?us-ascii?Q?+fJ/km/M2MqcOwgSTXfoS9yPnbvia1UGls+QBDCrgy3/hpmWFQ6nCg0p/Nai?=
+ =?us-ascii?Q?4aIjjlz+9Xgi7vbA2m6GL7hwKozJRGooqPMOcwvznxHe+U+uhjHRZVZFyrUm?=
+ =?us-ascii?Q?ASuJOxfXZC5FKIH/cYf0kme5HS4pG5gYWHSVmBrtzWUZNOjTHA7xZyxcCK/V?=
+ =?us-ascii?Q?g6vw/2B8Qvbi/nUcP/QTMJXP7mny6Fw/ztHGqkP9xRlvD+eAqWa5fZsKPPMY?=
+ =?us-ascii?Q?CSb8j67gs52bdlHAGYZeu/N+EyjFkjxoBKG1CsfUR64xZt6UwJPKhOD157WG?=
+ =?us-ascii?Q?RfipNfLY9emylf3FzKLytAKc0QmnqNG7djSjHwHg2RggrSQP9pwW5wz+oZEb?=
+ =?us-ascii?Q?3qIx6RzNc5vIv5sudF6yms9lAbIfTVZIDoYN5aQckpsZKZ4QSlUA7C2Okymv?=
+ =?us-ascii?Q?etsaV+KAaHxgendwCaSwYK07EKXAM/dZzjy3NYPvOUJ3jLDydqtN2XlTJz9z?=
+ =?us-ascii?Q?IeF7+Nud/DHujN0oLKu4m+Gvn72ghdXT2uWgxqwTVqwnTczsuwpwdm+T9HbM?=
+ =?us-ascii?Q?Qu+lN9HWGj3fizekMnHkafEIPGxgshg2A3FA0BfCcY4e55ZkIFAP6KzrWWpQ?=
+ =?us-ascii?Q?enQa9zMrIVeY84d0fH9W21SS0bPH1IZFY8TVYnwdG5y3ZbbRZ8Jm3aIOe+G+?=
+ =?us-ascii?Q?RBVb8xVLCU8ZSlRdYom1bHQ3r6zHrw9pUNWFswuqLwtZzZWyT1cG5K2LcEh1?=
+ =?us-ascii?Q?s6AK1iQnjLW7LPuLxjk0d6zzBUg6Q0qi/7R66s133ePKFAB+OCxd1tKwFk6s?=
+ =?us-ascii?Q?61ZCq5C2D/N+TnGv+T16KlMUcSZUtWC3Y9BeMkoanUXXdn9j8jNv0JJ+UtX+?=
+ =?us-ascii?Q?ioQvIAitgYfcvIbdrQtGuzMkqetbPIVBtX5C5uhQTN46K6Fd/OaIx1L0Ie5l?=
+ =?us-ascii?Q?sD4R4ykWPw6tsm9avktQMOWx2BcJqpiD/Zz7KsTkmcUzQVnc5+YlsY3Sf15T?=
+ =?us-ascii?Q?Kzm136NCNy4TZT5L3nsfJDh127I=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90887445-3aa7-4d9e-c971-08d9eabe07b4
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 04:46:54.5641
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wG2UcfLjTxZZm64N+Yx3eOla42+7hZFwdCplaCbJX2pTWpTs+gUQTb2dHsNUsBfoIKvNjTmwBMwcf/C+4wKIfZsHKrWFi1e8AcAt7pJBb5I=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB4394
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some implementations, such as the Qualcomm platforms, the display
-driver has no way to query the current HPD state and as such it's
-impossible to distinguish between disconnect and attention events.
+Ocelot loops over memory regions to gather stats on different ports.
+These regions are mostly continuous, and are ordered. This patch set
+uses that information to break the stats reads into regions that can get
+read in bulk.
 
-Add a parameter to drm_connector_oob_hotplug_event() to pass the HPD
-state.
+The motiviation is for general cleanup, but also for SPI. Performing two
+back-to-back reads on a SPI bus require toggling the CS line, holding,
+re-toggling the CS line, sending 3 address bytes, sending N padding
+bytes, then actually performing the read. Bulk reads could reduce almost
+all of that overhead, but require that the reads are performed via
+regmap_bulk_read.
 
-Also push the test for unchanged state in the displayport altmode driver
-into the i915 driver, to allow other drivers to act upon each update.
+v1 > v2: reword commit messages
+v2 > v3: correctly mark this for net-next when sending
+v3 > v4: calloc array instead of zalloc per review
+v4 > v5:
+    Apply CR suggestions for whitespace
+    Fix calloc / zalloc mixup
+    Properly destroy workqueues
+    Add third commit to split long macros
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
 
-Note that the Intel driver has only been compile tested with this patch.
+Colin Foster (3):
+  net: ocelot: align macros for consistency
+  net: mscc: ocelot: add ability to perform bulk reads
+  net: mscc: ocelot: use bulk reads for stats
 
- drivers/gpu/drm/drm_connector.c          |  6 ++++--
- drivers/gpu/drm/i915/display/intel_dp.c  | 14 +++++++++++---
- drivers/gpu/drm/i915/i915_drv.h          |  3 +++
- drivers/usb/typec/altmodes/displayport.c |  9 ++-------
- include/drm/drm_connector.h              |  5 +++--
- 5 files changed, 23 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c    | 78 ++++++++++++++++++++++-----
+ drivers/net/ethernet/mscc/ocelot_io.c | 13 +++++
+ include/soc/mscc/ocelot.h             | 57 ++++++++++++++------
+ 3 files changed, 120 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
-index a50c82bc2b2f..ad7295597c0f 100644
---- a/drivers/gpu/drm/drm_connector.c
-+++ b/drivers/gpu/drm/drm_connector.c
-@@ -2825,6 +2825,7 @@ struct drm_connector *drm_connector_find_by_fwnode(struct fwnode_handle *fwnode)
- /**
-  * drm_connector_oob_hotplug_event - Report out-of-band hotplug event to connector
-  * @connector_fwnode: fwnode_handle to report the event on
-+ * @hpd_state: number of data lanes available
-  *
-  * On some hardware a hotplug event notification may come from outside the display
-  * driver / device. An example of this is some USB Type-C setups where the hardware
-@@ -2834,7 +2835,8 @@ struct drm_connector *drm_connector_find_by_fwnode(struct fwnode_handle *fwnode)
-  * This function can be used to report these out-of-band events after obtaining
-  * a drm_connector reference through calling drm_connector_find_by_fwnode().
-  */
--void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode)
-+void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode,
-+				     bool hpd_state)
- {
- 	struct drm_connector *connector;
- 
-@@ -2843,7 +2845,7 @@ void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode)
- 		return;
- 
- 	if (connector->funcs->oob_hotplug_event)
--		connector->funcs->oob_hotplug_event(connector);
-+		connector->funcs->oob_hotplug_event(connector, hpd_state);
- 
- 	drm_connector_put(connector);
- }
-diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
-index 146b83916005..00520867d37b 100644
---- a/drivers/gpu/drm/i915/display/intel_dp.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp.c
-@@ -4816,15 +4816,23 @@ static int intel_dp_connector_atomic_check(struct drm_connector *conn,
- 	return intel_modeset_synced_crtcs(state, conn);
- }
- 
--static void intel_dp_oob_hotplug_event(struct drm_connector *connector)
-+static void intel_dp_oob_hotplug_event(struct drm_connector *connector, bool hpd_state)
- {
- 	struct intel_encoder *encoder = intel_attached_encoder(to_intel_connector(connector));
- 	struct drm_i915_private *i915 = to_i915(connector->dev);
-+	bool need_work = false;
- 
- 	spin_lock_irq(&i915->irq_lock);
--	i915->hotplug.event_bits |= BIT(encoder->hpd_pin);
-+	if (hpd_state != i915->hotplug.oob_hotplug_state) {
-+		i915->hotplug.event_bits |= BIT(encoder->hpd_pin);
-+
-+		i915->hotplug.oob_hotplug_state = hpd_state;
-+		need_work = true;
-+	}
- 	spin_unlock_irq(&i915->irq_lock);
--	queue_delayed_work(system_wq, &i915->hotplug.hotplug_work, 0);
-+
-+	if (need_work)
-+		queue_delayed_work(system_wq, &i915->hotplug.hotplug_work, 0);
- }
- 
- static const struct drm_connector_funcs intel_dp_connector_funcs = {
-diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index 8c1706fd81f9..543ebf1cfcf4 100644
---- a/drivers/gpu/drm/i915/i915_drv.h
-+++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -149,6 +149,9 @@ struct i915_hotplug {
- 	/* Whether or not to count short HPD IRQs in HPD storms */
- 	u8 hpd_short_storm_enabled;
- 
-+	/* Last state reported by oob_hotplug_event */
-+	bool oob_hotplug_state;
-+
- 	/*
- 	 * if we get a HPD irq from DP and a HPD irq from non-DP
- 	 * the non-DP HPD could block the workqueue on a mode config
-diff --git a/drivers/usb/typec/altmodes/displayport.c b/drivers/usb/typec/altmodes/displayport.c
-index c1d8c23baa39..a4596be4d34a 100644
---- a/drivers/usb/typec/altmodes/displayport.c
-+++ b/drivers/usb/typec/altmodes/displayport.c
-@@ -59,7 +59,6 @@ struct dp_altmode {
- 	struct typec_displayport_data data;
- 
- 	enum dp_state state;
--	bool hpd;
- 
- 	struct mutex lock; /* device lock */
- 	struct work_struct work;
-@@ -143,10 +142,7 @@ static int dp_altmode_status_update(struct dp_altmode *dp)
- 		if (!ret)
- 			dp->state = DP_STATE_CONFIGURE;
- 	} else {
--		if (dp->hpd != hpd) {
--			drm_connector_oob_hotplug_event(dp->connector_fwnode);
--			dp->hpd = hpd;
--		}
-+		drm_connector_oob_hotplug_event(dp->connector_fwnode, hpd);
- 	}
- 
- 	return ret;
-@@ -573,8 +569,7 @@ void dp_altmode_remove(struct typec_altmode *alt)
- 	cancel_work_sync(&dp->work);
- 
- 	if (dp->connector_fwnode) {
--		if (dp->hpd)
--			drm_connector_oob_hotplug_event(dp->connector_fwnode);
-+		drm_connector_oob_hotplug_event(dp->connector_fwnode, false);
- 
- 		fwnode_handle_put(dp->connector_fwnode);
- 	}
-diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
-index 64cf5f88c05b..7c90b8eb2ace 100644
---- a/include/drm/drm_connector.h
-+++ b/include/drm/drm_connector.h
-@@ -1141,7 +1141,7 @@ struct drm_connector_funcs {
- 	 * This will get called when a hotplug-event for a drm-connector
- 	 * has been received from a source outside the display driver / device.
- 	 */
--	void (*oob_hotplug_event)(struct drm_connector *connector);
-+	void (*oob_hotplug_event)(struct drm_connector *connector, bool hpd_state);
- };
- 
- /**
-@@ -1742,7 +1742,8 @@ drm_connector_is_unregistered(struct drm_connector *connector)
- 		DRM_CONNECTOR_UNREGISTERED;
- }
- 
--void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode);
-+void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode,
-+				     bool hpd_state);
- const char *drm_get_connector_type_name(unsigned int connector_type);
- const char *drm_get_connector_status_name(enum drm_connector_status status);
- const char *drm_get_subpixel_order_name(enum subpixel_order order);
 -- 
-2.33.1
+2.25.1
 
