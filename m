@@ -2,118 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F37DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D3AC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:21:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386551AbiBHWVk (ORCPT
+        id S1386909AbiBHWVp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:21:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
+        Tue, 8 Feb 2022 17:21:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386437AbiBHUdf (ORCPT
+        with ESMTP id S1386769AbiBHVJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:33:35 -0500
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D65C0613CB;
-        Tue,  8 Feb 2022 12:33:35 -0800 (PST)
-Received: by mail-oo1-f44.google.com with SMTP id r15-20020a4ae5cf000000b002edba1d3349so58414oov.3;
-        Tue, 08 Feb 2022 12:33:34 -0800 (PST)
+        Tue, 8 Feb 2022 16:09:33 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02758C0612BA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:09:33 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id y129so303057ybe.7
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:09:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=eclypsium.com; s=google;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=Voz9w9zuaut5zzPtd6DrE9JLrle0cFN3rE5oW1AaY2M=;
+        b=H86Fkha4NgU8OTWhaHjE4JlGaizgjjoCxAoxzH6KuMHph8fpqwf03RaVnEuLk2P/bp
+         yY61kdvApYE6qxRpAaZcrq1arCGYhyP64OfxKZGk/ZOoOi/ltDcqSmSvBtCoQmeyEyLR
+         FYKxeVXO0j/kENA0AQ+2vCrGOl0VUKu3hWvpH/6m/A6hDV0bT0QlgbAqfNsNBafihzt3
+         2DJiAdstGP57WhN+4kYnrr97E23PJoqPkDXeN4LhN/1bMFwtonqt5k3vmcslxFSVGhxw
+         1hFhSiwDhUci9XkHK8tdvuB1zULSZaI7zSssvL59P/voaJjScrGEK282mnejgUsEtNCb
+         E5kA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=JRPrSLHlMGFs/3ziWzW4DwHIjPmQfKs7GHoGvsPVseE=;
-        b=Dui+ygRdtRvnuNNl8Az4C1xnDVuCud4J8YazRDVoZaKuMm1CL41TAIybF8J+2coTTi
-         w8rz983OochhgpVp1DekkSUfSweUKZLmEj3ioQje0K2vIdydMfCIwBzhYReInGndcO3H
-         Xi/GuMLJuKum+7VxG5yCIj//eTRMoXP7uTcaJlpd0Io6mBZYPbnQWHVppJ20asBCEqAV
-         Xz+yufUu1rRbo7VvkaAZC/a+VCAG5va3Lsb210x7AsU6AUdRQ7n9eYBKpSEoi0ouvJSX
-         9Gd6QuAHYmvuJw4DNmKRXVWeLP68LLLLXnjbC7TuZxLEfpOcYsTXWSGP5VM/uITc6ae4
-         ZAvg==
-X-Gm-Message-State: AOAM531PTXxCWmEfh7bByDz++xtcrZjcSZX/H3c9KO5rMIglncwv2UnR
-        kGcjnfK01r/ccluTn6emWw==
-X-Google-Smtp-Source: ABdhPJy992PXewYBALzEYZBXPGbQ5OcH8lbZ6CwXGZxPSunoTW7Rr/84sO8nvJNszKtykvGlJvCgtg==
-X-Received: by 2002:a05:6870:1215:: with SMTP id 21mr1027834oan.166.1644352414225;
-        Tue, 08 Feb 2022 12:33:34 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id u5sm5887627ooo.46.2022.02.08.12.33.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 12:33:33 -0800 (PST)
-Received: (nullmailer pid 2969145 invoked by uid 1000);
-        Tue, 08 Feb 2022 20:33:32 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Yifeng Zhao <yifeng.zhao@rock-chips.com>
-Cc:     heiko@sntech.de, vkoul@kernel.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org,
-        lee.jones@linaro.org, cl@rock-chips.com, kishon@ti.com,
-        kever.yang@rock-chips.com, linux-arm-kernel@lists.infradead.org,
-        david.wu@rock-chips.com, michael.riesch@wolfvision.net,
-        linux-phy@lists.infradead.org, wulf@rock-chips.com,
-        p.zabel@pengutronix.de, jbx6244@gmail.com
-In-Reply-To: <20220208091326.12495-3-yifeng.zhao@rock-chips.com>
-References: <20220208091326.12495-1-yifeng.zhao@rock-chips.com> <20220208091326.12495-3-yifeng.zhao@rock-chips.com>
-Subject: Re: [PATCH v8 2/4] dt-bindings: phy: rockchip: Add Naneng combo PHY bindings
-Date:   Tue, 08 Feb 2022 14:33:32 -0600
-Message-Id: <1644352412.075016.2969144.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=Voz9w9zuaut5zzPtd6DrE9JLrle0cFN3rE5oW1AaY2M=;
+        b=jiPeSXdHExt4YyIsQllfKTI3H31kxvZ1i+TV82m9r76rAMmg1LmrXQs+5r6Sh1mKwl
+         LEL2fzGI5Du3cTkazYhGAuxR9V/IQ9BsgnG4WI1NoSt5q5wr5EyKaYlKTNmNDY7oIefh
+         gzfeO5Nb5onomkL+l9fOzqlz2XA1pH/g9YK+/cWgfGQCWRn97qgJZJgAWCHRkuQJD8OB
+         FCMA2dJMKNkcO6i29opodoEba2tqn2ZpsfPvhcDQxVOhws9FMTZ6+Cz3V+GJt/TdE4ET
+         E3gbLmbUeBrWjna0qHSUQmHsxM7A1d77eKcFd3pE5bo29zeey6rElmofZBxUbikzItGn
+         CF6Q==
+X-Gm-Message-State: AOAM532z5xPilUKwQ51SX4LaoOjH3hqVgR827796z1NsG3uBZ+LVfolf
+        ClIMnjBwb96b6AEbxx/igB7HrHWPGZ8txSJ426Ynzg==
+X-Google-Smtp-Source: ABdhPJwq0oxAvAIPreUivsgDVcSG53+v8LdcVF+reGL+9mzDGy2lOfjCUp4XCtrNh7PS7fr/4/oEr1Bunn9utBnAgNA=
+X-Received: by 2002:a25:9988:: with SMTP id p8mr6404360ybo.128.1644354572175;
+ Tue, 08 Feb 2022 13:09:32 -0800 (PST)
+MIME-Version: 1.0
+Received: by 2002:a81:174d:0:0:0:0:0 with HTTP; Tue, 8 Feb 2022 13:09:31 -0800 (PST)
+In-Reply-To: <202202071325.F8450B3B2D@keescook>
+References: <20220203164328.203629-1-martin.fernandez@eclypsium.com>
+ <20220203164328.203629-4-martin.fernandez@eclypsium.com> <202202071325.F8450B3B2D@keescook>
+From:   Martin Fernandez <martin.fernandez@eclypsium.com>
+Date:   Tue, 8 Feb 2022 18:09:31 -0300
+Message-ID: <CAKgze5YtTMmmqmrNjkCey84nSRxGpa_yajH8+9kwQLckb2dFoA@mail.gmail.com>
+Subject: Re: [PATCH v6 3/6] x86/e820: Refactor range_update and range_remove
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
+        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        alison.schofield@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 08 Feb 2022 17:13:24 +0800, Yifeng Zhao wrote:
-> Add the compatible strings for the Naneng combo PHY found on rockchip SoC.
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-> ---
-> 
-> Changes in v8: None
-> Changes in v7:
-> - remove u3otg0_port_en, u3otg1_port_en and pipe_sgmii_mac_sel
-> 
-> Changes in v5:
-> - modify description for ssc and ext-refclk
-> - remove apb reset
-> 
-> Changes in v4:
-> - restyle
-> - remove some minItems
-> - add more properties
-> - remove reset-names
-> - move #phy-cells
-> - add rockchip,rk3568-pipe-grf
-> - add rockchip,rk3568-pipe-phy-grf
-> 
-> Changes in v3: None
-> Changes in v2:
-> - Fix dtschema/dtc warnings/errors
-> 
->  .../phy/phy-rockchip-naneng-combphy.yaml      | 109 ++++++++++++++++++
->  1 file changed, 109 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml
-> 
+On 2/7/22, Kees Cook <keescook@chromium.org> wrote:
+> On Thu, Feb 03, 2022 at 01:43:25PM -0300, Martin Fernandez wrote:
+>> __e820__range_update and e820__range_remove had a very similar
+>> I propose a refactor of those functions, given that I need to create a
+>> similar one for this patchset.
+>
+> The diff here is pretty hard (for me) to review; I'll need more time
+> to check it. What might make review easier (at least for me), is to
+> incrementally change these routines. i.e. separate patches to:
+>
+> - add the new infrastructure
+> - replace e820__range_remove
+> - replace __e820__range_update
+>
+> If that's not actually useful, no worries. I'll just stare at it a bit
+> more. :)
+>
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Yep, that's a good idea. I'll keep that in mind for the next patch.
 
-yamllint warnings/errors:
+>>
+>> Add a function to modify a E820 table in a given range. This
+>> modification is done backed up by two helper structs:
+>> e820_entry_updater and e820_*_data.
+>>
+>> The first one, e820_entry_updater, carries 3 callbacks which function
+>> as the actions to take on the table.
+>>
+>> The other one, e820_*_data carries information needed by the
+>> callbacks, for example in the case of range_update it will carry the
+>> type that we are targeting.
+>
+> Something I think would be really amazing here is if you could add KUnit
+> tests here to exercise the corner cases and validate the changes. It
+> should be pretty easy to add. Here's a quick example for the boilerplate
+> and testing a bit of __e820__range_add():
+>
+> #ifdef CONFIG_E820_KUNIT_TEST
+> #include <kunit/test.h>
+>
+> static void __init test_e820_range_add(struct kunit *context)
+> {
+> 	struct e820_table table;
+> 	u32 full;
+>
+> 	full = ARRAY_SIZE(table.entries);
+> 	/* Add last entry. */
+> 	table->nr_entries = full - 1;
+> 	__e820__range_add(&table, 0, 15, 0);
+> 	KUNIT_EXPECT_EQ(table->nr_entries, full)
+> 	/* Skip new entry when full. */
+> 	__e820__range_add(&table, 0, 15, 0);
+> 	KUNIT_EXPECT_EQ(table->nr_entries, full)
+> }
+>
+> static void __init test_e820_update(struct kunit *context)
+> {
+> ...
+> }
+>
+> static struct kunit_case __refdata e820_test_cases[] = {
+>         KUNIT_CASE(test_e820_range_add),
+>         KUNIT_CASE(test_e820_update),
+> 	...
+>         {}
+> };
+>
+> static struct kunit_suite e820_test_suite = {
+>         .name = "e820",
+>         .test_cases = e820_test_cases,
+> };
+>
+> kunit_test_suites(&e820_test_suite);
+> #endif
+>
 
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.example.dt.yaml:0:0: /example-0/syscon@fdc50000: failed to match any schema with compatible: ['rockchip,rk3568-pipe-grf', 'syscon']
-Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.example.dt.yaml:0:0: /example-0/syscon@fdc70000: failed to match any schema with compatible: ['rockchip,rk3568-pipe-phy-grf', 'syscon']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1589719
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Oh that's awesome! I'll definitely take a look into KUnit and integrate
+it to this patch. Thanks for the code snippet!
