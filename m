@@ -2,86 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7142C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF8CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:43:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359867AbiBHNnG (ORCPT
+        id S1376412AbiBHNnI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:43:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40508 "EHLO
+        Tue, 8 Feb 2022 08:43:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359740AbiBHNnC (ORCPT
+        with ESMTP id S235437AbiBHNnC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Feb 2022 08:43:02 -0500
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23672C03FEDA;
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2338FC03FED9;
         Tue,  8 Feb 2022 05:43:00 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 218DIbJ9030151;
-        Tue, 8 Feb 2022 07:18:37 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644326317;
-        bh=/MGvuszmvjvuoww9S0UFwwLOh22VmZKc/qKlwQzw13c=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=cmrR+mAm1UxlDW+C1pBgXYZsPCZBIpuSyLaIkd3H4w+4PXAfbZ79/MxlN7E/vy2Nb
-         vuExyuYIHckanprgu+q/WKJKgTsVCyYssC97nKsgHYzGWgpsHaSiASc4rNNCQvViX1
-         YFmHSLgXH5QC331jPpV150QbkrzPuXAvmZ18G5s8=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 218DIbob108633
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 8 Feb 2022 07:18:37 -0600
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 8
- Feb 2022 07:18:37 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 8 Feb 2022 07:18:37 -0600
-Received: from ula0132425.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 218DIUCg117228;
-        Tue, 8 Feb 2022 07:18:34 -0600
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/5] soc: ti: k3-socinfo: Add AM62x JTAG ID
-Date:   Tue, 8 Feb 2022 18:48:23 +0530
-Message-ID: <20220208131827.1430086-2-vigneshr@ti.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220208131827.1430086-1-vigneshr@ti.com>
-References: <20220208131827.1430086-1-vigneshr@ti.com>
+Received: by mail-ed1-x530.google.com with SMTP id cn6so14804122edb.5;
+        Tue, 08 Feb 2022 05:43:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=f4NlyDvQ+OmTWhioc5XIe48Pbf0SWwcG+0BmyfZwVFE=;
+        b=InKvcODql4soQETTIoVQwvWCSdhsI4olMXqvYkj6+7nx78OgY4P9Ppbcpbe0Bl5K8C
+         pCG8Np9utrrmDQ6BuEoF/qGZtWAFhyl1UvLVi++W2jBkSMCPsSc+mQPIID67reJ7L34p
+         F/2ZDRJ642N1nstNdozNlDA5HRXPh9HKLNqBkpL9GYOa89jd7E7HOmivcqEv7Wo/cAgJ
+         ZZ3fXK8NNkRSoeUHZnfYWXFbl5XOe/tSFfYjnJ/pgS5VFaskYns0huL9KF/MVQPe5YTn
+         TMMzgHKtHH0k++cYe2OeoHVChbWquicgEBYdCEhBEDz2oGZTVZxE1WN/J21bLJbixpAo
+         wZdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f4NlyDvQ+OmTWhioc5XIe48Pbf0SWwcG+0BmyfZwVFE=;
+        b=KuWfb9tZffRlUtlE/yrgtElVv6eQ3/r8hnV6i6i9sdWQgsgCO+2Bm3eLHqKlX/MmE5
+         N/qwZl7YNzJn9XYfI0KodivkNh+ZCQzy9GQBtYB1Y+HwNRJrxAb14gx7pVkUMBgluyuF
+         eXZpF0vCXeCkUjDLyYkw/WBqkx9Z6cdkxix6lUgCgdRCaVGLiHH5TMPKuRAYPdvq5fbA
+         +WfKWYFCl6bSkTGJwH2eDWze4tpoY48g94lFYI6ZduDIsx20Vks+Nuzm9JCay/lX955K
+         zynuhxXtb4OgKZEELVeJjSsviP7sUdHMrNP17aZs8lN/Qv9Gq7L8c5OcfvhU2rPnB0NV
+         dRGg==
+X-Gm-Message-State: AOAM532TIbRd7bvp+6PKHbmNJ1c8UebtSokrTuAysXcBt+xUltn11cLQ
+        wBFMoH+p+XGazYODYRVgfVUQXRSHfuvge6GaaZc=
+X-Google-Smtp-Source: ABdhPJzL1h8uMoMI1YO9mj+zqENB5rXbyS/y1GH2Oy4Usn3dJT9bRKgSvTIO9Olpk7hrj1E2o6AP93f79oomlsyf6Jc=
+X-Received: by 2002:aa7:c413:: with SMTP id j19mr3693113edq.200.1644327778649;
+ Tue, 08 Feb 2022 05:42:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20220208020441.3081162-1-liambeguin@gmail.com> <20220208020441.3081162-4-liambeguin@gmail.com>
+In-Reply-To: <20220208020441.3081162-4-liambeguin@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 8 Feb 2022 15:42:22 +0200
+Message-ID: <CAHp75Vd7OfLyfziraV4AHWrnTSCPPN9gzGNxaFa+V6uNe8-YUA@mail.gmail.com>
+Subject: Re: [PATCH v14 03/11] iio: afe: rescale: add offset support
+To:     Liam Beguin <liambeguin@gmail.com>
+Cc:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add JTAG ID entry to help identify AM62x SoC in kernel.
+On Tue, Feb 8, 2022 at 4:04 AM Liam Beguin <liambeguin@gmail.com> wrote:
+>
+> This is a preparatory change required for the addition of temperature
+> sensing front ends.
 
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
----
- drivers/soc/ti/k3-socinfo.c | 1 +
- 1 file changed, 1 insertion(+)
+...
 
-diff --git a/drivers/soc/ti/k3-socinfo.c b/drivers/soc/ti/k3-socinfo.c
-index b6b2150aca4e..91f441ee6175 100644
---- a/drivers/soc/ti/k3-socinfo.c
-+++ b/drivers/soc/ti/k3-socinfo.c
-@@ -42,6 +42,7 @@ static const struct k3_soc_id {
- 	{ 0xBB6D, "J7200" },
- 	{ 0xBB38, "AM64X" },
- 	{ 0xBB75, "J721S2"},
-+	{ 0xBB7E, "AM62X" },
- };
- 
- static int
+> +               if (iio_channel_has_info(rescale->source->channel,
+> +                                        IIO_CHAN_INFO_OFFSET)) {
+> +                       ret = iio_read_channel_offset(rescale->source,
+> +                                                     &schan_off, NULL);
+
+> +                       if (ret != IIO_VAL_INT)
+> +                               return ret < 0 ? ret : -EOPNOTSUPP;
+
+Wonder if this actually should be
+
+   if (ret < 0)
+       return ret;
+   if (ret != ...)
+       return -EOP...;
+
+> +               }
+
 -- 
-2.35.1
-
+With Best Regards,
+Andy Shevchenko
