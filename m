@@ -2,97 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED93C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A057C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385480AbiBHSsc (ORCPT
+        id S1385486AbiBHSsw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:48:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43232 "EHLO
+        Tue, 8 Feb 2022 13:48:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385472AbiBHSs3 (ORCPT
+        with ESMTP id S1358560AbiBHSst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:48:29 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F95DC0612C2
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:48:28 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id y17so121347plg.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 10:48:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3nJw75yUn0Ak2LbjP8FDSUKGk9cBjMNSHZr8K3rv/n8=;
-        b=Kcc50LqTHuQIYf273mHplhXaUKkVZo5PUBRoSWfRcf58iiGQ2BqdIdG45EwyPs1uXs
-         CAAbXNkEd2gr6pK4HN7DiQh4qUIHHNlorxb+wH1BXIOdeK6oQxUKyLl5QTwejhLKNtmR
-         CteLOdhUCS5CWbC0mzNmxIdXJAHtmnBxfT90k=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3nJw75yUn0Ak2LbjP8FDSUKGk9cBjMNSHZr8K3rv/n8=;
-        b=vo8E//jxoAnG+SOHjuTzR/ka2ICwpmXEmvCTE5P9GXxlSV4e8ldlbDhF9qa5M3Nzg1
-         F5WrVxeId0TbupCKC38E0xv6WKZnUw9XImPiOJx7w+Xh136kq4JpA8AXDDWE/BKVglPg
-         2Kuo1KgUZq8u374Q7jEStxbr5ybTjtpni+etGqn/fdAh4nn7qx+GDEv2CKuREiGSBK23
-         WgyalZI2ZeD/FsJtZvZFZ8FZwCdlsZ7cQ7hyxrIAltJwJ4eUWPM7+LcLjM4jwy+4n5Du
-         89sXVIYA2VHLXvpiDDqYk2VYvR4GE+BRfZUrJdFAlEj7XL2ydc7gbVZWUjMYciXZxKNV
-         b2QA==
-X-Gm-Message-State: AOAM532ngBi9hOgsUbedftC8B28vNt8JoxNihjJxRl3oqZOggVHam5jR
-        WML7zhcUINRnVhPSZ0vB23h/0LgDMfqG4Q==
-X-Google-Smtp-Source: ABdhPJzUwlOAtGq+Y2cBB0fnuRDAYTc8P/abuAm1YmIdSlVd7T3zol+qZiMELS+dYrh3y9do6LWUBA==
-X-Received: by 2002:a17:90b:4c91:: with SMTP id my17mr2870441pjb.121.1644346107948;
-        Tue, 08 Feb 2022 10:48:27 -0800 (PST)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id gk15sm3594453pjb.3.2022.02.08.10.48.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 10:48:27 -0800 (PST)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Prashant Malani <pmalani@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev (open list:CHROMEOS EC USB TYPE-C
-        DRIVER)
-Subject: [PATCH v2 4/4] platform/chrome: cros_ec_typec: Update mux flags during partner removal
-Date:   Tue,  8 Feb 2022 18:47:24 +0000
-Message-Id: <20220208184721.1697194-5-pmalani@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208184721.1697194-1-pmalani@chromium.org>
-References: <20220208184721.1697194-1-pmalani@chromium.org>
+        Tue, 8 Feb 2022 13:48:49 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D4DC0612C1;
+        Tue,  8 Feb 2022 10:48:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644346129; x=1675882129;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=GKYfrOdPKIidCVFdft/pVkcauP1SFgER+aJOOG3WDEA=;
+  b=nvxCrdDs4OeAnUM9i++1tL6hCNiNV1a8ZMXu2s/MV/yWXB2zsl5q/G61
+   cR3AyMXgHkhgE1wdVY7YftNxyMDaCiFAGTERLvGXYD/zrmMDkr5rUoHOR
+   bzZsILWoaMRTBOqBVQCN1uQhEFjJ6PLpOWyb2cbxm+Msg6CGClNMsTkkB
+   D0RqUTQkseeqYgAt9JvJYLEG4idlo1UwKatmXwyzChHR2wG3RHSwNJ9aA
+   IioWmKRt1h5QFFSJ/oDu/nrDG72iwpLLEbjmsgSOIWuVvZG6XRsC4NDSF
+   5uNLZ/UwS1MlXxO3ocA7Iyz/zy9RnqlSAkYHXnMTni+mxnfNLc5X4nt5v
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="236430341"
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="236430341"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 10:48:14 -0800
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="484914385"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 10:48:14 -0800
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org
+Cc:     vijay.dhanraj@intel.com, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH V3] x86/sgx: Silence softlockup detection when releasing large enclaves
+Date:   Tue,  8 Feb 2022 10:48:07 -0800
+Message-Id: <ced01cac1e75f900251b0a4ae1150aa8ebd295ec.1644345232.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In cros_typec_remove_partner(), we call
-cros_typec_usb_disconnect_state() which sets the switches/muxes to be in
-a disconnected state. This also happens in cros_typec_configure_mux().
-However, unlike there, here the mux_flags variable hasn't been updated
-to reflect that a disconnection has occurred. Update the flag here
-accordingly.
+Vijay reported that the "unclobbered_vdso_oversubscribed" selftest
+triggers the softlockup detector.
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
+Actual SGX systems have 128GB of enclave memory or more.  The
+"unclobbered_vdso_oversubscribed" selftest creates one enclave which
+consumes all of the enclave memory on the system. Tearing down such a
+large enclave takes around a minute, most of it in the loop where
+the EREMOVE instruction is applied to each individual 4k enclave page.
+
+Spending one minute in a loop triggers the softlockup detector.
+
+Add a cond_resched() to give other tasks a chance to run and placate
+the softlockup detector.
+
+Cc: stable@vger.kernel.org
+Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
+Reported-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
+Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Tested-by: Jarkko Sakkinen <jarkko@kernel.org>  (kselftest as sanity check)
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
+Softlockup message:
 
-Changes in v2:
-- No changes.
+watchdog: BUG: soft lockup - CPU#7 stuck for 22s! [test_sgx:11502]
+Kernel panic - not syncing: softlockup: hung tasks
+<snip>
+sgx_encl_release+0x86/0x1c0
+sgx_release+0x11c/0x130
+__fput+0xb0/0x280
+____fput+0xe/0x10
+task_work_run+0x6c/0xc0
+exit_to_user_mode_prepare+0x1eb/0x1f0
+syscall_exit_to_user_mode+0x1d/0x50
+do_syscall_64+0x46/0xb0
+entry_SYSCALL_64_after_hwframe+0x44/0xae
 
- drivers/platform/chrome/cros_ec_typec.c | 1 +
- 1 file changed, 1 insertion(+)
+Changes since V2:
+- V2: https://lore.kernel.org/lkml/b5e9f218064aa76e3026f778e1ad0a1d823e3db8.1643133224.git.reinette.chatre@intel.com/
+- Add Jarkko's "Reviewed-by" and "Tested-by" tags.
 
-diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
-index 3019e29f200d..4bd2752c0823 100644
---- a/drivers/platform/chrome/cros_ec_typec.c
-+++ b/drivers/platform/chrome/cros_ec_typec.c
-@@ -228,6 +228,7 @@ static void cros_typec_remove_partner(struct cros_typec_data *typec,
- 	cros_typec_unregister_altmodes(typec, port_num, true);
+Changes since V1:
+- V1: https://lore.kernel.org/lkml/1aa037705e5aa209d8b7a075873c6b4190327436.1642530802.git.reinette.chatre@intel.com/
+- Add comment provided by Jarkko.
+
+ arch/x86/kernel/cpu/sgx/encl.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index 001808e3901c..48afe96ae0f0 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -410,6 +410,8 @@ void sgx_encl_release(struct kref *ref)
+ 		}
  
- 	cros_typec_usb_disconnect_state(port);
-+	port->mux_flags = USB_PD_MUX_NONE;
+ 		kfree(entry);
++		/* Invoke scheduler to prevent soft lockups. */
++		cond_resched();
+ 	}
  
- 	typec_unregister_partner(port->partner);
- 	port->partner = NULL;
+ 	xa_destroy(&encl->page_array);
 -- 
-2.35.0.263.gb82422642f-goog
+2.25.1
 
