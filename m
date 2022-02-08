@@ -2,405 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4194EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E362C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387855AbiBHWby (ORCPT
+        id S1388007AbiBHWcE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:31:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
+        Tue, 8 Feb 2022 17:32:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386699AbiBHVIg (ORCPT
+        with ESMTP id S1386450AbiBHUej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:08:36 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654EAC0612BE
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:35 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id l67-20020a1c2546000000b00353951c3f62so153508wml.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=a5WrS/1rmXvD/BYbGf8gVLMNVbqD+GkBVWeKUPnYEUE=;
-        b=W8SZ9ZT9lnqf674qYwX61QIIXfYPpz5TT8FNFquYqMWF60Zr1NxVSo67LFUIumhY/b
-         g4X3DWnYQ4E9O0TT9I27jrKoBmg4rpZuW34qAkgkfckRl0rxiOId6Jms4FaL+TttstLl
-         RZw/gE3MZ7mAZ0AStwQU91DCKbDEAy83Zt1DU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=a5WrS/1rmXvD/BYbGf8gVLMNVbqD+GkBVWeKUPnYEUE=;
-        b=UtQBa8h1at7l9jWbsrqc7CYjlEb0DQyvpSRB5heVOK04Ja0ni+6DnwCAMGMOs/ZnSd
-         i3Ez20sNwvdMDP0vqadOMXCplEmMogRUHOdcJU0rXzLFY1WAaq7r4wzCpuIBMW/ysGNG
-         0AfopRfhJp3LnwtcwoH71wz3dI/HzOEQrn1HySUz2Xaraxs8h06NN6M+M17k55aj+s7w
-         6FFzQDQq+MwAV3NYScLY07iy1UxHNf1Evup7CF+b8g94mmfWj+DSARUhVzNUuhkDHkKA
-         KJ19izyUWdKot4nbBRjDkle4KCCWTCOYRYLzF1mjAs90Kx/K9jH6j9dx4xHvHlyOQmi+
-         tkNw==
-X-Gm-Message-State: AOAM531y9zTJnxxPM+RIuCQ5k6t2BkfjSvduLmGZLqJKe/BI/138vdun
-        EEMlrNJgTXPXxfAwolxy/ks1sg==
-X-Google-Smtp-Source: ABdhPJymquC64RJAFkzllw/eFz8WLOUKu7ZMOr++7kAYlKbVxvjPxIJXICIuvaEML/N2TifrI9Fp2w==
-X-Received: by 2002:a05:600c:4f85:: with SMTP id n5mr2579212wmq.64.1644354513896;
-        Tue, 08 Feb 2022 13:08:33 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 13:08:32 -0800 (PST)
-From:   Daniel Vetter <daniel.vetter@ffwll.ch>
-To:     DRI Development <dri-devel@lists.freedesktop.org>
-Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Helge Deller <deller@gmx.de>, Daniel Vetter <daniel@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Du Cheng <ducheng2@gmail.com>, Claudio Suarez <cssk@net-c.es>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH v2 03/19] fbcon: Introduce wrapper for console->fb_info lookup
-Date:   Tue,  8 Feb 2022 22:08:08 +0100
-Message-Id: <20220208210824.2238981-4-daniel.vetter@ffwll.ch>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+        Tue, 8 Feb 2022 15:34:39 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94483C0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:34:38 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id 558071F450AA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644352476;
+        bh=7xQvHqE5JkxFe/B6GU5XOuYuw6gmCUNHi1lLN9/W+eo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=M6+FjTNxa/BvKG9ip0I4YpTexVKfHVNgZrLnLDrKoh2FEb1ow32Rhn2d064vk+fta
+         kSh8BujX0yQb0TbeKk/+AAaWtc4wO/vu5Ud1I2Wo6RIeImLmJNGDPMU4YS5aEu5yle
+         IlfvvaHz8MTq2xUl/phMYahYiIdjCiK9etvvRacW2iJOywExOSgWe8giMwPL06iJ1c
+         oX4u3r+cV/c+D85+pqq4kzw8J1P3jJoZFGnZ+iYATBeLSVUAGvRuqhlYlstRjGa/TF
+         acoy5vh6mbPEFBPSQiQmyYbRZWrQQ2mhz7Gom5JW43l3W9gxlGw5AZIPJgX/WSbDbR
+         hFunc0nxpxAhw==
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Matthew Auld <matthew.auld@intel.com>,
+        Ramalingam C <ramalingam.c@intel.com>,
+        Robert Beckett <bob.beckett@collabora.com>,
+        Jordan Justen <jordan.l.justen@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Simon Ser <contact@emersion.fr>,
+        Pekka Paalanen <ppaalanen@gmail.com>,
+        Kenneth Graunke <kenneth@whitecape.org>,
+        mesa-dev@lists.freedesktop.org, Tony Ye <tony.ye@intel.com>,
+        Slawomir Milczarek <slawomir.milczarek@intel.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v8 5/5] drm/i915/uapi: document behaviour for DG2 64K support
+Date:   Tue,  8 Feb 2022 20:34:19 +0000
+Message-Id: <20220208203419.1094362-6-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220208203419.1094362-1-bob.beckett@collabora.com>
+References: <20220208203419.1094362-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Half of it is protected by console_lock, but the other half is a lot
-more awkward: Registration/deregistration of fbdev are serialized, but
-we don't really clear out anything in con2fb_map and so there's
-potential for use-after free mixups.
+From: Matthew Auld <matthew.auld@intel.com>
 
-First step is to encapsulate the lookup.
+On discrete platforms like DG2, we need to support a minimum page size
+of 64K when dealing with device local-memory. This is quite tricky for
+various reasons, so try to document the new implicit uapi for this.
 
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: Du Cheng <ducheng2@gmail.com>
-Cc: Claudio Suarez <cssk@net-c.es>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
+v3: fix typos and less emphasis
+v2: Fixed suggestions on formatting [Daniel]
+
+Signed-off-by: Matthew Auld <matthew.auld@intel.com>
+Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Acked-by: Jordan Justen <jordan.l.justen@intel.com>
+Reviewed-by: Ramalingam C <ramalingam.c@intel.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+cc: Simon Ser <contact@emersion.fr>
+cc: Pekka Paalanen <ppaalanen@gmail.com>
+Cc: Jordan Justen <jordan.l.justen@intel.com>
+Cc: Kenneth Graunke <kenneth@whitecape.org>
+Cc: mesa-dev@lists.freedesktop.org
+Cc: Tony Ye <tony.ye@intel.com>
+Cc: Slawomir Milczarek <slawomir.milczarek@intel.com>
 ---
- drivers/video/fbdev/core/fbcon.c | 76 ++++++++++++++++++--------------
- 1 file changed, 44 insertions(+), 32 deletions(-)
+ include/uapi/drm/i915_drm.h | 44 ++++++++++++++++++++++++++++++++-----
+ 1 file changed, 39 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index e925bb608e25..b75e638cb83d 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -110,6 +110,18 @@ static struct fbcon_display fb_display[MAX_NR_CONSOLES];
- static signed char con2fb_map[MAX_NR_CONSOLES];
- static signed char con2fb_map_boot[MAX_NR_CONSOLES];
+diff --git a/include/uapi/drm/i915_drm.h b/include/uapi/drm/i915_drm.h
+index 5e678917da70..77e5e74c32c1 100644
+--- a/include/uapi/drm/i915_drm.h
++++ b/include/uapi/drm/i915_drm.h
+@@ -1118,10 +1118,16 @@ struct drm_i915_gem_exec_object2 {
+ 	/**
+ 	 * When the EXEC_OBJECT_PINNED flag is specified this is populated by
+ 	 * the user with the GTT offset at which this object will be pinned.
++	 *
+ 	 * When the I915_EXEC_NO_RELOC flag is specified this must contain the
+ 	 * presumed_offset of the object.
++	 *
+ 	 * During execbuffer2 the kernel populates it with the value of the
+ 	 * current GTT offset of the object, for future presumed_offset writes.
++	 *
++	 * See struct drm_i915_gem_create_ext for the rules when dealing with
++	 * alignment restrictions with I915_MEMORY_CLASS_DEVICE, on devices with
++	 * minimum page sizes, like DG2.
+ 	 */
+ 	__u64 offset;
  
-+static struct fb_info *fbcon_info_from_console(int console)
-+{
-+	WARN_CONSOLE_UNLOCKED();
-+
-+	/*
-+	 * Note that only con2fb_map is protected by the console lock,
-+	 * registered_fb is protected by a separate mutex. This lookup can
-+	 * therefore race.
-+	 */
-+	return registered_fb[con2fb_map[console]];
-+}
-+
- static int logo_lines;
- /* logo_shown is an index to vc_cons when >= 0; otherwise follows FBCON_LOGO
-    enums.  */
-@@ -199,7 +211,7 @@ static void fbcon_rotate(struct fb_info *info, u32 rotate)
- 	if (!ops || ops->currcon == -1)
- 		return;
- 
--	fb_info = registered_fb[con2fb_map[ops->currcon]];
-+	fb_info = fbcon_info_from_console(ops->currcon);
- 
- 	if (info == fb_info) {
- 		struct fbcon_display *p = &fb_display[ops->currcon];
-@@ -226,7 +238,7 @@ static void fbcon_rotate_all(struct fb_info *info, u32 rotate)
- 	for (i = first_fb_vc; i <= last_fb_vc; i++) {
- 		vc = vc_cons[i].d;
- 		if (!vc || vc->vc_mode != KD_TEXT ||
--		    registered_fb[con2fb_map[i]] != info)
-+		    fbcon_info_from_console(i) != info)
- 			continue;
- 
- 		p = &fb_display[vc->vc_num];
-@@ -356,7 +368,7 @@ static void fb_flashcursor(struct work_struct *work)
- 		vc = vc_cons[ops->currcon].d;
- 
- 	if (!vc || !con_is_visible(vc) ||
-- 	    registered_fb[con2fb_map[vc->vc_num]] != info ||
-+	    fbcon_info_from_console(vc->vc_num) != info ||
- 	    vc->vc_deccm != 1) {
- 		console_unlock();
- 		return;
-@@ -791,7 +803,7 @@ static void con2fb_init_display(struct vc_data *vc, struct fb_info *info,
- 	if (show_logo) {
- 		struct vc_data *fg_vc = vc_cons[fg_console].d;
- 		struct fb_info *fg_info =
--			registered_fb[con2fb_map[fg_console]];
-+			fbcon_info_from_console(fg_console);
- 
- 		fbcon_prepare_logo(fg_vc, fg_info, fg_vc->vc_cols,
- 				   fg_vc->vc_rows, fg_vc->vc_cols,
-@@ -1014,7 +1026,7 @@ static void fbcon_init(struct vc_data *vc, int init)
- 	if (con2fb_map[vc->vc_num] == -1)
- 		con2fb_map[vc->vc_num] = info_idx;
- 
--	info = registered_fb[con2fb_map[vc->vc_num]];
-+	info = fbcon_info_from_console(vc->vc_num);
- 
- 	if (logo_shown < 0 && console_loglevel <= CONSOLE_LOGLEVEL_QUIET)
- 		logo_shown = FBCON_LOGO_DONTSHOW;
-@@ -1231,7 +1243,7 @@ static void fbcon_deinit(struct vc_data *vc)
- static void fbcon_clear(struct vc_data *vc, int sy, int sx, int height,
- 			int width)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
-@@ -1269,7 +1281,7 @@ static void fbcon_clear(struct vc_data *vc, int sy, int sx, int height,
- static void fbcon_putcs(struct vc_data *vc, const unsigned short *s,
- 			int count, int ypos, int xpos)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 	struct fbcon_ops *ops = info->fbcon_par;
- 
-@@ -1289,7 +1301,7 @@ static void fbcon_putc(struct vc_data *vc, int c, int ypos, int xpos)
- 
- static void fbcon_clear_margins(struct vc_data *vc, int bottom_only)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 
- 	if (!fbcon_is_inactive(vc, info))
-@@ -1298,7 +1310,7 @@ static void fbcon_clear_margins(struct vc_data *vc, int bottom_only)
- 
- static void fbcon_cursor(struct vc_data *vc, int mode)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
-  	int c = scr_readw((u16 *) vc->vc_pos);
- 
-@@ -1392,7 +1404,7 @@ static void fbcon_set_disp(struct fb_info *info, struct fb_var_screeninfo *var,
- 
- static __inline__ void ywrap_up(struct vc_data *vc, int count)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 
-@@ -1411,7 +1423,7 @@ static __inline__ void ywrap_up(struct vc_data *vc, int count)
- 
- static __inline__ void ywrap_down(struct vc_data *vc, int count)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 
-@@ -1430,7 +1442,7 @@ static __inline__ void ywrap_down(struct vc_data *vc, int count)
- 
- static __inline__ void ypan_up(struct vc_data *vc, int count)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 	struct fbcon_ops *ops = info->fbcon_par;
- 
-@@ -1454,7 +1466,7 @@ static __inline__ void ypan_up(struct vc_data *vc, int count)
- 
- static __inline__ void ypan_up_redraw(struct vc_data *vc, int t, int count)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 
-@@ -1478,7 +1490,7 @@ static __inline__ void ypan_up_redraw(struct vc_data *vc, int t, int count)
- 
- static __inline__ void ypan_down(struct vc_data *vc, int count)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 	struct fbcon_ops *ops = info->fbcon_par;
- 
-@@ -1502,7 +1514,7 @@ static __inline__ void ypan_down(struct vc_data *vc, int count)
- 
- static __inline__ void ypan_down_redraw(struct vc_data *vc, int t, int count)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 
-@@ -1666,7 +1678,7 @@ static void fbcon_redraw(struct vc_data *vc, struct fbcon_display *p,
- static void fbcon_bmove_rec(struct vc_data *vc, struct fbcon_display *p, int sy, int sx,
- 			    int dy, int dx, int height, int width, u_int y_break)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	u_int b;
- 
-@@ -1708,7 +1720,7 @@ static void fbcon_bmove_rec(struct vc_data *vc, struct fbcon_display *p, int sy,
- static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
- 			int height, int width)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 
- 	if (fbcon_is_inactive(vc, info))
-@@ -1731,7 +1743,7 @@ static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
- static bool fbcon_scroll(struct vc_data *vc, unsigned int t, unsigned int b,
- 		enum con_scroll dir, unsigned int count)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 	int scroll_partial = info->flags & FBINFO_PARTIAL_PAN_OK;
- 
-@@ -1996,7 +2008,7 @@ static void updatescrollmode(struct fbcon_display *p,
- static int fbcon_resize(struct vc_data *vc, unsigned int width, 
- 			unsigned int height, unsigned int user)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 	struct fb_var_screeninfo var = info->var;
-@@ -2065,7 +2077,7 @@ static int fbcon_switch(struct vc_data *vc)
- 	struct fb_var_screeninfo var;
- 	int i, ret, prev_console;
- 
--	info = registered_fb[con2fb_map[vc->vc_num]];
-+	info = fbcon_info_from_console(vc->vc_num);
- 	ops = info->fbcon_par;
- 
- 	if (logo_shown >= 0) {
-@@ -2079,7 +2091,7 @@ static int fbcon_switch(struct vc_data *vc)
- 
- 	prev_console = ops->currcon;
- 	if (prev_console != -1)
--		old_info = registered_fb[con2fb_map[prev_console]];
-+		old_info = fbcon_info_from_console(prev_console);
- 	/*
- 	 * FIXME: If we have multiple fbdev's loaded, we need to
- 	 * update all info->currcon.  Perhaps, we can place this
-@@ -2202,7 +2214,7 @@ static void fbcon_generic_blank(struct vc_data *vc, struct fb_info *info,
- 
- static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 
- 	if (mode_switch) {
-@@ -2244,7 +2256,7 @@ static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch)
- 
- static int fbcon_debug_enter(struct vc_data *vc)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 
- 	ops->save_graphics = ops->graphics;
-@@ -2257,7 +2269,7 @@ static int fbcon_debug_enter(struct vc_data *vc)
- 
- static int fbcon_debug_leave(struct vc_data *vc)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 
- 	ops->graphics = ops->save_graphics;
-@@ -2393,7 +2405,7 @@ static void set_vc_hi_font(struct vc_data *vc, bool set)
- static int fbcon_do_set_font(struct vc_data *vc, int w, int h, int charcount,
- 			     const u8 * data, int userfont)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	struct fbcon_display *p = &fb_display[vc->vc_num];
- 	int resize;
-@@ -2447,7 +2459,7 @@ static int fbcon_do_set_font(struct vc_data *vc, int w, int h, int charcount,
- static int fbcon_set_font(struct vc_data *vc, struct console_font *font,
- 			  unsigned int flags)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	unsigned charcount = font->charcount;
- 	int w = font->width;
- 	int h = font->height;
-@@ -2511,7 +2523,7 @@ static int fbcon_set_font(struct vc_data *vc, struct console_font *font,
- 
- static int fbcon_set_def_font(struct vc_data *vc, struct console_font *font, char *name)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	const struct font_desc *f;
- 
- 	if (!name)
-@@ -2535,7 +2547,7 @@ static struct fb_cmap palette_cmap = {
- 
- static void fbcon_set_palette(struct vc_data *vc, const unsigned char *table)
- {
--	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-+	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
- 	int i, j, k, depth;
- 	u8 val;
- 
-@@ -2651,7 +2663,7 @@ static void fbcon_modechanged(struct fb_info *info)
- 		return;
- 	vc = vc_cons[ops->currcon].d;
- 	if (vc->vc_mode != KD_TEXT ||
--	    registered_fb[con2fb_map[ops->currcon]] != info)
-+	    fbcon_info_from_console(ops->currcon) != info)
- 		return;
- 
- 	p = &fb_display[vc->vc_num];
-@@ -2691,7 +2703,7 @@ static void fbcon_set_all_vcs(struct fb_info *info)
- 	for (i = first_fb_vc; i <= last_fb_vc; i++) {
- 		vc = vc_cons[i].d;
- 		if (!vc || vc->vc_mode != KD_TEXT ||
--		    registered_fb[con2fb_map[i]] != info)
-+		    fbcon_info_from_console(i) != info)
- 			continue;
- 
- 		if (con_is_visible(vc)) {
-@@ -2954,7 +2966,7 @@ void fbcon_fb_blanked(struct fb_info *info, int blank)
- 
- 	vc = vc_cons[ops->currcon].d;
- 	if (vc->vc_mode != KD_TEXT ||
--			registered_fb[con2fb_map[ops->currcon]] != info)
-+			fbcon_info_from_console(ops->currcon) != info)
- 		return;
- 
- 	if (con_is_visible(vc)) {
-@@ -2974,7 +2986,7 @@ void fbcon_new_modelist(struct fb_info *info)
- 	const struct fb_videomode *mode;
- 
- 	for (i = first_fb_vc; i <= last_fb_vc; i++) {
--		if (registered_fb[con2fb_map[i]] != info)
-+		if (fbcon_info_from_console(i) != info)
- 			continue;
- 		if (!fb_display[i].mode)
- 			continue;
+@@ -3145,11 +3151,39 @@ struct drm_i915_gem_create_ext {
+ 	 *
+ 	 * The (page-aligned) allocated size for the object will be returned.
+ 	 *
+-	 * Note that for some devices we have might have further minimum
+-	 * page-size restrictions(larger than 4K), like for device local-memory.
+-	 * However in general the final size here should always reflect any
+-	 * rounding up, if for example using the I915_GEM_CREATE_EXT_MEMORY_REGIONS
+-	 * extension to place the object in device local-memory.
++	 *
++	 * DG2 64K min page size implications:
++	 *
++	 * On discrete platforms, starting from DG2, we have to contend with GTT
++	 * page size restrictions when dealing with I915_MEMORY_CLASS_DEVICE
++	 * objects.  Specifically the hardware only supports 64K or larger GTT
++	 * page sizes for such memory. The kernel will already ensure that all
++	 * I915_MEMORY_CLASS_DEVICE memory is allocated using 64K or larger page
++	 * sizes underneath.
++	 *
++	 * Note that the returned size here will always reflect any required
++	 * rounding up done by the kernel, i.e 4K will now become 64K on devices
++	 * such as DG2.
++	 *
++	 * Special DG2 GTT address alignment requirement:
++	 *
++	 * The GTT alignment will also need to be at least 2M for such objects.
++	 *
++	 * Note that due to how the hardware implements 64K GTT page support, we
++	 * have some further complications:
++	 *
++	 *   1) The entire PDE (which covers a 2MB virtual address range), must
++	 *   contain only 64K PTEs, i.e mixing 4K and 64K PTEs in the same
++	 *   PDE is forbidden by the hardware.
++	 *
++	 *   2) We still need to support 4K PTEs for I915_MEMORY_CLASS_SYSTEM
++	 *   objects.
++	 *
++	 * To keep things simple for userland, we mandate that any GTT mappings
++	 * must be aligned to and rounded up to 2MB. As this only wastes virtual
++	 * address space and avoids userland having to copy any needlessly
++	 * complicated PDE sharing scheme (coloring) and only affects DG2, this
++	 * is deemed to be a good compromise.
+ 	 */
+ 	__u64 size;
+ 	/**
 -- 
-2.34.1
+2.25.1
 
