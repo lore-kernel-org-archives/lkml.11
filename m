@@ -2,138 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D153CC4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0587CC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388094AbiBHWcS (ORCPT
+        id S1388151AbiBHWcX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:32:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
+        Tue, 8 Feb 2022 17:32:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386440AbiBHUee (ORCPT
+        with ESMTP id S1386225AbiBHTop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:34:34 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FE2C0612C0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:34:33 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id BAA4B1F450A7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644352470;
-        bh=wakhSFcVMZevZPcycdryY+hpEED54NWm/zeUvW6H0hU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eSOcjbckKYxUTCfS9q/Ko+ezw2Q4el1TXEyYaTKOwEDcUvNE0ZRARFfjYKh8g3cWt
-         9AhfgwPEgBNM0zXi7ddIk+TfsXVMPOMXSVIRrfvMw96ePAyVJNvRpYtBJr0lR+rFOR
-         rWRsk+EI7ca/MRN7TttCtiS1Ecot6MmUNHtMlRE6+AxueQE5Jk5YlFxni/4zJdjNWV
-         6dT0zD0O831WNFd3LCbI04XuiT2CBtNZZaa1ClE1jsQRQqCYx62qiCdgvQh7YRFW4t
-         FEPJP9Nq/FHc63jBIjFFc04986crC55yMeNqitXe4w/cztMlOGORnYjFONgXZejkM4
-         qMjhcrMCoMB5A==
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Ramalingam C <ramalingam.c@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Robert Beckett <bob.beckett@collabora.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v8 1/5] drm/i915: add needs_compact_pt flag
-Date:   Tue,  8 Feb 2022 20:34:15 +0000
-Message-Id: <20220208203419.1094362-2-bob.beckett@collabora.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220208203419.1094362-1-bob.beckett@collabora.com>
-References: <20220208203419.1094362-1-bob.beckett@collabora.com>
+        Tue, 8 Feb 2022 14:44:45 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE714C0613CB;
+        Tue,  8 Feb 2022 11:44:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644349484; x=1675885484;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=B0beRUcpy6mm/IC1BcwaxatHK/JKj1WU47oyT+N03mg=;
+  b=PmOrBH44twkgttlFTrbNznHsN82tq/QyRPYBRGwKespy+V1TQ7XMOuuQ
+   d39cTRA8h5t8m34AxiK2mz7FTOLeM7Ais3fD73M80b6wnWbjL43yAliuQ
+   JJhLBoU46nnjAhA5TmZmfMyqCiaMVtvzKgY1XnbTtsL9u8kxe6k/hiQjd
+   w=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Feb 2022 11:44:44 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 11:44:43 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 8 Feb 2022 11:44:43 -0800
+Received: from abhinavk-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 8 Feb 2022 11:44:42 -0800
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+To:     <johannes@sipsolutions.net>, <linux-kernel@vger.kernel.org>
+CC:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        <gregkh@linuxfoundation.org>, <rafael@kernel.org>,
+        <robdclark@gmail.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <freedreno@lists.freedesktop.org>,
+        <seanpaul@chromium.org>, <swboyd@chromium.org>,
+        <nganji@codeaurora.org>, <aravindh@codeaurora.org>,
+        <khsieh@codeaurora.org>, <daniel@ffwll.ch>,
+        <dmitry.baryshkov@linaro.org>
+Subject: [PATCH] devcoredump: increase the device delete timeout to 10 mins
+Date:   Tue, 8 Feb 2022 11:44:32 -0800
+Message-ID: <1644349472-31077-1-git-send-email-quic_abhinavk@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ramalingam C <ramalingam.c@intel.com>
+There are cases where depending on the size of the devcoredump and the speed
+at which the usermode reads the dump, it can take longer than the current 5 mins
+timeout.
 
-Add a new platform flag, needs_compact_pt, to mark the requirement of
-compact pt layout support for the ppGTT when using 64K GTT pages.
+This can lead to incomplete dumps as the device is deleted once the timeout expires.
 
-With this flag has_64k_pages will only indicate requirement of 64K
-GTT page sizes or larger for device local memory access.
+One example is below where it took 6 mins for the devcoredump to be completely read.
 
-v6:
-	* minor doc formatting
+04:22:24.668 23916 23994 I HWDeviceDRM::DumpDebugData: Opening /sys/class/devcoredump/devcd6/data
+04:28:35.377 23916 23994 W HWDeviceDRM::DumpDebugData: Freeing devcoredump node
 
-Suggested-by: Matthew Auld <matthew.auld@intel.com>
-Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Increase the timeout to 10 mins to accommodate system delays and large coredump
+sizes.
+
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 ---
- drivers/gpu/drm/i915/i915_drv.h          | 11 ++++++++---
- drivers/gpu/drm/i915/i915_pci.c          |  2 ++
- drivers/gpu/drm/i915/intel_device_info.h |  1 +
- 3 files changed, 11 insertions(+), 3 deletions(-)
+ drivers/base/devcoredump.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index 00e7594b59c9..4afdfa5fd3b3 100644
---- a/drivers/gpu/drm/i915/i915_drv.h
-+++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -1512,12 +1512,17 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
+diff --git a/drivers/base/devcoredump.c b/drivers/base/devcoredump.c
+index f4d794d..6b83ae5 100644
+--- a/drivers/base/devcoredump.c
++++ b/drivers/base/devcoredump.c
+@@ -18,8 +18,8 @@ static struct class devcd_class;
+ /* global disable flag, for security purposes */
+ static bool devcd_disabled;
  
- /*
-  * Set this flag, when platform requires 64K GTT page sizes or larger for
-- * device local memory access. Also this flag implies that we require or
-- * at least support the compact PT layout for the ppGTT when using the 64K
-- * GTT pages.
-+ * device local memory access.
-  */
- #define HAS_64K_PAGES(dev_priv) (INTEL_INFO(dev_priv)->has_64k_pages)
+-/* if data isn't read by userspace after 5 minutes then delete it */
+-#define DEVCD_TIMEOUT	(HZ * 60 * 5)
++/* if data isn't read by userspace after 10 minutes then delete it */
++#define DEVCD_TIMEOUT	(HZ * 60 * 10)
  
-+/*
-+ * Set this flag when platform doesn't allow both 64k pages and 4k pages in
-+ * the same PT. this flag means we need to support compact PT layout for the
-+ * ppGTT when using the 64K GTT pages.
-+ */
-+#define NEEDS_COMPACT_PT(dev_priv) (INTEL_INFO(dev_priv)->needs_compact_pt)
-+
- #define HAS_IPC(dev_priv)		 (INTEL_INFO(dev_priv)->display.has_ipc)
- 
- #define HAS_REGION(i915, i) (INTEL_INFO(i915)->memory_regions & (i))
-diff --git a/drivers/gpu/drm/i915/i915_pci.c b/drivers/gpu/drm/i915/i915_pci.c
-index 2df2db0a5d70..ce6ae6a3cbdf 100644
---- a/drivers/gpu/drm/i915/i915_pci.c
-+++ b/drivers/gpu/drm/i915/i915_pci.c
-@@ -1028,6 +1028,7 @@ static const struct intel_device_info xehpsdv_info = {
- 	PLATFORM(INTEL_XEHPSDV),
- 	.display = { },
- 	.has_64k_pages = 1,
-+	.needs_compact_pt = 1,
- 	.platform_engine_mask =
- 		BIT(RCS0) | BIT(BCS0) |
- 		BIT(VECS0) | BIT(VECS1) | BIT(VECS2) | BIT(VECS3) |
-@@ -1046,6 +1047,7 @@ static const struct intel_device_info dg2_info = {
- 	PLATFORM(INTEL_DG2),
- 	.has_guc_deprivilege = 1,
- 	.has_64k_pages = 1,
-+	.needs_compact_pt = 1,
- 	.platform_engine_mask =
- 		BIT(RCS0) | BIT(BCS0) |
- 		BIT(VECS0) | BIT(VECS1) |
-diff --git a/drivers/gpu/drm/i915/intel_device_info.h b/drivers/gpu/drm/i915/intel_device_info.h
-index abf1e103c558..d8da40d01dca 100644
---- a/drivers/gpu/drm/i915/intel_device_info.h
-+++ b/drivers/gpu/drm/i915/intel_device_info.h
-@@ -130,6 +130,7 @@ enum intel_ppgtt_type {
- 	/* Keep has_* in alphabetical order */ \
- 	func(has_64bit_reloc); \
- 	func(has_64k_pages); \
-+	func(needs_compact_pt); \
- 	func(gpu_reset_clobbers_display); \
- 	func(has_reset_engine); \
- 	func(has_global_mocs); \
+ struct devcd_entry {
+ 	struct device devcd_dev;
 -- 
-2.25.1
+2.7.4
 
