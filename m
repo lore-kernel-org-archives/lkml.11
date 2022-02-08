@@ -2,154 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 06:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CB7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 06:48:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347770AbiBHGrK (ORCPT
+        id S1347784AbiBHGsI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 01:47:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42962 "EHLO
+        Tue, 8 Feb 2022 01:48:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347746AbiBHGrG (ORCPT
+        with ESMTP id S236745AbiBHGsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 01:47:06 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56017C0401EF;
-        Mon,  7 Feb 2022 22:47:04 -0800 (PST)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nHKGn-0001c4-RJ; Tue, 08 Feb 2022 07:46:34 +0100
-Message-ID: <4be9dede-c1b8-8532-b576-f9c787157931@leemhuis.info>
-Date:   Tue, 8 Feb 2022 07:46:31 +0100
+        Tue, 8 Feb 2022 01:48:05 -0500
+Received: from sender4-pp-o95.zoho.com (sender4-pp-o95.zoho.com [136.143.188.95])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266D7C0401F5;
+        Mon,  7 Feb 2022 22:48:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1644302876; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=Mz5nes1S9Bv7uWg7mSdSkoWdqOUwx1ai6CPGy/4ZaRCeK/so4I5iIctzdQhCKtG/ItC82VgSQY1gm3W7XO0pBlnJS6EENrejw8S1jwffSvmnF64PeEfWEJ2/31yqUaxsBo5OmHbYeVOXXl08TSWnPYTQtL7rHDzEByRe9GR8WqU=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1644302876; h=Content-Type:Content-Transfer-Encoding:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=9rkLAN/8k6qz/+MCyKkO/cuBmp6HwOLZxvM3wynyJt8=; 
+        b=b8idG1FPq+aVw4jPrnJ0JeQPt3nrFc3C0Lz7VT9tQcMFq8Dbn+SD+WHI9J8W5CZE539xnjcJq5vnhEWNsEiy+vpi9oVM8dlbBWwXsW06pfbzOVB35oS+d7Cszlu9LVDSnPw7VRkMtgNzyl2gnKTBjng+nxP4xm+YME2OCDTvfAU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=zohomail.com;
+        spf=pass  smtp.mailfrom=lchen.firstlove@zohomail.com;
+        dmarc=pass header.from=<lchen.firstlove@zohomail.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1644302876;
+        s=zm2020; d=zohomail.com; i=lchen.firstlove@zohomail.com;
+        h=Date:From:To:Message-ID:In-Reply-To:References:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
+        bh=9rkLAN/8k6qz/+MCyKkO/cuBmp6HwOLZxvM3wynyJt8=;
+        b=jmm5HoQ8dH4kGzfEOCCZz0VFiJml/KwoXdh5nV1+P342P3NkjkjhQMpbB7MOs4u1
+        Vs4I9hAW0AF3rAy+HBgTD+Ipb+8++kkddaP/UPnwRzXey3Wg1/UnG7yKYFl2XUpgM7v
+        rVJNRYUK6cFuFyFQp/dY8WnuZ2GUmSeCh+cMJ3Mc=
+Received: from mail.zoho.com by mx.zohomail.com
+        with SMTP id 1644302874384547.2045927238538; Mon, 7 Feb 2022 22:47:54 -0800 (PST)
+Received: from  [45.80.185.140] by mail.zoho.com
+        with HTTP;Mon, 7 Feb 2022 22:47:54 -0800 (PST)
+Date:   Tue, 08 Feb 2022 01:47:54 -0500
+From:   Li Chen <lchen.firstlove@zohomail.com>
+To:     "Kishon Vijay Abraham I" <kishon@ti.com>,
+        "Lorenzo Pieralisi" <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?=22Krzysztof_Wilczy=C5=84ski=22?= <kw@linux.com>,
+        "Bjorn Helgaas" <bhelgaas@google.com>,
+        "linux-pci" <linux-pci@vger.kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>
+Message-ID: <17ed816b6f3.d4fb44fb69745.1048447841721382920@zohomail.com>
+In-Reply-To: <17e7b9b9ee6.c6d9c6a02564.4545388417402742326@zohomail.com>
+References: <17e7b9b9ee6.c6d9c6a02564.4545388417402742326@zohomail.com>
+Subject: Re: [PATCH] PCI: endpoint fix misused goto label
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] Fix regression due to "fs: move binfmt_misc sysctl to its
- own file"
-Content-Language: en-BS
-To:     Domenico Andreoli <domenico.andreoli@linux.com>, airlied@linux.ie,
-        akpm@linux-foundation.org, amir73il@gmail.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bcrl@kvack.org,
-        benh@kernel.crashing.org, clemens@ladisch.de, crope@iki.fi,
-        dgilbert@interlog.com, ebiederm@xmission.com,
-        gregkh@linuxfoundation.org, jack@suse.cz, jani.nikula@intel.com,
-        jani.nikula@linux.intel.com, jejb@linux.ibm.com,
-        jlbec@evilplan.org, john.ogness@linutronix.de,
-        joonas.lahtinen@linux.intel.com, joseph.qi@linux.alibaba.com,
-        julia.lawall@inria.fr, keescook@chromium.org, kernel@tuxforce.de,
-        linux-mm@kvack.org, mark@fasheh.com, martin.petersen@oracle.com,
-        mcgrof@kernel.org, mm-commits@vger.kernel.org,
-        nixiaoming@huawei.com, penguin-kernel@i-love.sakura.ne.jp,
-        peterz@infradead.org, phil@philpotter.co.uk, pjt@google.com,
-        pmladek@suse.com, rafael@kernel.org, rodrigo.vivi@intel.com,
-        rostedt@goodmis.org, senozhatsky@chromium.org, sre@kernel.org,
-        steve@sk2.org, surenb@google.com, torvalds@linux-foundation.org,
-        tytso@mit.edu, viro@zeniv.linux.org.uk, wangqing@vivo.com,
-        yzaikin@google.com
-Cc:     linux-kernel@vger.kernel.org,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <20220121221021.60533b009c357d660791476e@linux-foundation.org>
- <20220122061228.nmuo75sDn%akpm@linux-foundation.org> <YgEeQNdgBuHRyEWl@dumbo>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <YgEeQNdgBuHRyEWl@dumbo>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1644302824;a34e687f;
-X-HE-SMSGID: 1nHKGn-0001c4-RJ
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+ping
 
-[TLDR: I'm adding the regression report below to regzbot, the Linux
-kernel regression tracking bot; all text you find below is compiled from
-a few templates paragraphs you might have encountered already already
-from similar mails.]
-
-Hi, this is your Linux kernel regression tracker speaking.
-
-CCing the regression mailing list, as it should be in the loop for all
-regressions, as explained here:
-https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
-
-On 07.02.22 14:27, Domenico Andreoli wrote:
-> Commit 3ba442d5331f did not go unnoticed, binfmt-support stopped to
-> work on my Debian system since v5.17-rc2 (did not check with -rc1).
-> 
-> The existance of /proc/sys/fs/binfmt_misc is a precondition for
-> attempting to mount the binfmt_misc fs, which in turn triggers the
-> autoload of the binfmt_misc module. Without it, no module is loaded
-> and no binfmt is available at boot.
-> 
-> Building as built-in or manually loading the module and mounting the fs
-> works fine, it's therefore only a matter of interaction with user-space.
-> 
-> I could try to improve the Debian systemd configuration but I can't
-> say anything about the other distributions.
-> 
-> In the meanwhile this patch restores a working system right after boot.
-> [...]
-
-To be sure this issue doesn't fall through the cracks unnoticed, I'm
-adding it to regzbot, my Linux kernel regression tracking bot:
-
-#regzbot ^introduced 3ba442d5331f
-#regzbot title  binfmt-support stopped to work
-#regzbot ignore-activity
-
-Reminder for developers: when fixing the issue, please add a 'Link:'
-tags pointing to the report (the mail quoted above) using
-lore.kernel.org/r/, as explained in
-'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'. This allows the bot to connect
-the report with any patches posted or committed to fix the issue; this
-again allows the bot to show the current status of regressions and
-automatically resolve the issue when the fix hits the right tree.
-
-I'm sending this to everyone that got the initial report, to make them
-aware of the tracking. I also hope that messages like this motivate
-people to directly get at least the regression mailing list and ideally
-even regzbot involved when dealing with regressions, as messages like
-this wouldn't be needed then.
-
-Don't worry, I'll send further messages wrt to this regression just to
-the lists (with a tag in the subject so people can filter them away), if
-they are relevant just for regzbot. With a bit of luck no such messages
-will be needed anyway.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-reports on my table. I can only look briefly into most of them and lack
-knowledge about most of the areas they concern. I thus unfortunately
-will sometimes get things wrong or miss something important. I hope
-that's not the case here; if you think it is, don't hesitate to tell me
-in a public reply, it's in everyone's interest to set the public record
-straight.
-
--- 
-Additional information about regzbot:
-
-If you want to know more about regzbot, check out its web-interface, the
-getting start guide, and the references documentation:
-
-https://linux-regtracking.leemhuis.info/regzbot/
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
-
-The last two documents will explain how you can interact with regzbot
-yourself if your want to.
-
-Hint for reporters: when reporting a regression it's in your interest to
-CC the regression list and tell regzbot about the issue, as that ensures
-the regression makes it onto the radar of the Linux kernel's regression
-tracker -- that's in your interest, as it ensures your report won't fall
-through the cracks unnoticed.
-
-Hint for developers: you normally don't need to care about regzbot once
-it's involved. Fix the issue as you normally would, just remember to
-include 'Link:' tag in the patch descriptions pointing to all reports
-about the issue. This has been expected from developers even before
-regzbot showed up for reasons explained in
-'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'.
+ ---- On Fri, 21 Jan 2022 02:48:23 -0500 Li Chen <lchen.firstlove@zohomail.com> wrote ----
+ > From: Li Chen <lchen@ambarella.com>
+ > 
+ > If we goto err_map_addr here, buf allocated
+ > via kmalloc won't get freeed, then memoryleak.
+ > 
+ > Signed-off-by: Li Chen <lchen@ambarella.com>
+ > ---
+ >  drivers/pci/endpoint/functions/pci-epf-test.c | 2 +-
+ >  1 file changed, 1 insertion(+), 1 deletion(-)
+ > 
+ > diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
+ > index 96489cfdf58db..60303223976a1 100644
+ > --- a/drivers/pci/endpoint/functions/pci-epf-test.c
+ > +++ b/drivers/pci/endpoint/functions/pci-epf-test.c
+ > @@ -441,7 +441,7 @@ static int pci_epf_test_write(struct pci_epf_test *epf_test)
+ >          if (!epf_test->dma_supported) {
+ >              dev_err(dev, "Cannot transfer data using DMA\n");
+ >              ret = -EINVAL;
+ > -            goto err_map_addr;
+ > +            goto err_dma_map;
+ >          }
+ >  
+ >          src_phys_addr = dma_map_single(dma_dev, buf, reg->size,
+ > -- 
+ > 2.34.1
+ > 
+ > 
+ > 
