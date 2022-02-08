@@ -2,369 +2,586 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 736A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B8B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343906AbiBHBuQ (ORCPT
+        id S1345067AbiBHBu1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:50:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
+        Mon, 7 Feb 2022 20:50:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344937AbiBHBmb (ORCPT
+        with ESMTP id S241704AbiBHB1l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:42:31 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBF7C061355;
-        Mon,  7 Feb 2022 17:42:29 -0800 (PST)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 217M0Zp1023002;
-        Tue, 8 Feb 2022 01:42:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=weP/7A1pYJpzDNjvvzmEj/1Rdn+84YPS1WHgAZB+5NM=;
- b=hdykv4TrjH0NTzgej1ZYI0xZZ8VeKIpUq1E2EI5QvIPl9dAEZLOLWvuXQO7++X27IsKe
- 8FODFK1G7GRswyjjUlQt2FiE5xMU71/dc6a6LbXjqSv+pQyBjtDu+Dq8aESsbzoDVSiT
- Zj9eeQRrmAjarc+i+WMY3PXVYkUidkecamHmHCVKO1mNE3TI8YRl/IJmguk9jS5haOfY
- SLFDcSSW63m240ctRM7NTsNdt20alC4E7Lwr9shjY18nDPeNwpRz1OmfBn6x057DT/9u
- Cx+2Oj8hucvV2ZB9wKzq3rIX732KOM3mDVe0BjgMw0ISTIcaK4zTwQAyBavmbOl6+OFJ yA== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e22kqcdv9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 01:42:26 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2181Wjbi025016;
-        Tue, 8 Feb 2022 01:42:24 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04fra.de.ibm.com with ESMTP id 3e2ygpyh6v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 01:42:24 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2181gL0s38273280
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 8 Feb 2022 01:42:21 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 955D0A4065;
-        Tue,  8 Feb 2022 01:42:21 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6C5FEA406D;
-        Tue,  8 Feb 2022 01:42:20 +0000 (GMT)
-Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com.com (unknown [9.65.90.153])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  8 Feb 2022 01:42:20 +0000 (GMT)
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     linux-integrity@vger.kernel.org
-Cc:     Mimi Zohar <zohar@linux.ibm.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 7/8] ima: support fs-verity file digest based version 3 signatures
-Date:   Mon,  7 Feb 2022 20:41:39 -0500
-Message-Id: <20220208014140.483447-8-zohar@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220208014140.483447-1-zohar@linux.ibm.com>
-References: <20220208014140.483447-1-zohar@linux.ibm.com>
+        Mon, 7 Feb 2022 20:27:41 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17925C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:27:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644283660; x=1675819660;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xFxV3FwAnpydDENbVAtQKuNvQsT3jO7UeOEfBjt59z0=;
+  b=Slu40mNBJbc18v1yI4hMuMW3BYmt8tR76OGjlXFpuJFgoKlXWYPWhH/9
+   8KsodfIgTVVmgG65iKpYy9XN+nAKKfwx8MJIeDkjhgZN4SStk7dxaNXk3
+   DoLI72CbCXfPy6CycioYhf8/DRbRIQZIQmtJ9YIpZcWcjvniS0iPrvPX6
+   aKOxRfGYeJBO1QDhn7yxrqQ6NklR/f6Ceu2zgU4UXfyeyqe3xbni89i++
+   b1TulW67LIzgdiOZwmZ90MgnUHJ9+HKKP5V6/t2DG+y63Zhg6nSLT1m59
+   QABuxWa4OIsNkfBEMVSIGIt/7LQ0d5fxu3DaVzV1Et7gHBlWjHN50f2Tk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="236251959"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="236251959"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 17:27:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="677948819"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+  by fmsmga001.fm.intel.com with ESMTP; 07 Feb 2022 17:27:35 -0800
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH v2 03/10] iommu/vt-d: Remove aux-domain related callbacks
+Date:   Tue,  8 Feb 2022 09:25:52 +0800
+Message-Id: <20220208012559.1121729-4-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
+References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Ykc3RaG6kL8uKNknPTGGBZSlJQduBDv6
-X-Proofpoint-ORIG-GUID: Ykc3RaG6kL8uKNknPTGGBZSlJQduBDv6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_07,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 bulkscore=0 spamscore=0 impostorscore=0 suspectscore=0
- mlxlogscore=999 lowpriorityscore=0 adultscore=0 malwarescore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202080006
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of calculating a regular file hash and verifying the signature
-stored in the 'security.ima' xattr against the calculated file hash, get
-fs-verity's file digest and verify the signature (version 3) stored in
-'security.ima' against the digest.
+The aux-domain related callbacks are not called in the tree. Remove them
+to avoid dead code.
 
-To differentiate between IMA's and fs-verity's signatures, define a
-new signature type named 'IMA_VERITY_DIGSIG'.
-
-Update the 'ima-sig' template field to also display the new fs-verity
-signature type.
-
-To prevent abuse of the different signature formats, policy rules must be
-limited to a specific signature version.  The following 'appraise' policy
-rule requires fsverity file digests (signature v3).  The policy rule may
-be constrained, for example based on a fsuuid or LSM label.
-
-Basic fs-verity policy rule example:
-  appraise func=BPRM_CHECK digest_type=verity
-
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- Documentation/ABI/testing/ima_policy      | 12 ++++
- Documentation/security/IMA-templates.rst  |  4 +-
- security/integrity/ima/ima_appraise.c     | 79 +++++++++++++++++++++--
- security/integrity/ima/ima_policy.c       |  9 ++-
- security/integrity/ima/ima_template_lib.c |  3 +-
- security/integrity/integrity.h            |  5 +-
- 6 files changed, 100 insertions(+), 12 deletions(-)
+ include/linux/intel-iommu.h   |  17 --
+ drivers/iommu/intel/debugfs.c |   3 +-
+ drivers/iommu/intel/iommu.c   | 309 +---------------------------------
+ 3 files changed, 3 insertions(+), 326 deletions(-)
 
-diff --git a/Documentation/ABI/testing/ima_policy b/Documentation/ABI/testing/ima_policy
-index ff3c906738cb..aabbb206098d 100644
---- a/Documentation/ABI/testing/ima_policy
-+++ b/Documentation/ABI/testing/ima_policy
-@@ -159,3 +159,15 @@ Description:
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index beaacb589abd..5cfda90b2cca 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -542,7 +542,6 @@ struct dmar_domain {
+ 	u8 iommu_snooping: 1;		/* indicate snooping control feature */
  
- 			measure func=FILE_CHECK digest_type=verity \
- 				fsuuid=... template=ima-ngv2
-+
-+		Example of 'measure' and 'appraise' rules requiring fs-verity
-+		signatures (version 3) stored in security.ima xattr. The
-+		'ima-sig' template option includes the signature in the
-+		measurement list.  The 'appraise' rule verifies the signature.
-+		These policy rules are limited to a particular filesystem
-+		based on its fsuuid.
-+
-+			measure func=BPRM_CHECK digest_type=verity \
-+				fsuuid=... template=ima-sig
-+			appraise func=BPRM_CHECK digest_type=verity \
-+				fsuuid=...
-diff --git a/Documentation/security/IMA-templates.rst b/Documentation/security/IMA-templates.rst
-index 1e3fe986764e..fe9bc2595fa2 100644
---- a/Documentation/security/IMA-templates.rst
-+++ b/Documentation/security/IMA-templates.rst
-@@ -72,8 +72,8 @@ descriptors by adding their identifier to the format string
-  - 'd-type': differentiate between fs-verity's Merkle tree based file hash
-    from a regular IMA file hash measurement.
-  - 'n-ng': the name of the event, without size limitations;
-- - 'sig': the file signature, or the EVM portable signature if the file
--   signature is not found;
-+ - 'sig': the file signature, based on either the file's/fsverity's digest[1],
-+   or the EVM portable signature if the file signature is not found;
-  - 'modsig' the appended file signature;
-  - 'buf': the buffer data that was used to generate the hash without size limitations;
-  - 'evmsig': the EVM portable signature;
-diff --git a/security/integrity/ima/ima_appraise.c b/security/integrity/ima/ima_appraise.c
-index 7bc180bd808e..98f2ef99afc0 100644
---- a/security/integrity/ima/ima_appraise.c
-+++ b/security/integrity/ima/ima_appraise.c
-@@ -13,7 +13,9 @@
- #include <linux/magic.h>
- #include <linux/ima.h>
- #include <linux/evm.h>
-+#include <linux/fsverity.h>
- #include <keys/system_keyring.h>
-+#include <uapi/linux/fsverity.h>
+ 	struct list_head devices;	/* all devices' list */
+-	struct list_head subdevices;	/* all subdevices' list */
+ 	struct iova_domain iovad;	/* iova's that belong to this domain */
  
- #include "ima.h"
+ 	struct dma_pte	*pgd;		/* virtual address */
+@@ -557,11 +556,6 @@ struct dmar_domain {
+ 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
+ 	u64		max_addr;	/* maximum mapped address */
  
-@@ -183,13 +185,18 @@ enum hash_algo ima_get_hash_algo(const struct evm_ima_xattr_data *xattr_value,
- 		return ima_hash_algo;
- 
- 	switch (xattr_value->type) {
-+	case IMA_VERITY_DIGSIG:
-+		sig = (typeof(sig))xattr_value;
-+		if (sig->version != 3 || xattr_len <= sizeof(*sig) ||
-+		    sig->hash_algo >= HASH_ALGO__LAST)
-+			return ima_hash_algo;
-+		return sig->hash_algo;
- 	case EVM_IMA_XATTR_DIGSIG:
- 		sig = (typeof(sig))xattr_value;
- 		if (sig->version != 2 || xattr_len <= sizeof(*sig)
- 		    || sig->hash_algo >= HASH_ALGO__LAST)
- 			return ima_hash_algo;
- 		return sig->hash_algo;
--		break;
- 	case IMA_XATTR_DIGEST_NG:
- 		/* first byte contains algorithm id */
- 		ret = xattr_value->data[0];
-@@ -235,15 +242,22 @@ int ima_read_xattr(struct dentry *dentry,
-  * IMA signature version 3 disambiguates the data that is signed by
-  * indirectly signing the hash of the ima_file_id structure data.
-  *
-+ * Signing the ima_file_id struct is currently only supported for
-+ * IMA_VERITY_DIGSIG type xattrs.
-+ *
-  * Return 0 on success, error code otherwise.
-  */
- static int calc_file_id_hash(enum evm_ima_xattr_type type,
- 			     enum hash_algo algo, const u8 *digest,
- 			     struct ima_max_digest_data *hash)
- {
--	struct ima_file_id file_id = {.hash_algorithm = algo};
-+	struct ima_file_id file_id = {
-+		.hash_type = IMA_VERITY_DIGSIG, .hash_algorithm = algo};
- 	uint unused = HASH_MAX_DIGESTSIZE - hash_digest_size[algo];
- 
-+	if (type != IMA_VERITY_DIGSIG)
-+		return -EINVAL;
-+
- 	memcpy(file_id.hash, digest, hash_digest_size[algo]);
- 
- 	hash->algo = algo;
-@@ -264,6 +278,7 @@ static int xattr_verify(enum ima_hooks func, struct integrity_iint_cache *iint,
- 			struct evm_ima_xattr_data *xattr_value, int xattr_len,
- 			enum integrity_status *status, const char **cause)
- {
-+	struct ima_max_digest_data hash;
- 	struct signature_v2_hdr *sig;
- 	int rc = -EINVAL, hash_start = 0;
- 
-@@ -275,7 +290,10 @@ static int xattr_verify(enum ima_hooks func, struct integrity_iint_cache *iint,
- 	case IMA_XATTR_DIGEST:
- 		if (*status != INTEGRITY_PASS_IMMUTABLE) {
- 			if (iint->flags & IMA_DIGSIG_REQUIRED) {
--				*cause = "IMA-signature-required";
-+				if (iint->flags & IMA_VERITY_REQUIRED)
-+					*cause = "verity-signature-required";
-+				else
-+					*cause = "IMA-signature-required";
- 				*status = INTEGRITY_FAIL;
- 				break;
- 			}
-@@ -304,6 +322,12 @@ static int xattr_verify(enum ima_hooks func, struct integrity_iint_cache *iint,
- 	case EVM_IMA_XATTR_DIGSIG:
- 		set_bit(IMA_DIGSIG, &iint->atomic_flags);
- 
-+		if (iint->flags & (IMA_DIGSIG_REQUIRED | IMA_VERITY_REQUIRED)) {
-+			*cause = "verity-signature-required";
-+			*status = INTEGRITY_FAIL;
-+			break;
-+		}
-+
- 		sig = (typeof(sig))xattr_value;
- 		if (sig->version != 2) {
- 			*cause = "invalid-signature-version";
-@@ -332,6 +356,44 @@ static int xattr_verify(enum ima_hooks func, struct integrity_iint_cache *iint,
- 		} else {
- 			*status = INTEGRITY_PASS;
- 		}
-+		break;
-+	case IMA_VERITY_DIGSIG:
-+		set_bit(IMA_DIGSIG, &iint->atomic_flags);
-+
-+		if (iint->flags & IMA_DIGSIG_REQUIRED) {
-+			if (!(iint->flags & IMA_VERITY_REQUIRED)) {
-+				*cause = "IMA-signature-required";
-+				*status = INTEGRITY_FAIL;
-+				break;
-+			}
-+		}
-+
-+		sig = (typeof(sig))xattr_value;
-+		if (sig->version != 3) {
-+			*cause = "invalid-signature-version";
-+			*status = INTEGRITY_FAIL;
-+			break;
-+		}
-+
-+		rc = calc_file_id_hash(IMA_VERITY_DIGSIG, iint->ima_hash->algo,
-+				       iint->ima_hash->digest, &hash);
-+		if (rc) {
-+			*cause = "sigv3-hashing-error";
-+			*status = INTEGRITY_FAIL;
-+			break;
-+		}
-+
-+		rc = integrity_digsig_verify(INTEGRITY_KEYRING_IMA,
-+					     (const char *)xattr_value,
-+					     xattr_len, hash.digest,
-+					     hash.length);
-+		if (rc) {
-+			*cause = "invalid-verity-signature";
-+			*status = INTEGRITY_FAIL;
-+		} else {
-+			*status = INTEGRITY_PASS;
-+		}
-+
- 		break;
- 	default:
- 		*status = INTEGRITY_UNKNOWN;
-@@ -432,8 +494,15 @@ int ima_appraise_measurement(enum ima_hooks func,
- 		if (rc && rc != -ENODATA)
- 			goto out;
- 
--		cause = iint->flags & IMA_DIGSIG_REQUIRED ?
--				"IMA-signature-required" : "missing-hash";
-+		if (iint->flags & IMA_DIGSIG_REQUIRED) {
-+			if (iint->flags & IMA_VERITY_REQUIRED)
-+				cause = "verity-signature-required";
-+			else
-+				cause = "IMA-signature-required";
-+		} else {
-+			cause = "missing-hash";
-+		}
-+
- 		status = INTEGRITY_NOLABEL;
- 		if (file->f_mode & FMODE_CREATED)
- 			iint->flags |= IMA_NEW_FILE;
-diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima/ima_policy.c
-index 28aca1f9633b..576cbe790e27 100644
---- a/security/integrity/ima/ima_policy.c
-+++ b/security/integrity/ima/ima_policy.c
-@@ -1728,10 +1728,13 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
- 			break;
- 		case Opt_digest_type:
- 			ima_log_string(ab, "digest_type", args[0].from);
--			if ((strcmp(args[0].from, "verity")) == 0)
-+			if ((strcmp(args[0].from, "verity")) == 0) {
- 				entry->flags |= IMA_VERITY_REQUIRED;
--			else
-+				if (entry->action == APPRAISE)
-+					entry->flags |= IMA_DIGSIG_REQUIRED;
-+			} else {
- 				result = -EINVAL;
-+			}
- 			break;
- 		case Opt_appraise_type:
- 			ima_log_string(ab, "appraise_type", args[0].from);
-@@ -2186,7 +2189,7 @@ int ima_policy_show(struct seq_file *m, void *v)
- 	if (entry->flags & IMA_DIGSIG_REQUIRED) {
- 		if (entry->flags & IMA_MODSIG_ALLOWED)
- 			seq_puts(m, "appraise_type=imasig|modsig ");
--		else
-+		else if (!(entry->flags & IMA_VERITY_REQUIRED))
- 			seq_puts(m, "appraise_type=imasig ");
- 	}
- 	if (entry->flags & IMA_VERITY_REQUIRED)
-diff --git a/security/integrity/ima/ima_template_lib.c b/security/integrity/ima/ima_template_lib.c
-index 31573b4c7763..8f789ee4383e 100644
---- a/security/integrity/ima/ima_template_lib.c
-+++ b/security/integrity/ima/ima_template_lib.c
-@@ -498,7 +498,8 @@ int ima_eventsig_init(struct ima_event_data *event_data,
- {
- 	struct evm_ima_xattr_data *xattr_value = event_data->xattr_value;
- 
--	if ((!xattr_value) || (xattr_value->type != EVM_IMA_XATTR_DIGSIG))
-+	if (!xattr_value ||
-+	    !(xattr_value->type & (EVM_IMA_XATTR_DIGSIG | IMA_VERITY_DIGSIG)))
- 		return ima_eventevmsig_init(event_data, field_data);
- 
- 	return ima_write_template_field_data(xattr_value, event_data->xattr_len,
-diff --git a/security/integrity/integrity.h b/security/integrity/integrity.h
-index f59f83527c0c..df68f291fbf0 100644
---- a/security/integrity/integrity.h
-+++ b/security/integrity/integrity.h
-@@ -80,6 +80,7 @@ enum evm_ima_xattr_type {
- 	EVM_IMA_XATTR_DIGSIG,
- 	IMA_XATTR_DIGEST_NG,
- 	EVM_XATTR_PORTABLE_DIGSIG,
-+	IMA_VERITY_DIGSIG,
- 	IMA_XATTR_LAST
+-	u32		default_pasid;	/*
+-					 * The default pasid used for non-SVM
+-					 * traffic on mediated devices.
+-					 */
+-
+ 	struct iommu_domain domain;	/* generic domain data structure for
+ 					   iommu core */
+ };
+@@ -614,21 +608,11 @@ struct intel_iommu {
+ 	void *perf_statistic;
  };
  
-@@ -154,7 +155,9 @@ struct signature_v2_hdr {
+-/* Per subdevice private data */
+-struct subdev_domain_info {
+-	struct list_head link_phys;	/* link to phys device siblings */
+-	struct list_head link_domain;	/* link to domain siblings */
+-	struct device *pdev;		/* physical device derived from */
+-	struct dmar_domain *domain;	/* aux-domain */
+-	int users;			/* user count */
+-};
+-
+ /* PCI domain-device relationship */
+ struct device_domain_info {
+ 	struct list_head link;	/* link to domain siblings */
+ 	struct list_head global; /* link to global list */
+ 	struct list_head table;	/* link to pasid table */
+-	struct list_head subdevices; /* subdevices sibling */
+ 	u32 segment;		/* PCI segment number */
+ 	u8 bus;			/* PCI bus number */
+ 	u8 devfn;		/* PCI devfn number */
+@@ -639,7 +623,6 @@ struct device_domain_info {
+ 	u8 pri_enabled:1;
+ 	u8 ats_supported:1;
+ 	u8 ats_enabled:1;
+-	u8 auxd_enabled:1;	/* Multiple domains per device */
+ 	u8 ats_qdep;
+ 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+ 	struct intel_iommu *iommu; /* IOMMU used by this device */
+diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+index 62e23ff3c987..db7a0ca73626 100644
+--- a/drivers/iommu/intel/debugfs.c
++++ b/drivers/iommu/intel/debugfs.c
+@@ -351,8 +351,7 @@ static int show_device_domain_translation(struct device *dev, void *data)
+ 	if (!domain)
+ 		return 0;
  
- /*
-  * IMA signature version 3 disambiguates the data that is signed, by
-- * indirectly signing the hash of the ima_file_id structure data.
-+ * indirectly signing the hash of the ima_file_id structure data,
-+ * containing either the fsverity_descriptor struct digest or, in the
-+ * future, the regular IMA file hash.
-  *
-  * (The hash of the ima_file_id structure is only of the portion used.)
-  */
+-	seq_printf(m, "Device %s with pasid %d @0x%llx\n",
+-		   dev_name(dev), domain->default_pasid,
++	seq_printf(m, "Device %s @0x%llx\n", dev_name(dev),
+ 		   (u64)virt_to_phys(domain->pgd));
+ 	seq_puts(m, "IOVA_PFN\t\tPML5E\t\t\tPML4E\t\t\tPDPE\t\t\tPDE\t\t\tPTE\n");
+ 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 4f9d95067c8f..2b5f4e57a8bb 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1573,18 +1573,6 @@ static void domain_update_iotlb(struct dmar_domain *domain)
+ 			break;
+ 		}
+ 
+-	if (!has_iotlb_device) {
+-		struct subdev_domain_info *sinfo;
+-
+-		list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
+-			info = get_domain_info(sinfo->pdev);
+-			if (info && info->ats_enabled) {
+-				has_iotlb_device = true;
+-				break;
+-			}
+-		}
+-	}
+-
+ 	domain->has_iotlb_device = has_iotlb_device;
+ }
+ 
+@@ -1682,7 +1670,6 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+ {
+ 	unsigned long flags;
+ 	struct device_domain_info *info;
+-	struct subdev_domain_info *sinfo;
+ 
+ 	if (!domain->has_iotlb_device)
+ 		return;
+@@ -1691,27 +1678,9 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+ 	list_for_each_entry(info, &domain->devices, link)
+ 		__iommu_flush_dev_iotlb(info, addr, mask);
+ 
+-	list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
+-		info = get_domain_info(sinfo->pdev);
+-		__iommu_flush_dev_iotlb(info, addr, mask);
+-	}
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ }
+ 
+-static void domain_flush_piotlb(struct intel_iommu *iommu,
+-				struct dmar_domain *domain,
+-				u64 addr, unsigned long npages, bool ih)
+-{
+-	u16 did = domain->iommu_did[iommu->seq_id];
+-
+-	if (domain->default_pasid)
+-		qi_flush_piotlb(iommu, did, domain->default_pasid,
+-				addr, npages, ih);
+-
+-	if (!list_empty(&domain->devices))
+-		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr, npages, ih);
+-}
+-
+ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+ 				  struct dmar_domain *domain,
+ 				  unsigned long pfn, unsigned int pages,
+@@ -1727,7 +1696,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+ 		ih = 1 << 6;
+ 
+ 	if (domain_use_first_level(domain)) {
+-		domain_flush_piotlb(iommu, domain, addr, pages, ih);
++		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr, pages, ih);
+ 	} else {
+ 		/*
+ 		 * Fallback to domain selective flush if no PSI support or
+@@ -1776,7 +1745,7 @@ static void intel_flush_iotlb_all(struct iommu_domain *domain)
+ 		u16 did = dmar_domain->iommu_did[iommu->seq_id];
+ 
+ 		if (domain_use_first_level(dmar_domain))
+-			domain_flush_piotlb(iommu, dmar_domain, 0, -1, 0);
++			qi_flush_piotlb(iommu, did, PASID_RID2PASID, 0, -1, 0);
+ 		else
+ 			iommu->flush.flush_iotlb(iommu, did, 0, 0,
+ 						 DMA_TLB_DSI_FLUSH);
+@@ -1983,7 +1952,6 @@ static struct dmar_domain *alloc_domain(unsigned int type)
+ 		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
+ 	domain->has_iotlb_device = false;
+ 	INIT_LIST_HEAD(&domain->devices);
+-	INIT_LIST_HEAD(&domain->subdevices);
+ 
+ 	return domain;
+ }
+@@ -2676,8 +2644,6 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 	info->domain = domain;
+ 	info->iommu = iommu;
+ 	info->pasid_table = NULL;
+-	info->auxd_enabled = 0;
+-	INIT_LIST_HEAD(&info->subdevices);
+ 
+ 	if (dev && dev_is_pci(dev)) {
+ 		struct pci_dev *pdev = to_pci_dev(info->dev);
+@@ -4637,183 +4603,6 @@ static void intel_iommu_domain_free(struct iommu_domain *domain)
+ 		domain_exit(to_dmar_domain(domain));
+ }
+ 
+-/*
+- * Check whether a @domain could be attached to the @dev through the
+- * aux-domain attach/detach APIs.
+- */
+-static inline bool
+-is_aux_domain(struct device *dev, struct iommu_domain *domain)
+-{
+-	struct device_domain_info *info = get_domain_info(dev);
+-
+-	return info && info->auxd_enabled &&
+-			domain->type == IOMMU_DOMAIN_UNMANAGED;
+-}
+-
+-static inline struct subdev_domain_info *
+-lookup_subdev_info(struct dmar_domain *domain, struct device *dev)
+-{
+-	struct subdev_domain_info *sinfo;
+-
+-	if (!list_empty(&domain->subdevices)) {
+-		list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
+-			if (sinfo->pdev == dev)
+-				return sinfo;
+-		}
+-	}
+-
+-	return NULL;
+-}
+-
+-static int auxiliary_link_device(struct dmar_domain *domain,
+-				 struct device *dev)
+-{
+-	struct device_domain_info *info = get_domain_info(dev);
+-	struct subdev_domain_info *sinfo = lookup_subdev_info(domain, dev);
+-
+-	assert_spin_locked(&device_domain_lock);
+-	if (WARN_ON(!info))
+-		return -EINVAL;
+-
+-	if (!sinfo) {
+-		sinfo = kzalloc(sizeof(*sinfo), GFP_ATOMIC);
+-		if (!sinfo)
+-			return -ENOMEM;
+-		sinfo->domain = domain;
+-		sinfo->pdev = dev;
+-		list_add(&sinfo->link_phys, &info->subdevices);
+-		list_add(&sinfo->link_domain, &domain->subdevices);
+-	}
+-
+-	return ++sinfo->users;
+-}
+-
+-static int auxiliary_unlink_device(struct dmar_domain *domain,
+-				   struct device *dev)
+-{
+-	struct device_domain_info *info = get_domain_info(dev);
+-	struct subdev_domain_info *sinfo = lookup_subdev_info(domain, dev);
+-	int ret;
+-
+-	assert_spin_locked(&device_domain_lock);
+-	if (WARN_ON(!info || !sinfo || sinfo->users <= 0))
+-		return -EINVAL;
+-
+-	ret = --sinfo->users;
+-	if (!ret) {
+-		list_del(&sinfo->link_phys);
+-		list_del(&sinfo->link_domain);
+-		kfree(sinfo);
+-	}
+-
+-	return ret;
+-}
+-
+-static int aux_domain_add_dev(struct dmar_domain *domain,
+-			      struct device *dev)
+-{
+-	int ret;
+-	unsigned long flags;
+-	struct intel_iommu *iommu;
+-
+-	iommu = device_to_iommu(dev, NULL, NULL);
+-	if (!iommu)
+-		return -ENODEV;
+-
+-	if (domain->default_pasid <= 0) {
+-		u32 pasid;
+-
+-		/* No private data needed for the default pasid */
+-		pasid = ioasid_alloc(NULL, PASID_MIN,
+-				     pci_max_pasids(to_pci_dev(dev)) - 1,
+-				     NULL);
+-		if (pasid == INVALID_IOASID) {
+-			pr_err("Can't allocate default pasid\n");
+-			return -ENODEV;
+-		}
+-		domain->default_pasid = pasid;
+-	}
+-
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	ret = auxiliary_link_device(domain, dev);
+-	if (ret <= 0)
+-		goto link_failed;
+-
+-	/*
+-	 * Subdevices from the same physical device can be attached to the
+-	 * same domain. For such cases, only the first subdevice attachment
+-	 * needs to go through the full steps in this function. So if ret >
+-	 * 1, just goto out.
+-	 */
+-	if (ret > 1)
+-		goto out;
+-
+-	/*
+-	 * iommu->lock must be held to attach domain to iommu and setup the
+-	 * pasid entry for second level translation.
+-	 */
+-	spin_lock(&iommu->lock);
+-	ret = domain_attach_iommu(domain, iommu);
+-	if (ret)
+-		goto attach_failed;
+-
+-	/* Setup the PASID entry for mediated devices: */
+-	if (domain_use_first_level(domain))
+-		ret = domain_setup_first_level(iommu, domain, dev,
+-					       domain->default_pasid);
+-	else
+-		ret = intel_pasid_setup_second_level(iommu, domain, dev,
+-						     domain->default_pasid);
+-	if (ret)
+-		goto table_failed;
+-
+-	spin_unlock(&iommu->lock);
+-out:
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
+-
+-	return 0;
+-
+-table_failed:
+-	domain_detach_iommu(domain, iommu);
+-attach_failed:
+-	spin_unlock(&iommu->lock);
+-	auxiliary_unlink_device(domain, dev);
+-link_failed:
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
+-	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
+-		ioasid_put(domain->default_pasid);
+-
+-	return ret;
+-}
+-
+-static void aux_domain_remove_dev(struct dmar_domain *domain,
+-				  struct device *dev)
+-{
+-	struct device_domain_info *info;
+-	struct intel_iommu *iommu;
+-	unsigned long flags;
+-
+-	if (!is_aux_domain(dev, &domain->domain))
+-		return;
+-
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	info = get_domain_info(dev);
+-	iommu = info->iommu;
+-
+-	if (!auxiliary_unlink_device(domain, dev)) {
+-		spin_lock(&iommu->lock);
+-		intel_pasid_tear_down_entry(iommu, dev,
+-					    domain->default_pasid, false);
+-		domain_detach_iommu(domain, iommu);
+-		spin_unlock(&iommu->lock);
+-	}
+-
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
+-
+-	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
+-		ioasid_put(domain->default_pasid);
+-}
+-
+ static int prepare_domain_attach_device(struct iommu_domain *domain,
+ 					struct device *dev)
+ {
+@@ -4866,9 +4655,6 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 		return -EPERM;
+ 	}
+ 
+-	if (is_aux_domain(dev, domain))
+-		return -EPERM;
+-
+ 	/* normally dev is not mapped */
+ 	if (unlikely(domain_context_mapped(dev))) {
+ 		struct dmar_domain *old_domain;
+@@ -4885,33 +4671,12 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 	return domain_add_dev_info(to_dmar_domain(domain), dev);
+ }
+ 
+-static int intel_iommu_aux_attach_device(struct iommu_domain *domain,
+-					 struct device *dev)
+-{
+-	int ret;
+-
+-	if (!is_aux_domain(dev, domain))
+-		return -EPERM;
+-
+-	ret = prepare_domain_attach_device(domain, dev);
+-	if (ret)
+-		return ret;
+-
+-	return aux_domain_add_dev(to_dmar_domain(domain), dev);
+-}
+-
+ static void intel_iommu_detach_device(struct iommu_domain *domain,
+ 				      struct device *dev)
+ {
+ 	dmar_remove_one_dev_info(dev);
+ }
+ 
+-static void intel_iommu_aux_detach_device(struct iommu_domain *domain,
+-					  struct device *dev)
+-{
+-	aux_domain_remove_dev(to_dmar_domain(domain), dev);
+-}
+-
+ static int intel_iommu_map(struct iommu_domain *domain,
+ 			   unsigned long iova, phys_addr_t hpa,
+ 			   size_t size, int iommu_prot, gfp_t gfp)
+@@ -5205,46 +4970,6 @@ static struct iommu_group *intel_iommu_device_group(struct device *dev)
+ 	return generic_device_group(dev);
+ }
+ 
+-static int intel_iommu_enable_auxd(struct device *dev)
+-{
+-	struct device_domain_info *info;
+-	struct intel_iommu *iommu;
+-	unsigned long flags;
+-	int ret;
+-
+-	iommu = device_to_iommu(dev, NULL, NULL);
+-	if (!iommu || dmar_disabled)
+-		return -EINVAL;
+-
+-	if (!sm_supported(iommu) || !pasid_supported(iommu))
+-		return -EINVAL;
+-
+-	ret = intel_iommu_enable_pasid(iommu, dev);
+-	if (ret)
+-		return -ENODEV;
+-
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	info = get_domain_info(dev);
+-	info->auxd_enabled = 1;
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
+-
+-	return 0;
+-}
+-
+-static int intel_iommu_disable_auxd(struct device *dev)
+-{
+-	struct device_domain_info *info;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	info = get_domain_info(dev);
+-	if (!WARN_ON(!info))
+-		info->auxd_enabled = 0;
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
+-
+-	return 0;
+-}
+-
+ static int intel_iommu_enable_sva(struct device *dev)
+ {
+ 	struct device_domain_info *info = get_domain_info(dev);
+@@ -5301,9 +5026,6 @@ static int
+ intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
+ {
+ 	switch (feat) {
+-	case IOMMU_DEV_FEAT_AUX:
+-		return intel_iommu_enable_auxd(dev);
+-
+ 	case IOMMU_DEV_FEAT_IOPF:
+ 		return intel_iommu_enable_iopf(dev);
+ 
+@@ -5319,9 +5041,6 @@ static int
+ intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
+ {
+ 	switch (feat) {
+-	case IOMMU_DEV_FEAT_AUX:
+-		return intel_iommu_disable_auxd(dev);
+-
+ 	case IOMMU_DEV_FEAT_IOPF:
+ 		return 0;
+ 
+@@ -5333,26 +5052,6 @@ intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
+ 	}
+ }
+ 
+-static bool
+-intel_iommu_dev_feat_enabled(struct device *dev, enum iommu_dev_features feat)
+-{
+-	struct device_domain_info *info = get_domain_info(dev);
+-
+-	if (feat == IOMMU_DEV_FEAT_AUX)
+-		return scalable_mode_support() && info && info->auxd_enabled;
+-
+-	return false;
+-}
+-
+-static int
+-intel_iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
+-{
+-	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+-
+-	return dmar_domain->default_pasid > 0 ?
+-			dmar_domain->default_pasid : -EINVAL;
+-}
+-
+ static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
+ 					   struct device *dev)
+ {
+@@ -5397,9 +5096,6 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.domain_free		= intel_iommu_domain_free,
+ 	.attach_dev		= intel_iommu_attach_device,
+ 	.detach_dev		= intel_iommu_detach_device,
+-	.aux_attach_dev		= intel_iommu_aux_attach_device,
+-	.aux_detach_dev		= intel_iommu_aux_detach_device,
+-	.aux_get_pasid		= intel_iommu_aux_get_pasid,
+ 	.map_pages		= intel_iommu_map_pages,
+ 	.unmap_pages		= intel_iommu_unmap_pages,
+ 	.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
+@@ -5412,7 +5108,6 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.get_resv_regions	= intel_iommu_get_resv_regions,
+ 	.put_resv_regions	= generic_iommu_put_resv_regions,
+ 	.device_group		= intel_iommu_device_group,
+-	.dev_feat_enabled	= intel_iommu_dev_feat_enabled,
+ 	.dev_enable_feat	= intel_iommu_dev_enable_feat,
+ 	.dev_disable_feat	= intel_iommu_dev_disable_feat,
+ 	.is_attach_deferred	= intel_iommu_is_attach_deferred,
 -- 
-2.27.0
+2.25.1
 
