@@ -2,90 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B504CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F836C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 03:00:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346310AbiBHC7x (ORCPT
+        id S1345235AbiBHDAy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 21:59:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42876 "EHLO
+        Mon, 7 Feb 2022 22:00:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345777AbiBHC7v (ORCPT
+        with ESMTP id S1346087AbiBHCk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 21:59:51 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138FDC06109E;
-        Mon,  7 Feb 2022 18:59:50 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id v74so16451201pfc.1;
-        Mon, 07 Feb 2022 18:59:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=JhTpMGvbxGUrJKu9ijtc6q5cHQtWVbAXxqUiZ2vf6R0=;
-        b=VflgJZsG7gz8vKTl+ZwEyVJ/NKBnNb1T6B1IapXX3KAcQdvdl2+jbIwj3m6k5HhZFc
-         8PyUPJYerdEyFKEz6IxOHhfsZUUf4+kwHmFHVkgFMF9pWPX/C/kstJqHe0BCbWNSn4Ls
-         MXJXd9ytdvN78I0bV854gdZdpYj+K4kGZ11LsbzMDeN9j6faoaCJToXMQWUHxmFO7qbV
-         /Rf/IV8iiIV+DsJTfeJN2eJLmmT/KpLa25O9FPwbom3PP5d+LLOcKlBrTO4ilEukO58a
-         l3m1QIK+9qdK9/M0nyK+MuyHngKj1+wcVy3Koo9fzM2bks72DceoPDpAdme2iiVv/NUf
-         1CJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JhTpMGvbxGUrJKu9ijtc6q5cHQtWVbAXxqUiZ2vf6R0=;
-        b=AOzxSo8xIAFF1YBkysCbL5NHayNKGZdzh6qm1fbazTuXNhG7tLkZiqCLCozXMhEfJm
-         1Aa3+BxsjKsrusuBuWHsfh+51oon7qDSIF+/ZngB06B9CW4Cxe4GD0jncIOL+X8oMsFJ
-         WqfLDv2xJP77itwFUaFJVDzWkXM5UD0wjNVQix/uqBispFKo1mbz1RMTKBPBHkL16y+K
-         MLu1c2Kb+Y6F9tynQ6iSli1tLLiTa4OpZtB063g2Sk7E6Yyclz1O78Y3XLQn6UZbjkC3
-         YvsgGZZNw8rsYGYgj8zX3udNr5Q7SqH2YsooP4RyLE1O0yS2uTsBHNGM8LQb2bxOZR2X
-         EG7Q==
-X-Gm-Message-State: AOAM532e+cqEFhYtPE16J1QIaaqBSwu+aWhy/LsAhwXs9oKlmjtG3b36
-        5UW2lEEfkpeK6SXbvS7ucdE=
-X-Google-Smtp-Source: ABdhPJwJKe8zRAXA2oArhtP8Khj2Mlg8Z67j9TqGBH4wQ5OjG+YqFAO7vZAplb49s3J/KWVRY8Td+w==
-X-Received: by 2002:a05:6a00:cd2:: with SMTP id b18mr2322825pfv.63.1644289189459;
-        Mon, 07 Feb 2022 18:59:49 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id f18sm13464712pfc.203.2022.02.07.18.59.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 18:59:48 -0800 (PST)
-Message-ID: <3577892f-02ae-fbfd-8a6f-c58018e2efdc@gmail.com>
-Date:   Mon, 7 Feb 2022 18:59:47 -0800
+        Mon, 7 Feb 2022 21:40:58 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11728C03FEC0
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 18:40:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644288056; x=1675824056;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=G6VbzIs2C4kvJ9oS0aTPvUArRslNHPTgVY+IiGxNTGQ=;
+  b=GNkVBGIZN/I+JSKTW8AK8nHLOyTV6uxbDOe1egPAuZgu5yUoXhKJSMbG
+   /Z7UsSbB2R8MkCl2dDgsQnZTarPB2GccKrrrlC/6cjv7u390xQoDdVL5o
+   ZvNlnvm0n+eJAhoOP/33Q11v2kn1wE/jBeiEnmb3QarbmIJwdxhNCUgu6
+   tY/kRf7HdoLlI9+1m+yJfSZWwDkB6EZXFxrngNFxl/YCQGHIdT0EKHY3d
+   3SU7Y1R4ldgpXI6m3f+zLgeBOlpBLVOsxDFLkwBcd/YBpPTV8h+T6FjYZ
+   j+kCbyzCjMQy7yzEhRUBeEZoRrjBf3rxMUXlmFEjHazRbyX7YlX6l6dNZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="273384102"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="273384102"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 18:40:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="677965696"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by fmsmga001.fm.intel.com with ESMTP; 07 Feb 2022 18:40:52 -0800
+Message-ID: <3ab8d345-da63-4193-ae38-b3fdc56fddff@linux.intel.com>
+Date:   Tue, 8 Feb 2022 10:39:41 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v8 net-next 10/10] net: dsa: microchip: add support for
- vlan operations
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org,
+        x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 01/11] iommu/sva: Rename CONFIG_IOMMU_SVA_LIB to
+ CONFIG_IOMMU_SVA
 Content-Language: en-US
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
-        robh+dt@kernel.org
-Cc:     UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, devicetree@vger.kernel.org
-References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
- <20220207172204.589190-11-prasanna.vengateshan@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220207172204.589190-11-prasanna.vengateshan@microchip.com>
+To:     Fenghua Yu <fenghua.yu@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>
+References: <20220207230254.3342514-1-fenghua.yu@intel.com>
+ <20220207230254.3342514-2-fenghua.yu@intel.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220207230254.3342514-2-fenghua.yu@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2/7/2022 9:22 AM, Prasanna Vengateshan wrote:
-> Support for VLAN add, del, prepare and filtering operations.
+On 2/8/22 7:02 AM, Fenghua Yu wrote:
+> This CONFIG option originally only referred to the Shared
+> Virtual Address (SVA) library. But it is now also used for
+> non-library portions of code.
 > 
-> The VLAN aware is a global setting. Mixed vlan filterings
-> are not supported. vlan_filtering_is_global is made as true
-> in lan937x_setup function.
+> Drop the "_LIB" suffix so that there is just one configuration
+> options for all code relating to SVA.
 > 
-> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+> ---
+> v4:
+> - Add "Reviewed-by: Thomas Gleixner <tglx@linutronix.de>" (Thomas).
+> 
+> v2:
+> - Add this patch for more meaningful name CONFIG_IOMMU_SVA
+> 
+>   drivers/iommu/Kconfig         | 6 +++---
+>   drivers/iommu/Makefile        | 2 +-
+>   drivers/iommu/intel/Kconfig   | 2 +-
+>   drivers/iommu/iommu-sva-lib.h | 6 +++---
+>   4 files changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 3eb68fa1b8cc..c79a0df090c0 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -144,8 +144,8 @@ config IOMMU_DMA
+>   	select IRQ_MSI_IOMMU
+>   	select NEED_SG_DMA_LENGTH
+>   
+> -# Shared Virtual Addressing library
+> -config IOMMU_SVA_LIB
+> +# Shared Virtual Addressing
+> +config IOMMU_SVA
+>   	bool
+>   	select IOASID
+>   
+> @@ -379,7 +379,7 @@ config ARM_SMMU_V3
+>   config ARM_SMMU_V3_SVA
+>   	bool "Shared Virtual Addressing support for the ARM SMMUv3"
+>   	depends on ARM_SMMU_V3
+> -	select IOMMU_SVA_LIB
+> +	select IOMMU_SVA
+>   	select MMU_NOTIFIER
+>   	help
+>   	  Support for sharing process address spaces with devices using the
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index bc7f730edbb0..44475a9b3eea 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+>   obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+>   obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+>   obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+> -obj-$(CONFIG_IOMMU_SVA_LIB) += iommu-sva-lib.o io-pgfault.o
+> +obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
+>   obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
+>   obj-$(CONFIG_APPLE_DART) += apple-dart.o
+> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> index 247d0f2d5fdf..39a06d245f12 100644
+> --- a/drivers/iommu/intel/Kconfig
+> +++ b/drivers/iommu/intel/Kconfig
+> @@ -52,7 +52,7 @@ config INTEL_IOMMU_SVM
+>   	select PCI_PRI
+>   	select MMU_NOTIFIER
+>   	select IOASID
+> -	select IOMMU_SVA_LIB
+> +	select IOMMU_SVA
+>   	help
+>   	  Shared Virtual Memory (SVM) provides a facility for devices
+>   	  to access DMA resources through process address space by
+> diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
+> index 031155010ca8..95dc3ebc1928 100644
+> --- a/drivers/iommu/iommu-sva-lib.h
+> +++ b/drivers/iommu/iommu-sva-lib.h
+> @@ -17,7 +17,7 @@ struct device;
+>   struct iommu_fault;
+>   struct iopf_queue;
+>   
+> -#ifdef CONFIG_IOMMU_SVA_LIB
+> +#ifdef CONFIG_IOMMU_SVA
+>   int iommu_queue_iopf(struct iommu_fault *fault, void *cookie);
+>   
+>   int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev);
+> @@ -28,7 +28,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name);
+>   void iopf_queue_free(struct iopf_queue *queue);
+>   int iopf_queue_discard_partial(struct iopf_queue *queue);
+>   
+> -#else /* CONFIG_IOMMU_SVA_LIB */
+> +#else /* CONFIG_IOMMU_SVA */
+>   static inline int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
+>   {
+>   	return -ENODEV;
+> @@ -64,5 +64,5 @@ static inline int iopf_queue_discard_partial(struct iopf_queue *queue)
+>   {
+>   	return -ENODEV;
+>   }
+> -#endif /* CONFIG_IOMMU_SVA_LIB */
+> +#endif /* CONFIG_IOMMU_SVA */
+>   #endif /* _IOMMU_SVA_LIB_H */
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+Best regards,
+baolu
