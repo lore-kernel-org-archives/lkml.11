@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7EC7C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:00:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385666AbiBHTAZ (ORCPT
+        id S1385679AbiBHTA1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 14:00:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51548 "EHLO
+        Tue, 8 Feb 2022 14:00:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385631AbiBHTAW (ORCPT
+        with ESMTP id S1385641AbiBHTAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Feb 2022 14:00:22 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580E9C0612AA;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F230C0612C0;
         Tue,  8 Feb 2022 11:00:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C107FCE1C1B;
-        Tue,  8 Feb 2022 19:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B42AFC004E1;
-        Tue,  8 Feb 2022 19:00:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF8F7614E5;
+        Tue,  8 Feb 2022 19:00:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36010C340EE;
+        Tue,  8 Feb 2022 19:00:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644346817;
-        bh=zJd+H+BIPkR2OI3cFt0/lJSBS7oK/94+7PCJWcu8U/M=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=hoE1wnoZdIOBNhyQQdvZMVEKbdamCmwiLoxUBpPTTHa8SG7pRO9viyElKLyJwxSL/
-         oxeUkZdI1qrMhFXXCDjVTfAWWtkOUb7JwDIhmMuB+rFKuc45V0RDxKr0lJQ1Jg9QbM
-         73r/Pj6+oIMEFckMfW+dKnAffRRXz4dBOjdTwiXdF/UlnBCv41e7VTZh1nKkVdispC
-         ajwNQpsW66RwZwcNPn8O6/qVNkq4m4SA8gkodbfEXuD+cpefDW98jmDtMRlD5a99QT
-         +NHUEAfRGsYnQQkBr2O+pYINiHf5up34Gw5jYh3wraf8E7U2tIj5uZKXaobuX04KpM
-         t/dEGQEequoVQ==
+        s=k20201202; t=1644346821;
+        bh=6PCIRyCbJSYAdU2tSFfTL+upTuMx/VBYM1sorzeTYPk=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=VbAoq/+Y+DaszATSDNgpyzzBcJErhIFR1r4P3dK6HVKyqF6uTdbTqYK/YkzqlR0eZ
+         KJ5HJmk02+V8r5wvdKoFq+STNtHfZn5KKiESEMVoU/2zroLSyNHBuT0cBZJ1votBNY
+         oUgvKoxr9zs5F2pDFKFOKg7kOPlLAI5ltt/Yd/Fu7nPwlBL20vLLgiAxUw6oxPw0Wb
+         ygnPVgQgMrHxNnzOHDq/pPkcsHeEmH4Wnqr23SCcyVzBnGv9ooKFB7WsjH0wp+cZ7I
+         1WXqaqmPxUceYgSWbLF/Q+lT4Jr5ygOBZmdgl1t+6F6vEJzDW00SlJsdB0TMeHsZK7
+         +pbGuNDslUQhg==
 From:   Mark Brown <broonie@kernel.org>
-To:     linux-kernel@vger.kernel.org,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Grant Likely <grant.likely@secretlab.ca>,
-        linux-spi@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        linux-tegra@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Stephen Warren <swarren@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>
-In-Reply-To: <20220128165238.25615-1-linmq006@gmail.com>
-References: <20220128165238.25615-1-linmq006@gmail.com>
-Subject: Re: [PATCH] spi: tegra114: Add missing IRQ check in tegra_spi_probe
-Message-Id: <164434681322.1135514.2854633035091330179.b4-ty@kernel.org>
-Date:   Tue, 08 Feb 2022 19:00:13 +0000
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        linux-spi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+In-Reply-To: <20220129040453.8476-1-luizluca@gmail.com>
+References: <20220129040453.8476-1-luizluca@gmail.com>
+Subject: Re: [PATCH] spi: ath79: add mem_ops for fast-read
+Message-Id: <164434681988.1135514.4123730883547423099.b4-ty@kernel.org>
+Date:   Tue, 08 Feb 2022 19:00:19 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -54,11 +49,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 28 Jan 2022 16:52:38 +0000, Miaoqian Lin wrote:
-> This func misses checking for platform_get_irq()'s call and may passes the
-> negative error codes to request_threaded_irq(), which takes unsigned IRQ #,
-> causing it to fail with -EINVAL, overriding an original error code.
-> Stop calling request_threaded_irq() with invalid IRQ #s.
+On Sat, 29 Jan 2022 01:04:53 -0300, Luiz Angelo Daros de Luca wrote:
+> Reading from memory is 3x faster than bit-bang read operation. Also,
+> for tl-wr2543nd, the bit-bang read was sporadically returning random
+> data, possibly a HW defect, while fast-read works as expected.
 > 
 > 
 
@@ -68,8 +62,8 @@ Applied to
 
 Thanks!
 
-[1/1] spi: tegra114: Add missing IRQ check in tegra_spi_probe
-      commit: 4f92724d4b92c024e721063f520d66e11ca4b54b
+[1/1] spi: ath79: add mem_ops for fast-read
+      commit: d08de0259dfe172caf073b921c6b27ff089605a9
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
