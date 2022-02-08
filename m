@@ -2,87 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E8B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 05:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231642AbiBHFdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 00:33:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35064 "EHLO
+        id S1347269AbiBHFc4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 00:32:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232225AbiBHFUS (ORCPT
+        with ESMTP id S1347070AbiBHEws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 00:20:18 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF811C0401DC;
-        Mon,  7 Feb 2022 21:20:16 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id e6so16916645pfc.7;
-        Mon, 07 Feb 2022 21:20:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=ZMzyOA5LAs9QBtjWwJ8XKKlrb5J3zKHcDX+OTPYW99A=;
-        b=HWXLFjlW7P1qAc0DN5m7D8fICX4t7Y48xTyFDGVKktNAaVKRt8CvAuxqWXwUcYZayv
-         bnnj409Ku+sDmpcfF+1wRuvnG5ra0PsZPCvGXkTjMFiL0GEsjTC3jfda7nKjjKganglP
-         9DhMDx9AlVOyG1k+VlHkuYSzr+ZoEGKpm9/PW8wxjJ6EQgTnqKdnzPBD2wuvz5CZgsS+
-         23v2GB6PrO/PxZHaF3MiU71RUYGxjQJA6bSBmZSXzirDOn0m7diX70DvrRYTf5Jv+5GU
-         2+8TO1BhKQKrI76ZqA0h2c3iTinDKiDBSXoqS7+SEdMIQsHXKCrdHTMUb2noAkz+Bp9X
-         HEpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=ZMzyOA5LAs9QBtjWwJ8XKKlrb5J3zKHcDX+OTPYW99A=;
-        b=ZNlDtqj8vy3EPCnLranL5D7OgSGVaxVsjd3GTlvtajfni6LubsUFcyIRzG3hQPzsMy
-         zFem+8dzKiB0ML60EUNYUPBm0xyzOmSCfnAOz4xDT+umZ6k2o2kasMNjjeoa3vPoYo8b
-         d1raSizeHLMjhzjP1Ex/1MBlfsL6lXDHkiYAeLSubpuRh0SzKRt9bOUn41d9AbyhSIRZ
-         J/shaq1dpsx1+V87dWwEU7eDSzLLJsW61IlUpLHpZRXjYKUdhrJuBKSaYRInYyXUDVHG
-         hg25o8dm8hDSRJsa68z0/+Uj32LbeVTcl3pPkt0REYUpHrKH7+mCswFdog+OztUJuZh+
-         YSdQ==
-X-Gm-Message-State: AOAM532VS+LseOFX09M6O3zwbIHilWddwUuZmZC+zWUh8HmNJ+E8A3vu
-        0ph37UJQs63ela7vIcTZM9A=
-X-Google-Smtp-Source: ABdhPJyeI7iNgPA7uQpNmExmMfX8EIICD67Xr83rhNxp5evM53CXvnHv461Uu7hCBf2BiC+H9iUMCQ==
-X-Received: by 2002:a63:4003:: with SMTP id n3mr1528061pga.279.1644297616263;
-        Mon, 07 Feb 2022 21:20:16 -0800 (PST)
-Received: from [192.168.43.80] (subs32-116-206-28-20.three.co.id. [116.206.28.20])
-        by smtp.gmail.com with ESMTPSA id om18sm1128306pjb.39.2022.02.07.21.20.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 21:20:15 -0800 (PST)
-Message-ID: <168761dc-af22-8093-b308-50d3d1fcdc55@gmail.com>
-Date:   Tue, 8 Feb 2022 12:20:10 +0700
+        Mon, 7 Feb 2022 23:52:48 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B253C0401DC;
+        Mon,  7 Feb 2022 20:52:48 -0800 (PST)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2183uM12026751;
+        Tue, 8 Feb 2022 04:52:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=ieZeezeI2TpWtYFPeoUUGHoiN6GxjmTjle+KL9elrEY=;
+ b=OGQbCSDDnF21PyL0H7ha1LaPNx8lpwIHjQ4/J+o3+tFlIZ0584s1nyGfPEGWxyGZ42zj
+ +craRHM1VKLLsMTaEnekUtNoI0DyrxxHgxSnDrblkMtg8Lw4H0nXx5lMkO7fj4mBbw3t
+ X9atqYYAEDj6MRsEBis4Rkd9wxcPz02mehnbt8Qk11QaOemkA6t0MH2HyVQQUvoN4RAF
+ URtLHxjyt1g5sPnAkXwKfwWLrA+FHlPhgvfJ+E2P7dL+QYlMyDtJ0+0ih4MlH0PLlMvL
+ AxMOjG9dMWxZK94iX3bZ5k62GEXoiwstzs/kp0MkIZ61D5F45Ak5fHF3utPbWGIXt0iO xA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3e3h28g3jb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 08 Feb 2022 04:52:29 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2184q1tO088293;
+        Tue, 8 Feb 2022 04:52:28 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 3e1jppss6c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 08 Feb 2022 04:52:28 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2184qKi3089147;
+        Tue, 8 Feb 2022 04:52:28 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by userp3020.oracle.com with ESMTP id 3e1jppsrvr-6;
+        Tue, 08 Feb 2022 04:52:27 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     ALIM AKHTAR <alim.akhtar@samsung.com>, avri.altman@wdc.com,
+        jejb@linux.ibm.com, huobean@gmail.com, linux-scsi@vger.kernel.org,
+        asutoshd@codeaurora.org, bvanassche@acm.org, cang@codeaurora.org,
+        Jinyoung CHOI <j-young.choi@samsung.com>,
+        linux-kernel@vger.kernel.org, adrian.hunter@intel.com
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>
+Subject: Re: [PATCH RESEND] scsi: ufs: Add checking lifetime attribute for WriteBooster
+Date:   Mon,  7 Feb 2022 23:52:17 -0500
+Message-Id: <164429583887.16454.1665824706209955136.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <1891546521.01643252701746.JavaMail.epsvc@epcpadp3>
+References: <CGME20220126104125epcms2p50afb250190ffc3f2dc7b16df31757c94@epcms2p3> <1891546521.01643252701746.JavaMail.epsvc@epcpadp3>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: Re: [PATCH 5.15 000/111] 5.15.22-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220207133903.595766086@linuxfoundation.org>
-Content-Language: en-US
-In-Reply-To: <20220207133903.595766086@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: z7d8cay8KKCFc4zJT6_QoUJjHZKfsCSN
+X-Proofpoint-GUID: z7d8cay8KKCFc4zJT6_QoUJjHZKfsCSN
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/02/22 21.04, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.22 release.
-> There are 111 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Thu, 27 Jan 2022 12:00:25 +0900, Jinyoung CHOI wrote:
+
+> Because WB performs write in SLC mode, it is difficult to use WB
+> infinitely.
 > 
+> Vendors can set the Lifetime limit value to the device.
+> If Lifetime exceeds the limit value, the device itself can disable the
+> WB feature.
+> 
+> [...]
 
-Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0) and
-powerpc (ps3_defconfig).
+Applied to 5.18/scsi-queue, thanks!
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+[1/1] scsi: ufs: Add checking lifetime attribute for WriteBooster
+      https://git.kernel.org/mkp/scsi/c/f681d1078d45
 
 -- 
-An old man doll... just what I always wanted! - Clara
+Martin K. Petersen	Oracle Linux Engineering
