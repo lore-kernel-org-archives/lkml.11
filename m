@@ -2,353 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0D7C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B98C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:23:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386678AbiBHWW6 (ORCPT
+        id S1387342AbiBHWXC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:22:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35294 "EHLO
+        Tue, 8 Feb 2022 17:23:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386713AbiBHVIo (ORCPT
+        with ESMTP id S1386227AbiBHTqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:08:44 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6512C0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:43 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id k3-20020a1ca103000000b0037bdea84f9cso177060wme.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:43 -0800 (PST)
+        Tue, 8 Feb 2022 14:46:42 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C14C0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:46:40 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id k13so35328897lfg.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:46:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=A3tTnMr0uLBBq314Z85FYSlmwFIYVNy3yQwXAflpqNU=;
-        b=TFb2QU3rtSHoVZdJiHVZvumnVkhInsk+wCMJg8P7UFjC0BxdSuwwm1lmgr39cTAQp0
-         ngMKu/F9v33MtAhNOOOaKSPVmb78N+5R1zMkbeg4XzZGw4nJ7Nwz4v8lcTDFwb8agLrw
-         cdqX2t7ho1/lyYNo/mt86IWdCJimXrZ9E3cxE=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:user-agent:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mS3C+Wo/VrSubSEHXbpL025cTzdbcGtIyC7RL2QVj1k=;
+        b=dxvNMVA9VhI2Ic4/NqHu66Bawb1X5QOhCGBr7npMY8t0pMy5egEwQ0zGOws3/p5UVU
+         obo6BmPk66JYaDw/VWbvHOvxEkyB6IG4uQPA681CCErEaT175YwGVuJ8hRr2LNGEdwJv
+         hwvryfKvyGmCbsbR2brFkXCc0SXJJQiKzHmb9mtpqzIYoPWXLhPfAyq3Ep0QpJXxQ1PX
+         eV3kPJ1Yhmj1kkjoI/XdB8AToWTvdeLOwvfrez2kcWfcNbEzbnK2sqKBaZHZiWtuYIix
+         9Sq4+XseteOthTLKIlejiaY2MjChGKOPPyznlI8H4jXDySKECV5FKj6mblYepfNKbH3B
+         LzXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=A3tTnMr0uLBBq314Z85FYSlmwFIYVNy3yQwXAflpqNU=;
-        b=ppf1s+1YHvia8QbswHUHFjrhRzTlD3BI7OWFY9oD/rA0pDHLC0TNH7Vy4vNdK85UUl
-         3jTWb/jk8kdkz2Ps+XkS53oRjgXjy1VNjT2+lSIsrEu3yzB9NkmJg48dRhMgFxKZd3fi
-         UaqQHf9d0+g30DPFhihlXKOVJWG3sshbrQ0MTb1pgI/lnYF8D40JhW3K5IIoLacZ3Wmf
-         LuMFBaPIedepwSXEm20AQSBsujpfzzJF6DvD7CCZNNRklugLuCnVTO5kYvDzFCsms4fg
-         qIkB5yzMcjTNVgvcAg0kkhVBnH28RYmDDqsJm6LgZXWFZL4bLNa4nvv2BM/s2n8wxro7
-         0iMA==
-X-Gm-Message-State: AOAM53222RibULugJ362680ccJ67N6aAS5dXWtOjpsfacxTgT8T6qsqf
-        FFz6+TQDCBxj1IctRu/dg5b1FA==
-X-Google-Smtp-Source: ABdhPJy/MmzhXYLKsb7mnJJh9l95U3zWtlVma5KcWAwg0BTYSsMlJdIwPyk/OUMiHsCuauRvtiTE7Q==
-X-Received: by 2002:a05:600c:4ed3:: with SMTP id g19mr2625406wmq.186.1644354522253;
-        Tue, 08 Feb 2022 13:08:42 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 13:08:40 -0800 (PST)
-From:   Daniel Vetter <daniel.vetter@ffwll.ch>
-To:     DRI Development <dri-devel@lists.freedesktop.org>
-Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Claudio Suarez <cssk@net-c.es>, Du Cheng <ducheng2@gmail.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Subject: [PATCH v2 06/19] fbcon: Use delayed work for cursor
-Date:   Tue,  8 Feb 2022 22:08:11 +0100
-Message-Id: <20220208210824.2238981-7-daniel.vetter@ffwll.ch>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=mS3C+Wo/VrSubSEHXbpL025cTzdbcGtIyC7RL2QVj1k=;
+        b=FX1AEr+Qd8SenVmv3/4QHh7qlXXMpGCIzf0hcvQkC9wSrddtk3YLwJhYiIFROUuRmf
+         lutCF9k569bp2vye0YovMllt5iokI3AFCogoSbKRRSezv0FKw1lHBe8wGSZf2fg9h7oX
+         qGW35qHwvDi30VV8pQ1lQDZWiZmiUt7k6eYM3PeXKkZroHDDg4OU0mpeq1mIXq7iyMQT
+         jyFFayu2jYF8xpAyfoIHB5OblW5W1+YkIrSeMFJLeiKl98pOJPusR6y0jv7xemYR+cdh
+         SOOnDuwgccZMulnDfUUChkWXcxFwaCDa7R0LjVroDU026Vw6rYOp67qrjV9h9alnrAeD
+         /9Dg==
+X-Gm-Message-State: AOAM533lJ0gdFb0IXUIT5ppiNr0HlxA9Xk0Vly09uOWNWN1xGyXn+q5W
+        WCIvRIcKOSMTNKMYFPVnX+o=
+X-Google-Smtp-Source: ABdhPJxEzT360EJlxEiU+T+hZd/m/GXxo+WymxxJdJOvSwtymCUmypCgsT6c6ReKKHiNy7lhnZElsw==
+X-Received: by 2002:ac2:4acf:: with SMTP id m15mr4040567lfp.580.1644349599141;
+        Tue, 08 Feb 2022 11:46:39 -0800 (PST)
+Received: from localhost.localdomain (broadband-95-84-228-163.ip.moscow.rt.ru. [95.84.228.163])
+        by smtp.gmail.com with ESMTPSA id l12sm381178lfg.32.2022.02.08.11.46.37
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Tue, 08 Feb 2022 11:46:38 -0800 (PST)
+Date:   Tue, 8 Feb 2022 22:52:37 +0300
+From:   Alexander Sergeyev <sergeev917@gmail.com>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
+        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
+        Kailang Yang <kailang@realtek.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jian-Hong Pan <jhp@endlessos.org>,
+        Hui Wang <hui.wang@canonical.com>,
+        PeiSen Hou <pshou@realtek.com>
+Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
+ G8
+Message-ID: <20220208195237.3tnsslzaj2pmzr25@localhost.localdomain>
+User-Agent: mtt
+References: <20220115152215.kprws5nja2i43qax@localhost.localdomain>
+ <s5hilugw0l0.wl-tiwai@suse.de>
+ <20220119093249.eaxem33bjqjxcher@localhost.localdomain>
+ <20220122190522.ycaygrqcen7d3hj2@localhost.localdomain>
+ <20220122205637.7gzurdu7xl4sthxw@localhost.localdomain>
+ <s5ho83yldu3.wl-tiwai@suse.de>
+ <20220129144704.xlmeylllvy3b3fum@localhost.localdomain>
+ <20220130111020.44gzrm5ckrakjta2@localhost.localdomain>
+ <s5htudk9cn3.wl-tiwai@suse.de>
+ <s5h4k59s9wn.wl-tiwai@suse.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <s5h4k59s9wn.wl-tiwai@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allows us to delete a bunch of hand-rolled stuff. Also to simplify the
-code we initialize the cursor_work completely when we allocate the
-fbcon_ops structure, instead of trying to cope with console
-re-initialization.
+On Tue, Feb 08, 2022 at 03:36:08PM +0100, Takashi Iwai wrote:
+> ... and here is a fix patch for allowing more rebinds.
+> Give it a try.
 
-The motiviation here is that fbcon code stops using the fb_info.queue,
-which helps with locking issues around cleanup and all that in a later
-patch.
+It works, no problems with large numbers of rebinds.
 
-Also note that this allows us to ditch the hand-rolled work cleanup in
-fbcon_exit - we already call fbcon_del_cursor_timer, which takes care
-of everything. Plus this was racy anyway.
-
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Claudio Suarez <cssk@net-c.es>
-Cc: Du Cheng <ducheng2@gmail.com>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
- drivers/video/fbdev/core/fbcon.c | 85 +++++++++++++-------------------
- drivers/video/fbdev/core/fbcon.h |  4 +-
- 2 files changed, 35 insertions(+), 54 deletions(-)
-
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 83f0223f5333..a368ed602e2e 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -350,8 +350,8 @@ static int get_color(struct vc_data *vc, struct fb_info *info,
- 
- static void fb_flashcursor(struct work_struct *work)
- {
--	struct fb_info *info = container_of(work, struct fb_info, queue);
--	struct fbcon_ops *ops = info->fbcon_par;
-+	struct fbcon_ops *ops = container_of(work, struct fbcon_ops, cursor_work.work);
-+	struct fb_info *info;
- 	struct vc_data *vc = NULL;
- 	int c;
- 	int mode;
-@@ -364,7 +364,10 @@ static void fb_flashcursor(struct work_struct *work)
- 	if (ret == 0)
- 		return;
- 
--	if (ops && ops->currcon != -1)
-+	/* protected by console_lock */
-+	info = ops->info;
-+
-+	if (ops->currcon != -1)
- 		vc = vc_cons[ops->currcon].d;
- 
- 	if (!vc || !con_is_visible(vc) ||
-@@ -380,42 +383,25 @@ static void fb_flashcursor(struct work_struct *work)
- 	ops->cursor(vc, info, mode, get_color(vc, info, c, 1),
- 		    get_color(vc, info, c, 0));
- 	console_unlock();
--}
- 
--static void cursor_timer_handler(struct timer_list *t)
--{
--	struct fbcon_ops *ops = from_timer(ops, t, cursor_timer);
--	struct fb_info *info = ops->info;
--
--	queue_work(system_power_efficient_wq, &info->queue);
--	mod_timer(&ops->cursor_timer, jiffies + ops->cur_blink_jiffies);
-+	queue_delayed_work(system_power_efficient_wq, &ops->cursor_work,
-+			   ops->cur_blink_jiffies);
- }
- 
--static void fbcon_add_cursor_timer(struct fb_info *info)
-+static void fbcon_add_cursor_work(struct fb_info *info)
- {
- 	struct fbcon_ops *ops = info->fbcon_par;
- 
--	if ((!info->queue.func || info->queue.func == fb_flashcursor) &&
--	    !(ops->flags & FBCON_FLAGS_CURSOR_TIMER) &&
--	    !fbcon_cursor_noblink) {
--		if (!info->queue.func)
--			INIT_WORK(&info->queue, fb_flashcursor);
--
--		timer_setup(&ops->cursor_timer, cursor_timer_handler, 0);
--		mod_timer(&ops->cursor_timer, jiffies + ops->cur_blink_jiffies);
--		ops->flags |= FBCON_FLAGS_CURSOR_TIMER;
--	}
-+	if (!fbcon_cursor_noblink)
-+		queue_delayed_work(system_power_efficient_wq, &ops->cursor_work,
-+				   ops->cur_blink_jiffies);
- }
- 
--static void fbcon_del_cursor_timer(struct fb_info *info)
-+static void fbcon_del_cursor_work(struct fb_info *info)
- {
- 	struct fbcon_ops *ops = info->fbcon_par;
- 
--	if (info->queue.func == fb_flashcursor &&
--	    ops->flags & FBCON_FLAGS_CURSOR_TIMER) {
--		del_timer_sync(&ops->cursor_timer);
--		ops->flags &= ~FBCON_FLAGS_CURSOR_TIMER;
--	}
-+	cancel_delayed_work_sync(&ops->cursor_work);
- }
- 
- #ifndef MODULE
-@@ -714,6 +700,8 @@ static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
- 		ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
- 		if (!ops)
- 			err = -ENOMEM;
-+
-+		INIT_DELAYED_WORK(&ops->cursor_work, fb_flashcursor);
- 	}
- 
- 	if (!err) {
-@@ -751,7 +739,7 @@ static int con2fb_release_oldinfo(struct vc_data *vc, struct fb_info *oldinfo,
- 	}
- 
- 	if (!err) {
--		fbcon_del_cursor_timer(oldinfo);
-+		fbcon_del_cursor_work(oldinfo);
- 		kfree(ops->cursor_state.mask);
- 		kfree(ops->cursor_data);
- 		kfree(ops->cursor_src);
-@@ -867,7 +855,7 @@ static int set_con2fb_map(int unit, int newidx, int user)
- 				 logo_shown != FBCON_LOGO_DONTSHOW);
- 
- 		if (!found)
--			fbcon_add_cursor_timer(info);
-+			fbcon_add_cursor_work(info);
- 		con2fb_map_boot[unit] = newidx;
- 		con2fb_init_display(vc, info, unit, show_logo);
- 	}
-@@ -964,6 +952,8 @@ static const char *fbcon_startup(void)
- 		return NULL;
- 	}
- 
-+	INIT_DELAYED_WORK(&ops->cursor_work, fb_flashcursor);
-+
- 	ops->currcon = -1;
- 	ops->graphics = 1;
- 	ops->cur_rotate = -1;
-@@ -1006,7 +996,7 @@ static const char *fbcon_startup(void)
- 		 info->var.yres,
- 		 info->var.bits_per_pixel);
- 
--	fbcon_add_cursor_timer(info);
-+	fbcon_add_cursor_work(info);
- 	return display_desc;
- }
- 
-@@ -1194,7 +1184,7 @@ static void fbcon_deinit(struct vc_data *vc)
- 		goto finished;
- 
- 	if (con_is_visible(vc))
--		fbcon_del_cursor_timer(info);
-+		fbcon_del_cursor_work(info);
- 
- 	ops->flags &= ~FBCON_FLAGS_INIT;
- finished:
-@@ -1320,9 +1310,9 @@ static void fbcon_cursor(struct vc_data *vc, int mode)
- 		return;
- 
- 	if (vc->vc_cursor_type & CUR_SW)
--		fbcon_del_cursor_timer(info);
-+		fbcon_del_cursor_work(info);
- 	else
--		fbcon_add_cursor_timer(info);
-+		fbcon_add_cursor_work(info);
- 
- 	ops->cursor_flash = (mode == CM_ERASE) ? 0 : 1;
- 
-@@ -2132,14 +2122,14 @@ static int fbcon_switch(struct vc_data *vc)
- 		}
- 
- 		if (old_info != info)
--			fbcon_del_cursor_timer(old_info);
-+			fbcon_del_cursor_work(old_info);
- 	}
- 
- 	if (fbcon_is_inactive(vc, info) ||
- 	    ops->blank_state != FB_BLANK_UNBLANK)
--		fbcon_del_cursor_timer(info);
-+		fbcon_del_cursor_work(info);
- 	else
--		fbcon_add_cursor_timer(info);
-+		fbcon_add_cursor_work(info);
- 
- 	set_blitting_type(vc, info);
- 	ops->cursor_reset = 1;
-@@ -2247,9 +2237,9 @@ static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch)
- 
- 	if (mode_switch || fbcon_is_inactive(vc, info) ||
- 	    ops->blank_state != FB_BLANK_UNBLANK)
--		fbcon_del_cursor_timer(info);
-+		fbcon_del_cursor_work(info);
- 	else
--		fbcon_add_cursor_timer(info);
-+		fbcon_add_cursor_work(info);
- 
- 	return 0;
- }
-@@ -3181,7 +3171,7 @@ static ssize_t show_cursor_blink(struct device *device,
- 	if (!ops)
- 		goto err;
- 
--	blink = (ops->flags & FBCON_FLAGS_CURSOR_TIMER) ? 1 : 0;
-+	blink = delayed_work_pending(&ops->cursor_work);
- err:
- 	console_unlock();
- 	return snprintf(buf, PAGE_SIZE, "%d\n", blink);
-@@ -3210,10 +3200,10 @@ static ssize_t store_cursor_blink(struct device *device,
- 
- 	if (blink) {
- 		fbcon_cursor_noblink = 0;
--		fbcon_add_cursor_timer(info);
-+		fbcon_add_cursor_work(info);
- 	} else {
- 		fbcon_cursor_noblink = 1;
--		fbcon_del_cursor_timer(info);
-+		fbcon_del_cursor_work(info);
- 	}
- 
- err:
-@@ -3314,15 +3304,9 @@ static void fbcon_exit(void)
- #endif
- 
- 	for_each_registered_fb(i) {
--		int pending = 0;
--
- 		mapped = 0;
- 		info = registered_fb[i];
- 
--		if (info->queue.func)
--			pending = cancel_work_sync(&info->queue);
--		pr_debug("fbcon: %s pending work\n", (pending ? "canceled" : "no"));
--
- 		for (j = first_fb_vc; j <= last_fb_vc; j++) {
- 			if (con2fb_map[j] == i) {
- 				mapped = 1;
-@@ -3338,15 +3322,12 @@ static void fbcon_exit(void)
- 			if (info->fbcon_par) {
- 				struct fbcon_ops *ops = info->fbcon_par;
- 
--				fbcon_del_cursor_timer(info);
-+				fbcon_del_cursor_work(info);
- 				kfree(ops->cursor_src);
- 				kfree(ops->cursor_state.mask);
- 				kfree(info->fbcon_par);
- 				info->fbcon_par = NULL;
- 			}
--
--			if (info->queue.func == fb_flashcursor)
--				info->queue.func = NULL;
- 		}
- 	}
- }
-diff --git a/drivers/video/fbdev/core/fbcon.h b/drivers/video/fbdev/core/fbcon.h
-index 969d41ecede5..6708ca0048aa 100644
---- a/drivers/video/fbdev/core/fbcon.h
-+++ b/drivers/video/fbdev/core/fbcon.h
-@@ -14,11 +14,11 @@
- #include <linux/types.h>
- #include <linux/vt_buffer.h>
- #include <linux/vt_kern.h>
-+#include <linux/workqueue.h>
- 
- #include <asm/io.h>
- 
- #define FBCON_FLAGS_INIT         1
--#define FBCON_FLAGS_CURSOR_TIMER 2
- 
-    /*
-     *    This is the interface between the low-level console driver and the
-@@ -68,7 +68,7 @@ struct fbcon_ops {
- 	int  (*update_start)(struct fb_info *info);
- 	int  (*rotate_font)(struct fb_info *info, struct vc_data *vc);
- 	struct fb_var_screeninfo var;  /* copy of the current fb_var_screeninfo */
--	struct timer_list cursor_timer; /* Cursor timer */
-+	struct delayed_work cursor_work; /* Cursor timer */
- 	struct fb_cursor cursor_state;
- 	struct fbcon_display *p;
- 	struct fb_info *info;
--- 
-2.34.1
-
+> -- 8< --
+> From: Takashi Iwai <tiwai@suse.de>
+> Subject: [PATCH] ALSA: hda: Fix driver index handling at re-binding
+> 
+> HD-audio driver handles the multiple instances and keeps the static
+> index that is incremented at each probe.  This becomes a problem when
+> user tries to re-bind the device via sysfs multiple times; as the
+> device index isn't cleared unlike rmmod case, it points to the next
+> element at re-binding, and eventually later you can't probe any more
+> when it reaches to SNDRV_CARDS_MAX (usually 32).
+> 
+> This patch is an attempt to improve the handling at rebinding.
+> Instead of a static device index, now we keep a bitmap and assigns to
+> the first zero bit position.  At the driver remove, in return, the
+> bitmap slot is cleared again, so that it'll be available for the next
+> probe.
+> 
+> Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
+> Signed-off-by: Takashi Iwai <tiwai@suse.de>
+> ---
+>  sound/pci/hda/hda_intel.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
+> index 4b0338c4c543..a2922233e85f 100644
+> --- a/sound/pci/hda/hda_intel.c
+> +++ b/sound/pci/hda/hda_intel.c
+> @@ -2064,14 +2064,16 @@ static const struct hda_controller_ops pci_hda_ops = {
+>  	.position_check = azx_position_check,
+>  };
+>  
+> +static DECLARE_BITMAP(probed_devs, SNDRV_CARDS);
+> +
+>  static int azx_probe(struct pci_dev *pci,
+>  		     const struct pci_device_id *pci_id)
+>  {
+> -	static int dev;
+>  	struct snd_card *card;
+>  	struct hda_intel *hda;
+>  	struct azx *chip;
+>  	bool schedule_probe;
+> +	int dev;
+>  	int err;
+>  
+>  	if (pci_match_id(driver_denylist, pci)) {
+> @@ -2079,10 +2081,11 @@ static int azx_probe(struct pci_dev *pci,
+>  		return -ENODEV;
+>  	}
+>  
+> +	dev = find_first_zero_bit(probed_devs, SNDRV_CARDS);
+>  	if (dev >= SNDRV_CARDS)
+>  		return -ENODEV;
+>  	if (!enable[dev]) {
+> -		dev++;
+> +		set_bit(dev, probed_devs);
+>  		return -ENOENT;
+>  	}
+>  
+> @@ -2149,7 +2152,7 @@ static int azx_probe(struct pci_dev *pci,
+>  	if (schedule_probe)
+>  		schedule_delayed_work(&hda->probe_work, 0);
+>  
+> -	dev++;
+> +	set_bit(dev, probed_devs);
+>  	if (chip->disabled)
+>  		complete_all(&hda->probe_wait);
+>  	return 0;
+> @@ -2372,6 +2375,7 @@ static void azx_remove(struct pci_dev *pci)
+>  		cancel_delayed_work_sync(&hda->probe_work);
+>  		device_lock(&pci->dev);
+>  
+> +		clear_bit(chip->dev_index, probed_devs);
+>  		pci_set_drvdata(pci, NULL);
+>  		snd_card_free(card);
+>  	}
+> -- 
+> 2.34.1
+> 
