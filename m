@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6335EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:20:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D42CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350348AbiBHNUg (ORCPT
+        id S1350534AbiBHNUj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:20:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
+        Tue, 8 Feb 2022 08:20:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358831AbiBHMlo (ORCPT
+        with ESMTP id S1358154AbiBHMlF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:44 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941E2C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:43 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id b3so152773pfg.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:43 -0800 (PST)
+        Tue, 8 Feb 2022 07:41:05 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945CFC03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:04 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so2604791pjb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rT0ZvlEjSEX8tKc4measdB3BcCgivnDIA3yZFD+PibQ=;
-        b=kox8FsUbNjIpYMZjXcKa8GmJjInsgqKSj6osghdWW2iJEPN5D0RfPCqjSjc0mBLHm3
-         cWKgdgVcYOe/kIJnYOhYLE1pzYP7ghXt3SJm85YA6d4HNNzZPzVzFNs0MgtJbmp8p13+
-         SbAKAiMbVvblV3oKQC17IG7WEoFyeSha3YpuM=
+        bh=iNXCz8EKk1VR4agv1nk/pR4RM+PZmf+e9yRG2bvKFuM=;
+        b=FaLgS8JBXSx2rVQXT64+Rqa2xv8iXnhXcaxplMpKSmYnFH93Ujylq6y4Cl6nyd/sAH
+         WQfwAS1n/fUwhgBYIe1KmVkTBNXyXUHhRiExOGRjWRVg/4G87sHy17Rcuz1/8y4EO++T
+         6VK2V+jUdpukhI1bpN+MT9dUVWszTMuJ5z9NM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rT0ZvlEjSEX8tKc4measdB3BcCgivnDIA3yZFD+PibQ=;
-        b=sRzhI+akzj6JtYQ1+zmzTLsGw+w43XwK7qLsGEMntLz9rKxrp6Q3uMZ3IV9Ua6r4di
-         aBkPO5bSml4wXyPa28vip0ZsHb8re/CtkZIzL5R4W29wUCKrqONHpdFYf6C5RVEO+5Xp
-         YeYj9WobBpp/+HbU6DDDTKNVEyG+kOi9Wt7VrICj8bXmx6rsIUOQymAPP8gmLHrvM4ld
-         g2CmVJps9sUatExJNBZ0EshPkxL9PPT0519SgZn03NkZqAqnz7EBVpW7MdeAhcC56CgO
-         MjEhdoo59Q7l8j2KUqX8ciSS41rWdvT53g3zFqE8g/lcjd0A0YQgCQeOD1tMrpXBx98+
-         gEfA==
-X-Gm-Message-State: AOAM531C5NfZUAdxjurF/30EJPMCXYWT7LLRlBSR8QELmAnWxUjPy/Bz
-        4LfAYyZOUWNr2AB1gwfGqi57FeUM1T+uEQ==
-X-Google-Smtp-Source: ABdhPJx1ycT0FAJzg22IJjUEMsQqtSxdDyCkyduFu9zf4zZCUNd6bsoPyFYslN+f4ib6yI/1sZfQNA==
-X-Received: by 2002:a62:86c9:: with SMTP id x192mr4244674pfd.54.1644324103129;
-        Tue, 08 Feb 2022 04:41:43 -0800 (PST)
+        bh=iNXCz8EKk1VR4agv1nk/pR4RM+PZmf+e9yRG2bvKFuM=;
+        b=lEF/JdiVZbdF5pUy8jsI7b/X8C+efaNe7weeq/TpHyLl9FfzbpWPZtjztP2E+ZUyfe
+         3ULUVqVgJlkFFvkM8z6MyBimMKHyrAkdIw9NZCU6VRbuw8ww0XSuxYmK8wnZ6HyGHbg2
+         Hm+MUATxp+BE+RI1+tUxFoKHMB7LWTM7RnxP8aJZ9uXa8ErOfIBQ5LrrGHKKlomYuR3U
+         rs83EMOsOnnWZ4IqGxE/dpX+fX4EAkOPGWJQszhQI57dS0WQpF7l1HIV83vEThrHA23f
+         EBWlyS235ShTWAVrZhtIgrbFuMnYS9MZTiMUyG8Hon0VQCz4y/P6JmvJQbCMSx9JS6Dv
+         c1+A==
+X-Gm-Message-State: AOAM530L98ekBF/aSPV2hBfJTamR2ZIEwFESBEVjdGMkN8i9HNRAvsxI
+        v/+P4t44kIoOsm+aMWTr1fImAQ==
+X-Google-Smtp-Source: ABdhPJxCsDQjhQfSgwvXF6h1UuMsst6PTHnyW2BLFIfU9v0XAu5TwkzHqYQzzLVcalU0yaSD5TQ4Og==
+X-Received: by 2002:a17:902:f651:: with SMTP id m17mr4251259plg.106.1644324064142;
+        Tue, 08 Feb 2022 04:41:04 -0800 (PST)
 Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.41
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:42 -0800 (PST)
+        Tue, 08 Feb 2022 04:41:03 -0800 (PST)
 From:   Chen-Yu Tsai <wenst@chromium.org>
 To:     Stephen Boyd <sboyd@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -57,9 +57,9 @@ Cc:     Chen-Yu Tsai <wenst@chromium.org>,
         Miles Chen <miles.chen@mediatek.com>,
         linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 25/31] clk: mediatek: pll: Implement error handling in register API
-Date:   Tue,  8 Feb 2022 20:40:28 +0800
-Message-Id: <20220208124034.414635-26-wenst@chromium.org>
+Subject: [PATCH v3 07/31] clk: mediatek: cpumux: Internalize struct mtk_clk_cpumux
+Date:   Tue,  8 Feb 2022 20:40:10 +0800
+Message-Id: <20220208124034.414635-8-wenst@chromium.org>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
 References: <20220208124034.414635-1-wenst@chromium.org>
@@ -69,93 +69,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pll clk type registration function does not stop or return errors
-if any clk failed to be registered, nor does it implement an error
-handling path. This may result in a partially working device if any
-step failed.
+struct mtk_clk_cpumux is an implementation detail of the cpumux clk
+type, and is not used outside of the implementation.
 
-Make the register function return proper error codes, and bail out if
-errors occur. Proper cleanup, i.e. unregister any clks that were
-successfully registered, and unmap the I/O space, is done in the new
-error path.
+Internalize the definition to minimize leakage of details and shrink
+the header file.
 
 Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 Reviewed-by: Miles Chen <miles.chen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/clk/mediatek/clk-pll.c | 23 +++++++++++++++++++----
- drivers/clk/mediatek/clk-pll.h |  6 +++---
- 2 files changed, 22 insertions(+), 7 deletions(-)
+ drivers/clk/mediatek/clk-cpumux.c | 8 ++++++++
+ drivers/clk/mediatek/clk-cpumux.h | 8 --------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/clk/mediatek/clk-pll.c b/drivers/clk/mediatek/clk-pll.c
-index 8439d37e354d..817a80293bfc 100644
---- a/drivers/clk/mediatek/clk-pll.c
-+++ b/drivers/clk/mediatek/clk-pll.c
-@@ -377,8 +377,9 @@ static void mtk_clk_unregister_pll(struct clk *clk)
- 	kfree(pll);
- }
+diff --git a/drivers/clk/mediatek/clk-cpumux.c b/drivers/clk/mediatek/clk-cpumux.c
+index 99a819e3673f..344c6399b22f 100644
+--- a/drivers/clk/mediatek/clk-cpumux.c
++++ b/drivers/clk/mediatek/clk-cpumux.c
+@@ -12,6 +12,14 @@
+ #include "clk-mtk.h"
+ #include "clk-cpumux.h"
  
--void mtk_clk_register_plls(struct device_node *node,
--		const struct mtk_pll_data *plls, int num_plls, struct clk_onecell_data *clk_data)
-+int mtk_clk_register_plls(struct device_node *node,
-+			  const struct mtk_pll_data *plls, int num_plls,
-+			  struct clk_onecell_data *clk_data)
++struct mtk_clk_cpumux {
++	struct clk_hw	hw;
++	struct regmap	*regmap;
++	u32		reg;
++	u32		mask;
++	u8		shift;
++};
++
+ static inline struct mtk_clk_cpumux *to_mtk_clk_cpumux(struct clk_hw *_hw)
  {
- 	void __iomem *base;
- 	int i;
-@@ -387,7 +388,7 @@ void mtk_clk_register_plls(struct device_node *node,
- 	base = of_iomap(node, 0);
- 	if (!base) {
- 		pr_err("%s(): ioremap failed\n", __func__);
--		return;
-+		return -EINVAL;
- 	}
+ 	return container_of(_hw, struct mtk_clk_cpumux, hw);
+diff --git a/drivers/clk/mediatek/clk-cpumux.h b/drivers/clk/mediatek/clk-cpumux.h
+index fda7770fd803..a538f2bbef0d 100644
+--- a/drivers/clk/mediatek/clk-cpumux.h
++++ b/drivers/clk/mediatek/clk-cpumux.h
+@@ -7,14 +7,6 @@
+ #ifndef __DRV_CLK_CPUMUX_H
+ #define __DRV_CLK_CPUMUX_H
  
- 	for (i = 0; i < num_plls; i++) {
-@@ -397,11 +398,25 @@ void mtk_clk_register_plls(struct device_node *node,
- 
- 		if (IS_ERR(clk)) {
- 			pr_err("Failed to register clk %s: %pe\n", pll->name, clk);
--			continue;
-+			goto err;
- 		}
- 
- 		clk_data->clks[pll->id] = clk;
- 	}
-+
-+	return 0;
-+
-+err:
-+	while (--i >= 0) {
-+		const struct mtk_pll_data *pll = &plls[i];
-+
-+		mtk_clk_unregister_pll(clk_data->clks[pll->id]);
-+		clk_data->clks[pll->id] = ERR_PTR(-ENOENT);
-+	}
-+
-+	iounmap(base);
-+
-+	return PTR_ERR(clk);
- }
- EXPORT_SYMBOL_GPL(mtk_clk_register_plls);
- 
-diff --git a/drivers/clk/mediatek/clk-pll.h b/drivers/clk/mediatek/clk-pll.h
-index a889b1e472e7..bf06e44caef9 100644
---- a/drivers/clk/mediatek/clk-pll.h
-+++ b/drivers/clk/mediatek/clk-pll.h
-@@ -48,9 +48,9 @@ struct mtk_pll_data {
- 	u8 pll_en_bit; /* Assume 0, indicates BIT(0) by default */
- };
- 
--void mtk_clk_register_plls(struct device_node *node,
--			   const struct mtk_pll_data *plls, int num_plls,
--			   struct clk_onecell_data *clk_data);
-+int mtk_clk_register_plls(struct device_node *node,
-+			  const struct mtk_pll_data *plls, int num_plls,
-+			  struct clk_onecell_data *clk_data);
- void mtk_clk_unregister_plls(const struct mtk_pll_data *plls, int num_plls,
- 			     struct clk_onecell_data *clk_data);
- 
+-struct mtk_clk_cpumux {
+-	struct clk_hw	hw;
+-	struct regmap	*regmap;
+-	u32		reg;
+-	u32		mask;
+-	u8		shift;
+-};
+-
+ int mtk_clk_register_cpumuxes(struct device_node *node,
+ 			      const struct mtk_composite *clks, int num,
+ 			      struct clk_onecell_data *clk_data);
 -- 
 2.35.0.263.gb82422642f-goog
 
