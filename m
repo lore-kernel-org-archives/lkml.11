@@ -2,377 +2,540 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E95ADC47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6549C35275
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388520AbiBHWdF (ORCPT
+        id S1388421AbiBHWcz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:33:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43346 "EHLO
+        Tue, 8 Feb 2022 17:32:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386215AbiBHTnz (ORCPT
+        with ESMTP id S1386658AbiBHVEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:43:55 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04E8C0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:43:54 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id c10so234587pfi.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:43:54 -0800 (PST)
+        Tue, 8 Feb 2022 16:04:53 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C16CC0612BD
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:04:51 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id on2so299724pjb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:04:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Yy80CGDeGmOdUiLaU44tdYuu65avXredLZvHqvqZxvA=;
-        b=coFrZx+umVb8C/9VoaeNS8agdUuDH1jjXrRj9GBST7lfrgMyXv+urqHK84NA+cqHK2
-         YPP8ni+X5Tj3wenKzAOVxLCtqjfiED+u36ZZ9ETh3Bwnpy4r2M/jDQIWtW0kD7tvva6G
-         pjqXROY4r0loXEnFtL3ug4ia+hY746GpzMeAFbHuyUR4/gs28nIldej+IlIS5Y156+Fz
-         5Y+DXajDA+R/a+8V2WhjcIXodpHFPeTJcw8LsNLBv2zyWhu0/h6Ya6/k+ydhZ94Sax7g
-         +DICq7kdEw6BwaGWi6hz1N7nDIXFOPBr0r4QYmYf8NMT52ruOU6Kv8biZ560q5sTpmpH
-         wRrA==
+        d=eclypsium.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=afzJpCERAmk3yFBzidPNdDx8rS5idfCgJ4X6kw/EPaM=;
+        b=eEUrW4OF40G7F+WuRB6qBYML3NnN8jyRLUuDZQ36/XwjKQrosY7EncGqdoZ56goO11
+         xq22cEWlVcV/nfTZEgwOl4cltBYzFo5qBDhHsxZIXIfbl/ev31PA89aerwPLPjquVt41
+         bY0xhOiHnke5u4XhoMvSuQatKLPM9ope1sJvXd2uTxspzkQiDP8VZ4s1wrfo6tk5IrOU
+         A6r85p6t3+zI13d14ceOdn91Vz20yvAhdXYKsJQULVcHMNuj5RsQfYF+P5tX1QutEYJE
+         6qCcVAOXut7WXPhiIObuboj20J0WcrVEUKTbTC8X33BIepw3pq1fHPDyOd0Q5SaN7CQI
+         k9Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=Yy80CGDeGmOdUiLaU44tdYuu65avXredLZvHqvqZxvA=;
-        b=fds3bzHD+7AYHSnr5zKyX29d4hr2d7puTCGzchel4RlQNyTGKITGy+4NkUg1vUAtiW
-         p4E+Lu9z3fjTefucWqUvkC/v3kIdgVxufHoBIYzP5K/sP9RStnXD1nMZ6W89Fb+1eE+k
-         D/QE1SQ88zeI8pE8HPzOCIVML0MfdsjoVn2uRS9DozPUpCll3s0Ba7KOEg9raBMJs5y6
-         UsXmDulyZ+GEhSNUEST/Fh6did+kHx5bEmBnj8UjOOQA/xjqF/YyWWH7IjliznhQsieA
-         uNvGxHShN0UXabi3iZWazYT5tNRayhHDrW+XKLPxQ1WO0xCeAZO2C++LK30HzAJRJ4bS
-         QFmw==
-X-Gm-Message-State: AOAM533ngFyDB9/hyAFJ2nmHrMFcNbFwu4LO/Js0DW+8wv3jFeo+4WBy
-        OfCAbwxhouNfSzP8VKiSub0=
-X-Google-Smtp-Source: ABdhPJywJ/lu8GWNpkww16VbmJlUtxqslBTWQrZ6DMFizoxzO0kUsn0kJ6BhawqySiiptym920qTOw==
-X-Received: by 2002:a63:6942:: with SMTP id e63mr4761524pgc.226.1644349434067;
-        Tue, 08 Feb 2022 11:43:54 -0800 (PST)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
-        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 11:43:53 -0800 (PST)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>
-Subject: [PATCH 09/12] locking: Add more static lockdep init macros
-Date:   Tue,  8 Feb 2022 11:43:21 -0800
-Message-Id: <20220208194324.85333-10-namhyung@kernel.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
-References: <20220208194324.85333-1-namhyung@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=afzJpCERAmk3yFBzidPNdDx8rS5idfCgJ4X6kw/EPaM=;
+        b=pyUZdb1k+v+yHigG7pjZnluteD4ZrVK0bFfYNMqM3kL2IhXMrOHBpFQQytbaWiFh3x
+         CUK/jOJQuMWP36VhXQKGKJv23fr8qADAytUYrpvBBrcxWXgx2NWY0vQBKtXP3BHkS6YF
+         dSpKhfuqtoBpJopuPAK288JhlCDcCBtOXeOqXofHQNL7SMhzo+jgNBqru6QdvgRE9IBF
+         8Vu8DcT3Ngn/KoB3jEOzBsxRGJxBvkCubLEIeTOfYekEx6/StBTkMjRJYd62mjBHBM1S
+         NU408Re02YRk0YSBbfA5YwNoW6Dzxguz9DbQJWH/8MBjT4j1HsyCebjInHe7fMQUN3Pk
+         wXig==
+X-Gm-Message-State: AOAM532uR0BnBPvTrZWW0RnDbJxENZvfmpo48EnBHgS8Ah6HYXVMrg4P
+        ewrATvPzyRZDn8IS8iRv/kFLVW51lJ411XxRFxfgoA==
+X-Google-Smtp-Source: ABdhPJzhPgIonUJWKRLCbon/hP7emWLkYkN+Dx+b87pFcCzMzBNuU1ZCEMqTrJ+4QIVkDxz93NlatPENKIsESM0QRxo=
+X-Received: by 2002:a17:902:ab53:: with SMTP id ij19mr6335813plb.45.1644354290468;
+ Tue, 08 Feb 2022 13:04:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220203164328.203629-1-martin.fernandez@eclypsium.com> <20220203164328.203629-4-martin.fernandez@eclypsium.com>
+In-Reply-To: <20220203164328.203629-4-martin.fernandez@eclypsium.com>
+From:   Daniel Gutson <daniel.gutson@eclypsium.com>
+Date:   Tue, 8 Feb 2022 18:04:39 -0300
+Message-ID: <CAFmMkTHUZr8MY0ddgPvnkuo03KwxO_G=bnhEs6QbxUwK+XK=NA@mail.gmail.com>
+Subject: Re: [PATCH v6 3/6] x86/e820: Refactor range_update and range_remove
+To:     Martin Fernandez <martin.fernandez@eclypsium.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-mm@kvack.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, ardb@kernel.org,
+        dvhart@infradead.org, andy@infradead.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rafael@kernel.org, rppt@kernel.org, akpm@linux-foundation.org,
+        Richard Hughes <hughsient@gmail.com>,
+        Alex Bazhaniuk <alex.bazhaniuk@eclypsium.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add STATIC_LOCKDEP_MAP_INIT_{WAIT,TYPE} macros and use it for various
-lock init codes.  This helps having different implementations of
-CONFIG_LOCK_INFO like lockdep and tracepoints.
+On Thu, Feb 3, 2022 at 1:44 PM Martin Fernandez
+<martin.fernandez@eclypsium.com> wrote:
+>
+> __e820__range_update and e820__range_remove had a very similar
+> implementation with a few lines different from each other, the lines
+> that actually perform the modification over the e820_table. The
+> similiraties were found in the checks for the different cases on how
+> each entry intersects with the given range (if it does at all). These
+> checks were very presice and error prone so it was not a good idea to
+> have them in both places.
+>
+> I propose a refactor of those functions, given that I need to create a
+> similar one for this patchset.
+>
+> Add a function to modify a E820 table in a given range. This
+> modification is done backed up by two helper structs:
+> e820_entry_updater and e820_*_data.
+>
+> The first one, e820_entry_updater, carries 3 callbacks which function
+> as the actions to take on the table.
+>
+> The other one, e820_*_data carries information needed by the
+> callbacks, for example in the case of range_update it will carry the
+> type that we are targeting.
+>
+> Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+> ---
+>  arch/x86/kernel/e820.c | 383 ++++++++++++++++++++++++++++++-----------
+>  1 file changed, 283 insertions(+), 100 deletions(-)
+>
+> diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
+> index bc0657f0deed..89b78c6b345b 100644
+> --- a/arch/x86/kernel/e820.c
+> +++ b/arch/x86/kernel/e820.c
+> @@ -459,144 +459,327 @@ static int __init append_e820_table(struct boot_e820_entry *entries, u32 nr_entr
+>         return __append_e820_table(entries, nr_entries);
+>  }
+>
+> +/**
+> + * e820_entry_updater - Helper type for __e820__handle_range_update().
+> + * @should_update: Return true if @entry needs to be updated, false
+> + * otherwise.
+> + * @update: Apply desired actions to an @entry that is inside the
+> + * range and satisfies @should_update.
+> + * @new: Create new entry in the table with information gathered from
+> + * @original and @data.
+> + *
+> + * Each function corresponds to an action that
+> + * __e820__handle_range_update() does. Callbacks need to cast @data back
+> + * to the corresponding type.
+> + */
+> +struct e820_entry_updater {
+> +       bool (*should_update)(const struct e820_entry *entry, const void *data);
+> +       void (*update)(struct e820_entry *entry, const void *data);
+> +       void (*new)(struct e820_table *table, u64 new_start, u64 new_size,
+> +                   const struct e820_entry *original, const void *data);
+> +};
+> +
+> +/**
+> + * e820_remove_data - Helper type for e820__range_remove().
+> + * @old_type: old_type parameter of e820__range_remove().
+> + * @check_type: check_type parameter of e820__range_remove().
+> + *
+> + * This is intended to be used as the @data argument for the
+> + * e820_entry_updater callbacks.
+> + */
+> +struct e820_remover_data {
+> +       enum e820_type old_type;
+> +       bool check_type;
+> +};
+> +
+> +/**
+> + * e820_type_updater_data - Helper type for __e820__range_update().
+> + * @old_type: old_type parameter of __e820__range_update().
+> + * @new_type: new_type parameter of __e820__range_update().
+> + *
+> + * This is intended to be used as the @data argument for the
+> + * e820_entry_updater callbacks.
+> + */
+> +struct e820_type_updater_data {
+> +       enum e820_type old_type;
+> +       enum e820_type new_type;
+> +};
+> +
+> +/**
+> + * __e820__handle_intersected_range_update() - Helper function for
+> + * __e820__handle_range_update().
+> + * @table: Target e820_table.
+> + * @start: Start of the range.
+> + * @size: Size of the range.
+> + * @entry: Current entry that __e820__handle_range_update() was
+> + * looking into.
+> + * @updater: updater parameter of __e820__handle_range_update().
+> + * @data: data parameter of __e820__handle_range_update().
+> + *
+> + * Helper for __e820__handle_range_update to handle the case where
+> + * neither the entry completely covers the range nor the range
+> + * completely covers the entry.
+> + *
+> + * Return: The updated size.
+> + */
+>  static u64 __init
+> -__e820__range_update(struct e820_table *table, u64 start, u64 size, enum e820_type old_type, enum e820_type new_type)
+> +__e820__handle_intersected_range_update(struct e820_table *table,
+> +                                       u64 start,
+> +                                       u64 size,
+> +                                       struct e820_entry *entry,
+> +                                       const struct e820_entry_updater *updater,
+> +                                       const void *data)
+>  {
+>         u64 end;
+> -       unsigned int i;
+> -       u64 real_updated_size = 0;
+> -
+> -       BUG_ON(old_type == new_type);
+> +       u64 entry_end = entry->addr + entry->size;
+> +       u64 inner_start;
+> +       u64 inner_end;
+> +       u64 updated_size = 0;
+>
+>         if (size > (ULLONG_MAX - start))
+>                 size = ULLONG_MAX - start;
+>
+>         end = start + size;
+> -       printk(KERN_DEBUG "e820: update [mem %#010Lx-%#010Lx] ", start, end - 1);
+> -       e820_print_type(old_type);
+> -       pr_cont(" ==> ");
+> -       e820_print_type(new_type);
+> -       pr_cont("\n");
+> -
+> -       for (i = 0; i < table->nr_entries; i++) {
+> -               struct e820_entry *entry = &table->entries[i];
+> -               u64 final_start, final_end;
+> -               u64 entry_end;
+> +       inner_start = max(start, entry->addr);
+> +       inner_end = min(end, entry_end);
+> +
+> +       /* Range and entry do intersect and... */
+> +       if (inner_start < inner_end) {
+> +               /* Entry is on the left */
+> +               if (entry->addr < inner_start) {
+> +                       /* Resize current entry */
+> +                       entry->size = inner_start - entry->addr;
+> +               /* Entry is on the right */
+> +               } else {
+> +                       /* Resize and move current section */
+> +                       entry->addr = inner_end;
+> +                       entry->size = entry_end - inner_end;
+> +               }
+> +               /* Create new entry with intersected region */
+> +               updater->new(table, inner_start, inner_end - inner_start, entry, data);
+>
+> -               if (entry->type != old_type)
+> -                       continue;
+> +               updated_size += inner_end - inner_start;
+> +       } /* Else: [start, end) doesn't cover entry */
+>
+> -               entry_end = entry->addr + entry->size;
+> +       return updated_size;
+> +}
+>
+> -               /* Completely covered by new range? */
+> -               if (entry->addr >= start && entry_end <= end) {
+> -                       entry->type = new_type;
+> -                       real_updated_size += entry->size;
+> -                       continue;
+> -               }
+> +/** __e820__handle_range_update(): Helper function to update a address
+> + * range in a e820_table
+> + * @table: e820_table that we want to modify.
+> + * @start: Start of the range.
+> + * @size: Size of the range.
+> + * @updater: Callbacks to modify the table.
+> + * @data: Information to modify the table.
+> + *
+> + * Update the table @table in [@start, @start + @size) doing the
+> + * actions given in @updater.
+> + *
+> + * Return: The updated size.
+> + */
+> +static u64 __init
+> +__e820__handle_range_update(struct e820_table *table,
+> +                           u64 start,
+> +                           u64 size,
+> +                           const struct e820_entry_updater *updater,
+> +                           const void *data)
+> +{
+> +       u64 updated_size = 0;
+> +       u64 end;
+> +       unsigned int i;
+>
+> -               /* New range is completely covered? */
+> -               if (entry->addr < start && entry_end > end) {
+> -                       __e820__range_add(table, start, size, new_type);
+> -                       __e820__range_add(table, end, entry_end - end, entry->type);
+> -                       entry->size = start - entry->addr;
+> -                       real_updated_size += size;
+> -                       continue;
+> -               }
+> +       if (size > (ULLONG_MAX - start))
+> +               size = ULLONG_MAX - start;
+>
+> -               /* Partially covered: */
+> -               final_start = max(start, entry->addr);
+> -               final_end = min(end, entry_end);
+> -               if (final_start >= final_end)
+> -                       continue;
+> +       end = start + size;
+>
+> -               __e820__range_add(table, final_start, final_end - final_start, new_type);
+> +       for (i = 0; i < table->nr_entries; i++) {
+> +               struct e820_entry *entry = &table->entries[i];
+> +               u64 entry_end = entry->addr + entry->size;
+> +
+> +               if (updater->should_update(data, entry)) {
+> +                       /* Range completely covers entry */
+> +                       if (entry->addr >= start && entry_end <= end) {
+> +                               updater->update(entry, data);
+> +                               updated_size += entry->size;
+> +                       /* Entry completely covers range */
+> +                       } else if (start > entry->addr && end < entry_end) {
+> +                               /* Resize current entry */
+> +                               entry->size = start - entry->addr;
+> +
+> +                               /* Create new entry with intersection region */
+> +                               updater->new(table, start, size, entry, data);
+> +
+> +                               /*
+> +                                * Create a new entry for the leftover
+> +                                * of the current entry
+> +                                */
+> +                               __e820__range_add(table, end, entry_end - end,
+> +                                                 entry->type);
+> +
+> +                               updated_size += size;
+> +                       } else {
+> +                               updated_size =
+> +                                       __e820__handle_intersected_range_update(table, start, size,
+> +                                                                               entry, updater, data);
+> +                       }
+> +               }
+> +       }
+>
+> -               real_updated_size += final_end - final_start;
+> +       return updated_size;
+> +}
+>
+> -               /*
+> -                * Left range could be head or tail, so need to update
+> -                * its size first:
+> -                */
+> -               entry->size -= final_end - final_start;
+> -               if (entry->addr < final_start)
+> -                       continue;
+> +static bool __init type_updater__should_update(const struct e820_entry *entry,
+> +                                              const void *data)
+> +{
+> +       struct e820_type_updater_data *type_updater_data =
+> +               (struct e820_type_updater_data *)data;
 
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- drivers/gpu/drm/drm_connector.c     |  5 ++---
- include/linux/local_lock_internal.h | 10 ++++------
- include/linux/lockdep.h             | 23 +++++++++++++++++------
- include/linux/mutex.h               |  6 ++----
- include/linux/rtmutex.h             |  8 +++-----
- include/linux/rwlock_types.h        |  5 +----
- include/linux/rwsem.h               |  8 +++-----
- include/linux/spinlock_types_raw.h  | 24 ++++++++----------------
- kernel/printk/printk.c              | 10 ++++------
- kernel/rcu/update.c                 | 27 +++++++++------------------
- mm/memcontrol.c                     |  5 ++---
- 11 files changed, 55 insertions(+), 76 deletions(-)
+Please preserve const correctness. You are removing the const qualifier.
 
-diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
-index 94931b32a491..7f470de2ef2b 100644
---- a/drivers/gpu/drm/drm_connector.c
-+++ b/drivers/gpu/drm/drm_connector.c
-@@ -677,9 +677,8 @@ const char *drm_get_connector_force_name(enum drm_connector_force force)
- }
- 
- #ifdef CONFIG_LOCK_INFO
--static struct lockdep_map connector_list_iter_dep_map = {
--	.name = "drm_connector_list_iter"
--};
-+static struct lockdep_map connector_list_iter_dep_map =
-+	STATIC_LOCKDEP_MAP_INIT("drm_connector_list_iter", NULL);
- #endif
- 
- /**
-diff --git a/include/linux/local_lock_internal.h b/include/linux/local_lock_internal.h
-index 56f03f588aa7..dd280fcfadec 100644
---- a/include/linux/local_lock_internal.h
-+++ b/include/linux/local_lock_internal.h
-@@ -16,12 +16,10 @@ typedef struct {
- } local_lock_t;
- 
- #ifdef CONFIG_LOCK_INFO
--# define LOCAL_LOCK_DEBUG_INIT(lockname)		\
--	.dep_map = {					\
--		.name = #lockname,			\
--		.wait_type_inner = LD_WAIT_CONFIG,	\
--		.lock_type = LD_LOCK_PERCPU,		\
--	},						\
-+# define LOCAL_LOCK_DEBUG_INIT(lockname)				\
-+	.dep_map = STATIC_LOCKDEP_MAP_INIT_TYPE(#lockname, NULL,	\
-+					LD_WAIT_CONFIG, LD_WAIT_INV,	\
-+					LD_LOCK_PERCPU),		\
- 	.owner = NULL,
- 
- static inline void local_lock_acquire(local_lock_t *l)
-diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-index 0cc2b338a006..38cbef7601c7 100644
---- a/include/linux/lockdep.h
-+++ b/include/linux/lockdep.h
-@@ -237,6 +237,19 @@ static inline void lockdep_init_map(struct lockdep_map *lock, const char *name,
- #define lockdep_set_novalidate_class(lock) \
- 	lockdep_set_class_and_name(lock, &__lockdep_no_validate__, #lock)
- 
-+/*
-+ * To initialize a lockdep_map statically use this macro.
-+ * Note that _name must not be NULL.
-+ */
-+#define STATIC_LOCKDEP_MAP_INIT(_name, _key) \
-+	{ .name = (_name), .key = (void *)(_key), }
-+
-+#define STATIC_LOCKDEP_MAP_INIT_WAIT(_name, _key, _inner)	\
-+	{ .name = (_name), .key = (void *)(_key), .wait_type_inner = (_inner), }
-+
-+#define STATIC_LOCKDEP_MAP_INIT_TYPE(_name, _key, _inner, _outer, _type)	\
-+	{ .name = (_name), .key = (void *)(_key), .wait_type_inner = (_inner),	\
-+	  .wait_type_outer = (_outer), .lock_type = (_type), }
- /*
-  * Compare locking classes
-  */
-@@ -377,6 +390,10 @@ static inline void lockdep_set_selftest_task(struct task_struct *task)
- 
- #define lockdep_set_novalidate_class(lock) do { } while (0)
- 
-+#define STATIC_LOCKDEP_MAP_INIT(_name, _key) { }
-+#define STATIC_LOCKDEP_MAP_INIT_WAIT(_name, _key, _inner) { }
-+#define STATIC_LOCKDEP_MAP_INIT_TYPE(_name, _key, _inner, _outer, _type) { }
-+
- /*
-  * We don't define lockdep_match_class() and lockdep_match_key() for !LOCKDEP
-  * case since the result is not well defined and the caller should rather
-@@ -432,12 +449,6 @@ enum xhlock_context_t {
- };
- 
- #define lockdep_init_map_crosslock(m, n, k, s) do {} while (0)
--/*
-- * To initialize a lockdep_map statically use this macro.
-- * Note that _name must not be NULL.
-- */
--#define STATIC_LOCKDEP_MAP_INIT(_name, _key) \
--	{ .name = (_name), .key = (void *)(_key), }
- 
- static inline void lockdep_invariant_state(bool force) {}
- static inline void lockdep_free_task(struct task_struct *task) {}
-diff --git a/include/linux/mutex.h b/include/linux/mutex.h
-index 369c1abbf3d0..b2d018250a41 100644
---- a/include/linux/mutex.h
-+++ b/include/linux/mutex.h
-@@ -22,10 +22,8 @@
- 
- #ifdef CONFIG_LOCK_INFO
- # define __DEP_MAP_MUTEX_INITIALIZER(lockname)			\
--		, .dep_map = {					\
--			.name = #lockname,			\
--			.wait_type_inner = LD_WAIT_SLEEP,	\
--		}
-+	, .dep_map = STATIC_LOCKDEP_MAP_INIT_WAIT(#lockname,	\
-+					NULL, LD_WAIT_SLEEP)
- #else
- # define __DEP_MAP_MUTEX_INITIALIZER(lockname)
- #endif
-diff --git a/include/linux/rtmutex.h b/include/linux/rtmutex.h
-index 8eafdd6dcf35..887ffcd5fc09 100644
---- a/include/linux/rtmutex.h
-+++ b/include/linux/rtmutex.h
-@@ -77,11 +77,9 @@ do { \
- } while (0)
- 
- #ifdef CONFIG_LOCK_INFO
--#define __DEP_MAP_RT_MUTEX_INITIALIZER(mutexname)	\
--	.dep_map = {					\
--		.name = #mutexname,			\
--		.wait_type_inner = LD_WAIT_SLEEP,	\
--	}
-+#define __DEP_MAP_RT_MUTEX_INITIALIZER(mutexname)			\
-+	.dep_map = STATIC_LOCKDEP_MAP_INIT_WAIT(#mutexname,		\
-+						NULL, LD_WAIT_SLEEP)
- #else
- #define __DEP_MAP_RT_MUTEX_INITIALIZER(mutexname)
- #endif
-diff --git a/include/linux/rwlock_types.h b/include/linux/rwlock_types.h
-index 3e621bfd7cd0..438d8639a229 100644
---- a/include/linux/rwlock_types.h
-+++ b/include/linux/rwlock_types.h
-@@ -7,10 +7,7 @@
- 
- #ifdef CONFIG_LOCK_INFO
- # define RW_DEP_MAP_INIT(lockname)					\
--	.dep_map = {							\
--		.name = #lockname,					\
--		.wait_type_inner = LD_WAIT_CONFIG,			\
--	}
-+	.dep_map = STATIC_LOCKDEP_MAP_INIT_WAIT(#lockname, NULL, LD_WAIT_CONFIG)
- #else
- # define RW_DEP_MAP_INIT(lockname)
- #endif
-diff --git a/include/linux/rwsem.h b/include/linux/rwsem.h
-index c488485861f5..39126e6d97a1 100644
---- a/include/linux/rwsem.h
-+++ b/include/linux/rwsem.h
-@@ -17,11 +17,9 @@
- #include <linux/err.h>
- 
- #ifdef CONFIG_LOCK_INFO
--# define __RWSEM_DEP_MAP_INIT(lockname)			\
--	.dep_map = {					\
--		.name = #lockname,			\
--		.wait_type_inner = LD_WAIT_SLEEP,	\
--	},
-+# define __RWSEM_DEP_MAP_INIT(lockname)				\
-+	.dep_map = STATIC_LOCKDEP_MAP_INIT_WAIT(#lockname,	\
-+					NULL, LD_WAIT_SLEEP),
- #else
- # define __RWSEM_DEP_MAP_INIT(lockname)
- #endif
-diff --git a/include/linux/spinlock_types_raw.h b/include/linux/spinlock_types_raw.h
-index 564092a30cc4..006250640e76 100644
---- a/include/linux/spinlock_types_raw.h
-+++ b/include/linux/spinlock_types_raw.h
-@@ -27,23 +27,15 @@ typedef struct raw_spinlock {
- #define SPINLOCK_OWNER_INIT	((void *)-1L)
- 
- #ifdef CONFIG_LOCK_INFO
--# define RAW_SPIN_DEP_MAP_INIT(lockname)		\
--	.dep_map = {					\
--		.name = #lockname,			\
--		.wait_type_inner = LD_WAIT_SPIN,	\
--	}
--# define SPIN_DEP_MAP_INIT(lockname)			\
--	.dep_map = {					\
--		.name = #lockname,			\
--		.wait_type_inner = LD_WAIT_CONFIG,	\
--	}
-+# define RAW_SPIN_DEP_MAP_INIT(lockname)					\
-+	.dep_map = STATIC_LOCKDEP_MAP_INIT_WAIT(#lockname, NULL, LD_WAIT_SPIN)
- 
--# define LOCAL_SPIN_DEP_MAP_INIT(lockname)		\
--	.dep_map = {					\
--		.name = #lockname,			\
--		.wait_type_inner = LD_WAIT_CONFIG,	\
--		.lock_type = LD_LOCK_PERCPU,		\
--	}
-+# define SPIN_DEP_MAP_INIT(lockname)						\
-+	.dep_map = STATIC_LOCKDEP_MAP_INIT_WAIT(#lockname, NULL, LD_WAIT_CONFIG)
-+
-+# define LOCAL_SPIN_DEP_MAP_INIT(lockname)					\
-+	.dep_map = STATIC_LOCKDEP_MAP_INIT_TYPE(#lockname, NULL, LD_WAIT_CONFIG,\
-+						LD_WAIT_INV, LD_LOCK_PERCPU)
- #else
- # define RAW_SPIN_DEP_MAP_INIT(lockname)
- # define SPIN_DEP_MAP_INIT(lockname)
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index e45664e0ca30..7889df01a378 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -94,9 +94,8 @@ EXPORT_SYMBOL_GPL(console_drivers);
- int __read_mostly suppress_printk;
- 
- #ifdef CONFIG_LOCK_INFO
--static struct lockdep_map console_lock_dep_map = {
--	.name = "console_lock"
--};
-+static struct lockdep_map console_lock_dep_map =
-+	STATIC_LOCKDEP_MAP_INIT("console_lock", NULL);
- #endif
- 
- enum devkmsg_log_bits {
-@@ -1753,9 +1752,8 @@ SYSCALL_DEFINE3(syslog, int, type, char __user *, buf, int, len)
-  */
- 
- #ifdef CONFIG_LOCK_INFO
--static struct lockdep_map console_owner_dep_map = {
--	.name = "console_owner"
--};
-+static struct lockdep_map console_owner_dep_map =
-+	STATIC_LOCKDEP_MAP_INIT("console_owner", NULL);
- #endif
- 
- static DEFINE_RAW_SPINLOCK(console_owner_lock);
-diff --git a/kernel/rcu/update.c b/kernel/rcu/update.c
-index 156892c22bb5..8202ab6ddb4c 100644
---- a/kernel/rcu/update.c
-+++ b/kernel/rcu/update.c
-@@ -243,30 +243,21 @@ core_initcall(rcu_set_runtime_mode);
- 
- #ifdef CONFIG_DEBUG_LOCK_ALLOC
- static struct lock_class_key rcu_lock_key;
--struct lockdep_map rcu_lock_map = {
--	.name = "rcu_read_lock",
--	.key = &rcu_lock_key,
--	.wait_type_outer = LD_WAIT_FREE,
--	.wait_type_inner = LD_WAIT_CONFIG, /* PREEMPT_RT implies PREEMPT_RCU */
--};
-+struct lockdep_map rcu_lock_map = /* PREEMPT_RT implies PREEMPT_RCU */
-+	STATIC_LOCKDEP_MAP_INIT_TYPE("rcu_read_lock", &rcu_lock_key,
-+				     LD_WAIT_CONFIG, LD_WAIT_FREE, 0);
- EXPORT_SYMBOL_GPL(rcu_lock_map);
- 
- static struct lock_class_key rcu_bh_lock_key;
--struct lockdep_map rcu_bh_lock_map = {
--	.name = "rcu_read_lock_bh",
--	.key = &rcu_bh_lock_key,
--	.wait_type_outer = LD_WAIT_FREE,
--	.wait_type_inner = LD_WAIT_CONFIG, /* PREEMPT_RT makes BH preemptible. */
--};
-+struct lockdep_map rcu_bh_lock_map = /* PREEMPT_RT makes BH preemptable. */
-+	STATIC_LOCKDEP_MAP_INIT_TYPE("rcu_read_lock_bh", &rcu_bh_lock_key,
-+				     LD_WAIT_CONFIG, LD_WAIT_FREE, 0);
- EXPORT_SYMBOL_GPL(rcu_bh_lock_map);
- 
- static struct lock_class_key rcu_sched_lock_key;
--struct lockdep_map rcu_sched_lock_map = {
--	.name = "rcu_read_lock_sched",
--	.key = &rcu_sched_lock_key,
--	.wait_type_outer = LD_WAIT_FREE,
--	.wait_type_inner = LD_WAIT_SPIN,
--};
-+struct lockdep_map rcu_sched_lock_map =
-+	STATIC_LOCKDEP_MAP_INIT_TYPE("rcu_read_lock_sched", &rcu_sched_lock_key,
-+				     LD_WAIT_SPIN, LD_WAIT_FREE, 0);
- EXPORT_SYMBOL_GPL(rcu_sched_lock_map);
- 
- // Tell lockdep when RCU callbacks are being invoked.
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index d4ecfdd5eb8f..a561a6c66b2f 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -1672,9 +1672,8 @@ static int mem_cgroup_soft_reclaim(struct mem_cgroup *root_memcg,
- }
- 
- #ifdef CONFIG_LOCK_INFO
--static struct lockdep_map memcg_oom_lock_dep_map = {
--	.name = "memcg_oom_lock",
--};
-+static struct lockdep_map memcg_oom_lock_dep_map =
-+	STATIC_LOCKDEP_MAP_INIT("memcg_oom_lock", NULL);
- #endif
- 
- static DEFINE_SPINLOCK(memcg_oom_lock);
--- 
-2.35.0.263.gb82422642f-goog
-
+>
+> -               entry->addr = final_end;
+> -       }
+> -       return real_updated_size;
+> +       return entry->type == type_updater_data->old_type;
+>  }
+>
+> -u64 __init e820__range_update(u64 start, u64 size, enum e820_type old_type, enum e820_type new_type)
+> +static void __init type_updater__update(struct e820_entry *entry,
+> +                                       const void *data)
+>  {
+> -       return __e820__range_update(e820_table, start, size, old_type, new_type);
+> +       struct e820_type_updater_data *type_updater_data =
+> +               (struct e820_type_updater_data *)data;
+> +
+> +       entry->type = type_updater_data->new_type;
+>  }
+>
+> -static u64 __init e820__range_update_kexec(u64 start, u64 size, enum e820_type old_type, enum e820_type  new_type)
+> +static void __init type_updater__new(struct e820_table *table, u64 new_start,
+> +                                    u64 new_size,
+> +                                    const struct e820_entry *original,
+> +                                    const void *data)
+>  {
+> -       return __e820__range_update(e820_table_kexec, start, size, old_type, new_type);
+> +       struct e820_type_updater_data *type_updater_data =
+> +               (struct e820_type_updater_data *)data;
+> +
+> +       __e820__range_add(table, new_start, new_size,
+> +                         type_updater_data->new_type);
+>  }
+>
+> -/* Remove a range of memory from the E820 table: */
+> -u64 __init e820__range_remove(u64 start, u64 size, enum e820_type old_type, bool check_type)
+> +static u64 __init __e820__range_update(struct e820_table *table, u64 start,
+> +                                      u64 size, enum e820_type old_type,
+> +                                      enum e820_type new_type)
+>  {
+> -       int i;
+> -       u64 end;
+> -       u64 real_removed_size = 0;
+> +       struct e820_entry_updater updater = {
+> +               .should_update = type_updater__should_update,
+> +               .update = type_updater__update,
+> +               .new = type_updater__new
+> +       };
+>
+> -       if (size > (ULLONG_MAX - start))
+> -               size = ULLONG_MAX - start;
+> +       struct e820_type_updater_data data = {
+> +               .old_type = old_type,
+> +               .new_type = new_type
+> +       };
+>
+> -       end = start + size;
+> -       printk(KERN_DEBUG "e820: remove [mem %#010Lx-%#010Lx] ", start, end - 1);
+> -       if (check_type)
+> -               e820_print_type(old_type);
+> +       BUG_ON(old_type == new_type);
+> +
+> +       printk(KERN_DEBUG "e820: update [mem %#018Lx-%#018Lx] ", start,
+> +              start + size - 1);
+> +       e820_print_type(old_type);
+> +       pr_cont(" ==> ");
+> +       e820_print_type(new_type);
+>         pr_cont("\n");
+>
+> -       for (i = 0; i < e820_table->nr_entries; i++) {
+> -               struct e820_entry *entry = &e820_table->entries[i];
+> -               u64 final_start, final_end;
+> -               u64 entry_end;
+> +       return __e820__handle_range_update(table, start, size, &updater, &data);
+> +}
+>
+> -               if (check_type && entry->type != old_type)
+> -                       continue;
+> +static bool __init remover__should_update(const struct e820_entry *entry,
+> +                                         const void *data)
+> +{
+> +       struct e820_remover_data *remover_data =
+> +               (struct e820_remover_data *)data;
+>
+> -               entry_end = entry->addr + entry->size;
+> +       return !remover_data->check_type ||
+> +              entry->type == remover_data->old_type;
+> +}
+>
+> -               /* Completely covered? */
+> -               if (entry->addr >= start && entry_end <= end) {
+> -                       real_removed_size += entry->size;
+> -                       memset(entry, 0, sizeof(*entry));
+> -                       continue;
+> -               }
+> +static void __init remover__update(struct e820_entry *entry, const void *data)
+> +{
+> +       memset(entry, 0, sizeof(*entry));
+> +}
+>
+> -               /* Is the new range completely covered? */
+> -               if (entry->addr < start && entry_end > end) {
+> -                       e820__range_add(end, entry_end - end, entry->type);
+> -                       entry->size = start - entry->addr;
+> -                       real_removed_size += size;
+> -                       continue;
+> -               }
+> +static void __init remover__new(struct e820_table *table, u64 new_start,
+> +                               u64 new_size, const struct e820_entry *original,
+> +                               const void *data)
+> +{
+> +}
+>
+> -               /* Partially covered: */
+> -               final_start = max(start, entry->addr);
+> -               final_end = min(end, entry_end);
+> -               if (final_start >= final_end)
+> -                       continue;
+> +/**
+> + * e820__range_remove() - Remove an address range from e820_table.
+> + * @start: Start of the address range.
+> + * @size: Size of the address range.
+> + * @old_type: Type of the entries that we want to remove.
+> + * @check_type: Bool to decide if ignore @old_type or not.
+> + *
+> + * Remove [@start, @start + @size) from e820_table. If @check_type is
+> + * true remove only entries with type @old_type.
+> + *
+> + * Return: The size removed.
+> + */
+> +u64 __init e820__range_remove(u64 start, u64 size, enum e820_type old_type,
+> +                             bool check_type)
+> +{
+> +       struct e820_entry_updater updater = {
+> +               .should_update = remover__should_update,
+> +               .update = remover__update,
+> +               .new = remover__new
+> +       };
+> +
+> +       struct e820_remover_data data = {
+> +               .check_type = check_type,
+> +               .old_type = old_type
+> +       };
+> +
+> +       printk(KERN_DEBUG "e820: remove [mem %#018Lx-%#018Lx] ", start,
+> +              start + size - 1);
+> +       if (check_type)
+> +               e820_print_type(old_type);
+> +       pr_cont("\n");
+>
+> -               real_removed_size += final_end - final_start;
+> +       return __e820__handle_range_update(e820_table, start, size, &updater,
+> +                                           &data);
+> +}
+>
+> -               /*
+> -                * Left range could be head or tail, so need to update
+> -                * the size first:
+> -                */
+> -               entry->size -= final_end - final_start;
+> -               if (entry->addr < final_start)
+> -                       continue;
+> +/**
+> + * e820__range_update() - Update the type of a given address range in
+> + * e820_table.
+> + * @start: Start of the range.
+> + * @size: Size of the range.
+> + * @old_type: Type that we want to change.
+> + * @new_type: New type to replace @old_type.
+> + *
+> + * Update type of addresses in [@start, @start + @size) from @old_type
+> + * to @new_type in e820_table.
+> + *
+> + * Return: The size updated.
+> + */
+> +u64 __init e820__range_update(u64 start, u64 size, enum e820_type old_type,
+> +                             enum e820_type new_type)
+> +{
+> +       return __e820__range_update(e820_table, start, size, old_type, new_type);
+> +}
+>
+> -               entry->addr = final_end;
+> -       }
+> -       return real_removed_size;
+> +/**
+> + * e820__range_update_kexec() - Update the type of a given address
+> + * range in e820_table_kexec.
+> + * @start: Start of the range.
+> + * @size: Size of the range.
+> + * @old_type: Type that we want to change.
+> + * @new_type: New type to replace @old_type.
+> + *
+> + * Update type of addresses in [@start, @start + @size) from @old_type
+> + * to @new_type in e820_table_kexec.
+> + *
+> + * Return: The size updated.
+> + */
+> +static u64 __init e820__range_update_kexec(u64 start, u64 size,
+> +                                          enum e820_type old_type,
+> +                                          enum e820_type new_type)
+> +{
+> +       return __e820__range_update(e820_table_kexec, start, size, old_type, new_type);
+>  }
+>
+>  void __init e820__update_table_print(void)
+> --
+> 2.30.2
+>
