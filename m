@@ -2,96 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D937C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 07:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA89C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 07:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347016AbiBHHcp (ORCPT
+        id S1348202AbiBHHeA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 02:32:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
+        Tue, 8 Feb 2022 02:34:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiBHHcm (ORCPT
+        with ESMTP id S229436AbiBHHd6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 02:32:42 -0500
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118DAC0401EF
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 23:32:41 -0800 (PST)
-Received: from [192.168.0.2] (ip5f5aebc2.dynamic.kabel-deutschland.de [95.90.235.194])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 0129961E64846;
-        Tue,  8 Feb 2022 08:32:38 +0100 (CET)
-Message-ID: <0baca95b-771f-2217-1098-2d0eee568ea7@molgen.mpg.de>
-Date:   Tue, 8 Feb 2022 08:32:37 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Content-Language: en-US
-To:     Frederic Weisbecker <fweisbec@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linuxppc-dev@lists.ozlabs.org
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Subject: ppc64le: `NOHZ tick-stop error: Non-RCU local softirq work is
- pending, handler #20!!!` when turning off SMT
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Tue, 8 Feb 2022 02:33:58 -0500
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3EADC0401EF;
+        Mon,  7 Feb 2022 23:33:57 -0800 (PST)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 33CC91A0D13;
+        Tue,  8 Feb 2022 08:33:56 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id EEA131A0CBE;
+        Tue,  8 Feb 2022 08:33:55 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id A3C88183AC8A;
+        Tue,  8 Feb 2022 15:33:54 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     shawnguo@kernel.org, l.stach@pengutronix.de
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH] arm64: dts: imx8mq-evk: Add the second pcie port support
+Date:   Tue,  8 Feb 2022 15:02:29 +0800
+Message-Id: <1644303749-4610-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Linux folks,
+Enable the secone PCIe port support on i.MX8MQ EVK board.
 
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mq-evk.dts | 38 ++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-On the POWER8 server IBM S822LC running Ubuntu 21.10, Linux 5.17-rc1+ 
-built with
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-evk.dts b/arch/arm64/boot/dts/freescale/imx8mq-evk.dts
+index a1b7582f3ecf..06f6e44da4d4 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-evk.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mq-evk.dts
+@@ -27,6 +27,17 @@ pcie0_refclk: pcie0-refclk {
+ 		clock-frequency = <100000000>;
+ 	};
+ 
++	reg_pcie1: regulator-pcie {
++		compatible = "regulator-fixed";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_pcie1_reg>;
++		regulator-name = "MPCIE_3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&gpio5 10 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
+ 	reg_usdhc2_vmmc: regulator-vsd-3v3 {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_reg_usdhc2>;
+@@ -327,6 +338,20 @@ &pcie0 {
+ 	status = "okay";
+ };
+ 
++&pcie1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_pcie1>;
++	reset-gpio = <&gpio5 12 GPIO_ACTIVE_LOW>;
++	clocks = <&clk IMX8MQ_CLK_PCIE2_ROOT>,
++		 <&clk IMX8MQ_CLK_PCIE2_AUX>,
++		 <&clk IMX8MQ_CLK_PCIE2_PHY>,
++		 <&pcie0_refclk>;
++	clock-names = "pcie", "pcie_aux", "pcie_phy", "pcie_bus";
++	vpcie-supply = <&reg_pcie1>;
++	vph-supply = <&vgen5_reg>;
++	status = "okay";
++};
++
+ &pgc_gpu {
+ 	power-supply = <&sw1a_reg>;
+ };
+@@ -482,6 +507,19 @@ MX8MQ_IOMUXC_UART4_RXD_GPIO5_IO28		0x16
+ 		>;
+ 	};
+ 
++	pinctrl_pcie1: pcie1grp {
++		fsl,pins = <
++			MX8MQ_IOMUXC_I2C4_SDA_PCIE2_CLKREQ_B		0x76
++			MX8MQ_IOMUXC_ECSPI2_MISO_GPIO5_IO12		0x16
++		>;
++	};
++
++	pinctrl_pcie1_reg: pcie1reggrp {
++		fsl,pins = <
++			MX8MQ_IOMUXC_ECSPI2_SCLK_GPIO5_IO10		0x16
++		>;
++	};
++
+ 	pinctrl_qspi: qspigrp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_NAND_ALE_QSPI_A_SCLK	0x82
+-- 
+2.25.1
 
-     $ grep HZ /boot/config-5.17.0-rc1+
-     CONFIG_NO_HZ_COMMON=y
-     # CONFIG_HZ_PERIODIC is not set
-     CONFIG_NO_HZ_IDLE=y
-     # CONFIG_NO_HZ_FULL is not set
-     CONFIG_NO_HZ=y
-     # CONFIG_HZ_100 is not set
-     CONFIG_HZ_250=y
-     # CONFIG_HZ_300 is not set
-     # CONFIG_HZ_1000 is not set
-     CONFIG_HZ=250
-
-once warned about a NOHZ tick-stop error, when I executed `sudo 
-/usr/sbin/ppc64_cpu --smt=off` (so that KVM would work).
-
-```
-$ dmesg
-[    0.000000] Linux version 5.17.0-rc1+ 
-(pmenzel@flughafenberlinbrandenburgwillybrandt.molgen.mpg.de) (Ubuntu 
-clang version 13.0.0-2, LLD 13.0.0) #1 SMP Fri Jan 28 17:13:04 CET 2022
-[…]
-[271272.030262] NOHZ tick-stop error: Non-RCU local softirq work is 
-pending, handler #20!!!
-[271272.305726] NOHZ tick-stop error: Non-RCU local softirq work is 
-pending, handler #20!!!
-[271272.549790] NOHZ tick-stop error: Non-RCU local softirq work is 
-pending, handler #20!!!
-[271274.885167] NOHZ tick-stop error: Non-RCU local softirq work is 
-pending, handler #20!!!
-[271275.113896] NOHZ tick-stop error: Non-RCU local softirq work is 
-pending, handler #20!!!
-[271275.412902] NOHZ tick-stop error: Non-RCU local softirq work is 
-pending, handler #20!!!
-[271275.625245] NOHZ tick-stop error: Non-RCU local softirq work is 
-pending, handler #20!!!
-[271275.833107] NOHZ tick-stop error: Non-RCU local softirq work is 
-pending, handler #20!!!
-[271276.041391] NOHZ tick-stop error: Non-RCU local softirq work is 
-pending, handler #20!!!
-[271277.244880] NOHZ tick-stop error: Non-RCU local softirq work is 
-pending, handler #20!!!
-```
-
-
-Kind regards,
-
-Paul
