@@ -2,108 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6273C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBC5C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:53:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbiBHWxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:53:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53234 "EHLO
+        id S231775AbiBHWx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 17:53:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233478AbiBHWwZ (ORCPT
+        with ESMTP id S229759AbiBHWxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 17:52:25 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8570E049B60
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:40:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644360015; x=1675896015;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zk0H6M+qTcC8xrCsV1lGoyzwJ1os1Hryj6nMq8aZDGM=;
-  b=FzwQATfU/P86fXJb/o5KzFhpGKpBuSb61+H67BOTrevg9RfIWNQAZU/O
-   KyfN0vm55F0dAwcbTvUBSyBkZRa3SK9lxI2wwR3qg7ihcXG9FWSVShNif
-   TAlqLbDIbcpNMsfK6LK4e7Uoy7mm1YAAjPFaALFeWRW0HixWZsCg7fr7V
-   Rilua7wfTHU8BGhzo1rcVQf6Gu7MIaBrKqILJswuKvwCJN78fk60DPtjo
-   /sdtNi/6/safRs41Ezibho33oKLRrWGiWpEHbKvb85nbtGWUf4ZCMUq5e
-   OD7mDBWeDLdTbrxvJFN0sBQI6050vy/XG28//LUrvsnha9BuVBgVn4Ldp
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229718834"
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="229718834"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 14:40:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="482105297"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 08 Feb 2022 14:40:13 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nHZ9g-0000qm-Fq; Tue, 08 Feb 2022 22:40:12 +0000
-Date:   Wed, 9 Feb 2022 06:39:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kevin Barnett <kevin.barnett@microchip.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Mike McGowen <mike.mcgowen@microchip.com>,
-        Scott Benesh <scott.benesh@microchip.com>,
-        Scott Teel <scott.teel@microchip.com>,
-        Don Brace <don.brace@microchip.com>
-Subject: [mkp-scsi:for-next 51/53]
- drivers/scsi/smartpqi/smartpqi_init.c:9067:32: warning: unused variable
- 'pqi_pm_ops'
-Message-ID: <202202090657.bstNLuce-lkp@intel.com>
+        Tue, 8 Feb 2022 17:53:53 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE74C06174F
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:53:52 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id c10so981200pfi.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 14:53:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cQMwXqlDPSXD5WcTL3esNOpDqscVXLIQFDsHDlsLA6s=;
+        b=I7DYO0+aevF5VNc7lv6kik71OWvQgcQNZ8zVQtSbj5ylPTl774t0T5TzMtC8W+xc5a
+         G4V4PntNj6Wx//xFTtpnlKptTcgc6sVfB8LfdDkC0cNxX3M4aW4wQMC9A4bNoYOEYM2P
+         1lHHM0tCCK7nqJYtjXvIGjtcKV/o6fC9kvJcI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cQMwXqlDPSXD5WcTL3esNOpDqscVXLIQFDsHDlsLA6s=;
+        b=S16zmcsKJ2/B/FK5wlqk6EdjlGtzq3nYU+dB98lXaacp63LQHTtIXNaMRuLyLMTZr8
+         NOm8C+0KHmOxXuHdMUodZYcVkeY3U5SZKzskzzpbDX4hh8auoiP//tAM9+liL+ya7aq3
+         mnA0Wysmy9wCqFm+xPeBBfdVLkuvd3u+rBqHoe8wqe+logsw4sS0YRB8VFTN4FCD5BME
+         eLcYxqKCPpmgJ5dzqzn5mbabJx/6Zz8F2ymsvAxd3hrFXqpJtuGL6Z06eS3K1jVRIS3M
+         0TC5XD8HQNxEjZGI3zJZCiM4Q6dXA3wqSPHFCfRb3Ppkj6KMy0bFUQE9UspKiwsfKI9S
+         TC6g==
+X-Gm-Message-State: AOAM532Do33XJC9kCHigonPN7CUFzVHNFvfPOr2Gf7SQqmMp10/fqDbR
+        0HKy6Y6lY2tEhnrcKxO8f2Pjbg==
+X-Google-Smtp-Source: ABdhPJyYhpQYVGMNJXYXnSxOERPvWyclLewnhUUMAxAOZuJ7tLHin//i/EiDuxPbUhpcU0GU9RuCSA==
+X-Received: by 2002:a63:2322:: with SMTP id j34mr3073107pgj.583.1644360832076;
+        Tue, 08 Feb 2022 14:53:52 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id mj21sm3798910pjb.20.2022.02.08.14.53.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 14:53:51 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        Miguel Ojeda <ojeda@kernel.org>,
+        George Burgess IV <gbiv@google.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: [PATCH v7 2/8] Compiler Attributes: Add __pass_object_size for Clang
+Date:   Tue,  8 Feb 2022 14:53:44 -0800
+Message-Id: <20220208225350.1331628-3-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220208225350.1331628-1-keescook@chromium.org>
+References: <20220208225350.1331628-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1929; h=from:subject; bh=i0Oi+LXolg+eM3YPVR/El2E4tGz736zn+2NHNZGvzdI=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiAvR8bIQyeNI+NWaNQZqa8J2M9TzhXpEub4iVXEfv UzC3tZiJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYgL0fAAKCRCJcvTf3G3AJrm5D/ 9EGjvGZsuSNeXlB/ANO8IFgIGTwIXHRLmmfagMWJtTn5f0+hz4BgaRbPeS4QtNZkzoLAPwaQLFqPDc waWxLmtqXpmnn2xxTuscc3+DVmcKeNX9jPGCBmln0sVZkfIMdp5M5Mr//rsJVByTGQZuU/Eo+i27JV nK0CKkl/tQ6TWmER+YJM+f8IjiozsiN6ndeJxch4neSrzjBDqXKeKh0jIsflO8unil9uTNFCa6O674 8lEuyws8iqyFFAPaardjsC/ccYDTNKjvLBEmym9St62Dsg0VwlAz48NVgiZletgVD08a0y76U7vwIW 2eJzMJLV6cz4T/0RwGbtONrbLRXla3EFHGLYDCNClPIB1LXDUS5Qk9L5lGf7Z3rP4PbpCCSoKe8TeT wBp4ONPatn0kMdEzAP6aIgAv7VZ2P45TVzwTx5ThYWW5oG+qenakqfSGKE2udjlkk1wR8GqJBvm7j+ M4o9TTsjguid/+ArNUi5l8WC8wCnt0mXBu4dzJ9JUoTq7ymMKxd5U6fNrmyIp9hlQpGk+kJkDjXk2x YsZ/gC/FzYgLUEpK5QFoK1rbs1mN4jWTcB2uZ2FvHRQNCFKZNsCiFzBH24YPxREDZujwmpu65fnaOH M3DNpnvZOh5sWF0O4YrRZxuHCyONucVcFUVeCShow/6tZFwm9rOa2Nfy8Q9w==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git for-next
-head:   62ed6622aaf0ba3c41cc6db6f901cbaa2a7378d1
-commit: c66e078ad89e9f171a2474b255284d95c54c4c36 [51/53] scsi: smartpqi: Fix hibernate and suspend
-config: arm-randconfig-r003-20220208 (https://download.01.org/0day-ci/archive/20220209/202202090657.bstNLuce-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e8bff9ae54a55b4dbfeb6ba55f723abbd81bf494)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git/commit/?id=c66e078ad89e9f171a2474b255284d95c54c4c36
-        git remote add mkp-scsi https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git
-        git fetch --no-tags mkp-scsi for-next
-        git checkout c66e078ad89e9f171a2474b255284d95c54c4c36
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/scsi/smartpqi/
+In order to gain greater visibility to type information when using
+__builtin_object_size(), Clang has a function attribute "pass_object_size"
+that will make size information available for marked arguments in
+a function by way of implicit additional function arguments that are
+then wired up the __builtin_object_size().
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This is needed to implement FORTIFY_SOURCE in Clang, as a workaround
+to Clang's __builtin_object_size() having limited visibility[1] into types
+across function calls (even inlines).
 
-All warnings (new ones prefixed by >>):
+This attribute has an additional benefit that it can be used even on
+non-inline functions to gain argument size information.
 
->> drivers/scsi/smartpqi/smartpqi_init.c:9067:32: warning: unused variable 'pqi_pm_ops' [-Wunused-const-variable]
-   static const struct dev_pm_ops pqi_pm_ops = {
-                                  ^
-   1 warning generated.
+[1] https://github.com/llvm/llvm-project/issues/53516
 
-
-vim +/pqi_pm_ops +9067 drivers/scsi/smartpqi/smartpqi_init.c
-
-  9066	
-> 9067	static const struct dev_pm_ops pqi_pm_ops = {
-  9068		.suspend = pqi_suspend,
-  9069		.resume = pqi_resume_or_restore,
-  9070		.freeze = pqi_freeze,
-  9071		.thaw = pqi_thaw,
-  9072		.poweroff = pqi_poweroff,
-  9073		.restore = pqi_resume_or_restore,
-  9074	};
-  9075	
-
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: llvm@lists.linux.dev
+Reviewed-by: Miguel Ojeda <ojeda@kernel.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ include/linux/compiler_attributes.h | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler_attributes.h
+index 37e260020221..d0c503772061 100644
+--- a/include/linux/compiler_attributes.h
++++ b/include/linux/compiler_attributes.h
+@@ -263,6 +263,20 @@
+  */
+ #define __packed                        __attribute__((__packed__))
+ 
++/*
++ * Note: the "type" argument should match any __builtin_object_size(p, type) usage.
++ *
++ * Optional: not supported by gcc.
++ * Optional: not supported by icc.
++ *
++ * clang: https://clang.llvm.org/docs/AttributeReference.html#pass-object-size-pass-dynamic-object-size
++ */
++#if __has_attribute(__pass_object_size__)
++# define __pass_object_size(type)	__attribute__((__pass_object_size__(type)))
++#else
++# define __pass_object_size(type)
++#endif
++
+ /*
+  *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-pure-function-attribute
+  */
+-- 
+2.30.2
+
