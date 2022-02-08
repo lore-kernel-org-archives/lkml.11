@@ -2,221 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23380C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D287C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343675AbiBHLdw (ORCPT
+        id S1346134AbiBHLeA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:33:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
+        Tue, 8 Feb 2022 06:34:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347678AbiBHLIb (ORCPT
+        with ESMTP id S1356823AbiBHLIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 06:08:31 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CE5C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 03:08:29 -0800 (PST)
+        Tue, 8 Feb 2022 06:08:32 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6508AC03FEC5;
+        Tue,  8 Feb 2022 03:08:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644318509; x=1675854509;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=w0OyASRgPZ8xLiBy2HoDAX25Z26Ocs5YkZNDBp5V3bk=;
-  b=ngnHkHOW+TAGhg86KkGOABHgtB8cISxS8umoD3olAabnRphQ2TPabKpx
-   L1xwfAWl3POjko241cPkjXviiWtfoL0+bThzYbUrI9c8kEIvkfK7qZQtA
-   mKIIsaGpFNAiwDb6hLsCPgejaa6mZoMzIMivVFzzhCJtOO6I65dnmdi0v
-   AcqqPPO7qj8JOUHNIV8emIHHmxWsR5I1mBNy73Y0USTWcRZlOIlgRYC02
-   2OEoBaPIzT0SqyfFmg/swj4bg4PodpTUOJmTyCQltq3d0u6BazGEA+nEO
-   EEJhwf0xqRF7hKHK9EW+HbZGCdUScB9Fk3tJRk+7E09/PXv/zHq3kLHbX
+  t=1644318511; x=1675854511;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=7Yqt9Me3rvirigE3d9cr8aN9ZPM9Y78pNhy04CEmlHA=;
+  b=kwQUCuEYSH/4h4oKb62zOrQK8Fz8r4Ys6FO6eHBWgIZ7JV6Y4aLlSbI5
+   6MvAYMoez5NLZfw71GGCDbaNzJn4816/MUX64NEgUHevTGW/j6/pL6I7C
+   vsOAhxs1JZOSpLjc2pTWD/OxtkI3Hh+u+ciQe+ZAlXiw0RWDB5QQlbL/s
+   f8QNPzeCIxoV1RZfVd1APpfYAcmHAXyEDeo42pMuHg+la/uD5OOIJbeie
+   fGr7EyFfEEaNo/nsbFv9LeKR2fKgLHNY/15I/OmdXIlF29zAQnA2hUtao
+   8TGA5p7GE+Ovlaf9Q9K7KdcnuwgbIcv0SGXHGhBGvMv5/OxEbjPC8bnBl
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="335329247"
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="246515571"
 X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
-   d="scan'208";a="335329247"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 03:08:26 -0800
+   d="scan'208";a="246515571"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 03:08:31 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
-   d="scan'208";a="700810988"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 08 Feb 2022 03:08:21 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nHOM8-00005M-Ls; Tue, 08 Feb 2022 11:08:20 +0000
-Date:   Tue, 8 Feb 2022 19:07:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [bpf-next:master 212/221] arch/sparc/net/bpf_jit_comp_64.c:1602:56:
- error: 'struct bpf_binary_header' has no member named 'pages'
-Message-ID: <202202081815.gh1kFj08-lkp@intel.com>
+   d="scan'208";a="621875399"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Feb 2022 03:08:30 -0800
+Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 8 Feb 2022 03:08:29 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Tue, 8 Feb 2022 03:08:29 -0800
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.49) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Tue, 8 Feb 2022 03:08:28 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e+zUQeFMCJG8HNwPym/Y5vXYRu/ZXW4G64Z93SkfZU+2NAkU6BdhR9otbIoIBRbg8nMvOjn9Z0vk8o/eTWKhcAWGJlPzDYH80G/k2C+FdqLKYM1tYYJYg4dsrxDFxJ+/mwRV4IQfCGRDJTPCsG4Yv69RdDdRAGXlnfpll8rUlMQI/cpcz7g4URyhX8yw4iDi1a/p5FG8pyWdlL8v5J16y4o6qedYKgGjtYvy2fP5ia9ApUNfq9p3V1fP0B9hA3TjMAX2nVmEan48TAcxLBkEO6yk7YZ97esnEqXdj2QX/a2aSFghWdhv6xiTGiJqn+p9aMcUsLbQ6ifnXIJVzecVlg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7Yqt9Me3rvirigE3d9cr8aN9ZPM9Y78pNhy04CEmlHA=;
+ b=FKAlyAd0L1AEPQuNvhfJxiR/51iWk74+ncT4YBpivmAXWVZjVOOTycskkhmnAg3hZiqtdR+mW0On2Xd0An+46qr0g5+Yau66gqxXHfzoaQGTFyBVJ7Fp432q3E4OYtETFDO9Y9SRXUT5EJ7X1aaNodifsljTPw1uYRLhpk38wdOxIIEMH7jUuc3aqcllANDXOp2bblGhSRT0z8efhb47M3ddpXkL10bqwJl40nBe3UmyQ8R3c4WauXwUDQZljUEr2iB/t1ULtSfxY/lE6FJr2m0xFLxIuhf2/ZZmAlxlLdS3U3XcSGV5FuFlx4a1vTjNkNknl8xlMOt6JZ+74tg72Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from DM6PR11MB2731.namprd11.prod.outlook.com (2603:10b6:5:c3::25) by
+ SJ0PR11MB4911.namprd11.prod.outlook.com (2603:10b6:a03:2ad::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Tue, 8 Feb
+ 2022 11:08:26 +0000
+Received: from DM6PR11MB2731.namprd11.prod.outlook.com
+ ([fe80::b4f9:69c4:33a4:aca2]) by DM6PR11MB2731.namprd11.prod.outlook.com
+ ([fe80::b4f9:69c4:33a4:aca2%6]) with mapi id 15.20.4951.019; Tue, 8 Feb 2022
+ 11:08:26 +0000
+From:   "Hogander, Jouni" <jouni.hogander@intel.com>
+To:     "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "lyude@redhat.com" <lyude@redhat.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>
+CC:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "De Marchi, Lucas" <lucas.demarchi@intel.com>
+Subject: Re: [Intel-gfx] [PATCH] drm/i915/psr: Disable PSR2 selective fetch
+ for all TGL steps
+Thread-Topic: [Intel-gfx] [PATCH] drm/i915/psr: Disable PSR2 selective fetch
+ for all TGL steps
+Thread-Index: AQHYHGtCvBOYjfwJOUWrtRpPBGzng6yJf4uA
+Date:   Tue, 8 Feb 2022 11:08:26 +0000
+Message-ID: <89b5f3210a3f3e9c629967890090b21a94749f0a.camel@intel.com>
+References: <20220207213923.3605-1-lyude@redhat.com>
+In-Reply-To: <20220207213923.3605-1-lyude@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9b16baba-cfcd-4555-9d06-08d9eaf35488
+x-ms-traffictypediagnostic: SJ0PR11MB4911:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <SJ0PR11MB4911FB2F53181F6C673229038A2D9@SJ0PR11MB4911.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SK1HxcOb9voSckarz8+5iddq/Gt6an4Aff3nh5qWRNP9ujJOFAbIQPnAinL5nqommE0C3ac+EwJ01JwL3o3GoAFE6rbCPJbeVhIATfK5S/ZLPV1MMm7UM515aZfGJEgeZ8awjcfDCsZVvtx/Pfa8XLRisaw6DAFJeB8bFY0uj5HSJ3OfXaLd1B4aIsAHxk9LRqGToeY3fpxQzqhaLIkw+UV/AZhhkReBRh08XI5aNYshIvNEWoEBJFor3LkgTJDcpapyRKRX8ACHImmMlcpMCStmzonJq7cZo63eNhY/+DQ/g8KMBTwLiFFi5MXcdYJ/XXKHWiK2KnxUikGWgBAyd5AthyHrqjYYCx0dvlmJERLkqFB5JM2Qz1fRIGZUusRuCEnkNqzQ4GBG720u/xmhj95/il5Yxbys2yySq1+P+smGVYy42jhu6gdckQdU283XdmG4pZGj8ZdtkCXs0s9VuczeLIWJicalBYMA66Tpn3nE3etVzIS5g12xjT/GF1MrK03FMX/4RjC42X1F0Be9E8DC6Kq2jCDSy5YDD7vCQDSG+R9zLe+wGt7RTmi8zieEoayvH+HYgsmbiOZUb7mcwV6eq2PS96zt2ggoJxypAM6fHdDQWzxSI3q27XXm6GgsJX/pifSYNVhGsIxPtPBvjulgmXDcemyQ6t2Yvm+PtvHc7ImDqyMwcaJpVzpu3ZWQ+qeryPQnubqbG44rXDNQOA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2731.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(54906003)(316002)(36756003)(38100700002)(122000001)(38070700005)(966005)(110136005)(82960400001)(508600001)(6486002)(107886003)(2906002)(6512007)(8676002)(186003)(91956017)(26005)(66946007)(4326008)(66446008)(66476007)(66556008)(5660300002)(64756008)(2616005)(8936002)(83380400001)(6506007)(76116006)(71200400001)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UlE1c0RhNFEvQlBJT2dKSlN6YXc1aXBaT2NGSlZiNmd5bnVtQ1JTMFdzWCtw?=
+ =?utf-8?B?REY0Nk5QT0dRSWpJekZxblEvdVZpQWYrSGlBRTVUR2NTTVFuenhUcGs0eXJz?=
+ =?utf-8?B?dUd5Uk5YczBHemJtMjAzUWVOT0xFN0lESy9WaFdISnoveUlFUk9EVExCOThE?=
+ =?utf-8?B?K3o2NitHSUhMRDVWLzVYK2c5SGRuVmJxU2VQWVllYlQrZEtLQ05qVUtBS2JD?=
+ =?utf-8?B?eWlFUFNyUnlGSm41Q2F5UGNDRjEvcXhrVW5sWHBqVk9NYjIvY3NhRDZUR05C?=
+ =?utf-8?B?dG4rUG4wUEhsZmxIMHlsKy9RTUtWWFdqaGFqam81VnM1bjl3YStmUHhXUEVs?=
+ =?utf-8?B?dUtUN0FEQzMrQ2FqMTlQQjUyelp2aUhobWRzN3NXSjZYUlFEd2E4Q2RNajBz?=
+ =?utf-8?B?UkZaSFZKaDZnVDNhblRydGkxNW1GODQ0OFp3KzB2bDVraWw2OVZCbGRGN1R6?=
+ =?utf-8?B?Sk5HY0doRDh0aktqcHVJRGlORit3WWRrN3p5cGhrakNOSEZTeEtBUzNNMTNL?=
+ =?utf-8?B?VG81UjEwcGw3RmFObWJKanVPS05VajZnc3JhbTMxbVNoNGdya0ZMMEIvNXp0?=
+ =?utf-8?B?Y3VNMWF5cFF4OFY4bTVKTGhBMVNUYnRvdGpHZncreTdBbi9udXNsMklWWHJ5?=
+ =?utf-8?B?dDZyeVU2SXk1R3htd2JGbnI3RENCTHoxb0cyZlAzUDV3NEV1dDIxaE5Da3gx?=
+ =?utf-8?B?YjVGNStvVVlvaUp2VGM1QmhCWXNUZGc5TWltcGpwWC9ubkhPMGJPZ2t1ei9m?=
+ =?utf-8?B?TnNUYUt6VHpFNVM0UnVPeHdONDZnaGFpSXVYREhieGdEanlTQmJnZlNLYWNF?=
+ =?utf-8?B?cXZOemx2R2NIQmprNDV1UEVEWFhYeVk1enlOYnZrZlZBc1N2UUdGVlhRM0dO?=
+ =?utf-8?B?MisrYzZUNVF5RFl0Vk1GaFI0NEQrb0RPc0RyQjE1TDJuUGRXZzJERGJjbGhr?=
+ =?utf-8?B?RXNHeEJQKzJCdzF2VjBNT2cxWkNWMnhjRWd3WG14U2xjK3QxSjB1TXZBdENN?=
+ =?utf-8?B?d1BnNk5FWjFBK0Q1R1doY0dtMDFGRVJKNndwT0lRbWFLYUN5UFpIdzVWU2JD?=
+ =?utf-8?B?c2hwZmhRYTI1SlZaQ0FhdDUycnpWb3ZKWjhkZEtHMjQyREVwMWJ2SmhkbU5V?=
+ =?utf-8?B?WFNpOUh4MHZrVm9ERXFEdFFWc25YemR5SWw0TGw0b0owTTNPbGhzOStmeFRC?=
+ =?utf-8?B?bjdQUFE5MjRzaWE2MHFqZFZzR3lHTWxNREFKN29xTkcvdHV5azVXUFl5K2Fi?=
+ =?utf-8?B?ZmFNRDVCbUo0VWpEV3dZcVp6aDZSa0ptYi9MbXBsVEp0ZzBkRUQ5b210SVY1?=
+ =?utf-8?B?VlE1QWRVTWx3eXNHbFZWbk9uL2NlV08vMkg0MzZ3dVN1YTBWRlViZWxvY1JN?=
+ =?utf-8?B?dGQ0STR4bTlnS2ViWTduV0laMGRDWGpROHVJZ0JhUzdaSGtlcTZQOFB5TG85?=
+ =?utf-8?B?eXkrUE4xRjhvRERONXNjbTk1OERKLy9sS3lQQVlCRU10L2J6d2xJbi84NFJk?=
+ =?utf-8?B?eDNKdEF2a29YcmhXM3E4N2Z0a3ZwMVVRamRvZkFsOVpjNWNmcFNsc1B0cHpK?=
+ =?utf-8?B?TG13N09KQ2x2dmVvM0xPK0sxWWJsWHBUL00vdS9IWk5BUHJiNFZqaGxBTnZp?=
+ =?utf-8?B?NVlGV0YwbU1PYWQ5YzBrWXljcFgxcUlLLzBvQ3RDbVF3RGx2UDUzNlRkU3o5?=
+ =?utf-8?B?cnhKRHhmZG80VzlJbmtLajBZVHg4NldiaHR5QzBpdlV3d3BGVkRMaGVJUlNx?=
+ =?utf-8?B?S1R3WnZhQjE5YjN6ZGVVQ0VQeUFRcWxIOGdZUjgrdjFvUXg0bHBtaTN1UW5Z?=
+ =?utf-8?B?a2VMN1c1TXJtbEN3V05zemRVSWYyemNGSnp3K1J5SlZpdEZ6allBYzJMcEtE?=
+ =?utf-8?B?elZNa0E2WnlUdmV1cnhvNTUxeTZRYlNVcEdtQ3hoMmNETW40VVg5MVJ6YXhS?=
+ =?utf-8?B?aGhuWHhCMC9ZMmNDc0pyZmVYQ1h4Uy93UVZneFJBSWQ5ZjVDc3F0bTdUOENY?=
+ =?utf-8?B?N21hMnZHN2tDWHVsc25HbGNzVzlPR3dsdjlYNXkxUVB5VHQ0SzJpNFBDQThM?=
+ =?utf-8?B?NjIybGJXUnF0eXNFcTJvaEZpNld5KzdRalhZck0wc3hjaGRLbll0RFJ3ODl4?=
+ =?utf-8?B?dlFTd1FrSkVZNzJQeTBpNUx1M3hocUNpNy9YZFg1dlp0aUk5ZUovbmwzeDBK?=
+ =?utf-8?B?b0VuYWhZNzlKcDVKT3d1QnZLNlluSjVsRjIyZ3lBL1RycUJUYkJ2T2lXUng5?=
+ =?utf-8?Q?n7irioVEsvG1yhMNLclObZcFF3NJvhV5xqVsyqyy3g=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D27ABC53883508479A9849288C338441@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2731.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9b16baba-cfcd-4555-9d06-08d9eaf35488
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Feb 2022 11:08:26.5358
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 18iP9pKdQnKBTUVnr8ZVwMnJDnCamKziFRrP2Q+zHgcCgQl0ae7RY6e/VIzQF+uc/lKulSGLdI4sesc/HM/gTtyeXwI2MyV5aZgc+Nmdrfw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4911
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-head:   5d1e9f437df5ef21e7567f1970a00fda3b5d1126
-commit: ed2d9e1a26cca963ff5ed3b76326d70f7d8201a9 [212/221] bpf: Use size instead of pages in bpf_binary_header
-config: sparc-randconfig-r036-20220207 (https://download.01.org/0day-ci/archive/20220208/202202081815.gh1kFj08-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=ed2d9e1a26cca963ff5ed3b76326d70f7d8201a9
-        git remote add bpf-next https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-        git fetch --no-tags bpf-next master
-        git checkout ed2d9e1a26cca963ff5ed3b76326d70f7d8201a9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arch/sparc/net/bpf_jit_comp_64.c: In function 'bpf_int_jit_compile':
->> arch/sparc/net/bpf_jit_comp_64.c:1602:56: error: 'struct bpf_binary_header' has no member named 'pages'
-    1602 |         bpf_flush_icache(header, (u8 *)header + (header->pages * PAGE_SIZE));
-         |                                                        ^~
-
-
-vim +1602 arch/sparc/net/bpf_jit_comp_64.c
-
-5f5a641116391f David Miller       2017-12-22  1479  
-7a12b5031c6b94 David S. Miller    2017-04-17  1480  struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
-7a12b5031c6b94 David S. Miller    2017-04-17  1481  {
-7a12b5031c6b94 David S. Miller    2017-04-17  1482  	struct bpf_prog *tmp, *orig_prog = prog;
-5f5a641116391f David Miller       2017-12-22  1483  	struct sparc64_jit_data *jit_data;
-7a12b5031c6b94 David S. Miller    2017-04-17  1484  	struct bpf_binary_header *header;
-c44768a33da81b David Miller       2018-11-26  1485  	u32 prev_image_size, image_size;
-7a12b5031c6b94 David S. Miller    2017-04-17  1486  	bool tmp_blinded = false;
-5f5a641116391f David Miller       2017-12-22  1487  	bool extra_pass = false;
-7a12b5031c6b94 David S. Miller    2017-04-17  1488  	struct jit_ctx ctx;
-7a12b5031c6b94 David S. Miller    2017-04-17  1489  	u8 *image_ptr;
-c44768a33da81b David Miller       2018-11-26  1490  	int pass, i;
-7a12b5031c6b94 David S. Miller    2017-04-17  1491  
-60b58afc96c9df Alexei Starovoitov 2017-12-14  1492  	if (!prog->jit_requested)
-7a12b5031c6b94 David S. Miller    2017-04-17  1493  		return orig_prog;
-7a12b5031c6b94 David S. Miller    2017-04-17  1494  
-7a12b5031c6b94 David S. Miller    2017-04-17  1495  	tmp = bpf_jit_blind_constants(prog);
-7a12b5031c6b94 David S. Miller    2017-04-17  1496  	/* If blinding was requested and we failed during blinding,
-7a12b5031c6b94 David S. Miller    2017-04-17  1497  	 * we must fall back to the interpreter.
-7a12b5031c6b94 David S. Miller    2017-04-17  1498  	 */
-7a12b5031c6b94 David S. Miller    2017-04-17  1499  	if (IS_ERR(tmp))
-7a12b5031c6b94 David S. Miller    2017-04-17  1500  		return orig_prog;
-7a12b5031c6b94 David S. Miller    2017-04-17  1501  	if (tmp != prog) {
-7a12b5031c6b94 David S. Miller    2017-04-17  1502  		tmp_blinded = true;
-7a12b5031c6b94 David S. Miller    2017-04-17  1503  		prog = tmp;
-7a12b5031c6b94 David S. Miller    2017-04-17  1504  	}
-7a12b5031c6b94 David S. Miller    2017-04-17  1505  
-5f5a641116391f David Miller       2017-12-22  1506  	jit_data = prog->aux->jit_data;
-5f5a641116391f David Miller       2017-12-22  1507  	if (!jit_data) {
-5f5a641116391f David Miller       2017-12-22  1508  		jit_data = kzalloc(sizeof(*jit_data), GFP_KERNEL);
-5f5a641116391f David Miller       2017-12-22  1509  		if (!jit_data) {
-5f5a641116391f David Miller       2017-12-22  1510  			prog = orig_prog;
-5f5a641116391f David Miller       2017-12-22  1511  			goto out;
-5f5a641116391f David Miller       2017-12-22  1512  		}
-5f5a641116391f David Miller       2017-12-22  1513  		prog->aux->jit_data = jit_data;
-5f5a641116391f David Miller       2017-12-22  1514  	}
-5f5a641116391f David Miller       2017-12-22  1515  	if (jit_data->ctx.offset) {
-5f5a641116391f David Miller       2017-12-22  1516  		ctx = jit_data->ctx;
-5f5a641116391f David Miller       2017-12-22  1517  		image_ptr = jit_data->image;
-5f5a641116391f David Miller       2017-12-22  1518  		header = jit_data->header;
-5f5a641116391f David Miller       2017-12-22  1519  		extra_pass = true;
-5f5a641116391f David Miller       2017-12-22  1520  		image_size = sizeof(u32) * ctx.idx;
-c44768a33da81b David Miller       2018-11-26  1521  		prev_image_size = image_size;
-c44768a33da81b David Miller       2018-11-26  1522  		pass = 1;
-5f5a641116391f David Miller       2017-12-22  1523  		goto skip_init_ctx;
-5f5a641116391f David Miller       2017-12-22  1524  	}
-5f5a641116391f David Miller       2017-12-22  1525  
-7a12b5031c6b94 David S. Miller    2017-04-17  1526  	memset(&ctx, 0, sizeof(ctx));
-7a12b5031c6b94 David S. Miller    2017-04-17  1527  	ctx.prog = prog;
-7a12b5031c6b94 David S. Miller    2017-04-17  1528  
-c44768a33da81b David Miller       2018-11-26  1529  	ctx.offset = kmalloc_array(prog->len, sizeof(unsigned int), GFP_KERNEL);
-7a12b5031c6b94 David S. Miller    2017-04-17  1530  	if (ctx.offset == NULL) {
-7a12b5031c6b94 David S. Miller    2017-04-17  1531  		prog = orig_prog;
-5f5a641116391f David Miller       2017-12-22  1532  		goto out_off;
-7a12b5031c6b94 David S. Miller    2017-04-17  1533  	}
-7a12b5031c6b94 David S. Miller    2017-04-17  1534  
-c44768a33da81b David Miller       2018-11-26  1535  	/* Longest sequence emitted is for bswap32, 12 instructions.  Pre-cook
-c44768a33da81b David Miller       2018-11-26  1536  	 * the offset array so that we converge faster.
-7a12b5031c6b94 David S. Miller    2017-04-17  1537  	 */
-c44768a33da81b David Miller       2018-11-26  1538  	for (i = 0; i < prog->len; i++)
-c44768a33da81b David Miller       2018-11-26  1539  		ctx.offset[i] = i * (12 * 4);
-c44768a33da81b David Miller       2018-11-26  1540  
-c44768a33da81b David Miller       2018-11-26  1541  	prev_image_size = ~0U;
-c44768a33da81b David Miller       2018-11-26  1542  	for (pass = 1; pass < 40; pass++) {
-c44768a33da81b David Miller       2018-11-26  1543  		ctx.idx = 0;
-c44768a33da81b David Miller       2018-11-26  1544  
-c44768a33da81b David Miller       2018-11-26  1545  		build_prologue(&ctx);
-7a12b5031c6b94 David S. Miller    2017-04-17  1546  		if (build_body(&ctx)) {
-7a12b5031c6b94 David S. Miller    2017-04-17  1547  			prog = orig_prog;
-7a12b5031c6b94 David S. Miller    2017-04-17  1548  			goto out_off;
-7a12b5031c6b94 David S. Miller    2017-04-17  1549  		}
-7a12b5031c6b94 David S. Miller    2017-04-17  1550  		build_epilogue(&ctx);
-7a12b5031c6b94 David S. Miller    2017-04-17  1551  
-c44768a33da81b David Miller       2018-11-26  1552  		if (bpf_jit_enable > 1)
-c44768a33da81b David Miller       2018-11-26  1553  			pr_info("Pass %d: size = %u, seen = [%c%c%c%c%c%c]\n", pass,
-c44768a33da81b David Miller       2018-11-26  1554  				ctx.idx * 4,
-c44768a33da81b David Miller       2018-11-26  1555  				ctx.tmp_1_used ? '1' : ' ',
-c44768a33da81b David Miller       2018-11-26  1556  				ctx.tmp_2_used ? '2' : ' ',
-c44768a33da81b David Miller       2018-11-26  1557  				ctx.tmp_3_used ? '3' : ' ',
-c44768a33da81b David Miller       2018-11-26  1558  				ctx.saw_frame_pointer ? 'F' : ' ',
-c44768a33da81b David Miller       2018-11-26  1559  				ctx.saw_call ? 'C' : ' ',
-c44768a33da81b David Miller       2018-11-26  1560  				ctx.saw_tail_call ? 'T' : ' ');
-c44768a33da81b David Miller       2018-11-26  1561  
-c44768a33da81b David Miller       2018-11-26  1562  		if (ctx.idx * 4 == prev_image_size)
-c44768a33da81b David Miller       2018-11-26  1563  			break;
-c44768a33da81b David Miller       2018-11-26  1564  		prev_image_size = ctx.idx * 4;
-c44768a33da81b David Miller       2018-11-26  1565  		cond_resched();
-c44768a33da81b David Miller       2018-11-26  1566  	}
-c44768a33da81b David Miller       2018-11-26  1567  
-7a12b5031c6b94 David S. Miller    2017-04-17  1568  	/* Now we know the actual image size. */
-7a12b5031c6b94 David S. Miller    2017-04-17  1569  	image_size = sizeof(u32) * ctx.idx;
-7a12b5031c6b94 David S. Miller    2017-04-17  1570  	header = bpf_jit_binary_alloc(image_size, &image_ptr,
-7a12b5031c6b94 David S. Miller    2017-04-17  1571  				      sizeof(u32), jit_fill_hole);
-7a12b5031c6b94 David S. Miller    2017-04-17  1572  	if (header == NULL) {
-7a12b5031c6b94 David S. Miller    2017-04-17  1573  		prog = orig_prog;
-7a12b5031c6b94 David S. Miller    2017-04-17  1574  		goto out_off;
-7a12b5031c6b94 David S. Miller    2017-04-17  1575  	}
-7a12b5031c6b94 David S. Miller    2017-04-17  1576  
-7a12b5031c6b94 David S. Miller    2017-04-17  1577  	ctx.image = (u32 *)image_ptr;
-5f5a641116391f David Miller       2017-12-22  1578  skip_init_ctx:
-7a12b5031c6b94 David S. Miller    2017-04-17  1579  	ctx.idx = 0;
-7a12b5031c6b94 David S. Miller    2017-04-17  1580  
-7a12b5031c6b94 David S. Miller    2017-04-17  1581  	build_prologue(&ctx);
-7a12b5031c6b94 David S. Miller    2017-04-17  1582  
-7a12b5031c6b94 David S. Miller    2017-04-17  1583  	if (build_body(&ctx)) {
-7a12b5031c6b94 David S. Miller    2017-04-17  1584  		bpf_jit_binary_free(header);
-7a12b5031c6b94 David S. Miller    2017-04-17  1585  		prog = orig_prog;
-7a12b5031c6b94 David S. Miller    2017-04-17  1586  		goto out_off;
-7a12b5031c6b94 David S. Miller    2017-04-17  1587  	}
-7a12b5031c6b94 David S. Miller    2017-04-17  1588  
-7a12b5031c6b94 David S. Miller    2017-04-17  1589  	build_epilogue(&ctx);
-7a12b5031c6b94 David S. Miller    2017-04-17  1590  
-c44768a33da81b David Miller       2018-11-26  1591  	if (ctx.idx * 4 != prev_image_size) {
-c44768a33da81b David Miller       2018-11-26  1592  		pr_err("bpf_jit: Failed to converge, prev_size=%u size=%d\n",
-c44768a33da81b David Miller       2018-11-26  1593  		       prev_image_size, ctx.idx * 4);
-c44768a33da81b David Miller       2018-11-26  1594  		bpf_jit_binary_free(header);
-c44768a33da81b David Miller       2018-11-26  1595  		prog = orig_prog;
-c44768a33da81b David Miller       2018-11-26  1596  		goto out_off;
-7a12b5031c6b94 David S. Miller    2017-04-17  1597  	}
-7a12b5031c6b94 David S. Miller    2017-04-17  1598  
-7a12b5031c6b94 David S. Miller    2017-04-17  1599  	if (bpf_jit_enable > 1)
-7a12b5031c6b94 David S. Miller    2017-04-17  1600  		bpf_jit_dump(prog->len, image_size, pass, ctx.image);
-7a12b5031c6b94 David S. Miller    2017-04-17  1601  
-7a12b5031c6b94 David S. Miller    2017-04-17 @1602  	bpf_flush_icache(header, (u8 *)header + (header->pages * PAGE_SIZE));
-
-:::::: The code at line 1602 was first introduced by commit
-:::::: 7a12b5031c6b947cc13918237ae652b536243b76 sparc64: Add eBPF JIT.
-
-:::::: TO: David S. Miller <davem@davemloft.net>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+SGVsbG8gUGF1bCwNCg0KT24gTW9uLCAyMDIyLTAyLTA3IGF0IDE2OjM4IC0wNTAwLCBMeXVkZSBQ
+YXVsIHdyb3RlOg0KPiBBcyB3ZSd2ZSB1bmZvcnR1bmF0ZWx5IHN0YXJ0ZWQgdG8gY29tZSB0byBl
+eHBlY3QgZnJvbSBQU1Igb24gSW50ZWwNCj4gcGxhdGZvcm1zLCBQU1IyIHNlbGVjdGl2ZSBmZXRj
+aCBpcyBub3QgYXQgYWxsIHJlYWR5IHRvIGJlIGVuYWJsZWQgb24NCj4gVGlnZXJsYWtlIGFzIGl0
+IHJlc3VsdHMgaW4gc2V2ZXJlIGZsaWNrZXJpbmcgaXNzdWVzIC0gYXQgbGVhc3Qgb24NCj4gdGhp
+cw0KPiBUaGlua1BhZCBYMSBDYXJib24gOXRoIGdlbmVyYXRpb24uIFRoZSBlYXNpZXN0IHdheSBJ
+J3ZlIGZvdW5kIG9mDQo+IHJlcHJvZHVjaW5nIHRoZXNlIGlzc3VlcyBpcyB0byBqdXN0IG1vdmUg
+dGhlIGN1cnNvciBhcm91bmQgdGhlIGxlZnQNCj4gYm9yZGVyDQo+IG9mIHRoZSBzY3JlZW4gKHN1
+c3BpY2lvdXPigKYpLg0KDQpTb3JyeSB0byBoZWFyIHlvdSBoYXZlIHRoaXMgYmFkIGV4cGVyaWVu
+Y2Ugd2l0aCBpOTE1IFBTUjIgc2VsZWN0aXZlDQpmZXRjaCBzdXBwb3J0LiBUaGVyZSBpcyBhbHJl
+YWR5IHNvbWUgZGlzY3Vzc2lvbiBhYm91dCB0aGVzZSBwcm9ibGVtcw0KYW5kIHBvc3NpYmxlIHJv
+b3QgY2F1c2VzIGhlcmU6DQoNCmh0dHBzOi8vZ2l0bGFiLmZyZWVkZXNrdG9wLm9yZy9kcm0vaW50
+ZWwvLS9pc3N1ZXMvNDk1MQ0KDQpJIGhhdmUgRGVsbCBYUFMgMTMgNzM5MCB3aGljaCBoYXMgcGFu
+ZWwgc3VwcG9ydGluZyBQU1IyLiBMdWNraWx5IEknbQ0Kbm90IGZhY2luZyB0aGVzZSBwcm9ibGVt
+cyB3aXRoIGl0Lg0KIA0KPiANCj4gU28sIGZpeCBwZW9wbGUncyBkaXNwbGF5cyBhZ2FpbiBhbmQg
+dHVybiBQU1IyIHNlbGVjdGl2ZSBmZXRjaCBvZmYgZm9yDQo+IGFsbA0KPiBzdGVwcGluZ3Mgb2Yg
+VGlnZXJsYWtlLiBUaGlzIGNhbiBiZSByZS1lbmFibGVkIGFnYWluIGlmIHNvbWVvbmUgZnJvbQ0K
+PiBJbnRlbA0KPiBmaW5kcyB0aGUgdGltZSB0byBmaXggdGhpcyBmdW5jdGlvbmFsaXR5IG9uIE9F
+TSBtYWNoaW5lcy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEx5dWRlIFBhdWwgPGx5dWRlQHJlZGhh
+dC5jb20+DQo+IEZpeGVzOiA3ZjYwMDJlNTgwMjUgKCJkcm0vaTkxNS9kaXNwbGF5OiBFbmFibGUg
+UFNSMiBzZWxlY3RpdmUgZmV0Y2gNCj4gYnkgZGVmYXVsdCIpDQo+IENjOiBHd2FuLWd5ZW9uZyBN
+dW4gPGd3YW4tZ3llb25nLm11bkBpbnRlbC5jb20+DQo+IENjOiBWaWxsZSBTeXJqw6Rsw6QgPHZp
+bGxlLnN5cmphbGFAbGludXguaW50ZWwuY29tPg0KPiBDYzogSm9zw6kgUm9iZXJ0byBkZSBTb3V6
+YSA8am9zZS5zb3V6YUBpbnRlbC5jb20+DQo+IENjOiBKYW5pIE5pa3VsYSA8amFuaS5uaWt1bGFA
+bGludXguaW50ZWwuY29tPg0KPiBDYzogUm9kcmlnbyBWaXZpIDxyb2RyaWdvLnZpdmlAaW50ZWwu
+Y29tPg0KPiBDYzogaW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZw0KPiBDYzogPHN0YWJs
+ZUB2Z2VyLmtlcm5lbC5vcmc+ICMgdjUuMTYrDQo+IC0tLQ0KPiAgZHJpdmVycy9ncHUvZHJtL2k5
+MTUvZGlzcGxheS9pbnRlbF9wc3IuYyB8IDEwICsrKysrKystLS0NCj4gIDEgZmlsZSBjaGFuZ2Vk
+LCA3IGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9ncHUvZHJtL2k5MTUvZGlzcGxheS9pbnRlbF9wc3IuYw0KPiBiL2RyaXZlcnMvZ3B1L2Ry
+bS9pOTE1L2Rpc3BsYXkvaW50ZWxfcHNyLmMNCj4gaW5kZXggYTFhNjYzZjM2MmU3Li4yNWMxNmFi
+Y2Q5Y2QgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2Rpc3BsYXkvaW50ZWxf
+cHNyLmMNCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvZGlzcGxheS9pbnRlbF9wc3IuYw0K
+PiBAQCAtNzM3LDEwICs3MzcsMTQgQEAgc3RhdGljIGJvb2wNCj4gaW50ZWxfcHNyMl9zZWxfZmV0
+Y2hfY29uZmlnX3ZhbGlkKHN0cnVjdCBpbnRlbF9kcCAqaW50ZWxfZHAsDQo+ICAJCXJldHVybiBm
+YWxzZTsNCj4gIAl9DQo+ICANCj4gLQkvKiBXYV8xNDAxMDI1NDE4NSBXYV8xNDAxMDEwMzc5MiAq
+Lw0KPiAtCWlmIChJU19UR0xfRElTUExBWV9TVEVQKGRldl9wcml2LCBTVEVQX0EwLCBTVEVQX0Mw
+KSkgew0KPiArCS8qDQo+ICsJICogVGhlcmUncyB0d28gdGhpbmdzIHN0b3BwaW5nIHRoaXMgZnJv
+bSBiZWluZyBlbmFibGVkIG9uIFRHTDoNCj4gKwkgKiBGb3Igc3RlcHMgQTAtQzA6IHdvcmthcm91
+bmRzIFdhXzE0MDEwMjU0MTg1IFdhXzE0MDEwMTAzNzkyDQo+IGFyZSBtaXNzaW5nDQo+ICsJICog
+Rm9yIGFsbCBzdGVwczogUFNSMiBzZWxlY3RpdmUgZmV0Y2ggY2F1c2VzIHNjcmVlbiBmbGlja2Vy
+aW5nDQo+ICsJICovDQo+ICsJaWYgKElTX1RJR0VSTEFLRShkZXZfcHJpdikpIHsNCj4gIAkJZHJt
+X2RiZ19rbXMoJmRldl9wcml2LT5kcm0sDQo+IC0JCQkgICAgIlBTUjIgc2VsIGZldGNoIG5vdCBl
+bmFibGVkLCBtaXNzaW5nIHRoZQ0KPiBpbXBsZW1lbnRhdGlvbiBvZiBXQXNcbiIpOw0KPiArCQkJ
+ICAgICJQU1IyIHNlbCBmZXRjaCBub3QgZW5hYmxlZCwgY3VycmVudGx5DQo+IGJyb2tlbiBvbiBU
+R0xcbiIpOw0KPiAgCQlyZXR1cm4gZmFsc2U7DQo+ICAJfQ0KPiAgDQoNCkJSLA0KDQpKb3VuaSBI
+w7ZnYW5kZXINCg==
