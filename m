@@ -2,183 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5736CC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDC6C46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345506AbiBHBLa (ORCPT
+        id S1345536AbiBHBLd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:11:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59480 "EHLO
+        Mon, 7 Feb 2022 20:11:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242236AbiBHAqR (ORCPT
+        with ESMTP id S1344253AbiBHAu1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 19:46:17 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462BEC061A73;
-        Mon,  7 Feb 2022 16:46:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644281177; x=1675817177;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xMEi1oXFcnuX1gpk8saxEOCFax6+UjSCCyW2mtxyWzA=;
-  b=ltJCwWA5Tonap8ESUl2Scim5lHKCAroDOdkThdgjCt4yytUtZY4il5Lk
-   UwXpE06MsVsIGZMTIb7eSxLA6sCBqhD7WH9IXqCmS8TO5Eoom+f4FP21S
-   2SiB7ofoEDb3gDkuXoJV3PYuaeFVEy4VjzYB17XVrsnriT0mPoo8tCumr
-   PQglEC7DR4UHBqPJEpS2vjiBybErSbJqGRoPQlGs3s4tRKeZpT8R0CKXV
-   eXO1jAnIr5YaoziYZy+x/URwVox/hHgHdQ1qbFUkqVAuvY37zJtJgjReX
-   /kKCYDSXWCE+LzYMln2nLEuQMn5BcI/1VKLjTRcWzJYpWp9q/LiiA5X9j
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="232407995"
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="232407995"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:10 -0800
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="499389560"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:09 -0800
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V2 30/32] selftests/sgx: Test reclaiming of untouched page
-Date:   Mon,  7 Feb 2022 16:45:52 -0800
-Message-Id: <8a28acf461e5c6c0895221766b5bad2fe353d68e.1644274683.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1644274683.git.reinette.chatre@intel.com>
-References: <cover.1644274683.git.reinette.chatre@intel.com>
+        Mon, 7 Feb 2022 19:50:27 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E56C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 16:50:25 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id x65so1477930pfx.12
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 16:50:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=P4dVbEFdi/JUsP7B7tBGXHD+ETv7S+cY00xBr/7Gj+s=;
+        b=kcpKAm4jzm1OsPMjGPrgkbvJS/LbWlj2YvFZdqf3Okn+ptsEFxEPILhJ07fEaQkCCS
+         fxKQWER27n8E8CWkUIbx2aQ6znFoabJ/UgYrpQI0jgKeRF+9vG+j9s42cFGBK1Br/g0t
+         qGS/Ay3ZMQcH6ko2T/B3L9IaD3Q8qDzeltD0s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=P4dVbEFdi/JUsP7B7tBGXHD+ETv7S+cY00xBr/7Gj+s=;
+        b=21ap8ZmKChzKVq3udf7RytVnRplXXq/f0bNUo3nQewONAL+8TfZ9qs6Ub2g7jmPQc9
+         lbiui1j+cMnUtoJKO5gHJFg7Kp3HcYa7Ml8l+BQa/2HL0UGIcVtvA1mTOV7xzFeVZMJV
+         S+/SkWUmeqqCuyVXyJRVxMxgtaa2xbqGVRhUgxVWP7iRfrPV3Mmjx57kHgLCBKxiG9K2
+         ZKHcR7WVZeE19VS+U6EHF8l7Tri4bIINVXgDEnUxZtDzz4lubbK0SP4bpHEZfW/krCH1
+         LulyRBngznI9tBsd8TXKVmzHaPcjp4LZ5/uqNObchIW4+V0ByChF2nW8zGF7c8zjHoqR
+         +yWg==
+X-Gm-Message-State: AOAM533ZuYpnHKJkXzuWWFRVd83Mgt/UFNQ3JM0r/Od9dhiu1B4lqOFK
+        v3Yaj7UU9q3fMTyPgOyNhBNLSA==
+X-Google-Smtp-Source: ABdhPJyOItaFwB1a6V9pdWDOozh78FaEp+dooWqUDO7ZAS63J5y1+pQX1elO5BGpl/iyCEDyedzaaw==
+X-Received: by 2002:a05:6a00:1486:: with SMTP id v6mr1932729pfu.73.1644281424964;
+        Mon, 07 Feb 2022 16:50:24 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:45cc:a522:8718:fc78])
+        by smtp.gmail.com with UTF8SMTPSA id nv13sm515627pjb.18.2022.02.07.16.50.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 16:50:24 -0800 (PST)
+Date:   Mon, 7 Feb 2022 16:50:22 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Lukasz Luba <lukasz.luba@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        amit.kachhap@gmail.com, daniel.lezcano@linaro.org,
+        viresh.kumar@linaro.org, rafael@kernel.org, amitk@kernel.org,
+        rui.zhang@intel.com, dietmar.eggemann@arm.com,
+        Pierre.Gondois@arm.com, Douglas Anderson <dianders@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 1/2] thermal: cooling: Check Energy Model type in
+ cpufreq_cooling and devfreq_cooling
+Message-ID: <YgG+TmLrCSXX4Bvt@google.com>
+References: <20220207073036.14901-1-lukasz.luba@arm.com>
+ <20220207073036.14901-2-lukasz.luba@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220207073036.14901-2-lukasz.luba@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Removing a page from an initialized enclave involves three steps:
-(1) the user requests changing the page type to PT_TRIM via the
-    SGX_IOC_ENCLAVE_MODIFY_TYPE ioctl()
-(2) on success the ENCLU[EACCEPT] instruction is run from within
-    the enclave to accept the page removal
-(3) the user initiates the actual removal of the page via the
-    SGX_IOC_ENCLAVE_REMOVE_PAGES ioctl().
+On Mon, Feb 07, 2022 at 07:30:35AM +0000, Lukasz Luba wrote:
+> The Energy Model supports power values either in Watts or in some abstract
+> scale. When the 2nd option is in use, the thermal governor IPA should not
+> be allowed to operate, since the relation between cooling devices is not
+> properly defined. Thus, it might be possible that big GPU has lower power
+> values in abstract scale than a Little CPU. To mitigate a misbehaviour
+> of the thermal control algorithm, simply not register a cooling device
+> capable of working with IPA.
 
-Remove a page that has never been accessed. This means that when the
-first ioctl() requesting page removal arrives, there will be no page
-table entry, yet a valid page table entry needs to exist for the
-ENCLU[EACCEPT] function to succeed. In this test it is verified that
-a page table entry can still be installed for a page that is in the
-process of being removed.
+Ugh, this would break thermal throttling for existing devices that are
+currently supported in the upstream kernel.
 
-Suggested-by: Haitao Huang <haitao.huang@intel.com>
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
----
-Changes since V1:
-- Update to support ioctl() name change (SGX_IOC_PAGE_MODT ->
-  SGX_IOC_ENCLAVE_MODIFY_TYPE) and provide secinfo as parameter instead
-  of just page type (Jarkko).
-- Update test to reflect page removal ioctl() and struct name change:
-  SGX_IOC_PAGE_REMOVE->SGX_IOC_ENCLAVE_REMOVE_PAGES,
-  struct sgx_page_remove -> struct sgx_enclave_remove_pages (Jarkko).
-- Ensure test is skipped when SGX2 not supported by kernel.
+Wasn't the conclusion that it is the responsability of the device tree
+owners to ensure that cooling devices with different scales aren't used
+in the same thermal zone?
 
- tools/testing/selftests/sgx/main.c | 82 ++++++++++++++++++++++++++++++
- 1 file changed, 82 insertions(+)
+That's also what's currently specified in the power allocator
+documentation:
 
-diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
-index 239d3c9df169..4fe5a0324c97 100644
---- a/tools/testing/selftests/sgx/main.c
-+++ b/tools/testing/selftests/sgx/main.c
-@@ -1835,4 +1835,86 @@ TEST_F(enclave, remove_added_page_invalid_access_after_eaccept)
- 	EXPECT_EQ(self->run.exception_addr, data_start);
- }
- 
-+TEST_F(enclave, remove_untouched_page)
-+{
-+	struct sgx_enclave_remove_pages remove_ioc;
-+	struct encl_op_eaccept eaccept_op;
-+	struct sgx_enclave_modt modt_ioc;
-+	struct sgx_secinfo secinfo;
-+	unsigned long data_start;
-+	int ret, errno_save;
-+
-+	ASSERT_TRUE(setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata));
-+
-+	/*
-+	 * Hardware (SGX2) and kernel support is needed for this test. Start
-+	 * with check that test has a chance of succeeding.
-+	 */
-+	memset(&modt_ioc, 0, sizeof(modt_ioc));
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
-+
-+	if (ret == -1) {
-+		if (errno == ENOTTY)
-+			SKIP(return, "Kernel does not support SGX_IOC_ENCLAVE_MODIFY_TYPE ioctl()");
-+		else if (errno == ENODEV)
-+			SKIP(return, "System does not support SGX2");
-+	}
-+
-+	/*
-+	 * Invalid parameters were provided during sanity check,
-+	 * expect command to fail.
-+	 */
-+	EXPECT_EQ(ret, -1);
-+
-+	/* SGX2 is supported by kernel and hardware, test can proceed. */
-+	memset(&self->run, 0, sizeof(self->run));
-+	self->run.tcs = self->encl.encl_base;
-+
-+	data_start = self->encl.encl_base +
-+			 encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+
-+	memset(&modt_ioc, 0, sizeof(modt_ioc));
-+	memset(&secinfo, 0, sizeof(secinfo));
-+
-+	secinfo.flags = SGX_PAGE_TYPE_TRIM << 8;
-+	modt_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+	modt_ioc.length = PAGE_SIZE;
-+	modt_ioc.secinfo = (unsigned long)&secinfo;
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPE, &modt_ioc);
-+	errno_save = ret == -1 ? errno : 0;
-+
-+	EXPECT_EQ(ret, 0);
-+	EXPECT_EQ(errno_save, 0);
-+	EXPECT_EQ(modt_ioc.result, 0);
-+	EXPECT_EQ(modt_ioc.count, 4096);
-+
-+	/*
-+	 * Enter enclave via TCS #1 and approve page removal by sending
-+	 * EACCEPT for removed page.
-+	 */
-+
-+	eaccept_op.epc_addr = data_start;
-+	eaccept_op.flags = SGX_SECINFO_TRIM | SGX_SECINFO_MODIFIED;
-+	eaccept_op.ret = 0;
-+	eaccept_op.header.type = ENCL_OP_EACCEPT;
-+
-+	EXPECT_EQ(ENCL_CALL(&eaccept_op, &self->run, true), 0);
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+	EXPECT_EQ(eaccept_op.ret, 0);
-+
-+	memset(&remove_ioc, 0, sizeof(remove_ioc));
-+
-+	remove_ioc.offset = encl_get_data_offset(&self->encl) + PAGE_SIZE;
-+	remove_ioc.length = PAGE_SIZE;
-+	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_REMOVE_PAGES, &remove_ioc);
-+	errno_save = ret == -1 ? errno : 0;
-+
-+	EXPECT_EQ(ret, 0);
-+	EXPECT_EQ(errno_save, 0);
-+	EXPECT_EQ(remove_ioc.count, 4096);
-+}
-+
- TEST_HARNESS_MAIN
--- 
-2.25.1
+  Another important thing is the consistent scale of the power values
+  provided by the cooling devices. All of the cooling devices in a single
+  thermal zone should have power values reported either in milli-Watts
+  or scaled to the same 'abstract scale'.
 
+Which was actually added by yourself:
+
+commit 5a64f775691647c242aa40d34f3512e7b179a921
+Author: Lukasz Luba <lukasz.luba@arm.com>
+Date:   Tue Nov 3 09:05:58 2020 +0000
+
+    PM: EM: Clarify abstract scale usage for power values in Energy Model
+
+    The Energy Model (EM) can store power values in milli-Watts or in abstract
+    scale. This might cause issues in the subsystems which use the EM for
+        estimating the device power, such as:
+
+     - mixing of different scales in a subsystem which uses multiple
+            (cooling) devices (e.g. thermal Intelligent Power Allocation (IPA))
+
+     - assuming that energy [milli-Joules] can be derived from the EM power
+            values which might not be possible since the power scale doesn't have
+	           to be in milli-Watts
+
+    To avoid misconfiguration add the requisite documentation to the EM and
+        related subsystems: EAS and IPA.
+
+    Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+    Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+
+
+It's ugly to have the abstract scales in the first place, but that's
+unfortunately what we currently have for at least some cooling devices.
+
+IMO it would be preferable to stick to catching incompliant configurations
+in reviews, rather than breaking thermal throttling for existing devices
+with configurations that comply with the current documentation.
