@@ -2,168 +2,299 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 513D9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09462C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358968AbiBHL1o (ORCPT
+        id S1349602AbiBHL1H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:27:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56598 "EHLO
+        Tue, 8 Feb 2022 06:27:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234069AbiBHKcU (ORCPT
+        with ESMTP id S1344266AbiBHKUF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:32:20 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8C7C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:32:19 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id z7so13500099ilb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 02:32:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IiwkpuM+BfLL6jHkWVkc0DGHd+y4pmtd32Iu8/4ilfc=;
-        b=c34Yqufwr+tpl4Ls9NyohNK+tbfd7eD7QWVO23mmKLmOQplMwAiRZH4JxpVLsbcSLD
-         ZjrnpBi4zlEiv+2yuO0AA3o37PVhrimSWqty//ByE1PcwJj2DPC0zUyD5tdFa41ApGuc
-         ExF6gcgHxTjTmMsSGeiKGvthGPBqELlAP4WlcDDV+QjNMfx7cQTOcXjp52V8OIDZfNPq
-         cJwhpKGuPc7RfJ5WpfLj0kHIExXZaSORc54NAO+z2brqOPtn0y+AcCAORXoax4UXOLKu
-         zYjZPjGhbHHiVOt6susQrPHsmKiqFCoXEpBgp0D9nD/zaOiKVRTb0eoqrD+VzPrqt0NC
-         lr5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IiwkpuM+BfLL6jHkWVkc0DGHd+y4pmtd32Iu8/4ilfc=;
-        b=5OEDsq2qyYQj8MQKiMA8ZJEq70Pvn8f77zBJVkqCbshsMTfUiZY7OSs4jROz1oP0Hy
-         z8rdDFZvOUEGI1QetKbFR57epBt9VJYnUXhZ7miDthgjsskbKxxJsikOIAC/5AF+Eo0n
-         4OxvJ16FAVCuzmBl7b38Y0uFhntwbnIF6Jx7NMfOBoQ2mocktoakC4jvyexIAxX/iQ00
-         IDrybWCWOlSOfdEB9D3528SemLD2zBmvyJ7wLLAnI++wRcEpJxa2hEdea66hs5PGPDpz
-         7knLsTYgLsyOCwz1EYr/ttiSkeudbRfP7dI1DUkbVgbtAyWeTGZnOvMSsg6DjSOR5MmX
-         T8rQ==
-X-Gm-Message-State: AOAM530fRavba36jzUueuAeLwP5hsH9Op/54jfcEdTWm6y903crxXreL
-        bWuO3AgbVNasmwC2kqQuLEf+zjp68w6eMhCuUGaBDg==
-X-Google-Smtp-Source: ABdhPJwO7h+SNAUC6DS01GMY8SZPwIRsrITZWvxiKolM4+z3P2mez8dPra7ycisZCpd/a7IFPAVYshy3EHmGWbJP1pg=
-X-Received: by 2002:a05:6e02:194b:: with SMTP id x11mr1773801ilu.123.1644316338411;
- Tue, 08 Feb 2022 02:32:18 -0800 (PST)
+        Tue, 8 Feb 2022 05:20:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FB1C03FEC0;
+        Tue,  8 Feb 2022 02:20:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BA1861559;
+        Tue,  8 Feb 2022 10:20:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1930BC004E1;
+        Tue,  8 Feb 2022 10:20:01 +0000 (UTC)
+Date:   Tue, 8 Feb 2022 11:19:59 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-usb@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [v2] ARM: sa1100/assabet: move dmabounce hack to ohci
+ driver
+Message-ID: <YgJDz6UdVwvyCSvq@kroah.com>
+References: <20220203083658.559803-1-arnd@kernel.org>
 MIME-Version: 1.0
-References: <000000000000ef8cbb05d3bf84cd@google.com> <20211225005253.1962-1-hdanton@sina.com>
- <6396f046-b292-1a73-8339-d32b611d9b7f@redhat.com> <YczTPYx0L7y8TgIE@mit.edu> <20211230125018.2272-1-hdanton@sina.com>
-In-Reply-To: <20211230125018.2272-1-hdanton@sina.com>
-From:   Aleksandr Nogikh <nogikh@google.com>
-Date:   Tue, 8 Feb 2022 11:32:07 +0100
-Message-ID: <CANp29Y4wyREoKO60XjOfh618Udf5h21boF3R_=qYY8tJc0otfg@mail.gmail.com>
-Subject: Re: [syzbot] INFO: rcu detected stall in ext4_file_write_iter (4)
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>, Waiman Long <longman@redhat.com>,
-        syzbot <syzbot+03464269af631f4a4bdf@syzkaller.appspotmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220203083658.559803-1-arnd@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Closing the bug. Syzkaller now is much more careful with sched_setattr
-and perf_event_open, so, hopefully, we'll see fewer such false
-positive reports in the future.
+On Thu, Feb 03, 2022 at 09:36:33AM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The sa1111 platform is one of the two remaining users of the old Arm
+> specific "dmabounce" code, which is an earlier implementation of the
+> generic swiotlb.
+> 
+> Linus Walleij submitted a patch that removes dmabounce support from
+> the ixp4xx, and I had a look at the other user, which is the sa1111
+> companion chip.
+> 
+> Looking at how dmabounce is used, I could narrow it down to one driver
+> one three machines:
+> 
+>  - dmabounce is only initialized on assabet/neponset, jornada720 and
+>    badge4, which are the platforms that have an sa1111 and support
+>    DMA on it.
+> 
+>  - All three of these suffer from "erratum #7" that requires only
+>    doing DMA to half the memory sections based on one of the address
+>    lines, in addition, the neponset also can't DMA to the RAM that
+>    is connected to sa1111 itself.
+> 
+>  - the pxa lubbock machine also has sa1111, but does not support DMA
+>    on it and does not set dmabounce.
+> 
+>  - only the OHCI and audio devices on sa1111 support DMA, but as
+>    there is no audio driver for this hardware, only OHCI remains.
+> 
+> In the OHCI code, I noticed that two other platforms already have
+> a local bounce buffer support in the form of the "local_mem"
+> allocator. Specifically, TMIO and SM501 use this on a few other ARM
+> boards with 16KB or 128KB of local SRAM that can be accessed from the
+> OHCI and from the CPU.
+> 
+> While this is not the same problem as on sa1111, I could not find a
+> reason why we can't re-use the existing implementation but replace the
+> physical SRAM address mapping with a locally allocated DMA buffer.
+> 
+> There are two main downsides:
+> 
+>  - rather than using a dynamically sized pool, this buffer needs
+>    to be allocated at probe time using a fixed size. Without
+>    having any idea of what it should be, I picked a size of
+>    64KB, which is between what the other two OHCI front-ends use
+>    in their SRAM. If anyone has a better idea what that size
+>    is reasonable, this can be trivially changed.
+> 
+>  - Previously, only USB transfers to unaddressable memory needed
+>    to go through the bounce buffer, now all of them do, which may
+>    impact runtime performance for USB endpoints that do a lot of
+>    transfers.
+> 
+> On the upside, the local_mem support uses write-combining buffers,
+> which should be a bit faster for transfers to the device compared to
+> normal uncached coherent memory as used in dmabounce.
+> 
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: Christoph Hellwig <hch@infradead.org>
+> Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> Cc: linux-usb@vger.kernel.org
+> Acked-by: Alan Stern <stern@rowland.harvard.edu>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-#syz invalid
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-On Thu, Dec 30, 2021 at 1:50 PM Hillf Danton <hdanton@sina.com> wrote:
->
-> On Wed, 29 Dec 2021 16:29:33 -0500 Theodore Ts'o wrote:
-> > On Mon, Dec 27, 2021 at 10:14:23PM -0500, Waiman Long wrote:
-> > >
-> > > The test was running on a CONFIG_PREEMPT kernel. So if the syzkaller kthread
-> > > is running at a higher priority than the rcu_preempt kthread, it is possible
-> > > for the rcu_preempt kthread to be starved of cpu time. The rwsem optimistic
-> > > spinning code will relinquish the cpu if there is a higher priority thread
-> > > running. Since rcu_preempt kthread did not seem to be able to get the cpu, I
-> > > suspect that it is probably caused by the syzkaller thread having a higher
-> > > priority.
-> >
-> > It's even worse than that.  The Syzkaller reproducer is calling
-> > sched_setattr():
-> >
-> >   *(uint32_t*)0x20000080 = 0x38;    // sched_attr.sched_size
-> >   *(uint32_t*)0x20000084 = 1;       // sched_attr.sched_policy == SCHED_FIFO
-> >   *(uint64_t*)0x20000088 = 0;       // sched_attr.sched_flags
-> >   *(uint32_t*)0x20000090 = 0;       // sched_attr.sched_nice
-> >   *(uint32_t*)0x20000094 = 1;       // sched_attr.sched_priority
-> >   *(uint64_t*)0x20000098 = 0;       // ...
-> >   *(uint64_t*)0x200000a0 = 0;
-> >   *(uint64_t*)0x200000a8 = 0;
-> >   *(uint32_t*)0x200000b0 = 0;
-> >   *(uint32_t*)0x200000b4 = 0;
-> >   syscall(__NR_sched_setattr, 0, 0x20000080ul, 0ul);
-> >
-> > So one or more of the syzkaller threads is SCHED_FIFO, and SCHED_FIFO
-> > threads will *never* relinquish the CPU in favor of SCHED_OTHER
-> > threads (which in practice will include all kernel threads unless
-> > special measures are taken by someone who knows what they are doing)
-> > so long as it they are runable.
-> >
-> > See the discussion at:
-> >
-> >     https://lore.kernel.org/all/Yb5RMWRsJl5TMk8H@casper.infradead.org/
-> >
-> > I recommend that kernel developers simply ignore any syzkaller report
-> > that relates to tasks being hung or rcu detected and where the
-> > reproducer is trying to set a real-time priority (e.g., sched_policy
-> > of SCHED_FIFO or SCHED_RR), since the number of ways that
-> > sched_setattr can be used as a foot-gun are near infinite....
-> >
-> > Syzkaller reports that include sched_setattr are great for inflating
-> > the OMG!  There are tons of unhandled syzkaller reports, "companies
-> > need to fund more engineering headcount to fix syzkaller bugs" slide
-> > decks.  But IMHO, they are not good for much else.
-> >
-> >                                           - Ted
-> >
->
-> On the other hand, this report suggests IMHO the need for setting the
-> deadline, a couple of ticks by default, for spinners, to cut the chance
-> for FIFO tasks to make trouble in scenarios like the report.
->
-> Mutex needs the same mechanism if it makes sense.
->
-> Thanks
->                 Hillf
->
->
-> +++ x/kernel/locking/rwsem.c
-> @@ -716,6 +716,7 @@ rwsem_spin_on_owner(struct rw_semaphore
->         struct task_struct *new, *owner;
->         unsigned long flags, new_flags;
->         enum owner_state state;
-> +       unsigned long deadline;
->
->         lockdep_assert_preemption_disabled();
->
-> @@ -724,6 +725,10 @@ rwsem_spin_on_owner(struct rw_semaphore
->         if (state != OWNER_WRITER)
->                 return state;
->
-> +       /* avoid spinning long enough to make rcu stall
-> +        * particularly in case of FIFO spinner
-> +        */
-> +       deadline = jiffies + 2;
->         for (;;) {
->                 /*
->                  * When a waiting writer set the handoff flag, it may spin
-> @@ -747,7 +752,8 @@ rwsem_spin_on_owner(struct rw_semaphore
->                  */
->                 barrier();
->
-> -               if (need_resched() || !owner_on_cpu(owner)) {
-> +               if (need_resched() || !owner_on_cpu(owner) ||
-> +                   time_after(jiffies, deadline)) {
->                         state = OWNER_NONSPINNABLE;
->                         break;
->                 }
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/20211230125018.2272-1-hdanton%40sina.com.
+> ---
+> Changes in v2:
+> 
+>  - drop check for assabet, as bounce buffers are required on
+>    all sa1100 machines
+>  - select CONFIG_ZONE_DMA again
+>  - update comments and changelog text based on discussion
+> ---
+>  arch/arm/common/Kconfig        |  2 +-
+>  arch/arm/common/sa1111.c       | 64 ----------------------------------
+>  drivers/usb/core/hcd.c         | 17 +++++++--
+>  drivers/usb/host/ohci-sa1111.c | 25 +++++++++++++
+>  4 files changed, 40 insertions(+), 68 deletions(-)
+> 
+> diff --git a/arch/arm/common/Kconfig b/arch/arm/common/Kconfig
+> index c8e198631d41..bc158fd227e1 100644
+> --- a/arch/arm/common/Kconfig
+> +++ b/arch/arm/common/Kconfig
+> @@ -1,7 +1,7 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  config SA1111
+>  	bool
+> -	select DMABOUNCE if !ARCH_PXA
+> +	select ZONE_DMA if ARCH_SA1100
+>  
+>  config DMABOUNCE
+>  	bool
+> diff --git a/arch/arm/common/sa1111.c b/arch/arm/common/sa1111.c
+> index 7df003b149c6..a00915883f78 100644
+> --- a/arch/arm/common/sa1111.c
+> +++ b/arch/arm/common/sa1111.c
+> @@ -1391,70 +1391,9 @@ void sa1111_driver_unregister(struct sa1111_driver *driver)
+>  }
+>  EXPORT_SYMBOL(sa1111_driver_unregister);
+>  
+> -#ifdef CONFIG_DMABOUNCE
+> -/*
+> - * According to the "Intel StrongARM SA-1111 Microprocessor Companion
+> - * Chip Specification Update" (June 2000), erratum #7, there is a
+> - * significant bug in the SA1111 SDRAM shared memory controller.  If
+> - * an access to a region of memory above 1MB relative to the bank base,
+> - * it is important that address bit 10 _NOT_ be asserted. Depending
+> - * on the configuration of the RAM, bit 10 may correspond to one
+> - * of several different (processor-relative) address bits.
+> - *
+> - * This routine only identifies whether or not a given DMA address
+> - * is susceptible to the bug.
+> - *
+> - * This should only get called for sa1111_device types due to the
+> - * way we configure our device dma_masks.
+> - */
+> -static int sa1111_needs_bounce(struct device *dev, dma_addr_t addr, size_t size)
+> -{
+> -	/*
+> -	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
+> -	 * User's Guide" mentions that jumpers R51 and R52 control the
+> -	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
+> -	 * SDRAM bank 1 on Neponset). The default configuration selects
+> -	 * Assabet, so any address in bank 1 is necessarily invalid.
+> -	 */
+> -	return (machine_is_assabet() || machine_is_pfs168()) &&
+> -		(addr >= 0xc8000000 || (addr + size) >= 0xc8000000);
+> -}
+> -
+> -static int sa1111_notifier_call(struct notifier_block *n, unsigned long action,
+> -	void *data)
+> -{
+> -	struct sa1111_dev *dev = to_sa1111_device(data);
+> -
+> -	switch (action) {
+> -	case BUS_NOTIFY_ADD_DEVICE:
+> -		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL) {
+> -			int ret = dmabounce_register_dev(&dev->dev, 1024, 4096,
+> -					sa1111_needs_bounce);
+> -			if (ret)
+> -				dev_err(&dev->dev, "failed to register with dmabounce: %d\n", ret);
+> -		}
+> -		break;
+> -
+> -	case BUS_NOTIFY_DEL_DEVICE:
+> -		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL)
+> -			dmabounce_unregister_dev(&dev->dev);
+> -		break;
+> -	}
+> -	return NOTIFY_OK;
+> -}
+> -
+> -static struct notifier_block sa1111_bus_notifier = {
+> -	.notifier_call = sa1111_notifier_call,
+> -};
+> -#endif
+> -
+>  static int __init sa1111_init(void)
+>  {
+>  	int ret = bus_register(&sa1111_bus_type);
+> -#ifdef CONFIG_DMABOUNCE
+> -	if (ret == 0)
+> -		bus_register_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
+> -#endif
+>  	if (ret == 0)
+>  		platform_driver_register(&sa1111_device_driver);
+>  	return ret;
+> @@ -1463,9 +1402,6 @@ static int __init sa1111_init(void)
+>  static void __exit sa1111_exit(void)
+>  {
+>  	platform_driver_unregister(&sa1111_device_driver);
+> -#ifdef CONFIG_DMABOUNCE
+> -	bus_unregister_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
+> -#endif
+>  	bus_unregister(&sa1111_bus_type);
+>  }
+>  
+> diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
+> index 3c7c64ff3c0a..8417baedc89c 100644
+> --- a/drivers/usb/core/hcd.c
+> +++ b/drivers/usb/core/hcd.c
+> @@ -1260,7 +1260,8 @@ void usb_hcd_unlink_urb_from_ep(struct usb_hcd *hcd, struct urb *urb)
+>  EXPORT_SYMBOL_GPL(usb_hcd_unlink_urb_from_ep);
+>  
+>  /*
+> - * Some usb host controllers can only perform dma using a small SRAM area.
+> + * Some usb host controllers can only perform dma using a small SRAM area,
+> + * or have restrictions on addressable DRAM.
+>   * The usb core itself is however optimized for host controllers that can dma
+>   * using regular system memory - like pci devices doing bus mastering.
+>   *
+> @@ -3095,8 +3096,18 @@ int usb_hcd_setup_local_mem(struct usb_hcd *hcd, phys_addr_t phys_addr,
+>  	if (IS_ERR(hcd->localmem_pool))
+>  		return PTR_ERR(hcd->localmem_pool);
+>  
+> -	local_mem = devm_memremap(hcd->self.sysdev, phys_addr,
+> -				  size, MEMREMAP_WC);
+> +	/*
+> +	 * if a physical SRAM address was passed, map it, otherwise
+> +	 * allocate system memory as a buffer.
+> +	 */
+> +	if (phys_addr)
+> +		local_mem = devm_memremap(hcd->self.sysdev, phys_addr,
+> +					  size, MEMREMAP_WC);
+> +	else
+> +		local_mem = dmam_alloc_attrs(hcd->self.sysdev, size, &dma,
+> +					     GFP_KERNEL,
+> +					     DMA_ATTR_WRITE_COMBINE);
+> +
+>  	if (IS_ERR(local_mem))
+>  		return PTR_ERR(local_mem);
+>  
+> diff --git a/drivers/usb/host/ohci-sa1111.c b/drivers/usb/host/ohci-sa1111.c
+> index 137f66f6977f..0da2badf0658 100644
+> --- a/drivers/usb/host/ohci-sa1111.c
+> +++ b/drivers/usb/host/ohci-sa1111.c
+> @@ -206,6 +206,31 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
+>  		goto err1;
+>  	}
+>  
+> +	/*
+> +	 * According to the "Intel StrongARM SA-1111 Microprocessor Companion
+> +	 * Chip Specification Update" (June 2000), erratum #7, there is a
+> +	 * significant bug in the SA1111 SDRAM shared memory controller.  If
+> +	 * an access to a region of memory above 1MB relative to the bank base,
+> +	 * it is important that address bit 10 _NOT_ be asserted. Depending
+> +	 * on the configuration of the RAM, bit 10 may correspond to one
+> +	 * of several different (processor-relative) address bits.
+> +	 *
+> +	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
+> +	 * User's Guide" mentions that jumpers R51 and R52 control the
+> +	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
+> +	 * SDRAM bank 1 on Neponset). The default configuration selects
+> +	 * Assabet, so any address in bank 1 is necessarily invalid.
+> +	 *
+> +	 * As a workaround, use a bounce buffer in addressable memory
+> +	 * as local_mem, relying on ZONE_DMA to provide an area that
+> +	 * fits within the above constraints.
+> +	 *
+> +	 * SZ_64K is an estimate for what size this might need.
+> +	 */
+> +	ret = usb_hcd_setup_local_mem(hcd, 0, 0, SZ_64K);
+> +	if (ret)
+> +		goto err1;
+> +
+>  	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
+>  		dev_dbg(&dev->dev, "request_mem_region failed\n");
+>  		ret = -EBUSY;
+> -- 
+> 2.29.2
+> 
