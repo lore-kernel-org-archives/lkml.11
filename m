@@ -2,115 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD321C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348242AbiBHNSl (ORCPT
+        id S1348493AbiBHNSq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:18:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
+        Tue, 8 Feb 2022 08:18:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376344AbiBHM5Z (ORCPT
+        with ESMTP id S1358155AbiBHMlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:57:25 -0500
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99DF0C03FED0;
-        Tue,  8 Feb 2022 04:57:21 -0800 (PST)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxL+M6ZwJik0oIAA--.26524S5;
-        Tue, 08 Feb 2022 20:51:08 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Baoquan He <bhe@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, kexec@lists.infradead.org,
-        linux-doc@vger.kernel.org, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/5] panic: unset panic_on_warn inside panic()
-Date:   Tue,  8 Feb 2022 20:51:04 +0800
-Message-Id: <1644324666-15947-4-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1644324666-15947-1-git-send-email-yangtiezhu@loongson.cn>
-References: <1644324666-15947-1-git-send-email-yangtiezhu@loongson.cn>
-X-CM-TRANSID: AQAAf9DxL+M6ZwJik0oIAA--.26524S5
-X-Coremail-Antispam: 1UD129KBjvJXoW7Cr4UuFy7ury7WrWrWFW3Jrb_yoW8AryDpF
-        nxKFWDKr4kKr1rXa97Jw4vyryYvws5Xa4xCas7Ar4Fyan8tFn8JrZ7CFy2q34Yg34xXayY
-        vr1qqry3K3W8JaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPl14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JrWl82xGYIkIc2
-        x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
-        8EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AI
-        xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
-        vE14v26r106r15McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
-        r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04
-        v7MxkIecxEwVAFwVW5JwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC2
-        0s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI
-        0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv2
-        0xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2js
-        IE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZF
-        pf9x0JUhBMNUUUUU=
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Tue, 8 Feb 2022 07:41:07 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F45C03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:06 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id r19so2894603pfh.6
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3RinXQyHKb00TzypPmHwtAZLN3N95NjRwsCDNBAlwr4=;
+        b=YZFeequlV6N1Zm6zx7AjhJ88s7J6s6lm6hq4eZItcgFo8pOMuTMvZ3hzVnj93mM/dX
+         wFnDMu6mWWqvp29XUfzBr/4uMQmuOz5VTOtSzqPo+a2U6tTImCdnPb+fMYPH/Zv/Jw9S
+         1JOy9pLaEPyxVRAAQJ5IQs+EJiibHDKam75NU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3RinXQyHKb00TzypPmHwtAZLN3N95NjRwsCDNBAlwr4=;
+        b=zN5BGM2Iay5JN0oZzP9GFLNM6ACcRN4gnDwlJ/dVVp7t5wDIC2fVlCJPNGV6m0CJ4P
+         r10UyITrzMgffqqaZCWSGKCjbC4dxkMtwz8NXJ2uyGVGz8McpTs/VSw928dhBEauekJ/
+         NIXWFgw8t4PO/bC7pLtGEHIFbsTeMnHqdp5h8ZfYXlCta9/ZtgdxZTI10EZnl0YTIuX1
+         hbRv3/ycFJnjuaajmo68SaUGhDOixmFIQEbSd/lK6UAH2AVoj6LSVdmEN9viGU9HbWlx
+         zxhSZazxGFVYjdYggsYCR0SoPGgyHaMzF1GehCGEOHgzr3dysnGkoPSNGvaz5rukXhkz
+         ZItw==
+X-Gm-Message-State: AOAM531B3FT0ztSikfh+WvPcH7kwmkupdVLYHoGoe8sdpeK9O9UtdLXo
+        WQluS3cAdyQW8kW5WZw8CNMUcQ==
+X-Google-Smtp-Source: ABdhPJyVR6nI8dkkBw1DN8QU+KXFRS3jfBjQoqHIXzT0wpt+HFO/COZLgDxQ8jisVm0UKOLWRVS5qA==
+X-Received: by 2002:a05:6a00:d72:: with SMTP id n50mr4229384pfv.51.1644324066273;
+        Tue, 08 Feb 2022 04:41:06 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:41:06 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 08/31] clk: mediatek: cpumux: Clean up included headers
+Date:   Tue,  8 Feb 2022 20:40:11 +0800
+Message-Id: <20220208124034.414635-9-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the current code, the following three places need to unset
-panic_on_warn before calling panic() to avoid recursive panics:
+Some headers with the declaration of functions and structures aren't
+directly included. Explicitly include them so that future changes to
+other headers would not result in an unexpected build break.
 
-kernel/kcsan/report.c: print_report()
-kernel/sched/core.c: __schedule_bug()
-mm/kfence/report.c: kfence_report_error()
+On the header side, add forward declarations for any data structures
+whose pointers are used in function signatures. No headers are
+required.
 
-In order to avoid copy-pasting "panic_on_warn = 0" all over the
-places, it is better to move it inside panic() and then remove
-it from the other places.
-
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- kernel/panic.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ drivers/clk/mediatek/clk-cpumux.c | 3 +++
+ drivers/clk/mediatek/clk-cpumux.h | 4 ++++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/kernel/panic.c b/kernel/panic.c
-index 55b50e0..95ba825 100644
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -185,6 +185,16 @@ void panic(const char *fmt, ...)
- 	int old_cpu, this_cpu;
- 	bool _crash_kexec_post_notifiers = crash_kexec_post_notifiers;
+diff --git a/drivers/clk/mediatek/clk-cpumux.c b/drivers/clk/mediatek/clk-cpumux.c
+index 344c6399b22f..658aee789f44 100644
+--- a/drivers/clk/mediatek/clk-cpumux.c
++++ b/drivers/clk/mediatek/clk-cpumux.c
+@@ -5,8 +5,11 @@
+  */
  
-+	if (panic_on_warn) {
-+		/*
-+		 * This thread may hit another WARN() in the panic path.
-+		 * Resetting this prevents additional WARN() from panicking the
-+		 * system on this thread.  Other threads are blocked by the
-+		 * panic_mutex in panic().
-+		 */
-+		panic_on_warn = 0;
-+	}
+ #include <linux/clk-provider.h>
++#include <linux/container_of.h>
++#include <linux/err.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/module.h>
++#include <linux/regmap.h>
+ #include <linux/slab.h>
+ 
+ #include "clk-mtk.h"
+diff --git a/drivers/clk/mediatek/clk-cpumux.h b/drivers/clk/mediatek/clk-cpumux.h
+index a538f2bbef0d..b07e89f7c283 100644
+--- a/drivers/clk/mediatek/clk-cpumux.h
++++ b/drivers/clk/mediatek/clk-cpumux.h
+@@ -7,6 +7,10 @@
+ #ifndef __DRV_CLK_CPUMUX_H
+ #define __DRV_CLK_CPUMUX_H
+ 
++struct clk_onecell_data;
++struct device_node;
++struct mtk_composite;
 +
- 	/*
- 	 * Disable local interrupts. This will prevent panic_smp_self_stop
- 	 * from deadlocking the first cpu that invokes the panic, since
-@@ -576,16 +586,8 @@ void __warn(const char *file, int line, void *caller, unsigned taint,
- 	if (regs)
- 		show_regs(regs);
- 
--	if (panic_on_warn) {
--		/*
--		 * This thread may hit another WARN() in the panic path.
--		 * Resetting this prevents additional WARN() from panicking the
--		 * system on this thread.  Other threads are blocked by the
--		 * panic_mutex in panic().
--		 */
--		panic_on_warn = 0;
-+	if (panic_on_warn)
- 		panic("panic_on_warn set ...\n");
--	}
- 
- 	if (!regs)
- 		dump_stack();
+ int mtk_clk_register_cpumuxes(struct device_node *node,
+ 			      const struct mtk_composite *clks, int num,
+ 			      struct clk_onecell_data *clk_data);
 -- 
-2.1.0
+2.35.0.263.gb82422642f-goog
 
