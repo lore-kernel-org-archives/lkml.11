@@ -2,88 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:48:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED93C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:48:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385476AbiBHSsU (ORCPT
+        id S1385480AbiBHSsc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:48:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42784 "EHLO
+        Tue, 8 Feb 2022 13:48:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385455AbiBHSsP (ORCPT
+        with ESMTP id S1385472AbiBHSs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:48:15 -0500
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F117C0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:48:14 -0800 (PST)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1644346090;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=gcjgT1JGS5YXvEC8btLC0N+cld9EBSbr9pVNw5PdFDA=;
-        b=YwjFDHDpUVOWsxMQhjaqg62TIJEVJAMmMjMpcWMzPmWPvhtEXTN4RpsoFoe8geQvMHhHUA
-        vFTns2xWRjh/j2TG5fSJymx5r0Pyd5DICtZ2YqaS0YbWKMD7kyCmMVwfCtDslI/6KVwGJ6
-        nsJGiy/HAP6IZS+hEIWcWF9qLQ82RHA=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v2] kasan: test: prevent cache merging in kmem_cache_double_destroy
-Date:   Tue,  8 Feb 2022 19:48:08 +0100
-Message-Id: <b597bd434c49591d8af00ee3993a42c609dc9a59.1644346040.git.andreyknvl@google.com>
+        Tue, 8 Feb 2022 13:48:29 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F95DC0612C2
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:48:28 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id y17so121347plg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 10:48:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3nJw75yUn0Ak2LbjP8FDSUKGk9cBjMNSHZr8K3rv/n8=;
+        b=Kcc50LqTHuQIYf273mHplhXaUKkVZo5PUBRoSWfRcf58iiGQ2BqdIdG45EwyPs1uXs
+         CAAbXNkEd2gr6pK4HN7DiQh4qUIHHNlorxb+wH1BXIOdeK6oQxUKyLl5QTwejhLKNtmR
+         CteLOdhUCS5CWbC0mzNmxIdXJAHtmnBxfT90k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3nJw75yUn0Ak2LbjP8FDSUKGk9cBjMNSHZr8K3rv/n8=;
+        b=vo8E//jxoAnG+SOHjuTzR/ka2ICwpmXEmvCTE5P9GXxlSV4e8ldlbDhF9qa5M3Nzg1
+         F5WrVxeId0TbupCKC38E0xv6WKZnUw9XImPiOJx7w+Xh136kq4JpA8AXDDWE/BKVglPg
+         2Kuo1KgUZq8u374Q7jEStxbr5ybTjtpni+etGqn/fdAh4nn7qx+GDEv2CKuREiGSBK23
+         WgyalZI2ZeD/FsJtZvZFZ8FZwCdlsZ7cQ7hyxrIAltJwJ4eUWPM7+LcLjM4jwy+4n5Du
+         89sXVIYA2VHLXvpiDDqYk2VYvR4GE+BRfZUrJdFAlEj7XL2ydc7gbVZWUjMYciXZxKNV
+         b2QA==
+X-Gm-Message-State: AOAM532ngBi9hOgsUbedftC8B28vNt8JoxNihjJxRl3oqZOggVHam5jR
+        WML7zhcUINRnVhPSZ0vB23h/0LgDMfqG4Q==
+X-Google-Smtp-Source: ABdhPJzUwlOAtGq+Y2cBB0fnuRDAYTc8P/abuAm1YmIdSlVd7T3zol+qZiMELS+dYrh3y9do6LWUBA==
+X-Received: by 2002:a17:90b:4c91:: with SMTP id my17mr2870441pjb.121.1644346107948;
+        Tue, 08 Feb 2022 10:48:27 -0800 (PST)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id gk15sm3594453pjb.3.2022.02.08.10.48.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 10:48:27 -0800 (PST)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Prashant Malani <pmalani@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev (open list:CHROMEOS EC USB TYPE-C
+        DRIVER)
+Subject: [PATCH v2 4/4] platform/chrome: cros_ec_typec: Update mux flags during partner removal
+Date:   Tue,  8 Feb 2022 18:47:24 +0000
+Message-Id: <20220208184721.1697194-5-pmalani@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208184721.1697194-1-pmalani@chromium.org>
+References: <20220208184721.1697194-1-pmalani@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+In cros_typec_remove_partner(), we call
+cros_typec_usb_disconnect_state() which sets the switches/muxes to be in
+a disconnected state. This also happens in cros_typec_configure_mux().
+However, unlike there, here the mux_flags variable hasn't been updated
+to reflect that a disconnection has occurred. Update the flag here
+accordingly.
 
-With HW_TAGS KASAN and kasan.stacktrace=off, the cache created in the
-kmem_cache_double_destroy() test might get merged with an existing one.
-Thus, the first kmem_cache_destroy() call won't actually destroy it
-but will only decrease the refcount. This causes the test to fail.
-
-Provide an empty constructor for the created cache to prevent the cache
-from getting merged.
-
-Fixes: f98f966cd750 ("kasan: test: add test case for double-kmem_cache_destroy()")
-Reviewed-by: Marco Elver <elver@google.com>
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
 ---
- lib/test_kasan.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/lib/test_kasan.c b/lib/test_kasan.c
-index 26a5c9007653..3b413f8c8a71 100644
---- a/lib/test_kasan.c
-+++ b/lib/test_kasan.c
-@@ -869,11 +869,14 @@ static void kmem_cache_invalid_free(struct kunit *test)
- 	kmem_cache_destroy(cache);
- }
+Changes in v2:
+- No changes.
+
+ drivers/platform/chrome/cros_ec_typec.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
+index 3019e29f200d..4bd2752c0823 100644
+--- a/drivers/platform/chrome/cros_ec_typec.c
++++ b/drivers/platform/chrome/cros_ec_typec.c
+@@ -228,6 +228,7 @@ static void cros_typec_remove_partner(struct cros_typec_data *typec,
+ 	cros_typec_unregister_altmodes(typec, port_num, true);
  
-+static void empty_cache_ctor(void *object) { }
-+
- static void kmem_cache_double_destroy(struct kunit *test)
- {
- 	struct kmem_cache *cache;
+ 	cros_typec_usb_disconnect_state(port);
++	port->mux_flags = USB_PD_MUX_NONE;
  
--	cache = kmem_cache_create("test_cache", 200, 0, 0, NULL);
-+	/* Provide a constructor to prevent cache merging. */
-+	cache = kmem_cache_create("test_cache", 200, 0, 0, empty_cache_ctor);
- 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, cache);
- 	kmem_cache_destroy(cache);
- 	KUNIT_EXPECT_KASAN_FAIL(test, kmem_cache_destroy(cache));
+ 	typec_unregister_partner(port->partner);
+ 	port->partner = NULL;
 -- 
-2.25.1
+2.35.0.263.gb82422642f-goog
 
