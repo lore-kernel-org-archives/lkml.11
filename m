@@ -2,85 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D328EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 03:17:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 03:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344504AbiBHDRM (ORCPT
+        id S1346099AbiBHDR3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 22:17:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49422 "EHLO
+        Mon, 7 Feb 2022 22:17:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232087AbiBHDRK (ORCPT
+        with ESMTP id S1344559AbiBHDR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 22:17:10 -0500
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 19:17:08 PST
-Received: from qq.com (smtpbg410.qq.com [113.96.223.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2DBC061A73
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 19:17:08 -0800 (PST)
-X-QQ-mid: bizesmtp5t1644290101twk3qzvo1
-Received: from localhost.localdomain (unknown [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 08 Feb 2022 11:14:55 +0800 (CST)
-X-QQ-SSF: 01400000002000B0G000B00A0000000
-X-QQ-FEAT: JykYnMR+PRaregM+pIQhKrCVgehtTaXMsvfTUbZBq8GKqCGcWGTTX7/H02IY0
-        Xny1+TYdI5N9onp89RFeBj7W2HlImuB/4IoErmVjLgtrwJTgNKSxyDNihuFgEpKWpzbv5bR
-        Vxub8i3/Evxpe50Kb/Q7g+dtHYPsPiD+HDeuEAAVA8FeczBi+gziHPKcub94J8vSQvwEeQm
-        i819Rfxt1S+Sv1tgFKqD/ry5UP8pRPJrWdzQUU4BGQpb/5ipMlZTZOs53G2sSTW6+P4Pb4X
-        TNcJv7LkJcpk8xR/UdoWvUKJ0vJ7ABvV/M8t4c+ykCKXr+rRmoy8hD7LhmC3f6gV/7yBD4g
-        FdjG1sx
-X-QQ-GoodBg: 2
-From:   zhanglianjie <zhanglianjie@uniontech.com>
-To:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, Xinhui.Pan@amd.com,
-        Alex Deucher <alexander.deucher@amd.com>,
-        zhanglianjie <zhanglianjie@uniontech.com>
-Subject: [PATCH v2 2/2] drm/radeon/uvd: Fix forgotten unmap buffer objects
-Date:   Tue,  8 Feb 2022 11:14:54 +0800
-Message-Id: <20220208031454.24232-1-zhanglianjie@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Mon, 7 Feb 2022 22:17:26 -0500
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F29C043181
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 19:17:25 -0800 (PST)
+Received: by mail-oo1-xc2c.google.com with SMTP id r15-20020a4ae5cf000000b002edba1d3349so16151765oov.3
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 19:17:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zzxO3HcmPa0lMosAwo+8/h9UfVKa+wQzmEj2wnHSziM=;
+        b=ShbdY2mbI1d4/3jPV8kyfnQaqrRnf7w8sMMGMnPKKSfhl7XeZDCV8PZsSLkbfN0yA/
+         2e7I8B5Mm6/VLL6Zb4zQCctE/JRQAXkKJxPga5ArXu+Gj4Ef+8C6HWr3XPviQhXu1SRD
+         wnMC3X/BZ40oFcSu3qWFj/P9oFNwBCLiEwBFlGVaX8jEYQbLrZUr6MN3fJDjwCd97LvT
+         tEblTdZiDr5JmdL1rsFNC8Ex+U4g8m7i71BV1o4+1XfpXJDyi+uRn7Dn4vaIonYrpMlh
+         cQHV13m6ut9R7CHQDaH6qXcWL/cDw7VchzM0M2FYxncmLTnnXoWoxuwgjdDqvIsNn3D1
+         w5pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zzxO3HcmPa0lMosAwo+8/h9UfVKa+wQzmEj2wnHSziM=;
+        b=4JtI4q+8W9VSFzf8PccQC4ocygNWRRs/wgnJ43qqkXEhtIi40xfuiJYeVZ5veBgeXT
+         oAgKqkTWvAbAQfymUNURhY7VdcBUrDKwttviYT/If9cpr4+z6rRs8MtPcAGyIYHg8SZt
+         aZB6HnZ42+hGdGIY4UcwDS3XQRCYDxkB7n+1HlwSnDMlpod3JgmTDdqQg5buJv8yiSf5
+         rzIWo6fp4KIxS7ChbTzEL7GnDUExnVOXkGplxIjSU2ajfdPlEo3BvVr0GrqmqRv7rQvY
+         OXWhQkUsLhBFxGLkDELvbLaH6oL20J5L9ns8Xs91Ou7eqi2OJqs/EPQU2wW2Z1NyP+r4
+         WHkQ==
+X-Gm-Message-State: AOAM531doZHJ6iK9QZWji9pJiySZYONkOw7OIuIM/4h7A3ziUPum4Zt/
+        XyxPmQNox+0C0B+ycqJFkg00tw==
+X-Google-Smtp-Source: ABdhPJzLouZK+YvjCdY7PEwoHNqPNAf/lzh08xIFonIR59w/9SPltab4lT9JQAc1tvUJ1fu1RmQyxg==
+X-Received: by 2002:a05:6870:1043:: with SMTP id 3mr705760oaj.239.1644290244935;
+        Mon, 07 Feb 2022 19:17:24 -0800 (PST)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id k3sm4763873otl.41.2022.02.07.19.17.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 19:17:24 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Cc:     linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: [PATCH v2 0/6] typec: mux: Introduce support for multiple TypeC muxes
+Date:   Mon,  7 Feb 2022 19:19:38 -0800
+Message-Id: <20220208031944.3444-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign6
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-after the buffer object is successfully mapped, call radeon_bo_kunmap before the function returns.
+This series introduces a level of indirection between the controller's view of
+a typec_mux/switch and the implementation and then expands that to support
+multiple drivers.
 
-Signed-off-by: zhanglianjie <zhanglianjie@uniontech.com>
+This is needed in order to support devices such as the Qualcomm Snapdragon 888
+HDK, which does muxing and orientation handling in the QMP (USB+DP) PHY and SBU
+muxing in the external FSA4480 chip.
 
-diff --git a/drivers/gpu/drm/radeon/radeon_uvd.c b/drivers/gpu/drm/radeon/radeon_uvd.c
-index 377f9cdb5b53..0558d928d98d 100644
---- a/drivers/gpu/drm/radeon/radeon_uvd.c
-+++ b/drivers/gpu/drm/radeon/radeon_uvd.c
-@@ -497,6 +497,7 @@ static int radeon_uvd_cs_msg(struct radeon_cs_parser *p, struct radeon_bo *bo,
- 	handle = msg[2];
+Included in the series is a the new FSA4480 driver. This is done to deal with
+the renaming of the driver-side typec_mux -> typec_mux_dev.
 
- 	if (handle == 0) {
-+		radeon_bo_kunmap(bo);
- 		DRM_ERROR("Invalid UVD handle!\n");
- 		return -EINVAL;
- 	}
-@@ -559,12 +560,10 @@ static int radeon_uvd_cs_msg(struct radeon_cs_parser *p, struct radeon_bo *bo,
- 		return 0;
+Changes since v1:
+- Omitted QMP changes from this series, as the muxing implementation needs a
+  little bit more debugging.
 
- 	default:
--
- 		DRM_ERROR("Illegal UVD message type (%d)!\n", msg_type);
--		return -EINVAL;
- 	}
+Bjorn Andersson (6):
+  device property: Helper to match multiple connections
+  device property: Use multi-connection matchers for single case
+  typec: mux: Introduce indirection
+  typec: mux: Allow multiple mux_devs per mux
+  dt-bindings: usb: Add binding for fcs,fsa4480
+  usb: typec: mux: Add On Semi fsa4480 driver
 
--	BUG();
-+	radeon_bo_kunmap(bo);
- 	return -EINVAL;
- }
+ .../devicetree/bindings/usb/fcs,fsa4480.yaml  |  72 +++++
+ drivers/base/property.c                       |  85 ++++--
+ drivers/usb/typec/bus.c                       |   2 +-
+ drivers/usb/typec/mux.c                       | 261 +++++++++++++-----
+ drivers/usb/typec/mux.h                       |  12 +-
+ drivers/usb/typec/mux/Kconfig                 |   9 +
+ drivers/usb/typec/mux/Makefile                |   1 +
+ drivers/usb/typec/mux/fsa4480.c               | 220 +++++++++++++++
+ drivers/usb/typec/mux/intel_pmc_mux.c         |   8 +-
+ drivers/usb/typec/mux/pi3usb30532.c           |   8 +-
+ include/linux/property.h                      |   5 +
+ include/linux/usb/typec_mux.h                 |  22 +-
+ 12 files changed, 595 insertions(+), 110 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/usb/fcs,fsa4480.yaml
+ create mode 100644 drivers/usb/typec/mux/fsa4480.c
 
---
-2.20.1
-
-
+-- 
+2.33.1
 
