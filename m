@@ -2,92 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF8CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:43:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D237FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:44:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376412AbiBHNnI (ORCPT
+        id S1376347AbiBHNo5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:43:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40510 "EHLO
+        Tue, 8 Feb 2022 08:44:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235437AbiBHNnC (ORCPT
+        with ESMTP id S235437AbiBHNo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:43:02 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2338FC03FED9;
-        Tue,  8 Feb 2022 05:43:00 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id cn6so14804122edb.5;
-        Tue, 08 Feb 2022 05:43:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f4NlyDvQ+OmTWhioc5XIe48Pbf0SWwcG+0BmyfZwVFE=;
-        b=InKvcODql4soQETTIoVQwvWCSdhsI4olMXqvYkj6+7nx78OgY4P9Ppbcpbe0Bl5K8C
-         pCG8Np9utrrmDQ6BuEoF/qGZtWAFhyl1UvLVi++W2jBkSMCPsSc+mQPIID67reJ7L34p
-         F/2ZDRJ642N1nstNdozNlDA5HRXPh9HKLNqBkpL9GYOa89jd7E7HOmivcqEv7Wo/cAgJ
-         ZZ3fXK8NNkRSoeUHZnfYWXFbl5XOe/tSFfYjnJ/pgS5VFaskYns0huL9KF/MVQPe5YTn
-         TMMzgHKtHH0k++cYe2OeoHVChbWquicgEBYdCEhBEDz2oGZTVZxE1WN/J21bLJbixpAo
-         wZdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f4NlyDvQ+OmTWhioc5XIe48Pbf0SWwcG+0BmyfZwVFE=;
-        b=KuWfb9tZffRlUtlE/yrgtElVv6eQ3/r8hnV6i6i9sdWQgsgCO+2Bm3eLHqKlX/MmE5
-         N/qwZl7YNzJn9XYfI0KodivkNh+ZCQzy9GQBtYB1Y+HwNRJrxAb14gx7pVkUMBgluyuF
-         eXZpF0vCXeCkUjDLyYkw/WBqkx9Z6cdkxix6lUgCgdRCaVGLiHH5TMPKuRAYPdvq5fbA
-         +WfKWYFCl6bSkTGJwH2eDWze4tpoY48g94lFYI6ZduDIsx20Vks+Nuzm9JCay/lX955K
-         zynuhxXtb4OgKZEELVeJjSsviP7sUdHMrNP17aZs8lN/Qv9Gq7L8c5OcfvhU2rPnB0NV
-         dRGg==
-X-Gm-Message-State: AOAM532TIbRd7bvp+6PKHbmNJ1c8UebtSokrTuAysXcBt+xUltn11cLQ
-        wBFMoH+p+XGazYODYRVgfVUQXRSHfuvge6GaaZc=
-X-Google-Smtp-Source: ABdhPJzL1h8uMoMI1YO9mj+zqENB5rXbyS/y1GH2Oy4Usn3dJT9bRKgSvTIO9Olpk7hrj1E2o6AP93f79oomlsyf6Jc=
-X-Received: by 2002:aa7:c413:: with SMTP id j19mr3693113edq.200.1644327778649;
- Tue, 08 Feb 2022 05:42:58 -0800 (PST)
+        Tue, 8 Feb 2022 08:44:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C049C03FECE;
+        Tue,  8 Feb 2022 05:44:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29D5560B23;
+        Tue,  8 Feb 2022 13:44:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0BA3C004E1;
+        Tue,  8 Feb 2022 13:44:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644327892;
+        bh=gu1lM0Rv9DCMR8zhSFa7X6w8lK33nztv12R7zJr4ESA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZwNc1cccdB41SwRmW9HutUa3OWLDVHqsUVOjmyhH29h4OlwGahcPp8QWDuQ3x1IIh
+         LTmYuUWLsdybJSNiJF4lvGIxHqpJCA1FVG3xuL6Z4K7g81FuiIZKE76gTl5jmJ+5ME
+         bhTtcBHaRYGYESr1JWOPlZxEdf0gpa/pQon3RzsgJ2KRjUKU5SWY83NB9mj8vaAz3x
+         iDh4U8daYSrCHfC2QsLWHEJ3YXXSYDEqBjE3EgfsWDeqYq0Q+AzBsc8dKExJkPUt2G
+         YqPFlF8x50XG7CWcz35yEb8d0ZxzrgpcefdLBf1hx+U70fMADJf87jdHcmUEY8jbD8
+         QpOtYjX4d5zvg==
+Date:   Tue, 8 Feb 2022 13:44:47 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     Prasad Kumpatla <quic_pkumpatl@quicinc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
+Subject: Re: [PATCH v2] regmap-irq: Use regmap_irq_update_bits instead of
+ regmap_write
+Message-ID: <YgJzz5GFsKBteYyg@sirena.org.uk>
+References: <20220119142953.1804-1-quic_pkumpatl@quicinc.com>
+ <CGME20220208122955eucas1p2d4e32f51224242e9ebd0bce58b9c04ca@eucas1p2.samsung.com>
+ <39f1b598-58ca-1e3d-3065-8dd692ee7c9f@samsung.com>
 MIME-Version: 1.0
-References: <20220208020441.3081162-1-liambeguin@gmail.com> <20220208020441.3081162-4-liambeguin@gmail.com>
-In-Reply-To: <20220208020441.3081162-4-liambeguin@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 8 Feb 2022 15:42:22 +0200
-Message-ID: <CAHp75Vd7OfLyfziraV4AHWrnTSCPPN9gzGNxaFa+V6uNe8-YUA@mail.gmail.com>
-Subject: Re: [PATCH v14 03/11] iio: afe: rescale: add offset support
-To:     Liam Beguin <liambeguin@gmail.com>
-Cc:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bGkYXeNT7w8NEyD+"
+Content-Disposition: inline
+In-Reply-To: <39f1b598-58ca-1e3d-3065-8dd692ee7c9f@samsung.com>
+X-Cookie: This is your fortune.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 4:04 AM Liam Beguin <liambeguin@gmail.com> wrote:
->
-> This is a preparatory change required for the addition of temperature
-> sensing front ends.
 
-...
+--bGkYXeNT7w8NEyD+
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> +               if (iio_channel_has_info(rescale->source->channel,
-> +                                        IIO_CHAN_INFO_OFFSET)) {
-> +                       ret = iio_read_channel_offset(rescale->source,
-> +                                                     &schan_off, NULL);
+On Tue, Feb 08, 2022 at 01:29:55PM +0100, Marek Szyprowski wrote:
+> Hi Prasad,
+>=20
+> On 19.01.2022 15:29, Prasad Kumpatla wrote:
+> > With the existing logic by using regmap_write() all the bits in
+> > the register are being updated which is not expected. To update only the
+> > interrupt raised bit and not tocuhing other bits, replace regmap_write()
+> > with regmap_irq_update_bits().
+> >
+> > This patch is to fix the issue observed in MBHC button press/release ev=
+ents.
+> >
+> > Fixes: 3a6f0fb7b8eb ("regmap: irq: Add support to clear ack registers")
+> > Signed-off-by: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+>=20
+> There is something wrong with this patch. Since it landed in linux-next=
+=20
+> (20220204) I get an interrupt storm on two of my test devices:
 
-> +                       if (ret != IIO_VAL_INT)
-> +                               return ret < 0 ? ret : -EOPNOTSUPP;
+I'll just revert it for now.
 
-Wonder if this actually should be
+--bGkYXeNT7w8NEyD+
+Content-Type: application/pgp-signature; name="signature.asc"
 
-   if (ret < 0)
-       return ret;
-   if (ret != ...)
-       return -EOP...;
+-----BEGIN PGP SIGNATURE-----
 
-> +               }
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmICc84ACgkQJNaLcl1U
+h9Dcpwf/ZuoJ3isPhFf8jelGmKPzrCWi40feOyhm3CWL/l7usejsTkiUPR7NpV8g
+QjGdxc+NJaaIcuFGf30EL7r/xZmOfw7rwEBj/tWH56YJS2xKxIRuT/T59WOHbe1c
++7geKmc8uCPErb/5J8PJWLpSurDpsqIDu3O/o6WfgF5FfIJeRjE30uhvdklEpy1o
+XjMq1+8C4Bzp2FrKQLmMuEAem29GJb7FTgdMslly/MEKSXoQZtDY+ToF96flLg6w
+UCx4up1xa852G9gTXvKvNqtCJvyw/fC6Fdu1EUbabDVz35yiCmLPVePtBhdzgIVl
+ig8kR6VmcKsbsrze0yB1Sm4MuqdQhQ==
+=RHEL
+-----END PGP SIGNATURE-----
 
--- 
-With Best Regards,
-Andy Shevchenko
+--bGkYXeNT7w8NEyD+--
