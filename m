@@ -2,105 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C71C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F04FFC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356348AbiBHLZC (ORCPT
+        id S1358178AbiBHLZN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:25:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50384 "EHLO
+        Tue, 8 Feb 2022 06:25:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346121AbiBHKFn (ORCPT
+        with ESMTP id S1356063AbiBHKHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:05:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FDD1C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:05:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644314739;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rnpsDmBPmJ2P6qKlOUE8aXbjL0kFSyGBtiEVa9bJyyM=;
-        b=cMQKpePWLp9enfW2FGDeutgbudoIfoPLsFJSIPbaJwD3SaRPIeTDOs6lcQ255i1UUzCsoU
-        ScqxbrNLxoQyA4IjziOKoQ9GlZX3j8JQMT2XNccQcpsvL3LnJoa4oN4awUk1qonjh4aws2
-        OB9mnkjMnMLdeGPa0dLvJBWwGfGKQ6E=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-355-3Td81Le3ME65OrRaaYC55g-1; Tue, 08 Feb 2022 05:05:38 -0500
-X-MC-Unique: 3Td81Le3ME65OrRaaYC55g-1
-Received: by mail-wm1-f72.google.com with SMTP id v185-20020a1cacc2000000b0034906580813so847353wme.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 02:05:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rnpsDmBPmJ2P6qKlOUE8aXbjL0kFSyGBtiEVa9bJyyM=;
-        b=apRUxp8voDt8mIHU4bxyWUuXxwv7a9uTO+CJWwVCvL2Cm2lTraf4CM+BGZc8BcpW5s
-         mNakfTUzY0iA7Cqep1yfDWcVyDoQBDZsGHlYV0/CLKpfssHEHAffpCP2bWsuQ07iVwlR
-         Lp6ryGFMIqlG1rCvAz4m7j0ol7JUnJZuCZLgraOWY2LqxJ4db6xeSsA5NQEoal6FwUOE
-         4/wCkRe6x63uoDBUrK9Y0AEPU1tmr4q2rqonQoTtbQ7vrk79gvjS/EAVUxCYSFaypNy6
-         Th4zxJnDh8GkWP3MqFLNpdXy6kmcXojRhUWY3ZNbDYaL4AdPOuSlHOJvDKF3BXc5JT89
-         wGkQ==
-X-Gm-Message-State: AOAM532aqrLAM0R/PhuQvWPWZ4x+1QSjwlCTq+XHQLIf15d9I8yfbWOv
-        qlJU3hzT5apRafmRkiur9FZ3nXhE8WlhHbEkGMAzb6OMX8pGDIthYqcwzgp4c1zXy9xaPNMdi/7
-        v722IItksnO4vDysVsEsZ4Uw=
-X-Received: by 2002:a05:600c:1e86:: with SMTP id be6mr445577wmb.79.1644314737402;
-        Tue, 08 Feb 2022 02:05:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwzAOv0fEw2XktAsGBPhVL/P5zLic2ZMR945PIWQg7DEmQ6lTgu0tbw2/EsqIOqwYvk9kRdMQ==
-X-Received: by 2002:a05:600c:1e86:: with SMTP id be6mr445563wmb.79.1644314737240;
-        Tue, 08 Feb 2022 02:05:37 -0800 (PST)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id y10sm1556985wmi.47.2022.02.08.02.05.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 02:05:36 -0800 (PST)
-Date:   Tue, 8 Feb 2022 10:05:36 +0000
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Aaron Tomlin <atomlin@atomlin.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Michal Suchanek <msuchanek@suse.de>,
-        "cl@linux.com" <cl@linux.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "ghalat@redhat.com" <ghalat@redhat.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "void@manifault.com" <void@manifault.com>,
-        "joe@perches.com" <joe@perches.com>
-Subject: Re: [RFC PATCH v4 00/13] module: core code clean up
-Message-ID: <20220208100536.dvxl5nccp4tygimw@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220130213214.1042497-1-atomlin@redhat.com>
- <Yfsf2SGELhQ71Ovo@bombadil.infradead.org>
- <1ae3a950-8c1e-a212-e557-8f112a16457d@csgroup.eu>
- <20220207164659.ap42at2nphxu4q6o@ava.usersys.com>
- <b0a54f00-b9ac-df55-e8d2-d3eb95039a95@csgroup.eu>
- <20220207180148.bbstggd4yr5ozfrf@ava.usersys.com>
- <MRZP264MB2988F32D78CC49C4C9E486CBED2D9@MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM>
+        Tue, 8 Feb 2022 05:07:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC26C03FEC0;
+        Tue,  8 Feb 2022 02:07:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51E25B81802;
+        Tue,  8 Feb 2022 10:07:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55214C340EF;
+        Tue,  8 Feb 2022 10:07:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644314827;
+        bh=OikrdX8FMNiMLuMVEJTQbFg4yac0GkRiulyJsMntNGY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jiP1EPaq3l/aJLJwYUcK5NMYqW2KzAtVaLuE9HOb9vDiTt92PUE12lcvGYU6E6zqt
+         XcPHv5v36KfoKOmKMk4R3I/1iVdMxdBG53W5NftkumO7AlhhmCtBDucZk4S+gPHloK
+         ss7Xe7jZpLAI2h8sTcfxDRByeIUNzXrPHSohN2ps=
+Date:   Tue, 8 Feb 2022 11:07:04 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Erwan LE RAY <erwan.leray@foss.st.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Gerald Baeza <gerald.baeza@st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/2] serial: mctrl_gpio: add a new API to enable /
+ disable wake_irq
+Message-ID: <YgJAyAZFJBFXQGvf@kroah.com>
+References: <20220203171644.12231-1-erwan.leray@foss.st.com>
+ <20220203171644.12231-2-erwan.leray@foss.st.com>
+ <CAHp75VfxGj=3mKvjcRpQjyXBCM0szsidHVuJGdAL8yP5SmdBzw@mail.gmail.com>
+ <cb09a49a-37f8-9e3f-168c-4c5dd62e2c07@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <MRZP264MB2988F32D78CC49C4C9E486CBED2D9@MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cb09a49a-37f8-9e3f-168c-4c5dd62e2c07@foss.st.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-02-08 07:50 +0000, Christophe Leroy wrote:
-> As we know the code will be back in main.c at the end, I looks easier to
-> me to not move it at all by not applying your patch 5.
+On Fri, Feb 04, 2022 at 04:41:58PM +0100, Erwan LE RAY wrote:
+> Hi Andy,
+> 
+> On 2/4/22 10:07 AM, Andy Shevchenko wrote:
+> > 
+> > 
+> > On Thursday, February 3, 2022, Erwan Le Ray <erwan.leray@foss.st.com
+> > <mailto:erwan.leray@foss.st.com>> wrote:
+> > 
+> >     Add a new API to enable / disable wake_irq in order to enable gpio
+> >     irqs as
+> >     wakeup irqs for the uart port.
+> > 
+> >     Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com
+> >     <mailto:erwan.leray@foss.st.com>>
+> > 
+> >     diff --git a/drivers/tty/serial/serial_mctrl_gpio.c
+> >     b/drivers/tty/serial/serial_mctrl_gpio.c
+> >     index c41d8911ce95..1663b3afc3a0 100644
+> >     --- a/drivers/tty/serial/serial_mctrl_gpio.c
+> >     +++ b/drivers/tty/serial/serial_mctrl_gpio.c
+> >     @@ -299,4 +299,42 @@ void mctrl_gpio_disable_ms(struct mctrl_gpios
+> >     *gpios)
+> >       }
+> >       EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms);
+> > 
+> >     +void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios)
+> >     +{
+> >     +       enum mctrl_gpio_idx i;
+> >     +
+> >     +       if (!gpios)
+> >     +               return;
+> >     +
+> >     +       if (!gpios->mctrl_on)
+> >     +               return;
+> >     +
+> >     +       for (i = 0; i < UART_GPIO_MAX; ++i) {
+> >     +               if (!gpios->irq[i])
+> >     +                       continue;
+> > 
+> > 
+> > 
+> > Why not simply
+> > 
+> >    if (gpios[])
+> >      enable_irq_...
+> > 
+> > ?
+> > 
+> > And same for disabling.
+> > 
+> >     +
+> >     +               enable_irq_wake(gpios->irq[i]);
+> >     +       }
+> >     +}
+> >     +EXPORT_SYMBOL_GPL(mctrl_gpio_enable_irq_wake);
+> >     +
+> >     +void mctrl_gpio_disable_irq_wake(struct mctrl_gpios *gpios)
+> >     +{
+> >     +       enum mctrl_gpio_idx i;
+> >     +
+> >     +       if (!gpios)
+> >     +               return;
+> >     +
+> >     +       if (!gpios->mctrl_on)
+> >     +               return;
+> >     +
+> >     +       for (i = 0; i < UART_GPIO_MAX; ++i) {
+> >     +               if (!gpios->irq[i])
+> >     +                       continue;
+> >     +
+> >     +               disable_irq_wake(gpios->irq[i]);
+> >     +       }
+> >     +}
+> >     +EXPORT_SYMBOL_GPL(mctrl_gpio_disable_irq_wake);
+> >     +
+> >       MODULE_LICENSE("GPL");
+> >     diff --git a/drivers/tty/serial/serial_mctrl_gpio.h
+> >     b/drivers/tty/serial/serial_mctrl_gpio.h
+> >     index b134a0ffc894..fc76910fb105 100644
+> >     --- a/drivers/tty/serial/serial_mctrl_gpio.h
+> >     +++ b/drivers/tty/serial/serial_mctrl_gpio.h
+> >     @@ -91,6 +91,16 @@ void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios);
+> >        */
+> >       void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios);
+> > 
+> >     +/*
+> >     + * Enable gpio wakeup interrupts to enable wake up source.
+> >     + */
+> >     +void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios);
+> >     +
+> >     +/*
+> >     + * Disable gpio wakeup interrupts to enable wake up source.
+> >     + */
+> >     +void mctrl_gpio_disable_irq_wake(struct mctrl_gpios *gpios);
+> >     +
+> >       #else /* GPIOLIB */
+> > 
+> >       static inline
+> >     @@ -142,6 +152,14 @@ static inline void mctrl_gpio_disable_ms(struct
+> >     mctrl_gpios *gpios)
+> >       {
+> >       }
+> > 
+> >     +static inline void mctrl_gpio_enable_irq_wake(struct mctrl_gpios
+> >     *gpios)
+> >     +{
+> >     +}
+> >     +
+> >     +static inline void mctrl_gpio_disable_irq_wake(struct mctrl_gpios
+> >     *gpios)
+> >     +{
+> >     +}
+> >     +
+> >       #endif /* GPIOLIB */
+> > 
+> >       #endif
+> >     --     2.17.1
+> > 
+> > 
+> > 
+> > -- 
+> > With Best Regards,
+> > Andy Shevchenko
+> > 
+> > 
+> 
+> Thanks for your review.
+> I fully agree with your comment, but I wrote this code like it is to keep
+> the same structure than all the other ops of serial_mcrtrl_gpio driver. I
+> preferred keeping an homogeneous code in the driver rather than breaking the
+> driver homogeneity with the addition of an optimized code.
+> 
+> Greg, can you please indicate which solution you recommend ?
 
-Looking at your proposed solution once again, I do agree now.
+Sadly, this is the format in this file, so I'll take this as-is.
 
+thanks,
 
-Kind regards,
-
--- 
-Aaron Tomlin
-
+greg k-h
