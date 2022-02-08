@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB25C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D267DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345292AbiBHCJi (ORCPT
+        id S1345570AbiBHCJm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 21:09:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
+        Mon, 7 Feb 2022 21:09:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345418AbiBHCEv (ORCPT
+        with ESMTP id S1345427AbiBHCEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 21:04:51 -0500
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4540C061355;
-        Mon,  7 Feb 2022 18:04:50 -0800 (PST)
-Received: by mail-qv1-xf35.google.com with SMTP id o5so5317309qvm.3;
-        Mon, 07 Feb 2022 18:04:50 -0800 (PST)
+        Mon, 7 Feb 2022 21:04:55 -0500
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E350C061355;
+        Mon,  7 Feb 2022 18:04:55 -0800 (PST)
+Received: by mail-qv1-xf2b.google.com with SMTP id fh9so5094920qvb.1;
+        Mon, 07 Feb 2022 18:04:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Br1B4u51ocdlt7WfEv0vTubaAejLqNH+Ysavds7M+xg=;
-        b=ivtlL0RVL3/2BmFSoOQg0rPtEIDekwF2pi0Cv21Mbsczxq7t+J8mEHBXWf/dtFcTpG
-         1fDrYouiwfeMUskkkfXo8mbkkz7gLhCWt0lLQxWa28Gq5ICMnLVJ/9USIrTF7PC/Jwi5
-         nBZ2aM2ojh3B5AVsI+Asg5jm/yWJTBcOvmIQ2Rw434nrSnwR6f/VfhVWutGQZ9KwVNmo
-         7b5TBusKCGIa8mt++IXRZW0HfQDf7y9jl7Qx53YUwL8e+qKIgpjq+bycCIYN7bSNAAwU
-         +Q5LrAgv3cnqWuS+7YAXjDZGbO9mFX5X+5X0bZOfqbkFX3/Wj2cn22/OlXCHBdsSLuOw
-         TqlQ==
+        bh=gfQlEQsSnQDvJT0U+aR8JRv9vIvvKerjJkrDdnIFoP8=;
+        b=QzW4ymMZQnCBbuu0Tw+hjSiFb7qSatxqWI/xGKc2eMR2FDa6Ev97oVE+K2cG5+51Kh
+         NmPVqvPVI5O0vuV6F8BHVEgBomu+Sqeb1xCBWUlBKnnbC3EB0ISx15K7yZZLbOah6mgd
+         HegNRMfy+o46wJzSNCLctsAsyK9Asz1IthF4dh8bQNkGiWSlPIBeykkmNu4lPIyPM1OY
+         gm3JTAFEBMtd7JpLkwo/Jc+s4F4Incfyy6yjVFrixU1xr8oHLKk/XshKs6xHTf0sPTuH
+         LW/w2NNisXy+3TOjgPJBjtea6rcoc91WfuNz7pWFrJFs5OK+7FO4ZMeClBkztPNQjhAe
+         pPig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Br1B4u51ocdlt7WfEv0vTubaAejLqNH+Ysavds7M+xg=;
-        b=FiXMb6krWa6knfFTq2pJkbWLfvdvLp56O5g3Ww0w9asIm06vFUXTC4JvSQ0/tYZ0IE
-         r4+1Jb/OlRCmI/1ohjJnB7HqHW9kKsPhuAJx/bP8xQM7+EI5vCkZ3COk9ETE+O9dSmYj
-         cmvqcrwjjur/RtG/FknWlAoLkAUGFCmndwykVSEhaP1hllafHYBwjNzk/U35G58xzTCb
-         9KBjVCBirer1OSMw3mlzj60UmD86TGGm4LcKfCCqV6l8aGMMar55bPICGFFulHUzdm0C
-         p4tfXMAX/JIGQXVxZqi7V2+2GbzRXq1EyWUI8yWpcaYsEnY8AKhapejBn/X3ex1n6KrB
-         EAUg==
-X-Gm-Message-State: AOAM532EZ51lEX7YIjfcMm9nLpRaLIhqD8Hpz3ISM1zBp6ntsuouW2oI
-        /4xN6j6hPZ1nrIIuoQfHAOg=
-X-Google-Smtp-Source: ABdhPJy+BiiE4X+UxpvAcfOf2f3HKfzaBI0qQ+adwSPW4elIeJpPC8LRjBFvTpfpAbHKPoAml4yLTQ==
-X-Received: by 2002:a05:6214:20ab:: with SMTP id 11mr1688846qvd.11.1644285890048;
-        Mon, 07 Feb 2022 18:04:50 -0800 (PST)
+        bh=gfQlEQsSnQDvJT0U+aR8JRv9vIvvKerjJkrDdnIFoP8=;
+        b=0bMQlLxfFcIUrCbUyneMEm+Xh+CJN6aacWzK8m41oDVzuRZ5k/Ao2ojzDfgfk4KYsB
+         Peti6LBUcZARcJaqmQ4cSsXHDj0WBngyHFXKcNOeMim3e+ZvQYEh1QFgCYzAmfA8NnXM
+         Z91DMsTl9uIGHQOEw9S419PjiZZUy8vSxOyzkV+HkeVzS/bjH3xLm68u6wSMDTYjhWYE
+         Q8lCFbkAjBLao4B1aGvVkV/jt02PS0N1pgCReJgxoSf6fOVlqqQ33uP7JnaeQIOZ5aru
+         qKcmSlna09GVbtLB3h3i9/w3AKEyVdLdfPdLB3UM+cdBKOqThaLF2niFJZqR/BWn+M+e
+         NgyA==
+X-Gm-Message-State: AOAM530WfMB+HHeexGLpLWK4tQRbGBQ9PTw47JYSKI5QKGDtB2hFCqDY
+        2BATghhoN2OTfTiFzSOHIPA=
+X-Google-Smtp-Source: ABdhPJwsd2Uc1PKmKFKCYXv+8bDineGyZkaiOERnrr9QfmgiSPgIfjZ13I0FcDMHsnNEe94QAVV2dQ==
+X-Received: by 2002:a05:6214:1c47:: with SMTP id if7mr1634191qvb.129.1644285894438;
+        Mon, 07 Feb 2022 18:04:54 -0800 (PST)
 Received: from shaak.. (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id u9sm1416055qko.130.2022.02.07.18.04.49
+        by smtp.gmail.com with ESMTPSA id u9sm1416055qko.130.2022.02.07.18.04.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 18:04:49 -0800 (PST)
+        Mon, 07 Feb 2022 18:04:54 -0800 (PST)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         andy.shevchenko@gmail.com, lars@metafoo.de
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v14 02/11] iio: afe: rescale: add INT_PLUS_{MICRO,NANO} support
-Date:   Mon,  7 Feb 2022 21:04:32 -0500
-Message-Id: <20220208020441.3081162-3-liambeguin@gmail.com>
+Subject: [PATCH v14 06/11] iio: afe: rescale: make use of units.h
+Date:   Mon,  7 Feb 2022 21:04:36 -0500
+Message-Id: <20220208020441.3081162-7-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.35.1.4.g5d01301f2b86
 In-Reply-To: <20220208020441.3081162-1-liambeguin@gmail.com>
 References: <20220208020441.3081162-1-liambeguin@gmail.com>
@@ -66,75 +66,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some ADCs use IIO_VAL_INT_PLUS_{NANO,MICRO} scale types.
-Add support for these to allow using the iio-rescaler with them.
+Make use of well-defined SI metric prefixes to improve code readability.
 
 Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/afe/iio-rescale.c | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+ drivers/iio/afe/iio-rescale.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index 65832dd09249..f833eb38f8bb 100644
+index 67273de46843..4601f84a83c2 100644
 --- a/drivers/iio/afe/iio-rescale.c
 +++ b/drivers/iio/afe/iio-rescale.c
-@@ -14,6 +14,7 @@
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/property.h>
-+#include <linux/units.h>
- 
- #include <linux/iio/afe/rescale.h>
- #include <linux/iio/consumer.h>
-@@ -23,6 +24,9 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 			  int *val, int *val2)
- {
- 	s64 tmp;
-+	s32 rem;
-+	u32 mult;
-+	u32 neg;
- 
- 	switch (scale_type) {
- 	case IIO_VAL_FRACTIONAL:
-@@ -41,6 +45,37 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+@@ -51,11 +51,16 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 		}
+ 		fallthrough;
+ 	case IIO_VAL_FRACTIONAL_LOG2:
+-		tmp = (s64)*val * 1000000000LL;
++		/*
++		 * GIGA is used here as an arbitrarily large multiplier to avoid
++		 * precision loss in the division. It doesn't have any physical
++		 * meaning attached to it.
++		 */
++		tmp = (s64)*val * GIGA;
+ 		tmp = div_s64(tmp, rescale->denominator);
  		tmp *= rescale->numerator;
- 		tmp = div_s64(tmp, 1000000000LL);
+ 
+-		tmp = div_s64_rem(tmp, 1000000000LL, &rem);
++		tmp = div_s64_rem(tmp, GIGA, &rem);
  		*val = tmp;
-+		return scale_type;
-+	case IIO_VAL_INT_PLUS_NANO:
-+	case IIO_VAL_INT_PLUS_MICRO:
-+		mult = scale_type == IIO_VAL_INT_PLUS_NANO ? GIGA : MEGA;
-+
-+		/*
-+		 * For IIO_VAL_INT_PLUS_{MICRO,NANO} scale types if either *val
-+		 * OR *val2 is negative the schan scale is negative, i.e.
-+		 * *val = 1 and *val2 = -0.5 yields -1.5 not -0.5.
-+		 */
-+		neg = *val < 0 || *val2 < 0;
-+
-+		tmp = (s64)abs(*val) * abs(rescale->numerator);
-+		*val = div_s64_rem(tmp, abs(rescale->denominator), &rem);
-+
-+		tmp = (s64)rem * mult + (s64)abs(*val2) * abs(rescale->numerator);
-+		tmp = div_s64(tmp, abs(rescale->denominator));
-+
-+		*val += div_s64_rem(tmp, mult, val2);
-+
-+		/*
-+		 * If only one of the rescaler elements or the schan scale is
-+		 * negative, the combined scale is negative.
-+		 */
-+		if (neg ^ ((rescale->numerator < 0) ^ (rescale->denominator < 0))) {
-+			if (*val)
-+				*val = -*val;
-+			else
-+				*val2 = -*val2;
-+		}
-+
- 		return scale_type;
- 	default:
- 		return -EOPNOTSUPP;
+ 
+ 		if (!rem)
+@@ -71,7 +76,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 
+ 		*val2 = rem / (int)tmp;
+ 		if (rem2)
+-			*val2 += div_s64((s64)rem2 * 1000000000LL, tmp);
++			*val2 += div_s64((s64)rem2 * GIGA, tmp);
+ 
+ 		return IIO_VAL_INT_PLUS_NANO;
+ 	case IIO_VAL_INT_PLUS_NANO:
+@@ -332,8 +337,8 @@ static int rescale_current_sense_amplifier_props(struct device *dev,
+ 	 * gain_div / (gain_mult * sense), while trying to keep the
+ 	 * numerator/denominator from overflowing.
+ 	 */
+-	factor = gcd(sense, 1000000);
+-	rescale->numerator = 1000000 / factor;
++	factor = gcd(sense, MEGA);
++	rescale->numerator = MEGA / factor;
+ 	rescale->denominator = sense / factor;
+ 
+ 	factor = gcd(rescale->numerator, gain_mult);
+@@ -361,8 +366,8 @@ static int rescale_current_sense_shunt_props(struct device *dev,
+ 		return ret;
+ 	}
+ 
+-	factor = gcd(shunt, 1000000);
+-	rescale->numerator = 1000000 / factor;
++	factor = gcd(shunt, MEGA);
++	rescale->numerator = MEGA / factor;
+ 	rescale->denominator = shunt / factor;
+ 
+ 	return 0;
 -- 
 2.35.1.4.g5d01301f2b86
 
