@@ -2,87 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48325C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385058AbiBHSh4 (ORCPT
+        id S1385081AbiBHSjD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:37:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34198 "EHLO
+        Tue, 8 Feb 2022 13:39:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231149AbiBHShu (ORCPT
+        with ESMTP id S231149AbiBHSjA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:37:50 -0500
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D87C061576
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:37:49 -0800 (PST)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1644345464;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=NRVXz6k5qYgOdp2xZIUPWtH2m6FyLOF3PXWsoqOGl2A=;
-        b=ZUjyopANDHkE28JEx8nr2AFxm/cEBICwlMTv17KttWtGbSNoDnkbTzmL2FmwJ8ze6NWwEM
-        OvFClwfXddJxwZTGFuL7akWh657ngPhBE8nkMNVppeoHiBgZtZBFmoB4BV3SFe/umYB+Jx
-        TzoWc1cTazy49fpJW/hIF+ZAdJLt67U=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH] kasan: test: prevent cache merging in kmem_cache_double_destroy
-Date:   Tue,  8 Feb 2022 19:37:36 +0100
-Message-Id: <748bd5e0bad5266a4cac52ff25232bbc314b24f5.1644345308.git.andreyknvl@google.com>
+        Tue, 8 Feb 2022 13:39:00 -0500
+X-Greylist: delayed 1053 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 10:38:58 PST
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E69EC061579;
+        Tue,  8 Feb 2022 10:38:58 -0800 (PST)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 218ILMhw124429;
+        Tue, 8 Feb 2022 12:21:22 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644344482;
+        bh=1nkGGCWScu2aD1m/BHp/eL9jSeS7UsELkjz8CZraFUc=;
+        h=From:To:CC:Subject:Date;
+        b=NhWuEc0KIz2LBcVl968jVOIZF9e8fMyyxTgeeBm6UVU/1dg7t6JfT6dkUzRZVK5U7
+         2mZjWsLaGAz9wwN77QyxF+uvOgJnrbb+eS/Ewd3GXdlIjR1AD2vtPgGEcOtlsvUWjD
+         Jft0SunS5xd8hF6R7EfCAXZbVAtJvF37QuO43fSw=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 218ILMat004125
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 8 Feb 2022 12:21:22 -0600
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 8
+ Feb 2022 12:21:22 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 8 Feb 2022 12:21:22 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 218ILMfn029185;
+        Tue, 8 Feb 2022 12:21:22 -0600
+From:   Hari Nagalla <hnagalla@ti.com>
+To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <nm@ti.com>, <vigneshr@ti.com>, <robh+dt@kernel.org>
+Subject: [PATCH] arm64: dts: ti: k3-am64: Add ESM0 to device memory map
+Date:   Tue, 8 Feb 2022 12:21:19 -0600
+Message-ID: <20220208182119.24707-1-hnagalla@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+AM64x SoCs have two ESM modules, with one in MAIN voltage domain and the
+other in MCU voltage domain. The error output from Main ESM module can
+be routed to the MCU ESM module. The error output of MCU ESM can be
+configured to reset the device.
 
-With HW_TAGS KASAN and kasan.stacktrace=off, the cache created in the
-kmem_cache_double_destroy() test might get merged with an existing one.
-Thus, the first kmem_cache_destroy() call won't actually destroy it
-but will only descrease the refcount. This causes the test to fail.
+For ESM details please refer technical reference manual at
+https://www.ti.com/lit/pdf/spruim2
 
-Provide an empty contructor for the created cache to prevent the cache
-from getting merged.
-
-Fixes: f98f966cd750 ("kasan: test: add test case for double-kmem_cache_destroy()")
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+Signed-off-by: Hari Nagalla <hnagalla@ti.com>
 ---
- lib/test_kasan.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/ti/k3-am64.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/lib/test_kasan.c b/lib/test_kasan.c
-index 26a5c9007653..3b413f8c8a71 100644
---- a/lib/test_kasan.c
-+++ b/lib/test_kasan.c
-@@ -869,11 +869,14 @@ static void kmem_cache_invalid_free(struct kunit *test)
- 	kmem_cache_destroy(cache);
- }
- 
-+static void empty_cache_ctor(void *object) { }
-+
- static void kmem_cache_double_destroy(struct kunit *test)
- {
- 	struct kmem_cache *cache;
- 
--	cache = kmem_cache_create("test_cache", 200, 0, 0, NULL);
-+	/* Provide a constructor to prevent cache merging. */
-+	cache = kmem_cache_create("test_cache", 200, 0, 0, empty_cache_ctor);
- 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, cache);
- 	kmem_cache_destroy(cache);
- 	KUNIT_EXPECT_KASAN_FAIL(test, kmem_cache_destroy(cache));
+diff --git a/arch/arm64/boot/dts/ti/k3-am64.dtsi b/arch/arm64/boot/dts/ti/k3-am64.dtsi
+index 120974726be8..0622a93ec136 100644
+--- a/arch/arm64/boot/dts/ti/k3-am64.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am64.dtsi
+@@ -66,6 +66,7 @@
+ 		#address-cells = <2>;
+ 		#size-cells = <2>;
+ 		ranges = <0x00 0x000f4000 0x00 0x000f4000 0x00 0x000002d0>, /* PINCTRL */
++			 <0x00 0x00420000 0x00 0x00420000 0x00 0x00001000>, /* ESM0 */
+ 			 <0x00 0x00600000 0x00 0x00600000 0x00 0x00001100>, /* GPIO */
+ 			 <0x00 0x00a40000 0x00 0x00a40000 0x00 0x00000800>, /* Timesync router */
+ 			 <0x00 0x01000000 0x00 0x01000000 0x00 0x02330400>, /* First peripheral window */
 -- 
-2.25.1
+2.17.1
 
