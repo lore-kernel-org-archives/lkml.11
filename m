@@ -2,241 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F31C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AFB8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359173AbiBHNkD (ORCPT
+        id S1358837AbiBHNkf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:40:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
+        Tue, 8 Feb 2022 08:40:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358766AbiBHNkA (ORCPT
+        with ESMTP id S243023AbiBHNke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:40:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250A6C03FED7;
-        Tue,  8 Feb 2022 05:39:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B73B3B81AFA;
-        Tue,  8 Feb 2022 13:39:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67BA8C340E9;
-        Tue,  8 Feb 2022 13:39:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644327596;
-        bh=arWyuKrgF6+HTy5MGGr9g1ZYG3YqGe+bpPoKBhwDtjY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iRcMxm2NinrxP0/dQodYfHh7RziJJ6SzP7mzdIkPqhMs3k5TCjS1XddxBIZiBLRWe
-         fwsdHqkyllv+f+u1X7HW1pRH236O9WBWXThRFXUZ3DGcllJJyj+jpn8NGzuMduVmt2
-         VH9+3pdfzFM+wiZ3119U215A3SNS6eM4zENnhzdV2JsEUAIyTv0hA+0xyYGATs+knD
-         eiR0PPJyCdHewwzmyv7KEe+xE2Y45P468g1Y7LTuTiliKkMrJXkeMtFJ3bAd55MtPd
-         phoE2FDW40WGRPJHyNd45b9VSjxZK9ZOanjsJLzazKAr+DS4Zf4rcVtyQzybCN9V04
-         WOeQ8tXUTVsFw==
-Date:   Tue, 8 Feb 2022 13:39:22 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Emma Anholt <emma@anholt.net>,
-        David Lechner <david@lechnology.com>,
-        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
-        Antti Palosaari <crope@iki.fi>,
-        Lee Jones <lee.jones@linaro.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Piel <eric.piel@tremplin-utc.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        =?utf-8?Q?=C5=81ukasz?= Stelmach <l.stelmach@samsung.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Harry Morris <h.morris@cascoda.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Solomon Peachy <pizza@shaftnet.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Benson Leung <bleung@chromium.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        James Schulman <james.schulman@cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Ronald =?iso-8859-1?Q?Tschal=E4r?= <ronald@innovation.ch>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
-        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Heiko Schocher <hs@denx.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Matt Kline <matt@bitbashing.io>,
-        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Stefan =?iso-8859-1?Q?M=E4tje?= <stefan.maetje@esd.eu>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nanyong Sun <sunnanyong@huawei.com>,
-        Yang Shen <shenyang39@huawei.com>,
-        dingsenjie <dingsenjie@yulong.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michael Walle <michael@walle.cc>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        wengjianfeng <wengjianfeng@yulong.com>,
-        Sidong Yang <realwakka@gmail.com>,
-        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
-        Davidlohr Bueso <dbueso@suse.de>, Claudius Heine <ch@denx.de>,
-        Jiri Prchal <jiri.prchal@aksignal.cz>,
-        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        linux-wireless@vger.kernel.org, libertas-dev@lists.infradead.org,
-        platform-driver-x86@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH 5/5] spi: make remove callback a void function
-Message-ID: <YgJyiiLqLu44MWF1@sirena.org.uk>
-References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
- <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
+        Tue, 8 Feb 2022 08:40:34 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13AEC03FED0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:40:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644327633; x=1675863633;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Q4G/SZPJo4bllBcLYXaoB9cwYQmtRawt9cIr4MkpgHo=;
+  b=gGGv/KWinz9aUxQcKmOIzK22oVCITGuce2AfUdYu/tIT60gKziz9JXKz
+   Cmpn/y9s519RR59K8KokEUvLFbg43On0rRIc+4UyIgLGJDdczNk6kdexE
+   99rAWCeI7Fp7hQexO4KOcJo2O5YBq73+L4t3lLepvY+UMRJ1wwxw7M3Om
+   Y=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 05:40:32 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 05:40:32 -0800
+Received: from [10.216.32.197] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 8 Feb 2022
+ 05:40:29 -0800
+Message-ID: <4b8ae129-45f9-33f9-673e-b134b4c36324@quicinc.com>
+Date:   Tue, 8 Feb 2022 19:10:22 +0530
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ef2aNFzDYnZC/zcG"
-Content-Disposition: inline
-In-Reply-To: <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
-X-Cookie: You will forget that you ever knew me.
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] softirq: Remove raise_softirq from
+ tasklet_action_common()
+Content-Language: en-US
+To:     <linux-kernel@vger.kernel.org>
+CC:     <peterz@infradead.org>, <tglx@linutronix.de>, <paulmck@kernel.org>,
+        <will@kernel.org>, <dave@stgolabs.net>, <frederic@kernel.org>
+References: <1644066805-17212-1-git-send-email-quic_mojha@quicinc.com>
+From:   Mukesh Ojha <quic_mojha@quicinc.com>
+In-Reply-To: <1644066805-17212-1-git-send-email-quic_mojha@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.47.97.222)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi All,
 
---ef2aNFzDYnZC/zcG
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Sorry for the reminder so quickly as we are hitting this issue more 
+frequently.
+Please suggest if whether below patch will have any side-effect.
 
-On Sun, Jan 23, 2022 at 06:52:01PM +0100, Uwe Kleine-K=F6nig wrote:
-> The value returned by an spi driver's remove function is mostly ignored.
-> (Only an error message is printed if the value is non-zero that the
-> error is ignored.)
->=20
-> So change the prototype of the remove function to return no value. This
-> way driver authors are not tempted to assume that passing an error to
-> the upper layer is a good idea. All drivers are adapted accordingly.
-> There is no intended change of behaviour, all callbacks were prepared to
-> return 0 before.
+-Mukesh
 
-I was going to apply this but it needs rebasing against current code
-unfortunately.
-
---ef2aNFzDYnZC/zcG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmICcokACgkQJNaLcl1U
-h9DmcQf+LJZ969n1sCqmHKwy4lQ2Pxdy53x61CG2xi4rHMBDaahnhIqh6OONUbd+
-C69P1GRsp8evXqnMb8d4TH1pFPvi3X7mWWwRFhXalhZsYYw/b3jmnQNO7zN81ayi
-80hp04WF+UE2A+FJhiN9n9i47vM4FEBcuKxNp9AZNSxwiTfVHUoHAF3UddqF0oAo
-hThmCBaRZYCQ9dCX1glz8vfrfXVIqRVx30esuamogMGtZbM5bSDoPizzdk83trN4
-pfd594g2DUBkpQBHZvadCjp92MBULn5nNnlF5Ob5PAmP1T0NUVsTu7Ra/ZJTnUNb
-GfkUNfSvLNah+a6BUd3Jp6LazHu9Ew==
-=bpX2
------END PGP SIGNATURE-----
-
---ef2aNFzDYnZC/zcG--
+On 2/5/2022 6:43 PM, Mukesh Ojha wrote:
+> Think about a scenario when all other cores are in suspend
+> and one core is only running ksoftirqd and it is because
+> some client has invoked tasklet_hi_schedule() only once
+> during that phase.
+>
+> tasklet_action_common() handles that softirq and marks the
+> same softirq as pending again. And due to that core keeps
+> running the softirq handler [1] forever and it is not able to
+> go to suspend.
+>
+> We can get rid of raising softirq from tasklet handler.
+>
+> [1]
+> <idle>-0    [003]   13058.769081:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> <idle>-0     [003]  13058.769085: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
+> <idle>-0    [003]   13058.769087:  softirq_exit   vec=0  action=HI_SOFTIRQ
+> <idle>-0    [003]   13058.769091:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> <idle>-0     [003]  13058.769094: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
+> <idle>-0    [003]   13058.769097:  softirq_exit   vec=0  action=HI_SOFTIRQ
+> <idle>-0    [003]   13058.769100:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> <idle>-0     [003]  13058.769103: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
+> <idle>-0    [003]   13058.769106:  softirq_exit   vec=0  action=HI_SOFTIRQ
+> <idle>-0    [003]   13058.769109:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> <idle>-0    [003]   13059.058923:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> ...
+> ..
+> ..
+> ..
+>
+> <idle>-0    [003]   13059.058951:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> <idle>-0     [003]  13059.058954: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
+> <idle>-0    [003]   13059.058957:  softirq_exit   vec=0  action=HI_SOFTIRQ
+> <idle>-0    [003]   13059.058960:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> <idle>-0     [003]  13059.058963: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
+> <idle>-0    [003]   13059.058966:  softirq_exit   vec=0  action=HI_SOFTIRQ
+> <idle>-0    [003]   13059.058969:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> <idle>-0     [003]  13059.058972: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
+> <idle>-0    [003]   13059.058975:  softirq_exit   vec=0  action=HI_SOFTIRQ
+> <idle>-0    [003]   13059.058978:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> <idle>-0     [003]  13059.058981: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
+> <idle>-0    [003]   13059.058984:  softirq_exit   vec=0  action=HI_SOFTIRQ
+> <idle>-0    [003]   13059.058987:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> <idle>-0     [003]  13059.058990: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
+> <idle>-0    [003]   13059.058993:  softirq_exit   vec=0  action=HI_SOFTIRQ
+> <idle>-0    [003]   13059.058996:  softirq_entry   vec=0  action=HI_SOFTIRQ
+> <idle>-0     [003]  13059.059000: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
+> <idle>-0    [003]   13059.059002:  softirq_exit   vec=0  action=HI_SOFTIRQ
+>
+> Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
+> ---
+>   kernel/softirq.c | 1 -
+>   1 file changed, 1 deletion(-)
+>
+> diff --git a/kernel/softirq.c b/kernel/softirq.c
+> index 41f4709..d3e6fb9 100644
+> --- a/kernel/softirq.c
+> +++ b/kernel/softirq.c
+> @@ -795,7 +795,6 @@ static void tasklet_action_common(struct softirq_action *a,
+>   		t->next = NULL;
+>   		*tl_head->tail = t;
+>   		tl_head->tail = &t->next;
+> -		__raise_softirq_irqoff(softirq_nr);
+>   		local_irq_enable();
+>   	}
+>   }
