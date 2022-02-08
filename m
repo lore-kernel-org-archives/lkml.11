@@ -2,93 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0867C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D131C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354110AbiBHJXo (ORCPT
+        id S1354124AbiBHJXu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 04:23:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
+        Tue, 8 Feb 2022 04:23:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354083AbiBHJXl (ORCPT
+        with ESMTP id S1354117AbiBHJXr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:23:41 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09638C03FEC6
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:23:40 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id m14so29453831wrg.12
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:23:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=nv9eGMngUI4irs2c+oCw9hCjsOWg2bDP2XUBGqADoak=;
-        b=pjGIicdCBYz734ZtdMDLF0Vk0sQ4CQdXf13cqIefkoiIZvpwGSwsRPI7XLM+fzR/JU
-         66QDwlp33BgK6zTu5GMchSO6Ya9LIEeg4vIq/hsPX9qoPO/DBT617X9KBShEQ9HjKS3U
-         gVwWvGKzfRSOZn7GFMBRHHBpbfJhj1VVzWYRmEtM2bYZZmCn/l/ewK9rphxpSqANRpvG
-         E1nBnNFufGsa7tYM50+ZOtRY6zuv0Y53TRZq2ffG0QggCSdsLFY2h57mKKXYqGlDp4VO
-         pdzzVHt/rJ+K6LFu45fvQxTcKaMVXBNOCUfbuZEfXzpsVIs/gOslOA0VAS15MRIPWYTV
-         OKFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=nv9eGMngUI4irs2c+oCw9hCjsOWg2bDP2XUBGqADoak=;
-        b=MqnPfF0GyzJHLPNFUTOTCXZP+6DX9LMJNH1pTjkGbbF+kVN5GXChZbOZMkrd4Xz1K6
-         I8cODWemCaDiUoB2uZJ57ZaTd3dAnFYHEAQwrbySoRPS6R5ovXu56dXn4nGNVuo0pdYU
-         RvamYrDVDMsmi99iriCBz3/+R4h4HwEdAzuOpk14+wfvYRO5Y3gJ7IS/be6rJA42gxeQ
-         jCzNQzYUovWDRQbxJTHUHjnFiuUOhxJh3iJ1xK+dwwYtkk/rnaegKs4EnVW3uMAZjAis
-         KoX2Sllc3Mi0j+4iKuaccd562a3xfNMHfmnOvhMwtohOdVIBvgU5498kBRLpYCAty25/
-         5wuQ==
-X-Gm-Message-State: AOAM530LFD5Ena8lm9IgIMLdIaks329XHaNmthgdBnFdqhAPmGM2gUD3
-        SV4j2/tsC+gJQVUfhRsHStnYEg==
-X-Google-Smtp-Source: ABdhPJxjRg1M0ImAnVJO2McmBHHY7WjBVt9i/brwoGpY52oPDZ+DU4XInyUB2s7IiA+cTZulDHS/rg==
-X-Received: by 2002:adf:b610:: with SMTP id f16mr2693143wre.266.1644312218574;
-        Tue, 08 Feb 2022 01:23:38 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id y1sm1771596wmi.36.2022.02.08.01.23.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 01:23:37 -0800 (PST)
-Date:   Tue, 8 Feb 2022 09:23:34 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Luca Weiss <luca.weiss@fairphone.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kiran Gunda <kgunda@codeaurora.org>,
-        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: backlight: qcom-wled: Add PM6150L
- compatible
-Message-ID: <YgI2ltTYI/1mAxR+@google.com>
-References: <20211229170358.2457006-1-luca.weiss@fairphone.com>
- <20211229170358.2457006-2-luca.weiss@fairphone.com>
+        Tue, 8 Feb 2022 04:23:47 -0500
+X-Greylist: delayed 1294 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 01:23:46 PST
+Received: from qproxy4-pub.mail.unifiedlayer.com (qproxy4-pub.mail.unifiedlayer.com [66.147.248.250])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EBBC03FEC6
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:23:45 -0800 (PST)
+Received: from gproxy1-pub.mail.unifiedlayer.com (gproxy1-pub.mail.unifiedlayer.com [69.89.25.95])
+        by qproxy4.mail.unifiedlayer.com (Postfix) with ESMTP id 4BD6C802E59B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:02:11 +0000 (UTC)
+Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
+        by progateway3.mail.pro1.eigbox.com (Postfix) with ESMTP id 97D1E1004733B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:02:10 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id HMO2nh862EaNCHMO2nc4Bf; Tue, 08 Feb 2022 09:02:10 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=fNX8YbWe c=1 sm=1 tr=0 ts=62023192
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=oGFeUVbbRNcA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=NjNOBljHOn0YkUJ5KKXki1nVeez07hjn+mmexGx7Yz8=; b=szxKvTH9Pmt57WEcUfEdeo1hxA
+        bHEhYdQuukSVdWmTpIvQeU1h5D52VKzHVamntCgdl3HeAzidkQ7TDaPchJr3XkIEVAidrJjXb5FX6
+        rJyXOl4YkucwYtETw2SGuEl6O;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:53772 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nHMO1-0021xE-QM; Tue, 08 Feb 2022 02:02:09 -0700
+Message-ID: <8986fe5b-edf5-3511-0ff9-eb0e5b0e672a@w6rz.net>
+Date:   Tue, 8 Feb 2022 01:02:08 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211229170358.2457006-2-luca.weiss@fairphone.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.16 000/127] 5.16.8-rc2 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220207133856.644483064@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220207133856.644483064@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nHMO1-0021xE-QM
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:53772
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 13
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 29 Dec 2021, Luca Weiss wrote:
+On 2/7/22 06:04, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.8 release.
+> There are 127 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Feb 2022 13:38:34 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.8-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-> Document the compatible for the wled block found in PM6150L.
-> 
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-> ---
->  Documentation/devicetree/bindings/leds/backlight/qcom-wled.yaml | 1 +
->  1 file changed, 1 insertion(+)
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-Applied, thanks.
+Tested-by: Ron Economos <re@w6rz.net>
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
