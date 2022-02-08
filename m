@@ -2,99 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F96C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 513D9C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:27:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358863AbiBHL1l (ORCPT
+        id S1358968AbiBHL1o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:27:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56314 "EHLO
+        Tue, 8 Feb 2022 06:27:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356311AbiBHKbL (ORCPT
+        with ESMTP id S234069AbiBHKcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:31:11 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B5DC03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:31:08 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id d187so18083531pfa.10
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 02:31:08 -0800 (PST)
+        Tue, 8 Feb 2022 05:32:20 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8C7C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:32:19 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id z7so13500099ilb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 02:32:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=heitbaum.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=n2sPaAfs1e3r3EaCKrH3flEyvxcUKOyg9+DSgqzK2kY=;
-        b=MW9d5dMmZamQEEDqf3yut7WOOWrRcS9vhDUuzD2Qffdf/ZkuPQhYNVJrqUO5rQG5Pv
-         kn3LuLy1MF4EdVeySja+iqHd3GGUdxUdGhtaGb4++TeB9bN24bxPl81e7bMbbLxkMuYZ
-         n0dIQqRgAafGZ04HEA3KQBKFpMY/BIIwW9rF8=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IiwkpuM+BfLL6jHkWVkc0DGHd+y4pmtd32Iu8/4ilfc=;
+        b=c34Yqufwr+tpl4Ls9NyohNK+tbfd7eD7QWVO23mmKLmOQplMwAiRZH4JxpVLsbcSLD
+         ZjrnpBi4zlEiv+2yuO0AA3o37PVhrimSWqty//ByE1PcwJj2DPC0zUyD5tdFa41ApGuc
+         ExF6gcgHxTjTmMsSGeiKGvthGPBqELlAP4WlcDDV+QjNMfx7cQTOcXjp52V8OIDZfNPq
+         cJwhpKGuPc7RfJ5WpfLj0kHIExXZaSORc54NAO+z2brqOPtn0y+AcCAORXoax4UXOLKu
+         zYjZPjGhbHHiVOt6susQrPHsmKiqFCoXEpBgp0D9nD/zaOiKVRTb0eoqrD+VzPrqt0NC
+         lr5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=n2sPaAfs1e3r3EaCKrH3flEyvxcUKOyg9+DSgqzK2kY=;
-        b=Tgz3XJaaTzevvjsSeu8IhGMMud9D2uw0O9I/cmxxFH1qLoyHO7Oos9zePhqY8Gk+AI
-         XOyrgLBxm8WsRC+9nWTZZJ1TbFY2oeMnXqhiXYvcod2wQSL8+UEsayyFzea3AqAeFRx4
-         Nf64fsc5ne7LoELb6i5npvzueE3ApzbVZCMSitI87JaS4fbMFN9/VCAwqFT5UDtjHrKf
-         4ANP+l0dXTiu3qk4e/UwSBXhgJgXQbU8udu2Ab3MlzED71j95lG48X3LFB0yEfnYgJHN
-         RIh5MBz8FP8XKldJrJj4Z6jAUBKqBNamxvT+Uza5bKizyDbQPySEQ5gjrRztIyY0A9mr
-         iNcQ==
-X-Gm-Message-State: AOAM532fJ2qd89Pyhp/jJFL3isQGlkfIcY4XJcx0ib4twXGbSpIo1kal
-        9bqlHEP734WF424mpPrhojr4Dw==
-X-Google-Smtp-Source: ABdhPJw5CoJJ5j92QzzAFiXKwho86u7TKH2Dj9d4eLJJvDDSEUpwHs5VzBuY1DioqejlBbgmzCMXMQ==
-X-Received: by 2002:a05:6a00:d5c:: with SMTP id n28mr3738935pfv.9.1644316267474;
-        Tue, 08 Feb 2022 02:31:07 -0800 (PST)
-Received: from f59db626e9e0 ([203.221.136.13])
-        by smtp.gmail.com with ESMTPSA id q16sm15514674pfu.194.2022.02.08.02.31.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 02:31:06 -0800 (PST)
-Date:   Tue, 8 Feb 2022 10:30:56 +0000
-From:   Rudi Heitbaum <rudi@heitbaum.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.16 000/127] 5.16.8-rc2 review
-Message-ID: <20220208103056.GA29@f59db626e9e0>
-References: <20220207133856.644483064@linuxfoundation.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IiwkpuM+BfLL6jHkWVkc0DGHd+y4pmtd32Iu8/4ilfc=;
+        b=5OEDsq2qyYQj8MQKiMA8ZJEq70Pvn8f77zBJVkqCbshsMTfUiZY7OSs4jROz1oP0Hy
+         z8rdDFZvOUEGI1QetKbFR57epBt9VJYnUXhZ7miDthgjsskbKxxJsikOIAC/5AF+Eo0n
+         4OxvJ16FAVCuzmBl7b38Y0uFhntwbnIF6Jx7NMfOBoQ2mocktoakC4jvyexIAxX/iQ00
+         IDrybWCWOlSOfdEB9D3528SemLD2zBmvyJ7wLLAnI++wRcEpJxa2hEdea66hs5PGPDpz
+         7knLsTYgLsyOCwz1EYr/ttiSkeudbRfP7dI1DUkbVgbtAyWeTGZnOvMSsg6DjSOR5MmX
+         T8rQ==
+X-Gm-Message-State: AOAM530fRavba36jzUueuAeLwP5hsH9Op/54jfcEdTWm6y903crxXreL
+        bWuO3AgbVNasmwC2kqQuLEf+zjp68w6eMhCuUGaBDg==
+X-Google-Smtp-Source: ABdhPJwO7h+SNAUC6DS01GMY8SZPwIRsrITZWvxiKolM4+z3P2mez8dPra7ycisZCpd/a7IFPAVYshy3EHmGWbJP1pg=
+X-Received: by 2002:a05:6e02:194b:: with SMTP id x11mr1773801ilu.123.1644316338411;
+ Tue, 08 Feb 2022 02:32:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207133856.644483064@linuxfoundation.org>
+References: <000000000000ef8cbb05d3bf84cd@google.com> <20211225005253.1962-1-hdanton@sina.com>
+ <6396f046-b292-1a73-8339-d32b611d9b7f@redhat.com> <YczTPYx0L7y8TgIE@mit.edu> <20211230125018.2272-1-hdanton@sina.com>
+In-Reply-To: <20211230125018.2272-1-hdanton@sina.com>
+From:   Aleksandr Nogikh <nogikh@google.com>
+Date:   Tue, 8 Feb 2022 11:32:07 +0100
+Message-ID: <CANp29Y4wyREoKO60XjOfh618Udf5h21boF3R_=qYY8tJc0otfg@mail.gmail.com>
+Subject: Re: [syzbot] INFO: rcu detected stall in ext4_file_write_iter (4)
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     "Theodore Ts'o" <tytso@mit.edu>, Waiman Long <longman@redhat.com>,
+        syzbot <syzbot+03464269af631f4a4bdf@syzkaller.appspotmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 03:04:44PM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.8 release.
-> There are 127 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 09 Feb 2022 13:38:34 +0000.
-> Anything received after that time might be too late.
+Closing the bug. Syzkaller now is much more careful with sched_setattr
+and perf_event_open, so, hopefully, we'll see fewer such false
+positive reports in the future.
 
-Hi Greg,
+#syz invalid
 
-5.16.8-rc2 tested.
-
-Run tested on:
-- Allwinner H6 (Tanix TX6)
-- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
-
-In addition - build tested on:
-- Allwinner A64
-- Allwinner H3
-- Allwinner H5
-- NXP iMX6
-- NXP iMX8
-- Qualcomm Dragonboard
-- Rockchip RK3288
-- Rockchip RK3328
-- Rockchip RK3399pro
-- Samsung Exynos
-
-Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
---
-Rudi
+On Thu, Dec 30, 2021 at 1:50 PM Hillf Danton <hdanton@sina.com> wrote:
+>
+> On Wed, 29 Dec 2021 16:29:33 -0500 Theodore Ts'o wrote:
+> > On Mon, Dec 27, 2021 at 10:14:23PM -0500, Waiman Long wrote:
+> > >
+> > > The test was running on a CONFIG_PREEMPT kernel. So if the syzkaller kthread
+> > > is running at a higher priority than the rcu_preempt kthread, it is possible
+> > > for the rcu_preempt kthread to be starved of cpu time. The rwsem optimistic
+> > > spinning code will relinquish the cpu if there is a higher priority thread
+> > > running. Since rcu_preempt kthread did not seem to be able to get the cpu, I
+> > > suspect that it is probably caused by the syzkaller thread having a higher
+> > > priority.
+> >
+> > It's even worse than that.  The Syzkaller reproducer is calling
+> > sched_setattr():
+> >
+> >   *(uint32_t*)0x20000080 = 0x38;    // sched_attr.sched_size
+> >   *(uint32_t*)0x20000084 = 1;       // sched_attr.sched_policy == SCHED_FIFO
+> >   *(uint64_t*)0x20000088 = 0;       // sched_attr.sched_flags
+> >   *(uint32_t*)0x20000090 = 0;       // sched_attr.sched_nice
+> >   *(uint32_t*)0x20000094 = 1;       // sched_attr.sched_priority
+> >   *(uint64_t*)0x20000098 = 0;       // ...
+> >   *(uint64_t*)0x200000a0 = 0;
+> >   *(uint64_t*)0x200000a8 = 0;
+> >   *(uint32_t*)0x200000b0 = 0;
+> >   *(uint32_t*)0x200000b4 = 0;
+> >   syscall(__NR_sched_setattr, 0, 0x20000080ul, 0ul);
+> >
+> > So one or more of the syzkaller threads is SCHED_FIFO, and SCHED_FIFO
+> > threads will *never* relinquish the CPU in favor of SCHED_OTHER
+> > threads (which in practice will include all kernel threads unless
+> > special measures are taken by someone who knows what they are doing)
+> > so long as it they are runable.
+> >
+> > See the discussion at:
+> >
+> >     https://lore.kernel.org/all/Yb5RMWRsJl5TMk8H@casper.infradead.org/
+> >
+> > I recommend that kernel developers simply ignore any syzkaller report
+> > that relates to tasks being hung or rcu detected and where the
+> > reproducer is trying to set a real-time priority (e.g., sched_policy
+> > of SCHED_FIFO or SCHED_RR), since the number of ways that
+> > sched_setattr can be used as a foot-gun are near infinite....
+> >
+> > Syzkaller reports that include sched_setattr are great for inflating
+> > the OMG!  There are tons of unhandled syzkaller reports, "companies
+> > need to fund more engineering headcount to fix syzkaller bugs" slide
+> > decks.  But IMHO, they are not good for much else.
+> >
+> >                                           - Ted
+> >
+>
+> On the other hand, this report suggests IMHO the need for setting the
+> deadline, a couple of ticks by default, for spinners, to cut the chance
+> for FIFO tasks to make trouble in scenarios like the report.
+>
+> Mutex needs the same mechanism if it makes sense.
+>
+> Thanks
+>                 Hillf
+>
+>
+> +++ x/kernel/locking/rwsem.c
+> @@ -716,6 +716,7 @@ rwsem_spin_on_owner(struct rw_semaphore
+>         struct task_struct *new, *owner;
+>         unsigned long flags, new_flags;
+>         enum owner_state state;
+> +       unsigned long deadline;
+>
+>         lockdep_assert_preemption_disabled();
+>
+> @@ -724,6 +725,10 @@ rwsem_spin_on_owner(struct rw_semaphore
+>         if (state != OWNER_WRITER)
+>                 return state;
+>
+> +       /* avoid spinning long enough to make rcu stall
+> +        * particularly in case of FIFO spinner
+> +        */
+> +       deadline = jiffies + 2;
+>         for (;;) {
+>                 /*
+>                  * When a waiting writer set the handoff flag, it may spin
+> @@ -747,7 +752,8 @@ rwsem_spin_on_owner(struct rw_semaphore
+>                  */
+>                 barrier();
+>
+> -               if (need_resched() || !owner_on_cpu(owner)) {
+> +               if (need_resched() || !owner_on_cpu(owner) ||
+> +                   time_after(jiffies, deadline)) {
+>                         state = OWNER_NONSPINNABLE;
+>                         break;
+>                 }
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/20211230125018.2272-1-hdanton%40sina.com.
