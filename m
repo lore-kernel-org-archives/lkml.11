@@ -2,125 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 889D7C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 391B9C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345764AbiBHWeR (ORCPT
+        id S1356800AbiBHWeM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:34:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58356 "EHLO
+        Tue, 8 Feb 2022 17:34:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386515AbiBHUsK (ORCPT
+        with ESMTP id S1387272AbiBHWU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:48:10 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F5FC0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:48:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644353289; x=1675889289;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=T1Dq70dqxoGsKjC3M8rAVhSwDwdOT6gVU2rJNwMN/fY=;
-  b=aVdVvj7Yqa2mXwqBAZRfcgSD4QlVlTNTuS2j7l4BOUQ9HVWIIpMOGDgf
-   w4oxL9q1D+/Yz0nHdivUBvA8ET+dm7qBXhUbuZW/6Sn1f72RNqk4SK7Pg
-   CRuuaNKmaCJI4xgYn/cm75HGhA67fJVz0L1S4u6FpbGYHZ9KpnBWtFB8d
-   sjrUjvqkUSxYME8v5sMUXjgRh8TrvXARy488VSrfQ2ej6wNjsyqNYPVf5
-   Zd6zEpG9EZb+ZQrscyQG+Pxx7pg31GfK1nn38AfAri5w1oAoiIY7ksGsG
-   obQ71T9kdpp4w7idHSoK3fYYaSX/v3zIesSmuTamB35fxV17ADS7ATnLY
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229020844"
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="229020844"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 12:48:09 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="632976632"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 08 Feb 2022 12:48:07 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nHXPD-0000j5-2E; Tue, 08 Feb 2022 20:48:07 +0000
-Date:   Wed, 9 Feb 2022 04:47:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Tue, 8 Feb 2022 17:20:56 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEC3C0612B8;
+        Tue,  8 Feb 2022 14:20:55 -0800 (PST)
+Received: from localhost.localdomain (ip5f5aebc2.dynamic.kabel-deutschland.de [95.90.235.194])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 4669B61E64846;
+        Tue,  8 Feb 2022 23:20:54 +0100 (CET)
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [mark:arm64/preempt-dynamic-static-key 7/7]
- arch/arm64/include/asm/preempt.h:85:25: error: a parameter list without
- types is only allowed in a function definition
-Message-ID: <202202090439.RWVJ0AMJ-lkp@intel.com>
+Subject: [PATCH 2/2] Revert "Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg"
+Date:   Tue,  8 Feb 2022 23:19:11 +0100
+Message-Id: <20220208221911.57058-2-pmenzel@molgen.mpg.de>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220208221911.57058-1-pmenzel@molgen.mpg.de>
+References: <20220208221911.57058-1-pmenzel@molgen.mpg.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git arm64/preempt-dynamic-static-key
-head:   106f60395c0b424e5e05a69bbd40075152f9a17f
-commit: 106f60395c0b424e5e05a69bbd40075152f9a17f [7/7] arm64: support PREEMPT_DYNAMIC
-config: arm64-randconfig-r025-20220208 (https://download.01.org/0day-ci/archive/20220209/202202090439.RWVJ0AMJ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e8bff9ae54a55b4dbfeb6ba55f723abbd81bf494)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=106f60395c0b424e5e05a69bbd40075152f9a17f
-        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
-        git fetch --no-tags mark arm64/preempt-dynamic-static-key
-        git checkout 106f60395c0b424e5e05a69bbd40075152f9a17f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 prepare
+This reverts commit 81be03e026dc0c16dc1c64e088b2a53b73caa895.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Since the commit, transferring files greater than some bytes to the
+Nokia N9 (MeeGo) or Jolla (Sailfish OS) is not possible anymore.
 
-All error/warnings (new ones prefixed by >>):
+    # obexctl
+    [NEW] Client /org/bluez/obex
+    [obex]# connect 40:98:4E:5B:CE:XX
+    Attempting to connect to 40:98:4E:5B:CE:XX
+    [NEW] Session /org/bluez/obex/client/session0 [default]
+    [NEW] ObjectPush /org/bluez/obex/client/session0
+    Connection successful
+    [40:98:4E:5B:CE:XX]# send /lib/systemd/systemd
+    Attempting to send /lib/systemd/systemd to /org/bluez/obex/client/session0
+    [NEW] Transfer /org/bluez/obex/client/session0/transfer0
+    Transfer /org/bluez/obex/client/session0/transfer0
+        Status: queued
+        Name: systemd
+        Size: 1841712
+        Filename: /lib/systemd/systemd
+        Session: /org/bluez/obex/client/session0
+    [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: active
+    [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Transferred: 32737 (@32KB/s 00:55)
+    [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: error
+    [DEL] Transfer /org/bluez/obex/client/session0/transfer0
 
-   In file included from arch/arm64/kernel/asm-offsets.c:10:
-   In file included from include/linux/arm_sdei.h:8:
-   In file included from include/acpi/ghes.h:5:
-   In file included from include/acpi/apei.h:9:
-   In file included from include/linux/acpi.h:13:
-   In file included from include/linux/irqdomain.h:35:
-   In file included from include/linux/of.h:17:
-   In file included from include/linux/kobject.h:20:
-   In file included from include/linux/sysfs.h:16:
-   In file included from include/linux/kernfs.h:11:
-   In file included from include/linux/mutex.h:17:
-   In file included from include/linux/lockdep.h:14:
-   In file included from include/linux/smp.h:110:
-   In file included from include/linux/preempt.h:78:
->> arch/arm64/include/asm/preempt.h:85:1: warning: declaration specifier missing, defaulting to 'int'
-   DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-   ^
-   int
->> arch/arm64/include/asm/preempt.h:85:25: error: a parameter list without types is only allowed in a function definition
-   DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-                           ^
-   1 warning and 1 error generated.
-   make[2]: *** [scripts/Makefile.build:121: arch/arm64/kernel/asm-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1191: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+Reverting it, fixes the regression.
 
-
-vim +85 arch/arm64/include/asm/preempt.h
-
-    84	
-  > 85	DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-    86	void dynamic_preempt_schedule(void);
-    87	#define __preempt_schedule()		dynamic_preempt_schedule()
-    88	void dynamic_preempt_schedule_notrace(void);
-    89	#define __preempt_schedule_notrace()	dynamic_preempt_schedule_notrace()
-    90	
-
+Link: https://lore.kernel.org/linux-bluetooth/aa3ee7ac-6c52-3861-1798-3cc1a37f6ebf@molgen.mpg.de/T/#m1f9673e4ab0d55a7dccf87905337ab2e67d689f1
+Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ net/bluetooth/rfcomm/core.c | 50 ++++++-------------------------------
+ net/bluetooth/rfcomm/sock.c | 46 ++++++++++++++++++++++++++--------
+ 2 files changed, 43 insertions(+), 53 deletions(-)
+
+diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
+index 7324764384b6..f2bacb464ccf 100644
+--- a/net/bluetooth/rfcomm/core.c
++++ b/net/bluetooth/rfcomm/core.c
+@@ -549,58 +549,22 @@ struct rfcomm_dlc *rfcomm_dlc_exists(bdaddr_t *src, bdaddr_t *dst, u8 channel)
+ 	return dlc;
+ }
+ 
+-static int rfcomm_dlc_send_frag(struct rfcomm_dlc *d, struct sk_buff *frag)
+-{
+-	int len = frag->len;
+-
+-	BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
+-
+-	if (len > d->mtu)
+-		return -EINVAL;
+-
+-	rfcomm_make_uih(frag, d->addr);
+-	__skb_queue_tail(&d->tx_queue, frag);
+-
+-	return len;
+-}
+-
+ int rfcomm_dlc_send(struct rfcomm_dlc *d, struct sk_buff *skb)
+ {
+-	unsigned long flags;
+-	struct sk_buff *frag, *next;
+-	int len;
++	int len = skb->len;
+ 
+ 	if (d->state != BT_CONNECTED)
+ 		return -ENOTCONN;
+ 
+-	frag = skb_shinfo(skb)->frag_list;
+-	skb_shinfo(skb)->frag_list = NULL;
+-
+-	/* Queue all fragments atomically. */
+-	spin_lock_irqsave(&d->tx_queue.lock, flags);
+-
+-	len = rfcomm_dlc_send_frag(d, skb);
+-	if (len < 0 || !frag)
+-		goto unlock;
+-
+-	for (; frag; frag = next) {
+-		int ret;
+-
+-		next = frag->next;
+-
+-		ret = rfcomm_dlc_send_frag(d, frag);
+-		if (ret < 0) {
+-			kfree_skb(frag);
+-			goto unlock;
+-		}
++	BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
+ 
+-		len += ret;
+-	}
++	if (len > d->mtu)
++		return -EINVAL;
+ 
+-unlock:
+-	spin_unlock_irqrestore(&d->tx_queue.lock, flags);
++	rfcomm_make_uih(skb, d->addr);
++	skb_queue_tail(&d->tx_queue, skb);
+ 
+-	if (len > 0 && !test_bit(RFCOMM_TX_THROTTLED, &d->flags))
++	if (!test_bit(RFCOMM_TX_THROTTLED, &d->flags))
+ 		rfcomm_schedule();
+ 	return len;
+ }
+diff --git a/net/bluetooth/rfcomm/sock.c b/net/bluetooth/rfcomm/sock.c
+index 5938af3e9936..2c95bb58f901 100644
+--- a/net/bluetooth/rfcomm/sock.c
++++ b/net/bluetooth/rfcomm/sock.c
+@@ -575,20 +575,46 @@ static int rfcomm_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 	lock_sock(sk);
+ 
+ 	sent = bt_sock_wait_ready(sk, msg->msg_flags);
++	if (sent)
++		goto done;
+ 
+-	release_sock(sk);
++	while (len) {
++		size_t size = min_t(size_t, len, d->mtu);
++		int err;
+ 
+-	if (sent)
+-		return sent;
++		skb = sock_alloc_send_skb(sk, size + RFCOMM_SKB_RESERVE,
++				msg->msg_flags & MSG_DONTWAIT, &err);
++		if (!skb) {
++			if (sent == 0)
++				sent = err;
++			break;
++		}
++		skb_reserve(skb, RFCOMM_SKB_HEAD_RESERVE);
++
++		err = memcpy_from_msg(skb_put(skb, size), msg, size);
++		if (err) {
++			kfree_skb(skb);
++			if (sent == 0)
++				sent = err;
++			break;
++		}
++
++		skb->priority = sk->sk_priority;
++
++		err = rfcomm_dlc_send(d, skb);
++		if (err < 0) {
++			kfree_skb(skb);
++			if (sent == 0)
++				sent = err;
++			break;
++		}
+ 
+-	skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
+-			      RFCOMM_SKB_TAIL_RESERVE);
+-	if (IS_ERR_OR_NULL(skb))
+-		return PTR_ERR(skb);
++		sent += size;
++		len  -= size;
++	}
+ 
+-	sent = rfcomm_dlc_send(d, skb);
+-	if (sent < 0)
+-		kfree_skb(skb);
++done:
++	release_sock(sk);
+ 
+ 	return sent;
+ }
+-- 
+2.34.1
+
