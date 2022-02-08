@@ -2,215 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02943C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F68DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351474AbiBHOnN convert rfc822-to-8bit (ORCPT
+        id S1351672AbiBHOpb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:43:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
+        Tue, 8 Feb 2022 09:45:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238856AbiBHOnI (ORCPT
+        with ESMTP id S1351484AbiBHOp2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 09:43:08 -0500
-X-Greylist: delayed 325 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 06:43:06 PST
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B77E0C03FECE
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 06:43:06 -0800 (PST)
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-556-gBPqdHwSMgifiW50WL7BZA-1; Tue, 08 Feb 2022 09:36:32 -0500
-X-MC-Unique: gBPqdHwSMgifiW50WL7BZA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 8 Feb 2022 09:45:28 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8BCC03FED4;
+        Tue,  8 Feb 2022 06:45:27 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 72D0F189DF52;
-        Tue,  8 Feb 2022 14:36:31 +0000 (UTC)
-Received: from x1.com (unknown [10.22.16.42])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 27C917C141;
-        Tue,  8 Feb 2022 14:36:29 +0000 (UTC)
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
-Subject: [PATCH V3] rtla: Fix segmentation fault when failing to enable -t
-Date:   Tue,  8 Feb 2022 15:36:21 +0100
-Message-Id: <5660a2b6bf66c2655842360f2d7f6b48db5dba23.1644327249.git.bristot@kernel.org>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 6EEFD1F387;
+        Tue,  8 Feb 2022 14:45:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644331526; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F8fCX7jpBJSdTGWVH6OOOBQBhn3uvoR/Uftrbxcu2D0=;
+        b=gZUkN49ITaU744saGHPoaBrHxebr7OVW0K3A02xnMR0qLfJHWISh2ExbOqTgBd+pm7+txn
+        TpHyxG9CeReB6H1Rq68OUBo+JGURds0H56Cnc9mfJ7JP5NtHwSNSsY5ZmZy7l+fMgxNzVy
+        BrG5Pw30Bbd1nXt7jBrKLZZcCGdnkYk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644331526;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F8fCX7jpBJSdTGWVH6OOOBQBhn3uvoR/Uftrbxcu2D0=;
+        b=zF1lHTovq6sClWtl35NOT8VHMi1709bKDEzHdRe3pUQMftZY1A99N/+9uU95qZQpK6CO1F
+        1xK69EzqDluIeSAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D9CE413C79;
+        Tue,  8 Feb 2022 14:45:25 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 0a1rMwWCAmI3DgAAMHmgww
+        (envelope-from <jdelvare@suse.de>); Tue, 08 Feb 2022 14:45:25 +0000
+Date:   Tue, 8 Feb 2022 15:45:24 +0100
+From:   Jean Delvare <jdelvare@suse.de>
+To:     Terry Bowman <terry.bowman@amd.com>
+Cc:     <linux@roeck-us.net>, <linux-watchdog@vger.kernel.org>,
+        <jdelvare@suse.com>, <linux-i2c@vger.kernel.org>, <wsa@kernel.org>,
+        <andy.shevchenko@gmail.com>, <rafael.j.wysocki@intel.com>,
+        <linux-kernel@vger.kernel.org>, <wim@linux-watchdog.org>,
+        <rrichter@amd.com>, <thomas.lendacky@amd.com>,
+        <sudheesh.mavila@amd.com>, <Nehal-bakulchandra.Shah@amd.com>,
+        <Basavaraj.Natikar@amd.com>, <Shyam-sundar.S-k@amd.com>,
+        <Mario.Limonciello@amd.com>
+Subject: Re: [PATCH v4 3/9] i2c: piix4: Move port I/O region request/release
+ code into functions
+Message-ID: <20220208154524.283609ad@endymion.delvare>
+In-Reply-To: <20220130184130.176646-4-terry.bowman@amd.com>
+References: <20220130184130.176646-1-terry.bowman@amd.com>
+        <20220130184130.176646-4-terry.bowman@amd.com>
+Organization: SUSE Linux
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=bristot@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rtla osnoise and timerlat are causing a segmentation fault when running
-with the --trace option on a kernel that does not support multiple
-instances. For example:
+Hi Terry,
 
-    [root@f34 rtla]# rtla osnoise top -t
-    failed to enable the tracer osnoise
-    Could not enable osnoiser tracer for tracing
-    Failed to enable the trace instance
-    Segmentation fault (core dumped)
+On Sun, 30 Jan 2022 12:41:24 -0600, Terry Bowman wrote:
+> Move duplicated region request and release code into a function. Move is
+> in preparation for following MMIO changes.
+> 
+> Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+> ---
+>  drivers/i2c/busses/i2c-piix4.c | 39 +++++++++++++++++++++++-----------
+>  1 file changed, 27 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/i2c/busses/i2c-piix4.c b/drivers/i2c/busses/i2c-piix4.c
+> index 3ff68967034e..5a98970ac60a 100644
+> --- a/drivers/i2c/busses/i2c-piix4.c
+> +++ b/drivers/i2c/busses/i2c-piix4.c
+> @@ -165,6 +165,24 @@ struct i2c_piix4_adapdata {
+>  	u8 port;		/* Port number, shifted */
+>  };
+>  
+> +static int piix4_sb800_region_request(struct device *dev)
+> +{
+> +	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE,
+> +				  "sb800_piix4_smb")) {
+> +		dev_err(dev,
+> +			"SMBus base address index region 0x%x already in use.\n",
+> +			SB800_PIIX4_SMB_IDX);
+> +		return -EBUSY;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void piix4_sb800_region_release(struct device *dev)
+> +{
+> +	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
+> +}
+> +
+>  static int piix4_setup(struct pci_dev *PIIX4_dev,
+>  		       const struct pci_device_id *id)
+>  {
+> @@ -270,6 +288,7 @@ static int piix4_setup_sb800(struct pci_dev *PIIX4_dev,
+>  	unsigned short piix4_smba;
+>  	u8 smba_en_lo, smba_en_hi, smb_en, smb_en_status, port_sel;
+>  	u8 i2ccfg, i2ccfg_offset = 0x10;
+> +	int retval;
+>  
+>  	/* SB800 and later SMBus does not support forcing address */
+>  	if (force || force_addr) {
+> @@ -291,20 +310,16 @@ static int piix4_setup_sb800(struct pci_dev *PIIX4_dev,
+>  	else
+>  		smb_en = (aux) ? 0x28 : 0x2c;
+>  
+> -	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE,
+> -				  "sb800_piix4_smb")) {
+> -		dev_err(&PIIX4_dev->dev,
+> -			"SMB base address index region 0x%x already in use.\n",
+> -			SB800_PIIX4_SMB_IDX);
+> -		return -EBUSY;
+> -	}
+> +	retval = piix4_sb800_region_request(&PIIX4_dev->dev);
+> +	if (retval)
+> +		return retval;
+>  
+>  	outb_p(smb_en, SB800_PIIX4_SMB_IDX);
+>  	smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
+>  	outb_p(smb_en + 1, SB800_PIIX4_SMB_IDX);
+>  	smba_en_hi = inb_p(SB800_PIIX4_SMB_IDX + 1);
+>  
+> -	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
+> +	piix4_sb800_region_release(&PIIX4_dev->dev);
+>  
+>  	if (!smb_en) {
+>  		smb_en_status = smba_en_lo & 0x10;
+> @@ -685,9 +700,9 @@ static s32 piix4_access_sb800(struct i2c_adapter *adap, u16 addr,
+>  	u8 port;
+>  	int retval;
+>  
+> -	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE,
+> -				  "sb800_piix4_smb"))
+> -		return -EBUSY;
+> +	retval = piix4_sb800_region_request(&adap->dev);
+> +	if (retval)
+> +		return retval;
+>  
+>  	/* Request the SMBUS semaphore, avoid conflicts with the IMC */
+>  	smbslvcnt  = inb_p(SMBSLVCNT);
+> @@ -762,7 +777,7 @@ static s32 piix4_access_sb800(struct i2c_adapter *adap, u16 addr,
+>  		piix4_imc_wakeup();
+>  
+>  release:
+> -	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
+> +	piix4_sb800_region_release(&adap->dev);
+>  	return retval;
+>  }
+>  
 
-This error happens because the exit code of the tools is trying
-to destroy the trace instance that failed to be created.
+There's a third occurrence of request_muxed_region(SB800_PIIX4_SMB_IDX,
+...) / release_region(SB800_PIIX4_SMB_IDX, ...) in function
+piix4_setup_sb800. Any reason why you don't make use of the new helper
+functions there as well?
 
-Make osnoise_destroy_tool() aware of possible NULL osnoise_tool *,
-and do not attempt to destroy it. This also simplifies the exit code.
+OK, I see that this part of the code is specific to the original (ATI)
+SB800, so it can't use MMIO, therefore you don't *have* to call the
+helper functions. But for consistency, wouldn't it still make sense to
+use them?
 
-Suggested-by: Steven Rostedt <rostedt@goodmis.org>
-Fixes: 1eceb2fc2ca5 ("rtla/osnoise: Add osnoise top mode")
-Fixes: 829a6c0b5698 ("rtla/osnoise: Add the hist mode")
-Fixes: a828cd18bc4a ("rtla: Add timerlat tool and timelart top mode")
-Fixes: 1eeb6328e8b3 ("rtla/timerlat: Add timerlat hist mode")
-Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-trace-devel@vger.kernel.org
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
----
-Changes from V2:
- - Init local variables as NULL (Steven)
- - Cleanup in the exit code
-Changes from V1:
- - Make osnoise_destroy_tool handle NULL osnoise_tool (Steven)
-
- tools/tracing/rtla/src/osnoise.c       | 3 +++
- tools/tracing/rtla/src/osnoise_hist.c  | 7 +++----
- tools/tracing/rtla/src/osnoise_top.c   | 7 +++----
- tools/tracing/rtla/src/timerlat_hist.c | 7 +++----
- tools/tracing/rtla/src/timerlat_top.c  | 7 +++----
- 5 files changed, 15 insertions(+), 16 deletions(-)
-
-diff --git a/tools/tracing/rtla/src/osnoise.c b/tools/tracing/rtla/src/osnoise.c
-index 7b73d1eccd0e..5648f9252e58 100644
---- a/tools/tracing/rtla/src/osnoise.c
-+++ b/tools/tracing/rtla/src/osnoise.c
-@@ -750,6 +750,9 @@ void osnoise_put_context(struct osnoise_context *context)
-  */
- void osnoise_destroy_tool(struct osnoise_tool *top)
- {
-+	if (!top)
-+		return;
-+
- 	trace_instance_destroy(&top->trace);
- 
- 	if (top->context)
-diff --git a/tools/tracing/rtla/src/osnoise_hist.c b/tools/tracing/rtla/src/osnoise_hist.c
-index 180fcbe423cd..1f0b7fce55cf 100644
---- a/tools/tracing/rtla/src/osnoise_hist.c
-+++ b/tools/tracing/rtla/src/osnoise_hist.c
-@@ -701,9 +701,9 @@ osnoise_hist_set_signals(struct osnoise_hist_params *params)
- int osnoise_hist_main(int argc, char *argv[])
- {
- 	struct osnoise_hist_params *params;
-+	struct osnoise_tool *record = NULL;
-+	struct osnoise_tool *tool = NULL;
- 	struct trace_instance *trace;
--	struct osnoise_tool *record;
--	struct osnoise_tool *tool;
- 	int return_value = 1;
- 	int retval;
- 
-@@ -792,9 +792,8 @@ int osnoise_hist_main(int argc, char *argv[])
- out_hist:
- 	osnoise_free_histogram(tool->data);
- out_destroy:
-+	osnoise_destroy_tool(record);
- 	osnoise_destroy_tool(tool);
--	if (params->trace_output)
--		osnoise_destroy_tool(record);
- 	free(params);
- out_exit:
- 	exit(return_value);
-diff --git a/tools/tracing/rtla/src/osnoise_top.c b/tools/tracing/rtla/src/osnoise_top.c
-index 332b2ac205fc..c67dc28ef716 100644
---- a/tools/tracing/rtla/src/osnoise_top.c
-+++ b/tools/tracing/rtla/src/osnoise_top.c
-@@ -483,9 +483,9 @@ static void osnoise_top_set_signals(struct osnoise_top_params *params)
- int osnoise_top_main(int argc, char **argv)
- {
- 	struct osnoise_top_params *params;
-+	struct osnoise_tool *record = NULL;
-+	struct osnoise_tool *tool = NULL;
- 	struct trace_instance *trace;
--	struct osnoise_tool *record;
--	struct osnoise_tool *tool;
- 	int return_value = 1;
- 	int retval;
- 
-@@ -571,9 +571,8 @@ int osnoise_top_main(int argc, char **argv)
- 
- out_top:
- 	osnoise_free_top(tool->data);
-+	osnoise_destroy_tool(record);
- 	osnoise_destroy_tool(tool);
--	if (params->trace_output)
--		osnoise_destroy_tool(record);
- out_exit:
- 	exit(return_value);
- }
-diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
-index 235f9620ef3d..436a799f9adf 100644
---- a/tools/tracing/rtla/src/timerlat_hist.c
-+++ b/tools/tracing/rtla/src/timerlat_hist.c
-@@ -729,9 +729,9 @@ timerlat_hist_set_signals(struct timerlat_hist_params *params)
- int timerlat_hist_main(int argc, char *argv[])
- {
- 	struct timerlat_hist_params *params;
-+	struct osnoise_tool *record = NULL;
-+	struct osnoise_tool *tool = NULL;
- 	struct trace_instance *trace;
--	struct osnoise_tool *record;
--	struct osnoise_tool *tool;
- 	int return_value = 1;
- 	int retval;
- 
-@@ -813,9 +813,8 @@ int timerlat_hist_main(int argc, char *argv[])
- 
- out_hist:
- 	timerlat_free_histogram(tool->data);
-+	osnoise_destroy_tool(record);
- 	osnoise_destroy_tool(tool);
--	if (params->trace_output)
--		osnoise_destroy_tool(record);
- 	free(params);
- out_exit:
- 	exit(return_value);
-diff --git a/tools/tracing/rtla/src/timerlat_top.c b/tools/tracing/rtla/src/timerlat_top.c
-index 1ebd5291539c..d4187f6534ed 100644
---- a/tools/tracing/rtla/src/timerlat_top.c
-+++ b/tools/tracing/rtla/src/timerlat_top.c
-@@ -521,9 +521,9 @@ timerlat_top_set_signals(struct timerlat_top_params *params)
- int timerlat_top_main(int argc, char *argv[])
- {
- 	struct timerlat_top_params *params;
-+	struct osnoise_tool *record = NULL;
-+	struct osnoise_tool *top = NULL;
- 	struct trace_instance *trace;
--	struct osnoise_tool *record;
--	struct osnoise_tool *top;
- 	int return_value = 1;
- 	int retval;
- 
-@@ -609,9 +609,8 @@ int timerlat_top_main(int argc, char *argv[])
- 
- out_top:
- 	timerlat_free_top(top->data);
-+	osnoise_destroy_tool(record);
- 	osnoise_destroy_tool(top);
--	if (params->trace_output)
--		osnoise_destroy_tool(record);
- 	free(params);
- out_exit:
- 	exit(return_value);
 -- 
-2.34.1
-
+Jean Delvare
+SUSE L3 Support
