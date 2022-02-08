@@ -2,102 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD760C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64247C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385828AbiBHTGt (ORCPT
+        id S1385830AbiBHTHw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 14:06:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55718 "EHLO
+        Tue, 8 Feb 2022 14:07:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352581AbiBHTGs (ORCPT
+        with ESMTP id S1352581AbiBHTHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:06:48 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19A4C0613CB;
-        Tue,  8 Feb 2022 11:06:47 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 85DA8210F5;
-        Tue,  8 Feb 2022 19:06:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644347206;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uuczzsLerYxf5+rv4LqJaLUqY8prQZza42JsJ9r52vw=;
-        b=aSx5mvQqEJxFgLpdX14GPITrKNOUKdehmtwf/lK4cXBI0v8TKIXlJLz1Yw8LPPGqez/MZU
-        5iZYaEVxHsz7fcZUJDAW0vZZDqWcRzlUjZPi6C7aaFUACoI4w87g5buWuE6AxhAS8sQoUS
-        Zt9U1CaviNefBLTvd5gjvwlv1mUS7CQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644347206;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uuczzsLerYxf5+rv4LqJaLUqY8prQZza42JsJ9r52vw=;
-        b=KaSdzSjTi4kfq97LsEmnuANFm+twdm3rbN8Wt0Ll0wZfFJtOQJetofYIJG9PuIAyFHy49E
-        V0GY3kgOtU5CyaAA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 08A0CA3B88;
-        Tue,  8 Feb 2022 19:06:41 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 8528EDAB3F; Tue,  8 Feb 2022 20:03:01 +0100 (CET)
-Date:   Tue, 8 Feb 2022 20:03:01 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paul.mckenney@linaro.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org
-Subject: Re: [PATCH 06/12] btrfs: change lockdep class size check using
- ks->names
-Message-ID: <20220208190301.GF12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>, Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paul.mckenney@linaro.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
-        linux-btrfs@vger.kernel.org
-References: <20220208184208.79303-1-namhyung@kernel.org>
- <20220208184208.79303-7-namhyung@kernel.org>
+        Tue, 8 Feb 2022 14:07:50 -0500
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C38C0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:07:49 -0800 (PST)
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nHVq1-000S8r-Iw; Tue, 08 Feb 2022 19:07:41 +0000
+Date:   Tue, 8 Feb 2022 19:07:41 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Christian Brauner <brauner@kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Alexey Gladkov <legion@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Jann Horn <jannh@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] copy_process(): Move fd_install() out of
+ sighand->siglock critical section
+Message-ID: <YgK/fdYWi0wWysci@zeniv-ca.linux.org.uk>
+References: <20220208163912.1084752-1-longman@redhat.com>
+ <YgKziblMKsmHkP4f@zeniv-ca.linux.org.uk>
+ <bd83aca3-059f-92dd-e094-b27f51f9481a@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220208184208.79303-7-namhyung@kernel.org>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <bd83aca3-059f-92dd-e094-b27f51f9481a@redhat.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 10:42:02AM -0800, Namhyung Kim wrote:
-> With upcoming lock tracepoints config, it'd allow some lockdep
-> annotation code without enabling CONFIG_LOCKDEP actually.  In that
-> config, size of the struct lock_class_key would be 0.
-> 
-> But it'd cause divide-by-zero in btrfs_set_buffer_lockdep_class() due
-> to ARRAY_SIZE macro.  Let's change it to use ks->names[] instead.  It
-> should have the same size as with ks->keys[].
-> 
-> Cc: Chris Mason <clm@fb.com>
-> Cc: Josef Bacik <josef@toxicpanda.com>
-> Cc: David Sterba <dsterba@suse.com>
-> Cc: linux-btrfs@vger.kernel.org
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+On Tue, Feb 08, 2022 at 01:51:35PM -0500, Waiman Long wrote:
+> On 2/8/22 13:16, Al Viro wrote:
+> > On Tue, Feb 08, 2022 at 11:39:12AM -0500, Waiman Long wrote:
+> > 
+> > > One way to solve this problem is to move the fd_install() call out of
+> > > the sighand->siglock critical section.
+> > > 
+> > > Before commit 6fd2fe494b17 ("copy_process(): don't use ksys_close()
+> > > on cleanups"), the pidfd installation was done without holding both
+> > > the task_list lock and the sighand->siglock. Obviously, holding these
+> > > two locks are not really needed to protect the fd_install() call.
+> > > So move the fd_install() call down to after the releases of both locks.
+> > 	Umm... That assumes we can delay it that far.  IOW, that nothing
+> > relies upon having pidfd observable in /proc/*/fd as soon as the child
+> > becomes visible there in the first place.
+> > 
+> > 	What warranties are expected from CLONE_PIDFD wrt observation of
+> > child's descriptor table?
+> > 
+> I think the fd_install() call can be moved after the release of
+> sighand->siglock but before the release the tasklist_lock. Will that be good
+> enough?
 
-Acked-by: David Sterba <dsterba@suse.com>
+Looks like it should, but I'd rather hear from the CLONE_PIDFD authors first...
+Christian, could you comment on that?
