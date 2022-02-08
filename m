@@ -2,167 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B98C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387342AbiBHWXC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:23:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43974 "EHLO
+        id S231587AbiBHWXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 17:23:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386227AbiBHTqm (ORCPT
+        with ESMTP id S1386677AbiBHVIV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:46:42 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C14C0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:46:40 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id k13so35328897lfg.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:46:40 -0800 (PST)
+        Tue, 8 Feb 2022 16:08:21 -0500
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92668C0612BA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:20 -0800 (PST)
+Received: by mail-oo1-xc2c.google.com with SMTP id c7-20020a4ad207000000b002e7ab4185d2so140395oos.6
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mS3C+Wo/VrSubSEHXbpL025cTzdbcGtIyC7RL2QVj1k=;
-        b=dxvNMVA9VhI2Ic4/NqHu66Bawb1X5QOhCGBr7npMY8t0pMy5egEwQ0zGOws3/p5UVU
-         obo6BmPk66JYaDw/VWbvHOvxEkyB6IG4uQPA681CCErEaT175YwGVuJ8hRr2LNGEdwJv
-         hwvryfKvyGmCbsbR2brFkXCc0SXJJQiKzHmb9mtpqzIYoPWXLhPfAyq3Ep0QpJXxQ1PX
-         eV3kPJ1Yhmj1kkjoI/XdB8AToWTvdeLOwvfrez2kcWfcNbEzbnK2sqKBaZHZiWtuYIix
-         9Sq4+XseteOthTLKIlejiaY2MjChGKOPPyznlI8H4jXDySKECV5FKj6mblYepfNKbH3B
-         LzXw==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=3e5u0a3XUZipDiH81TDu2p1mqGvTz/Xj7xCNvUYnc48=;
+        b=JrdRVJpooTykk1B8KBt18t1IQyUEgTydyV9eupm+jAPxd9SncOnypFGZTtPEngmpZA
+         zPF85y6VwXAERScIsGuZxlS3yhf9h4gFYzrWgEW7zFpdpj3qzaZYMFf63Mqlca0KGWbn
+         b0H2Hw8AIS3EyZyzwJl5gKblzlgFdsB2NPFlY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=mS3C+Wo/VrSubSEHXbpL025cTzdbcGtIyC7RL2QVj1k=;
-        b=FX1AEr+Qd8SenVmv3/4QHh7qlXXMpGCIzf0hcvQkC9wSrddtk3YLwJhYiIFROUuRmf
-         lutCF9k569bp2vye0YovMllt5iokI3AFCogoSbKRRSezv0FKw1lHBe8wGSZf2fg9h7oX
-         qGW35qHwvDi30VV8pQ1lQDZWiZmiUt7k6eYM3PeXKkZroHDDg4OU0mpeq1mIXq7iyMQT
-         jyFFayu2jYF8xpAyfoIHB5OblW5W1+YkIrSeMFJLeiKl98pOJPusR6y0jv7xemYR+cdh
-         SOOnDuwgccZMulnDfUUChkWXcxFwaCDa7R0LjVroDU026Vw6rYOp67qrjV9h9alnrAeD
-         /9Dg==
-X-Gm-Message-State: AOAM533lJ0gdFb0IXUIT5ppiNr0HlxA9Xk0Vly09uOWNWN1xGyXn+q5W
-        WCIvRIcKOSMTNKMYFPVnX+o=
-X-Google-Smtp-Source: ABdhPJxEzT360EJlxEiU+T+hZd/m/GXxo+WymxxJdJOvSwtymCUmypCgsT6c6ReKKHiNy7lhnZElsw==
-X-Received: by 2002:ac2:4acf:: with SMTP id m15mr4040567lfp.580.1644349599141;
-        Tue, 08 Feb 2022 11:46:39 -0800 (PST)
-Received: from localhost.localdomain (broadband-95-84-228-163.ip.moscow.rt.ru. [95.84.228.163])
-        by smtp.gmail.com with ESMTPSA id l12sm381178lfg.32.2022.02.08.11.46.37
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Tue, 08 Feb 2022 11:46:38 -0800 (PST)
-Date:   Tue, 8 Feb 2022 22:52:37 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
-        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
-        Kailang Yang <kailang@realtek.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jian-Hong Pan <jhp@endlessos.org>,
-        Hui Wang <hui.wang@canonical.com>,
-        PeiSen Hou <pshou@realtek.com>
-Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
- G8
-Message-ID: <20220208195237.3tnsslzaj2pmzr25@localhost.localdomain>
-User-Agent: mtt
-References: <20220115152215.kprws5nja2i43qax@localhost.localdomain>
- <s5hilugw0l0.wl-tiwai@suse.de>
- <20220119093249.eaxem33bjqjxcher@localhost.localdomain>
- <20220122190522.ycaygrqcen7d3hj2@localhost.localdomain>
- <20220122205637.7gzurdu7xl4sthxw@localhost.localdomain>
- <s5ho83yldu3.wl-tiwai@suse.de>
- <20220129144704.xlmeylllvy3b3fum@localhost.localdomain>
- <20220130111020.44gzrm5ckrakjta2@localhost.localdomain>
- <s5htudk9cn3.wl-tiwai@suse.de>
- <s5h4k59s9wn.wl-tiwai@suse.de>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=3e5u0a3XUZipDiH81TDu2p1mqGvTz/Xj7xCNvUYnc48=;
+        b=ke0ZWlxoYkUgvHIywiLL2XayTwQ9UK7DcBTB7/OvBBQDoamyrBmLAA+G4cWHN/B2jT
+         JyBAbwn5XMD992U1khd+Uv2KNLrqC8IUs3SIqPMztmnMfVUb8yG866p2kVWEc2dR83t9
+         fzhpQSUiHmJyrgNiLl7tx36qwwJf2bE3F/gJdmdXqbAKGkNoSnE1a+7bdwZbFtUUwBEJ
+         F+0kp8mKbgD2PMKUlgt27osC9QYT5h+EnBLKyUQvDhwzskk2s4zjgmZg65tiIO+sghr1
+         wMFp2NJJqMhhwxKia0kLSbwRVCIZPQNZTR50dp6GI0oRiibMjUmAB34NvVYtCAhZ0YoP
+         GZxw==
+X-Gm-Message-State: AOAM531y5ZEAGFG1ImUBWsDYlFuCtqTaCmvDB3yXpVZ2qbYbVti/8NHv
+        VZiFWgUprQYeWwWL6ZDWgB08nxXcC4LdAc9HLG/zKA==
+X-Google-Smtp-Source: ABdhPJw5+EvIpVVqz2BaX3AzUdYsZgeCqlaaiTe1hKK5HeI7XFgoTdWGJ4fEXjeS9rfkpxFZJsz75fONZG/PTg/psTU=
+X-Received: by 2002:a05:6870:1209:: with SMTP id 9mr982427oan.8.1644354499907;
+ Tue, 08 Feb 2022 13:08:19 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 8 Feb 2022 13:08:19 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <s5h4k59s9wn.wl-tiwai@suse.de>
+In-Reply-To: <1644334454-16719-2-git-send-email-quic_srivasam@quicinc.com>
+References: <1644334454-16719-1-git-send-email-quic_srivasam@quicinc.com> <1644334454-16719-2-git-send-email-quic_srivasam@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 8 Feb 2022 13:08:19 -0800
+Message-ID: <CAE-0n50PAtGfvHXjNrvQYe6edNEfJvEc1uYZFUeW2KHxn6fsBA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] arm64: dts: qcom: sc7280: Add pinmux for I2S
+ speaker and Headset
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        devicetree@vger.kernel.org, dianders@chromium.org,
+        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 03:36:08PM +0100, Takashi Iwai wrote:
-> ... and here is a fix patch for allowing more rebinds.
-> Give it a try.
-
-It works, no problems with large numbers of rebinds.
-
-> -- 8< --
-> From: Takashi Iwai <tiwai@suse.de>
-> Subject: [PATCH] ALSA: hda: Fix driver index handling at re-binding
-> 
-> HD-audio driver handles the multiple instances and keeps the static
-> index that is incremented at each probe.  This becomes a problem when
-> user tries to re-bind the device via sysfs multiple times; as the
-> device index isn't cleared unlike rmmod case, it points to the next
-> element at re-binding, and eventually later you can't probe any more
-> when it reaches to SNDRV_CARDS_MAX (usually 32).
-> 
-> This patch is an attempt to improve the handling at rebinding.
-> Instead of a static device index, now we keep a bitmap and assigns to
-> the first zero bit position.  At the driver remove, in return, the
-> bitmap slot is cleared again, so that it'll be available for the next
-> probe.
-> 
-> Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
-> Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Quoting Srinivasa Rao Mandadapu (2022-02-08 07:34:12)
+> Add AMP enable node and pinmux for primary and secondary I2S
+> for SC7280 based platforms.
+>
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 > ---
->  sound/pci/hda/hda_intel.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
-> index 4b0338c4c543..a2922233e85f 100644
-> --- a/sound/pci/hda/hda_intel.c
-> +++ b/sound/pci/hda/hda_intel.c
-> @@ -2064,14 +2064,16 @@ static const struct hda_controller_ops pci_hda_ops = {
->  	.position_check = azx_position_check,
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 40 ++++++++++++++++++++++++++++++++
+>  arch/arm64/boot/dts/qcom/sc7280.dtsi     | 40 ++++++++++++++++++++++++++++++++
+>  2 files changed, 80 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> index d623d71..c7d6c46 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> @@ -436,6 +436,39 @@
+>                 qcom,drive-strength = <3>;
+>         };
 >  };
->  
-> +static DECLARE_BITMAP(probed_devs, SNDRV_CARDS);
+
+Newline here
+
+> +&pri_mi2s_data0 {
+> +       drive-strength = <6>;
+> +};
 > +
->  static int azx_probe(struct pci_dev *pci,
->  		     const struct pci_device_id *pci_id)
->  {
-> -	static int dev;
->  	struct snd_card *card;
->  	struct hda_intel *hda;
->  	struct azx *chip;
->  	bool schedule_probe;
-> +	int dev;
->  	int err;
->  
->  	if (pci_match_id(driver_denylist, pci)) {
-> @@ -2079,10 +2081,11 @@ static int azx_probe(struct pci_dev *pci,
->  		return -ENODEV;
->  	}
->  
-> +	dev = find_first_zero_bit(probed_devs, SNDRV_CARDS);
->  	if (dev >= SNDRV_CARDS)
->  		return -ENODEV;
->  	if (!enable[dev]) {
-> -		dev++;
-> +		set_bit(dev, probed_devs);
->  		return -ENOENT;
->  	}
->  
-> @@ -2149,7 +2152,7 @@ static int azx_probe(struct pci_dev *pci,
->  	if (schedule_probe)
->  		schedule_delayed_work(&hda->probe_work, 0);
->  
-> -	dev++;
-> +	set_bit(dev, probed_devs);
->  	if (chip->disabled)
->  		complete_all(&hda->probe_wait);
->  	return 0;
-> @@ -2372,6 +2375,7 @@ static void azx_remove(struct pci_dev *pci)
->  		cancel_delayed_work_sync(&hda->probe_work);
->  		device_lock(&pci->dev);
->  
-> +		clear_bit(chip->dev_index, probed_devs);
->  		pci_set_drvdata(pci, NULL);
->  		snd_card_free(card);
->  	}
-> -- 
-> 2.34.1
-> 
+> +&pri_mi2s_data1 {
+> +       drive-strength = <6>;
+> +};
+> +
+> +&pri_mi2s_mclk {
+> +       drive-strength = <6>;
+> +};
+> +
+> +&pri_mi2s_sclk {
+> +       drive-strength = <6>;
+> +};
+> +
+> +&pri_mi2s_ws {
+> +       drive-strength = <6>;
+> +};
+> +
+> +&sec_mi2s_data0 {
+> +       drive-strength = <6>;
+> +       bias-disable;
+> +};
+> +
+> +&sec_mi2s_sclk {
+> +       drive-strength = <6>;
+> +       bias-disable;
+> +};
+> +
+> +&sec_mi2s_ws {
+> +       drive-strength = <6>;
+> +};
+
+Please sort these nodes alphabetically on node name.
+
+>
+>  &qspi_cs0 {
+>         bias-disable;
+> @@ -491,6 +524,13 @@
+>  };
+>
+>  &tlmm {
+> +       amp_en: amp-en {
+> +               pins = "gpio63";
+> +               function = "gpio";
+> +               bias-disable;
+
+Is there an external pull?
+
+> +               drive-strength = <2>;
+> +       };
+> +
+>         nvme_pwren: nvme-pwren {
+>                 function = "gpio";
+>         };
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> index 937c2e0..76e73e9 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> @@ -3461,6 +3461,46 @@
+>                                 };
+>                         };
+>
+> +                       pri_mi2s_data0: pri-mi2s-data0 {
+> +                               pins = "gpio98";
+> +                               function = "mi2s0_data0";
+> +                       };
+> +
+> +                       pri_mi2s_data1: pri-mi2s-data1 {
+> +                               pins = "gpio99";
+> +                               function = "mi2s0_data1";
+> +                       };
+> +
+> +                       pri_mi2s_mclk: pri-mi2s-mclk {
+> +                               pins = "gpio96";
+> +                               function = "pri_mi2s";
+> +                       };
+> +
+> +                       pri_mi2s_sclk: pri-mi2s-sclk {
+> +                               pins = "gpio97";
+> +                               function = "mi2s0_sck";
+> +                       };
+> +
+> +                       pri_mi2s_ws: pri-mi2s-ws {
+> +                               pins = "gpio100";
+> +                               function = "mi2s0_ws";
+> +                       };
+> +
+> +                       sec_mi2s_data0: sec-mi2s-data0 {
+> +                               pins = "gpio107";
+> +                               function = "mi2s1_data0";
+> +                       };
+> +
+> +                       sec_mi2s_sclk: sec-mi2s-sclk {
+> +                               pins = "gpio106";
+> +                               function = "mi2s1_sck";
+> +                       };
+> +
+> +                       sec_mi2s_ws: sec-mi2s-ws {
+> +                               pins = "gpio108";
+> +                               function = "mi2s1_ws";
+> +                       };
+
+Please sort these nodes alphabetically on node name.
