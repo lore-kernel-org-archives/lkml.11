@@ -2,124 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA09C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0894EC47086
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386195AbiBHWeH (ORCPT
+        id S1389276AbiBHWeA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:34:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
+        Tue, 8 Feb 2022 17:34:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386594AbiBHU5t (ORCPT
+        with ESMTP id S1386847AbiBHVRF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:57:49 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A6CC0612C3;
-        Tue,  8 Feb 2022 12:57:49 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id w1so398572plb.6;
-        Tue, 08 Feb 2022 12:57:48 -0800 (PST)
+        Tue, 8 Feb 2022 16:17:05 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207B8C0612B8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:17:05 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id b187-20020a251bc4000000b0061e15c5024fso190758ybb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:17:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=lER0Yn2EpeMSnVJPYoZJVlBcAkY3FCI93VU6xZwJrHE=;
-        b=DR4hOjfQMDg56Ra5Gcb+pNcHpV3LBEcOn5SQ/ZzCsKGrKBq1HQFmyEzf7GgN42JujR
-         nzXgmsfhSsO2CDqmgur4Hi/VMyUrx0wGzZtTiLIiGVI2ZYwxgOqJeAks9XECFpd/AgcG
-         1QyRsg9s0BTKMJPVb+8c/SS7JVko9ew1/oEZE/LVhESBmLzBv7gDHZiSHDDyF8N+4HF/
-         XtRxoBUBoMNdeKRi1obyUsESFfYu5Yp4lIe2vxx/4fnk3WaBwiIdxhIMtetuYbdjBe9g
-         BB3kTzDOVS8vJc4GG0HfhqSbSW1Gk1PpV+2EathmCnaTpaK7W1leiapaOvDDMKgjJ6jV
-         t+dA==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=IkSsAEe4tLZ7sPXk1cQDbdyI/ymKu70QdfkWphwdEME=;
+        b=b79Z7mrt1T2rqjlQtvxG17JrcAsR5iLV5BcMxiBFygqW3qVgCsA77QfwZtD2vuQU7J
+         cfEe2GM7sD1ayD+2/wyB3JjaXRE357xbtHNQozxQOmj5kA08Q2eBZFr8f9eWB00WxvdE
+         udxuQSNKJXvYjAudABDXGuC60jf3ZP8UEmtoqgfLstZdnVHRo9AnvDrKwu631Kx1Ojgl
+         s0uBonnRONcL6fZ3DMCpxqDiNnVw++0Z6Ps+n3yCQuis5Jj620sfzQVc8+yk1UH1OeIH
+         fgYU0b9rkBxh4jfG1TjuBFZq17+JRhxD1O+H/GD7jyesjOw7sUJZOxbl0djhjp4T8fRn
+         BQiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=lER0Yn2EpeMSnVJPYoZJVlBcAkY3FCI93VU6xZwJrHE=;
-        b=OG6cLLmFi4r9bTxy3hu2PVsKWJlf3xpEAmLUyBiqunmEt+pZjKTXQ+JTzuL446uB8h
-         azf72FT7mCWAn4sLIa6fZLTZckhjVIAzHepnGGaZPKA5TCZ8TF2WI2/zHCPp0nYwzHeN
-         VFoGxvoViu68ab6bDMRsPRV/xWJRURnNnDCd2UZm00qVi+JZyhA4jNALNzt8f4q2q0G0
-         l78wPHXnajjz9hlrmnudpSRJaw8+83dyYo68Yd6gqJlcIGl5zEYPSRtAeeAvD9vhmQZb
-         cppluBxdX15WXhWzQ8+MSvVrUc9pc88455bllyOSR3LnsVGR3JGAf+Gcvc1ylY+6PQkQ
-         3gnQ==
-X-Gm-Message-State: AOAM530NNQr86ZLYp9jpCZ4dP/ARWnmktAL68HwmPfEPmO6JA/Ngo1gl
-        7etvZpXq1fqBDRCofUSTWMlF9NgFbQc=
-X-Google-Smtp-Source: ABdhPJyD1XSVqyDQR8eoIbfVTTIK7WZth2TwLe+zSUDXHBELSyDkPp+Hst2Y7r4jyog9YA4ytner2Q==
-X-Received: by 2002:a17:902:e844:: with SMTP id t4mr6280526plg.104.1644353867631;
-        Tue, 08 Feb 2022 12:57:47 -0800 (PST)
-Received: from google.com ([2620:15c:202:201:3a7a:5580:400f:1e51])
-        by smtp.gmail.com with ESMTPSA id b24sm12184296pgs.1.2022.02.08.12.57.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 12:57:46 -0800 (PST)
-Date:   Tue, 8 Feb 2022 12:57:44 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
-Cc:     rydberg@bitmath.org, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Peter Hutterer <peter.hutterer@who-t.net>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: Re: [PATCH RESEND v3] Input: clear BTN_RIGHT/MIDDLE on buttonpads
-Message-ID: <YgLZSNqx0BN1JXhC@google.com>
-References: <20220208174806.17183-1-jose.exposito89@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220208174806.17183-1-jose.exposito89@gmail.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=IkSsAEe4tLZ7sPXk1cQDbdyI/ymKu70QdfkWphwdEME=;
+        b=Ca6jWelzds8UEnn7aljyAvB6z+whHVovwsJE5i8uL5Iu3+xGpdX/5sowxVB6o93inl
+         v++/ont6AeKQ+B+z8dDM65kNvltulh1D58HOqeWNFsXFcuh3IxyuVBgI5jtPpmdnp3ve
+         mrI6ycW7WPnuIrU7HVCpNsyS0N+e4G9Z/qtJuFbZCcq7t//Gf90sEme8YfR7Q5UEshO9
+         1mKuxekkmIps+tJGqXWz22Mhm5B6ULizax5Rp2m5zsLDc7LQyjdltbRPlhjIWQR1a/6R
+         bnN0Z3t4+xiZLrrMXTcU9TeIyR2F3aHbyS62N2c6Emoibhbc0wgrK3xbfy1+T/ms4mYP
+         8feg==
+X-Gm-Message-State: AOAM533fqBvWz3Y3ZykSDTnuE+cMdt31Rd7kWcCoq7gd/31QSeJKzDUU
+        jPkhPOzxNlJBLjKrwMDLZfVAgVeip2KmKDAV3SH1I/gEKjrdL8BlWrAnf2Aq2dKLFzDkzKtR1GG
+        HdLj8MR/6LdWVKnFMdlDw68BcKJiDjhqM2uO7K6fw6HqS8WoYH0ZNaHQhSjqxU/IjiwOxLaNG
+X-Google-Smtp-Source: ABdhPJxTVkfw8EifXuKk44o0hXOLcZKl9tvUeVIC23vGxANJlD9t8VEaIHcuXL1EJCskdf6PGZH7c2cLpSSQ
+X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:6875:3c51:69be:6e2c])
+ (user=eranian job=sendgmr) by 2002:a25:4d5:: with SMTP id 204mr6406319ybe.485.1644355024283;
+ Tue, 08 Feb 2022 13:17:04 -0800 (PST)
+Date:   Tue,  8 Feb 2022 13:16:30 -0800
+In-Reply-To: <20220208211637.2221872-1-eranian@google.com>
+Message-Id: <20220208211637.2221872-6-eranian@google.com>
+Mime-Version: 1.0
+References: <20220208211637.2221872-1-eranian@google.com>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+Subject: [PATCH v6 05/12] perf/x86/amd: enable branch sampling priv level filtering
+From:   Stephane Eranian <eranian@google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
+        jolsa@redhat.com, songliubraving@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 06:48:06PM +0100, José Expósito wrote:
-> Buttonpads are expected to map the INPUT_PROP_BUTTONPAD property bit
-> and the BTN_LEFT key bit.
-> 
-> As explained in the specification, where a device has a button type
-> value of 0 (click-pad) or 1 (pressure-pad) there should not be
-> discrete buttons:
-> https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/touchpad-windows-precision-touchpad-collection#device-capabilities-feature-report
-> 
-> However, some drivers map the BTN_RIGHT and/or BTN_MIDDLE key bits even
-> though the device is a buttonpad and therefore does not have those
-> buttons.
-> 
-> This behavior has forced userspace applications like libinput to
-> implement different workarounds and quirks to detect buttonpads and
-> offer to the user the right set of features and configuration options.
-> For more information:
-> https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/726
-> 
-> In order to avoid this issue clear the BTN_RIGHT and BTN_MIDDLE key
-> bits when the input device is register if the INPUT_PROP_BUTTONPAD
-> property bit is set.
-> 
-> Notice that this change will not affect udev because it does not check
-> for buttons. See systemd/src/udev/udev-builtin-input_id.c.
-> 
-> List of known affected hardware:
-> 
->  - Chuwi AeroBook Plus
->  - Chuwi Gemibook
->  - Framework Laptop
->  - GPD Win Max
->  - Huawei MateBook 2020
->  - Prestigio Smartbook 141 C2
->  - Purism Librem 14v1
->  - StarLite Mk II   - AMI firmware
->  - StarLite Mk II   - Coreboot firmware
->  - StarLite Mk III  - AMI firmware
->  - StarLite Mk III  - Coreboot firmware
->  - StarLabTop Mk IV - AMI firmware
->  - StarLabTop Mk IV - Coreboot firmware
->  - StarBook Mk V
-> 
-> Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
-> Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> Acked-by: Jiri Kosina <jkosina@suse.cz>
-> Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-> 
+The AMD Branch Sampling features does not provide hardware filtering by
+privilege level. The associated PMU counter does but not the branch sampling
+by itself. Given how BRS operates there is a possibility that BRS captures
+kernel level branches even though the event is programmed to count only at
+the user level.
 
-Applied, thank you.
+Implement a workaround in software by removing the branches which belong to
+the wrong privilege level. The privilege level is evaluated on the target of
+the branch and not the source so as to be compatible with other architectures.
+As a consequence of this patch, the number of entries in the
+PERF_RECORD_BRANCH_STACK buffer may be less than the maximum (16).  It could
+even be zero. Another consequence is that consecutive entries in the branch
+stack may not reflect actual code path and may have discontinuities, in case
+kernel branches were suppressed. But this is no different than what happens
+on other architectures.
 
+Signed-off-by: Stephane Eranian <eranian@google.com>
+---
+ arch/x86/events/amd/brs.c | 26 ++++++++++++++++++++------
+ 1 file changed, 20 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/events/amd/brs.c b/arch/x86/events/amd/brs.c
+index 3c13c484c637..40461c3ce714 100644
+--- a/arch/x86/events/amd/brs.c
++++ b/arch/x86/events/amd/brs.c
+@@ -92,10 +92,6 @@ int amd_brs_setup_filter(struct perf_event *event)
+ 	if ((type & ~PERF_SAMPLE_BRANCH_PLM_ALL) != PERF_SAMPLE_BRANCH_ANY)
+ 		return -EINVAL;
+ 
+-	/* can only capture at all priv levels due to the way BRS works */
+-	if ((type & PERF_SAMPLE_BRANCH_PLM_ALL) != PERF_SAMPLE_BRANCH_PLM_ALL)
+-		return -EINVAL;
+-
+ 	return 0;
+ }
+ 
+@@ -195,6 +191,21 @@ void amd_brs_disable_all(void)
+ 		amd_brs_disable();
+ }
+ 
++static bool amd_brs_match_plm(struct perf_event *event, u64 to)
++{
++	int type = event->attr.branch_sample_type;
++	int plm_k = PERF_SAMPLE_BRANCH_KERNEL | PERF_SAMPLE_BRANCH_HV;
++	int plm_u = PERF_SAMPLE_BRANCH_USER;
++
++	if (!(type & plm_k) && kernel_ip(to))
++		return 0;
++
++	if (!(type & plm_u) && !kernel_ip(to))
++		return 0;
++
++	return 1;
++}
++
+ /*
+  * Caller must ensure amd_brs_inuse() is true before calling
+  * return:
+@@ -252,8 +263,6 @@ void amd_brs_drain(void)
+ 		if (to == BRS_POISON)
+ 			break;
+ 
+-		rdmsrl(brs_from(brs_idx), from);
+-
+ 		/*
+ 		 * Sign-extend SAMP_BR_TO to 64 bits, bits 61-63 are reserved.
+ 		 * Necessary to generate proper virtual addresses suitable for
+@@ -261,6 +270,11 @@ void amd_brs_drain(void)
+ 		 */
+ 		to = (u64)(((s64)to << shift) >> shift);
+ 
++		if (!amd_brs_match_plm(event, to))
++			continue;
++
++		rdmsrl(brs_from(brs_idx), from);
++
+ 		perf_clear_branch_entry_bitfields(br+nr);
+ 
+ 		br[nr].from = from;
 -- 
-Dmitry
+2.35.0.263.gb82422642f-goog
+
