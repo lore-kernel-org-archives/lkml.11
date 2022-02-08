@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A59C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3D3C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387248AbiBHWf4 (ORCPT
+        id S1388293AbiBHWgQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:35:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
+        Tue, 8 Feb 2022 17:36:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386835AbiBHVQz (ORCPT
+        with ESMTP id S1386861AbiBHVRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:16:55 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4BFC0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:16:53 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id z15-20020a25bb0f000000b00613388c7d99so368437ybg.8
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:16:53 -0800 (PST)
+        Tue, 8 Feb 2022 16:17:17 -0500
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0B2C0612BC
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:17:16 -0800 (PST)
+Received: by mail-pf1-x44a.google.com with SMTP id i16-20020aa78d90000000b004be3e88d746so234301pfr.13
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:17:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=cGNJBKF6PsQgduFsVJ5Gh/suqswt2MaW3a4I4Gi0t+E=;
-        b=Hm7/TufQO9AsHm4IIkCqa7Qhk1A5LQyxNQZSg1lgGy5u6TZA+6FoNJPutQGdwVsQrn
-         CbAXBX2lpvyf47VHBbUAFYYl4O7pBrzflI0Lp5HdaSR697hin6dUk8jPdyvsnJYoVYLo
-         4GkACrLCH4OWVMPoQErPa7HmmRspR4XvsCoCzEJFR7jBR4Lr+ZhjjhDwj2S9rjC6SVsx
-         7ljOwCgE862AHqUyL4ATikJ2K/zN4Ftk435/nd/Oqd5shZEw6IKjV6lNU5ZMunhs2fGr
-         f5KBugqWdLtFN8abbg5JzblrH6dgDQNG+QhBfhvkPNqkYQA90BukuPBoS/G7Hu7d9BZ3
-         1CWw==
+        bh=uTDmTBSOOY683ot1kd61hkpiMB3wxXOtomvwYLlA3dQ=;
+        b=Cx0XtYRxcH4rbHL4wV+lB2OzYKeQ/4cXIVomva3Oh0zh4c5JfPYsIlzFVACwveQyJY
+         vI0yMSxMGyz6VtTOn4aXbOggGYqx85kdcYNpF3yHRMj84a6h0g957qJmiQ2AWwnvsEAU
+         0BdOFvtVw/3D37X452H0sGUmrvwq+4tdBTQMLRT56m7bGwv0729XSrC/a1iFte65RyoO
+         rchhAp36fxKyVq/5GeEbdrQs7T2d3qsL588Wtjy857HKW7S7xyJzOJ8GxDVocVS6gpG4
+         OejHORJog5iou4Kh4Py7BllaOp3s8PzlH96jjma35fffvFCXhFWgUzLg2UJs5lN2PxVF
+         XpAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=cGNJBKF6PsQgduFsVJ5Gh/suqswt2MaW3a4I4Gi0t+E=;
-        b=3tL0+f7Ti94XOSRfKKxBEJ3lEutQhR/vtRCWZVDMRYopMTVjeUAb9E1I3Bm6+tdlKX
-         kaMaivyHtjqaGn79/2lKCTYOMifdDzB19B7OMRK/O3ThcuBAyk2qGJBeYZpy5seq7iJJ
-         QynbPoKv+EBKl+LACYUrU/ptEQkBZ7rfMm99x58RTW8UM5d/z1zAM9o7jP49WP+wZEb/
-         uXf7FR2kuTuugnubM1kP9Wy2KV9rrB/CucduYUn/6dg+zz8xlRwXWGNQE1JjiMO4flWr
-         TsVitapuwTYLWaTKzQOHIcsUDRUiCub1Xgs16owFV8HyZ49mlWebj6Dq5ROP19jmSOiy
-         /B+Q==
-X-Gm-Message-State: AOAM5323UEwN6muG1hexQQPXCh1lVL+VDEyuS9LCXJdj3CyU7/cDnnsZ
-        6n6mYrLQWPxm4eRFycWybr6AWqXuWkPfbNw4eB0Ad5QlfB6HOVyXHODzDDBkzO+87Wc8CsGw8bu
-        KT6JG7V44F7Y8pCLWF4Tbv0YxOMBlHcMG6IKafcPyDx+nTZMro8VYBakc9jVT12B7/BqYgLJw
-X-Google-Smtp-Source: ABdhPJyBwnf/TcqlVb9aM+QBBfi+sfUmTWUzarAY36/5Ju7kQX8q4LTcWN6yrsR8hBEZiRL1mcwLx89q5PXy
+        bh=uTDmTBSOOY683ot1kd61hkpiMB3wxXOtomvwYLlA3dQ=;
+        b=NswopKFDxVC0oNSSRD+vOQElvEVPtuB9JYgDA3+X16vDc5L25XE+aIUmXdRgK9Oal2
+         G0hRc3ywT0jV+w84u1Y471NsxdKuOdVpzM/jbUo+lkuF2ll38C7XzxSXr+J8/fKxRqmB
+         qB6SFwKz0zwARGXxnS7HqZ7Zt3AQwO5wD1XoiXhxXyyrRcskW8fZOYqvGtYx51UfO5T8
+         f3+9yfXXN8WwVA89nFgSTHEqNynqDzrtY6EghLnJsYn9DQ/msvoTXUjVoAby/ZedVSVp
+         66qCtgjKxDvMpsIygktZTqWSKwbMDwfsZskIY0Fa5oqQGwWtigqToiF6PDgKQ+phVvP/
+         xYVQ==
+X-Gm-Message-State: AOAM533f2rTOuU7J9AYr6ZgoB3iiRXfgkbgaQEesKCjfjeDovfRGMgwz
+        IruQIPfYcQ8GNKYaPDKxDSJkF23nxrl43Ixo6JpZi2Ndp3mdHdIbvSyg3GyLwc40g6Y8Nde59h+
+        8gW77dEdng6YFt+24kPrj1/KYan5AmFAflwnTjBE4sOiZfDsJLNiu5XV+Y7um9xhxR00SZBm6
+X-Google-Smtp-Source: ABdhPJzECl4nloGcEaC4D2VkDIalK0xVDOgyyn6E5UEquw+JIDhh+rcA6l20CApUgd4KLd3Tb2FKjwEx4FJa
 X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:6875:3c51:69be:6e2c])
- (user=eranian job=sendgmr) by 2002:a25:9a49:: with SMTP id
- r9mr6800491ybo.90.1644355013096; Tue, 08 Feb 2022 13:16:53 -0800 (PST)
-Date:   Tue,  8 Feb 2022 13:16:26 -0800
+ (user=eranian job=sendgmr) by 2002:a17:902:b684:: with SMTP id
+ c4mr6195450pls.100.1644355035935; Tue, 08 Feb 2022 13:17:15 -0800 (PST)
+Date:   Tue,  8 Feb 2022 13:16:34 -0800
 In-Reply-To: <20220208211637.2221872-1-eranian@google.com>
-Message-Id: <20220208211637.2221872-2-eranian@google.com>
+Message-Id: <20220208211637.2221872-10-eranian@google.com>
 Mime-Version: 1.0
 References: <20220208211637.2221872-1-eranian@google.com>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-Subject: [PATCH v6 01/12] perf/core: add perf_clear_branch_entry_bitfields() helper
+Subject: [PATCH v6 09/12] perf/x86/amd: add idle hooks for branch sampling
 From:   Stephane Eranian <eranian@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
@@ -63,127 +63,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make it simpler to reset all the info fields on the
-perf_branch_entry by adding a helper inline function.
+On AMD Fam19h Zen3, the branch sampling (BRS) feature must be disabled before
+entering low power and re-enabled (if was active) when returning from low
+power. Otherwise, the NMI interrupt may be held up for too long and cause
+problems. Stopping BRS will cause the NMI to be delivered if it was held up.
 
-The goal is to centralize the initialization to avoid missing
-a field in case more are added.
+Define a perf_amd_brs_lopwr_cb() callback to stop/restart BRS.  The callback
+is protected by a jump label which is enabled only when AMD BRS is detected.
+In all other cases, the callback is never called.
 
 Signed-off-by: Stephane Eranian <eranian@google.com>
 ---
- arch/x86/events/intel/lbr.c | 36 +++++++++++++++++-------------------
- include/linux/perf_event.h  | 16 ++++++++++++++++
- 2 files changed, 33 insertions(+), 19 deletions(-)
+ arch/x86/events/amd/brs.c         | 32 +++++++++++++++++++++++++++++++
+ arch/x86/events/amd/core.c        |  4 ++++
+ arch/x86/events/perf_event.h      |  1 +
+ arch/x86/include/asm/perf_event.h | 21 ++++++++++++++++++++
+ 4 files changed, 58 insertions(+)
 
-diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
-index 669c2be14784..6a903113d3a6 100644
---- a/arch/x86/events/intel/lbr.c
-+++ b/arch/x86/events/intel/lbr.c
-@@ -769,6 +769,7 @@ void intel_pmu_lbr_disable_all(void)
- void intel_pmu_lbr_read_32(struct cpu_hw_events *cpuc)
- {
- 	unsigned long mask = x86_pmu.lbr_nr - 1;
-+	struct perf_branch_entry *br = cpuc->lbr_entries;
- 	u64 tos = intel_pmu_lbr_tos();
- 	int i;
+diff --git a/arch/x86/events/amd/brs.c b/arch/x86/events/amd/brs.c
+index 40461c3ce714..185a58cea917 100644
+--- a/arch/x86/events/amd/brs.c
++++ b/arch/x86/events/amd/brs.c
+@@ -7,6 +7,7 @@
+  * Contributed by Stephane Eranian <eranian@google.com>
+  */
+ #include <linux/kernel.h>
++#include <linux/jump_label.h>
+ #include <asm/msr.h>
+ #include <asm/cpufeature.h>
  
-@@ -784,15 +785,11 @@ void intel_pmu_lbr_read_32(struct cpu_hw_events *cpuc)
- 
- 		rdmsrl(x86_pmu.lbr_from + lbr_idx, msr_lastbranch.lbr);
- 
--		cpuc->lbr_entries[i].from	= msr_lastbranch.from;
--		cpuc->lbr_entries[i].to		= msr_lastbranch.to;
--		cpuc->lbr_entries[i].mispred	= 0;
--		cpuc->lbr_entries[i].predicted	= 0;
--		cpuc->lbr_entries[i].in_tx	= 0;
--		cpuc->lbr_entries[i].abort	= 0;
--		cpuc->lbr_entries[i].cycles	= 0;
--		cpuc->lbr_entries[i].type	= 0;
--		cpuc->lbr_entries[i].reserved	= 0;
-+		perf_clear_branch_entry_bitfields(br);
-+
-+		br->from	= msr_lastbranch.from;
-+		br->to		= msr_lastbranch.to;
-+		br++;
- 	}
- 	cpuc->lbr_stack.nr = i;
- 	cpuc->lbr_stack.hw_idx = tos;
-@@ -807,6 +804,7 @@ void intel_pmu_lbr_read_64(struct cpu_hw_events *cpuc)
- {
- 	bool need_info = false, call_stack = false;
- 	unsigned long mask = x86_pmu.lbr_nr - 1;
-+	struct perf_branch_entry *br = cpuc->lbr_entries;
- 	u64 tos = intel_pmu_lbr_tos();
- 	int i;
- 	int out = 0;
-@@ -878,15 +876,14 @@ void intel_pmu_lbr_read_64(struct cpu_hw_events *cpuc)
- 		if (abort && x86_pmu.lbr_double_abort && out > 0)
- 			out--;
- 
--		cpuc->lbr_entries[out].from	 = from;
--		cpuc->lbr_entries[out].to	 = to;
--		cpuc->lbr_entries[out].mispred	 = mis;
--		cpuc->lbr_entries[out].predicted = pred;
--		cpuc->lbr_entries[out].in_tx	 = in_tx;
--		cpuc->lbr_entries[out].abort	 = abort;
--		cpuc->lbr_entries[out].cycles	 = cycles;
--		cpuc->lbr_entries[out].type	 = 0;
--		cpuc->lbr_entries[out].reserved	 = 0;
-+		perf_clear_branch_entry_bitfields(br+out);
-+		br[out].from	 = from;
-+		br[out].to	 = to;
-+		br[out].mispred	 = mis;
-+		br[out].predicted = pred;
-+		br[out].in_tx	 = in_tx;
-+		br[out].abort	 = abort;
-+		br[out].cycles	 = cycles;
- 		out++;
- 	}
- 	cpuc->lbr_stack.nr = out;
-@@ -951,6 +948,8 @@ static void intel_pmu_store_lbr(struct cpu_hw_events *cpuc,
- 		to = rdlbr_to(i, lbr);
- 		info = rdlbr_info(i, lbr);
- 
-+		perf_clear_branch_entry_bitfields(e);
-+
- 		e->from		= from;
- 		e->to		= to;
- 		e->mispred	= get_lbr_mispred(info);
-@@ -959,7 +958,6 @@ static void intel_pmu_store_lbr(struct cpu_hw_events *cpuc,
- 		e->abort	= !!(info & LBR_INFO_ABORT);
- 		e->cycles	= get_lbr_cycles(info);
- 		e->type		= get_lbr_br_type(info);
--		e->reserved	= 0;
- 	}
- 
- 	cpuc->lbr_stack.nr = i;
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index 733649184b27..496eb6aa6e54 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -1063,6 +1063,22 @@ static inline void perf_sample_data_init(struct perf_sample_data *data,
- 	data->txn = 0;
+@@ -329,3 +330,34 @@ void amd_pmu_brs_sched_task(struct perf_event_context *ctx, bool sched_in)
+ 	if (sched_in)
+ 		amd_brs_poison_buffer();
  }
- 
++
++DEFINE_STATIC_KEY_FALSE(perf_lopwr_needed);
++
 +/*
-+ * Clear all bitfields in the perf_branch_entry.
-+ * The to and from fields are not cleared because they are
-+ * systematically modified by caller.
++ * called from ACPI processor_idle.c or acpi_pad.c
++ * with interrupts disabled
 + */
-+static inline void perf_clear_branch_entry_bitfields(struct perf_branch_entry *br)
++void perf_amd_brs_lopwr_cb(bool lopwr_in)
 +{
-+	br->mispred = 0;
-+	br->predicted = 0;
-+	br->in_tx = 0;
-+	br->abort = 0;
-+	br->cycles = 0;
-+	br->type = 0;
-+	br->reserved = 0;
++	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
++	union amd_debug_extn_cfg cfg;
++
++	/*
++	 * on mwait in, we may end up in non C0 state.
++	 * we must disable branch sampling to avoid holding the NMI
++	 * for too long. We disable it in hardware but we
++	 * keep the state in cpuc, so we can re-enable.
++	 *
++	 * The hardware will deliver the NMI if needed when brsmen cleared
++	 */
++	if (cpuc->brs_active) {
++		cfg.val = get_debug_extn_cfg();
++		cfg.brsmen = !lopwr_in;
++		set_debug_extn_cfg(cfg.val);
++	}
 +}
 +
- extern void perf_output_sample(struct perf_output_handle *handle,
- 			       struct perf_event_header *header,
- 			       struct perf_sample_data *data,
++void __init amd_brs_lopwr_init(void)
++{
++	static_branch_enable(&perf_lopwr_needed);
++}
+diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
+index 597defee1e02..ea71ee52b758 100644
+--- a/arch/x86/events/amd/core.c
++++ b/arch/x86/events/amd/core.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ #include <linux/perf_event.h>
++#include <linux/jump_label.h>
+ #include <linux/export.h>
+ #include <linux/types.h>
+ #include <linux/init.h>
+@@ -1189,6 +1190,9 @@ static int __init amd_core_pmu_init(void)
+ 			 * The put_event_constraints callback is shared with
+ 			 * Fam17h, set above
+ 			 */
++
++			/* branch sampling must be stopped when entering low power */
++			amd_brs_lopwr_init();
+ 		}
+ 	}
+ 
+diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
+index 4d050579dcbd..2ed7bf5b51b1 100644
+--- a/arch/x86/events/perf_event.h
++++ b/arch/x86/events/perf_event.h
+@@ -1226,6 +1226,7 @@ void amd_brs_enable(void);
+ void amd_brs_enable_all(void);
+ void amd_brs_disable_all(void);
+ void amd_brs_drain(void);
++void amd_brs_lopwr_init(void);
+ void amd_brs_disable_all(void);
+ int amd_brs_setup_filter(struct perf_event *event);
+ void amd_brs_reset(void);
+diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
+index 58d9e4b1fa0a..42753a9dc3ed 100644
+--- a/arch/x86/include/asm/perf_event.h
++++ b/arch/x86/include/asm/perf_event.h
+@@ -513,6 +513,27 @@ static inline void intel_pt_handle_vmx(int on)
+ #if defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_AMD)
+  extern void amd_pmu_enable_virt(void);
+  extern void amd_pmu_disable_virt(void);
++
++#if defined(CONFIG_PERF_EVENTS_AMD_BRS)
++
++#define PERF_NEEDS_LOPWR_CB 1
++
++/*
++ * architectural low power callback impacts
++ * drivers/acpi/processor_idle.c
++ * drivers/acpi/acpi_pad.c
++ */
++extern void perf_amd_brs_lopwr_cb(bool lopwr_in);
++DECLARE_STATIC_KEY_FALSE(perf_lopwr_needed);
++
++static inline void perf_lopwr_cb(bool mode)
++{
++	/* key enabled only when BRS is available */
++	if (static_branch_unlikely(&perf_lopwr_needed))
++		perf_amd_brs_lopwr_cb(mode);
++}
++#endif /* PERF_NEEDS_LOPWR_CB */
++
+ #else
+  static inline void amd_pmu_enable_virt(void) { }
+  static inline void amd_pmu_disable_virt(void) { }
 -- 
 2.35.0.263.gb82422642f-goog
 
