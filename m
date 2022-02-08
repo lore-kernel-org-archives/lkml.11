@@ -2,111 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA84C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:51:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D028C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385547AbiBHSv4 (ORCPT
+        id S1385550AbiBHSzh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:51:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
+        Tue, 8 Feb 2022 13:55:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385421AbiBHSvr (ORCPT
+        with ESMTP id S1385532AbiBHSzc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:51:47 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99714C0612C0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:51:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644346306; x=1675882306;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=Q2mh3eOg4xNTxgD0+mwb382wcBgYuaMQIdn7dMUxwAc=;
-  b=N2mUM+YA8RLgG3n6m6+8KV/8/ABAiXnrReeKZ7y/EtZnCsRxD9EdlftZ
-   OcsAHeoX7MF83YpEVO6sL9S70cHaSi/OGQ96XxJczryAKIUKQ9c/nLMmG
-   WOJkRZMr4cGjPMZAG+qBsRw1b/7CemrKWbfMIX6eBZ08p3a1WIp8urkld
-   5DYvDTa78RhJG/vr0UKuYn7ryI3DhQPQGzY4XVO0EQIm3uxxOVAaj0lgc
-   +IyIYJfjSjXMEShvNsDpp1o09nmOynVvn+IGWIcWj1YE1xmKaSd9frO6w
-   Lg+eTMjGJUwNWjLW2BoVTZ6UXE8p9nYCfhM+/z5L8deB3RhPWFFcy/XR5
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="236431611"
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="236431611"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 10:51:46 -0800
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="540736470"
-Received: from ijbeckin-mobl2.ger.corp.intel.com (HELO localhost) ([10.252.19.63])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 10:51:41 -0800
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paul.mckenney@linaro.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        intel-gfx@lists.freedesktop.org
-Subject: Re: [PATCH 05/12] drm/i915: Protect lockdep functions with #ifdef
-In-Reply-To: <20220208184208.79303-6-namhyung@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220208184208.79303-1-namhyung@kernel.org>
- <20220208184208.79303-6-namhyung@kernel.org>
-Date:   Tue, 08 Feb 2022 20:51:38 +0200
-Message-ID: <87y22lp4xx.fsf@intel.com>
+        Tue, 8 Feb 2022 13:55:32 -0500
+Received: from mx1.smtp.larsendata.com (mx1.smtp.larsendata.com [91.221.196.215])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFD6C0612C1
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:55:30 -0800 (PST)
+Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
+        by mx1.smtp.larsendata.com (Halon) with ESMTPS
+        id d4e32d3c-8910-11ec-b20b-0050568c148b;
+        Tue, 08 Feb 2022 18:56:32 +0000 (UTC)
+Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sam@ravnborg.org)
+        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 26746194B43;
+        Tue,  8 Feb 2022 19:55:29 +0100 (CET)
+Date:   Tue, 8 Feb 2022 19:55:26 +0100
+X-Report-Abuse-To: abuse@mxhotel.dk
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Claudio Suarez <cssk@net-c.es>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@intel.com>
+Subject: Re: [PATCH 19/21] fbcon: Maintain a private array of fb_info
+Message-ID: <YgK8nugB7HO2d6r1@ravnborg.org>
+References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+ <20220131210552.482606-20-daniel.vetter@ffwll.ch>
+ <Yf2JbCP6dtHVZS3c@ravnborg.org>
+ <YgJ4MC1IJL7AOgSK@phenom.ffwll.local>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgJ4MC1IJL7AOgSK@phenom.ffwll.local>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 08 Feb 2022, Namhyung Kim <namhyung@kernel.org> wrote:
-> With upcoming lock tracepoints config, it'd define some of lockdep
-> functions without enabling CONFIG_LOCKDEP actually.  The existing code
-> assumes those functions will be removed by the preprocessor but it's
-> not the case anymore.  Let's protect the code with #ifdef's explicitly.
+Hi Daniel,
 
-I don't understand why you can't keep the no-op stubs for
-CONFIG_LOCKDEP=n.
+On Tue, Feb 08, 2022 at 03:03:28PM +0100, Daniel Vetter wrote:
+> On Fri, Feb 04, 2022 at 09:15:40PM +0100, Sam Ravnborg wrote:
+> > Hi Daniel,
+> > 
+> > On Mon, Jan 31, 2022 at 10:05:50PM +0100, Daniel Vetter wrote:
+> > > Accessing the one in fbmem.c without taking the right locks is a bad
+> > > idea. Instead maintain our own private copy, which is fully protected
+> > > by console_lock() (like everything else in fbcon.c). That copy is
+> > > serialized through fbcon_fb_registered/unregistered() calls.
+> > 
+> > I fail to see why we can make a private copy of registered_fb
+> > just like that - are they not somehow shared between fbcon and fbmem.
+> > So when fbmem updates it, then fbcon will use the entry or such?
+> > 
+> > I guess I am just ignorant of how registered_fb is used - but please
+> > explain.
+> 
+> The private copy is protected under console_lock, and hence safe to access
+> from fbcon.c code.
+> 
+> The main registered_fb array is protected by a different mutex, so we
+> could indeed end up with hilarious corruption because the value is
+> inconsistent while we try to access it (e.g. we check for !NULL, but later
+> on gcc decides to reload the value and now it's suddenly become NULL and
+> we blow up).
+> 
+> The two are synchronized by fbmem.c calling fbcon_register/unregister, so
+> aside from the different locks if there's no race going on, they will
+> always be identical.
+IT was this part that I missed, and it is already spelled out in the
+commit message.
 
-BR,
-Jani.
+> 
+> Other option would be to roll out get_fb_info() to fbcon.c, but since
+> fbcon.c is fully protected by console_lock that would add complexity in
+> the code flow that we don't really need. And we'd have to wire fb_info
+> through all call chains, since the right way to use get_fb_info is to look
+> it up once and then only drop it when your callback has finished.
+> 
+> Since the current code just assume it's all protected by console_lock and
+> we never drop that during a callback this would mean major surgery and
+> essentially refactoring all of fbcon.c to only access the fbcon stuff
+> through fb_info, i.e. to get rid of _all_ the global arrays we have more
+> or less. I'm not volunteering for that (despite that really this would be
+> the right thing to do if we'd have infinite engineering time).
+> 
+> Ack with that explainer added to the commit message?
 
->
-> Cc: Jani Nikula <jani.nikula@linux.intel.com>
-> Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-> Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-> Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-> Cc: intel-gfx@lists.freedesktop.org
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> ---
->  drivers/gpu/drm/i915/intel_wakeref.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/gpu/drm/i915/intel_wakeref.c b/drivers/gpu/drm/i915/intel_wakeref.c
-> index dfd87d082218..6e4b8d036283 100644
-> --- a/drivers/gpu/drm/i915/intel_wakeref.c
-> +++ b/drivers/gpu/drm/i915/intel_wakeref.c
-> @@ -106,8 +106,11 @@ void __intel_wakeref_init(struct intel_wakeref *wf,
->  	wf->wakeref = 0;
->  
->  	INIT_DELAYED_WORK(&wf->work, __intel_wakeref_put_work);
-> +
-> +#ifdef CONFIG_LOCKDEP
->  	lockdep_init_map(&wf->work.work.lockdep_map,
->  			 "wakeref.work", &key->work, 0);
-> +#endif
->  }
->  
->  int intel_wakeref_wait_for_idle(struct intel_wakeref *wf)
+I consider the current commit message fine - it helps when you actually
+read it.
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
