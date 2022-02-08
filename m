@@ -2,313 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98967C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55481C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:55:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384397AbiBHRzB (ORCPT
+        id S1384418AbiBHRzN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 12:55:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39592 "EHLO
+        Tue, 8 Feb 2022 12:55:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352766AbiBHRy6 (ORCPT
+        with ESMTP id S1384401AbiBHRzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 12:54:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B472CC0613C9;
-        Tue,  8 Feb 2022 09:54:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FA38B81CBA;
-        Tue,  8 Feb 2022 17:54:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73C04C340EC;
-        Tue,  8 Feb 2022 17:54:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644342895;
-        bh=IuW90oNzwf6fPYlTgMqjNPx5vkCGyymY1ZojgOBus74=;
-        h=From:To:Cc:Subject:Date:From;
-        b=l3Dj6CPvc+VwQgpvDkn4wY0hnai5jGkRV4V6PPoGED6HX54oPOTtGt6neIqslsgk3
-         rYqHx01qKgfJ/arUdp0FHRFOlPMr0BWUau1sGF0m1VFn+IRH+klKFhcvrsLyH43zj2
-         2Ut3alP+PQeiLLC/2oJNH/dJQUGhT2kpnCr1oOlo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 4.14.265
-Date:   Tue,  8 Feb 2022 18:54:47 +0100
-Message-Id: <1644342887240235@kroah.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 8 Feb 2022 12:55:04 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FDF4C06174F
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:55:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644342903; x=1675878903;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ISAFhUDFjzj9/t8WCUMLpMCCQ+CZM15k1cc8OKpYoe4=;
+  b=k+qxMbIZezLJYTBZJrXb+UFDoAIq1Llx3ioL0nQd6XcW44eC08xw8FRh
+   ZF3JK9Yw94CmzNE7yPeM3hQvfvBux188rJNbLEzRbOWn26H4WL9qXdLL8
+   XH0+ly0T19awtxrfMyhfQbag5qWig/+kr2FSXULx32I52R1uIbPE72SFH
+   /39K29XZDA0E+PTAKshnysOlKy0hYd6lKBsMUVX9WpdLTkKwAe1yQTp/e
+   Luh9m+r/x+KCq3KDzM4HIYaiLYcbKMJQsQR9d6h5y/Oam1HDggAIBSOqD
+   t14eMmByXE5yiSDb1Ox6QA0waha9XdQpxt9/rGV/NDYM5aPhSjJZ3ATgV
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="248771770"
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="248771770"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 09:55:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="700929075"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 08 Feb 2022 09:55:01 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nHUhg-0000Y7-GZ; Tue, 08 Feb 2022 17:55:00 +0000
+Date:   Wed, 9 Feb 2022 01:54:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vimal Agrawal <avimalin@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, 0day robot <lkp@intel.com>
+Subject: kernel/module.c:4213:6: warning: no previous prototype for function
+ 'match_address_layout'
+Message-ID: <202202090113.JTGTQqUD-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 4.14.265 kernel.
+tree:   https://github.com/0day-ci/linux/commits/UPDATE-20220208-194118/Vimal-Agrawal/kernel-module-c-heuristic-enhancement-when-INSTALL_MOD_STRIP-strip-unneeded-is-used/20211222-212507
+head:   8e6e1487d86e7fe625a0c64a5c3f4c6fc6a58a48
+commit: 8e6e1487d86e7fe625a0c64a5c3f4c6fc6a58a48 modules: add heuristic when stripping unneeded symbols
+date:   6 hours ago
+config: s390-randconfig-r044-20220208 (https://download.01.org/0day-ci/archive/20220209/202202090113.JTGTQqUD-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e8bff9ae54a55b4dbfeb6ba55f723abbd81bf494)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/0day-ci/linux/commit/8e6e1487d86e7fe625a0c64a5c3f4c6fc6a58a48
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review UPDATE-20220208-194118/Vimal-Agrawal/kernel-module-c-heuristic-enhancement-when-INSTALL_MOD_STRIP-strip-unneeded-is-used/20211222-212507
+        git checkout 8e6e1487d86e7fe625a0c64a5c3f4c6fc6a58a48
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
-All users of the 4.14 kernel series must upgrade.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The updated 4.14.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.14.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+All warnings (new ones prefixed by >>):
 
-thanks,
+>> kernel/module.c:4213:6: warning: no previous prototype for function 'match_address_layout' [-Wmissing-prototypes]
+   bool match_address_layout(struct module *mod, unsigned long addr, bool init)
+        ^
+   kernel/module.c:4213:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   bool match_address_layout(struct module *mod, unsigned long addr, bool init)
+   ^
+   static 
+   1 warning generated.
 
-greg k-h
 
-------------
+vim +/match_address_layout +4213 kernel/module.c
 
- Makefile                                        |    2 
- arch/powerpc/kernel/Makefile                    |    1 
- arch/powerpc/lib/Makefile                       |    3 
- arch/s390/hypfs/hypfs_vm.c                      |    6 -
- block/bio-integrity.c                           |    2 
- drivers/edac/altera_edac.c                      |    2 
- drivers/edac/xgene_edac.c                       |    2 
- drivers/gpu/drm/i915/intel_overlay.c            |    3 
- drivers/gpu/drm/msm/dsi/phy/dsi_phy.c           |    4 
- drivers/gpu/drm/msm/msm_drv.c                   |    2 
- drivers/gpu/drm/nouveau/nvkm/subdev/bios/base.c |    2 
- drivers/hwmon/lm90.c                            |    2 
- drivers/infiniband/hw/mlx4/main.c               |    2 
- drivers/iommu/amd_iommu_init.c                  |    2 
- drivers/iommu/intel_irq_remapping.c             |   13 ++-
- drivers/misc/Makefile                           |    2 
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c        |   14 +++
- drivers/net/ethernet/ibm/ibmvnic.c              |    6 -
- drivers/net/ethernet/intel/i40e/i40e.h          |    8 -
- drivers/net/ethernet/intel/i40e/i40e_debugfs.c  |    2 
- drivers/net/ethernet/intel/i40e/i40e_main.c     |   16 +--
- drivers/net/hamradio/yam.c                      |    4 
- drivers/net/ieee802154/ca8210.c                 |    1 
- drivers/net/macsec.c                            |    9 ++
- drivers/net/phy/phylink.c                       |    5 +
- drivers/net/usb/ipheth.c                        |    6 -
- drivers/rpmsg/rpmsg_char.c                      |   22 -----
- drivers/rtc/rtc-mc146818-lib.c                  |    2 
- drivers/s390/scsi/zfcp_fc.c                     |   13 ++-
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c               |   41 ++++-----
- drivers/spi/spi-bcm-qspi.c                      |    2 
- drivers/spi/spi-meson-spicc.c                   |    5 +
- drivers/spi/spi-mt65xx.c                        |    2 
- drivers/staging/typec/tcpm.c                    |    3 
- drivers/tty/n_gsm.c                             |    4 
- drivers/tty/serial/8250/8250_pci.c              |  100 +++++++++++++++++++++++-
- drivers/tty/serial/stm32-usart.c                |    2 
- drivers/usb/common/ulpi.c                       |    7 +
- drivers/usb/core/hcd.c                          |   14 +++
- drivers/usb/core/urb.c                          |   12 ++
- drivers/usb/gadget/function/f_sourcesink.c      |    1 
- drivers/usb/storage/unusual_devs.h              |   10 ++
- fs/ext4/inline.c                                |   10 ++
- fs/nfs/dir.c                                    |   18 ++++
- fs/nfsd/nfs4state.c                             |    4 
- fs/udf/inode.c                                  |    9 --
- include/linux/netdevice.h                       |    1 
- include/net/ip.h                                |   21 ++---
- include/net/netfilter/nf_nat_l4proto.h          |    2 
- kernel/audit.c                                  |   62 ++++++++++----
- kernel/bpf/core.c                               |   59 ++++++++++++--
- kernel/power/wakelock.c                         |   12 --
- net/bluetooth/hci_event.c                       |   10 +-
- net/core/filter.c                               |   11 ++
- net/core/net-procfs.c                           |   38 ++++++++-
- net/core/rtnetlink.c                            |    6 -
- net/ieee802154/nl802154.c                       |    8 -
- net/ipv4/ip_output.c                            |   11 ++
- net/ipv4/ping.c                                 |    3 
- net/ipv4/raw.c                                  |    5 -
- net/ipv6/ip6_tunnel.c                           |    8 -
- net/netfilter/nf_nat_proto_common.c             |   36 ++++++--
- net/netfilter/nf_nat_proto_dccp.c               |    5 -
- net/netfilter/nf_nat_proto_sctp.c               |    5 -
- net/netfilter/nf_nat_proto_tcp.c                |    5 -
- net/netfilter/nf_nat_proto_udp.c                |   10 --
- net/netfilter/nft_payload.c                     |    3 
- net/packet/af_packet.c                          |   10 +-
- sound/soc/fsl/pcm030-audio-fabric.c             |   11 +-
- sound/soc/soc-ops.c                             |   29 ++++++
- tools/testing/selftests/futex/Makefile          |    4 
- 71 files changed, 561 insertions(+), 216 deletions(-)
+  4207	
+  4208	/*
+  4209	 * Check if module address (addr) passed is as per init passed
+  4210	 * if init is true then check in init layout
+  4211	 * else check in core layout
+  4212	 */
+> 4213	bool match_address_layout(struct module *mod, unsigned long addr, bool init)
+  4214	{
+  4215		if (init)
+  4216			return within_module_init(addr, mod);
+  4217		else
+  4218			return within_module_core(addr, mod);
+  4219	}
+  4220	
 
-Alan Stern (2):
-      usb-storage: Add unusual-devs entry for VL817 USB-SATA bridge
-      USB: core: Fix hang in usb_kill_urb by adding memory barriers
-
-Badhri Jagan Sridharan (1):
-      usb: typec: tcpm: Do not disconnect while receiving VBUS off
-
-Benjamin Gaignard (1):
-      spi: mediatek: Avoid NULL pointer crash in interrupt
-
-Brian Gix (1):
-      Bluetooth: refactor malicious adv data check
-
-Cameron Williams (1):
-      tty: Add support for Brainboxes UC cards.
-
-Christophe Leroy (2):
-      powerpc/32: Fix boot failure with GCC latent entropy plugin
-      lkdtm: Fix content of section containing lkdtm_rodata_do_nothing()
-
-Congyu Liu (1):
-      net: fix information leakage in /proc/net/ptype
-
-Dai Ngo (1):
-      nfsd: nfsd4_setclientid_confirm mistakenly expires confirmed client.
-
-Dan Carpenter (1):
-      drm/i915/overlay: Prevent divide by zero bugs in scaling
-
-Daniel Borkmann (1):
-      bpf: fix truncated jump targets on heavy expansions
-
-Eric Dumazet (5):
-      ipv4: avoid using shared IP generator for connected sockets
-      ipv4: raw: lock the socket in raw_bind()
-      ipv4: tcp: send zero IPID in SYNACK messages
-      rtnetlink: make sure to refresh master_dev/m_ops in __rtnl_newlink()
-      af_packet: fix data-race in packet_setsockopt / packet_setsockopt
-
-Florian Westphal (2):
-      netfilter: nat: remove l4 protocol port rovers
-      netfilter: nat: limit port clash resolution attempts
-
-Georgi Valkov (1):
-      ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
-
-Greg Kroah-Hartman (2):
-      PM: wakeup: simplify the output logic of pm_show_wakelocks()
-      Linux 4.14.265
-
-Guenter Roeck (1):
-      hwmon: (lm90) Reduce maximum conversion rate for G781
-
-Guoqing Jiang (1):
-      iommu/vt-d: Fix potential memory leak in intel_setup_irq_remapping()
-
-Hangyu Hua (1):
-      yam: fix a memory leak in yam_siocdevprivate()
-
-Ido Schimmel (1):
-      ipv6_tunnel: Rate limit warning messages
-
-Jan Kara (2):
-      udf: Restore i_lenAlloc when inode expansion fails
-      udf: Fix NULL ptr deref when converting from inline format
-
-Jedrzej Jagielski (1):
-      i40e: Increase delay to 1 s after global EMP reset
-
-Jianguo Wu (1):
-      net-procfs: show net devices bound packet types
-
-Joe Damato (1):
-      i40e: fix unsigned stat widths
-
-Joerg Roedel (1):
-      iommu/amd: Fix loop timeout issue in iommu_ga_log_enable()
-
-John Meneghini (2):
-      scsi: bnx2fc: Flush destroy_work queue before calling bnx2fc_interface_put()
-      scsi: bnx2fc: Make bnx2fc_recv_frame() mp safe
-
-Jon Hunter (1):
-      usb: common: ulpi: Fix crash in ulpi_match()
-
-José Expósito (1):
-      drm/msm/dsi: invalid parameter check in msm_dsi_phy_enable
-
-Kamal Dasu (1):
-      spi: bcm-qspi: check for valid cs before applying chip select
-
-Leon Romanovsky (1):
-      RDMA/mlx4: Don't continue event handler after memory allocation failure
-
-Lior Nahmanson (1):
-      net: macsec: Verify that send_sci is on when setting Tx sci explicitly
-
-Marek Behún (1):
-      net: sfp: ignore disabled SFP node
-
-Mark Brown (3):
-      ASoC: ops: Reject out of bounds values in snd_soc_put_volsw()
-      ASoC: ops: Reject out of bounds values in snd_soc_put_volsw_sx()
-      ASoC: ops: Reject out of bounds values in snd_soc_put_xr_sx()
-
-Martin K. Petersen (1):
-      block: bio-integrity: Advance seed correctly for larger interval sizes
-
-Matthias Kaehlcke (1):
-      rpmsg: char: Fix race between the release of rpmsg_eptdev and cdev
-
-Miaoqian Lin (2):
-      spi: meson-spicc: add IRQ check in meson_spicc_probe
-      ASoC: fsl: Add missing error handling in pcm030_fabric_probe
-
-Miquel Raynal (2):
-      net: ieee802154: ca8210: Stop leaking skb's
-      net: ieee802154: Return meaningful error codes from the netlink helpers
-
-Muhammad Usama Anjum (1):
-      selftests: futex: Use variable MAKE instead of make
-
-Nick Lopez (1):
-      drm/nouveau: fix off by one in BIOS boundary checking
-
-Pablo Neira Ayuso (1):
-      netfilter: nft_payload: do not update layer 4 checksum when mangling fragments
-
-Paul Moore (1):
-      audit: improve audit queue handling when "audit=1" on cmdline
-
-Pavankumar Kondeti (1):
-      usb: gadget: f_sourcesink: Fix isoc transfer for USB_SPEED_SUPER_PLUS
-
-Raju Rangoju (1):
-      net: amd-xgbe: ensure to reset the tx_timer_active flag
-
-Ritesh Harjani (1):
-      ext4: fix error handling in ext4_restore_inline_data()
-
-Riwen Lu (1):
-      rtc: cmos: Evaluate century appropriate
-
-Sergey Shtylyov (2):
-      EDAC/altera: Fix deferred probing
-      EDAC/xgene: Fix deferred probing
-
-Shyam Sundar S K (1):
-      net: amd-xgbe: Fix skb data length underflow
-
-Steffen Maier (1):
-      scsi: zfcp: Fix failed recovery on gone remote port with non-NPIV FCP devices
-
-Sujit Kautkar (1):
-      rpmsg: char: Fix race between the release of rpmsg_ctrldev and cdev
-
-Sukadev Bhattiprolu (1):
-      ibmvnic: don't spin in tasklet
-
-Trond Myklebust (2):
-      NFSv4: Handle case where the lookup of a directory fails
-      NFSv4: nfs_atomic_open() can race when looking up a non-regular file
-
-Valentin Caron (1):
-      serial: stm32: fix software flow control transfer
-
-Vasily Gorbik (1):
-      s390/hypfs: include z/VM guests with access control group set
-
-Xianting Tian (1):
-      drm/msm: Fix wrong size calculation
-
-Xin Long (1):
-      ping: fix the sk_bound_dev_if match in ping_lookup
-
-daniel.starke@siemens.com (1):
-      tty: n_gsm: fix SW flow control encoding/handling
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
