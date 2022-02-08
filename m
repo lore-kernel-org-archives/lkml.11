@@ -2,104 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA18C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344593AbiBHB4W (ORCPT
+        id S1345150AbiBHB40 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:56:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44348 "EHLO
+        Mon, 7 Feb 2022 20:56:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345806AbiBHB4R (ORCPT
+        with ESMTP id S1345412AbiBHBzx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:56:17 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50B4C061355;
-        Mon,  7 Feb 2022 17:56:15 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id m25so12606713qka.9;
-        Mon, 07 Feb 2022 17:56:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5iD3JAv2NJY5TryKV7Dj3UeZLdxf5ObNApLJn3kqghU=;
-        b=pI2HVe8/S4Y+G8xDNV/doYes7BMdmEzKOwMNl7CDEObwsbuznhLtxXks2G0+fmmtqk
-         OSyX7Z8b5Cw098Dal46LDTktIPK7mkbN9+/iqg0/oz2SC6OyjrfsxvjIG+1eI+S2pRLe
-         LN0MuicP9WdOvLvvxpWVtJeHt5nsFOgC5KiRzkgPHe1Glk4rl5+NVOc0ErrapRH1RLxm
-         N/4eiaijhDREgdPR3442hjLOZ88Y0dRiXhbXqLf4LY1CNZGO0AB6qIwhcUzflIGsP4Xs
-         lq9LKc7x/Jmuec8Rn6XmyylUnXgWfFD65WnYLKkObMGsrzSTnIkVpB+mdvGGkjz9lEgt
-         +pdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5iD3JAv2NJY5TryKV7Dj3UeZLdxf5ObNApLJn3kqghU=;
-        b=cv4hckLoF2iUh7WP44PHeoc7PHVd1XtJtjMgbT0MPMRmJEIDR2WmhADKtF9TvBtDAm
-         MC/d0O4TDj/t6+3kzV57DERzJ90MjBCRjNjB85MAgyri9CsMFRuo/ebldCjPwyJ1Kbgl
-         joSdZkKO8qr3lYJ+bqJUzG/SGeUBitgO26vAJBj05tANzZLBUTlay9DmydlZYWUJOiwN
-         IyVP18aqzLCjMhC/ncQuGx6gli3UlAAfUxYqDEzgIZn7JmlZQPw8np9CwZ/QaV+2FWav
-         MWEe2oYSGutIIaJjOY0/NC8a0gfNhoo5Ti2cGrVO9j8HFM9eahqGmIhcDzkL4A9aH56h
-         CdDA==
-X-Gm-Message-State: AOAM531KcDTU4Q52aU1SkkQud2XqbpAS9l1DmG0KKxd5NkogwDR+HyYb
-        kFXWs76XtmOybi9R5uiA3SGy3JvDpic=
-X-Google-Smtp-Source: ABdhPJxFhOahqPUMM3z6x7O2UdmmKk2bvzsAtCng2yMFFMl9tpErPaNvbD7C4dAkwpclDF1KH6PNaQ==
-X-Received: by 2002:a37:a707:: with SMTP id q7mr1512997qke.229.1644285374971;
-        Mon, 07 Feb 2022 17:56:14 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id f14sm6395153qko.117.2022.02.07.17.56.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 17:56:14 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kvalo@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH V2] wcn36xx: use struct_size over open coded arithmetic
-Date:   Tue,  8 Feb 2022 01:56:06 +0000
-Message-Id: <20220208015606.1514022-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 7 Feb 2022 20:55:53 -0500
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285EEC061355;
+        Mon,  7 Feb 2022 17:55:53 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 9AE675801A8;
+        Mon,  7 Feb 2022 20:46:12 -0500 (EST)
+Received: from imap49 ([10.202.2.99])
+  by compute2.internal (MEProxy); Mon, 07 Feb 2022 20:46:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; bh=5+76eXXO9x6v5j
+        dgARY6WL3HFi5ejxI1U2gzzn4TQV8=; b=KIpS8MJ0/E7AS8EwU75dlgJxq/GO0b
+        /an7Aa8y2dbAOgLsTwPsANUVIfHXVFp0fVJkjBdYkqaMQhNtL/zcK26N898bE50f
+        uPBUYUCVpleMv7lajcUodBhC3O9Lm1rRQsxAOcCfs84LeYHMttSfGYrViflIQm7I
+        e1n5eQi4k+FXR4FS3rc7gdddCmy8sM2Mc/ePLlTmG9/QMk2LoJ5qeX6cbGMvPppZ
+        zQfh0nlZu1cYauGcE0ycYDBOQJtE+Lb3wtTl6gi/UPtf15jbOk7OfIdVzLMCSreJ
+        W98eOLRQ42oUO0QvgGbFBG0mL4+2LF5g7rvZMCOHQeh1U64B3Z2goISA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=5+76eXXO9x6v5jdgA
+        RY6WL3HFi5ejxI1U2gzzn4TQV8=; b=cdF5Kv0ki0kMMfLqDLCgnfxGEL2F2Uj8o
+        KX9+aD6ISWeTyevY4vzuDakWLl1AUfGRFN5h1W7AGKRa3ZrUsz5ym20y2xwcEKd0
+        Pd2Uk5MLKhIWbSbH4WnUlVz/XQ/DTpOKlH/roJ5r3jzBvNLMLk0Kjb7WYfRy1+UL
+        ZnP73Qp2CDa1ynxU6WQgkIEl3R9fVBLYznYQowhqSqNrbFZwXzyOZSAMlz7S2tWC
+        39jUDqTg0DJlqV3IOB9gvMKOmzVCDviSdcHe3gWRd/WFnZ3DgNuhKaZ6NhIkLwkM
+        IyhvxGo9rNxWJyFkP8QwtJnEYZmbZJb4YsA+lXBc383EscfVYdzGA==
+X-ME-Sender: <xms:ZMsBYrivwJfeProIDu2iqbiOtbVDcHOHuxp5C8TYHEMuv_zYaY1Djg>
+    <xme:ZMsBYoA9gJCZOASJa5BMhZPkMjb_gtlr77mydMwtF8_1zvN4Y8a_tP5c9NTMU26A5
+    xx2K4gR6i8DOdmlOjM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheeigdefiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhlrggu
+    vgcuhggrthhkihhnshdfuceoshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtohhmqe
+    enucggtffrrghtthgvrhhnpeeuieffteejieetgfevteelheevudehteeihffhteehtdet
+    leegtedtvdevvddugeenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
+X-ME-Proxy: <xmx:ZMsBYrGHO2eGNBi7uquc9UXJM5bE0-f3Z8uFF4VG0pNmjQliyhpulg>
+    <xmx:ZMsBYoQ4UUqCDYMmR1kwbIFFlRC2OtgEeTF0aXpe_GoG3X201qM0qg>
+    <xmx:ZMsBYoxsT2ves09QRyv03R3EjzoLaZpayu_8UsruWN9ABkYhJEY3SQ>
+    <xmx:ZMsBYto52h2ZJNzreV8Y-6g6WwmsHQPKXWqTQ372TWezjpBEJm7LxzGPqhs>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 64FA8F6007E; Mon,  7 Feb 2022 20:46:12 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4748-g31a5b5f50e-fm-cal2020-20220204.001-g31a5b5f5
+Mime-Version: 1.0
+Message-Id: <ca0e703a-0c19-49c9-b0cb-a5fc4b38f898@www.fastmail.com>
+In-Reply-To: <20220207103752.341184175@linuxfoundation.org>
+References: <20220207103752.341184175@linuxfoundation.org>
+Date:   Mon, 07 Feb 2022 20:45:52 -0500
+From:   "Slade Watkins" <slade@sladewatkins.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH 4.9 00/48] 4.9.300-rc1 review
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
+On Mon, Feb 7, 2022, at 6:05 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.300 release.
+> There are 48 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
 
-Replace zero-length array with flexible-array member and make use
-of the struct_size() helper in kmalloc(). For example:
+Compiled and booted 4.9.300-rc1 on my x86_64 test system successfully without errors or regressions.
 
-struct wcn36xx_hal_ind_msg {
-    struct list_head list;
-    size_t msg_len;
-    u8 msg[];
-};
+Tested-by: Slade Watkins <slade@sladewatkins.com>
 
-Make use of the struct_size() helper instead of an open-coded version
-in order to avoid any potential type mistakes.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
----
- drivers/net/wireless/ath/wcn36xx/smd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index caeb68901326..59ad332156ae 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -3347,7 +3347,7 @@ int wcn36xx_smd_rsp_process(struct rpmsg_device *rpdev,
- 	case WCN36XX_HAL_DELETE_STA_CONTEXT_IND:
- 	case WCN36XX_HAL_PRINT_REG_INFO_IND:
- 	case WCN36XX_HAL_SCAN_OFFLOAD_IND:
--		msg_ind = kmalloc(sizeof(*msg_ind) + len, GFP_ATOMIC);
-+		msg_ind = kmalloc(struct_size(msg_ind, msg, len), GFP_ATOMIC);
- 		if (!msg_ind) {
- 			wcn36xx_err("Run out of memory while handling SMD_EVENT (%d)\n",
- 				    msg_header->msg_type);
--- 
-2.25.1
-
+Thanks,
+Slade
