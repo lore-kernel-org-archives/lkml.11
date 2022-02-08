@@ -2,462 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 435A9C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B6FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378133AbiBHQRB (ORCPT
+        id S1382949AbiBHQRr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 11:17:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
+        Tue, 8 Feb 2022 11:17:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382942AbiBHQQ7 (ORCPT
+        with ESMTP id S236852AbiBHQRq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 11:16:59 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CDDC0612C2
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 08:16:55 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id h6so12987038wrb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 08:16:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aKXJwL4hvq55/LFdYG92ZXL3tNxjw52aAP4axBxnMOQ=;
-        b=jj8IPRcCM4Er1aZyxSbz/MktKNiNx4Ny95ct6Z3tzw/KbWyYm9ZT6Zh5krVFlJUEtI
-         NbWV6pKno0oTqEDgKAKVt+6zFPT2Gnahw3yTSYY5E1ajSkyC6B9il91yo15CRMnV/OhF
-         7lXiKHbkXnK1OiOs5BYMUJfpoxXLHH5ykYwut+UlABSMRghx1RNx4PZ362ab5srOIHkx
-         Y0DRDFr8IEzsfIgZE1ebyhdZGQe3fSWekS3qdunmI6unFlWZsYd1k3bicTp98Ft6VFWx
-         mTZVwvQm1ZCb6ksXAarSL1cXCsAREAGAVgXgujO5aIXd/46AQwWS41D/F3MjMz53Sqps
-         e+ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aKXJwL4hvq55/LFdYG92ZXL3tNxjw52aAP4axBxnMOQ=;
-        b=Q4mSkHEq5UrMrScbUPkuiirIy7L94+6JqGGW417Zj9RUP5DCD+or45oqukc4NGv0fW
-         OBQWC2WADkr/5ThgVLTFdS+hmOJlfJsOUWBmhC0wG+68tnyiJaM01O8MzkVC/0sQmrQ4
-         zR34OSRq1EfWw5XrtIK92FMSApQiPLcTY4lgnmio6yqJSKmMfem9/CUtxyRyUTO4CWsg
-         R4rhKhUHNGr46tLGt78jmb5Ff+6xG0WmfMOkmIZh4lC88+rZVmuW8M/t//gbpVa+NRj2
-         ivcalP+8MGhB94JNe6fB7OhJmcaNcV0ItBkpWmwJiM4KrNCP1mq4xeNkGshln9jRfSAJ
-         Rn5g==
-X-Gm-Message-State: AOAM530aPwlBYDZ1EAJQtkeUg+kxcPM4o8+cdYfvVXaP8Z2dvFk9Dvby
-        e3A5BbY21eVQJxiIMw367TMPDgFKvv7F6qFAdt+GBA==
-X-Google-Smtp-Source: ABdhPJxiIS9ZYI9gg0KVV2cfDvDLybSCPDmYGnzAe0Vc6ckA/KBv4MAS15wMskZNFjULgZghwbhmeosZthvL68ecAS8=
-X-Received: by 2002:a5d:588d:: with SMTP id n13mr4175738wrf.690.1644337013676;
- Tue, 08 Feb 2022 08:16:53 -0800 (PST)
-MIME-Version: 1.0
-References: <20220126114452.692512-1-apatel@ventanamicro.com>
- <20220126114452.692512-9-apatel@ventanamicro.com> <CAJF2gTQsSn1KBgX2bg2LiSUbCmbGD3oF5KcmK5gq2Dd49BWDBQ@mail.gmail.com>
- <CAAhSdy3Dkv6ga0ZMp5rMFa8nV9EDHgOMBwuJ4z4-w52T8EaUag@mail.gmail.com>
- <CAJF2gTSLmBcgUUE3VGsEq0JCWV74Yy-pkduS66rk=VPVwxk59g@mail.gmail.com>
- <CAK9=C2WqczG=tH1u9zcLt7Em+fPD1ZZwtDhf1yHJ70-o-HL8OQ@mail.gmail.com> <CAJF2gTSeH6w2Cfr5QEJTJ4ho_B4q3Eo2Xi+R_2yt+7CZCa+WBg@mail.gmail.com>
-In-Reply-To: <CAJF2gTSeH6w2Cfr5QEJTJ4ho_B4q3Eo2Xi+R_2yt+7CZCa+WBg@mail.gmail.com>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Tue, 8 Feb 2022 21:46:39 +0530
-Message-ID: <CAAhSdy3uaDz2tSgREqOX6s-e_Aqx5yJQRQ1-PCMxJ729V42kHg@mail.gmail.com>
-Subject: Re: [PATCH v10 8/8] RISC-V: Enable RISC-V SBI CPU Idle driver for
- QEMU virt machine
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Anup Patel <apatel@ventanamicro.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Sandeep Tripathy <milun.tripathy@gmail.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Liush <liush@allwinnertech.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        kvm-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 8 Feb 2022 11:17:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF87AC061579;
+        Tue,  8 Feb 2022 08:17:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B0AB61675;
+        Tue,  8 Feb 2022 16:17:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AF73C340EF;
+        Tue,  8 Feb 2022 16:17:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644337064;
+        bh=jC6VMA8Sjd8HqhTCuSTd/fKRie9Nid3LAIoupAVCfTE=;
+        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
+        b=mFWGq8uAmEYrM4KqTeIPAKdvUJpkRPXpSvPv8XwE3fiYaMXlMUbLu1WwQN7AL2xGb
+         sRRyeogXF566C+wrWX7L/PCPdoQHFZDwjv5ixiTClH+JX8n/SumavGgUi2JPTvhf4u
+         HJTpMglX6kmleSRSkZe4HeCXS6JBz+W54bs7q63PRyQr6RsP2v2sFEEji+dZaB6fTc
+         xcBN3abEqZKglPSQac6tasuTziU0eEtpsXc3cWYsGH6OT8JFTgcB1G9DOClNQ/TW2G
+         Kl8BnawvDjkNfaLgLHml0AvcTfTcpLopAz/VZVvWPbY10IQhaYYyxsAs1XP5RFQ2+e
+         tnzvW+xcodPhA==
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailauth.nyi.internal (Postfix) with ESMTP id C69D527C0054;
+        Tue,  8 Feb 2022 11:17:41 -0500 (EST)
+Received: from imap48 ([10.202.2.98])
+  by compute5.internal (MEProxy); Tue, 08 Feb 2022 11:17:41 -0500
+X-ME-Sender: <xms:pJcCYmyQ-D4r7f7RLuyn2sI4TJBlIEUTxxo_SsXvxbLw2eShW_DqCw>
+    <xme:pJcCYiSiHDVlmKJ_bx5T8hwv-bnRbpHohpq7r-UjB3CZ2l_vug11UwMX3ykacfI1h
+    UE__rzajT_GlvQLVOE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheejgdekfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedftehnugih
+    ucfnuhhtohhmihhrshhkihdfuceolhhuthhosehkvghrnhgvlhdrohhrgheqnecuggftrf
+    grthhtvghrnheptdfhheettddvtedvtedugfeuuefhtddugedvleevleefvdetleffgfef
+    vdekgeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    eprghnugihodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduudeiudekheei
+    fedvqddvieefudeiiedtkedqlhhuthhopeepkhgvrhhnvghlrdhorhhgsehlihhnuhigrd
+    hluhhtohdruhhs
+X-ME-Proxy: <xmx:pJcCYoW5bf9iA3GFSMYFd0oYfgJCLB5Ur7zWmFzzuVIPO3vjqeuOcA>
+    <xmx:pJcCYsjn5PdnQGjlN3hz12UubnRpK0zb-FEdOwH8r_ZJJWJ0-RdNcA>
+    <xmx:pJcCYoAkWI2J4XKYOtKSffY77Z00QDgVRcp3cNlb2S1qFIHqB7DxXg>
+    <xmx:pZcCYujI_qgvUILAndkfV21ruLnmNvrGzpFCJLTj6ieH_2W8JAqvUoaU-Jw>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 7B8AA21E0073; Tue,  8 Feb 2022 11:17:40 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4748-g31a5b5f50e-fm-cal2020-20220204.001-g31a5b5f5
+Mime-Version: 1.0
+Message-Id: <f4663ec8-7c69-40d7-b2ae-64cde71675b9@www.fastmail.com>
+In-Reply-To: <87mtj1vh50.ffs@tglx>
+References: <87fsozek0j.ffs@tglx>
+ <a7e59ae16e0e05579b087caf4045e42b174e2167.camel@intel.com>
+ <3421da7fc8474b6db0e265b20ffd28d0@AcuMS.aculab.com>
+ <CAMe9rOonepEiRyoAyTGkDMQQhuyuoP4iTZJJhKGxgnq9vv=dLQ@mail.gmail.com>
+ <9f948745435c4c9273131146d50fe6f328b91a78.camel@intel.com>
+ <6ba06196-0756-37a4-d6c4-2e47e6601dcd@kernel.org> <87mtj1vh50.ffs@tglx>
+Date:   Tue, 08 Feb 2022 08:15:12 -0800
+From:   "Andy Lutomirski" <luto@kernel.org>
+To:     "Thomas Gleixner" <tglx@linutronix.de>,
+        "Rick P Edgecombe" <rick.p.edgecombe@intel.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>,
+        "David Laight" <David.Laight@aculab.com>,
+        "Adrian Reber" <adrian@lisas.de>,
+        "Cyrill Gorcunov" <gorcunov@openvz.org>,
+        "Eugene Syromiatnikov" <esyr@redhat.com>,
+        "Dmitry Safonov" <0x7f454c46@gmail.com>
+Cc:     "Balbir Singh" <bsingharora@gmail.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Randy Dunlap" <rdunlap@infradead.org>,
+        "Kees Cook" <keescook@chromium.org>,
+        "Eranian, Stephane" <eranian@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Dave Hansen" <dave.hansen@linux.intel.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "Florian Weimer" <fweimer@redhat.com>,
+        "Nadav Amit" <nadav.amit@gmail.com>,
+        "Jann Horn" <jannh@google.com>, "kcc@google.com" <kcc@google.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "Pavel Machek" <pavel@ucw.cz>, "Oleg Nesterov" <oleg@redhat.com>,
+        "Weijiang Yang" <weijiang.yang@intel.com>,
+        "Borislav Petkov" <bp@alien8.de>, "Arnd Bergmann" <arnd@arndb.de>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "Mike Kravetz" <mike.kravetz@oracle.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "Dave Martin" <Dave.Martin@arm.com>,
+        "john.allen@amd.com" <john.allen@amd.com>,
+        "Ingo Molnar" <mingo@redhat.com>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        "Linux API" <linux-api@vger.kernel.org>,
+        "Cyrill Gorcunov" <gorcunov@gmail.com>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 8:22 PM Guo Ren <guoren@kernel.org> wrote:
+On Tue, Feb 8, 2022, at 1:31 AM, Thomas Gleixner wrote:
+> On Mon, Feb 07 2022 at 17:31, Andy Lutomirski wrote:
+>> So this leaves altshadowstack.  If we want to allow userspace to handle 
+>> a shstk overflow, I think we need altshadowstack.  And I can easily 
+>> imagine signal handling in a coroutine or user-threading evironment (Go? 
+>> UMCG or whatever it's called?) wanting this.  As noted, this obnoxious 
+>> Andy person didn't like putting any shstk-related extensions in the FPU 
+>> state.
+>>
+>> For better or for worse, altshadowstack is (I think) fundamentally a new 
+>> API.  No amount of ucontext magic is going to materialize an entire 
+>> shadow stack out of nowhere when someone calls sigaltstack().  So the 
+>> questions are: should we support altshadowstack from day one and, if so, 
+>> what should it look like?
 >
-> On Tue, Feb 8, 2022 at 9:25 PM Anup Patel <apatel@ventanamicro.com> wrote:
-> >
-> > On Tue, Feb 8, 2022 at 3:47 PM Guo Ren <guoren@kernel.org> wrote:
-> > >
-> > > On Tue, Feb 8, 2022 at 4:54 PM Anup Patel <anup@brainfault.org> wrote:
-> > > >
-> > > > On Tue, Feb 8, 2022 at 12:16 PM Guo Ren <guoren@kernel.org> wrote:
-> > > > >
-> > > > > Another question:
-> > > > >
-> > > > > Have you put "idle-states {" in qemu's DTS? or how do you test your patches?
-> > > >
-> > > > I usually do the following:
-> > > > 1) Dump QEMU virt machine DTB
-> > > > 2) Convert QEMU virt machine DTB into DTS
-> > > > 3) Add "idle-states" in QEMU virt machine DTS
-> > > > 4) Create QEMU virt machine DTB with "idle-states"
-> > > > 5) Use the new QEMU virt machine DTB for testing this series.
-> > > >
-> > > > Here's one of the DTS files which I used for testing on QEMU virt machine:
-> > > >
-> > > > /dts-v1/;
-> > > >
-> > > > / {
-> > > >     #address-cells = <0x02>;
-> > > >     #size-cells = <0x02>;
-> > > >     compatible = "riscv-virtio";
-> > > >     model = "riscv-virtio,qemu";
-> > > >
-> > > >     chosen {
-> > > >         linux,initrd-end = <0x8855d200>;
-> > > >         linux,initrd-start = <0x88200000>;
-> > > >         bootargs = "root=/dev/ram rw console=ttyS0 earlycon";
-> > > >         stdout-path = "/soc/uart@10000000";
-> > > >     };
-> > > >
-> > > >     memory@80000000 {
-> > > >         device_type = "memory";
-> > > >         reg = <0x00 0x80000000 0x00 0x10000000>;
-> > > >     };
-> > > >
-> > > >     cpus {
-> > > >         #address-cells = <0x01>;
-> > > >         #size-cells = <0x00>;
-> > > >         timebase-frequency = <0x989680>;
-> > > >
-> > > >         cpu@0 {
-> > > >             phandle = <0x07>;
-> > > >             device_type = "cpu";
-> > > >             reg = <0x00>;
-> > > >             status = "okay";
-> > > >             compatible = "riscv";
-> > > >             riscv,isa = "rv64imafdcsu";
-> > > >             mmu-type = "riscv,sv48";
-> > > >             cpu-idle-states = <&CPU_NONRET_DEF>;
-> > > >
-> > > >             interrupt-controller {
-> > > >                 #interrupt-cells = <0x01>;
-> > > >                 interrupt-controller;
-> > > >                 compatible = "riscv,cpu-intc";
-> > > >                 phandle = <0x08>;
-> > > >             };
-> > > >         };
-> > > >
-> > > >         cpu@1 {
-> > > >             phandle = <0x05>;
-> > > >             device_type = "cpu";
-> > > >             reg = <0x01>;
-> > > >             status = "okay";
-> > > >             compatible = "riscv";
-> > > >             riscv,isa = "rv64imafdcsu";
-> > > >             mmu-type = "riscv,sv48";
-> > > >             cpu-idle-states = <&CPU_RET_DEF>;
-> > > >
-> > > >             interrupt-controller {
-> > > >                 #interrupt-cells = <0x01>;
-> > > >                 interrupt-controller;
-> > > >                 compatible = "riscv,cpu-intc";
-> > > >                 phandle = <0x06>;
-> > > >             };
-> > > >         };
-> > > >
-> > > >         cpu@2 {
-> > > >             phandle = <0x03>;
-> > > >             device_type = "cpu";
-> > > >             reg = <0x02>;
-> > > >             status = "okay";
-> > > >             compatible = "riscv";
-> > > >             riscv,isa = "rv64imafdcsu";
-> > > >             mmu-type = "riscv,sv48";
-> > > >             cpu-idle-states = <&CPU_NONRET_DEF>;
-> > > >
-> > > >             interrupt-controller {
-> > > >                 #interrupt-cells = <0x01>;
-> > > >                 interrupt-controller;
-> > > >                 compatible = "riscv,cpu-intc";
-> > > >                 phandle = <0x04>;
-> > > >             };
-> > > >         };
-> > > >
-> > > >         cpu@3 {
-> > > >             phandle = <0x01>;
-> > > >             device_type = "cpu";
-> > > >             reg = <0x03>;
-> > > >             status = "okay";
-> > > >             compatible = "riscv";
-> > > >             riscv,isa = "rv64imafdcsu";
-> > > >             mmu-type = "riscv,sv48";
-> > > >             cpu-idle-states = <&CPU_RET_DEF>;
-> > > >
-> > > >             interrupt-controller {
-> > > >                 #interrupt-cells = <0x01>;
-> > > >                 interrupt-controller;
-> > > >                 compatible = "riscv,cpu-intc";
-> > > >                 phandle = <0x02>;
-> > > >             };
-> > > >         };
-> > > >
-> > > >         cpu-map {
-> > > >
-> > > >             cluster0 {
-> > > >
-> > > >                 core0 {
-> > > >                     cpu = <0x07>;
-> > > >                 };
-> > > >
-> > > >                 core1 {
-> > > >                     cpu = <0x05>;
-> > > >                 };
-> > > >
-> > > >                 core2 {
-> > > >                     cpu = <0x03>;
-> > > >                 };
-> > > >
-> > > >                 core3 {
-> > > >                     cpu = <0x01>;
-> > > >                 };
-> > > >             };
-> > > >         };
-> > > >
-> > > >         idle-states {
-> > > >             CPU_RET_DEF: cpu-retentive-default {
-> > > >                 compatible = "riscv,idle-state";
-> > > >                 riscv,sbi-suspend-param = <0x00000000>;
-> > > >                 entry-latency-us = <10>;
-> > > >                 exit-latency-us = <10>;
-> > > >                 min-residency-us = <100>;
-> > > >             };
-> > > >
-> > > >             CPU_NONRET_DEF: cpu-nonretentive-default {
-> > > >                 compatible = "riscv,idle-state";
-> > > >                 riscv,sbi-suspend-param = <0x80000000>;
-> > > >                 entry-latency-us = <100>;
-> > > >                 exit-latency-us = <100>;
-> > > >                 min-residency-us = <1000>;
-> > > >             };
-> > > >         };
-> > > >     };
-> > > >
-> > > >     soc {
-> > > >         #address-cells = <0x02>;
-> > > >         #size-cells = <0x02>;
-> > > >         compatible = "simple-bus";
-> > > >         ranges;
-> > > >
-> > > >         flash@20000000 {
-> > > >             bank-width = <0x04>;
-> > > >             reg = <0x00 0x20000000 0x00 0x2000000 0x00 0x22000000 0x00
-> > > > 0x2000000>;
-> > > >             compatible = "cfi-flash";
-> > > >         };
-> > > >
-> > > >         rtc@101000 {
-> > > >             interrupts = <0x0b>;
-> > > >             interrupt-parent = <0x09>;
-> > > >             reg = <0x00 0x101000 0x00 0x1000>;
-> > > >             compatible = "google,goldfish-rtc";
-> > > >         };
-> > > >
-> > > >         uart@10000000 {
-> > > >             interrupts = <0x0a>;
-> > > >             interrupt-parent = <0x09>;
-> > > >             clock-frequency = <0x384000>;
-> > > >             reg = <0x00 0x10000000 0x00 0x100>;
-> > > >             compatible = "ns16550a";
-> > > >         };
-> > > >
-> > > >         poweroff {
-> > > >             value = <0x5555>;
-> > > >             offset = <0x00>;
-> > > >             regmap = <0x0a>;
-> > > >             compatible = "syscon-poweroff";
-> > > >         };
-> > > >
-> > > >         reboot {
-> > > >             value = <0x7777>;
-> > > >             offset = <0x00>;
-> > > >             regmap = <0x0a>;
-> > > >             compatible = "syscon-reboot";
-> > > >         };
-> > > >
-> > > >         test@100000 {
-> > > >             phandle = <0x0a>;
-> > > >             reg = <0x00 0x100000 0x00 0x1000>;
-> > > >             compatible = "sifive,test1\0sifive,test0\0syscon";
-> > > >         };
-> > > >
-> > > >         pci@30000000 {
-> > > >             interrupt-map-mask = <0x1800 0x00 0x00 0x07>;
-> > > >             interrupt-map = <0x00 0x00 0x00 0x01 0x09 0x20 0x00 0x00
-> > > > 0x00 0x02 0x09 0x21 0x00 0x00 0x00 0x03 0x09 0x22 0x00 0x00 0x00 0x04
-> > > > 0x09 0x23 0x800 0x00 0x00 0x01 0x09 0x21 0x800 0x00 0x00 0x02 0x09
-> > > > 0x22 0x800 0x00 0x00 0x03 0x09 0x23 0x800 0x00 0x00 0x04 0x09 0x20
-> > > > 0x1000 0x00 0x00 0x01 0x09 0x22 0x1000 0x00 0x00 0x02 0x09 0x23 0x1000
-> > > > 0x00 0x00 0x03 0x09 0x20 0x1000 0x00 0x00 0x04 0x09 0x21 0x1800 0x00
-> > > > 0x00 0x01 0x09 0x23 0x1800 0x00 0x00 0x02 0x09 0x20 0x1800 0x00 0x00
-> > > > 0x03 0x09 0x21 0x1800 0x00 0x00 0x04 0x09 0x22>;
-> > > >             ranges = <0x1000000 0x00 0x00 0x00 0x3000000 0x00 0x10000
-> > > > 0x2000000 0x00 0x40000000 0x00 0x40000000 0x00 0x40000000>;
-> > > >             reg = <0x00 0x30000000 0x00 0x10000000>;
-> > > >             dma-coherent;
-> > > >             bus-range = <0x00 0xff>;
-> > > >             linux,pci-domain = <0x00>;
-> > > >             device_type = "pci";
-> > > >             compatible = "pci-host-ecam-generic";
-> > > >             #size-cells = <0x02>;
-> > > >             #interrupt-cells = <0x01>;
-> > > >             #address-cells = <0x03>;
-> > > >         };
-> > > >
-> > > >         virtio_mmio@10008000 {
-> > > >             interrupts = <0x08>;
-> > > >             interrupt-parent = <0x09>;
-> > > >             reg = <0x00 0x10008000 0x00 0x1000>;
-> > > >             compatible = "virtio,mmio";
-> > > >         };
-> > > >
-> > > >         virtio_mmio@10007000 {
-> > > >             interrupts = <0x07>;
-> > > >             interrupt-parent = <0x09>;
-> > > >             reg = <0x00 0x10007000 0x00 0x1000>;
-> > > >             compatible = "virtio,mmio";
-> > > >         };
-> > > >
-> > > >         virtio_mmio@10006000 {
-> > > >             interrupts = <0x06>;
-> > > >             interrupt-parent = <0x09>;
-> > > >             reg = <0x00 0x10006000 0x00 0x1000>;
-> > > >             compatible = "virtio,mmio";
-> > > >         };
-> > > >
-> > > >         virtio_mmio@10005000 {
-> > > >             interrupts = <0x05>;
-> > > >             interrupt-parent = <0x09>;
-> > > >             reg = <0x00 0x10005000 0x00 0x1000>;
-> > > >             compatible = "virtio,mmio";
-> > > >         };
-> > > >
-> > > >         virtio_mmio@10004000 {
-> > > >             interrupts = <0x04>;
-> > > >             interrupt-parent = <0x09>;
-> > > >             reg = <0x00 0x10004000 0x00 0x1000>;
-> > > >             compatible = "virtio,mmio";
-> > > >         };
-> > > >
-> > > >         virtio_mmio@10003000 {
-> > > >             interrupts = <0x03>;
-> > > >             interrupt-parent = <0x09>;
-> > > >             reg = <0x00 0x10003000 0x00 0x1000>;
-> > > >             compatible = "virtio,mmio";
-> > > >         };
-> > > >
-> > > >         virtio_mmio@10002000 {
-> > > >             interrupts = <0x02>;
-> > > >             interrupt-parent = <0x09>;
-> > > >             reg = <0x00 0x10002000 0x00 0x1000>;
-> > > >             compatible = "virtio,mmio";
-> > > >         };
-> > > >
-> > > >         virtio_mmio@10001000 {
-> > > >             interrupts = <0x01>;
-> > > >             interrupt-parent = <0x09>;
-> > > >             reg = <0x00 0x10001000 0x00 0x1000>;
-> > > >             compatible = "virtio,mmio";
-> > > >         };
-> > > >
-> > > >         plic@c000000 {
-> > > >             phandle = <0x09>;
-> > > >             riscv,ndev = <0x35>;
-> > > >             reg = <0x00 0xc000000 0x00 0x210000>;
-> > > >             interrupts-extended = <0x08 0x0b 0x08 0x09 0x06 0x0b 0x06
-> > > > 0x09 0x04 0x0b 0x04 0x09 0x02 0x0b 0x02 0x09>;
-> > > >             interrupt-controller;
-> > > >             compatible = "riscv,plic0";
-> > > >             #interrupt-cells = <0x01>;
-> > > >             #address-cells = <0x00>;
-> > > >         };
-> > > >
-> > > >         clint@2000000 {
-> > > >             interrupts-extended = <0x08 0x03 0x08 0x07 0x06 0x03 0x06
-> > > > 0x07 0x04 0x03 0x04 0x07 0x02 0x03 0x02 0x07>;
-> > > >             reg = <0x00 0x2000000 0x00 0x10000>;
-> > > >             compatible = "riscv,clint0";
-> > > >         };
-> > > >     };
-> > > > };
-> > >
-> > > Thx Anup, but it still couldn't work for testing suspend.
-> > >
-> > > # echo mem > /sys/power/state
-> > > sh: write error: Function not implemented
-> > >
-> > > Why there is no ARCH_SUSPEND_POSSIBLE in the patch series?
-> >
-> > You are referring to system-level suspend to RAM support whereas
-> > this series adds CPU idle power management support.
-> Right.
+> I think we should support them from day one.
 >
-> >
-> > Adding system-level suspend to RAM will be a separate series
-> > and it will re-use the non-retentive suspend infrastructure added
-> > by this series.
-> Do you have the plan for the feature of SUSPEND? I think you've done
-> the core part by this series.
+>> So I don't have a complete or even almost complete design in mind, but I 
+>> think we do need to make a conscious decision either to design this 
+>> right or to skip it for v1.
+>
+> Skipping it might create a fundamental design fail situation as it might
+> require changes to the shadow stack signal handling in general which
+> becomes a nightmare once a non-altstack API is exposed.
 
-We need to first define System SUSPEND in the SBI specification and
-only after that we can plan support for OpenSBI and Linux.
-
-Regards,
-Anup
+It would also expose a range of kernels in which shstk is on but programs that want altshadowstack don't have it.  That would be annoying.
 
 >
-> In the end, thx for the work :)
+>> As for CRIU, I don't think anyone really expects a new kernel, running 
+>> new userspace that takes advantage of features in the new kernel, to 
+>> work with old CRIU.
 >
-> >
-> > Regards,
-> > Anup
-> >
-> > >
-> > > ref arm64's:
-> > > commit 166936bace056dfc11452d794209f39a5e9b0fb4
-> > > Author: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> > > Date:   Thu Nov 7 18:37:14 2013 +0000
-> > >
-> > >     arm64: kernel: add PM build infrastructure
-> > >
-> > >     This patch adds the required makefile and kconfig entries to enable PM
-> > >     for arm64 systems.
-> > >
-> > >     The kernel relies on the cpu_{suspend}/{resume} infrastructure to
-> > >     properly save the context for a CPU and put it to sleep, hence this
-> > >     patch adds the config option required to enable cpu_{suspend}/{resume}
-> > >     API.
-> > >
-> > >     In order to rely on the CPU PM implementation for saving and restoring
-> > >     of CPU subsystems like GIC and PMU, the arch Kconfig must be also
-> > >     augmented to select the CONFIG_CPU_PM option when SUSPEND or CPU_IDLE
-> > >     kernel implementations are selected.
-> > >
-> > > >
-> > > > Regards,
-> > > > Anup
-> > >
-> > >
-> > >
-> > > --
-> > > Best Regards
-> > >  Guo Ren
-> > >
-> > > ML: https://lore.kernel.org/linux-csky/
->
->
->
-> --
-> Best Regards
->  Guo Ren
->
-> ML: https://lore.kernel.org/linux-csky/
+> Yes, CRIU needs updates, but what ensures that CRIU managed user space
+> does not use SHSTK if CRIU is not updated yet?
+
+In some sense this is like any other feature.  If a program uses timerfd but CRIU doesn't support timerfd, then it won't work.  SHSTK is a bit unique because it's likely that all programs on a system will start using it all at once.
