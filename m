@@ -2,80 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C0A3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386363AbiBHWZL (ORCPT
+        id S1387574AbiBHWZS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:25:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
+        Tue, 8 Feb 2022 17:25:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386453AbiBHUfV (ORCPT
+        with ESMTP id S1386197AbiBHTnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:35:21 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A1AC0613CB;
-        Tue,  8 Feb 2022 12:35:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=jFMUOxkl3kB2j+Wo2GSKdxNzPGRMQ7XpF5gBMuNYOTk=;
-        t=1644352519; x=1645562119; b=fJumUEPNdjhYM3d38TSYR/EZD4AxfMKk8PAW7QVmAldR8cF
-        wgTW1uxQZ1fw4gD23fywmYyRM1P6lAf8au4bR638Y+TdgqJ2fzBgBLwsOL/+pcKkSLZFsLE2q1jxm
-        ZSd2wpvAul7kEz1PmU1O4biCIz89sYXovXmxoOHXXg1kWwI0oRbE6QHwW89ZD7YaNikOSw09TYJly
-        eNr6L6MTTq54zcaDe0rrN7YZMIf8+tLZcRWK0PsSsgeqn5Ojo/Hs3Hx/vMCOBuTq51f5VAYyuAkDC
-        iSnmpXVhH6AatgkPdurQm0VdIjo+ZlXY2VStMIrEE9c+EqQcZ45CBIp2hVAi8SEw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nHXCj-00GB3n-Oo;
-        Tue, 08 Feb 2022 21:35:13 +0100
-Message-ID: <8d67484c7e4b9fb4560d2eca1f71c75fde8bae0d.camel@sipsolutions.net>
-Subject: Re: [PATCH] devcoredump: increase the device delete timeout to 10
- mins
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, rafael@kernel.org, robdclark@gmail.com,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, seanpaul@chromium.org,
-        swboyd@chromium.org, nganji@codeaurora.org,
-        aravindh@codeaurora.org, khsieh@codeaurora.org, daniel@ffwll.ch,
-        dmitry.baryshkov@linaro.org
-Date:   Tue, 08 Feb 2022 21:35:11 +0100
-In-Reply-To: <1644349472-31077-1-git-send-email-quic_abhinavk@quicinc.com>
-References: <1644349472-31077-1-git-send-email-quic_abhinavk@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        Tue, 8 Feb 2022 14:43:41 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD47AC0613CB;
+        Tue,  8 Feb 2022 11:43:40 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id z13so302851pfa.3;
+        Tue, 08 Feb 2022 11:43:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Ufb8JerL9tDT7g1v4aJC4XJXyEpEyj9Y7QxoUEiNuQM=;
+        b=l8GUnslAu32x2n2gXuW8E6fzALxUMJ0TwywQoY3fKUoNyKJBqq58O/62kH0swgU77u
+         DbHskTdVQLu0Tdr9fEJ2kCUH9L/S//grixVe8rw4M3vpH1XFpXDTqUJYyKMEILKF1MkG
+         hNgLMNVINDbz/fRhL7lq0u7gY3Q1eRgLlyHbu5XWBWVJD7moK9FcLDHoF21NtVZMRtp5
+         wWo93xO3wzaNO8NKVWPxd2UX00xbuNMSUxt45F9VVuVGAAxCzn4Ya+E2pjQbOiAsQzlG
+         YHCeOJSR/NtzKWhs/gvZ0VKN22ynW8TsN+SOc0Ur0FgHjnIbTvjt2eQHzwWd/JDEO7iN
+         CgtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=Ufb8JerL9tDT7g1v4aJC4XJXyEpEyj9Y7QxoUEiNuQM=;
+        b=csvpIatJnEJoQKMXVojIT0mD9sQV1EC8REOW0yI1irlbsKUgmKxHOnP6kW5P/uW3Ct
+         a6wu3mKHUxOK9GubuUfkbyTyVD9/WX/BeUGNYI7AQSeNDTpXH1MbVKW4gCOq1aH7b0Bw
+         TmhIANCAo/A0te++7j4IsOSpyUJBn9smV0v+RAyStbMiG7xr6hSMUvRAag+BjD1wadSk
+         vrji/mTSfaSUw0ID3vZISlS2znIYGz6b7pom3OjzIs9vVxg1mMHAsCJUgVue5hDddeOZ
+         I2vUQw0Q2TxJzVtAo5HBx95h9aSj/Lec6jiURvefH/2HcIWQuQgJzWIr1BKV6sVRDn7y
+         A/ig==
+X-Gm-Message-State: AOAM530j0J9Uio0fbfmev4RML+gxc9a3O0b5tcumNhhh404s1KMW4ln3
+        sLMhXRkUkd3mRFG4yGpkRbQ=
+X-Google-Smtp-Source: ABdhPJwrwivlWofm2UOfe8OdlqbFVCbp5LnU7jaGnUKTctny/cMMRUv76SfiAeYangOlGnt5tOCHAw==
+X-Received: by 2002:a65:4d0d:: with SMTP id i13mr4696818pgt.483.1644349420393;
+        Tue, 08 Feb 2022 11:43:40 -0800 (PST)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
+        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 11:43:39 -0800 (PST)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Radoslaw Burny <rburny@google.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 02/12] cgroup: rstat: Make cgroup_rstat_cpu_lock name readable
+Date:   Tue,  8 Feb 2022 11:43:14 -0800
+Message-Id: <20220208194324.85333-3-namhyung@kernel.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
+References: <20220208194324.85333-1-namhyung@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-08 at 11:44 -0800, Abhinav Kumar wrote:
-> There are cases where depending on the size of the devcoredump and the speed
-> at which the usermode reads the dump, it can take longer than the current 5 mins
-> timeout.
-> 
-> This can lead to incomplete dumps as the device is deleted once the timeout expires.
-> 
-> One example is below where it took 6 mins for the devcoredump to be completely read.
-> 
-> 04:22:24.668 23916 23994 I HWDeviceDRM::DumpDebugData: Opening /sys/class/devcoredump/devcd6/data
-> 04:28:35.377 23916 23994 W HWDeviceDRM::DumpDebugData: Freeing devcoredump node
-> 
-> Increase the timeout to 10 mins to accommodate system delays and large coredump
-> sizes.
-> 
+The raw_spin_lock_init() uses the argument to name its lockdep map.
+But passing per_cpu_ptr() macro directly makes it a very very long
+name as it expanded like below:
 
-No real objection, I guess, but can the data actually disappear *while*
-the sysfs file is open?!
+  ({ do { const void *__vpp_verify = (typeof((&cgroup_rstat_cpu_lock) ...
 
-Or did it take 5 minutes to open the file?
+Let's fix it by passing a local variable instead.  With this change,
+the name now looks like:
 
-If the former, maybe we should fix that too (or instead)?
+  cgrp_rstat_cpu_lock
 
-johannes
+Cc: Zefan Li <lizefan.x@bytedance.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: cgroups@vger.kernel.org
+Acked-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ kernel/cgroup/rstat.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/cgroup/rstat.c b/kernel/cgroup/rstat.c
+index 9d331ba44870..371f54a59c38 100644
+--- a/kernel/cgroup/rstat.c
++++ b/kernel/cgroup/rstat.c
+@@ -286,9 +286,17 @@ void cgroup_rstat_exit(struct cgroup *cgrp)
+ void __init cgroup_rstat_boot(void)
+ {
+ 	int cpu;
++	raw_spinlock_t *cgrp_rstat_cpu_lock;
+ 
+-	for_each_possible_cpu(cpu)
+-		raw_spin_lock_init(per_cpu_ptr(&cgroup_rstat_cpu_lock, cpu));
++	for_each_possible_cpu(cpu) {
++		/*
++		 * raw_spin_lock_init() uses the argument to name the lock in
++		 * lockdep results.  Passing per_cpu_ptr() directly created a
++		 * cryptic name as the macro was expanded before stringified.
++		 */
++		cgrp_rstat_cpu_lock = per_cpu_ptr(&cgroup_rstat_cpu_lock, cpu);
++		raw_spin_lock_init(cgrp_rstat_cpu_lock);
++	}
+ }
+ 
+ /*
+-- 
+2.35.0.263.gb82422642f-goog
+
