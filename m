@@ -2,113 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA273C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CDFC3527A
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386932AbiBHW1h (ORCPT
+        id S1387815AbiBHW2r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:27:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
+        Tue, 8 Feb 2022 17:28:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386733AbiBHVIx (ORCPT
+        with ESMTP id S1386582AbiBHUzS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:08:53 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150F5C0612BA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:53 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id q7so506724wrc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:53 -0800 (PST)
+        Tue, 8 Feb 2022 15:55:18 -0500
+Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE5EC0612B8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:55:16 -0800 (PST)
+Received: by mail-vk1-xa2a.google.com with SMTP id b2so52170vkl.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 12:55:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ox4yXC0LP8o2wCPaioNRgnQjoBr7m6vhS+hT+ChhFWw=;
-        b=S5BqVNPSpXHrqviuw3HJUVHCNuXrwfZETQgddkSqec9Q51qTu/X1Dy3DHTTT/LagCc
-         TdfBUwokFJF0o/5jKLoZI4jM9BwZ4q0H1RYvw+h1/Ibn+wlkQIVyJ99QoReMwJFgFFyb
-         hL6uv3nX42Ve284n0fZhP+uQl2c3CEhq0yFcA=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Dav5GHwHoInVNFFUmD/+H7rFBilhhPolISX4pLfyPgs=;
+        b=I35aftOGkLR/ISv6OSLuGuNra4KAzA0XXAvR3HIzqJsZ4sbzSCT6m6eUErRZTsBdRZ
+         5zHFtqoTfYTj0VaC44XixtJmomtIqu6M2jaGsuJVIFo9NFo73pcMfzY6Ib6daRmOQQ6G
+         s61LlDd0JuL2BDMhfXFEtfUTzv8Gb82qMMbR0G9yretQLwALK2QmdEaFwNvtCZ+xTHcw
+         YsKyu3HM3enCJRsm6D5qPoryva8Zw7Tulo94jtMwvcQWakEadP5Kr9mEupdTsILy1yjH
+         aZAW1pjsKR/HlEntXIBoRge+jo1q74UJiwiUyNQKf6AdaelrV1Cb0N0B5Vj6vewPaFM1
+         JBSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ox4yXC0LP8o2wCPaioNRgnQjoBr7m6vhS+hT+ChhFWw=;
-        b=Pn57n67Oh4AKJXzwZI/yApHLI1Tw1cEd49FnqdD99PFc/EhIQMv1adjOaEuWUygQ5E
-         9vixJcaHIdASXl0aqSvLdpnp6da87ZXopRUscMwbkaczlrLQNcrghowSv7WdaZzkhMRc
-         lE2w9jUsgECBXY+2ClNA8TuoEdaSRbtdSF4nhqG3qlE+9UUeYuvxwWbAM3ylGpmistcR
-         CbxfeFctjwo1BIcZL5hr2D8fphRUpeAeMfmg1w26uZSDX0erN93tlisGvZHyW053EMBg
-         K/157KvKq1m1i9JUuJwhIhVLvL04sDHkKh62Hslk3yxzYL8PJYCGMZde96b5fmQnMmj/
-         EbOA==
-X-Gm-Message-State: AOAM530tiNzWmA3KRS3Q1mmMgiVZx1/JQV5Br3gyc06oefpmOyMMQFbH
-        DvHl4zGZt6f4+Qe3G4Rre+hwpQ==
-X-Google-Smtp-Source: ABdhPJz+CmlVndGXlugGb0ahxfiZBUSbHrx3Tg5Zrm6dge27t3XQoa5XtM7kt+nVAKioCX2KEMo9QQ==
-X-Received: by 2002:a5d:4c41:: with SMTP id n1mr4989076wrt.128.1644354531674;
-        Tue, 08 Feb 2022 13:08:51 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 13:08:50 -0800 (PST)
-From:   Daniel Vetter <daniel.vetter@ffwll.ch>
-To:     DRI Development <dri-devel@lists.freedesktop.org>
-Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Du Cheng <ducheng2@gmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Claudio Suarez <cssk@net-c.es>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH v2 13/19] fbcon: Consistently protect deferred_takeover with console_lock()
-Date:   Tue,  8 Feb 2022 22:08:18 +0100
-Message-Id: <20220208210824.2238981-14-daniel.vetter@ffwll.ch>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dav5GHwHoInVNFFUmD/+H7rFBilhhPolISX4pLfyPgs=;
+        b=tlWZstrnbgGB+H37pN6QWDzlw6P+RHjjy+926YNDTKXoAvoDalTaazQCPzjF9LmH0x
+         3ZE8kIdd4iG9TpOs13AsM+vUmHNCUX5vAQWqj+e9XOPxXeSM3iT/ewKN+b5AQiE1Swop
+         qxjRQU/Rmpak/oezglZxKvxjFgzZCf2pN0bGizV0KD+ySLNPl5+QAuZybIXjB0e09oQK
+         DZEMCWVgSEXny+yOzxSTi+ouba0nbQUYMdX9R+DFpuCvqFGs4vKJp2r2cQjK9Y/mgAl9
+         nnfv8hc0hTd5j0T2cXRsK9WyUUiIFz8MGZ9eIXphe+6xvDJO8O91NPjoxsUnmxczWFXB
+         jAgw==
+X-Gm-Message-State: AOAM533nzMVdhbvMfyxTI1vgR7fMEf+OxKsUw9sgwmyWOblfSWxB2DUv
+        q5vGvX8stIl8yf2MJGUxyuA+8IRZoSEQfA==
+X-Google-Smtp-Source: ABdhPJyAds8ya3zvTpqvh0cGhMNUvwNedLZSTwG7MQ38DVVsr9CsQCJgB3X00FLv+ZZPfeQ3S7D/dg==
+X-Received: by 2002:a05:6122:202a:: with SMTP id l42mr2456574vkd.40.1644353715549;
+        Tue, 08 Feb 2022 12:55:15 -0800 (PST)
+Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
+        by smtp.gmail.com with ESMTPSA id s15sm3164838uao.17.2022.02.08.12.55.15
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 12:55:15 -0800 (PST)
+Received: by mail-ua1-f48.google.com with SMTP id 60so263577uae.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 12:55:15 -0800 (PST)
+X-Received: by 2002:ab0:6718:: with SMTP id q24mr1146421uam.141.1644353714675;
+ Tue, 08 Feb 2022 12:55:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220208181510.787069-1-andrew@daynix.com> <20220208181510.787069-4-andrew@daynix.com>
+In-Reply-To: <20220208181510.787069-4-andrew@daynix.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 8 Feb 2022 15:54:38 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSdrHwNWh1Mz7KT8w+Z69LcNipeTcasny6ioqOUYBisNXg@mail.gmail.com>
+Message-ID: <CA+FuTSdrHwNWh1Mz7KT8w+Z69LcNipeTcasny6ioqOUYBisNXg@mail.gmail.com>
+Subject: Re: [PATCH v3 3/4] drivers/net/virtio_net: Added RSS hash report.
+To:     Andrew Melnychenko <andrew@daynix.com>
+Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jasowang@redhat.com, mst@redhat.com, yan@daynix.com,
+        yuri.benditovich@daynix.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This shouldn't be a problem in practice since until we've actually
-taken over the console there's nothing we've registered with the
-console/vt subsystem, so the exit/unbind path that check this can't
-do the wrong thing. But it's confusing, so fix it by moving it a tad
-later.
+On Tue, Feb 8, 2022 at 1:19 PM Andrew Melnychenko <andrew@daynix.com> wrote:
+>
+> Added features for RSS hash report.
+> If hash is provided - it sets to skb.
+> Added checks if rss and/or hash are enabled together.
+>
+> Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+> ---
+>  drivers/net/virtio_net.c | 51 ++++++++++++++++++++++++++++++++++------
+>  1 file changed, 44 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 495aed524e33..543da2fbdd2d 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -227,6 +227,7 @@ struct virtnet_info {
+>
+>         /* Host supports rss and/or hash report */
+>         bool has_rss;
+> +       bool has_rss_hash_report;
+>         u8 rss_key_size;
+>         u16 rss_indir_table_size;
+>         u32 rss_hash_types_supported;
+> @@ -421,7 +422,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>
+>         hdr_len = vi->hdr_len;
+>         if (vi->mergeable_rx_bufs)
+> -               hdr_padded_len = sizeof(*hdr);
+> +               hdr_padded_len = hdr_len;
 
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Du Cheng <ducheng2@gmail.com>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: Claudio Suarez <cssk@net-c.es>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
----
- drivers/video/fbdev/core/fbcon.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Belongs in patch 1?
 
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index cc960bf49991..4f9752ee9189 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -3227,6 +3227,9 @@ static void fbcon_register_existing_fbs(struct work_struct *work)
- 
- 	console_lock();
- 
-+	deferred_takeover = false;
-+	logo_shown = FBCON_LOGO_DONTSHOW;
-+
- 	for_each_registered_fb(i)
- 		fbcon_fb_registered(registered_fb[i]);
- 
-@@ -3244,8 +3247,6 @@ static int fbcon_output_notifier(struct notifier_block *nb,
- 	pr_info("fbcon: Taking over console\n");
- 
- 	dummycon_unregister_output_notifier(&fbcon_output_nb);
--	deferred_takeover = false;
--	logo_shown = FBCON_LOGO_DONTSHOW;
- 
- 	/* We may get called in atomic context */
- 	schedule_work(&fbcon_deferred_takeover_work);
--- 
-2.34.1
+>         else
+>                 hdr_padded_len = sizeof(struct padded_vnet_hdr);
+>
+> @@ -1156,6 +1157,8 @@ static void receive_buf(struct virtnet_info *vi, struct receive_queue *rq,
+>         struct net_device *dev = vi->dev;
+>         struct sk_buff *skb;
+>         struct virtio_net_hdr_mrg_rxbuf *hdr;
+> +       struct virtio_net_hdr_v1_hash *hdr_hash;
+> +       enum pkt_hash_types rss_hash_type;
+>
+>         if (unlikely(len < vi->hdr_len + ETH_HLEN)) {
+>                 pr_debug("%s: short packet %i\n", dev->name, len);
+> @@ -1182,6 +1185,29 @@ static void receive_buf(struct virtnet_info *vi, struct receive_queue *rq,
+>                 return;
+>
+>         hdr = skb_vnet_hdr(skb);
+> +       if (dev->features & NETIF_F_RXHASH && vi->has_rss_hash_report) {
 
+Can the first be true if the second is not?
+
+> +               hdr_hash = (struct virtio_net_hdr_v1_hash *)(hdr);
+> +
+> +               switch (hdr_hash->hash_report) {
+> +               case VIRTIO_NET_HASH_REPORT_TCPv4:
+> +               case VIRTIO_NET_HASH_REPORT_UDPv4:
+> +               case VIRTIO_NET_HASH_REPORT_TCPv6:
+> +               case VIRTIO_NET_HASH_REPORT_UDPv6:
+> +               case VIRTIO_NET_HASH_REPORT_TCPv6_EX:
+> +               case VIRTIO_NET_HASH_REPORT_UDPv6_EX:
+> +                       rss_hash_type = PKT_HASH_TYPE_L4;
+> +                       break;
+> +               case VIRTIO_NET_HASH_REPORT_IPv4:
+> +               case VIRTIO_NET_HASH_REPORT_IPv6:
+> +               case VIRTIO_NET_HASH_REPORT_IPv6_EX:
+> +                       rss_hash_type = PKT_HASH_TYPE_L3;
+> +                       break;
+> +               case VIRTIO_NET_HASH_REPORT_NONE:
+> +               default:
+> +                       rss_hash_type = PKT_HASH_TYPE_NONE;
+> +               }
+> +               skb_set_hash(skb, hdr_hash->hash_value, rss_hash_type);
+> +       }
+
+so many lines, perhaps deserves a helper function
+
+>
+>         if (hdr->hdr.flags & VIRTIO_NET_HDR_F_DATA_VALID)
+>                 skb->ip_summed = CHECKSUM_UNNECESSARY;
+> @@ -2232,7 +2258,8 @@ static bool virtnet_commit_rss_command(struct virtnet_info *vi)
+>         sg_set_buf(&sgs[3], vi->ctrl->rss.key, sg_buf_size);
+>
+>         if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_MQ,
+> -                                 VIRTIO_NET_CTRL_MQ_RSS_CONFIG, sgs)) {
+> +                                 vi->has_rss ? VIRTIO_NET_CTRL_MQ_RSS_CONFIG
+> +                                 : VIRTIO_NET_CTRL_MQ_HASH_CONFIG, sgs)) {
+>                 dev_warn(&dev->dev, "VIRTIONET issue with committing RSS sgs\n");
+>                 return false;
+>         }
+> @@ -3230,6 +3257,8 @@ static bool virtnet_validate_features(struct virtio_device *vdev)
+>              VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_CTRL_MAC_ADDR,
+>                              "VIRTIO_NET_F_CTRL_VQ") ||
+>              VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_RSS,
+> +                            "VIRTIO_NET_F_CTRL_VQ") ||
+> +            VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_HASH_REPORT,
+>                              "VIRTIO_NET_F_CTRL_VQ"))) {
+>                 return false;
+>         }
+> @@ -3365,8 +3394,13 @@ static int virtnet_probe(struct virtio_device *vdev)
+>         if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
+>                 vi->mergeable_rx_bufs = true;
+>
+> -       if (virtio_has_feature(vdev, VIRTIO_NET_F_RSS)) {
+> +       if (virtio_has_feature(vdev, VIRTIO_NET_F_HASH_REPORT))
+> +               vi->has_rss_hash_report = true;
+> +
+> +       if (virtio_has_feature(vdev, VIRTIO_NET_F_RSS))
+>                 vi->has_rss = true;
+> +
+> +       if (vi->has_rss || vi->has_rss_hash_report) {
+>                 vi->rss_indir_table_size =
+>                         virtio_cread16(vdev, offsetof(struct virtio_net_config,
+
+should indir table size be zero if only hash report is enabled?
+
+>                                 rss_max_indirection_table_length));
+> @@ -3382,8 +3416,11 @@ static int virtnet_probe(struct virtio_device *vdev)
+>
+>                 dev->hw_features |= NETIF_F_RXHASH;
+>         }
+> -       if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF) ||
+> -           virtio_has_feature(vdev, VIRTIO_F_VERSION_1))
+> +
+> +       if (vi->has_rss_hash_report)
+> +               vi->hdr_len = sizeof(struct virtio_net_hdr_v1_hash);
+> +       else if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF) ||
+> +                virtio_has_feature(vdev, VIRTIO_F_VERSION_1))
+>                 vi->hdr_len = sizeof(struct virtio_net_hdr_mrg_rxbuf);
+>         else
+>                 vi->hdr_len = sizeof(struct virtio_net_hdr);
+> @@ -3450,7 +3487,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+>                 }
+>         }
+>
+> -       if (vi->has_rss)
+> +       if (vi->has_rss || vi->has_rss_hash_report)
+>                 virtnet_init_default_rss(vi);
+>
+>         err = register_netdev(dev);
+> @@ -3585,7 +3622,7 @@ static struct virtio_device_id id_table[] = {
+>         VIRTIO_NET_F_CTRL_MAC_ADDR, \
+>         VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
+>         VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
+> -       VIRTIO_NET_F_RSS
+> +       VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT
+>
+>  static unsigned int features[] = {
+>         VIRTNET_FEATURES,
+> --
+> 2.34.1
+>
