@@ -2,85 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67794C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:09:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B989C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348912AbiBHIJm (ORCPT
+        id S1348931AbiBHIKC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:09:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
+        Tue, 8 Feb 2022 03:10:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiBHIJk (ORCPT
+        with ESMTP id S1348915AbiBHIKA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:09:40 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784A7C0401EF
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:09:40 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id v186so47709986ybg.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:09:40 -0800 (PST)
+        Tue, 8 Feb 2022 03:10:00 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4505EC0401EF
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:09:59 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id j2so47788389ybu.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:09:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DC5h5QPa2MMSD8jMuUZaOZTMv0rKCEv7tr+WwakctiM=;
-        b=UKt/5gqtEQEDR+I4jR//5bWv57hPVaW9KmAr8xHRshFW+V9PDSWkFrBE8Hyb8wlSkA
-         QQKQ+stzgyEgp5J4DyVY4bvPNBtHP4wSzJ6uJck+8cplu8GPkuIVWQ+Y8zm1xv27s0Zu
-         cR2ljgqob8w9EmBGVw0EdJVkId5N+xNPUHeADg5epuSLdcXTrW9Tqo5OcA22EaRu8U3K
-         l3cuLzKBbOc9GbQXk+h497gXyT6KtsqpW966ysKE5jotsGOXr7l3B+dKnggATk5GoyUy
-         KJOt1xwxzqYiEqEVIBRmXg0oLWnTj4m1q1+iR+FtOucXjtQu9GfhLJMBe3O/kYgazNfR
-         tnQg==
+         :cc:content-transfer-encoding;
+        bh=bLl0JJQpx3VT/7k/lVGpwYjdhHk/5YKncSo5G08KJEk=;
+        b=DU5xsxyvI1jqnE8bKjY0OLS0NsSNgWai/ptCdWLK3TI4sOMi+6xU1VUhMmMJaNK5uj
+         63tiX0PevGWIV8EzXLyAb1lGPFmCytd0TytasLdztgiEL957YpsWSKlLj/A0D6abc3/J
+         Pyeth1VEA/sIZ+IdpIBhBAuQZ/PCngYYX+Jv+hrtlBM2ViP5vpUdaMp+tKKVZsxafvYI
+         zRk6ruVDZ0J/6ZEychbXnmfNqC96lo/EsDVIQnS25VcezPgu1YvUXdJV9gpC5XO4Mydk
+         hMtNQrWq6m9CLpTxpGNxyUr2GGyE/B61QhAaiN6ipJpYGYzWMY3IJK7VxZn9frPuIlUW
+         dWsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DC5h5QPa2MMSD8jMuUZaOZTMv0rKCEv7tr+WwakctiM=;
-        b=OafxFoHz1oOiGrgQDdCEoRA3DqcwOJzSK/dFs/YnOhzM+gyEfjHmv1jeIlDJZfW4Q2
-         nt6qXaQCduRieqyHriWXIw+qG/OqrudoYxbi33yY4qKf7odG2lNlO7V+zxNdOL8fKY2K
-         h3KYeZk9mnHDW0DyGiDF+9Id4iqqfw6QqInny2vqCq4mHVxFAO0lyJckIs1vcYePUEZz
-         MYMb2aioWu/RzfU9lhE4hIpQi2H9ZI8IUWDS/DuF11gil5B6Nzn+pUoVq1/bcL+kGqlQ
-         4wUnoZdydDdmUN1DFzMMmvNJI1TEV8gGlRrml2M7KyEcgSx6lh4wIaVhyI3ZYeYoePEU
-         k56Q==
-X-Gm-Message-State: AOAM530ASzqYYA7W1DmwHpZhpvZfV3z47BFPr5rXfAl1urDsAK16cHTe
-        WKv9mDMrujXJlQ8tpqhqiuyUjLKGKsq9v6r1MBx2KA==
-X-Google-Smtp-Source: ABdhPJyFSmuR7M4HIJ31YSJoOUpobAKTBK69kzVotLKdLdB2NRipgBTZ2XLKWECEqSNiqnwAnFetqc4Ion8CCMp0OGY=
-X-Received: by 2002:a81:ad46:: with SMTP id l6mr3668263ywk.31.1644307779769;
- Tue, 08 Feb 2022 00:09:39 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bLl0JJQpx3VT/7k/lVGpwYjdhHk/5YKncSo5G08KJEk=;
+        b=uv/cYQV20kWL6etW2/GKI0DlJBKOAXuMPpunD9HxbR4Ukh5e0tGUqOPvlPrjYOK7lN
+         +djQmZRuK6Ihc2ZPHACleu3f6SjNYMl2l9EfDdujTV0pxLGbcwd/CdJX1R4WjNAcnuYi
+         iqLwv+8HaSxDcZZMLS78HFkoS5qcfldalZZknson0mp6RgJJZKRLSdYA4iO93vGSD7qu
+         nLrqQ3B7y9aPtJMKiPn8wYsKhnbC03CaFqlCOQVYAAA94Mp/D5btHu4EjzK6sLNcUGK9
+         uWjGj2UTMmgs5bY0H38HxvVmplkGUtbFlVUCAeX3bBE5bkts7qNJATfF8wiU5AcYurC8
+         +46Q==
+X-Gm-Message-State: AOAM530hRJj4Z5YquixqpdYJCP92E8XGAit1kqLs0Ulv+NrxCO/ecH76
+        gCUAxmKxw+1z9MaXyrtyPwvp0BsxFH6zP5+B2p8/Tg==
+X-Google-Smtp-Source: ABdhPJwuuJv9wlhTlzweDM2oR2lT9WpraZTfba2ypaRff/IL5875UBTx7iLSnzCY7+nzuLvQb2whvn2VnVg9qfBeGgw=
+X-Received: by 2002:a25:49c5:: with SMTP id w188mr3501478yba.200.1644307798270;
+ Tue, 08 Feb 2022 00:09:58 -0800 (PST)
 MIME-Version: 1.0
-References: <20220207063249.1833066-1-hch@lst.de> <20220207063249.1833066-5-hch@lst.de>
-In-Reply-To: <20220207063249.1833066-5-hch@lst.de>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 8 Feb 2022 16:09:03 +0800
-Message-ID: <CAMZfGtUqbU9VpCOA-9bdU6d1CoQ7n8D+26v4j79uLcH1uc5Q2w@mail.gmail.com>
-Subject: Re: [PATCH 4/8] mm: move free_devmap_managed_page to memremap.c
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Alistair Popple <apopple@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, nvdimm@lists.linux.dev,
-        Linux Memory Management List <linux-mm@kvack.org>
+References: <20220207103753.155627314@linuxfoundation.org>
+In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 8 Feb 2022 13:39:47 +0530
+Message-ID: <CA+G9fYs5bPiAA0M0=sQvxCxVcaz1Y+bDb0zy1+5dCMOFJjshdw@mail.gmail.com>
+Subject: Re: [PATCH 5.4 00/44] 5.4.178-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 2:42 PM Christoph Hellwig <hch@lst.de> wrote:
+On Mon, 7 Feb 2022 at 16:49, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> free_devmap_managed_page has nothing to do with the code in swap.c,
-> move it to live with the rest of the code for devmap handling.
+> This is the start of the stable review cycle for the 5.4.178 release.
+> There are 44 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.4.178-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.4.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Thanks.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+## Build
+* kernel: 5.4.178-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.4.y
+* git commit: 3836147e31ee95815758c97dc5c319423774464d
+* git describe: v5.4.177-45-g3836147e31ee
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.4.y/build/v5.4.1=
+77-45-g3836147e31ee
+
+## Test Regressions (compared to v5.4.177)
+No test regressions found.
+
+## Metric Regressions (compared to v5.4.177)
+No metric regressions found.
+
+## Test Fixes (compared to v5.4.177)
+No test fixes found.
+
+## Metric Fixes (compared to v5.4.177)
+No metric fixes found.
+
+## Test result summary
+total: 92667, pass: 77078, fail: 737, skip: 13409, xfail: 1443
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 257 total, 257 passed, 0 failed
+* arm64: 36 total, 31 passed, 5 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 20 total, 20 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 34 total, 34 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 52 total, 48 passed, 4 failed
+* riscv: 24 total, 24 passed, 0 failed
+* s390: 12 total, 12 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 36 total, 36 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-arm64
+* kselftest-arm64/arm64.btitest.bti_c_func
+* kselftest-arm64/arm64.btitest.bti_j_func
+* kselftest-arm64/arm64.btitest.bti_jc_func
+* kselftest-arm64/arm64.btitest.bti_none_func
+* kselftest-arm64/arm64.btitest.nohint_func
+* kselftest-arm64/arm64.btitest.paciasp_func
+* kselftest-arm64/arm64.nobtitest.bti_c_func
+* kselftest-arm64/arm64.nobtitest.bti_j_func
+* kselftest-arm64/arm64.nobtitest.bti_jc_func
+* kselftest-arm64/arm64.nobtitest.bti_none_func
+* kselftest-arm64/arm64.nobtitest.nohint_func
+* kselftest-arm64/arm64.nobtitest.paciasp_func
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kselftest[
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* rcutorture
+* ssuite
+* v4l2-compliance
+
+--
+Linaro LKFT
+https://lkft.linaro.org
