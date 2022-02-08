@@ -2,84 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDC4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A66DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344162AbiBHBtS (ORCPT
+        id S1344222AbiBHBtV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:49:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
+        Mon, 7 Feb 2022 20:49:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343704AbiBHBbj (ORCPT
+        with ESMTP id S243058AbiBHBlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:31:39 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1023C061355
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:31:38 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id bt13so21440160ybb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 17:31:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tCJweZfHtprqNwQuPKuSEa8equXJDKCDWHoJe/Xk+94=;
-        b=fmLm2+b0Vi8fyFlno+sBzlvxdiOinqMMSjhhIC3lIyAfleRXnfHq74bS8lB/mSNU8r
-         6jXDw5garFcyc7Ibtr6uEe4zrLDIHhuXcAVhvSYY8XJk0M9XM2O4lmcd1N9IThzroYpZ
-         GucSNu7NmuuXNL0Ogw6Vd9IvU1Z5hyTPnJEJgWN+khl8OBW3dRCn4iHISMga3oykiq7U
-         /odbVMN5shA5S6T1+BhLTqlF1xEgfnx7Wvx7GmHCeL4ye0G2pCRNhk1L4EJTbXHbPAWc
-         Dgyv9VK9aMkYe5wpKd+SpryQ89VHUSyQubkEYPIopT0zcrKn5+/SeOfDcTM6mu4ZSSTC
-         OYUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tCJweZfHtprqNwQuPKuSEa8equXJDKCDWHoJe/Xk+94=;
-        b=I4zz8TlrSqc6ra+R3UScHJ/bpOqh3Jq7xYMNXHNnkexIZZ/e25rdqx4zmvYeTsVKx4
-         MmXjN63psC6ufX7l1x4Vq0dW0+hewm0E9oW46EjLVye5zP1xBSvJXYfaN/u5m4fVvluI
-         m0pemRGcOaU7cn2Pi+gGNtrLt3RDjV5Rsjz31/5koDMVU7T/bJGiQoIjr2QTSNpLJLZc
-         WTx1iOpUiVO3Byiieul6hD8UBeQRdShhU+lRrPlSKJOMp4NKAzSrqCfG25XRBOSnPLwf
-         KCUzHj6FFgsorxKrdA2kq9y8UjokUtuirwQCVBnHEKkCjOsiglg62A5y7/izVE/nyOaq
-         Isiw==
-X-Gm-Message-State: AOAM530p6rjknNM9gOIeGgTyxnS/xx/mPpn+VUbWYJJTn8KG+KbMAukd
-        DYGRzv5ooHZE1X0jFcWXA649F/kHwW3pcvnp+ceasQ==
-X-Google-Smtp-Source: ABdhPJx2mKqMDRjehybx6rXQuL9bFCnGNeOOYN9Q7Az3jEMiEEcSFx0PdKX3wUIXfBWRwy8D1KGwzva4m8d0S9EV95E=
-X-Received: by 2002:a25:7a47:: with SMTP id v68mr2663451ybc.488.1644283897723;
- Mon, 07 Feb 2022 17:31:37 -0800 (PST)
+        Mon, 7 Feb 2022 20:41:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39A6C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:41:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 942D2B8162F
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AB48C004E1;
+        Tue,  8 Feb 2022 01:41:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644284481;
+        bh=PG9nKdSqWU1EyxwFEOiE2jtWbEBP0UISJyN0lr1Jgm0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=mukdVPz8iz27i3XxSqkquq48InSHqIdLsdRhR5iezeRL045AFH6w96WDUFzJP+IPr
+         4LvHUYmFkVrpJHVMO1tV+0BMNX5nOzHyGlS7LlAPbkCmUGE6GfMrrfvN+Gyt0MW2gz
+         uAeTL3qumz68uA6fGQ/ysQcUZppseIEPibqUfTupUyxEH+EcPIcPBdbKe2/1Wfn/oJ
+         kkd86XF4bAcoGMZ95g9nzDPLV0mIRWRk9KtoWT2QVD8fK4ECtaNkTc5slGRLRugjQT
+         nJH07CZIcHdLRDViva9SYxnQcdm4Tts52j2xAoo9ywF4stJEDA8TO3AUfxpQCr62j2
+         p+ILdmY+rJFAA==
+Message-ID: <917b4044-80ce-cd46-520b-8325a011631f@kernel.org>
+Date:   Tue, 8 Feb 2022 09:41:17 +0800
 MIME-Version: 1.0
-References: <20220128131006.67712-1-michel@lespinasse.org> <20220128131006.67712-23-michel@lespinasse.org>
- <20220129121319.3593-1-hdanton@sina.com> <CAJuCfpHBfSQBuz8=LHYhX-aOgZ1ng6nNfpv_jeBLz+KVr1OU5w@mail.gmail.com>
- <20220201020958.3720-1-hdanton@sina.com> <CAJuCfpG95cA68Y047MKsXYjvGMENXsjSzHkhYktagcT=fjagWw@mail.gmail.com>
- <20220208002059.2670-1-hdanton@sina.com>
-In-Reply-To: <20220208002059.2670-1-hdanton@sina.com>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Mon, 7 Feb 2022 17:31:26 -0800
-Message-ID: <CAJuCfpEEWFYJehwRhmMAEBx8+gf6TsV=kxuSGDVXaPwhNLt1JQ@mail.gmail.com>
-Subject: Re: [PATCH v2 22/35] percpu-rwsem: enable percpu_sem destruction in
- atomic context
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Michel Lespinasse <michel@lespinasse.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v2] f2fs: skip f2fs_preallocate_blocks() for overwrite
+ case
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+References: <20220204091005.49407-1-chao@kernel.org>
+ <YgFv85dH0dWFTZBx@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YgFv85dH0dWFTZBx@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 4:21 PM Hillf Danton <hdanton@sina.com> wrote:
->
-> On Mon, 7 Feb 2022 11:31:38 -0800 Suren Baghdasaryan wrote:
-> >
-> > Sorry for the delay. Are you concerned about the use of spin_lock()
-> > inside percpu_rwsem_async_destroy() which would become a sleeping lock
-> > in case of PREEMPT_RT? If so, we can use raw_spin_lock() when locking
-> > destroy_list_lock. Please confirm. Thanks!
->
-> Yes please replace spin lock with the raw version which can fit in
-> more scenarios.
+On 2022/2/8 3:16, Jaegeuk Kim wrote:
+> On 02/04, Chao Yu wrote:
+>> There is potential hangtask happened during swapfile's writeback:
+>>
+>> - loop_kthread_worker_fn		- do_checkpoint
+>>    - kthread_worker_fn
+>>     - loop_queue_work
+>>      - lo_rw_aio
+>>       - f2fs_file_write_iter
+>>        - f2fs_preallocate_blocks
+>>         - f2fs_map_blocks
+>> 					 - down_write
+>>          - down_read
+>>           - rwsem_down_read_slowpath
+>>            - schedule
+>>
+>> One cause is f2fs_preallocate_blocks() will always be called no matter
+>> the physical block addresses are allocated or not.
+>>
+>> This patch tries to check whether block addresses are all allocated with
+>> i_size and i_blocks of inode, it's rough because blocks can be allocated
+>> beyond i_size, however, we can afford skipping block preallocation in this
+>> condition since it's not necessary to do preallocation all the time.
+>>
+>> Signed-off-by: Chao Yu <chao@kernel.org>
+>> ---
+>> v2:
+>> - check overwrite case with i_size and i_blocks roughly.
+>>   fs/f2fs/file.c | 10 ++++++++++
+>>   1 file changed, 10 insertions(+)
+>>
+>> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+>> index cfdc41f87f5d..09565d10611d 100644
+>> --- a/fs/f2fs/file.c
+>> +++ b/fs/f2fs/file.c
+>> @@ -4390,6 +4390,16 @@ static int f2fs_preallocate_blocks(struct kiocb *iocb, struct iov_iter *iter,
+>>   	int flag;
+>>   	int ret;
+>>   
+>> +	/*
+>> +	 * It tries to check whether block addresses are all allocated,
+>> +	 * it's rough because blocks can be allocated beyond i_size,
+>> +	 * however, we can afford skipping block preallocation since
+>> +	 * it's not necessary all the time.
+>> +	 */
+>> +	if (F2FS_BLK_ALIGN(i_size_read(inode)) ==
+>> +			SECTOR_TO_BLOCK(inode->i_blocks))
+> 
+> Do we count i_blocks only for data?
 
-Thanks for confirmation! I'll rework my patch and will send it to
-Michel to include in the next version of his patchset.
+Oops, it seems it's not...
 
->
-> Hillf
->
+Needs to introduce another function to calculate node block count based on i_size?
+
+Thanks,
+
+> 
+>> +		return 0;
+>> +
+>>   	/* If it will be an out-of-place direct write, don't bother. */
+>>   	if (dio && f2fs_lfs_mode(sbi))
+>>   		return 0;
+>> -- 
+>> 2.32.0
