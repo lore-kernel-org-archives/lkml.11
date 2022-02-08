@@ -2,144 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68AB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:45:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9951DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381506AbiBHPpL (ORCPT
+        id S1381544AbiBHPpM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:45:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54918 "EHLO
+        Tue, 8 Feb 2022 10:45:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236426AbiBHPpI (ORCPT
+        with ESMTP id S1381426AbiBHPpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:45:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54823C061576
+        Tue, 8 Feb 2022 10:45:09 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA604C061579
         for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 07:45:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644335106;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5c6BokZGpjxZJfiqo2/4IGY86UdM0DHCzeepgSZdBO4=;
-        b=gmcMstuU52ZwnCV68nKfxM/TPV7A5LTxiBexqgoPJGBR2reUmzj+gRGEIMVdjusLn3TrOc
-        DNFNxv9qYKcsr58o4vbWvcTpndXBi43KJxTisHHI27TIBynhmYIwXqvvfSur6FnsC2L2la
-        w86SF5X6qKq1rBU23luRO4jSM0S0M54=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-173-4lDkcB_5NYykzZO5OFEJhQ-1; Tue, 08 Feb 2022 10:45:05 -0500
-X-MC-Unique: 4lDkcB_5NYykzZO5OFEJhQ-1
-Received: by mail-qk1-f199.google.com with SMTP id b204-20020a3767d5000000b004b2a0d2e930so11167264qkc.15
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 07:45:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5c6BokZGpjxZJfiqo2/4IGY86UdM0DHCzeepgSZdBO4=;
-        b=J0tRp14j6EaxKybkvpku8UgN3lCL/Did8X4mrGey9HN5gpVIXCbAsR8YaQ3Q6BA7bw
-         mQLMJbc9vJjQF4IK0o6FL8wjE5yqetBoL4dP/UqZlwJIinp5a6wo2RZm5KVrRD6uzgfK
-         uOG6Vt12p7zqJZsk5IeB7fs+UOZ4wynjgY1gxX2CjAfZZ8wG7dWZX4X+gmFoiv7Hkwo8
-         JC1yDt4LjE/sBpmsl07L2OnheAcccVhI9hs14OOiVNa7Hm//MuRGuwRA7bTA5Nvvxa6g
-         kHZdT8dlyZ/pj8y/VuAB6y6NATr+UGsOFvE922xZ/HbGLxbvQeJ3xRa2wXL1ca0gvHcl
-         othw==
-X-Gm-Message-State: AOAM5320o/4vcDlMBZgQMZQKcpTQ63q+PzcwpPvmYLVdpTd9Rrrb+gtw
-        vEZRwWkbbCv4UWGzYv95J0U7hMwRmO3VPigb49Ux5ePlKEEHyYlbnA9wsyA+5YIZEBEvxH2MI4y
-        tzGmtDn348llHmIXjwLi/7keB
-X-Received: by 2002:a05:620a:1a82:: with SMTP id bl2mr2924990qkb.360.1644335104014;
-        Tue, 08 Feb 2022 07:45:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwPdAD8h7XP4irSwKpgb8bE8kYshYN6EWQP1VYm2uzSHInxS6E2UNAok247/mFO4RH8j4wVOg==
-X-Received: by 2002:a05:620a:1a82:: with SMTP id bl2mr2924977qkb.360.1644335103780;
-        Tue, 08 Feb 2022 07:45:03 -0800 (PST)
-Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
-        by smtp.gmail.com with ESMTPSA id 5sm7649569qtp.81.2022.02.08.07.45.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 07:45:03 -0800 (PST)
-Subject: Re: [PATCH v2] livepatch: Skip livepatch tests if ftrace cannot be
- configured
-To:     David Vernet <void@manifault.com>, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
-        pmladek@suse.com, jikos@kernel.org, mbenes@suse.cz, corbet@lwn.net
-Cc:     kernel-team@fb.com
-References: <20220203233205.1554034-1-void@manifault.com>
- <20220204205625.2628328-1-void@manifault.com>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Message-ID: <89a430e9-6da4-761a-68aa-187a3faa9c53@redhat.com>
-Date:   Tue, 8 Feb 2022 10:45:02 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-MIME-Version: 1.0
-In-Reply-To: <20220204205625.2628328-1-void@manifault.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 713422B;
+        Tue,  8 Feb 2022 07:45:07 -0800 (PST)
+Received: from e120937-lin.home (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CF2033F73B;
+        Tue,  8 Feb 2022 07:45:05 -0800 (PST)
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
+        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
+        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
+        souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
+        igor.skalkin@opensynergy.com, cristian.marussi@arm.com
+Subject: [PATCH v3 0/8] Add SCMI Virtio & Clock atomic support
+Date:   Tue,  8 Feb 2022 15:44:44 +0000
+Message-Id: <20220208154452.39428-1-cristian.marussi@arm.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/4/22 3:56 PM, David Vernet wrote:
-> livepatch has a set of selftests that are used to validate the behavior of
-> the livepatching subsystem.  One of the testcases in the livepatch
-> testsuite is test-ftrace.sh, which among other things, validates that
-> livepatching gracefully fails when ftrace is disabled.  In the event that
-> ftrace cannot be disabled using 'sysctl kernel.ftrace_enabled=0', the test
-> will fail later due to it unexpectedly successfully loading the
-> test_klp_livepatch module.
-> 
-> While the livepatch selftests are careful to remove any of the livepatch
-> test modules between testcases to avoid this situation, ftrace may still
-> fail to be disabled if another trace is active on the system that was
-> enabled with FTRACE_OPS_FL_PERMANENT.  For example, any active BPF programs
-> that use trampolines will cause this test to fail due to the trampoline
-> being implemented with register_ftrace_direct().  The following is an
-> example of such a trace:
-> 
-> tcp_drop (1) R I D      tramp: ftrace_regs_caller+0x0/0x58
-> (call_direct_funcs+0x0/0x30)
->         direct-->bpf_trampoline_6442550536_0+0x0/0x1000
-> 
-> In order to make the test more resilient to system state that is out of its
-> control, this patch adds a check to set_ftrace_enabled() to skip the tests
-> if the sysctl invocation fails.
-> 
-> Signed-off-by: David Vernet <void@manifault.com>
-> ---
-> v2:
->   - Fix typo in newly added comment (s/permament/permanent).
->   - Adjust the location of the added newline to be before the new comment
->     rather than that the end of the function.
->   - Make the failure-path check a bit less brittle by checking for the
->     exact expected string, rather than specifically for "Device or resource
->     busy".
-> 
->  tools/testing/selftests/livepatch/functions.sh | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-> index 846c7ed71556..32970324dd7e 100644
-> --- a/tools/testing/selftests/livepatch/functions.sh
-> +++ b/tools/testing/selftests/livepatch/functions.sh
-> @@ -78,6 +78,12 @@ function set_ftrace_enabled() {
->  	result=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1 && \
->  		 sysctl kernel.ftrace_enabled 2>&1)
->  	echo "livepatch: $result" > /dev/kmsg
-> +
-> +	# Skip the test if ftrace is busy.  This can happen under normal system
-> +	# conditions if a trace is marked as permanent.
-> +	if [[ "$result" != "kernel.ftrace_enabled = $1" ]]; then
-> +		skip "failed to set kernel.ftrace_enabled=$1"
-> +	fi
->  }
->  
->  function cleanup() {
-> 
+Hi,
 
-Thanks for updating.
+This small series is the tail-subset of the previous V8 series about atomic
+support in SCMI [1], whose 8-patches head-subset has now been queued on
+[2]; as such, it is based on [2] on top of tag scmi-updates-5.17:
 
-Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
+commit 94d0cd1da14a ("firmware: arm_scmi: Add new parameter to
+		     mark_txdone")
+
+Patch [1/8] substitute virtio-scmi ready flag and lock with a reference
+counter to keep track of vio channels lifetime while removing the need of
+a wide spinlocked section (that would cause issues with introduction of
+virtio polling support)
+
+Patch [2/8] adds a few helpers to handle the TX free_list and a dedicated
+spinlock to reduce the reliance on the main one.
+
+Patch [3/8] adds polling mode to SCMI VirtIO transport in order to support
+atomic operations on such transport.
+
+Patches [4,5/8] introduce a new optional SCMI binding, atomic_threshold, to
+configure a platform specific time threshold used in the following patches
+to select with a finer grain which SCMI resources should be eligible for
+atomic operations when requested.
+
+Patch [6/8] exposes new SCMI Clock protocol operations to allow an SCMI
+user to request atomic mode on clock enable commands.
+
+Patch [7/8] adds support to SCMI Clock protocol for a new clock attributes
+field which advertises typical enable latency for a specific resource.
+
+Finally patch [8/8] add support for atomic operations to the SCMI clock
+driver; the underlying logic here is that we register with the Clock
+framework atomic-capable clock resources if and only if the backing SCMI
+transport is capable of atomic operations AND the specific clock resource
+has been advertised by the SCMI platform as having:
+
+	clock_enable_latency <= atomic_threshold
+
+The idea is to avoid costly atomic busy-waiting for resources that have
+been advertised as 'slow' to operate upon. (i.e. a PLL vs a gating clock)
+
+To ease testing the whole series can be find at [3].
+
+Any feedback/testing welcome as usual.
+
+Thanks,
+Cristian
+
+[1]: https://lore.kernel.org/linux-arm-kernel/20211220195646.44498-1-cristian.marussi@arm.com/
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git/tag/?h=scmi-updates-5.17
+[3]: https://gitlab.arm.com/linux-arm/linux-cm/-/commits/scmi_atomic_clk_virtio_V3/
+
+---
+V2 --> V3
+ - split out virtio_ring RFC patch into a distinct series
+ - calling virtqueue_broke_device when cleaning up channel
+ - removed RFC tags from CLK related patches
+
+V1 --> V2
+ - added vio channel refcount support patch
+ - reviewed free_list support and usage
+ - added virtio_ring RFC patch
+ - shrinked spinlocked section within virtio_poll_done to exclude
+   virtqueue_poll call
+ - removed poll_lock
+ - use vio channel refcount acquire/release logic when polling
+ - using new free_list accessors
+ - added new dedicated pending_lock to access pending_cmds_list
+ - fixed a few comments
+
+
+Cristian Marussi (8):
+  firmware: arm_scmi: Add a virtio channel refcount
+  firmware: arm_scmi: Review virtio free_list handling
+  firmware: arm_scmi: Add atomic mode support to virtio transport
+  dt-bindings: firmware: arm,scmi: Add atomic_threshold optional
+    property
+  firmware: arm_scmi: Support optional system wide atomic_threshold
+  firmware: arm_scmi: Add atomic support to clock protocol
+  firmware: arm_scmi: Add support for clock_enable_latency
+  clk: scmi: Support atomic clock enable/disable API
+
+ .../bindings/firmware/arm,scmi.yaml           |  11 +
+ drivers/clk/clk-scmi.c                        |  71 ++-
+ drivers/firmware/arm_scmi/Kconfig             |  15 +
+ drivers/firmware/arm_scmi/clock.c             |  34 +-
+ drivers/firmware/arm_scmi/driver.c            |  36 +-
+ drivers/firmware/arm_scmi/virtio.c            | 495 +++++++++++++++---
+ include/linux/scmi_protocol.h                 |   9 +-
+ 7 files changed, 566 insertions(+), 105 deletions(-)
 
 -- 
-Joe
+2.17.1
 
