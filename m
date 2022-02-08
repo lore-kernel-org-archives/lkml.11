@@ -2,120 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03493C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:35:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 546A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344301AbiBHWfC (ORCPT
+        id S1346659AbiBHWfH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:35:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
+        Tue, 8 Feb 2022 17:35:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386329AbiBHUJX (ORCPT
+        with ESMTP id S1386203AbiBHTnr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 15:09:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82F60C0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 12:09:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644350961;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I3/8UwtTiLaHjDIsw5ToTGGU9VaJhcJtecxqfQCO+Kg=;
-        b=E1dQBbkrtUDbVwISoUl0RLNImuuiSrzaSnxvSn3I3awcmPwNPyg3S2hwTbaPsl1h5W9qc5
-        85eOds5djgpWZrUMek338uxDyNImSzYVPKMw6EY1+j23+leiosSENPjj3bLFh+6TBEmMC0
-        XqvpZm2cWyuuiLjfRr6YjJLkwCCpMXY=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-85-P0WKLpGEOLemn0qd87L29A-1; Tue, 08 Feb 2022 15:09:18 -0500
-X-MC-Unique: P0WKLpGEOLemn0qd87L29A-1
-Received: by mail-qk1-f200.google.com with SMTP id bj2-20020a05620a190200b005084968bb24so8093619qkb.23
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 12:09:18 -0800 (PST)
+        Tue, 8 Feb 2022 14:43:47 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C82EDC0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:43:46 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id v5-20020a17090a4ec500b001b8b702df57so2937103pjl.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:43:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=sJjbNLxKnq2MLHtlOHVGr5cmsCqOoxOU5S439s399rs=;
+        b=FCaFfDHqOKbbM+LTbZb/y7018/XOb/NmUt5E6W+YnPsqxKsfSDMkWZB/l0fglbgasl
+         clQebc8o6nC+U2ONdp4ydBS2u9mOTBEPiyiovDrjfweqhsE4OQLY6vnmZL4LYFkMGbp4
+         zx0Ldh7CVLEFZaAg0EkxPR7V58GWFRcK38oNqFb+kXJM/NXJ/LE0zDxE1iwSW9o0UhKv
+         5mYjmoD1oql0ihFJrAlulXXNG0pefXs1oTT0rJ79JaxEBu0b7PhNtIS7oKe589fqyeuz
+         iQS0o2k9uDlyVH34IVZDep+1o0VwKMV1j7oN9lcKwBo0mpIgqI5YGnPdeRoXaSL3qxo7
+         v8aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=I3/8UwtTiLaHjDIsw5ToTGGU9VaJhcJtecxqfQCO+Kg=;
-        b=ceFrSWczA3GbFg2a6npnWP7i8suOn3QcJS3rSWJoi80d5GzivmwnT7YIQ2+LRf3R6y
-         FEb/Bdg4P8QmXPO+LKve1+6vSO5RlL/O1pRMkr3q4qHh6yxi7CWAFeykeOVLVF1ssISk
-         Cm/WM6gsDd6NFmGyg0KFqctcFleXufEyrWCAr7Rug54eTvgl7LKzoW3NEgPqY4PqO7as
-         3RkBaNilvuU6VZVng8ydcQwylwP8FhXCl0wjaaXnlQX+eSyTgelZswcE0mPL6Awevmyy
-         mi1OHQOVqEQJSMJzAdkOC8QxcupxPh6XAkji1RREmLtCLvH2OnNIB2rYBGdNgh/lHcgq
-         Dvqg==
-X-Gm-Message-State: AOAM533d8AmBqOlVV266zVcBvIVE6NGKVb1wHR/rfR2pA97DFfsECJbt
-        2m/J9Qjpe8Ra1+mJ1XDROKhEuraRUmgz1dNGqkNv0Hx2VjFkF+tgOZI1lGOTYeN/eO7xhSIH4+w
-        5HjJ9uuzQwiL+202fUY63FWXR
-X-Received: by 2002:a05:6214:4111:: with SMTP id kc17mr4417586qvb.61.1644350957409;
-        Tue, 08 Feb 2022 12:09:17 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxsREE/wlVXhB/X8tBjZ+cErEBHMvIYU1EUljfRg7HUFF85vJYIMBgalTBx0/F2MZWG8LFj8g==
-X-Received: by 2002:a05:6214:4111:: with SMTP id kc17mr4417571qvb.61.1644350957203;
-        Tue, 08 Feb 2022 12:09:17 -0800 (PST)
-Received: from [192.168.8.138] (pool-96-230-100-15.bstnma.fios.verizon.net. [96.230.100.15])
-        by smtp.gmail.com with ESMTPSA id p70sm7253061qka.62.2022.02.08.12.09.15
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=sJjbNLxKnq2MLHtlOHVGr5cmsCqOoxOU5S439s399rs=;
+        b=wqzzijdvJFyh0RSjuzhNSR5XP+/H1fdf0/x0d4HzwfnVPrg4HNlb73kwSVrbCZAFwG
+         Nv6SB+ex6XsC3DQaVgMLbDr3FPgUJumB7Kh/PuNIyOjB0mMIg9d+CQqtCb+U/Jz/Pn9p
+         d+BoFtB01s9HlBwLW0mtt/6b1Zkoj6En9CVslh3ANrxjU15tg3+XHCGp1EkI6S6zXDwf
+         HjBcS/+oSHzKl1QVB3ZfV8yZmYdg9MUQWKBKxWM6m9vHNZ0PLWvwYRsQw9AuTcwReRIa
+         chgt6KRxICdVTpSvE6hAZoBanINThLJJ17E4ohfr/C9/DNFbwazciFskj4SKoHSbIEsT
+         Lddg==
+X-Gm-Message-State: AOAM531xSExTNXEJjNo9lk37lcwq41N7pPeKIfEHHOymk52zyo73XDlj
+        XI9MZSvimhAJ5Vi86SjPhvA=
+X-Google-Smtp-Source: ABdhPJxcdJhuyvcGJERiilgb8k7uMGXZtduHdT/KN0RWAWmAOJukqmIGccAe7pKgqTm7G6G9cfXrHQ==
+X-Received: by 2002:a17:90b:4c06:: with SMTP id na6mr3057583pjb.174.1644349426360;
+        Tue, 08 Feb 2022 11:43:46 -0800 (PST)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
+        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 12:09:16 -0800 (PST)
-Message-ID: <58cc03e21bdf8665f402c7eb9beed557f19a4be2.camel@redhat.com>
-Subject: Re: [PATCH][next] nouveau/svm: Use struct_size() helper in
- nouveau_pfns_map()
-From:   Lyude Paul <lyude@redhat.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Date:   Tue, 08 Feb 2022 15:09:04 -0500
-In-Reply-To: <20220207233923.GA524723@embeddedor>
-References: <20220207233923.GA524723@embeddedor>
-Organization: Red Hat Inc.
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        Tue, 08 Feb 2022 11:43:45 -0800 (PST)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Radoslaw Burny <rburny@google.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        intel-gfx@lists.freedesktop.org
+Subject: [PATCH 05/12] drm/i915: Protect lockdep functions with #ifdef
+Date:   Tue,  8 Feb 2022 11:43:17 -0800
+Message-Id: <20220208194324.85333-6-namhyung@kernel.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
+References: <20220208194324.85333-1-namhyung@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Lyude Paul <lyude@redhat.com>
+With upcoming lock tracepoints config, it'd define some of lockdep
+functions without enabling CONFIG_LOCKDEP actually.  The existing code
+assumes those functions will be removed by the preprocessor but it's
+not the case anymore.  Let's protect the code with #ifdef's explicitly.
 
-Will push this to drm-misc-next, thanks!
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc: intel-gfx@lists.freedesktop.org
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ drivers/gpu/drm/i915/intel_wakeref.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-On Mon, 2022-02-07 at 17:39 -0600, Gustavo A. R. Silva wrote:
-> Make use of the struct_size() helper instead of an open-coded version,
-> in order to avoid any potential type mistakes or integer overflows that,
-> in the worse scenario, could lead to heap overflows.
-> 
-> Link: https://github.com/KSPP/linux/issues/160
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> ---
->  drivers/gpu/drm/nouveau/nouveau_svm.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/nouveau/nouveau_svm.c
-> b/drivers/gpu/drm/nouveau/nouveau_svm.c
-> index 266809e511e2..46a5a1016e37 100644
-> --- a/drivers/gpu/drm/nouveau/nouveau_svm.c
-> +++ b/drivers/gpu/drm/nouveau/nouveau_svm.c
-> @@ -925,8 +925,8 @@ nouveau_pfns_map(struct nouveau_svmm *svmm, struct
-> mm_struct *mm,
->  
->         mutex_lock(&svmm->mutex);
->  
-> -       ret = nvif_object_ioctl(&svmm->vmm->vmm.object, args, sizeof(*args)
-> +
-> -                               npages * sizeof(args->p.phys[0]), NULL);
-> +       ret = nvif_object_ioctl(&svmm->vmm->vmm.object, args,
-> +                               struct_size(args, p.phys, npages), NULL);
->  
->         mutex_unlock(&svmm->mutex);
->  }
-
+diff --git a/drivers/gpu/drm/i915/intel_wakeref.c b/drivers/gpu/drm/i915/intel_wakeref.c
+index dfd87d082218..6e4b8d036283 100644
+--- a/drivers/gpu/drm/i915/intel_wakeref.c
++++ b/drivers/gpu/drm/i915/intel_wakeref.c
+@@ -106,8 +106,11 @@ void __intel_wakeref_init(struct intel_wakeref *wf,
+ 	wf->wakeref = 0;
+ 
+ 	INIT_DELAYED_WORK(&wf->work, __intel_wakeref_put_work);
++
++#ifdef CONFIG_LOCKDEP
+ 	lockdep_init_map(&wf->work.work.lockdep_map,
+ 			 "wakeref.work", &key->work, 0);
++#endif
+ }
+ 
+ int intel_wakeref_wait_for_idle(struct intel_wakeref *wf)
 -- 
-Cheers,
- Lyude Paul (she/her)
- Software Engineer at Red Hat
+2.35.0.263.gb82422642f-goog
 
