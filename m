@@ -2,109 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E82FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34835C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349894AbiBHNTS (ORCPT
+        id S1347564AbiBHNTV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:19:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33006 "EHLO
+        Tue, 8 Feb 2022 08:19:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240593AbiBHMtm (ORCPT
+        with ESMTP id S1358457AbiBHMlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:49:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62B8C03FEC0;
-        Tue,  8 Feb 2022 04:49:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1082B81AEE;
-        Tue,  8 Feb 2022 12:49:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E1CDC36AE2;
-        Tue,  8 Feb 2022 12:49:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644324579;
-        bh=0n1tSbHGXQRN3Sm9t1TdK+VKkpyIaGj7yXjkA1XeR8M=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=PmxRX3fFyESQfmX1d9x5XYkCI0ms3ReygkYI8sae7khFo1L5ZcHnWyk/jQVUhSj+v
-         Wr9i6RfOxlIT/uINBi5QvK7pfWqFdG1JysR1gGNA2RvANm6fr3jSurh/BEu7jS4Y7T
-         9oIdXIX/IZROp8gU5eQ8LSIBlxvpwm/1th0xmuv5EhPBzihMFXJFYNmzf4uhhbv3Ts
-         GfQQ4MDfx0/aEx/BfOCNdXyEgV9I/dLmplmi4bireCREAj4chK5/KXXOTxFhiJ86Go
-         SNntGi4nqJjVFwq2VSjkd0npuuwy0vwe6zRKiVVpp17a+RU9fkLchm5vzMrWgX11Ha
-         w8ETbGd+wJ+bQ==
-Received: by mail-wr1-f52.google.com with SMTP id f17so30584630wrx.1;
-        Tue, 08 Feb 2022 04:49:39 -0800 (PST)
-X-Gm-Message-State: AOAM532dn12W0ZA1M/MduzW5niOsxdX3MOYMJ0fdMjpx7jPTaVQgrgFn
-        vbywmggTHpBtYZog1o2U0iT+dVERI9ObnP+rJuU=
-X-Google-Smtp-Source: ABdhPJzoyVBYULQ0Fua/eWADY0DsDt4BT5S47X2cvHGkFyMcI+N8rZKbjpqb0HaIxoaKlzO1YYPrVYc5d6FqX/xl8Uk=
-X-Received: by 2002:a5d:568f:: with SMTP id f15mr306677wrv.407.1644324577741;
- Tue, 08 Feb 2022 04:49:37 -0800 (PST)
+        Tue, 8 Feb 2022 07:41:24 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215AFC03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:24 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id x65so4132102pfx.12
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0jvgrG3Dmpy1I6S7Dz5gEHIA3LIp2Xa/xR1uXh6G5dU=;
+        b=OO1r4dxadJOGLUSOKAN0tmHzPQa1/FnX57PE28Fw2+knHtrP1i77Wg2a5G/AUHfj7F
+         XJe4SgQaXUtNYtLJaaI40p7JgRIe15fGPHDGLYG3xHdNTVULkjQ59t51I+2PyOThCt2P
+         5n4cgfYK6ehEyeCRKJw4xyfPqumGi9TgdpYyk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0jvgrG3Dmpy1I6S7Dz5gEHIA3LIp2Xa/xR1uXh6G5dU=;
+        b=fwh+zWxs8XHXPmWCOUDs+9tZKEjWQ4y90di6Rhwr2Ia402miU2BwLx9Bz9Xug6U7c6
+         78STHaDeFpuxY2pCDJF5vgZhoUE0leF5VCcW3nYsG/O4LdUuqQqpyYiT40cJ9vN44lT/
+         ZlNnBxfGE5aLrfnjRb45b0H2MFdUZsW1dnLDAFKKIdyO6/HgYNCnZEofegr4vJ+t5po6
+         YhbQmxwWcis1MDEknu81eb/b0NVqO1YFzafateKwmMSCho7SUPgsvEQC36NQWfpfI7CX
+         3FIDnck19P9SyXs9EYGEK+H/HG38ZG1ZiSA6p6Qa0zCybJSqcE4qfYfTzBSBR0JoCozK
+         CIgA==
+X-Gm-Message-State: AOAM5325ABS7a6ja2kmq8lU35QYrM8/YVR8oJ1TU90eBUHCakfifwZNK
+        3FfPvvRwM1SHLUaE59xbJ0nQM9VlrxFmtw==
+X-Google-Smtp-Source: ABdhPJxlQ6xRfe3jgexdVmS/BecwJ0yJF53+WUSqv5aNmcGH8QFSxeRwNVd6B/u1PMoMOp5zWvGwTA==
+X-Received: by 2002:a63:9307:: with SMTP id b7mr3353508pge.291.1644324083669;
+        Tue, 08 Feb 2022 04:41:23 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 04:41:23 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 16/31] clk: mediatek: Implement mtk_clk_unregister_factors() API
+Date:   Tue,  8 Feb 2022 20:40:19 +0800
+Message-Id: <20220208124034.414635-17-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
+References: <20220208124034.414635-1-wenst@chromium.org>
 MIME-Version: 1.0
-References: <20220203083658.559803-1-arnd@kernel.org> <CAMj1kXG5W4nTXP5fXLmWhNfsQ_WigKbhdZz5yh1MNqE_VcD1TA@mail.gmail.com>
-In-Reply-To: <CAMj1kXG5W4nTXP5fXLmWhNfsQ_WigKbhdZz5yh1MNqE_VcD1TA@mail.gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 8 Feb 2022 13:49:21 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1GeHV4Mj6rcnAY7y0351r-A7imsyWevKfE_qwHMz0D1g@mail.gmail.com>
-Message-ID: <CAK8P3a1GeHV4Mj6rcnAY7y0351r-A7imsyWevKfE_qwHMz0D1g@mail.gmail.com>
-Subject: Re: [PATCH] [v2] ARM: sa1100/assabet: move dmabounce hack to ohci driver
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        USB list <linux-usb@vger.kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 3, 2022 at 9:47 AM Ard Biesheuvel <ardb@kernel.org> wrote:
-> On Thu, 3 Feb 2022 at 09:38, Arnd Bergmann <arnd@kernel.org> wrote:
->
-> > There are two main downsides:
-> >
-> >  - rather than using a dynamically sized pool, this buffer needs
-> >    to be allocated at probe time using a fixed size. Without
-> >    having any idea of what it should be, I picked a size of
-> >    64KB, which is between what the other two OHCI front-ends use
-> >    in their SRAM. If anyone has a better idea what that size
-> >    is reasonable, this can be trivially changed.
-> >
->
-> I suppose this is a problem if the driver falls back to ordinary DRAM
-> once the allocation runs out?
+mtk_clk_register_factors(), as the name suggests, is used to register
+a given list of fixed factor clks. However it is lacking a counterpart
+unregister API.
 
-From what I can tell, there is no such fallback. If the localmem_pool
-runs out, the allocation fails, which may cause other problems, but
-it never falls back to the wrong DMA address.
+Implement said unregister API so that the various clock platform drivers
+can utilize it to do proper unregistration, cleanup and removal.
 
-> >  - Previously, only USB transfers to unaddressable memory needed
-> >    to go through the bounce buffer, now all of them do, which may
-> >    impact runtime performance for USB endpoints that do a lot of
-> >    transfers.
-> >
-> > On the upside, the local_mem support uses write-combining buffers,
-> > which should be a bit faster for transfers to the device compared to
-> > normal uncached coherent memory as used in dmabounce.
-> >
->
-> Talking from past experience using this trick on a NXP ARM9 SoC ~10
-> years ago, using on-chip SRAM for USB DMA likely results in a
-> significant performance boost, even without write combining, although
-> the exact scenario obviously matters.
+In the header file, the register function's declaration is also
+reformatted to fit code style guidelines.
 
-Right, that makes sense, but it won't help here because there is
-no SRAM. One detail  I noticed is that the localmem pool normally
-gets mapped as WC, which is what I did in the new code as well, but
-dma_alloc_flags(..., DMA_ATTR_WRITE_COMBINE) does not always
-honor this flag. I think it will do it here because a GFP_KERNEL
-allocation should be served by the remap_allocator, while
-GFP_ATOMIC allocations would be served by pool_allocator_alloc(),
-which ignores the flag.
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/clk/mediatek/clk-mtk.c | 20 ++++++++++++++++++++
+ drivers/clk/mediatek/clk-mtk.h |  6 ++++--
+ 2 files changed, 24 insertions(+), 2 deletions(-)
 
-        Arnd
+diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
+index 7c0d5706eed7..b267b2f04b84 100644
+--- a/drivers/clk/mediatek/clk-mtk.c
++++ b/drivers/clk/mediatek/clk-mtk.c
+@@ -126,6 +126,26 @@ void mtk_clk_register_factors(const struct mtk_fixed_factor *clks,
+ }
+ EXPORT_SYMBOL_GPL(mtk_clk_register_factors);
+ 
++void mtk_clk_unregister_factors(const struct mtk_fixed_factor *clks, int num,
++				struct clk_onecell_data *clk_data)
++{
++	int i;
++
++	if (!clk_data)
++		return;
++
++	for (i = num; i > 0; i--) {
++		const struct mtk_fixed_factor *ff = &clks[i - 1];
++
++		if (IS_ERR_OR_NULL(clk_data->clks[ff->id]))
++			continue;
++
++		clk_unregister_fixed_factor(clk_data->clks[ff->id]);
++		clk_data->clks[ff->id] = ERR_PTR(-ENOENT);
++	}
++}
++EXPORT_SYMBOL_GPL(mtk_clk_unregister_factors);
++
+ struct clk *mtk_clk_register_composite(const struct mtk_composite *mc,
+ 		void __iomem *base, spinlock_t *lock)
+ {
+diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
+index cc7f920eabb4..4db1a97c1250 100644
+--- a/drivers/clk/mediatek/clk-mtk.h
++++ b/drivers/clk/mediatek/clk-mtk.h
+@@ -55,8 +55,10 @@ struct mtk_fixed_factor {
+ 		.div = _div,				\
+ 	}
+ 
+-void mtk_clk_register_factors(const struct mtk_fixed_factor *clks,
+-		int num, struct clk_onecell_data *clk_data);
++void mtk_clk_register_factors(const struct mtk_fixed_factor *clks, int num,
++			      struct clk_onecell_data *clk_data);
++void mtk_clk_unregister_factors(const struct mtk_fixed_factor *clks, int num,
++				struct clk_onecell_data *clk_data);
+ 
+ struct mtk_composite {
+ 	int id;
+-- 
+2.35.0.263.gb82422642f-goog
+
