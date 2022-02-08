@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A58C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:39:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33DD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:39:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358594AbiBHNjW (ORCPT
+        id S1358725AbiBHNju (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:39:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37710 "EHLO
+        Tue, 8 Feb 2022 08:39:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349830AbiBHNjS (ORCPT
+        with ESMTP id S1349830AbiBHNjr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:39:18 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56F3C03FECE
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:39:17 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id bt13so25930576ybb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:39:17 -0800 (PST)
+        Tue, 8 Feb 2022 08:39:47 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F780C03FED1
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 05:39:46 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id g14so49815346ybs.8
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 05:39:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jkWKVFY9Ane+4hLx7KO8wJLB4fAu322gdHrEZT3DJhA=;
-        b=roCaBezV/DQ17i+sXf/6XpzD0kL3lOx0tmGDYIQeLnFfebE+ICp2HRuPG2IM2OTZ6U
-         oxUfMDdFvyCgHJWd07HTyS796Uu/Xb40/dqYd0h2UgrG0FDL1UEWaTPpvJ+Bn0XaXkHW
-         z79H5Oz0JfkFDiomzRoZug3tTey8JUBGRcKGzeViKw8Cn2IbxzfPPkbBrupntOFHryUy
-         phoG8jGtTaisDjxtJW0duvFMpIYU1ydx+KE98ezaImPdL2JSEInpLxYQuhlKF1ncpz/y
-         L/DKbzp03/UiCgOARSWW+guLsK9dx4vi8Jfi3cq1N+i6yudIQC4v9hq8A+N0imsmrdkg
-         ZDTA==
+        bh=AB43GeMhzoWNJcuHGVxX4xPDF6JvmahIqFg1wRbGD9E=;
+        b=JBVhCpQm4U1bayIyDFb2W7GCme8X/VBGonuobVv7G4Temo3gqMH7cdtrDi2dDqME8X
+         qlUA/R+m0zXhAexPkTFUtqBqNdoZFt5qbB3plHDoz88JqFfTu1aVkMsyfF0EgOxSzRda
+         1qIItw58w7UETvuGE9pDY1enmMQNK5prZ11UOZli3ZxaO3wMknlDmvZZwRcTEHf0up15
+         +x6imdr/QjOS32lq+KtVY5HaiaYLz0lId0zPpB/fFR02/XlTzSHkm3NLqReoUijVSamF
+         GSioTb7+A/ha9n1Jfco5RxwxnQ8nipskEL9uEvqm4//wVfCwNANLMa1pGh9GJYfteVTC
+         lc0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jkWKVFY9Ane+4hLx7KO8wJLB4fAu322gdHrEZT3DJhA=;
-        b=pCy8z2zSl4zUOy4n0GJAFxvJVOXwYD/sRSp10Gq5igocVqLkyZCScM6z/yMQt1bds1
-         96NVMTHyn+GCEWwQhVKG61NU5leeYTnAfrI9wRZYeddQ+bgAqxbzMv0f6wz3mwhKCKZ1
-         Q5CAfDAwnD5mp0HkPDXkL5NNO2AbjssOM88Z22CnElwLqT5vLe7vHcxltjqURuwZV7Te
-         eUEIb9JlE9n8E6bPmJ50cV8MaRDZD96e6EasvW2lIROmR3gGKyO9sJm5ma7Mgc25DaQO
-         t2T/y0W+uuQxekzm4iciC4RF1b9q2QPraYGv5XQeyIeCl7sySFWhNoOi41DGGL2S/bEr
-         dNJw==
-X-Gm-Message-State: AOAM531jurVtcP42Uoxb8Hun2K4LxAahhkbNUyJo8Tx5naCoR0EKgv1U
-        6fqEV/lzO5Fc++pWyLaA3TiA2mmGhbotfn6lHwggKA==
-X-Google-Smtp-Source: ABdhPJxVPX7eETUkWHJHX+qRDcXXalcx4ypoqmAMKW5Ugv2G+t/qfCIMALqgvBuTV9JQ7+kf/GBhkFyc36+EodIy1rk=
-X-Received: by 2002:a81:1153:: with SMTP id 80mr4667357ywr.327.1644327556844;
- Tue, 08 Feb 2022 05:39:16 -0800 (PST)
+        bh=AB43GeMhzoWNJcuHGVxX4xPDF6JvmahIqFg1wRbGD9E=;
+        b=FLMCR6j6sF3FAINSOT0AKBmhVY8d3N/yrMFwbT3x8xgUPHp1zMgmJs38sgmGGI/Sxp
+         aqzX/F1S0n/aVaTcicEWN7hH1FGDQUJaRTwNChkeCPUdyDaGGzFu9QiKQF8mNtwFxr7p
+         YJDsf13LjmOoB0F9d2zyZP4rgC+2FOddDLxqBWe0VsyilVEIV6RjeBrlPAPySuz43zWP
+         gOATf43GswnEpPmsAxrqRF9YZd5huZTxwS04JQz0AyA4izqyo6j41Ewow7pIUPcBsB+s
+         1Nxwoca08NwCX++xo7io4im0fNO0zB+J6Rblf3R3Vv0EbbRpgsQjNZ7tQOLBmH4ge/3U
+         8VfQ==
+X-Gm-Message-State: AOAM531K0zO+o3rVpmCq6QTSNM5hz7HRqGU9hxXXDfrkFLvKNEURTjZc
+        /JJVBiWwOchUvsBpcl4ATPHpnmJCgLBRu4iVac2mGQ==
+X-Google-Smtp-Source: ABdhPJxbDgXMBRv9C+RY1p8OyAGygwZn2GL78Z4+WOtcMuUdETn286pOhYdPFjFTIV+onoiigXO8dnUZoDWUsoPYX8M=
+X-Received: by 2002:a05:6902:1548:: with SMTP id r8mr5071533ybu.374.1644327585600;
+ Tue, 08 Feb 2022 05:39:45 -0800 (PST)
 MIME-Version: 1.0
-References: <1644324666-15947-1-git-send-email-yangtiezhu@loongson.cn> <1644324666-15947-5-git-send-email-yangtiezhu@loongson.cn>
-In-Reply-To: <1644324666-15947-5-git-send-email-yangtiezhu@loongson.cn>
+References: <1644324666-15947-1-git-send-email-yangtiezhu@loongson.cn> <1644324666-15947-6-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <1644324666-15947-6-git-send-email-yangtiezhu@loongson.cn>
 From:   Marco Elver <elver@google.com>
-Date:   Tue, 8 Feb 2022 14:39:05 +0100
-Message-ID: <CANpmjNOFL1vTZS28z_DWSz+X64_ghXBiGj3Fhee=wpRexZy7kA@mail.gmail.com>
-Subject: Re: [PATCH v2 4/5] ubsan: no need to unset panic_on_warn in ubsan_epilogue()
+Date:   Tue, 8 Feb 2022 14:39:34 +0100
+Message-ID: <CANpmjNPxLgosrY=CH9GpwHmOKFbCuPQfLBFS+QBZGKiQC-od9w@mail.gmail.com>
+Subject: Re: [PATCH v2 5/5] kasan: no need to unset panic_on_warn in end_report()
 To:     Tiezhu Yang <yangtiezhu@loongson.cn>
 Cc:     Baoquan He <bhe@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
         Andrew Morton <akpm@linux-foundation.org>,
@@ -67,7 +67,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 On Tue, 8 Feb 2022 at 13:51, Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
 >
 > panic_on_warn is unset inside panic(), so no need to unset it
-> before calling panic() in ubsan_epilogue().
+> before calling panic() in end_report().
 >
 > Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 
@@ -75,18 +75,18 @@ Reviewed-by: Marco Elver <elver@google.com>
 
 
 > ---
->  lib/ubsan.c | 10 +---------
+>  mm/kasan/report.c | 10 +---------
 >  1 file changed, 1 insertion(+), 9 deletions(-)
 >
-> diff --git a/lib/ubsan.c b/lib/ubsan.c
-> index bdc380f..36bd75e 100644
-> --- a/lib/ubsan.c
-> +++ b/lib/ubsan.c
-> @@ -154,16 +154,8 @@ static void ubsan_epilogue(void)
->
->         current->in_ubsan--;
->
-> -       if (panic_on_warn) {
+> diff --git a/mm/kasan/report.c b/mm/kasan/report.c
+> index 3ad9624..f141465 100644
+> --- a/mm/kasan/report.c
+> +++ b/mm/kasan/report.c
+> @@ -117,16 +117,8 @@ static void end_report(unsigned long *flags, unsigned long addr)
+>         pr_err("==================================================================\n");
+>         add_taint(TAINT_BAD_PAGE, LOCKDEP_NOW_UNRELIABLE);
+>         spin_unlock_irqrestore(&report_lock, *flags);
+> -       if (panic_on_warn && !test_bit(KASAN_BIT_MULTI_SHOT, &kasan_flags)) {
 > -               /*
 > -                * This thread may hit another WARN() in the panic path.
 > -                * Resetting this prevents additional WARN() from panicking the
@@ -94,16 +94,16 @@ Reviewed-by: Marco Elver <elver@google.com>
 > -                * panic_mutex in panic().
 > -                */
 > -               panic_on_warn = 0;
-> +       if (panic_on_warn)
+> +       if (panic_on_warn && !test_bit(KASAN_BIT_MULTI_SHOT, &kasan_flags))
 >                 panic("panic_on_warn set ...\n");
 > -       }
->  }
->
->  void __ubsan_handle_divrem_overflow(void *_data, void *lhs, void *rhs)
+>         if (kasan_arg_fault == KASAN_ARG_FAULT_PANIC)
+>                 panic("kasan.fault=panic set ...\n");
+>         kasan_enable_current();
 > --
 > 2.1.0
 >
 > --
 > You received this message because you are subscribed to the Google Groups "kasan-dev" group.
 > To unsubscribe from this group and stop receiving emails from it, send an email to kasan-dev+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/kasan-dev/1644324666-15947-5-git-send-email-yangtiezhu%40loongson.cn.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/kasan-dev/1644324666-15947-6-git-send-email-yangtiezhu%40loongson.cn.
