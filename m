@@ -2,108 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9531CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA45C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:55:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356025AbiBHLzi (ORCPT
+        id S1356154AbiBHLzu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:55:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44984 "EHLO
+        Tue, 8 Feb 2022 06:55:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351457AbiBHLzg (ORCPT
+        with ESMTP id S1356697AbiBHLzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 06:55:36 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13722C03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 03:55:36 -0800 (PST)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 8 Feb 2022 06:55:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB6E2C03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 03:55:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644321342;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CrvvLV6pJtPHCmu67NLbQwinnrYKaoWgfpouCR5Xtw0=;
+        b=VsFN/hX3Xl6nQTIYCI7fR0zpulOBtUMbCNbCEMMLyauRazxDRyI0+YUHPPYAcxa8pv8xVK
+        6xm4OShHg4dcn2+1j9rC0cMVnCfMwXB3XCOgXpkuh5BE2iNIqmbXlBlN3HqborX2aZg491
+        N6imfDtbkQ7RhqOaj5yRoCod2GfQnz0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-459-FDBsLofiMVuJy2ja0QKZ6g-1; Tue, 08 Feb 2022 06:55:37 -0500
+X-MC-Unique: FDBsLofiMVuJy2ja0QKZ6g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E598F3F1F0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:55:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644321333;
-        bh=o9lVwGLOMjBBC4tFHuuGDiFsf+0wof2yGLRdH2ujaps=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=pMSbt0qjQGJhlXU0DJrmtpJnoCH+UOr5EpGVlBMxnj/kDdvgDymjS5NOtXSnUHsBB
-         BwYGRP+Xpds4sGcgswWP4Z/kUPjehxu9gRbVAtEiE+xodatmzZX3CQtefd2lLotp8j
-         hBYKP3J2zAkKEum4b7SUpDCO3vIgq42S6UEVNT8oIB/EuHsiICq30jxTYGQSQcdf6s
-         fB8GP/GKptXTV+q12g9eA7BCmeXFFblDhBLvf7MjRcoPf+8ouzVAup+BtQnmG5//TL
-         AqkGzWm3czfGFj11feMKn5zKhSh3TPFVRmApizYoZLjDKFPi9kK9p6XZNrpDilMQ18
-         RrEbD/f8gdzCA==
-Received: by mail-ej1-f69.google.com with SMTP id h22-20020a1709060f5600b006b11a2d3dcfso5646860ejj.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 03:55:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=o9lVwGLOMjBBC4tFHuuGDiFsf+0wof2yGLRdH2ujaps=;
-        b=ZtWVga7JjV0ZJpoAFC8qx7u3Ye8BCc+O1BB7l7TUDFOd64plcmMSH00Lpqd0kytNe8
-         mP8KAtD14TYM4EDA1aqj6f/ooh2fx42z62FKwzFldu6QK8/e9c4ZVhsi7ilbu9WWNmOt
-         xUfu495la7wOltrneYT/SiJX4VOBwG1y61raMELj7h5crzxe3I0OxI/kXReJXWZ1h7z7
-         csZU9zZaxcKmpD1SRiCt8c/LxEL84f7567E2Tn83D+0lADEKVu3cxOx0Z0js00aS2+Ze
-         cG3cJMI8zxubqwudTiCdcUy9ZmIiXIApwNzGTxN818MsQ13abwRO60CD4C25JhSNseeJ
-         33Ew==
-X-Gm-Message-State: AOAM53111haIWyZk27pXwbXVV5pEV1ibOHx7Q6ffAuVB1AlyomhFfRn6
-        O1vh/LMCnBA8BCAbqD78LeLSIGZzNGRwN3mbNPOypDMm2q9ZauJF/nGlLyZ6VSA7kM3/ljD8Q9B
-        31+IIrF5eVY5mQCDNOHaT+EwUPI9lJR2m425/JaFGdA==
-X-Received: by 2002:a17:907:1c01:: with SMTP id nc1mr3507969ejc.659.1644321333570;
-        Tue, 08 Feb 2022 03:55:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxJRKF31xIu6mS1pj+dMNV+8zV+4g6/YqHO7wOvj2ZzAgp/idanGTZW765Y8LXBDd4VTSMQVA==
-X-Received: by 2002:a17:907:1c01:: with SMTP id nc1mr3507953ejc.659.1644321333380;
-        Tue, 08 Feb 2022 03:55:33 -0800 (PST)
-Received: from [192.168.0.93] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id o11sm6780166edh.75.2022.02.08.03.55.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 03:55:32 -0800 (PST)
-Message-ID: <d995fee3-c2ad-55d2-86a0-c8a27e459ff0@canonical.com>
-Date:   Tue, 8 Feb 2022 12:55:32 +0100
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 47D0C1091DA5;
+        Tue,  8 Feb 2022 11:55:31 +0000 (UTC)
+Received: from starship (unknown [10.40.192.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 529196E1EA;
+        Tue,  8 Feb 2022 11:55:08 +0000 (UTC)
+Message-ID: <0c20990f2543413f4a087b7918cff14db48bc774.camel@redhat.com>
+Subject: Re: [PATCH RESEND 07/30] KVM: x86: nSVM: deal with L1 hypervisor
+ that intercepts interrupts but lets L2 control them
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-kernel@vger.kernel.org,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sean Christopherson <seanjc@google.com>,
+        David Airlie <airlied@linux.ie>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Jim Mattson <jmattson@google.com>, x86@kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>
+Date:   Tue, 08 Feb 2022 13:55:07 +0200
+In-Reply-To: <dd9305d6-1e3a-24f9-1d48-c5dac440112d@redhat.com>
+References: <20220207155447.840194-1-mlevitsk@redhat.com>
+         <20220207155447.840194-8-mlevitsk@redhat.com>
+         <dd9305d6-1e3a-24f9-1d48-c5dac440112d@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] ARM: dts: at91: Use the generic "crypto" node name for
- the crypto IPs
-Content-Language: en-US
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        alexandre.belloni@bootlin.com
-Cc:     robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kavyasree.kotagiri@microchip.com
-References: <20220208111225.234685-1-tudor.ambarus@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220208111225.234685-1-tudor.ambarus@microchip.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/02/2022 12:12, Tudor Ambarus wrote:
-> The DT specification recommeds that:
-> "The name of a node should be somewhat generic, reflecting the function of
-> the device and not its precise programming model. If appropriate, the name
-> should be one of the following choices:"
-> "crypto" being the recommendation for the crypto nodes. Follow the DT
-> recommendation and use the generic "crypto" node name for the at91 crypto
-> IPs. While at this, add labels to the crypto nodes where they missed, for
-> easier reference purposes.
+On Tue, 2022-02-08 at 12:33 +0100, Paolo Bonzini wrote:
+> On 2/7/22 16:54, Maxim Levitsky wrote:
+> > Fix a corner case in which the L1 hypervisor intercepts
+> > interrupts (INTERCEPT_INTR) and either doesn't set
+> > virtual interrupt masking (V_INTR_MASKING) or enters a
+> > nested guest with EFLAGS.IF disabled prior to the entry.
+> > 
+> > In this case, despite the fact that L1 intercepts the interrupts,
+> > KVM still needs to set up an interrupt window to wait before
+> > injecting the INTR vmexit.
+> > 
+> > Currently the KVM instead enters an endless loop of 'req_immediate_exit'.
+> > 
+> > Exactly the same issue also happens for SMIs and NMI.
+> > Fix this as well.
+> > 
+> > Note that on VMX, this case is impossible as there is only
+> > 'vmexit on external interrupts' execution control which either set,
+> > in which case both host and guest's EFLAGS.IF
+> > are ignored, or not set, in which case no VMexits are delivered.
+> > 
+> > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> > ---
+> >   arch/x86/kvm/svm/svm.c | 17 +++++++++++++----
+> >   1 file changed, 13 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> > index 9a4e299ed5673..22e614008cf59 100644
+> > --- a/arch/x86/kvm/svm/svm.c
+> > +++ b/arch/x86/kvm/svm/svm.c
+> > @@ -3372,11 +3372,13 @@ static int svm_nmi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
+> >   	if (svm->nested.nested_run_pending)
+> >   		return -EBUSY;
+> >   
+> > +	if (svm_nmi_blocked(vcpu))
+> > +		return 0;
+> > +
+> >   	/* An NMI must not be injected into L2 if it's supposed to VM-Exit.  */
+> >   	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_nmi(svm))
+> >   		return -EBUSY;
+> > -
+> > -	return !svm_nmi_blocked(vcpu);
+> > +	return 1;
+> >   }
+> >   
+> >   static bool svm_get_nmi_mask(struct kvm_vcpu *vcpu)
+> > @@ -3428,9 +3430,13 @@ bool svm_interrupt_blocked(struct kvm_vcpu *vcpu)
+> >   static int svm_interrupt_allowed(struct kvm_vcpu *vcpu, bool for_injection)
+> >   {
+> >   	struct vcpu_svm *svm = to_svm(vcpu);
+> > +
+> >   	if (svm->nested.nested_run_pending)
+> >   		return -EBUSY;
+> >   
+> > +	if (svm_interrupt_blocked(vcpu))
+> > +		return 0;
+> > +
+> >   	/*
+> >   	 * An IRQ must not be injected into L2 if it's supposed to VM-Exit,
+> >   	 * e.g. if the IRQ arrived asynchronously after checking nested events.
+> > @@ -3438,7 +3444,7 @@ static int svm_interrupt_allowed(struct kvm_vcpu *vcpu, bool for_injection)
+> >   	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_intr(svm))
+> >   		return -EBUSY;
+> >   
+> > -	return !svm_interrupt_blocked(vcpu);
+> > +	return 1;
+> >   }
+> >   
+> >   static void svm_enable_irq_window(struct kvm_vcpu *vcpu)
+> > @@ -4169,11 +4175,14 @@ static int svm_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
+> >   	if (svm->nested.nested_run_pending)
+> >   		return -EBUSY;
+> >   
+> > +	if (svm_smi_blocked(vcpu))
+> > +		return 0;
+> > +
+> >   	/* An SMI must not be injected into L2 if it's supposed to VM-Exit.  */
+> >   	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_smi(svm))
+> >   		return -EBUSY;
+> >   
+> > -	return !svm_smi_blocked(vcpu);
+> > +	return 1;
+> >   }
+> >   
+> >   static int svm_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
 > 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-> ---
->  arch/arm/boot/dts/sam9x60.dtsi | 6 +++---
->  arch/arm/boot/dts/sama5d2.dtsi | 6 +++---
->  arch/arm/boot/dts/sama5d3.dtsi | 6 +++---
->  arch/arm/boot/dts/sama5d4.dtsi | 6 +++---
->  4 files changed, 12 insertions(+), 12 deletions(-)
-> 
+> Can you prepare a testcase for at least the interrupt case?
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-
+Yep, I already wrote a kvm unit tests for all the cases, and I will send them very soon.
 
 Best regards,
-Krzysztof
+	Maxim Levitsky
+> 
+> Thanks,
+> 
+> Paolo
+> 
+
+
