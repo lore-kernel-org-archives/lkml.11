@@ -2,172 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72537C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 895C3C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388954AbiBHWdo (ORCPT
+        id S1388977AbiBHWds (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:33:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38618 "EHLO
+        Tue, 8 Feb 2022 17:33:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386918AbiBHVU4 (ORCPT
+        with ESMTP id S1386853AbiBHVRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:20:56 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118A8C0612B8;
-        Tue,  8 Feb 2022 13:20:56 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id e28so672764pfj.5;
-        Tue, 08 Feb 2022 13:20:56 -0800 (PST)
+        Tue, 8 Feb 2022 16:17:08 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B05C0612B8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:17:07 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id a12-20020a056902056c00b0061dc0f2a94aso388597ybt.6
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:17:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=ZM1nSLJ2yy0XCOnwkMPhCfHL7dFUtelFO2BPDuqjW0Y=;
-        b=GGu0TYe+F6jFKwY3Qz7/AocnUpRrUOF913L1zofAIQt1UG6+oeIoLnQhezQdyrf5FW
-         twYJEH+murJL4QGvZhN9YOrUs8cf5dTvrKSdk66ZzFDoSmXXqCXOSHErIsApOXJxLgns
-         sH5nFwMY56z1kyzyMMCQpSLCKozzdDBJ+VH3JX7a284jJKbJBxUrWqXSNnXnfZw893Ev
-         J+mJiR32sX9jYB5tocb0ij60fqujUeR2oFQlxebhCKvJ+tEJi9tV8Axtj5xQD5/67uoQ
-         mYT1/siSGgv2yACF0F1vMDB2pDB+VYNgx8gl1dva0NwzLjv5Vg73lwoTgJkjCvoQ2fp2
-         2GxQ==
+        bh=l7SK3hpl2tjo8fmJkEKtw/l+MWg699GiBeiSDOMnjGI=;
+        b=M7vZM4ZREjaUtmHzubGbUso3C4ozlbjNKZqvghtgVrz9MmcgRU5etkyKJsvmcr8Q3r
+         q6lyfZsEdfSK29U50aZ0pOWW0gUYabrBzKqxUHhNHzojj9Zh0kSJIcoz7SPZcV77RwB1
+         MrAkKurRMn9nbC/21+6kuVSn21Y3j2RKG8rKMETkOJElB2MVKLSnJVOeL4kou9dxPOP/
+         UVFWo0i8QPdL+5pu/INhcuHnJULb1D6hCry/NBXMrFQ4DYhwSzSUWykWM0qIyukeutWg
+         GRJPF1MDCd/xxB8xzJyFDfbJqIBLLcc9sFJP+75ZRsid889rfjjEyIkZLMr/HC5/7s7x
+         sw/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZM1nSLJ2yy0XCOnwkMPhCfHL7dFUtelFO2BPDuqjW0Y=;
-        b=JRe7Op2GL6zGANzYfNI8h+v0DisF1pxFRvxxYEMun88jShZ2yhcPaq9Nk4RLQdqCVe
-         E1cSwgFKybobQZH/shOaPHVM4V4L63ff3T0x6AcJNloTzyC/gnYfBUHEx/7+NNkcaKcu
-         5g+Pq2WCEUtn4g9HFmVeW5xXIKvH0zAyfCOWDXEKEhAv86ZBjKJ6TkD0VYZJSfljriRf
-         n1CxULMG+ksFnwoIC6EIY+IaiGpPfH/8Aqt7rCoZQzz2H7s0g1tt8i+NtyBgD52+MCYy
-         eXu2ANX6LuOSG9jH4uJG7H9Xp+0AotM8LOlZs/t2BJzKI6alXj2dJMFkvqZE7eGC5KsG
-         MGyw==
-X-Gm-Message-State: AOAM532OK7OdjnMS+yaIJ9u5CDRUwmGrHUdlx+5tqVyhdkJgTrxYLXgo
-        FsgNfdMHJ3w0/DfScD8m5UFTwRT60JdwGiFPWrU=
-X-Google-Smtp-Source: ABdhPJzLQ5OiBxETJ/n/pCVvGcsULw94LLCVu0lToYc6JXrDk7g5/B162zMjS/B4zCByuRgoxv3Qm0ohGX36u9EmKz0=
-X-Received: by 2002:a05:6a00:2301:: with SMTP id h1mr6195909pfh.77.1644355255463;
- Tue, 08 Feb 2022 13:20:55 -0800 (PST)
-MIME-Version: 1.0
-References: <20220201205534.1962784-1-haoluo@google.com> <20220201205534.1962784-6-haoluo@google.com>
- <20220203180414.blk6ou3ccmod2qck@ast-mbp.dhcp.thefacebook.com>
- <CA+khW7jkJbvQrTx4oPJAoBZ0EOCtr3C2PKbrzhxj-7euBK8ojg@mail.gmail.com>
- <CAADnVQLZZ3SM2CDxnzgOnDgRtGU7+6wT9u5v4oFas5MnZF6DsQ@mail.gmail.com>
- <CA+khW7i+TScwPZ6-rcFKiXtxMm8hiZYJGH-wYb=7jBvDWg8pJQ@mail.gmail.com>
- <CAADnVQ+-29CS7nSXghKMgZjKte84L0nRDegUE0ObFm3d7E=eWw@mail.gmail.com> <CA+khW7iWd5MzZW_mCfgqHESi8okjNRiRMr0TM=CQzLkMsa_a5g@mail.gmail.com>
-In-Reply-To: <CA+khW7iWd5MzZW_mCfgqHESi8okjNRiRMr0TM=CQzLkMsa_a5g@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 8 Feb 2022 13:20:44 -0800
-Message-ID: <CAADnVQJcTAgcbwrOWO8EnbTdAcQ91HQmtpn7aKJGwHc=mEpJ1g@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next v2 5/5] selftests/bpf: test for pinning for
- cgroup_view link
-To:     Hao Luo <haoluo@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=l7SK3hpl2tjo8fmJkEKtw/l+MWg699GiBeiSDOMnjGI=;
+        b=F1y4S5485ZX340nu+1R0NcHNB/gFOcnMTsnVoQUyrGDMJq0mKHgQIX6m67PyOOwpnx
+         nkdeh6v3ShkB5fVEqhcR4sAszORaXJbNUlUx4vLPeBpzNQ43J3c/Fzd4R9Mrlj10P3q3
+         gmp+P/IhcdIqMMEaIUCGpAYS5X1r9v1lfyrQdlcsCvXK8bNo07YDUHKja/IMghuWQMJM
+         NC50iVENq6Jo8+F930e0yf/mewgWX9/YbBG/q0QL7ZaROLxw5He9WP8JNdlIGhSp4k0q
+         L5w271SPHSz3pVz/f4EYng5IlSvQ4uJz3kbh40zUffY9fE8zqox/FOLfoDA3tZ6jdyMA
+         YMCQ==
+X-Gm-Message-State: AOAM530P7NEBvv2owE8Pcjlb4wBm/x3QaorI+2ok1G1SJDVHJKX9PGIe
+        KVKFdLwQtUZnum5Hd0lSzGH8CnG16f66qNb1ITFchtdWZ9K5X+oYOXjxMaXAELUFI/sgaK5CWxI
+        F7OrDKNza9lznkQwhD1o5jiy+O6AFkQNYPb/KxQIuwQQial+0bDLSwxBGGPOZVEGdN4igRc1r
+X-Google-Smtp-Source: ABdhPJww16HAN32Z6YUGCbf+r3wgG+Y5yNKVjcEJ3h20rpY3mB6H5B3KgHoziz1vex98CAy2Q8lFajjLbHw/
+X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:6875:3c51:69be:6e2c])
+ (user=eranian job=sendgmr) by 2002:a81:af54:: with SMTP id
+ x20mr4840845ywj.337.1644355027029; Tue, 08 Feb 2022 13:17:07 -0800 (PST)
+Date:   Tue,  8 Feb 2022 13:16:31 -0800
+In-Reply-To: <20220208211637.2221872-1-eranian@google.com>
+Message-Id: <20220208211637.2221872-7-eranian@google.com>
+Mime-Version: 1.0
+References: <20220208211637.2221872-1-eranian@google.com>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+Subject: [PATCH v6 06/12] perf/x86/amd: add AMD branch sampling period adjustment
+From:   Stephane Eranian <eranian@google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
+        jolsa@redhat.com, songliubraving@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 12:07 PM Hao Luo <haoluo@google.com> wrote:
->
-> On Sat, Feb 5, 2022 at 8:29 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Fri, Feb 4, 2022 at 10:27 AM Hao Luo <haoluo@google.com> wrote:
-> > > >
-> > > > > In our use case, we can't ask the users who create cgroups to do the
-> > > > > pinning. Pinning requires root privilege. In our use case, we have
-> > > > > non-root users who can create cgroup directories and still want to
-> > > > > read bpf stats. They can't do pinning by themselves. This is why
-> > > > > inheritance is a requirement for us. With inheritance, they only need
-> > > > > to mkdir in cgroupfs and bpffs (unprivileged operations), no pinning
-> > > > > operation is required. Patch 1-4 are needed to implement inheritance.
-> > > > >
-> > > > > It's also not a good idea in our use case to add a userspace
-> > > > > privileged process to monitor cgroupfs operations and perform the
-> > > > > pinning. It's more complex and has a higher maintenance cost and
-> > > > > runtime overhead, compared to the solution of asking whoever makes
-> > > > > cgroups to mkdir in bpffs. The other problem is: if there are nodes in
-> > > > > the data center that don't have the userspace process deployed, the
-> > > > > stats will be unavailable, which is a no-no for some of our users.
-> > > >
-> > > > The commit log says that there will be a daemon that does that
-> > > > monitoring of cgroupfs. And that daemon needs to mkdir
-> > > > directories in bpffs when a new cgroup is created, no?
-> > > > The kernel is only doing inheritance of bpf progs into
-> > > > new dirs. I think that daemon can pin as well.
-> > > >
-> > > > The cgroup creation is typically managed by an agent like systemd.
-> > > > Sounds like you have your own agent that creates cgroups?
-> > > > If so it has to be privileged and it can mkdir in bpffs and pin too ?
-> > >
-> > > Ah, yes, we have our own daemon to manage cgroups. That daemon creates
-> > > the top-level cgroup for each job to run inside. However, the job can
-> > > create its own cgroups inside the top-level cgroup, for fine grained
-> > > resource control. This doesn't go through the daemon. The job-created
-> > > cgroups don't have the pinned objects and this is a no-no for our
-> > > users.
-> >
-> > We can whitelist certain tracepoints to be sleepable and extend
-> > tp_btf prog type to include everything from prog_type_syscall.
-> > Such prog would attach to cgroup_mkdir and cgroup_release
-> > and would call bpf_sys_bpf() helper to pin progs in new bpffs dirs.
-> > We can allow prog_type_syscall to do mkdir in bpffs as well.
-> >
-> > This feature could be useful for similar monitoring/introspection tasks.
-> > We can write a program that would monitor bpf prog load/unload
-> > and would pin an iterator prog that would show debug info about a prog.
-> > Like cat /sys/fs/bpf/progs.debug shows a list of loaded progs.
-> > With this feature we can implement:
-> > ls /sys/fs/bpf/all_progs.debug/
-> > and each loaded prog would have a corresponding file.
-> > The file name would be a program name, for example.
-> > cat /sys/fs/bpf/all_progs.debug/my_prog
-> > would pretty print info about 'my_prog' bpf program.
-> >
-> > This way the kernfs/cgroupfs specific logic from patches 1-4
-> > will not be necessary.
-> >
-> > wdyt?
->
-> Thanks Alexei. I gave it more thought in the last couple of days.
-> Actually I think it's a good idea, more flexible. It gets rid of the
-> need of a user space daemon for monitoring cgroup creation and
-> destruction. We could monitor task creations and exits as well, so
-> that we can export per-task information (e.g. task_vma_iter) more
-> efficiently.
+Add code to adjust the sampling event period when used with the Branch
+Sampling feature (BRS). Given the depth of the BRS (16), the period is
+reduced by that depth such that in the best case scenario, BRS saturates at
+the desired sampling period. In practice, though, the processor may execute
+more branches. Given a desired period P and a depth D, the kernel programs
+the actual period at P - D. After P occurrences of the sampling event, the
+counter overflows. It then may take X branches (skid) before the NMI is
+caught and held by the hardware and BRS activates. Then, after D branches,
+BRS saturates and the NMI is delivered.  With no skid, the effective period
+would be (P - D) + D = P. In practice, however, it will likely be (P - D) +
+X + D. There is no way to eliminate X or predict X.
 
-Yep. Monitoring task creation and exposing via bpf_iter sounds
-useful too.
+Signed-off-by: Stephane Eranian <eranian@google.com>
+---
+ arch/x86/events/core.c       |  7 +++++++
+ arch/x86/events/perf_event.h | 12 ++++++++++++
+ 2 files changed, 19 insertions(+)
 
-> A couple of thoughts when thinking about the details:
->
-> - Regarding parameterized pinning, I don't think we can have one
-> single bpf_iter_link object, but with different parameters. Because
-> parameters are part of the bpf_iter_link (bpf_iter_aux_info). So every
-> time we pin, we have to attach iter in order to get a new link object
-> first. So we need to add attach and detach in bpf_sys_bpf().
+diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+index c2a890caeb0a..ed285f640efe 100644
+--- a/arch/x86/events/core.c
++++ b/arch/x86/events/core.c
+@@ -1374,6 +1374,13 @@ int x86_perf_event_set_period(struct perf_event *event)
+ 	    x86_pmu.set_topdown_event_period)
+ 		return x86_pmu.set_topdown_event_period(event);
+ 
++	/*
++	 * decrease period by the depth of the BRS feature to get
++	 * the last N taken branches and approximate the desired period
++	 */
++	if (has_branch_stack(event))
++		period = amd_brs_adjust_period(period);
++
+ 	/*
+ 	 * If we are way outside a reasonable range then just skip forward:
+ 	 */
+diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
+index 3485a4cf0241..25b037b571e4 100644
+--- a/arch/x86/events/perf_event.h
++++ b/arch/x86/events/perf_event.h
+@@ -1263,6 +1263,14 @@ static inline bool amd_brs_active(void)
+ 	return cpuc->brs_active;
+ }
+ 
++static inline s64 amd_brs_adjust_period(s64 period)
++{
++	if (period > x86_pmu.lbr_nr)
++		return period - x86_pmu.lbr_nr;
++
++	return period;
++}
++
+ #else /* CONFIG_CPU_SUP_AMD */
+ 
+ static inline int amd_pmu_init(void)
+@@ -1287,6 +1295,10 @@ static inline void amd_brs_disable_all(void)
+ {
+ }
+ 
++static inline s64 amd_brs_adjust_period(s64 period)
++{
++	return period;
++}
+ #endif /* CONFIG_CPU_SUP_AMD */
+ 
+ static inline int is_pebs_pt(struct perf_event *event)
+-- 
+2.35.0.263.gb82422642f-goog
 
-Makes sense.
-I'm adding bpf_link_create to bpf_sys_bpf as part of
-the "lskel for kernel" patch set.
-The detach is sys_close. It's already available.
-
-> - We also need to add those syscalls for cleanup: (1) unlink for
-> removing pinned obj and (2) rmdir for removing the directory in
-> prog_type_syscall.
-
-Yes. These two would be needed.
-And obj_pin too.
-
-> With these extensions, we can shift some of the bpf operations
-> currently performed in system daemons into the kernel. IMHO it's a
-> great thing, making system monitoring more flexible.
-
-Awesome. Sounds like we're converging :)
