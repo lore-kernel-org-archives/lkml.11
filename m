@@ -2,157 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6167C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B504CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 02:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346294AbiBHC7Z (ORCPT
+        id S1346310AbiBHC7x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 21:59:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42538 "EHLO
+        Mon, 7 Feb 2022 21:59:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345777AbiBHC7R (ORCPT
+        with ESMTP id S1345777AbiBHC7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 21:59:17 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE7BC06109E;
-        Mon,  7 Feb 2022 18:59:16 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id f17so17325889edd.2;
-        Mon, 07 Feb 2022 18:59:16 -0800 (PST)
+        Mon, 7 Feb 2022 21:59:51 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138FDC06109E;
+        Mon,  7 Feb 2022 18:59:50 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id v74so16451201pfc.1;
+        Mon, 07 Feb 2022 18:59:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WC7nvBT4t6u2JKkTS9J0CfU3z+ZLMOQNawlmGZkvWlM=;
-        b=XYFhzYgZ34QZfbd1PNPFXrVaWPycD1IijIXOeHwVoGOTa8/ZLykFt5KArST9jrS6vV
-         CZEmKnTE4O9nGoEpy0ixPt/lsPb4mrkXCHsD0gXcQ+KLcXD03eAHLIddv5/t1da0sXBi
-         QjbDdwcd/edhWRurf8PtC0UO8GjV0zdi017ttJ9cQDLCpl61PtSeIcHFuRJ9CgCozKXd
-         l8tQvUppC67q7UJbKNAPYCdLOUFKq8C6LZd1YJJkfzHhu9NSOCB1d5iEoEx3omSfwY8C
-         dTAVKp5lViC+djP13d7Wv/1nODUDEWw/2iZfPR8hOjEd1lg82Z03IyDITkP/T/R0Y7vQ
-         wSZg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JhTpMGvbxGUrJKu9ijtc6q5cHQtWVbAXxqUiZ2vf6R0=;
+        b=VflgJZsG7gz8vKTl+ZwEyVJ/NKBnNb1T6B1IapXX3KAcQdvdl2+jbIwj3m6k5HhZFc
+         8PyUPJYerdEyFKEz6IxOHhfsZUUf4+kwHmFHVkgFMF9pWPX/C/kstJqHe0BCbWNSn4Ls
+         MXJXd9ytdvN78I0bV854gdZdpYj+K4kGZ11LsbzMDeN9j6faoaCJToXMQWUHxmFO7qbV
+         /Rf/IV8iiIV+DsJTfeJN2eJLmmT/KpLa25O9FPwbom3PP5d+LLOcKlBrTO4ilEukO58a
+         l3m1QIK+9qdK9/M0nyK+MuyHngKj1+wcVy3Koo9fzM2bks72DceoPDpAdme2iiVv/NUf
+         1CJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WC7nvBT4t6u2JKkTS9J0CfU3z+ZLMOQNawlmGZkvWlM=;
-        b=P4ILWd7yxVhSyQASlclIS+nuly8sEVkVFl6aORi2CmcMTZVz048zXU/O4MLECTbo1e
-         0KVqd399joqb9u4j9Jvva8ZC/QexEpouXpQhNdryueHZcHnpitsYchbQbNd3UcT8PoJg
-         a8gpiHWV4Tt9lGeqorjm9Hr7MIRObWw9WeWAQaXN5n8cDizJE7HJFDQhNRhbqEhh8drx
-         qah6BatxI3NBHdZ7rwH97515NXPEBL305tjeDyX5VMj1UMxcFH86J6FU1R2izvvzwuGn
-         0XxZ/uZVmX37QGL71+9dYss7bfomCnb66Bj2Gmg/lGsyKUcU3suldQ2ZyrG6/dim/hmM
-         fc0g==
-X-Gm-Message-State: AOAM531nmWed/pHUSncGj7idk/WskRvUUQDJCZo1SsIm+vys7p/N1t7c
-        x1X2vN3xZi3kzT5FaB2UWqPQiqlCXWwt17ak69Y=
-X-Google-Smtp-Source: ABdhPJwB2mY6FQgnQezO/xKBJppV0NAkZlUSarliDu5+ppsxzl7SveX/LNr85/MXtfvommSzUruZGBwJ550jyh5Dsm8=
-X-Received: by 2002:a50:ccd3:: with SMTP id b19mr2345435edj.253.1644289155048;
- Mon, 07 Feb 2022 18:59:15 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JhTpMGvbxGUrJKu9ijtc6q5cHQtWVbAXxqUiZ2vf6R0=;
+        b=AOzxSo8xIAFF1YBkysCbL5NHayNKGZdzh6qm1fbazTuXNhG7tLkZiqCLCozXMhEfJm
+         1Aa3+BxsjKsrusuBuWHsfh+51oon7qDSIF+/ZngB06B9CW4Cxe4GD0jncIOL+X8oMsFJ
+         WqfLDv2xJP77itwFUaFJVDzWkXM5UD0wjNVQix/uqBispFKo1mbz1RMTKBPBHkL16y+K
+         MLu1c2Kb+Y6F9tynQ6iSli1tLLiTa4OpZtB063g2Sk7E6Yyclz1O78Y3XLQn6UZbjkC3
+         YvsgGZZNw8rsYGYgj8zX3udNr5Q7SqH2YsooP4RyLE1O0yS2uTsBHNGM8LQb2bxOZR2X
+         EG7Q==
+X-Gm-Message-State: AOAM532e+cqEFhYtPE16J1QIaaqBSwu+aWhy/LsAhwXs9oKlmjtG3b36
+        5UW2lEEfkpeK6SXbvS7ucdE=
+X-Google-Smtp-Source: ABdhPJwJKe8zRAXA2oArhtP8Khj2Mlg8Z67j9TqGBH4wQ5OjG+YqFAO7vZAplb49s3J/KWVRY8Td+w==
+X-Received: by 2002:a05:6a00:cd2:: with SMTP id b18mr2322825pfv.63.1644289189459;
+        Mon, 07 Feb 2022 18:59:49 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id f18sm13464712pfc.203.2022.02.07.18.59.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 18:59:48 -0800 (PST)
+Message-ID: <3577892f-02ae-fbfd-8a6f-c58018e2efdc@gmail.com>
+Date:   Mon, 7 Feb 2022 18:59:47 -0800
 MIME-Version: 1.0
-References: <20220205081738.565394-1-imagedong@tencent.com> <Yf+wcVAAWzmSz93n@shredder>
-In-Reply-To: <Yf+wcVAAWzmSz93n@shredder>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Tue, 8 Feb 2022 10:54:22 +0800
-Message-ID: <CADxym3aphsF=i4WbrdomPki+3Lz2=dOm-6h8P8fupV1ZtTPSaQ@mail.gmail.com>
-Subject: Re: [PATCH v6 net-next] net: drop_monitor: support drop reason
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v8 net-next 10/10] net: dsa: microchip: add support for
+ vlan operations
+Content-Language: en-US
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
+        andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
+        robh+dt@kernel.org
+Cc:     UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        vivien.didelot@gmail.com, devicetree@vger.kernel.org
+References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
+ <20220207172204.589190-11-prasanna.vengateshan@microchip.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220207172204.589190-11-prasanna.vengateshan@microchip.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 6, 2022 at 7:26 PM Ido Schimmel <idosch@idosch.org> wrote:
->
-> On Sat, Feb 05, 2022 at 04:17:38PM +0800, menglong8.dong@gmail.com wrote:
-> > diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-> > index 7b288a121a41..1180f1a28599 100644
-> > --- a/net/core/drop_monitor.c
-> > +++ b/net/core/drop_monitor.c
-> > @@ -48,6 +48,16 @@
-> >  static int trace_state = TRACE_OFF;
-> >  static bool monitor_hw;
-> >
-> > +#undef EM
-> > +#undef EMe
-> > +
-> > +#define EM(a, b)     [a] = #b,
-> > +#define EMe(a, b)    [a] = #b
-> > +
-> > +static const char *drop_reasons[SKB_DROP_REASON_MAX + 1] = {
-> > +     TRACE_SKB_DROP_REASON
-> > +};
-> > +
-> >  /* net_dm_mutex
-> >   *
-> >   * An overall lock guarding every operation coming from userspace.
-> > @@ -126,6 +136,7 @@ struct net_dm_skb_cb {
-> >               struct devlink_trap_metadata *hw_metadata;
-> >               void *pc;
-> >       };
-> > +     enum skb_drop_reason reason;
-> >  };
-> >
-> >  #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
-> > @@ -498,6 +509,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
-> >  {
-> >       ktime_t tstamp = ktime_get_real();
-> >       struct per_cpu_dm_data *data;
-> > +     struct net_dm_skb_cb *cb;
-> >       struct sk_buff *nskb;
-> >       unsigned long flags;
-> >
-> > @@ -508,7 +520,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
-> >       if (!nskb)
-> >               return;
-> >
-> > -     NET_DM_SKB_CB(nskb)->pc = location;
-> > +     cb = NET_DM_SKB_CB(nskb);
-> > +     cb->reason = reason;
-> > +     cb->pc = location;
-> >       /* Override the timestamp because we care about the time when the
-> >        * packet was dropped.
-> >        */
-> > @@ -606,8 +620,9 @@ static int net_dm_packet_report_in_port_put(struct sk_buff *msg, int ifindex,
-> >  static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
-> >                                    size_t payload_len)
-> >  {
-> > -     u64 pc = (u64)(uintptr_t) NET_DM_SKB_CB(skb)->pc;
-> > +     struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
-> >       char buf[NET_DM_MAX_SYMBOL_LEN];
-> > +     unsigned int reason;
-> >       struct nlattr *attr;
-> >       void *hdr;
-> >       int rc;
-> > @@ -620,10 +635,16 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
-> >       if (nla_put_u16(msg, NET_DM_ATTR_ORIGIN, NET_DM_ORIGIN_SW))
-> >               goto nla_put_failure;
-> >
-> > -     if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, pc, NET_DM_ATTR_PAD))
-> > +     if (nla_put_u64_64bit(msg, NET_DM_ATTR_PC, (u64)(uintptr_t)cb->pc,
-> > +                           NET_DM_ATTR_PAD))
-> > +             goto nla_put_failure;
-> > +
-> > +     reason = (unsigned int)cb->reason;
-> > +     if (reason < SKB_DROP_REASON_MAX &&
-> > +         nla_put_string(msg, NET_DM_ATTR_REASON, drop_reasons[reason]))
->
-> You need to make sure 'msg' has enough room for this attribute. Account
-> for it in net_dm_packet_report_size()
->
 
-Ok, I see what you mean now, thanks!
 
-> >               goto nla_put_failure;
-> >
-> > -     snprintf(buf, sizeof(buf), "%pS", NET_DM_SKB_CB(skb)->pc);
-> > +     snprintf(buf, sizeof(buf), "%pS", cb->pc);
-> >       if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
-> >               goto nla_put_failure;
-> >
-> > --
-> > 2.27.0
-> >
+On 2/7/2022 9:22 AM, Prasanna Vengateshan wrote:
+> Support for VLAN add, del, prepare and filtering operations.
+> 
+> The VLAN aware is a global setting. Mixed vlan filterings
+> are not supported. vlan_filtering_is_global is made as true
+> in lan937x_setup function.
+> 
+> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
