@@ -2,125 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D42CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350534AbiBHNUj (ORCPT
+        id S1352845AbiBHNUr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:20:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58860 "EHLO
+        Tue, 8 Feb 2022 08:20:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358154AbiBHMlF (ORCPT
+        with ESMTP id S1356823AbiBHMY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:05 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945CFC03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:04 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id my12-20020a17090b4c8c00b001b528ba1cd7so2604791pjb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iNXCz8EKk1VR4agv1nk/pR4RM+PZmf+e9yRG2bvKFuM=;
-        b=FaLgS8JBXSx2rVQXT64+Rqa2xv8iXnhXcaxplMpKSmYnFH93Ujylq6y4Cl6nyd/sAH
-         WQfwAS1n/fUwhgBYIe1KmVkTBNXyXUHhRiExOGRjWRVg/4G87sHy17Rcuz1/8y4EO++T
-         6VK2V+jUdpukhI1bpN+MT9dUVWszTMuJ5z9NM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iNXCz8EKk1VR4agv1nk/pR4RM+PZmf+e9yRG2bvKFuM=;
-        b=lEF/JdiVZbdF5pUy8jsI7b/X8C+efaNe7weeq/TpHyLl9FfzbpWPZtjztP2E+ZUyfe
-         3ULUVqVgJlkFFvkM8z6MyBimMKHyrAkdIw9NZCU6VRbuw8ww0XSuxYmK8wnZ6HyGHbg2
-         Hm+MUATxp+BE+RI1+tUxFoKHMB7LWTM7RnxP8aJZ9uXa8ErOfIBQ5LrrGHKKlomYuR3U
-         rs83EMOsOnnWZ4IqGxE/dpX+fX4EAkOPGWJQszhQI57dS0WQpF7l1HIV83vEThrHA23f
-         EBWlyS235ShTWAVrZhtIgrbFuMnYS9MZTiMUyG8Hon0VQCz4y/P6JmvJQbCMSx9JS6Dv
-         c1+A==
-X-Gm-Message-State: AOAM530L98ekBF/aSPV2hBfJTamR2ZIEwFESBEVjdGMkN8i9HNRAvsxI
-        v/+P4t44kIoOsm+aMWTr1fImAQ==
-X-Google-Smtp-Source: ABdhPJxCsDQjhQfSgwvXF6h1UuMsst6PTHnyW2BLFIfU9v0XAu5TwkzHqYQzzLVcalU0yaSD5TQ4Og==
-X-Received: by 2002:a17:902:f651:: with SMTP id m17mr4251259plg.106.1644324064142;
-        Tue, 08 Feb 2022 04:41:04 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:03 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 07/31] clk: mediatek: cpumux: Internalize struct mtk_clk_cpumux
-Date:   Tue,  8 Feb 2022 20:40:10 +0800
-Message-Id: <20220208124034.414635-8-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
+        Tue, 8 Feb 2022 07:24:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0F7BC03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:24:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644323065;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OmNk9x3t77ts5HOhyjEsKGS6qVWrt92aX3uBiIq4k1Y=;
+        b=NB6girQ7CODOoany7Zjll+I059oVrlmvvp3XLVQuQ6l94Uk77QIaY++Bmktu79plXex1Gf
+        uSwHUTNkp2VPeGNQv/z0aOXbkkfwncWpPUL10F/jNegrgNE70awjYCNu2tVHHQZQDqMN0S
+        QeoDSTjfNzQ9ll13P0+bW7vTUm8n/S0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-635-cl1sK-SEMRGwiMugl2xPOw-1; Tue, 08 Feb 2022 07:24:22 -0500
+X-MC-Unique: cl1sK-SEMRGwiMugl2xPOw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B3B0C19251AB;
+        Tue,  8 Feb 2022 12:24:19 +0000 (UTC)
+Received: from starship (unknown [10.40.192.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1EB102B44E;
+        Tue,  8 Feb 2022 12:24:09 +0000 (UTC)
+Message-ID: <f198aca18f64b2e788ee53d5a03e739abe6a6697.camel@redhat.com>
+Subject: Re: [PATCH RESEND 07/30] KVM: x86: nSVM: deal with L1 hypervisor
+ that intercepts interrupts but lets L2 control them
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-kernel@vger.kernel.org,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sean Christopherson <seanjc@google.com>,
+        David Airlie <airlied@linux.ie>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Jim Mattson <jmattson@google.com>, x86@kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>
+Date:   Tue, 08 Feb 2022 14:24:08 +0200
+In-Reply-To: <0c20990f2543413f4a087b7918cff14db48bc774.camel@redhat.com>
+References: <20220207155447.840194-1-mlevitsk@redhat.com>
+         <20220207155447.840194-8-mlevitsk@redhat.com>
+         <dd9305d6-1e3a-24f9-1d48-c5dac440112d@redhat.com>
+         <0c20990f2543413f4a087b7918cff14db48bc774.camel@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-struct mtk_clk_cpumux is an implementation detail of the cpumux clk
-type, and is not used outside of the implementation.
+On Tue, 2022-02-08 at 13:55 +0200, Maxim Levitsky wrote:
+> On Tue, 2022-02-08 at 12:33 +0100, Paolo Bonzini wrote:
+> > On 2/7/22 16:54, Maxim Levitsky wrote:
+> > > Fix a corner case in which the L1 hypervisor intercepts
+> > > interrupts (INTERCEPT_INTR) and either doesn't set
+> > > virtual interrupt masking (V_INTR_MASKING) or enters a
+> > > nested guest with EFLAGS.IF disabled prior to the entry.
+> > > 
+> > > In this case, despite the fact that L1 intercepts the interrupts,
+> > > KVM still needs to set up an interrupt window to wait before
+> > > injecting the INTR vmexit.
+> > > 
+> > > Currently the KVM instead enters an endless loop of 'req_immediate_exit'.
+> > > 
+> > > Exactly the same issue also happens for SMIs and NMI.
+> > > Fix this as well.
+> > > 
+> > > Note that on VMX, this case is impossible as there is only
+> > > 'vmexit on external interrupts' execution control which either set,
+> > > in which case both host and guest's EFLAGS.IF
+> > > are ignored, or not set, in which case no VMexits are delivered.
+> > > 
+> > > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> > > ---
+> > >   arch/x86/kvm/svm/svm.c | 17 +++++++++++++----
+> > >   1 file changed, 13 insertions(+), 4 deletions(-)
+> > > 
+> > > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> > > index 9a4e299ed5673..22e614008cf59 100644
+> > > --- a/arch/x86/kvm/svm/svm.c
+> > > +++ b/arch/x86/kvm/svm/svm.c
+> > > @@ -3372,11 +3372,13 @@ static int svm_nmi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
+> > >   	if (svm->nested.nested_run_pending)
+> > >   		return -EBUSY;
+> > >   
+> > > +	if (svm_nmi_blocked(vcpu))
+> > > +		return 0;
+> > > +
+> > >   	/* An NMI must not be injected into L2 if it's supposed to VM-Exit.  */
+> > >   	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_nmi(svm))
+> > >   		return -EBUSY;
+> > > -
+> > > -	return !svm_nmi_blocked(vcpu);
+> > > +	return 1;
+> > >   }
+> > >   
+> > >   static bool svm_get_nmi_mask(struct kvm_vcpu *vcpu)
+> > > @@ -3428,9 +3430,13 @@ bool svm_interrupt_blocked(struct kvm_vcpu *vcpu)
+> > >   static int svm_interrupt_allowed(struct kvm_vcpu *vcpu, bool for_injection)
+> > >   {
+> > >   	struct vcpu_svm *svm = to_svm(vcpu);
+> > > +
+> > >   	if (svm->nested.nested_run_pending)
+> > >   		return -EBUSY;
+> > >   
+> > > +	if (svm_interrupt_blocked(vcpu))
+> > > +		return 0;
+> > > +
+> > >   	/*
+> > >   	 * An IRQ must not be injected into L2 if it's supposed to VM-Exit,
+> > >   	 * e.g. if the IRQ arrived asynchronously after checking nested events.
+> > > @@ -3438,7 +3444,7 @@ static int svm_interrupt_allowed(struct kvm_vcpu *vcpu, bool for_injection)
+> > >   	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_intr(svm))
+> > >   		return -EBUSY;
+> > >   
+> > > -	return !svm_interrupt_blocked(vcpu);
+> > > +	return 1;
+> > >   }
+> > >   
+> > >   static void svm_enable_irq_window(struct kvm_vcpu *vcpu)
+> > > @@ -4169,11 +4175,14 @@ static int svm_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
+> > >   	if (svm->nested.nested_run_pending)
+> > >   		return -EBUSY;
+> > >   
+> > > +	if (svm_smi_blocked(vcpu))
+> > > +		return 0;
+> > > +
+> > >   	/* An SMI must not be injected into L2 if it's supposed to VM-Exit.  */
+> > >   	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_smi(svm))
+> > >   		return -EBUSY;
+> > >   
+> > > -	return !svm_smi_blocked(vcpu);
+> > > +	return 1;
+> > >   }
+> > >   
+> > >   static int svm_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
+> > 
+> > Can you prepare a testcase for at least the interrupt case?
+> 
+> Yep, I already wrote a kvm unit tests for all the cases, and I will send them very soon.
 
-Internalize the definition to minimize leakage of details and shrink
-the header file.
+Done.
 
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-cpumux.c | 8 ++++++++
- drivers/clk/mediatek/clk-cpumux.h | 8 --------
- 2 files changed, 8 insertions(+), 8 deletions(-)
+I also included tests for LBR virtualization which I think I already posted but I am not sure.
 
-diff --git a/drivers/clk/mediatek/clk-cpumux.c b/drivers/clk/mediatek/clk-cpumux.c
-index 99a819e3673f..344c6399b22f 100644
---- a/drivers/clk/mediatek/clk-cpumux.c
-+++ b/drivers/clk/mediatek/clk-cpumux.c
-@@ -12,6 +12,14 @@
- #include "clk-mtk.h"
- #include "clk-cpumux.h"
- 
-+struct mtk_clk_cpumux {
-+	struct clk_hw	hw;
-+	struct regmap	*regmap;
-+	u32		reg;
-+	u32		mask;
-+	u8		shift;
-+};
-+
- static inline struct mtk_clk_cpumux *to_mtk_clk_cpumux(struct clk_hw *_hw)
- {
- 	return container_of(_hw, struct mtk_clk_cpumux, hw);
-diff --git a/drivers/clk/mediatek/clk-cpumux.h b/drivers/clk/mediatek/clk-cpumux.h
-index fda7770fd803..a538f2bbef0d 100644
---- a/drivers/clk/mediatek/clk-cpumux.h
-+++ b/drivers/clk/mediatek/clk-cpumux.h
-@@ -7,14 +7,6 @@
- #ifndef __DRV_CLK_CPUMUX_H
- #define __DRV_CLK_CPUMUX_H
- 
--struct mtk_clk_cpumux {
--	struct clk_hw	hw;
--	struct regmap	*regmap;
--	u32		reg;
--	u32		mask;
--	u8		shift;
--};
--
- int mtk_clk_register_cpumuxes(struct device_node *node,
- 			      const struct mtk_composite *clks, int num,
- 			      struct clk_onecell_data *clk_data);
--- 
-2.35.0.263.gb82422642f-goog
+Best regards,
+	Maxim Levitsky
+> 
+> Best regards,
+> 	Maxim Levitsky
+> > Thanks,
+> > 
+> > Paolo
+> > 
+
 
