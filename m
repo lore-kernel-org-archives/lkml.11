@@ -2,121 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3479EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75649C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387526AbiBHWYk (ORCPT
+        id S1387546AbiBHWYy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:24:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
+        Tue, 8 Feb 2022 17:24:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387027AbiBHVsw (ORCPT
+        with ESMTP id S1345032AbiBHWUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:48:52 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67B6C0612BA;
-        Tue,  8 Feb 2022 13:48:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644356930; x=1675892930;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=HEBg2eQcO7Fk1Q3mMJehGhu8DX1HWgw88BE5sdLZ/f0=;
-  b=Agr68XLFtPCLJKAx5j9/jgRuOciH2gMbQav2Et9YID3WWU6spM5foaQ9
-   VMRINiRO7V/cdEhvRimw7bllIQEul264gty30ZJT/S2WtNC/8pX7vSnW5
-   B5f7ZclsLARzKBKQJv6his9K9GhQNbDSf8NBcG4KxPWhl54ScLblbPNAz
-   jhkxHG7Zb21Ym4rSwWP1juRfDPv/HOitgptdeDIoVMlceE28thq3bX/rc
-   AwmWoYUwrUiJX22I7ID38hKVH2KZQJJHuo3qDXbstcxw0piDWtMqQ6FO3
-   RGJp38M1hEKtu44ljKZBHq1XUvIJstizUZBijMxkjFoj8FopgSD4qhWv9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="309805366"
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="309805366"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 13:48:49 -0800
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
-   d="scan'208";a="632992865"
-Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 13:48:49 -0800
-From:   Reinette Chatre <reinette.chatre@intel.com>
-To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
-        linux-sgx@vger.kernel.org, x86@kernel.org, shuah@kernel.org
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH V3 1/4] selftests/sgx: Fix NULL-pointer-dereference upon early test failure
-Date:   Tue,  8 Feb 2022 13:48:39 -0800
-Message-Id: <90a31dfd640ea756fa324712e7cbab4a90fa7518.1644355600.git.reinette.chatre@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1644355600.git.reinette.chatre@intel.com>
-References: <cover.1644355600.git.reinette.chatre@intel.com>
+        Tue, 8 Feb 2022 17:20:52 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F734C0612B8;
+        Tue,  8 Feb 2022 14:20:50 -0800 (PST)
+Received: from localhost.localdomain (ip5f5aebc2.dynamic.kabel-deutschland.de [95.90.235.194])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 16BEA61E64846;
+        Tue,  8 Feb 2022 23:20:47 +0100 (CET)
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] Revert "Bluetooth: Fix passing NULL to PTR_ERR"
+Date:   Tue,  8 Feb 2022 23:19:10 +0100
+Message-Id: <20220208221911.57058-1-pmenzel@molgen.mpg.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-== Background ==
+This reverts commit 266191aa8d14b84958aaeb5e96ee4e97839e3d87, so that
+commit 81be03e026dc ("Bluetooth: RFCOMM: Replace use of memcpy_from_msg
+with bt_skb_sendmmsg"), introducing a regression, can be reverted.
 
-The SGX selftests track parts of the enclave binaries in an array:
-encl->segment_tbl[]. That array is dynamically allocated early
-(but not first) in the test's lifetime. The array is referenced
-at the end of the test in encl_delete().
-
-== Problem ==
-
-encl->segment_tbl[] can be NULL if the test fails before its
-allocation. That leads to a NULL-pointer-dereference in encl_delete().
-This is triggered during early failures of the selftest like if the
-enclave binary ("test_encl.elf") is deleted.
-
-== Solution ==
-
-Ensure encl->segment_tbl[] is valid before attempting to access
-its members. The offset with which it is accessed, encl->nr_segments,
-is initialized before encl->segment_tbl[] and thus considered valid
-to use after the encl->segment_tbl[] check succeeds.
-
-Fixes: 3200505d4de6 ("selftests/sgx: Create a heap for the test enclave")
-Acked-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
 ---
-Changes since V2:
-- Add Acked by from Shuah.
+ include/net/bluetooth/bluetooth.h | 2 +-
+ net/bluetooth/rfcomm/sock.c       | 2 +-
+ net/bluetooth/sco.c               | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-Changes since V1:
-- Rewrite commit message (Dave).
-
- tools/testing/selftests/sgx/load.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/tools/testing/selftests/sgx/load.c b/tools/testing/selftests/sgx/load.c
-index 9d4322c946e2..006b464c8fc9 100644
---- a/tools/testing/selftests/sgx/load.c
-+++ b/tools/testing/selftests/sgx/load.c
-@@ -21,7 +21,7 @@
+diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
+index 4b3d0b16c185..318df161e6d3 100644
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -505,7 +505,7 @@ static inline struct sk_buff *bt_skb_sendmmsg(struct sock *sk,
+ 		struct sk_buff *tmp;
  
- void encl_delete(struct encl *encl)
- {
--	struct encl_segment *heap_seg = &encl->segment_tbl[encl->nr_segments - 1];
-+	struct encl_segment *heap_seg;
+ 		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
+-		if (IS_ERR(tmp)) {
++		if (IS_ERR_OR_NULL(tmp)) {
+ 			kfree_skb(skb);
+ 			return tmp;
+ 		}
+diff --git a/net/bluetooth/rfcomm/sock.c b/net/bluetooth/rfcomm/sock.c
+index 4bf4ea6cbb5e..5938af3e9936 100644
+--- a/net/bluetooth/rfcomm/sock.c
++++ b/net/bluetooth/rfcomm/sock.c
+@@ -583,7 +583,7 @@ static int rfcomm_sock_sendmsg(struct socket *sock, struct msghdr *msg,
  
- 	if (encl->encl_base)
- 		munmap((void *)encl->encl_base, encl->encl_size);
-@@ -32,10 +32,11 @@ void encl_delete(struct encl *encl)
- 	if (encl->fd)
- 		close(encl->fd);
+ 	skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
+ 			      RFCOMM_SKB_TAIL_RESERVE);
+-	if (IS_ERR(skb))
++	if (IS_ERR_OR_NULL(skb))
+ 		return PTR_ERR(skb);
  
--	munmap(heap_seg->src, heap_seg->size);
--
--	if (encl->segment_tbl)
-+	if (encl->segment_tbl) {
-+		heap_seg = &encl->segment_tbl[encl->nr_segments - 1];
-+		munmap(heap_seg->src, heap_seg->size);
- 		free(encl->segment_tbl);
-+	}
+ 	sent = rfcomm_dlc_send(d, skb);
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 8eabf41b2993..7ebc9d294f0c 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -734,7 +734,7 @@ static int sco_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 		return -EOPNOTSUPP;
  
- 	memset(encl, 0, sizeof(*encl));
- }
+ 	skb = bt_skb_sendmsg(sk, msg, len, len, 0, 0);
+-	if (IS_ERR(skb))
++	if (IS_ERR_OR_NULL(skb))
+ 		return PTR_ERR(skb);
+ 
+ 	lock_sock(sk);
 -- 
-2.25.1
+2.34.1
 
