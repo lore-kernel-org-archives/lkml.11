@@ -2,251 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8408AC4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:16:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 234FEC47081
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:16:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343778AbiBHNPq (ORCPT
+        id S1345687AbiBHNPx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:15:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
+        Tue, 8 Feb 2022 08:15:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358967AbiBHMlw (ORCPT
+        with ESMTP id S234748AbiBHMQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:52 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EA8C03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:52 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id x65so4134105pfx.12
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xQYgt3QgtF2LKqHQFrC88zvLPa0lBRjCLZf9LxJ/ets=;
-        b=PTrB6iawyPIGirYG4b5/ASRbq8cAXNLl2+9H+SsEVOhpHDioapf8D795bOuyB1Vzt+
-         D7iK/QAZBbVNs3n0Uh48XNOiKVqYmIJcav6+gLIRs2cHTzUwI9XmIC8iudvh87dIKEuE
-         MKrB6vnf59XhrPYB9ENKj6YN1eXJbtBkiWBXU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xQYgt3QgtF2LKqHQFrC88zvLPa0lBRjCLZf9LxJ/ets=;
-        b=wbPKvjvKqPg2LQWbG5rTXDuz/T1y7R76XP7JZPKrYucMwR+JZ4uDZOoZUIy8kGM1uJ
-         MGHUsWaeIVB9W065sNmHdCzvMBRYrM0ahMYEXrKEKu+Lx+obael5psDZ/IvBpCVhDuYT
-         /bQ3n74QTiOAALvR6QoUjc1THI3jtacap4ubuOY//NkbRBQ9+dkxec+iaK39T6rghA5X
-         NbCMTssNjDNiQ+FPTqofqdIEtznOG34wgqXGeqaMnQCl1sDhvQ1tUiHUtI+vmtO/jRx2
-         +naWmnraYh7Xbmr8dzNYWBUbUT4hzcJQDdlcYKWXGZOq4ozWGi8t2pc9k4u3IyvebOmJ
-         FZfw==
-X-Gm-Message-State: AOAM53254Ts5sUfKONAr94NVbNU6Bdf36vulw7RnO5Bb/em5WyfZZG55
-        riHzpyn+v27bNS0MJYVfiTeSZg==
-X-Google-Smtp-Source: ABdhPJye9xIwNE3PNFsoBEXbqwqREmnxZwGI394gtD4ROpx9kUF2yM+rAGbVJ76CmcyLN8yUhD1OGg==
-X-Received: by 2002:a63:86:: with SMTP id 128mr3314659pga.13.1644324111661;
-        Tue, 08 Feb 2022 04:41:51 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:51 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 29/31] clk: mediatek: mt8195: Implement error handling in probe functions
-Date:   Tue,  8 Feb 2022 20:40:32 +0800
-Message-Id: <20220208124034.414635-30-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
+        Tue, 8 Feb 2022 07:16:28 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFC3C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:16:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644322587; x=1675858587;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Olp7rK6zk5YLYG7Pc7r9QucePjQot3Nd7pJoWAbt+Ss=;
+  b=S+e+P+RfotLkXlPud5+Jt2i9MgPVDRgSwgq7whC313uBnuTM20vaJUCa
+   wF5Xh63J5jFSJAoQJzE+sLKJjr7P9w0G3JR8UP+6p7hEPWQFQ/47rk6t4
+   pzOEvrrg0v0+6Fc81kYk4xoMVLaouzqKgnrHI0gm0aawF4b0QTatYOTF2
+   Erzy3+wc9hNGH0I7wDfMr5d5azZ/AiIVMCNlBQJd6ZS8qnyH2VEEw8sGN
+   Mf4tcYAaxHuq0eQk7JPJnVzJEon0F88MPk5LDVNWSweC/vd7DTaf8woh3
+   csftjO6rZdmTyGphDe+LFWq/3Fylau9Aa3GKkKFhxjD6/JFsb9ztDqgkl
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="232501378"
+X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
+   d="scan'208";a="232501378"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 04:16:27 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
+   d="scan'208";a="484792694"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 08 Feb 2022 04:16:25 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nHPQ1-00009M-5y; Tue, 08 Feb 2022 12:16:25 +0000
+Date:   Tue, 8 Feb 2022 20:15:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Song Liu <song@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>
+Subject: [bpf-next:master 216/221] kernel/bpf/core.c:826:37: error: statement
+ expression not allowed at file scope
+Message-ID: <202202082002.DBLucTeM-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Until now the mediatek clk driver library did not have any way to
-unregister clks, and so all drivers did not do proper cleanup in
-their error paths.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+head:   5d1e9f437df5ef21e7567f1970a00fda3b5d1126
+commit: 57631054fae6dcc9c892ae6310b58bbb6f6e5048 [216/221] bpf: Introduce bpf_prog_pack allocator
+config: s390-randconfig-r044-20220208 (https://download.01.org/0day-ci/archive/20220208/202202082002.DBLucTeM-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e8bff9ae54a55b4dbfeb6ba55f723abbd81bf494)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=57631054fae6dcc9c892ae6310b58bbb6f6e5048
+        git remote add bpf-next https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+        git fetch --no-tags bpf-next master
+        git checkout 57631054fae6dcc9c892ae6310b58bbb6f6e5048
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
-Now that the library does have APIs to unregister clks, use them
-in the error path of the probe functions for the mt8195 clk drivers
-to do proper cleanup.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+All errors (new ones prefixed by >>):
+
+   In file included from kernel/bpf/core.c:21:
+   In file included from include/linux/filter.h:12:
+   In file included from include/linux/skbuff.h:31:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from kernel/bpf/core.c:21:
+   In file included from include/linux/filter.h:12:
+   In file included from include/linux/skbuff.h:31:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from kernel/bpf/core.c:21:
+   In file included from include/linux/filter.h:12:
+   In file included from include/linux/skbuff.h:31:
+   In file included from include/linux/dma-mapping.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> kernel/bpf/core.c:826:37: error: statement expression not allowed at file scope
+           unsigned long bitmap[BITS_TO_LONGS(BPF_PROG_CHUNK_COUNT)];
+                                              ^
+   kernel/bpf/core.c:821:31: note: expanded from macro 'BPF_PROG_CHUNK_COUNT'
+   #define BPF_PROG_CHUNK_COUNT    (BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE)
+                                    ^
+   kernel/bpf/core.c:817:28: note: expanded from macro 'BPF_PROG_PACK_SIZE'
+   #define BPF_PROG_PACK_SIZE      HPAGE_PMD_SIZE
+                                   ^
+   include/linux/huge_mm.h:333:24: note: expanded from macro 'HPAGE_PMD_SIZE'
+   #define HPAGE_PMD_SIZE ({ BUILD_BUG(); 0; })
+                          ^
+   12 warnings and 1 error generated.
+
+
+vim +826 kernel/bpf/core.c
+
+   822	
+   823	struct bpf_prog_pack {
+   824		struct list_head list;
+   825		void *ptr;
+ > 826		unsigned long bitmap[BITS_TO_LONGS(BPF_PROG_CHUNK_COUNT)];
+   827	};
+   828	
+
 ---
- drivers/clk/mediatek/clk-mt8195-apmixedsys.c | 13 ++++--
- drivers/clk/mediatek/clk-mt8195-apusys_pll.c |  9 +++-
- drivers/clk/mediatek/clk-mt8195-topckgen.c   | 49 +++++++++++++++-----
- drivers/clk/mediatek/clk-mt8195-vdo0.c       |  4 +-
- drivers/clk/mediatek/clk-mt8195-vdo1.c       |  4 +-
- 5 files changed, 61 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/clk/mediatek/clk-mt8195-apmixedsys.c b/drivers/clk/mediatek/clk-mt8195-apmixedsys.c
-index 5b1b7dc447eb..d0fdb5a4a921 100644
---- a/drivers/clk/mediatek/clk-mt8195-apmixedsys.c
-+++ b/drivers/clk/mediatek/clk-mt8195-apmixedsys.c
-@@ -120,17 +120,24 @@ static int clk_mt8195_apmixed_probe(struct platform_device *pdev)
- 	if (!clk_data)
- 		return -ENOMEM;
- 
--	mtk_clk_register_plls(node, plls, ARRAY_SIZE(plls), clk_data);
--	r = mtk_clk_register_gates(node, apmixed_clks, ARRAY_SIZE(apmixed_clks), clk_data);
-+	r = mtk_clk_register_plls(node, plls, ARRAY_SIZE(plls), clk_data);
- 	if (r)
- 		goto free_apmixed_data;
- 
-+	r = mtk_clk_register_gates(node, apmixed_clks, ARRAY_SIZE(apmixed_clks), clk_data);
-+	if (r)
-+		goto unregister_plls;
-+
- 	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
- 	if (r)
--		goto free_apmixed_data;
-+		goto unregister_gates;
- 
- 	return r;
- 
-+unregister_gates:
-+	mtk_clk_unregister_gates(apmixed_clks, ARRAY_SIZE(apmixed_clks), clk_data);
-+unregister_plls:
-+	mtk_clk_unregister_plls(plls, ARRAY_SIZE(plls), clk_data);
- free_apmixed_data:
- 	mtk_free_clk_data(clk_data);
- 	return r;
-diff --git a/drivers/clk/mediatek/clk-mt8195-apusys_pll.c b/drivers/clk/mediatek/clk-mt8195-apusys_pll.c
-index db449ff877d7..f489b57e325e 100644
---- a/drivers/clk/mediatek/clk-mt8195-apusys_pll.c
-+++ b/drivers/clk/mediatek/clk-mt8195-apusys_pll.c
-@@ -66,13 +66,18 @@ static int clk_mt8195_apusys_pll_probe(struct platform_device *pdev)
- 	if (!clk_data)
- 		return -ENOMEM;
- 
--	mtk_clk_register_plls(node, apusys_plls, ARRAY_SIZE(apusys_plls), clk_data);
--	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-+	r = mtk_clk_register_plls(node, apusys_plls, ARRAY_SIZE(apusys_plls), clk_data);
- 	if (r)
- 		goto free_apusys_pll_data;
- 
-+	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-+	if (r)
-+		goto unregister_plls;
-+
- 	return r;
- 
-+unregister_plls:
-+	mtk_clk_unregister_plls(apusys_plls, ARRAY_SIZE(apusys_plls), clk_data);
- free_apusys_pll_data:
- 	mtk_free_clk_data(clk_data);
- 	return r;
-diff --git a/drivers/clk/mediatek/clk-mt8195-topckgen.c b/drivers/clk/mediatek/clk-mt8195-topckgen.c
-index 3e2aba9c40bb..3631f49a5e5a 100644
---- a/drivers/clk/mediatek/clk-mt8195-topckgen.c
-+++ b/drivers/clk/mediatek/clk-mt8195-topckgen.c
-@@ -1239,25 +1239,52 @@ static int clk_mt8195_topck_probe(struct platform_device *pdev)
- 		goto free_top_data;
- 	}
- 
--	mtk_clk_register_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks),
--				    top_clk_data);
--	mtk_clk_register_factors(top_divs, ARRAY_SIZE(top_divs), top_clk_data);
--	mtk_clk_register_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), node,
--			       &mt8195_clk_lock, top_clk_data);
--	mtk_clk_register_composites(top_muxes, ARRAY_SIZE(top_muxes), base,
--				    &mt8195_clk_lock, top_clk_data);
--	mtk_clk_register_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), base,
--				    &mt8195_clk_lock, top_clk_data);
--	r = mtk_clk_register_gates(node, top_clks, ARRAY_SIZE(top_clks), top_clk_data);
-+	r = mtk_clk_register_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks),
-+					top_clk_data);
- 	if (r)
- 		goto free_top_data;
- 
-+	r = mtk_clk_register_factors(top_divs, ARRAY_SIZE(top_divs), top_clk_data);
-+	if (r)
-+		goto unregister_fixed_clks;
-+
-+	r = mtk_clk_register_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), node,
-+				   &mt8195_clk_lock, top_clk_data);
-+	if (r)
-+		goto unregister_factors;
-+
-+	r = mtk_clk_register_composites(top_muxes, ARRAY_SIZE(top_muxes), base,
-+					&mt8195_clk_lock, top_clk_data);
-+	if (r)
-+		goto unregister_muxes;
-+
-+	r = mtk_clk_register_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), base,
-+					&mt8195_clk_lock, top_clk_data);
-+	if (r)
-+		goto unregister_composite_muxes;
-+
-+	r = mtk_clk_register_gates(node, top_clks, ARRAY_SIZE(top_clks), top_clk_data);
-+	if (r)
-+		goto unregister_composite_divs;
-+
- 	r = of_clk_add_provider(node, of_clk_src_onecell_get, top_clk_data);
- 	if (r)
--		goto free_top_data;
-+		goto unregister_gates;
- 
- 	return r;
- 
-+unregister_gates:
-+	mtk_clk_unregister_gates(top_clks, ARRAY_SIZE(top_clks), top_clk_data);
-+unregister_composite_divs:
-+	mtk_clk_unregister_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), top_clk_data);
-+unregister_composite_muxes:
-+	mtk_clk_unregister_composites(top_muxes, ARRAY_SIZE(top_muxes), top_clk_data);
-+unregister_muxes:
-+	mtk_clk_unregister_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), top_clk_data);
-+unregister_factors:
-+	mtk_clk_unregister_factors(top_divs, ARRAY_SIZE(top_divs), top_clk_data);
-+unregister_fixed_clks:
-+	mtk_clk_unregister_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks), top_clk_data);
- free_top_data:
- 	mtk_free_clk_data(top_clk_data);
- 	return r;
-diff --git a/drivers/clk/mediatek/clk-mt8195-vdo0.c b/drivers/clk/mediatek/clk-mt8195-vdo0.c
-index f7ff7618c714..af34eb564b1d 100644
---- a/drivers/clk/mediatek/clk-mt8195-vdo0.c
-+++ b/drivers/clk/mediatek/clk-mt8195-vdo0.c
-@@ -105,10 +105,12 @@ static int clk_mt8195_vdo0_probe(struct platform_device *pdev)
- 
- 	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
- 	if (r)
--		goto free_vdo0_data;
-+		goto unregister_gates;
- 
- 	return r;
- 
-+unregister_gates:
-+	mtk_clk_unregister_gates(vdo0_clks, ARRAY_SIZE(vdo0_clks), clk_data);
- free_vdo0_data:
- 	mtk_free_clk_data(clk_data);
- 	return r;
-diff --git a/drivers/clk/mediatek/clk-mt8195-vdo1.c b/drivers/clk/mediatek/clk-mt8195-vdo1.c
-index 03df8eae8838..6b502bbc730c 100644
---- a/drivers/clk/mediatek/clk-mt8195-vdo1.c
-+++ b/drivers/clk/mediatek/clk-mt8195-vdo1.c
-@@ -122,10 +122,12 @@ static int clk_mt8195_vdo1_probe(struct platform_device *pdev)
- 
- 	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
- 	if (r)
--		goto free_vdo1_data;
-+		goto unregister_gates;
- 
- 	return r;
- 
-+unregister_gates:
-+	mtk_clk_unregister_gates(vdo1_clks, ARRAY_SIZE(vdo1_clks), clk_data);
- free_vdo1_data:
- 	mtk_free_clk_data(clk_data);
- 	return r;
--- 
-2.35.0.263.gb82422642f-goog
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
