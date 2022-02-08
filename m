@@ -2,110 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E21F9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB10EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:50:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382045AbiBHPtr (ORCPT
+        id S1382074AbiBHPuj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:49:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59106 "EHLO
+        Tue, 8 Feb 2022 10:50:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239907AbiBHPtm (ORCPT
+        with ESMTP id S239907AbiBHPuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:49:42 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84CAC061579;
-        Tue,  8 Feb 2022 07:49:41 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 8DD151F387;
-        Tue,  8 Feb 2022 15:49:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644335380; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8/yyDEn0znQ6vifOgauLRJ+f9o0LDX3jTehpE1N4f20=;
-        b=Ro4MgiR/TGmj4CCeQCMWf17cLE+9KyA5BN8HX4zVOiUaZJXRsJbYjkp51BA7knZzVvhxA2
-        BDGx1eVq9xhduEnahtXAGEihTxzF9GOAE4YuwnL5+FDo8Nb9yj6DrL4gYXAxU5E9xBd0k2
-        1YQRTKZLYZ6Q+2HiTTVSIOV2BonaCO4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644335380;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8/yyDEn0znQ6vifOgauLRJ+f9o0LDX3jTehpE1N4f20=;
-        b=Xm3DHaRJYBsMgGfeUBVrT0tXJtWekeqP6gXV0NAfVZebgnMqTO6/hqox1JpscH4nMuAN1M
-        rJSgsuQkjHb5baDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0B20D13CDC;
-        Tue,  8 Feb 2022 15:49:40 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id FKEUARSRAmKuMgAAMHmgww
-        (envelope-from <jdelvare@suse.de>); Tue, 08 Feb 2022 15:49:40 +0000
-Date:   Tue, 8 Feb 2022 16:49:38 +0100
-From:   Jean Delvare <jdelvare@suse.de>
-To:     Terry Bowman <terry.bowman@amd.com>
-Cc:     <linux@roeck-us.net>, <linux-watchdog@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <wsa@kernel.org>,
-        <andy.shevchenko@gmail.com>, <rafael.j.wysocki@intel.com>,
-        <linux-kernel@vger.kernel.org>, <wim@linux-watchdog.org>,
-        <rrichter@amd.com>, <thomas.lendacky@amd.com>,
-        <sudheesh.mavila@amd.com>, <Nehal-bakulchandra.Shah@amd.com>,
-        <Basavaraj.Natikar@amd.com>, <Shyam-sundar.S-k@amd.com>,
-        <Mario.Limonciello@amd.com>
-Subject: Re: [PATCH v4 6/9] i2c: piix4: Add EFCH MMIO support to region
- request and release
-Message-ID: <20220208164938.512abe51@endymion.delvare>
-In-Reply-To: <20220130184130.176646-7-terry.bowman@amd.com>
-References: <20220130184130.176646-1-terry.bowman@amd.com>
-        <20220130184130.176646-7-terry.bowman@amd.com>
-Organization: SUSE Linux
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        Tue, 8 Feb 2022 10:50:37 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 504ECC061576;
+        Tue,  8 Feb 2022 07:50:37 -0800 (PST)
+Received: from tatooine.ideasonboard.com (unknown [IPv6:2a01:e0a:169:7140:b99c:2ebe:5dcf:6513])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id C7379A50;
+        Tue,  8 Feb 2022 16:50:34 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644335435;
+        bh=b4DGiyfvyoOudln8HWj3ITn77XitcebPtAQjLV0bz0M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Z/LfltXAo59GU2ZWMq3HCIRKaLilxhwq4O47ZEU6CF8dQJOczVNqU3WFsbvHy3D92
+         HUlg23QlY8WicyKOgl4HmPuFsvINQpYtdwcEs3HqCw30RXWbjU1gxHCCRJshWTBPwT
+         hhpBmwee2yZco2VX07aV6umGnDRNJZ1iCjlah9Kc=
+From:   Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+To:     jeanmichel.hautbois@ideasonboard.com
+Cc:     dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
+        kernel-list@raspberrypi.com, laurent.pinchart@ideasonboard.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        lukasz@jany.st, mchehab@kernel.org, naush@raspberrypi.com,
+        robh@kernel.org, tomi.valkeinen@ideasonboard.com,
+        bcm-kernel-feedback-list@broadcom.com, stefan.wahren@i2se.com
+Subject: [PATCH v5 01/11] media: v4l: Add V4L2-PIX-FMT-Y12P format
+Date:   Tue,  8 Feb 2022 16:50:17 +0100
+Message-Id: <20220208155027.891055-2-jeanmichel.hautbois@ideasonboard.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220208155027.891055-1-jeanmichel.hautbois@ideasonboard.com>
+References: <20220208155027.891055-1-jeanmichel.hautbois@ideasonboard.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Terry,
+This is a packed grey-scale image format with a depth of 12 bits per
+pixel. Two consecutive pixels are packed into 3 bytes. The first 2 bytes
+contain the 8 high order bits of the pixels, and the 3rd byte contains
+the 4 least significants bits of each pixel, in the same order.
 
-On Sun, 30 Jan 2022 12:41:27 -0600, Terry Bowman wrote:
-> EFCH cd6h/cd7h port I/O may no longer be available on later AMD
-> processors and it is recommended to use MMIO instead. Update the
-> request and release functions to support MMIO.
-> 
-> MMIO request/release and mmapping require details during cleanup.
-> Add a MMIO configuration structure containing resource and vaddress
-> details for mapping the region, accessing the region, and releasing
-> the region.
-> 
-> Signed-off-by: Terry Bowman <terry.bowman@amd.com>
-> ---
->  drivers/i2c/busses/i2c-piix4.c | 61 ++++++++++++++++++++++++++++++----
->  1 file changed, 55 insertions(+), 6 deletions(-)
-> (...)
-> @@ -880,6 +928,7 @@ static int piix4_add_adapter(struct pci_dev *dev, unsigned short smba,
->  		return -ENOMEM;
->  	}
->  
-> +	adapdata->mmio_cfg.use_mmio = 0;
+Add the entry in userspace API, and document it.
 
-Useless initialization, as the adapdata structure has just been zalloc'd.
+Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+---
+ .../userspace-api/media/v4l/pixfmt-yuv-luma.rst       | 11 +++++++++++
+ drivers/media/v4l2-core/v4l2-ioctl.c                  |  1 +
+ include/uapi/linux/videodev2.h                        |  1 +
+ 3 files changed, 13 insertions(+)
 
->  	adapdata->smba = smba;
->  	adapdata->sb800_main = sb800_main;
->  	adapdata->port = port << piix4_port_shift_sb800;
-
-
+diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-luma.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-luma.rst
+index 8ebd58c3588f..d37ce6027095 100644
+--- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-luma.rst
++++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-luma.rst
+@@ -92,6 +92,17 @@ are often referred to as greyscale formats.
+       - ...
+       - ...
+ 
++    * .. _V4L2-PIX-FMT-Y12P:
++
++      - ``V4L2_PIX_FMT_Y12P``
++      - 'Y12P'
++
++      - Y'\ :sub:`0`\ [11:4]
++      - Y'\ :sub:`1`\ [11:4]
++      - Y'\ :sub:`1`\ [3:0] Y'\ :sub:`0`\ [3:0]
++      - ...
++      - ...
++
+     * .. _V4L2-PIX-FMT-Y14:
+ 
+       - ``V4L2_PIX_FMT_Y14``
+diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+index 8a9883bbe1ef..12862e0803bf 100644
+--- a/drivers/media/v4l2-core/v4l2-ioctl.c
++++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+@@ -1266,6 +1266,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+ 	case V4L2_PIX_FMT_Y16_BE:	descr = "16-bit Greyscale BE"; break;
+ 	case V4L2_PIX_FMT_Y10BPACK:	descr = "10-bit Greyscale (Packed)"; break;
+ 	case V4L2_PIX_FMT_Y10P:		descr = "10-bit Greyscale (MIPI Packed)"; break;
++	case V4L2_PIX_FMT_Y12P:		descr = "12-bit Greyscale (MIPI Packed)"; break;
+ 	case V4L2_PIX_FMT_Y8I:		descr = "Interleaved 8-bit Greyscale"; break;
+ 	case V4L2_PIX_FMT_Y12I:		descr = "Interleaved 12-bit Greyscale"; break;
+ 	case V4L2_PIX_FMT_Z16:		descr = "16-bit Depth"; break;
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index c9ee5de1bce6..bef488205fea 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -569,6 +569,7 @@ struct v4l2_pix_format {
+ /* Grey bit-packed formats */
+ #define V4L2_PIX_FMT_Y10BPACK    v4l2_fourcc('Y', '1', '0', 'B') /* 10  Greyscale bit-packed */
+ #define V4L2_PIX_FMT_Y10P    v4l2_fourcc('Y', '1', '0', 'P') /* 10  Greyscale, MIPI RAW10 packed */
++#define V4L2_PIX_FMT_Y12P    v4l2_fourcc('Y', '1', '2', 'P') /* 12  Greyscale, MIPI RAW12 packed */
+ 
+ /* Palette formats */
+ #define V4L2_PIX_FMT_PAL8    v4l2_fourcc('P', 'A', 'L', '8') /*  8  8-bit palette */
 -- 
-Jean Delvare
-SUSE L3 Support
+2.32.0
+
