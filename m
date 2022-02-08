@@ -2,235 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F49FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 995BDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 09:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355125AbiBHJcL (ORCPT
+        id S1354981AbiBHJcp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 04:32:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40114 "EHLO
+        Tue, 8 Feb 2022 04:32:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355058AbiBHJb7 (ORCPT
+        with ESMTP id S1354954AbiBHJcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:31:59 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A42C03FEDB;
-        Tue,  8 Feb 2022 01:31:44 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id f18so2957541lfj.12;
-        Tue, 08 Feb 2022 01:31:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=QTsvG/MyR6TPoZZ1n5KMlOw4gpVQIJ+hOUnP6d8GFcc=;
-        b=DKhZSAqJ6wiIGf+iD+yFxg2jDXx8jMDB2WiDTTjJErW2HwymA7vVgUzR9MKOqQAy4m
-         Aq2Sd0DEn7MaLIeGV9iWAreTiv0MyFZhSEiGpL4OBtPnVGD50g4Vd1cwHDP1FkmEPfY8
-         hNGx9qqSwTvf33NFhBFbEqKnBwQpaf8EmW4QHS4zTccIGOUYdjxdizjPR66D/AZb6XF0
-         J/wbms0+EK46ESGLqoEFPULznfkjqCAGs0C4Wim7kv3a3z90hoJogJgFTpUhBVDShJeA
-         2I90Ms1qXYPLiDaO7jXQMda1T4C8hP2dSqACLl9oKA0qgICOnneQhAzBM2SxDaBDexii
-         tKnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=QTsvG/MyR6TPoZZ1n5KMlOw4gpVQIJ+hOUnP6d8GFcc=;
-        b=idcy3KQyuq5P2N62nfsyGFLXf1i6Agj25o3ycVAXHLXEcQXAM+j4rIUbyJjP5lE03k
-         pdwB9fdgq2HvgVgQjf2hJyW69Nwoc7JK2UrJyNopTf8ijV6ENI5/gSl/r23imrHEzJQp
-         GXZb+6cszXHdeS18Fcus0OJq4wrsPHezWQEU3dzKq77y/nKIi+iqtgJjqHo08Q2sYd2F
-         NkT5VMWyqGPvY7b99XqxyIps/nneLzUDm8MpObCk5uHLXOo4d9fg6iLFsPHgVR3GNE7H
-         u3LKhR09emlF1bHdHY4qVb0BOeAPNy2cmFsOR6T5RYWq6o/LFsQKO8dK24xQQV/1kabn
-         wLuA==
-X-Gm-Message-State: AOAM531xBr4jzAMv3lgaUsqk3gWOeiRVwUkf7fm8sTM8rnNr7nX1fHv4
-        qdebqp7oEpuScjSrAOS173y0ap/y0VJpPl1+/g==
-X-Google-Smtp-Source: ABdhPJypVIyBMMvDURLR0SEeUbpP7YTNmt+B/7NYNmg53tZ+PS9X8lm5E6KlllarkaEGTbpM2ZZWBPRdR00N7rIwrms=
-X-Received: by 2002:a05:6512:3c96:: with SMTP id h22mr2373512lfv.262.1644312702716;
- Tue, 08 Feb 2022 01:31:42 -0800 (PST)
+        Tue, 8 Feb 2022 04:32:43 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99706C03FECA;
+        Tue,  8 Feb 2022 01:32:42 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3A37F11D4;
+        Tue,  8 Feb 2022 01:32:42 -0800 (PST)
+Received: from [10.57.15.144] (unknown [10.57.15.144])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 443373F73B;
+        Tue,  8 Feb 2022 01:32:36 -0800 (PST)
+Subject: Re: [PATCH 1/2] thermal: cooling: Check Energy Model type in
+ cpufreq_cooling and devfreq_cooling
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        amit.kachhap@gmail.com, daniel.lezcano@linaro.org,
+        viresh.kumar@linaro.org, rafael@kernel.org, amitk@kernel.org,
+        rui.zhang@intel.com, dietmar.eggemann@arm.com,
+        Pierre.Gondois@arm.com, Douglas Anderson <dianders@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+References: <20220207073036.14901-1-lukasz.luba@arm.com>
+ <20220207073036.14901-2-lukasz.luba@arm.com> <YgG+TmLrCSXX4Bvt@google.com>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+Message-ID: <4a7d4e94-1461-5bac-5798-29998af9793a@arm.com>
+Date:   Tue, 8 Feb 2022 09:32:28 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220207063338.6570-1-warp5tw@gmail.com> <20220207063338.6570-7-warp5tw@gmail.com>
- <CAHb3i=vdc_+J4pCBcY--C85ZR1uXO1LG02UsttsfSnsQBDKWAg@mail.gmail.com>
-In-Reply-To: <CAHb3i=vdc_+J4pCBcY--C85ZR1uXO1LG02UsttsfSnsQBDKWAg@mail.gmail.com>
-From:   Avi Fishman <avifishman70@gmail.com>
-Date:   Tue, 8 Feb 2022 11:31:31 +0200
-Message-ID: <CAKKbWA6qZ1ytKS5V6tLxQgzQefhz7mTg3Vi_tPDM2p=N7O+8Vg@mail.gmail.com>
-Subject: Re: [PATCH v1 6/6] i2c: npcm: Support NPCM845
-To:     Tali Perry <tali.perry1@gmail.com>
-Cc:     Tyrone Ting <warp5tw@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
-        Wolfram Sang <wsa@kernel.org>, jie.deng@intel.com,
-        sven@svenpeter.dev, bence98@sch.bme.hu,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, olof@lixom.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Tali Perry <tali.perry@nuvoton.com>,
-        Avi Fishman <Avi.Fishman@nuvoton.com>,
-        Tomer Maimon <tomer.maimon@nuvoton.com>, KWLIU@nuvoton.com,
-        JJLIU0@nuvoton.com, kfting@nuvoton.com,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YgG+TmLrCSXX4Bvt@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 11:22 AM Tali Perry <tali.perry1@gmail.com> wrote:
->
-> >On 08/02/2022 09:51, Tali Perry wrote:
-> >>> On 08/02/2022 08:14, Tali Perry wrote:
-> >>>>> Subject: Re: [PATCH v1 6/6] i2c: npcm: Support NPCM845
-> >>>>>
-> >>>>> On 07/02/2022 13:00, Jonathan Neusch=C3=A4fer wrote:
-> >>>>>> Hello,
-> >>>>>>
-> >>>>>> On Mon, Feb 07, 2022 at 02:33:38PM +0800, Tyrone Ting wrote:
-> >>>>>>> From: Tyrone Ting <kfting@nuvoton.com>
-> >>>>>>>
-> >>>>>>> NPCM8XX uses a similar i2c module as NPCM7XX.
-> >>>>>>> The only difference is that the internal HW FIFO is larger.
-> >>>>>>>
-> >>>>>>> Related Makefile and Kconfig files are modified to support as wel=
-l.
-> >>>>>>>
-> >>>>>>> Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controll=
-er
-> >>>>>>> driver")
-> >>>>>>
-> >>>>>> It's not really a bug fix, but rather an additional feature.
-> >>>>>> Therefore, I suggest removing the Fixes tag from this patch.
-> >>>>>>
-> >>>>>>> Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-> >>>>>>> Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-> >>>>>>> ---
-> >>>>>> [...]
-> >>>>>>>  /* init register and default value required to enable module */
-> >>>>>>>  #define NPCM_I2CSEGCTL 0xE4
-> >>>>>>> +#ifdef CONFIG_ARCH_NPCM7XX
-> >>>>>>>  #define NPCM_I2CSEGCTL_INIT_VAL 0x0333F000
-> >>>>>>> +#else
-> >>>>>>> +#define NPCM_I2CSEGCTL_INIT_VAL 0x9333F000
-> >>>>>>> +#endif
-> >>>>>>
-> >>>>>> This is going to cause problems when someone tries to compile a ke=
-rnel
-> >>>>>> that runs on both NPCM7xx and NPCM8xx (because the driver will the=
-n
-> >>>>>> only work on NPCM7xx).
-> >>>>>
-> >>>>> Yes, good catch.
-> >>>>>
-> >>>>> The NPCM7XX is multiplatform, I guess NPCM8xx will be as well, so t=
-his looks like an invalid code. How such code is supposed to work on multip=
-latform kernel?
-> >>>>>
-> >>>>
-> >>>> NPCM7xx and NPCM8xx are very different devices.
-> >>>> They share same driver sources for some of the modules but it's not =
-ABI.
-> >>>> Users cannot compile a single kernel with two separate DTS.
-> >>>> In case of the i2c controller, the npcm7xx has a 16 byte HW FIFO,
-> >>>> and the NPCM8xx has 32 bytes HW FIFO.
-> >>>> This also means that registers fields are slightly different.
-> >>>> For init data we can move it to the DTS, but register field sizes
-> >>>> can't be handled with this approach.
-> >>>>
-> >>>
-> >>> What do you mean they cannot compile a kernel with different DTS? Of
-> >>> course they can - when we talk about multiplatform sub-architectures!
-> >>> Maybe there is something specific in NPCMxxx which stops it but then =
-it
-> >>> should not be marked multiplatform.
-> >>>
-> >>
-> >>
-> >> NCPM7xx is ARM32 bit (dual core Cortex A9)
-> >> NPCM8xx is ARM64 bit (quad core Cortex A35)
-> >>
-> >> They have completely different architecture so not ABI compliant.
-> >> I2C module is similar, but the devices are quite different and have
-> >> separate architectures.
-> >
-> >OK, in such case usually you indeed can't have both. :)
-> >
-> >> Sorry for the confusion.
-> >> This is the first patch we try to upstream for NPCM8xx.
-> >> In the coming weeks we will upstream the architecture of NPCM8xx as we=
-ll.
-> >
-> >Still, ARCH_XXX should not be hard-coded in the drivers to change the
-> >driver's behavior, even if driver won't be used simultaneously. It
-> >breaks all design principles and prevents any further re-use if a new
-> >use case appears.
-> >
-> >You can use "ifdef ARCH_XXX" to skip building of some parts of the
-> >driver, but it's not the case here.
-> >
->
-> Correct, the main change is in FIFO size:
-> +#ifdef CONFIG_ARCH_NPCM7XX
-> #define I2C_HW_FIFO_SIZE               16
-> +#else
-> +#define I2C_HW_FIFO_SIZE               32
-> +#endif /* CONFIG_ARCH_NPCM7XX */
->
-> NPCM7XX will always have 16 bytes, all the next gens will have 32.
->
-> This impact some registers sizes, like this one:
->
-> +#ifdef CONFIG_ARCH_NPCM7XX
-> #define NPCM_I2CRXF_STS_RX_BYTES       GENMASK(4, 0)
-> +#else
-> +#define NPCM_I2CRXF_STS_RX_BYTES       GENMASK(5, 0)
-> +#endif /*CONFIG_ARCH_NPCM7XX*/
->
-> For this, the FIFO size should be defined before compilation.
-> I also don't want to let users select FIFO size per architecture.
-> NPCM7XX has 16, NPCM8XX has 32. This is not a user selection.
-> It's part of the arch.
-
-Will this be a better approach to add in the Kconfig file a legacy mode:
-config I2C_NPCM_VER_89
-      bool "support legacy i2c version 0x89 of npcm"
-      depends on ARCH_NPCM7XX
-      default y
-      help
-        This limits the support to legacy i2c version 0x89 of npcm
-        Will be only 16 bytes fifo and will not include other new features
-
-config I2C_NPCM
-      tristate "Nuvoton I2C Controller"
-      depends on ARCH_NPCM || COMPILE_TEST
-      select I2C_NPCM_VER_89 if ARCH_NPCM7XX
-      help
-        If you say yes to this option, support will be included for the
-        Nuvoton I2C controller, which is available on the NPCM BMC
-        controllers.
-        Driver can also support slave mode (select I2C_SLAVE).
-
-and in the code replace:
-#ifdef CONFIG_ARCH_NPCM7XX
-with
-#ifdef CONFIG_I2C_NPCM_VER_89
-
->
->
->
-> >
-> >Best regards,
-> >Krzysztof
->
-> Thanks,
-> Tali
 
 
+On 2/8/22 12:50 AM, Matthias Kaehlcke wrote:
+> On Mon, Feb 07, 2022 at 07:30:35AM +0000, Lukasz Luba wrote:
+>> The Energy Model supports power values either in Watts or in some abstract
+>> scale. When the 2nd option is in use, the thermal governor IPA should not
+>> be allowed to operate, since the relation between cooling devices is not
+>> properly defined. Thus, it might be possible that big GPU has lower power
+>> values in abstract scale than a Little CPU. To mitigate a misbehaviour
+>> of the thermal control algorithm, simply not register a cooling device
+>> capable of working with IPA.
+> 
+> Ugh, this would break thermal throttling for existing devices that are
+> currently supported in the upstream kernel.
 
---=20
+Could you point me to those devices? I cannot find them in the mainline
+DT. There are no GPU devices which register Energy Model (EM) in
+upstream, neither using DT (which would be power in mW) nor explicitly
+providing EM get_power() callback. The EM is needed to have IPA.
+
+Please clarify which existing devices are going to be broken with this
+change.
+
+> 
+> Wasn't the conclusion that it is the responsability of the device tree
+> owners to ensure that cooling devices with different scales aren't used
+> in the same thermal zone?
+
+It's based on assumption that someone has DT and control. There was also
+implicit assumption that IPA would work properly on such platform - but
+it won't.
+
+1. You cannot have 2 thermal zones: one with CPUs and other with GPU
+only and both working with two instances of IPA.
+
+2. The abstract power scale doesn't guaranty anything about power values
+and IPA was simply designed with milli-Watts in mind. So even working
+on CPUs only using bogoWatts, is not what we could guaranty in IPA.
+
+> 
+> That's also what's currently specified in the power allocator
+> documentation:
+> 
+>    Another important thing is the consistent scale of the power values
+>    provided by the cooling devices. All of the cooling devices in a single
+>    thermal zone should have power values reported either in milli-Watts
+>    or scaled to the same 'abstract scale'.
+
+This can change. We have removed the userspace governor from kernel
+recently. The trend is to implement thermal policy in FW. Dealing with
+some intermediate configurations are causing complicated design, support
+of the algorithm logic is also more complex.
+
+> 
+> Which was actually added by yourself:
+> 
+> commit 5a64f775691647c242aa40d34f3512e7b179a921
+> Author: Lukasz Luba <lukasz.luba@arm.com>
+> Date:   Tue Nov 3 09:05:58 2020 +0000
+> 
+>      PM: EM: Clarify abstract scale usage for power values in Energy Model
+> 
+>      The Energy Model (EM) can store power values in milli-Watts or in abstract
+>      scale. This might cause issues in the subsystems which use the EM for
+>          estimating the device power, such as:
+> 
+>       - mixing of different scales in a subsystem which uses multiple
+>              (cooling) devices (e.g. thermal Intelligent Power Allocation (IPA))
+> 
+>       - assuming that energy [milli-Joules] can be derived from the EM power
+>              values which might not be possible since the power scale doesn't have
+> 	           to be in milli-Watts
+> 
+>      To avoid misconfiguration add the requisite documentation to the EM and
+>          related subsystems: EAS and IPA.
+> 
+>      Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+>      Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> 
+> 
+> It's ugly to have the abstract scales in the first place, but that's
+> unfortunately what we currently have for at least some cooling devices.
+
+A few questions:
+Do you use 'we' as Chrome engineers?
+Could you point me to those devices please?
+Are they new or some old platforms which need just maintenance?
+How IPA works for you in such real platform configuration?
+If it would be possible could you share some plots of temperature,
+frequency and CPUs, GPU utilization?
+Do you maybe know how the real power was scaled for them?
+
+It would help me understand and judge.
+
+> 
+> IMO it would be preferable to stick to catching incompliant configurations
+> in reviews, rather than breaking thermal throttling for existing devices
+> with configurations that comply with the current documentation.
+> 
+
+Without access to the source code of those devices, it's hard for me to
+see if they are broken.
+
 Regards,
-Avi
+Lukasz
