@@ -2,130 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74689C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE65C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380438AbiBHPcB (ORCPT
+        id S1380478AbiBHPcR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:32:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
+        Tue, 8 Feb 2022 10:32:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235109AbiBHPcA (ORCPT
+        with ESMTP id S235109AbiBHPcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:32:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5584C061576
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 07:31:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C1E2615C7
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 15:31:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F8F2C340E9;
-        Tue,  8 Feb 2022 15:31:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644334318;
-        bh=L0p/sE9csIRwSUuble/l//7GDvjyfHoLqprBqHetPSc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ouw1+av2qOU9Y88Pio/kOxI/2jxsqngUdvYjkPsq0DGvW0wvZjBPSv7J43exny63Z
-         2Jq+TXc8J1EkXvbcfVnIPVggcz7rWd5ZmWfpfroAQfch+SXB/HnBePi5diiAYy+9ek
-         7Gi0QplCwPQIJA0pDJ/3psDaRXngU3NfjL7Y5I72ZBGiQd/i2NBFluOMvphmC4GJM8
-         svFHDDl/lx9IXUlgnp1hYa2IhId0BlUdVN2URhNtxlM1rSqPpQp62ngDxc/9RxRK29
-         HZ/ZgxNO42Hc8oXVE30B8DzAdv+ZtLzZJO+sbsWdWz8y4yHID7z3kS0HG0P4+oh8UA
-         mThwvlwoh0fEA==
-Date:   Tue, 8 Feb 2022 15:31:52 +0000
-From:   Will Deacon <will@kernel.org>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Rob Clark <robdclark@chromium.org>,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, Xin Tan <tanxin.ctf@gmail.com>,
-        Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
-        "Isaac J. Manjarres" <isaacm@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Subject: Re: [PATCH 1/2] iommu/arm-smmu: Use platform_irq_count() to get the
- interrupt count
-Message-ID: <20220208153152.GC1802@willie-the-truck>
-References: <20211223130046.9365-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20211223130046.9365-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <f9efc8e8-9dc6-8a80-15bb-bc2d9aaf60cb@arm.com>
- <20220208151932.GB1802@willie-the-truck>
- <f54af077-41a3-e8c3-4349-ecc7f83520a4@arm.com>
+        Tue, 8 Feb 2022 10:32:16 -0500
+Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2002::664])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B917C061576;
+        Tue,  8 Feb 2022 07:32:15 -0800 (PST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1644334333; bh=wgBzt5vK3cFN8FMnyCpL9e4AgZNfJRkAyZy5pNQF5Y8=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=SDtmhTSuRrLIi0rBu2TtRfajchoprAs5Y921ThZLf60QXQWj6C62Z5d3CntC9fB8Y
+         ez/6QuDAttYFRjncVb18h5leoNYSIKF36l4hIHnk0J88KgCvWwFD6tjAuTSGcS67fq
+         KgxpwbYrlF0bYZJyz4sRLqrY0/AWc5OOOR41hFO7tBxRgfaBOG50spbTS16HvvZISB
+         OfOpaj5w6vLOhL2ndpQwatDM2xZvXdeHDQAL4mzNzU7krdAzhVE8HgMv+kAuZNBseT
+         btlWIBr5CH4FAUjEDGuNNOxcV4COjwF9Y3PB43j2h8/q5b8xTUiyCSq23x7nMrHLK1
+         O5SZLzArGhTxw==
+To:     Jeff Johnson <quic_jjohnson@quicinc.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] ath9k: htc: clean up *STAT_* macros
+In-Reply-To: <258ac12b-9ca3-9b24-30df-148f9df51582@quicinc.com>
+References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+ <28c83b99b8fea0115ad7fbda7cc93a86468ec50d.1644265120.git.paskripkin@gmail.com>
+ <258ac12b-9ca3-9b24-30df-148f9df51582@quicinc.com>
+Date:   Tue, 08 Feb 2022 16:32:13 +0100
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87ee4d9xxe.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f54af077-41a3-e8c3-4349-ecc7f83520a4@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 03:28:50PM +0000, Robin Murphy wrote:
-> On 2022-02-08 15:19, Will Deacon wrote:
-> > On Thu, Dec 23, 2021 at 02:14:35PM +0000, Robin Murphy wrote:
-> > > On 2021-12-23 13:00, Lad Prabhakar wrote:
-> > > > platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
-> > > > allocation of IRQ resources in DT core code, this causes an issue
-> > > > when using hierarchical interrupt domains using "interrupts" property
-> > > > in the node as this bypasses the hierarchical setup and messes up the
-> > > > irq chaining.
-> > > > 
-> > > > In preparation for removal of static setup of IRQ resource from DT core
-> > > > code use platform_get_irq_count().
-> > > 
-> > > Nit: platform_irq_count()
-> > > 
-> > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > > > ---
-> > > >    drivers/iommu/arm/arm-smmu/arm-smmu.c | 12 ++++++------
-> > > >    1 file changed, 6 insertions(+), 6 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > > index 4bc75c4ce402..4844cd075644 100644
-> > > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > > @@ -2105,12 +2105,12 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
-> > > >    	if (IS_ERR(smmu))
-> > > >    		return PTR_ERR(smmu);
-> > > > -	num_irqs = 0;
-> > > > -	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, num_irqs))) {
-> > > > -		num_irqs++;
-> > > > -		if (num_irqs > smmu->num_global_irqs)
-> > > > -			smmu->num_context_irqs++;
-> > > > -	}
-> > > > +	num_irqs = platform_irq_count(pdev);
-> > > > +	if (num_irqs < 0)
-> > > > +		return num_irqs;
-> > > > +
-> > > > +	if (num_irqs > smmu->num_global_irqs)
-> > > > +		smmu->num_context_irqs += (num_irqs - smmu->num_global_irqs);
-> > > 
-> > > This seems a bit overcomplicated. I reckon:
-> > > 
-> > > 	smmu->num_context_irqs = num_irqs - smmu->num_global_irqs;
-> > > 	if (num_irqs <= smmu->num_global_irqs) {
-> > > 		dev_err(...
-> > > 
-> > > should do it.
-> > > 
-> > > However, FYI I have some patches refactoring most of the IRQ stuff here that
-> > > I plan to post next cycle (didn't quite have time to get them done for 5.17
-> > > as I'd hoped...), so unless this needs to go in right now as an urgent fix,
-> > > I'm happy to take care of removing platform_get_resource() as part of that
-> > > if it's easier.
-> > 
-> > Did you get anywhere with this? December 23rd is long forgotten by now ;)
-> 
-> Yup: https://gitlab.arm.com/linux-arm/linux-rm/-/commit/b2a40caaf1622eb35c555074a0d72f4f0513cff9
-> 
-> I'm still cleaning up the PMU driver that justifies the whole thing, but I
-> can send that patch now if you reckon it's not complete nonsense out of
-> context. Otherwise, I'll aim to get the whole lot out next week.
+Jeff Johnson <quic_jjohnson@quicinc.com> writes:
 
-Next week is fine, no rush. I was just trying to work out what to do with
-Lad's patches in this thread and it sounds like I should ignore them and
-wait for your series instead.
+> On 2/7/2022 12:24 PM, Pavel Skripkin wrote:
+>> I've changed *STAT_* macros a bit in previous patch and I seems like
+>> they become really unreadable. Align these macros definitions to make
+>> code cleaner.
+>> 
+>> Also fixed following checkpatch warning
+>> 
+>> ERROR: Macros with complex values should be enclosed in parentheses
+>> 
+>> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+>> ---
+>> 
+>> Changes since v2:
+>> 	- My send-email script forgot, that mailing lists exist.
+>> 	  Added back all related lists
+>> 	- Fixed checkpatch warning
+>> 
+>> Changes since v1:
+>> 	- Added this patch
+>> 
+>> ---
+>>   drivers/net/wireless/ath/ath9k/htc.h | 16 ++++++++--------
+>>   1 file changed, 8 insertions(+), 8 deletions(-)
+>> 
+>> diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+>> index 141642e5e00d..b4755e21a501 100644
+>> --- a/drivers/net/wireless/ath/ath9k/htc.h
+>> +++ b/drivers/net/wireless/ath/ath9k/htc.h
+>> @@ -327,14 +327,14 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
+>>   }
+>>   
+>>   #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+>> -#define __STAT_SAVE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
+>> -#define TX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+>> -#define TX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+>> -#define RX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+>> -#define RX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+>> -#define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
+>> -
+>> -#define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
+>> +#define __STAT_SAVE(expr)	(hif_dev->htc_handle->drv_priv ? (expr) : 0)
+>> +#define TX_STAT_INC(c)		__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+>> +#define TX_STAT_ADD(c, a)	__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+>> +#define RX_STAT_INC(c)		__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+>> +#define RX_STAT_ADD(c, a)	__STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+>> +#define CAB_STAT_INC		(priv->debug.tx_stats.cab_queued++)
+>> +
+>> +#define TX_QSTAT_INC(q)		(priv->debug.tx_stats.queue_stats[q]++)
+>>   
+>>   void ath9k_htc_err_stat_rx(struct ath9k_htc_priv *priv,
+>>   			   struct ath_rx_status *rs);
+>
+> It seems that these macros (both the original and the new) aren't 
+> following the guidance from the Coding Style which tells us under 
+> "Things to avoid when using macros" that we should avoid "macros that 
+> depend on having a local variable with a magic name". Wouldn't these 
+> macros be "better" is they included the hif_dev/priv as arguments rather 
+> than being "magic"?
 
-Will
+Hmm, yeah, that's a good point; looks like the non-HTC ath9k stats
+macros have already been converted to take the container as a parameter,
+so taking this opportunity to fix these macros is not a bad idea. While
+we're at it, let's switch to the do{} while(0) syntax the other macros
+are using instead of that weird usage of ?:. And there's not really any
+reason for the duplication between ADD/INC either. So I'm thinking
+something like:
+
+#define __STAT_SAVE(_priv, _member, _n) do { if (_priv) (_priv)->_member += (_n); } while(0)
+
+#define TX_STAT_ADD(_priv, _c, _a) __STAT_SAVE(_priv, debug.tx_stats._c, _a)
+#define TX_STAT_INC(_priv, _c) TX_STAT_ADD(_priv, _c, 1)
+
+[... etc ...]
+
+-Toke
