@@ -2,92 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D300C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D41C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344339AbiBHB5t (ORCPT
+        id S1345185AbiBHB6E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:57:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45336 "EHLO
+        Mon, 7 Feb 2022 20:58:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244596AbiBHB5r (ORCPT
+        with ESMTP id S244596AbiBHB6B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:57:47 -0500
-X-Greylist: delayed 241 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 17:57:46 PST
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7199C061A73
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:57:46 -0800 (PST)
+        Mon, 7 Feb 2022 20:58:01 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397ABC061A73;
+        Mon,  7 Feb 2022 17:58:01 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id h7so19366826iof.3;
+        Mon, 07 Feb 2022 17:58:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644285467; x=1675821467;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=XYGnDAcg+DtyGKZQPv6wzPHMGMw0imYE5zSgdyrOqag=;
-  b=zGIZgp6176fibZk3lKMFnofEfFgirgUcBjy/GL3m8Yy7l+ZWQDm4iaXf
-   YLCxTDi5tEga6sMVAwgDsPZvXFGcFa1JF1GKzwad1ZJcLxegfYkvHDPB4
-   KS3QDhpyK/QuLx4NoAOizqPpfgf6Qh0q6ElaaYgKXSIEXu0vRIfO/m/hm
-   Y=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 07 Feb 2022 17:51:42 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 17:51:42 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Mon, 7 Feb 2022 17:51:41 -0800
-Received: from [10.38.243.172] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 7 Feb 2022
- 17:51:39 -0800
-Message-ID: <8a2ce43f-f5b9-62bf-f169-ccbe3f4b8c49@quicinc.com>
-Date:   Mon, 7 Feb 2022 17:51:36 -0800
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y6LL15sKBUCB5jpcMtEzuUx11A37XJsokGmfmwHbmTw=;
+        b=eRcL3Nm87C1GFPXlf9w0y99ThD2XUhUBMCPvD4G3K0WCSoDnhpHlbNxbOfOpviMiea
+         VwHLV+119v0VSfWHIhGhN951e8a2EEiqs3oNbWGnjQcWUn6pmO/c7nYriLm9TvLcSwXV
+         aWfFyH9bFY1k07MJ+Ssnsb2R+VSxFr1dsQP+9+zjnFHP0rKE9BzGWlEVMUAh2C1MFecx
+         JPAV3GUS4P6tswJ3LhAPrSX9pPuB0eZ1MnwkbL57jgfNAXBb2HkYDkOWg2PWMqCLF2TB
+         hnem8HhRiFw3z62j6glh3A8VV0qbsBgM3eaf/ZynTcYbipgqR0gEB21nz/GNHRFPSfes
+         kJNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y6LL15sKBUCB5jpcMtEzuUx11A37XJsokGmfmwHbmTw=;
+        b=O2NhDqgRX6NuZpWLlm05DkWj388qxV0LFZSDFsuPkZO6JeCI9eet+e4OXAgeCl6UZm
+         jMoYWqlPT7kSkRT3xLq5TF6xQKQT416DnFHhp6BzTwlc6svL+WRrUETOae69hbv3PiXO
+         pRJyY3jS7eSN4FX6+OXYpJQC7p8wNzGRJyvbiNHC7ICnod/BeBf207qjkJmiicrm03sU
+         52ECgLkyBUdnoDIcfUYpWdQrvyUCXr0hUJ1W91ewyavyXNAzrQDjZoyrvZTycKeMrOhe
+         NKf1rlS0ImKwu+UD770/MJSf7RzTPhANt3Orohp+rKnS5EqKU9oq7DnN9R7LkDLYHu1I
+         rNBA==
+X-Gm-Message-State: AOAM5338rd2SmQzGxJN5JttCQ9s998yP0L4Rw55EyRmKUQTYiS8uEMS7
+        Mh/E4uITxKNZY5nvX/MrbWDfumEHS8gtntaUYIM=
+X-Google-Smtp-Source: ABdhPJyL4wkgnkqRf0wUUrIPAwFmAD6zaYr7NnN7z+A/JQrbvNh8Dv4kdWm/XKMy6lhdNgsbHa+kISWa0TIJlVfgy/o=
+X-Received: by 2002:a02:6988:: with SMTP id e130mr1129766jac.120.1644285480118;
+ Mon, 07 Feb 2022 17:58:00 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH -next] drm/msm/dpu: clean up some inconsistent indenting
-Content-Language: en-US
-To:     Yang Li <yang.lee@linux.alibaba.com>, <daniel@ffwll.ch>
-CC:     <airlied@linux.ie>, <sean@poorly.run>, <robdclark@gmail.com>,
-        <linux-arm-msm@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        "Abaci Robot" <abaci@linux.alibaba.com>
-References: <20220208012321.43587-1-yang.lee@linux.alibaba.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <20220208012321.43587-1-yang.lee@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220207133856.644483064@linuxfoundation.org>
+In-Reply-To: <20220207133856.644483064@linuxfoundation.org>
+From:   Zan Aziz <zanaziz313@gmail.com>
+Date:   Mon, 7 Feb 2022 18:57:49 -0700
+Message-ID: <CAFU3qoYBZ1+nWTjiJUSaYNZMPdU8rfLR0X0vaQyr9kv8xA2fow@mail.gmail.com>
+Subject: Re: [PATCH 5.16 000/127] 5.16.8-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 7, 2022 at 8:18 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.16.8 release.
+> There are 127 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Feb 2022 13:38:34 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.8-rc2.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
+Hi Greg,
 
-On 2/7/2022 5:23 PM, Yang Li wrote:
-> Eliminate the follow smatch warning:
-> drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c:411
-> _dpu_crtc_blend_setup_mixer() warn: inconsistent indenting
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-> ---
->   drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-> index e7c9fe1a250f..662b7bc9c219 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-> @@ -408,7 +408,7 @@ static void _dpu_crtc_blend_setup_mixer(struct drm_crtc *crtc,
->   	if (ctl->ops.set_active_pipes)
->   		ctl->ops.set_active_pipes(ctl, fetch_active);
->   
-> -	 _dpu_crtc_program_lm_output_roi(crtc);
-> +	_dpu_crtc_program_lm_output_roi(crtc);
->   }
->   
->   /**
+Compiled and booted on my test system Lenovo P50s: Intel Core i7
+No emergency and critical messages in the dmesg
+
+./perf bench sched all
+# Running sched/messaging benchmark...
+# 20 sender and receiver processes per group
+# 10 groups == 400 processes run
+
+     Total time: 0.449 [sec]
+
+# Running sched/pipe benchmark...
+# Executed 1000000 pipe operations between two processes
+
+     Total time: 9.039 [sec]
+
+       9.039568 usecs/op
+         110624 ops/sec
+
+Tested-by: Zan Aziz <zanaziz313@gmail.com>
+
+Thanks
+-Zan
