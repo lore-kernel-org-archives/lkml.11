@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6733AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45ABFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349380AbiBHIUz (ORCPT
+        id S1349198AbiBHIU5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:20:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53014 "EHLO
+        Tue, 8 Feb 2022 03:20:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349201AbiBHITs (ORCPT
+        with ESMTP id S1349217AbiBHITs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Feb 2022 03:19:48 -0500
-Received: from mail-il1-x14a.google.com (mail-il1-x14a.google.com [IPv6:2607:f8b0:4864:20::14a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC5FC03FEE1
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:19:41 -0800 (PST)
-Received: by mail-il1-x14a.google.com with SMTP id f18-20020a926a12000000b002be48b02bc6so2116841ilc.17
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:19:41 -0800 (PST)
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3073CC03FEEF
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:19:45 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id v10-20020a05690204ca00b0061dd584eb83so7598526ybs.21
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:19:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc:content-transfer-encoding;
-        bh=MIB++7G+/LCy16uIS5SE62AmAfXnIjlhBHvrLUsKEns=;
-        b=j04x2wOt2cZHbDzPHqdx2vq9JtnvFNLOAiVY3qfGUiWCnq3cnJPNG2/mmfrtuDXHjE
-         CBnj5o5JUsSj+nfz3qSJl/mv7bqUj57dW6tzR5ZDewYq6AFhTcKVzQTb5Cbi/4JBlI0m
-         cG6HHx6Ice5xypjaoYERkrXU4jQSN1fcndUbRjnoxR01y1ork4tsgZT4NBEF53Bb1rKJ
-         tZI8+cZgwHl51rjkt/+vrgZUGvQfvcxOizfgWPOAUBbm46MeVmMNFUUiRCuLXDt2tmnP
-         A0xtSEKDRkzS2qauLrPiS9wSlrrkURAU701cZy5LzdPkcJ2auSuEVyDmOgFtZqWlOg5V
-         38yQ==
+        bh=YVgph1S7S/KhnDZWPK/21Kb0iFZ85VY+kaUoodkvSfs=;
+        b=LPUUnvP3KiRJOtBK7ehNIOditrPQVm4qb0xako5BDNxKqOTpybfI/rbGsv6Ba4LKZV
+         7Vr2/sPq4jXjAPIdnVQ/L2eRjyqHDRO1txkk08bZmum/YLFGtOzKoNedOH+pYN+5L0ls
+         ZoBU71ZVqCRbOCvegQZ9X9N5xDhwygiRk4X87KJK7elMXhqbCdXO0LMcMgvNSEmbE10e
+         w0w58bxVzDHqb/kEfqSMjn92eikullUCwz6NbYbkR9imkFIUZ8QInzDmS4rqRr7grEjI
+         PuyNC9Z/vaakRjNuybtQXQhwtx3VPBbNjAYHAOIIf8JWobHcgVnzzXQT3w7pCqFEIVf7
+         xBng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc:content-transfer-encoding;
-        bh=MIB++7G+/LCy16uIS5SE62AmAfXnIjlhBHvrLUsKEns=;
-        b=voxuj6UHZPhQQFpvZn4KLOLbNgBZ3RFvEnYGCYRp+xkLm1VRWDD2axjb4n3zM89AA2
-         /7VU4Ga/ZmCM0ooK/1ZWTZnqOetFQjqxvVcknbr1C4+qZY0104Ig8D3ivx/mNBfeIYXF
-         pb057/XT2tnXuvOXt2OzPvIYdbh195T+1G6w1o7f5NeFXAKb6J/eGPU3QG/yiJ9f1MDh
-         yyt0fiL5jFLO6ilPpV0aNhTSNHA/ZAvjQhSVxy+opQoEh1KFbo383MfRmWzzuaHm5GKp
-         QnNMC97ux0f7mU5HHE3Gk8XOqwSNiGz6UYtn6daihxYoR8WfrZkN/GfABtXeu3uDU/yV
-         VTag==
-X-Gm-Message-State: AOAM5321Gzhsab6mNzWgsU3B9er6N/cnR0iJhtIEIcuNxtm3e8z1IiE9
-        ArQ0rveB3u0BhZnMUP/RgUubLGwjYzc=
-X-Google-Smtp-Source: ABdhPJwvGsx9x7biM2i13AIBVIwwI7yLTvs/RgJHVZky0l2R0ILRLR7J5MVRvavlQNnwnqDruUBvYL02o6s=
+        bh=YVgph1S7S/KhnDZWPK/21Kb0iFZ85VY+kaUoodkvSfs=;
+        b=eep6nMGH/oij0hoIUjKhNc0M0k4uzn+Wf9cvEbYEVMWgulfwQys1nAiDNKaxD5k6W9
+         3hIN0WdhM1rB7q8QNLqPmxVR8BDU9SHDY4OT9gSkIX3Rb3L8sUHWTqb8WieXoEhGzqrr
+         oJIszHyM8Galx4VCoCHwsdSgp7FtT2aQVOGSzo4E8TXlrvemyW8l3d+OTbwHWl4XCEot
+         sKNzoOGvkbk3Zh00xqxbcNM9op9WWcI4pLchg07Ht2N3ZLCXJ/zr20JedjJ0DbWvC5p/
+         2W7u1SjBcU8oc+bg3EIVH6slVp0SgBvhYeqBGHn8qtwGm4xdKsAaSx4mKOEOdmUY4G1t
+         0kog==
+X-Gm-Message-State: AOAM530HF5kitPVJ9O3Tt8YCqcS6vdgHUs6TItm5G3zUdDI1uUfwwQOE
+        doX8kcmEbhsYj7nyyz5ZvTa70zQo5Tk=
+X-Google-Smtp-Source: ABdhPJxHfrvdjw/ioGL/CY9F6iMqAfiU4rpWvGJpBLTOZu3nfaPCcOelWryg2+GLyTOhlUoLP6GGbhLqyxo=
 X-Received: from yuzhao.bld.corp.google.com ([2620:15c:183:200:5f31:19c3:21f5:7300])
- (user=yuzhao job=sendgmr) by 2002:a92:dacb:: with SMTP id o11mr720466ilq.188.1644308381316;
- Tue, 08 Feb 2022 00:19:41 -0800 (PST)
-Date:   Tue,  8 Feb 2022 01:19:00 -0700
+ (user=yuzhao job=sendgmr) by 2002:a81:7e06:: with SMTP id o6mr3685138ywn.13.1644308384378;
+ Tue, 08 Feb 2022 00:19:44 -0800 (PST)
+Date:   Tue,  8 Feb 2022 01:19:02 -0700
 In-Reply-To: <20220208081902.3550911-1-yuzhao@google.com>
-Message-Id: <20220208081902.3550911-11-yuzhao@google.com>
+Message-Id: <20220208081902.3550911-13-yuzhao@google.com>
 Mime-Version: 1.0
 References: <20220208081902.3550911-1-yuzhao@google.com>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-Subject: [PATCH v7 10/12] mm: multigenerational LRU: thrashing prevention
+Subject: [PATCH v7 12/12] mm: multigenerational LRU: documentation
 From:   Yu Zhao <yuzhao@google.com>
 To:     Andrew Morton <akpm@linux-foundation.org>,
         Johannes Weiner <hannes@cmpxchg.org>,
@@ -94,24 +94,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add /sys/kernel/mm/lru_gen/min_ttl_ms for thrashing prevention, as
-requested by many desktop users [1].
-
-When set to value N, it prevents the working set of N milliseconds
-from getting evicted. The OOM killer is triggered if this working set
-can't be kept in memory. Based on the average human detectable lag
-(~100ms), N=3D1000 usually eliminates intolerable lags due to thrashing.
-Larger values like N=3D3000 make lags less noticeable at the risk of
-premature OOM kills.
-
-Compared with the size-based approach, e.g., [2], this time-based
-approach has the following advantages:
-1) It's easier to configure because it's agnostic to applications and
-   memory sizes.
-2) It's more reliable because it's directly wired to the OOM killer.
-
-[1] https://lore.kernel.org/lkml/Ydza%2FzXKY9ATRoh6@google.com/
-[2] https://lore.kernel.org/lkml/20211130201652.2218636d@mail.inbox.lv/
+Add a design doc and an admin guide.
 
 Signed-off-by: Yu Zhao <yuzhao@google.com>
 Acked-by: Brian Geffon <bgeffon@google.com>
@@ -126,147 +109,327 @@ Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
 Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
 Tested-by: Sofia Trinh <sofia.trinh@edi.works>
 ---
- mm/vmscan.c | 64 +++++++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 60 insertions(+), 4 deletions(-)
+ Documentation/admin-guide/mm/index.rst        |   1 +
+ Documentation/admin-guide/mm/multigen_lru.rst | 121 ++++++++++++++
+ Documentation/vm/index.rst                    |   1 +
+ Documentation/vm/multigen_lru.rst             | 152 ++++++++++++++++++
+ 4 files changed, 275 insertions(+)
+ create mode 100644 Documentation/admin-guide/mm/multigen_lru.rst
+ create mode 100644 Documentation/vm/multigen_lru.rst
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 700c35f2a030..4d37d63668b5 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -4335,7 +4335,8 @@ static long get_nr_evictable(struct lruvec *lruvec, u=
-nsigned long max_seq,
- 	return total > 0 ? total : 0;
- }
-=20
--static void age_lruvec(struct lruvec *lruvec, struct scan_control *sc)
-+static bool age_lruvec(struct lruvec *lruvec, struct scan_control *sc,
-+		       unsigned long min_ttl)
- {
- 	bool need_aging;
- 	long nr_to_scan;
-@@ -4344,14 +4345,22 @@ static void age_lruvec(struct lruvec *lruvec, struc=
-t scan_control *sc)
- 	DEFINE_MAX_SEQ(lruvec);
- 	DEFINE_MIN_SEQ(lruvec);
-=20
-+	if (min_ttl) {
-+		int gen =3D lru_gen_from_seq(min_seq[TYPE_FILE]);
-+		unsigned long birth =3D READ_ONCE(lruvec->lrugen.timestamps[gen]);
+diff --git a/Documentation/admin-guide/mm/index.rst b/Documentation/admin-g=
+uide/mm/index.rst
+index c21b5823f126..2cf5bae62036 100644
+--- a/Documentation/admin-guide/mm/index.rst
++++ b/Documentation/admin-guide/mm/index.rst
+@@ -32,6 +32,7 @@ the Linux memory management.
+    idle_page_tracking
+    ksm
+    memory-hotplug
++   multigen_lru
+    nommu-mmap
+    numa_memory_policy
+    numaperf
+diff --git a/Documentation/admin-guide/mm/multigen_lru.rst b/Documentation/=
+admin-guide/mm/multigen_lru.rst
+new file mode 100644
+index 000000000000..16a543c8b886
+--- /dev/null
++++ b/Documentation/admin-guide/mm/multigen_lru.rst
+@@ -0,0 +1,121 @@
++.. SPDX-License-Identifier: GPL-2.0
 +
-+		if (time_is_after_jiffies(birth + min_ttl))
-+			return false;
-+	}
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++Multigenerational LRU
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 +
- 	mem_cgroup_calculate_protection(NULL, memcg);
-=20
- 	if (mem_cgroup_below_min(memcg))
--		return;
-+		return false;
-=20
- 	nr_to_scan =3D get_nr_evictable(lruvec, max_seq, min_seq, swappiness, &ne=
-ed_aging);
- 	if (!nr_to_scan)
--		return;
-+		return false;
-=20
- 	nr_to_scan >>=3D sc->priority;
-=20
-@@ -4360,11 +4369,18 @@ static void age_lruvec(struct lruvec *lruvec, struc=
-t scan_control *sc)
-=20
- 	if (nr_to_scan && need_aging && (!mem_cgroup_below_low(memcg) || sc->memc=
-g_low_reclaim))
- 		try_to_inc_max_seq(lruvec, max_seq, sc, swappiness, false);
++Quick start
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++Build configurations
++--------------------
++:Required: Set ``CONFIG_LRU_GEN=3Dy``.
 +
-+	return true;
- }
-=20
-+/* to protect the working set of the last N jiffies */
-+static unsigned long lru_gen_min_ttl __read_mostly;
++:Optional: Set ``CONFIG_LRU_GEN_ENABLED=3Dy`` to enable the
++ multigenerational LRU by default.
 +
- static void lru_gen_age_node(struct pglist_data *pgdat, struct scan_contro=
-l *sc)
- {
- 	struct mem_cgroup *memcg;
-+	bool success =3D false;
-+	unsigned long min_ttl =3D READ_ONCE(lru_gen_min_ttl);
-=20
- 	VM_BUG_ON(!current_is_kswapd());
-=20
-@@ -4390,11 +4406,28 @@ static void lru_gen_age_node(struct pglist_data *pg=
-dat, struct scan_control *sc)
- 	do {
- 		struct lruvec *lruvec =3D mem_cgroup_lruvec(memcg, pgdat);
-=20
--		age_lruvec(lruvec, sc);
-+		if (age_lruvec(lruvec, sc, min_ttl))
-+			success =3D true;
-=20
- 		cond_resched();
- 	} while ((memcg =3D mem_cgroup_iter(NULL, memcg, NULL)));
-=20
-+	/*
-+	 * The main goal is to OOM kill if every generation from all memcgs is
-+	 * younger than min_ttl. However, another theoretical possibility is all
-+	 * memcgs are either below min or empty.
-+	 */
-+	if (!success && mutex_trylock(&oom_lock)) {
-+		struct oom_control oc =3D {
-+			.gfp_mask =3D sc->gfp_mask,
-+			.order =3D sc->order,
-+		};
++Runtime configurations
++----------------------
++:Required: Write ``y`` to ``/sys/kernel/mm/lru_gen/enable`` if
++ ``CONFIG_LRU_GEN_ENABLED=3Dn``.
 +
-+		out_of_memory(&oc);
++This file accepts different values to enabled or disabled the
++following features:
 +
-+		mutex_unlock(&oom_lock);
-+	}
++=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D
++Values Features
++=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D
++0x0001 the multigenerational LRU
++0x0002 clear the accessed bit in leaf page table entries **in large
++       batches**, when MMU sets it (e.g., on x86)
++0x0004 clear the accessed bit in non-leaf page table entries **as
++       well**, when MMU sets it (e.g., on x86)
++[yYnN] apply to all the features above
++=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D
 +
- 	current->reclaim_state->mm_walk =3D NULL;
- }
-=20
-@@ -5107,6 +5140,28 @@ static void lru_gen_change_state(bool enable)
-  *                          sysfs interface
-  *************************************************************************=
-*****/
-=20
-+static ssize_t show_min_ttl(struct kobject *kobj, struct kobj_attribute *a=
-ttr, char *buf)
-+{
-+	return sprintf(buf, "%u\n", jiffies_to_msecs(READ_ONCE(lru_gen_min_ttl)))=
-;
-+}
++E.g.,
++::
 +
-+static ssize_t store_min_ttl(struct kobject *kobj, struct kobj_attribute *=
-attr,
-+			     const char *buf, size_t len)
-+{
-+	unsigned int msecs;
++    echo y >/sys/kernel/mm/lru_gen/enabled
++    cat /sys/kernel/mm/lru_gen/enabled
++    0x0007
++    echo 5 >/sys/kernel/mm/lru_gen/enabled
++    cat /sys/kernel/mm/lru_gen/enabled
++    0x0005
 +
-+	if (kstrtouint(buf, 0, &msecs))
-+		return -EINVAL;
++Most users should enable or disable all the features unless some of
++them have unforeseen side effects.
 +
-+	WRITE_ONCE(lru_gen_min_ttl, msecs_to_jiffies(msecs));
++Recipes
++=3D=3D=3D=3D=3D=3D=3D
++Personal computers
++------------------
++Personal computers are more sensitive to thrashing because it can
++cause janks (lags when rendering UI) and negatively impact user
++experience. The multigenerational LRU offers thrashing prevention to
++the majority of laptop and desktop users who don't have oomd.
 +
-+	return len;
-+}
++:Thrashing prevention: Write ``N`` to
++ ``/sys/kernel/mm/lru_gen/min_ttl_ms`` to prevent the working set of
++ ``N`` milliseconds from getting evicted. The OOM killer is triggered
++ if this working set can't be kept in memory. Based on the average
++ human detectable lag (~100ms), ``N=3D1000`` usually eliminates
++ intolerable janks due to thrashing. Larger values like ``N=3D3000``
++ make janks less noticeable at the risk of premature OOM kills.
 +
-+static struct kobj_attribute lru_gen_min_ttl_attr =3D __ATTR(
-+	min_ttl_ms, 0644, show_min_ttl, store_min_ttl
-+);
++Data centers
++------------
++Data centers want to optimize job scheduling (bin packing) to improve
++memory utilizations. Job schedulers need to estimate whether a server
++can allocate a certain amount of memory for a new job, and this step
++is known as working set estimation, which doesn't impact the existing
++jobs running on this server. They also want to attempt freeing some
++cold memory from the existing jobs, and this step is known as proactive
++reclaim, which improves the chance of landing a new job successfully.
 +
- static ssize_t show_enable(struct kobject *kobj, struct kobj_attribute *at=
-tr, char *buf)
- {
- 	unsigned int caps =3D 0;
-@@ -5155,6 +5210,7 @@ static struct kobj_attribute lru_gen_enabled_attr =3D=
- __ATTR(
- );
-=20
- static struct attribute *lru_gen_attrs[] =3D {
-+	&lru_gen_min_ttl_attr.attr,
- 	&lru_gen_enabled_attr.attr,
- 	NULL
- };
++:Optional: Increase ``CONFIG_NR_LRU_GENS`` to support more generations
++ for working set estimation and proactive reclaim.
++
++:Debugfs interface: ``/sys/kernel/debug/lru_gen`` has the following
++ format:
++ ::
++
++   memcg  memcg_id  memcg_path
++     node  node_id
++       min_gen  birth_time  anon_size  file_size
++       ...
++       max_gen  birth_time  anon_size  file_size
++
++ ``min_gen`` is the oldest generation number and ``max_gen`` is the
++ youngest generation number. ``birth_time`` is in milliseconds.
++ ``anon_size`` and ``file_size`` are in pages. The youngest generation
++ represents the group of the MRU pages and the oldest generation
++ represents the group of the LRU pages. For working set estimation, a
++ job scheduler writes to this file at a certain time interval to
++ create new generations, and it ranks available servers based on the
++ sizes of their cold memory defined by this time interval. For
++ proactive reclaim, a job scheduler writes to this file before it
++ tries to land a new job, and if it fails to materialize the cold
++ memory without impacting the existing jobs, it retries on the next
++ server according to the ranking result.
++
++ This file accepts commands in the following subsections. Multiple
++ command lines are supported, so does concatenation with delimiters
++ ``,`` and ``;``.
++
++ ``/sys/kernel/debug/lru_gen_full`` contains additional stats for
++ debugging.
++
++:Working set estimation: Write ``+ memcg_id node_id max_gen
++ [can_swap [full_scan]]`` to ``/sys/kernel/debug/lru_gen`` to invoke
++ the aging. It scans PTEs for hot pages and promotes them to the
++ youngest generation ``max_gen``. Then it creates a new generation
++ ``max_gen+1``. Set ``can_swap`` to ``1`` to scan for hot anon pages
++ when swap is off. Set ``full_scan`` to ``0`` to reduce the overhead
++ as well as the coverage when scanning PTEs.
++
++:Proactive reclaim: Write ``- memcg_id node_id min_gen [swappiness
++ [nr_to_reclaim]]`` to ``/sys/kernel/debug/lru_gen`` to invoke the
++ eviction. It evicts generations less than or equal to ``min_gen``.
++ ``min_gen`` should be less than ``max_gen-1`` as ``max_gen`` and
++ ``max_gen-1`` aren't fully aged and therefore can't be evicted. Use
++ ``nr_to_reclaim`` to limit the number of pages to evict.
+diff --git a/Documentation/vm/index.rst b/Documentation/vm/index.rst
+index 44365c4574a3..b48434300226 100644
+--- a/Documentation/vm/index.rst
++++ b/Documentation/vm/index.rst
+@@ -25,6 +25,7 @@ algorithms.  If you are looking for advice on simply allo=
+cating memory, see the
+    ksm
+    memory-model
+    mmu_notifier
++   multigen_lru
+    numa
+    overcommit-accounting
+    page_migration
+diff --git a/Documentation/vm/multigen_lru.rst b/Documentation/vm/multigen_=
+lru.rst
+new file mode 100644
+index 000000000000..42a277b4e74b
+--- /dev/null
++++ b/Documentation/vm/multigen_lru.rst
+@@ -0,0 +1,152 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++Multigenerational LRU
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++
++Design overview
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++The design objectives are:
++
++* Good representation of access recency
++* Try to profit from spatial locality
++* Fast paths to make obvious choices
++* Simple self-correcting heuristics
++
++The representation of access recency is at the core of all LRU
++implementations. In the multigenerational LRU, each generation
++represents a group of pages with similar access recency (a timestamp).
++Generations establish a common frame of reference and therefore help
++make better choices, e.g., between different memcgs on a computer or
++different computers in a data center (for job scheduling).
++
++Exploiting spatial locality improves the efficiency when gathering the
++accessed bit. A rmap walk targets a single page and doesn't try to
++profit from discovering a young PTE. A page table walk can sweep all
++the young PTEs in an address space, but its search space can be too
++large to make a profit. The key is to optimize both methods and use
++them in combination.
++
++Fast paths reduce code complexity and runtime overhead. Unmapped pages
++don't require TLB flushes; clean pages don't require writeback. These
++facts are only helpful when other conditions, e.g., access recency,
++are similar. With generations as a common frame of reference,
++additional factors stand out. But obvious choices might not be good
++choices; thus self-correction is required.
++
++The benefits of simple self-correcting heuristics are self-evident.
++Again, with generations as a common frame of reference, this becomes
++attainable. Specifically, pages in the same generation are categorized
++based on additional factors, and a feedback loop statistically
++compares the refault percentages across those categories and infers
++which of them are better choices.
++
++The protection of hot pages and the selection of cold pages are based
++on page access channels and patterns. There are two access channels:
++
++* Accesses through page tables
++* Accesses through file descriptors
++
++The protection of the former channel is by design stronger because:
++
++1. The uncertainty in determining the access patterns of the former
++   channel is higher due to the approximation of the accessed bit.
++2. The cost of evicting the former channel is higher due to the TLB
++   flushes required and the likelihood of encountering the dirty bit.
++3. The penalty of underprotecting the former channel is higher because
++   applications usually don't prepare themselves for major page faults
++   like they do for blocked I/O. E.g., GUI applications commonly use
++   dedicated I/O threads to avoid blocking the rendering threads.
++
++There are also two access patterns:
++
++* Accesses exhibiting temporal locality
++* Accesses not exhibiting temporal locality
++
++For the reasons listed above, the former channel is assumed to follow
++the former pattern unless ``VM_SEQ_READ`` or ``VM_RAND_READ`` is
++present, and the latter channel is assumed to follow the latter
++pattern unless outlying refaults have been observed.
++
++Workflow overview
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++Evictable pages are divided into multiple generations for each
++``lruvec``. The youngest generation number is stored in
++``lrugen->max_seq`` for both anon and file types as they are aged on
++an equal footing. The oldest generation numbers are stored in
++``lrugen->min_seq[]`` separately for anon and file types as clean
++file pages can be evicted regardless of swap constraints. These three
++variables are monotonically increasing.
++
++Generation numbers are truncated into ``order_base_2(MAX_NR_GENS+1)``
++bits in order to fit into the gen counter in ``folio->flags``. Each
++truncated generation number is an index to ``lrugen->lists[]``. The
++sliding window technique is used to track at least ``MIN_NR_GENS`` and
++at most ``MAX_NR_GENS`` generations. The gen counter stores
++``(seq%MAX_NR_GENS)+1`` while a page is on one of ``lrugen->lists[]``;
++otherwise it stores zero.
++
++Each generation is divided into multiple tiers. Tiers represent
++different ranges of numbers of accesses through file descriptors.
++A page accessed ``N`` times through file descriptors is in tier
++``order_base_2(N)``. In contrast to moving across generations which
++requires the LRU lock, moving across tiers only requires operations on
++``folio->flags`` and therefore has a negligible cost. A feedback loop
++modeled after the PID controller monitors refaults over all the tiers
++from anon and file types and decides which tiers from which types to
++evict or promote.
++
++There are two conceptually independent processes (as in the
++manufacturing process): the aging and the eviction. They form a
++closed-loop system, i.e., the page reclaim.
++
++Aging
++-----
++The aging produces young generations. Given an ``lruvec``, it
++increments ``max_seq`` when ``max_seq-min_seq+1`` approaches
++``MIN_NR_GENS``. The aging promotes hot pages to the youngest
++generation when it finds them accessed through page tables; the
++demotion of cold pages happens consequently when it increments
++``max_seq``. The aging uses page table walks and rmap walks to find
++young PTEs. For the former, it iterates ``lruvec_memcg()->mm_list``
++and calls ``walk_page_range()`` with each ``mm_struct`` on this list
++to scan PTEs. On finding a young PTE, it clears the accessed bit and
++updates the gen counter of the page mapped by this PTE to
++``(max_seq%MAX_NR_GENS)+1``. After each iteration of this list, it
++increments ``max_seq``. For the latter, when the eviction walks the
++rmap and finds a young PTE, the aging scans the adjacent PTEs and
++follows the same steps.
++
++Eviction
++--------
++The eviction consumes old generations. Given an ``lruvec``, it
++increments ``min_seq`` when ``lrugen->lists[]`` indexed by
++``min_seq%MAX_NR_GENS`` becomes empty. To select a type and a tier to
++evict from, it first compares ``min_seq[]`` to select the older type.
++If they are equal, it selects the type whose first tier has a lower
++refault percentage. The first tier contains single-use unmapped clean
++pages, which are the best bet. The eviction sorts a page according to
++the gen counter if the aging has found this page accessed through page
++tables and updated the gen counter. It also promotes a page to the
++next generation, i.e., ``min_seq+1`` rather than ``max_seq``, if this
++page was accessed multiple times through file descriptors and the
++feedback loop has detected outlying refaults from the tier this page
++is in, using the first tier as a baseline.
++
++Summary
++-------
++The multigenerational LRU can be disassembled into the following
++components:
++
++* Generations
++* Page table walks
++* Rmap walks
++* Bloom filters
++* PID controller
++
++Between the aging and the eviction (processes), the latter drives the
++former by the sliding window over generations. Within the aging, rmap
++walks drive page table walks by inserting hot dense page tables to the
++Bloom filters. Within the eviction, the PID controller uses refaults
++as the feedback to turn on or off the eviction of certain types and
++tiers.
 --=20
 2.35.0.263.gb82422642f-goog
 
