@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C31C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E190C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385297AbiBHSnK (ORCPT
+        id S1385169AbiBHSnR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:43:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
+        Tue, 8 Feb 2022 13:43:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385196AbiBHSmh (ORCPT
+        with ESMTP id S1385203AbiBHSml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:42:37 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE599C0613CA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:42:36 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id g15-20020a17090a67cf00b001b7d5b6bedaso3782593pjm.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 10:42:36 -0800 (PST)
+        Tue, 8 Feb 2022 13:42:41 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB91C0613CA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:42:40 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id c10so1544162pfi.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 10:42:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EQBAIvQLg20+7U3cvyTRGOoJ39hD5GGWkL0kfjAijZk=;
-        b=bhx9naFDbe84/mR55A9dfCO8CUPQeMOP3i7A7qKzsbCfC2+TsdcjdwCSdGzbdm2RJ3
-         yy3CoEaidsWBzxHX5oUnedOm9T2ab4tXNd4z7w/qeCAAQahqmFpcPjttwgTMIuwZf+pN
-         ckxpfu3PBAwzacrmKWm3B8onLVewVDSGvnGvuuQRcCYyl32+IFndUhWCP7+tgkcWWG4K
-         5ZWieC6sOcVfSEfq2p6QqSZzUMg2Ypxmn63vNMi3dWEKQbZ/Op5ryYiG2pZ/4pLIAFC8
-         A48gryz27XoiN5Z7qy9O5NO3HLUCI12c/vagvfRGu3ToimoYjc0xU3a4z2grAuBACcvg
-         19NQ==
+        bh=YblOd1MvT8NiXh69QNSwkAqyNRZA5ZxOXoJicXqw4d8=;
+        b=NmS6X3F31vgYNbuvcdntXgrQDZoNYzdGA3tlzav9IIoi3N7XJZD9ch+GwUFveURRO2
+         SROdeY6g0phlVdCYFSm7tHfzc2bnxucgeidgKsbSPIVqIz82VL7kjq/jujlpBo1zW8Yj
+         0FVqx74858ngYvm1FafXinri2hKxU80QWAMRlgCnzjAEQ+eZg2iB2DUR9g9ASjrWe3XH
+         ti0FdUij8/Y/YQLdin+Ha1/OlT2Wx+0V066N4D8JrADhJr5fR6hfdtC3YZ6I2mgF8cQZ
+         hO5cb/8pEB5tL8YHGqxPPWbviDFmHcbCcpf3dQWE1K8kn6sFJq+P6BocsRXus8tVxji+
+         EFfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=EQBAIvQLg20+7U3cvyTRGOoJ39hD5GGWkL0kfjAijZk=;
-        b=SseyJPcv3vZ1kSBqOlsdODZr4rDiKcf+aQNoSrLXpsZ1YEe8qqKat8DF9PUXZuCQGD
-         n2tT63+0iYrME9LUhS1w1qn2+XoiuVieiQ01BCkRKXO/aFhuK8vOIMFGcKxpkYCKbvCc
-         XRBVkV6K80Xckb7jGQwILh1jbNZSR8fvxcSYhMDXsg4iWqxZCkFvb24jvvD3BFK8/x4p
-         ZavlXBlXMJT/mcFU11DeF5oJ8eK5GrmcBML8N/blzfwVSX3MCQoWZV3wmJ+LeE16n9P8
-         RW58eWnaewfwmtjdRxlakovJbgMGeGplgObfV1WvBEpkFJKPjFJ6lGlgaL3F9k5BpTAa
-         m3sg==
-X-Gm-Message-State: AOAM533uGzAG9Nd60pLawbQKGntcD2jjqgI7d87yZAylkPm98ETbdAC6
-        1HMQLENlTLLswzngrXbw2Qw=
-X-Google-Smtp-Source: ABdhPJwbxVriXvJ1GSzkVzUCiYV40o7Vpjul0Cag/SEPWfUKtbaSlRG71F1XxlsfMIMb2dvAOfNrqg==
-X-Received: by 2002:a17:903:22d0:: with SMTP id y16mr6043279plg.65.1644345756135;
-        Tue, 08 Feb 2022 10:42:36 -0800 (PST)
+        bh=YblOd1MvT8NiXh69QNSwkAqyNRZA5ZxOXoJicXqw4d8=;
+        b=dihZTktS99yy6VhodAYac5asmp4Gb6Po14ZXBWcDeJ0PNw16lxe2dAvHJOt0DGd6d6
+         ucLKbuu5gDhsRj/Kwrhuej+cte5hStNvZO8T+738+KZHjeM++aH93TwkIiwFn2ratJHE
+         01ownudYJ1TjXZuIr7+EmZZY1lE7aWZ6qgt8+oE6Vq9eIONN1kl1d0GrG7d9Wikg46Xk
+         Wcm2eLxl3rh7Yfuu1/aKzRhDd1yGV4ThlOGpshiQnbM8GiVwdaX3zc8jmXWf6t9ZODW1
+         Fx2vxHHbr9GtFW2ii46SJqjkn+LJHhnoN6ihEERYdE0igfdjEus5axN7MA2zkmlcKRz6
+         Sv7Q==
+X-Gm-Message-State: AOAM532hBCIxcjY0KKYwMymzhOVpMx8HcNBAb1H1GQlWa5fEqsXvmmld
+        Z49W7dGzANDkRFB36e86EtA=
+X-Google-Smtp-Source: ABdhPJxQBzd9hdEXIalI27JyMmk9v8rfHzVUxtK1Qw9o5ag3vEDO7T2BDzJVlNsoq2zRUL9/fCbNdw==
+X-Received: by 2002:a63:ec58:: with SMTP id r24mr4592854pgj.353.1644345760093;
+        Tue, 08 Feb 2022 10:42:40 -0800 (PST)
 Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
-        by smtp.gmail.com with ESMTPSA id l14sm3517027pjf.1.2022.02.08.10.42.34
+        by smtp.gmail.com with ESMTPSA id l14sm3517027pjf.1.2022.02.08.10.42.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 10:42:35 -0800 (PST)
+        Tue, 08 Feb 2022 10:42:39 -0800 (PST)
 Sender: Namhyung Kim <namhyung@gmail.com>
 From:   Namhyung Kim <namhyung@kernel.org>
 To:     Peter Zijlstra <peterz@infradead.org>,
@@ -62,9 +62,9 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         "Paul E. McKenney" <paul.mckenney@linaro.org>,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Radoslaw Burny <rburny@google.com>
-Subject: [PATCH 10/12] locking: Add CONFIG_LOCK_TRACEPOINTS option
-Date:   Tue,  8 Feb 2022 10:42:06 -0800
-Message-Id: <20220208184208.79303-11-namhyung@kernel.org>
+Subject: [PATCH 12/12] locking: Move lock_acquired() from the fast path
+Date:   Tue,  8 Feb 2022 10:42:08 -0800
+Message-Id: <20220208184208.79303-13-namhyung@kernel.org>
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 In-Reply-To: <20220208184208.79303-1-namhyung@kernel.org>
 References: <20220208184208.79303-1-namhyung@kernel.org>
@@ -74,348 +74,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This option enables the following tracepoints for lock analysis.  This
-can be used to trace lock/unlock pairs and their contentions without
-enabling LOCKDEP and LOCK_STAT.
+The lock_acquired() function is used by CONFIG_LOCK_STAT to track wait
+time for contended locks.  So it's meaningful only if the given lock
+is in the slow path (contended).  Let's move the call into the if
+block so that we can skip it in the fast path.  This also move the
+tracepoint to be called only after lock_contended().
 
- * lock_acquire
- * lock_release
- * lock_contended
- * lock_acquired
+It might affect bounce_acquired stats rarely (if it's on a different
+cpu than when you call lock_acquire) but I'm not sure it's possible in
+uncontended cases.  Otherwise, this should have no functional changes
+in the LOCKDEP and LOCK_STAT.
 
-It selects CONFIG_LOCK_INFO to have lock names properly, and make the
-lockdep functions inline to check if the corresponding tracepoint is
-enabled before calling the function.  Then it could avoid unnecessary
-overhead setting up the arguments in the tracepoint when disabled.
+Userspace tools that use the tracepoint might see the difference, but
+I think most of them can handle the missing lock_acquired() in
+non-contended case properly as it's the case when using a trylock
+function to grab a lock.  At least it seems ok for the perf
+tools ('perf lock' command specifically).
+
+Add similar change in the __mutex_lock_common() so that it can call
+lock_acquired() only after lock_contended().
 
 Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- include/linux/lockdep.h       | 141 +++++++++++++++++++++++++++++++++-
- include/linux/lockdep_types.h |   8 +-
- include/trace/events/lock.h   |   4 +-
- kernel/locking/Makefile       |   1 +
- kernel/locking/lockdep.c      |  40 +++++++++-
- lib/Kconfig.debug             |   9 +++
- 6 files changed, 195 insertions(+), 8 deletions(-)
+ Documentation/locking/lockstat.rst |  4 ++--
+ include/linux/lockdep.h            | 12 ++++++------
+ kernel/locking/mutex.c             |  4 +---
+ 3 files changed, 9 insertions(+), 11 deletions(-)
 
+diff --git a/Documentation/locking/lockstat.rst b/Documentation/locking/lockstat.rst
+index 536eab8dbd99..3638ad1113c2 100644
+--- a/Documentation/locking/lockstat.rst
++++ b/Documentation/locking/lockstat.rst
+@@ -28,11 +28,11 @@ The graph below shows the relation between the lock functions and the various
+             |    __contended
+             |         |
+             |       <wait>
++            |         |
++            |    __acquired
+             | _______/
+             |/
+             |
+-       __acquired
+-            |
+             .
+           <hold>
+             .
 diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-index 38cbef7601c7..4e728d2957db 100644
+index 4e728d2957db..63b75ad2e17c 100644
 --- a/include/linux/lockdep.h
 +++ b/include/linux/lockdep.h
-@@ -14,6 +14,8 @@
- #include <linux/smp.h>
- #include <asm/percpu.h>
+@@ -559,8 +559,8 @@ do {								\
+ 	if (!try(_lock)) {					\
+ 		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
+ 		lock(_lock);					\
++		lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
+ 	}							\
+-	lock_acquired(&(_lock)->dep_map, _RET_IP_);			\
+ } while (0)
  
-+#include <linux/tracepoint-defs.h>
-+
- struct task_struct;
- 
- /* for sysctl */
-@@ -367,12 +369,104 @@ static inline void lockdep_set_selftest_task(struct task_struct *task)
- {
- }
- 
-+#ifdef CONFIG_LOCK_TRACEPOINTS
-+DECLARE_TRACEPOINT(lock_acquire);
-+DECLARE_TRACEPOINT(lock_release);
-+
-+extern void __lock_acquire(struct lockdep_map *lock, unsigned int subclass,
-+			   int trylock, int read, int check,
-+			   struct lockdep_map *nest_lock, unsigned long ip);
-+extern void __lock_release(struct lockdep_map *lock, unsigned long ip);
-+
-+static inline void lock_acquire(struct lockdep_map *lock, unsigned int subclass,
-+				int trylock, int read, int check,
-+				struct lockdep_map *nest_lock, unsigned long ip)
-+{
-+	if (tracepoint_enabled(lock_acquire))
-+		__lock_acquire(lock, subclass, trylock, read, check, nest_lock, ip);
-+}
-+
-+static inline void lock_release(struct lockdep_map *lock, unsigned long ip)
-+{
-+	if (tracepoint_enabled(lock_release))
-+		__lock_release(lock, ip);
-+}
-+#else /* !CONFIG_LOCK_TRACEPOINTS */
- # define lock_acquire(l, s, t, r, c, n, i)	do { } while (0)
- # define lock_release(l, i)			do { } while (0)
-+#endif /* CONFIG_LOCK_TRACEPOINTS */
-+
- # define lock_downgrade(l, i)			do { } while (0)
- # define lock_set_class(l, n, k, s, i)		do { } while (0)
- # define lock_set_subclass(l, s, i)		do { } while (0)
- # define lockdep_init()				do { } while (0)
-+
-+#ifdef CONFIG_LOCK_INFO
-+
-+static inline void
-+lockdep_init_map_type(struct lockdep_map *lock, const char *name,
-+		      struct lock_class_key *key, int subclass,
-+		      u8 inner, u8 outer, u8 type)
-+{
-+	if (!name)
-+		name = "NULL";
-+
-+	lock->name = name;
-+}
-+
-+static inline void
-+lockdep_init_map_waits(struct lockdep_map *lock, const char *name,
-+		       struct lock_class_key *key, int subclass,
-+		       u8 inner, u8 outer)
-+{
-+	lockdep_init_map_type(lock, name, key, subclass, inner, outer, 0);
-+}
-+
-+static inline void
-+lockdep_init_map_wait(struct lockdep_map *lock, const char *name,
-+		      struct lock_class_key *key, int subclass, u8 inner)
-+{
-+	lockdep_init_map_waits(lock, name, key, subclass, inner, 0);
-+}
-+
-+static inline void
-+lockdep_init_map(struct lockdep_map *lock, const char *name,
-+		 struct lock_class_key *key, int subclass)
-+{
-+	lockdep_init_map_wait(lock, name, key, subclass, 0);
-+}
-+
-+/* Reinitialize a lock name - other info will be ignore. */
-+# define lockdep_set_class(lock, key)				\
-+	lockdep_init_map(&(lock)->dep_map, #key, key, 0)
-+
-+# define lockdep_set_class_and_name(lock, key, name)		\
-+	lockdep_init_map(&(lock)->dep_map, name, key, 0)
-+
-+# define lockdep_set_class_and_subclass(lock, key, sub)		\
-+	lockdep_init_map(&(lock)->dep_map, #key, key, sub)
-+
-+# define lockdep_set_subclass(lock, sub)			\
-+	lockdep_init_map(&(lock)->dep_map, #lock, NULL, sub)
-+
-+# define lockdep_set_novalidate_class(lock) \
-+	lockdep_set_class_and_name(lock, NULL, #lock)
-+
-+/*
-+ * To initialize a lockdep_map statically use this macro.
-+ * Note that _name must not be NULL.
-+ */
-+# define STATIC_LOCKDEP_MAP_INIT(_name, _key)			\
-+	{ .name = (_name), }
-+
-+# define STATIC_LOCKDEP_MAP_INIT_WAIT(_name, _key, _inner)	\
-+	{ .name = (_name), }
-+
-+# define STATIC_LOCKDEP_MAP_INIT_TYPE(_name, _key, _inner, _outer, _type) \
-+	{ .name = (_name), }
-+
-+#else /* !CONFIG_LOCK_INFO */
-+
- # define lockdep_init_map_type(lock, name, key, sub, inner, outer, type) \
- 		do { (void)(name); (void)(key); } while (0)
- # define lockdep_init_map_waits(lock, name, key, sub, inner, outer) \
-@@ -394,6 +488,8 @@ static inline void lockdep_set_selftest_task(struct task_struct *task)
- #define STATIC_LOCKDEP_MAP_INIT_WAIT(_name, _key, _inner) { }
- #define STATIC_LOCKDEP_MAP_INIT_TYPE(_name, _key, _inner, _outer, _type) { }
- 
-+#endif /* CONFIG_LOCK_INFO */
-+
- /*
-  * We don't define lockdep_match_class() and lockdep_match_key() for !LOCKDEP
-  * case since the result is not well defined and the caller should rather
-@@ -479,7 +575,48 @@ do {								\
+ #define LOCK_CONTENDED_RETURN(_lock, try, lock)			\
+@@ -569,9 +569,9 @@ do {								\
+ 	if (!try(_lock)) {					\
+ 		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
+ 		____err = lock(_lock);				\
++		if (!____err)					\
++			lock_acquired(&(_lock)->dep_map, _RET_IP_); \
+ 	}							\
+-	if (!____err)						\
+-		lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
  	____err;						\
  })
  
--#else /* CONFIG_LOCK_STAT */
-+#elif defined(CONFIG_LOCK_TRACEPOINTS)
-+
-+DECLARE_TRACEPOINT(lock_contended);
-+DECLARE_TRACEPOINT(lock_acquired);
-+
-+extern void __lock_contended(struct lockdep_map *lock, unsigned long ip);
-+extern void __lock_acquired(struct lockdep_map *lock, unsigned long ip);
-+
-+static inline void lock_contended(struct lockdep_map *lock, unsigned long ip)
-+{
-+	if (tracepoint_enabled(lock_contended))
-+		__lock_contended(lock, ip);
-+}
-+
-+static inline void lock_acquired(struct lockdep_map *lock, unsigned long ip)
-+{
-+	if (tracepoint_enabled(lock_acquired))
-+		__lock_acquired(lock, ip);
-+}
-+
-+#define LOCK_CONTENDED(_lock, try, lock)			\
-+do {								\
-+	if (!try(_lock)) {					\
-+		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
-+		lock(_lock);					\
-+	}							\
-+	lock_acquired(&(_lock)->dep_map, _RET_IP_);		\
-+} while (0)
-+
-+#define LOCK_CONTENDED_RETURN(_lock, try, lock)			\
-+({								\
-+	int ____err = 0;					\
-+	if (!try(_lock)) {					\
-+		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
-+		____err = lock(_lock);				\
-+	}							\
-+	if (!____err)						\
+@@ -600,8 +600,8 @@ do {								\
+ 	if (!try(_lock)) {					\
+ 		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
+ 		lock(_lock);					\
 +		lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
-+	____err;						\
-+})
-+
-+#else /* !CONFIG_LOCK_STAT && !CONFIG_LOCK_TRACEPOINTS */
+ 	}							\
+-	lock_acquired(&(_lock)->dep_map, _RET_IP_);		\
+ } while (0)
  
- #define lock_contended(lockdep_map, ip) do {} while (0)
- #define lock_acquired(lockdep_map, ip) do {} while (0)
-@@ -490,7 +627,7 @@ do {								\
- #define LOCK_CONTENDED_RETURN(_lock, try, lock) \
- 	lock(_lock)
+ #define LOCK_CONTENDED_RETURN(_lock, try, lock)			\
+@@ -610,9 +610,9 @@ do {								\
+ 	if (!try(_lock)) {					\
+ 		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
+ 		____err = lock(_lock);				\
++		if (!____err)					\
++			lock_acquired(&(_lock)->dep_map, _RET_IP_); \
+ 	}							\
+-	if (!____err)						\
+-		lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
+ 	____err;						\
+ })
  
--#endif /* CONFIG_LOCK_STAT */
-+#endif /* CONFIG_LOCK_STAT || CONFIG_LOCK_TRACEPOINTS */
+diff --git a/kernel/locking/mutex.c b/kernel/locking/mutex.c
+index f8bc4ae312a0..e67b5a16440b 100644
+--- a/kernel/locking/mutex.c
++++ b/kernel/locking/mutex.c
+@@ -605,8 +605,6 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
  
- #ifdef CONFIG_PROVE_LOCKING
- extern void print_irqtrace_events(struct task_struct *curr);
-diff --git a/include/linux/lockdep_types.h b/include/linux/lockdep_types.h
-index d22430840b53..340138c9023e 100644
---- a/include/linux/lockdep_types.h
-+++ b/include/linux/lockdep_types.h
-@@ -197,9 +197,13 @@ struct pin_cookie { unsigned int val; };
- struct lock_class_key { };
+ 	if (__mutex_trylock(lock) ||
+ 	    mutex_optimistic_spin(lock, ww_ctx, NULL)) {
+-		/* got the lock, yay! */
+-		lock_acquired(&lock->dep_map, ip);
+ 		if (ww_ctx)
+ 			ww_mutex_set_context_fastpath(ww, ww_ctx);
+ 		preempt_enable();
+@@ -708,10 +706,10 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
  
- /*
-- * The lockdep_map takes no space if lockdep is disabled:
-+ * The lockdep_map takes no space if lockdep and lock_info is disabled:
-  */
--struct lockdep_map { };
-+struct lockdep_map {
-+#ifdef CONFIG_LOCK_INFO
-+	const char	*name;
-+#endif
-+};
+ 	debug_mutex_free_waiter(&waiter);
  
- struct pin_cookie { };
+-skip_wait:
+ 	/* got the lock - cleanup and rejoice! */
+ 	lock_acquired(&lock->dep_map, ip);
  
-diff --git a/include/trace/events/lock.h b/include/trace/events/lock.h
-index d7512129a324..74667841ae02 100644
---- a/include/trace/events/lock.h
-+++ b/include/trace/events/lock.h
-@@ -8,7 +8,7 @@
- #include <linux/lockdep.h>
- #include <linux/tracepoint.h>
++skip_wait:
+ 	if (ww_ctx)
+ 		ww_mutex_lock_acquired(ww, ww_ctx);
  
--#ifdef CONFIG_LOCKDEP
-+#if defined(CONFIG_LOCKDEP) || defined(CONFIG_LOCK_TRACEPOINTS)
- 
- TRACE_EVENT(lock_acquire,
- 
-@@ -62,7 +62,7 @@ DEFINE_EVENT(lock, lock_release,
- 	TP_ARGS(lock, ip)
- );
- 
--#ifdef CONFIG_LOCK_STAT
-+#if defined(CONFIG_LOCK_STAT) || defined(CONFIG_LOCK_TRACEPOINTS)
- 
- DEFINE_EVENT(lock, lock_contended,
- 
-diff --git a/kernel/locking/Makefile b/kernel/locking/Makefile
-index d51cabf28f38..d772a37470a6 100644
---- a/kernel/locking/Makefile
-+++ b/kernel/locking/Makefile
-@@ -17,6 +17,7 @@ endif
- obj-$(CONFIG_DEBUG_IRQFLAGS) += irqflag-debug.o
- obj-$(CONFIG_DEBUG_MUTEXES) += mutex-debug.o
- obj-$(CONFIG_LOCKDEP) += lockdep.o
-+obj-$(CONFIG_LOCK_TRACEPOINTS) += lockdep.o
- ifeq ($(CONFIG_PROC_FS),y)
- obj-$(CONFIG_LOCKDEP) += lockdep_proc.o
- endif
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index 2e6892ec3756..f234e981d1c7 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -58,11 +58,13 @@
- 
- #include <asm/sections.h>
- 
--#include "lockdep_internals.h"
--
- #define CREATE_TRACE_POINTS
- #include <trace/events/lock.h>
- 
-+#ifdef CONFIG_LOCKDEP
-+
-+#include "lockdep_internals.h"
-+
- #ifdef CONFIG_PROVE_LOCKING
- int prove_locking = 1;
- module_param(prove_locking, int, 0644);
-@@ -6566,3 +6568,37 @@ void lockdep_rcu_suspicious(const char *file, const int line, const char *s)
- 	dump_stack();
- }
- EXPORT_SYMBOL_GPL(lockdep_rcu_suspicious);
-+
-+#elif defined(CONFIG_LOCK_TRACEPOINTS)
-+
-+void __lock_acquire(struct lockdep_map *lock, unsigned int subclass,
-+			  int trylock, int read, int check,
-+			  struct lockdep_map *nest_lock, unsigned long ip)
-+{
-+	trace_lock_acquire(lock, subclass, trylock, read, check, nest_lock, ip);
-+}
-+EXPORT_SYMBOL_GPL(__lock_acquire);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(lock_acquire);
-+
-+void __lock_release(struct lockdep_map *lock, unsigned long ip)
-+{
-+	trace_lock_release(lock, ip);
-+}
-+EXPORT_SYMBOL_GPL(__lock_release);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(lock_release);
-+
-+void __lock_contended(struct lockdep_map *lock, unsigned long ip)
-+{
-+	trace_lock_contended(lock, ip);
-+}
-+EXPORT_SYMBOL_GPL(__lock_contended);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(lock_contended);
-+
-+void __lock_acquired(struct lockdep_map *lock, unsigned long ip)
-+{
-+	trace_lock_acquired(lock, ip);
-+}
-+EXPORT_SYMBOL_GPL(__lock_acquired);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(lock_acquired);
-+
-+#endif /* CONFIG_LOCKDEP */
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 5f64ffe23c35..749de6c1ba50 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -1452,6 +1452,15 @@ config LOCK_INFO
- 	bool
- 	default n
- 
-+config LOCK_TRACEPOINTS
-+	bool "Enable lock tracepoints"
-+	depends on !LOCKDEP
-+	select LOCK_INFO
-+	help
-+	  This enables all lock events required by "perf lock", subcommand of
-+	  perf, without enabling LOCKDEP and LOCK_STAT.  If you want to use
-+	  "perf lock", you also need to turn on CONFIG_EVENT_TRACING.
-+
- config DEBUG_ATOMIC_SLEEP
- 	bool "Sleep inside atomic section checking"
- 	select PREEMPT_COUNT
 -- 
 2.35.0.263.gb82422642f-goog
 
