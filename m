@@ -2,138 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06B0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344127AbiBHBtN (ORCPT
+        id S1344162AbiBHBtS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:49:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
+        Mon, 7 Feb 2022 20:49:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344425AbiBHBjR (ORCPT
+        with ESMTP id S1343704AbiBHBbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:39:17 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F890C061A73;
-        Mon,  7 Feb 2022 17:39:16 -0800 (PST)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21816aGl005365;
-        Tue, 8 Feb 2022 01:39:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=sVx6COLO4Sd9YlLY2EIXXK8MIIh+dQJ2YyW4Db5R0oo=;
- b=Lh/2WaDCeAnPBKpX0CWOjiYFqgsPuu7Mvci25KUObIjkXoEObWs30yepo8vy7NHDZygs
- Ciabd7lPC6rusSJ87kLB9/LRA3It2FNWdIhZx1OeVcc+Mrq++4w1KLQ3oGN+6p2G8vYW
- XEocB+k/NmlDEgIFH/+JLYkI2vKXy7RrEh01Jqu8HuBdsjwGA5a+2MQIdX16yMUNwr7o
- gPo0lOeQ7KvMbXeUTfGB+p8bJIFI563I0IYQLs6cD7DV7+18m8dJAmYQnjrG96Ew+Gja
- iyt7MZ4CdDcu4WHFc9GNN0nLZTdqGH9UX5FQAdQnamEktl3nRYQ1tecMx3VjH1Z7nY11 CQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e355ap16v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 01:39:14 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2181dDtS020804;
-        Tue, 8 Feb 2022 01:39:13 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e355ap169-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 01:39:13 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2181WWM7028456;
-        Tue, 8 Feb 2022 01:39:11 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 3e1gv99jd6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 01:39:10 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2181T1ks43057468
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 8 Feb 2022 01:29:01 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B85E711C04A;
-        Tue,  8 Feb 2022 01:39:04 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2380211C04C;
-        Tue,  8 Feb 2022 01:39:04 +0000 (GMT)
-Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.171.70.169])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Tue,  8 Feb 2022 01:39:04 +0000 (GMT)
-Date:   Tue, 8 Feb 2022 02:38:35 +0100
-From:   Halil Pasic <pasic@linux.ibm.com>
-To:     Tony Krowiak <akrowiak@linux.ibm.com>
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, jjherne@linux.ibm.com, freude@linux.ibm.com,
-        borntraeger@de.ibm.com, cohuck@redhat.com, mjrosato@linux.ibm.com,
-        alex.williamson@redhat.com, kwankhede@nvidia.com,
-        fiuczy@linux.ibm.com, Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [PATCH v17 14/15] s390/ap: notify drivers on config changed and
- scan complete callbacks
-Message-ID: <20220208023835.1fc8c6dd.pasic@linux.ibm.com>
-In-Reply-To: <573f8647-7479-3561-cd88-035b4db33e36@linux.ibm.com>
-References: <20211021152332.70455-1-akrowiak@linux.ibm.com>
-        <20211021152332.70455-15-akrowiak@linux.ibm.com>
-        <20220204114359.4898b9c5.pasic@linux.ibm.com>
-        <573f8647-7479-3561-cd88-035b4db33e36@linux.ibm.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        Mon, 7 Feb 2022 20:31:39 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1023C061355
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:31:38 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id bt13so21440160ybb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Feb 2022 17:31:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tCJweZfHtprqNwQuPKuSEa8equXJDKCDWHoJe/Xk+94=;
+        b=fmLm2+b0Vi8fyFlno+sBzlvxdiOinqMMSjhhIC3lIyAfleRXnfHq74bS8lB/mSNU8r
+         6jXDw5garFcyc7Ibtr6uEe4zrLDIHhuXcAVhvSYY8XJk0M9XM2O4lmcd1N9IThzroYpZ
+         GucSNu7NmuuXNL0Ogw6Vd9IvU1Z5hyTPnJEJgWN+khl8OBW3dRCn4iHISMga3oykiq7U
+         /odbVMN5shA5S6T1+BhLTqlF1xEgfnx7Wvx7GmHCeL4ye0G2pCRNhk1L4EJTbXHbPAWc
+         Dgyv9VK9aMkYe5wpKd+SpryQ89VHUSyQubkEYPIopT0zcrKn5+/SeOfDcTM6mu4ZSSTC
+         OYUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tCJweZfHtprqNwQuPKuSEa8equXJDKCDWHoJe/Xk+94=;
+        b=I4zz8TlrSqc6ra+R3UScHJ/bpOqh3Jq7xYMNXHNnkexIZZ/e25rdqx4zmvYeTsVKx4
+         MmXjN63psC6ufX7l1x4Vq0dW0+hewm0E9oW46EjLVye5zP1xBSvJXYfaN/u5m4fVvluI
+         m0pemRGcOaU7cn2Pi+gGNtrLt3RDjV5Rsjz31/5koDMVU7T/bJGiQoIjr2QTSNpLJLZc
+         WTx1iOpUiVO3Byiieul6hD8UBeQRdShhU+lRrPlSKJOMp4NKAzSrqCfG25XRBOSnPLwf
+         KCUzHj6FFgsorxKrdA2kq9y8UjokUtuirwQCVBnHEKkCjOsiglg62A5y7/izVE/nyOaq
+         Isiw==
+X-Gm-Message-State: AOAM530p6rjknNM9gOIeGgTyxnS/xx/mPpn+VUbWYJJTn8KG+KbMAukd
+        DYGRzv5ooHZE1X0jFcWXA649F/kHwW3pcvnp+ceasQ==
+X-Google-Smtp-Source: ABdhPJx2mKqMDRjehybx6rXQuL9bFCnGNeOOYN9Q7Az3jEMiEEcSFx0PdKX3wUIXfBWRwy8D1KGwzva4m8d0S9EV95E=
+X-Received: by 2002:a25:7a47:: with SMTP id v68mr2663451ybc.488.1644283897723;
+ Mon, 07 Feb 2022 17:31:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Q35ZFvgSB15WKZ95VOoEEYhKvc2u_QRC
-X-Proofpoint-ORIG-GUID: i67ciEUarlaYDAk_fJb5-51AaOinIXHV
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_07,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- suspectscore=0 clxscore=1015 lowpriorityscore=0 bulkscore=0 malwarescore=0
- priorityscore=1501 spamscore=0 mlxlogscore=999 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202080006
+References: <20220128131006.67712-1-michel@lespinasse.org> <20220128131006.67712-23-michel@lespinasse.org>
+ <20220129121319.3593-1-hdanton@sina.com> <CAJuCfpHBfSQBuz8=LHYhX-aOgZ1ng6nNfpv_jeBLz+KVr1OU5w@mail.gmail.com>
+ <20220201020958.3720-1-hdanton@sina.com> <CAJuCfpG95cA68Y047MKsXYjvGMENXsjSzHkhYktagcT=fjagWw@mail.gmail.com>
+ <20220208002059.2670-1-hdanton@sina.com>
+In-Reply-To: <20220208002059.2670-1-hdanton@sina.com>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Mon, 7 Feb 2022 17:31:26 -0800
+Message-ID: <CAJuCfpEEWFYJehwRhmMAEBx8+gf6TsV=kxuSGDVXaPwhNLt1JQ@mail.gmail.com>
+Subject: Re: [PATCH v2 22/35] percpu-rwsem: enable percpu_sem destruction in
+ atomic context
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Michel Lespinasse <michel@lespinasse.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Feb 2022 14:39:31 -0500
-Tony Krowiak <akrowiak@linux.ibm.com> wrote:
-
-> > Back to the topic of locking: it looks to me that on this path you
-> > do the filtering and thus the accesses to matrix_mdev->shadow_apcb,
-> > matrix_mdev->matrix and matrix_dev->config_info some of which are
-> > of type write whithout the matrix_dev->lock held. More precisely
-> > only with the matrix_dev->guests_lock held in "read" mode.
+On Mon, Feb 7, 2022 at 4:21 PM Hillf Danton <hdanton@sina.com> wrote:
+>
+> On Mon, 7 Feb 2022 11:31:38 -0800 Suren Baghdasaryan wrote:
 > >
-> > Did I misread the code? If not, how is that OK?  
-> 
-> You make a valid point, a struct rw_semaphore is not adequate for the 
-> purposes
-> it is used in this patch series. It needs to be a mutex.
-> 
+> > Sorry for the delay. Are you concerned about the use of spin_lock()
+> > inside percpu_rwsem_async_destroy() which would become a sleeping lock
+> > in case of PREEMPT_RT? If so, we can use raw_spin_lock() when locking
+> > destroy_list_lock. Please confirm. Thanks!
+>
+> Yes please replace spin lock with the raw version which can fit in
+> more scenarios.
 
-Good we agree that v17 is racy.
+Thanks for confirmation! I'll rework my patch and will send it to
+Michel to include in the next version of his patchset.
 
-> 
-> For v18 which is forthcoming probably this week, I've been reworking the 
-> locking
-> based on your observation that the struct ap_guest is not necessary given we
-> already have a list of the mediated devices which contain the KVM 
-> pointer. On the other
-
-[..]
-> 
-> >
-> > BTW I got delayed on my "locking rules" writeup. Sorry for that!  
-> 
-> No worries, I've been writing up a vfio-ap-locking.rst document to 
-> include with the next
-> version of the patch series.
-
-I'm looking forward to v18 including that document. I prefer not to
-discuss what you wrote about the approach taken in v18 now. It is easier
-to me when I have both the text stating the intended design, and the
-code that is supposed to adhere to this design.
-
-Regards,
-Halil
-
+>
+> Hillf
+>
