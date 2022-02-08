@@ -2,64 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B6BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A5B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 17:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383850AbiBHRMj (ORCPT
+        id S1349421AbiBHROv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 12:12:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46426 "EHLO
+        Tue, 8 Feb 2022 12:14:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383783AbiBHRMi (ORCPT
+        with ESMTP id S1378791AbiBHQoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 12:12:38 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7B7C061578
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:12:35 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nHU2U-00034v-M7; Tue, 08 Feb 2022 18:12:26 +0100
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Brian Norris <briannorris@chromium.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Heiko Stuebner <heiko@sntech.de>, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Sandy Huang <hjc@rock-chips.com>,
-        linux-rockchip@lists.infradead.org,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        stable@vger.kernel.org, Mark Yao <markyao0591@gmail.com>
-Subject: Re: [PATCH] drm/rockchip: vop: Correct RK3399 VOP register fields
-Date:   Tue,  8 Feb 2022 18:12:25 +0100
-Message-Id: <164434033775.248576.1440613083224554584.b4-ty@sntech.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220119161104.1.I1d01436bef35165a8cdfe9308789c0badb5ff46a@changeid>
-References: <20220119161104.1.I1d01436bef35165a8cdfe9308789c0badb5ff46a@changeid>
+        Tue, 8 Feb 2022 11:44:22 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C34AC0613CA;
+        Tue,  8 Feb 2022 08:44:10 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id fy20so5085644ejc.0;
+        Tue, 08 Feb 2022 08:44:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=/We9yqvOLbUXSssHcpaNdlRzNEjNOvG/0v7Svvaz5Q4=;
+        b=etIp6yJwuUC0V7khhdsusLxvPXiPT+dRuZBkg698TYSH2APvgEepxO8VjEB5b2jjRf
+         1KjOTgRrHmP/RicAU/bAK+3+uSoRil9NYIXqcK7NeV02U5P1YT+azxRRcFbbDxULK/Q7
+         aKWvmKrebIiaCb/xB6c8Kr7V6gW0+7obnMCOHU3RU04pYdE8ZLvtd4EtiL0mO5GPf27l
+         DxR1CUmghwRONkCW06ee8wmNoSXWuAndU7p1fo+ziOJCnVPJSHydn+0hMvoqmDqmy8ID
+         G1WKFuZ5GMJJcLwvNjDk7SChsTJJuEWIRTmQ/NL7eKakfELMfdGRDbUTtA1z5lTvm6+a
+         Vybg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=/We9yqvOLbUXSssHcpaNdlRzNEjNOvG/0v7Svvaz5Q4=;
+        b=vezbfo/adeL48kQmcVPP/lF/MOye5yazOUkm4EXhzRJ+YN+q2miJxUSFJo82WsWubB
+         xwslDKYIH2Jfj1VfLbM7IQfO5zjKgEh+wu6s0jJ7bz7J+Tc2IswnRHnl6P5Rsy08/bOM
+         gwmuTtzr4M5wemioon/A677seZvuU0gkcnTq5Yz+3od+AeMkiLU6EF583lSl2iWk4GTa
+         iesnzPCT39rVhfCSk21RShJ2zwKQKsY3QgmGNgM+dMGcv/lYkol7ogybjkypvKpgZsH1
+         jSD25FZs3KjKzZCPG+3IcCK8vwEcFLBF7sioaJlkw70urA8O8nPTmcHLqA9T6p9grZiu
+         +OGA==
+X-Gm-Message-State: AOAM5315hNfjE7BSSMTGDsc8WfQHPDeUWETpgmReW0jfnede+y5653KO
+        uClTwj167iUcihqrSg5utxXSTw392FGw6A==
+X-Google-Smtp-Source: ABdhPJwKzRMW1NRUfd4q6aN58onV1rkH2NmYV61FvRyQm4XbQPZZuMy0OLPsE/mnRya9v/1R4RUwxw==
+X-Received: by 2002:a17:907:1b24:: with SMTP id mp36mr4422564ejc.519.1644338648635;
+        Tue, 08 Feb 2022 08:44:08 -0800 (PST)
+Received: from p200300c58721e9a997b21f6340834df8.dip0.t-ipconnect.de (p200300c58721e9a997b21f6340834df8.dip0.t-ipconnect.de. [2003:c5:8721:e9a9:97b2:1f63:4083:4df8])
+        by smtp.googlemail.com with ESMTPSA id n25sm3561260eds.89.2022.02.08.08.44.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 08:44:08 -0800 (PST)
+Message-ID: <35b4b69826a6295c7e5141934290812277d8b411.camel@gmail.com>
+Subject: Re: [PATCH 0/5] Use of_device_get_match_data() helper
+From:   Bean Huo <huobean@gmail.com>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Eugen.Hristev@microchip.com, adrian.hunter@intel.com,
+        nicolas.ferre@microchip.com, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, beanhuo@micron.com
+Date:   Tue, 08 Feb 2022 17:44:07 +0100
+In-Reply-To: <CAPDyKFqDk3Jik5tXoKNbQijZTd08nTcHgv_Z-D2DbV_TUM+76w@mail.gmail.com>
+References: <20220202180648.1252154-1-huobean@gmail.com>
+         <CAPDyKFqDk3Jik5tXoKNbQijZTd08nTcHgv_Z-D2DbV_TUM+76w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 19 Jan 2022 16:11:22 -0800, Brian Norris wrote:
-> Commit 7707f7227f09 ("drm/rockchip: Add support for afbc") switched up
-> the rk3399_vop_big[] register windows, but it did so incorrectly.
+On Tue, 2022-02-08 at 16:12 +0100, Ulf Hansson wrote:
+> On Wed, 2 Feb 2022 at 19:07, Bean Huo <huobean@gmail.com> wrote:
+> > From: Bean Huo <beanhuo@micron.com>
+> > 
+> > *** BLURB HERE ***
+> > 
+> > Bean Huo (5):
+> >   mmc: wmt-sdmmc: Use of_device_get_match_data() helper
+> >   mmc: sdhci-tegra: Use of_device_get_match_data() helper
+> >   mmc: sdhci-omap: Use of_device_get_match_data() helper
+> >   mmc: sdhci-of-at91: Use of_device_get_match_data() helper
+> >   mmc: davinci: Use of_device_get_match_data() helper
+> > 
+> >  drivers/mmc/host/davinci_mmc.c   | 6 ++----
+> >  drivers/mmc/host/sdhci-of-at91.c | 6 ++----
+> >  drivers/mmc/host/sdhci-omap.c    | 7 +------
+> >  drivers/mmc/host/sdhci-tegra.c   | 6 ++----
+> >  drivers/mmc/host/wmt-sdmmc.c     | 7 ++-----
+> >  5 files changed, 9 insertions(+), 23 deletions(-)
+> > 
 > 
-> The biggest problem is in rk3288_win23_data[] vs.
-> rk3368_win23_data[] .format field:
+> Series applied for next, except patch3 that seems to need some minor
+> adjustments, thanks!
 > 
->   RK3288's format: VOP_REG(RK3288_WIN2_CTRL0, 0x7, 1)
->   RK3368's format: VOP_REG(RK3368_WIN2_CTRL0, 0x3, 5)
-> 
-> [...]
 
-Applied, thanks!
+Thanks, I will update the patch3.
 
-[1/1] drm/rockchip: vop: Correct RK3399 VOP register fields
-      commit: 9da1e9ab82c92d0e89fe44cad2cd7c2d18d64070
+Kind regards,
+Bean
 
-Best regards,
--- 
-Heiko Stuebner <heiko@sntech.de>
+> Kind regards
+> Uffe
+
