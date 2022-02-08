@@ -2,113 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E50DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A74C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377866AbiBHOM4 convert rfc822-to-8bit (ORCPT
+        id S1377759AbiBHONG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:12:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
+        Tue, 8 Feb 2022 09:13:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377752AbiBHOMs (ORCPT
+        with ESMTP id S1377745AbiBHONB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 09:12:48 -0500
-X-Greylist: delayed 1092 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 06:12:43 PST
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18384C03FEDA;
-        Tue,  8 Feb 2022 06:12:42 -0800 (PST)
-Received: from in02.mta.xmission.com ([166.70.13.52]:39206)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nHQwu-0004wn-9Z; Tue, 08 Feb 2022 06:54:28 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:42144 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nHQws-009yMp-W6; Tue, 08 Feb 2022 06:54:27 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>
-Cc:     Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>
-References: <20220207121800.5079-1-mkoutny@suse.com>
-Date:   Tue, 08 Feb 2022 07:54:00 -0600
-In-Reply-To: <20220207121800.5079-1-mkoutny@suse.com> ("Michal =?utf-8?Q?K?=
- =?utf-8?Q?outn=C3=BD=22's?=
-        message of "Mon, 7 Feb 2022 13:17:54 +0100")
-Message-ID: <87ee4dihvr.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 8 Feb 2022 09:13:01 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEBEC03FED3
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 06:13:00 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id i14so1353059wrc.10
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 06:13:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5R9+MBEvDpMW00Dte4+/rEEsFi5DtKUaBzOD4MXCXtQ=;
+        b=Jc79PGraKQ5s6L/P+SLK07eOBNmq7ee8b1jOmNuDLMvHSGeWysmyOpNAzy8Au2OwGJ
+         S4bEVN2W/Kj9ydurocslXTyX0C4c//GnnjcwRcVOyUerHb2D22oLssPL8ECZDuF4F+WJ
+         Yvx5THUgRzzMqElW/OQKovVf/OMDvdRVnm9rI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=5R9+MBEvDpMW00Dte4+/rEEsFi5DtKUaBzOD4MXCXtQ=;
+        b=apch9tLvEXwBuFdUQK77XGgG73lwVI3fG7NrxURnQtUBtnlzFMbLL9E1SAee89GEod
+         IJsi/i7RK26sZx5xDucUd03I0uPcA3IHDrrkVUfFgWaxSeOkDVtJh5RPb5KBGHcFlzg2
+         2QYpOhzK/2smzQ7dT08CDwuUrjGBZzj2/GhjTOj83BgjKa5Snzfoy9smv9vj7gTf6pMl
+         M9mN9vPeQsFHKabTqq/1XYrK09M/k9I+hjTXms/jqUGPb6ojkiXbz0GKiVG+vM38zeez
+         9ugh4j7joxBTGtciLXj9ir31mkYUyEgkF1NKkGtAl5A4HNLYt+madEPOdQSGI1WcJL+U
+         /XRg==
+X-Gm-Message-State: AOAM531NrXfxGCI7qgssBN5cUPMTKhr9AscJRUteUjeg+lB6Dfy+kP5h
+        NltaHJZ8zvqZAVzO2eQhTrU4Ng==
+X-Google-Smtp-Source: ABdhPJw+sMlSVd/afjYxQMHqe/E6uF3RGqFVH/7HQ+ZCHFj6dyRrBozPKFtxGDVDOD1tAPw8D+QNOA==
+X-Received: by 2002:adf:edc9:: with SMTP id v9mr3665385wro.135.1644329579332;
+        Tue, 08 Feb 2022 06:12:59 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id az21sm2187601wmb.11.2022.02.08.06.12.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 06:12:58 -0800 (PST)
+Date:   Tue, 8 Feb 2022 15:12:56 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     DRI Development <dri-devel@lists.freedesktop.org>
+Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Dave Airlie <airlied@gmail.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Claudio Suarez <cssk@net-c.es>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Sven Schnelle <svens@stackframe.org>,
+        Gerd Hoffmann <kraxel@redhat.com>
+Subject: Re: [PATCH 01/21] MAINTAINERS: Add entry for fbdev core
+Message-ID: <YgJ6aKxFXbdX6toP@phenom.ffwll.local>
+Mail-Followup-To: DRI Development <dri-devel@lists.freedesktop.org>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Dave Airlie <airlied@gmail.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Claudio Suarez <cssk@net-c.es>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Sven Schnelle <svens@stackframe.org>,
+        Gerd Hoffmann <kraxel@redhat.com>
+References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
+ <20220131210552.482606-2-daniel.vetter@ffwll.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1nHQws-009yMp-W6;;;mid=<87ee4dihvr.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1/ahRGJgxPKAsR4MwgKINp4kU2cAU6uSPQ=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [RFC PATCH 0/6] RLIMIT_NPROC in ucounts fixups
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131210552.482606-2-daniel.vetter@ffwll.ch>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Michal Koutný <mkoutny@suse.com> writes:
+On Mon, Jan 31, 2022 at 10:05:32PM +0100, Daniel Vetter wrote:
+> Ever since Tomi extracted the core code in 2014 it's been defacto me
+> maintaining this, with help from others from dri-devel and sometimes
+> Linus (but those are mostly merge conflicts):
+> 
+> $ git shortlog -ns  drivers/video/fbdev/core/ | head -n5
+>     35  Daniel Vetter
+>     23  Linus Torvalds
+>     10  Hans de Goede
+>      9  Dave Airlie
+>      6  Peter Rosin
+> 
+> I think ideally we'd also record that the various firmware fb drivers
+> (efifb, vesafb, ...) are also maintained in drm-misc because for the
+> past few years the patches have either been to fix handover issues
+> with drm drivers, or caused handover issues with drm drivers. So any
+> other tree just doesn't make sense. But also, there's plenty of
+> outdated MAINTAINER entries for these with people and git trees that
+> haven't been active in years, so maybe let's just leave them alone.
+> And furthermore distros are now adopting simpledrm as the firmware fb
+> driver, so hopefully the need to care about the fbdev firmware drivers
+> will go down going forward.
+> 
+> Note that drm-misc is group maintained, I expect that to continue like
+> we've done before, so no new expectations that patches all go through
+> my hands. That would be silly. This also means I'm happy to put any
+> other volunteer's name in the M: line, but otherwise git log says I'm
+> the one who's stuck with this.
+> 
+> Cc: Dave Airlie <airlied@gmail.com>
+> Cc: Jani Nikula <jani.nikula@linux.intel.com>
+> Cc: Linus Torvalds <torvalds@linux-foundation.org>
+> Cc: Linux Fbdev development list <linux-fbdev@vger.kernel.org>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Javier Martinez Canillas <javierm@redhat.com>
+> Cc: DRI Development <dri-devel@lists.freedesktop.org>
+> Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+> Cc: Claudio Suarez <cssk@net-c.es>
+> Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Thomas Zimmermann <tzimmermann@suse.de>
+> Cc: Daniel Vetter <daniel.vetter@intel.com>
+> Cc: Sven Schnelle <svens@stackframe.org>
+> Cc: Gerd Hoffmann <kraxel@redhat.com>
+> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
 
-> This series is a result of looking deeper into breakage of
-> tools/testing/selftests/rlimits/rlimits-per-userns.c after 
-> https://lore.kernel.org/r/20220204181144.24462-1-mkoutny@suse.com/
-> is applied.
->
-> The description of the original problem that lead to RLIMIT_NPROC et al.
-> ucounts rewrite could be ambiguously interpretted as supporting either
-> the case of:
-> - never-fork service or
-> - fork (RLIMIT_NPROC-1) times service.
->
-> The scenario is weird anyway given existence of pids controller.
->
-> The realization of that scenario relies not only on tracking number of
-> processes per user_ns but also newly allows the root to override limit through
-> set*uid. The commit message didn't mention that, so it's unclear if it
-> was the intention too.
->
-> I also noticed that the RLIMIT_NPROC enforcing in fork seems subject to TOCTOU
-> race (check(nr_tasks),...,nr_tasks++) so the limit is rather advisory (but
-> that's not a new thing related to ucounts rewrite).
->
-> This series is RFC to discuss relevance of the subtle changes RLIMIT_NPROC to
-> ucounts rewrite introduced.
+Merged to drm-misc-fixes with all the acks added.
+-Daniel
 
-A quick reply (because I don't have a lot of time at the moment).
+> ---
+>  MAINTAINERS | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index ea3e6c914384..49809eaa3096 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -7573,6 +7573,12 @@ S:	Maintained
+>  W:	http://floatingpoint.sourceforge.net/emulator/index.html
+>  F:	arch/x86/math-emu/
+>  
+> +FRAMEBUFFER CORE
+> +M:	Daniel Vetter <daniel@ffwll.ch>
+> +F:	drivers/video/fbdev/core/
+> +S:	Odd Fixes
+> +T:	git git://anongit.freedesktop.org/drm/drm-misc
+> +
+>  FRAMEBUFFER LAYER
+>  M:	Helge Deller <deller@gmx.de>
+>  L:	linux-fbdev@vger.kernel.org
+> -- 
+> 2.33.0
+> 
 
-I agree with the issues your first patch before this series addresses
-and the issues the first 3 patches address.
-
-I have not looked at the tests.
-
-I actually disagree with most of your fixes.  Both because of
-intrusiveness and because of awkwardness.  My basic problem with
-your fixes is I don't think they leave the code in a more maintainable
-state.
-
-Hopefully later today I can propose some alternative fixes and we can
-continue the discussion.
-
-
-One thing I think you misunderstood is the capability checks in set_user
-have always been there.  There is a very good argument they are badly
-placed so are not exactly checking the correct credentials.  Especially
-now.
-
-Your patch 4/6 I don't think makes sense.  It has always been the
-case that root without capabilities is subject to the rlimit.  If  you
-are in a user namespace you are root without capabilities.
-
-
-Eric
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
