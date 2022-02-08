@@ -2,160 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B3C9C4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07EC0C47081
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387517AbiBHW2a (ORCPT
+        id S1387835AbiBHW3P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:28:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
+        Tue, 8 Feb 2022 17:29:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386201AbiBHTnp (ORCPT
+        with ESMTP id S1387240AbiBHWKP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:43:45 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B357CC0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:43:44 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id n23so320475pfo.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:43:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OMn1l57PTLxYtwc+HI0U7xszWZxDsxBNDoAjSgoqiTo=;
-        b=eB1ulFLlG3MvjHSKqJMMPP76xZ5tzmritayHnxYj4pjoQSG31cYP4slT9wT97U7F0R
-         tp0KYs48AvrVX4+VZj7CEwvYxNYoDtC2XN9IbBEi19IVT6jFC+dCWJWh2LhsinDz6s0Y
-         WWnGw0c7L2wyr5fDrnnrYoT9AbQOeiBA1xVP2mSS6jhy8I81TidsErrdFVJ1xE013E1u
-         yfS+FM+wkCjg3S5Q+FluIUilTHtzPX0I4W+T1MTf61x6x+jZTCd9E+JRKOvjiYz0RkOR
-         m8V4+FLxsZc0S4V9/pF3CBOZZ3wDhIngfKi9ZRYAe3qEXvtjSm3p2Qd56MsIYlERVOvQ
-         P6pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=OMn1l57PTLxYtwc+HI0U7xszWZxDsxBNDoAjSgoqiTo=;
-        b=2Zvye8aT5ttDjsmR5xpxUykf34f3DQ/tvcWVgevfZ13x643fNf/30rfZqOX98665bZ
-         7/VOLl5o75gNp+06ay9bnRbLJLJvuL6YmdcIm/izBoX/X3JiaLEQapPbtvQDpMCb0oRI
-         YdQh0La/5McxYlkz1WUfLld7sDHeUVs0BhFiByhqsiSjbQn2cux8dWh5v0+jyyU91+ml
-         1MDYQDKbQbg8Nf6zFDUgMZI6H39SUG80THbccRZTFsr4yfX7j7leDWfqYrX8CitWYS+d
-         dkg8tS9zPiabhhgtHlQ7sHXu5WHay4xpwG7PgbXstjxItzYCJ7xpaVkJ9yrETZTA0Of+
-         +azg==
-X-Gm-Message-State: AOAM533MQDqLMdv4sK1WXC+qLYF52qNPM2GVWWicVXA9YhdjX3kK1sOj
-        POIwa0J+pv5J2cQ3stJbAYY=
-X-Google-Smtp-Source: ABdhPJxa3EJBSsbwQz/XZzLop6zZQaddVuKoxQrvRvkGQbStZq8FBYijx/2PQqDl+XAyFFBowzvwOw==
-X-Received: by 2002:a05:6a00:23d5:: with SMTP id g21mr5835863pfc.78.1644349424241;
-        Tue, 08 Feb 2022 11:43:44 -0800 (PST)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
-        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 11:43:43 -0800 (PST)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-Subject: [PATCH 04/12] workqueue: Protect lockdep functions with #ifdef
-Date:   Tue,  8 Feb 2022 11:43:16 -0800
-Message-Id: <20220208194324.85333-5-namhyung@kernel.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208194324.85333-1-namhyung@kernel.org>
-References: <20220208194324.85333-1-namhyung@kernel.org>
+        Tue, 8 Feb 2022 17:10:15 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D378BC0612B8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:10:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644358213; x=1675894213;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=h02fHfNx7LQhoMNvC37VqDWYOpJW635bruQfZsGYpnI=;
+  b=cVcUCSbo52hVTkOmlLgCWlofa5YSRE45AP/DaPLryCAQmI7xU8FSSRnL
+   y9h9a+0Py8enmAS+N+yTbvgg4cwJVVibutyPI39BUfmvzmDOY+8r/eNcR
+   IYssqXASGe0q+VEJLQshbv8bh3sj3xJEEPEn8FLmhCgibHLiLnSw3ax8Y
+   Ix08AnGycC7jDzBPYT4Q6cDZmkeeX+PFeBp6quHmZ2fuJ5fEcCpc2Ik79
+   51YexrvT2AVX43w0/eSPBRDecobHzrEP/synE39LNwy37LbM9sfX7gkca
+   lu9CBGWnbR5HxnjZ+BEoEn5mdsR4s6IGXJ3DquAStsZ1HsS/2HvWNf+lZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="335465723"
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="335465723"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 14:10:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="701007986"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 08 Feb 2022 14:10:11 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nHYgd-0000oP-Ae; Tue, 08 Feb 2022 22:10:11 +0000
+Date:   Wed, 9 Feb 2022 06:09:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [saeed:net-next-mlx4 36/89] undefined reference to
+ `ipv6_mc_check_mld'
+Message-ID: <202202090647.RlBrHxf1-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With upcoming lock tracepoints config, it'd define some of lockdep
-functions without enabling CONFIG_LOCKDEP actually.  The existing code
-assumes those functions will be removed by the preprocessor but it's
-not the case anymore.  Let's protect the code with #ifdef's explicitly.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git net-next-mlx4
+head:   c3e676b98326a419f30dd5d956c68fc33323f4fd
+commit: 47aeea0d57e80c9449448802aede54526a3d6305 [36/89] net: lan966x: Implement the callback SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED
+config: parisc-randconfig-r012-20220208 (https://download.01.org/0day-ci/archive/20220209/202202090647.RlBrHxf1-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git/commit/?id=47aeea0d57e80c9449448802aede54526a3d6305
+        git remote add saeed https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git
+        git fetch --no-tags saeed net-next-mlx4
+        git checkout 47aeea0d57e80c9449448802aede54526a3d6305
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash
 
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Lai Jiangshan <jiangshanlai@gmail.com>
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   hppa-linux-ld: drivers/net/ethernet/microchip/lan966x/lan966x_main.o: in function `lan966x_xtr_irq_handler.part.0':
+>> (.text+0x2240): undefined reference to `ipv6_mc_check_mld'
+
 ---
- kernel/workqueue.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 33f1106b4f99..405e27385f74 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -2279,8 +2279,11 @@ __acquires(&pool->lock)
- 
- 	raw_spin_unlock_irq(&pool->lock);
- 
-+#ifdef CONFIG_LOCKDEP
- 	lock_map_acquire(&pwq->wq->lockdep_map);
- 	lock_map_acquire(&lockdep_map);
-+#endif
-+
- 	/*
- 	 * Strictly speaking we should mark the invariant state without holding
- 	 * any locks, that is, before these two lock_map_acquire()'s.
-@@ -2310,8 +2313,11 @@ __acquires(&pool->lock)
- 	 * point will only record its address.
- 	 */
- 	trace_workqueue_execute_end(work, worker->current_func);
-+
-+#ifdef CONFIG_LOCKDEP
- 	lock_map_release(&lockdep_map);
- 	lock_map_release(&pwq->wq->lockdep_map);
-+#endif
- 
- 	if (unlikely(in_atomic() || lockdep_depth(current) > 0)) {
- 		pr_err("BUG: workqueue leaked lock or atomic: %s/0x%08x/%d\n"
-@@ -2824,8 +2830,10 @@ void flush_workqueue(struct workqueue_struct *wq)
- 	if (WARN_ON(!wq_online))
- 		return;
- 
-+#ifdef CONFIG_LOCKDEP
- 	lock_map_acquire(&wq->lockdep_map);
- 	lock_map_release(&wq->lockdep_map);
-+#endif
- 
- 	mutex_lock(&wq->mutex);
- 
-@@ -3052,6 +3060,7 @@ static bool start_flush_work(struct work_struct *work, struct wq_barrier *barr,
- 	insert_wq_barrier(pwq, barr, work, worker);
- 	raw_spin_unlock_irq(&pool->lock);
- 
-+#ifdef CONFIG_LOCKDEP
- 	/*
- 	 * Force a lock recursion deadlock when using flush_work() inside a
- 	 * single-threaded or rescuer equipped workqueue.
-@@ -3066,6 +3075,8 @@ static bool start_flush_work(struct work_struct *work, struct wq_barrier *barr,
- 		lock_map_acquire(&pwq->wq->lockdep_map);
- 		lock_map_release(&pwq->wq->lockdep_map);
- 	}
-+#endif
-+
- 	rcu_read_unlock();
- 	return true;
- already_gone:
-@@ -3084,10 +3095,12 @@ static bool __flush_work(struct work_struct *work, bool from_cancel)
- 	if (WARN_ON(!work->func))
- 		return false;
- 
-+#ifdef CONFIG_LOCKDEP
- 	if (!from_cancel) {
- 		lock_map_acquire(&work->lockdep_map);
- 		lock_map_release(&work->lockdep_map);
- 	}
-+#endif
- 
- 	if (start_flush_work(work, &barr, from_cancel)) {
- 		wait_for_completion(&barr.done);
--- 
-2.35.0.263.gb82422642f-goog
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
