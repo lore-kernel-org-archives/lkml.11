@@ -2,105 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 346DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A829C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 18:41:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384997AbiBHSfl (ORCPT
+        id S1385053AbiBHSlR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 13:35:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60572 "EHLO
+        Tue, 8 Feb 2022 13:41:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237383AbiBHSfb (ORCPT
+        with ESMTP id S231149AbiBHSlP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 13:35:31 -0500
-Received: from smtpout1.mo3004.mail-out.ovh.net (smtpout1.mo3004.mail-out.ovh.net [79.137.123.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91A2C061576;
-        Tue,  8 Feb 2022 10:35:29 -0800 (PST)
-Received: from pro2.mail.ovh.net (unknown [10.108.1.178])
-        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id E50A7246E7F;
-        Tue,  8 Feb 2022 18:35:27 +0000 (UTC)
-Received: from localhost.localdomain (88.125.132.78) by DAG1EX2.emp2.local
- (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Feb
- 2022 19:35:26 +0100
-From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-To:     <linux-renesas-soc@vger.kernel.org>, <geert+renesas@glider.be>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>
-CC:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>,
-        <linux-watchdog@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>
-Subject: [PATCH v2 0/6] ARM: r9a06g032: add support for the watchdogs
-Date:   Tue, 8 Feb 2022 19:35:04 +0100
-Message-ID: <20220208183511.2925304-1-jjhiblot@traphandler.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 8 Feb 2022 13:41:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3D2EC061579
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 10:41:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644345674;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xML1xNkIw3e0hTYk74bi0fSg0bcnbMZm5u6L4MPv8BA=;
+        b=bck0yfKicJmKETmL+MCTzBS/qgOqMz1tJSizTsus6ltfq9Cp0UGNPIQn/SEu3tSNynlTHH
+        onTPxwk711oQoqxDMFJJzbycFeZldhZVO8NqtHgGeXsREglZo8IUT2ldqiNSjW1ZZzW1mf
+        WlZHGyi6MUlWPl3tfygVWYmD8iZ8wLk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-168-4DGKpYoYNeCJaX4uVE-ldw-1; Tue, 08 Feb 2022 13:41:11 -0500
+X-MC-Unique: 4DGKpYoYNeCJaX4uVE-ldw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 10B42101F003;
+        Tue,  8 Feb 2022 18:41:02 +0000 (UTC)
+Received: from [10.22.35.8] (unknown [10.22.35.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F62710A3945;
+        Tue,  8 Feb 2022 18:40:58 +0000 (UTC)
+Message-ID: <e897adca-168e-13db-8001-4afbef3aa648@redhat.com>
+Date:   Tue, 8 Feb 2022 13:40:57 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [88.125.132.78]
-X-ClientProxiedBy: DAG1EX1.emp2.local (172.16.2.1) To DAG1EX2.emp2.local
- (172.16.2.2)
-X-Ovh-Tracer-Id: 13254093705174858197
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrheejgdduudduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgtghisehtkeertdertddtnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpeejudfgffelleehheevveeutdejfffgjeekudekkedugfeutdeffeeuhfeuveehieenucffohhmrghinhepghhithhhuhgsrdgtohhmnecukfhppedtrddtrddtrddtpdekkedruddvhedrudefvddrjeeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehprhhovddrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdgtlhhksehvghgvrhdrkhgvrhhnvghlrdhorhhg
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v5 3/4] mm/page_owner: Print memcg information
+Content-Language: en-US
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Ira Weiny <ira.weiny@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Roman Gushchin <guro@fb.com>,
+        Rafael Aquini <aquini@redhat.com>,
+        Mike Rapoport <rppt@linux.ibm.com>
+References: <20220208000532.1054311-1-longman@redhat.com>
+ <20220208000532.1054311-4-longman@redhat.com>
+ <YgJeWth50eP9L0PK@dhcp22.suse.cz>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YgJeWth50eP9L0PK@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+On 2/8/22 07:13, Michal Hocko wrote:
+> On Mon 07-02-22 19:05:31, Waiman Long wrote:
+>> It was found that a number of dying memcgs were not freed because
+>> they were pinned by some charged pages that were present. Even "echo 1 >
+>> /proc/sys/vm/drop_caches" wasn't able to free those pages. These dying
+>> but not freed memcgs tend to increase in number over time with the side
+>> effect that percpu memory consumption as shown in /proc/meminfo also
+>> increases over time.
+> I still believe that this is very suboptimal way to debug offline memcgs
+> but memcg information can be useful in other contexts and it doesn't
+> cost us anything except for an additional output so I am fine with this.
+I am planning to have a follow-up patch to add a new debugfs file for 
+just printing page information associated with dying memcgs only. It 
+will be based on the existing page_owner code, though. So I need to get 
+this patch in first.
+>   
+>> In order to find out more information about those pages that pin
+>> dying memcgs, the page_owner feature is extended to print memory
+>> cgroup information especially whether the cgroup is dying or not.
+>> RCU read lock is taken when memcg is being accessed to make sure
+>> that it won't be freed.
+>>
+>> Signed-off-by: Waiman Long <longman@redhat.com>
+>> Acked-by: David Rientjes <rientjes@google.com>
+>> Acked-by: Roman Gushchin <guro@fb.com>
+>> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+> With few comments/questions below.
+>
+>> ---
+>>   mm/page_owner.c | 44 ++++++++++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 44 insertions(+)
+>>
+>> diff --git a/mm/page_owner.c b/mm/page_owner.c
+>> index 28dac73e0542..d4c311455753 100644
+>> --- a/mm/page_owner.c
+>> +++ b/mm/page_owner.c
+>> @@ -10,6 +10,7 @@
+>>   #include <linux/migrate.h>
+>>   #include <linux/stackdepot.h>
+>>   #include <linux/seq_file.h>
+>> +#include <linux/memcontrol.h>
+>>   #include <linux/sched/clock.h>
+>>   
+>>   #include "internal.h"
+>> @@ -325,6 +326,47 @@ void pagetypeinfo_showmixedcount_print(struct seq_file *m,
+>>   	seq_putc(m, '\n');
+>>   }
+>>   
+>> +/*
+>> + * Looking for memcg information and print it out
+>> + */
+> I am not sure this is particularly useful comment.
+Right, I can remove that.
+>
+>> +static inline int print_page_owner_memcg(char *kbuf, size_t count, int ret,
+>> +					 struct page *page)
+>> +{
+>> +#ifdef CONFIG_MEMCG
+>> +	unsigned long memcg_data;
+>> +	struct mem_cgroup *memcg;
+>> +	bool dying;
+>> +
+>> +	rcu_read_lock();
+>> +	memcg_data = READ_ONCE(page->memcg_data);
+>> +	if (!memcg_data)
+>> +		goto out_unlock;
+>> +
+>> +	if (memcg_data & MEMCG_DATA_OBJCGS)
+>> +		ret += scnprintf(kbuf + ret, count - ret,
+>> +				"Slab cache page\n");
+>> +
+>> +	memcg = page_memcg_check(page);
+>> +	if (!memcg)
+>> +		goto out_unlock;
+>> +
+>> +	dying = (memcg->css.flags & CSS_DYING);
+> Is there any specific reason why you haven't used mem_cgroup_online?
+Not really. However, I think checking for CSS_DYING makes more sense now 
+that I using the term "dying".
+>
+>> +	ret += scnprintf(kbuf + ret, count - ret,
+>> +			"Charged %sto %smemcg ",
+>> +			PageMemcgKmem(page) ? "(via objcg) " : "",
+>> +			dying ? "dying " : "");
+>> +
+>> +	/* Write cgroup name directly into kbuf */
+>> +	cgroup_name(memcg->css.cgroup, kbuf + ret, count - ret);
+>> +	ret += strlen(kbuf + ret);
+> cgroup_name should return the length of the path added to the buffer.
+I realized that after I sent out the patch. I will remove te redundant 
+strlen() in a future update.
+>
+>> +	ret += scnprintf(kbuf + ret, count - ret, "\n");
+> I do not see any overflow prevention here. I believe you really need to
+> check ret >= count after each scnprintf/cgroup_name.
 
-This series adds support for the watchdog timers of the RZ/N1.
-The watchdog driver (rzn1-wdt.c) is derived from the driver available at
-https://github.com/renesas-rz/rzn1_linux.git with a few modifications
+As you have realized, the beauty of using scnprintf() is to not needing 
+an overflow check after each invocation.
 
-In order to be able to reset the board when a watchdog timer expires,
-the RSTEN register must be configured. it is the responsability of the
-bootloader to set those bits (or not, depending on the chosen policy).
-
-If the watchdog reset source is not enabled, an interrupt is triggered
-when the watchdog expires. Currently this interrupt doesn't much apart
-from printing a message.
-
-Changes v1 -> v2:
-* Modified the clock driver to not enable the watchdog reset sources.
-  On other renesas platforms, those bits are by the bootloader. The
-  watchdog reset sources are still disabled when the platform is halted
-  to prevent a watchdog reset.
-* Added a SOC-specific compatible "renesas,r9a06g032-wdt"
-* reordered the dts/i entries
-* default timeout is 60 seconds
-* reworked the probe function of the wdt driver to better error cases
-* removed the set_timeout() and use a fixed period computed in probe().
-  This removes the confusion and makes it clear that the period defined
-  by the user space in indeed handled by the watchdog core
-
-Jean-Jacques Hiblot (5):
-  dt-bindings: clock: r9a06g032: Add the definition of the the watchdog
-    clock
-  dt-bindings: watchdog: renesas,wdt: Add support for RZ/N1
-  ARM: dts: r9a06g032: Add the watchdog nodes
-  ARM: dts: r9a06g032-rzn1d400-db: Enable watchdog0 with a 60s timeout
-  clk: renesas: r9a06g032: Disable the watchdog reset sources when
-    halting
-
-Phil Edworthy (1):
-  watchdog: Add Renesas RZ/N1 Watchdog driver
-
- .../bindings/watchdog/renesas,wdt.yaml        |   6 +
- arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts   |   5 +
- arch/arm/boot/dts/r9a06g032.dtsi              |  16 ++
- drivers/clk/renesas/r9a06g032-clocks.c        |  30 +++
- drivers/watchdog/Kconfig                      |   8 +
- drivers/watchdog/Makefile                     |   1 +
- drivers/watchdog/rzn1_wdt.c                   | 208 ++++++++++++++++++
- include/dt-bindings/clock/r9a06g032-sysctrl.h |   1 +
- 8 files changed, 275 insertions(+)
- create mode 100644 drivers/watchdog/rzn1_wdt.c
-
--- 
-2.25.1
+Cheers,
+Longman
 
