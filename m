@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92389C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8316FC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233493AbiBHLXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:23:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
+        id S1354330AbiBHLXs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:23:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355795AbiBHJzN (ORCPT
+        with ESMTP id S1349748AbiBHJzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:55:13 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142FFC03FEC0;
-        Tue,  8 Feb 2022 01:55:13 -0800 (PST)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2189e1Gs001072;
-        Tue, 8 Feb 2022 01:55:03 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=3abWHgG6nENtNyY5CXP31TV02jF59Tr3xSqA/fFYRfU=;
- b=OV9t6Unxq3b4h6e9scy+KFsT8tqELVt9yYW3MLvT68jJALYsHGot1/ddNj4f9kb31mKw
- h9vpun8jTiMvD5dHFizxnT50QDo5DdfFFg7mCSN/9Ix59KbupwxOho/hCYDSpmimjCq1
- rrajMPVWUvMytuIcN42voGhm58fDXr4K40IHlHOCskZU0d2V47dxyJDn/H6Eo+LxFz2u
- 6aI9JrDsnDV8A3G4pUt9XeD+cyAcUhx0oymAR9dw+X+SRXvmpr2Tw5Fb7V8GjE2H1z3m
- yYPKTmaNqZ5bAASJvB2ZZaiMRAkDd6WckuEwKfia0BtNYExnvyFcZXlZhT0/74ASNzgK 6A== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3e3nuy02qc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 08 Feb 2022 01:55:02 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 8 Feb
- 2022 01:55:00 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 8 Feb 2022 01:55:00 -0800
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 0E7403F708F;
-        Tue,  8 Feb 2022 01:54:57 -0800 (PST)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>
-Subject: [net-next PATCH 0/4] Priority flow control support for RVU netdev
-Date:   Tue, 8 Feb 2022 15:24:52 +0530
-Message-ID: <20220208095456.6122-1-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 8 Feb 2022 04:55:08 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12106C03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:55:07 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id b13so36265504edn.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:55:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AqLy4wbT30gKNHEEk8JX8phB5jik7Edkg+UhlJoA5rs=;
+        b=GmStCOfR1LjR64d3+n6xiUfvnpjdXMYf6CGOzrW6RIz8xDIP0n8/jYPfRmgeH4wvSA
+         OHrBANagwetRO1ctOhpjjqD7hq3IRov+o5g/6r0ohsUWmjxkkAJDMOq5G7RuPuznKZbW
+         Lzs8UqpznjHrlZnMzaYxyFRSPYAnFnvEXsiKUDiZvjkpTJFrJJ7Ls7UIM2rbS4+dOVrw
+         ZTl80lTnm3SQW3C0NMVVs1AuA2J1zOFaOQeqPQydNl0ZsDO068k9z5YB2blovsV4bGfr
+         gty2VNbQEfzPRpAvMj9ngw21yaINuwxLkGx4nbkMcjKNYVKDht8HkTJcUAvqS8XqsgVi
+         dwyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AqLy4wbT30gKNHEEk8JX8phB5jik7Edkg+UhlJoA5rs=;
+        b=FNPHfgf9J+vKzuVDR1lMuS5YPCOMO/NTSwjCs9LTNI2Iuikk5Ms8P9ztwplnXWNqvj
+         ndKtonRW4WsffmJFBbf4kwcURmaqOIVy+0P6/t3plAZeLk1HmaNuULQfiNM/1svBFl78
+         f0WwER0dLbv9Ow3MP9dYjjDabKWb6E6jocmCIxdSTCcAZih139DuKNNY8yJYjw5eB5uC
+         tHMwNdJMK2nGpdU/3+c9fnNmdwxed/ubkajavu8d72Xt/c2Bt4LgcxmkJiD/mUAGdMjU
+         2T7kCB16U3H2Z+GnzFt8AKrKZfCtebC6rkgJgygwIPZncpLfmhtiFA5jDe4AQAOmBCUF
+         n2Sw==
+X-Gm-Message-State: AOAM530WqPXPGY/HG1Mh5k2uX7MPm5Q540zQFvGq/Y1T5erAkB0AY/l8
+        XcUkMQJYe2Tvel0f8VTUWBUXIoSmEFk5uIRIx1xQBA==
+X-Google-Smtp-Source: ABdhPJyuckf4+FV8dJpo2WtDgSZtUTZx/r7KCc+6Q0sBzWGx76zj30iQdTOjUHRAsDoMGMpJF9mslMLO5Se5xA+4mcg=
+X-Received: by 2002:aa7:de91:: with SMTP id j17mr3715196edv.396.1644314105618;
+ Tue, 08 Feb 2022 01:55:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: nxZF4mK6WB5-LdweunyRz-MM67UNdlS-
-X-Proofpoint-ORIG-GUID: nxZF4mK6WB5-LdweunyRz-MM67UNdlS-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-08_02,2022-02-07_02,2021-12-02_01
+References: <20220120150024.646714-1-paul.kocialkowski@bootlin.com>
+ <20220120150024.646714-4-paul.kocialkowski@bootlin.com> <CACRpkdZnw-Tf2eQwO+LZRW4UacR09qWRWct00=XLb4pfa-N3=g@mail.gmail.com>
+In-Reply-To: <CACRpkdZnw-Tf2eQwO+LZRW4UacR09qWRWct00=XLb4pfa-N3=g@mail.gmail.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 8 Feb 2022 10:54:55 +0100
+Message-ID: <CAMRc=MewxfQqM+QvzqjP05Qe5TeiEx+iiOFZLmieqCCVOL9UGQ@mail.gmail.com>
+Subject: Re: [PATCH v10 3/6] gpio: logicvc: Support compatible with major
+ version only
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In network congestion, instead of pausing all traffic on link
-PFC allows user to selectively pause traffic according to its
-class. This series of patches add support of PFC for RVU netdev
-drivers.
+On Sun, Jan 30, 2022 at 1:43 AM Linus Walleij <linus.walleij@linaro.org> wrote:
+>
+> On Thu, Jan 20, 2022 at 4:00 PM Paul Kocialkowski
+> <paul.kocialkowski@bootlin.com> wrote:
+>
+> > Support the newly-introduced common compatible for version 3.
+> >
+> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+>
+> Are there dependencies between the GPIO patches and the rest?
+> Doesn't look like that.
+> Can Bartosz just merge the GPIO stuff to the GPIO tree?
+>
+> Yours,
+> Linus Walleij
 
-Patch1 adds support to disable pause frames by default as
-with PFC user can enable either PFC or 802.3 pause frames.
-Patch2&3 adds resource management support for flow control
-and configures necessary registers for PFC.
-Patch4 adds dcb ops registration for netdev drivers.
+Except I'm seeing there's no agreement on the actual compatible yet in
+the previous patch.
 
-
-
-Hariprasad Kelam (3):
-  octeontx2-af: Don't enable Pause frames by default
-  octeontx2-af: Flow control resource management
-  octeontx2-pf: PFC config support with DCBx
-
-Sunil Kumar Kori (1):
-  octeontx2-af: Priority flow control configuration support
-
- .../net/ethernet/marvell/octeontx2/af/cgx.c   | 247 +++++++++++++-----
- .../net/ethernet/marvell/octeontx2/af/cgx.h   |  13 +
- .../marvell/octeontx2/af/lmac_common.h        |  10 +
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |  19 ++
- .../net/ethernet/marvell/octeontx2/af/rpm.c   | 223 ++++++++++++----
- .../net/ethernet/marvell/octeontx2/af/rpm.h   |  30 +++
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |   3 +
- .../ethernet/marvell/octeontx2/af/rvu_cgx.c   | 117 ++++++++-
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  16 +-
- .../ethernet/marvell/octeontx2/nic/Makefile   |   3 +
- .../marvell/octeontx2/nic/otx2_common.c       |  17 +-
- .../marvell/octeontx2/nic/otx2_common.h       |  12 +
- .../marvell/octeontx2/nic/otx2_dcbnl.c        | 170 ++++++++++++
- .../marvell/octeontx2/nic/otx2_flows.c        |  50 +++-
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  26 +-
- .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |  24 +-
- 16 files changed, 835 insertions(+), 145 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c
-
---
-2.17.1
+Bart
