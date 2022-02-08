@@ -2,94 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 805B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F32CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:20:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350574AbiBHNTz (ORCPT
+        id S1344053AbiBHNT6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:19:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52252 "EHLO
+        Tue, 8 Feb 2022 08:19:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350334AbiBHMPe (ORCPT
+        with ESMTP id S1359509AbiBHMpj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:15:34 -0500
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1482BC03FEC0;
-        Tue,  8 Feb 2022 04:15:34 -0800 (PST)
-Received: by mail-lj1-x242.google.com with SMTP id q22so24150047ljh.7;
-        Tue, 08 Feb 2022 04:15:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=2GE6Q0D3nEM9QK+CkQht2Y4pLl2s1etXJlLVBzJ5ih8=;
-        b=H9rZ/I0jxjWtcDngwgYUkZB6+c1jgkoSzx9diPClqzk+qipqU+CoO0jeNarTTOJraD
-         yAwmr+aMt5Vy0D48+IURaOm7+iDdS0+W2lsYhnb6eLdFA8ftUVmDzVwzUfRV46b8R0+a
-         RZHqw35+wt1DytW8nYBPCqAb8B1T4MJxadEKK9E0lLS2MIsS3eAAOjniDMEvpSOHQIh4
-         l+H2PhcKlbB0Ui9rIoOVoJbMyzp7uvQJPo37lwvOUd4k7BndLHNbZ4fSXFAxfmbEQWTa
-         kepuJ05xembxMUoo23fki4pciZ2kUwasuFqPZP2orQ3FlUBLSP3UVqoreXvntpQ864sH
-         z71Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=2GE6Q0D3nEM9QK+CkQht2Y4pLl2s1etXJlLVBzJ5ih8=;
-        b=zqks/ZNrkzhRLUEZk9JIgYCVseHlMmKjc3wT5kVzwTPlqzpHb1pN8O7Wko12oOPn8v
-         1/Qou5Gz6WACzCSaIIzyvAQWrPmopN+5s0Gsc3Gpe7M8aTeoXWZq6FbK5gDR1KQ+pRGC
-         0mdFok1bFtxXYpN0MKUG5eI37BHD3Eb15CyZ6d2t6dJgVLsegE9sgMUY/3CQM2O8RE07
-         FkuWV/d5kedHwimIOdG8Lt36lgHZ31tk3PP2z0yP2fY7LrHsN61ZIYn6JM9ZL5uWRa3J
-         d1OT7uERpTzsNzQbgvXPJvhEHgha/AInpIqcBCLgmyrIJhH3TvEGGSreI4ldy74y7nXd
-         siZQ==
-X-Gm-Message-State: AOAM532GsDG3qKiSDRfldYpfQeeh6ZnmN6ptKTmEn91fezZf7xeBf95Y
-        yDwJ5iFQNz3yNdH3s4WkW+LEzGDc+3NvVdzHJER0GQ==
-X-Google-Smtp-Source: ABdhPJxy+YHcTtW7eNm2n7wF2SdFfO6lhPQN2ERdYd7UGp81hbU2MelLgL0YFXjHURFBHBGD0NHRqw==
-X-Received: by 2002:a2e:9f4a:: with SMTP id v10mr2598113ljk.79.1644322532310;
-        Tue, 08 Feb 2022 04:15:32 -0800 (PST)
-Received: from wse-c0127 ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id m26sm1900240lfp.45.2022.02.08.04.15.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:15:31 -0800 (PST)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/4] net: dsa: mv88e6xxx: Add support for
- bridge port locked feature
-In-Reply-To: <YgEnIksFSHaRZtK7@lunn.ch>
-References: <20220207100742.15087-1-schultz.hans+netdev@gmail.com>
- <20220207100742.15087-4-schultz.hans+netdev@gmail.com>
- <YgEnIksFSHaRZtK7@lunn.ch>
-Date:   Tue, 08 Feb 2022 13:14:45 +0100
-Message-ID: <86mtj1lfm2.fsf@gmail.com>
+        Tue, 8 Feb 2022 07:45:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 37057C03FECA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:45:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644324336;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SmULaSJ9/41bYKgiVa0NC3LLzANiIdl0eYGwm0duLms=;
+        b=iuh7wT/WqjoNadZ0GDivK9P4qPb/T9n8bWlxPQt5ZYRKMIDUB4GRyx4ZTENTIGajYSxDDX
+        5jsqg6K+FZem2SqHKAI1NQMizWgk/X2W4wjodEQoorzZZ93aUxKwfwfz1zbeY3N+wht7bN
+        d+ZXzW2DkEINjFD8P36EKUC2SuDRtiI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-186-p85c9BeWM2GIiz6pCOO-4g-1; Tue, 08 Feb 2022 07:45:35 -0500
+X-MC-Unique: p85c9BeWM2GIiz6pCOO-4g-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B52571054F90;
+        Tue,  8 Feb 2022 12:45:31 +0000 (UTC)
+Received: from starship (unknown [10.40.192.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5FE5F1059A4E;
+        Tue,  8 Feb 2022 12:45:20 +0000 (UTC)
+Message-ID: <d8dffd4267002465d15ea6b6fea1db80b8d84ef1.camel@redhat.com>
+Subject: Re: [PATCH RESEND 00/30] My patch queue
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-kernel@vger.kernel.org,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sean Christopherson <seanjc@google.com>,
+        David Airlie <airlied@linux.ie>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Jim Mattson <jmattson@google.com>, x86@kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>
+Date:   Tue, 08 Feb 2022 14:45:19 +0200
+In-Reply-To: <f48b498a-879d-6698-6217-971f71211389@redhat.com>
+References: <20220207155447.840194-1-mlevitsk@redhat.com>
+         <f48b498a-879d-6698-6217-971f71211389@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On m=C3=A5n, feb 07, 2022 at 15:05, Andrew Lunn <andrew@lunn.ch> wrote:
-> On Mon, Feb 07, 2022 at 11:07:41AM +0100, Hans Schultz wrote:
->> Supporting bridge port locked mode using the 802.1X mode in Marvell
->> mv88e6xxx switchcores is described in the '88E6096/88E6097/88E6097F
->> Datasheet', sections 4.4.6, 4.4.7 and 5.1.2.1 (Drop on Lock).
->
-> This implementation seems to be incorrect for 6390X, and maybe
-> others. I just picked a modern devices at random, and it is different,
-> so didn't check any other devices.  The 6390X uses bits 14 and 15, not
-> just bit 14.
->
-> So either you need to narrow down support to just those devices this
-> actually works for, or you need to add implementations for all
-> generations, via an op in mv88e6xxx_ops.
->
->     Andrew
+On Tue, 2022-02-08 at 13:02 +0100, Paolo Bonzini wrote:
+> On 2/7/22 16:54, Maxim Levitsky wrote:
+> > This is set of various patches that are stuck in my patch queue.
+> > 
+> > KVM_REQ_GET_NESTED_STATE_PAGES patch is mostly RFC, but it does seem
+> > to work for me.
+> > 
+> > Read-only APIC ID is also somewhat RFC.
+> > 
+> > Some of these patches are preparation for support for nested AVIC
+> > which I almost done developing, and will start testing very soon.
+> > 
+> > Resend with cleaned up CCs.
+> 
+> 1-9 are all bugfixes and pretty small, so I queued them.
+> 
+> 10 is also a bugfix but I think it should be split up further, so I'll 
+> resend it.
 
-The 6096 and 6097 also use both bits 15 and 14, with '01' being Drop On
-Lock and the default being '00' No SA filtering. '11' is drop to CPU, which
-can also be used for 801.1X, so 'x1' should suffice for these devices,
-thus setting bit 14 seems appropriate.
+> 
+> For 11-30 I'll start reviewing them, but most of them are independent 
+> series.
+
+Thank you very much!
+ 
+I must again say sorry that I posted the whole thing as a one patch series,
+next time I'll post each series separately, and I also try to post
+the patches as soon as I write them.
+ 
+ I didn't post them because I felt that the whole thing needs good testing 
+and I only recently gotten to somewhat automate my nested migration tests 
+which I usually use to test this kind of work.
+ 
+ 
+
+Best regards,
+	Maxim Levitsky
+ 
+PS: the strict_mmu option does have quite an effect on nested migration with npt=0/ept=0.
+In my testing such migration crashes with pagefault in L2 kernel after around 50-100
+iterations, while with this options, on survived ~1000 iterations and around the same on intel,
+and on both machines L1 eventually crashed with a page fault instead.
+ 
+Could be that it just throws timing off, or maybe we still do have some form of bug
+in shadow paging after all, maybe even 2 bugs.
+Hmmm....
+ 
+I automated these tests so I can run them for days until I have more confidence
+in what is going on.
+
+
+
+Best regards,
+	Maxim Levitsky
+
+> 
+> Paolo
+> 
+
+
