@@ -2,271 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A24C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB03C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387749AbiBHWbg (ORCPT
+        id S1387810AbiBHWbr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:31:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35344 "EHLO
+        Tue, 8 Feb 2022 17:31:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386721AbiBHVIs (ORCPT
+        with ESMTP id S1386251AbiBHTvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:08:48 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173AFC0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:08:48 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id m126-20020a1ca384000000b0037bb8e379feso1986185wme.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:08:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZpkV0RtV6b+qoZSx1q7At4dbITHQdztu2MpUTGszUSQ=;
-        b=XBxwj0okLWcXjnLZC8VylTpr8kVr/cRQvzFH0baQxLV3Ag48btF75FnQSiNzw2+6VD
-         mv4OqAjPHJGITMkt/3V8/uxvtQ0r4+UQCO5GX+qxMgmsCuyTs0uabU9J7oJGYb8c6Iow
-         n/zSAwN9FJlnot4fK6xQ8YNOvjOBpzPLNjj0c=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZpkV0RtV6b+qoZSx1q7At4dbITHQdztu2MpUTGszUSQ=;
-        b=L21pFy/dzozmNxgvh4yAamQs5yGCPYthH+RTAVQOLJ5o+raTU4Dvo49oXgv/b7fEI0
-         T6WAwvc7r1/3zJ0vRLNvg8jF47va+Uol86qDwGpb5lZ2zngt/GFdOwVnGUyMHN7TW4IS
-         xtCwa8VpGCWT+6gCey9hRgJe2W1PoSgYZTHavmFRWUldkmda0hoeQp2G42fd0NYtiQDA
-         0RTSmsisq3qlNcnkkDm3lquYDvqRjFFuKnPj5ovYZUqwlGMro+arEkZ5UMBjZt2ukFfr
-         cGvj2Qi/yuZfdTPNFqqcXk0K1ElvzYUAgcPgyzevzCawmyuYr9qqJV7v+/Rfg5E8LFLK
-         T43w==
-X-Gm-Message-State: AOAM532BfReVwEpAX2fo0w0SeCws5JmnpRrB1ygwcJDr6CXoCkjgJIrO
-        x91RhrX4nh4qjGJyfBArQd4XEw==
-X-Google-Smtp-Source: ABdhPJynSn4cJJu2QmKl6qJIPVpol64suJAmeSMzFGBHBZrxWj3fvOdAZeounKrNlr8/sZP5nXwPjQ==
-X-Received: by 2002:a05:600c:308:: with SMTP id q8mr2548459wmd.71.1644354526664;
-        Tue, 08 Feb 2022 13:08:46 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id o14sm3033561wmr.3.2022.02.08.13.08.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 13:08:44 -0800 (PST)
-From:   Daniel Vetter <daniel.vetter@ffwll.ch>
-To:     DRI Development <dri-devel@lists.freedesktop.org>
-Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Claudio Suarez <cssk@net-c.es>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Du Cheng <ducheng2@gmail.com>
-Subject: [PATCH v2 09/19] fbcon: Extract fbcon_open/release helpers
-Date:   Tue,  8 Feb 2022 22:08:14 +0100
-Message-Id: <20220208210824.2238981-10-daniel.vetter@ffwll.ch>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
-References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+        Tue, 8 Feb 2022 14:51:21 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2048.outbound.protection.outlook.com [40.107.223.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6803AC0613CB;
+        Tue,  8 Feb 2022 11:51:20 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UPVH71REf99rl9X2pQJc967JWTl/ne6BWBmxXBtbuOnku4TaieJE8ft8ShpysBsZw43eYrM8D4qrEPzeRNI8tjERJsbL+mPcYRWepnw8TvIqV68fr3DVtyzG9dbDAviDOLrWgPDB/ICIEuR9kEVhvUvW7rk6YyZmdO/+YAvVk9/AtyG0nGNQ1FryWtsCFi8F3C4DSKcUmTaz80zlopcNwMuE3omJgsSt+/sGMZIdlwCbbD6hMt/PHuBQFQVfx6EUtjgtC+se8DEEuG5r5speLLr7ZsedTvhX7sevbbAQMgK8tPF99zFE1gu8DhkV/BzhSrYanMpGop03ySvGqAhJWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=M8ElwflWsZKwDSqqusy6exWKURZo+iCocJedRM5M0pM=;
+ b=KS7B0lBYRHd4rLaLkYtsAh1LAAv5NIgtzwIDKfHZq4DpeC5mEXsGiIQQ0QXBrS+XfCv21+DjmmEHXGH0tSSHC3Kr7Il/t8V0jVAzxSdAhtgnEy4ED9cWELP0W58Qs5XAdlQ3iX20uEsygwUWpQ3YQPG5EEN7FcMmB8JEgpANPQwJhmPoZ8UUoGPYyQuvf4LHG3lD95yW7s95zsA8HSFtPiNDRNavhezv1NY3ZQJwopVWDO06yoWZMFhAU8b9yXzSoNrkO2rUnUxMqjz51RFM+eYIeGIdvdW97bpAyO2j/8HiQDku2umu8yjUpWSLZuiuwiVDlv5cbjM+fbiVkqVPww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M8ElwflWsZKwDSqqusy6exWKURZo+iCocJedRM5M0pM=;
+ b=LRUv9KqehnEmc1Wq6QuqsDr9Z0LlH2FSexTCoDuf8f0nAOokmiuWr+SxwSHO29MZGOiPWz5rXaWMxdK+WS3zQuvTU4DKGkIT2GjiYZSOI62D3/ozMJ50c/d74uZ32aEqsJGLp8cNDHRNRfeT7czHMat5r6t8DclOZbpUylfIbuhS/eidHrUuJlzhjfS7bGqy/uztYjbdbxJtF3zof0WdksFrA8+PPtMDXRmpgf3G2zt8lUYICYVVLw3LwE56tZl3t1MoE7+EvcGAO/U06nVkuHum6fkhkNe35Qhpw2paSSIjPXo+hFC+56P/g9kVAVu8TcN414SzGoW82L7JISMRdw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM6PR12MB5535.namprd12.prod.outlook.com (2603:10b6:5:20a::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Tue, 8 Feb
+ 2022 19:51:19 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.4975.011; Tue, 8 Feb 2022
+ 19:51:18 +0000
+Date:   Tue, 8 Feb 2022 15:51:17 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Matthew Rosato <mjrosato@linux.ibm.com>,
+        linux-s390@vger.kernel.org, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
+        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 24/30] vfio-pci/zdev: wire up group notifier
+Message-ID: <20220208195117.GI4160@nvidia.com>
+References: <20220204211536.321475-1-mjrosato@linux.ibm.com>
+ <20220204211536.321475-25-mjrosato@linux.ibm.com>
+ <20220208104319.4861fb22.alex.williamson@redhat.com>
+ <20220208185141.GH4160@nvidia.com>
+ <20220208122624.43ad52ef.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208122624.43ad52ef.alex.williamson@redhat.com>
+X-ClientProxiedBy: BL1PR13CA0209.namprd13.prod.outlook.com
+ (2603:10b6:208:2be::34) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9d3c63f9-1a68-438a-dd5d-08d9eb3c5f7b
+X-MS-TrafficTypeDiagnostic: DM6PR12MB5535:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB553596549259A31FA0559283C22D9@DM6PR12MB5535.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MfJy9Oas5QhQW2r+gfua7xR+f/vVODf0U1BNY/b5fpjfKK2QaEhR3E3M1RFVD4MJQ8OmsMECVPdjykHr2ZqF6Jr0W0eocvtaMIuRZCXLUbhQn5DoyJa6cACykfP338wtcF3u8bkR8qvajQhEA8RKEI53HI8cw+Qpg3F1j+aVTpfR6339q3PwwXEcjjkPqInxtXVxYVjPjt3nsfk8FCZyScZHod+Xnp0SKbnEzZ1rfU9RTLO3BrY/Mffrm2jVrnOGG85E4CPV1Fl8KyM0S+0AmZE7Gd8kCmFZqFNCqc4bbcIBEOm6sFdOvVakK6LhR8tEwDIdEDxk1d7z74NXbfJJPuOME2yG3uHKZEdI8iu4muurrZ4FqdoxDwlhTyOXhOMzjRudJoshOim7y4IwQMjAv7sy7INmJC67EpVFLFpN1jtLKy3vfLxFLuYtPDbNuUXIrAzbfrRVL93nUPW+O0PpFvnLF5YBC5Sjh+WbPo41sIDBMY/ungCkLwuFCDJtEAe3wTxiY9EL32xVsXVZOzUPokq+hYDoawK17yVok31INRQTUMRfU74Ssdum4ANn0+Pyr+QHu8q19t+1hRYUBoB4NQZoP2wvLThI+1N8Xcb+QOrSxc5xu51ZEBui7UKhOeVK4UL8GNDOR3shahokmDyHLm6Vu5oaKchlCvl7A/N4bmMyDjCznQDZ0cCiK4ev3RYdSY+AX5jrBLAx2L7GiYV1V8p8Vlcl4Ng+ITpy7/c95x4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(66946007)(5660300002)(66476007)(33656002)(4326008)(8676002)(6506007)(66556008)(6512007)(508600001)(966005)(36756003)(7416002)(83380400001)(1076003)(316002)(26005)(2616005)(2906002)(38100700002)(186003)(6486002)(6916009)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qdJ5F9A9sqhkAvGqYYr8gmshYfYFq2woaLlz4FouCfdfA6Xi1/JT3i+mmUlA?=
+ =?us-ascii?Q?aiEycRH3jv7QP8R2kRSwfAPDzOsHB58XNLaeyTKXb5TTdNcsb+JXhnqvoPB1?=
+ =?us-ascii?Q?zY9mtJgb3BFXRCmEQ7xRLYSQYPkOZc0j6CoStazDmNHiQYoIZAYyc4n6k7xI?=
+ =?us-ascii?Q?omLX52uhZoAB58JP2/TY8ju8MQ+3u2pWYZoH6FYk2KDdc+96mpdjdzKExXRH?=
+ =?us-ascii?Q?L9V2U1ienWCOIgb784Lp6WqbKiQPdtdegTtlWHLWcNF4tnPlk5mj1CXAsFHg?=
+ =?us-ascii?Q?dFKrBCmJw9eeTozi189kiZGBw04B+hUeBp/PnK72tHe5GRLKeVvmIZDrJn3o?=
+ =?us-ascii?Q?y8ebnOjYWU1jrRN3vGHZ351M08WBPYTJRFa6+sJnwm5T5R7lx89Kom29b7+9?=
+ =?us-ascii?Q?+AZet0dsmcaYLbHsyNU+6dMMmGbmWTgsaTcpuedxrVIva69mWDYnxL7ML2CY?=
+ =?us-ascii?Q?8hfOxBKHgTmTDdrnyqfGT1vc6cqHPazUofvCssKNSi2rJxkerqv6YAscQoz2?=
+ =?us-ascii?Q?4M4U44n76Am3Ep2RH+EycuYgsaUapHuHGwNlrJOLRlxORR+4+eiQilLVhAL7?=
+ =?us-ascii?Q?emOCtVr6WbY/cSxPAo1ZvgUwFTOYJ/Nf4kzV/leG4bZ/B2sV1o+qr7y/GSws?=
+ =?us-ascii?Q?LbWiY1fJq20+xc46sfnyn533RhkSr8Gn5yOJEglCjfTuKEViVptVtkMB3uAC?=
+ =?us-ascii?Q?NRO9RG4bs4pE9FJqUxt5nPrSp0fiTNl7LN95yMbjYhHVukcDHACQGWij9oiQ?=
+ =?us-ascii?Q?QvFaXB9HmUISYoAyz49HRoAHD33Ueja6JFGtb0mffLuGqfAPjs9/pqECjIAm?=
+ =?us-ascii?Q?D1OYaUET17EToYB5S+difL31TdkhbnxZoJCmoSNE9T9FYsUNzyvX6jSeTf/O?=
+ =?us-ascii?Q?bW6NwmDhbS6lZK9F7+SKUcYJ4WRkcpfvAT0215tMq/Klf3uDHWRequgo2U7z?=
+ =?us-ascii?Q?splRay6V1g4kJFuE9HgYO8f2nKE+Bt8S7QdmtfsOGA+D9EfvHgaUrAQu0/kY?=
+ =?us-ascii?Q?lVd4zmDDXSYkqWQLVKEGcvRO9Rpr/BJgWw398tfXQ3e6W1jb5NDeEf5Hlr6S?=
+ =?us-ascii?Q?Mv3JKM15vfllU93BgpOL/LtfD1keQ+WM5D7FAvERep5PK+BwKjm+YaKZcSsB?=
+ =?us-ascii?Q?XLjpWex0S2EA4mP15WqeOqn+LKgYch+8Q1T/Mw59wxWeVWKpASS32DPd5UuD?=
+ =?us-ascii?Q?iVj0w3lGzmIIyGhrD97j5sn32Jn2wS9ZrDsjKREMGorWnc8OOu3O0JnvpvJs?=
+ =?us-ascii?Q?jvwQIuuqi1wJAzCl4g5i/jCM1r7YdPa0N3XGEf0AGlDuXQPGSzzItSd+CQ1/?=
+ =?us-ascii?Q?B2i6YOKwXtiAKDrMUHxJCdSisLjKa4JjAIJEbSCBPikxv9XJxU9y2LUgvluP?=
+ =?us-ascii?Q?uM+IPEtHptc8525kM0Ov2V/EinWW125hlbaXjNXvWTHPSuTHCrAmKrkS5d1w?=
+ =?us-ascii?Q?iApq2qNIRm7iNv0YptTzqz4TJf57iKg8rGfTnCktMyhM5q0NFLH4Fa48oWkO?=
+ =?us-ascii?Q?1yfb4NPwzOm/LXVHL6jXjTSn6SCb5DxuOc6IStJJ82lk/PvqAixGhFxGlWsD?=
+ =?us-ascii?Q?+dppUqokv7JuJNf31jc=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d3c63f9-1a68-438a-dd5d-08d9eb3c5f7b
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2022 19:51:18.5135
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BcUrYIvv60e49tyu7pNjqWzHGo2ZLj1u35JgfDxlKXRRZBBq+WzuQxu8kUTuuV55
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5535
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's two minor behaviour changes in here:
-- in error paths we now consistently call fb_ops->fb_release
-- fb_release really can't fail (fbmem.c ignores it too) and there's no
-  reasonable cleanup we can do anyway.
+On Tue, Feb 08, 2022 at 12:26:24PM -0700, Alex Williamson wrote:
 
-Note that everything in fbcon.c is protected by the big console_lock()
-lock (especially all the global variables), so the minor changes in
-ordering of setup/cleanup do not matter.
+> > Personally, I think it is wrong layering for VFIO to be aware of KVM
+> > like this. This marks the first time that VFIO core code itself is
+> > being made aware of the KVM linkage.
+> 
+> I agree, but I've resigned that I've lost that battle.  Both mdev vGPU
+> vendors make specific assumptions about running on a VM. 
 
-v2: Explain a bit better why this is all correct (Sam)
+The vGPU's are not as egregious though, are they?
 
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Claudio Suarez <cssk@net-c.es>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: Du Cheng <ducheng2@gmail.com>
----
- drivers/video/fbdev/core/fbcon.c | 107 +++++++++++++++----------------
- 1 file changed, 53 insertions(+), 54 deletions(-)
+> > Or, at the very least, everything needs to be described in some way
+> > that makes it clear what is happening to userspace, without kvm,
+> > through these ioctls.
+> 
+> As I understand the discussion here:
+> 
+> https://lore.kernel.org/all/20220204211536.321475-15-mjrosato@linux.ibm.com/
+> 
+> The assumption is that there is no non-KVM userspace currently.  This
+> seems like a regression to me.
 
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 058e885d24f6..3e1a3e7bf527 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -682,19 +682,37 @@ static int fbcon_invalid_charcount(struct fb_info *info, unsigned charcount)
- 
- #endif /* CONFIG_MISC_TILEBLITTING */
- 
-+static int fbcon_open(struct fb_info *info)
-+{
-+	if (!try_module_get(info->fbops->owner))
-+		return -ENODEV;
-+
-+	if (info->fbops->fb_open &&
-+	    info->fbops->fb_open(info, 0)) {
-+		module_put(info->fbops->owner);
-+		return -ENODEV;
-+	}
-+
-+	return 0;
-+}
-+
-+static void fbcon_release(struct fb_info *info)
-+{
-+	if (info->fbops->fb_release)
-+		info->fbops->fb_release(info, 0);
-+
-+	module_put(info->fbops->owner);
-+}
- 
- static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
- 				  int unit, int oldidx)
- {
- 	struct fbcon_ops *ops = NULL;
--	int err = 0;
--
--	if (!try_module_get(info->fbops->owner))
--		err = -ENODEV;
-+	int err;
- 
--	if (!err && info->fbops->fb_open &&
--	    info->fbops->fb_open(info, 0))
--		err = -ENODEV;
-+	err = fbcon_open(info);
-+	if (err)
-+		return err;
- 
- 	if (!err) {
- 		ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
-@@ -715,7 +733,7 @@ static int con2fb_acquire_newinfo(struct vc_data *vc, struct fb_info *info,
- 
- 	if (err) {
- 		con2fb_map[unit] = oldidx;
--		module_put(info->fbops->owner);
-+		fbcon_release(info);
- 	}
- 
- 	return err;
-@@ -726,45 +744,34 @@ static int con2fb_release_oldinfo(struct vc_data *vc, struct fb_info *oldinfo,
- 				  int oldidx, int found)
- {
- 	struct fbcon_ops *ops = oldinfo->fbcon_par;
--	int err = 0, ret;
-+	int ret;
- 
--	if (oldinfo->fbops->fb_release &&
--	    oldinfo->fbops->fb_release(oldinfo, 0)) {
--		con2fb_map[unit] = oldidx;
--		if (!found && newinfo->fbops->fb_release)
--			newinfo->fbops->fb_release(newinfo, 0);
--		if (!found)
--			module_put(newinfo->fbops->owner);
--		err = -ENODEV;
--	}
-+	fbcon_release(oldinfo);
- 
--	if (!err) {
--		fbcon_del_cursor_work(oldinfo);
--		kfree(ops->cursor_state.mask);
--		kfree(ops->cursor_data);
--		kfree(ops->cursor_src);
--		kfree(ops->fontbuffer);
--		kfree(oldinfo->fbcon_par);
--		oldinfo->fbcon_par = NULL;
--		module_put(oldinfo->fbops->owner);
--		/*
--		  If oldinfo and newinfo are driving the same hardware,
--		  the fb_release() method of oldinfo may attempt to
--		  restore the hardware state.  This will leave the
--		  newinfo in an undefined state. Thus, a call to
--		  fb_set_par() may be needed for the newinfo.
--		*/
--		if (newinfo && newinfo->fbops->fb_set_par) {
--			ret = newinfo->fbops->fb_set_par(newinfo);
-+	fbcon_del_cursor_work(oldinfo);
-+	kfree(ops->cursor_state.mask);
-+	kfree(ops->cursor_data);
-+	kfree(ops->cursor_src);
-+	kfree(ops->fontbuffer);
-+	kfree(oldinfo->fbcon_par);
-+	oldinfo->fbcon_par = NULL;
-+	/*
-+	  If oldinfo and newinfo are driving the same hardware,
-+	  the fb_release() method of oldinfo may attempt to
-+	  restore the hardware state.  This will leave the
-+	  newinfo in an undefined state. Thus, a call to
-+	  fb_set_par() may be needed for the newinfo.
-+	*/
-+	if (newinfo && newinfo->fbops->fb_set_par) {
-+		ret = newinfo->fbops->fb_set_par(newinfo);
- 
--			if (ret)
--				printk(KERN_ERR "con2fb_release_oldinfo: "
--					"detected unhandled fb_set_par error, "
--					"error code %d\n", ret);
--		}
-+		if (ret)
-+			printk(KERN_ERR "con2fb_release_oldinfo: "
-+				"detected unhandled fb_set_par error, "
-+				"error code %d\n", ret);
- 	}
- 
--	return err;
-+	return 0;
- }
- 
- static void con2fb_init_display(struct vc_data *vc, struct fb_info *info,
-@@ -919,7 +926,6 @@ static const char *fbcon_startup(void)
- 	struct fbcon_display *p = &fb_display[fg_console];
- 	struct vc_data *vc = vc_cons[fg_console].d;
- 	const struct font_desc *font = NULL;
--	struct module *owner;
- 	struct fb_info *info = NULL;
- 	struct fbcon_ops *ops;
- 	int rows, cols;
-@@ -938,17 +944,12 @@ static const char *fbcon_startup(void)
- 	if (!info)
- 		return NULL;
- 	
--	owner = info->fbops->owner;
--	if (!try_module_get(owner))
-+	if (fbcon_open(info))
- 		return NULL;
--	if (info->fbops->fb_open && info->fbops->fb_open(info, 0)) {
--		module_put(owner);
--		return NULL;
--	}
- 
- 	ops = kzalloc(sizeof(struct fbcon_ops), GFP_KERNEL);
- 	if (!ops) {
--		module_put(owner);
-+		fbcon_release(info);
- 		return NULL;
- 	}
- 
-@@ -3314,10 +3315,6 @@ static void fbcon_exit(void)
- 		}
- 
- 		if (mapped) {
--			if (info->fbops->fb_release)
--				info->fbops->fb_release(info, 0);
--			module_put(info->fbops->owner);
--
- 			if (info->fbcon_par) {
- 				struct fbcon_ops *ops = info->fbcon_par;
- 
-@@ -3327,6 +3324,8 @@ static void fbcon_exit(void)
- 				kfree(info->fbcon_par);
- 				info->fbcon_par = NULL;
- 			}
-+
-+			fbcon_release(info);
- 		}
- 	}
- }
--- 
-2.34.1
+Indeed, I definitely don't like it either. This is not VFIO if is
+just driving KVM.
 
+I would prefer they add a function to get the 'struct device *' from a
+VFIO device fd and drive more of this from kvm, as appropriate.
+
+> > > this is meant to extend vfio-pci proper for the whole arch.  Is there a
+> > > compromise in using #ifdefs in vfio_pci_ops to call into zpci specific
+> > > code that implements these arch specific hooks and the core for
+> > > everything else?  SPAPR code could probably converted similarly, it
+> > > exists here for legacy reasons. [Cc Jason]  
+> > 
+> > I'm not sure I get what you are suggesting? Where would these ifdefs
+> > be?
+> 
+> Essentially just:
+> 
+> static const struct vfio_device_ops vfio_pci_ops = {
+>         .name           = "vfio-pci",
+> #ifdef CONFIG_S390
+>         .open_device    = vfio_zpci_open_device,
+>         .close_device   = vfio_zpci_close_device,
+>         .ioctl          = vfio_zpci_ioctl,
+> #else
+>         .open_device    = vfio_pci_open_device,
+>         .close_device   = vfio_pci_core_close_device,
+>         .ioctl          = vfio_pci_core_ioctl,
+> #endif
+>         .read           = vfio_pci_core_read,
+>         .write          = vfio_pci_core_write,
+>         .mmap           = vfio_pci_core_mmap,
+>         .request        = vfio_pci_core_request,
+>         .match          = vfio_pci_core_match,
+> };
+> 
+> It would at least provide more validation/exercise of the core/vendor
+> split.  Thanks,
+
+This would have to be in every pci driver - this is not just code the
+universal vfio-pci has to enable, but every migration driver/etc too.
+
+And we will need it again in vfio-cxl for s390 in 10 years too..
+
+So, I think this approach is the right one, asided from the
+philosophical question of being so tightly linking s390 vfio to KVM.
+
+Jason
