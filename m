@@ -2,147 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C3CDC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C611FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358290AbiBHL3G (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:29:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
+        id S244896AbiBHL3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 06:29:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239869AbiBHKpM (ORCPT
+        with ESMTP id S1356443AbiBHKqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:45:12 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8EFC03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:45:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644317111; x=1675853111;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mN9K51vTDl0W52W7ywGb05QpC05SBH0LiTQxmYECtEA=;
-  b=nvVQpxODBIPorvhWQVGC1QDjJygFK5Qocn3bYPvSctMPdTtUwI53Jh1O
-   rUzzddEhjfFrH7hSbhsC93sSyCCk6HpJrIB2VnoMVxX01x7YEhX9fTxVN
-   n41Bcf7EfvWmcmusTr4spi5zispno4CTQC6b/Ud9leOdAxiT+6Z57eJ/h
-   NMpQrKearOlGMGBhFw6qs/Wtu++y5YF+extc/FG/oYr/Il2jFpGbOwELm
-   1c1HjbctWDEkTPLXmdl1wwxkNv0a3dBBP98S+4jtbl14gDw+nzeWRmaSQ
-   2v9X5CbpNguRJ65+dJlK8J8TN/JjxOc7ouvziBu9F8P+etcTIvbWUTyDM
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="228890724"
-X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
-   d="scan'208";a="228890724"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 02:45:10 -0800
-X-IronPort-AV: E=Sophos;i="5.88,352,1635231600"; 
-   d="scan'208";a="700804108"
-Received: from lucas-s2600cw.jf.intel.com ([10.165.21.202])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 02:45:09 -0800
-From:   Lucas De Marchi <lucas.demarchi@intel.com>
-To:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Cc:     John Harrison <John.C.Harrison@Intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 01/18] iosys-map: Add offset to iosys_map_memcpy_to()
-Date:   Tue,  8 Feb 2022 02:45:07 -0800
-Message-Id: <20220208104524.2516209-2-lucas.demarchi@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220208104524.2516209-1-lucas.demarchi@intel.com>
-References: <20220208104524.2516209-1-lucas.demarchi@intel.com>
+        Tue, 8 Feb 2022 05:46:49 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D87C03FEC3
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:46:48 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id m11so36540130edi.13
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 02:46:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=svMcsljcPvXZuq090tCyPbwiQT93klPS1p7hFo1NwxU=;
+        b=jaJiR87YLSg2r8NPKRNACrNKcr7iEQiUcgkw6d+7Y0ody3WwHgD37jFEgdgvciprNA
+         ++0newFTrvaOE/zj9otYJiTv3cJjLwBSxXpCVp7W0KN0K4UIliBPyu1KdOHdKLv7BaUY
+         oSn9zVz6KHDHZ1RHgTtA2upAG0VC4dYLBD954ZjrmwK81VkPuSOjP+Btd3uFnL8GI1wP
+         cxZKaqUjKPFtRYVioGe4Z1SvokmOxsxny20MsX9V7cVYP+XAqoY0oTcyODWVC3pmkb8L
+         y9sCpbMReoxCsg3/IhB6qpB2hKb9EowFMMXV9jjxb0I8qXYCyBJB3ngK5ZV2QEZz64Zw
+         qH8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=svMcsljcPvXZuq090tCyPbwiQT93klPS1p7hFo1NwxU=;
+        b=sb1jUKNiGM9zl9qXneaC0cVfPn3qkb3/gnKmg/BFYPgdkWdy0IBcCjpPVvpCy0LNRR
+         TDJDGzE8JbEm0GjMHYi47nPVgdC/Ef/rYVP3Fkaw8Zl9BdYN/RA7aEnaUeocpVABwB0A
+         5X5yTTQVrKKbtQxA5wQDMOuz3WGgrNvKqzKox+If0eVnIRtR+rMhBWKgDtxhf7nd97jr
+         QMPahieJPfH7GkSXgBeY1TqZhT+jfDuBHn5hXr8dlMribXJSUrZPfLKZHo+2xEb0vzNX
+         /Qy51UXKo3hnUrHCe5yvxOJo3Dg7ok9r76FXGJP7OJu2qdGGfkpEcKJV+wx8FeiKvolk
+         g7oA==
+X-Gm-Message-State: AOAM531oNGIXbkwZhPjYQVswoihzf3QbwRD0IPEzOzJxlZYkSF7Rhk+D
+        lcNnOkiHmaY08/sVslQsqaK7uyMxlNAp9IkpIp0Bng==
+X-Google-Smtp-Source: ABdhPJyIh/CJWfyaIsCsHmqNruVAUcd+/I2Wu5ksso+EiWAmuFVB62j0tun9U6GaPg5Bl1HrXqlKACuF47LskGkzfVc=
+X-Received: by 2002:a05:6402:143:: with SMTP id s3mr3741176edu.7.1644317206913;
+ Tue, 08 Feb 2022 02:46:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220202104937.146827-1-brgl@bgdev.pl> <YfpomMEgiTh8kjGJ@smile.fi.intel.com>
+In-Reply-To: <YfpomMEgiTh8kjGJ@smile.fi.intel.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 8 Feb 2022 11:46:36 +0100
+Message-ID: <CAMRc=MfjkeEkdzyPUN8h6h+0iA+wFi1tVAWLOHLEY2VvKXoi8g@mail.gmail.com>
+Subject: Re: [PATCH] gpiolib: make struct comments into real kernel docs
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In certain situations it's useful to be able to write to an
-offset of the mapping. Add a dst_offset to iosys_map_memcpy_to().
+On Wed, Feb 2, 2022 at 12:19 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Wed, Feb 02, 2022 at 11:49:37AM +0100, Bartosz Golaszewski wrote:
+> > We have several comments that start with '/**' but don't conform to the
+> > kernel doc standard. Add proper detailed descriptions for the affected
+> > definitions and move the docs from the forward declarations to the
+> > struct definitions where applicable.
+>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>
+> A few comments below.
+>
+> > Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> > Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+> > ---
+> >  drivers/gpio/gpiolib.h        | 31 +++++++++++++++++++++++++++++++
+> >  include/linux/gpio/consumer.h | 35 ++++++++++++++++-------------------
+> >  2 files changed, 47 insertions(+), 19 deletions(-)
+> >
+> > diff --git a/drivers/gpio/gpiolib.h b/drivers/gpio/gpiolib.h
+> > index 30bc3f80f83e..0025701b7641 100644
+> > --- a/drivers/gpio/gpiolib.h
+> > +++ b/drivers/gpio/gpiolib.h
+> > @@ -72,6 +72,20 @@ struct gpio_device {
+> >  /* gpio suffixes used for ACPI and device tree lookup */
+> >  static __maybe_unused const char * const gpio_suffixes[] = { "gpios", "gpio" };
+> >
+> > +/**
+> > + * struct gpio_array - Opaque descriptor for a structure of GPIO array attributes
+>
+> > + *
+>
+> I dunno we need these blank lines.
 
-Cc: Sumit Semwal <sumit.semwal@linaro.org>
-Cc: Christian König <christian.koenig@amd.com>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
----
- drivers/gpu/drm/drm_cache.c     |  2 +-
- drivers/gpu/drm/drm_fb_helper.c |  2 +-
- include/linux/iosys-map.h       | 17 +++++++++--------
- 3 files changed, 11 insertions(+), 10 deletions(-)
+I think it looks better. Some docs use it some don't, there's no standard.
 
-diff --git a/drivers/gpu/drm/drm_cache.c b/drivers/gpu/drm/drm_cache.c
-index 66597e411764..c3e6e615bf09 100644
---- a/drivers/gpu/drm/drm_cache.c
-+++ b/drivers/gpu/drm/drm_cache.c
-@@ -218,7 +218,7 @@ static void memcpy_fallback(struct iosys_map *dst,
- 	if (!dst->is_iomem && !src->is_iomem) {
- 		memcpy(dst->vaddr, src->vaddr, len);
- 	} else if (!src->is_iomem) {
--		iosys_map_memcpy_to(dst, src->vaddr, len);
-+		iosys_map_memcpy_to(dst, 0, src->vaddr, len);
- 	} else if (!dst->is_iomem) {
- 		memcpy_fromio(dst->vaddr, src->vaddr_iomem, len);
- 	} else {
-diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
-index 238f815cb2a0..bf5cc9a42e5a 100644
---- a/drivers/gpu/drm/drm_fb_helper.c
-+++ b/drivers/gpu/drm/drm_fb_helper.c
-@@ -385,7 +385,7 @@ static void drm_fb_helper_damage_blit_real(struct drm_fb_helper *fb_helper,
- 	iosys_map_incr(dst, offset); /* go to first pixel within clip rect */
- 
- 	for (y = clip->y1; y < clip->y2; y++) {
--		iosys_map_memcpy_to(dst, src, len);
-+		iosys_map_memcpy_to(dst, 0, src, len);
- 		iosys_map_incr(dst, fb->pitches[0]);
- 		src += fb->pitches[0];
- 	}
-diff --git a/include/linux/iosys-map.h b/include/linux/iosys-map.h
-index f4186f91caa6..edd730b1e899 100644
---- a/include/linux/iosys-map.h
-+++ b/include/linux/iosys-map.h
-@@ -220,22 +220,23 @@ static inline void iosys_map_clear(struct iosys_map *map)
- }
- 
- /**
-- * iosys_map_memcpy_to - Memcpy into iosys mapping
-+ * iosys_map_memcpy_to - Memcpy into offset of iosys_map
-  * @dst:	The iosys_map structure
-+ * @dst_offset:	The offset from which to copy
-  * @src:	The source buffer
-  * @len:	The number of byte in src
-  *
-- * Copies data into a iosys mapping. The source buffer is in system
-- * memory. Depending on the buffer's location, the helper picks the correct
-- * method of accessing the memory.
-+ * Copies data into a iosys_map with an offset. The source buffer is in
-+ * system memory. Depending on the buffer's location, the helper picks the
-+ * correct method of accessing the memory.
-  */
--static inline void iosys_map_memcpy_to(struct iosys_map *dst, const void *src,
--				       size_t len)
-+static inline void iosys_map_memcpy_to(struct iosys_map *dst, size_t dst_offset,
-+				       const void *src, size_t len)
- {
- 	if (dst->is_iomem)
--		memcpy_toio(dst->vaddr_iomem, src, len);
-+		memcpy_toio(dst->vaddr_iomem + dst_offset, src, len);
- 	else
--		memcpy(dst->vaddr, src, len);
-+		memcpy(dst->vaddr + dst_offset, src, len);
- }
- 
- /**
--- 
-2.35.1
+>
+> > + * @desc:            Array of pointers to the GPIO descriptors
+> > + * @size:            Number of elements in desc
+>
+>   in @desc
+>
+> or
+>
+>   in the array of the descriptor pointers
+>
+> > + * @chip:            Parent GPIO chip
+> > + * @get_mask:                Get mask used in fastpath.
+> > + * @set_mask:                Set mask used in fastpath.
+> > + * @invert_mask:     Invert mask used in fastpath.
+>
+> Why some of the descriptions are with grammar period and some w/o?
+>
+> > + *
+> > + * This structure is attached to struct gpiod_descs obtained from
+> > + * gpiod_get_array() and can be passed back to get/set array functions in order
+> > + * to activate fast processing path if applicable.
+> > + */
+> >  struct gpio_array {
+> >       struct gpio_desc        **desc;
+> >       unsigned int            size;
+> > @@ -96,6 +110,23 @@ int gpiod_set_array_value_complex(bool raw, bool can_sleep,
+> >  extern spinlock_t gpio_lock;
+> >  extern struct list_head gpio_devices;
+> >
+> > +
+> > +/**
+> > + * struct gpio_desc - Opaque descriptor for a GPIO
+> > + *
+> > + * @gdev:            Pointer to the parent GPIO device
+> > + * @flags:           Binary descriptor flags
+> > + * @label:           Name of the consumer
+> > + * @name:            Line name
+> > + * @hog:             Pointer to the device node that hogs this line (if any)
+> > + * @debounce_period_us:      Debounce period in microseconds
+> > + *
+> > + * These are obtained using gpiod_get() and are preferable to the old
+> > + * integer-based handles.
+> > + *
+> > + * Contrary to integers, a pointer to a gpio_desc is guaranteed to be valid
+>
+> &struct gpio_desc
+>
+> > + * until the GPIO is released.
+> > + */
+> >  struct gpio_desc {
+> >       struct gpio_device      *gdev;
+> >       unsigned long           flags;
+> > diff --git a/include/linux/gpio/consumer.h b/include/linux/gpio/consumer.h
+> > index 3ad67b4a72be..3ffb054fafbd 100644
+> > --- a/include/linux/gpio/consumer.h
+> > +++ b/include/linux/gpio/consumer.h
+> > @@ -8,27 +8,16 @@
+> >  #include <linux/err.h>
+> >
+> >  struct device;
+> > -
+> > -/**
+> > - * Opaque descriptor for a GPIO. These are obtained using gpiod_get() and are
+> > - * preferable to the old integer-based handles.
+> > - *
+> > - * Contrary to integers, a pointer to a gpio_desc is guaranteed to be valid
+> > - * until the GPIO is released.
+> > - */
+> >  struct gpio_desc;
+> > -
+> > -/**
+> > - * Opaque descriptor for a structure of GPIO array attributes.  This structure
+> > - * is attached to struct gpiod_descs obtained from gpiod_get_array() and can be
+> > - * passed back to get/set array functions in order to activate fast processing
+> > - * path if applicable.
+> > - */
+> >  struct gpio_array;
+> >
+> >  /**
+> > - * Struct containing an array of descriptors that can be obtained using
+> > - * gpiod_get_array().
+> > + * struct gpio_descs - Struct containing an array of descriptors that can be
+> > + *                     obtained using gpiod_get_array()
+> > + *
+> > + * @info:    Pointer to the opaque gpio_array structure
+> > + * @ndescs:  Number of held descriptors
+> > + * desc:     Array of pointers to GPIO descriptors
+>
+> Missed @?
+>
+> >   */
+> >  struct gpio_descs {
+> >       struct gpio_array *info;
+> > @@ -43,8 +32,16 @@ struct gpio_descs {
+> >  #define GPIOD_FLAGS_BIT_NONEXCLUSIVE BIT(4)
+> >
+> >  /**
+> > - * Optional flags that can be passed to one of gpiod_* to configure direction
+> > - * and output value. These values cannot be OR'd.
+> > + * enum gpiod_flags - Optional flags that can be passed to one of gpiod_* to
+> > + *                    configure direction and output value. These values
+> > + *                    cannot be OR'd.
+> > + *
+> > + * @GPIOD_ASIS:                      Don't change the direction
+>
+> Don't change anything
+>
+> (Not only direction, also the output value. Some hardware allows to change
+> output buffer value even if the line is configured as input).
+>
+> > + * @GPIOD_IN:                        Set lines to input mode
+> > + * @GPIOD_OUT_LOW:           Set lines to output and drive them low
+> > + * @GPIOD_OUT_HIGH:          Set lines to output and drive them high
+> > + * @GPIOD_OUT_LOW_OPEN_DRAIN:        Set lines to open-drain output and drive them low
+> > + * @GPIOD_OUT_HIGH_OPEN_DRAIN:       Set lines to open-drain output and drive them high
+> >   */
+> >  enum gpiod_flags {
+> >       GPIOD_ASIS      = 0,
+> > --
+> > 2.30.1
+> >
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
 
+Fixed the rest. Thanks!
+
+Bart
