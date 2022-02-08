@@ -2,120 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD617C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04333C35278
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388619AbiBHWdR (ORCPT
+        id S1388552AbiBHWdI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:33:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
+        Tue, 8 Feb 2022 17:33:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386880AbiBHVRX (ORCPT
+        with ESMTP id S1387026AbiBHVsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 16:17:23 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A95AC0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:17:22 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id q199-20020a252ad0000000b0061e113c9953so257802ybq.18
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:17:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=ohbaKv3Lg/0Da2FFFbyy5azyuFvGZukwAaGJCbUrePw=;
-        b=SKx+AgJfubJcERmdfYBFsFjNIZCuy1okXaW+Upyg8n+NM6mwgA1CWsSzmFUQQ9FzFh
-         Kuy+E3vvzhtZ2h3EHEMm4GwLyNy7+D4KngxLeseIQtqrxN/bIOFSuslOVxCBXAhDaAlf
-         oKWiAu1FbhNW4lt7rng/y0DEuyzSe0icv7li/pEdDnhMVeV5g5QnVnxfiwRe6KY8a98c
-         HnRiAlmQ1yu3BM5/iwqx5TykECDJMiQC8fJML8uDRiV7ORY+2KwfJUJ8Kq6g4IZ4QmDO
-         0cB/hD3tq0X0abapCjENL2mgoEYs7IXbeoZJMthXYfc6rrlGstkypt2gT3DRUXogTh6e
-         Y6XA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=ohbaKv3Lg/0Da2FFFbyy5azyuFvGZukwAaGJCbUrePw=;
-        b=Ew4/wEKVsubkrb/iRGbYag9Q/ne4Zsf0KmT9TgZdgbr+iZnJL7BaTkj96a2OLLOumv
-         LKdI3wNd5srRrz2T+bo9S/4WYnDUBOsOV2eyKOCX4YXn0i7/+wwGEaDKdeCEUCx0Cm+5
-         4kFVZ65P7IifDStWDpFKE5uY/xTy+1TCZhGZWTQuNZ590REYD1rYkgKCBFEQVJVFGfvr
-         dhzgWOkf0tNI2H2xTeVx8vhyjRHK2BqL5m6kCDYwfPnm7EmkRcczjXKXW0+c/24B1bFE
-         HhKpCybMHLcPwHIpIxGxAhwhNFokqAmc3x6eOrGPvwoN1ZFpUZPqaTBz5GvRH4Q6fhhG
-         XFGw==
-X-Gm-Message-State: AOAM531lVgrYtEA/Sd9r3IJOwM+Llm1rKQmJvxDG/3PnpGkkMv6rgRok
-        JaVQwA5ETLKNpMn0UMMq0haHnKV8svbwiVwWjqZ3pDy5xwLN3bJtR/SZqntyLCrI7nhtDNHCA5k
-        ZDybclvuKK49y7Bz4eXCmY3X3x5ufSEf/2Cv/OzQ84eUicNjBFwAc0GyQrMOABGi8spmLnB19
-X-Google-Smtp-Source: ABdhPJzGaANv2LxnvqCCuYdwvnXsK2X2ChMgm2rnPY5ppU/8qM6BnNyTPK1i1ppKVA273TcfVVmOiLUZStTn
-X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:6875:3c51:69be:6e2c])
- (user=eranian job=sendgmr) by 2002:a25:cdc1:: with SMTP id
- d184mr6229803ybf.489.1644355041791; Tue, 08 Feb 2022 13:17:21 -0800 (PST)
-Date:   Tue,  8 Feb 2022 13:16:36 -0800
-In-Reply-To: <20220208211637.2221872-1-eranian@google.com>
-Message-Id: <20220208211637.2221872-12-eranian@google.com>
-Mime-Version: 1.0
-References: <20220208211637.2221872-1-eranian@google.com>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-Subject: [PATCH v6 11/12] perf tools: Improve error handling of AMD Branch Sampling
-From:   Stephane Eranian <eranian@google.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
-        jolsa@redhat.com, songliubraving@fb.com
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 8 Feb 2022 16:48:50 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2191C0612B8;
+        Tue,  8 Feb 2022 13:48:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644356929; x=1675892929;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=GGSyh+03q9qU11wHQlvx8iReUEq1xb52fNxWSqLbH+4=;
+  b=GJz07wFvA+IoPPsN9IpyuJWWA/A2v0qbbQGPLgU/LoNFALHXmV9Ue2nN
+   2K0Occf/hrS1cXd7PrKi72PB7wLpvkEJuyYW7WL0k5vW3BJNGsGySe11W
+   nvNG5VwXnKmodjasmjYrgcSf/yC1gsetZq/dtOUdFOUybOZfOmSB0dO7B
+   YPZDQj1vbUF/h56K9QtfqRgOBwfARR/shTyMH41P9UYUUTs2DeN44/s+z
+   8a3WrHZBXcgPg5PsFd6jyGVD9Sv4YMeXHH/hSUEt7d/ZrdaMOG82MPQnz
+   uXgjWOcitxNnrkUccR2scjkK322pK0oyJetO2gSlwjnFebTfpgHBe7Sal
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="309805365"
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="309805365"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 13:48:49 -0800
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; 
+   d="scan'208";a="632992863"
+Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 13:48:49 -0800
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, luto@kernel.org, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org, shuah@kernel.org
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH V3 0/4] selftests/sgx: Early enclave loading error path fixes
+Date:   Tue,  8 Feb 2022 13:48:38 -0800
+Message-Id: <cover.1644355600.git.reinette.chatre@intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Improve the error message printed by perf when perf_event_open() fails on
-AMD Zen3 when using the branch sampling feature. In the case of EINVAL, there
-are two main reasons: frequency mode or period is smaller than the depth of
-the branch sampling buffer (16). The patch checks the parameters of the call
-and tries to print a relevant message to explain the error:
+Changes since V2:
+- V2: https://lore.kernel.org/linux-sgx/cover.1643754040.git.reinette.chatre@intel.com/
+- Added Acked-by from Shuah to all patches in series.
+- Shuah is ok with these entering the kernel via tip.git:
+  https://lore.kernel.org/linux-sgx/e188c62e-f75e-2bec-b544-76063098611d@linuxfoundation.org/
+- Include x86@kernel.org and more x86 maintainers since goal is for
+  inclusion into tip.git.
 
-$ perf record -b -e cpu/branch-brs/ -c 10 ls
-Error:
-AMD Branch Sampling does not support sampling period smaller than what is reported in /sys/devices/cpu/caps/branches.
+Changes since V1:
+- V1: https://lore.kernel.org/linux-sgx/cover.1643393473.git.reinette.chatre@intel.com/
+- All changes impact the commit messages only, no changes to code.
+- Rewrite commit message of 1/4 (Dave).
+- Detail in 2/4 commit log what callers will see with this change (Dave).
+- Add Acked-by from Dave to 2/4 and 4/4.
 
-$ perf record -b -e cpu/branch-brs/ ls
-Error:
-AMD Branch Sampling does not support frequency mode sampling, must pass a fixed sampling period via -c option or cpu/branch-brs,period=xxxx/.
+Hi Everybody,
 
-Signed-off-by: Stephane Eranian <eranian@google.com>
-[Rebased on commit 9fe8895a27a84 ("perf env: Add perf_env__cpuid, perf_env__{nr_}pmu_mappings")]
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
----
- tools/perf/util/evsel.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+Please find included a few fixes that address problems encountered after
+venturing into the enclave loading error handling code of the SGX
+selftests.
 
-diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-index d42f63a484df..7311e7b4d34d 100644
---- a/tools/perf/util/evsel.c
-+++ b/tools/perf/util/evsel.c
-@@ -2857,6 +2857,12 @@ static bool is_amd_ibs(struct evsel *evsel)
- 	return evsel->core.attr.precise_ip || !strncmp(evsel->pmu_name, "ibs", 3);
- }
- 
-+static bool is_amd_brs(struct evsel *evsel)
-+{
-+	return ((evsel->core.attr.config & 0xff) == 0xc4) &&
-+	       (evsel->core.attr.sample_type & PERF_SAMPLE_BRANCH_STACK);
-+}
-+
- int evsel__open_strerror(struct evsel *evsel, struct target *target,
- 			 int err, char *msg, size_t size)
- {
-@@ -2971,6 +2977,14 @@ int evsel__open_strerror(struct evsel *evsel, struct target *target,
- 					return scnprintf(msg, size,
- 	"AMD IBS may only be available in system-wide/per-cpu mode.  Try using -a, or -C and workload affinity");
- 			}
-+			if (is_amd_brs(evsel)) {
-+				if (evsel->core.attr.freq)
-+					return scnprintf(msg, size,
-+	"AMD Branch Sampling does not support frequency mode sampling, must pass a fixed sampling period via -c option or cpu/branch-brs,period=xxxx/.");
-+				/* another reason is that the period is too small */
-+				return scnprintf(msg, size,
-+	"AMD Branch Sampling does not support sampling period smaller than what is reported in /sys/devices/cpu/caps/branches.");
-+			}
- 		}
- 
- 		break;
+Reinette
+
+Reinette Chatre (4):
+  selftests/sgx: Fix NULL-pointer-dereference upon early test failure
+  selftests/sgx: Do not attempt enclave build without valid enclave
+  selftests/sgx: Ensure enclave data available during debug print
+  selftests/sgx: Remove extra newlines in test output
+
+ tools/testing/selftests/sgx/load.c | 9 +++++----
+ tools/testing/selftests/sgx/main.c | 9 +++++----
+ 2 files changed, 10 insertions(+), 8 deletions(-)
+
 -- 
-2.35.0.263.gb82422642f-goog
+2.25.1
 
