@@ -2,151 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BB02C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10991C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 14:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377517AbiBHOE5 (ORCPT
+        id S1377563AbiBHOFC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 09:04:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
+        Tue, 8 Feb 2022 09:05:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359354AbiBHOE4 (ORCPT
+        with ESMTP id S1359354AbiBHOE6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 09:04:56 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF9AC03FECE
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 06:04:56 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id k6-20020a05600c1c8600b003524656034cso1729106wms.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 06:04:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B6FmlZTmcDzUzTnzs/ZnYmE51lyCgX2/CWAYd99P97c=;
-        b=NRaKMb4NCaHsBJXQvwGqtTS8m1aISo9EPi17EJah39Y03g7CaTHKQott64gc4dVFLo
-         Uhdo9cAUaQPQ0mKLYZByUdJh3JLOVDpX7kQzE7v3+1tAY07cyMvHU22MVI4QEiRD51AZ
-         tVcbf8e3BnqOM6P7zL5YaFtDr+YDwBLbWzPds=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=B6FmlZTmcDzUzTnzs/ZnYmE51lyCgX2/CWAYd99P97c=;
-        b=KfYVplISo+rr7C2eCAYmk6BlvQJ1wpkR1z2d63crYWaC5Q5r4vp7qy29NGJqNlMLQ7
-         Gv7qYS83ooOrR9qsOTKNZcDzwyK2vYEUwD3WYOGQlk6qjDmOaYRsjTuHLSdeqT5ukBrz
-         wm7aZnaCPh2NcMRk2eIhHJMLlqbTDfp1m88oBWL7o+5JMZe9q9WhiiezgrnVFXNfqvqp
-         VYscvpOEAc5TGf4nNMlNUn6lI0IKmMydwYTOFYHYjsEodeLgeiAM0Ol6H1sce7dBsQZ6
-         uecg+wgC2tmQXmAz5JUvIkkyak8zyWi0fHA6zOb1uiEvBlUiB0lYJPcc4hE1k/T3hcfi
-         DCKA==
-X-Gm-Message-State: AOAM531pTxmphdXotGmiQXzW0V2kAs+CY4VkPveY8nfdDZbB1CBPAuxB
-        Zu79uGsDDriAj7ctcCZOrbDXkg==
-X-Google-Smtp-Source: ABdhPJy7VKPSMId+XZSUl+UPzsq7hk9qGy4vC8m7UEqCLa/LPu+gRsdppXdPV+QZ5sHxKub1DOQDkQ==
-X-Received: by 2002:a05:600c:1506:: with SMTP id b6mr1299950wmg.30.1644329094673;
-        Tue, 08 Feb 2022 06:04:54 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id z17sm2262017wml.38.2022.02.08.06.04.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 06:04:54 -0800 (PST)
-Date:   Tue, 8 Feb 2022 15:04:51 +0100
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jens Frederich <jfrederich@gmail.com>,
-        Jon Nettleton <jon.nettleton@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
-        Matthew Wilcox <willy@infradead.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Zheyu Ma <zheyuma97@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 21/21] fbdev: Make registered_fb[] private to fbmem.c
-Message-ID: <YgJ4g2BEaeUELmvF@phenom.ffwll.local>
-Mail-Followup-To: Geert Uytterhoeven <geert@linux-m68k.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jens Frederich <jfrederich@gmail.com>,
-        Jon Nettleton <jon.nettleton@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Helge Deller <deller@gmx.de>, Matthew Wilcox <willy@infradead.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>, Zheyu Ma <zheyuma97@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>
-References: <20220131210552.482606-1-daniel.vetter@ffwll.ch>
- <20220131210552.482606-22-daniel.vetter@ffwll.ch>
- <CAMuHMdUm76tT6u+i=A50ffh=k8hX5kgoMqH=t_wfHqH95nVOPA@mail.gmail.com>
+        Tue, 8 Feb 2022 09:04:58 -0500
+X-Greylist: delayed 1806 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 06:04:58 PST
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19329C03FECE;
+        Tue,  8 Feb 2022 06:04:57 -0800 (PST)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 218DIeSd060742;
+        Tue, 8 Feb 2022 07:18:40 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644326320;
+        bh=ZiOjVY7LaUfOv8g+mkFWBADUqQCcc3Bnf8I/9D6ObNc=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=vl/cmvm0SW2BnbrNiXiTnd5fQniR+Wd34c8y0fmNcx4yoN3OZa4pr5u7bCCA7j0rE
+         9+N0QkrlXZpsCeVXZDpdt7xzcErDOIEDiyS1J8c5cgDrrWA28v8/+TFnD7B1YrUkLv
+         4tzLDTTD0dcwygGmqR70MlEq2ZlQEwM72QSSqJ1Q=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 218DIeB0101774
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 8 Feb 2022 07:18:40 -0600
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 8
+ Feb 2022 07:18:40 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 8 Feb 2022 07:18:40 -0600
+Received: from ula0132425.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 218DIUCh117228;
+        Tue, 8 Feb 2022 07:18:37 -0600
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/5] dt-bindings: arm: ti: Add bindings for AM625 SoC
+Date:   Tue, 8 Feb 2022 18:48:24 +0530
+Message-ID: <20220208131827.1430086-3-vigneshr@ti.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220208131827.1430086-1-vigneshr@ti.com>
+References: <20220208131827.1430086-1-vigneshr@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdUm76tT6u+i=A50ffh=k8hX5kgoMqH=t_wfHqH95nVOPA@mail.gmail.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 09:30:56AM +0100, Geert Uytterhoeven wrote:
-> Hi Daniel,
-> 
-> Thanks for your patch!
-> 
-> On Tue, Feb 1, 2022 at 9:50 PM Daniel Vetter <daniel.vetter@ffwll.ch> wrote:
-> > Well except when the olpc dcon fbdev driver is enabled, that thing
-> > digs around in there in rather unfixable ways.
-> 
-> Can't the actual frame buffer driver (which one?) used on olpc export
-> a pointer to its fb_info?
+From: Nishanth Menon <nm@ti.com>
 
-Yeah that might be the right thing to do, I'll add that as a stagin TODO
-in the next iteration.
+The AM62 SoC family is the follow on AM335x built on K3 Multicore SoC
+architecture platform, providing ultra-low-power modes, dual display,
+multi-sensor edge compute, security and other BOM-saving integration.
+The AM62 SoC targets broad market to enable applications such as
+Industrial HMI, PLC/CNC/Robot control, Medical Equipment, Building
+Automation, Appliances and more.
 
-> 
-> > --- a/drivers/video/fbdev/core/fbmem.c
-> > +++ b/drivers/video/fbdev/core/fbmem.c
-> > @@ -48,10 +48,14 @@
-> >  static DEFINE_MUTEX(registration_lock);
-> >
-> >  struct fb_info *registered_fb[FB_MAX] __read_mostly;
-> > -EXPORT_SYMBOL(registered_fb);
-> > -
-> >  int num_registered_fb __read_mostly;
-> > +#if IS_ENABLED(CONFIG_OLPC_DCON)
-> 
-> CONFIG_FB_OLPC_DCON (everywhere), cfr. the build failure reported
-> by the robot.
+Some highlights of this SoC are:
 
-Yeah realized that too and fixed it locally.
+* Quad-Cortex-A53s (running up to 1.4GHz) in a single cluster.
+  Pin-to-pin compatible options for single and quad core are available.
+* Cortex-M4F for general-purpose or safety usage.
+* Dual display support, providing 24-bit RBG parallel interface and
+  OLDI/LVDS-4 Lane x2, up to 200MHz pixel clock support for 2K display
+  resolution.
+* Selectable GPUsupport, up to 8GFLOPS, providing better user experience
+  in 3D graphic display case and Android.
+* PRU(Programmable Realtime Unit) support for customized programmable
+  interfaces/IOs.
+* Integrated Giga-bit Ethernet switch supporting up to a total of two
+  external ports (TSN capable).
+* 9xUARTs, 5xSPI, 6xI2C, 2xUSB2, 3xCAN-FD, 3x eMMC and SD, GPMC for
+  NAND/FPGA connection, OSPI memory controller, 3xMcASP for audio,
+  1x CSI-RX-4L for Camera, eCAP/eQEP, ePWM, among other peripherals.
+* Dedicated Centralized System Controller for Security, Power, and
+  Resource Management.
+* Multiple low power modes support, ex: Deep sleep,Standby, MCU-only,
+  enabling battery powered system design.
 
-Cheers, Daniel
+AM625 is the first device of the family. Add DT bindings for the same.
 
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+More details can be found in the Technical Reference Manual:
+https://www.ti.com/lit/pdf/spruiv7
 
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+---
+ Documentation/devicetree/bindings/arm/ti/k3.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/ti/k3.yaml b/Documentation/devicetree/bindings/arm/ti/k3.yaml
+index b03c10fa2e7a..64f3db3ea9dd 100644
+--- a/Documentation/devicetree/bindings/arm/ti/k3.yaml
++++ b/Documentation/devicetree/bindings/arm/ti/k3.yaml
+@@ -53,6 +53,12 @@ properties:
+               - ti,am642-sk
+           - const: ti,am642
+ 
++      - description: K3 AM625 SoC
++        items:
++          - enum:
++              - ti,am625-sk
++          - const: ti,am625
++
+       - description: K3 J721s2 SoC
+         items:
+           - enum:
 -- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+2.35.1
+
