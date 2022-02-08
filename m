@@ -2,118 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 136AEC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D60ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349380AbiBHImT (ORCPT
+        id S1350726AbiBHImi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:42:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
+        Tue, 8 Feb 2022 03:42:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231542AbiBHImI (ORCPT
+        with ESMTP id S231542AbiBHIme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:42:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F937C03FECC;
-        Tue,  8 Feb 2022 00:42:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37DF5B81884;
-        Tue,  8 Feb 2022 08:42:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 584EFC004E1;
-        Tue,  8 Feb 2022 08:42:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644309724;
-        bh=sAeco6xgxqRwjb0iDifRLfjcvvAG94ttN6jFbAjdq4g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VKy28vKSsxSfOorEu59O9ozNaCmVobA6oiAQfsc3SNbif0ZaJ3aNHb0cEivAtrfXK
-         0iylLNzah58dMoMr6hqFJyJun5fPVXnl8D6FY/RInPa3geORWcvXavP+kGtGE6HP86
-         HPJSJhR4t0smUhqJmn1ovN7cK0+/ziAZfE66f2Yk=
-Date:   Tue, 8 Feb 2022 09:41:57 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Neal Liu <neal_liu@aspeedtech.com>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        Tao Ren <rentao.bupt@gmail.com>, BMC-SW <BMC-SW@aspeedtech.com>
-Subject: Re: [PATCH] usb: ehci: add pci device support for Aspeed platforms
-Message-ID: <YgIs1fIu9nzuCKeA@kroah.com>
-References: <20220208062927.3527137-1-neal_liu@aspeedtech.com>
- <YgId0AhvRAmIcEA0@kroah.com>
- <HK0PR06MB32026A17E53EB76DB898A399802D9@HK0PR06MB3202.apcprd06.prod.outlook.com>
+        Tue, 8 Feb 2022 03:42:34 -0500
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7140C0401F6
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:42:33 -0800 (PST)
+Received: by mail-il1-x129.google.com with SMTP id f13so1104517ilq.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:42:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FhfpJki+NNdkV0gRVxsiFBe0vxe4of82upgxXPZeRnU=;
+        b=ltrv7fjxH8Z/MYJ+dFqSX07UsjFk0En2JVojwb07khT6GU/nljRY6ZcUw5XDkY2k9U
+         10iCVy9Ac2BAJDuQFYo9S7tDIj3P9JKeZpva3KedKVwTgq/++kCs4tuecqGhtM8RyvXv
+         mvjO6MjUYOeh3Eb7IF2GiKoupddeqo33NlX0dsBG/idvvizpFhLyoF6+Ck2Qi07i8O9m
+         kuh39mSjp36sDeaM7WmQrV59O+OXMvNNFEcQADvyZ5Sp4fcVXuPGhcMOghBHacSXUKXf
+         Zz7AOL9oylZsRdYSmJE8C0LTQ9L/alT7qztTD5bsEs2FMyshCXc9x3zGHrUcOn2yuILW
+         p8Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FhfpJki+NNdkV0gRVxsiFBe0vxe4of82upgxXPZeRnU=;
+        b=naIbguYKhIFzMl6oOIVdD5jSvFu96VTZEwqcQIAr8EIIv/DV7V8+vfEJoODXz4b+Cj
+         GUkp/nSXh5FBkAXQb7qQ+SCvHZCNYfjGj0kTJ4vNTEwDm/l/zznmDrj1+Y/NFRZEewTD
+         XD6+WFpsBkRJ5FgRqYlD0BTm9HqtnAY66W34a30OF+2UMj2V+/5i9NDx9+zYK7/a/LGW
+         HLzogc0QbWkuwsGWPZXHNXLRpPU5jRrdwCFrJylztz+2kdvzXbrS1UMtiB3V8zJ89h9g
+         s5RT3K+DaUXtj6Zd/afyHF1EBOZ1iqX+bPii3HQlPqGk9ocj3FOpHtU3T7cnphMqZ/Zf
+         YcgQ==
+X-Gm-Message-State: AOAM533lZ0B4dttaPXaXSfih8vvJL4QWP7t08wPCrinEcV/1mdQ+qyg8
+        wWfxzcaQ0cInKCqbMNSbxZ7JRQ==
+X-Google-Smtp-Source: ABdhPJyYhd/AJxeDgLSOW7+qrTADVxq90CiyDTRHsiwwvVnqVHQOfXMPMVg1u68HTRArEl9IZnGDZQ==
+X-Received: by 2002:a05:6e02:144c:: with SMTP id p12mr1713786ilo.182.1644309753034;
+        Tue, 08 Feb 2022 00:42:33 -0800 (PST)
+Received: from google.com ([2620:15c:183:200:5f31:19c3:21f5:7300])
+        by smtp.gmail.com with ESMTPSA id r9sm7575223ill.52.2022.02.08.00.42.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 00:42:32 -0800 (PST)
+Date:   Tue, 8 Feb 2022 01:42:28 -0700
+From:   Yu Zhao <yuzhao@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@kernel.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        page-reclaim@google.com, x86@kernel.org,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>
+Subject: Re: [PATCH v7 09/12] mm: multigenerational LRU: runtime switch
+Message-ID: <YgIs9Ig7PMS8Lsw3@google.com>
+References: <20220208081902.3550911-1-yuzhao@google.com>
+ <20220208081902.3550911-10-yuzhao@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <HK0PR06MB32026A17E53EB76DB898A399802D9@HK0PR06MB3202.apcprd06.prod.outlook.com>
+In-Reply-To: <20220208081902.3550911-10-yuzhao@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 08:20:07AM +0000, Neal Liu wrote:
-> > -----Original Message-----
-> > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Sent: Tuesday, February 8, 2022 3:38 PM
-> > To: Neal Liu <neal_liu@aspeedtech.com>
-> > Cc: Alan Stern <stern@rowland.harvard.edu>; Bjorn Helgaas
-> > <bhelgaas@google.com>; linux-usb@vger.kernel.org;
-> > linux-kernel@vger.kernel.org; linux-pci@vger.kernel.org; Tao Ren
-> > <rentao.bupt@gmail.com>; BMC-SW <BMC-SW@aspeedtech.com>
-> > Subject: Re: [PATCH] usb: ehci: add pci device support for Aspeed platforms
-> > 
-> > On Tue, Feb 08, 2022 at 02:29:27PM +0800, Neal Liu wrote:
-> > > Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
-> > > handshake CMD_RUN instead of STS_HALT") to support Aspeed ehci-pci
-> > > device.
-> > >
-> > > Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-> > > ---
-> > >  drivers/usb/host/ehci-pci.c | 6 ++++++
-> > >  include/linux/pci_ids.h     | 3 +++
-> > >  2 files changed, 9 insertions(+)
-> > >
-> > > diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
-> > > index e87cf3a00fa4..a91b25d216ae 100644
-> > > --- a/drivers/usb/host/ehci-pci.c
-> > > +++ b/drivers/usb/host/ehci-pci.c
-> > > @@ -222,6 +222,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
-> > >  			ehci->has_synopsys_hc_bug = 1;
-> > >  		}
-> > >  		break;
-> > > +	case PCI_VENDOR_ID_ASPEED:
-> > > +		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
-> > > +			ehci_info(ehci, "applying Aspeed HC workaround\n");
-> > > +			ehci->is_aspeed = 1;
-> > > +		}
-> > > +		break;
-> > >  	}
-> > >
-> > >  	/* optional debug port, normally in the first BAR */ diff --git
-> > > a/include/linux/pci_ids.h b/include/linux/pci_ids.h index
-> > > aad54c666407..410b395fe56c 100644
-> > > --- a/include/linux/pci_ids.h
-> > > +++ b/include/linux/pci_ids.h
-> > > @@ -3096,4 +3096,7 @@
-> > >
-> > >  #define PCI_VENDOR_ID_NCUBE		0x10ff
-> > >
-> > > +#define PCI_VENDOR_ID_ASPEED		0x1a03
-> > > +#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
-> > 
-> > Please read the top of this file, this does not need to be added here.
-> > 
-> > thanks,
-> > 
-> > greg k-h
+On Tue, Feb 08, 2022 at 01:18:59AM -0700, Yu Zhao wrote:
+> Add /sys/kernel/mm/lru_gen/enabled as a runtime switch. Features that
+> can be enabled or disabled include:
+>   0x0001: the multigenerational LRU
+>   0x0002: the page table walks, when arch_has_hw_pte_young() returns
+>           true
+>   0x0004: the use of the accessed bit in non-leaf PMD entries, when
+>           CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=y
+>   [yYnN]: apply to all the features above
+> E.g.,
+>   echo y >/sys/kernel/mm/lru_gen/enabled
+>   cat /sys/kernel/mm/lru_gen/enabled
+>   0x0007
+>   echo 5 >/sys/kernel/mm/lru_gen/enabled
+>   cat /sys/kernel/mm/lru_gen/enabled
+>   0x0005
 > 
-> Are you suggesting to hard code vendor/device ID in driver instead?
+> NB: the page table walks happen on the scale of seconds under heavy
+> memory pressure. Under such a condition, the mmap_lock contention is a
+> lesser concern, compared with the LRU lock contention and the I/O
+> congestion. So far the only well-known case of the mmap_lock
+> contention is Android, due to Scudo [1] which allocates several
+> thousand VMAs for merely a few hundred MBs. The SPF and the Maple Tree
+> also have provided their own assessments [2][3]. However, if the page
+> table walks do worsen the mmap_lock contention, the runtime switch can
+> be used to disable this feature. In this case the multigenerational
+> LRU will suffer a minor performance degradation, as shown previously.
 
-Or put the define in the ehci-pci.c file like other drivers do.  Only
-add to the pci_ids.h file if your define is needed in multiple drivers,
-otherwise it is a merge nightmare.
+Clarified the potential impact from the mmap_lock contention as
+requested here:
+https://lore.kernel.org/linux-mm/YdwQcl6D5Mbp9Z4h@dhcp22.suse.cz/
 
-thanks,
+<snipped>
 
-greg k-h
+> +static void lru_gen_change_state(bool enable)
+> +{
+> +	static DEFINE_MUTEX(state_mutex);
+> +
+> +	struct mem_cgroup *memcg;
+> +
+> +	cgroup_lock();
+> +	cpus_read_lock();
+> +	get_online_mems();
+> +	mutex_lock(&state_mutex);
+> +
+> +	if (enable == lru_gen_enabled())
+> +		goto unlock;
+> +
+> +	if (enable)
+> +		static_branch_enable_cpuslocked(&lru_gen_caps[LRU_GEN_CORE]);
+> +	else
+> +		static_branch_disable_cpuslocked(&lru_gen_caps[LRU_GEN_CORE]);
+
+Fixed the lockdep warning for memory hotplug:
+https://lore.kernel.org/linux-mm/87a6g0nczg.fsf@linux.ibm.com/
+
+<snipped>
