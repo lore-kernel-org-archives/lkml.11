@@ -2,113 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D96C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E34CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 15:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351748AbiBHPSY (ORCPT
+        id S1379593AbiBHPTA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 10:18:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35210 "EHLO
+        Tue, 8 Feb 2022 10:19:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239424AbiBHPSX (ORCPT
+        with ESMTP id S1352926AbiBHPS7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 10:18:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA73BC061576;
-        Tue,  8 Feb 2022 07:18:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5610761599;
-        Tue,  8 Feb 2022 15:18:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 071E2C004E1;
-        Tue,  8 Feb 2022 15:18:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644333501;
-        bh=9zUs0iuzKwulU200Q6NMliFAJbLi0oQzH9htLDfo/j8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jec8CourqxGwtOULAuUJQ2M06wpyEydYcArcgJdKsAi2pDpknemzA3PLWTfMKSj7k
-         UDzxVpfxINAj6NXq1W4KUyDdHKyM51z62OlSYsrEJOcVZbQybOEJNB6Y/FESnlSAdw
-         s+kZ3C6+D9EpV9zfi/4v42c21hn321m0WQijY487BF3RlwwxK4RXsiIFqskCZKGg2X
-         YZWojAT2oRg5AxPl4e2OOP/6DUinHkbXLQ7JADrUsYjDmOza9sAg5gbYVmYEefXPVj
-         HhDLH0L2g/iD0eNGQf+ZyGAUmEYBS4BjNfqd7OdQKIK7dCh/DYx+/uRVmhDXdrYyYv
-         JIrzOMR83Rk4w==
-Date:   Tue, 8 Feb 2022 15:18:14 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [PATCH v2 0/4] drm/tiny: Add driver for Solomon SSD1307 OLED
- displays
-Message-ID: <YgKJtjoFMSzxNiiI@sirena.org.uk>
-References: <20220204134347.1187749-1-javierm@redhat.com>
- <CAMuHMdVTVX7LFay-rfv=oW96dMA24duMUVGRE62jQSNkrKtyMg@mail.gmail.com>
- <f178de92-7cb1-dcc5-1f60-9ccfc56bc0a4@redhat.com>
+        Tue, 8 Feb 2022 10:18:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62BB4C061579
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 07:18:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644333537;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=g1dLWDlmAylsVAbFh6dRuuTZBM7U6UZUvU1LhCTc2yU=;
+        b=flUpgXq44x+f0mO57dp4hx5VDlip8gCZc7xvHd9CWpfA7WktHMqBxJZWMX4JfRx/SUYF6R
+        UFax4CY7E1Fyd/bYHsjjn75ZcwvjR3eL8IOf+7moQnfZjlZEbKbXPEC6lZYQ7myVV+x+Y8
+        rN9fEfqoqPKXwdC3N+rp6YiujSBl4fs=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-248-I9bifseCM4KMxFAxU_QPrg-1; Tue, 08 Feb 2022 10:18:56 -0500
+X-MC-Unique: I9bifseCM4KMxFAxU_QPrg-1
+Received: by mail-wr1-f71.google.com with SMTP id g6-20020adfbc86000000b001a2d62be244so6178791wrh.23
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 07:18:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=g1dLWDlmAylsVAbFh6dRuuTZBM7U6UZUvU1LhCTc2yU=;
+        b=wZL2ve2OYvnw+KGRIOhG3SOMBxLTTgis/bA9zm8BA8wkIc5X8zSQ6Th++pEbU+ztzq
+         ty0taWBLoe1VBBIZSHdlyF7F47nBaqw2iMghcIZf8AjOHyKWoWW4xy+EGvbTeUCG0zH5
+         aoohJAklzOsDXonNmvtwQHh5DO04eaCQm4mtXTbN/oWkJyeN3Rfnl0/aoZEc4iDqZ9pc
+         +AiWV276GGaoCIbiENE1SxKj3VhSo4lbClReDqt+HS94u7tY3aLWAuYoFe3JGRDW3EOR
+         tWcp5rVtU0nxZWn2AV+/C0Gs+PKBFrMiS5uu81vH643/o/aWx0xg8QvRgFBzIMjoPBTq
+         WNMw==
+X-Gm-Message-State: AOAM533XWuWe86QtKhxY3lSZcvhbx6JnUnbFnbEZfF9mJsUngJN9pWka
+        uTxjcMWARLcXoEWY5GecNnhdIYfwDXahT9Qqh0ZI4P5sXK0pFA7wQJjGrWvRuV7I8Q/JfA3x/ox
+        HPsmAcs1XCmXSASb/Y54qvgI=
+X-Received: by 2002:a05:600c:3846:: with SMTP id s6mr1562110wmr.26.1644333535407;
+        Tue, 08 Feb 2022 07:18:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxlF2zSt7RYRFVBT770zFzAYkbM60g4+C9WVjw78vwP9vz+XHesCTBfEzpGpKZYFpy9H8xlRg==
+X-Received: by 2002:a05:600c:3846:: with SMTP id s6mr1562097wmr.26.1644333535246;
+        Tue, 08 Feb 2022 07:18:55 -0800 (PST)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id f13sm2630160wmq.29.2022.02.08.07.18.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 07:18:54 -0800 (PST)
+Date:   Tue, 8 Feb 2022 15:18:53 +0000
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     mcgrof@kernel.org, cl@linux.com, mbenes@suse.cz,
+        akpm@linux-foundation.org, jeyu@kernel.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        live-patching@vger.kernel.org, atomlin@atomlin.com,
+        ghalat@redhat.com, allen.lkml@gmail.com, void@manifault.com,
+        joe@perches.com
+Subject: Re: [RFC PATCH v4 03/13] module: Move livepatch support to a
+ separate file
+Message-ID: <20220208151853.avy4e7sgyutuempk@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220130213214.1042497-1-atomlin@redhat.com>
+ <20220130213214.1042497-4-atomlin@redhat.com>
+ <YgJXEhiwn5B4Psxa@alley>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6nCHMM5kfVPLymNn"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <f178de92-7cb1-dcc5-1f60-9ccfc56bc0a4@redhat.com>
-X-Cookie: This is your fortune.
+In-Reply-To: <YgJXEhiwn5B4Psxa@alley>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue 2022-02-08 12:42 +0100, Petr Mladek wrote:
+> This should go to internal.h.
+> 
+> Alternative is to move both is_livepatch_module() and
+> set_livepatch_module() into include/linux/livepatch.h.
+> 
+> I do not have strong opinion.
 
---6nCHMM5kfVPLymNn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hi Petr,
 
-On Tue, Feb 08, 2022 at 04:10:49PM +0100, Javier Martinez Canillas wrote:
-> On 2/8/22 15:19, Geert Uytterhoeven wrote:
+Firstly, thank you for your feedback.
 
-> >   - "time ls" on the serial console (no files in the current directory,
-> >     so nothing to print) increases from 0.86s to 1.92s, so the system is
-> >     more loaded.  As ssd1307fb relied on deferred I/O too, the slowdown
-> >     might be (partly) due to redrawing of the visual artefacts
-> >     mentioned above.
+In my opinion, I believe is_livepatch_module() should remain as it may
+continue to be used externally i.e., outside of kernel/module/; albeit,
+indeed set_livepatch_module() should be moved to kernel/module/internal.h
+given its use is exclusive to core code.
 
-> I was trying to first have the driver and then figure out how to optimize
-> it. For v3 I'm using regmap to access instead of the I2C layer directly.
 
-> I noticed that this is even slower but it makes the driver more clean and
-> allows to support both I2C and SPI (untested but will include it as a WIP).
+Kind regards,
 
-I wouldn't have expected regmap to add huge overhead relative to I2C,
-partly predicated on I2C being rather slow itself.  There will be some
-overhead for concurrency protection and data marshalling but for I2C
-clocked at normal speeds it's surprising.
+-- 
+Aaron Tomlin
 
---6nCHMM5kfVPLymNn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmICibYACgkQJNaLcl1U
-h9AOugf/QJOPSSqlU4nYtDxke7z0DHEFzbA063OycyGY8coF3lZCkjrBvoV2zp5r
-gBY8Wdmv00psAkmZE7Pg3o8IZhaBn9mZ7+u/GZ0/Rzv7P+oNScm9ixRfPzOVAw5n
-8ipOUBx2JYFmxMaYKsahkKl/IMSZ7w14roD+GnSHomyk1yK47L+7+ILdJdzC9Gg4
-0rDNz+IF+tKQu4SrwyteAmwy0a3ufos9kj+zOH61iVOv4388BuSnoUCa0ADUCGMb
-n7MkSDMlJwuTJkX3sS5jJeJdi0AP+uuPwUa73zAAq3FDi7Zn3wjnRlEHP+QNa3B/
-yQIr2nXx8Oy5WWWQc8CPGM7d4u+3EQ==
-=0FAN
------END PGP SIGNATURE-----
-
---6nCHMM5kfVPLymNn--
