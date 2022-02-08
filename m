@@ -2,211 +2,645 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E2CC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:25:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2784C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358055AbiBHLYS (ORCPT
+        id S1357662AbiBHLYJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:24:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
+        Tue, 8 Feb 2022 06:24:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355836AbiBHJzk (ORCPT
+        with ESMTP id S1355805AbiBHJzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:55:40 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DD0C03FEC3
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:55:39 -0800 (PST)
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 2E6044003D
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 09:55:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644314138;
-        bh=Szjo/xn7L6v0v/D7OiLOigwEC075JGBmQohH09dmhBU=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=rIhIhYYP5Ia2Lftk+OtmnNwLCoQIHJK3aVhbxW9Y5tepleufIvhiT2o4oZr0NYFTn
-         UVCqMWy7F/J08LJzPAxJOcT5SeU6mc9bl120A0i5mgsEEmj9P58deqWmzr4kcAyd4D
-         AVzHAhRkyZEb64SuKj16l8zp7grQVfdG4Cy8UZfqJUJ9mLxARZk+Zbvkgv/L78UEXc
-         DGJDZHc4P4QJUzBo4BjqjqRalcVPSbLGnGppLnSObLfh0VFdFwUP0j6WWS5r/eujEF
-         nfiE3bB1oh6p2HxehKJqiGJozzDo8otsqR8bwMw0RRbxKDofq9pr/uB3txBNRI5w16
-         v6BxgJ4LpYNlA==
-Received: by mail-ej1-f70.google.com with SMTP id ky6-20020a170907778600b0068e4bd99fd1so5505028ejc.15
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:55:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Szjo/xn7L6v0v/D7OiLOigwEC075JGBmQohH09dmhBU=;
-        b=m54sV+f9Bb8JSGDR3oFezvJ33VAUs9A7iy2eFoKFp4PsZzs+POdjGtCS2Yaqy2sdAA
-         D8l7OZBdx7/4S8MKQQ0LbpUlsKBkb+q8Z6FE5QMtfyAREMZy2YWfQUZ2C7TD5hWGVFaS
-         qNSiJxr9AFPC1OP3lADxUBcaLIHP29dkvPGH9WQ6czr4w0aLYwIqAg+h4xYmtnvncxzl
-         yxYUJRZINDlDFRBvpMD3oJH8z+9JC7fXQgHrDry2uBsF8RxpBiU9NYrXCN9ZuuniY66R
-         QWmm/SBF7QSayfhCVQC1/dA/pcHYYtF1rppTWx6nLQWX/72bJjwALA2X3sSs1diPWwvB
-         OASA==
-X-Gm-Message-State: AOAM531ReFAJZF7kX9QL/KfHReka4XkSk8hXsQiuHlJ9ijxLn7nmMcno
-        g3jWGmtsRK26ahSOShIXT1WJgA7nBoKb8j0yiO5vyWBirid9uWaSvFEV9x5LCm8s057hawpLu2b
-        hpGkS7uYKcHo75bzea+Yj4AfTlA02OdaBztO0AD3+OQ==
-X-Received: by 2002:a17:906:4999:: with SMTP id p25mr2962923eju.605.1644314136760;
-        Tue, 08 Feb 2022 01:55:36 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz6Iu0J7lv26V4wjpXecuQJTMEHXlN1Y9pJES2wkCc04GRpLkPji9H4FKt//tjuDuor1d/XWA==
-X-Received: by 2002:a17:906:4999:: with SMTP id p25mr2962902eju.605.1644314136538;
-        Tue, 08 Feb 2022 01:55:36 -0800 (PST)
-Received: from [192.168.0.93] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id r22sm4593859ejo.48.2022.02.08.01.55.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 01:55:36 -0800 (PST)
-Message-ID: <82f120fc-1bc5-29ee-2a02-ca1fba308de3@canonical.com>
-Date:   Tue, 8 Feb 2022 10:55:35 +0100
+        Tue, 8 Feb 2022 04:55:19 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1D8C03FEC1;
+        Tue,  8 Feb 2022 01:55:18 -0800 (PST)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2189ecME003539;
+        Tue, 8 Feb 2022 01:55:14 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=6AVyIpZnbEKN4rXA2yrQOr/6xrmDl2g1Q2a4UyVRqJ4=;
+ b=Hl7nnEr0A1iZofq68HKiKlCB4u2JgGR0oOMeq91qM0YczRaUOJNiRlX35HeybkXfBhpt
+ muJqySvfw1D3e0vZ49XdMYJawDTSUjgvuNbu38szQfj2WpFzBz7cgXUIGdd1O5TQXAbP
+ F3FU5ZlUYztveVOIB0t1rgJA1azeWOYUvH9R5PdPgKTDWIBAcwX0HJNFOBRV9Ynavsx1
+ CcsZMnGLYgRGTSBtycbUr9NFH72t3dUx7U6j4LCi8yw8mj7HSHb7TxpfLKkcpynwApXv
+ D+up+gkrGhhmcwfngg4uuBsvlv67lZyjTtB4bZP0KQWtKR5B0HINi6+iuNfEd2WSY6kG Nw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3e3nuy02qy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 08 Feb 2022 01:55:13 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 8 Feb
+ 2022 01:55:11 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 8 Feb 2022 01:55:11 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 335C83F7092;
+        Tue,  8 Feb 2022 01:55:07 -0800 (PST)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>
+Subject: [net-next PATCH 3/4] octeontx2-af: Flow control resource management
+Date:   Tue, 8 Feb 2022 15:24:55 +0530
+Message-ID: <20220208095456.6122-4-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220208095456.6122-1-hkelam@marvell.com>
+References: <20220208095456.6122-1-hkelam@marvell.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/3] dt-bindings: crypto: Convert Atmel AES to yaml
-Content-Language: en-US
-To:     Tudor.Ambarus@microchip.com, herbert@gondor.apana.org.au,
-        robh+dt@kernel.org
-Cc:     davem@davemloft.net, Nicolas.Ferre@microchip.com,
-        Claudiu.Beznea@microchip.com, alexandre.belloni@bootlin.com,
-        linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220207032405.70733-1-tudor.ambarus@microchip.com>
- <20220207032405.70733-2-tudor.ambarus@microchip.com>
- <f8387f12-24f9-4a39-e9b8-3b83f1de078d@canonical.com>
- <ec358f0f-e3e2-a97b-e09a-d397edc65c72@microchip.com>
- <7b787aee-ceea-d035-38b1-02ba0bcd3f21@canonical.com>
- <eba691b4-e75f-f3ca-5359-9dc8b3bd3558@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <eba691b4-e75f-f3ca-5359-9dc8b3bd3558@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-GUID: iwUOgzTOfcbVbRRrZitdVwBcBWYQHrYp
+X-Proofpoint-ORIG-GUID: iwUOgzTOfcbVbRRrZitdVwBcBWYQHrYp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-08_02,2022-02-07_02,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/02/2022 10:49, Tudor.Ambarus@microchip.com wrote:
-> On 2/8/22 10:59, Krzysztof Kozlowski wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->>
->> On 08/02/2022 05:10, Tudor.Ambarus@microchip.com wrote:
->>> Hi, Krzysztof,
->>>
->>> On 2/7/22 17:56, Krzysztof Kozlowski wrote:
->>>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->>>>
->>>> On 07/02/2022 04:24, Tudor Ambarus wrote:
->>>>> Convert Atmel AES documentation to yaml format. With the conversion the
->>>>> clock and clock-names properties are made mandatory. The driver returns
->>>>> -EINVAL if "aes_clk" is not found, reflect that in the bindings and make
->>>>> the clock and clock-names properties mandatory. Update the example to
->>>>> better describe how one should define the dt node.
->>>>>
->>>>> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
->>>>> ---
->>>>>  .../devicetree/bindings/crypto/atmel,aes.yaml | 65 +++++++++++++++++++
->>>>>  .../bindings/crypto/atmel-crypto.txt          | 20 ------
->>>>>  2 files changed, 65 insertions(+), 20 deletions(-)
->>>>>  create mode 100644 Documentation/devicetree/bindings/crypto/atmel,aes.yaml
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/crypto/atmel,aes.yaml b/Documentation/devicetree/bindings/crypto/atmel,aes.yaml
->>>>> new file mode 100644
->>>>> index 000000000000..f77ec04dbabe
->>>>> --- /dev/null
->>>>> +++ b/Documentation/devicetree/bindings/crypto/atmel,aes.yaml
->>>>> @@ -0,0 +1,65 @@
->>>>> +# SPDX-License-Identifier: GPL-2.0-only
->>>>> +%YAML 1.2
->>>>> +---
->>>>> +$id: http://devicetree.org/schemas/crypto/atmel,aes.yaml#
->>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>>> +
->>>>> +title: Atmel Advanced Encryption Standard (AES) HW cryptographic accelerator
->>>>> +
->>>>> +maintainers:
->>>>> +  - Tudor Ambarus <tudor.ambarus@microchip.com>
->>>>> +
->>>>> +properties:
->>>>> +  compatible:
->>>>> +    const: atmel,at91sam9g46-aes
->>>>> +
->>>>> +  reg:
->>>>> +    maxItems: 1
->>>>> +
->>>>> +  interrupts:
->>>>> +    maxItems: 1
->>>>> +
->>>>> +  clocks:
->>>>> +    maxItems: 1
->>>>> +
->>>>> +  clock-names:
->>>>> +    const: aes_clk
->>>>> +
->>>>> +  dmas:
->>>>> +    items:
->>>>> +      - description: TX DMA Channel
->>>>> +      - description: RX DMA Channel
->>>>> +
->>>>> +  dma-names:
->>>>> +    items:
->>>>> +      - const: tx
->>>>> +      - const: rx
->>>>> +
->>>>> +required:
->>>>> +  - compatible
->>>>> +  - reg
->>>>> +  - interrupts
->>>>> +  - clocks
->>>>> +  - clock-names
->>>>> +  - dmas
->>>>> +  - dma-names
->>>>> +
->>>>> +additionalProperties: false
->>>>> +
->>>>> +examples:
->>>>> +  - |
->>>>> +    #include <dt-bindings/interrupt-controller/irq.h>
->>>>> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->>>>> +    #include <dt-bindings/clock/at91.h>
->>>>> +    #include <dt-bindings/dma/at91.h>
->>>>
->>>> One empty line for readability.
->>>
->>> Ok.
->>>
->>>>
->>>>> +    aes: aes@f8038000 {
->>>>
->>>> Generic node name, so "crypto".
->>>
->>> Hm, I'm not convinced why, would you please give more details about this
->>> requirement? This IP is capable of doing just AES operations, I find it
->>> generic enough. We use the "aes" name on all our SoCs that have a version
->>> of this IP, that would be quite a change. So I would prefer to keep the
->>> "aes" name if possible.
->>>
->>
->> The requirement comes from DT specification.
->> "The name of a node should be somewhat generic, reflecting the function
->> of the device and not its precise programming
->>  model. If appropriate, the name should be one of the following choice"
->> AES is not generic. AES is specific crypto operation. The spec gives
->> example - "crypto", so use this one just like others are using. Atmel is
->> not special in that matter.
->>
-> I see, thanks for the explanation. I will put the node name as "crypto", and add
-> a label to it as "aes":
-> aes: crypto@f8038000 {
-> 
+CN10K MAC block (RPM) and Octeontx2 MAC block (CGX) both supports
+PFC flow control and 802.3X flow control pause frames.
 
-That's fine (label naming doesn't matter). You don't have to change all
-your DTS files with the new node name, although at some point it could
-be required.
+Each MAC block supports max 4 LMACS and AF driver assigns same
+(MAC,LMAC) to PF and its VFs. As PF and its share same (MAC,LMAC)
+pair we need resource management to address below scenarios
 
-For some other bindings in different subsystems, the node name pattern
-is now enforced by dtschema (git grep -C 1 -E
-'(nodename|patternProperties)' -- Documentation/devicetree/bindings/).
+1. Maintain PFC and 8023X pause frames mutually exclusive.
+2. Reject disable flow control request if other PF or Vfs
+   enabled it.
 
-Best regards,
-Krzysztof
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+---
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   | 166 ++++++++++++++----
+ .../net/ethernet/marvell/octeontx2/af/cgx.h   |   4 +
+ .../marvell/octeontx2/af/lmac_common.h        |   7 +
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |   2 +
+ .../net/ethernet/marvell/octeontx2/af/rpm.c   |  34 +++-
+ .../net/ethernet/marvell/octeontx2/af/rpm.h   |   2 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   3 +
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |  98 +++++++++--
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |   8 +-
+ 9 files changed, 276 insertions(+), 48 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index 64e8211d14ba..25491edc35ce 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -578,31 +578,78 @@ void cgx_lmac_promisc_config(int cgx_id, int lmac_id, bool enable)
+ 	}
+ }
+ 
++static int cgx_lmac_get_pause_frm_status(void *cgxd, int lmac_id,
++					 u8 *tx_pause, u8 *rx_pause)
++{
++	struct cgx *cgx = cgxd;
++	u64 cfg;
++
++	if (is_dev_rpm(cgx))
++		return 0;
++
++	if (!is_lmac_valid(cgx, lmac_id))
++		return -ENODEV;
++
++	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
++	*rx_pause = !!(cfg & CGX_SMUX_RX_FRM_CTL_CTL_BCK);
++
++	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
++	*tx_pause = !!(cfg & CGX_SMUX_TX_CTL_L2P_BP_CONV);
++	return 0;
++}
++
+ /* Enable or disable forwarding received pause frames to Tx block */
+ void cgx_lmac_enadis_rx_pause_fwding(void *cgxd, int lmac_id, bool enable)
+ {
+ 	struct cgx *cgx = cgxd;
++	u8 rx_pause, tx_pause;
++	bool is_pfc_enabled;
++	struct lmac *lmac;
+ 	u64 cfg;
+ 
+ 	if (!cgx)
+ 		return;
+ 
+-	if (enable) {
+-		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
+-		cfg |= CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
+-		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
++	lmac = lmac_pdata(lmac_id, cgx);
++	if (!lmac)
++		return;
+ 
+-		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
+-		cfg |= CGX_SMUX_RX_FRM_CTL_CTL_BCK;
+-		cgx_write(cgx, lmac_id,	CGXX_SMUX_RX_FRM_CTL, cfg);
++	/* Pause frames are not enabled just return */
++	if (!bitmap_weight(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max))
++		return;
++
++	cgx_lmac_get_pause_frm_status(cgx, lmac_id, &rx_pause, &tx_pause);
++	is_pfc_enabled = rx_pause ? false : true;
++
++	if (enable) {
++		if (!is_pfc_enabled) {
++			cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
++			cfg |= CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
++			cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
++
++			cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
++			cfg |= CGX_SMUX_RX_FRM_CTL_CTL_BCK;
++			cgx_write(cgx, lmac_id,	CGXX_SMUX_RX_FRM_CTL, cfg);
++		} else {
++			cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
++			cfg |= CGXX_SMUX_CBFC_CTL_BCK_EN;
++			cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
++		}
+ 	} else {
+-		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
+-		cfg &= ~CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
+-		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
+ 
+-		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
+-		cfg &= ~CGX_SMUX_RX_FRM_CTL_CTL_BCK;
+-		cgx_write(cgx, lmac_id,	CGXX_SMUX_RX_FRM_CTL, cfg);
++		if (!is_pfc_enabled) {
++			cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
++			cfg &= ~CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
++			cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
++
++			cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
++			cfg &= ~CGX_SMUX_RX_FRM_CTL_CTL_BCK;
++			cgx_write(cgx, lmac_id,	CGXX_SMUX_RX_FRM_CTL, cfg);
++		} else {
++			cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
++			cfg &= ~CGXX_SMUX_CBFC_CTL_BCK_EN;
++			cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
++		}
+ 	}
+ }
+ 
+@@ -722,26 +769,6 @@ int cgx_lmac_tx_enable(void *cgxd, int lmac_id, bool enable)
+ 	return !!(last & DATA_PKT_TX_EN);
+ }
+ 
+-static int cgx_lmac_get_pause_frm_status(void *cgxd, int lmac_id,
+-					 u8 *tx_pause, u8 *rx_pause)
+-{
+-	struct cgx *cgx = cgxd;
+-	u64 cfg;
+-
+-	if (is_dev_rpm(cgx))
+-		return 0;
+-
+-	if (!is_lmac_valid(cgx, lmac_id))
+-		return -ENODEV;
+-
+-	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
+-	*rx_pause = !!(cfg & CGX_SMUX_RX_FRM_CTL_CTL_BCK);
+-
+-	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
+-	*tx_pause = !!(cfg & CGX_SMUX_TX_CTL_L2P_BP_CONV);
+-	return 0;
+-}
+-
+ static int cgx_lmac_enadis_pause_frm(void *cgxd, int lmac_id,
+ 				     u8 tx_pause, u8 rx_pause)
+ {
+@@ -815,6 +842,47 @@ static void cgx_lmac_pause_frm_config(void *cgxd, int lmac_id, bool enable)
+ 	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
+ 	cfg &= ~CGX_SMUX_TX_CTL_L2P_BP_CONV;
+ 	cgx_write(cgx, lmac_id, CGXX_SMUX_TX_CTL, cfg);
++
++	cfg = cgx_read(cgx, 0, CGXX_CMR_RX_OVR_BP);
++	cfg |= CGX_CMR_RX_OVR_BP_EN(lmac_id);
++	cfg &= ~CGX_CMR_RX_OVR_BP_BP(lmac_id);
++	cgx_write(cgx, 0, CGXX_CMR_RX_OVR_BP, cfg);
++}
++
++int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
++		       int pfvf_idx)
++{
++	struct cgx *cgx = cgxd;
++	struct lmac *lmac;
++
++	lmac = lmac_pdata(lmac_id, cgx);
++	if (!lmac)
++		return -ENODEV;
++
++	if (!rx_pause)
++		clear_bit(pfvf_idx, lmac->rx_fc_pfvf_bmap.bmap);
++	else
++		set_bit(pfvf_idx, lmac->rx_fc_pfvf_bmap.bmap);
++
++	if (!tx_pause)
++		clear_bit(pfvf_idx, lmac->tx_fc_pfvf_bmap.bmap);
++	else
++		set_bit(pfvf_idx, lmac->tx_fc_pfvf_bmap.bmap);
++
++	/* check if other pfvfs are using flow control */
++	if (!rx_pause && bitmap_weight(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max)) {
++		dev_warn(&cgx->pdev->dev,
++			 "Receive Flow control disable not permitted as its used by other PFVFs\n");
++		return -EPERM;
++	}
++
++	if (!tx_pause && bitmap_weight(lmac->tx_fc_pfvf_bmap.bmap, lmac->tx_fc_pfvf_bmap.max)) {
++		dev_warn(&cgx->pdev->dev,
++			 "Transmit Flow control disable not permitted as its used by other PFVFs\n");
++		return -EPERM;
++	}
++
++	return 0;
+ }
+ 
+ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
+@@ -858,6 +926,23 @@ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
+ 	return 0;
+ }
+ 
++int cgx_lmac_get_pfc_frm_cfg(void *cgxd, int lmac_id, u8 *tx_pause,
++			     u8 *rx_pause)
++{
++	struct cgx *cgx = cgxd;
++	u64 cfg;
++
++	if (!is_lmac_valid(cgx, lmac_id))
++		return -ENODEV;
++
++	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
++
++	*rx_pause = !!(cfg & CGXX_SMUX_CBFC_CTL_RX_EN);
++	*tx_pause = !!(cfg & CGXX_SMUX_CBFC_CTL_TX_EN);
++
++	return 0;
++}
++
+ void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable)
+ {
+ 	struct cgx *cgx = cgxd;
+@@ -1517,6 +1602,16 @@ static int cgx_lmac_init(struct cgx *cgx)
+ 		/* Reserve first entry for default MAC address */
+ 		set_bit(0, lmac->mac_to_index_bmap.bmap);
+ 
++		lmac->rx_fc_pfvf_bmap.max = 128;
++		err = rvu_alloc_bitmap(&lmac->rx_fc_pfvf_bmap);
++		if (err)
++			goto err_dmac_bmap_free;
++
++		lmac->tx_fc_pfvf_bmap.max = 128;
++		err = rvu_alloc_bitmap(&lmac->tx_fc_pfvf_bmap);
++		if (err)
++			goto err_rx_fc_bmap_free;
++
+ 		init_waitqueue_head(&lmac->wq_cmd_cmplt);
+ 		mutex_init(&lmac->cmd_lock);
+ 		spin_lock_init(&lmac->event_cb_lock);
+@@ -1533,6 +1628,10 @@ static int cgx_lmac_init(struct cgx *cgx)
+ 	return cgx_lmac_verify_fwi_version(cgx);
+ 
+ err_bitmap_free:
++	rvu_free_bitmap(&lmac->tx_fc_pfvf_bmap);
++err_rx_fc_bmap_free:
++	rvu_free_bitmap(&lmac->rx_fc_pfvf_bmap);
++err_dmac_bmap_free:
+ 	rvu_free_bitmap(&lmac->mac_to_index_bmap);
+ err_name_free:
+ 	kfree(lmac->name);
+@@ -1601,6 +1700,7 @@ static struct mac_ops	cgx_mac_ops    = {
+ 	.mac_rx_tx_enable =		cgx_lmac_rx_tx_enable,
+ 	.mac_tx_enable =		cgx_lmac_tx_enable,
+ 	.pfc_config =                   cgx_lmac_pfc_config,
++	.mac_get_pfc_frm_cfg   =        cgx_lmac_get_pfc_frm_cfg,
+ };
+ 
+ static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
+index 27c6fa925e10..bd2f33a26eee 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
+@@ -181,4 +181,8 @@ u64 cgx_read_dmac_ctrl(void *cgxd, int lmac_id);
+ u64 cgx_read_dmac_entry(void *cgxd, int index);
+ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
+ 			u16 pfc_en);
++int cgx_lmac_get_pfc_frm_cfg(void *cgxd, int lmac_id, u8 *tx_pause,
++			     u8 *rx_pause);
++int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
++		       int pfvf_idx);
+ #endif /* CGX_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+index 8f6b7d14b18b..f30581bf0688 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+@@ -17,6 +17,8 @@
+  * @resp:		command response
+  * @link_info:		link related information
+  * @mac_to_index_bmap:	Mac address to CGX table index mapping
++ * @rx_fc_pfvf_bmap:    Receive flow control enabled netdev mapping
++ * @tx_fc_pfvf_bmap:    Transmit flow control enabled netdev mapping
+  * @event_cb:		callback for linkchange events
+  * @event_cb_lock:	lock for serializing callback with unregister
+  * @cgx:		parent cgx port
+@@ -33,6 +35,8 @@ struct lmac {
+ 	u64 resp;
+ 	struct cgx_link_user_info link_info;
+ 	struct rsrc_bmap mac_to_index_bmap;
++	struct rsrc_bmap rx_fc_pfvf_bmap;
++	struct rsrc_bmap tx_fc_pfvf_bmap;
+ 	struct cgx_event_cb event_cb;
+ 	/* lock for serializing callback with unregister */
+ 	spinlock_t event_cb_lock;
+@@ -113,6 +117,9 @@ struct mac_ops {
+ 	int                     (*pfc_config)(void *cgxd, int lmac_id,
+ 					      u8 tx_pause, u8 rx_pause, u16 pfc_en);
+ 
++	int                     (*mac_get_pfc_frm_cfg)(void *cgxd, int lmac_id,
++						       u8 *tx_pause, u8 *rx_pause);
++
+ };
+ 
+ struct cgx {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index f8d0e7f42567..550cb11197bf 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -1620,6 +1620,8 @@ enum cgx_af_status {
+ 	LMAC_AF_ERR_INVALID_PARAM	= -1101,
+ 	LMAC_AF_ERR_PF_NOT_MAPPED	= -1102,
+ 	LMAC_AF_ERR_PERM_DENIED		= -1103,
++	LMAC_AF_ERR_PFC_ENADIS_PERM_DENIED       = -1104,
++	LMAC_AF_ERR_8023PAUSE_ENADIS_PERM_DENIED = -1105,
+ };
+ 
+ #endif /* MBOX_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+index a9a93c66ab07..d7a8aad46e12 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+@@ -33,6 +33,7 @@ static struct mac_ops	rpm_mac_ops   = {
+ 	.mac_rx_tx_enable =		rpm_lmac_rx_tx_enable,
+ 	.mac_tx_enable =		rpm_lmac_tx_enable,
+ 	.pfc_config =                   rpm_lmac_pfc_config,
++	.mac_get_pfc_frm_cfg   =        rpm_lmac_get_pfc_frm_cfg,
+ };
+ 
+ struct mac_ops *rpm_get_mac_ops(void)
+@@ -97,11 +98,20 @@ int rpm_lmac_rx_tx_enable(void *rpmd, int lmac_id, bool enable)
+ void rpm_lmac_enadis_rx_pause_fwding(void *rpmd, int lmac_id, bool enable)
+ {
+ 	rpm_t *rpm = rpmd;
++	struct lmac *lmac;
+ 	u64 cfg;
+ 
+ 	if (!rpm)
+ 		return;
+ 
++	lmac = lmac_pdata(lmac_id, rpm);
++	if (!lmac)
++		return;
++
++	/* Pause frames are not enabled just return */
++	if (!bitmap_weight(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max))
++		return;
++
+ 	if (enable) {
+ 		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+ 		cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_IGNORE;
+@@ -123,10 +133,11 @@ int rpm_lmac_get_pause_frm_status(void *rpmd, int lmac_id,
+ 		return -ENODEV;
+ 
+ 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+-	*rx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE);
++	if (!(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_PFC_MODE)) {
++		*rx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE);
++		*tx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE);
++	}
+ 
+-	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+-	*tx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE);
+ 	return 0;
+ }
+ 
+@@ -416,3 +427,20 @@ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 p
+ 
+ 	return 0;
+ }
++
++int  rpm_lmac_get_pfc_frm_cfg(void *rpmd, int lmac_id, u8 *tx_pause, u8 *rx_pause)
++{
++	rpm_t *rpm = rpmd;
++	u64 cfg;
++
++	if (!is_lmac_valid(rpm, lmac_id))
++		return -ENODEV;
++
++	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
++	if (cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_PFC_MODE) {
++		*rx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE);
++		*tx_pause = !(cfg & RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE);
++	}
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+index 2d2f5d150f03..9ab8d49dd180 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+@@ -89,4 +89,6 @@ int rpm_lmac_rx_tx_enable(void *rpmd, int lmac_id, bool enable);
+ int rpm_lmac_tx_enable(void *rpmd, int lmac_id, bool enable);
+ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause,
+ 			u16 pfc_en);
++int rpm_lmac_get_pfc_frm_cfg(void *rpmd, int lmac_id, u8 *tx_pause,
++			     u8 *rx_pause);
+ #endif /* RPM_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index 5ed94cfb47d2..513b43ecd5be 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -807,6 +807,9 @@ u32  rvu_cgx_get_fifolen(struct rvu *rvu);
+ void *rvu_first_cgx_pdata(struct rvu *rvu);
+ int cgxlmac_to_pf(struct rvu *rvu, int cgx_id, int lmac_id);
+ int rvu_cgx_config_tx(void *cgxd, int lmac_id, bool enable);
++int rvu_cgx_prio_flow_ctrl_cfg(struct rvu *rvu, u16 pcifunc, u8 tx_pause, u8 rx_pause,
++			       u16 pfc_en);
++int rvu_cgx_cfg_pause_frm(struct rvu *rvu, u16 pcifunc, u8 tx_pause, u8 rx_pause);
+ 
+ int npc_get_nixlf_mcam_index(struct npc_mcam *mcam, u16 pcifunc, int nixlf,
+ 			     int type);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index b2dac088dc43..9ffe99830e34 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -863,6 +863,45 @@ int rvu_mbox_handler_cgx_intlbk_disable(struct rvu *rvu, struct msg_req *req,
+ 	return 0;
+ }
+ 
++int rvu_cgx_cfg_pause_frm(struct rvu *rvu, u16 pcifunc, u8 tx_pause, u8 rx_pause)
++{
++	int pf = rvu_get_pf(pcifunc);
++	u8 rx_pfc = 0, tx_pfc = 0;
++	struct mac_ops *mac_ops;
++	u8 cgx_id, lmac_id;
++	void *cgxd;
++
++	if (!is_mac_feature_supported(rvu, pf, RVU_LMAC_FEAT_FC))
++		return 0;
++
++	/* This msg is expected only from PF/VFs that are mapped to CGX LMACs,
++	 * if received from other PF/VF simply ACK, nothing to do.
++	 */
++	if (!is_pf_cgxmapped(rvu, pf))
++		return LMAC_AF_ERR_PF_NOT_MAPPED;
++
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
++	cgxd = rvu_cgx_pdata(cgx_id, rvu);
++	mac_ops = get_mac_ops(cgxd);
++
++	mac_ops->mac_get_pfc_frm_cfg(cgxd, lmac_id, &tx_pfc, &rx_pfc);
++	if (tx_pfc || rx_pfc) {
++		dev_warn(rvu->dev,
++			 "Can not configure 802.3X flow control as PFC frames are enabled");
++		return LMAC_AF_ERR_8023PAUSE_ENADIS_PERM_DENIED;
++	}
++
++	mutex_lock(&rvu->rsrc_lock);
++	if (verify_lmac_fc_cfg(cgxd, lmac_id, tx_pause, rx_pause,
++			       pcifunc & RVU_PFVF_FUNC_MASK)) {
++		mutex_unlock(&rvu->rsrc_lock);
++		return LMAC_AF_ERR_PERM_DENIED;
++	}
++	mutex_unlock(&rvu->rsrc_lock);
++
++	return mac_ops->mac_enadis_pause_frm(cgxd, lmac_id, tx_pause, rx_pause);
++}
++
+ int rvu_mbox_handler_cgx_cfg_pause_frm(struct rvu *rvu,
+ 				       struct cgx_pause_frm_cfg *req,
+ 				       struct cgx_pause_frm_cfg *rsp)
+@@ -870,11 +909,9 @@ int rvu_mbox_handler_cgx_cfg_pause_frm(struct rvu *rvu,
+ 	int pf = rvu_get_pf(req->hdr.pcifunc);
+ 	struct mac_ops *mac_ops;
+ 	u8 cgx_id, lmac_id;
++	int err = 0;
+ 	void *cgxd;
+ 
+-	if (!is_mac_feature_supported(rvu, pf, RVU_LMAC_FEAT_FC))
+-		return 0;
+-
+ 	/* This msg is expected only from PF/VFs that are mapped to CGX LMACs,
+ 	 * if received from other PF/VF simply ACK, nothing to do.
+ 	 */
+@@ -886,13 +923,11 @@ int rvu_mbox_handler_cgx_cfg_pause_frm(struct rvu *rvu,
+ 	mac_ops = get_mac_ops(cgxd);
+ 
+ 	if (req->set)
+-		mac_ops->mac_enadis_pause_frm(cgxd, lmac_id,
+-					      req->tx_pause, req->rx_pause);
++		err = rvu_cgx_cfg_pause_frm(rvu, req->hdr.pcifunc, req->tx_pause, req->rx_pause);
+ 	else
+-		mac_ops->mac_get_pause_frm_status(cgxd, lmac_id,
+-						  &rsp->tx_pause,
+-						  &rsp->rx_pause);
+-	return 0;
++		mac_ops->mac_get_pause_frm_status(cgxd, lmac_id, &rsp->tx_pause, &rsp->rx_pause);
++
++	return err;
+ }
+ 
+ int rvu_mbox_handler_cgx_get_phy_fec_stats(struct rvu *rvu, struct msg_req *req,
+@@ -1080,6 +1115,43 @@ int rvu_mbox_handler_cgx_mac_addr_update(struct rvu *rvu,
+ 	return cgx_lmac_addr_update(cgx_id, lmac_id, req->mac_addr, req->index);
+ }
+ 
++int rvu_cgx_prio_flow_ctrl_cfg(struct rvu *rvu, u16 pcifunc, u8 tx_pause,
++			       u8 rx_pause, u16 pfc_en)
++{
++	int pf = rvu_get_pf(pcifunc);
++	u8 rx_8023 = 0, tx_8023 = 0;
++	struct mac_ops *mac_ops;
++	u8 cgx_id, lmac_id;
++	void *cgxd;
++
++	/* This msg is expected only from PF/VFs that are mapped to CGX LMACs,
++	 * if received from other PF/VF simply ACK, nothing to do.
++	 */
++	if (!is_pf_cgxmapped(rvu, pf))
++		return -ENODEV;
++
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
++	cgxd = rvu_cgx_pdata(cgx_id, rvu);
++	mac_ops = get_mac_ops(cgxd);
++
++	mac_ops->mac_get_pause_frm_status(cgxd, lmac_id, &tx_8023, &rx_8023);
++	if (tx_8023 || rx_8023) {
++		dev_warn(rvu->dev,
++			 "Can not configure PFC as 802.3X pause frames are enabled");
++		return LMAC_AF_ERR_PFC_ENADIS_PERM_DENIED;
++	}
++
++	mutex_lock(&rvu->rsrc_lock);
++	if (verify_lmac_fc_cfg(cgxd, lmac_id, tx_pause, rx_pause,
++			       pcifunc & RVU_PFVF_FUNC_MASK)) {
++		mutex_unlock(&rvu->rsrc_lock);
++		return LMAC_AF_ERR_PERM_DENIED;
++	}
++	mutex_unlock(&rvu->rsrc_lock);
++
++	return mac_ops->pfc_config(cgxd, lmac_id, tx_pause, rx_pause, pfc_en);
++}
++
+ int rvu_mbox_handler_cgx_prio_flow_ctrl_cfg(struct rvu *rvu,
+ 					    struct cgx_pfc_cfg *req,
+ 					    struct cgx_pfc_rsp *rsp)
+@@ -1088,6 +1160,7 @@ int rvu_mbox_handler_cgx_prio_flow_ctrl_cfg(struct rvu *rvu,
+ 	struct mac_ops *mac_ops;
+ 	u8 cgx_id, lmac_id;
+ 	void *cgxd;
++	int err;
+ 
+ 	/* This msg is expected only from PF/VFs that are mapped to CGX LMACs,
+ 	 * if received from other PF/VF simply ACK, nothing to do.
+@@ -1099,6 +1172,9 @@ int rvu_mbox_handler_cgx_prio_flow_ctrl_cfg(struct rvu *rvu,
+ 	cgxd = rvu_cgx_pdata(cgx_id, rvu);
+ 	mac_ops = get_mac_ops(cgxd);
+ 
+-	return mac_ops->pfc_config(cgxd, lmac_id, req->tx_pause, req->rx_pause,
+-				   req->pfc_en);
++	err = rvu_cgx_prio_flow_ctrl_cfg(rvu, req->hdr.pcifunc, req->tx_pause,
++					 req->rx_pause, req->pfc_en);
++
++	mac_ops->mac_get_pfc_frm_cfg(cgxd, lmac_id, &rsp->tx_pause, &rsp->rx_pause);
++	return err;
+ }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 811d775a9752..73cd39af0090 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -525,7 +525,7 @@ static int rvu_nix_get_bpid(struct rvu *rvu, struct nix_bp_cfg_req *req,
+ 	 */
+ 	switch (type) {
+ 	case NIX_INTF_TYPE_CGX:
+-		if ((req->chan_base + req->chan_cnt) > 15)
++		if ((req->chan_base + req->chan_cnt) > 16)
+ 			return -EINVAL;
+ 		rvu_get_cgx_lmac_id(pfvf->cgx_lmac, &cgx_id, &lmac_id);
+ 		/* Assign bpid based on cgx, lmac and chan id */
+@@ -4570,6 +4570,12 @@ void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int nixlf)
+ 		pfvf->hw_rx_tstamp_en = false;
+ 	}
+ 
++	/* reset priority flow control config */
++	rvu_cgx_prio_flow_ctrl_cfg(rvu, pcifunc, 0, 0, 0);
++
++	/* reset 802.3x flow control config */
++	rvu_cgx_cfg_pause_frm(rvu, pcifunc, 0, 0);
++
+ 	nix_ctx_free(rvu, pfvf);
+ 
+ 	nix_free_all_bandprof(rvu, pcifunc);
+-- 
+2.17.1
+
