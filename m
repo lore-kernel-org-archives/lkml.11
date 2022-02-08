@@ -2,116 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60763C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51072C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 16:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352311AbiBHQof (ORCPT
+        id S1383492AbiBHQqA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 11:44:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33180 "EHLO
+        Tue, 8 Feb 2022 11:46:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238504AbiBHQoe (ORCPT
+        with ESMTP id S236202AbiBHQp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 11:44:34 -0500
-X-Greylist: delayed 1368 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 08:44:32 PST
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018F1C061579;
-        Tue,  8 Feb 2022 08:44:31 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 218GLaqt094798;
-        Tue, 8 Feb 2022 10:21:36 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644337296;
-        bh=pUuWQr+L14zdI+Vc3J1KTPWgbWU9dWvEhXxZKxw3cCk=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=GpDKsn9r44cfaqqMWKNvTVOHoo3C3VZt8oW0UDJ2JEBWbPRyZ1TR2HJO5SBr6FAnV
-         EX5QzWSZdUuaP/HrM7XA4PQX5Ry1D26Ch9V1cs2wpBjtZ6UdnwoYzzAqVlPV4IFBoW
-         Z7CS7ifGsDiyPmlwXT/LNnTr2hAC/ipthtcHSF8U=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 218GLa2k116010
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 8 Feb 2022 10:21:36 -0600
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 8
- Feb 2022 10:20:24 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 8 Feb 2022 10:20:24 -0600
-Received: from [10.250.233.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 218GKLAD068450;
-        Tue, 8 Feb 2022 10:20:22 -0600
-Message-ID: <93916792-67f6-9018-e93b-4bdc8987af20@ti.com>
-Date:   Tue, 8 Feb 2022 21:50:20 +0530
+        Tue, 8 Feb 2022 11:45:59 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88750C061576;
+        Tue,  8 Feb 2022 08:45:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=kPMXXd6d9rnGjX69ktGIh5H3gUoF6mPBzgaLD0J5WWE=; b=DMbClZXJMFdvLYy1aodWs4Sqkg
+        2eB8zSA3W0Zl9gjg22rBO+5vtKAUgnIoZfWHoe19xhqn8AvMfGgKLz7yVPSzgCabdhODC0Fr5lfh3
+        81svV47f2bu6GHqDR8CW49ww8fA0Lzy9t/HeEh7QOgvteCyVNPGMCCr9t+BOUrc6wF60CviFBtz8T
+        w1Q4kDskFQs0Zla8cW9CYTRGfhQjO7hSpSY+o6JqCi4Cs+yOTbL8I+krA857zUZgykGmpD2HZHDnk
+        +LTxiiXtHQkdkkxAil6GT6xDhzXkkzN7yWMMbGVgtf0ZVv8H7GsNqK1JX8EsWBU+r9yDeZCGPK0t4
+        +yZrffbw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nHTci-0089v9-NB; Tue, 08 Feb 2022 16:45:49 +0000
+Message-ID: <b5cf2337-770f-1834-dd37-2d0c579aa113@infradead.org>
+Date:   Tue, 8 Feb 2022 08:45:41 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v5] ASoC: dt-bindings: davinci-mcasp: convert McASP
- bindings to yaml schema
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2] gpiolib: make struct comments into real kernel docs
 Content-Language: en-US
-To:     =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>,
-        <robh+dt@kernel.org>
-CC:     <lgirdwood@gmail.com>, <broonie@kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220103074427.4233-1-j-choudhary@ti.com>
- <2cf3c89c-169f-3421-25d4-c80a6c9737ae@gmail.com>
- <83c51ee4-ac10-0e44-d1cc-f69cebcbf0b8@gmail.com>
- <f2bf4959-af15-04ad-78c3-aca883173d65@ti.com>
- <609b03e1-66e0-9bfd-cbe1-810d816df659@gmail.com>
-From:   Jayesh Choudhary <j-choudhary@ti.com>
-In-Reply-To: <609b03e1-66e0-9bfd-cbe1-810d816df659@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220208104831.308722-1-brgl@bgdev.pl>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220208104831.308722-1-brgl@bgdev.pl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi--
+
+On 2/8/22 02:48, Bartosz Golaszewski wrote:
+> We have several comments that start with '/**' but don't conform to the
+> kernel doc standard. Add proper detailed descriptions for the affected
+> definitions and move the docs from the forward declarations to the
+> struct definitions where applicable.
+> 
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+
+> ---
+> v1 -> v2:
+> - described fields not yet documented
+> - added missing '@'
+> - made using periods consistent
+> - fixed struct references
+> 
+>  drivers/gpio/gpiolib.h        | 34 ++++++++++++++++++++++++++++++++++
+>  include/linux/gpio/consumer.h | 35 ++++++++++++++++-------------------
+>  2 files changed, 50 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/gpio/gpiolib.h b/drivers/gpio/gpiolib.h
+> index 30bc3f80f83e..40723a179902 100644
+> --- a/drivers/gpio/gpiolib.h
+> +++ b/drivers/gpio/gpiolib.h
+> @@ -37,6 +37,9 @@
+>   * or name of the IP component in a System on Chip.
+>   * @data: per-instance data assigned by the driver
+>   * @list: links gpio_device:s together for traversal
+> + * @notifier: used to notify subscribers about lines being requested, released
+> + *            or reconfigured
+> + * @pin_ranges: range of pins served by the GPIO driver
+>   *
+>   * This state container holds most of the runtime variable data
+>   * for a GPIO device and can hold references and live on after the
+> @@ -72,6 +75,20 @@ struct gpio_device {
+>  /* gpio suffixes used for ACPI and device tree lookup */
+>  static __maybe_unused const char * const gpio_suffixes[] = { "gpios", "gpio" };
+>  
+> +/**
+> + * struct gpio_array - Opaque descriptor for a structure of GPIO array attributes
+> + *
+> + * @desc:		Array of pointers to the GPIO descriptors
+> + * @size:		Number of elements in desc
+> + * @chip:		Parent GPIO chip
+> + * @get_mask:		Get mask used in fastpath
+> + * @set_mask:		Set mask used in fastpath
+> + * @invert_mask:	Invert mask used in fastpath
+> + *
+> + * This structure is attached to struct gpiod_descs obtained from
+
+maybe
+                                    &struct gpiod_descs
+
+> + * gpiod_get_array() and can be passed back to get/set array functions in order
+> + * to activate fast processing path if applicable.
+> + */
+>  struct gpio_array {
+>  	struct gpio_desc	**desc;
+>  	unsigned int		size;
+> @@ -96,6 +113,23 @@ int gpiod_set_array_value_complex(bool raw, bool can_sleep,
+>  extern spinlock_t gpio_lock;
+>  extern struct list_head gpio_devices;
+>  
+> +
+> +/**
+> + * struct gpio_desc - Opaque descriptor for a GPIO
+> + *
+> + * @gdev:		Pointer to the parent GPIO device
+> + * @flags:		Binary descriptor flags
+> + * @label:		Name of the consumer
+> + * @name:		Line name
+> + * @hog:		Pointer to the device node that hogs this line (if any)
+> + * @debounce_period_us:	Debounce period in microseconds
+> + *
+> + * These are obtained using gpiod_get() and are preferable to the old
+> + * integer-based handles.
+> + *
+> + * Contrary to integers, a pointer to a &struct gpio_desc is guaranteed to be
+> + * valid until the GPIO is released.
+> + */
+>  struct gpio_desc {
+>  	struct gpio_device	*gdev;
+>  	unsigned long		flags;
+> diff --git a/include/linux/gpio/consumer.h b/include/linux/gpio/consumer.h
+> index 3ad67b4a72be..c3aa8b330e1c 100644
+> --- a/include/linux/gpio/consumer.h
+> +++ b/include/linux/gpio/consumer.h
+> @@ -8,27 +8,16 @@
+>  #include <linux/err.h>
+>  
+>  struct device;
+> -
+> -/**
+> - * Opaque descriptor for a GPIO. These are obtained using gpiod_get() and are
+> - * preferable to the old integer-based handles.
+> - *
+> - * Contrary to integers, a pointer to a gpio_desc is guaranteed to be valid
+> - * until the GPIO is released.
+> - */
+>  struct gpio_desc;
+> -
+> -/**
+> - * Opaque descriptor for a structure of GPIO array attributes.  This structure
+> - * is attached to struct gpiod_descs obtained from gpiod_get_array() and can be
+> - * passed back to get/set array functions in order to activate fast processing
+> - * path if applicable.
+> - */
+>  struct gpio_array;
+>  
+>  /**
+> - * Struct containing an array of descriptors that can be obtained using
+> - * gpiod_get_array().
+> + * struct gpio_descs - Struct containing an array of descriptors that can be
+> + *                     obtained using gpiod_get_array()
+> + *
+> + * @info:	Pointer to the opaque gpio_array structure
+> + * @ndescs:	Number of held descriptors
+> + * @desc:	Array of pointers to GPIO descriptors
+>   */
+>  struct gpio_descs {
+>  	struct gpio_array *info;
+> @@ -43,8 +32,16 @@ struct gpio_descs {
+>  #define GPIOD_FLAGS_BIT_NONEXCLUSIVE	BIT(4)
+>  
+>  /**
+> - * Optional flags that can be passed to one of gpiod_* to configure direction
+> - * and output value. These values cannot be OR'd.
+> + * enum gpiod_flags - Optional flags that can be passed to one of gpiod_* to
+> + *                    configure direction and output value. These values
+> + *                    cannot be OR'd.
+> + *
+> + * @GPIOD_ASIS:			Don't change anything
+> + * @GPIOD_IN:			Set lines to input mode
+> + * @GPIOD_OUT_LOW:		Set lines to output and drive them low
+> + * @GPIOD_OUT_HIGH:		Set lines to output and drive them high
+> + * @GPIOD_OUT_LOW_OPEN_DRAIN:	Set lines to open-drain output and drive them low
+> + * @GPIOD_OUT_HIGH_OPEN_DRAIN:	Set lines to open-drain output and drive them high
+>   */
+>  enum gpiod_flags {
+>  	GPIOD_ASIS	= 0,
 
 
-On 29/01/22 01:48, Péter Ujfalusi wrote:
-> 
-> On 1/17/22 12:07, Jayesh Choudhary wrote:
-> 
->>>>> +properties:
->>>>> +  compatible:
->>>>> +    enum:
->>>>> +      - ti,dm646x-mcasp-audio
->>>>> +      - ti,da830-mcasp-audio
->>>>> +      - ti,am33xx-mcasp-audio
->>>>> +      - ti,dra7-mcasp-audio
->>>>> +      - ti,omap4-mcasp-audio
->>>
->>> This is the only thing which bugs me: the pointless '-audio' postfix for
->>> the compatible string...
->>>
->>
->> Removing the postfix would also require a lot of dts changes which might
->> be backward incompatible. So it is probably not a good idea.
-> 
-> My plan was to not convert the ti,*-mcasp-audio txt file to yaml in the
-> first place, but do it right with as ti,*-mcasp
-> 
-> One of the outstanding issue is the multiple serializer support. It
-> should be in core as things are just working by luck atm when more than
-> one serializer is in use (via the card node).
-> 
->> Should we still consider this?
-> 
-> Since we are officially documenting the -mcasp-audio, I don't think it
-> would be a good idea to introduce different binding for the very same IP
-> just for the sake of it.
-> 
-> The new (and imho correct) binding would require quite a bit of work in
-> the driver and in the core level (plus the simple-card family), but I'm
-> afraid, I will not have time for it.
-> 
-
-Peter,
-
-I think all the new changes can be picked up later on.
-For now, to support the current device tree and binding, I am posting a
-v6 patch with 'acked-by' and 'reviewed-by' so that they are not lost in
-this thread and this patch could be merged.
+thanks.
+-- 
+~Randy
