@@ -2,98 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34524C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9812CC35274
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348474AbiBHLWu (ORCPT
+        id S1357430AbiBHLWk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:22:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
+        Tue, 8 Feb 2022 06:22:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355475AbiBHJmS (ORCPT
+        with ESMTP id S1355438AbiBHJhE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 04:42:18 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5D6C03FEC1
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:42:17 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id ka4so50380163ejc.11
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:42:17 -0800 (PST)
+        Tue, 8 Feb 2022 04:37:04 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAA2C03FEC1
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 01:37:02 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id eg42so20404562edb.7
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 01:37:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=cFH5Um3Vk6lWWywUkT3b2cpV2XDFUTcWLb/4zeHC0OA=;
-        b=RaKIxYSNPWKV2aZvdO35uoi9j0vmIB/E4cIlt2SxPD8bymbg7JKOjOh2KAfqpvDZgQ
-         Hz3hpgX8DMh2Md0X6E4YT9ajtruTCUkoHDkCPrTYjF/FRY3EkY44c4jZoQGAaJgoH6Jr
-         fySkP7tgnT7oRN6i8kfkFHqqs2rpQbT2pe8aBxg3RXj8V8dMhl1uwAsd69TmMgMjDVqk
-         qCnLV5MoynvovnijaWm79BtdMqGRLSlxPLtCZedCKuUgBMk3R2vAuYrVvMtA8phJBB1L
-         Yxrs/V9rcpPgpmlgr+SN4V4OXb3aq6LDOOmkzMruypFnyl8O9DOvUqOkdwtrnwnBmG7p
-         Gyug==
+        bh=JvnJjK0RDJicPSg7G8U97zBPT489yzRM1hbnPJc6o4c=;
+        b=4Zp/2W6eFuUZHfmWZI7PrD3HbFCSnvK4stjXRh7lXp8/iFXJOiQkzeSzdy2DZb5hsd
+         oTO5DJTGvx827oj8qp/o85iwlp0ulq/yRMWoRwby7tWwGwlPrdV/5d77fzxdHI6hXjVO
+         qXchSa6Z5eUQGLEN9PVRMACIgNwS1qqpfg2CZilYUaoVUn55Sn7YD9rkBF4Yg/p0FIGq
+         6cU0C1cOVqw10kxCFmJklxui3pXDABUteXnY2HQl/b4gA3SjB/W8S09YpHNgz2+VVPPB
+         geZqwWKKMBCiOspjl0O1uWrtZYgM4G1rMfslHCj30eU8spQqil+Fpn9RYq/Llcms+8hM
+         zryQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=cFH5Um3Vk6lWWywUkT3b2cpV2XDFUTcWLb/4zeHC0OA=;
-        b=nZ2yeJ3MMheSES1/icBvL3JPl5mF9pcbTHYhUpPe8AO1afsLHKvVIDkwDNbZ2I6wk2
-         /4mhx6uEZyu8oD/LHjMGp9tctDrlxFH+otuoW3SHxAGdiPPfQJT7eDz+PVLwko8I33Nj
-         quCB5AP2Hj0JMbl9Cgzb0kPTODAdFOhcs8yH0JLYAi3Em0tbuUIwiZC9nusojuDdwCYE
-         Q76/4RUzMl4R/cjTV8kMhIw7O4wF28XIsM2rXJjovBQDxvo9lz6c3rh+Wj3Iw+rS7Z/W
-         FvbmlX0MFQQm2M7hdlJ7CCNgAyKqmc8eVR6x/WzNudvNha3Mwn9biixttxF1PDp8KaGm
-         A5pw==
-X-Gm-Message-State: AOAM531S895orx486P/Q/25tiDd5oL6ps7zdkHKE87fdUvWt0Vf6moZl
-        21ts6K7DAFLMkZEmNdaYHijixzgfhaE9OQR/Hn8uAheKWOM=
-X-Google-Smtp-Source: ABdhPJy5JV5gtW+6VU7VUEUGc0VJeEBbqD4zyP00OvC2wafBHz8mihci9cMpntW0CsymEKMgNHTswYx46nxDiwmJK+U=
-X-Received: by 2002:a17:907:94c7:: with SMTP id dn7mr2920919ejc.101.1644313336458;
- Tue, 08 Feb 2022 01:42:16 -0800 (PST)
+        bh=JvnJjK0RDJicPSg7G8U97zBPT489yzRM1hbnPJc6o4c=;
+        b=vWQ9i5T3BJaUgDUynt/mnbrJYYvmC79E1aC8LDwbCkvKwUY/yBH/IbzZsho3GlUvFM
+         iAAhmT4U+xJxPqCTr5ITf78B8gRUJzoG/v5vBl6y7u0VdTevgKwClH7gZTqo448VXqn/
+         LQJggsbu5sxsEwAirdx3Lf5xQ6N9ZDL/FH45rIgsWLnXH29QJYEUcH4NZqlajrCL9C6L
+         oWMLcqy+Zy+xJaDEpEElNbAmHmI6luhGzlbMbunLd6h86Lj22IHH+Mo/vkU57EyCe32M
+         f9jFbdpvImNVDMH4Isf9nbvoyCqjHSmnQyuxjuqzlMEcz8DCtIfLVCoG1jMaW7eRHehu
+         EzUQ==
+X-Gm-Message-State: AOAM530bLBgUbSnZ+66GynLehejv8pnFVXkdLG4hX4FWW3P1X0ubYj7j
+        IbJrZyZONXRpFAvEApt07MVFxJccYgeb7E2E6OH51A==
+X-Google-Smtp-Source: ABdhPJxJknyMB+UBPJFW5JPQLhQR0+oe+zM3S/WKleJgV8L5XezH7YE99N7EnTFVKszVy3EQplEatN2iLsdywR8zMQA=
+X-Received: by 2002:aa7:de91:: with SMTP id j17mr3640705edv.396.1644313021435;
+ Tue, 08 Feb 2022 01:37:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20220207122530.1609009-1-peng.fan@oss.nxp.com>
-In-Reply-To: <20220207122530.1609009-1-peng.fan@oss.nxp.com>
+References: <20220201152758.40391-1-andriy.shevchenko@linux.intel.com> <YgEv/MIydfZlL1zQ@smile.fi.intel.com>
+In-Reply-To: <YgEv/MIydfZlL1zQ@smile.fi.intel.com>
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 8 Feb 2022 10:42:05 +0100
-Message-ID: <CAMRc=Mf3QYbrKECWi8O2=uaBY6xme=c8TP7kcmmiNjwvS9f2yQ@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: gpio: gpio-vf610: Add imx93 compatible string
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, stefan@agner.ch,
+Date:   Tue, 8 Feb 2022 10:36:50 +0100
+Message-ID: <CAMRc=MdrTuJiRhxPvhuos02eDc3eUS1fXNJr2xwCCG9C82tAVA@mail.gmail.com>
+Subject: Re: [PATCH v3 0/4] gpiolib: A fix and a few cleanups
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peng Fan <peng.fan@nxp.com>
+        Linus Walleij <linus.walleij@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 1:26 PM Peng Fan (OSS) <peng.fan@oss.nxp.com> wrote:
+On Mon, Feb 7, 2022 at 3:44 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
 >
-> From: Peng Fan <peng.fan@nxp.com>
+> On Tue, Feb 01, 2022 at 05:27:54PM +0200, Andy Shevchenko wrote:
+> > Patch 1 is a fix for wrong error code to user space.
+> > Patches 2-4 are small cleanups.
 >
-> Add the compatible string for i.MX93
+> > Can be routed via my tree, or directly into GPIO, whatever maintainers
+> > prefer.
 >
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  Documentation/devicetree/bindings/gpio/gpio-vf610.yaml | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/devicetree/bindings/gpio/gpio-vf610.yaml b/Documentation/devicetree/bindings/gpio/gpio-vf610.yaml
-> index e1359391d3a4..d2c39dba56ad 100644
-> --- a/Documentation/devicetree/bindings/gpio/gpio-vf610.yaml
-> +++ b/Documentation/devicetree/bindings/gpio/gpio-vf610.yaml
-> @@ -25,7 +25,9 @@ properties:
->            - const: fsl,imx7ulp-gpio
->            - const: fsl,vf610-gpio
->        - items:
-> -          - const: fsl,imx8ulp-gpio
-> +          - enum:
-> +              - fsl,imx93-gpio
-> +              - fsl,imx8ulp-gpio
->            - const: fsl,imx7ulp-gpio
->
->    reg:
-> --
-> 2.25.1
+> Bart, if the series is okay for you tell me which route to take?
 >
 
-Applied, thanks!
+Queued the first one for fixes and 2-4 for v5.18.
 
 Bart
