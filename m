@@ -2,140 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 110A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:19:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344082AbiBHNTD (ORCPT
+        id S1349492AbiBHNTG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:19:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59058 "EHLO
+        Tue, 8 Feb 2022 08:19:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242857AbiBHMl0 (ORCPT
+        with ESMTP id S1376349AbiBHM52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:26 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A37C03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:26 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id y9so8504310pjf.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:26 -0800 (PST)
+        Tue, 8 Feb 2022 07:57:28 -0500
+Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CA5C03FECE
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:57:27 -0800 (PST)
+Received: by mail-vs1-xe30.google.com with SMTP id t10so3242789vsp.8
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:57:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=R3JoellM0j3/drkIwePqf6xNXC0okTaVtKIbynTeAOc=;
-        b=cDbvFXn+++jD2RBihOfm+4NuHtNk8YlQxYmPjF35O1yrsUbdXxfadniAuG4XR5nFwS
-         6AjlYWaCgdXKEQ9wtER+Kay6SUeGumXjw601aAOrw5/VgQcSA14qgibFM3JGqGXyIn/9
-         ETByjiRDfguEMxbmnwqFjDAIY6/V0+X2N5eCw=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QZ2ThHzP4ksA4NOQgohi764WWAj9VnjVAoaKOn8fduI=;
+        b=EMNBfmRp2wjXy+C2nQjYiC4DxNdDT0Ya2c9ZJSm2s/IK+XPPjo+cGsdCTvp9u90FsG
+         tRqCGtNC3wCccHPKhPWChFxncjU99ntTEaBdEPB03bc9P8/U8FYgUFY7vdSZAP+LL66n
+         8muVbJxDU+xxi+GmHrXwjsvugC3kqxn9ef9hdQsp10IXD+NVENGlrxBTWY+UFPNoHPf4
+         RHbN11vXN69TDV8BidyZ8l4EP8cJ2ab/NHOkJSAN5IKDoyD0sZA7xP4PaeLcrr5DiYd4
+         g91AF4JgLxIiEs01Ea2luKoKeXr9sBtd2/KBDK+xVx2Jy59x8WCPTibulnNVsHC01Xk4
+         ZNtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=R3JoellM0j3/drkIwePqf6xNXC0okTaVtKIbynTeAOc=;
-        b=dRdzVIyRAR88s6P7IKyUmRUaQyzK4CE9ZtRXlhPJHke7VqgvUCsT5j+5BswzPtEC1g
-         zlo3Mh/KMbznxDnxeyopPcmY6lg6sT5mQdNkwUZVN+ZlHV7WrcaQn1RncEjPthgNqWS0
-         UsNKGMdjLX4YUOMUKdRzd6WbJJNFD9Od7lCs1ImEOGesNruB72OSQXXvsDL4jNdbQvZl
-         leiv9VZvRX6w7pfK6bE5gBQw58/vQNWgn+Zce5kE9jKiGAN7KiYW0WfbLEkyV+ynrMbH
-         H2fEicIG+16zXk4CM1D57Jn8Z+/zjMScQjcgvIe8qjh04icavJksapWtk+z9c4scbUkO
-         7FYg==
-X-Gm-Message-State: AOAM5334gxBMRIfftTnOWqkQgDYQ3al0uHfe4HhiDu6ms3Ps5B0pxenk
-        cQtBnJt7U2Kra5/iICJsQ+ofGQ==
-X-Google-Smtp-Source: ABdhPJySG6k3d+lfO+J6p0YF76ehegEmYbi/IhHoJqpoMykEiunvLKUkSg7jAzY0zepF1RSOzn+Q1w==
-X-Received: by 2002:a17:90b:3a86:: with SMTP id om6mr1151521pjb.99.1644324085808;
-        Tue, 08 Feb 2022 04:41:25 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:25 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 17/31] clk: mediatek: Implement mtk_clk_unregister_divider_clks() API
-Date:   Tue,  8 Feb 2022 20:40:20 +0800
-Message-Id: <20220208124034.414635-18-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QZ2ThHzP4ksA4NOQgohi764WWAj9VnjVAoaKOn8fduI=;
+        b=iNmiXjeQSM/PCaeCHOr1ayfOaLJoSx4OCk3oLwYKOiLudLKtmn9EFCcsZ/JhvJFVwh
+         3fQp1PP31AuYwuID+WgfKAhoaleMoFRCYEREyyMNZv1fsxz5GiKhCUsVrUYHX9URBfMF
+         /UyuYTNz2fAk4C9NAptHTUBcIrFkaTbhwGRaL7wbIePLvnLN8qVrMmKoQ0qDIBDYl+Ww
+         kDqdSUDfvCAoK0QjTZb62Fd6ggOW6epoK5hfHdS3DJVqJkeYNE1GKDeXcyhsOlzCLRQ3
+         SUIbFo8o7+M5rHuvc9s1oGI6ahJnncSB1C0v9tr3Z7Gfu5IzVHcVVeRpPJjl3MSnKiwv
+         LIYQ==
+X-Gm-Message-State: AOAM532w4WW3rES0RUkwB8xbdIl93B83BjmJhfdMjElKogpT4WAtq++E
+        8n75Fb3Ct6i4xGTSbeez4S7NZ6Ds/SGtwH8IymP/AQ==
+X-Google-Smtp-Source: ABdhPJwzYnmI8xSLok/uyBrzIkBQJkWypFop0Iw7jyMCJjojRBeCCoicMZcYrBL6mMytDpkckHcQi/Zv4nuSY6mysaM=
+X-Received: by 2002:a67:e146:: with SMTP id o6mr1574855vsl.12.1644325046779;
+ Tue, 08 Feb 2022 04:57:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220208025511.1019-1-lina.wang@mediatek.com> <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
+In-Reply-To: <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Tue, 8 Feb 2022 04:57:14 -0800
+Message-ID: <CANP3RGe8ko=18F2cr0_hVMKw99nhTyOCf4Rd_=SMiwBtQ7AmrQ@mail.gmail.com>
+Subject: Re: [PATCH] net: fix wrong network header length
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Lina Wang <lina.wang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Kernel hackers <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Willem Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mtk_clk_register_divider_clks(), as the name suggests, is used to register
-a given list of divider clks. However it is lacking a counterpart
-unregister API.
+On Tue, Feb 8, 2022 at 12:25 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> Hello,
+>
+> On Tue, 2022-02-08 at 10:55 +0800, Lina Wang wrote:
+> > When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
+> > several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
+> > ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
+> > network_header\transport_header\mac_header have been updated as ipv4 acts,
+> > but other skbs in frag_list didnot update anything, just ipv6 packets.
+> >
+> > udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
+> > frag_list and make sure right udp payload is delivered to user space.
+> > Unfortunately, other skbs in frag_list who are still ipv6 packets are
+> > updated like the first skb and will have wrong transport header length.
+> >
+> > e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
+> > has the same network_header(24)& transport_header(64), after
+> > bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
+> > skb's network_header is 44,transport_header is 64, other skbs in frag_list
+> > didnot change.After skb_segment_list, the other skbs in frag_list has
+> > different network_header(24) and transport_header(44), so there will be 20
+> > bytes difference,that is difference between ipv6 header and ipv4 header.
+>
+> > Actually, there are two solutions to fix it, one is traversing all skbs
+> > and changing every skb header in bpf_skb_proto_6_to_4, the other is
+> > modifying frag_list skb's header in skb_segment_list.
+>
+> I don't think the above should be addressed into the GSO layer. The
+> ebpf program is changing the GRO packet in arbitrary way violating the
+> GSO packet constraint - arguably, it's corrupting the packet.
+>
+> I think it would be better change the bpf_skb_proto_6_to_4() to
+> properly handle FRAGLIST GSO packets.
+>
+> If traversing the segments become too costly, you can try replacing
+> GRO_FRAGLIST with GRO_UDP_FWD.
 
-Implement said unregister API so that the various clock platform drivers
-can utilize it to do proper unregistration, cleanup and removal.
+Yeah, I don't know...
 
-In the header file, the register function's declaration is also
-reformatted to fit code style guidelines.
+I've considered that we could perhaps fix the 6to4 helper, and 4to6 helper...
+but then I think every *other* helper / code path that plays games
+with the packet header needs fixing as well,
+ie. everything dealing with encap/decap, vlan, etc..
 
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-mtk.c | 19 +++++++++++++++++++
- drivers/clk/mediatek/clk-mtk.h |  8 +++++---
- 2 files changed, 24 insertions(+), 3 deletions(-)
+At that point it seems to me like it's worth fixing here rather than
+in all those other places.
 
-diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
-index b267b2f04b84..3a6dfe445e63 100644
---- a/drivers/clk/mediatek/clk-mtk.c
-+++ b/drivers/clk/mediatek/clk-mtk.c
-@@ -286,6 +286,25 @@ void mtk_clk_register_dividers(const struct mtk_clk_divider *mcds,
- 	}
- }
- 
-+void mtk_clk_unregister_dividers(const struct mtk_clk_divider *mcds, int num,
-+				 struct clk_onecell_data *clk_data)
-+{
-+	int i;
-+
-+	if (!clk_data)
-+		return;
-+
-+	for (i = num; i > 0; i--) {
-+		const struct mtk_clk_divider *mcd = &mcds[i - 1];
-+
-+		if (IS_ERR_OR_NULL(clk_data->clks[mcd->id]))
-+			continue;
-+
-+		clk_unregister_divider(clk_data->clks[mcd->id]);
-+		clk_data->clks[mcd->id] = ERR_PTR(-ENOENT);
-+	}
-+}
-+
- int mtk_clk_simple_probe(struct platform_device *pdev)
- {
- 	const struct mtk_clk_desc *mcd;
-diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
-index 4db1a97c1250..e3ae22fb0334 100644
---- a/drivers/clk/mediatek/clk-mtk.h
-+++ b/drivers/clk/mediatek/clk-mtk.h
-@@ -176,9 +176,11 @@ struct mtk_clk_divider {
- 		.div_width = _width,				\
- }
- 
--void mtk_clk_register_dividers(const struct mtk_clk_divider *mcds,
--			int num, void __iomem *base, spinlock_t *lock,
--				struct clk_onecell_data *clk_data);
-+void mtk_clk_register_dividers(const struct mtk_clk_divider *mcds, int num,
-+			       void __iomem *base, spinlock_t *lock,
-+			       struct clk_onecell_data *clk_data);
-+void mtk_clk_unregister_dividers(const struct mtk_clk_divider *mcds, int num,
-+				 struct clk_onecell_data *clk_data);
- 
- struct clk_onecell_data *mtk_alloc_clk_data(unsigned int clk_num);
- void mtk_free_clk_data(struct clk_onecell_data *clk_data);
--- 
-2.35.0.263.gb82422642f-goog
+In general it seems gro fraglist as implemented is just a bad idea...
+Packets (and things we treat like packets) really should only have 1 header.
+GRO fraglist - as implemented - violates this pretty fundamental assumption.
+As such it seems to be on the gro fraglist implementation to deal with it.
+That to me seems to mean it should be fixed here, and not elsewhere.
 
+(btw. wrt. this commit itself, it seems like the diff should be a signed int)
