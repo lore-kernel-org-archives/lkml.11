@@ -2,123 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A474AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:24:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A2EC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349319AbiBHIYZ (ORCPT
+        id S1349374AbiBHIZ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:24:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
+        Tue, 8 Feb 2022 03:25:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231538AbiBHIYT (ORCPT
+        with ESMTP id S1349668AbiBHIZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:24:19 -0500
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84A1C03FEC0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:24:18 -0800 (PST)
-Received: by mail-io1-xd35.google.com with SMTP id h7so20172902iof.3
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:24:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5xEJb5dGtkxnE3DtyMZwk9XL+cYr5+2XHsmtJGbNn9w=;
-        b=EQfrfLZxUCkGh+GkX3mWS9OkZA/2OhdrueRQPYkMoFFyxvFSW2s2Il8NdOT6E+n9/O
-         5x4ciq9rZpVLgGZObrl9GmF2Z0MA2sloPjyTHgo+7o2CUNDxQqt3zD/4o/R9DFBUMOFY
-         YIMD8S8bgDHl2b26431AcMAeqYJ+7fZQujWRpHC0xYgfE74KQZdY4/+rebqFBI/3YstE
-         0vUNNpqIRLp0Mssr4eK1bCBO+doe0IXOPB3V2GTfWyvMgI2Z+McTB/VzdXYsa/HPs5Qi
-         JAEoHlzFaMya6tWxKtHQ5ksXavkCAunD7RQK3MNjE6AGrvICXgPgSD+J96OYRIru6PyF
-         C3JA==
+        Tue, 8 Feb 2022 03:25:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B04FC03FEC0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:25:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644308750;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vK6N04AyX07pMpT7bwBFBL+2ctaA8ouHGk0qanbWuN4=;
+        b=NU4Uk+H6vDLPr9KtLjREbNbG4ed04M4vxojLvSIV07AhRSN9AspH74i9Nms3ItFmcahiGa
+        hsmG9iyJpprrMcSQpd6NRvwPZQGQJfwFV7R8k7d0wbbzXCXzC5L66VRXdjVtjSkATSx+lV
+        1KlMOUQjdrhqvtrqV5r5Zx04Kf359xs=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-529-1inVdJlxMqu0gbU8xnULhQ-1; Tue, 08 Feb 2022 03:25:49 -0500
+X-MC-Unique: 1inVdJlxMqu0gbU8xnULhQ-1
+Received: by mail-wr1-f70.google.com with SMTP id j8-20020adfa548000000b001e33074ac51so1342131wrb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:25:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5xEJb5dGtkxnE3DtyMZwk9XL+cYr5+2XHsmtJGbNn9w=;
-        b=JYPydGPRzSl8AMaLxlAXh6d1DsmcHqNrnvtKRTauun4oMVoAfCJVzfbLe8YbnmN8hA
-         Kv2G2/9u/WPwPAg2WcDukyMOCbvAwcmTj5amGyJb8f7l3t/J+dwtVknG5Hn/9tX5janB
-         xDRdakXLMKb8qvhhAzECEhEYQ3w0Z1zQSCHco4GTQ06FiJ49P/z714MAtM+Eq+6NMtj2
-         efc9C5lnCM66ZumtqcGTQ38LdcxeGSnUN67kBRN3Inzs7NbXfS1esTvdLa3lxCVDmuWc
-         XtDA5MUwIjJe7pzim3MsmhMwQtG9ZXXsWhCqvey+2sC+xs2Xr9GJ7kek+hzCeyXKi0dQ
-         MqlQ==
-X-Gm-Message-State: AOAM532ADjw5WIYe2SNMyGbTwkgkPZIj/vfxiGV6N3l2gHyWbfQfptTT
-        cCIriCZVpzZud+QycsaAUc/IJw==
-X-Google-Smtp-Source: ABdhPJz0275GX25s4HD4rXh2vegbV0ySFaSIArfKRzAwnXPerqERRCHYLW7W1lSQppGMHug4USPTww==
-X-Received: by 2002:a05:6638:10c5:: with SMTP id q5mr1493113jad.113.1644308658203;
-        Tue, 08 Feb 2022 00:24:18 -0800 (PST)
-Received: from google.com ([2620:15c:183:200:5f31:19c3:21f5:7300])
-        by smtp.gmail.com with ESMTPSA id x7sm2989090ilp.88.2022.02.08.00.24.17
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=vK6N04AyX07pMpT7bwBFBL+2ctaA8ouHGk0qanbWuN4=;
+        b=TVAiMiscbmGS8YHwLhKAuJ2QQWc5k2KaiDcy+nCRONmrYd0cu0cj2+xnvJQ7rLkFzP
+         JhkFr6d6PooCRUGrKTEk7GtLSrgtBjwWPt/aP5/bWn+r05oL+Ra/M2+1hsv/zkNPMCzQ
+         i/6WvvtGIlUPMcuN9UGFLueb7o9kEavGklNaVG3L5hwEaI/DYVUpe/cM3dG/12Wl0LJZ
+         3YXTpzJQuIoHOakigJeFSb3Zvqprohm4HvDDTotpyrLxwLvxWx1E+7hS4SA7viO24EUG
+         jz6/oEFjPiLX++oI5mnaFV2g0wDplWpglriiuYD6X09Ys0a3ka++3kZ/N4Wr4mCxYdEL
+         TG1w==
+X-Gm-Message-State: AOAM532N3RZRYi6LP7sHPybQ7sI26KQcMjWOQAJovRzi9yaTHYMRFaxZ
+        CromvQP+oNOR2+Xe94Ncu+tdTfXLRqphNoWUtT1+B9ldihb5y8PG3RJTTSc/7QB/tBNhHEm8v1l
+        sz7hWDVUhyURDQoDcgP9yFjIW
+X-Received: by 2002:a1c:f004:: with SMTP id a4mr92374wmb.1.1644308747829;
+        Tue, 08 Feb 2022 00:25:47 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxwcIp4GwwlLjr351VgLNGexExdoCChF42UovxVNCbQl1Hb3RiYgQkMtyyft5+2jnWx1EvDaA==
+X-Received: by 2002:a1c:f004:: with SMTP id a4mr92362wmb.1.1644308747614;
+        Tue, 08 Feb 2022 00:25:47 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
+        by smtp.gmail.com with ESMTPSA id e17sm13943510wrt.27.2022.02.08.00.25.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 00:24:17 -0800 (PST)
-Date:   Tue, 8 Feb 2022 01:24:13 -0700
-From:   Yu Zhao <yuzhao@google.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@kernel.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>
-Subject: Re: [PATCH v7 01/12] mm: x86, arm64: add arch_has_hw_pte_young()
-Message-ID: <YgIorS8g6N1YlpzB@google.com>
-References: <20220208081902.3550911-1-yuzhao@google.com>
- <20220208081902.3550911-2-yuzhao@google.com>
+        Tue, 08 Feb 2022 00:25:47 -0800 (PST)
+Message-ID: <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
+Subject: Re: [PATCH] net: fix wrong network header length
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Lina Wang <lina.wang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, maze@google.com,
+        willemb@google.com, edumazet@google.com
+Date:   Tue, 08 Feb 2022 09:25:45 +0100
+In-Reply-To: <20220208025511.1019-1-lina.wang@mediatek.com>
+References: <20220208025511.1019-1-lina.wang@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220208081902.3550911-2-yuzhao@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 01:18:51AM -0700, Yu Zhao wrote:
+Hello,
 
-<snipped>
+On Tue, 2022-02-08 at 10:55 +0800, Lina Wang wrote:
+> When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
+> several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
+> ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
+> network_header\transport_header\mac_header have been updated as ipv4 acts,
+> but other skbs in frag_list didnot update anything, just ipv6 packets.
+> 
+> udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
+> frag_list and make sure right udp payload is delivered to user space.
+> Unfortunately, other skbs in frag_list who are still ipv6 packets are
+> updated like the first skb and will have wrong transport header length.
+> 
+> e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
+> has the same network_header(24)& transport_header(64), after
+> bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
+> skb's network_header is 44,transport_header is 64, other skbs in frag_list
+> didnot change.After skb_segment_list, the other skbs in frag_list has
+> different network_header(24) and transport_header(44), so there will be 20
+> bytes difference,that is difference between ipv6 header and ipv4 header.
 
-> diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
-> index c4ba047a82d2..990358eca359 100644
-> --- a/arch/arm64/include/asm/pgtable.h
-> +++ b/arch/arm64/include/asm/pgtable.h
-> @@ -999,23 +999,13 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
->   * page after fork() + CoW for pfn mappings. We don't always have a
->   * hardware-managed access flag on arm64.
->   */
-> -static inline bool arch_faults_on_old_pte(void)
-> -{
-> -	WARN_ON(preemptible());
-> -
-> -	return !cpu_has_hw_af();
-> -}
-> -#define arch_faults_on_old_pte		arch_faults_on_old_pte
-> +#define arch_has_hw_pte_young		cpu_has_hw_af
+> Actually, there are two solutions to fix it, one is traversing all skbs
+> and changing every skb header in bpf_skb_proto_6_to_4, the other is
+> modifying frag_list skb's header in skb_segment_list. 
 
-Reworked arch_has_hw_pte_young() for arm64 according to:
-https://lore.kernel.org/linux-mm/20220111141901.GA10338@willie-the-truck/
+I don't think the above should be addressed into the GSO layer. The
+ebpf program is changing the GRO packet in arbitrary way violating the
+GSO packet constraint - arguably, it's corrupting the packet.
 
-<snipped>
+I think it would be better change the bpf_skb_proto_6_to_4() to
+properly handle FRAGLIST GSO packets.
+
+If traversing the segments become too costly, you can try replacing
+GRO_FRAGLIST with GRO_UDP_FWD.
+
+Thanks!
+
+Paolo
+
