@@ -2,125 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4567EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 19:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F37DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:21:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353812AbiBHTle (ORCPT
+        id S1386551AbiBHWVk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 14:41:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
+        Tue, 8 Feb 2022 17:21:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353806AbiBHTlb (ORCPT
+        with ESMTP id S1386437AbiBHUdf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:41:31 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF72C0612B8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 11:41:30 -0800 (PST)
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B86D23F1F0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:41:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644349282;
-        bh=IBoZSDY+vh3MSwNsW1pxD5jmNE6UjfMq9hfqIrcXwOQ=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=K8L1CWA6+gQrk0r2BPB6naeEEC/px6HGeoPbk7cT9kbJS0aSaj2URSSPphSner+Fb
-         3wvHQxxCehPuZrpt9wnDXYama7HvoKVkwQOQtgTDr7defUeSnkOQSwK+DmptjJMomS
-         4PomZ6ZSyK4K4B/I4JVo/m8jXu4We4jUpPhuEEXVGHQVmwg7O4b34caE57woLgOKhj
-         +aEEw2JPgEIHdAJBAWxycfPcmgUIYnmiK3AW+nHm6mwp8tPSkGors4ei/JTcmGiqVc
-         kgMjGXPnpLZLN4k2mjkTQZOQK/xlP/BhvnbyYCWaT/qvgpMlnc0/mxuPBhLtz/nYXb
-         7EBCmzv+fBLqQ==
-Received: by mail-ej1-f71.google.com with SMTP id z26-20020a1709067e5a00b006cbe0628826so112726ejr.10
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 11:41:22 -0800 (PST)
+        Tue, 8 Feb 2022 15:33:35 -0500
+Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D65C0613CB;
+        Tue,  8 Feb 2022 12:33:35 -0800 (PST)
+Received: by mail-oo1-f44.google.com with SMTP id r15-20020a4ae5cf000000b002edba1d3349so58414oov.3;
+        Tue, 08 Feb 2022 12:33:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IBoZSDY+vh3MSwNsW1pxD5jmNE6UjfMq9hfqIrcXwOQ=;
-        b=bxREl6d4jcuUxEtQNPEXi6g8mQjhh8qmQXe2WKFSOV2KwxvSDn5AvTJkEeG2o9JoSd
-         dDIgBo7NTsSGtrPlyAmwmAzjcUc+PoG04CQiKOXzJdrU60C5LMolMXE+slIVnDS8ctYj
-         8RWjQvdLafqfPqaRAHOZYQcBoSakS1fCc/Oc8tkfo+CCIgVdEuFxbChe2z49VaG0EpvQ
-         taDQpqyke+MNMvgSvjuuaziicy6Ku4pSsB8NvmYACTDh30TenN+goLjl0zbVU2C+6iXS
-         Ik/L9TGsMM9V5lVi3YNztH8gkBkkVgEzZVOlcYV+D/E3B8eev7ODG+g9xKUCuIITHHm3
-         zTkQ==
-X-Gm-Message-State: AOAM533/yeFAVS4dMbFqw746DnBDnoKSjrMx63BYwK8PGvKciJxaaKJY
-        BF0yxBzpWSe/pKjkzyET1cuN9kixZYjN0iHAk3mmUnELAH82TOckys0RMBz3VZg0B5FilooeJwn
-        FQYjiM9xMSvrdgGnUU8kqBnZbcY7QAti5VCm/GDvKdQ==
-X-Received: by 2002:a17:907:16a6:: with SMTP id hc38mr5142712ejc.291.1644349282205;
-        Tue, 08 Feb 2022 11:41:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzn9tSy823egnQ7yz9s8CuvfmblkNP8GroHvwF86v5BwqvI6RsmXBhjnUpUe0Qp6ywDYxQrXQ==
-X-Received: by 2002:a17:907:16a6:: with SMTP id hc38mr5142696ejc.291.1644349282019;
-        Tue, 08 Feb 2022 11:41:22 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id k22sm3887085ejr.211.2022.02.08.11.41.21
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=JRPrSLHlMGFs/3ziWzW4DwHIjPmQfKs7GHoGvsPVseE=;
+        b=Dui+ygRdtRvnuNNl8Az4C1xnDVuCud4J8YazRDVoZaKuMm1CL41TAIybF8J+2coTTi
+         w8rz983OochhgpVp1DekkSUfSweUKZLmEj3ioQje0K2vIdydMfCIwBzhYReInGndcO3H
+         Xi/GuMLJuKum+7VxG5yCIj//eTRMoXP7uTcaJlpd0Io6mBZYPbnQWHVppJ20asBCEqAV
+         Xz+yufUu1rRbo7VvkaAZC/a+VCAG5va3Lsb210x7AsU6AUdRQ7n9eYBKpSEoi0ouvJSX
+         9Gd6QuAHYmvuJw4DNmKRXVWeLP68LLLLXnjbC7TuZxLEfpOcYsTXWSGP5VM/uITc6ae4
+         ZAvg==
+X-Gm-Message-State: AOAM531PTXxCWmEfh7bByDz++xtcrZjcSZX/H3c9KO5rMIglncwv2UnR
+        kGcjnfK01r/ccluTn6emWw==
+X-Google-Smtp-Source: ABdhPJy992PXewYBALzEYZBXPGbQ5OcH8lbZ6CwXGZxPSunoTW7Rr/84sO8nvJNszKtykvGlJvCgtg==
+X-Received: by 2002:a05:6870:1215:: with SMTP id 21mr1027834oan.166.1644352414225;
+        Tue, 08 Feb 2022 12:33:34 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id u5sm5887627ooo.46.2022.02.08.12.33.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 11:41:21 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: soc: samsung: usi: refer to dtschema for children
-Date:   Tue,  8 Feb 2022 20:41:19 +0100
-Message-Id: <20220208194119.46022-1-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 08 Feb 2022 12:33:33 -0800 (PST)
+Received: (nullmailer pid 2969145 invoked by uid 1000);
+        Tue, 08 Feb 2022 20:33:32 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Yifeng Zhao <yifeng.zhao@rock-chips.com>
+Cc:     heiko@sntech.de, vkoul@kernel.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        lee.jones@linaro.org, cl@rock-chips.com, kishon@ti.com,
+        kever.yang@rock-chips.com, linux-arm-kernel@lists.infradead.org,
+        david.wu@rock-chips.com, michael.riesch@wolfvision.net,
+        linux-phy@lists.infradead.org, wulf@rock-chips.com,
+        p.zabel@pengutronix.de, jbx6244@gmail.com
+In-Reply-To: <20220208091326.12495-3-yifeng.zhao@rock-chips.com>
+References: <20220208091326.12495-1-yifeng.zhao@rock-chips.com> <20220208091326.12495-3-yifeng.zhao@rock-chips.com>
+Subject: Re: [PATCH v8 2/4] dt-bindings: phy: rockchip: Add Naneng combo PHY bindings
+Date:   Tue, 08 Feb 2022 14:33:32 -0600
+Message-Id: <1644352412.075016.2969144.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Explicitly reference the dtschema for USI children implementing specific
-serial protocol (I2C, SPI, UART).  The SPI schema is not yet accepted,
-so it will be provided later.
+On Tue, 08 Feb 2022 17:13:24 +0800, Yifeng Zhao wrote:
+> Add the compatible strings for the Naneng combo PHY found on rockchip SoC.
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
+> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+> ---
+> 
+> Changes in v8: None
+> Changes in v7:
+> - remove u3otg0_port_en, u3otg1_port_en and pipe_sgmii_mac_sel
+> 
+> Changes in v5:
+> - modify description for ssc and ext-refclk
+> - remove apb reset
+> 
+> Changes in v4:
+> - restyle
+> - remove some minItems
+> - add more properties
+> - remove reset-names
+> - move #phy-cells
+> - add rockchip,rk3568-pipe-grf
+> - add rockchip,rk3568-pipe-phy-grf
+> 
+> Changes in v3: None
+> Changes in v2:
+> - Fix dtschema/dtc warnings/errors
+> 
+>  .../phy/phy-rockchip-naneng-combphy.yaml      | 109 ++++++++++++++++++
+>  1 file changed, 109 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml
+> 
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- .../bindings/soc/samsung/exynos-usi.yaml      | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-diff --git a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-index 58f2e9d8bb0e..f3aae7e0e2e6 100644
---- a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-+++ b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-@@ -18,11 +18,7 @@ description: |
-   selects which particular function will be used.
- 
-   Refer to next bindings documentation for information on protocol subnodes that
--  can exist under USI node:
--
--  [1] Documentation/devicetree/bindings/serial/samsung_uart.yaml
--  [2] Documentation/devicetree/bindings/i2c/i2c-exynos5.txt
--  [3] Documentation/devicetree/bindings/spi/spi-samsung.txt
-+  can exist under USI node.
- 
- properties:
-   $nodename:
-@@ -75,10 +71,17 @@ properties:
-       This property is optional.
- 
- patternProperties:
--  # All other properties should be child nodes
--  "^(serial|spi|i2c)@[0-9a-f]+$":
-+  "^i2c@[0-9a-f]+$":
-+    $ref: /schemas/i2c/i2c-exynos5.yaml
-+    description: Child node describing underlying I2C
-+
-+  "^serial@[0-9a-f]+$":
-+    $ref: /schemas/serial/samsung_uart.yaml
-+    description: Child node describing underlying UART/serial
-+
-+  "^spi@[0-9a-f]+$":
-     type: object
--    description: Child node describing underlying USI serial protocol
-+    description: Child node describing underlying SPI
- 
- required:
-   - compatible
--- 
-2.32.0
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.example.dt.yaml:0:0: /example-0/syscon@fdc50000: failed to match any schema with compatible: ['rockchip,rk3568-pipe-grf', 'syscon']
+Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.example.dt.yaml:0:0: /example-0/syscon@fdc70000: failed to match any schema with compatible: ['rockchip,rk3568-pipe-phy-grf', 'syscon']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1589719
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
