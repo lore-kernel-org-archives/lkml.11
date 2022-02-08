@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49720C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:28:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B27C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:28:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357022AbiBHN2D (ORCPT
+        id S1350660AbiBHN2F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:28:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53276 "EHLO
+        Tue, 8 Feb 2022 08:28:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350578AbiBHN1q (ORCPT
+        with ESMTP id S1350678AbiBHN1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 08:27:46 -0500
-X-Greylist: delayed 7442 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 05:23:12 PST
+        Tue, 8 Feb 2022 08:27:48 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D09C0302D4;
-        Tue,  8 Feb 2022 05:23:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8CEC03E962;
+        Tue,  8 Feb 2022 05:23:13 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 86C721F44D84
+        with ESMTPSA id 4DFC81F44D85
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644326591;
-        bh=uJUlKX/iIA11lRA+PlFkLXQAKC4sa9q+whrNfqSm8S8=;
+        s=mail; t=1644326592;
+        bh=o7erjfdlSIRztr8BR7vLoN0cESgk0yvfG32LdmIoclY=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Xpmcrru8AC8ypC5y8KCIRjU4n+yYy2A42pD1U8MuLpxJLLxbUo3eVUzqXMhfJqXJU
-         EpKVKpxWpJxgxAWZycaYWXiP6e+T+v34lLFIV35rZoAQkbCBx2VngNc2LJH5+60ns7
-         LS5P4f1QVjn85hpDabzVUt5cCnU6DL4pdC4cceSqeM/mpFolOFbXFcsQfks0ABuqVc
-         TQ36fuaQQgu4AU4TdoRricDCKOrslXiIlwovl3fV1py6fNxiPMtGt1+qYSvSQWHyhj
-         jTV/HwbYI5nE25VQ0y3CYYAoY7L7eBNo1i71gNrO3IhHVadHTJxK+fLQTBaGcJ0URK
-         AZkAL2svZe6Zg==
-Message-ID: <9b74cc0b-e4ec-9152-7be2-c20d45cddb10@collabora.com>
-Date:   Tue, 8 Feb 2022 14:23:08 +0100
+        b=MpQZw6E3e1cJJYtYYjILxSITbmds6umcehEJcVUFODDcrZbvN0T6wG8oEzbHHsBab
+         ZKxV9JRPkSUzA2arqrCdZjyZ0uDhGcAMuT0VhfIn9dZc1QwGX5pAi+va/Sctp/4u6k
+         CHDkUfUlwKJ/BnPIZa583SFtyrGkUUKZpYsqkMCZZVqL6/w4TSifDE7FTooGrhdLGV
+         Uo+lgVfET7BvfX6j5BMsjKFUq68rZXH/5KU8OV2FFQbgIa2zD5MNXW1p9PUgY0j6I0
+         GZ4TRnDfRlG4v2YghoEfSyx0edNq2CTKSQkRnatvpWLWJBUySOQKodBl0hZle67fV4
+         aEpDEl5wxsD1Q==
+Message-ID: <68fda288-cc2f-aa35-8b21-e7f91d9f3b49@collabora.com>
+Date:   Tue, 8 Feb 2022 14:23:09 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH v3 30/31] clk: mediatek: mt8195: Implement remove
- functions
+Subject: Re: [PATCH v3 29/31] clk: mediatek: mt8195: Implement error handling
+ in probe functions
 Content-Language: en-US
 To:     Chen-Yu Tsai <wenst@chromium.org>, Stephen Boyd <sboyd@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -46,10 +45,10 @@ Cc:     Chun-Jie Chen <chun-jie.chen@mediatek.com>,
         linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <20220208124034.414635-1-wenst@chromium.org>
- <20220208124034.414635-31-wenst@chromium.org>
+ <20220208124034.414635-30-wenst@chromium.org>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220208124034.414635-31-wenst@chromium.org>
+In-Reply-To: <20220208124034.414635-30-wenst@chromium.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -58,14 +57,13 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 08/02/22 13:40, Chen-Yu Tsai ha scritto:
 > Until now the mediatek clk driver library did not have any way to
-> unregister clks, and so none of the drivers implemented remove
-> functions.
+> unregister clks, and so all drivers did not do proper cleanup in
+> their error paths.
 > 
 > Now that the library does have APIs to unregister clks, use them
-> to implement remove functions for the mt8195 clk drivers.
+> in the error path of the probe functions for the mt8195 clk drivers
+> to do proper cleanup.
 > 
 > Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-> Reviewed-by: Miles Chen <miles.chen@mediatek.com>
 
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-
