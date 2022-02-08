@@ -2,278 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 908F7C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06DA5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 13:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347157AbiBHNWk (ORCPT
+        id S1350358AbiBHNWr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:22:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59352 "EHLO
+        Tue, 8 Feb 2022 08:22:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359046AbiBHMly (ORCPT
+        with ESMTP id S1376385AbiBHM75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 07:41:54 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444EEC03FECA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 04:41:54 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id y9so8505462pjf.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 04:41:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=su8yB3PhAikF3CbTDZ6t9xjvJ0+tVV3Q7sMK1qov3u8=;
-        b=dawlL8uPpwEhEdNzpFhriSJEc1UtRFiXuNLnUzi+5qbBM87ysJgWjelVSEpVjER5Jx
-         joGv/TplaF0PTc6D/bNC1/u/UXy0U65BtryhYLyNRH9tBW5x3jFSaV3tmczcjqcWZiQL
-         b+ndNi9SCeiJkOOce7Rr7EGiWg81mozts7FXw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=su8yB3PhAikF3CbTDZ6t9xjvJ0+tVV3Q7sMK1qov3u8=;
-        b=wREW5WFi0qJ+gINNMCr2vXFazpdlWCaU4mzbkDkJoqrPcUoLpps8VhRHBxX0+aYKk0
-         p/8T8/v++JmyNzOTmA9q8pvE4IyzMQtYOW4BIKjL9sop4qr6HtXYRuJVhKRWbJneiVtm
-         YmjoRhzkhcFSA0JZ61JdYtrFZCmoe+V9GpebLQNHFrHzDXD/JxGJiyOVfUD/HVwhH7SC
-         920pn6mQSYO1473MgV+g4H/yZLMc6SNPvjot9x4yUz0j/M4/rXrSieAz/EghJNILe09y
-         a+Eu3I1/DktKPigC2WCzkTvRQbhasagiIJ7loB9AsUP5nhDwD81JukN3BNjOS4DFlUFi
-         2B4g==
-X-Gm-Message-State: AOAM532w2UkhGEcryf6OEZOB4OuXWBT9fcJ4XNkgiJddIjsrmV3e32aP
-        a9jwDlEYDNEUnHO089QTjyJdFA==
-X-Google-Smtp-Source: ABdhPJzfeIV9hW4JatNPV1xSEsdpC0w96N8R32l6fhq4Zd+WxyYTQiY+H/KMNwMzwxkzPNn53nCdVA==
-X-Received: by 2002:a17:902:ecc9:: with SMTP id a9mr4084829plh.121.1644324113776;
-        Tue, 08 Feb 2022 04:41:53 -0800 (PST)
-Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
-        by smtp.gmail.com with ESMTPSA id h11sm15056939pfe.214.2022.02.08.04.41.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 04:41:53 -0800 (PST)
-From:   Chen-Yu Tsai <wenst@chromium.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 30/31] clk: mediatek: mt8195: Implement remove functions
-Date:   Tue,  8 Feb 2022 20:40:33 +0800
-Message-Id: <20220208124034.414635-31-wenst@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220208124034.414635-1-wenst@chromium.org>
-References: <20220208124034.414635-1-wenst@chromium.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 8 Feb 2022 07:59:57 -0500
+X-Greylist: delayed 1150 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 04:59:47 PST
+Received: from bddwd-sys-mailin04.bddwd.baidu.com (mx402.baidu.com [124.64.201.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21509C03FEC0;
+        Tue,  8 Feb 2022 04:59:47 -0800 (PST)
+Received: from bjhw-sys-rpm015653cc5.bjhw.baidu.com (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
+        by bddwd-sys-mailin04.bddwd.baidu.com (Postfix) with ESMTP id 8B65B13D80030;
+        Tue,  8 Feb 2022 20:40:20 +0800 (CST)
+Received: from localhost (localhost [127.0.0.1])
+        by bjhw-sys-rpm015653cc5.bjhw.baidu.com (Postfix) with ESMTP id 7F6B3D9932;
+        Tue,  8 Feb 2022 20:40:20 +0800 (CST)
+From:   Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>
+To:     pbonzini@redhat.com, seanjc@google.com, wanpengli@tencent.com,
+        vkuznets@redhat.com, jmattson@google.com, joro@8bytes.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com
+Cc:     lirongqing@baidu.com, x86@kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] KVM: X86: Introduce vfio_intr_stat per-vm debugfs file
+Date:   Tue,  8 Feb 2022 20:40:20 +0800
+Message-Id: <1644324020-17639-1-git-send-email-yuanzhaoxiong@baidu.com>
+X-Mailer: git-send-email 1.7.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Until now the mediatek clk driver library did not have any way to
-unregister clks, and so none of the drivers implemented remove
-functions.
+Use this file to export correspondence between guest_irq, host_irq,
+vector and vcpu belonging to VFIO passthrough devices.
 
-Now that the library does have APIs to unregister clks, use them
-to implement remove functions for the mt8195 clk drivers.
+An example output of this looks like (a vm with VFIO passthrough
+devices):
+   guest_irq     host_irq       vector         vcpu
+          24          201           37            8
+          25          202           35           25
+          26          203           35           20
+   ......
 
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+When a VM has VFIO passthrough devices, the correspondence between
+guest_irq, host_irq, vector and vcpu may need to be known especially
+in AMD platform with avic disabled. The AMD avic is disabled, and
+the passthrough devices may cause vcpu vm exit twice for a interrupt.
+One extrernal interrupt caused by vfio host irq, other ipi to inject
+a interrupt to vm.
+
+If the system administrator known these information, set vfio host
+irq affinity to Pcpu which the correspondece guest irq affinited vcpu,
+to avoid extra vm exit.
+
+Co-developed-by: Li RongQing <lirongqing@baidu.com>
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+Signed-off-by: Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>
 ---
- drivers/clk/mediatek/clk-mt8195-apmixedsys.c | 16 ++++++++++++++++
- drivers/clk/mediatek/clk-mt8195-apusys_pll.c | 15 +++++++++++++++
- drivers/clk/mediatek/clk-mt8195-topckgen.c   | 20 ++++++++++++++++++++
- drivers/clk/mediatek/clk-mt8195-vdo0.c       | 16 ++++++++++++++++
- drivers/clk/mediatek/clk-mt8195-vdo1.c       | 16 ++++++++++++++++
- 5 files changed, 83 insertions(+)
+v1: https://lore.kernel.org/lkml/1642593015-28729-1-git-send-email-yuanzhaoxiong@baidu.com/
+v1->v2: 
+- remove the HAVE_KVM_IRQ_BYPASS conditional judgment
+- Modifying code format and remove unnecessary curly braces
 
-diff --git a/drivers/clk/mediatek/clk-mt8195-apmixedsys.c b/drivers/clk/mediatek/clk-mt8195-apmixedsys.c
-index d0fdb5a4a921..eecc7035a56a 100644
---- a/drivers/clk/mediatek/clk-mt8195-apmixedsys.c
-+++ b/drivers/clk/mediatek/clk-mt8195-apmixedsys.c
-@@ -132,6 +132,8 @@ static int clk_mt8195_apmixed_probe(struct platform_device *pdev)
- 	if (r)
- 		goto unregister_gates;
+ arch/x86/kvm/debugfs.c | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 78 insertions(+)
+
+diff --git a/arch/x86/kvm/debugfs.c b/arch/x86/kvm/debugfs.c
+index 9240b3b..fef9014 100644
+--- a/arch/x86/kvm/debugfs.c
++++ b/arch/x86/kvm/debugfs.c
+@@ -6,6 +6,8 @@
+  */
+ #include <linux/kvm_host.h>
+ #include <linux/debugfs.h>
++#include <linux/kvm_irqfd.h>
++#include <asm/irq_remapping.h>
+ #include "lapic.h"
+ #include "mmu.h"
+ #include "mmu/mmu_internal.h"
+@@ -181,9 +183,85 @@ static int kvm_mmu_rmaps_stat_release(struct inode *inode, struct file *file)
+ 	.release	= kvm_mmu_rmaps_stat_release,
+ };
  
-+	platform_set_drvdata(pdev, clk_data);
-+
- 	return r;
- 
- unregister_gates:
-@@ -143,8 +145,22 @@ static int clk_mt8195_apmixed_probe(struct platform_device *pdev)
- 	return r;
- }
- 
-+static int clk_mt8195_apmixed_remove(struct platform_device *pdev)
++static int kvm_vfio_intr_stat_show(struct seq_file *m, void *v)
 +{
-+	struct device_node *node = pdev->dev.of_node;
-+	struct clk_onecell_data *clk_data = platform_get_drvdata(pdev);
++	struct kvm_kernel_irq_routing_entry *e;
++	struct kvm_irq_routing_table *irq_rt;
++	unsigned int host_irq, guest_irq;
++	struct kvm_kernel_irqfd *irqfd;
++	struct kvm *kvm = m->private;
++	struct kvm_lapic_irq irq;
++	struct kvm_vcpu *vcpu;
++	int idx;
 +
-+	of_clk_del_provider(node);
-+	mtk_clk_unregister_gates(apmixed_clks, ARRAY_SIZE(apmixed_clks), clk_data);
-+	mtk_clk_unregister_plls(plls, ARRAY_SIZE(plls), clk_data);
-+	mtk_free_clk_data(clk_data);
++	if (!kvm_arch_has_assigned_device(kvm) ||
++	    !irq_remapping_cap(IRQ_POSTING_CAP))
++		return 0;
 +
++	seq_printf(m, "%12s %12s %12s %12s\n",
++		   "guest_irq", "host_irq", "vector", "vcpu");
++
++	spin_lock_irq(&kvm->irqfds.lock);
++	idx = srcu_read_lock(&kvm->irq_srcu);
++	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
++
++	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
++		if (!irqfd->producer)
++			continue;
++
++		host_irq = irqfd->producer->irq;
++		guest_irq = irqfd->gsi;
++
++		if (guest_irq >= irq_rt->nr_rt_entries ||
++		    hlist_empty(&irq_rt->map[guest_irq]))
++			continue;
++
++		hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
++			if (e->type != KVM_IRQ_ROUTING_MSI)
++				continue;
++
++			kvm_set_msi_irq(kvm, e, &irq);
++			if (kvm_intr_is_single_vcpu(kvm, &irq, &vcpu))
++				seq_printf(m, "%12u %12u %12u %12u\n",
++					   guest_irq, host_irq, irq.vector, vcpu->vcpu_id);
++		}
++	}
++	srcu_read_unlock(&kvm->irq_srcu, idx);
++	spin_unlock_irq(&kvm->irqfds.lock);
 +	return 0;
 +}
 +
- static struct platform_driver clk_mt8195_apmixed_drv = {
- 	.probe = clk_mt8195_apmixed_probe,
-+	.remove = clk_mt8195_apmixed_remove,
- 	.driver = {
- 		.name = "clk-mt8195-apmixed",
- 		.of_match_table = of_match_clk_mt8195_apmixed,
-diff --git a/drivers/clk/mediatek/clk-mt8195-apusys_pll.c b/drivers/clk/mediatek/clk-mt8195-apusys_pll.c
-index f489b57e325e..8cd88dfc3283 100644
---- a/drivers/clk/mediatek/clk-mt8195-apusys_pll.c
-+++ b/drivers/clk/mediatek/clk-mt8195-apusys_pll.c
-@@ -74,6 +74,8 @@ static int clk_mt8195_apusys_pll_probe(struct platform_device *pdev)
- 	if (r)
- 		goto unregister_plls;
- 
-+	platform_set_drvdata(pdev, clk_data);
-+
- 	return r;
- 
- unregister_plls:
-@@ -83,6 +85,18 @@ static int clk_mt8195_apusys_pll_probe(struct platform_device *pdev)
- 	return r;
- }
- 
-+static int clk_mt8195_apusys_pll_remove(struct platform_device *pdev)
++static int kvm_vfio_intr_stat_open(struct inode *inode, struct file *file)
 +{
-+	struct clk_onecell_data *clk_data = platform_get_drvdata(pdev);
-+	struct device_node *node = pdev->dev.of_node;
++	struct kvm *kvm = inode->i_private;
 +
-+	of_clk_del_provider(node);
-+	mtk_clk_unregister_plls(apusys_plls, ARRAY_SIZE(apusys_plls), clk_data);
-+	mtk_free_clk_data(clk_data);
++	if (!kvm_get_kvm_safe(kvm))
++		return -ENOENT;
 +
-+	return 0;
++	return single_open(file, kvm_vfio_intr_stat_show, kvm);
 +}
 +
- static const struct of_device_id of_match_clk_mt8195_apusys_pll[] = {
- 	{ .compatible = "mediatek,mt8195-apusys_pll", },
- 	{}
-@@ -90,6 +104,7 @@ static const struct of_device_id of_match_clk_mt8195_apusys_pll[] = {
- 
- static struct platform_driver clk_mt8195_apusys_pll_drv = {
- 	.probe = clk_mt8195_apusys_pll_probe,
-+	.remove = clk_mt8195_apusys_pll_remove,
- 	.driver = {
- 		.name = "clk-mt8195-apusys_pll",
- 		.of_match_table = of_match_clk_mt8195_apusys_pll,
-diff --git a/drivers/clk/mediatek/clk-mt8195-topckgen.c b/drivers/clk/mediatek/clk-mt8195-topckgen.c
-index 3631f49a5e5a..b602fcd7f1d1 100644
---- a/drivers/clk/mediatek/clk-mt8195-topckgen.c
-+++ b/drivers/clk/mediatek/clk-mt8195-topckgen.c
-@@ -1271,6 +1271,8 @@ static int clk_mt8195_topck_probe(struct platform_device *pdev)
- 	if (r)
- 		goto unregister_gates;
- 
-+	platform_set_drvdata(pdev, top_clk_data);
-+
- 	return r;
- 
- unregister_gates:
-@@ -1290,8 +1292,26 @@ static int clk_mt8195_topck_probe(struct platform_device *pdev)
- 	return r;
- }
- 
-+static int clk_mt8195_topck_remove(struct platform_device *pdev)
++static int kvm_vfio_intr_stat_release(struct inode *inode, struct file *file)
 +{
-+	struct clk_onecell_data *top_clk_data = platform_get_drvdata(pdev);
-+	struct device_node *node = pdev->dev.of_node;
++	struct kvm *kvm = inode->i_private;
 +
-+	of_clk_del_provider(node);
-+	mtk_clk_unregister_gates(top_clks, ARRAY_SIZE(top_clks), top_clk_data);
-+	mtk_clk_unregister_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), top_clk_data);
-+	mtk_clk_unregister_composites(top_muxes, ARRAY_SIZE(top_muxes), top_clk_data);
-+	mtk_clk_unregister_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), top_clk_data);
-+	mtk_clk_unregister_factors(top_divs, ARRAY_SIZE(top_divs), top_clk_data);
-+	mtk_clk_unregister_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks), top_clk_data);
-+	mtk_free_clk_data(top_clk_data);
-+
-+	return 0;
++	kvm_put_kvm(kvm);
++	return single_release(inode, file);
 +}
 +
- static struct platform_driver clk_mt8195_topck_drv = {
- 	.probe = clk_mt8195_topck_probe,
-+	.remove = clk_mt8195_topck_remove,
- 	.driver = {
- 		.name = "clk-mt8195-topck",
- 		.of_match_table = of_match_clk_mt8195_topck,
-diff --git a/drivers/clk/mediatek/clk-mt8195-vdo0.c b/drivers/clk/mediatek/clk-mt8195-vdo0.c
-index af34eb564b1d..3bc7ed19d550 100644
---- a/drivers/clk/mediatek/clk-mt8195-vdo0.c
-+++ b/drivers/clk/mediatek/clk-mt8195-vdo0.c
-@@ -107,6 +107,8 @@ static int clk_mt8195_vdo0_probe(struct platform_device *pdev)
- 	if (r)
- 		goto unregister_gates;
- 
-+	platform_set_drvdata(pdev, clk_data);
++static const struct file_operations vfio_intr_stat_fops = {
++	.open    = kvm_vfio_intr_stat_open,
++	.read    = seq_read,
++	.llseek  = seq_lseek,
++	.release = kvm_vfio_intr_stat_release,
++};
 +
- 	return r;
- 
- unregister_gates:
-@@ -116,8 +118,22 @@ static int clk_mt8195_vdo0_probe(struct platform_device *pdev)
- 	return r;
+ int kvm_arch_create_vm_debugfs(struct kvm *kvm)
+ {
+ 	debugfs_create_file("mmu_rmaps_stat", 0644, kvm->debugfs_dentry, kvm,
+ 			    &mmu_rmaps_stat_fops);
++
++	debugfs_create_file("vfio_intr_stat", 0444, kvm->debugfs_dentry, kvm,
++			    &vfio_intr_stat_fops);
+ 	return 0;
  }
- 
-+static int clk_mt8195_vdo0_remove(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *node = dev->parent->of_node;
-+	struct clk_onecell_data *clk_data = platform_get_drvdata(pdev);
-+
-+	of_clk_del_provider(node);
-+	mtk_clk_unregister_gates(vdo0_clks, ARRAY_SIZE(vdo0_clks), clk_data);
-+	mtk_free_clk_data(clk_data);
-+
-+	return 0;
-+}
-+
- static struct platform_driver clk_mt8195_vdo0_drv = {
- 	.probe = clk_mt8195_vdo0_probe,
-+	.remove = clk_mt8195_vdo0_remove,
- 	.driver = {
- 		.name = "clk-mt8195-vdo0",
- 	},
-diff --git a/drivers/clk/mediatek/clk-mt8195-vdo1.c b/drivers/clk/mediatek/clk-mt8195-vdo1.c
-index 6b502bbc730c..90c738a85ff1 100644
---- a/drivers/clk/mediatek/clk-mt8195-vdo1.c
-+++ b/drivers/clk/mediatek/clk-mt8195-vdo1.c
-@@ -124,6 +124,8 @@ static int clk_mt8195_vdo1_probe(struct platform_device *pdev)
- 	if (r)
- 		goto unregister_gates;
- 
-+	platform_set_drvdata(pdev, clk_data);
-+
- 	return r;
- 
- unregister_gates:
-@@ -133,8 +135,22 @@ static int clk_mt8195_vdo1_probe(struct platform_device *pdev)
- 	return r;
- }
- 
-+static int clk_mt8195_vdo1_remove(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *node = dev->parent->of_node;
-+	struct clk_onecell_data *clk_data = platform_get_drvdata(pdev);
-+
-+	of_clk_del_provider(node);
-+	mtk_clk_unregister_gates(vdo1_clks, ARRAY_SIZE(vdo1_clks), clk_data);
-+	mtk_free_clk_data(clk_data);
-+
-+	return 0;
-+}
-+
- static struct platform_driver clk_mt8195_vdo1_drv = {
- 	.probe = clk_mt8195_vdo1_probe,
-+	.remove = clk_mt8195_vdo1_remove,
- 	.driver = {
- 		.name = "clk-mt8195-vdo1",
- 	},
 -- 
-2.35.0.263.gb82422642f-goog
+1.8.3.1
 
