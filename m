@@ -2,98 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E14C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF30DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 23:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232099AbiBHW7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:59:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58752 "EHLO
+        id S230525AbiBHWuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 17:50:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231624AbiBHW71 (ORCPT
+        with ESMTP id S243270AbiBHWs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 17:59:27 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEF7C061576
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:59:25 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id m18so826827lfq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 14:59:25 -0800 (PST)
+        Tue, 8 Feb 2022 17:48:27 -0500
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFEFC04A4C6
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 14:36:16 -0800 (PST)
+Received: by mail-qv1-xf2f.google.com with SMTP id h9so458581qvm.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 14:36:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ItA6TI8Ni0PvSK9MRYCU3UPCNW2YkPVfVW+7WyXcgIY=;
-        b=afjxbKw+HzBUlQ3VvuygQbzk9tugRPl9+vCKl+hHOnudj3FtAdcYJm+J0obNuEvQkF
-         mMdDm1UwYtIBcQYD+5S69w2LC/oAIIi/zEFuRkTuJXaT25X71WtPXS4N9QxghiI29Zw6
-         K2PCvrwgk7c+ntSYrQLtBLuKdljo30Ej3qX5OIQqDw9temAZsjNWDUrOXXTu/gYTG+0B
-         4IHqkeQKU0bmSqngH3QnAumzP+5C6EPz0BRZ1WQ8bNcJX8DsOqVPh+foqEjAMVhADIvv
-         fJaCY0xTm3hvMswNVpOcc3EIMuqy51gbtJE7qUz4sn7uTHYRZmCOEQWmQZNFkthU435E
-         H9jw==
+        bh=4N/VNg4Z4S2yqwqo7lo1EjNg6APRg3vzTZff0H8mfjg=;
+        b=talymFDqCzEUp4aHHWidFmuLQAjI7ib4UgEt38u23rP/AK6rIrytCEjeQZQh3RU080
+         LPJe8b6QR0MHHR+TGcPrW08xNorYwQdYxPrj5gIqRh/Fn+ts37j7rrgcDpyMSXHpVyIq
+         UA3ZMQ+8R9NiO946F3uG01eWoF61WgKLRkQ9lMD4DkAsJ89tfB0gq7BrXjuLwA8VSoFg
+         VIohx2OoJk7bOWu8UnVAcyGyzXeY96nI3KsFWqDL7cMtm80M9gfVx4IiYcAVy3aWv0Qf
+         K4YOmtSq+AXmcw2M/DN1ye6a8nuh0FdRmgMZ2DqlIS5jJ9pem5fnbtyU0+CAyQjSxfWF
+         lQ4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ItA6TI8Ni0PvSK9MRYCU3UPCNW2YkPVfVW+7WyXcgIY=;
-        b=cJUToYhzLWaDY/k8diAzBwUfwnun9MKEF2otGIMy6A/jNRPfoBnx9xg5H2D+DEQnZH
-         c+AXuX5njIgIOUSGs9PVBzkBMD8TM/GkiTjWj1z38hX0Pqy/jJQj6JIEyD+HlKCBaMrl
-         mzXaOWPoi+fzTDuYfgkFqoamvObcYrCT7VR4btXtpc8D259EMDatKhuvUqNzb/T1tEHR
-         oken1ga89YQpcN7RuTdWkBqlHft4pM+fYvQ5/TxAyPatTWbfvLBlOl5QG9+/DvAZwiV1
-         ilP6rsPrRYc5Q6UI+7r4QL9Ikly4xOJHWF64y3hlLKdNBXDXqEGfSfzvWi9UALcy7L6M
-         8rQA==
-X-Gm-Message-State: AOAM531X0YROoZ3I8m/PNP5WPKVe3QqW8vavwE75DrMUVb70csmHupNt
-        64vhNOl82tEQaDECLtDgYUKTUNTnf92l/tZ+A0vnGg==
-X-Google-Smtp-Source: ABdhPJzrXjvmHbg4P8xDaIMkX3/azpSsByQPI0FL0T+S/upQWiXIjKfa7421S1XvVu6Ron9ZMXcooOEZEXBDJE9GEbk=
-X-Received: by 2002:ac2:43db:: with SMTP id u27mr1290745lfl.651.1644361163719;
- Tue, 08 Feb 2022 14:59:23 -0800 (PST)
+        bh=4N/VNg4Z4S2yqwqo7lo1EjNg6APRg3vzTZff0H8mfjg=;
+        b=E/LVhWDYob9U6u6vrXIWDMjJJg/k+tlTrLKTSIk6Gjt0/UqBc4cnm4YzPgNNLMEPzr
+         FiVcFCxKT8aUGdIL+bNax05h+c5uyXYTyK3MhHajQjpGEN7NeQWNnReei5YIJrEFvJW2
+         JqeWsAYkeifN6CvCBceBnAEpn/Oj/Zbqtga/AJGxtlWmhXSlUXsDyDzeSx9t6LSM/K9/
+         2AUl6eEyvLbBN6mlm5SayDI7+uT7654mKzwV96C9UHPPsUZ9UpnV4lBPHyD+RjYCaI+y
+         aDimuSTPiNR6pD3qt/gKUMqGEmvDXYwRGpcFlWS0oE+s1KPWzzMpqxoKSYqZiC0OsQGK
+         ohYQ==
+X-Gm-Message-State: AOAM531nSxmDUrK4AAITjxfA3XFmpZu7IFOY3d/JbEK650r63LZfsbYA
+        GtoNgz2JOr2+qLoxXT109Q89F8hUN7/dp0VJ4Q+TYw==
+X-Google-Smtp-Source: ABdhPJyF46u8KAMmRWmD7rrzZKsobdyPRpM8YW1eiuvtHbLOEyo4TZh7sHhOrBLHCinn/AeeEBBrZcDWnwWA1wUxHI0=
+X-Received: by 2002:a05:6214:2aa2:: with SMTP id js2mr4831360qvb.55.1644359775256;
+ Tue, 08 Feb 2022 14:36:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20220208225350.1331628-1-keescook@chromium.org> <20220208225350.1331628-2-keescook@chromium.org>
-In-Reply-To: <20220208225350.1331628-2-keescook@chromium.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 8 Feb 2022 14:59:11 -0800
-Message-ID: <CAKwvOdm425gzxFbjcq8UmWOiBNV_POYemFgqK9CyZtdyg=Z8Qg@mail.gmail.com>
-Subject: Re: [PATCH v7 1/8] fortify: Replace open-coded __gnu_inline attribute
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        George Burgess IV <gbiv@google.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        llvm@lists.linux.dev
+References: <20211228045934.1524865-1-bjorn.andersson@linaro.org>
+ <176fb0bc-2f09-df3b-86be-ef69b8e6cea8@linaro.org> <YgLff2ZFjEN3I3M2@ripper>
+In-Reply-To: <YgLff2ZFjEN3I3M2@ripper>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Wed, 9 Feb 2022 01:36:04 +0300
+Message-ID: <CAA8EJpqtb90V6oN_d7_MYXvTNyt2NhLudJ-iJAbPb-ymX6JLQw@mail.gmail.com>
+Subject: Re: [PATCH] drm/msm/dp: Add DisplayPort controller for SM8350
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Herring <robh+dt@kernel.org>, Sean Paul <sean@poorly.run>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 2:53 PM Kees Cook <keescook@chromium.org> wrote:
+On Wed, 9 Feb 2022 at 00:21, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
 >
-> Replace open-coded gnu_inline attribute with the normal kernel
-> convention for attributes: __gnu_inline
+> On Wed 19 Jan 15:14 PST 2022, Dmitry Baryshkov wrote:
+>
+> > On 28/12/2021 07:59, Bjorn Andersson wrote:
+> > > The Qualcomm SM8350 platform comes with a single DisplayPort controller,
+> > > add support for this in the DisplayPort driver.
+> > >
+> > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> >
+> > Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> >
+>
+> I don't see this in linux-next, would it be possible to pick it up now
+> that we're past the merge window etc?
 
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+I'll work on my staging tree (and send it to Rob) before the EoW.
 
 >
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  include/linux/fortify-string.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Regards,
+> Bjorn
 >
-> diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
-> index 53123712bb3b..439aad24ab3b 100644
-> --- a/include/linux/fortify-string.h
-> +++ b/include/linux/fortify-string.h
-> @@ -2,7 +2,7 @@
->  #ifndef _LINUX_FORTIFY_STRING_H_
->  #define _LINUX_FORTIFY_STRING_H_
->
-> -#define __FORTIFY_INLINE extern __always_inline __attribute__((gnu_inline))
-> +#define __FORTIFY_INLINE extern __always_inline __gnu_inline
->  #define __RENAME(x) __asm__(#x)
->
->  void fortify_panic(const char *name) __noreturn __cold;
-> --
-> 2.30.2
->
->
+> > > ---
+> > >   .../devicetree/bindings/display/msm/dp-controller.yaml    | 1 +
+> > >   drivers/gpu/drm/msm/dp/dp_display.c                       | 8 ++++++++
+> > >   2 files changed, 9 insertions(+)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> > > index 5457612ab136..cd05cfd76536 100644
+> > > --- a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> > > +++ b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> > > @@ -21,6 +21,7 @@ properties:
+> > >         - qcom,sc7280-edp
+> > >         - qcom,sc8180x-dp
+> > >         - qcom,sc8180x-edp
+> > > +      - qcom,sm8350-dp
+> > >     reg:
+> > >       items:
+> > > diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+> > > index 8d9c19dbf33e..fd0fd03f8fed 100644
+> > > --- a/drivers/gpu/drm/msm/dp/dp_display.c
+> > > +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+> > > @@ -143,10 +143,18 @@ static const struct msm_dp_config sc7280_dp_cfg = {
+> > >     .num_descs = 2,
+> > >   };
+> > > +static const struct msm_dp_config sm8350_dp_cfg = {
+> > > +   .descs = (const struct msm_dp_desc[]) {
+> > > +           [MSM_DP_CONTROLLER_0] = { .io_start = 0x0ae90000, .connector_type = DRM_MODE_CONNECTOR_DisplayPort },
+> > > +   },
+> > > +   .num_descs = 1,
+> > > +};
+> > > +
+> > >   static const struct of_device_id dp_dt_match[] = {
+> > >     { .compatible = "qcom,sc7180-dp", .data = &sc7180_dp_cfg },
+> > >     { .compatible = "qcom,sc7280-dp", .data = &sc7280_dp_cfg },
+> > >     { .compatible = "qcom,sc7280-edp", .data = &sc7280_dp_cfg },
+> > > +   { .compatible = "qcom,sm8350-dp", .data = &sm8350_dp_cfg },
+> > >     {}
+> > >   };
+> >
+> >
+> > --
+> > With best wishes
+> > Dmitry
+
 
 
 -- 
-Thanks,
-~Nick Desaulniers
+With best wishes
+Dmitry
