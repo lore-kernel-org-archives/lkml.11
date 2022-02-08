@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA8AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BFFAC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344634AbiBHBKt (ORCPT
+        id S1344729AbiBHBKy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:10:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
+        Mon, 7 Feb 2022 20:10:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344214AbiBHAqQ (ORCPT
+        with ESMTP id S1344213AbiBHAqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Feb 2022 19:46:16 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32273C043180;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF49C061A73;
         Mon,  7 Feb 2022 16:46:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1644281176; x=1675817176;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8/l41GYdNmbgP2ToNZ8AUjD5rze4OQVd0hNF/VcPaSI=;
-  b=C5UG+rrBnA6ovTiWh8pbOXgONhDGiWpnNaSQjjlpWN8fHwM9ycdYuG5b
-   ZZCjmBl0z7YX0VIsU43YlenHICLSPy3SdqmhCzoGPbgNWaEtKyrXwFXFX
-   e9r41lY/wG8tLqHtjjV/L+ZWJs4jgx6HmH1b2t+oLcQzXeEf/H5WBFZ0x
-   +nDxD4tDoFgsAfGcSPTQAbs6kUl2/uHHNn/5szAZjp9zeCtHkdnnBEx+n
-   G63ohNRlAUJpWfm8b2Qq1EhjL8hwOlfh6uk1vMtiw7KyY5T7KrJktO98x
-   OfjuGO9F4bZUw9meUmDWuHqPo+twNHNBHuY1CtoH1rOXVV5fZ/JOJpAUm
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="232407988"
+  bh=jpG9hfXpHnLcADFZTQ12jgZ85kq17DbfUnpfb4LgYcQ=;
+  b=SFpFVQ5pTiisUFeTwZhD0qKgOduvaDnBALDaxUav5w86+85aQf1ypcmw
+   UwXwH+vWj/2oRiVFAIw6TubOpwkGnCDZT4IF5Zn6iK2Rnmo3OakDq8p+6
+   qx95t9TWtrCO6csy8yTtOd+K25URrXO3jrFExz6g+arM6Vk6f+DA8HJkf
+   NDCT1NRGJyoKO+6vGRn1J9B0b7FDrDHLFRd/U3ZoznxvxDW7mVpJ0DdyF
+   uvkHrqIiNQByhNel5embOIbxt6U6a1nd9A9KbULddNnnFI5vcYJrHMc3J
+   G4gH8UNsMCnoAIeazloG0M16Wfpq/FKfKYnJuKb1q+xub8vn4Z0av7rz8
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="232407986"
 X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="232407988"
+   d="scan'208";a="232407986"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:10 -0800
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:09 -0800
 X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
-   d="scan'208";a="499389545"
+   d="scan'208";a="499389541"
 Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
   by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 16:46:09 -0800
 From:   Reinette Chatre <reinette.chatre@intel.com>
@@ -46,9 +46,9 @@ Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
         cedric.xing@intel.com, haitao.huang@intel.com,
         mark.shanahan@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V2 25/32] selftests/sgx: Introduce dynamic entry point
-Date:   Mon,  7 Feb 2022 16:45:47 -0800
-Message-Id: <65c137c875bd4da675eaba35316ff43d7cfd52f8.1644274683.git.reinette.chatre@intel.com>
+Subject: [PATCH V2 24/32] Documentation/x86: Introduce enclave runtime management section
+Date:   Mon,  7 Feb 2022 16:45:46 -0800
+Message-Id: <81387cc6cfee70a98165377f234908037e40dcf8.1644274683.git.reinette.chatre@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1644274683.git.reinette.chatre@intel.com>
 References: <cover.1644274683.git.reinette.chatre@intel.com>
@@ -58,48 +58,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The test enclave (test_encl.elf) is built with two initialized
-Thread Control Structures (TCS) included in the binary. Both TCS are
-initialized with the same entry point, encl_entry, that correctly
-computes the absolute address of the stack based on the stack of each
-TCS that is also built into the binary.
-
-A new TCS can be added dynamically to the enclave and requires to be
-initialized with an entry point used to enter the enclave. Since the
-existing entry point, encl_entry, assumes that the TCS and its stack
-exists at particular offsets within the binary it is not able to handle
-a dynamically added TCS and its stack.
-
-Introduce a new entry point, encl_dyn_entry, that initializes the
-absolute address of that thread's stack to the address immediately
-preceding the TCS itself. It is now possible to dynamically add a
-contiguous memory region to the enclave with the new stack preceding
-the new TCS. With the new TCS initialized with encl_dyn_entry as entry
-point the absolute address of the stack is computed correctly on entry.
+Enclave runtime management is introduced following the pattern
+of the section describing enclave building. Provide a brief
+summary of enclave runtime management, pointing to the functions
+implementing the ioctl()s that will contain details within their
+kernel-doc.
 
 Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
-No changes since V1.
+Changes since V1:
+- New patch.
 
- tools/testing/selftests/sgx/test_encl_bootstrap.S | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/x86/sgx.rst | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/tools/testing/selftests/sgx/test_encl_bootstrap.S b/tools/testing/selftests/sgx/test_encl_bootstrap.S
-index 82fb0dfcbd23..03ae0f57e29d 100644
---- a/tools/testing/selftests/sgx/test_encl_bootstrap.S
-+++ b/tools/testing/selftests/sgx/test_encl_bootstrap.S
-@@ -45,6 +45,12 @@ encl_entry:
- 	# TCS #2. By adding the value of encl_stack to it, we get
- 	# the absolute address for the stack.
- 	lea	(encl_stack)(%rbx), %rax
-+	jmp encl_entry_core
-+encl_dyn_entry:
-+	# Entry point for dynamically created TCS page expected to follow
-+	# its stack directly.
-+	lea -1(%rbx), %rax
-+encl_entry_core:
- 	xchg	%rsp, %rax
- 	push	%rax
+diff --git a/Documentation/x86/sgx.rst b/Documentation/x86/sgx.rst
+index 9df620b59f83..4059efbb4d2e 100644
+--- a/Documentation/x86/sgx.rst
++++ b/Documentation/x86/sgx.rst
+@@ -138,6 +138,22 @@ pages and establish enclave page permissions.
+                sgx_ioc_enclave_init
+                sgx_ioc_enclave_provision
+ 
++Enclave runtime management
++--------------------------
++
++Systems supporting SGX2 additionally support changes to initialized
++enclaves: modifying enclave page permissions and type, and dynamically
++adding and removing of enclave pages. When an enclave accesses an address
++within its address range that does not have a backing page then a new
++regular page will be dynamically added to the enclave. The enclave is
++still required to run EACCEPT on the new page before it can be used.
++
++.. kernel-doc:: arch/x86/kernel/cpu/sgx/ioctl.c
++   :functions: sgx_ioc_enclave_relax_perm
++               sgx_ioc_enclave_restrict_perm
++               sgx_ioc_enclave_modt
++               sgx_ioc_enclave_remove_pages
++
+ Enclave vDSO
+ ------------
  
 -- 
 2.25.1
