@@ -2,146 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B300C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D211C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 01:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345332AbiBHBun (ORCPT
+        id S1344504AbiBHBuw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:50:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
+        Mon, 7 Feb 2022 20:50:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344798AbiBHBkb (ORCPT
+        with ESMTP id S241926AbiBHBdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Feb 2022 20:40:31 -0500
-Received: from relay3.hostedemail.com (relay3.hostedemail.com [64.99.140.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3EEFC061A73
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:40:30 -0800 (PST)
-Received: from omf14.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay06.hostedemail.com (Postfix) with ESMTP id 3E6E02282B;
-        Tue,  8 Feb 2022 01:40:29 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf14.hostedemail.com (Postfix) with ESMTPA id EAB782D;
-        Tue,  8 Feb 2022 01:40:12 +0000 (UTC)
-Message-ID: <103681860759d72b1acf712eed334b1d4ef6b7d5.camel@perches.com>
-Subject: Re: [PATCH V6 1/3] platform/x86: Add Intel Software Defined Silicon
- driver
-From:   Joe Perches <joe@perches.com>
-To:     "David E. Box" <david.e.box@linux.intel.com>, hdegoede@redhat.com,
-        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
-        srinivas.pandruvada@intel.com, mgross@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        Mark Gross <markgross@kernel.org>
-Date:   Mon, 07 Feb 2022 17:40:26 -0800
-In-Reply-To: <20220208005444.487209-2-david.e.box@linux.intel.com>
-References: <20220208005444.487209-1-david.e.box@linux.intel.com>
-         <20220208005444.487209-2-david.e.box@linux.intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Mon, 7 Feb 2022 20:33:40 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81866C061A73
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Feb 2022 17:33:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644284020; x=1675820020;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=lCvKr8YSZEJVpbrPbtkoNv3VFQvm3GXDNvJCWJ1cbfQ=;
+  b=OVwmuZsXDYNGLFytnYauiH07MhHsAq0IYUsktefUtNAy5gW1i381jA+5
+   ikjyYOPptTWU1xERyvFWtXB3Mmf0TYY/WZa3N7lsb+yMHGpBRZQWToWNE
+   tMT8sqxCJaaIOZXIU4GVQHS2halvPAFQkFtwQJBzWk909zyss4gDzQuEg
+   iNDqkKia7rZWbx+EArtyAprzczYDgn3qMRSNUv+0kbpIvohjwcoMwu0IB
+   JIIqaBPh/jG1KB/gEylM4zvnwa+JKhRyUHwWWTQsi/curGZ4eToJj4bNs
+   KDFZmTLmv8y5lHrHw36VX5qvrqLTeZeN58c9XmB397gpt22YlIVKyYlhZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="246436875"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="246436875"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 17:33:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; 
+   d="scan'208";a="677950229"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by fmsmga001.fm.intel.com with ESMTP; 07 Feb 2022 17:33:36 -0800
+Message-ID: <40399e95-1ce4-187e-06c1-7cd7b7f4a190@linux.intel.com>
+Date:   Tue, 8 Feb 2022 09:32:25 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     baolu.lu@linux.intel.com,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/7] iommu cleanup and refactoring
+Content-Language: en-US
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>
+References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Rspamd-Server: rspamout06
-X-Rspamd-Queue-Id: EAB782D
-X-Stat-Signature: cqp3gnqhxdfm9599fkk1o4kd3ab9ky5j
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/rw6BEZ0kR964qVgcoew+I17VtKpWRSzg=
-X-HE-Tag: 1644284412-993389
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-07 at 16:54 -0800, David E. Box wrote:
-> Intel Software Defined Silicon (SDSi) is a post manufacturing mechanism for
-> activating additional silicon features. Features are enabled through a
-> license activation process.  The SDSi driver provides a per socket, sysfs
-> attribute interface for applications to perform 3 main provisioning
-> functions:
-[]
-> ---
-> V6
->   - Replace,
->               return (ret < 0) ? ret : size;
->     with,
->               if (ret)
->                    return ret;
->               return size
+On 1/24/22 3:10 PM, Lu Baolu wrote:
+> Hi,
 > 
->     Besides the style change (suggested by GKH) this fixes a klocwork
->     warning.
+> The guest pasid and aux-domain related code are dead code in current
+> iommu subtree. As we have reached a consensus that all these features
+> should be based on the new iommufd framework (which is under active
+> development), the first part of this series removes and cleanups all
+> the dead code.
+> 
+> The second part of this series refactors the iommu_domain by moving all
+> domain-specific ops from iommu_ops to a new domain_ops. This makes an
+> iommu_domain self-contained and represent the abstraction of an I/O
+> translation table in the IOMMU subsystem. With different type of
+> iommu_domain providing different set of ops, it's easier to support more
+> types of I/O translation tables.
+> 
+> Please help to review and comment.
 
-thanks.
+Thank you all for the great comments. A new version of this series has
+been posted.
 
-> diff --git a/drivers/platform/x86/intel/sdsi.c b/drivers/platform/x86/intel/sdsi.c
+https://lore.kernel.org/linux-iommu/20220208012559.1121729-1-baolu.lu@linux.intel.com/
 
-[]
+Please check whether I missed anything.
 
-> +/* SDSi mailbox operations must be performed using 64bit mov instructions */
-> +static __always_inline void
-> +sdsi_memcpy64_toio(u64 __iomem *to, const u64 *from, size_t count_bytes)
-> +{
-> +	size_t count = count_bytes / sizeof(*to);
-> +	int i;
-> +
-> +	for (i = 0; i < count; i++)
-> +		writeq(from[i], &to[i]);
-
-Any chance the byte count is not a multiple of sizeof(u64) ?
-
-> +static __always_inline void
-> +sdsi_memcpy64_fromio(u64 *to, const u64 __iomem *from, size_t count_bytes)
-> +{
-> +	size_t count = count_bytes / sizeof(*to);
-> +	int i;
-> +
-> +	for (i = 0; i < count; i++)
-> +		to[i] = readq(&from[i]);
-> +}
-
-here too.
-
-[]
-
-> +static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct sdsi_mbox_info *info,
-> +			      size_t *data_size)
-> +{
-> +	struct device *dev = priv->dev;
-> +	u32 total, loop, eom, status, message_size;
-[]
-> +		if (packet_size > SDSI_SIZE_MAILBOX) {
-> +			dev_err(dev, "Packet size to large\n");
-
-too
-
-[]
-> +	/* Message size check is only valid for multi-packet transfers */
-> +	if (loop && total != message_size)
-> +		dev_warn(dev, "Read count %d differs from expected count %d\n",
-
-%u
-
-> +			 total, message_size);
-
-
-> +static int sdsi_map_mbox_registers(struct sdsi_priv *priv, struct pci_dev *parent,
-> +				   struct disc_table *disc_table, struct resource *disc_res)
-> +{
-> +	u32 access_type = FIELD_GET(DT_ACCESS_TYPE, disc_table->access_info);
-> +	u32 size = FIELD_GET(DT_SIZE, disc_table->access_info);
-> +	u32 tbir = FIELD_GET(DT_TBIR, disc_table->offset);
-> +	u32 offset = DT_OFFSET(disc_table->offset);
-> +	u32 features_offset;
-> +	struct resource res = {};
-> +
-> +	/* Starting location of SDSi MMIO region based on access type */
-> +	switch (access_type) {
-> +	case ACCESS_TYPE_LOCAL:
-> +		if (tbir) {
-> +			dev_err(priv->dev, "Unsupported BAR index %d for access type %d\n",
-> +				tbir, access_type);
-
-%u here too
-
-[]
-> +		dev_err(priv->dev, "Unrecognized access_type %d\n", access_type);
-
-and here
-
-
+Best regards,
+baolu
