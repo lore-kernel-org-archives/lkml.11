@@ -2,286 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B97D5C47080
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C99FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 22:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387624AbiBHW2h (ORCPT
+        id S1387852AbiBHW3Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 17:28:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43218 "EHLO
+        Tue, 8 Feb 2022 17:29:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386194AbiBHTnh (ORCPT
+        with ESMTP id S1386833AbiBHVQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 14:43:37 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6273C0613CB;
-        Tue,  8 Feb 2022 11:43:36 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id w20so221012plq.12;
-        Tue, 08 Feb 2022 11:43:36 -0800 (PST)
+        Tue, 8 Feb 2022 16:16:52 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCFDC0612B8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 13:16:51 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id u185-20020a2560c2000000b0060fd98540f7so536031ybb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 13:16:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=k3ImYAmlfRKBZkC/pLF9BVzBCr+7P+OE/oDyEYAOAPQ=;
-        b=RSk9d3qmUd4qYszbyz1ANvzT1zanWxXRFOsL6+7w9bKoGrI/+i5ySpouQXJyrqUIfL
-         oC7RstqRX7MpfHBVJ3qKOPvM2BtsmoKGJi1utEYXQE9ntJNNhnQiBWtnnACiY3fhwHMP
-         lmeaj3JpoNOOzymhWEDUxQTplKUmuNsoEf8dFHpUUT0ewQwsItB2l3YzSjmBq+poSuKX
-         0l1QzuC7w1xxfSNSGUzUiEkj9zHkCopGQNPAwj1cyjRwiyR2/0BK+UNChrCuKVwKY+nj
-         oY7b69LyjPwbT7tZYcMfDUtEFR3mEVHEuF9uFfS64DN0Glg9zHz/G1ZVKXS0tlAhFdub
-         5/Pg==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=503JwJOZ9nC5FfeuXbTUxOpRWtXWDj6hC6JonajRc7g=;
+        b=HXqSwtiUscysBZZpMAg9nNvhQ7x1PBlzLJQHC3SYnszZJl8wO9wyJXbXKLWy4YtgZw
+         MOCgW7eIIIc1iNVXEAyPIuYBorIVTJiVtnW+KTrHdm1d1dPjRKKp5CBA9RTCFXfYLKht
+         6/87cMvmzMg8O6mOKwvF/HsGOt4+fIi8KGiGNWVlfxmfXYLgJdJcDYociG4oY85xmu6v
+         6aU/67sffK+WI9qGY7bilFTb2V7gRMC9xFCQSPlYAwmkT5Mypmng6XkbKqHNSNgaJ72P
+         0qnlzpuakX7nJbR4eYgAbCOJCr+bA9jqM8Mv9QOusBiuUswElEjXlzIRhn6nChYfowj4
+         PgKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=k3ImYAmlfRKBZkC/pLF9BVzBCr+7P+OE/oDyEYAOAPQ=;
-        b=J08zdvTMUfLBgKv4zy7C7t/+QmKRf/GPesOFPgDAM8mZIhlZAKDVhbDM93NLOnhT3X
-         22fhbqQOwPww8mxC4LizzLE7ctjBc+cPi1B7q69huoKQBgWBnXYh+dAgqM4nDS2voxWh
-         qL62WF8lVHimrDWZbL9+pYAltQQjGoub2QgCWWokOiVHuQN6yOMVD6KhuwYCsSXc3Jts
-         rqUfYpoPrTtIjoN20z79MR4b7VaB3w4SuAn0Oc2Q6II5MFc+7KuKFCEi5EOJl7nsWI8O
-         1Z9AdN1fBA5LDk3XuNqsSvrib97yNRXhUXL0ESpZeFIene7vEUanuVoJKOjiJNP5ebwQ
-         9jeg==
-X-Gm-Message-State: AOAM532HAaToKMOn+GXmBZ4voBh9kThDeYvTWAMiAz8tlpGUMqg5veGP
-        1F7uc7D0tD2fS2W3bZLxDKI=
-X-Google-Smtp-Source: ABdhPJxdROXUt/+NpwRLoiVRuI5Fkp69z4w5V7oVsLdzS6wbeh4k2qfYnhWIH93Nq9q1XFfnjyp7cQ==
-X-Received: by 2002:a17:902:7489:: with SMTP id h9mr2349321pll.8.1644349415950;
-        Tue, 08 Feb 2022 11:43:35 -0800 (PST)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:c6f0:347f:e607:176:4358])
-        by smtp.gmail.com with ESMTPSA id w11sm16876839pfu.50.2022.02.08.11.43.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 11:43:35 -0800 (PST)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
-        rcu@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, intel-gfx@lists.freedesktop.org
-Subject: [RFC RESEND 00/12] locking: Separate lock tracepoints from lockdep/lock_stat (v1.1)
-Date:   Tue,  8 Feb 2022 11:43:12 -0800
-Message-Id: <20220208194324.85333-1-namhyung@kernel.org>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=503JwJOZ9nC5FfeuXbTUxOpRWtXWDj6hC6JonajRc7g=;
+        b=5vadOkT3SsKRtjeTVHjYKJ981ez1I0dl/5Puw3mujKSxdC3ac7ytrDhJ98WXDNvVA3
+         /Pwqoofyz/rY8puaLpAkXtRJpG0to+maHA9mBW7R7nywWjiaAa8HRwU6aJd902DlU4yo
+         +uwdGfiN8dVM1R2GDD8b0fAN1MNIsIFPu/In+y6bb4/deB7DPg4qfR05oZOSDqDRBEI3
+         fikWTKGnT98yYjTzCwrUkuybx1yKW3pVsdgZBQidD+EhqwTZHCMM8hL/9uCfJlLCDHwD
+         ioTGiRq/nhAvW305TjZLgM4BwLFLDUkoz2BCTVylQVXhGdMhpn50mGN4oE6Pu70/IS4b
+         NUxQ==
+X-Gm-Message-State: AOAM532QyFGmYbFCPazXMLMZUSeeiX6jnUS2jRzyg+UDmkPiXVPIjolm
+        k2BVovWxaNi0zx9lavJYD6ylOa0uGMLqE9lnV9ULDHB2Ep5JaQtfM4UGw4qp1U6CD+r5zsFm/uf
+        3R8dCXxOW+DA111HcTxKQPe8/9AKfjw9PmizI4A7XjRdkguALEbyGtKCx1nPZEvWvYBP+5r5d
+X-Google-Smtp-Source: ABdhPJyiY1Py3BcQrV7gFt47XDAUmxBb6KAP97GNRJzEPJNP1wgamF87bK8UWPoHT6xAlzkoHtWkdc18mkdb
+X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:6875:3c51:69be:6e2c])
+ (user=eranian job=sendgmr) by 2002:a05:6902:701:: with SMTP id
+ k1mr6968691ybt.76.1644355010218; Tue, 08 Feb 2022 13:16:50 -0800 (PST)
+Date:   Tue,  8 Feb 2022 13:16:25 -0800
+Message-Id: <20220208211637.2221872-1-eranian@google.com>
+Mime-Version: 1.0
 X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH v6 00/12] perf/x86/amd: Add AMD Fam19h Branch Sampling support
+From:   Stephane Eranian <eranian@google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
+        jolsa@redhat.com, songliubraving@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Add support for the AMD Fam19h 16-deep branch sampling feature as described
+in the AMD PPR Fam19h Model 01h Revision B1 section 2.1.13. This is a model
+specific extension. It is not an architected AMD feature.
 
-(Resending with Paul's correct email address, sorry!)
+The Branch Sampling Feature (BRS) provides the statistical taken branch
+information necessary to enable autoFDO-style optimization by compilers,
+i.e., basic block execution counts.
 
-There have been some requests for low-overhead kernel lock contention
-monitoring.  The kernel has CONFIG_LOCK_STAT to provide such an infra
-either via /proc/lock_stat or tracepoints directly.
+BRS operates with a 16-deep saturating buffer in MSR registers. There is no
+hardware branch type filtering. All control flow changes are captured. BRS
+relies on specific programming of the core PMU of Fam19h.  In particular,
+the following requirements must be met:
+ - the sampling period be greater than 16 (BRS depth)
+ - the sampling period must use fixed and not frequency mode
 
-However it's not light-weight and hard to be used in production.  So
-I'm trying to separate out the tracepoints and using them as a base to
-build a new monitoring system.
+BRS interacts with the NMI interrupt as well. Because enabling BRS is
+expensive, it is only activated after P event occurrences, where P is the
+desired sampling period. At P occurrences of the event, the counter
+overflows, the CPU catches the NMI interrupt, activates BRS for 16 branches
+until it saturates, and then delivers the NMI to the kernel. Between the
+overflow and the time BRS activates more branches may be executed skewing the
+period. All along, the sampling event keeps counting. The skid may be
+attenuated by reducing the sampling period by 16.
 
-* Changes in v1.1
- - add some Acked-by's
- - add comments on cgroup rstat cpu lock
- 
-As the lockdep and lock_stat provide good hooks in the lock functions,
-it'd be natural to reuse them.  Actually I tried to use lockdep as is
-but disables the functionality at runtime (initialize debug_locks = 0,
-lock_stat = 0).  But it still has unacceptable overhead and the
-lockdep data structures also increase memory footprint unnecessarily.
+BRS is integrated into perf_events seamlessly via the same
+PERF_RECORD_BRANCH_STACK sample format. BRS generates branch
+perf_branch_entry records in the sampling buffer. There is no prediction or
+latency information supported. The branches are stored in reverse order of
+execution.  The most recent branch is the first entry in each record.
 
-So I'm proposing a separate tracepoint-only configuration and keeping
-lockdep_map only with minimal information needed for tracepoints (for
-now, it's just name).  And then the existing lockdep hooks can be used
-for the tracepoints.
+Because BRS must be stopped when a CPU goes into low power mode, the series
+includes patches to add callbacks on ACPI low power entry and exit which is
+used on AMD processors.
 
-The patch 01-06 are preparation for the work.  In a few places in the
-kernel, they calls lockdep annotation explicitly to deal with
-limitations in the lockdep implementation.  In my understanding, they
-are not needed to analyze lock contention.
+Given that there is no privilege filterting with BRS, the kernel implements
+filtering on privlege level.
 
-To make matters worse, they rely on the compiler optimization (or
-macro magic) so that it can get rid of the annotations and their
-arguments when lockdep is not configured.
+This version adds a few simple modifications to perf record and report.
+1. add the branch-brs event as a builtin such as it can used directly:
+   perf record -e branch-brs ...
+2. improve error handling for AMD IBS and is contributed by Kim Phillips.
+3. use the better error handling to improve error handling for BRS.
+4. add two new sort dimensions to help display the branch sampling
+   information. Because there is no latency information associated with the
+   branch sampling feature perf report would collapse all samples within a
+   function into a single histogram entry. This is expected because the
+   default sort mode for PERF_SAMPLE_BRANCH_STACK is symbol_from/symbol_to.
+   This propagates to the annotation.
 
-But it's not true any more when lock tracepoints are added and it'd
-cause build errors.  So I added #ifdef guards for LOCKDEP in the code
-to prevent such errors.
+For more detailed view of the branch samples, the new sort dimensions
+addr_from,addr_to can be used instead as follows:
 
-In the patch 07 I mechanically changed most of code that depend on
-CONFIG_LOCKDEP or CONFIG_DEBUG_LOCK_ALLOC to CONFIG_LOCK_INFO.  It
-paves the way for the codes to be shared for lockdep and tracepoints.
-Mostly, it makes sure that locks are initialized with a proper name,
-like in the patch 08 and 09.
+$ perf report --sort=overhead,comm,dso,addr_from,addr_to 
+# Overhead  Command    Shared Object     Source Address   Target Address
+# ........  .......... ..............  ..............     ..............
+#
+     4.21%  test_prg   test_prg       [.] test_threa+0x3c [.] test_threa+0x4
+     4.14%  test_prg   test_prg       [.] test_threa+0x3e [.] test_threa+0x2
+     4.10%  test_prg   test_prg       [.] test_threa+0x4  [.] test_threa+0x3a
+     4.07%  test_prg   test_prg       [.] test_threa+0x2  [.] test_threa+0x3c
 
-I didn't change some places intentionally - for example, timer and
-workqueue depend on LOCKDEP explicitly since they use some lockdep
-annotations to work around the "held lock freed" warnings.  The ocfs2
-directly accesses lockdep_map.key so I didn't touch the code for now.
-And RCU was because it generates too much overhead thanks to the
-rcu_read_lock().  Maybe I need to revisit some of them later.
+Versus the default output:
 
-I added CONFIG_LOCK_TRACEPOINTS in the patch 10 to make it optional.
-I found that it adds 2~3% of overhead when I ran `perf bench sched
-messaging` even when the tracepoints are disabled.  The benchmark
-creates a lot of processes and make them communicate by socket pairs
-(or pipes).  I measured that around 15% of lock acquisition creates
-contentions and it's mostly for spin locks (alc->lock and u->lock).
+$ perf report 
+# Overhead  Command   Source Shared Object Source Symbol    Target Symbol      Basic Block Cycles
+# ........  ......... .................... ................ .................  ..................
+#
+    99.52%  test_prg  test_prg             [.] test_thread  [.] test_thread    -                 
 
-I ran perf record + report with the workload and it showed 50% of the
-cpu cycles are in the spin lock slow path.  So it's highly affected by
-the spin lock slow path.  Actually LOCK_CONTENDED() macro transforms
-the spin lock code (and others) to use trylock first and then fall
-back to real lock function if failed.  Thus it'd add more (atomic)
-operations and cache line bouncing for the contended cases:
+BRS can be used with any sampling event. However, it is recommended to use
+the RETIRED_BRANCH event because it matches what the BRS captures. For
+convenience, a pseudo event matching the branches captured by BRS is
+exported by the kernel (branch-brs):
 
-  #define LOCK_CONTENDED(_lock, try, lock)		\
-  do {							\
-      if (!try(_lock)) {				\
-          lock_contended(&(_lock)->dep_map, _RET_IP_);	\
-          lock(_lock);					\
-      }							\
-      lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
-  } while (0)
+$ perf record -b -e cpu/branch-brs/ -c 1000037 test
 
-If I modify the macro not to use trylock and to call the real lock
-function directly (so the lock_contended tracepoint would be called
-always, if enabled), the overhead goes down to 0.x% when the
-tracepoints are disabled.
+$ perf report -D
+56531696056126 0x193c000 [0x1a8]: PERF_RECORD_SAMPLE(IP, 0x2): 18122/18230: 0x401d24 period: 1000037 addr: 0
+... branch stack: nr:16
+.....  0: 0000000000401d24 -> 0000000000401d5a 0 cycles      0
+.....  1: 0000000000401d5c -> 0000000000401d24 0 cycles      0
+.....  2: 0000000000401d22 -> 0000000000401d5c 0 cycles      0
+.....  3: 0000000000401d5e -> 0000000000401d22 0 cycles      0
+.....  4: 0000000000401d20 -> 0000000000401d5e 0 cycles      0
+.....  5: 0000000000401d3e -> 0000000000401d20 0 cycles      0
+.....  6: 0000000000401d42 -> 0000000000401d3e 0 cycles      0
+.....  7: 0000000000401d3c -> 0000000000401d42 0 cycles      0
+.....  8: 0000000000401d44 -> 0000000000401d3c 0 cycles      0
+.....  9: 0000000000401d3a -> 0000000000401d44 0 cycles      0
+..... 10: 0000000000401d46 -> 0000000000401d3a 0 cycles      0
+..... 11: 0000000000401d38 -> 0000000000401d46 0 cycles      0
+..... 12: 0000000000401d48 -> 0000000000401d38 0 cycles      0
+..... 13: 0000000000401d36 -> 0000000000401d48 0 cycles      0
+..... 14: 0000000000401d4a -> 0000000000401d36 0 cycles      0
+..... 15: 0000000000401d34 -> 0000000000401d4a 0 cycles      0
+ ... thread: test:18230
+ ...... dso: test
 
-I don't have a good solution as long as we use LOCK_CONTENDED() macro
-to separate the contended locking path.  Maybe we can make it call
-some (generic) slow path lock function directly after failing trylock.
-Or move the lockdep annotations into the each lock function bodies and
-get rid of the LOCK_CONTENDED() macro entirely.  Ideas?
+Special thanks to Kim Phillips @ AMD for the testing, reviews and
+contributions.
 
-Actually the patch 11 handles the same issue on the mutex code.  The
-fast version of mutex trylock was attempted only if LOCKDEP is not
-enabled and it affects the mutex lock performance in the uncontended
-cases too.  So I partially reverted the change in the patch 07 to use
-the fast functions with lock tracepoints too.  Maybe we can use it
-with LOCKDEP as well?
-
-The last patch 12 might be controversial and I'd like to move the
-lock_acquired annotation into the if(!try) block in the LOCK_CONTEDED
-macro so that it can only be called when there's a contention.
-
-Eventually I'm mostly interested in the contended locks only and I
-want to reduce the overhead in the fast path.  By moving that, it'd be
-easy to track contended locks with timing by using two tracepoints.
-
-It'd change lock hold time calculation in lock_stat for the fast path,
-but I assume time difference between lock_acquire and lock_acquired
-would be small when the lock is not contended.  So I think we can use
-the timestamp in lock_acquire.  If it's not acceptable, we might
-consider adding a new tracepoint to track the timing of contended
-locks.
-
-This series base on the current tip/locking/core and you get it from
-'locking/tracepoint-v1' branch in my tree at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/namhyung/linux-perf.git
-
-
-Thanks,
-Namhyung
+V2 makes the following changes:
+  - the low power callback code has be reworked completly. It is not
+    impacting the generic perf_events code anymore. This is all handled
+    via x86 code and only for ACPI low power driver which seems to be the
+    default on AMD. The change in acpi_pad.c and processor_idle.c has no
+    impact on non x86 architectures, on Intel x86 or AMD without BRS, a
+    jump label is used to void the code unless necessary
+  - BRS is an opt-in compile time option for the kernel
+  - branch_stack bit clearing helper is introduced
+  - As for the fact that BRS holds the NMI and that it may conflict with
+    other sampling events and introduced skid, this is not really a problem
+    because AMD PMI skid is already very large prompting special handling in
+    amd_pmu_wait_on_overflow(), so adding a few cycles while the CPU executes
+    at most 16 taken branches is not a problem.
 
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Byungchul Park <byungchul.park@lge.com>
-Cc: rcu@vger.kernel.org
-Cc: cgroups@vger.kernel.org
-Cc: linux-btrfs@vger.kernel.org
-Cc: intel-gfx@lists.freedesktop.org
+V3 makes the following changes:
+   - simplifies the handling of BRS enable/disable to mimic the Intel LBR code
+     path more closely. That removes some callbacks in generic x86 code
+   - add config option to compile BRS as an opt-in (off by default)
+   - updated perf tool error reporting patch updates by Kim Phillips
+
+V4 makes the following changes:
+   - rebase to latest tip.git (commit 6f5ac142e5df)
+   - integrate Kim Phillips latest perf tool error handling patches
 
 
-Namhyung Kim (12):
-  locking: Pass correct outer wait type info
-  cgroup: rstat: Make cgroup_rstat_cpu_lock name readable
-  timer: Protect lockdep functions with #ifdef
-  workqueue: Protect lockdep functions with #ifdef
-  drm/i915: Protect lockdep functions with #ifdef
-  btrfs: change lockdep class size check using ks->names
-  locking: Introduce CONFIG_LOCK_INFO
-  locking/mutex: Init name properly w/ CONFIG_LOCK_INFO
-  locking: Add more static lockdep init macros
-  locking: Add CONFIG_LOCK_TRACEPOINTS option
-  locking/mutex: Revive fast functions for LOCK_TRACEPOINTS
-  locking: Move lock_acquired() from the fast path
+V5 makes the following changes:
+   - rebased to 5.17-rc1
+   - integrated feedback from PeterZ about AMD perf_events callbacks
+   - fix cpufeature macros name X86_FEATURE_BRS
+   - integrated all perf tool error handling from kim Phillips
 
- drivers/gpu/drm/drm_connector.c               |   7 +-
- drivers/gpu/drm/i915/i915_sw_fence.h          |   2 +-
- drivers/gpu/drm/i915/intel_wakeref.c          |   3 +
- drivers/gpu/drm/i915/selftests/lib_sw_fence.h |   2 +-
- .../net/wireless/intel/iwlwifi/iwl-trans.c    |   4 +-
- .../net/wireless/intel/iwlwifi/iwl-trans.h    |   2 +-
- drivers/tty/tty_ldsem.c                       |   2 +-
- fs/btrfs/disk-io.c                            |   4 +-
- fs/btrfs/disk-io.h                            |   2 +-
- fs/cifs/connect.c                             |   2 +-
- fs/kernfs/file.c                              |   2 +-
- include/linux/completion.h                    |   2 +-
- include/linux/jbd2.h                          |   2 +-
- include/linux/kernfs.h                        |   2 +-
- include/linux/kthread.h                       |   2 +-
- include/linux/local_lock_internal.h           |  18 +-
- include/linux/lockdep.h                       | 170 ++++++++++++++++--
- include/linux/lockdep_types.h                 |   8 +-
- include/linux/mmu_notifier.h                  |   2 +-
- include/linux/mutex.h                         |  12 +-
- include/linux/percpu-rwsem.h                  |   4 +-
- include/linux/regmap.h                        |   4 +-
- include/linux/rtmutex.h                       |  14 +-
- include/linux/rwlock_api_smp.h                |   4 +-
- include/linux/rwlock_rt.h                     |   4 +-
- include/linux/rwlock_types.h                  |  11 +-
- include/linux/rwsem.h                         |  14 +-
- include/linux/seqlock.h                       |   4 +-
- include/linux/spinlock_api_smp.h              |   4 +-
- include/linux/spinlock_rt.h                   |   4 +-
- include/linux/spinlock_types.h                |   4 +-
- include/linux/spinlock_types_raw.h            |  28 ++-
- include/linux/swait.h                         |   2 +-
- include/linux/tty_ldisc.h                     |   2 +-
- include/linux/wait.h                          |   2 +-
- include/linux/ww_mutex.h                      |   6 +-
- include/media/v4l2-ctrls.h                    |   2 +-
- include/net/sock.h                            |   2 +-
- include/trace/events/lock.h                   |   4 +-
- kernel/cgroup/rstat.c                         |   7 +-
- kernel/locking/Makefile                       |   1 +
- kernel/locking/lockdep.c                      |  40 ++++-
- kernel/locking/mutex-debug.c                  |   2 +-
- kernel/locking/mutex.c                        |  22 ++-
- kernel/locking/mutex.h                        |   7 +
- kernel/locking/percpu-rwsem.c                 |   2 +-
- kernel/locking/rtmutex_api.c                  |  10 +-
- kernel/locking/rwsem.c                        |   4 +-
- kernel/locking/spinlock.c                     |   2 +-
- kernel/locking/spinlock_debug.c               |   4 +-
- kernel/locking/spinlock_rt.c                  |   8 +-
- kernel/locking/ww_rt_mutex.c                  |   2 +-
- kernel/printk/printk.c                        |  14 +-
- kernel/rcu/update.c                           |  27 +--
- kernel/time/timer.c                           |   8 +-
- kernel/workqueue.c                            |  13 ++
- lib/Kconfig.debug                             |  14 ++
- mm/memcontrol.c                               |   7 +-
- mm/mmu_notifier.c                             |   2 +-
- net/core/dev.c                                |   2 +-
- net/sunrpc/svcsock.c                          |   2 +-
- net/sunrpc/xprtsock.c                         |   2 +-
- 62 files changed, 391 insertions(+), 180 deletions(-)
+V6 makes the following changes:
+   - rebase to 5.17-rc3
+   - fix the typo in the Kconfig for BRS opt-in
+   - reword all changelogs to be more aligned with standard
 
 
-base-commit: 1dc01abad6544cb9d884071b626b706e37aa9601
+Kim Phillips (1):
+  perf tools: Improve IBS error handling
+
+Stephane Eranian (11):
+  perf/core: add perf_clear_branch_entry_bitfields() helper
+  x86/cpufeatures: add AMD Fam19h Branch Sampling feature
+  perf/x86/amd: add AMD Fam19h Branch Sampling support
+  perf/x86/amd: add branch-brs helper event for Fam19h BRS
+  perf/x86/amd: enable branch sampling priv level filtering
+  perf/x86/amd: add AMD branch sampling period adjustment
+  perf/x86/amd: make Zen3 branch sampling opt-in
+  ACPI: add perf low power callback
+  perf/x86/amd: add idle hooks for branch sampling
+  perf tools: Improve error handling of AMD Branch Sampling
+  perf report: add addr_from/addr_to sort dimensions
+
+ arch/x86/events/Kconfig            |   8 +
+ arch/x86/events/amd/Makefile       |   1 +
+ arch/x86/events/amd/brs.c          | 363 +++++++++++++++++++++++++++++
+ arch/x86/events/amd/core.c         | 217 ++++++++++++++++-
+ arch/x86/events/core.c             |  17 +-
+ arch/x86/events/intel/lbr.c        |  36 ++-
+ arch/x86/events/perf_event.h       | 143 ++++++++++--
+ arch/x86/include/asm/cpufeatures.h |   1 +
+ arch/x86/include/asm/msr-index.h   |   4 +
+ arch/x86/include/asm/perf_event.h  |  21 ++
+ drivers/acpi/acpi_pad.c            |   6 +
+ drivers/acpi/processor_idle.c      |   5 +
+ include/linux/perf_event.h         |  22 ++
+ tools/perf/util/evsel.c            |  38 +++
+ tools/perf/util/hist.c             |   2 +
+ tools/perf/util/hist.h             |   2 +
+ tools/perf/util/sort.c             | 128 ++++++++++
+ tools/perf/util/sort.h             |   2 +
+ 18 files changed, 976 insertions(+), 40 deletions(-)
+ create mode 100644 arch/x86/events/amd/brs.c
+
 -- 
 2.35.0.263.gb82422642f-goog
+
