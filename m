@@ -2,144 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00899C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6BCC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359354AbiBHLbT (ORCPT
+        id S1356582AbiBHLbZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:31:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33312 "EHLO
+        Tue, 8 Feb 2022 06:31:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356649AbiBHKxd (ORCPT
+        with ESMTP id S1356700AbiBHKzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:53:33 -0500
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7B4C03FEC0;
-        Tue,  8 Feb 2022 02:53:31 -0800 (PST)
+        Tue, 8 Feb 2022 05:55:04 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEA5C03FEC5
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 02:55:02 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id h14-20020a17090a130e00b001b88991a305so1711477pja.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 02:55:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1644317611; x=1675853611;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UbrGQyvULXin7BBC8wqdS8uqSO3Rl+MipBC4/fpyAFA=;
-  b=A70yp/lnOBAI3gXLtwTmKGkj8F3WQbzguuqxghR3rKFV9AsDK8JmYRBG
-   t368KlgLlyOinM6/Yp00c+a4ngRFQTDvs+CDj8TFwI4zusg3jaoIGwfuZ
-   krx1oxtKoubB5IvNPGaAY8dTVjqlYFjAwD1HMteMkZ5fnIcCydOOc/WjI
-   BqCF3kZDPgUYvKbTwc5C6FkHVt/PkXvt7ng//CKXPKz9z3+rTRCivoWcd
-   2i0kPA4X1v2wgnQKMjTY/EgmxYM7b/cA2tEXoMWkNw4ehgHDly04CG16M
-   9u7NC1ljE7teZzvm9mOPfNwDQGnvW3LkyLIU5sJgvOEse8myB+UOzepKM
-   w==;
-X-IronPort-AV: E=Sophos;i="5.88,352,1635199200"; 
-   d="scan'208";a="21957534"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 08 Feb 2022 11:53:29 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Tue, 08 Feb 2022 11:53:29 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Tue, 08 Feb 2022 11:53:29 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1644317609; x=1675853609;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UbrGQyvULXin7BBC8wqdS8uqSO3Rl+MipBC4/fpyAFA=;
-  b=VWnvEgqtDGvLWpFibWP78PUxgQe4FS9HDx/QNP3mgMele6QiMfx+TOYn
-   WkoDBxcdmrChiv28+5qECk6WOShr8EBEiPiDAxgB8FEY+JNyuD1C279JE
-   oTAac32IfRRg1AFGZE5pcLbT9thlMFtvb4uHPVB3wB6EdbDdfWp5jnjfx
-   SBa8eo5NFRVDC2wSbEmWtFvMLn9xXghyL+KYLcGmfUOY3JOcNHuoIz/30
-   Ap9danfx8+pIpDiK2VyIo3puV44kUkzyGG4drWcxVtrFtB40sYM5zKXdp
-   hOHeKy7XtK628/97U7w9Z9THRGrW4zXI+t3XFMUJvsuHjfwrMFrSn2RVz
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.88,352,1635199200"; 
-   d="scan'208";a="21957533"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 08 Feb 2022 11:53:29 +0100
-Received: from schifferm-ubuntu (SCHIFFERM-M2.tq-net.de [10.121.201.138])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 3B223280065;
-        Tue,  8 Feb 2022 11:53:29 +0100 (CET)
-Message-ID: <9923df6525212389b86cb635624bcfb5c27a8bc5.camel@ew.tq-group.com>
-Subject: Re: [PATCH v2 1/2] arm64: dts: ti: k3-am65: disable optional
- peripherals by default
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>, soc@kernel.org,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>, jan.kiszka@siemens.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Nishanth Menon <nm@ti.com>
-Date:   Tue, 08 Feb 2022 11:53:27 +0100
-In-Reply-To: <YgEBml9HvFzSl289@atomide.com>
-References: <20220203140240.973690-1-matthias.schiffer@ew.tq-group.com>
-         <20220204143108.653qk2ihnlhsr5aa@prior> <YgDCLaBHA3DDQAUd@atomide.com>
-         <5944ba0ce568eaf507917799b1dfd89a3d0ca492.camel@ew.tq-group.com>
-         <YgEBml9HvFzSl289@atomide.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JpFe2MD1E+2DPoXg543PglALXj4OP+/vcuv1a1idPqs=;
+        b=deOHRpDN7/U/V2+1GsKT9q4cej3QCC1mv9oreCRy2yqCzqwof20GqvzEGli/OdHxZp
+         XbF3QBT3Th2t6JVa2oGczJxri5/zN1rZQOLve5TxfB5GgIpK5tzEM08Ad2tDnXi2n3L1
+         QkJwk/5mWQ/oqiRINLAHiGlQgQye9NmBNdHJ8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JpFe2MD1E+2DPoXg543PglALXj4OP+/vcuv1a1idPqs=;
+        b=HVKExAxQJBwESMYO9BCKVlyxwgPrNilIMxig2EtMz8AuZZwIXNEW8axSx2xm7Jp2Py
+         vHGW0ppHdybmuwK0wKaAQZ+184AIFkPPOhbTvi+CywjcxL7lkk5kNNuj40+Z0QMTo2a2
+         JYrD3EmQ0uEFg7qVdWWCCKKNz/Z4/3h3C+YMUg7F2pqUUwFsUH+8vBDIZnHhGNTi2xPS
+         +BnMkzIDx4TFaGLbBgdstWOgGMCbm+Xnx7WcMfin1w0ZQ5ES9HY1pB6ofbGM/d00rMf7
+         d+8uCF0hrCevK8JQxh5PDR1zF2BewSSw8QY1rznGjZ7uTdgzzkIhVvtn7A5EWgwm2tpA
+         AG/g==
+X-Gm-Message-State: AOAM531PJVucd4w5NyBSqTu/++chYm7R671Kfi/LKluVO9saG47/dFi7
+        2EytcYUOEPWAMb2+cSmtSve0bA==
+X-Google-Smtp-Source: ABdhPJzxCELfUQ71vOBWo/X6NxZxybbY8TJpqWcbbxZ9oEXImbmiUN5OoLbviGkL9g1oIynidlrpnw==
+X-Received: by 2002:a17:902:dcca:: with SMTP id t10mr3844961pll.133.1644317702158;
+        Tue, 08 Feb 2022 02:55:02 -0800 (PST)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:41b6:813e:c823:609c])
+        by smtp.gmail.com with ESMTPSA id e17sm14907277pfv.101.2022.02.08.02.55.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 02:55:01 -0800 (PST)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH RFC] media: hantro: Implement support for encoder commands
+Date:   Tue,  8 Feb 2022 18:54:56 +0800
+Message-Id: <20220208105456.321294-1-wenst@chromium.org>
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-07 at 13:25 +0200, Tony Lindgren wrote:
-> * Matthias Schiffer <matthias.schiffer@ew.tq-group.com> [220207
-> 08:45]:
-> > Generally I think that it's a bootloader's responsiblity to disable
-> > unneeded devices - the kernel may not even have a driver for some
-> > peripherals, leading to the same behaviour as a "disabled" status.
-> > For
-> > this reason I believe that it should always be okay to set unneeded
-> > devices to "disabled", and it should be considered a safe default.
-> 
-> Not possible, think kexec for example :) How would the previous
-> kernel
-> even know what to disable if Linux has no idea about the devices?
+The V4L2 stateful encoder uAPI specification requires that drivers
+support the ENCODER_CMD ioctl to allow draining of buffers. This
+however was not implemented, and causes issues for some userspace
+applications.
 
-Well, optimally, bootloader and all kernels would agree on the devices
-that are actually available, but I get your point.
+Implement support for the ENCODER_CMD ioctl using v4l2-mem2mem helpers.
+This is entirely based on existing code found in the vicodec test
+driver.
 
-> 
-> If there are issues you're seeing, it's likely a bug in some of the
-> device drivers for not checking for the necessary resources like
-> pinctrl for i2c lines.
+Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+---
 
-I don't think it's common for individual drivers to care about pinctrl
-unless switching between different pin settings is required at runtime.
-Many drivers can be used on different hardware, some of which may
-require pinmuxing, while others don't.
+This is based on linux-next-20220207, and was tested on RK3399 with
+Gstreamer running the JPEG encoder. It was also tested on ChromeOS
+5.10 on Kevin with the video encoder used in ChromeOS ARC, which
+requires this.
 
-Also, what is the expected behavior of a driver that is probed for an
-unusable device? Wouldn't this require some as-of-yet nonexisting
-status between "okay" and "disabled" that conveys something like "probe
-this device, initialize (and disable) PM, but don't register anything",
-so no unusable devices become visible to userspace (and possibly other
-kernel drivers)?
+Everything works OK, but since I'm not very familiar with the mem2mem
+framework, I might be missing something, causing resource leaks.
+Hence this patch is labeled RFC.
 
-> 
-> > I'm not sure what the consensus on these issues is. I'm more
-> > familiar
-> > with NXP's i.MX and Layerscape SoCs, where it's common to have all
-> > muxable peripherals set to "disabled" in the base DTSI, and a quick
-> > grep through a few dts directories gives me the impression that
-> > this is
-> > the case for most other vendors as well.
-> 
-> This approach only works for SoCs that don't need the kernel to idle
-> devices for runtime PM.
+---
+ drivers/staging/media/hantro/hantro_drv.c  | 10 +++++
+ drivers/staging/media/hantro/hantro_v4l2.c | 44 ++++++++++++++++++++++
+ 2 files changed, 54 insertions(+)
 
-I'm pretty sure that most modern SoCs I looked at have runtime PM, and
-it is simply expected that unusable devices are never enabled in the
-first place, so there is no need for the kernel to know about them.
-
-Regards,
-Matthias
-
-
-
-
-> Regards,
-> 
-> Tony
+diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
+index bc9bcb4eaf46..ccd47eee5c43 100644
+--- a/drivers/staging/media/hantro/hantro_drv.c
++++ b/drivers/staging/media/hantro/hantro_drv.c
+@@ -56,6 +56,10 @@ dma_addr_t hantro_get_ref(struct hantro_ctx *ctx, u64 ts)
+ 	return hantro_get_dec_buf_addr(ctx, buf);
+ }
+ 
++static const struct v4l2_event hantro_eos_event = {
++	.type = V4L2_EVENT_EOS
++};
++
+ static void hantro_job_finish_no_pm(struct hantro_dev *vpu,
+ 				    struct hantro_ctx *ctx,
+ 				    enum vb2_buffer_state result)
+@@ -73,6 +77,12 @@ static void hantro_job_finish_no_pm(struct hantro_dev *vpu,
+ 	src->sequence = ctx->sequence_out++;
+ 	dst->sequence = ctx->sequence_cap++;
+ 
++	if (v4l2_m2m_is_last_draining_src_buf(ctx->fh.m2m_ctx, src)) {
++		dst->flags |= V4L2_BUF_FLAG_LAST;
++		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
++		v4l2_m2m_mark_stopped(ctx->fh.m2m_ctx);
++	}
++
+ 	v4l2_m2m_buf_done_and_job_finish(ctx->dev->m2m_dev, ctx->fh.m2m_ctx,
+ 					 result);
+ }
+diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
+index 67148ba346f5..8c6746637236 100644
+--- a/drivers/staging/media/hantro/hantro_v4l2.c
++++ b/drivers/staging/media/hantro/hantro_v4l2.c
+@@ -628,6 +628,39 @@ static int vidioc_s_selection(struct file *file, void *priv,
+ 	return 0;
+ }
+ 
++static const struct v4l2_event hantro_eos_event = {
++	.type = V4L2_EVENT_EOS
++};
++
++static int vidioc_encoder_cmd(struct file *file, void *priv,
++			      struct v4l2_encoder_cmd *ec)
++{
++	struct hantro_ctx *ctx = fh_to_ctx(priv);
++	int ret;
++
++	ret = v4l2_m2m_ioctl_try_encoder_cmd(file, priv, ec);
++	if (ret < 0)
++		return ret;
++
++	if (!vb2_is_streaming(v4l2_m2m_get_src_vq(ctx->fh.m2m_ctx)) ||
++	    !vb2_is_streaming(v4l2_m2m_get_dst_vq(ctx->fh.m2m_ctx)))
++		return 0;
++
++	ret = v4l2_m2m_ioctl_encoder_cmd(file, priv, ec);
++	if (ret < 0)
++		return ret;
++
++	if (ec->cmd == V4L2_ENC_CMD_STOP &&
++	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
++		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
++
++	if (ec->cmd == V4L2_ENC_CMD_START &&
++	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
++		vb2_clear_last_buffer_dequeued(&ctx->fh.m2m_ctx->cap_q_ctx.q);
++
++	return 0;
++}
++
+ const struct v4l2_ioctl_ops hantro_ioctl_ops = {
+ 	.vidioc_querycap = vidioc_querycap,
+ 	.vidioc_enum_framesizes = vidioc_enum_framesizes,
+@@ -657,6 +690,9 @@ const struct v4l2_ioctl_ops hantro_ioctl_ops = {
+ 
+ 	.vidioc_g_selection = vidioc_g_selection,
+ 	.vidioc_s_selection = vidioc_s_selection,
++
++	.vidioc_try_encoder_cmd = v4l2_m2m_ioctl_try_encoder_cmd,
++	.vidioc_encoder_cmd = vidioc_encoder_cmd,
+ };
+ 
+ static int
+@@ -759,6 +795,8 @@ static int hantro_start_streaming(struct vb2_queue *q, unsigned int count)
+ 	struct hantro_ctx *ctx = vb2_get_drv_priv(q);
+ 	int ret = 0;
+ 
++	v4l2_m2m_update_start_streaming_state(ctx->fh.m2m_ctx, q);
++
+ 	if (V4L2_TYPE_IS_OUTPUT(q->type))
+ 		ctx->sequence_out = 0;
+ 	else
+@@ -831,6 +869,12 @@ static void hantro_stop_streaming(struct vb2_queue *q)
+ 		hantro_return_bufs(q, v4l2_m2m_src_buf_remove);
+ 	else
+ 		hantro_return_bufs(q, v4l2_m2m_dst_buf_remove);
++
++	v4l2_m2m_update_stop_streaming_state(ctx->fh.m2m_ctx, q);
++
++	if (V4L2_TYPE_IS_OUTPUT(q->type) &&
++	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
++		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
+ }
+ 
+ static void hantro_buf_request_complete(struct vb2_buffer *vb)
+-- 
+2.35.0.263.gb82422642f-goog
 
