@@ -2,112 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC882C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2868C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Feb 2022 08:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349980AbiBHIdg (ORCPT
+        id S1350007AbiBHIdy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 03:33:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33520 "EHLO
+        Tue, 8 Feb 2022 03:33:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349945AbiBHIdc (ORCPT
+        with ESMTP id S1347610AbiBHIdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 03:33:32 -0500
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43440C0401F6
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 00:33:30 -0800 (PST)
-Received: by mail-il1-f199.google.com with SMTP id m3-20020a056e02158300b002b6e3d1f97cso10757269ilu.19
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 00:33:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Zu1f5wks8CG9qf+bEyfbwDDqbLe9bidYWfVJmudyP5c=;
-        b=lRjB3fdVzUV1GxFIbrdboJQTTH9HhomHlOGmrs1mMiN0kRud4kjWXMnCJX9f0agS+U
-         KX3LMTWGRaUE4+b2vg2lwOSLs4cFvbqDbnqcccJfcjakK2hlvmGgUxt3UTuzEUp0ovkB
-         UrZjjStZKw7Y7sGp4nuTWs6GJWTS61imM0IxLWMn8IjZE1FLN22kvdPzi1M4a5mWIT5a
-         hHh/rWF3KvnYqmGvtQrVLR3FX7YzXnvK4bnfVl43Ged1zR466XeSOMruIFK4T8CeWMqR
-         6c6nO49lq2PU5Cnd3CVlLyn9pLDV7+B5lFR36vGpus4YvM1Amhra9JPjFU/iFRUczMRt
-         U9PA==
-X-Gm-Message-State: AOAM530s5LHuJd/3bqqgVMh+2qx6A4VbaLIUidxe6jDFoOQRxFKiRPUU
-        YLU/OM6/xFXqwyd3BcbR2UM+x+yfWVbsLWuNMeJLk7ixZVPD
-X-Google-Smtp-Source: ABdhPJz2gSdVhCHqfIAKJccadNo+Pwyc0aWv5nW4Iwpv1ik7Vv8sD+fb4hjvadw87gBxqOfFORmeIByV5Ol5nUDZY0Wah4vaPz+t
+        Tue, 8 Feb 2022 03:33:52 -0500
+X-Greylist: delayed 507 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 00:33:50 PST
+Received: from first.geanix.com (first.geanix.com [116.203.34.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227DBC03FEC0;
+        Tue,  8 Feb 2022 00:33:49 -0800 (PST)
+Received: from zen.. (unknown [185.17.218.86])
+        by first.geanix.com (Postfix) with ESMTPSA id 3B30AE28D1;
+        Tue,  8 Feb 2022 08:25:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1644308719; bh=Efu6zjcxm/eWjynAIA8LNMAq9G0qvlYvhealE9QUzXQ=;
+        h=From:To:Cc:Subject:Date;
+        b=C2ohMC85IOb51JqunUAZHpOrmNCwKkz1ZlbIrTMm12tmkPSAGUPUtAfynh+pxU2Tb
+         Jo9+i8yz8kitAON4mcrNf3/w4EtR5N8Re3sf8JaxSkApNWKxWUj5fgk7o7Gw9Fgl5k
+         ETMGo2aW2WdWjlo8gIcp+EuGIY3s1aLfLZinpZsemsX5vAHCsK+ShtX4soNyB5MFim
+         3dd0ZiVf6IldfoR/NtOUeIiYWM0NEh9s3qigwgsRRfp51es91ujVqeKHTjk9NpbVN/
+         bdQGmEZDldUJszJYssqmSm7uO979MI71LCtWrIHzXf6X6b6L+jK7zOnELzlULxN9vA
+         rwCmCD1jUkLOA==
+From:   Sean Nyekjaer <sean@geanix.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Boris Brezillon <bbrezillon@kernel.org>
+Cc:     Sean Nyekjaer <sean@geanix.com>, stable@vger.kernel.org,
+        sfr@canb.auug.org.au,
+        Boris Brezillon <boris.brezillon@collabora.com>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3] mtd: rawnand: protect access to rawnand devices while in suspend
+Date:   Tue,  8 Feb 2022 09:25:06 +0100
+Message-Id: <20220208082507.1837764-1-sean@geanix.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2dd4:: with SMTP id l20mr1577514iow.115.1644309209624;
- Tue, 08 Feb 2022 00:33:29 -0800 (PST)
-Date:   Tue, 08 Feb 2022 00:33:29 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005733c005d77d9215@google.com>
-Subject: [syzbot] KCSAN: data-race in wg_packet_decrypt_worker /
- wg_packet_rx_poll (2)
-From:   syzbot <syzbot+d1de830e4ecdaac83d89@syzkaller.appspotmail.com>
-To:     Jason@zx2c4.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, wireguard@lists.zx2c4.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Prevent rawnend access while in a suspended state.
 
-syzbot found the following issue on:
+Commit 013e6292aaf5 ("mtd: rawnand: Simplify the locking") allows the
+rawnand layer to return errors rather than waiting in a blocking wait.
 
-HEAD commit:    2ade8eef993c Merge tag 'ata-5.17-rc4' of git://git.kernel...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=112ef758700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1dcc3374da7c1f7c
-dashboard link: https://syzkaller.appspot.com/bug?extid=d1de830e4ecdaac83d89
-compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
+Tested on a iMX6ULL.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+d1de830e4ecdaac83d89@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KCSAN: data-race in wg_packet_decrypt_worker / wg_packet_rx_poll
-
-write to 0xffff888127d03888 of 8 bytes by interrupt on cpu 1:
- counter_validate drivers/net/wireguard/receive.c:328 [inline]
- wg_packet_rx_poll+0x436/0x11f0 drivers/net/wireguard/receive.c:468
- __napi_poll+0x65/0x3f0 net/core/dev.c:6365
- napi_poll net/core/dev.c:6432 [inline]
- net_rx_action+0x29e/0x650 net/core/dev.c:6519
- __do_softirq+0x158/0x2de kernel/softirq.c:558
- do_softirq+0xb1/0xf0 kernel/softirq.c:459
- __local_bh_enable_ip+0x68/0x70 kernel/softirq.c:383
- __raw_spin_unlock_bh include/linux/spinlock_api_smp.h:167 [inline]
- _raw_spin_unlock_bh+0x33/0x40 kernel/locking/spinlock.c:210
- spin_unlock_bh include/linux/spinlock.h:394 [inline]
- ptr_ring_consume_bh include/linux/ptr_ring.h:367 [inline]
- wg_packet_decrypt_worker+0x73c/0x780 drivers/net/wireguard/receive.c:506
- process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
- worker_thread+0x616/0xa70 kernel/workqueue.c:2454
- kthread+0x1bf/0x1e0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30
-
-read to 0xffff888127d03888 of 8 bytes by task 1912 on cpu 0:
- decrypt_packet drivers/net/wireguard/receive.c:259 [inline]
- wg_packet_decrypt_worker+0x23a/0x780 drivers/net/wireguard/receive.c:508
- process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
- worker_thread+0x616/0xa70 kernel/workqueue.c:2454
- kthread+0x1bf/0x1e0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30
-
-value changed: 0x0000000000000bb9 -> 0x0000000000000bba
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 1912 Comm: kworker/0:3 Not tainted 5.17.0-rc3-syzkaller-00013-g2ade8eef993c-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: wg-crypt-wg1 wg_packet_decrypt_worker
-==================================================================
-
-
+Fixes: 013e6292aaf5 ("mtd: rawnand: Simplify the locking")
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Follow-up on discussion in:
+https://lkml.org/lkml/2021/10/4/41
+https://lkml.org/lkml/2021/10/11/435
+https://lkml.org/lkml/2021/10/20/184
+https://lkml.org/lkml/2021/10/25/288
+https://lkml.org/lkml/2021/10/26/55
+https://lkml.org/lkml/2021/11/2/352
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Changes since v1:
+ - fixed uninitialized return
+
+Changes since v2:
+ - fixed wait queue description
+
+ drivers/mtd/nand/raw/nand_base.c | 44 +++++++++++++++-----------------
+ include/linux/mtd/rawnand.h      |  2 ++
+ 2 files changed, 22 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/mtd/nand/raw/nand_base.c b/drivers/mtd/nand/raw/nand_base.c
+index e7b2ba016d8c..8daaba96edb2 100644
+--- a/drivers/mtd/nand/raw/nand_base.c
++++ b/drivers/mtd/nand/raw/nand_base.c
+@@ -338,16 +338,19 @@ static int nand_isbad_bbm(struct nand_chip *chip, loff_t ofs)
+  *
+  * Return: -EBUSY if the chip has been suspended, 0 otherwise
+  */
+-static int nand_get_device(struct nand_chip *chip)
++static void nand_get_device(struct nand_chip *chip)
+ {
+-	mutex_lock(&chip->lock);
+-	if (chip->suspended) {
++	/* Wait until the device is resumed. */
++	while (1) {
++		mutex_lock(&chip->lock);
++		if (!chip->suspended) {
++			mutex_lock(&chip->controller->lock);
++			return;
++		}
+ 		mutex_unlock(&chip->lock);
+-		return -EBUSY;
+-	}
+-	mutex_lock(&chip->controller->lock);
+ 
+-	return 0;
++		wait_event(chip->resume_wq, !chip->suspended);
++	}
+ }
+ 
+ /**
+@@ -576,9 +579,7 @@ static int nand_block_markbad_lowlevel(struct nand_chip *chip, loff_t ofs)
+ 		nand_erase_nand(chip, &einfo, 0);
+ 
+ 		/* Write bad block marker to OOB */
+-		ret = nand_get_device(chip);
+-		if (ret)
+-			return ret;
++		nand_get_device(chip);
+ 
+ 		ret = nand_markbad_bbm(chip, ofs);
+ 		nand_release_device(chip);
+@@ -3826,9 +3827,7 @@ static int nand_read_oob(struct mtd_info *mtd, loff_t from,
+ 	    ops->mode != MTD_OPS_RAW)
+ 		return -ENOTSUPP;
+ 
+-	ret = nand_get_device(chip);
+-	if (ret)
+-		return ret;
++	nand_get_device(chip);
+ 
+ 	if (!ops->datbuf)
+ 		ret = nand_do_read_oob(chip, from, ops);
+@@ -4415,13 +4414,11 @@ static int nand_write_oob(struct mtd_info *mtd, loff_t to,
+ 			  struct mtd_oob_ops *ops)
+ {
+ 	struct nand_chip *chip = mtd_to_nand(mtd);
+-	int ret;
++	int ret = 0;
+ 
+ 	ops->retlen = 0;
+ 
+-	ret = nand_get_device(chip);
+-	if (ret)
+-		return ret;
++	nand_get_device(chip);
+ 
+ 	switch (ops->mode) {
+ 	case MTD_OPS_PLACE_OOB:
+@@ -4481,9 +4478,7 @@ int nand_erase_nand(struct nand_chip *chip, struct erase_info *instr,
+ 		return -EIO;
+ 
+ 	/* Grab the lock and see if the device is available */
+-	ret = nand_get_device(chip);
+-	if (ret)
+-		return ret;
++	nand_get_device(chip);
+ 
+ 	/* Shift to get first page */
+ 	page = (int)(instr->addr >> chip->page_shift);
+@@ -4570,7 +4565,7 @@ static void nand_sync(struct mtd_info *mtd)
+ 	pr_debug("%s: called\n", __func__);
+ 
+ 	/* Grab the lock and see if the device is available */
+-	WARN_ON(nand_get_device(chip));
++	nand_get_device(chip);
+ 	/* Release it and go back */
+ 	nand_release_device(chip);
+ }
+@@ -4587,9 +4582,7 @@ static int nand_block_isbad(struct mtd_info *mtd, loff_t offs)
+ 	int ret;
+ 
+ 	/* Select the NAND device */
+-	ret = nand_get_device(chip);
+-	if (ret)
+-		return ret;
++	nand_get_device(chip);
+ 
+ 	nand_select_target(chip, chipnr);
+ 
+@@ -4660,6 +4653,8 @@ static void nand_resume(struct mtd_info *mtd)
+ 			__func__);
+ 	}
+ 	mutex_unlock(&chip->lock);
++
++	wake_up_all(&chip->resume_wq);
+ }
+ 
+ /**
+@@ -5437,6 +5432,7 @@ static int nand_scan_ident(struct nand_chip *chip, unsigned int maxchips,
+ 	chip->cur_cs = -1;
+ 
+ 	mutex_init(&chip->lock);
++	init_waitqueue_head(&chip->resume_wq);
+ 
+ 	/* Enforce the right timings for reset/detection */
+ 	chip->current_interface_config = nand_get_reset_interface_config();
+diff --git a/include/linux/mtd/rawnand.h b/include/linux/mtd/rawnand.h
+index 5b88cd51fadb..dcf90144d70b 100644
+--- a/include/linux/mtd/rawnand.h
++++ b/include/linux/mtd/rawnand.h
+@@ -1240,6 +1240,7 @@ struct nand_secure_region {
+  * @lock: Lock protecting the suspended field. Also used to serialize accesses
+  *        to the NAND device
+  * @suspended: Set to 1 when the device is suspended, 0 when it's not
++ * @resume_wq: wait queue to sleep if rawnand is in suspended state.
+  * @cur_cs: Currently selected target. -1 means no target selected, otherwise we
+  *          should always have cur_cs >= 0 && cur_cs < nanddev_ntargets().
+  *          NAND Controller drivers should not modify this value, but they're
+@@ -1294,6 +1295,7 @@ struct nand_chip {
+ 	/* Internals */
+ 	struct mutex lock;
+ 	unsigned int suspended : 1;
++	wait_queue_head_t resume_wq;
+ 	int cur_cs;
+ 	int read_retries;
+ 	struct nand_secure_region *secure_regions;
+-- 
+2.34.1
+
