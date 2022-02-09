@@ -2,85 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5640C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:41:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AFEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243191AbiBICk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:40:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34418 "EHLO
+        id S245422AbiBIClI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:41:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237043AbiBICEJ (ORCPT
+        with ESMTP id S231611AbiBIByv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:04:09 -0500
-Received: from relay.hostedemail.com (relay.hostedemail.com [64.99.140.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 007EEC06157B
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 18:04:07 -0800 (PST)
-Received: from omf18.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay11.hostedemail.com (Postfix) with ESMTP id 166AA80DE7;
-        Wed,  9 Feb 2022 02:04:06 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id 5104430;
-        Wed,  9 Feb 2022 02:03:43 +0000 (UTC)
-Message-ID: <d7d764a70d154030fc5e00d6238c8a65b489e456.camel@perches.com>
-Subject: Re: [PATCH] HID: lenovo: replace snprintf with sysfs_emit
-From:   Joe Perches <joe@perches.com>
-To:     davidcomponentone@gmail.com, jikos@kernel.org
-Cc:     benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Date:   Tue, 08 Feb 2022 18:03:58 -0800
-In-Reply-To: <124b72fd0751d7f37c64dd517d386db38cf8c189.1644287860.git.yang.guang5@zte.com.cn>
-References: <124b72fd0751d7f37c64dd517d386db38cf8c189.1644287860.git.yang.guang5@zte.com.cn>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Tue, 8 Feb 2022 20:54:51 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C02C06157B;
+        Tue,  8 Feb 2022 17:54:49 -0800 (PST)
+Received: from dggeme754-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JtjWb2qZczZfNF;
+        Wed,  9 Feb 2022 09:50:35 +0800 (CST)
+Received: from huawei.com (10.175.104.170) by dggeme754-chm.china.huawei.com
+ (10.3.19.100) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.21; Wed, 9
+ Feb 2022 09:54:46 +0800
+From:   Zhipeng Xie <xiezhipeng1@huawei.com>
+To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <jolsa@redhat.com>, <namhyung@kernel.org>
+CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <xiezhipeng1@huawei.com>, <xiexiuqi@huawei.com>,
+        <fanwentao@huawei.com>
+Subject: [PATCH v2] perf/core: Fix perf_mmap fail when CONFIG_PERF_USE_VMALLOC enabled
+Date:   Wed, 9 Feb 2022 09:54:17 -0500
+Message-ID: <20220209145417.6495-1-xiezhipeng1@huawei.com>
+X-Mailer: git-send-email 2.18.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: iqs1qxbfo9mznhfqx76ia7kbcdqcigeo
-X-Rspamd-Server: rspamout01
-X-Rspamd-Queue-Id: 5104430
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18ty/e3+hs8eD8Zb+lkmqGKEYhRakpImEY=
-X-HE-Tag: 1644372223-671604
+Content-Type: text/plain
+X-Originating-IP: [10.175.104.170]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggeme754-chm.china.huawei.com (10.3.19.100)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-09 at 08:39 +0800, davidcomponentone@gmail.com wrote:
-> From: Yang Guang <yang.guang5@zte.com.cn>
-[]
-> Use sysfs_emit instead of scnprintf or sprintf makes more sense.
-[]
-> diff --git a/drivers/hid/hid-lenovo.c b/drivers/hid/hid-lenovo.c
-[]
-> @@ -442,7 +442,7 @@ static ssize_t attr_sensitivity_show_cptkbd(struct device *dev,
->  	struct hid_device *hdev = to_hid_device(dev);
->  	struct lenovo_drvdata *cptkbd_data = hid_get_drvdata(hdev);
->  
-> -	return snprintf(buf, PAGE_SIZE, "%u\n",
-> +	return sysfs_emit(buf, "%u\n",
->  		cptkbd_data->sensitivity);
+This problem can be reproduced with CONFIG_PERF_USE_VMALLOC enabled on both
+x86_64 and aarch64 arch when using sysdig -B(using ebpf)[1].
+sysdig -B works fine after rebuilding the kernel with CONFIG_PERF_USE_VMALLOC
+disabled.
 
-Please rewrap lines to 80 columns where reasonable.
+I tracked it down to the if condition event->rb->nr_pages != nr_pages in
+perf_mmap is true when CONFIG_PERF_USE_VMALLOC is enabled where
+event->rb->nr_pages = 1 and nr_pages = 2048 resulting perf_mmap to return
+-EINVAL.This is because when CONFIG_PERF_USE_VMALLOC is enabled, rb->nr_pages
+is always equal to 1.
 
-	return sysfs_emit(buf, "%u\n", cptkbd_data->sensitivity);
+Arch with CONFIG_PERF_USE_VMALLOC enabled by default:
+	arc/arm/csky/mips/sh/sparc/xtensa
+Arch with CONFIG_PERF_USE_VMALLOC disabled by default:
+	x86_64/aarch64/...
 
-[]
-> @@ -723,7 +723,7 @@ static ssize_t attr_sensitivity_show_tpkbd(struct device *dev,
->  	struct hid_device *hdev = to_hid_device(dev);
->  	struct lenovo_drvdata *data_pointer = hid_get_drvdata(hdev);
->  
-> -	return snprintf(buf, PAGE_SIZE, "%u\n",
-> +	return sysfs_emit(buf, "%u\n",
->  		data_pointer->sensitivity);
->  }
->  
-> @@ -752,7 +752,7 @@ static ssize_t attr_press_speed_show_tpkbd(struct device *dev,
->  	struct hid_device *hdev = to_hid_device(dev);
->  	struct lenovo_drvdata *data_pointer = hid_get_drvdata(hdev);
->  
-> -	return snprintf(buf, PAGE_SIZE, "%u\n",
-> +	return sysfs_emit(buf, "%u\n",
->  		data_pointer->press_speed);
+Fix this problem by using data_page_nr.
 
-etc...
+[1] https://github.com/draios/sysdig
 
+Signed-off-by: Zhipeng Xie <xiezhipeng1@huawei.com>
+---
+ kernel/events/core.c        | 2 +-
+ kernel/events/internal.h    | 5 +++++
+ kernel/events/ring_buffer.c | 5 -----
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 57c7197838db..370292effd32 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -6352,7 +6352,7 @@ static int perf_mmap(struct file *file, struct vm_area_struct *vma)
+ again:
+ 	mutex_lock(&event->mmap_mutex);
+ 	if (event->rb) {
+-		if (event->rb->nr_pages != nr_pages) {
++		if (data_page_nr(event->rb) != nr_pages) {
+ 			ret = -EINVAL;
+ 			goto unlock;
+ 		}
+diff --git a/kernel/events/internal.h b/kernel/events/internal.h
+index 082832738c8f..5816c0719dbf 100644
+--- a/kernel/events/internal.h
++++ b/kernel/events/internal.h
+@@ -116,6 +116,11 @@ static inline int page_order(struct perf_buffer *rb)
+ }
+ #endif
+ 
++static int data_page_nr(struct perf_buffer *rb)
++{
++	return rb->nr_pages << page_order(rb);
++}
++
+ static inline unsigned long perf_data_size(struct perf_buffer *rb)
+ {
+ 	return rb->nr_pages << (PAGE_SHIFT + page_order(rb));
+diff --git a/kernel/events/ring_buffer.c b/kernel/events/ring_buffer.c
+index 52868716ec35..fb35b926024c 100644
+--- a/kernel/events/ring_buffer.c
++++ b/kernel/events/ring_buffer.c
+@@ -859,11 +859,6 @@ void rb_free(struct perf_buffer *rb)
+ }
+ 
+ #else
+-static int data_page_nr(struct perf_buffer *rb)
+-{
+-	return rb->nr_pages << page_order(rb);
+-}
+-
+ static struct page *
+ __perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
+ {
+-- 
+2.18.1
 
