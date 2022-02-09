@@ -2,98 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D37C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E902EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:50:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238419AbiBIRt0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 12:49:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47060 "EHLO
+        id S238461AbiBIRuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 12:50:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238478AbiBIRtO (ORCPT
+        with ESMTP id S231911AbiBIRut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 12:49:14 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20BE6C05CB82
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:49:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644428957; x=1675964957;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=UOUACCmc6ZSeIBWc/lGIpGPqTjbY/sikTiknQS2V6T8=;
-  b=EAIJ7FCsLtxW9chPLH774Djbn6aXhDhtnQV5o3xqS73CBNi0QIrNjYvt
-   wD+x9V62xhFa9Zz0u6WRSgAHBdVPVLV6fCBhSLgTq8mUeCxcrmU8vOU7p
-   zfC/VQdWQjO+oGFzfjAyfVZnjqXp2MfiPZY5EItsTJlbS0AD8v4RbwWCh
-   5EvcbE2fCjZUbbZmhe0U8/T3FER1+y0FGpNFErdsai1cuKcB9iha2Kc32
-   x6fx6hAuQ7hRUIeX1FRLgUNZlES73GmgUeXwOVv1ZI7hg+ChOPeMqi1i3
-   uxcVWArNFQe3JAgrMZCFt3H1O7PLc20V73l5eRK+Us28PxVTyjHCeMIV6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="249034334"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="249034334"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 09:49:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="633310153"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 09 Feb 2022 09:49:13 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 9BD17107; Wed,  9 Feb 2022 19:49:28 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Joerg Roedel <jroedel@suse.de>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc:     David Woodhouse <dwmw2@infradead.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] iommu/vt-d: Don't cast parameter in for_each_set_bit()
-Date:   Wed,  9 Feb 2022 19:49:13 +0200
-Message-Id: <20220209174913.4319-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 9 Feb 2022 12:50:49 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3F4C0613C9;
+        Wed,  9 Feb 2022 09:50:52 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id r27so3269819oiw.4;
+        Wed, 09 Feb 2022 09:50:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=gC34qLnBgCo9feYyVVLxVtmeO/7MUjN69gDKe+4Rb2M=;
+        b=WCaMTO/bVpIwPYXwn07zmiZRhVh+LUzR3Lgf5RQHB/KQmovntZcaMMgSlXrfhU24fg
+         EZll0YoCRoztDvcboG4AN9lY/ciwKtZ0QxPd02X9uNUqzzu/zrPd2lE3/zpqrW/AGqkO
+         1mTdwHbZFhFMuak5shCCiDof/pvJ68rkaQDMtma0Oc7QZFemqBqlhWSRnjZJZZjxeVI8
+         H71fh1wlGqdVQcFsDZYi77HS7BcRVmvy310Wza+K6xO5sIMmjh5Omp1hb3R9qm5iqGS3
+         lXo/bvpyTiGvEN6nCECHb8f/MoicGdobyI2LHXDp5jN3fcwzxj9FZk3bEAcbJdi6vIgT
+         oeDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=gC34qLnBgCo9feYyVVLxVtmeO/7MUjN69gDKe+4Rb2M=;
+        b=2FTTpdMUMUm18cByYq+7JbjkMlBsGt3Kxh35CUsQ5G8AZlSnqSTob53KU6FLTDeqsb
+         ArC34EDqZh6V8WLmvFe/kWHDeB3v2ghTZerkodc1oXqIukimAaZTHOjb/TVR3ybvN+CD
+         hK1CYKVvL/rsPtE0UG4H8ILFtkdTtYwhKky6scu1ARuvw1eddwn4Ot2Q2c1xRFxlFqpq
+         z40PRFP9baWt8JXH6zsXjiEZgyIGL1doRmt4nc/yOWwH5+mjp8IG7ekKJewFrhsmXFxo
+         KO8T1JbDuAOkhH1XVyjHODL9QqYUsd5JTZdsbh5XQ1PzVfygcB4WVKsLEDj7vz1gKdeU
+         EPZw==
+X-Gm-Message-State: AOAM5317kKU54a/dgBIm85TmmEdo/o3jVNMZPem09CoAzcM19Fb1RpNl
+        qpuK7fVaA+l83fcS+APSLgM=
+X-Google-Smtp-Source: ABdhPJxcWkHWNFQS6nhcBDl7n7JPql/gG7nO3d6ZkEP/oMjOboygk886qnKhgGisxAYVK2CuIUGkLQ==
+X-Received: by 2002:a05:6808:1590:: with SMTP id t16mr1761606oiw.232.1644429051634;
+        Wed, 09 Feb 2022 09:50:51 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id r41sm6107035oap.2.2022.02.09.09.50.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 09:50:51 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <e2aec7c6-2d73-6446-89c9-797850f9402f@roeck-us.net>
+Date:   Wed, 9 Feb 2022 09:50:49 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Potin Lai <potin.lai@quantatw.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Patrick Williams <patrick@stwcx.xyz>
+References: <20220208082026.4855-1-potin.lai@quantatw.com>
+ <20220208112226.9108-1-potin.lai@quantatw.com>
+ <20220208112226.9108-3-potin.lai@quantatw.com>
+ <1acc1733-da53-6255-5cad-15f79850f44f@roeck-us.net>
+ <fed6bad9-bf9b-90b5-57fd-083401f6c990@quantatw.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v2 2/2] usb: typec: fusb302: add support of
+ supported_pd_rev
+In-Reply-To: <fed6bad9-bf9b-90b5-57fd-083401f6c990@quantatw.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While in this particular case it would not be a (critical) issue,
-the pattern itself is bad and error prone in case the location
-of the parameter is changed.
+On 2/8/22 19:34, Potin Lai wrote:
+> 
+> Guenter Roeck 於 2022/2/8 下午 11:22 寫道:
+>> On 2/8/22 03:22, Potin Lai wrote:
+>>> Add support for passing supported PD rev to TCPM.
+>>> If "supported-pd-rev" property exist, then return supported_pd_rev as
+>>> defined value in DTS, otherwise return PD_MAX_REV
+>>>
+>>> Example of DTS:
+>>>
+>>> fusb302: typec-portc@22 {
+>>>      compatible = "fcs,fusb302";
+>>>      reg = <0x22>;
+>>>      ...
+>>>      supported-pd-rev=<1>; // PD_REV20
+>>>      ...
+>>> };
+>>>
+>>
+>> The new property needs to be documented. However, I am not entirely sure
+>> I understand why it is needed. Wouldn't the supported PD revision
+>> be a chip (fusb302) specific constant ? If so, why does it need a
+>> devicetree property ? I think that needs some additional explanation.
+>>
+>> Thanks,
+>> Guenter
+>>
+> 
+> My initially intend was adding flexibility for developer to decided which PD revision
+> they want to use for negotiation.
+> 
 
-Don't cast parameter to unsigned long pointer in for_each_set_bit().
-Instead copy to a local variable on stack of a proper type and use.
+I may be missing something, but I don't think that "flexibility for developer
+to decide which PD revision they want to use for negotiation" is entirely appropriate.
+This should be a chip property, not something a developer should decide. As written,
+the code does accept PC version 3 for FUSB302 by default, which seems odd and unusual.
+If the chip supports PD version 3, why artificially limit it to earlier PD revisions ?
 
-Fixes: 6ee1b77ba3ac ("iommu/vt-d: Add svm/sva invalidate function")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+I think this requires a detailed description of the use case. Is fusb302 indeed not able
+to support a specific version of the power delivery specification ? If yes,
+what is the limitation, and why would it need to be configurable with a devicetree
+property ?
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 92fea3fbbb11..777e81b8f4f5 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4973,6 +4973,7 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	struct device_domain_info *info;
- 	struct intel_iommu *iommu;
-+	unsigned long cache_bits;
- 	unsigned long flags;
- 	int cache_type;
- 	u8 bus, devfn;
-@@ -5008,9 +5009,8 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
- 		size = to_vtd_size(inv_info->granu.addr_info.granule_size,
- 				   inv_info->granu.addr_info.nb_granules);
- 
--	for_each_set_bit(cache_type,
--			 (unsigned long *)&inv_info->cache,
--			 IOMMU_CACHE_INV_TYPE_NR) {
-+	cache_bits = inv_info->cache;
-+	for_each_set_bit(cache_type, &cache_bits, IOMMU_CACHE_INV_TYPE_NR) {
- 		int granu = 0;
- 		u64 pasid = 0;
- 		u64 addr = 0;
--- 
-2.34.1
+Thanks,
+Guenter
+
+> I saw your reply in another patch,  I agree with you, it will be simple and consistent if
+> move "supported-pd-rev" to tcpm fwnode as other capabilities.
+> 
+> Just want to double confirm, is "usb-connector.yaml" right place to put documentation
+> if adding "supported-pd-rev" in fwnode?
+> 
+> Thanks,
+> Potin
+> 
+>>> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
+>>> ---
+>>>   drivers/usb/typec/tcpm/fusb302.c | 20 ++++++++++++++++++++
+>>>   1 file changed, 20 insertions(+)
+>>>
+>>> diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
+>>> index 72f9001b0792..8cff92d58b96 100644
+>>> --- a/drivers/usb/typec/tcpm/fusb302.c
+>>> +++ b/drivers/usb/typec/tcpm/fusb302.c
+>>> @@ -109,6 +109,9 @@ struct fusb302_chip {
+>>>       enum typec_cc_status cc2;
+>>>       u32 snk_pdo[PDO_MAX_OBJECTS];
+>>>   +    /* supported pd rev */
+>>> +    u32 supported_pd_rev;
+>>> +
+>>>   #ifdef CONFIG_DEBUG_FS
+>>>       struct dentry *dentry;
+>>>       /* lock for log buffer access */
+>>> @@ -1056,6 +1059,13 @@ static int tcpm_pd_transmit(struct tcpc_dev *dev, enum tcpm_transmit_type type,
+>>>       return ret;
+>>>   }
+>>>   +static u32 tcpm_supported_pd_rev(struct tcpc_dev *dev)
+>>> +{
+>>> +    struct fusb302_chip *chip = container_of(dev, struct fusb302_chip,
+>>> +                         tcpc_dev);
+>>> +    return chip->supported_pd_rev;
+>>> +}
+>>> +
+>>>   static enum typec_cc_status fusb302_bc_lvl_to_cc(u8 bc_lvl)
+>>>   {
+>>>       if (bc_lvl == FUSB_REG_STATUS0_BC_LVL_1230_MAX)
+>>> @@ -1129,6 +1139,7 @@ static void init_tcpc_dev(struct tcpc_dev *fusb302_tcpc_dev)
+>>>       fusb302_tcpc_dev->set_roles = tcpm_set_roles;
+>>>       fusb302_tcpc_dev->start_toggling = tcpm_start_toggling;
+>>>       fusb302_tcpc_dev->pd_transmit = tcpm_pd_transmit;
+>>> +    fusb302_tcpc_dev->supported_pd_rev = tcpm_supported_pd_rev;
+>>>   }
+>>>     static const char * const cc_polarity_name[] = {
+>>> @@ -1683,6 +1694,7 @@ static int fusb302_probe(struct i2c_client *client,
+>>>       struct fusb302_chip *chip;
+>>>       struct i2c_adapter *adapter = client->adapter;
+>>>       struct device *dev = &client->dev;
+>>> +    struct device_node *np = dev->of_node;
+>>>       const char *name;
+>>>       int ret = 0;
+>>>   @@ -1756,6 +1768,14 @@ static int fusb302_probe(struct i2c_client *client,
+>>>           dev_err(dev, "cannot request IRQ for GPIO Int_N, ret=%d", ret);
+>>>           goto tcpm_unregister_port;
+>>>       }
+>>> +
+>>> +    if (of_property_read_u32(np, "supported-pd-rev",
+>>> +                &chip->supported_pd_rev) < 0) {
+>>> +        chip->supported_pd_rev = PD_MAX_REV;
+>>> +    } else if (chip->supported_pd_rev > PD_MAX_REV) {
+>>> +        chip->supported_pd_rev = PD_MAX_REV;
+>>> +    }
+>>
+>> The else part is also checked in the tcpm code and thus seems
+>> to be redundant.
+>>
+>>> +
+>>>       enable_irq_wake(chip->gpio_int_n_irq);
+>>>       i2c_set_clientdata(client, chip);
+>>
 
