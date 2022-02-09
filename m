@@ -2,125 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 085CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 876C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241187AbiBISwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:52:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        id S238042AbiBISwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:52:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241256AbiBISuz (ORCPT
+        with ESMTP id S241343AbiBISu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:50:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE557C03E941;
-        Wed,  9 Feb 2022 10:46:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8367BB82385;
-        Wed,  9 Feb 2022 18:46:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B4E9C340E7;
-        Wed,  9 Feb 2022 18:46:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432390;
-        bh=M3g5niZDmS2QGRzOcEgr6nK0pvMXu9h0RVKKGiXxNIM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ELE5wEbTYfhH08ruRYQI1lPqk0gZsjO8tMHxUHCBcByr/EiUIC83afh2s+7V3UgrE
-         zHchVWvKJQmN9rjs+cTlq6FWmoBxkep2yhv2ElF84h2d2zT0g8u9OG8+JXUaXDKM3O
-         l69YoDKwFGQJ4iICA5WZBaBEajfEJ86FFY+00xr2uHK2w8mSE+zSTzT8qe6l3VbY6M
-         jw0ouXiA91LmmpsbSEfpDJQlLbr8sEyCrqAL2uHFCH6kXLpLI+6WvO4xqhMYm86pr6
-         sJ6FWfZwG9ip/UdfWScw3BpSW34uq46eic3/RRUuE2FNL4hETqrvtmV+4x3HR1gGi8
-         R9YGJO9SaEnQg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Darrick J. Wong" <djwong@kernel.org>, Jan Kara <jack@suse.cz>,
-        Christoph Hellwig <hch@lst.de>,
-        Christian Brauner <brauner@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, viro@zeniv.linux.org.uk,
-        linux-fsdevel@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 6/7] vfs: make freeze_super abort when sync_filesystem returns error
-Date:   Wed,  9 Feb 2022 13:45:49 -0500
-Message-Id: <20220209184550.48481-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209184550.48481-1-sashal@kernel.org>
-References: <20220209184550.48481-1-sashal@kernel.org>
+        Wed, 9 Feb 2022 13:50:59 -0500
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0114C050CCB
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 10:47:39 -0800 (PST)
+Received: by mail-ot1-x32e.google.com with SMTP id o9-20020a9d7189000000b0059ee49b4f0fso2175767otj.2
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 10:47:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=k7inhu8PhMJK6yGxgiDvgZaOGdJa0rrk9ukESAEO+Jo=;
+        b=oMBnkAtbT2pyt87Qd+fh7ucVAOoZ03oqSs3/0kWtRhsWcb/tRHhTPKH2SMhVaiz4EC
+         nhpkIVwjaOl6FfTH/GasB2aGxssA6hfaiuHLEUkr4HckBGvY8Ipd2XYKEu8AKm/rWLVM
+         XCEJqZi4Ex/VQkRDsJCrJxP4vjp5UKrVTSxD+DRvRiwDuAgtfDA72GtJKVIfolZEkoaV
+         iWqFXkB+oBNa/El48FhJCRBdLvHrLaRMI8Jt1H4HYasV+oGfyRRArMg+UUK3tzw/UVwK
+         lYPOWzIXFkGJiRBMwcc4ZQeXJyJhVIhR4PvIVv9TDKwjqKF1P9qHHB/llsE0ZNV52pA7
+         KXVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=k7inhu8PhMJK6yGxgiDvgZaOGdJa0rrk9ukESAEO+Jo=;
+        b=GWpc8BAajYfgXBQI10dGn/jNUMAii0nUJR44UED/RQSjZDsJPbdjhF9hx13MVZPw1R
+         CqznUvzfA8i/4DX3gqpYGDBSeC2olYKRphY8wqdO5cd5HkwzrsVZDj4TytMkgv8dl8VP
+         T8qym+gmjglRqmesCRWESmNp5XkeCRYKedaqNAhzBWMo5NR55Fji1uU/J8VKLYrM2YNZ
+         4LEzehhAfHj4I+1zUK7D6dpT8xICeWf6S6jzmgDH0N0Y9VVgp76OT1y+/ldW75QDWZQU
+         pNNbjxgV1PK7HUWgp6J/NLIhVdwTDEq36pfzmByNXA4G8tQMTocrBqIU93MCDGmMm8Y9
+         SVHw==
+X-Gm-Message-State: AOAM533VDXyrluMsMJsTQcWDQwvKt3DNxEnrIury9JLSWUiGbmzZEIcr
+        rvP4ZoFSZAwhi5+MgrdJAmC6cLjWrdg27kRdmNsdcw==
+X-Google-Smtp-Source: ABdhPJxegeSwNRY/UzyVE3AOL7f4B2uatLSpPxfgyc7Lzsn5m1x7AZM7n0VXFCKbmLY3hSN9+3M3ZbZFH7gt2+xbxHY=
+X-Received: by 2002:a9d:4e03:: with SMTP id p3mr1530696otf.299.1644432458616;
+ Wed, 09 Feb 2022 10:47:38 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220117085307.93030-1-likexu@tencent.com> <20220117085307.93030-3-likexu@tencent.com>
+ <20220202144308.GB20638@worktop.programming.kicks-ass.net>
+ <CALMp9eRBOmwz=mspp0m5Q093K3rMUeAsF3vEL39MGV5Br9wEQQ@mail.gmail.com>
+ <YgO/3usazae9rCEh@hirez.programming.kicks-ass.net> <69c0fc41-a5bd-fea9-43f6-4724368baf66@intel.com>
+In-Reply-To: <69c0fc41-a5bd-fea9-43f6-4724368baf66@intel.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Wed, 9 Feb 2022 10:47:27 -0800
+Message-ID: <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com>
+Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
+ perfmon_event_map[] directly
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Like Xu <like.xu.linux@gmail.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>,
+        Stephane Eranian <eranian@google.com>,
+        David Dunn <daviddunn@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Darrick J. Wong" <djwong@kernel.org>
+On Wed, Feb 9, 2022 at 7:41 AM Dave Hansen <dave.hansen@intel.com> wrote:
+>
+> On 2/9/22 05:21, Peter Zijlstra wrote:
+> > On Wed, Feb 02, 2022 at 02:35:45PM -0800, Jim Mattson wrote:
+> >> 3) TDX is going to pull the rug out from under us anyway. When the TDX
+> >> module usurps control of the PMU, any active host counters are going
+> >> to stop counting. We are going to need a way of telling the host perf
+> >> subsystem what's happening, or other host perf clients are going to
+> >> get bogus data.
+> > That's not acceptible behaviour. I'm all for unilaterally killing any
+> > guest that does this.
+>
+> I'm not sure where the "bogus data" comes or to what that refers
+> specifically.  But, the host does have some level of control:
 
-[ Upstream commit 2719c7160dcfaae1f73a1c0c210ad3281c19022e ]
+I was referring to gaps in the collection of data that the host perf
+subsystem doesn't know about if ATTRIBUTES.PERFMON is set for a TDX
+guest. This can potentially be a problem if someone is trying to
+measure events per unit of time.
 
-If we fail to synchronize the filesystem while preparing to freeze the
-fs, abort the freeze.
+> > The host VMM controls whether a guest TD can use the performance
+> > monitoring ISA using the TD=E2=80=99s ATTRIBUTES.PERFMON bit...
+>
+> So, worst-case, we don't need to threaten to kill guests.  The host can
+> just deny access in the first place.
+>
+> I'm not too picky about what the PMU does, but the TDX behavior didn't
+> seem *that* onerous to me.  The gory details are all in "On-TD
+> Performance Monitoring" here:
+>
+> > https://www.intel.com/content/dam/develop/external/us/en/documents/tdx-=
+module-1.0-public-spec-v0.931.pdf
+>
+> My read on it is that TDX host _can_ cede the PMU to TDX guests if it
+> wants.  I assume the context-switching model Jim mentioned is along the
+> lines of what TDX is already doing on host<->guest transitions.
 
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/super.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+Right. If ATTRIBUTES.PERFMON is set, then "perfmon state is
+context-switched by the Intel TDX module across TD entry and exit
+transitions." Furthermore, the VMM has no access to guest perfmon
+state.
 
-diff --git a/fs/super.c b/fs/super.c
-index 377c439477b74..20e9cd2b6488d 100644
---- a/fs/super.c
-+++ b/fs/super.c
-@@ -1298,11 +1298,9 @@ static void lockdep_sb_freeze_acquire(struct super_block *sb)
- 		percpu_rwsem_acquire(sb->s_writers.rw_sem + level, 0, _THIS_IP_);
- }
- 
--static void sb_freeze_unlock(struct super_block *sb)
-+static void sb_freeze_unlock(struct super_block *sb, int level)
- {
--	int level;
--
--	for (level = SB_FREEZE_LEVELS - 1; level >= 0; level--)
-+	for (level--; level >= 0; level--)
- 		percpu_up_write(sb->s_writers.rw_sem + level);
- }
- 
-@@ -1373,7 +1371,14 @@ int freeze_super(struct super_block *sb)
- 	sb_wait_write(sb, SB_FREEZE_PAGEFAULT);
- 
- 	/* All writers are done so after syncing there won't be dirty data */
--	sync_filesystem(sb);
-+	ret = sync_filesystem(sb);
-+	if (ret) {
-+		sb->s_writers.frozen = SB_UNFROZEN;
-+		sb_freeze_unlock(sb, SB_FREEZE_PAGEFAULT);
-+		wake_up(&sb->s_writers.wait_unfrozen);
-+		deactivate_locked_super(sb);
-+		return ret;
-+	}
- 
- 	/* Now wait for internal filesystem counter */
- 	sb->s_writers.frozen = SB_FREEZE_FS;
-@@ -1385,7 +1390,7 @@ int freeze_super(struct super_block *sb)
- 			printk(KERN_ERR
- 				"VFS:Filesystem freeze failed\n");
- 			sb->s_writers.frozen = SB_UNFROZEN;
--			sb_freeze_unlock(sb);
-+			sb_freeze_unlock(sb, SB_FREEZE_FS);
- 			wake_up(&sb->s_writers.wait_unfrozen);
- 			deactivate_locked_super(sb);
- 			return ret;
-@@ -1437,7 +1442,7 @@ int thaw_super(struct super_block *sb)
- 	}
- 
- 	sb->s_writers.frozen = SB_UNFROZEN;
--	sb_freeze_unlock(sb);
-+	sb_freeze_unlock(sb, SB_FREEZE_FS);
- out:
- 	wake_up(&sb->s_writers.wait_unfrozen);
- 	deactivate_locked_super(sb);
--- 
-2.34.1
-
+If you're saying that setting this bit is unacceptable, then perhaps
+the TDX folks need to redesign their in-guest PMU support.
