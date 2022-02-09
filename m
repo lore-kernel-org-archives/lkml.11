@@ -2,95 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD92FC43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3E7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239313AbiBISeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:34:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
+        id S239441AbiBISeF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:34:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239312AbiBISdw (ORCPT
+        with ESMTP id S239394AbiBISd7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:33:52 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41B5C05CB89
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 10:33:53 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id bx31so4772000ljb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 10:33:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/VHbBhh1Q5BW0eHT7ODuGdUrQwpBM3ZeS/JzBlzS9jg=;
-        b=keJhsHcEm7hotnsbHxViXXol0pALn6nLuo0isXo7S9YQJwQgaJ+dOc46DYLg9W81MY
-         7JnC/TE9t/lDp8oUoJNnkHs6z9sCvhRMWJJyZ5kDtS8htfmpBWaVFwYi31IZLLck9pe9
-         KyxGtXlAM4bvJjDmdgl38SSajtMIvXGZooE///ovgxOFXLtZT3GlvjzVqMOCkcC0IaCV
-         gFJ9mIHg/89NDvwdM+vwb0OASB/94Lx8ladYZJ6DRYZOm0FDiELrnEfKGUtX2vyAf3jN
-         4V5QzUhEa1ccxg75bk2osR2BRZUS6eOJ+2sw61GkcFsXUv/dfWlZ8mLMgHNctZr+4b+C
-         mflA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/VHbBhh1Q5BW0eHT7ODuGdUrQwpBM3ZeS/JzBlzS9jg=;
-        b=zlVY6HwK+9ToF6ZAihDsqFsX5Pxu++pE576/+Gb+IUe13RODm0kg2wETwbxfsahjDo
-         5rvVC1X8FxpuaQufz8SytlU6ZWOBdnCMoOc+HgoQXa+eQ9p+t8xllbYK2uGorH/kNDdn
-         5dA3qIWkgfp3TvAjlo3gnEsySkMeEu+uZvWzD0m3C2qLn/arPO19WwDNUDJLTrqpKTMs
-         VJl2PL4BsH3SWEivsZUVLmIwRKN88U/tG3nB1zqwMs8VyxsmVRfu7YRwJOYz4+3hVQki
-         R8lWe93PHSgJUXlXsn6J15ZJdvDgeVfCYQD0obz3nz8qThDZZIY9xIOH4w1cIZ3dvZ7v
-         LqQQ==
-X-Gm-Message-State: AOAM532Mf2vet9MyJBW9zU+1kWAJfYGY5U9sM1+Vw7N2R7nS+XeACd70
-        ORd3Dh8ZWfxiIFVuOuWrN5Y=
-X-Google-Smtp-Source: ABdhPJxh9nYl2aI5spHPNmfjqz/wXlDX3E9kOtM5a728QIC8T9TyOZy7Wzyxsh3VLJ0ATjuEK4fl5w==
-X-Received: by 2002:a2e:bc1c:: with SMTP id b28mr2337728ljf.40.1644431632033;
-        Wed, 09 Feb 2022 10:33:52 -0800 (PST)
-Received: from [192.168.1.11] ([217.117.245.154])
-        by smtp.gmail.com with ESMTPSA id u21sm2606127ljo.81.2022.02.09.10.33.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 10:33:51 -0800 (PST)
-Message-ID: <be19eaee-2b90-d0c3-c80c-d8fb379bdcf3@gmail.com>
-Date:   Wed, 9 Feb 2022 21:33:50 +0300
+        Wed, 9 Feb 2022 13:33:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D33C05CB8E;
+        Wed,  9 Feb 2022 10:33:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E0CE615F9;
+        Wed,  9 Feb 2022 18:33:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CAE3C340E9;
+        Wed,  9 Feb 2022 18:33:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644431636;
+        bh=qpKXmq3SY6mhExkKTzKyH2WV4QpU0WkZoSqvrwQR5fc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=D1IvxnD77uiGiLb766PHWYdSsPW/hTQ7kdp72TgCVE8xYtIkQcDsvYS+QCzvTk5FO
+         E/2WG9+BXvxSbFzjw1Qck81ScT4OTs1DIVfHPRnK3hmjJtBiMJxks98rGZ6FLqa/d+
+         xIqi7nUKdtdPWQRstqI4DkskCDQEDkUDnIoEPxzfTcHrXG9LD5R+9VpkIfsrUSd0EM
+         5gDsmX/nV82zZL/Bf8sKpzubWhCa4P2tPTmJnSnmV7mA/ls7n5bFFPPnkz17rJ2cjG
+         5PBHKcI3FmC7Ij7gcy4kjuL1RWx1iJtfIJJXf3qpDlPGtA1rXi9XYhj69E8Y/VX1AB
+         AHdi//oM1Z0yw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Li Zhijian <lizhijian@cn.fujitsu.com>,
+        yang xu <xuyang2018.jy@cn.fujitsu.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, keescook@chromium.org,
+        shuah@kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 07/42] kselftest: signal all child processes
+Date:   Wed,  9 Feb 2022 13:32:39 -0500
+Message-Id: <20220209183335.46545-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209183335.46545-1-sashal@kernel.org>
+References: <20220209183335.46545-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] staging: r8188eu: keep the success path and error path
- separate
-Content-Language: en-US
-To:     Vihas Makwana <makvihas@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Martin Kaiser <martin@kaiser.cx>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220209174819.5068-1-makvihas@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220209174819.5068-1-makvihas@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vihas,
+From: Li Zhijian <lizhijian@cn.fujitsu.com>
 
-On 2/9/22 20:48, Vihas Makwana wrote:
-> -exit:
-> +	if (pnetdev)
-> +		rtw_free_netdev(pnetdev);
-> +	else if (padapter)
-> +		vfree(padapter);
-> +	padapter = NULL;
-> +
->   	return padapter;
->   }
+[ Upstream commit 92d25637a3a45904292c93f1863c6bbda4e3e38f ]
 
-Why just not `return NULL`?
+We have some many cases that will create child process as well, such as
+pidfd_wait. Previously, we will signal/kill the parent process when it
+is time out, but this signal will not be sent to its child process. In
+such case, if child process doesn't terminate itself, ksefltest framework
+will hang forever.
 
+Here we group all its child processes so that kill() can signal all of
+them in timeout.
 
+Fixed change log: Shuah Khan <skhan@linuxfoundation.org>
 
+Suggested-by: yang xu <xuyang2018.jy@cn.fujitsu.com>
+Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/kselftest_harness.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-With regards,
-Pavel Skripkin
+diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
+index 79a182cfa43ad..78e59620d28de 100644
+--- a/tools/testing/selftests/kselftest_harness.h
++++ b/tools/testing/selftests/kselftest_harness.h
+@@ -875,7 +875,8 @@ static void __timeout_handler(int sig, siginfo_t *info, void *ucontext)
+ 	}
+ 
+ 	t->timed_out = true;
+-	kill(t->pid, SIGKILL);
++	// signal process group
++	kill(-(t->pid), SIGKILL);
+ }
+ 
+ void __wait_for_test(struct __test_metadata *t)
+@@ -985,6 +986,7 @@ void __run_test(struct __fixture_metadata *f,
+ 		ksft_print_msg("ERROR SPAWNING TEST CHILD\n");
+ 		t->passed = 0;
+ 	} else if (t->pid == 0) {
++		setpgrp();
+ 		t->fn(t, variant);
+ 		if (t->skip)
+ 			_exit(255);
+-- 
+2.34.1
+
