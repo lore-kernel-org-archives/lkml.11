@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD35C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48258C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238705AbiBIS6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:58:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59370 "EHLO
+        id S241596AbiBIS6v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:58:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238358AbiBIS5J (ORCPT
+        with ESMTP id S241214AbiBIS5P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:57:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB09C050CCF;
-        Wed,  9 Feb 2022 10:57:12 -0800 (PST)
+        Wed, 9 Feb 2022 13:57:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47872C05CB86;
+        Wed,  9 Feb 2022 10:57:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DBA93B82378;
-        Wed,  9 Feb 2022 18:57:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54D8EC340E7;
-        Wed,  9 Feb 2022 18:57:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D961C617F4;
+        Wed,  9 Feb 2022 18:57:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82C38C340ED;
+        Wed,  9 Feb 2022 18:57:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644433029;
-        bh=HdxsNJrs1dfFv6By4Y8htW+gcjuci9yJxmsfAA5eDYQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lc071oJPHGtBh7Z2zdrHsaDVlydwFMZDFjP+AdyhIc6oa6ehRgyi3B0v0M1NqVlVc
-         yZKoyx6ym+lINULAojQAfnO55d29YUSKkZv503sd3kKfvy6WUsEt4PEkd8/152sU2l
-         CKZohJDqVfxpFoGKelaw0ThXj7zjc3iPM8D+gv7WqAeNDskz/plfGGJixH0zvG43zz
-         YhWBbvGhZ5NcjFmCt5l/X2wvd8F2QjxZgttMPtb/GDSUnfeJPckKeJg7Dp6Z/Cp6es
-         KEwtSyzgaQKXvsKIRO5QDEp0wLC9iMrf8lljbWKXVIHyp0jrTA5Q2l8tGwJutYdDHJ
-         4RxW4M0d5ri0w==
+        s=k20201202; t=1644433037;
+        bh=X/BFUlpcGhyLwAO9j1bzq1Q46bsIUcjSuLw8ydqvLzM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=D1eIfu373ueOezhWGM5flarCsY7D3exJJW9cGm2B/azxD54sdfc2fDQu/NLycZ80Q
+         U1+hGI7RgbsleC5dTbzB1wAPE/VtJF21+Gm1vPGoksaNKhCdOh5iHDhZ/cpoMUkE24
+         vx+Yd6yx+9NwA+Uy+ADvjntfpRfs2C9cU2CUZ6VR0z6b82u3Jk1Dt62tI2eZR0EDEE
+         0fZrgPCAQ2pTdn/wytJfeJaWp8yFDwOmfcCdSqjoD9aHu8qNcEGotY50wn4gMGIteL
+         f42K1dMY4O475Z+5Tliaw65Ow8zP5bznov7rQSzpgOs4Ew/YjQoTphZL9DlGTuVChJ
+         R8JEYPv89ocaQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Alexander Graf <graf@amazon.de>,
+Cc:     Hou Wenlong <houwenlong93@linux.alibaba.com>,
+        Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.15 7/8] KVM: VMX: Set vmcs.PENDING_DBG.BS on #DB in STI/MOVSS blocking shadow
-Date:   Wed,  9 Feb 2022 13:56:52 -0500
-Message-Id: <20220209185653.48833-7-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.10 1/6] KVM: eventfd: Fix false positive RCU usage warning
+Date:   Wed,  9 Feb 2022 13:57:08 -0500
+Message-Id: <20220209185714.48936-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209185653.48833-1-sashal@kernel.org>
-References: <20220209185653.48833-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,99 +50,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Hou Wenlong <houwenlong93@linux.alibaba.com>
 
-[ Upstream commit b9bed78e2fa9571b7c983b20666efa0009030c71 ]
+[ Upstream commit 6a0c61703e3a5d67845a4b275e1d9d7bc1b5aad7 ]
 
-Set vmcs.GUEST_PENDING_DBG_EXCEPTIONS.BS, a.k.a. the pending single-step
-breakpoint flag, when re-injecting a #DB with RFLAGS.TF=1, and STI or
-MOVSS blocking is active.  Setting the flag is necessary to make VM-Entry
-consistency checks happy, as VMX has an invariant that if RFLAGS.TF is
-set and STI/MOVSS blocking is true, then the previous instruction must
-have been STI or MOV/POP, and therefore a single-step #DB must be pending
-since the RFLAGS.TF cannot have been set by the previous instruction,
-i.e. the one instruction delay after setting RFLAGS.TF must have already
-expired.
+Fix the following false positive warning:
+ =============================
+ WARNING: suspicious RCU usage
+ 5.16.0-rc4+ #57 Not tainted
+ -----------------------------
+ arch/x86/kvm/../../../virt/kvm/eventfd.c:484 RCU-list traversed in non-reader section!!
 
-Normally, the CPU sets vmcs.GUEST_PENDING_DBG_EXCEPTIONS.BS appropriately
-when recording guest state as part of a VM-Exit, but #DB VM-Exits
-intentionally do not treat the #DB as "guest state" as interception of
-the #DB effectively makes the #DB host-owned, thus KVM needs to manually
-set PENDING_DBG.BS when forwarding/re-injecting the #DB to the guest.
+ other info that might help us debug this:
 
-Note, although this bug can be triggered by guest userspace, doing so
-requires IOPL=3, and guest userspace running with IOPL=3 has full access
-to all I/O ports (from the guest's perspective) and can crash/reboot the
-guest any number of ways.  IOPL=3 is required because STI blocking kicks
-in if and only if RFLAGS.IF is toggled 0=>1, and if CPL>IOPL, STI either
-takes a #GP or modifies RFLAGS.VIF, not RFLAGS.IF.
+ rcu_scheduler_active = 2, debug_locks = 1
+ 3 locks held by fc_vcpu 0/330:
+  #0: ffff8884835fc0b0 (&vcpu->mutex){+.+.}-{3:3}, at: kvm_vcpu_ioctl+0x88/0x6f0 [kvm]
+  #1: ffffc90004c0bb68 (&kvm->srcu){....}-{0:0}, at: vcpu_enter_guest+0x600/0x1860 [kvm]
+  #2: ffffc90004c0c1d0 (&kvm->irq_srcu){....}-{0:0}, at: kvm_notify_acked_irq+0x36/0x180 [kvm]
 
-MOVSS blocking can be initiated by userspace, but can be coincident with
-a #DB if and only if DR7.GD=1 (General Detect enabled) and a MOV DR is
-executed in the MOVSS shadow.  MOV DR #GPs at CPL>0, thus MOVSS blocking
-is problematic only for CPL0 (and only if the guest is crazy enough to
-access a DR in a MOVSS shadow).  All other sources of #DBs are either
-suppressed by MOVSS blocking (single-step, code fetch, data, and I/O),
-are mutually exclusive with MOVSS blocking (T-bit task switch), or are
-already handled by KVM (ICEBP, a.k.a. INT1).
+ stack backtrace:
+ CPU: 26 PID: 330 Comm: fc_vcpu 0 Not tainted 5.16.0-rc4+
+ Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x44/0x57
+  kvm_notify_acked_gsi+0x6b/0x70 [kvm]
+  kvm_notify_acked_irq+0x8d/0x180 [kvm]
+  kvm_ioapic_update_eoi+0x92/0x240 [kvm]
+  kvm_apic_set_eoi_accelerated+0x2a/0xe0 [kvm]
+  handle_apic_eoi_induced+0x3d/0x60 [kvm_intel]
+  vmx_handle_exit+0x19c/0x6a0 [kvm_intel]
+  vcpu_enter_guest+0x66e/0x1860 [kvm]
+  kvm_arch_vcpu_ioctl_run+0x438/0x7f0 [kvm]
+  kvm_vcpu_ioctl+0x38a/0x6f0 [kvm]
+  __x64_sys_ioctl+0x89/0xc0
+  do_syscall_64+0x3a/0x90
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-This bug was originally found by running tests[1] created for XSA-308[2].
-Note that Xen's userspace test emits ICEBP in the MOVSS shadow, which is
-presumably why the Xen bug was deemed to be an exploitable DOS from guest
-userspace.  KVM already handles ICEBP by skipping the ICEBP instruction
-and thus clears MOVSS blocking as a side effect of its "emulation".
+Since kvm_unregister_irq_ack_notifier() does synchronize_srcu(&kvm->irq_srcu),
+kvm->irq_ack_notifier_list is protected by kvm->irq_srcu. In fact,
+kvm->irq_srcu SRCU read lock is held in kvm_notify_acked_irq(), making it
+a false positive warning. So use hlist_for_each_entry_srcu() instead of
+hlist_for_each_entry_rcu().
 
-[1] http://xenbits.xenproject.org/docs/xtf/xsa-308_2main_8c_source.html
-[2] https://xenbits.xen.org/xsa/advisory-308.html
-
-Reported-by: David Woodhouse <dwmw2@infradead.org>
-Reported-by: Alexander Graf <graf@amazon.de>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220120000624.655815-1-seanjc@google.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Hou Wenlong <houwenlong93@linux.alibaba.com>
+Message-Id: <f98bac4f5052bad2c26df9ad50f7019e40434512.1643265976.git.houwenlong.hwl@antgroup.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/vmx.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ virt/kvm/eventfd.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 2ab0e997e39fa..44da933a756b3 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -4791,8 +4791,33 @@ static int handle_exception_nmi(struct kvm_vcpu *vcpu)
- 		dr6 = vmx_get_exit_qual(vcpu);
- 		if (!(vcpu->guest_debug &
- 		      (KVM_GUESTDBG_SINGLESTEP | KVM_GUESTDBG_USE_HW_BP))) {
-+			/*
-+			 * If the #DB was due to ICEBP, a.k.a. INT1, skip the
-+			 * instruction.  ICEBP generates a trap-like #DB, but
-+			 * despite its interception control being tied to #DB,
-+			 * is an instruction intercept, i.e. the VM-Exit occurs
-+			 * on the ICEBP itself.  Note, skipping ICEBP also
-+			 * clears STI and MOVSS blocking.
-+			 *
-+			 * For all other #DBs, set vmcs.PENDING_DBG_EXCEPTIONS.BS
-+			 * if single-step is enabled in RFLAGS and STI or MOVSS
-+			 * blocking is active, as the CPU doesn't set the bit
-+			 * on VM-Exit due to #DB interception.  VM-Entry has a
-+			 * consistency check that a single-step #DB is pending
-+			 * in this scenario as the previous instruction cannot
-+			 * have toggled RFLAGS.TF 0=>1 (because STI and POP/MOV
-+			 * don't modify RFLAGS), therefore the one instruction
-+			 * delay when activating single-step breakpoints must
-+			 * have already expired.  Note, the CPU sets/clears BS
-+			 * as appropriate for all other VM-Exits types.
-+			 */
- 			if (is_icebp(intr_info))
- 				WARN_ON(!skip_emulated_instruction(vcpu));
-+			else if ((vmx_get_rflags(vcpu) & X86_EFLAGS_TF) &&
-+				 (vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) &
-+				  (GUEST_INTR_STATE_STI | GUEST_INTR_STATE_MOV_SS)))
-+				vmcs_writel(GUEST_PENDING_DBG_EXCEPTIONS,
-+					    vmcs_readl(GUEST_PENDING_DBG_EXCEPTIONS) | DR6_BS);
+diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+index c2323c27a28b5..518cd8dc390e2 100644
+--- a/virt/kvm/eventfd.c
++++ b/virt/kvm/eventfd.c
+@@ -451,8 +451,8 @@ bool kvm_irq_has_notifier(struct kvm *kvm, unsigned irqchip, unsigned pin)
+ 	idx = srcu_read_lock(&kvm->irq_srcu);
+ 	gsi = kvm_irq_map_chip_pin(kvm, irqchip, pin);
+ 	if (gsi != -1)
+-		hlist_for_each_entry_rcu(kian, &kvm->irq_ack_notifier_list,
+-					 link)
++		hlist_for_each_entry_srcu(kian, &kvm->irq_ack_notifier_list,
++					  link, srcu_read_lock_held(&kvm->irq_srcu))
+ 			if (kian->gsi == gsi) {
+ 				srcu_read_unlock(&kvm->irq_srcu, idx);
+ 				return true;
+@@ -468,8 +468,8 @@ void kvm_notify_acked_gsi(struct kvm *kvm, int gsi)
+ {
+ 	struct kvm_irq_ack_notifier *kian;
  
- 			kvm_queue_exception_p(vcpu, DB_VECTOR, dr6);
- 			return 1;
+-	hlist_for_each_entry_rcu(kian, &kvm->irq_ack_notifier_list,
+-				 link)
++	hlist_for_each_entry_srcu(kian, &kvm->irq_ack_notifier_list,
++				  link, srcu_read_lock_held(&kvm->irq_srcu))
+ 		if (kian->gsi == gsi)
+ 			kian->irq_acked(kian);
+ }
 -- 
 2.34.1
 
