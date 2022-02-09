@@ -2,90 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B445EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD5BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:20:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbiBINRA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 08:17:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
+        id S229927AbiBINUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 08:20:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232620AbiBINQz (ORCPT
+        with ESMTP id S229558AbiBINUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 08:16:55 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C5CC05CBB6
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 05:16:57 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id e16so1687786qtq.6
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 05:16:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=00zXVWqiIIWmqW86EePr+9PjPrQ814Ku4hB+RmWAzVE=;
-        b=O6jcEE5sfFGLsdLvyVYmVvv0eI3/ZISLBScADt5gl3GCiZr4XJsUbvKdbByPitU8aX
-         Xz10avwmXHoXXdNfaBWfCGb2KW90KGZtbURff0EfNlIPOvnTkFp+kknDz8eQrNJg2mIh
-         sK9bINFCmj0UfTLPFKbxdYFDeZIygmZ9Hh+3Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=00zXVWqiIIWmqW86EePr+9PjPrQ814Ku4hB+RmWAzVE=;
-        b=iUY5N79Xv7vX1/QqoNh/P5rvWHSnvU8BqjoqCIL3l4Zp6y9l+KYhXqoGMA7de741uv
-         3W9DHK9DtlwwSPbQxepV/nogL+AQSFgq5aTo565IOxkOBe+OoYykdmr46MLa4rIZVsdj
-         shmLC6dO64e/s4ZOUaMYPa8flJOxj0KxQ+4OjrJTBHTVacFzcYB6OCz3FKQuQa+YyVp2
-         aTlcULjdqtl2S9sbsJRh8zS2jBGMZHFNvHvat1aiFCwDPDZGFcd+v1ixqmPguqPgJQ1S
-         91IUoM/gNJUqptOjxVh3K0f6t2GVaaKrw2dxhK4qGMJYrAZHfC+N3IL+2j5NrfVgeWx7
-         J0+w==
-X-Gm-Message-State: AOAM532jQtCLRQ6MQ/nJwtKlVMpXOqi/ABuUbWklOKOjQalM/y22tuYr
-        T6wcjt1W2r876kK/5wthSVEhSg==
-X-Google-Smtp-Source: ABdhPJyGbmCVNJq7whVXntybKDMHFLHfJgy5dnYQpVdbz5i7W2IQdFcQ6DMilTc6vOjw3UAE86GmZQ==
-X-Received: by 2002:ac8:7f0a:: with SMTP id f10mr1244788qtk.619.1644412616806;
-        Wed, 09 Feb 2022 05:16:56 -0800 (PST)
-Received: from meerkat.local (bras-base-mtrlpq5031w-grc-32-216-209-220-127.dsl.bell.ca. [216.209.220.127])
-        by smtp.gmail.com with ESMTPSA id k20sm9071209qtx.64.2022.02.09.05.16.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 05:16:56 -0800 (PST)
-Date:   Wed, 9 Feb 2022 08:16:54 -0500
-From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>
-Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: Re: [PATCH v2 05/11] KVM: s390: Add optional storage key checking to
- MEMOP IOCTL
-Message-ID: <20220209131654.7txhwrax322rjje2@meerkat.local>
-References: <20220207165930.1608621-1-scgl@linux.ibm.com>
- <20220207165930.1608621-6-scgl@linux.ibm.com>
- <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
- <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
- <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
- <29ac0e5c-f77b-04b2-bbf5-cf5a5ca78921@linux.ibm.com>
+        Wed, 9 Feb 2022 08:20:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927F2C0613C9;
+        Wed,  9 Feb 2022 05:20:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43E08B82144;
+        Wed,  9 Feb 2022 13:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 02228C340EE;
+        Wed,  9 Feb 2022 13:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644412810;
+        bh=XViH5LUsqxeoWkYyHrdYklvq0k90VZt8E17PeZEL9FA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=aQKqfQup9f9CHtDTl9FoADOdI2FqGiGmmJTXPL9RjjMO9MA7ihmWqPBJQKyhP5L1+
+         zVHieWA8b2N5qyTb2USfFGsJYCWjVSfAsegDyO43fO2zezFUlq92J2ARU+TPS/ZoEW
+         enUAyH/ZXLDtMxHvdRShCEYhvk9EGPi/bNqVEXSZ5aFl9vyyXhAUzimvA1GV8lnYfR
+         DdopiQqcIW4aIkn8w7JdRO8lZDsUWxRUYRD0mHOZ9z/6uRMy1uRTrF4i6Q8/2ilHdx
+         eEz0lrFL/1+m9+ErfhtPrK3N7V7mxbIZPKRtJHLzzqZ9Rx8UIB2gwdLl+oDMPgqCaH
+         G/lqcW9LRiFlw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E0E4FE5D07D;
+        Wed,  9 Feb 2022 13:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <29ac0e5c-f77b-04b2-bbf5-cf5a5ca78921@linux.ibm.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next PATCH V2 0/4] Priority flow control support for RVU netdev
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164441280991.17901.900814529553893748.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Feb 2022 13:20:09 +0000
+References: <20220209071519.10403-1-hkelam@marvell.com>
+In-Reply-To: <20220209071519.10403-1-hkelam@marvell.com>
+To:     Hariprasad Kelam <hkelam@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, sgoutham@marvell.com,
+        lcherian@marvell.com, gakula@marvell.com, jerinj@marvell.com,
+        sbhatta@marvell.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 10:34:19AM +0100, Christian Borntraeger wrote:
-> CC Konstantin,
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed, 9 Feb 2022 12:45:15 +0530 you wrote:
+> In network congestion, instead of pausing all traffic on link
+> PFC allows user to selectively pause traffic according to its
+> class. This series of patches add support of PFC for RVU netdev
+> drivers.
 > 
-> I hope you can find the right people. Looks that my (and Janis) emaildid not make it to linux-s390 and kvm at vger lists.
-> Message-ID: <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
+> Patch1 adds support to disable pause frames by default as
+> with PFC user can enable either PFC or 802.3 pause frames.
+> Patch2&3 adds resource management support for flow control
+> and configures necessary registers for PFC.
+> Patch4 adds dcb ops registration for netdev drivers.
+> 
+> [...]
 
-I see it in the archives, though:
-https://lore.kernel.org/linux-s390/6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com
-https://lore.kernel.org/kvm/6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com
+Here is the summary with links:
+  - [net-next,V2,1/4] octeontx2-af: Don't enable Pause frames by default
+    https://git.kernel.org/netdev/net-next/c/d957b51f7ed6
+  - [net-next,V2,2/4] octeontx2-af: Priority flow control configuration support
+    https://git.kernel.org/netdev/net-next/c/1121f6b02e7a
+  - [net-next,V2,3/4] octeontx2-af: Flow control resource management
+    https://git.kernel.org/netdev/net-next/c/e740003874ed
+  - [net-next,V2,4/4] octeontx2-pf: PFC config support with DCBx
+    https://git.kernel.org/netdev/net-next/c/8e67558177f8
 
-Perhaps it was just delayed?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
--K
+
