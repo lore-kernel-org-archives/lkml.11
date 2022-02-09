@@ -2,100 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49E60C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A04E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230508AbiBIKCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:02:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37982 "EHLO
+        id S229850AbiBIKCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:02:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231160AbiBIKBq (ORCPT
+        with ESMTP id S231569AbiBIKBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:01:46 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719DBE022AFC;
-        Wed,  9 Feb 2022 02:01:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644400900; x=1675936900;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MhAPRdsDHJ8uaTiaXrdti0+yuDAFi7HzI4SCxA0SdwE=;
-  b=kDRvREpgXdAEbnewnAhcIryVqOlyrDOTT6EmjfwQQpZs2nzGK27FfDkj
-   s6nxLXf/Mk/OETA8z4FTsT1/Sd+8IbRhB+nfghKczHUdutOxdZziaRRS9
-   1a1kzSmfBnuq1JfXEWdY0cwryuYd29KTgPC4HuUevihF27hOt8TeMvrvs
-   mMFvhAMcO0ql7IZ++AOOchIsmGn3dW5dBgVEQSz9kGZL6UkO0f/V7CvS0
-   IsEEwIqYd6OUaDMPUBaVttCMn3OaNZgubb5rvTka6uHw5d6H6lZOZ1hUa
-   iTZ+eZAZAEN2ykskKZ+fBbRCCoraCQFk4UaaHIoOD+8siGfBcEpztxNUf
-   A==;
-IronPort-SDR: DAFonjqizeKbuF+rjvTc3HLhKHGwG5r1ik+WiwDX6aW3TOztVim+344xEWbXB1UWjb7vP2l1bf
- vst6jHQ9NJuSSPe73oZvyclrZHdAJ/jGDBTsatHSqS7ptmHzblFalSgxoBdSNLQTRCsMV6fVPs
- 4y06RfNUlXogXdl1OpIFf/PWfrELUNC+inD6KaS7NumTjAJFbOzUgNt0sqD8/1af1AlpeTevcC
- LPE0EPAza8+5NM3HXoGwz2JtJN5f7F/rTFZ84hfWMQi1Wh7a4GYNt79r2EZEnjeLJCYMfCmly5
- lnZO3lV8B+AKD6niql2Defy7
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="152967185"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Feb 2022 02:56:26 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Feb 2022 02:56:25 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 9 Feb 2022 02:56:23 -0700
-Message-ID: <ee9826d1-216e-45b0-e48b-700ec41b3683@microchip.com>
-Date:   Wed, 9 Feb 2022 10:56:22 +0100
+        Wed, 9 Feb 2022 05:01:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7367CE0E9166
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:01:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644400578;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=k0HK3B5yNAKajVmotOojuc2NAUachNqSXS/dwZrea2Q=;
+        b=MiDrZ4gltHXcPb2OxwVx9YGPFXU+Fkzhwtx4xlhFhmrlqjMbsCGMyNxbOSxtbh4ghg8Zkd
+        VL6i50ttptJVhE0TuXA6tPcvJxM6z/1leb+GntFlBdKO2Ov7E3JVlWuEQv4v5FJklgAamb
+        1XKsUwUfxU36GB+Z0LCVo7k6OyWwdiw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-627-dGDdDviNNj6gL9uAMi56kg-1; Wed, 09 Feb 2022 03:44:16 -0500
+X-MC-Unique: dGDdDviNNj6gL9uAMi56kg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 47C6419251A0;
+        Wed,  9 Feb 2022 08:44:14 +0000 (UTC)
+Received: from localhost (ovpn-12-114.pek2.redhat.com [10.72.12.114])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 39FF91057FD5;
+        Wed,  9 Feb 2022 08:44:12 +0000 (UTC)
+Date:   Wed, 9 Feb 2022 16:44:10 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Pingfan Liu <kernelfans@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Vincent Donnefort <vincent.donnefort@arm.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>, kexec@lists.infradead.org
+Subject: Re: [PATCHv2] kexec: disable cpu hotplug until the rebooting cpu is
+ stable
+Message-ID: <YgN+2gAoeyp05MV7@MiWiFi-R3L-srv>
+References: <20220127090215.32000-1-kernelfans@gmail.com>
+ <20220127094144.GC13508@MiWiFi-R3L-srv>
+ <YfOeL6B4CowkCQBC@piliu.users.ipa.redhat.com>
+ <YgI5AFoL4b/5MJEp@MiWiFi-R3L-srv>
+ <YgNt4slCVxHRex8z@piliu.users.ipa.redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3] ARM: dts: add DT for lan966x SoC and 2-port board
- pcb8291
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>
-CC:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Olof Johansson <olof@lixom.net>, SoC Team <soc@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-References: <20220113080017.30155-1-kavyasree.kotagiri@microchip.com>
- <f8b83cf0-7ebf-1ecd-b544-f0d0079d9dde@microchip.com>
- <CAK8P3a2kRhCOoXnvcMyqS-zK2WDZjtUq4aqOzE5VV=VMg=pVOA@mail.gmail.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <CAK8P3a2kRhCOoXnvcMyqS-zK2WDZjtUq4aqOzE5VV=VMg=pVOA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgNt4slCVxHRex8z@piliu.users.ipa.redhat.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/02/2022 at 17:08, Arnd Bergmann wrote:
-> On Thu, Jan 13, 2022 at 9:33 AM Nicolas Ferre
-> <nicolas.ferre@microchip.com>  wrote:
->> On 13/01/2022 at 09:00, Kavyasree Kotagiri wrote:
->>> This patch adds basic DT for Microchip lan966x SoC and associated board
->>> pcb8291(2-port EVB). Adds peripherals required to allow booting: IRQs,
->>> clocks, timers, memory, flexcoms, GPIOs. Also adds other peripherals like
->>> crypto(AES,SHA), DMA and watchdog.
->>>
->>> Signed-off-by: Kavyasree Kotagiri<kavyasree.kotagiri@microchip.com>
->> Looks good to me:
->> Reviewed-by: Nicolas Ferre<nicolas.ferre@microchip.com>
-> I'm not quite sure what to do with this, as this was sentto:soc@kernel.org,
-> which is normally for patches that are already reviewed and should just
-> get applied.
+On 02/09/22 at 03:31pm, Pingfan Liu wrote:
+> On Tue, Feb 08, 2022 at 05:33:52PM +0800, Baoquan He wrote:
+> > On 01/28/22 at 03:41pm, Pingfan Liu wrote:
+> > > On Thu, Jan 27, 2022 at 05:41:44PM +0800, Baoquan He wrote:
+> > > Hi Baoquan,
+> > > 
+> > > Thanks for reviewing, please see comment inlined
+> > > > Hi Pingfan,
+> > > > 
+> > > > On 01/27/22 at 05:02pm, Pingfan Liu wrote:
+> > > > > The following identical code piece appears in both
+> > > > > migrate_to_reboot_cpu() and smp_shutdown_nonboot_cpus():
+> > > > > 
+> > > > > 	if (!cpu_online(primary_cpu))
+> > > > > 		primary_cpu = cpumask_first(cpu_online_mask);
+> > > > > 
+> > > > > This is due to a breakage like the following:
+> > > > >    migrate_to_reboot_cpu();
+> > > > >    cpu_hotplug_enable();
+> > > > >                           --> comes a cpu_down(this_cpu) on other cpu
+> > > > >    machine_shutdown();
+> > > > > 
+> > > > > Although the kexec-reboot task can get through a cpu_down() on its cpu,
+> > > > > this code looks a little confusing.
+> > > > > 
+> > > > > Make things straight forward by keeping cpu hotplug disabled until
+> > > > > smp_shutdown_nonboot_cpus() holds cpu_add_remove_lock. By this way, the
+> > > > > breakage is squashed out and the rebooting cpu can keep unchanged.
+> > > > 
+> > > > If I didn't go through code wrongly, you may miss the x86 case.
+> > > > Several ARCHes do call smp_shutdown_nonboot_cpus() in machine_shutdown()
+> > > > in kexec reboot code path, while x86 doesn't. If I am right, you may
+> > > > need reconsider if this patch is needed or need be adjustd.
+> > > > 
+> > > Citing the code piece in kernel_kexec()
+> > > 
+> > >                 migrate_to_reboot_cpu();
+> > > 
+> > >                 /*
+> > >                  * migrate_to_reboot_cpu() disables CPU hotplug assuming that
+> > >                  * no further code needs to use CPU hotplug (which is true in
+> > >                  * the reboot case). However, the kexec path depends on using
+> > >                  * CPU hotplug again; so re-enable it here.
+> > >                  */
+> > >                 cpu_hotplug_enable();
+> > >                 pr_notice("Starting new kernel\n");
+> > >                 machine_shutdown();
+> > > 
+> > > So maybe it can be considered in such way: "cpu_hotplug_enable()" is not
+> > > needed by x86 and ppc, so this patch removes it, while re-displace it in
+> > > a more appropriate place for arm64/riscv ...
+> > 
+> > OK, so the thing is:
+> > 
+> > ==
+> > In the current code of kexec, we disable cpu hotplug and check reboot cpu
+> > validity in migrate_to_reboot_cpu(), then enable cpu hotplug. Then in
+> > machine_shutdown()->smp_shutdown_nonboot_cpus(), check the reboot cpu and
+> > disable cpu hotplug again.
+>   ^^^
+> No, there is no any new call to cpu_hotplug_disable() after
+> migrate_to_reboot_cpu(). smp_shutdown_nonboot_cpus() just leaves
+> cpu_hotplug_disabled==0 as it is.
+
+Hmm, there's 'cpu_hotplug_disabled++;' at the end of
+smp_shutdown_nonboot_cpus(). It's disabling cpu hotplug again, I think.
+
+> > 
+> > In this patch, it disables cpu hotplug in migrate_to_reboot_cpu() and
+> > keep it till entering into smp_shutdown_nonboot_cpus() to shutdown all
+> > other cpu with hotplug mechanism, then disable it again. With this
+>                                          ^^^
+> Here is enable, i.e. smp_shutdown_nonboot_cpus() makes
+> cpu_hotplug_disabled switch from 1 to 0, so the following fn can work
+
+Right, you keep the cpu hotplug disabled till in
+smp_shutdown_nonboot_cpus(), then enable it to shut down all other cpus.
+
+> ||	static int cpu_down_maps_locked(unsigned int cpu, enum cpuhp_state target)
+> ||	{
+> ||		if (cpu_hotplug_disabled)
+> ||			return -EBUSY;
+> ||		return _cpu_down(cpu, 0, target);
+> ||	}
 > 
-> I can apply this, but I would normally expect board files to get picked up
-> in the at91 tree first. I'll drop this version from patchwork for now, as I
-> also have a couple of comments:
+> > change, it won't need to double check the reboot cpu validity. 
+> > 
+> > This change only affect ARCHes relying on hotplug to shutdown cpu before
+> > kexec reboot, e.g arm64, risc-v. Other ARCH like x86 is not affected.
+> 
+> Yes.
+> > ==
+> > 
+> > Do I got it right?
+> > 
+> Here, neither the original code nor this patch has another
+> cpu_hotplug_disable(), the only change is the shift of cpu_hotplug_enable() to an onwards place.
+> 
+> And I think you should get my idea except this.
+> 
+> Thanks,
+> 
+> 	Pingfan
+> 
 
-I have the intention to take this patch when it's ready in the at91 tree.
-
-Thanks for your feedback Arnd. Best regards,
-   Nicolas
-
--- 
-Nicolas Ferre
