@@ -2,184 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A7BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:56:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E83C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236185AbiBIJ4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:56:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47972 "EHLO
+        id S230312AbiBIJ6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:58:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235348AbiBIJ4O (ORCPT
+        with ESMTP id S234017AbiBIJ6V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:56:14 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED508DF28ACF;
-        Wed,  9 Feb 2022 01:56:08 -0800 (PST)
-X-UUID: f47de4b025de4216ae53e6b7a645d804-20220209
-X-UUID: f47de4b025de4216ae53e6b7a645d804-20220209
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <kewei.xu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1907449128; Wed, 09 Feb 2022 17:54:14 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 9 Feb 2022 17:54:13 +0800
-Received: from localhost.localdomain (10.17.3.14) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 9 Feb 2022 17:54:12 +0800
-From:   Kewei Xu <kewei.xu@mediatek.com>
-To:     <wsa@the-dreams.de>
-CC:     <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <leilk.liu@mediatek.com>,
-        <qii.wang@mediatek.com>, <liguo.zhang@mediatek.com>,
-        <caiyu.chen@mediatek.com>, <housong.zhang@mediatek.com>,
-        <yuhan.wei@mediatek.com>, <kewei.xu@mediatek.com>,
-        <ryan-jh.yu@mediatek.com>, <david-yh.chiu@mediatek.com>
-Subject: [PATCH v9 1/1] i2c: mediatek: modify bus speed calculation formula
-Date:   Wed, 9 Feb 2022 17:54:07 +0800
-Message-ID: <1644400447-6215-2-git-send-email-kewei.xu@mediatek.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1644400447-6215-1-git-send-email-kewei.xu@mediatek.com>
-References: <1644400447-6215-1-git-send-email-kewei.xu@mediatek.com>
+        Wed, 9 Feb 2022 04:58:21 -0500
+Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B41EE022ADA;
+        Wed,  9 Feb 2022 01:58:15 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 7EA74580152;
+        Wed,  9 Feb 2022 03:52:19 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Wed, 09 Feb 2022 03:52:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=5AsuKlg9T3wRs6EodVp0NmABKRFh6ykn6emryp
+        MFqcE=; b=tJSbjzcafZKt16I56xV6jV5vxF1WGT5F2+4G9QjLLNk423jTTeO2Rc
+        zHnaWdr4mAAI6soRoHBZs56pjt7JAyvUzDI6GRCzQyj1a1gmZ7g+T2wmruVOYhGj
+        U/i8/jIg/iMTj3m7IC0/YXArfNPbCRIVDNcaXxkb7ake0Bexf2mKo3K2mth34ue9
+        WLD/Ki/AzraJGy50OZolC5AQjIFIQIrBZDPoNZ06+D6S+73CfEI/dq20rVCx1pd1
+        cC9msnw+U26YI4SnONvNadAzIHz1jx1T6tAsQ4IVX3uKRycsWBDPf5gB3N4FcDig
+        1icVgoCuAhNoi87sqBua/4Aubd977JjA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=5AsuKlg9T3wRs6Eod
+        Vp0NmABKRFh6ykn6emrypMFqcE=; b=VbtCkvnpzlBFH8WTmpIt6LRDreCQoQJub
+        Fzshu4pCLO2vq7pubT2yKFTwOh33ovalCRzkgYSFDs630Mn0JznhTazTWLuminSU
+        TGtgVwpIdKX9mF95t51To8n6ZHd2o22kRHvqvXqKgBWHMNGJUOywiLKq1/nrTHzA
+        U+AoPm1h6GAcJhtILdf7WEt3n+5sUIfpqQ7oIWwoKb4ZqArlIMDXa/dbBCufPPHJ
+        guqKP+1Dln9I5NvE17l0JStDxAOyQH3xDRTjmz/wyw2lfz5w47HGc+HJo6QGJJjv
+        o7gpY1rPw7VatRLSZWGQwb8KttgfDtgCmtoUqcT3wc/KqRDUb84Ig==
+X-ME-Sender: <xms:woADYq-0eSssQcGmiFliY3197FJPDabzDoC5c-S9rmwOLV775OJ_1Q>
+    <xme:woADYqtEcXYvnyvCziOKFwlhuM7_YdaFtgdOJ9NbhwXNdDn_Zt9COsgBJll-AVbkD
+    SvRVm4Tt4AhVHFectY>
+X-ME-Received: <xmr:woADYgA38MA3W3u_26f06nr8SC5tbUkS9nWe-Fu400YyD4TsPT9NfVPv1JlUkACVYB5DVpbsR_OoORf2kChjlYi5mTc_XN8zhy4PTyE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheekgdduvdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
+    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    grgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:woADYifXlPCUf4Pfw4h2SaQnZtk1p0MS281dIBhl632sONAVXFFHfQ>
+    <xmx:woADYvNp5I5KNjAOyPv_QIUqQYGc9vVFIxWKktj5IhiM1bXk7_mYZw>
+    <xmx:woADYskKXPWxqIOgq3sOBSXwGBjJfH41bx-0ka5XOLVCipe0HYtfNA>
+    <xmx:w4ADYoz22sbKeC_hoJ5t4JY_gwAnhHwWZLPgo9_GLLuWGA3EgMUojg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 9 Feb 2022 03:52:17 -0500 (EST)
+Date:   Wed, 9 Feb 2022 09:52:15 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Sui Jingfeng <15330273260@189.cn>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v6 1/3] drm/lsdc: add drm driver for loongson display
+ controller
+Message-ID: <20220209085215.65qbdsgwtnvujdng@houat>
+References: <20220203082546.3099-1-15330273260@189.cn>
+ <20220203082546.3099-2-15330273260@189.cn>
+ <20220203085851.yqstkfgt4dz7rcnw@houat>
+ <57805e19-285a-76d3-16e3-09a3eb7a9540@189.cn>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ya7qckwy2foywkx2"
+Content-Disposition: inline
+In-Reply-To: <57805e19-285a-76d3-16e3-09a3eb7a9540@189.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When clock-div is 0 or greater than 1, the bus speed
-calculated by the old speed calculation formula will be
-larger than the target speed. So we update the formula.
 
-Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
-Change-Id: Ic0d9b8ab036bcf215d3a5066f2b91c7b8b128ba6
----
- drivers/i2c/busses/i2c-mt65xx.c | 51 +++++++++++++++++++++++++++++++++--------
- 1 file changed, 41 insertions(+), 10 deletions(-)
+--ya7qckwy2foywkx2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/i2c/busses/i2c-mt65xx.c b/drivers/i2c/busses/i2c-mt65xx.c
-index aa4d218..682293e 100644
---- a/drivers/i2c/busses/i2c-mt65xx.c
-+++ b/drivers/i2c/busses/i2c-mt65xx.c
-@@ -67,11 +67,12 @@
- 
- #define MAX_SAMPLE_CNT_DIV		8
- #define MAX_STEP_CNT_DIV		64
--#define MAX_CLOCK_DIV			256
-+#define MAX_CLOCK_DIV_8BITS		256
-+#define MAX_CLOCK_DIV_5BITS		32
- #define MAX_HS_STEP_CNT_DIV		8
--#define I2C_STANDARD_MODE_BUFFER	(1000 / 2)
--#define I2C_FAST_MODE_BUFFER		(300 / 2)
--#define I2C_FAST_MODE_PLUS_BUFFER	(20 / 2)
-+#define I2C_STANDARD_MODE_BUFFER	(1000 / 3)
-+#define I2C_FAST_MODE_BUFFER		(300 / 3)
-+#define I2C_FAST_MODE_PLUS_BUFFER	(20 / 3)
- 
- #define I2C_CONTROL_RS                  (0x1 << 1)
- #define I2C_CONTROL_DMA_EN              (0x1 << 2)
-@@ -604,6 +605,31 @@ static int mtk_i2c_max_step_cnt(unsigned int target_speed)
- 		return MAX_STEP_CNT_DIV;
- }
- 
-+static int mtk_i2c_get_clk_div_restri(struct mtk_i2c *i2c,
-+				      unsigned int sample_cnt)
-+{
-+	int clk_div_restri = 0;
-+
-+	if (i2c->dev_comp->ltiming_adjust == 0)
-+		return 0;
-+
-+	if (sample_cnt == 1) {
-+		if (i2c->ac_timing.inter_clk_div == 0)
-+			clk_div_restri = 0;
-+		else
-+			clk_div_restri = 1;
-+	} else {
-+		if (i2c->ac_timing.inter_clk_div == 0)
-+			clk_div_restri = -1;
-+		else if (i2c->ac_timing.inter_clk_div == 1)
-+			clk_div_restri = 0;
-+		else
-+			clk_div_restri = 1;
-+	}
-+
-+	return clk_div_restri;
-+}
-+
- /*
-  * Check and Calculate i2c ac-timing
-  *
-@@ -732,6 +758,7 @@ static int mtk_i2c_calculate_speed(struct mtk_i2c *i2c, unsigned int clk_src,
- 	unsigned int best_mul;
- 	unsigned int cnt_mul;
- 	int ret = -EINVAL;
-+	int clk_div_restri = 0;
- 
- 	if (target_speed > I2C_MAX_HIGH_SPEED_MODE_FREQ)
- 		target_speed = I2C_MAX_HIGH_SPEED_MODE_FREQ;
-@@ -749,7 +776,8 @@ static int mtk_i2c_calculate_speed(struct mtk_i2c *i2c, unsigned int clk_src,
- 	 * optimizing for sample_cnt * step_cnt being minimal
- 	 */
- 	for (sample_cnt = 1; sample_cnt <= MAX_SAMPLE_CNT_DIV; sample_cnt++) {
--		step_cnt = DIV_ROUND_UP(opt_div, sample_cnt);
-+		clk_div_restri = mtk_i2c_get_clk_div_restri(i2c, sample_cnt);
-+		step_cnt = DIV_ROUND_UP(opt_div + clk_div_restri, sample_cnt);
- 		cnt_mul = step_cnt * sample_cnt;
- 		if (step_cnt > max_step_cnt)
- 			continue;
-@@ -763,7 +791,7 @@ static int mtk_i2c_calculate_speed(struct mtk_i2c *i2c, unsigned int clk_src,
- 			best_mul = cnt_mul;
- 			base_sample_cnt = sample_cnt;
- 			base_step_cnt = step_cnt;
--			if (best_mul == opt_div)
-+			if (best_mul == (opt_div + clk_div_restri))
- 				break;
- 		}
- 	}
-@@ -774,7 +802,8 @@ static int mtk_i2c_calculate_speed(struct mtk_i2c *i2c, unsigned int clk_src,
- 	sample_cnt = base_sample_cnt;
- 	step_cnt = base_step_cnt;
- 
--	if ((clk_src / (2 * sample_cnt * step_cnt)) > target_speed) {
-+	if ((clk_src / (2 * (sample_cnt * step_cnt - clk_div_restri))) >
-+		target_speed) {
- 		/* In this case, hardware can't support such
- 		 * low i2c_bus_freq
- 		 */
-@@ -803,13 +832,16 @@ static int mtk_i2c_set_speed(struct mtk_i2c *i2c, unsigned int parent_clk)
- 	target_speed = i2c->speed_hz;
- 	parent_clk /= i2c->clk_src_div;
- 
--	if (i2c->dev_comp->timing_adjust)
--		max_clk_div = MAX_CLOCK_DIV;
-+	if (i2c->dev_comp->timing_adjust && i2c->dev_comp->ltiming_adjust)
-+		max_clk_div = MAX_CLOCK_DIV_5BITS;
-+	else if (i2c->dev_comp->timing_adjust)
-+		max_clk_div = MAX_CLOCK_DIV_8BITS;
- 	else
- 		max_clk_div = 1;
- 
- 	for (clk_div = 1; clk_div <= max_clk_div; clk_div++) {
- 		clk_src = parent_clk / clk_div;
-+		i2c->ac_timing.inter_clk_div = clk_div - 1;
- 
- 		if (target_speed > I2C_MAX_FAST_MODE_PLUS_FREQ) {
- 			/* Set master code speed register */
-@@ -856,7 +888,6 @@ static int mtk_i2c_set_speed(struct mtk_i2c *i2c, unsigned int parent_clk)
- 		break;
- 	}
- 
--	i2c->ac_timing.inter_clk_div = clk_div - 1;
- 
- 	return 0;
- }
--- 
-1.9.1
+On Thu, Feb 03, 2022 at 11:47:16PM +0800, Sui Jingfeng wrote:
+> On 2022/2/3 16:58, Maxime Ripard wrote:
+> > > diff --git a/drivers/gpu/drm/lsdc/Kconfig b/drivers/gpu/drm/lsdc/Kcon=
+fig
+> > > new file mode 100644
+> > > index 000000000000..7ed1b0fdbe1b
+> > > --- /dev/null
+> > > +++ b/drivers/gpu/drm/lsdc/Kconfig
+> > > @@ -0,0 +1,38 @@
+> > > +config DRM_LSDC
+> > > +	tristate "DRM Support for loongson's display controller"
+> > > +	depends on DRM && PCI
+> > > +	depends on MACH_LOONGSON64 || LOONGARCH || MIPS || COMPILE_TEST
+> > > +	select OF
+> > > +	select CMA if HAVE_DMA_CONTIGUOUS
+> > > +	select DMA_CMA if HAVE_DMA_CONTIGUOUS
+> > > +	select DRM_KMS_HELPER
+> > > +	select DRM_KMS_FB_HELPER
+> > > +	select DRM_GEM_CMA_HELPER
+> > > +	select VIDEOMODE_HELPERS
+> > > +	select BACKLIGHT_PWM if CPU_LOONGSON2K
+> > > +	select I2C_GPIO if CPU_LOONGSON2K
+> > > +	select I2C_LS2X if CPU_LOONGSON2K
+> > > +	default m
+> > > +	help
+> > > +	  This is a KMS driver for the display controller in the LS7A1000
+> > > +	  bridge chip and LS2K1000 SoC. The display controller has two
+> > > +	  display pipes and it is a PCI device.
+> > > +	  When using this driver on LS2K1000/LS2K0500 SoC, its framebuffer
+> > > +	  is located at system memory.
+> > > +	  If "M" is selected, the module will be called lsdc.
+> > > +
+> > > +	  If in doubt, say "Y".
+> > > +
+> > > +config DRM_LSDC_VRAM_DRIVER
+> > > +	bool "vram helper based device driver support"
+> > > +	depends on DRM_LSDC
+> > > +	select DRM_VRAM_HELPER
+> > > +	default y
+> > > +	help
+> > > +	  When using this driver on LS7A1000 + LS3A3000/LS3A4000/LS3A5000
+> > > +	  platform, the LS7A1000 bridge chip has dedicated video RAM. Using
+> > > +	  "lsdc.use_vram_helper=3D1" in the kernel command line will enable
+> > > +	  this driver mode and then the framebuffer will be located at the
+> > > +	  VRAM at the price of losing PRIME support.
+> > > +
+> > > +	  If in doubt, say "Y".
+> > This doesn't sound right. The driver should make the proper decision
+> > depending on the platform, not the user or the distribution.
+>=20
+> The LS7A1000 north bridge chip has dedicated video RAM, but the DC in LS7=
+A1000
+> can also scanout from the system memory directly like a display controlle=
+r in a
+> SoC does. In fact, this display controller is envolved from early product=
+ of
+> Loongson 2H SoC. This driver still works even if the downstream PC board
+> manufacturer doesn't solder a video RAM on the mother board.
+>=20
+> The lsdc_should_vram_helper_based() function in lsdc_drv.c will examine
+> if the DC device node contain a use_vram_helper property at driver loadin=
+g time.
+> If there is no use_vram_helper property, CMA helper based DRM driver will=
+ be used.
+> Doing this way allow the user using "lsdc.use_vram_helper=3D0" override t=
+he default
+> behavior even through there is a "use_vram_helper;" property in the DTS.
+>=20
+> In short, It is intend to let the command line passed from kernel has hig=
+her
+> priority than the device tree. Otherwise the end user can not switch diff=
+erent
+> driver mode through the kernel command line once the DC device node conta=
+in
+> "use_vram_helper;" property.
+>=20
+> This driver's author already made the decision by the time when the patch=
+ is
+> sent out, even through this**may not proper.
+>=20
+> The CMA helper based driver will be used by default, if the DC device nod=
+e contain
+> "use_vram_helper;" then VRAM based driver will be used. This is my initia=
+l intention.
 
+DT isn't really a solution either. Let's take the distribution
+perspective there. Suppose you're a Fedora or Debian developer, and want
+to make a single kernel image, and ship a DT to the user for their board
+without any modification. How is either the Kconfig solution or DT flags
+solution any good there? It doesn't help them at all.
+
+Maxime
+
+--ya7qckwy2foywkx2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgOAvwAKCRDj7w1vZxhR
+xfmlAP9jrc/0alF0HbOEKem/PYILuIQZksQjvUqUpnADGQgZ2AD/YY/Mdq2iiu3Z
+W6nZNr9i/aZ4agM5MHGTU59+JVzfAwA=
+=9aeP
+-----END PGP SIGNATURE-----
+
+--ya7qckwy2foywkx2--
