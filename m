@@ -2,170 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E39C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbiBILVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:21:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
+        id S230147AbiBILWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:22:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiBILVh (ORCPT
+        with ESMTP id S229552AbiBILWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:21:37 -0500
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B5DE111E59
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:16:03 -0800 (PST)
-Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MvJPR-1o8BrF423V-00rKWN;
- Wed, 09 Feb 2022 11:01:53 +0100
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marek Vasut <marek.vasut@gmail.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Adam Ford <aford173@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
-        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v5 10/12] arm64: defconfig: enable verdin-imx8mm relevant drivers as modules
-Date:   Wed,  9 Feb 2022 11:00:53 +0100
-Message-Id: <20220209100055.181389-11-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220209100055.181389-1-marcel@ziswiler.com>
-References: <20220209100055.181389-1-marcel@ziswiler.com>
+        Wed, 9 Feb 2022 06:22:00 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E36E08E457
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:16:23 -0800 (PST)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21975wJM007609;
+        Wed, 9 Feb 2022 09:13:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Wvm5YIaS7ro2Fs/QQiFJb+9ymuruMtS8dhHGq+seETY=;
+ b=qRVuC7b9aJ3jd3dcXaKg30zoW/AbmzqvLvvqMudTwSdx/G2iMqvqA8uB7i2Jja90DXWg
+ DvAwC96urYT4buuE7pq8hdva6KkgIkIZi0YK7A7TK3l8k7f1pBkOR0FsDXBpEQ9AunUf
+ 7daYqTkoA0PWa/SzNrz4Dlnaqu2n9x79aojvg2jt4yoVsCldrQuHguETCanxDvI8pmWR
+ 2oPkVpENF0DNe4Y9uEz2g3j/iVaw5w82185VeTZ/OEuO2REOA38B4hJJLeJb3OpEwj3J
+ 6e0lMdMRtu00kga4FA0Q6YHJchApotYyvrRWaNfS0J89q6q96Id0NS6d7fBoAUhx+4EV oA== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e3ny977gf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 09:13:22 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21994u8E025375;
+        Wed, 9 Feb 2022 09:13:22 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma02dal.us.ibm.com with ESMTP id 3e3gq00pq4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 09:13:22 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2199DJYx26280242
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Feb 2022 09:13:19 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 325C2112067;
+        Wed,  9 Feb 2022 09:13:19 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3E5CC112061;
+        Wed,  9 Feb 2022 09:13:17 +0000 (GMT)
+Received: from [9.65.240.79] (unknown [9.65.240.79])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Feb 2022 09:13:17 +0000 (GMT)
+Message-ID: <0d33cac6-99a7-e756-e0e3-37124784e3bb@linux.ibm.com>
+Date:   Wed, 9 Feb 2022 11:13:15 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:T3ALNuvBwd7E5HjqIZvVMct1MNdJkpHzT6CB6XQoFuHgqJu8rNh
- NetJrKz2F6JReYf9eRtzCbGJUZRsu2jYJLXRy0KFyZgi0WAYqkXglvlzuvZYdsfpOPLz4Wr
- dTpiA8JH9XtIRkgNKyR3nK9GOxo9c8bGTNXXqrJyRBFjXgKTy9vIJFXtW5fiyf11+++fNFy
- wIYt6Dp4mSuOwQWfm1B1w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Gja8Svjjq2k=:FuMFCAcPBb8GbFzLw0N0Qb
- FccSMGRorFLtJUr1hr2NdFDX2zs3ArfDYpwk+3lxbXbNzB78NWUP/hD1NjWm94PI/C6hI8eMg
- IX+197cObtWFg1XK2tLCS7vBCmkEfTR5LgOPZQUnsRoQw2VHTD4BLKJlKdkq2p2NYxyfXYQ9U
- wXgly2CD2mSVyK/ZcnA87rdLFJ4TNJGXduAZkdtCGPdcJq+lAV2J/006H0txJ1XjarZcEYnok
- mVjATG+jWiTX4iSUph8/WJTQng1Yjxwkr2KEBW0ssKJKVGfzDCQVKOPb/JrfpWcD7tHBzuy1Y
- B1zYqRiEuH48x0EWlIKBzyYz2xa916e0jqcAw7T62iA16fkyB/OKXMlt2uY6OKYdWCf74J/pB
- BXiK/TL3bTA8nMxPWGRW/A2WiVHVHLZ7lHR9Xo7f++IJxPGhilXykND3gGv+GmCcxd+h9R2P4
- QQ6nZbwM4liL/lgQKKgPtOMy2vH7BymuLXgGwSh54SAyQcHNTsx9rURnqRe2+6T+IIqRi3qxg
- LDe9cNxhqw30ZCiyF7Qnpa7N/+ZfFyxWYDu6z/uukpVsCNl0QuBgUYJ/llo0BGR9tx+E155Jd
- 7qQm2vEFZIg7dFt+iVPNxwqd8AuG/UsyNXRcmiAWR4TY6eMvPchb3ZULQPUOaG05/5MR7EeDE
- 5ySwl5TqRsiBiHNrM6qFvAjFGp8MO5OTn/XWMAb9Nt/RpwMwi03wj++cKIP1YU8kLdwFf9ViJ
- 76+NhCGwiTa+oI/7
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [RFC PATCH 2/2] pseries: define sysfs interface to expose PKS
+ variables
+Content-Language: en-US
+To:     Nayna Jain <nayna@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Daniel Axtens <dja@axtens.net>,
+        George Wilson <gcwilson@linux.ibm.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Douglas Miller <dougmill@linux.vnet.ibm.com>, gjoyce@ibm.com,
+        linux-kernel@vger.kernel.org, Dov Murik <dovmurik@linux.ibm.com>
+References: <20220122005637.28199-1-nayna@linux.ibm.com>
+ <20220122005637.28199-3-nayna@linux.ibm.com>
+From:   Dov Murik <dovmurik@linux.ibm.com>
+In-Reply-To: <20220122005637.28199-3-nayna@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Ryuf2rR1vgn2ZkvPJiIheYi1GKSMlzaC
+X-Proofpoint-ORIG-GUID: Ryuf2rR1vgn2ZkvPJiIheYi1GKSMlzaC
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_04,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
+ mlxlogscore=999 phishscore=0 suspectscore=0 malwarescore=0 adultscore=0
+ impostorscore=0 clxscore=1015 priorityscore=1501 spamscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202090060
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Hi Nayna,
 
-Enable various drivers which support peripherals as found on the
-Verdin iMX8M Mini et al. computer/system on modules:
 
-- CONFIG_CAN_MCP251XFD
-At least one Microchip MCP2518FDT SPI CAN controller which this driver
-also supports may be found on the Verdin iMX8M Mini computer/system on
-module.
+On 22/01/2022 2:56, Nayna Jain wrote:
+> PowerVM guest secure boot intend to use Platform Keystore(PKS) for the
+> purpose of storing public keys to verify digital signature.
+> 
+> Define sysfs interface to expose PKS variables to userspace to allow
+> read/write/add/delete operations. Each variable is shown as a read/write
+> attribute file. The size of the file represents the size of the current
+> content of the variable.
+> 
+> create_var and delete_var attribute files are always present which allow
+> users to create/delete variables. These are write only attributes.The
+> design has tried to be compliant with sysfs semantic to represent single
+> value per attribute. Thus, rather than mapping a complete data structure
+> representation to create_var, it only accepts a single formatted string
+> to create an empty variable.
+> 
+> The sysfs interface is designed such as to expose PKS configuration
+> properties, operating system variables and firmware variables.
+> Current version exposes configuration and operating system variables.
+> The support for exposing firmware variables will be added in the future
+> version.
+> 
+> Example of pksvar sysfs interface:
+> 
+> # cd /sys/firmware/pksvar/
+> # ls
+> config  os
+> 
+> # cd config
+> 
+> # ls -ltrh
+> total 0
+> -r--r--r-- 1 root root 64K Jan 21 17:55 version
+> -r--r--r-- 1 root root 64K Jan 21 17:55 used_space
+> -r--r--r-- 1 root root 64K Jan 21 17:55 total_size
+> -r--r--r-- 1 root root 64K Jan 21 17:55 supported_policies
+> -r--r--r-- 1 root root 64K Jan 21 17:55 max_object_size
+> -r--r--r-- 1 root root 64K Jan 21 17:55 max_object_label_size
+> -r--r--r-- 1 root root 64K Jan 21 17:55 flags
+> 
+> # cd os
+> 
+> # ls -ltrh
+> total 0
+> -rw------- 1 root root 104 Jan 21 17:56 var4
+> -rw------- 1 root root 104 Jan 21 17:56 var3
+> -rw------- 1 root root 831 Jan 21 17:56 GLOBAL_PK
+> -rw------- 1 root root 831 Jan 21 17:56 GLOBAL_KEK
+> -rw------- 1 root root  76 Jan 21 17:56 GLOBAL_dbx
+> -rw------- 1 root root 831 Jan 21 17:56 GLOBAL_db
+> --w------- 1 root root 64K Jan 21 17:56 delete_var
+> --w------- 1 root root 64K Jan 21 17:56 create_var
+> 
+> 1. Read variable
+> 
+> # hexdump -C GLOBAL_db
+> 00000000  00 00 00 00 a1 59 c0 a5  e4 94 a7 4a 87 b5 ab 15  |.....Y.....J....|
+> 00000010  5c 2b f0 72 3f 03 00 00  00 00 00 00 23 03 00 00  |\+.r?.......#...|
+> ....
+> 00000330  02 a8 e8 ed 0f 20 60 3f  40 04 7c a8 91 21 37 eb  |..... `?@.|..!7.|
+> 00000340  f3 f1 4e                                          |..N|
+> 00000343
+> 
+> 2. Write variable
+> 
+> cat /tmp/data.bin > <variable_name>
+> 
+> 3. Create variable
+> 
+> # echo "var1" > create_var
 
-- CONFIG_BT_HCIUART_MRVL, CONFIG_BT_MRVL, CONFIG_BT_MRVL_SDIO and
-  CONFIG_MWIFIEX_SDIO
-The AzureWave AW-CM276NF which these Bluetooth and Wi-Fi drivers also
-support may be found on the Verdin iMX8M Mini (as well as the Apalis
-iMX8, Colibri iMX8X and Verdin iMX8M Plus for that matter) computer/
-system on module.
+It would be easier to understand if the user could create a new variable
+like a regular new file, something like:
 
-- CONFIG_SENSORS_LM75
-The TI TMP75C temperature sensor which this driver also supports may be
-found on the Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for
-that matter) computer/system on module.
+# cat /tmp/data.bin > var1
 
-- CONFIG_SND_SOC_NAU8822
-The Nuvoton Technology Corporation (NTC) NAU88C22YG which this driver
-also supports may be found on the Verdin Development Board a carrier
-board for the Verdin family of computer/system on module which the
-Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for that matter)
-may be mated in.
+but I understand there are also comma-seperated-policy-strings which
+should go somewhere; not sure how this fits (or if there are other
+examples for similar interfaces in other sysfs parts).
 
-- CONFIG_TI_ADS1015
-The TLA2024 ADC which this driver also supports may be found on the
-Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for that matter)
-computer/system on module.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
----
+> # ls -ltrh
+> total 0
+> -rw------- 1 root root 104 Jan 21 17:56 var4
+> -rw------- 1 root root 104 Jan 21 17:56 var3
+> -rw------- 1 root root 831 Jan 21 17:56 GLOBAL_PK
+> -rw------- 1 root root 831 Jan 21 17:56 GLOBAL_KEK
+> -rw------- 1 root root  76 Jan 21 17:56 GLOBAL_dbx
+> -rw------- 1 root root 831 Jan 21 17:56 GLOBAL_db
+> --w------- 1 root root 64K Jan 21 17:56 delete_var
+> --w------- 1 root root 64K Jan 21 17:57 create_var
+> -rw------- 1 root root   0 Jan 21 17:57 var1.tmp
+> 
+> Current design creates a zero size temporary variable. This implies
+> it is not yet persisted to PKS. Only once data is written to newly
+> created temporary variable and if it is successfully stored in the
+> PKS, that the variable is permanent. The temporary variable will get
+> removed on reboot. The code currently doesn't remove .tmp suffix
+> immediately when persisted. The future version will fix this.
+> 
+> To avoid the additional .tmp semantic, alternative option is to consider
+> any zero size variable as temporary variable. This option is under
+> evaluation. This would avoid any runtime sysfs magic to replace .tmp
+> variable with real variable.
+> 
+> Also, the formatted string to pass to create_var will have following
+> format in the future version:
+> <variable_name>:<comma-separated-policy strings>
+> 
+> 4. Delete variable
+> # echo "var3" > delete_var
 
-(no changes since v3)
+If it's possible here, I think it would be easier to understand (and
+use) if you implement unlink(), so deleting var3 would be:
 
-Changes in v3:
-- Add Krzysztof's reviewed-by tag.
+# rm var3
 
-Changes in v2:
-- Explain why enabling these may make sense and squash them relevant
-  changes as requested by Krzysztof.
+(and then there's no need for the special 'delete_var' entry.)
 
- arch/arm64/configs/defconfig | 8 ++++++++
- 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 76334cb698af..8d2733f8a7d9 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -179,6 +179,7 @@ CONFIG_CAN=m
- CONFIG_CAN_FLEXCAN=m
- CONFIG_CAN_RCAR=m
- CONFIG_CAN_RCAR_CANFD=m
-+CONFIG_CAN_MCP251XFD=m
- CONFIG_BT=m
- CONFIG_BT_HIDP=m
- # CONFIG_BT_LE is not set
-@@ -189,6 +190,9 @@ CONFIG_BT_HCIUART=m
- CONFIG_BT_HCIUART_LL=y
- CONFIG_BT_HCIUART_BCM=y
- CONFIG_BT_HCIUART_QCA=y
-+CONFIG_BT_HCIUART_MRVL=y
-+CONFIG_BT_MRVL=m
-+CONFIG_BT_MRVL_SDIO=m
- CONFIG_BT_QCOMSMD=m
- CONFIG_CFG80211=m
- CONFIG_MAC80211=m
-@@ -380,6 +384,7 @@ CONFIG_ATH10K_SNOC=m
- CONFIG_WCN36XX=m
- CONFIG_BRCMFMAC=m
- CONFIG_MWIFIEX=m
-+CONFIG_MWIFIEX_SDIO=m
- CONFIG_MWIFIEX_PCIE=m
- CONFIG_WL18XX=m
- CONFIG_WLCORE_SDIO=m
-@@ -556,6 +561,7 @@ CONFIG_CHARGER_BQ25980=m
- CONFIG_SENSORS_ARM_SCMI=y
- CONFIG_SENSORS_ARM_SCPI=y
- CONFIG_SENSORS_JC42=m
-+CONFIG_SENSORS_LM75=m
- CONFIG_SENSORS_LM90=m
- CONFIG_SENSORS_PWM_FAN=m
- CONFIG_SENSORS_RASPBERRYPI_HWMON=m
-@@ -797,6 +803,7 @@ CONFIG_SND_SOC_WM8960=m
- CONFIG_SND_SOC_WM8962=m
- CONFIG_SND_SOC_WM8978=m
- CONFIG_SND_SOC_WSA881X=m
-+CONFIG_SND_SOC_NAU8822=m
- CONFIG_SND_SOC_LPASS_WSA_MACRO=m
- CONFIG_SND_SOC_LPASS_VA_MACRO=m
- CONFIG_SND_SIMPLE_CARD=m
-@@ -1088,6 +1095,7 @@ CONFIG_QCOM_SPMI_VADC=m
- CONFIG_QCOM_SPMI_ADC5=m
- CONFIG_ROCKCHIP_SARADC=m
- CONFIG_RZG2L_ADC=m
-+CONFIG_TI_ADS1015=m
- CONFIG_IIO_CROS_EC_SENSORS_CORE=m
- CONFIG_IIO_CROS_EC_SENSORS=m
- CONFIG_IIO_ST_LSM6DSX=m
--- 
-2.33.1
+-Dov
+
+> # ls -ltrh
+> total 0
+> -rw------- 1 root root 104 Jan 21 17:56 var4
+> -rw------- 1 root root 831 Jan 21 17:56 GLOBAL_PK
+> -rw------- 1 root root 831 Jan 21 17:56 GLOBAL_KEK
+> -rw------- 1 root root  76 Jan 21 17:56 GLOBAL_dbx
+> -rw------- 1 root root 831 Jan 21 17:56 GLOBAL_db
+> --w------- 1 root root 64K Jan 21 17:57 create_var
+> -rw------- 1 root root   0 Jan 21 17:57 var1.tmp
+> --w------- 1 root root 64K Jan 21 17:58 delete_var
+> 
+> The var3 file is removed at runtime, if variable is successfully
+> removed from the PKS storage.
+> 
+> NOTE: We are evaluating two design for userspace interface: using the
+> sysfs or defining a new filesystem based. Any feedback on this sysfs based
+> approach would be highly appreciated. We have tried to follow one value
+> per attribute semantic. If that or any other semantics aren't followed
+> properly, please let us know.
+> 
+> Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
+> ---
+>  Documentation/ABI/testing/sysfs-pksvar        |  77 ++++
+>  arch/powerpc/platforms/pseries/Kconfig        |   7 +
+>  arch/powerpc/platforms/pseries/Makefile       |   1 +
+>  arch/powerpc/platforms/pseries/pksvar-sysfs.c | 356 ++++++++++++++++++
+>  4 files changed, 441 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-pksvar
+>  create mode 100644 arch/powerpc/platforms/pseries/pksvar-sysfs.c
+> 
 
