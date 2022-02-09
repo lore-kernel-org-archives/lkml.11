@@ -2,123 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CDD6C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9175FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:51:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235758AbiBIJuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:50:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
+        id S236768AbiBIJvE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:51:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234919AbiBIJuL (ORCPT
+        with ESMTP id S237766AbiBIJvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:50:11 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB8EE0738A8
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:50:05 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id t4-20020a17090a510400b001b8c4a6cd5dso1688410pjh.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:50:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1wTIjLivrgPfop/XqqzPH2ki4x3bw9zR7SXERTNkUpE=;
-        b=BmPUOAsOyFIy/ROJwTkfoKGMMQeUrXZ/VeQ51zjV07Oac0N2yds6QbO0e46Q0aEy+w
-         RzfdmSJfLrhkXDvAl+TStnSEorr/uvecb97lskcIQtfwWhvJ4ULNtZJqGkOkpmCZNH3W
-         Q6m40/vzhC4VIgAJBBiRZi6TgEXtztRXLD+lh/tF+6LBexJo1/3l4XEeFynju7nYyt7C
-         esNcDX/34rID/6YlaNhDw23+D8wYzL5R9OfLtxRkvEBgA5SmDaXbrKVVDubjfSQbQ5qj
-         tHj5ovyN2qH2tYJPqoZj3rlC+i+EcTfJcc1CbvjrT4K6nu7+qQT4M0mNfeGhQv/BYlAl
-         NEAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1wTIjLivrgPfop/XqqzPH2ki4x3bw9zR7SXERTNkUpE=;
-        b=L4QZEFeSvyAPANXS6KC8+2bs9OwtoK/pl1xtXKgGkPeNFj0w6ueVUoraB/hz1s2raO
-         BwsEbGDQNM38//utJTn1rjEjz2H7RkCE9zQ+xwHo3zn24Ly25diuAuoy1lAeuTHMXlDl
-         fR3KbwUNf3QaPI5TpviLTNnjqtjVlqBCrxnB6azL7qM1SDlDc2fNGB02HkP+CMN0PC9S
-         Cv9QLz2cSRHskTbhoPQkuv7pXi8BaO2gml+EvWrL21+nVKY8oNW987oRADPTdjQHzVTA
-         /kKiAi0L3HjXg6aNsQWDxCaIn4Xb54UODT4NiR/WWxdLsrDyshOAf8oHxVQoru1IXjtu
-         sMSg==
-X-Gm-Message-State: AOAM5327StPEKCMglFqq/3+PWpqqlQa8o/5L8CkSgJSLyvnioGiCLpvB
-        s2Am4eHSRLT+fhRi3dIBClsX
-X-Google-Smtp-Source: ABdhPJzfyc6tO7XYdUYzeul0/pG0KZLMVeopkZCqa+HTMN4bS4LlZLAjPlc7RWJovlvCfqbxESALbQ==
-X-Received: by 2002:a17:902:ce04:: with SMTP id k4mr1403914plg.153.1644399983719;
-        Wed, 09 Feb 2022 01:46:23 -0800 (PST)
-Received: from localhost.localdomain ([117.217.179.178])
-        by smtp.gmail.com with ESMTPSA id p4sm1912948pgh.53.2022.02.09.01.46.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 01:46:23 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        quic_vbadigan@quicinc.com, quic_cang@quicinc.com,
-        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, elder@linaro.org,
-        Paul Davey <paul.davey@alliedtelesis.co.nz>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Hemant Kumar <hemantk@codeaurora.org>, stable@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 01/23] bus: mhi: Fix pm_state conversion to string
-Date:   Wed,  9 Feb 2022 15:15:39 +0530
-Message-Id: <20220209094601.26131-2-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209094601.26131-1-manivannan.sadhasivam@linaro.org>
-References: <20220209094601.26131-1-manivannan.sadhasivam@linaro.org>
+        Wed, 9 Feb 2022 04:51:00 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB96BE073E0C
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:50:53 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D25BF1FB;
+        Wed,  9 Feb 2022 01:42:31 -0800 (PST)
+Received: from [10.57.88.251] (unknown [10.57.88.251])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A38703F73B;
+        Wed,  9 Feb 2022 01:42:30 -0800 (PST)
+Message-ID: <5fbadc11-0371-7dec-3189-ef5908fb3122@arm.com>
+Date:   Wed, 9 Feb 2022 09:42:29 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH v2 RESEND 1/4] coresight: etm4x: Add lock for reading
+ virtual context ID comparator
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220204152403.71775-1-leo.yan@linaro.org>
+ <20220204152403.71775-2-leo.yan@linaro.org>
+ <6b91293a-1149-2c77-04a4-421a45d4e1e0@arm.com>
+ <20220209093304.GA334894@leoy-ThinkPad-X240s>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20220209093304.GA334894@leoy-ThinkPad-X240s>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Davey <paul.davey@alliedtelesis.co.nz>
+Hi Leo
 
-On big endian architectures the mhi debugfs files which report pm state
-give "Invalid State" for all states.  This is caused by using
-find_last_bit which takes an unsigned long* while the state is passed in
-as an enum mhi_pm_state which will be of int size.
+On 09/02/2022 09:33, Leo Yan wrote:
+> Hi Suzuki,
+> 
+> On Wed, Feb 09, 2022 at 05:47:24AM +0000, Suzuki Kuruppassery Poulose wrote:
+>> Hi Leo
+>>
+>> On 04/02/2022 15:24, Leo Yan wrote:
+>>> Updates to the values and the index are protected via the spinlock.
+>>> Ensure we use the same lock to read the value safely.
+>>>
+>>> Signed-off-by: Leo Yan <leo.yan@linaro.org>
+>>> Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+>>> ---
+>>>    drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 2 ++
+>>>    1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+>>> index 10ef2a29006e..2f3b4eef8261 100644
+>>> --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+>>> +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+>>> @@ -2111,7 +2111,9 @@ static ssize_t vmid_val_show(struct device *dev,
+>>>    	struct etmv4_drvdata *drvdata = dev_get_drvdata(dev->parent);
+>>>    	struct etmv4_config *config = &drvdata->config;
+>>> +	spin_lock(&drvdata->spinlock);
+>>>    	val = (unsigned long)config->vmid_val[config->vmid_idx];
+>>> +	spin_unlock(&drvdata->spinlock);
+>>>    	return scnprintf(buf, PAGE_SIZE, "%#lx\n", val);
+>>>    }
+>>
+>>
+>> I have queued this patch.
+> 
+> Thanks!
+> 
+>> For the rest, we would need to wait until the helper lands in the rc.
 
-Fix by using __fls to pass the value of state instead of find_last_bit.
+Sorry, that was not the exact argument, see below.
 
-Fixes: a6e2e3522f29 ("bus: mhi: core: Add support for PM state transitions")
-Signed-off-by: Paul Davey <paul.davey@alliedtelesis.co.nz>
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-Reviewed-by: Hemant Kumar <hemantk@codeaurora.org>
-Cc: stable@vger.kernel.org
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/bus/mhi/core/init.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> The helper function patch has been landed on the mainline kernel,
+> it would be safe to merge the rest patches.
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d7e4f8545b497b3f5687e592f1c355cbaee64c8c
 
-diff --git a/drivers/bus/mhi/core/init.c b/drivers/bus/mhi/core/init.c
-index 046f407dc5d6..0d588b60929e 100644
---- a/drivers/bus/mhi/core/init.c
-+++ b/drivers/bus/mhi/core/init.c
-@@ -79,10 +79,12 @@ static const char * const mhi_pm_state_str[] = {
- 
- const char *to_mhi_pm_state_str(enum mhi_pm_state state)
- {
--	unsigned long pm_state = state;
--	int index = find_last_bit(&pm_state, 32);
-+	int index;
- 
--	if (index >= ARRAY_SIZE(mhi_pm_state_str))
-+	if (state)
-+		index = __fls(state);
-+
-+	if (!state || index >= ARRAY_SIZE(mhi_pm_state_str))
- 		return "Invalid State";
- 
- 	return mhi_pm_state_str[index];
-@@ -789,7 +791,6 @@ static int parse_ch_cfg(struct mhi_controller *mhi_cntrl,
- 		mhi_chan->offload_ch = ch_cfg->offload_channel;
- 		mhi_chan->db_cfg.reset_req = ch_cfg->doorbell_mode_switch;
- 		mhi_chan->pre_alloc = ch_cfg->auto_queue;
--		mhi_chan->wake_capable = ch_cfg->wake_capable;
- 
- 		/*
- 		 * If MHI host allocates buffers, then the channel direction
--- 
-2.25.1
+The coresight queue is based on rc1 and we already created a stable
+tag for TRBE erratas, which was pulled into arm64. So, (correct me
+if I am wrong), AFAIU, we cannot rebase the queue on to rc2 where
+the patch landed. But happy to proceed, if there is a solution.
 
+Mathieu, what do you think ?
+
+Cheers
+Suzuki
