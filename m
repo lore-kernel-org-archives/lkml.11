@@ -2,88 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CEABC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC73C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236561AbiBIQHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:07:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
+        id S236570AbiBIQIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:08:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236511AbiBIQHV (ORCPT
+        with ESMTP id S231704AbiBIQIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:07:21 -0500
-X-Greylist: delayed 3905 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 08:07:22 PST
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B6CC0613C9;
-        Wed,  9 Feb 2022 08:07:22 -0800 (PST)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 219EELie022353;
-        Wed, 9 Feb 2022 10:01:32 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e46jbtae8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 10:01:32 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 219F1VUx056491
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 9 Feb 2022 10:01:31 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 9 Feb 2022
- 10:01:30 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 9 Feb 2022 10:01:30 -0500
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 219F1BGV030677;
-        Wed, 9 Feb 2022 10:01:14 -0500
-From:   <alexandru.tachici@analog.com>
-To:     <o.rempel@pengutronix.de>
-CC:     <alexandru.tachici@analog.com>, <andrew@lunn.ch>,
-        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <netdev@vger.kernel.org>, <robh+dt@kernel.org>
-Subject: Re: [PATCH v4 4/7] net: phy: Add 10BASE-T1L support in phy-c45
-Date:   Wed, 9 Feb 2022 17:12:20 +0200
-Message-ID: <20220209151220.15154-1-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220207092753.GC23727@pengutronix.de>
-References: <20220207092753.GC23727@pengutronix.de>
+        Wed, 9 Feb 2022 11:08:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6631C061355
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:08:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644422896;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0y+3D1mmDP+so7K35HmtJtJnfLKa5XZgyYtLZiIRCfU=;
+        b=LfeaPp9JDVMGL6GWsUeuC955pRKJu2tTgTL39A43aGh+cKeDy+sgnnUKDJDf/LDpxBV1zh
+        UL5UBrAkZtGcHnzVy5sxQqIclG23DuQ1QGVan9ZygV8dgZsaQ7qHi1gvxgVZmGwmQhkOXN
+        4xxMCiplzdu/GtpsDWlAgC/BOAIwZT8=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-28-bdePseLWPFWkC0Mb88jn6w-1; Wed, 09 Feb 2022 11:08:15 -0500
+X-MC-Unique: bdePseLWPFWkC0Mb88jn6w-1
+Received: by mail-ej1-f70.google.com with SMTP id ka12-20020a170907990c00b006c41c582397so1399080ejc.11
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 08:08:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0y+3D1mmDP+so7K35HmtJtJnfLKa5XZgyYtLZiIRCfU=;
+        b=0eVoahyyntUWH1SYnZl2oOx8HfeyEoi7+Uc5Dil7widFBEptF+wFV80N/FYtHC5ROV
+         HUlWp3nPEqZ2wq7GDGgiC8qYmPZJ/TZwasPtB2/4v9Gpk1u8tisz4Hx1T9/Q6f3ZIX/R
+         mqjkqbBWSMMrZNqvRADrdNIO37ufPpR8iSQgSCXFY5PzyIxsa32RaVDeIZ5jxgTIcIy0
+         b946kuCTgjxQepQOaUCFntthIZnsyouGvkMGXgez/OJeol+CWrM3tkzPCYIBjWbUbCml
+         7T7AIJ9tGn8eTxtoZhRTpCeO4d+tWjQWjo+g7NFh34+vLwOgtKUtAPEdcx8J+ErVpd6N
+         RIfw==
+X-Gm-Message-State: AOAM530WYoE56DyyOztmIE6A7BkdiYm6o92WOB8Qi34fUfS9e+/UA3gS
+        1aClOy/A9SiYxCv+YDmJTS2FVm9ez55G97Hs7mXwfcZHX2/gHD7aOW56SWRbPWS8mIQ6brZOs9x
+        L7F3/rafnu92ZYsZOkNaViso2
+X-Received: by 2002:a17:906:15ca:: with SMTP id l10mr2696379ejd.435.1644422894519;
+        Wed, 09 Feb 2022 08:08:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxb6OkuwjdrgsvxBGJbTCnOXgla4rTIAOurtFalLqWz1KjOzLrxrYsGyj6nNlH9UONmPYU0kQ==
+X-Received: by 2002:a17:906:15ca:: with SMTP id l10mr2696358ejd.435.1644422894330;
+        Wed, 09 Feb 2022 08:08:14 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id va16sm4817409ejb.173.2022.02.09.08.08.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 08:08:13 -0800 (PST)
+Message-ID: <2f01e99d-e830-d03c-3a9d-30b95726cc2c@redhat.com>
+Date:   Wed, 9 Feb 2022 17:08:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: ecP3ea8MbRQPPDOZEkuMGLmXug0406tG
-X-Proofpoint-GUID: ecP3ea8MbRQPPDOZEkuMGLmXug0406tG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-09_08,2022-02-09_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=793
- priorityscore=1501 adultscore=0 lowpriorityscore=0 malwarescore=0
- suspectscore=0 impostorscore=0 bulkscore=0 clxscore=1011 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202090085
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [5.17 regression] "x86/PCI: Ignore E820 reservations for bridge
+ windows on newer systems" breaks suspend/resume
+Content-Language: en-US
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        linux-acpi <linux-acpi@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>, x86@kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Benoit_Gr=c3=a9goire?= <benoitg@coeus.ca>,
+        Hui Wang <hui.wang@canonical.com>
+References: <a7ad05fe-c2ab-a6d9-b66e-68e8c5688420@redhat.com>
+ <697aaf96-ec60-4e11-b011-0e4151e714d7@redhat.com> <YgKcl9YX4HfjqZxS@lahna>
+ <02994528-aaad-5259-1774-19aeacdd18fc@redhat.com> <YgPlQ6UK3+4/yzLk@lahna>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <YgPlQ6UK3+4/yzLk@lahna>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Sat, Dec 11, 2021 at 10:07:49PM +0100, Andrew Lunn wrote:
-> > > +		ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-> > > +		if (ret < 0)
-> > > +			return ret;
-> > > +
-> > > +		if (ret & MDIO_PMA_EXTABLE_BT1)
-> > 
-> > 
-> > This pattern of reading the MDIO_PMA_EXTABLE register and then looking
-> > for bit MDIO_PMA_EXTABLE_BT1 happens a lot. It is not something which
-> > is expected to change is it? So i wounder if it should be read once
-> > and stored away?
-> 
-> What is the state of this patches? Will you be able to make requested
-> changes and send new version?
+Hi,
 
-I will come back with a V5 where I will add the requested changes.
+On 2/9/22 17:01, Mika Westerberg wrote:
+> Hi Hans,
+> 
+> Thanks for looking into this!
+> 
+> On Wed, Feb 09, 2022 at 04:12:32PM +0100, Hans de Goede wrote:
+>> An alternative, much more elaborate fix would be to:
+>>
+>> 1. Add E820_TYPE_MMIO and E820_TYPE_MMIO_PCI_BRIDGE_WINDOW types to
+>>    enum e820_type and modify the 2 places which check for type == reserved
+>>    to treat these both as reserved too, so as to not have any functional
+>>    changes there
+>>
+>> 2. Modify the code building e820 tables from the EFI memmap to use
+>>    E820_TYPE_MMIO for MMIO EFI memmap entries and make e820_nomerge()
+>>    treat E820_TYPE_MMIO as non mergable to retain these as is
+>>
+>> 3. Modify pci_acpi_root_prepare_resources() to compare ACPI provided
+>>    bridge mmio windows against E820_TYPE_MMIO e820_Table entries and
+>>    if there is an exact match (as is the case on the Yoga C940)
+>>    then change the e820 type to E820_TYPE_MMIO_PCI_BRIDGE_WINDOW
+>>
+>>    This means that we are now very narrowly treating EFI MMIO marked
+>>    regions special, in the special case where they are a 1:1 map
+>>    to an ACPI PCI bridge window resource.
+>>
+>>    Note since we treat both E820_TYPE_MMIO and E820_TYPE_MMIO_PCI_BRIDGE_WINDOW
+>>    identical to the old RESERVED everywhere there is no functional change
+>>    here.
+>>
+>> 4. Modify arch/x86/kernel/resource.c: remove_e820_regions() to skip
+>>    e820 table entries with a type of E820_TYPE_MMIO_PCI_BRIDGE_WINDOW,
+>>    this would actually be a functional change and should fix the
+>>    issues we are trying to fix.
+>>
+>> Note an alternative would be to skip having the extra E820_TYPE_MMIO_PCI_BRIDGE_WINDOW
+>> type and to skip step 3. above. That would boil down to doing the same
+>> as your original patch in a somewhat cleaner manner.
+> 
+> I agree and my vote goes for this last alternative (e.g skipping step 3).
+> That would also make it slightly easier to follow the logic if someone
+> in the future needs to investigate possible issues around this, I think.
+
+As mentioned in my email from 10 seconds ago I think a better simpler
+fix would be to just do:
+
+diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
+index 9b9fb7882c20..18656f823764 100644
+--- a/arch/x86/kernel/resource.c
++++ b/arch/x86/kernel/resource.c
+@@ -28,6 +28,10 @@ static void remove_e820_regions(struct resource *avail)
+ 	int i;
+ 	struct e820_entry *entry;
+ 
++	/* Only remove E820 reservations on classic BIOS boot */
++	if (efi_enabled(EFI_MEMMAP))
++		return;
++
+ 	for (i = 0; i < e820_table->nr_entries; i++) {
+ 		entry = &e820_table->entries[i];
+ 
+
+I'm curious what you think of that?
 
 Regards,
-Alexandru
+
+Hans
+
