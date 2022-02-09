@@ -2,152 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DED07C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AAADC4167B
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244235AbiBICnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:43:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57596 "EHLO
+        id S1343632AbiBICoG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:44:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239658AbiBIBmP (ORCPT
+        with ESMTP id S229558AbiBIBNZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:42:15 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1ACFC06157B;
-        Tue,  8 Feb 2022 17:42:11 -0800 (PST)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JtjJ51574z9sWd;
-        Wed,  9 Feb 2022 09:40:37 +0800 (CST)
-Received: from [10.67.110.173] (10.67.110.173) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 9 Feb 2022 09:42:08 +0800
-Message-ID: <248bf5e4-f171-0f18-90ec-f4be886cb35e@huawei.com>
-Date:   Wed, 9 Feb 2022 09:42:08 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: Problem with commit ccf11dbaa07b ("evm: Fix memleak in
- init_desc")
-Content-Language: en-US
-To:     Mimi Zohar <zohar@linux.ibm.com>
-CC:     Roberto Sassu <roberto.sassu@huawei.com>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        <linux-security-module@vger.kernel.org>,
-        wangweiyang <wangweiyang2@huawei.com>,
-        "xiujianfeng@huawei.com" <xiujianfeng@huawei.com>
-References: <e852660c-17fa-cd75-e361-45dd77b8884d@huawei.com>
- <ec4348e54b39811b727a29f3c23972eab616dcd3.camel@linux.ibm.com>
-From:   "Guozihua (Scott)" <guozihua@huawei.com>
-In-Reply-To: <ec4348e54b39811b727a29f3c23972eab616dcd3.camel@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+        Tue, 8 Feb 2022 20:13:25 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1977EC061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 17:13:24 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so700532pjh.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 17:13:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=t5FgH2YJXOPf/xxPjv6QRrKmo/4kA2ug0zb3e+u3Xao=;
+        b=zIbTskggTwuJ8Cs4sq0rq+triPMJ73QwqJeAJl8rQPFbTgi9R6UFxKykUlvi2LoERU
+         JfrHtLoOEo2RSK7qLDy3j0ClM1pKefSYA/drHmfx4QjoQzLJnW2Km/A5MIhKulJwl9Qv
+         jhkGIKcGThJzb+5tYP9Iyh0pn5HgLF/ba+Q9AR8Q3k9b3cKxTwZbWZ9D4aKYsijihkOe
+         lpZM1ZR+9/hhfA3fWhGbyfHdzF9Pi3vGiDrlGNkkacJ/7zITVO8irSIW3xVovn540T2p
+         +QWlc3FWZdjDBSBgODptqPqPSjLdv3glClBxbuSCWJv0QMkMZrnl266Jo4je6sRoA4q1
+         igCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=t5FgH2YJXOPf/xxPjv6QRrKmo/4kA2ug0zb3e+u3Xao=;
+        b=Mb83jUSj6gBUKiNHLIUCsfMwKSUdPgUNx1qa1GO3vYebGn+hcE3Ky34dM27gswQNgw
+         YU8keKNyD+QwepQuObuDMNpUnQZa8HweIuCRI/UkxTFP4+RoHyLGEhOx3dRCqVa5AVBF
+         dYXw6JziWGNFgGpebgGl296JJwx5sTTTEG8e8g9LdG/T6bIwp48fLZqm7VPbaSVxZ06i
+         8b0ae8Q4NRV4tbMjokOwcr978phqWvb7KJgvhNvTDPuYU3BiX/v+N++nZpFxzq9iigKg
+         p6SgLPqUeVIglwzooBc5BfEa7VKYwsFynb8sViTKQ5UH4HTZmcIYtHo1hR6ncfI1aYrJ
+         Z+hw==
+X-Gm-Message-State: AOAM533Ps7wFsEA2yGav0rtJBsqJbU4CTkrN57DkfjOjMAsrEkrjpP7D
+        SbxLqfXs6e3eM9c6ZQ6yk5Zazw==
+X-Google-Smtp-Source: ABdhPJyMzXTZUWesPmKCROa5Vq0xkIcpEaIdsXW7yw+ZtlpYv491NFu63mbL/Q0o7cNRpbRns9anbg==
+X-Received: by 2002:a17:903:228c:: with SMTP id b12mr6801223plh.36.1644369203436;
+        Tue, 08 Feb 2022 17:13:23 -0800 (PST)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id pg2sm4559295pjb.54.2022.02.08.17.13.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 17:13:22 -0800 (PST)
+Date:   Tue, 08 Feb 2022 17:13:22 -0800 (PST)
+X-Google-Original-Date: Tue, 08 Feb 2022 17:12:33 PST (-0800)
+Subject:     Re: [PATCH] riscv: extable: fix err reg writing in dedicated uaccess handler
+In-Reply-To: <20220123090417.630-1-jszhang@kernel.org>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        mchitale@ventanamicro.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     jszhang@kernel.org
+Message-ID: <mhng-1843aa8a-4e63-4366-9b70-42448c3d37b8@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.173]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500024.china.huawei.com (7.185.36.203)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/2/8 23:20, Mimi Zohar wrote:
-> On Tue, 2022-02-08 at 16:53 +0800, Guozihua (Scott) wrote:
->> Hi Mimi,
->>
->> I found an issue with commit ccf11dbaa07b ("evm: Fix memleak in init_desc").
->>
->> This commit tries to free variable "tmp_tfm" if something went wrong
->> after the "alloc" label in function init_desc, which would potentially
->> cause a user-after-free issue
->>
->> The codes are as follows:
->>
->>     1 static struct shash_desc *init_desc(char type, uint8_t hash_algo)
->>     2 {
->>     3 	long rc;
->>     4 	const char *algo;
->>     5 	struct crypto_shash **tfm, *tmp_tfm = NULL;
->>     6 	struct shash_desc *desc;
->>     7
->>     8 	if (type == EVM_XATTR_HMAC) {
->>     9 		if (!(evm_initialized & EVM_INIT_HMAC)) {
->>    10 			pr_err_once("HMAC key is not set\n");
->>    11 			return ERR_PTR(-ENOKEY);
->>    12 		}
->>    13 		tfm = &hmac_tfm;
->>    14 		algo = evm_hmac;
->>    15 	} else {
->>    16 		if (hash_algo >= HASH_ALGO__LAST)
->>    17 			return ERR_PTR(-EINVAL);
->>    18
->>    19 		tfm = &evm_tfm[hash_algo];
->>    20 		algo = hash_algo_name[hash_algo];
->>    21 	}
->>    22
->>    23 	if (*tfm)
->>    24 		goto alloc;
->>    25 	mutex_lock(&mutex);
->>    26 	if (*tfm)
->>    27 		goto unlock;
->>    28
->>    29 	tmp_tfm = crypto_alloc_shash(algo, 0, CRYPTO_NOLOAD);
->>    30 	if (IS_ERR(tmp_tfm)) {
->>    31 		pr_err("Can not allocate %s (reason: %ld)\n", algo,
->>    32 		       PTR_ERR(tmp_tfm));
->>    33 		mutex_unlock(&mutex);
->>    34 		return ERR_CAST(tmp_tfm);
->>    35 	}
->>    36 	if (type == EVM_XATTR_HMAC) {
->>    37 		rc = crypto_shash_setkey(tmp_tfm, evmkey, evmkey_len);
->>    38 		if (rc) {
->>    39 			crypto_free_shash(tmp_tfm);
->>    40 			⋅mutex_unlock(&mutex);
->>    41 			return ERR_PTR(rc);
->>    42 		}
->>    43 	}
->>    44 	*tfm = tmp_tfm;
->>    45 unlock:
->>    46 	mutex_unlock(&mutex);
->>    47 alloc:
->>    48 	desc = kmalloc(sizeof(*desc) + crypto_shash_descsize(*tfm),
->>    49 			GFP_KERNEL);
->>    50 	if (!desc) {
->>    51 		crypto_free_shash(tmp_tfm);
->>    52 		return ERR_PTR(-ENOMEM);
->>    53 	}
->>    54
->>    55 	desc->tfm = *tfm;
->>    56
->>    57 	rc = crypto_shash_init(desc);
->>    58 	if (rc) {
->>    59 		crypto_free_shash(tmp_tfm);
->>    60 		kfree(desc);
->>    61 		return ERR_PTR(rc);
->>    62 	}
->>    63 	return desc;
->>    64 }
->>
->> As we can see, variable *tfm points to one of the two global variable
->> hmac_tfm or evm_tfm[hash_algo]. tmp_tfm is used as an intermediate
->> variable for initializing these global variables. Freeing tmp_tfm after
->> line 44 would invalidate these global variables and potentially cause a
->> user-after-free issue.
->>
->> I think this commit should be reverted.
->>
->> Reference: commit 843385694721 ("evm: Fix a small race in init_desc()")
-> 
-> Why this one, as opposed to commit ccf11dbaa07b ("evm: Fix memleak in
-> init_desc")?
-> 
+On Sun, 23 Jan 2022 01:04:17 PST (-0800), jszhang@kernel.org wrote:
+> Mayuresh reported commit 20802d8d477d ("riscv: extable: add a dedicated
+> uaccess handler") breaks the writev02 test case in LTP. This is due to
+> the err reg isn't correctly set with the errno(-EFAULT in writev02
+> case). First of all, the err and zero regs are reg numbers rather than
+> reg offsets in struct pt_regs; Secondly, regs_set_gpr() should write
+> the regs when offset isn't zero(zero means epc)
+>
+> Fix it by correcting regs_set_gpr() logic and passing the correct reg
+> offset to it.
+>
+> Reported-by: Mayuresh Chitale <mchitale@ventanamicro.com>
+> Fixes: 20802d8d477d ("riscv: extable: add a dedicated uaccess handler")
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>  arch/riscv/mm/extable.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
+> index 05978f78579f..35484d830fd6 100644
+> --- a/arch/riscv/mm/extable.c
+> +++ b/arch/riscv/mm/extable.c
+> @@ -33,7 +33,7 @@ static inline void regs_set_gpr(struct pt_regs *regs, unsigned int offset,
+>  	if (unlikely(offset > MAX_REG_OFFSET))
+>  		return;
+>
+> -	if (!offset)
+> +	if (offset)
+>  		*(unsigned long *)((unsigned long)regs + offset) = val;
+>  }
+>
+> @@ -43,8 +43,8 @@ static bool ex_handler_uaccess_err_zero(const struct exception_table_entry *ex,
+>  	int reg_err = FIELD_GET(EX_DATA_REG_ERR, ex->data);
+>  	int reg_zero = FIELD_GET(EX_DATA_REG_ZERO, ex->data);
+>
+> -	regs_set_gpr(regs, reg_err, -EFAULT);
+> -	regs_set_gpr(regs, reg_zero, 0);
+> +	regs_set_gpr(regs, reg_err * sizeof(unsigned long), -EFAULT);
+> +	regs_set_gpr(regs, reg_zero * sizeof(unsigned long), 0);
+>
+>  	regs->epc = get_ex_fixup(ex);
+>  	return true;
 
-Hi Mimi,
-
-I mean commit ccf11dbaa07b ("evm: Fix memleak in init_desc") should be 
-reverted. commit 843385694721 ("evm: Fix a small race in init_desc()") 
-is just for reference.
-
--- 
-Best
-GUO Zihua
+Thanks, this is on fixes.  I'm not sure if it's saner to have these be 
+register numbers rather than offsets, but regs_get_register is this way 
+so it's probably better to have them match.
