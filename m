@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F760C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69108C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:12:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235300AbiBIGIe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:08:34 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53396 "EHLO
+        id S240416AbiBIGIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:08:05 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236149AbiBIGB5 (ORCPT
+        with ESMTP id S235833AbiBIGBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:01:57 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830F4C05CBA7;
-        Tue,  8 Feb 2022 22:01:59 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V3zg5Md_1644386497;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V3zg5Md_1644386497)
+        Wed, 9 Feb 2022 01:01:52 -0500
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B78C05CBA7;
+        Tue,  8 Feb 2022 22:01:55 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V3zeEdM_1644386488;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V3zeEdM_1644386488)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Feb 2022 14:01:38 +0800
+          Wed, 09 Feb 2022 14:01:29 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -27,9 +27,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
         tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 22/22] erofs: add 'uuid' mount option
-Date:   Wed,  9 Feb 2022 14:01:08 +0800
-Message-Id: <20220209060108.43051-23-jefflexu@linux.alibaba.com>
+Subject: [PATCH v3 15/22] erofs: implement fscache-based data read for non-inline layout
+Date:   Wed,  9 Feb 2022 14:01:01 +0800
+Message-Id: <20220209060108.43051-16-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220209060108.43051-1-jefflexu@linux.alibaba.com>
 References: <20220209060108.43051-1-jefflexu@linux.alibaba.com>
@@ -39,137 +39,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce 'uuid' mount option to enable on-demand read sementics. In
-this case, erofs could be mounted from blob files instead of blkdev.
-By then users could specify the path of bootstrap blob file containing
-the complete erofs image.
+This patch implements the data plane of reading data from bootstrap blob
+file over fscache for non-inline layout.
+
+Be noted that compressed layout is not supported yet.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/super.c | 44 +++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 37 insertions(+), 7 deletions(-)
+ fs/erofs/fscache.c  | 94 +++++++++++++++++++++++++++++++++++++++++++++
+ fs/erofs/inode.c    |  6 ++-
+ fs/erofs/internal.h |  1 +
+ 3 files changed, 100 insertions(+), 1 deletion(-)
 
-diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index 2942029a7049..8bc4b782f9a9 100644
---- a/fs/erofs/super.c
-+++ b/fs/erofs/super.c
-@@ -400,6 +400,7 @@ enum {
- 	Opt_dax,
- 	Opt_dax_enum,
- 	Opt_device,
-+	Opt_uuid,
- 	Opt_err
- };
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+index a29d2ecff58b..82fdde054b0b 100644
+--- a/fs/erofs/fscache.c
++++ b/fs/erofs/fscache.c
+@@ -4,6 +4,12 @@
+  */
+ #include "internal.h"
  
-@@ -424,6 +425,7 @@ static const struct fs_parameter_spec erofs_fs_parameters[] = {
- 	fsparam_flag("dax",             Opt_dax),
- 	fsparam_enum("dax",		Opt_dax_enum, erofs_dax_param_enums),
- 	fsparam_string("device",	Opt_device),
-+	fsparam_string("uuid",		Opt_uuid),
- 	{}
- };
- 
-@@ -519,6 +521,12 @@ static int erofs_fc_parse_param(struct fs_context *fc,
- 		}
- 		++ctx->devs->extra_devices;
- 		break;
-+	case Opt_uuid:
-+		kfree(ctx->opt.uuid);
-+		ctx->opt.uuid = kstrdup(param->string, GFP_KERNEL);
-+		if (!ctx->opt.uuid)
-+			return -ENOMEM;
-+		break;
- 	default:
- 		return -ENOPARAM;
- 	}
-@@ -593,9 +601,14 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 
- 	sb->s_magic = EROFS_SUPER_MAGIC;
- 
--	if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
--		erofs_err(sb, "failed to set erofs blksize");
--		return -EINVAL;
-+	if (erofs_bdev_mode(sb)) {
-+		if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
-+			erofs_err(sb, "failed to set erofs blksize");
-+			return -EINVAL;
-+		}
-+	} else {
-+		sb->s_blocksize = EROFS_BLKSIZ;
-+		sb->s_blocksize_bits = LOG_BLOCK_SIZE;
- 	}
- 
- 	sbi = kzalloc(sizeof(*sbi), GFP_KERNEL);
-@@ -604,11 +617,12 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 
- 	sb->s_fs_info = sbi;
- 	sbi->opt = ctx->opt;
--	sbi->dax_dev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->dax_part_off);
- 	sbi->devs = ctx->devs;
- 	ctx->devs = NULL;
- 
--	if (!erofs_bdev_mode(sb)) {
-+	if (erofs_bdev_mode(sb)) {
-+		sbi->dax_dev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->dax_part_off);
-+	} else {
- 		struct erofs_fscache_context *bootstrap;
- 
- 		bootstrap = erofs_fscache_get_ctx(sb, ctx->opt.uuid, true);
-@@ -620,6 +634,8 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 		err = super_setup_bdi(sb);
- 		if (err)
- 			return err;
++struct erofs_fscache_map {
++	struct erofs_fscache_context *m_ctx;
++	erofs_off_t m_pa, m_la, o_la;
++	u64 m_llen;
++};
 +
-+		sbi->dax_dev = NULL;
- 	}
+ static struct fscache_volume *volume;
  
- 	err = erofs_read_superblock(sb);
-@@ -682,6 +698,11 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 
- static int erofs_fc_get_tree(struct fs_context *fc)
- {
-+	struct erofs_fs_context *ctx = fc->fs_private;
-+
-+	if (ctx->opt.uuid)
-+		return get_tree_nodev(fc, erofs_fc_fill_super);
-+
- 	return get_tree_bdev(fc, erofs_fc_fill_super);
+ static int erofs_fscache_read_page(struct fscache_cookie *cookie,
+@@ -58,10 +64,98 @@ static int erofs_fscache_readpage_blob(struct file *data, struct page *page)
+ 	return ret;
  }
  
-@@ -731,6 +752,7 @@ static void erofs_fc_free(struct fs_context *fc)
- 	struct erofs_fs_context *ctx = fc->fs_private;
- 
- 	erofs_free_dev_context(ctx->devs);
-+	kfree(ctx->opt.uuid);
- 	kfree(ctx);
- }
- 
-@@ -771,7 +793,10 @@ static void erofs_kill_sb(struct super_block *sb)
- 
- 	WARN_ON(sb->s_magic != EROFS_SUPER_MAGIC);
- 
--	kill_block_super(sb);
-+	if (erofs_bdev_mode(sb))
-+		kill_block_super(sb);
-+	else
-+		generic_shutdown_super(sb);
- 
- 	sbi = EROFS_SB(sb);
- 	if (!sbi)
-@@ -889,7 +914,12 @@ static int erofs_statfs(struct dentry *dentry, struct kstatfs *buf)
- {
- 	struct super_block *sb = dentry->d_sb;
- 	struct erofs_sb_info *sbi = EROFS_SB(sb);
--	u64 id = huge_encode_dev(sb->s_bdev->bd_dev);
-+	u64 id;
++static inline int erofs_fscache_get_map(struct erofs_fscache_map *fsmap,
++					struct erofs_map_blocks *map,
++					struct super_block *sb)
++{
++	struct erofs_sb_info *sbi = EROFS_SB(sb);
 +
-+	if (erofs_bdev_mode(sb))
-+		id = huge_encode_dev(sb->s_bdev->bd_dev);
++	fsmap->m_ctx  = sbi->bootstrap;
++	fsmap->m_la   = map->m_la;
++	fsmap->m_pa   = map->m_pa;
++	fsmap->m_llen = map->m_llen;
++
++	return 0;
++}
++
++static int erofs_fscache_readpage_noinline(struct page *page,
++					   struct erofs_fscache_map *fsmap)
++{
++	struct fscache_cookie *cookie = fsmap->m_ctx->cookie;
++	/*
++	 * 1) For FLAT_PLAIN layout, the output map.m_la shall be equal to o_la,
++	 * and the output map.m_pa is exactly the physical address of o_la.
++	 * 2) For CHUNK_BASED layout, the output map.m_la is rounded down to the
++	 * nearest chunk boundary, and the output map.m_pa is actually the
++	 * physical address of this chunk boundary. So we need to recalculate
++	 * the actual physical address of o_la.
++	 */
++	loff_t start = fsmap->m_pa + fsmap->o_la - fsmap->m_la;
++
++	return erofs_fscache_read_page(cookie, page, start);
++}
++
++static int erofs_fscache_do_readpage(struct page *page)
++{
++	struct inode *inode = page->mapping->host;
++	struct erofs_inode *vi = EROFS_I(inode);
++	struct super_block *sb = inode->i_sb;
++	struct erofs_map_blocks map;
++	struct erofs_fscache_map fsmap;
++	int ret;
++
++	if (erofs_inode_is_data_compressed(vi->datalayout)) {
++		erofs_info(sb, "compressed layout not supported yet");
++		return -EOPNOTSUPP;
++	}
++
++	map.m_la = fsmap.o_la = page_offset(page);
++
++	ret = erofs_map_blocks(inode, &map, EROFS_GET_BLOCKS_RAW);
++	if (ret)
++		return ret;
++
++	if (!(map.m_flags & EROFS_MAP_MAPPED)) {
++		zero_user(page, 0, PAGE_SIZE);
++		return 0;
++	}
++
++	ret = erofs_fscache_get_map(&fsmap, &map, sb);
++	if (ret)
++		return ret;
++
++	switch (vi->datalayout) {
++	case EROFS_INODE_FLAT_PLAIN:
++	case EROFS_INODE_CHUNK_BASED:
++		return erofs_fscache_readpage_noinline(page, &fsmap);
++	default:
++		DBG_BUGON(1);
++		return -EOPNOTSUPP;
++	}
++}
++
++static int erofs_fscache_readpage(struct file *file, struct page *page)
++{
++	int ret;
++
++	ret = erofs_fscache_do_readpage(page);
++	if (ret)
++		SetPageError(page);
 +	else
-+		id = 0; /* TODO */
++		SetPageUptodate(page);
++
++	unlock_page(page);
++	return ret;
++}
++
+ static const struct address_space_operations erofs_fscache_blob_aops = {
+ 	.readpage = erofs_fscache_readpage_blob,
+ };
  
- 	buf->f_type = sb->s_magic;
- 	buf->f_bsize = EROFS_BLKSIZ;
++const struct address_space_operations erofs_fscache_access_aops = {
++	.readpage = erofs_fscache_readpage,
++};
++
+ struct page *erofs_fscache_read_cache_page(struct erofs_fscache_context *ctx,
+ 					   pgoff_t index)
+ {
+diff --git a/fs/erofs/inode.c b/fs/erofs/inode.c
+index ff62f84f47d3..2f450cb3a7b9 100644
+--- a/fs/erofs/inode.c
++++ b/fs/erofs/inode.c
+@@ -296,7 +296,11 @@ static int erofs_fill_inode(struct inode *inode, int isdir)
+ 		err = z_erofs_fill_inode(inode);
+ 		goto out_unlock;
+ 	}
+-	inode->i_mapping->a_ops = &erofs_raw_access_aops;
++
++	if (erofs_bdev_mode(inode->i_sb))
++		inode->i_mapping->a_ops = &erofs_raw_access_aops;
++	else
++		inode->i_mapping->a_ops = &erofs_fscache_access_aops;
+ 
+ out_unlock:
+ 	erofs_put_metabuf(&buf);
+diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+index fca706cfaf72..548f928b0ded 100644
+--- a/fs/erofs/internal.h
++++ b/fs/erofs/internal.h
+@@ -393,6 +393,7 @@ struct page *erofs_grab_cache_page_nowait(struct address_space *mapping,
+ extern const struct super_operations erofs_sops;
+ 
+ extern const struct address_space_operations erofs_raw_access_aops;
++extern const struct address_space_operations erofs_fscache_access_aops;
+ extern const struct address_space_operations z_erofs_aops;
+ 
+ /*
 -- 
 2.27.0
 
