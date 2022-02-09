@@ -2,193 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04DF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:36:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236144AbiBIPgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:36:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50710 "EHLO
+        id S230307AbiBIPgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:36:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236049AbiBIPgF (ORCPT
+        with ESMTP id S236242AbiBIPgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:36:05 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF21FC05CB97
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:36:06 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AE34C12FC;
-        Wed,  9 Feb 2022 07:36:06 -0800 (PST)
-Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 93CA43F73B;
-        Wed,  9 Feb 2022 07:36:04 -0800 (PST)
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     ardb@kernel.org, bp@alien8.de, catalin.marinas@arm.com,
-        dave.hansen@linux.intel.com, frederic@kernel.org,
-        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
-        linux-kernel@vger.kernel.org, luto@kernel.org,
-        mark.rutland@arm.com, mingo@redhat.com, peterz@infradead.org,
-        tglx@linutronix.de, valentin.schneider@arm.com, will@kernel.org
-Subject: [PATCH v3 7/7] arm64: support PREEMPT_DYNAMIC
-Date:   Wed,  9 Feb 2022 15:35:35 +0000
-Message-Id: <20220209153535.818830-8-mark.rutland@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220209153535.818830-1-mark.rutland@arm.com>
-References: <20220209153535.818830-1-mark.rutland@arm.com>
+        Wed, 9 Feb 2022 10:36:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A40EC050CDE;
+        Wed,  9 Feb 2022 07:36:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA1E7614F5;
+        Wed,  9 Feb 2022 15:36:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EACE0C340E7;
+        Wed,  9 Feb 2022 15:36:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644420998;
+        bh=AYiSnNGzd7sXenCfs60QjVqVRErTSfdKRWpFCVKKFQg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=sdQdEymDMm2ZzCxwgTKBq6KkUy4nsmX/Xn5tZBfJmB54+vP1mVscS9kTjMmg5I+HP
+         JOQkPPaj8u9SZrbVjVZzQFXqNNW1DQIqZnF3UhAII+SkXnuu4JrGUD42EAXPjYMkMd
+         1a5D+mS7NPEKwM/xDeM9Gg58ffg2s2LFGrpftCabW55o5HzgXfSZrvcDKlVn1NlcZR
+         cBQMQjJpKI+n495D1Xb/pBs3pSUFgwDfGeudwiz02L/yr0yk+0WOfmREhIkwG3c6LK
+         7EtkoSWUFLnr6ujaV9PYrT4RkRCt+vuTxjbDr6z5S/aJylqEjBaOilbdt0ffAecCXM
+         Gw+M2DBHNMhmg==
+Date:   Wed, 9 Feb 2022 09:36:36 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Richard Zhu <hongxing.zhu@nxp.com>
+Cc:     l.stach@pengutronix.de, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, shawnguo@kernel.org,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Subject: Re: [RFC 2/2] PCI: imx6: Enable imx6qp pcie power management support
+Message-ID: <20220209153636.GA557361@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644390156-5940-2-git-send-email-hongxing.zhu@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch enables support for PREEMPT_DYNAMIC on arm64, allowing the
-preemption model to be chosen at boot time.
+In subject, s/pcie/PCIe/ or remove it altogether, since I don't think
+it adds useful information.
 
-Specifically, this patch selects HAVE_PREEMPT_DYNAMIC_KEY, so that each
-preemption function is an out-of-line call with an early return
-depending upon a static key. This leaves almost all the codegen up to
-the compiler, and side-steps a number of pain points with static calls
-(e.g. interaction with CFI schemes). This should have no worse overhead
-than using non-inline static calls, as those use out-of-line trampolines
-with early returns.
+On Wed, Feb 09, 2022 at 03:02:36PM +0800, Richard Zhu wrote:
+> i.MX6QP PCIe supports the RESET logic, thus it can support
+> the L2 exit by the reset mechanism.
+> Enable the i.MX6QP PCIe suspend/resume operations support.
 
-For example, the dynamic_cond_resched() wrapper looks as follows when
-enabled. When disabled, the first `B` is replaced with a `NOP`,
-resulting in an early return.
+Add blank line between paragraphs or rewrap into a single paragraph.
 
-| <dynamic_cond_resched>:
-|        bti     c
-|        b       <dynamic_cond_resched+0x10>     // or `nop`
-|        mov     w0, #0x0
-|        ret
-|        mrs     x0, sp_el0
-|        ldr     x0, [x0, #8]
-|        cbnz    x0, <dynamic_cond_resched+0x8>
-|        paciasp
-|        stp     x29, x30, [sp, #-16]!
-|        mov     x29, sp
-|        bl      <preempt_schedule_common>
-|        mov     w0, #0x1
-|        ldp     x29, x30, [sp], #16
-|        autiasp
-|        ret
+Rewrap to fill 75 columns.
 
-... compared to the regular form of the function:
+What does "L2 exit by reset mechanism" mean?  Is this an
+i.MX6-specific thing?  If not, can you point me to the relevant part
+of the PCIe spec?
 
-| <__cond_resched>:
-|        bti     c
-|        mrs     x0, sp_el0
-|        ldr     x1, [x0, #8]
-|        cbz     x1, <__cond_resched+0x18>
-|        mov     w0, #0x0
-|        ret
-|        paciasp
-|        stp     x29, x30, [sp, #-16]!
-|        mov     x29, sp
-|        bl      <preempt_schedule_common>
-|        mov     w0, #0x1
-|        ldp     x29, x30, [sp], #16
-|        autiasp
-|        ret
-
-Since arm64 does not yet use the generic entry code, we must define our
-own `sk_dynamic_irqentry_exit_cond_resched`, which will be
-enabled/disabled by the common code in kernel/sched/core.c. All other
-preemption functions and associated static keys are defined there.
-
-Note that PREEMPT_DYNAMIC is `def bool y`, so this will default to
-enabled.
-
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Frederic Weisbecker <frederic@kernel.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Joey Gouly <joey.gouly@arm.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Valentin Schneider <valentin.schneider@arm.com>
-Cc: Will Deacon <will@kernel.org>
----
- arch/arm64/Kconfig               |  1 +
- arch/arm64/include/asm/preempt.h | 19 +++++++++++++++++--
- arch/arm64/kernel/entry-common.c | 10 +++++++++-
- 3 files changed, 27 insertions(+), 3 deletions(-)
-
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index f2b5a4abef21..3831d922a81d 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -192,6 +192,7 @@ config ARM64
- 	select HAVE_PERF_EVENTS
- 	select HAVE_PERF_REGS
- 	select HAVE_PERF_USER_STACK_DUMP
-+	select HAVE_PREEMPT_DYNAMIC_KEY
- 	select HAVE_REGS_AND_STACK_ACCESS_API
- 	select HAVE_POSIX_CPU_TIMERS_TASK_WORK
- 	select HAVE_FUNCTION_ARG_ACCESS_API
-diff --git a/arch/arm64/include/asm/preempt.h b/arch/arm64/include/asm/preempt.h
-index e83f0982b99c..0159b625cc7f 100644
---- a/arch/arm64/include/asm/preempt.h
-+++ b/arch/arm64/include/asm/preempt.h
-@@ -2,6 +2,7 @@
- #ifndef __ASM_PREEMPT_H
- #define __ASM_PREEMPT_H
- 
-+#include <linux/jump_label.h>
- #include <linux/thread_info.h>
- 
- #define PREEMPT_NEED_RESCHED	BIT(32)
-@@ -80,10 +81,24 @@ static inline bool should_resched(int preempt_offset)
- }
- 
- #ifdef CONFIG_PREEMPTION
-+
- void preempt_schedule(void);
--#define __preempt_schedule() preempt_schedule()
- void preempt_schedule_notrace(void);
--#define __preempt_schedule_notrace() preempt_schedule_notrace()
-+
-+#ifdef CONFIG_PREEMPT_DYNAMIC
-+
-+DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-+void dynamic_preempt_schedule(void);
-+#define __preempt_schedule()		dynamic_preempt_schedule()
-+void dynamic_preempt_schedule_notrace(void);
-+#define __preempt_schedule_notrace()	dynamic_preempt_schedule_notrace()
-+
-+#else /* CONFIG_PREEMPT_DYNAMIC */
-+
-+#define __preempt_schedule()		preempt_schedule()
-+#define __preempt_schedule_notrace()	preempt_schedule_notrace()
-+
-+#endif /* CONFIG_PREEMPT_DYNAMIC */
- #endif /* CONFIG_PREEMPTION */
- 
- #endif /* __ASM_PREEMPT_H */
-diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
-index 2c639b6b676d..675352ec1368 100644
---- a/arch/arm64/kernel/entry-common.c
-+++ b/arch/arm64/kernel/entry-common.c
-@@ -220,9 +220,17 @@ static void noinstr arm64_exit_el1_dbg(struct pt_regs *regs)
- 		lockdep_hardirqs_on(CALLER_ADDR0);
- }
- 
-+#ifdef CONFIG_PREEMPT_DYNAMIC
-+DEFINE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-+#define need_irq_preemption() \
-+	(static_branch_unlikely(&sk_dynamic_irqentry_exit_cond_resched))
-+#else
-+#define need_irq_preemption()	(IS_ENABLED(CONFIG_PREEMPTION))
-+#endif
-+
- static void __sched arm64_preempt_schedule_irq(void)
- {
--	if (!IS_ENABLED(CONFIG_PREEMPTION))
-+	if (!need_irq_preemption())
- 		return;
- 
- 	/*
--- 
-2.30.2
-
+Bjorn
