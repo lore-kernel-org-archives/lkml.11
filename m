@@ -2,134 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2BC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CEE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236820AbiBIQZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:25:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55532 "EHLO
+        id S236828AbiBIQZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:25:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236801AbiBIQZZ (ORCPT
+        with ESMTP id S236822AbiBIQZh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:25:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D01DFC061355
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:25:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644423927;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=U2UGaBijIxRE44n1fVKzxpivW+ch5MCUy66hzNFFtU0=;
-        b=BaJVB3ftuc/TeDVEkToLkkpich0l4/qIaPtESys2SG6JZru5lVOwmMHn5WU3W9LGptjvMl
-        0Se+70TsVpY6obWxJ4ec0qYiGbZf6nXc8A1EE5D+30IH+MAIf2IzhKtLUGVfiTPKFIKyfE
-        HTiZFeEqeyNGoOlsOrxR8tXXkXnRl8w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-110-3I4lEYmZMP6JoO_1rqQMAw-1; Wed, 09 Feb 2022 11:25:23 -0500
-X-MC-Unique: 3I4lEYmZMP6JoO_1rqQMAw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C2C7D814264;
-        Wed,  9 Feb 2022 16:25:21 +0000 (UTC)
-Received: from [10.22.18.180] (unknown [10.22.18.180])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AB8277D3CC;
-        Wed,  9 Feb 2022 16:25:20 +0000 (UTC)
-Message-ID: <c99b49a3-263a-f0b4-de3c-3271153a5208@redhat.com>
-Date:   Wed, 9 Feb 2022 11:25:20 -0500
+        Wed, 9 Feb 2022 11:25:37 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1421BC05CB88;
+        Wed,  9 Feb 2022 08:25:37 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: detlev)
+        with ESMTPSA id 7C9811F437CC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644423933;
+        bh=wUyTh4TxAaAhhf0GaFyj+4ErZEcZzUH0SZMh0f5d9aI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=X3Zo1DikBaErEDlbfGfpcfYsLZVVx4HB6xSkJsJDbnuJB3SbWgYHSFkw+yPWfclOQ
+         7BXPGKatk9pqjqTKTJFxaC5RyIxAC8HagGc6y8sAOOAX6mvv9CE1lAcn7XnP8c3ZdL
+         35sxQRLm6g6BEYSYcWhVbzcMvhJbqV76D6fP7/uMDe+/VUZup6i4zSmpZ+iY4FatVh
+         TYqYIo9S28072Qs7SWeibkeZoHIsuYiIfwfiVhH1xygwSF0MaSlOA3WeRP8GN/AEKh
+         d6fgHZCPL/f5TFnL9w5/lO3LVF7DjumyT9fN9I/9QQk4bRy0QDQoJSCb8v1RH4fJ7v
+         dqTGDbv5v7Dkg==
+From:   Detlev Casanova <detlev.casanova@collabora.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Detlev Casanova <detlev.casanova@collabora.com>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org (maintainer:ARM AND ARM64 SoC SUB-ARCHITECTURES (COMMON
+        PARTS)), Rob Herring <robh+dt@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM
+        BCM281XX/BCM11XXX/BCM216XX ARM ARCHITE...),
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM AND ARM64 SoC
+        SUB-ARCHITECTURES (COMMON PARTS)),
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        linux-rpi-kernel@lists.infradead.org (moderated list:BROADCOM
+        BCM2711/BCM2835 ARM ARCHITECTURE)
+Subject: [PATCH 0/2] ARM: dts: Support official Raspberry Pi 7inch touchscreen
+Date:   Wed,  9 Feb 2022 11:25:10 -0500
+Message-Id: <20220209162515.706729-1-detlev.casanova@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] copy_process(): Move fd_install() out of sighand->siglock
- critical section
-Content-Language: en-US
-To:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Christian Brauner <brauner@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alexey Gladkov <legion@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Jann Horn <jannh@google.com>, linux-kernel@vger.kernel.org
-References: <20220208163912.1084752-1-longman@redhat.com>
- <YgKziblMKsmHkP4f@zeniv-ca.linux.org.uk>
- <bd83aca3-059f-92dd-e094-b27f51f9481a@redhat.com>
- <YgK/fdYWi0wWysci@zeniv-ca.linux.org.uk>
- <874k59f2ad.fsf@email.froward.int.ebiederm.org>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <874k59f2ad.fsf@email.froward.int.ebiederm.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/8/22 16:59, Eric W. Biederman wrote:
-> Al Viro <viro@zeniv.linux.org.uk> writes:
->
->> On Tue, Feb 08, 2022 at 01:51:35PM -0500, Waiman Long wrote:
->>> On 2/8/22 13:16, Al Viro wrote:
->>>> On Tue, Feb 08, 2022 at 11:39:12AM -0500, Waiman Long wrote:
->>>>
->>>>> One way to solve this problem is to move the fd_install() call out of
->>>>> the sighand->siglock critical section.
->>>>>
->>>>> Before commit 6fd2fe494b17 ("copy_process(): don't use ksys_close()
->>>>> on cleanups"), the pidfd installation was done without holding both
->>>>> the task_list lock and the sighand->siglock. Obviously, holding these
->>>>> two locks are not really needed to protect the fd_install() call.
->>>>> So move the fd_install() call down to after the releases of both locks.
->>>> 	Umm... That assumes we can delay it that far.  IOW, that nothing
->>>> relies upon having pidfd observable in /proc/*/fd as soon as the child
->>>> becomes visible there in the first place.
->>>>
->>>> 	What warranties are expected from CLONE_PIDFD wrt observation of
->>>> child's descriptor table?
->>>>
->>> I think the fd_install() call can be moved after the release of
->>> sighand->siglock but before the release the tasklist_lock. Will that be good
->>> enough?
->> Looks like it should, but I'd rather hear from the CLONE_PIDFD authors first...
->> Christian, could you comment on that?
-> The tasklist_lock and the siglock provide no protection against
-> being looked up in proc.
->
-> The proc filesystem looks up process information with things only
-> protected by the rcu_read_lock().  Which means that the process
-> will be visible through proc after "attach_pid(p, PIDTYPE_PID".
->
-> The fd is being installed in the fdtable of the parent process,
-> and the siglock and tasklist_lock are held to protect the child.
->
->
-> Further fd_install is exposing the fd to userspace where it can be used
-> by the process_madvise and the process_mrelease system calls, from
-> anything that shares the fdtable of the parent thread.  Which means it
-> needs to be guaranteed that kernel_clone will call wake_up_process
-> before it is safe to call fd_install.
->
->
-> So it appears to me that moving fd_install earlier fundamentally unsafe,
-> and the locks are meaningless from an fd_install perspective.
->
-> Which means it should be perfectly fine to move the fd_install outside
-> of the tasklist_lock and the outside siglock.
->
->
-> I don't see how we could support the fd appearing in the fdtable sooner
-> which seems to make the question moot as to weather userspace in some
-> odd corner case expects the fd to appear in the fdtable sooner.
->
-> So I say move fd_install down with proc_fork_connector and friends.
+Add a devicetree to support the official Raspberry Pi 7inch touchscreen.
 
-Right. Keeping fd_install() inside of tasklist_lock may also be 
-problematic as a read lock can be taken at interrupt context which may 
-cause similar lockdep splat. So I am keep this patch as is.
+This also demuxes the i2c0 controller to support both pinctrls.
 
-Cheers,
-Longman
+Detlev Casanova (2):
+  ARM: dts: bcm2*: Demux i2c0 with a pinctrl
+  ARM: dts: Add bcm2711-rpi-4-b-7inch-ts-dsi.dts
+
+ arch/arm/boot/dts/Makefile                    |   1 +
+ .../boot/dts/bcm2711-rpi-4-b-7inch-ts-dsi.dts | 129 ++++++++++++++++++
+ arch/arm/boot/dts/bcm2711-rpi-4-b.dts         |   1 +
+ arch/arm/boot/dts/bcm2711.dtsi                |   2 +-
+ arch/arm/boot/dts/bcm2835-rpi.dtsi            |   9 +-
+ .../boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi    |   4 +
+ arch/arm/boot/dts/bcm283x.dtsi                |  26 +++-
+ arch/arm64/boot/dts/broadcom/Makefile         |   1 +
+ .../broadcom/bcm2711-rpi-4-b-7inch-ts-dsi.dts |   2 +
+ 9 files changed, 170 insertions(+), 5 deletions(-)
+ create mode 100644 arch/arm/boot/dts/bcm2711-rpi-4-b-7inch-ts-dsi.dts
+ create mode 100644 arch/arm/boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi
+ create mode 100644 arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b-7inch-ts-dsi.dts
+
+-- 
+2.35.1
 
