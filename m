@@ -2,98 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D03BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:49:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234817AbiBIGs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:48:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41164 "EHLO
+        id S234943AbiBIGtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:49:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiBIGsz (ORCPT
+        with ESMTP id S229478AbiBIGtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:48:55 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A3EC05CB82;
-        Tue,  8 Feb 2022 22:48:58 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id p14so1128562qtx.0;
-        Tue, 08 Feb 2022 22:48:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lAqaRsXwc1gC7GE6i8m+gUTSpQepPCDhRGq27De/nR4=;
-        b=c0XyOtHiSSfBQbMnR+HRZSb2cSonct9adQm13eUu8KxhJXJPcfkk5TS2By/aaT0O5Y
-         TBSGT1oB9UvByZ7RJVghm5sreKSrRt59pWR1MD5LP8y3LOrfUMzsUreojm3Wr8VK7bXE
-         i37pfRf6y2l+qe7Hb84RSH8SD2JeCOvCmnoDfLQO8bIka23E2uwQP6LiKNQftDuvYTPV
-         Pps5jqP2cEOkSjgxHDqw23XeAyeowtMUm7TyPS4wJJ9NbBg9MOHZORpXxzP7ihYBBvwB
-         nyMvPrw3EO+wyutH3hfqBuHFnmeNZhN4+eV0effOXS4RwKYv2liuTm4G04vd5K+9ZP3j
-         LLfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lAqaRsXwc1gC7GE6i8m+gUTSpQepPCDhRGq27De/nR4=;
-        b=eOxI4gkIRrrG2ywyXfYgQ0VQnquwvWKgXMVQPqjeAPbwIz2DL5EvsNG2uQgRediz+Y
-         Uv8c9KNai5MGWgGT+78HJ97v0wfmDr6kMKgZYllECCjhL4C6gv4g9whvb2JVNXhTUMhU
-         Z9bCUBFHJPuZDxgr/SAI19bGFpwhUbk5iyAF2/IvauaSc9WjFmuwiy7TErZh5x0oY7yp
-         c61f68Rak55RGpfevT6RQVWChweTsQrzTIiuk11GWt+YC98K8274cFvRVe3/8O8IApyo
-         /yVbAQLXMhwk/qRo1wg+TDpoL93vE0ThKqVUHyftoPyjEJ/fWv/KFA/Tg7hXUSy9T/3j
-         TJNw==
-X-Gm-Message-State: AOAM530E6les5BnzGcBy2+v5HIDddWe8FPbjLLsdwVkMwBrgSf14RdLz
-        Qo3gO6btXFsJj0V/TKVYnqk=
-X-Google-Smtp-Source: ABdhPJwS7iqr+j+AfMft9VVVJSRtIo7OX0GKoilYOF/xr3gGHIUyem5hRghiHScRdJi62rNfE1mkVw==
-X-Received: by 2002:ac8:5a54:: with SMTP id o20mr439830qta.670.1644389337016;
-        Tue, 08 Feb 2022 22:48:57 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id e9sm9036736qtx.37.2022.02.08.22.48.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 22:48:56 -0800 (PST)
-Date:   Tue, 8 Feb 2022 22:46:43 -0800
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH 33/54] net: ethernet: replace bitmap_weight with
- bitmap_weight_{eq,gt,ge,lt,le} for mellanox
-Message-ID: <YgNjU8iXJ8WIyh/P@yury-laptop>
-References: <20220123183925.1052919-1-yury.norov@gmail.com>
- <20220123183925.1052919-34-yury.norov@gmail.com>
- <Ye6gDK2MA+cshctS@smile.fi.intel.com>
+        Wed, 9 Feb 2022 01:49:16 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C320DC05CB82;
+        Tue,  8 Feb 2022 22:49:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=b/WCJj+IAa3iXel/d+P/0rJsMFgdLOczPIXqs1W2hP0=; b=lbYRkj2zLwFVlbeJRNox44n4Aa
+        qQHSLuqtNu2uUND7p9zm8vLv7n2VLBVlmvk9qO7E8GJgxe5tZgGaZRaYDaXfJQxiJ6c6hub/xPcKr
+        mJqlvLQ5N7dTcndix9674lGeUMYAdZT0LSezI7R1uZDNqta/so6/kfmuMcE7b0aeIqhvK1KwlV6/3
+        n6o5eALqiW++om+Z8bfSbIP51OL5LGS4rmBMkxsXwgPozh/rDARVx265mqHkYjkRFrRNqmclJrOmE
+        COzRIhp16varAp2LA+Gam5hM1f079OAoZfGYxwkkHC4eIUF0QAO1sSRUpZ7scCJkJ258RJrDARE5c
+        QPTyfkTA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nHgmr-00GOWe-Se; Wed, 09 Feb 2022 06:49:09 +0000
+Date:   Tue, 8 Feb 2022 22:49:09 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     zhenggy <zhenggy@chinatelecom.cn>
+Cc:     bcrl@kvack.org, viro@zeniv.linux.org.uk, ebiggers@kernel.org,
+        axboe@kernel.dk, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] aio: inform block layer of how many requests we are
+ submitting
+Message-ID: <YgNj5SLMjwGON+Q+@infradead.org>
+References: <8e0186ed-04bb-7bb8-ff09-581a7b9fdf03@chinatelecom.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ye6gDK2MA+cshctS@smile.fi.intel.com>
+In-Reply-To: <8e0186ed-04bb-7bb8-ff09-581a7b9fdf03@chinatelecom.cn>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 02:48:12PM +0200, Andy Shevchenko wrote:
-> On Sun, Jan 23, 2022 at 10:39:04AM -0800, Yury Norov wrote:
-> > Mellanox code uses bitmap_weight() to compare the weight of bitmap with
-> > a given number. We can do it more efficiently with bitmap_weight_{eq, ...}
-> > because conditional bitmap_weight may stop traversing the bitmap earlier,
-> > as soon as condition is met.
+On Tue, Feb 08, 2022 at 05:47:17PM +0800, zhenggy wrote:
+> After commit 47c122e35d7e ("block: pre-allocate requests if plug is
+> started and is a batch"), block layer can make smarter request allocation
+> if it know how many requests it need to submit, so switch to use
+> blk_start_plug_nr_ios here to pass the number of requests we will submit.
 > 
-> > -	if (port <= 0 || port > m)
-> > +	if (port <= 0 || bitmap_weight_lt(actv_ports.ports, dev->caps.num_ports, port))
-> >  		return -EINVAL;
-> 
-> Can we eliminate now the port <= 0 check? Or at least make it port == 0?
+> Signed-off-by: GuoYong Zheng <zhenggy@chinatelecom.cn>
 
-The port is a parameter of exported function. I'd rather not take this risk.
-Even if it makes sense, it should be a separate patch anyways.
+Looks good,
+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
