@@ -2,132 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D28C4167E
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93AD3C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345073AbiBIDNq (ORCPT
+        id S1343995AbiBIDPT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:13:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38542 "EHLO
+        Tue, 8 Feb 2022 22:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343995AbiBIDNQ (ORCPT
+        with ESMTP id S232860AbiBIDOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:13:16 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D76DC061355
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:13:15 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id g14so2206654ybs.8
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 19:13:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/R2LriswMiHtMayk3cQe3ZgDGVpDn6vfPdguZ1VAL8c=;
-        b=Z4htK1PvPjLN2hbBeC6YYrji+agQMuMV5YG42X2kwEw2dpzm0JxFKo8hsFa2C1Jfx6
-         aiqSpFNGQmDBS2DDI+xB/nArXQTRf8UlOzrFaZGH+fyy6IVPwIXsISWvJMcGQ6vwcd4N
-         brBY26HkIFXOwhYOm+A2RznepAOysyGRvyKdM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/R2LriswMiHtMayk3cQe3ZgDGVpDn6vfPdguZ1VAL8c=;
-        b=wcwMcInRSsdfSwe8AgoovRbUP+6h9HXoiYUF9Og2Q1ikTSo3iAMSNjejDGpEHYU+N2
-         Mp/77KMoOO8k8T5hde7fnjTvBUXX46skUg6MGV578W/4O6FL42HNdvKnFI2uemD3GEe5
-         363Qpx+pU01yAV1CJiHh+JdfLfMVF2LAKNiQQD3tYImUKd2/lflEwwPjAnhVxj7rx3KS
-         ap4uXSVOo8cnOYHWmmUGagIv6nCGEJxp2buc2GAlh9w8qrdwB7Qy98WmVM0Qd6qyzkFW
-         H9Tp4dWeaX+nFU7ePROPL063MxzMluj8LXsO1dFf/QrNQMrvEfn7ez7jJQiGJVwBCZzp
-         SwEg==
-X-Gm-Message-State: AOAM530gk60iDru8Fcs5EHUtnuk5ETCF0erIgvthnltRBksrKd6wdWaU
-        6hUUs7YfUm75nIwX3bMBF6zSA3TtA1m5hFqDOM2Lsg==
-X-Google-Smtp-Source: ABdhPJxTxvn/1WdP/keqrM63kkqlFYBObLI54gDsNyXkQOm6LGSkEX7oidm2bg05AxRzM3cqFgbOsLGSQybe+5qqx+o=
-X-Received: by 2002:a25:5382:: with SMTP id h124mr384351ybb.291.1644376394583;
- Tue, 08 Feb 2022 19:13:14 -0800 (PST)
+        Tue, 8 Feb 2022 22:14:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B91A3C0612C2
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:14:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644376492;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=X9DHk6APJIsHE1UI+ceCyZijDLQACCuReEtHVHktgAg=;
+        b=AmXW1nf8BYebvD8R3j31GEa5KmvmSbdZ8Ns7MmDTx3dX+hx4r17ufHkODYgbgPe3yqzioj
+        QSZpLeJk+gmj5QQ5epZUGFtwOWvSMqub2zv5GImnSo8eoLfUvFt72+H/vivHS9EuaE4jtv
+        G9GwL4oE4Wf3T6hPL57IPLgxWoHcTI0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-533-TMv76d40NiuumRdfoHQ9zA-1; Tue, 08 Feb 2022 22:14:49 -0500
+X-MC-Unique: TMv76d40NiuumRdfoHQ9zA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E426E1091DA0;
+        Wed,  9 Feb 2022 03:14:47 +0000 (UTC)
+Received: from T590 (ovpn-8-25.pek2.redhat.com [10.72.8.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A6EBD4D729;
+        Wed,  9 Feb 2022 03:14:31 +0000 (UTC)
+Date:   Wed, 9 Feb 2022 11:14:23 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     tj@kernel.org, axboe@kernel.dk, cgroups@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH -next] blk-throttle: enable io throttle for root in
+ cgroup v2
+Message-ID: <YgMxjyVjMjmkMQU5@T590>
+References: <20220114093000.3323470-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-References: <20220208124034.414635-1-wenst@chromium.org> <20220208223252.7f179c63@pc>
-In-Reply-To: <20220208223252.7f179c63@pc>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Wed, 9 Feb 2022 11:13:03 +0800
-Message-ID: <CAGXv+5Hz6-aZpisXuFqdez5CQBtsg-h7H6yOAWUwBP-L8L=qkw@mail.gmail.com>
-Subject: Re: [PATCH v3 00/31] clk: mediatek: Cleanups and Improvements - Part 1
-To:     Boris Lysov <arz65xx@gmail.com>
-Cc:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220114093000.3323470-1-yukuai3@huawei.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hello Yu Kuai,
 
-On Wed, Feb 9, 2022 at 3:32 AM Boris Lysov <arz65xx@gmail.com> wrote:
->
-> Hi, I couldn't find a particular patch to reply to so I'm replying cover
-> letter to give some input on the PLL subsystem.
->
-> On Tue,  8 Feb 2022 20:40:03 +0800
-> Chen-Yu Tsai <wenst@chromium.org> wrote:
-> >  drivers/clk/mediatek/clk-pll.c                | 100 +++++-
-> >  drivers/clk/mediatek/clk-pll.h                |  57 ++++
->
-> In clk-pll.c there is an mtk_clk_register_pll function which at some point
-> executes this:
->
-> > init.ops = &mtk_pll_ops;
->
-> In my opinion there should be a possibility to define a custom mtk_pll_ops for a
-> given SoC instead of using a hardcoded one because not all Mediatek SoCs share
-> the same PLL startup/powerdown flow. For example, the existing mtk_pll_prepare
-> implementation won't work for the entire Mediatek Cortex-A9 SoC family (this
-> includes but not limited to mt6515, mt6517, mt6575, and mt6577).
+On Fri, Jan 14, 2022 at 05:30:00PM +0800, Yu Kuai wrote:
+> RFC patch: https://lkml.org/lkml/2021/9/9/1432
+> 
+> There is a proformance problem in our environment:
+> 
+> A host can provide a remote device to difierent client. If one client is
+> under high io pressure, other clients might be affected.
 
-Ack. My scope is limited to SoCs used in Chromebooks. However Miles and
-Chun-Jie, who are Cc-ed on the series, should know more.
+Can you use the linux kernel storage term to describe the issue?
+Such as, I guess here host means target server(iscsi, nvme target?),
+client should be scsi initiator, or nvme host. If not, can you provide
+one actual example for your storage use case?
 
-That said, we can implement support for these varying parameters as we
-see them, not before.
+With common term used, it becomes pretty easy for people to understand &
+solve the issue, and avoid any misunderstanding.
 
-> > static int mtk_pll_prepare(struct clk_hw *hw)
-> > {
-> >       struct mtk_clk_pll *pll = to_mtk_clk_pll(hw);
-> >       u32 r;
-> >       u32 div_en_mask;
-> >
-> >       r = readl(pll->pwr_addr) | CON0_PWR_ON;
-> >       writel(r, pll->pwr_addr);
->
-> This code sets a bit to 1 to start a PLL but the SoCs I mentioned above would
-> need to have that bit cleared (set to 0) [1] [2].
->
-> Another interesting thing in mtk_pll_prepare is
-> >       udelay(20);
-> Is 20 ms a settle time for PLL? If yes then it would also be cool to specify an
-> arbitrary value easily as some PLLs have longer settle time [3] [4].
+> 
+> Limit the overall iops/bps(io.max) from the client can fix the problem,
 
-This is a question for whomever upstreamed the driver.
-> Worth noting the SoCs I mentioned aren't in mainline yet, and I think there are
-> more modern mainline-worthy Mediatek SoCs that might also need these changes in
-> the future.
+Just be curious how each client can figure out perfect iops/bps limit?
+Given one client doesn't know how many clients are connected to the
+target server.
 
-Again, we can implement varying parameters as they appear.
+It sounds like the throttle shouldn't be done in client side cgroup,
+given the throttle is nothing to do with tasks. 
 
-Thanks
-ChenYu
+Maybe it should be done in server side, since server has enough
+information to provide fair iops/bps allocation for each clients.
 
 
->
-> Thanks.
->
-> [1] MT6577 HSPA Smartphone Application Processor Datasheet, pages 1212-1227
-> (*_CON0 registers).
-> [2] MT6515 GSM/EDGE Smartphone Application Processor Datasheet, pages
-> 1202-1216 (*_CON0 registers).
-> [3] pages 1303-1306 of [1]
-> [4] MT6589 HSPA+ Smartphone Application Processor Datasheet, page 1344
-> (MDPLL1 & MDPLL2)
+Thanks, 
+Ming
+
