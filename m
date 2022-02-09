@@ -2,188 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CAAEC43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:08:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD09C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346262AbiBIEIE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:08:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
+        id S244673AbiBIEIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 23:08:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347529AbiBIDvV (ORCPT
+        with ESMTP id S245500AbiBIDfe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:51:21 -0500
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34864C061578;
-        Tue,  8 Feb 2022 19:51:20 -0800 (PST)
-Received: by mail-oi1-f177.google.com with SMTP id m10so1288243oie.2;
-        Tue, 08 Feb 2022 19:51:20 -0800 (PST)
+        Tue, 8 Feb 2022 22:35:34 -0500
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FF9C0401C7;
+        Tue,  8 Feb 2022 19:35:32 -0800 (PST)
+Received: by mail-oo1-f51.google.com with SMTP id u47-20020a4a9732000000b00316d0257de0so1050071ooi.7;
+        Tue, 08 Feb 2022 19:35:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=B5PZKrvUUieFothgb+vZlRFtusXfP8pySB7FuMjMx4Q=;
-        b=yXb2/1f5Db0nsEZF7LBkjH8h6mnEGmixFAlx003cA3VLzs89n8CQ0PSn07LojiR5ST
-         WABfP3BwggkROzLaV6boLFq12UBnQ9WGUYC5AyAMZJkHX2MpK5zI/TKn/KL2P/rXk8fE
-         /niDJJ3rsfARcOr9XS2RWy1M4Ncxuzhbm07Vvi0d4oQkCyZhnuLd5VjM7rsghFuqYq6p
-         I8zcPWSjhq9CoDdxgCNLdtz+NQymxVTbr5dJFZyNp8ypJYU3zszhvXFYYkhrPlzATo1i
-         YDOtl/HjjPCNBRIn7HoiqAUtVjdFyARK3CU64dyTQVF1FeaRFfgnp5TjYGfx2AMTulxA
-         CgYQ==
-X-Gm-Message-State: AOAM532acmIyM0+C/C0sCAZGB297ZTTQ14L6ZpIQu1PG3EqpiQedV+sG
-        GU5kzngugOx3wnv/OsGeAQ==
-X-Google-Smtp-Source: ABdhPJxbreGzMUi6G1HWnwJEd4pBS64kXe9J+H9ATYzK8Wijsk523xyxrMpsEDFzmW/yeFuN+T4jpw==
-X-Received: by 2002:a05:6808:30a4:: with SMTP id bl36mr514560oib.136.1644378679489;
-        Tue, 08 Feb 2022 19:51:19 -0800 (PST)
+        bh=Ua8yzWuBZ3Q29vbdd20GEsasq9Yt7O844bjqRtO+wJI=;
+        b=V5q3OgBz/5SsdnigDknvUPJDHfV5PR4cVJ54UGlFH9rlhGha4Z+SO5++9ETJ2Uhe6U
+         PuPWtx9ii2BL0Y7jne8cSE2FkewS2TTpaOE2HYLd0sZMwPr9PUvOJ5GS2UG5Gtpa/hqZ
+         yRVsjFYNdQataxMqJJmOA1XysDin8hjCUSZq6OHWI+F34ftK/2Y5g3OKk7jd5tghFnoS
+         7nFpBtV39Sy5wjvznaAXEhOD565mH+H8XrF9c92Z4B5FLE0CFoKqFlu2jRESkuWploGB
+         ppHdXLhUASKAcMylsdNSlzf2m3GrDXtNv5pfv8JqLPgma2VjPt7DJXpxGBhxIXflBc/3
+         auMw==
+X-Gm-Message-State: AOAM531GfJh/lUxjT8W1SEf/ieTqbGsI/5JfTr9xDzYdHoGM1SNQawUC
+        h6chMqytbHZseOhuTo7PG8l6Km90KQ==
+X-Google-Smtp-Source: ABdhPJwklbn1MIZs1/9RclzK3S7SlJx6e1DOtC9O6gHsNTCdMxHh0O0KRUuHoqfzQbEnwz7S4bpX7w==
+X-Received: by 2002:a05:6870:5146:: with SMTP id z6mr147799oak.52.1644377731646;
+        Tue, 08 Feb 2022 19:35:31 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id y15sm6106902oof.37.2022.02.08.19.51.18
+        by smtp.gmail.com with ESMTPSA id s3sm6113168otg.67.2022.02.08.19.35.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 19:51:18 -0800 (PST)
-Received: (nullmailer pid 3614192 invoked by uid 1000);
-        Wed, 09 Feb 2022 03:51:17 -0000
-Date:   Tue, 8 Feb 2022 21:51:17 -0600
+        Tue, 08 Feb 2022 19:35:31 -0800 (PST)
+Received: (nullmailer pid 3591177 invoked by uid 1000);
+        Wed, 09 Feb 2022 03:35:29 -0000
+Date:   Tue, 8 Feb 2022 21:35:29 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v1 3/4] dt-bindings: net: add "label" property
- for all usbnet Ethernet controllers
-Message-ID: <YgM6NZ2pji01YeMl@robh.at.kernel.org>
-References: <20220127104905.899341-1-o.rempel@pengutronix.de>
- <20220127104905.899341-4-o.rempel@pengutronix.de>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     Mark Lee <Mark-MC.Lee@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Fabien Parent <fparent@baylibre.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Felix Fietkau <nbd@nbd.name>, devicetree@vger.kernel.org,
+        Macpaul Lin <macpaul.lin@mediatek.com>,
+        John Crispin <john@phrozen.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Yinghua Pan <ot_yinghua.pan@mediatek.com>
+Subject: Re: [PATCH net-next v2 4/9] dt-bindings: net: mtk-star-emac: add
+ support for MT8365
+Message-ID: <YgM2gb7mqZAwmigt@robh.at.kernel.org>
+References: <20220127015857.9868-1-biao.huang@mediatek.com>
+ <20220127015857.9868-5-biao.huang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220127104905.899341-4-o.rempel@pengutronix.de>
+In-Reply-To: <20220127015857.9868-5-biao.huang@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 11:49:04AM +0100, Oleksij Rempel wrote:
-> For hard wired Ethernet controllers it is helpful to assign name related
-> to port description on the board. Or name, related to the special
-> internal function, if the USB ethernet controller attached to the CPU
-> port of some DSA switch.
-
-Yes, so add 'label' to ethernet-controller.yaml.
-
-Then I don't think usbnet.yaml is needed.
-
+On Thu, 27 Jan 2022 09:58:52 +0800, Biao Huang wrote:
+> Add binding document for Ethernet on MT8365.
 > 
-> This patch provides documentation for "label" property, reusable for all
-> usbnet controllers.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
 > ---
->  .../devicetree/bindings/net/asix,ax88178.yaml |  4 ++-
->  .../bindings/net/microchip,lan95xx.yaml       |  4 ++-
->  .../devicetree/bindings/net/usbnet.yaml       | 36 +++++++++++++++++++
->  3 files changed, 42 insertions(+), 2 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/usbnet.yaml
+>  Documentation/devicetree/bindings/net/mediatek,star-emac.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/net/asix,ax88178.yaml b/Documentation/devicetree/bindings/net/asix,ax88178.yaml
-> index 74b6806006e3..c8ad767a2e45 100644
-> --- a/Documentation/devicetree/bindings/net/asix,ax88178.yaml
-> +++ b/Documentation/devicetree/bindings/net/asix,ax88178.yaml
-> @@ -13,7 +13,7 @@ description: |
->    Device tree properties for hard wired USB Ethernet devices.
->  
->  allOf:
-> -  - $ref: ethernet-controller.yaml#
-> +  - $ref: usbnet.yaml#
->  
->  properties:
->    compatible:
-> @@ -58,6 +58,7 @@ properties:
->            - usb6189,182d  # Sitecom LN-029
->  
->    reg: true
-> +  label: true
->    local-mac-address: true
->    mac-address: true
->  
-> @@ -77,6 +78,7 @@ examples:
->          ethernet@1 {
->              compatible = "usbdb0,a877";
->              reg = <1>;
-> +            label = "LAN0";
->              local-mac-address = [00 00 00 00 00 00];
->          };
->      };
-> diff --git a/Documentation/devicetree/bindings/net/microchip,lan95xx.yaml b/Documentation/devicetree/bindings/net/microchip,lan95xx.yaml
-> index b185c7068a8a..259879bba3a0 100644
-> --- a/Documentation/devicetree/bindings/net/microchip,lan95xx.yaml
-> +++ b/Documentation/devicetree/bindings/net/microchip,lan95xx.yaml
-> @@ -14,7 +14,7 @@ description: |
->    controller.
->  
->  allOf:
-> -  - $ref: ethernet-controller.yaml#
-> +  - $ref: usbnet.yaml#
->  
->  properties:
->    compatible:
-> @@ -40,6 +40,7 @@ properties:
->            - usb424,ec00   # SMSC9512/9514 USB Hub & Ethernet Device
->  
->    reg: true
-> +  label: true
->    local-mac-address: true
->    mac-address: true
->  
-> @@ -59,6 +60,7 @@ examples:
->          ethernet@1 {
->              compatible = "usb424,ec00";
->              reg = <1>;
-> +            label = "LAN0";
->              local-mac-address = [00 00 00 00 00 00];
->          };
->      };
-> diff --git a/Documentation/devicetree/bindings/net/usbnet.yaml b/Documentation/devicetree/bindings/net/usbnet.yaml
-> new file mode 100644
-> index 000000000000..fe0848433263
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/usbnet.yaml
-> @@ -0,0 +1,36 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/usbnet.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: The device tree bindings for the USB Ethernet controllers
-> +
-> +maintainers:
-> +  - Oleksij Rempel <o.rempel@pengutronix.de>
-> +
-> +description: |
-> +  Device tree properties for hard wired USB Ethernet devices.
-> +
-> +allOf:
-> +  - $ref: ethernet-controller.yaml#
-> +
-> +properties:
-> +  compatible: true
-> +
-> +  reg:
-> +    description: Port number
-> +
-> +  label:
-> +    description:
-> +      Describes the label associated with this port, which will become
-> +      the netdev name
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: true
-> +
-> +...
-> -- 
-> 2.30.2
-> 
-> 
+
+Acked-by: Rob Herring <robh@kernel.org>
