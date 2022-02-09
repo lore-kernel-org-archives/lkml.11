@@ -2,81 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 948A6C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FD4C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245186AbiBICkL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:40:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58190 "EHLO
+        id S241857AbiBICkP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:40:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243511AbiBIBoz (ORCPT
+        with ESMTP id S243317AbiBIBjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:44:55 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BC9C06157B;
-        Tue,  8 Feb 2022 17:44:53 -0800 (PST)
-X-UUID: d5a60fe8432a4ccabe48553e4ec294a0-20220209
-X-UUID: d5a60fe8432a4ccabe48553e4ec294a0-20220209
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <leilk.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 654026101; Wed, 09 Feb 2022 09:44:50 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 9 Feb 2022 09:44:48 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 9 Feb 2022 09:44:48 +0800
-From:   Leilk Liu <leilk.liu@mediatek.com>
-To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
-Subject: [PATCH V5 0/3] Add compatible for Mediatek MT8186
-Date:   Wed, 9 Feb 2022 09:44:40 +0800
-Message-ID: <20220209014443.12443-1-leilk.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 8 Feb 2022 20:39:48 -0500
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D05C06157B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 17:39:46 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V3yNqjc_1644370781;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V3yNqjc_1644370781)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Feb 2022 09:39:42 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     daniel@ffwll.ch
+Cc:     airlied@linux.ie, Felix.Kuehling@amd.com,
+        alexander.deucher@amd.com, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] drm/amdkfd: Fix NULL but dereferenced coccicheck error
+Date:   Wed,  9 Feb 2022 09:39:40 +0800
+Message-Id: <20220209013940.71348-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-V5:
-1. re-send these patchs based on v5.17-rc1.
-2. add the flags: "Reviewed-by Rob Herring".
+Eliminate the following coccicheck warning:
+./drivers/gpu/drm/amd/amdkfd/kfd_chardev.c:2087:27-38: ERROR: bo_buckets
+is NULL but dereferenced.
 
-V4:
-1. add "dt-bindings: spi: Convert spi-slave-mt27xx to json-schema" to this series again.
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/gpu/drm/amd/amdkfd/kfd_chardev.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-v3:
-1. Fix Rob review comment in v2.
-
-v2:
-1. Fix Rob review comment.
-2. split spi-mt65xx & spi-slave-mt27xx to 2 patches.
-
-Leilk Liu (3):
-  dt-bindings: spi: Convert spi-slave-mt27xx to json-schema
-  dt-bindings: spi: Convert spi-mt65xx to json-schema
-  dt-bindings: spi: Add compatible for Mediatek MT8186
-
- .../bindings/spi/mediatek,spi-mt65xx.yaml     | 102 ++++++++++++++++++
- .../spi/mediatek,spi-slave-mt27xx.yaml        |  58 ++++++++++
- .../devicetree/bindings/spi/spi-mt65xx.txt    |  68 ------------
- .../bindings/spi/spi-slave-mt27xx.txt         |  33 ------
- 4 files changed, 160 insertions(+), 101 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
- create mode 100644 Documentation/devicetree/bindings/spi/mediatek,spi-slave-mt27xx.yaml
- delete mode 100644 Documentation/devicetree/bindings/spi/spi-mt65xx.txt
- delete mode 100644 Documentation/devicetree/bindings/spi/spi-slave-mt27xx.txt
-
---
-2.25.1
-
-
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+index 64e3b4e3a712..636391c61caf 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+@@ -1982,10 +1982,8 @@ static int criu_checkpoint_bos(struct kfd_process *p,
+ 	void *mem;
+ 
+ 	bo_buckets = kvzalloc(num_bos * sizeof(*bo_buckets), GFP_KERNEL);
+-	if (!bo_buckets) {
+-		ret = -ENOMEM;
+-		goto exit;
+-	}
++	if (!bo_buckets)
++		return -ENOMEM;
+ 
+ 	bo_privs = kvzalloc(num_bos * sizeof(*bo_privs), GFP_KERNEL);
+ 	if (!bo_privs) {
+-- 
+2.20.1.7.g153144c
 
