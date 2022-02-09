@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D473EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBEBC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234330AbiBIV4W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 16:56:22 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49742 "EHLO
+        id S234358AbiBIV4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 16:56:25 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234145AbiBIV4J (ORCPT
+        with ESMTP id S234211AbiBIV4J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 16:56:09 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70041.outbound.protection.outlook.com [40.107.7.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651C2DF28AD4;
-        Wed,  9 Feb 2022 13:56:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02801E00D121;
+        Wed,  9 Feb 2022 13:56:11 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BelQHjsTDp/ynfPy2Xid0mUbaTa84iJl7xWyEcYWnCQzp/6mJal+BtZbq7DBq8Row4kTC6LJp1EfnUaHr/8P2DlDozWVplVCvJ6pxWAgeoPy0kHfFm/b4jeuhAXFwXB5eAWUjUFky56GvzBcRqSI4wnqpyazlDlD5stMDF1LEEtxhRwDi8bLY1HfYUXGjDFWo+4sqoYTdnREKna5I/lqJ5RcLPEj6P9eWsxvoz5jkQeRCcNNM13dZY4bMKNTCdzfxqYzH+ju1mkx08b2rCH3Shk9rvITND6Sme5TlQxusPp7vXyd/PcOcRY9SaztFAYpgD03cTMjBycVGclKqp1buA==
+ b=bciXlOzgDOeLXgf5zKgAWDfSo4HAigJolDRGpsar3JEZYIyBlkaHTWIYkv6aDCWt67bYdN3WwgajG1SbnYvTsHV89WlOJ8gFq1YEKjlhwcY1qFk1pY0j0fPgkZXTr47snafrkGcsUbakxbsQ6ISv1GlCtjdXldxX3/QyXrxjMIXonl5YS6TwKS5XgiXdAaHHQaZDbiBAeEzllEChh3xYezYhzVjbp5UflCsoVh0/PqP41w7JP5XupJ0e44DcxRMb9X1AqifcUtkR2pi8EOlVCbM+RaOhhNpZ+0G6n6cWo+3zCKwN5MGH85O476wpwtqwEq4l2ePeJ3rHt49dduTCjA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8+ZeP3sg0/Td589Z2ryGgBECGTfyTWxkXdYv5CB/8HQ=;
- b=Qn8zrXW0aN3AYX0mg8epWAEiEfHZ6nBkIGwdkVodHfbCljaKtnHMj7IhmNMF/QpqkSJ5M3bcNLQ+5GrPcQkrQpIs3yIqZ7rJx8cC5GWSVq/WD+XUT9M2dg1ch8dHH3iaWEmCkLj1Bgay+XyeoRwMQ0xUwdb+OFtb3vC6R/oNL7u+OCDnQiC6Wdq9xaYu12S+OJOSKNxQOX4iEXwCVkTfaHWljgAo58qCJv2rcUtFNRc49VohomEEUW9Q0M7NIpViF7QcUvzpHmUB31flTgQucgVP7eWLzGMxYXxCpKSMRi5eghKu3BkCCMaCuKkqUeGIlnMfNqGWPajKVP6+SWk16Q==
+ bh=4gcqtk8JERjBYgVYJAmds3gb0AFb3R3KmOp9CD1Uczo=;
+ b=ZDxq1xgrffa8+29EvpvUiS36Db5k+yBZ/9PCaahHWpDyPWnUFxML7itRwWwdnl2VLiYV4GHA7sw+Wa3nZvsj0GU/HhtG1W20nWjt6a5CD/SQ6yNufDgJwfbQqLh4HeL5l0ks8MGTGATOgtK2j1hhMJEzo7L84Kf4HHA+lh0tvZ5HdCIoAXiR1oZJQAhl6T3pKdfmL92QGs8Xx7tvQ/48nM7ikVDa+yuheo7bXZkLoPdrx+0Mrcz3FulOjuZNa20xhrBo3nQaUl1q1q0BPznFYJKWbkz+m8m9FnhE7hk68XGvSHGCKLrbCyMscIbO5XBwaHTJj1NeOzSrcktChv5ivw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8+ZeP3sg0/Td589Z2ryGgBECGTfyTWxkXdYv5CB/8HQ=;
- b=wNnl3fQLgycmW11MxnQKzYXo7McpxX3uHvqpjAsxhSvcyAFUes/Odia5jWsrBLd6gbjcc2RM35CSzwiktjz6saFEwhMDD54xCr2DqU1NoqpMqUqJ81utvl483SfHCBTLUyi1xhAV1KKM+VtkcXqQr+xoMlVQIfo3Q7tnDY8xVPo=
+ bh=4gcqtk8JERjBYgVYJAmds3gb0AFb3R3KmOp9CD1Uczo=;
+ b=MNouepg80qIRU/ImwH+6siCCa4z7LhZpg6MVME9soHF8lBaep+HkHKIVRDCSRwHOGEhUIXddVxdvzFoc9dNXKtSRZY+iyUYSt1YyTi+tn3LfEpRbKeHZHqfLM2lvaTSNYwZpt7cQD5iw5bEz/hMLkjUHhI+XtLhNzlBPD7uSOb8=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=wolfvision.net;
 Received: from HE1PR0802MB2426.eurprd08.prod.outlook.com (2603:10a6:3:e1::23)
  by VI1PR08MB4575.eurprd08.prod.outlook.com (2603:10a6:803:eb::26) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17; Wed, 9 Feb
- 2022 21:56:02 +0000
+ 2022 21:56:08 +0000
 Received: from HE1PR0802MB2426.eurprd08.prod.outlook.com
  ([fe80::e14f:197:5001:4c56]) by HE1PR0802MB2426.eurprd08.prod.outlook.com
  ([fe80::e14f:197:5001:4c56%3]) with mapi id 15.20.4951.019; Wed, 9 Feb 2022
- 21:56:02 +0000
+ 21:56:08 +0000
 From:   Michael Riesch <michael.riesch@wolfvision.net>
 To:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -53,10 +53,12 @@ Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
         Alex Bee <knaerzche@gmail.com>, Liang Chen <cl@rock-chips.com>,
         Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH v6 0/5] Add GPU for RK356x SoCs
-Date:   Wed,  9 Feb 2022 22:55:44 +0100
-Message-Id: <20220209215549.94524-1-michael.riesch@wolfvision.net>
+Subject: [PATCH v6 3/5] arm64: dts: rockchip: add cooling map and trip points for gpu to rk356x
+Date:   Wed,  9 Feb 2022 22:55:47 +0100
+Message-Id: <20220209215549.94524-4-michael.riesch@wolfvision.net>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220209215549.94524-1-michael.riesch@wolfvision.net>
+References: <20220209215549.94524-1-michael.riesch@wolfvision.net>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: ZR0P278CA0197.CHEP278.PROD.OUTLOOK.COM
@@ -64,111 +66,111 @@ X-ClientProxiedBy: ZR0P278CA0197.CHEP278.PROD.OUTLOOK.COM
  (2603:10a6:3:e1::23)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 12851dd6-0c72-49f5-82fd-08d9ec16f6a1
+X-MS-Office365-Filtering-Correlation-Id: 55b43b3c-cca9-4b47-99a0-08d9ec16f9f4
 X-MS-TrafficTypeDiagnostic: VI1PR08MB4575:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR08MB4575F4E0D00F500599FB429FF22E9@VI1PR08MB4575.eurprd08.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1775;
+X-Microsoft-Antispam-PRVS: <VI1PR08MB4575170E4C8D9A18DEBE9489F22E9@VI1PR08MB4575.eurprd08.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AL4k/Uibvr0U4yE6pbwo5qXoB+25aPyJx/QGpdNPkqHHCwiJ9jUoHlxMi+2Hh/RV/5a+PqmUPmWh3nn43pMv0hSeXosZHfN6xUetSH6JxzaSxHIp8sagtu5IwxT6BTjkjILF1+QAC6w4X0vAb/Ydo4PAqK8Nn7A8FEqiA0K99omNK251isOEMd7hP5iR5XQEFsx1tlKjFNnbNFMLSY+R2JxxkM5APJKhb+ArBMcSWAJH+fyHsmFFVSyxn9EMF+P4nfXgap+ZtEytKiVjT6t1/D5zx169WBV1Oa3F12pJAz3XVhDniE2e5skbjifi9SNvuq7YhgqH7uI1D7Z62jG/5v8jbdoJW6qXr5/SxUmOfUNJcJeMn79HeIFIhXegeMQo+NCXDiL5C9a/w73d7jYL5ExJ1E98gpBTwnobHt8qtCC5zcdfIvq7p648Ia1EdPKtdluCZ+caHyf1Dm+Fie5k26+v+s+MMsn2SXKiM0kMCXIzhnyF/s5VyJymYTr/fwsUfUv/irDJn55Lb89zFk6/v1MrFss+UkETQMc1kptt3/iog8iYmelTNuje9D34aFAii7j0DLaiG8HirV4jOt1twI2Vq3EPpd+8h3LQ3oMK6duiYdkoCmWTM70O5zl1mSbdWp4vzjvEEkSXcNuKtEePjGJN5VXVs+ycnL5w6MxmFH8sQlQZ5QyIHP74BBsGrou4OHyiYToVhte7q4SHNK8UkGIrTCNjLrqrVjVNo41viduaT6ZIiBYIFEWpWqbtaom/WKhRl6sSNEgxRpOR6WYPfQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2426.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(6029001)(4636009)(366004)(6512007)(38100700002)(2906002)(4326008)(508600001)(316002)(54906003)(52116002)(36756003)(6666004)(6506007)(6486002)(966005)(2616005)(44832011)(1076003)(86362001)(7416002)(66946007)(66556008)(186003)(8676002)(66476007)(8936002)(5660300002)(83380400001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: oFA9FRdjMaR5hNb3t8cmAfCr2rtDH6SWQhL1pX+VZZNUxDCiffvQv5LY7czI7PHZgPotHousvIA0qn/aWyz/KwY3m2jSZvmVwHAzsUEdVwrt7jo8Dlk1cVzhkR0xaIOIhP6cLJMjwdVhpBJXX08mAnGK03KCAXyX3hws+hxAkoHFB9ijFyC8fkAz0AEisLGRclDtIpFO6ovsbM7hjHUt9f4isop3CcHbf8sIxrSU/G/jZ14GR3jAMdXZz6OFBEiV5zhlA4Bmb62hxdM3azLOS8h6JmXRfEoniEHZsHsOS8P+LorOG3OlVf4Bw9YQP0L6bovPQPzbUM69731pxhFAsd8HpXLNJJ9ZZtBuReml2cKJoYF1bOKQtrQkl7YlxZuQS0fuX+73R4HvOHkR85bOT6c74rlIl1v4UR+nw4OeeveZ1EoKbze1T2yTt/abQdaBvTbei1f0qHlcdrTEL3ik6tK7+MFwvhg91MCRMIpXkpyVRQsg6BILX3fMjWGeFj6KIN/bqv8i729X7+k4rfGHHVN3gxES4hY28kZOOVuzAokrgvM6To8HK6XBHXB9LtBy34xI64JC5W4eZcDcNyu708kTlJAH8YM6IAxIxQ+gJNd8z32dzPisa/1t8XeTnzhHUrt4WyIwVN7WLMUeOsIZTg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2426.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(38100700002)(2906002)(4326008)(508600001)(316002)(54906003)(52116002)(36756003)(6666004)(6506007)(6486002)(2616005)(44832011)(1076003)(86362001)(7416002)(66946007)(66556008)(186003)(8676002)(66476007)(8936002)(5660300002)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9Z/CgbYy/J7B7tGFrQixvyaY/13RIz6MUKZeejuiFzGD46x8sEDVn88pNlpc?=
- =?us-ascii?Q?8wvzAvblWBhg06K21JcMiZsiXo53daC45IydbBcp0s33mqqGpd3kypZIHvaC?=
- =?us-ascii?Q?prH4VU+vUmnPAaR04ZP8Q3xwPp6/UWuQabN1CNDQXlJmjropM2VGn7cEwZeP?=
- =?us-ascii?Q?b7AWwDgZP6wq493mGjpjWZTzz9NcXvQq317EQpGHu8Itom7N0b7VL1JWP4UW?=
- =?us-ascii?Q?xACwMWa+CYRAXcjHgouBhJ2rsCnGcrGyfPMLqLWKRB4+A62BWDEBsidchyq5?=
- =?us-ascii?Q?xotPSQVJ7WyF0+9FMeKvz4DQSsJaGZ7ga8Q6/EXDA1cUI9Ix1zKfy2qn2ASW?=
- =?us-ascii?Q?/CVzgvyluf6fm3z2who6uokKFW+urf50R7jEFs77yy4hdLEjbQ6JHR1wtCaJ?=
- =?us-ascii?Q?aukOHPa05htGU/1NyrJy0mZJNyKXsgvylgjqEETCuwtp3jiG6OEM4LnTtwA0?=
- =?us-ascii?Q?ndRbePXAPDyOKIXfpv+W+gORkdyYIDRn1D39+7+DxhSnTFghKkeS4790Lb1Q?=
- =?us-ascii?Q?FlphT37N0N7Nvfgk7A4vCvHEGv/Zvkz4V2HTxxvIPVZz12+bznqbceD+mkvE?=
- =?us-ascii?Q?gBGDs5BNQR1UUZzMuiDa9i2BbSLz835Plh9DK0DAWUFi0cPKo+WZNYO+syNa?=
- =?us-ascii?Q?bVFfsMTQKRi4Fbf6Z+r0gtD66oT1hQjagd6OqwrcgDvwji/TNd5FVqX/uwI6?=
- =?us-ascii?Q?FY7Tc4nURT4GWZ/iIkAwbBispDkEXmOrcIbOF6R3odTPni8sJ5RCGDQGFXXm?=
- =?us-ascii?Q?crA8qv3/YbQdjFlH21oUOqkngMu/fK+dNHjcEPgpm9uXxjrjA2NPrJUifGFA?=
- =?us-ascii?Q?7FuFSFcMGAqjjDBgslEBnoh96cfpo7DFZmA/Kyqgs7KkAiFPh9CYHv4P5fi0?=
- =?us-ascii?Q?cI8TXVF7k+giH6fAj9F43o3SOcZ+/3gi7doY7vJJuMqYIkmx4zDreXEzGsPk?=
- =?us-ascii?Q?4mt55qj4GwjFdB+Ju4KvUpd2baklUK2mjM5mqQM61DFICp6vSR5uvgDgs+KW?=
- =?us-ascii?Q?abUMqyMNapWMfF8ASb9ZyPpdOUqnIBSpTH5dCpGwV4WguRDiXIHVluallodK?=
- =?us-ascii?Q?asj3h5G3XEO++YuR8ZMeKjpxEHp4E+ls363UZ2knPmbEOi+/63cIMX40TG5Y?=
- =?us-ascii?Q?x8x8id39B0ysGap0CtHJrWCdwe+SWfXApBVVL0njYFRnsA+BTEj2RndH3nm7?=
- =?us-ascii?Q?584zGDRzWFlaDJWzEn0z/tuguHxNxv9qT5agx+w+S9xZ485+qlV9WKN7CY/b?=
- =?us-ascii?Q?Meef7XvZR/fwHOYXifuAY8JaXfAR8ws+YfdypBr9WR2eMcsGbwJaYfN0uIA4?=
- =?us-ascii?Q?QRJjm0i2+EF4+Brm9g4MpNhdm7EqGApIjNxPjkKAZ4HbVEmJi4VG+n9xGkmj?=
- =?us-ascii?Q?w4voj4tv6S+lS04dH9TXXeUcDBmlBrpGo//shFUKZGyoPUTNRAtok3O74hpC?=
- =?us-ascii?Q?2kx7WftbBcKPc8nGzd9QLk22RttW/WbfupN8y5Lrqhhi3w6aUnIwZRAAvTD8?=
- =?us-ascii?Q?IhOfoWsWTv0sCdZrhoSY6Qq9VaVcnU/TC38nRXebsh0mWcidOShTivWRl2Tg?=
- =?us-ascii?Q?YqsxCycIwu3bgE2JRxJB34sF9orMHXLaNGg28KNICxoNDY0Upk21Rmy2QTnF?=
- =?us-ascii?Q?/+3RJnM9bS8zxfGnXOIqgK6nnhQySwGQYJSQno4mtDrHafk8iNvtIos1eGZs?=
- =?us-ascii?Q?o5BwEYwjDEo4pfBbfiVW3Nn0CNBZ7nPYKb10MqLnjgD0Bj6uOeKeWuDLxBqa?=
- =?us-ascii?Q?pkv7Ae9d3X3gUnhFzKAFws557ZTQnpc=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?33HCziqWOjk0BomOiFUO1/1Yzn7mmsOC0LGjo0t6bjMrMuytrmfNUGJDdEDe?=
+ =?us-ascii?Q?jyK9oZ2OBMe2b8UvKMptKTHyETU5x354mzGohOFTyRRb0/6TrVyFGZKlNo+R?=
+ =?us-ascii?Q?8v5DG1ajr3eHThKOX3JpsUESxV93TY/6ASVvhDMt3YGsAJNEC0a06mG/mo+9?=
+ =?us-ascii?Q?ECF7mvr+iE5fpXIuvNeXd7BUUW1ZHPb5lyxZQ4fqD43n0kbOnu2SVf+T+I7f?=
+ =?us-ascii?Q?JVHAI+z9WSbdOauZFBN2gNr/HoTHsT1QjZK1XwPKZgrP6B1OucjW868048hh?=
+ =?us-ascii?Q?lZmivUDu7fMzWGUtpWgQTtPzlF2bFNKV6FRzoP1MhLpgLn5/1vdhcGoH3nlG?=
+ =?us-ascii?Q?GWlbz4hrl1DpQ/5Ztzd/fX7rq7GY6fWc2KyLak7pLkkGX9J4qdC5CtS2nrwe?=
+ =?us-ascii?Q?2Rk5a4zZ+vgv+YZD7gfGCpdMRXeWrnP35kti02PFX3SeUz/ICiHr9hBYG56L?=
+ =?us-ascii?Q?iC92YflalDYKbqvHRLmaCgExtqFyBvY4nK+2FavmYuoARfV/EU+pexzU7HP/?=
+ =?us-ascii?Q?MKGxdyNpTfz3o2KUEawIf2s4imimMOO2uSzyXs1+OY+WoxZnA3GMDwnMmU3r?=
+ =?us-ascii?Q?kEe+g9s/I5Lcudgr26NuTHm8ikJTE+4kgSPfFjzDqHgu9r55YtQLFOwRogZj?=
+ =?us-ascii?Q?BlXEVtDJWCSo3om7yTpFZGBxQRX8ioVC4R1qYeGUbkY1BJSFZN/sMnnAvYQ7?=
+ =?us-ascii?Q?JmmnbGG1sy5A9MV9a5G6Y1/fbfzhclQH2zORdwuRPwyZajkYM4o3WXLe4+8w?=
+ =?us-ascii?Q?Qt1oOvqxcibC7YvAeOQ2+1EloLyQ7ceJox7jxbk6yFyvNsQNwqplZD0w+dDj?=
+ =?us-ascii?Q?H4N2xGjR9pzPHlWongLUEvq2ZDllkQUo3oO7wOoy1KIyXn8TLc2YLSp/mu5u?=
+ =?us-ascii?Q?sQzFN3nqarw/hfjOcjZ/vE2fkBPsVqymKhI//s2ELBvzyYCb9QPrc5EBLHZP?=
+ =?us-ascii?Q?/N9HW/mt0Zo6R0Bd2qJpYEqFEBPVEGrx9SYWOzqF7fMNTUUPA1i88qIrsgSr?=
+ =?us-ascii?Q?koLcXBHtJZjrHLxo2UiaLqOZDXNmJGsIofwjExtQFinCbajIwzXLcu67Km+y?=
+ =?us-ascii?Q?qNBIM345jinSpbgcQWqeMzaMFxnObUQmTACCYqdCCwv6RsSqinw9VSfY2WCF?=
+ =?us-ascii?Q?5fEbh/P/C0MxHzbAaBGs8yNAnNb5X8Z/78SfKfeis1GNmIwmQCGL/ZYVjV0e?=
+ =?us-ascii?Q?m9QZDqKjU7dNRWxTuQhWCbJxRS4oLGIyLEtWEg2UkztQg7smRQRoPOaP+5cd?=
+ =?us-ascii?Q?KoOlcGM5KkrfbmdpMdjjKzmbIR0rbBoMi0qQQSS4aGofplvMxTxzw6tQvHTP?=
+ =?us-ascii?Q?oilR2HiHHdSpbFapgirnE0ZTeeXpcEI7XyvjjUNB1fq/97PCconaHxicy8QF?=
+ =?us-ascii?Q?pb8O93AEa3TWBiQcf/NBCLZwFe4tVdoJ3iWRDLgSJymx7BdvdZFF3jxpFsHM?=
+ =?us-ascii?Q?qnDH2yeok+5x1OBtsceugulPXfmtxaEGoyffiFnzc+Yphn6W9EuZ0Va7B0z3?=
+ =?us-ascii?Q?GCMffjkVcve/kdxogfx7G8CPd9sh1tpZTXtK6j8FnUw7cP56gSY1QYDD/3jx?=
+ =?us-ascii?Q?zplCCj3+hfElonDT00rpu0XrW6BJbAmvT5n3J8xqUiDP4M/6DCRJbBPHfpf7?=
+ =?us-ascii?Q?mtCZGpQ24gPY2weR/e00X26aK5LRU1KXZ8HdBrhGfrRtBNJHQbkF3Iezjx8T?=
+ =?us-ascii?Q?6CDGg6UMXfkuHn0wygE5aIPr25ug3aXl/Crq/cMeVts/P4JomMKB0VfKoSX6?=
+ =?us-ascii?Q?bnCJk4oUAQQ0nAUGYEtJi9JfS5AQNMg=3D?=
 X-OriginatorOrg: wolfvision.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: 12851dd6-0c72-49f5-82fd-08d9ec16f6a1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 55b43b3c-cca9-4b47-99a0-08d9ec16f9f4
 X-MS-Exchange-CrossTenant-AuthSource: HE1PR0802MB2426.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 21:56:02.4288
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 21:56:07.8815
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: e94ec9da-9183-471e-83b3-51baa8eb804f
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: v0GaM73yMgA5j+kzLHbUCJtM4jXUpcqDum7PexujISXt6T2YQYyc975Puf6WyDkdy47KHq/YOjt3xkyFIajE9/DID1ugK0u1n8e9Kxee9eM=
+X-MS-Exchange-CrossTenant-UserPrincipalName: SrWl0wR9OWIqqS9VlNzgqjLU/302gs++zhv+WGpdqejbcx4rmucXfCF1+CITS1AX553xuN2dXgq2NXbbn8IOch27Uxzxls7MftpsIi1anow=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB4575
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+From: Alex Bee <knaerzche@gmail.com>
 
-This series aims to bring the GPU support for the RK356x mainline. In
-conjunction with the VOP2/HDMI TX patches v4 [0]) it has been tested
-successfully on a RK3568 EVB1 with weston and glmark2-es2-wayland.
+RK356x SoCs have a second thermal sensor for the GPU. This adds the
+cooling map and trip points for it to make use of its contribution as
+a cooling device.
 
-It should be noted that on the RK3568 EVB1 the supply of the GPU power
-domain needs to be set to "always-on" in the device tree. There is an
-ongoing discussion to provide a clean solution [1], in the meantime one
-has to apply a hack.
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
+---
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi | 27 ++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-Looking forward to your comments!
-
-Best regards,
-Michael
-
-v6:
-- use existing clock name "gpu" instead of "core"
-- fix missing space in indentation
-
-v5:
-- address Rob's comments, describe clocks in SoC specific region
-- move gpu_opp_table so that nodes without a reg are sorted alphabetically
-- add GPU support to the RK3568 EVB1
-
-v4: see https://lore.kernel.org/linux-rockchip/20211126151729.1026566-1-knaerzche@gmail.com/
-v3: see https://lore.kernel.org/linux-rockchip/20210805025948.10900-1-ezequiel@collabora.com/
-v2: see https://lore.kernel.org/linux-rockchip/20210730164515.83044-1-ezequiel@collabora.com/
-
-[0] https://lore.kernel.org/linux-rockchip/20220126145549.617165-1-s.hauer@pengutronix.de/
-[1] https://lore.kernel.org/linux-rockchip/20211217130919.3035788-1-s.hauer@pengutronix.de/
-
-Alex Bee (2):
-  dt-bindings: gpu: mali-bifrost: describe clocks for the rk356x gpu
-  arm64: dts: rockchip: add cooling map and trip points for gpu to
-    rk356x
-
-Ezequiel Garcia (2):
-  arm64: dts: rockchip: add gpu node to rk356x
-  arm64: dts: rockchip: enable the gpu on quartz64-a
-
-Michael Riesch (1):
-  arm64: dts: rockchip: enable the gpu on rk3568-evb1-v10
-
- .../bindings/gpu/arm,mali-bifrost.yaml        | 15 ++++
- .../boot/dts/rockchip/rk3566-quartz64-a.dts   |  5 ++
- .../boot/dts/rockchip/rk3568-evb1-v10.dts     | 11 +++
- arch/arm64/boot/dts/rockchip/rk356x.dtsi      | 76 +++++++++++++++++++
- 4 files changed, 107 insertions(+)
-
+diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+index 50bbea862a6a..37194d735028 100644
+--- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+@@ -1093,6 +1093,33 @@ gpu_thermal: gpu-thermal {
+ 			polling-delay = <1000>; /* milliseconds */
+ 
+ 			thermal-sensors = <&tsadc 1>;
++
++			trips {
++				gpu_threshold: gpu-threshold {
++					temperature = <70000>;
++					hysteresis = <2000>;
++					type = "passive";
++				};
++				gpu_target: gpu-target {
++					temperature = <75000>;
++					hysteresis = <2000>;
++					type = "passive";
++				};
++				gpu_crit: gpu-crit {
++					temperature = <95000>;
++					hysteresis = <2000>;
++					type = "critical";
++				};
++			};
++
++			cooling-maps {
++				map0 {
++					trip = <&gpu_target>;
++					cooling-device =
++						<&gpu THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++				};
++			};
++
+ 		};
+ 	};
+ 
 -- 
 2.30.2
 
