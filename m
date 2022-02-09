@@ -2,262 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7483C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6AC8C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235676AbiBIJjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:39:54 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45330 "EHLO
+        id S237658AbiBIJj7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:39:59 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238558AbiBIJdR (ORCPT
+        with ESMTP id S240356AbiBIJec (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:33:17 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD9AE05ADE1
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:33:12 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id q7so2861756wrc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:33:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vD+/Cmu1Qo/Y2K+tLoqBHl5G/I2HgHP3zBZQPgA76XU=;
-        b=UE1ENqV54hus9qyKzyTo4+aJMKOa7Gfuj5kSXgr12/DrBx2E3f+/lze2MSXf19Wjr3
-         s8mijdNdLwW25Xa22N6izIjsluhrnI5XXht8rmVNKK5DLUOOWNOI29aOv2bjZLXygexx
-         buElQp7T1PBaDGMXsP6QWFJCDZgvONxxTfjuSTwMcC2HLVo7imZPJo5J2V12ryO75P/u
-         wP/TgCVqbyZYT7RT4Q7ZHIcbPTduh6ZCRH/ClCb2u+Ma9e4f5GSpL2aZbtj2gGUdJjVE
-         ZPVArEFUMRBFkgUXKh2DrS6usck0tziNMd7Kh+G+yUPzVEBs70/w/kGgKUwtQbfhIM3a
-         j8tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vD+/Cmu1Qo/Y2K+tLoqBHl5G/I2HgHP3zBZQPgA76XU=;
-        b=76JfVLRoV2L6BR4Y0E8QdsnRlymBwpymqcOyD/1emttCU/uAzfnnX+KO1m/EgCsmOZ
-         yNq4Me83saDCVwnM5q2RbgZiwTh3iHgpjFwjQoUVu5hbQeoJMBrHhC3fR6Zf3lpvIO1K
-         XLb0fV/IGC7vBdgtelUnRLLgWhAvuh3UCLtLPAvaYqJlnUqzLTakKENwCcqseRgXzYCZ
-         mLRxHVrw7oRhQUnrNQG77xaJLE+SykPl5dhC1JDSFyd6Ld64kL7Jrp4JOV4f9NthD1ag
-         QQithrBQxc9dOD9EMTJjsFoAa6bPktzefNIU/JH8I5Tk5aGBfxM5HJF468EC+9U4YCpV
-         D7Gw==
-X-Gm-Message-State: AOAM533jgcE+y1SO0MiSOfKLKX1Gf6OUmpFjU7ZflRWMFOllTATcqhKx
-        gBeryePwirIBWEiKuogxZDq+DqitDRPvlVh/WUeO3Q==
-X-Google-Smtp-Source: ABdhPJyZDacMwjglnsU7XGk9iLjX9iJ0g23M7rUy18zgTzfpJeurAK8DrcUeBy/mGNKTxVFS4gz+ofK2DEhu8fUPJpc=
-X-Received: by 2002:a5d:5850:: with SMTP id i16mr1298418wrf.519.1644399186067;
- Wed, 09 Feb 2022 01:33:06 -0800 (PST)
+        Wed, 9 Feb 2022 04:34:32 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3D1E05BA6F;
+        Wed,  9 Feb 2022 01:34:31 -0800 (PST)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2198vqhf012063;
+        Wed, 9 Feb 2022 09:34:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=HH9xhkFjQ1nugdMdCXQbfnAWk9nKi8h0ee0AeB6zGyA=;
+ b=QquuRP7lHwiEdtO5XBL769aWD+oG3iEJ3M9EImyATu/lxpWyVVYe3fQdrQq1EfJs5ElI
+ nEne5DAjdDjtFOdkQypeL6OCDKJ2h7FAPc2qMRK6c4lPBHTilbb1iw6m6gmMcWTtAzfs
+ hn/c0ocUY1UPqJD6xi5RrtpMtxrySqCBWvgdqg4pkI5Hgq83C2Qu79MXQvXCkOLAsZQV
+ lsFTTgn86750Zr68MbnZ1/oZxnzvEBCYnbdi6PhXpUm3L+iZWk+LbUDvwfhWBJ2vhc5T
+ l0NiS4XmaRK4S3jVPMpum+74YYBlWmI6p9qJBWMJrPBZ+pIvP22LfOvCO9cr8NqB42Rt DA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e4ajk8nj3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 09:34:30 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2199QDBs024667;
+        Wed, 9 Feb 2022 09:34:29 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e4ajk8nhk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 09:34:29 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2199H0Z1025227;
+        Wed, 9 Feb 2022 09:34:27 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma01fra.de.ibm.com with ESMTP id 3e1gv9kqjg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 09:34:26 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2199YLcu44237234
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Feb 2022 09:34:21 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 01E5AA4053;
+        Wed,  9 Feb 2022 09:34:21 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0E05EA4051;
+        Wed,  9 Feb 2022 09:34:20 +0000 (GMT)
+Received: from [9.171.87.52] (unknown [9.171.87.52])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Feb 2022 09:34:19 +0000 (GMT)
+Message-ID: <29ac0e5c-f77b-04b2-bbf5-cf5a5ca78921@linux.ibm.com>
+Date:   Wed, 9 Feb 2022 10:34:19 +0100
 MIME-Version: 1.0
-References: <20220203120604.128396-1-james.clark@arm.com> <20220203120604.128396-2-james.clark@arm.com>
- <1b649955-cb45-1283-68cd-c82582cef60c@arm.com> <7ba34443-d76a-253d-d112-4100d5a57e21@arm.com>
-In-Reply-To: <7ba34443-d76a-253d-d112-4100d5a57e21@arm.com>
-From:   Mike Leach <mike.leach@linaro.org>
-Date:   Wed, 9 Feb 2022 09:32:54 +0000
-Message-ID: <CAJ9a7Vj4TRmxkiGi=OMx3iYxWjD0me7AS25BnyvBktHRCCb_GQ@mail.gmail.com>
-Subject: Re: [PATCH v2 01/15] coresight: Make ETM4x TRCIDR0 register accesses
- consistent with sysreg.h
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     Anshuman Khandual <Anshuman.Khandual@arm.com>,
-        James Clark <James.Clark@arm.com>, mathieu.poirier@linaro.org,
-        coresight@lists.linaro.org, leo.yan@linaro.com,
-        Leo Yan <leo.yan@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 05/11] KVM: s390: Add optional storage key checking to
+ MEMOP IOCTL
+Content-Language: en-US
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+References: <20220207165930.1608621-1-scgl@linux.ibm.com>
+ <20220207165930.1608621-6-scgl@linux.ibm.com>
+ <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
+ <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
+ <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
+In-Reply-To: <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: JGM9Zf2mFAzgHbvz4-cjin-y2c5Ym3v7
+X-Proofpoint-GUID: k8icOF-FvUBNOatk0Xme2-sWOtUNd3uB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_05,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1011
+ priorityscore=1501 phishscore=0 mlxlogscore=999 adultscore=0 bulkscore=0
+ malwarescore=0 lowpriorityscore=0 spamscore=0 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202090062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi James,
+CC Konstantin,
 
-When reviewing another patch set I spotted that there is a FIELD_GET
-macro already defined for the kernel in include/linux/bitfield.h
-
-Advantage of this is that you only need to define a shifted mask for
-each field and the macro handles the extraction and shifting
-automatically.
-It also ensures does a bunch of compile time sanity checks to ensure
-that the masks are in range for the type.
-
-i.e. - define the mask _with_ the shift
-#define TRCIDR0_INSTP0_MASK                    GENMASK(2, 1)
-
-then
-drvdata->instrp0 = !!(FIELD_GET(TRCIDR0_INSTP0_MASK, etmidr0) == 0b11);
-
-which means all the shift #defines can be dropped
-
-Should we use this and drop the REG_VAL or whatever?
-
-Regards
-
-Mike
-
-On Tue, 8 Feb 2022 at 15:04, Suzuki K Poulose <suzuki.poulose@arm.com> wrote:
->
-> On 07/02/2022 05:44, Anshuman Khandual wrote:
-> > Hi James,
-> >
-> > These are all ETM4X specific changes. Something like this might be cleaner
-> > and also more compact. Also would suggest to follow the same for subsequent
-> > patches as well.
-> >
-> > coresight: etm4x: Cleanup TRCIDR0 register accesses
-> >
-> > Consistency with sysreg.h could be mentioned in the commit message itself.
-> >
-> > On 2/3/22 5:35 PM, James Clark wrote:
-> >> This is a no-op change for style and consistency and has no effect on the
-> >> binary produced by gcc-11.
-> >
-> > This patch adds register definitions, helper macros as well. Please expand
-> > the commit message to add more details. This is too short, for the change
-> > it creates. BTW why is it necessary to mention GCC version number here.
-> >
-> >>
-> >> Signed-off-by: James Clark <james.clark@arm.com>
-> >> ---
-> >>   .../coresight/coresight-etm4x-core.c          | 36 +++++--------------
-> >>   drivers/hwtracing/coresight/coresight-etm4x.h | 17 +++++++++
-> >>   drivers/hwtracing/coresight/coresight-priv.h  |  5 +++
-> >>   3 files changed, 30 insertions(+), 28 deletions(-)
-> >>
-> >> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> >> index e2eebd865241..107e81948f76 100644
-> >> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> >> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> >> @@ -1091,41 +1091,21 @@ static void etm4_init_arch_data(void *info)
-> >>      etmidr0 = etm4x_relaxed_read32(csa, TRCIDR0);
-> >>
-> >>      /* INSTP0, bits[2:1] P0 tracing support field */
-> >> -    if (BMVAL(etmidr0, 1, 2) == 0b11)
-> >> -            drvdata->instrp0 = true;
-> >> -    else
-> >> -            drvdata->instrp0 = false;
-> >> -
-> >> +    drvdata->instrp0 = !!(REG_VAL(etmidr0, TRCIDR0_INSTP0) == 0b11);
-> >>      /* TRCBB, bit[5] Branch broadcast tracing support bit */
-> >> -    if (BMVAL(etmidr0, 5, 5))
-> >> -            drvdata->trcbb = true;
-> >> -    else
-> >> -            drvdata->trcbb = false;
-> >> -
-> >> +    drvdata->trcbb = !!(etmidr0 & TRCIDR0_TRCBB);
-> >>      /* TRCCOND, bit[6] Conditional instruction tracing support bit */
-> >> -    if (BMVAL(etmidr0, 6, 6))
-> >> -            drvdata->trccond = true;
-> >> -    else
-> >> -            drvdata->trccond = false;
-> >> -
-> >> +    drvdata->trccond = !!(etmidr0 & TRCIDR0_TRCCOND);
-> >>      /* TRCCCI, bit[7] Cycle counting instruction bit */
-> >> -    if (BMVAL(etmidr0, 7, 7))
-> >> -            drvdata->trccci = true;
-> >> -    else
-> >> -            drvdata->trccci = false;
-> >> -
-> >> +    drvdata->trccci = !!(etmidr0 & TRCIDR0_TRCCCI);
-> >>      /* RETSTACK, bit[9] Return stack bit */
-> >> -    if (BMVAL(etmidr0, 9, 9))
-> >> -            drvdata->retstack = true;
-> >> -    else
-> >> -            drvdata->retstack = false;
-> >> -
-> >> +    drvdata->retstack = !!(etmidr0 & TRCIDR0_RETSTACK);
-> >>      /* NUMEVENT, bits[11:10] Number of events field */
-> >> -    drvdata->nr_event = BMVAL(etmidr0, 10, 11);
-> >> +    drvdata->nr_event = REG_VAL(etmidr0, TRCIDR0_NUMEVENT);
-> >>      /* QSUPP, bits[16:15] Q element support field */
-> >> -    drvdata->q_support = BMVAL(etmidr0, 15, 16);
-> >> +    drvdata->q_support = REG_VAL(etmidr0, TRCIDR0_QSUPP);
-> >>      /* TSSIZE, bits[28:24] Global timestamp size field */
-> >> -    drvdata->ts_size = BMVAL(etmidr0, 24, 28);
-> >> +    drvdata->ts_size = REG_VAL(etmidr0, TRCIDR0_TSSIZE);
-> >>
-> >>      /* maximum size of resources */
-> >>      etmidr2 = etm4x_relaxed_read32(csa, TRCIDR2);
-> >> diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
-> >> index 3c4d69b096ca..2bd8ad953b8e 100644
-> >> --- a/drivers/hwtracing/coresight/coresight-etm4x.h
-> >> +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
-> >> @@ -130,6 +130,23 @@
-> >>
-> >>   #define TRCRSR_TA                  BIT(12)
-> >>
-> >> +/*
-> >> + * Bit positions of registers that are defined above, in the sysreg.h style
-> >> + * of _MASK, _SHIFT and BIT().
-> >> + */
-> >
-> > ^^^ not really necessary. Instead the format requirement for below mentioned
-> > CORESIGHT_REG_VAL() macro might be relevant and should be mentioned.
-> >
-> >> +#define TRCIDR0_INSTP0_SHIFT                        1
-> >> +#define TRCIDR0_INSTP0_MASK                 GENMASK(1, 0)
-> >> +#define TRCIDR0_TRCBB                               BIT(5)
-> >> +#define TRCIDR0_TRCCOND                             BIT(6)
-> >> +#define TRCIDR0_TRCCCI                              BIT(7)
-> >> +#define TRCIDR0_RETSTACK                    BIT(9)
-> >> +#define TRCIDR0_NUMEVENT_SHIFT                      10
-> >> +#define TRCIDR0_NUMEVENT_MASK                       GENMASK(1, 0)
-> >> +#define TRCIDR0_QSUPP_SHIFT                 15
-> >> +#define TRCIDR0_QSUPP_MASK                  GENMASK(1, 0)
-> >> +#define TRCIDR0_TSSIZE_SHIFT                        24
-> >> +#define TRCIDR0_TSSIZE_MASK                 GENMASK(4, 0)
-> >> +
-> >>   /*
-> >>    * System instructions to access ETM registers.
-> >>    * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
-> >> diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
-> >> index ff1dd2092ac5..1452c6038421 100644
-> >> --- a/drivers/hwtracing/coresight/coresight-priv.h
-> >> +++ b/drivers/hwtracing/coresight/coresight-priv.h
-> >> @@ -36,6 +36,11 @@
-> >>
-> >>   #define TIMEOUT_US         100
-> >>   #define BMVAL(val, lsb, msb)       ((val & GENMASK(msb, lsb)) >> lsb)
-> >> +/*
-> >> + * Extract a field from a register where field is #defined in the form
-> >> + * <register_name>_<field_name>_MASK and <register_name>_<field_name>_SHIFT
-> >> + */
-> >
-> > Looking at the usage, <register_name> is already embedded in <filed_name>. So
-> > it requires <field_name>_SHIFT and <field_name>_MASK instead. Unless register
-> > name should be passed as separate argument (which actually might be better).
-> >
-> > REG_VAL(etmidr0, TRCIDR0_TSSIZE) ----> REG_VAL(etmidr0, TRCIDR0, TSSIZE)
->
-> I don't see much difference here. So I am fine either way.
->
-> >
-> > with some restructuring in the comment ..
-> >
-> > /*
-> >   * Extract a field from a coresight register
-> >   *
-> >   * Required fields are defined as macros like the following
-> >   *
-> >   * <register_name>_<field_name>_MASK and <register_name>_<field_name>_SHIFT
-> >   */
-> >
-> >> +#define REG_VAL(val, field) ((val & (field##_MASK << field##_SHIFT)) >> field##_SHIFT)
-> >
-> > This is too generic to be in a coresight header or it should just be
-> > named CORESIGHT_REG_VAL() instead, making it more specific for here.
-> >
-> > The build should fail in case any required macro definition is absent.
-> > I guess no more fortification is required in case macros are missing.
-> >
-> > However CORESIGHT_REG_VAL() is better placed in <coresight-etm4x.h>
-> > just before all the dependent SHIFT/MASK register field definition
-> > starts.
->
-> Not necessarily. CORESIGHT_REG_VAL() is a generic function and doesn't
-> have anything specific to do with etm4x. We could reuse that for
-> cleaning up other drivers in CoreSight.
->
-> Cheers
-> Suzuki
+I hope you can find the right people. Looks that my (and Janis) emaildid not make it to linux-s390 and kvm at vger lists.
+Message-ID: <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
 
 
-
--- 
-Mike Leach
-Principal Engineer, ARM Ltd.
-Manchester Design Centre. UK
+Am 09.02.22 um 10:08 schrieb Christian Borntraeger:
+> 
+> 
+> Am 09.02.22 um 09:49 schrieb Janis Schoetterl-Glausch:
+>> On 2/9/22 08:34, Christian Borntraeger wrote:
+>>> Am 07.02.22 um 17:59 schrieb Janis Schoetterl-Glausch:
+>>>> User space needs a mechanism to perform key checked accesses when
+>>>> emulating instructions.
+>>>>
+>>>> The key can be passed as an additional argument.
+>>>> Having an additional argument is flexible, as user space can
+>>>> pass the guest PSW's key, in order to make an access the same way the
+>>>> CPU would, or pass another key if necessary.
+>>>>
+>>>> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+>>>> Acked-by: Janosch Frank <frankja@linux.ibm.com>
+>>>> Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+>>>> ---
+>>>>    arch/s390/kvm/kvm-s390.c | 49 +++++++++++++++++++++++++++++++---------
+>>>>    include/uapi/linux/kvm.h |  8 +++++--
+>>>>    2 files changed, 44 insertions(+), 13 deletions(-)
+>>>>
+>>>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+>>>> index cf347e1a4f17..71e61fb3f0d9 100644
+>>>> --- a/arch/s390/kvm/kvm-s390.c
+>>>> +++ b/arch/s390/kvm/kvm-s390.c
+>>>> @@ -32,6 +32,7 @@
+>>>>    #include <linux/sched/signal.h>
+>>>>    #include <linux/string.h>
+>>>>    #include <linux/pgtable.h>
+>>>> +#include <linux/bitfield.h>
+>>>>      #include <asm/asm-offsets.h>
+>>>>    #include <asm/lowcore.h>
+>>>> @@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
+>>>>        return r;
+>>>>    }
+>>>>    +static bool access_key_invalid(u8 access_key)
+>>>> +{
+>>>> +    return access_key > 0xf;
+>>>> +}
+>>>> +
+>>>>    long kvm_arch_vm_ioctl(struct file *filp,
+>>>>                   unsigned int ioctl, unsigned long arg)
+>>>>    {
+>>>> @@ -4687,34 +4693,54 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+>>>>                      struct kvm_s390_mem_op *mop)
+>>>>    {
+>>>>        void __user *uaddr = (void __user *)mop->buf;
+>>>> +    u8 access_key = 0, ar = 0;
+>>>>        void *tmpbuf = NULL;
+>>>> +    bool check_reserved;
+>>>>        int r = 0;
+>>>>        const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
+>>>> -                    | KVM_S390_MEMOP_F_CHECK_ONLY;
+>>>> +                    | KVM_S390_MEMOP_F_CHECK_ONLY
+>>>> +                    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
+>>>>    -    if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
+>>>> +    if (mop->flags & ~supported_flags || !mop->size)
+>>>>            return -EINVAL;
+>>>> -
+>>>>        if (mop->size > MEM_OP_MAX_SIZE)
+>>>>            return -E2BIG;
+>>>> -
+>>>>        if (kvm_s390_pv_cpu_is_protected(vcpu))
+>>>>            return -EINVAL;
+>>>> -
+>>>>        if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+>>>>            tmpbuf = vmalloc(mop->size);
+>>>>            if (!tmpbuf)
+>>>>                return -ENOMEM;
+>>>>        }
+>>>> +    ar = mop->ar;
+>>>> +    mop->ar = 0;
+>>>
+>>> Why this assignment to 0?
+>>
+>> It's so the check of reserved below works like that, they're all part of the anonymous union.
+> 
+> Ah, I see. This is ugly :-)
+> 
+>>>
+>>>> +    if (ar >= NUM_ACRS)
+>>>> +        return -EINVAL;
+>>>> +    if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+>>>> +        access_key = mop->key;
+>>>> +        mop->key = 0;
+>>>
+>>> and this? I think we can leave mop unchanged.
+>>>
+>>> In fact, why do we add the ar and access_key variable?
+>>> This breaks the check from above (if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size))  into two checks
+>>> and it will create a memleak for tmpbuf.
+>>
+>> I can move the allocation down, goto out or get rid of the reserved check and keep everything as before.
+>> First is simpler, but second makes handling that case more explicit and might help in the future.
+> 
+> Maybe add a reserved_02 field in the anon struct and check this for being zero and get rid of the local variables?
+> 
+>> Patch 6 has the same issue in the vm ioctl handler.
+>>>
+>>> Simply use mop->key and mop->ar below and get rid of the local variables.
+>>> The structure has no concurrency and gcc will handle that just as the local variable.
+>>>
+>>> Other than that this looks good.
+>>
+>> [...]
+>>
