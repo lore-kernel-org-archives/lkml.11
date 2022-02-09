@@ -2,155 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51918C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:10:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED2F5C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234060AbiBIKKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:10:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37006 "EHLO
+        id S234216AbiBIKKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:10:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiBIKKE (ORCPT
+        with ESMTP id S231567AbiBIKK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:10:04 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE04E0486FB
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:08:18 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id v4so1706036pjh.2
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 02:08:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pmDkqthjssoHKJ9bLjod6j2IDm4LIWLx3+MkrpaPVXo=;
-        b=BEiHMRnQ3d0uqlb0Y/CzgsGVZBB2yLJyXVGsAOrFWnfyYqANuKd6t5lz7go8EsGuky
-         xK3B0ZBG4FSwqjzyq6DYa8w6jn59DWThbCY5cpojaE9ipy0eGuNaYs0Oo2bQaH2d6019
-         bqsJ3YIVS8YdfQ3akS2Yev/WgX6GbrqYgitYIQCCoVo9sws0XBYLhsCm3KJanX/9rIED
-         DB9JFBTIptea75yQNd4zR6KzavAzDVnoaRLpGFOSYAu9IlXR6TtfxA/TQAPUnBwMlIPp
-         ozMDVBu++TO0jPtE2k8rtqu0zPGM7y9I/E3BTm+aI5XNtqbbd57V+Cg44HiCJAr+sUKL
-         e8Ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pmDkqthjssoHKJ9bLjod6j2IDm4LIWLx3+MkrpaPVXo=;
-        b=NB47KSlgwaAQHpb3AN03wWk82YOw0PGFw9npqzLQFWDdfuUX4O7Vr5BmCzt0J8AGao
-         RnzVxJiniZzIZiy7ATd+txC7Pnw+jX+7drtVbj2DPUWtQbQDq144zJhxGEGtSsJzqK+f
-         nib5eYJOkRfAfV7nA0xLI1Qe+iurSxCU8jWbUPTcgB16qEY4pXJC5d8Pbj5w2bCJWiMw
-         d86kPx1zWrrkrbvavVPsV2+lrqW0jUfahqqQkQqiLHFdAhDr7L1bxPYgE66+Fv6z8853
-         J4fl06oJybxEflY0b2mVhXlJnuQERhatTz2TsfDZvXz7+0NJ+mLM03HyzJs431DPo2Xz
-         arbw==
-X-Gm-Message-State: AOAM5317+bPxn5S9xAW29TcOOXL2vu4Yj7fyyuN8h02dnxYXbFsUlkj7
-        EDd29PAmivL+3WsOwwIf97ZP
-X-Google-Smtp-Source: ABdhPJzS+FgYIm8PZLlg8rh64dLRyOt2elhMgWkhYPdGcwQ+ro/gZGH0+GRW613NtZNUMyjPQW3PgA==
-X-Received: by 2002:a17:902:bf06:: with SMTP id bi6mr1380824plb.24.1644401242187;
-        Wed, 09 Feb 2022 02:07:22 -0800 (PST)
-Received: from localhost.localdomain ([117.217.179.178])
-        by smtp.gmail.com with ESMTPSA id p2sm6722024pfo.125.2022.02.09.02.07.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 02:07:21 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        vbadigan@codeaurora.org, quic_cang@quicinc.com,
-        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, elder@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v2 23/23] bus: mhi: ep: Add uevent support for module autoloading
-Date:   Wed,  9 Feb 2022 15:26:24 +0530
-Message-Id: <20220209095624.26389-24-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
-References: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
+        Wed, 9 Feb 2022 05:10:28 -0500
+X-Greylist: delayed 628 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 02:08:44 PST
+Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DC8E103152;
+        Wed,  9 Feb 2022 02:08:43 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.west.internal (Postfix) with ESMTP id 832362B001FF;
+        Wed,  9 Feb 2022 04:23:36 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 09 Feb 2022 04:23:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=ynnIBDyxddplj0yDy1ftsHwCIVNF26bdpyTej6
+        p+4/g=; b=kvvo+EBSJ3tR004LCR4sJSPmSM9GWoMkJaSz/UTAaZ/WPclvitGGoz
+        jNm1YpYDJVvBTIYxTkMdab3mTaaivqubtsY1/ecdBPtzYmRSkMVb8puAlZMhrmjZ
+        Ipxi8Oq9uCV2ZWwktot+TpGStnzJnPyHJCluj2fz3gnQf4dnAmh036wQANAXxacM
+        IPW4TzyCfixYslCMhVrIYcC5G42HyfoH8lOlXMwEHU4yu+CNwAViEZwaKoaHRyyc
+        7JhpeE3n+Iqc8XS89f7YjbBZO9fdXefvbjUymatB9hdJK24zdYl0I0NIw7okrpkw
+        KRxZ3hUyQ/nAB6m7ibQZ+fHQUSA1hwgw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=ynnIBDyxddplj0yDy
+        1ftsHwCIVNF26bdpyTej6p+4/g=; b=TR3ish91hzSufC8jLjr1Iyo1DhoQ4qzBv
+        5nd81B7nrZwoT00wAY9RTPibr/rydxHczP1laGwhn48fkjN96RY4cUtlqeNfsoPl
+        uhujkGPKV3vh3aLT8/bTQtd+ubv5KnRX0fjaH8S1ljRcNBcdveLbZwK3FNOlTSOB
+        KbyjbG3mOIDL0Z9lfLx8TTgbpdAJwQsSjX9WI0YrwDAsmdK+3WQte8sBdEk5FX8N
+        +uFRXS3e0stV55KI48Hk2TsILvtjDWlDCY8T1UuTbFsTabtGLXVrn4bgO+GQlsKN
+        JB190aDUQoxlDB1GhsEtepoHT4F5sMFZymajfBSDzeKN5bM6VZFxg==
+X-ME-Sender: <xms:F4gDYrxCvLtXo2ifHjHR0DYDEl7ucELatEDpEcIVJtq__aNckdAUJA>
+    <xme:F4gDYjRuY-hjiDVgSDZ_iaLLk4wUph3ANSWgkF6EBGiYt2ZrPYZx4Oo_ZjNDF0VIE
+    ib9tXbWu48MBKLkON4>
+X-ME-Received: <xmr:F4gDYlX8qO7DppudciOhz147Q0nhfaqUpzvTejTsEP8olGFzyIgX24f4Mmp03gB6ilISS6mI7Qi0y_Mdp3EGyupOT9CuysslOoP0Pcw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheelgddtvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
+    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
+    gvrhhnpeelkeeghefhuddtleejgfeljeffheffgfeijefhgfeufefhtdevteegheeiheeg
+    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
+    igihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:F4gDYlg65wljSBYqfsTf4Baop9UP5uZvvnV9dQWoeVKrE49Cp9jqJg>
+    <xmx:F4gDYtCrQkuzciz5ye4gjCPhH2a9rOS9vG7stD1BNy6tcsFAv99lkg>
+    <xmx:F4gDYuKjZjYVcjABNgBdvazdhGfQFYZbUA1NaG8kua1os3eHCBz-NQ>
+    <xmx:GIgDYl6pAWJRUjxHsVZ7Zto9bEJUghYLgg1xXcvwtAve-iu-ynj4_IO0zFI>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 9 Feb 2022 04:23:35 -0500 (EST)
+Date:   Wed, 9 Feb 2022 10:23:33 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 29/66] media: sun6i-csi: Move csi buffer definition to
+ main header file
+Message-ID: <20220209092333.76pu7dpimgsz443z@houat>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-30-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zs2otepylosvwibr"
+Content-Disposition: inline
+In-Reply-To: <20220205185429.2278860-30-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add uevent support to MHI endpoint bus so that the client drivers can be
-autoloaded by udev when the MHI endpoint devices gets created. The client
-drivers are expected to provide MODULE_DEVICE_TABLE with the MHI id_table
-struct so that the alias can be exported.
 
-The MHI endpoint reused the mhi_device_id structure of the MHI bus.
+--zs2otepylosvwibr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/bus/mhi/ep/main.c       |  9 +++++++++
- include/linux/mod_devicetable.h |  2 ++
- scripts/mod/file2alias.c        | 10 ++++++++++
- 3 files changed, 21 insertions(+)
+On Sat, Feb 05, 2022 at 07:53:52PM +0100, Paul Kocialkowski wrote:
+> The buffer structure is a top-level definition, put it in the main header
+> to keep things tidy. No functional change intended.
+>=20
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index ed3dbca170d3..c70062f92c03 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -1547,6 +1547,14 @@ void mhi_ep_driver_unregister(struct mhi_ep_driver *mhi_drv)
- }
- EXPORT_SYMBOL_GPL(mhi_ep_driver_unregister);
- 
-+static int mhi_ep_uevent(struct device *dev, struct kobj_uevent_env *env)
-+{
-+	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
-+
-+	return add_uevent_var(env, "MODALIAS=" MHI_EP_DEVICE_MODALIAS_FMT,
-+					mhi_dev->name);
-+}
-+
- static int mhi_ep_match(struct device *dev, struct device_driver *drv)
- {
- 	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
-@@ -1573,6 +1581,7 @@ struct bus_type mhi_ep_bus_type = {
- 	.name = "mhi_ep",
- 	.dev_name = "mhi_ep",
- 	.match = mhi_ep_match,
-+	.uevent = mhi_ep_uevent,
- };
- 
- static int __init mhi_ep_init(void)
-diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-index 4bb71979a8fd..0cff19bd72bf 100644
---- a/include/linux/mod_devicetable.h
-+++ b/include/linux/mod_devicetable.h
-@@ -835,6 +835,8 @@ struct wmi_device_id {
- #define MHI_DEVICE_MODALIAS_FMT "mhi:%s"
- #define MHI_NAME_SIZE 32
- 
-+#define MHI_EP_DEVICE_MODALIAS_FMT "mhi_ep:%s"
-+
- /**
-  * struct mhi_device_id - MHI device identification
-  * @chan: MHI channel name
-diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
-index 5258247d78ac..d9d6a31446ea 100644
---- a/scripts/mod/file2alias.c
-+++ b/scripts/mod/file2alias.c
-@@ -1391,6 +1391,15 @@ static int do_mhi_entry(const char *filename, void *symval, char *alias)
- 	return 1;
- }
- 
-+/* Looks like: mhi_ep:S */
-+static int do_mhi_ep_entry(const char *filename, void *symval, char *alias)
-+{
-+	DEF_FIELD_ADDR(symval, mhi_device_id, chan);
-+	sprintf(alias, MHI_EP_DEVICE_MODALIAS_FMT, *chan);
-+
-+	return 1;
-+}
-+
- /* Looks like: ishtp:{guid} */
- static int do_ishtp_entry(const char *filename, void *symval, char *alias)
- {
-@@ -1519,6 +1528,7 @@ static const struct devtable devtable[] = {
- 	{"tee", SIZE_tee_client_device_id, do_tee_entry},
- 	{"wmi", SIZE_wmi_device_id, do_wmi_entry},
- 	{"mhi", SIZE_mhi_device_id, do_mhi_entry},
-+	{"mhi_ep", SIZE_mhi_device_id, do_mhi_ep_entry},
- 	{"auxiliary", SIZE_auxiliary_device_id, do_auxiliary_entry},
- 	{"ssam", SIZE_ssam_device_id, do_ssam_entry},
- 	{"dfl", SIZE_dfl_device_id, do_dfl_entry},
--- 
-2.25.1
+Reviewed-by: Maxime Ripard <maxime@cerno.tech>
 
+Maxime
+
+--zs2otepylosvwibr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgOIFAAKCRDj7w1vZxhR
+xemTAP9H29JYiSyQC8X0RLZBbi6rB8nkBPtKbCCr4GXaSXzuogD/bju3syA/cSSZ
+HfH6KHazoj6sNSOVjjf3VxMWJOwBPgo=
+=mj5l
+-----END PGP SIGNATURE-----
+
+--zs2otepylosvwibr--
