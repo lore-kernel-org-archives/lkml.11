@@ -2,210 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C161C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:47:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F876C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241837AbiBICrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:47:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42658 "EHLO
+        id S242468AbiBIDCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:02:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233820AbiBIClL (ORCPT
+        with ESMTP id S1359775AbiBICvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:41:11 -0500
-Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739AFC07E5C0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 18:40:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1644374412; x=1675910412;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5jGen3hKuAqmZCUZesezMs0C28vFlrjgrYakLwisLjM=;
-  b=hKy/hjvKzd+wIqTn77jqiAiJueNt9HGN/4y2HEor9n1j4eMfLic8s82O
-   x56+LUhtQJae5KaXY2KJgTVTI1fcf95F61b2peH9IpwUz8rxngU7ZxnS/
-   tD3MM34QDjq8aWQpak7JS6sbyfz0AALV9D7R1CZcaYJZONpKFwgDtbY4G
-   LI271eiSjsNb9+YMB1EdMireCu9bO8Y9BOIE73c4k9xUthkL5kyw/Qqcu
-   YjQiWwSp4tsBg4ld7OeMLlzUCXJHRibNiTz4QuRqmV/scg084XJx16Wjm
-   wHYi9fxhvUG1u5xx3DFJQQ4EP7nQnTF2cUMR+JDgFp54lJXUoIVudAMN+
-   A==;
-X-IronPort-AV: E=Sophos;i="5.88,354,1635177600"; 
-   d="scan'208";a="193449709"
-Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 09 Feb 2022 10:40:12 +0800
-IronPort-SDR: wbGwYMLbbSKqgcknWsdbrl2RlEK6M5wq+kbblV9IKKxDhMPpKT69pOANxs5tEUgihxQdUmIXZt
- DvHa/JQuiiXnGZhKWnICMgFSI/4l92FnvaV+hUehgSO87oYctQIOqxj5SxUFMfSOTkkqbrwwSj
- 9LtZlcXc5IKyHfmHLuow7dNHTf3JUTtahPu5nIcGHTLpaCAtwuQalij/caX8bZzOmW/kljp9j0
- bDQ5a3Gq5gWWiizmhpHeFe+MrLwoXDl2g7zuDbNREbn+rEHQ384vMLzixHEd7STaf8HD+/3fmx
- WFmT6VPMD1Fm6dt+6yP3hBni
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 18:12:01 -0800
-IronPort-SDR: PRVvmd513psvC+D8OdYZTcjG/rX8LY+L6USNRxnjlb6Ya7hkYeO0iu/lc8t2RqXqCgSGKASaCL
- IxVrp5doldXPozK96gB21wMTRjnBRh5EJOZKpIy/7JvpiIAGTZxj9e3+9QhdQSB417q+EiIw4X
- bHGNB1zZVSxchmh8SAKPqj49qbv5MNQLv/mhI6BE2kCrMSv9Xft7a+7vybK7N8iMiQw5GRLIx4
- 2OijRS8yEgDzkTono4cGeHk3hb62LG9KcmayZ/DDbxFf6MFSqOO+WbILwXXqC2Uv5ztV2RiFGX
- NVA=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 18:40:12 -0800
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Jtkcq4g7Fz1SVp0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 18:40:11 -0800 (PST)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1644374410; x=1646966411; bh=5jGen3hKuAqmZCUZesezMs0C28vFlrjgrYa
-        kLwisLjM=; b=b5vxNOXovYZpnITGpEvJ4Vr4BmUY9xkeyqQubYzQRSo317/KyUx
-        XdqsSzfDK8Nppd2BEZFG0GgvRyJHrNfJ/Jn0FHKxMYgogDO/51MVmU5qYYNebiSz
-        fzTZqxmcCdxYg/GRmLWpK04k4p1Slk1tg+J7oE9AAL7z1LE5xl9euMB2Co3JOVfQ
-        4OZW/Qi3ANlf2SOp4RT4SQdlt2Say/QfNQeA3lcEacEhpA2nVRI8tJXiYtNoHKvi
-        /PsjX5Stam2mDF25DsD8C6et4KnZ+tM5BfU58nH+p3FU70GHv8grXJXxxuBLSW3Y
-        ioeJz0mLZB0eM3ik1VWHfiz85WSzbMWkmRg==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 26x7ipbS-P36 for <linux-kernel@vger.kernel.org>;
-        Tue,  8 Feb 2022 18:40:10 -0800 (PST)
-Received: from [10.225.163.67] (unknown [10.225.163.67])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4Jtkcm6B4Xz1Rwrw;
-        Tue,  8 Feb 2022 18:40:08 -0800 (PST)
-Message-ID: <a0ec0411-6388-197f-abaa-08b2dc9dac4d@opensource.wdc.com>
-Date:   Wed, 9 Feb 2022 11:40:07 +0900
+        Tue, 8 Feb 2022 21:51:25 -0500
+Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B154C06129A;
+        Tue,  8 Feb 2022 18:51:18 -0800 (PST)
+Received: by mail-oo1-f44.google.com with SMTP id u47-20020a4a9732000000b00316d0257de0so951181ooi.7;
+        Tue, 08 Feb 2022 18:51:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VO57A+eaNZtnz6wrYVmF9l+Ime3J98JyiSD+FE1Zl2s=;
+        b=IxtwRbkbNqTDs7ZOZ0EAnYxdmPQE7juvsvdCsVU944EBA/MxTA3M9HjOX0Znlncwle
+         EWv+RSPqm8AyYXFUYapjmQ3gF6hc8hgXHfsLI6NUPgVeDsAZG5TDPrVcXnD06Xrx1q+D
+         8dg+mRlFVqWwjPmYHvPqJAzvgJcoO2GyG/vFYI4D+X9E5ei8vtCcGkHFKMFHPDD7WpLQ
+         r8bykoDbL9jHKp6/Mpmomvx40Z2YpXZXLD7DcdxYNYda5MT7fe6YfqFkB/xv8aXFgbQ4
+         ss3lVhf/qgaekyv130jsXOdNRvduV/t6/QE3U2ZRAjzmf2SJYrydO7MSLR38rtkdAc3f
+         NIrQ==
+X-Gm-Message-State: AOAM533krJ0qb7gRReQtjvpRZvVuuXN5tCOI04Cs+GGyAbmzk8MnVIRa
+        rf426Ox2IMnTQoIc6zqpsQ==
+X-Google-Smtp-Source: ABdhPJxvuliPhG9zvYZUYypDptFiBEp90kxcqHXsBxraIopOXa+eDr+9phL24xxz3FeKGwifvVmfeA==
+X-Received: by 2002:a05:6870:b283:: with SMTP id c3mr291386oao.196.1644375077341;
+        Tue, 08 Feb 2022 18:51:17 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id h27sm5987295ote.57.2022.02.08.18.51.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 18:51:16 -0800 (PST)
+Received: (nullmailer pid 3521815 invoked by uid 1000);
+        Wed, 09 Feb 2022 02:51:15 -0000
+Date:   Tue, 8 Feb 2022 20:51:15 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Abel Vesa <abel.vesa@nxp.com>
+Cc:     linux-serial@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>
+Subject: Re: [PATCH] dt-bindings: serial: fsl-lpuart: Remove i.MX8QM from enum
+Message-ID: <YgMsI4BTbBTR2vDP@robh.at.kernel.org>
+References: <20220118135535.2118720-1-abel.vesa@nxp.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] scsi: ibmvfc: replace snprintf with sysfs_emit
-Content-Language: en-US
-To:     davidcomponentone@gmail.com, tyreld@linux.ibm.com
-Cc:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        linux-scsi@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <b4c150c86f539d3bac3fc8885252adb9f24ee48f.1644286482.git.yang.guang5@zte.com.cn>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <b4c150c86f539d3bac3fc8885252adb9f24ee48f.1644286482.git.yang.guang5@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220118135535.2118720-1-abel.vesa@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 09:43, davidcomponentone@gmail.com wrote:
-> From: Yang Guang <yang.guang5@zte.com.cn>
+On Tue, 18 Jan 2022 15:55:35 +0200, Abel Vesa wrote:
+> i.MX8QM lpuart is backwards compatible with i.MX8QXP, so lets remove
+> the single match from enum. This will force nodes to have both compatible
+> strings, since there is alreaady an 'items' entry for that.
 > 
-> coccinelle report:
-> ./drivers/scsi/ibmvscsi/ibmvfc.c:3453:8-16:
-> WARNING: use scnprintf or sprintf
-> ./drivers/scsi/ibmvscsi/ibmvfc.c:3416:8-16:
-> WARNING: use scnprintf or sprintf
-> ./drivers/scsi/ibmvscsi/ibmvfc.c:3436:8-16:
-> WARNING: use scnprintf or sprintf
-> ./drivers/scsi/ibmvscsi/ibmvfc.c:3426:8-16:
-> WARNING: use scnprintf or sprintf
-> ./drivers/scsi/ibmvscsi/ibmvfc.c:3445:8-16:
-> WARNING: use scnprintf or sprintf
-> ./drivers/scsi/ibmvscsi/ibmvfc.c:3406:8-16:
-> WARNING: use scnprintf or sprintf
-> 
-> Use sysfs_emit instead of scnprintf or sprintf makes more sense.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-> Signed-off-by: David Yang <davidcomponentone@gmail.com>
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 > ---
->  drivers/scsi/ibmvscsi/ibmvfc.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 1 -
+>  1 file changed, 1 deletion(-)
 > 
-> diff --git a/drivers/scsi/ibmvscsi/ibmvfc.c b/drivers/scsi/ibmvscsi/ibmvfc.c
-> index d0eab5700dc5..d5a197d17e0a 100644
-> --- a/drivers/scsi/ibmvscsi/ibmvfc.c
-> +++ b/drivers/scsi/ibmvscsi/ibmvfc.c
-> @@ -3403,7 +3403,7 @@ static ssize_t ibmvfc_show_host_partition_name(struct device *dev,
->  	struct Scsi_Host *shost = class_to_shost(dev);
->  	struct ibmvfc_host *vhost = shost_priv(shost);
->  
-> -	return snprintf(buf, PAGE_SIZE, "%s\n",
-> +	return sysfs_emit(buf, "%s\n",
->  			vhost->login_buf->resp.partition_name);
->  }
->  
-> @@ -3413,7 +3413,7 @@ static ssize_t ibmvfc_show_host_device_name(struct device *dev,
->  	struct Scsi_Host *shost = class_to_shost(dev);
->  	struct ibmvfc_host *vhost = shost_priv(shost);
->  
-> -	return snprintf(buf, PAGE_SIZE, "%s\n",
-> +	return sysfs_emit(buf, "%s\n",
->  			vhost->login_buf->resp.device_name);
->  }
->  
-> @@ -3423,7 +3423,7 @@ static ssize_t ibmvfc_show_host_loc_code(struct device *dev,
->  	struct Scsi_Host *shost = class_to_shost(dev);
->  	struct ibmvfc_host *vhost = shost_priv(shost);
->  
-> -	return snprintf(buf, PAGE_SIZE, "%s\n",
-> +	return sysfs_emit(buf, "%s\n",
->  			vhost->login_buf->resp.port_loc_code);
->  }
->  
-> @@ -3433,7 +3433,7 @@ static ssize_t ibmvfc_show_host_drc_name(struct device *dev,
->  	struct Scsi_Host *shost = class_to_shost(dev);
->  	struct ibmvfc_host *vhost = shost_priv(shost);
->  
-> -	return snprintf(buf, PAGE_SIZE, "%s\n",
-> +	return sysfs_emit(buf, "%s\n",
->  			vhost->login_buf->resp.drc_name);
->  }
->  
-> @@ -3442,7 +3442,7 @@ static ssize_t ibmvfc_show_host_npiv_version(struct device *dev,
->  {
->  	struct Scsi_Host *shost = class_to_shost(dev);
->  	struct ibmvfc_host *vhost = shost_priv(shost);
-> -	return snprintf(buf, PAGE_SIZE, "%d\n", be32_to_cpu(vhost->login_buf->resp.version));
-> +	return sysfs_emit(buf, "%d\n", be32_to_cpu(vhost->login_buf->resp.version));
 
-The format should be %u, not %d. And while at it, please add a blank
-line after the declarations.
-
->  }
->  
->  static ssize_t ibmvfc_show_host_capabilities(struct device *dev,
-> @@ -3450,7 +3450,7 @@ static ssize_t ibmvfc_show_host_capabilities(struct device *dev,
->  {
->  	struct Scsi_Host *shost = class_to_shost(dev);
->  	struct ibmvfc_host *vhost = shost_priv(shost);
-> -	return snprintf(buf, PAGE_SIZE, "%llx\n", be64_to_cpu(vhost->login_buf->resp.capabilities));
-> +	return sysfs_emit(buf, "%llx\n", be64_to_cpu(vhost->login_buf->resp.capabilities));
->  }
-
-Ditto for the blank line.
-
->  
->  /**
-> @@ -3471,7 +3471,7 @@ static ssize_t ibmvfc_show_log_level(struct device *dev,
->  	int len;
->  
->  	spin_lock_irqsave(shost->host_lock, flags);
-> -	len = snprintf(buf, PAGE_SIZE, "%d\n", vhost->log_level);
-> +	len = sysfs_emit(buf, "%d\n", vhost->log_level);
->  	spin_unlock_irqrestore(shost->host_lock, flags);
->  	return len;
->  }
-> @@ -3509,7 +3509,7 @@ static ssize_t ibmvfc_show_scsi_channels(struct device *dev,
->  	int len;
->  
->  	spin_lock_irqsave(shost->host_lock, flags);
-> -	len = snprintf(buf, PAGE_SIZE, "%d\n", vhost->client_scsi_channels);
-> +	len = sysfs_emit(buf, "%d\n", vhost->client_scsi_channels);
->  	spin_unlock_irqrestore(shost->host_lock, flags);
->  	return len;
->  }
-
-
--- 
-Damien Le Moal
-Western Digital Research
+Acked-by: Rob Herring <robh@kernel.org>
