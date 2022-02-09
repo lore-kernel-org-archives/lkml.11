@@ -2,87 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F13EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54845C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241136AbiBISwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:52:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
+        id S241239AbiBISwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:52:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241272AbiBISu5 (ORCPT
+        with ESMTP id S241261AbiBISuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:50:57 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7218C03E96E;
-        Wed,  9 Feb 2022 10:46:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644432399; x=1675968399;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/sf9RDeSLDsXwLAbDoDvwa7faj+vGk0nfM38INq+8DM=;
-  b=dtU8cg14oWvUSx+8UWSnB8HX/0n/b6+ZF5C/XDpQrxspjo87W5zHBy+G
-   0jhTkF8G27aHQ7Hqn+uskLBOJ9K/6eT/TkbROuFXd32XAr5gB0di5K1vz
-   NXsEK0t659z7WnDTIxlq0GIy7pr1yongczUlGODt18TTlcyAv7qc7j4d0
-   Q=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 09 Feb 2022 10:46:39 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 10:46:38 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Wed, 9 Feb 2022 10:46:38 -0800
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Wed, 9 Feb 2022
- 10:46:36 -0800
-Date:   Wed, 9 Feb 2022 13:46:34 -0500
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Jan Kara <jack@suse.cz>
-CC:     Theodore Ts'o <tytso@mit.edu>, Jan Kara <jack@suse.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        <linux-ext4@vger.kernel.org>, <rcu@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH] jbd2: avoid __GFP_ZERO with SLAB_TYPESAFE_BY_RCU
-Message-ID: <YgQMCoEM5/fSZpdo@qian>
-References: <20220209165742.5659-1-quic_qiancai@quicinc.com>
- <20220209181010.gfn66rvip56i54df@quack3.lan>
+        Wed, 9 Feb 2022 13:50:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A14C03E95E;
+        Wed,  9 Feb 2022 10:46:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97285B82215;
+        Wed,  9 Feb 2022 18:46:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B090C340ED;
+        Wed,  9 Feb 2022 18:46:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644432392;
+        bh=GttMzeaofkNMOCaqUHy7gLUshl9uBtQS37tupBrwCDQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NSymINvo3vn1ZQmlJbCXBRGCQvBBtgiP5C6WZ4GlR5dLTErs2UQimYREPYJfnTV14
+         vjaYrnh7R7BLQe5HfKFEfQWofIXt82/SypcmUafBC6htHGuoKRr57OCFdkMfiht+30
+         FRhnRLYSHgsfyGo8/yHiaTkbcdtmNcae6S30/oAGtaEHH4EYH2lwyHBJa1N9np5dHX
+         pjp451HyxII1Efd6g1fe+9HEAqsy2h9l/gbv/BX6jaBB2OcthJXhFmiy1XUCXMklXF
+         Ccxg8f2BqoUC5qsPXF7RqpAb74FsN8mnhvaamhCrrnlFJMdXHLJU+xF12CnfRT7HpR
+         AON4tmMLkv5NA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "Darrick J. Wong" <djwong@kernel.org>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <brauner@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, jack@suse.com
+Subject: [PATCH AUTOSEL 4.9 7/7] quota: make dquot_quota_sync return errors from ->sync_fs
+Date:   Wed,  9 Feb 2022 13:45:50 -0500
+Message-Id: <20220209184550.48481-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209184550.48481-1-sashal@kernel.org>
+References: <20220209184550.48481-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220209181010.gfn66rvip56i54df@quack3.lan>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 07:10:10PM +0100, Jan Kara wrote:
-> On Wed 09-02-22 11:57:42, Qian Cai wrote:
-> > Since the linux-next commit 120aa5e57479 (mm: Check for
-> > SLAB_TYPESAFE_BY_RCU and __GFP_ZERO slab allocation), we will get a
-> > boot warning. Avoid it by calling synchronize_rcu() before the zeroing.
-> > 
-> > Signed-off-by: Qian Cai <quic_qiancai@quicinc.com>
-> 
-> No, the performance impact of this would be just horrible. Can you
-> ellaborate a bit why SLAB_TYPESAFE_BY_RCU + __GFP_ZERO is a problem and why
-> synchronize_rcu() would be needed here before the memset() please? I mean
-> how is zeroing here any different from the memory just being used?
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-I'll defer to Paul and other RCU developers for more indepth explanations of
-the issue with the combo. The above mentioned commit has a bit information:
+[ Upstream commit dd5532a4994bfda0386eb2286ec00758cee08444 ]
 
-    Code using a SLAB_TYPESAFE_BY_RCU kmem_cache can have readers accessing
-    blocks of memory passed to kmem_cache_free(), and those readers might
-    still be accessing those blocks after kmem_cache_alloc() reallocates
-    those blocks.  These readers are not going to take kindly to that memory
-    being zeroed along the way.  Therefore, add a WARN_ON_ONCE() complaining
-    about __GFP_ZERO being passed to an allocation from a SLAB_TYPESAFE_BY_RCU
-    kmem_cache.
+Strangely, dquot_quota_sync ignores the return code from the ->sync_fs
+call, which means that quotacalls like Q_SYNC never see the error.  This
+doesn't seem right, so fix that.
+
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/quota/dquot.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
+index 82a5ecbe2da96..022b237c6a134 100644
+--- a/fs/quota/dquot.c
++++ b/fs/quota/dquot.c
+@@ -676,9 +676,14 @@ int dquot_quota_sync(struct super_block *sb, int type)
+ 	/* This is not very clever (and fast) but currently I don't know about
+ 	 * any other simple way of getting quota data to disk and we must get
+ 	 * them there for userspace to be visible... */
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, 1);
+-	sync_blockdev(sb->s_bdev);
++	if (sb->s_op->sync_fs) {
++		ret = sb->s_op->sync_fs(sb, 1);
++		if (ret)
++			return ret;
++	}
++	ret = sync_blockdev(sb->s_bdev);
++	if (ret)
++		return ret;
+ 
+ 	/*
+ 	 * Now when everything is written we can discard the pagecache so
+-- 
+2.34.1
+
