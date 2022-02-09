@@ -2,110 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2996DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233202AbiBIO2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 09:28:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59480 "EHLO
+        id S235021AbiBIO3L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 09:29:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233010AbiBIO2s (ORCPT
+        with ESMTP id S233010AbiBIO3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 09:28:48 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DFBC06157B;
-        Wed,  9 Feb 2022 06:28:51 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 24D3A210DC;
-        Wed,  9 Feb 2022 14:28:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644416930; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=io62y92hn/uGoChit59qxAIh63DflnbWE34GvXvv5WY=;
-        b=m5fq8AmYqQxnyQ62G7Dp1kUk7FtBRK69c8z6rNt9+uPZS2rBP6DX20dtihKPnvBQSLcNF/
-        g1j4JPAAY9iR6VDbGiQwNODXMAgLfBTFPJ250ZX4oPUSGnBFvCRl4MJzVAONr8sfVkCWU0
-        8NvP/aDKNFAWaYra6jtzeg1IdGrbcck=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644416930;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=io62y92hn/uGoChit59qxAIh63DflnbWE34GvXvv5WY=;
-        b=ECcpj/mg9vk6A2nU6+Lnt4PKQmtb4U1qjpc83XWVJpXbAYfBwiJMxU3WFeff9fmmwgMh8Y
-        c6GNrA3cOXHTWLBw==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id CB46EA3B8D;
-        Wed,  9 Feb 2022 14:28:49 +0000 (UTC)
-Date:   Wed, 9 Feb 2022 15:28:49 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Aaron Tomlin <atomlin@redhat.com>
-cc:     mcgrof@kernel.org, cl@linux.com, pmladek@suse.com,
-        akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        live-patching@vger.kernel.org, atomlin@atomlin.com,
-        ghalat@redhat.com, allen.lkml@gmail.com, void@manifault.com,
-        joe@perches.com
-Subject: Re: [RFC PATCH v4 07/13] module: Move extra signature support out
- of core code
-In-Reply-To: <20220130213214.1042497-8-atomlin@redhat.com>
-Message-ID: <alpine.LSU.2.21.2202091526260.32090@pobox.suse.cz>
-References: <20220130213214.1042497-1-atomlin@redhat.com> <20220130213214.1042497-8-atomlin@redhat.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Wed, 9 Feb 2022 09:29:08 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50538C06157B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:29:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=eIF08KcMpl5r29rPiQe9+6ZkSSpvO+hinKiqWMtDBSw=; b=oj44LeKt1qxycyFeTCQRMXiQqd
+        4VhwfEU3oOTLW+gPnSCXOuyJT4uiRmzCJo6lHaioJ88h04fktbf61OSYQeO9gafWkZNshRMa9/eSl
+        0ImOQoptpWW/k8aD8/4EaWgAZNUjL7ooSRDHy7vkBtjGzqLxp+cKz6paZQsNqL5Khem5GftWcXbNw
+        EgTpQiFfeOGaJAUiNVcklqkzxhb/U/2BWNaXERwgF4cX1Yev583OCBmcZaKH0xMT/lCb5UjMTCTUp
+        snHr5CedN/FAthzUI+5fvM+/cf3nPSR75ZWYYOD2Zo7Yq0LKYHjVL/WvVDb0SNQfz9ENetNZjUyN6
+        eBXAL6tA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nHny1-007w0y-Cn; Wed, 09 Feb 2022 14:29:09 +0000
+Date:   Wed, 9 Feb 2022 14:29:09 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Mauricio Faria de Oliveira <mfo@canonical.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 51/75] mm/rmap: Convert try_to_unmap() to take a folio
+Message-ID: <YgPPtW9V3opFHMwx@casper.infradead.org>
+References: <20220204195852.1751729-1-willy@infradead.org>
+ <20220204195852.1751729-52-willy@infradead.org>
+ <CAO9xwp2+3Sh-X8xcukLxp5NE3pLWTx=KqVhivDB33W1Xci7uHQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAO9xwp2+3Sh-X8xcukLxp5NE3pLWTx=KqVhivDB33W1Xci7uHQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> diff --git a/include/linux/module.h b/include/linux/module.h
-> index 520c0f4bb968..15ba2ebbca3e 100644
-> --- a/include/linux/module.h
-> +++ b/include/linux/module.h
-> @@ -720,8 +720,8 @@ static inline bool set_livepatch_module(struct module *mod)
->  	return false;
->  }
->  
-> -bool is_module_sig_enforced(void);
-> -void set_module_sig_enforced(void);
-> +extern bool is_module_sig_enforced(void);
-> +extern void set_module_sig_enforced(void);
+On Wed, Feb 09, 2022 at 11:24:34AM -0300, Mauricio Faria de Oliveira wrote:
+> Hi Andrew and Matthew,
+> 
+> On Fri, Feb 4, 2022 at 5:00 PM Matthew Wilcox (Oracle)
+> <willy@infradead.org> wrote:
+> >
+> > Change both callers and the worker function try_to_unmap_one().
+> ...
+> > diff --git a/mm/rmap.c b/mm/rmap.c
+> ...
+> > @@ -1598,8 +1602,8 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+> >                         }
+> >
+> >                         /* MADV_FREE page check */
+> > -                       if (!PageSwapBacked(page)) {
+> > -                               if (!PageDirty(page)) {
+> > +                       if (!folio_test_swapbacked(folio)) {
+> > +                               if (!folio_test_dirty(folio)) {
+> >                                         /* Invalidate as we cleared the pte */
+> >                                         mmu_notifier_invalidate_range(mm,
+> >                                                 address, address + PAGE_SIZE);
+> > @@ -1608,11 +1612,11 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+> >                                 }
+> >
+> >                                 /*
+> > -                                * If the page was redirtied, it cannot be
+> > +                                * If the folio was redirtied, it cannot be
+> >                                  * discarded. Remap the page to page table.
+> >                                  */
+> >                                 set_pte_at(mm, address, pvmw.pte, pteval);
+> > -                               SetPageSwapBacked(page);
+> > +                               folio_set_swapbacked(folio);
+> >                                 ret = false;
+> >                                 page_vma_mapped_walk_done(&pvmw);
+> >                                 break;
+> ...
+> 
+> This conflicts with patch [1], currently in mmotm, and I'll send
+> another version anyway.
+> Should that patch be on top of these folio changes, or the other way around?
 
-Please, drop these extern modifiers in front of function declarations. 
-They are unnecessary. It applies to different patches of the set as well.
-  
->  #else /* !CONFIG_MODULES... */
->  
-> @@ -911,6 +911,7 @@ static inline bool module_sig_ok(struct module *module)
->  {
->  	return true;
->  }
-> +#define sig_enforce false
->  #endif	/* CONFIG_MODULE_SIG */
->  
->  int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
-> diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-> index de28d6bb7b5b..2ec2a1d9dd9f 100644
-> --- a/kernel/module/internal.h
-> +++ b/kernel/module/internal.h
-> @@ -114,3 +114,12 @@ static struct module *mod_find(unsigned long addr)
->  	return NULL;
->  }
->  #endif /* CONFIG_MODULES_TREE_LOOKUP */
-> +
-> +#ifdef CONFIG_MODULE_SIG
-> +extern int module_sig_check(struct load_info *info, int flags);
-> +#else /* !CONFIG_MODULE_SIG */
-> +static int module_sig_check(struct load_info *info, int flags)
-> +{
-> +	return 0;
-> +}
+Andrew and I need to resolve conflicts between this series and other
+patches in his tree.  You don't need to worry about this.
 
-I think it should be 
-
-static inline int module_sig_check(struct load_info *info, int flags)
-
-Thanks,
-Miroslav
+> The latter would help w/ the stable backports that don't have folios
+> yet, but I can
+> send backports there as well; not a problem.
+> 
+> Thanks,
+> 
+> [1] https://lkml.kernel.org/r/20220131230255.789059-1-mfo@canonical.com
+> [PATCH v3] mm: fix race between MADV_FREE reclaim and blkdev direct IO read
+> 
+> -- 
+> Mauricio Faria de Oliveira
+> 
