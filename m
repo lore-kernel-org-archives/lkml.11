@@ -2,72 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1378DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:42:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17058C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233567AbiBIMm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:42:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
+        id S233584AbiBIMnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:43:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230053AbiBIMmX (ORCPT
+        with ESMTP id S230053AbiBIMnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:42:23 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE868C0613CA;
-        Wed,  9 Feb 2022 04:42:25 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        Wed, 9 Feb 2022 07:43:05 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA7CC0613CA
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 04:43:04 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nHmEv-0001Mv-BV; Wed, 09 Feb 2022 13:38:29 +0100
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
-Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org, wefu@redhat.com,
-        liush@allwinnertech.com, guoren@kernel.org, atishp@atishpatra.org,
-        anup@brainfault.org, drew@beagleboard.org, hch@lst.de,
-        arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
-        gfavor@ventanamicro.com, andrea.mondelli@huawei.com,
-        behrensj@mit.edu, xinhaoqu@huawei.com, huffman@cadence.com,
-        mick@ics.forth.gr, allen.baum@esperantotech.com,
-        jscheid@ventanamicro.com, rtrauben@gmail.com, samuel@sholland.org,
-        cmuellner@linux.com, philipp.tomsich@vrull.eu,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v6 13/14] riscv: remove FIXMAP_PAGE_IO and fall back to its default value
-Date:   Wed,  9 Feb 2022 13:37:59 +0100
-Message-Id: <20220209123800.269774-14-heiko@sntech.de>
+        (envelope-from <ore@pengutronix.de>)
+        id 1nHmJG-0008KF-It; Wed, 09 Feb 2022 13:42:58 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nHmJF-00CfQI-Bi; Wed, 09 Feb 2022 13:42:57 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v1] net: usb: smsc95xx: add generic selftest support
+Date:   Wed,  9 Feb 2022 13:42:55 +0100
+Message-Id: <20220209124256.3019116-1-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220209123800.269774-1-heiko@sntech.de>
-References: <20220209123800.269774-1-heiko@sntech.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If not defined in the arch, FIXMAP_PAGE_IO defaults to PAGE_KERNEL_IO,
-which we defined when adding the svpbmt implementation.
+Provide generic selftest support. Tested with LAN9500 and LAN9512.
 
-So drop the FIXMAP_PAGE_IO riscv define.
-
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/riscv/include/asm/fixmap.h | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/usb/Kconfig    |  1 +
+ drivers/net/usb/smsc95xx.c | 25 +++++++++++++++++++++++++
+ 2 files changed, 26 insertions(+)
 
-diff --git a/arch/riscv/include/asm/fixmap.h b/arch/riscv/include/asm/fixmap.h
-index 58a718573ad6..692e25e56d8e 100644
---- a/arch/riscv/include/asm/fixmap.h
-+++ b/arch/riscv/include/asm/fixmap.h
-@@ -44,8 +44,6 @@ enum fixed_addresses {
- 	__end_of_fixed_addresses
+diff --git a/drivers/net/usb/Kconfig b/drivers/net/usb/Kconfig
+index b554054a7560..e62fc4f2aee0 100644
+--- a/drivers/net/usb/Kconfig
++++ b/drivers/net/usb/Kconfig
+@@ -358,6 +358,7 @@ config USB_NET_SMSC95XX
+ 	select BITREVERSE
+ 	select CRC16
+ 	select CRC32
++	imply NET_SELFTESTS
+ 	help
+ 	  This option adds support for SMSC LAN95XX based USB 2.0
+ 	  10/100 Ethernet adapters.
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index bc1e3dd67c04..5567220e9d16 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -20,6 +20,8 @@
+ #include <linux/of_net.h>
+ #include <linux/mdio.h>
+ #include <linux/phy.h>
++#include <net/selftests.h>
++
+ #include "smsc95xx.h"
+ 
+ #define SMSC_CHIPNAME			"smsc95xx"
+@@ -727,6 +729,26 @@ static u32 smsc95xx_get_link(struct net_device *net)
+ 	return net->phydev->link;
+ }
+ 
++static void smsc95xx_ethtool_get_strings(struct net_device *netdev, u32 sset,
++					u8 *data)
++{
++	switch (sset) {
++	case ETH_SS_TEST:
++		net_selftest_get_strings(data);
++		break;
++	}
++}
++
++static int smsc95xx_ethtool_get_sset_count(struct net_device *ndev, int sset)
++{
++	switch (sset) {
++	case ETH_SS_TEST:
++		return net_selftest_get_count();
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ static const struct ethtool_ops smsc95xx_ethtool_ops = {
+ 	.get_link	= smsc95xx_get_link,
+ 	.nway_reset	= phy_ethtool_nway_reset,
+@@ -743,6 +765,9 @@ static const struct ethtool_ops smsc95xx_ethtool_ops = {
+ 	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
+ 	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
+ 	.get_ts_info	= ethtool_op_get_ts_info,
++	.self_test	= net_selftest,
++	.get_strings	= smsc95xx_ethtool_get_strings,
++	.get_sset_count	= smsc95xx_ethtool_get_sset_count,
  };
  
--#define FIXMAP_PAGE_IO		PAGE_KERNEL
--
- #define __early_set_fixmap	__set_fixmap
- 
- #define __late_set_fixmap	__set_fixmap
+ static int smsc95xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
 -- 
 2.30.2
 
