@@ -2,128 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6213FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F670C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbiBIKij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:38:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48100 "EHLO
+        id S230257AbiBIKiq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:38:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiBIKi2 (ORCPT
+        with ESMTP id S229671AbiBIKin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:38:28 -0500
-Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E38DE14863B;
-        Wed,  9 Feb 2022 02:25:56 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id 115792B0024D;
-        Wed,  9 Feb 2022 04:39:48 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 09 Feb 2022 04:39:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=zZDTW0FB5xKeIff0Mgbh1Hl+LyU717M3Sxe8pk
-        IOuHc=; b=KlmaBgGevb6slB6ovY6OBGrpRLV8tshmia32SHGxOGlrtr6r9ZSNpZ
-        Jb9Ov9d6JaZ35Nn7KWKTfA3hAYfX0jjz5bAgcsOe/mkD4+yMLbvPM0bdavTZNZRD
-        MfTQFtsvJTp7m+ES+uT49HUNf8PT94qOit8mFniJrAndZEKJEyoDquEtypBtNq6D
-        4OOoQyHgRwFY+qigKYrfM64ctNZlTn1nxu3Go/lGlyT1XYvNkW0lpPxslyLXhQTV
-        Qy9Hw0pvkVbTnE7HcDmmeX/bjgm4q88G9k74n7t0kI56n0ZxBLhepChTU9JW/t75
-        9+lWl8GpcFlNEeafSQsICQrXLatRueLA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=zZDTW0FB5xKeIff0M
-        gbh1Hl+LyU717M3Sxe8pkIOuHc=; b=FURyB28ibG4wKLzvnt1IiJgZcL3W0Y5u+
-        XQdEwRtaBvxDjjnpyBGUrfMIBRjgr334IouWW5IeIv5j2modJRRj4QkXC+xy5A9U
-        ppRch0eWsuE8XU00D0SEBdF1hW6IsWse9eSCLywMkQFhomRCYDJNvXEnv+yAbrsz
-        Awhb+5OyQKDK/7dQBUUHhEdducnVb7EPYUweyzbBfsPC05yKmRvjR4J+CH97Iggo
-        UzJdu6pUCkVtjETJqMmN2pW1cNa8KEzGjj58Ab/MoFrKMqRfKVu5UHnuMTVXxKKe
-        nflyBCFF5TlmYZyX3kQTulwqf5nOXYrWi/ECbS8SPlm5OGpcUCLhA==
-X-ME-Sender: <xms:44sDYjSxlulXbXOJqCM8WdVKQGqZt13IBP2bSh2AF4mf_T2aZDr7DA>
-    <xme:44sDYkxHRJSC2rvpTW35Jc5VZnXAAEyya_edLFYC5GF5grGz_-pkYyky_7mWtArdq
-    A_TR9_MOpQ1olgXsPw>
-X-ME-Received: <xmr:44sDYo37kBJDFUI0HfXtyJ-MMzuKgq_p1SQjGm7_qOZsvqyql4-VV6oSVj2umtI5i7hUsBgzCPA6dDbJvbxXAIKEhQLuTI1Z11jw5mY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheelgddthecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
-    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
-    gvrhhnpeevveefffduveeitdegtefhhfetueffteefffdvheevvdehteethedvleffgfej
-    vdenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:44sDYjA1m5oRlsmPJVwlSRYEXcPh3mzF2RoLWejLVWrr80SAVR5S2Q>
-    <xmx:44sDYsiJYipLR3S9fJRo7q4pokp8cjkfqjwsk4D68iy52hLwQ40XfA>
-    <xmx:44sDYnr2BIm6RArU5B456VZSpZCgS9DWObNEBchbLtQyp3KroLcaxA>
-    <xmx:5IsDYlZ8pSIB5aLnEULMyXJ-SpVxye41G7b7NbC7R0erH2yzJkQLSRkh33A>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 9 Feb 2022 04:39:46 -0500 (EST)
-Date:   Wed, 9 Feb 2022 10:39:45 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 33/66] media: sun6i-csi: Rework register definitions,
- invert misleading fields
-Message-ID: <20220209093945.uertj7wut72tximz@houat>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-34-paul.kocialkowski@bootlin.com>
+        Wed, 9 Feb 2022 05:38:43 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170E0E148DD0
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:25:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644402359; x=1675938359;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tKssAuH+rgarP0EYdoMpZsm6AfzDbRcpB7eIOckVr+8=;
+  b=ElRxGyoQ3UEHPyDBUiJNas0F6gyTGylkkaeOQ+TYKD4FGm8Sk9pexkdt
+   0V6WT5uxuRChELz6FJZ2bQ/biJxH2bsk/oJhYYHBVoW4sgU0KRVn6+RCY
+   63yhHq4T+lBtoR3GuzyBaKKOvidnkfjTZ4aZYZXtaLONN7gMhu7kHSpzs
+   WAJox1ozP3qAp6Z4h88sLn6vD8ZF2HEkHrT/XixQily7T70KdTuaEh+tR
+   Br1tJH5E9vLZdr4Oa17zQI3kowVVF750XUq1TP4MUv/L2Oc4krE4sNEaX
+   nf00Gl7T41/5DslA+0mtcht+6nDkjEFIkccw3/7qr714/jjAAwWPvalF0
+   w==;
+IronPort-SDR: nGNsrxLmsWkOMGuzZt+kNen+3rqOnR8/JnVhk0PEznY0smadEE71pwygWpO09i5NykHPK/ug/R
+ oux1jfrqQOqnrN/1FNKtmBnr+MQctYQveZRFfKFR7CpE7o28FmaSNW+ZFn6rWNQCIv2wyXzErJ
+ u1OT9+MhXcFNdrdd5ew/ZSobvHKbclmFNE0pbAp6aYHqufd+pYOID0KTU21RSFPUC2WGU+tFv7
+ BZNmPVS5SkjeSBHupK/gs78e787jWmhSXmCPa0LPpdU2MrFG0ymkuwYQi3hsYGvixlyb6LHBiY
+ gf+tWIdk1+o86FXk+4ZM2wog
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="145378883"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Feb 2022 03:24:47 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Feb 2022 03:24:47 -0700
+Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 9 Feb 2022 03:24:45 -0700
+Message-ID: <e33d303b-15d6-d133-bdb3-cb63e305ef24@microchip.com>
+Date:   Wed, 9 Feb 2022 11:24:43 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="y5bsrtm5k7kfdw3r"
-Content-Disposition: inline
-In-Reply-To: <20220205185429.2278860-34-paul.kocialkowski@bootlin.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] net: macb: Align the dma and coherent dma masks
+Content-Language: en-US
+To:     Harini Katakam <harini.katakam@xilinx.com>, <davem@davemloft.net>,
+        <claudiu.beznea@microchip.com>, <kuba@kernel.org>,
+        <Conor.Dooley@microchip.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <michal.simek@xilinx.com>, <harinikatakamlinux@gmail.com>,
+        <mstamand@ciena.com>
+References: <20220209094325.8525-1-harini.katakam@xilinx.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20220209094325.8525-1-harini.katakam@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 09/02/2022 at 10:43, Harini Katakam wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> From: Marc St-Amand <mstamand@ciena.com>
+> 
+> Single page and coherent memory blocks can use different DMA masks
+> when the macb accesses physical memory directly. The kernel is clever
+> enough to allocate pages that fit into the requested address width.
+> 
+> When using the ARM SMMU, the DMA mask must be the same for single
+> pages and big coherent memory blocks. Otherwise the translation
+> tables turn into one big mess.
+> 
+>    [   74.959909] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
+>    [   74.959989] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+>    [   75.173939] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
+>    [   75.173955] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+> 
+> Since using the same DMA mask does not hurt direct 1:1 physical
+> memory mappings, this commit always aligns DMA and coherent masks.
+> 
+> Signed-off-by: Marc St-Amand <mstamand@ciena.com>
+> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
 
---y5bsrtm5k7kfdw3r
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ok:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-On Sat, Feb 05, 2022 at 07:53:56PM +0100, Paul Kocialkowski wrote:
-> This cleans up the register definitions a bit, adds a prefix, remove mask=
-s.
-> Registers are now fully defined, some additional fields were added when
-> needed. New format definitions are added for future use.
->=20
-> Some fields are wrongly defined (inverted) in Allwinner litterature
-> (e.g. field vs frame prefixes), which is quite misleading. They are
-> now corrected to reflect their actual behavior.
+Best regards,
+   Nicolas
 
-How was it tested?
+> ---
+>   drivers/net/ethernet/cadence/macb_main.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index 1ce20bf52f72..4c231159b562 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -4765,7 +4765,7 @@ static int macb_probe(struct platform_device *pdev)
+> 
+>   #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+>          if (GEM_BFEXT(DAW64, gem_readl(bp, DCFG6))) {
+> -               dma_set_mask(&pdev->dev, DMA_BIT_MASK(44));
+> +               dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(44));
+>                  bp->hw_dma_cap |= HW_DMA_CAP_64B;
+>          }
+>   #endif
+> --
+> 2.17.1
+> 
 
-In particular, see
-https://lore.kernel.org/all/20180305093535.11801-7-maxime.ripard@bootlin.co=
-m/
 
-Maxime
-
---y5bsrtm5k7kfdw3r
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgOL4QAKCRDj7w1vZxhR
-xVXMAP4tUZl6Zly0E31lIvZlN0DimuVQB8+cy8faHTKuekbwPQEA4bndLWw2iOVW
-ikY5YFrnuK1/de7lSQUW2bhUHCbSPQ4=
-=Pxbv
------END PGP SIGNATURE-----
-
---y5bsrtm5k7kfdw3r--
+-- 
+Nicolas Ferre
