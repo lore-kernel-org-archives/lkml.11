@@ -2,191 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF59CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237591AbiBIHpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 02:45:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42204 "EHLO
+        id S232016AbiBIHs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 02:48:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbiBIHp3 (ORCPT
+        with ESMTP id S237374AbiBIHsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 02:45:29 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD0C1C0613CA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 23:45:32 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id o19so3460173ybc.12
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 23:45:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rZt97/8ROY3+UKnKOkybgWpfp57iv+flrkhWaztw2B4=;
-        b=hjNPEUw9OlUPIk2B4S7HhB3hqe9U9AT7bF0Q+ofYKz+gn7Tit4EYniAacYbI8Ut2DR
-         sImSygPZsw2DdMFe6k/h3puZokb+ORZ/tqEi/CO2VbqgO7ZI4sa9YhKqKgeo5M6HzPCk
-         1hBQBzkRbptsJjjpKnecf9nOiDO0mP2eQMZ3VoHmrbfD+b47MiHA246ZqOnFS2Uk4Coc
-         l4amT4j7IO2ciSvjaSLS6qzWp2xzxvsf0qFFWuHepJGrt0wiq0F8fdTuGhKeNx2YcxBU
-         2DfUuPmKQjorZC0cZDfWjOV+yj1U5RrMmOD/JFmKV6JBRfCzPnjTAY9xXB/8HokbQILO
-         1Nmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rZt97/8ROY3+UKnKOkybgWpfp57iv+flrkhWaztw2B4=;
-        b=eg8a7xk8fnANcNwV/Yoo0VhQizspKA0LQmdYxBkRgZ+Pj3QEId+I3KslqwMBESmPgk
-         4/OdLJUM05E7R/VkP3LMlJprU7BuRLRKYFbXMQSOJB+5mnDLIT/J8KPpTVF+jdU/B0N4
-         UxFJ6sju9W67S1URAI0daWVG+E4GT+qastktmmv114DOTkRrP5S5H8TlpooGDTNqikfa
-         ew7WcaCh+PwU95iOpUjSs/2BGkEkowa/isg8PXUU4IAWfXuKig0YQnfkMe3ICGwhLixY
-         6y2mtg8qrEgoN/mh5lRzducTRpE9p1myYM01TzfEWy5d7MsYjkxBHVF3GuA6A6PXmUgb
-         e9TA==
-X-Gm-Message-State: AOAM532zzHMl4RqECcg5hboI1vjhjZizhbpNGHBi+gszE6gwJjWu8MVh
-        92T677KW7aFLUjj6Sa3NmikXLg+m3S8PkvpntEkn3Q==
-X-Google-Smtp-Source: ABdhPJxnnpaw8noZfnF3Z83h+7aPBZguIP6vpvycsBalPzDcqBtgoaWBC8+48r0zPplursG/0OyeH/mYz65iclJX4Ww=
-X-Received: by 2002:a25:c983:: with SMTP id z125mr1039624ybf.132.1644392731988;
- Tue, 08 Feb 2022 23:45:31 -0800 (PST)
+        Wed, 9 Feb 2022 02:48:55 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E30C0613CB;
+        Tue,  8 Feb 2022 23:48:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644392939; x=1675928939;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UHxQ0y6ReTg5fAil+JKwO37ROUMI1ZBKsYOkDDrvDa0=;
+  b=JAKJTt7lQ3ErEl1627tkNZltivTKJCYgoSsISDIzydbmgqDXe5PULrxB
+   EIfJx62CVNN6HebphBDc/DnD+HsJW+d3nPGZvogpDXBV8gHgPFl9Ii5oC
+   V9atX26WowaahJXqHSYPu5Bl65ZAOx+vOKQKHd1I6rQkUyL4UDlZJQCH+
+   5AMwdrkE0Pw18bdf5ceUMNHldCzx4c9Bqo+gSo+8HqagjS7R0K0i0QKl6
+   Aih6qw0SL+oZrC1yCNFsgdtOFgEad2wDOD4fewyNeGRxOxZ1uNwtEp8KA
+   lEintS/aIaQq0l308ODwwZJQ4PqmwnNbg3BE4JYvp4vsfh/gfGY6I70fL
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="273682787"
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="273682787"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 23:48:59 -0800
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="525893576"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 23:48:56 -0800
+Date:   Wed, 9 Feb 2022 15:59:51 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, kevin.tian@intel.com,
+        tglx@linutronix.de, John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Tony Lindgren <tony@atomide.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] KVM: Rename and move CPUHP_AP_KVM_STARTING to
+ ONLINE section
+Message-ID: <20220209075950.GA7943@gao-cwp>
+References: <20220118064430.3882337-1-chao.gao@intel.com>
+ <20220118064430.3882337-4-chao.gao@intel.com>
+ <YgMLBYl7P1jFA2xe@google.com>
 MIME-Version: 1.0
-References: <20211101031651.75851-1-songmuchun@bytedance.com>
- <CAMZfGtUeL45=WG3ceaZ_tALMGZTLtuD9jbfKEzeQv270OnaLYQ@mail.gmail.com>
- <35c5217d-eb8f-6f70-544a-a3e8bd009a46@oracle.com> <CAMZfGtW=e___8kpe1B5a1rK+SV63bP_Nwucj89QKaX4ZOMUpaw@mail.gmail.com>
- <CAMZfGtV0JKcjVL0qGoYCQJ-LsXdng7Z2UjBym5hf_WM0LcYi=Q@mail.gmail.com>
- <20211123190952.7d1e0cac2d72acacd2df016c@linux-foundation.org> <CAMZfGtW+DoKp_gCcPSy33Urc86A58rRp8HJ+-GOuW9vFP-BwxQ@mail.gmail.com>
-In-Reply-To: <CAMZfGtW+DoKp_gCcPSy33Urc86A58rRp8HJ+-GOuW9vFP-BwxQ@mail.gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Wed, 9 Feb 2022 15:44:54 +0800
-Message-ID: <CAMZfGtV-ODDGQ6dUuo_eSEDn2kDSiUjNDc=nyFwoRRSxNLsTeg@mail.gmail.com>
-Subject: Re: [PATCH v7 0/5] Free the 2nd vmemmap page associated with each
- HugeTLB page
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     Oscar Salvador <osalvador@suse.de>,
-        David Hildenbrand <david@redhat.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>,
-        Qi Zheng <zhengqi.arch@bytedance.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>,
-        Barry Song <21cnbao@gmail.com>,
-        "Bodeddula, Balasubramaniam" <bodeddub@amazon.com>,
-        Jue Wang <juew@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgMLBYl7P1jFA2xe@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 4:04 PM Muchun Song <songmuchun@bytedance.com> wrote:
+On Wed, Feb 09, 2022 at 12:29:57AM +0000, Sean Christopherson wrote:
+>On Tue, Jan 18, 2022, Chao Gao wrote:
+>> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+>> index 148f7169b431..528741601122 100644
+>> --- a/virt/kvm/kvm_main.c
+>> +++ b/virt/kvm/kvm_main.c
+>> @@ -4856,13 +4856,25 @@ static void hardware_enable_nolock(void *junk)
+>>  	}
+>>  }
+>>  
+>> -static int kvm_starting_cpu(unsigned int cpu)
+>> +static int kvm_online_cpu(unsigned int cpu)
+>>  {
+>> +	int ret = 0;
+>> +
+>>  	raw_spin_lock(&kvm_count_lock);
+>> -	if (kvm_usage_count)
+>> +	/*
+>> +	 * Abort the CPU online process if hardware virtualization cannot
+>> +	 * be enabled. Otherwise running VMs would encounter unrecoverable
+>> +	 * errors when scheduled to this CPU.
+>> +	 */
+>> +	if (kvm_usage_count) {
 >
-> On Wed, Nov 24, 2021 at 11:09 AM Andrew Morton
-> <akpm@linux-foundation.org> wrote:
-> >
-> > On Mon, 22 Nov 2021 12:21:32 +0800 Muchun Song <songmuchun@bytedance.com> wrote:
-> >
-> > > On Wed, Nov 10, 2021 at 2:18 PM Muchun Song <songmuchun@bytedance.com> wrote:
-> > > >
-> > > > On Tue, Nov 9, 2021 at 3:33 AM Mike Kravetz <mike.kravetz@oracle.com> wrote:
-> > > > >
-> > > > > On 11/8/21 12:16 AM, Muchun Song wrote:
-> > > > > > On Mon, Nov 1, 2021 at 11:22 AM Muchun Song <songmuchun@bytedance.com> wrote:
-> > > > > >>
-> > > > > >> This series can minimize the overhead of struct page for 2MB HugeTLB pages
-> > > > > >> significantly. It further reduces the overhead of struct page by 12.5% for
-> > > > > >> a 2MB HugeTLB compared to the previous approach, which means 2GB per 1TB
-> > > > > >> HugeTLB. It is a nice gain. Comments and reviews are welcome. Thanks.
-> > > > > >>
-> > > > > >
-> > > > > > Hi,
-> > > > > >
-> > > > > > Ping guys. Does anyone have any comments or suggestions
-> > > > > > on this series?
-> > > > > >
-> > > > > > Thanks.
-> > > > > >
-> > > > >
-> > > > > I did look over the series earlier.  I have no issue with the hugetlb and
-> > > > > vmemmap modifications as they are enhancements to the existing
-> > > > > optimizations.  My primary concern is the (small) increased overhead
-> > > > > for the helpers as outlined in your cover letter.  Since these helpers
-> > > > > are not limited to hugetlb and used throughout the kernel, I would
-> > > > > really like to get comments from others with a better understanding of
-> > > > > the potential impact.
-> > > >
-> > > > Thanks Mike. I'd like to hear others' comments about this as well.
-> > > > From my point of view, maybe the (small) overhead is acceptable
-> > > > since it only affects the head page, however Matthew Wilcox's folio
-> > > > series could reduce this situation as well.
-> >
-> > I think Mike was inviting you to run some tests to quantify the
-> > overhead ;)
 >
-> Hi Andrew,
+>>  		hardware_enable_nolock(NULL);
+>> +		if (atomic_read(&hardware_enable_failed)) {
 >
-> Sorry for the late reply.
+>This needs:
 >
-> Specific overhead figures are already in the cover letter. Also,
-> I did some other tests, e.g. kernel compilation, sysbench. I didn't
-> see any regressions.
-
-The overhead is introduced by page_fixed_fake_head() which
-has an "if" statement and an access to a possible cold cache line.
-I think the main overhead is from the latter. However, probabilistically,
-only 1/64 of the pages need to do the latter.  And
-page_fixed_fake_head() is already simple (I mean the overhead
-is small enough) and many performance bottlenecks in mm are
-not in compound_head().  This also matches the tests I did.
-I didn't see any regressions after enabling this feature.
-
-I knew Mike's concern is the increased overhead to use cases
-beyond HugeTLB. If we really want to avoid the access to
-a possible cold cache line, we can introduce a new page
-flag like PG_hugetlb and test if it is set in the page->flags,
-if so, then return the read head page struct. Then
-page_fixed_fake_head() looks like below.
-
-static __always_inline const struct page *page_fixed_fake_head(const
-struct page *page)
-{
-        if (!hugetlb_free_vmemmap_enabled())
-                return page;
-
-        if (test_bit(PG_hugetlb, &page->flags)) {
-                unsigned long head = READ_ONCE(page[1].compound_head);
-
-                if (likely(head & 1))
-                        return (const struct page *)(head - 1);
-        }
-        return page;
-}
-
-But I don't think it's worth doing this.
-
-Hi Mike and Andrew,
-
-Since these helpers are not limited to hugetlb and used throughout the
-kernel, I would really like to get comments from others with a better
-understanding of the potential impact. Do you have any appropriate
-reviewers to invite?
-
-Thanks.
+>		atomic_set(&hardware_enable_failed, 0);
 >
-> >
-> > > Ping guys.
-> > >
-> > > Hi Andrew,
-> > >
-> > > Do you have any suggestions on this series to move it on?
-> > >
-> >
-> > I tossed it in there for some testing but yes please, additional
-> > reviewing?
->
-> It's already been in the next-tree (also in our ByteDance servers)
-> for several months, and I didn't receive any negative feedback.
->
-> Do you think it is ready for 5.17?
->
-> Thanks.
+>otherwise failure to online one CPU will prevent onlining other non-broken CPUs.
+>It's probably worth adding a WARN_ON_ONCE above this too, e.g.
+
+Thanks. All your comments to this series make sense. I just post a revised
+version.
