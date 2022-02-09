@@ -2,96 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0791DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8E59C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233184AbiBIVRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 16:17:49 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44666 "EHLO
+        id S233214AbiBIVSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 16:18:44 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233085AbiBIVRr (ORCPT
+        with ESMTP id S233188AbiBIVSm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 16:17:47 -0500
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id B4584C006939
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 13:17:49 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1644441469; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=l9IB4Qa+LqQHeEdS9Xvem4BknbivZ/qkp2XXwLsm5wQ=;
- b=sg8sl8dB8ru4OuY428fsvNKoEkwCxjROqMq+LJ2/8bJGeWinf8uHU+KGI/d+ntpft4V/kQM3
- IGbPpeKKCgKWD2SKDHLeBATomznOrt6RNe+uV3FEsFLvxUw2oxm/SDT5J53Xt5LG/YykqBcF
- 5JFDEpyuFqCoNHLt/ezDRTjOX1s=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 62042f7c19d16b66a9d67c6e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 09 Feb 2022 21:17:48
- GMT
-Sender: nitirawa=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id DD1FBC4360C; Wed,  9 Feb 2022 21:17:47 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: nitirawa)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3F84CC4338F;
-        Wed,  9 Feb 2022 21:17:47 +0000 (UTC)
+        Wed, 9 Feb 2022 16:18:42 -0500
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6CEC1DC05D;
+        Wed,  9 Feb 2022 13:18:44 -0800 (PST)
+Received: by mail-oi1-f169.google.com with SMTP id r27so3890491oiw.4;
+        Wed, 09 Feb 2022 13:18:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ysi9tyGURK2QwhBWavXBNAH4KWOK+Ss1yM0yrY3G7jk=;
+        b=LXvGnFqsrU4dYig/OsI1JmIRUWTxbu9MAJLcyzYlXQ54ODdfdfWAXWtad9r9UcrjiT
+         BjZ0EGwrIib2DbUbG93lfg9PnEJ6L39DVYQJ0YlPzaFUnPtRiREOpZ5htV+c43d/SbQo
+         sfjqB5bpBU4mOzGMrLHtaDhP6FaCi3QfIONVeoTlxOwG5N3Ak1Om47AMrLUG0J9RxhfZ
+         dCu/E+xovKiJNbbnkHSM4m/AMl3YYdZ83cH75Riu9M3m3ki+NCjy2DIg0STVd/Ruggxc
+         OfyeOA09cHicP1fEjIrh1XDHXeq+26LwtEWpqqDFVFn99+n3aZORMzA7ACio4tC30boH
+         8XLA==
+X-Gm-Message-State: AOAM530Aq1a2HW3EKaPzdIFh9p4gSJoSk3ifLv5s9TKZi0A5961hPADX
+        Dj10wRU8chR3pa3c+JL6KQ==
+X-Google-Smtp-Source: ABdhPJzaDtW2H4LesfcmHT/9rcXfGcMFnwfUDpZImmvW0LWJ0t2aBhAXoz0IFGO+1CSlXSzEgirmdQ==
+X-Received: by 2002:a05:6808:208d:: with SMTP id s13mr2225459oiw.282.1644441523498;
+        Wed, 09 Feb 2022 13:18:43 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id 12sm3579222oam.5.2022.02.09.13.18.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 13:18:42 -0800 (PST)
+Received: (nullmailer pid 932436 invoked by uid 1000);
+        Wed, 09 Feb 2022 21:18:41 -0000
+Date:   Wed, 9 Feb 2022 15:18:41 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     linus.walleij@linaro.org, miquel.raynal@bootlin.com,
+        richard@nod.at, vigneshr@ti.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mtd@lists.infradead.org
+Subject: Re: [PATCH v2] dt-bindings: mtd: drop mtd/cortina,gemini-flash.txt
+Message-ID: <YgQvsQbGEBgfAoVO@robh.at.kernel.org>
+References: <20220131080858.1777518-1-clabbe@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 10 Feb 2022 02:47:47 +0530
-From:   nitirawa@codeaurora.org
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     Vidya Sagar <vidyas@nvidia.com>, rafael.j.wysocki@intel.com,
-        keith.busch@intel.com, hch@lst.de, bhelgaas@google.com,
-        mmaddireddy@nvidia.com, kthota@nvidia.com, sagar.tv@gmail.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Query related to shutting down NVMe during system suspend
-In-Reply-To: <20220209202639.GB1616420@dhcp-10-100-145-180.wdc.com>
-References: <65b836cd-8d5d-b9c2-eb8f-2ee3ef46112b@nvidia.com>
- <20220209202639.GB1616420@dhcp-10-100-145-180.wdc.com>
-Message-ID: <bc80ec7d1ca2c56feded1a6848c285ef@codeaurora.org>
-X-Sender: nitirawa@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220131080858.1777518-1-clabbe@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-10 01:56, Keith Busch wrote:
-> On Tue, Feb 01, 2022 at 09:52:28PM +0530, Vidya Sagar wrote:
->> Hi Rafael & Christoph,
->> My query is regarding the comment and the code that follows after it 
->> at
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/nvme/host/pci.c?h=v5.17-rc2#n3243
->> What I understood from it is that, there is an underlying assumption
->> that the power to the devices is not removed during the suspend call.
->> In the case of device-tree based platforms like Tegra194, power is
->> indeed removed to the devices during suspend-resume process. Hence, 
->> the
->> NVMe devices need to be taken through the shutdown path irrespective 
->> of
->> whether the ASPM states are enabled or not.
->> I would like to hear from you the best method to follow to achieve 
->> this.
+On Mon, Jan 31, 2022 at 08:08:58AM +0000, Corentin Labbe wrote:
+> Drop mtd/cortina,gemini-flash.txt since it is nearly already handled by
+> Documentation/devicetree/bindings/mtd/mtd-physmap.yaml.
 > 
-> Christoph prefers to append quirks for platforms that need full device
-> shutdown on s2idle instead of changing the driver default.
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+> Change since v1:
+> - fixed typo on syscon
 > 
-> We use dmi matching for our current platform quirk list. I do not know
-> what the equivalent is for device-tree based platforms. Do you know?
+>  .../bindings/mtd/cortina,gemini-flash.txt     | 24 -------------------
+>  .../devicetree/bindings/mtd/mtd-physmap.yaml  | 18 +++++++++++++-
+>  2 files changed, 17 insertions(+), 25 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/mtd/cortina,gemini-flash.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/mtd/cortina,gemini-flash.txt b/Documentation/devicetree/bindings/mtd/cortina,gemini-flash.txt
+> deleted file mode 100644
+> index efa5b2aba829..000000000000
+> --- a/Documentation/devicetree/bindings/mtd/cortina,gemini-flash.txt
+> +++ /dev/null
+> @@ -1,24 +0,0 @@
+> -Flash device on Cortina Systems Gemini SoC
+> -
+> -This flash is regular CFI compatible (Intel or AMD extended) flash chips with
+> -some special bits that can be controlled by the machine's system controller.
+> -
+> -Required properties:
+> -- compatible : must be "cortina,gemini-flash", "cfi-flash";
+> -- reg : memory address for the flash chip
+> -- syscon : must be a phandle to the system controller
+> -- bank-width : width in bytes of flash interface, should be <2>
+> -
+> -For the rest of the properties, see mtd-physmap.yaml.
+> -
+> -The device tree may optionally contain sub-nodes describing partitions of the
+> -address space. See partition.txt for more detail.
+> -
+> -Example:
+> -
+> -flash@30000000 {
+> -	compatible = "cortina,gemini-flash", "cfi-flash";
+> -	reg = <0x30000000 0x01000000>;
+> -	syscon = <&syscon>;
+> -	bank-width = <2>;
+> -};
+> diff --git a/Documentation/devicetree/bindings/mtd/mtd-physmap.yaml b/Documentation/devicetree/bindings/mtd/mtd-physmap.yaml
+> index f827984936f6..82eb4e0f453b 100644
+> --- a/Documentation/devicetree/bindings/mtd/mtd-physmap.yaml
+> +++ b/Documentation/devicetree/bindings/mtd/mtd-physmap.yaml
+> @@ -44,7 +44,9 @@ properties:
+>                - numonyx,js28f128
+>                - sst,sst39vf320
+>                - xlnx,xps-mch-emc-2.00.a
+> -          - const: cfi-flash
+> +          - enum:
+> +              - cfi-flash
+> +              - jedec-flash
 
-Hi Keith,
+Why is jedec-flash being added? The old doc made no mention of it.
 
-IMO, the NVME driver is not associated with any device tree, Instead PCI 
-driver is associated with device tree.
-So unlike ACPI based platform where we have platform specific DMI 
-matching, we don't have equivalent check for DT based platform.
-
-Do we see any concern if we introduce a module param with default not 
-set to quick suspend.
-For platform that need full shutdown durring resume , they can set it to 
-quick suspend.
+>        - items:
+>            - enum:
+>                - cypress,cy7c1019dv33-10zsxi
+> @@ -127,6 +129,20 @@ required:
+>    - compatible
+>    - reg
+>  
+> +if:
+> +  properties:
+> +    compatible:
+> +      contains:
+> +        const: cortina,gemini-flash
+> +then:
+> +  properties:
+> +    syscon:
+> +      $ref: /schemas/types.yaml#/definitions/phandle
+> +      description:
+> +        Phandle to the syscon controller
+> +  required:
+> +    - syscon
+> +
+>  # FIXME: A parent bus may define timing properties
+>  additionalProperties: true
+>  
+> -- 
+> 2.34.1
+> 
+> 
