@@ -2,122 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8575AC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD94C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbiBIMDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:03:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39114 "EHLO
+        id S229608AbiBIMDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiBIMDL (ORCPT
+        with ESMTP id S232036AbiBIMDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:03:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 08873C03C180
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 03:36:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644406567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XfermB6CMKU1zKQ537x6yTA+IzQs5j2AWlksK8pCcRU=;
-        b=RTTwdLCVIBcSbOth+M/OZx1x1gfPdvw8oOU6lo31GHp+gjyFd2vdt8RwPD7Yc1HJWNZQC8
-        HD5FfEH5rYcy/JJBsOvzdglnhvbBvUeIKZT6ECuNMOF0t+UmobjdNqwvfmITtyCvXRQSUe
-        7QG+1SsK47G/UVxH7Bwksamf8nnAB0Y=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-592-_M7WPzw_MVGb_NkfRXv0aw-1; Wed, 09 Feb 2022 06:36:06 -0500
-X-MC-Unique: _M7WPzw_MVGb_NkfRXv0aw-1
-Received: by mail-wm1-f72.google.com with SMTP id p24-20020a05600c1d9800b0037be98d03a1so1946479wms.0
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 03:36:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=XfermB6CMKU1zKQ537x6yTA+IzQs5j2AWlksK8pCcRU=;
-        b=sNYnyzalmzHxUrSusOZcIOmdFxQdkeuNcqeNp/McF+Aaz8f+fU6rMm5ISPGfxOuZm1
-         Ta6nmMlzVz8Q2vPw96VNbZewLZH5LJTlyp24oITyasPCzlkwCL8/BlAkEZuTWcE61JSd
-         eK4fGzVNoD2smdGY7n39Qf0c+vC+7JtkUfYwsSyzA9hQAyuFY1zb6Xl9l7GsVwOVnEKC
-         KNG2qVi8Nv9cRSsmQVFMHR2E9lUl+59B6VynpNa8zjoUJ0XGPgSxfBlpVj7QEuLwXVZg
-         8cgPo4hOsKDh1SG2USo/KNQRKZGrl9+T/k8ZSmfYp47KFJxwrVQDSNnXn7pBcQsQGLZu
-         DMyg==
-X-Gm-Message-State: AOAM531j6j9CmfkdFdVmEou3T/m0CcbOMYuAxX5LnK5CBdMnBrtiKDf+
-        8jfkMVZ7Ci/SHHrbAU5kbx+Z+KCrfWF7CC4skD+TeU+/Z0y+O/6YsuKRAzkZji1ZZHrLCcV1WSO
-        Aaf6ibyT3u6z3B82kNFRbtiqN
-X-Received: by 2002:a05:600c:3b97:: with SMTP id n23mr640442wms.116.1644406564898;
-        Wed, 09 Feb 2022 03:36:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy0JWcCTHjUFiG4IzG96xqlvCJC9eJ8y4HTIUnEUHpgEQcFZRU1VGpZWbVwcZeHh2mrYMIrCw==
-X-Received: by 2002:a05:600c:3b97:: with SMTP id n23mr640405wms.116.1644406564445;
-        Wed, 09 Feb 2022 03:36:04 -0800 (PST)
-Received: from ?IPv6:2a0c:5a80:1204:1500:37e7:8150:d9df:36f? ([2a0c:5a80:1204:1500:37e7:8150:d9df:36f])
-        by smtp.gmail.com with ESMTPSA id z17sm4531039wmf.11.2022.02.09.03.36.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 03:36:04 -0800 (PST)
-Message-ID: <035d9c7a21eb024e336dce0942fa3f85b864aaea.camel@redhat.com>
-Subject: Re: [PATCH 0/2] mm/page_alloc: Remote per-cpu lists drain support
-From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
-To:     Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        frederic@kernel.org, tglx@linutronix.de, mtosatti@redhat.com,
-        mgorman@suse.de, linux-rt-users@vger.kernel.org, vbabka@suse.cz,
-        cl@linux.com, paulmck@kernel.org, willy@infradead.org
-Date:   Wed, 09 Feb 2022 12:36:02 +0100
-In-Reply-To: <b2e7ea31-0a56-6415-474b-a952fb1d36ef@huawei.com>
-References: <20220208100750.1189808-1-nsaenzju@redhat.com>
-         <7c87f388-cc50-e9a1-17a7-802bb42656e4@huawei.com>
-         <b5363ced8e17d07d41554da8fde06c410e6688e0.camel@redhat.com>
-         <b2e7ea31-0a56-6415-474b-a952fb1d36ef@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        Wed, 9 Feb 2022 07:03:15 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886AAC03E965
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 03:41:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Cg3BreKapOWrcjA/myDb7wb6nkioNEwwwkcLOSzaG3k=; b=CYwBPHV/nGZpvtuFaGg+bEeYQG
+        hjGXpURWA6SOjdPDsNmd3ETz4Q9TgGovkE3yWIinrS2M/PEhx26FrnFQTJOQPXUK1+MP5VFXe+znC
+        jgPhycUFHU1/W1tRYvtz/Ee/kRs1h5lfzEqcOC1KCO+NbbF4DspBCO79AI1qw+8tf5unUqJOxAm3q
+        oRWQGCm7TjvZbDa/udWLZMCVCMnDo6tGGUbbMgr13bH5/THtCYk6ZO6YaR956cLlKjoVjGsE/7Ys3
+        GwVCnItq1oAaciY6vIRr2J0damNtPvNrW74CdGY9yiSO6dmGilidP8KgRDLvCCTs2uYLud7sGw9kK
+        eTMyKSlQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nHlLy-008Pay-Ka; Wed, 09 Feb 2022 11:41:42 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3DB0A9853C7; Wed,  9 Feb 2022 12:41:41 +0100 (CET)
+Date:   Wed, 9 Feb 2022 12:41:41 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+        joao@overdrivepizza.com, hjl.tools@gmail.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        ndesaulniers@google.com, samitolvanen@google.com
+Subject: Re: [RFC][PATCH 6/6] objtool: Add IBT validation / fixups
+Message-ID: <20220209114141.GN23216@worktop.programming.kicks-ass.net>
+References: <20211122170301.764232470@infradead.org>
+ <20211122170805.338489412@infradead.org>
+ <20211124193037.nu7q4pa3sianzqtc@treble>
+ <202202081542.F685EC23@keescook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202202081542.F685EC23@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-09 at 19:26 +0800, Xiongfeng Wang wrote:
-> Hi,
+On Tue, Feb 08, 2022 at 03:43:27PM -0800, Kees Cook wrote:
+> On Wed, Nov 24, 2021 at 11:30:37AM -0800, Josh Poimboeuf wrote:
+> > On Mon, Nov 22, 2021 at 06:03:07PM +0100, Peter Zijlstra wrote:
+> > > +static int validate_ibt_reloc(struct objtool_file *file, struct reloc *reloc, char **name)
+> > > +{
+> > > +	struct instruction *dest;
+> > > +	struct section *sec;
+> > > +	unsigned long off;
+> > > +
+> > > +	sec = reloc->sym->sec;
+> > > +	off = reloc->sym->offset + reloc->addend;
+> > > +
+> > > +	dest = find_insn(file, sec, off);
+> > > +	if (!dest)
+> > > +		return 0;
+> > > +
+> > > +	if (name && dest->func)
+> > > +		*name = dest->func->name;
+> > 
+> > I think these checks can be further narrowed down by only looking for
+> > X86_64_64 relocs.
+> > 
+> > > +	list_for_each_entry(insn, &file->endbr_list, call_node) {
+> > > +		if (ibt_seal) {
+> > > +			elf_write_insn(file->elf, insn->sec,
+> > > +				       insn->offset, insn->len,
+> > > +				       arch_nop_insn(insn->len));
+> > > +		}
+> > 
+> > Like the retpoline rewriting, I'd much rather have objtool create
+> > annotations which the kernel can then read and patch itself.
+> > 
+> > e.g. have '.ibt.direct_call_sites' and '.ibt.unused_endbr_insns'
+> > sections.
 > 
-> On 2022/2/9 17:45, Nicolas Saenz Julienne wrote:
-> > Hi Xiongfeng, thanks for taking the time to look at this.
-> > 
-> > On Wed, 2022-02-09 at 16:55 +0800, Xiongfeng Wang wrote:
-> > > Hi Nicolas，
-> > > 
-> > > When I applied the patchset on the following commit and tested on QEMU, I came
-> > > accross the following CallTrace.
-> > >   commit dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
-> > > 
-> > > I wrote a userspace application to consume the memory. When the memory is used
-> > > out, the OOM killer is triggered and the following Calltrace is printed. I am
-> > > not sure if it is related to this patchset. But when I reverted this patchset,
-> > > the 'NULL pointer' Calltrace didn't show.
-> > 
-> > It's a silly mistake on my part, while cleaning up the code I messed up one of
-> > the 'struct per_cpu_pages' accessors. This should fix it:
-> > 
-> > ------------------------->8-------------------------
-> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> > index 0caa7155ca34..e65b991c3dc8 100644
-> > --- a/mm/page_alloc.c
-> > +++ b/mm/page_alloc.c
-> > @@ -3279,7 +3279,7 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
-> >                                 has_pcps = true;
-> >                 } else {
-> >                         for_each_populated_zone(z) {
-> > -                               pcp = per_cpu_ptr(zone->per_cpu_pageset, cpu);
-> > +                               pcp = per_cpu_ptr(z->per_cpu_pageset, cpu);
-> >                                 lp = rcu_dereference_protected(pcp->lp,
-> >                                                 mutex_is_locked(&pcpu_drain_mutex));
-> >                                 if (lp->count) {
-> 
-> I have tested it. It works well. No more 'NULL pointer' Calltrace.
+> Why have the kernel do that work at every boot when it can be known at
+> link time?
 
-Thanks!
+I have patches that write a 4 byte #UD there instead of a nop. That
+would make !IBT hardware splat as well when it hits a sealed function
+(and in that case actually having those extra ENDBR generated is a
+bonus).
 
--- 
-Nicolás Sáenz
+Anyway, I have some newer patches and some hardware, except it's a NUC
+and working with those things is a royal pain in the arse since they
+don't have serial. I finally did get XHCI debug port working, but
+there's no XDBC grub support, so now I managed to boot a dead kernel and
+the thing is a brick until I can be arsed to connect a keybaord and
+screen to it again :-(
 
+KVM/qemu has no IBT support merged yet, so I can't use that either.
