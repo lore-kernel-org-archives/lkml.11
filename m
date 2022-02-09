@@ -2,107 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0222C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A73C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235679AbiBIPTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:19:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59468 "EHLO
+        id S233759AbiBIPUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:20:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233245AbiBIPTB (ORCPT
+        with ESMTP id S235683AbiBIPUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:19:01 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC80C0613C9;
-        Wed,  9 Feb 2022 07:19:03 -0800 (PST)
-Received: from mail-wm1-f42.google.com ([209.85.128.42]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1N9MlI-1oMjEg0hU4-015LCk; Wed, 09 Feb 2022 16:19:02 +0100
-Received: by mail-wm1-f42.google.com with SMTP id m126-20020a1ca384000000b0037bb8e379feso3380272wme.5;
-        Wed, 09 Feb 2022 07:19:02 -0800 (PST)
-X-Gm-Message-State: AOAM530QaYBl5zAT8ckwrKkz1/QmgQRB3mUr/fzUDmB+1MtAfTD3R6MD
-        6V+9ESz9BFigxlFWZzh8NO54uzg0CMX5t69PsIk=
-X-Google-Smtp-Source: ABdhPJxC6yS4pZe2435Qd1HxMwKInn1Oh/ph/XdsG7j7cymhJO/oHhExs7jdnGMMcZ3Rtq95pkF7gsXdKA/mOg/25a0=
-X-Received: by 2002:a05:600c:1f06:: with SMTP id bd6mr2495408wmb.98.1644419941772;
- Wed, 09 Feb 2022 07:19:01 -0800 (PST)
+        Wed, 9 Feb 2022 10:20:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4F1EC0613CA
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:20:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644420024;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HWJxSwYp7jtZ92shaLhTfEcqyJ4FcqxLKxSHScXMFmA=;
+        b=PyuTenbJ41dM5debF7w6Co+TKiLJfVBr8cyhYPUt4fu3dF08QvMM59PBa3YU3t17p2HsxK
+        vFbAgD2o6GVPyf86BefZ69if5ZvtmMZtWxa+4YzYM7zZJ2bIKSBLAgApQUAnrwC0eJKzGU
+        BY9JrygxUlbsn/uIpnzLeMZNAbu1B18=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-249-zb1mVJcgP2uMAOLwj5qykg-1; Wed, 09 Feb 2022 10:20:22 -0500
+X-MC-Unique: zb1mVJcgP2uMAOLwj5qykg-1
+Received: by mail-wm1-f72.google.com with SMTP id 125-20020a1c0283000000b0037bf720e6a8so448511wmc.8
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 07:20:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HWJxSwYp7jtZ92shaLhTfEcqyJ4FcqxLKxSHScXMFmA=;
+        b=4P4BH9eRJtFeYXCSpn9AuwgRh3gAykRAmn32BUECZHZnyyAav0JR6JjEqh0zG44JNs
+         BDImuSVIO2y6c27vFIrBOhMCufUw0zZ1xIki1shMgcSliuoh3UJM9qoXs/zPCTNOaziL
+         nBuj9q4eDJEnl0Kc7HKFh3LqBqDDuKypDnewkd5slHeTkM/OOhKm17EdQ4/5v1zzYS1a
+         0d7YhqLwHdZjWqPIvBELxjyNj0gdyDWI9UkhBaHhbxkyciFjCFyYdWKSmDvvyqgaBHLz
+         XANqHjkVmWlmvxvWA+Oiy+ol2nv253raapiC1FM1Rw2mrpZjuL5WLyOm/6UgaY4Xo6nJ
+         gMDw==
+X-Gm-Message-State: AOAM533XsEBugy/ZwfBMVlwUb/SH1zlDpk9PJiNbJoGL4+Ti6pi6Af8m
+        0B98Q/irGts0Y+0YbnPtaRpn1otTkQi0T6gM2ADuqEj4CZMP5tjx1qmZ0wR9ggZ/7oFI8IvODIq
+        xoTzjRqnfojNQSh/Lm1D7veF+LJSeRDRI8g6virIQ
+X-Received: by 2002:a1c:2942:: with SMTP id p63mr2494643wmp.75.1644420021706;
+        Wed, 09 Feb 2022 07:20:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzBIOqCE7cDbpGvT5TmCSizl7rrPw18L3EY0Uy8onixaMONTzYS0XvUHUkxcZEdMAG886y96+4xK4BB/NuuR5w=
+X-Received: by 2002:a1c:2942:: with SMTP id p63mr2494623wmp.75.1644420021540;
+ Wed, 09 Feb 2022 07:20:21 -0800 (PST)
 MIME-Version: 1.0
-References: <20211218165258.16716-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20211218165258.16716-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdUg3=q7gyaVHP0XcYUOo3PQUUv8Hc8wp5faVQ+bTBpg4A@mail.gmail.com>
- <042a2183-3f04-088c-1861-656de870337d@gmail.com> <CAK8P3a3owi7YWmq-tckD-C7NK5HaX+swGNW-QBkWQuQgVsVWrA@mail.gmail.com>
- <d74ab454-9337-d168-9b21-842569431b4a@gmail.com>
-In-Reply-To: <d74ab454-9337-d168-9b21-842569431b4a@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 9 Feb 2022 16:18:45 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a20mwJXN4Mb063zQG+HAevj_Odpj58EzPHkX-p6pbtnGA@mail.gmail.com>
-Message-ID: <CAK8P3a20mwJXN4Mb063zQG+HAevj_Odpj58EzPHkX-p6pbtnGA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] i2c: sh_mobile: Use platform_get_irq_optional() to
- get the interrupt
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Chris Brandt <chris.brandt@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Linux-sh list <linux-sh@vger.kernel.org>
+References: <20220209085243.3136536-1-lee.jones@linaro.org> <20220209150904.GA22025@lst.de>
+In-Reply-To: <20220209150904.GA22025@lst.de>
+From:   Andreas Gruenbacher <agruenba@redhat.com>
+Date:   Wed, 9 Feb 2022 16:20:10 +0100
+Message-ID: <CAHc6FU5e4GaQTfh6Z2_2vhcgxY+dbwUBOgazrXB3XW4=DRpLHQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] Revert "iomap: fall back to buffered writes for
+ invalidation failures"
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        "Darrick J . Wong" <darrick.wong@oracle.com>,
+        Bob Peterson <rpeterso@redhat.com>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-ext4 <linux-ext4@vger.kernel.org>,
+        cluster-devel <cluster-devel@redhat.com>,
+        syzbot+0ed9f769264276638893@syzkaller.appspotmail.com
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:dQBJIFZTK9zwJLYqmqEGtwvJT36W2YcbFpcMZrBBJ0xvhxJUmpA
- hUV34FTZb1X5/+oTtjTILgFEr120S4BaJpvPJVtMzyTXzPd4B9vJPqq0KpuvokCHnEuDQiH
- LY0YIz3LSwTAB8usE4RUEI/4aCU/LBeOG8Kd92GX/CgldDiyQ8lPRWmCkThcDErm3FWBT88
- gbXlkzh0WQLKMiQ8mU6qQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:tR737zmlJjw=:0tHcA+TTCFpWfT1uhePcI/
- D2MfeUGm+3phGJpaMQvMwfvV5M/eOHqNrM6fusvtlWnBpy6kcYYbXa07hBlgR+ppWOZ5bveRm
- 8Q0osF1hBODDpROXrEQsijM9ECikMHBNkH6JXcHZDr7qFfBiQhtGqUfjv/7yjUD2p0vNksCze
- feJ/4kfP3OkJDKoPTJ+/Yj6//WNv3pgfFmdPnvu/39K2xjm6JgUiE5RSRL54aRXc6ZYyVo0aJ
- PoiDhuoXxBT73WBqhO9srA7tsrlM6aFudYKkZDWSl0M17XYSS1xMF2e16p0ngk5lSK1314R1D
- AMtj/rpnc9sr5SdjxVB8JE0Ng0PaoWjyTQXpN5jkEjPTFiC7OjsezubwbRdlGgz9h++Ns9mil
- YmB0j9ZEoplISzcLp1FplGHYGk6HnwQYfCOk/mQj+uPOjc5OJTyhA63aWoguDyc04NPViHKCA
- sIxcq4v1Mu++PPyRdzOMeyIT/UtCzzMXwOmlzRFIzGy6M3Sej4uxBCF2rOwzDdFavcqp5Qou6
- RxlzCcMdWul6/ZU/JSAaEtHngVuibga8bgcCIsv9AcCSQw9eaoeG+3CJnEISrtVyZGWZdVLyt
- wmk8DRbXqooL+lyTW/LfAOBuh+X0VBcLMaYEwsrsHHO2/73Ubbdc7m+G3V0CEn2u21pA8tMr9
- HfCHLKjyqSpgAq0KG4gJt60THytDeSWgwAj5WT6tu4/596LSMc83iYBt+cJK9EM/7RtQ=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 4:11 PM Sergei Shtylyov
-<sergei.shtylyov@gmail.com> wrote:
->
-> On 2/8/22 3:31 PM, Arnd Bergmann wrote:
->
-> [...]
-> >>> I might have missed something, but it seems the only user of IRQ 0 on
-> >>> SuperH is smsc911x Ethernet in arch/sh/boards/board-apsh4a3a.c and
-> >>> arch/sh/boards/board-apsh4ad0a.c, which use evt2irq(0x200).
-> >>> These should have been seeing the "0 is an invalid IRQ number"
-> >>> warning splat since it was introduced in commit a85a6c86c25be2d2
-> >>> ("driver core: platform: Clarify that IRQ 0 is invalid"). Or not:
-> >>
-> >>     Warning or no warning, 0 is still returned. :-/
-> >>     My attempt to put an end to this has stuck waiting a review from the IRQ
-> >> people...
+On Wed, Feb 9, 2022 at 4:09 PM Christoph Hellwig <hch@lst.de> wrote:
+> On Wed, Feb 09, 2022 at 08:52:43AM +0000, Lee Jones wrote:
+> > This reverts commit 60263d5889e6dc5987dc51b801be4955ff2e4aa7.
 > >
-> > I had another look at this after you asked about it on IRC. I don't
-> > know much SH assembly, but I suspect IRQ 0 has not been delivered
-> > since 2009 after 1e1030dccb10 ("sh: nmi_debug support."). On a
+> > Reverting since this commit opens a potential avenue for abuse.
+> >
+> > The C-reproducer and more information can be found at the link below.
+
+This reproducer seems to be working fine on gfs2, but the locking in
+gfs2 differs hugely from that of other filesystems.
+
+> > With this patch applied, I can no longer get the repro to trigger.
 >
->    Mhm... this commit changes the SH3 code while SH778x are SH4A, no?
+> Well, maybe you should actually debug and try to understand what is
+> going on before blindly reverting random commits.
 
-This code is shared between both:
+Andreas
 
-arch/sh/kernel/cpu/sh4/Makefile:common-y        += $(addprefix
-../sh3/, entry.o ex.o)
-
-       Arnd
