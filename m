@@ -2,211 +2,349 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E18E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:58:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2640FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237618AbiBIQ6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:58:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
+        id S237632AbiBIQ6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:58:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237586AbiBIQ57 (ORCPT
+        with ESMTP id S237601AbiBIQ6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:57:59 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA252C05CB87;
+        Wed, 9 Feb 2022 11:58:00 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66AEC05CB82;
         Wed,  9 Feb 2022 08:58:01 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: tonyk)
-        with ESMTPSA id EA6FE1F45167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644425879;
-        bh=rtln7R9NFet9KUNdtB4HI4S2cgm11zhgu+CXJo6WH+Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=krhM7Onk7fIQbn4rIbZGh3vUnFH9lTsffXtDginYg9PT9NsgmLW/FLjE2paGd1njb
-         mF1CTpmG8e0cNLYldM/44KQ5XHEQok3x/FBuaTWpaIlsj4xa3fnpeWZbjel3GXOXxR
-         PRZAoDEuWBMJTdgVEpUDnX8o4N4KEcn5Y5Ktm6Etnb9fTpXabIlvdAWly1bYO+2ZEb
-         KspWfDaZNogdB4Ih7GZAxehTAAADjAYRBGRe8g9nMGAucuYOXxgLlCCfuLqJiZwXWz
-         o2dpuMyzHw7vc75D1aCwUoiZxMsC/5+oO3RlIi5ZVAQNhkIIQHhGCxJXw53WEXQF72
-         tYTMbWxmCoY5Q==
-From:   =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>
-To:     Sanjay R Mehta <sanju.mehta@amd.com>,
-        Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Nehal Bakulchandra Shah <Nehal-Bakulchandra.shah@amd.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>
-Cc:     =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>
-Subject: [PATCH 3/3] spi: amd: Add support for version AMDI0062
-Date:   Wed,  9 Feb 2022 13:57:33 -0300
-Message-Id: <20220209165733.43134-4-andrealmeid@collabora.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220209165733.43134-1-andrealmeid@collabora.com>
-References: <20220209165733.43134-1-andrealmeid@collabora.com>
+Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jv5fW3bR1z67yyp;
+        Thu, 10 Feb 2022 00:57:55 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Wed, 9 Feb 2022 17:57:59 +0100
+Received: from localhost (10.122.247.231) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 9 Feb
+ 2022 16:57:58 +0000
+Date:   Wed, 9 Feb 2022 16:57:56 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Dan Williams <dan.j.williams@intel.com>
+CC:     "Weiny, Ira" <ira.weiny@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        <linux-cxl@vger.kernel.org>, Linux PCI <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V6 03/10] PCI/DOE: Add Data Object Exchange Aux Driver
+Message-ID: <20220209165756.00002841@huawei.com>
+In-Reply-To: <CAPcyv4g2nNHKPuYVOEH3TbJtCiB1rkRNCVbfDWHnWkotvTAcJg@mail.gmail.com>
+References: <20220201071952.900068-1-ira.weiny@intel.com>
+        <20220201071952.900068-4-ira.weiny@intel.com>
+        <CAPcyv4hYAgyf-WcArGvbWHAJgc5+p=OO_6ah_dXJhNM5cXcVTw@mail.gmail.com>
+        <20220209101320.00000473@Huawei.com>
+        <CAPcyv4g2nNHKPuYVOEH3TbJtCiB1rkRNCVbfDWHnWkotvTAcJg@mail.gmail.com>
+Organization: Huawei Technologies R&D (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.122.247.231]
+X-ClientProxiedBy: lhreml743-chm.china.huawei.com (10.201.108.193) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the AMD SPI controller version AMDI0062. Do this in a
-modular way where's easy to add new versions.
+On Wed, 9 Feb 2022 08:26:43 -0800
+Dan Williams <dan.j.williams@intel.com> wrote:
 
-Signed-off-by: André Almeida <andrealmeid@collabora.com>
----
- drivers/spi/spi-amd.c | 73 +++++++++++++++++++++++++++++++++++++------
- 1 file changed, 63 insertions(+), 10 deletions(-)
+> On Wed, Feb 9, 2022 at 2:13 AM Jonathan Cameron
+> <Jonathan.Cameron@huawei.com> wrote:
+> [..]
 
-diff --git a/drivers/spi/spi-amd.c b/drivers/spi/spi-amd.c
-index 417ce14a21c6..a2f948f41c88 100644
---- a/drivers/spi/spi-amd.c
-+++ b/drivers/spi/spi-amd.c
-@@ -19,6 +19,10 @@
- #define AMD_SPI_FIFO_CLEAR	BIT(20)
- #define AMD_SPI_BUSY		BIT(31)
- 
-+#define AMD_SPI_OPCODE_REG	0x45
-+#define AMD_SPI_CMD_TRIGGER_REG	0x47
-+#define AMD_SPI_TRIGGER_CMD	BIT(7)
-+
- #define AMD_SPI_OPCODE_MASK	0xFF
- 
- #define AMD_SPI_ALT_CS_REG	0x1D
-@@ -35,9 +39,15 @@
- #define AMD_SPI_XFER_TX		1
- #define AMD_SPI_XFER_RX		2
- 
-+enum amd_spi_versions {
-+	AMD_SPI_V1 = 1,	/* AMDI0061 */
-+	AMD_SPI_V2,	/* AMDI0062 */
-+};
-+
- struct amd_spi {
- 	void __iomem *io_remap_addr;
- 	unsigned long io_base_addr;
-+	enum amd_spi_versions version;
- };
- 
- static inline u8 amd_spi_readreg8(struct amd_spi *amd_spi, int idx)
-@@ -81,14 +91,29 @@ static void amd_spi_select_chip(struct amd_spi *amd_spi, u8 cs)
- 	amd_spi_setclear_reg8(amd_spi, AMD_SPI_ALT_CS_REG, cs, AMD_SPI_ALT_CS_MASK);
- }
- 
-+static inline void amd_spi_clear_chip(struct amd_spi *amd_spi, u8 chip_select)
-+{
-+	amd_spi_writereg8(amd_spi, AMD_SPI_ALT_CS_REG, chip_select & ~AMD_SPI_ALT_CS_MASK);
-+}
-+
- static void amd_spi_clear_fifo_ptr(struct amd_spi *amd_spi)
- {
- 	amd_spi_setclear_reg32(amd_spi, AMD_SPI_CTRL0_REG, AMD_SPI_FIFO_CLEAR, AMD_SPI_FIFO_CLEAR);
- }
- 
--static void amd_spi_set_opcode(struct amd_spi *amd_spi, u8 cmd_opcode)
-+static int amd_spi_set_opcode(struct amd_spi *amd_spi, u8 cmd_opcode)
- {
--	amd_spi_setclear_reg32(amd_spi, AMD_SPI_CTRL0_REG, cmd_opcode, AMD_SPI_OPCODE_MASK);
-+	switch (amd_spi->version) {
-+	case AMD_SPI_V1:
-+		amd_spi_setclear_reg32(amd_spi, AMD_SPI_CTRL0_REG, cmd_opcode,
-+				       AMD_SPI_OPCODE_MASK);
-+		return 0;
-+	case AMD_SPI_V2:
-+		amd_spi_writereg8(amd_spi, AMD_SPI_OPCODE_REG, cmd_opcode);
-+		return 0;
-+	default:
-+		return -ENODEV;
-+	}
- }
- 
- static inline void amd_spi_set_rx_count(struct amd_spi *amd_spi, u8 rx_count)
-@@ -104,9 +129,21 @@ static inline void amd_spi_set_tx_count(struct amd_spi *amd_spi, u8 tx_count)
- static int amd_spi_busy_wait(struct amd_spi *amd_spi)
- {
- 	u32 val;
-+	int reg;
-+
-+	switch (amd_spi->version) {
-+	case AMD_SPI_V1:
-+		reg = AMD_SPI_CTRL0_REG;
-+		break;
-+	case AMD_SPI_V2:
-+		reg = AMD_SPI_STATUS_REG;
-+		break;
-+	default:
-+		return -ENODEV;
-+	}
- 
--	return readl_poll_timeout(amd_spi->io_remap_addr + AMD_SPI_CTRL0_REG,
--				  val, !(val & AMD_SPI_BUSY), 20, 2000000);
-+	return readl_poll_timeout(amd_spi->io_remap_addr + reg, val,
-+				  !(val & AMD_SPI_BUSY), 20, 2000000);
- }
- 
- static int amd_spi_execute_opcode(struct amd_spi *amd_spi)
-@@ -117,10 +154,20 @@ static int amd_spi_execute_opcode(struct amd_spi *amd_spi)
- 	if (ret)
- 		return ret;
- 
--	/* Set ExecuteOpCode bit in the CTRL0 register */
--	amd_spi_setclear_reg32(amd_spi, AMD_SPI_CTRL0_REG, AMD_SPI_EXEC_CMD, AMD_SPI_EXEC_CMD);
--
--	return 0;
-+	switch (amd_spi->version) {
-+	case AMD_SPI_V1:
-+		/* Set ExecuteOpCode bit in the CTRL0 register */
-+		amd_spi_setclear_reg32(amd_spi, AMD_SPI_CTRL0_REG, AMD_SPI_EXEC_CMD,
-+				       AMD_SPI_EXEC_CMD);
-+		return 0;
-+	case AMD_SPI_V2:
-+		/* Trigger the command execution */
-+		amd_spi_setclear_reg8(amd_spi, AMD_SPI_CMD_TRIGGER_REG,
-+				      AMD_SPI_TRIGGER_CMD, AMD_SPI_TRIGGER_CMD);
-+		return 0;
-+	default:
-+		return -ENODEV;
-+	}
- }
- 
- static int amd_spi_master_setup(struct spi_device *spi)
-@@ -190,6 +237,9 @@ static inline int amd_spi_fifo_xfer(struct amd_spi *amd_spi,
- 	message->actual_length = tx_len + rx_len + 1;
- 	/* complete the transaction */
- 	message->status = 0;
-+
-+	if (amd_spi->version == AMD_SPI_V2)
-+		amd_spi_clear_chip(amd_spi, message->spi->chip_select);
- 	spi_finalize_current_message(master);
- 
- 	return 0;
-@@ -235,6 +285,8 @@ static int amd_spi_probe(struct platform_device *pdev)
- 	}
- 	dev_dbg(dev, "io_remap_address: %p\n", amd_spi->io_remap_addr);
- 
-+	amd_spi->version = (enum amd_spi_versions) device_get_match_data(dev);
-+
- 	/* Initialize the spi_master fields */
- 	master->bus_num = 0;
- 	master->num_chipselect = 4;
-@@ -260,7 +312,8 @@ static int amd_spi_probe(struct platform_device *pdev)
- 
- #ifdef CONFIG_ACPI
- static const struct acpi_device_id spi_acpi_match[] = {
--	{ "AMDI0061", 0 },
-+	{ "AMDI0061", AMD_SPI_V1 },
-+	{ "AMDI0062", AMD_SPI_V2 },
- 	{},
- };
- MODULE_DEVICE_TABLE(acpi, spi_acpi_match);
-@@ -269,7 +322,7 @@ MODULE_DEVICE_TABLE(acpi, spi_acpi_match);
- static struct platform_driver amd_spi_driver = {
- 	.driver = {
- 		.name = "amd_spi",
--		.acpi_match_table = ACPI_PTR(spi_acpi_match),
-+		.acpi_match_table = spi_acpi_match,
- 	},
- 	.probe = amd_spi_probe,
- };
--- 
-2.35.0
+...
+
+> 
+> >  
+> > >  
+> > > > +}
+> > > > +
+> > > > +static int pci_doe_send_req(struct pci_doe *doe, struct pci_doe_exchange *ex)  
+> > >
+> > > The relationship between tasks, requests, responses, and exchanges is
+> > > not immediately clear to me. For example, can this helper be renamed
+> > > in terms of its relationship to a task? A theory of operation document
+> > > would help, but it seems there is also room for the implementation to
+> > > be more self documenting.  
+> >
+> > Not totally sure what such naming would be.
+> >
+> > A task is the management wrapper around an exchange which is a request
+> > + response pair.  In the sense you queue a task which will carry out
+> > and exchange by sending a request and receiving a response.
+> >
+> > Could rename this pci_doe_start_exchange() but that then obscures
+> > that we mean send the request to the hardware and removes the resemblance
+> > to what I recall the specification uses.  
+> 
+> I'm not a big fan of copying spec names *if* Linux has a more
+> idiomatic name for the concept. I am mainly reviewing this from the
+> perspective that 'struct bio' and 'struct request' naming /
+> organization is idiomatic for Linux driver transaction flows. Up to
+> this point in the review I was mapping tasks to bios and exchanges to
+> requests but then the usage of "req" in this function name threw off
+> my ontology. At a minimum a decoder ring style comment, like your
+> reply, about the relationship between these terms would help avoid
+> this exercise again.
+
+OK. So up to Ira, but my suggestion is go with a comment unless
+someone comes up with clearer naming.
+
+Mind you, if we are now exposing the doe_exchange to callers anyway,
+we could just squash the structure into the doe_task one and drop
+the separation.
+
+Intent before was doe_exchange was all the stuff related to the protocol
+(so buffers etc0 whereas task was about the implementation but
+if we expose struct doe_task anyway that separation becomes a bit pointless.
+
+> 
+> > > > +       case DOE_WAIT_ABORT:
+> > > > +       case DOE_WAIT_ABORT_ON_ERR:
+> > > > +               pci_read_config_dword(pdev, offset + PCI_DOE_STATUS, &val);
+> > > > +
+> > > > +               if (!FIELD_GET(PCI_DOE_STATUS_ERROR, val) &&
+> > > > +                   !FIELD_GET(PCI_DOE_STATUS_BUSY, val)) {
+> > > > +                       /* Back to normal state - carry on */
+> > > > +                       mutex_lock(&doe->state_lock);
+> > > > +                       doe->cur_task = NULL;
+> > > > +                       mutex_unlock(&doe->state_lock);
+> > > > +                       wake_up_interruptible(&doe->wq);
+> > > > +
+> > > > +                       /*
+> > > > +                        * For deliberately triggered abort, someone is
+> > > > +                        * waiting.
+> > > > +                        */
+> > > > +                       if (doe->state == DOE_WAIT_ABORT)
+> > > > +                               complete(&doe->abort_c);  
+> > >
+> > > Why is a completion and waitqueue needed? I.e. a waiter could simply
+> > > look for an abort completion flag to be set instead.  
+> >
+> > You mean use the main completion (the one for the non abort case)
+> > and a flag?
+> >
+> > Or a wait_event() with appropriate check?
+> >
+> > Could do that but I'm not sure I understand why we care either way?  
+> 
+> Just reduction in machinery that needs to be maintained /
+> comprehended. 2 wait primitives when one will do will always be a
+> tempting cleanup target.
+
+Ah. Fair enough - it looks like using the same completion won't
+be a huge addition in complexity.
+
+> 
+> [..]
+> > > > +/**
+> > > > + * pci_doe_exchange_sync() - Send a request, then wait for and receive a
+> > > > + *                          response
+> > > > + * @doe_dev: DOE mailbox state structure
+> > > > + * @ex: Description of the buffers and Vendor ID + type used in this
+> > > > + *      request/response pair
+> > > > + *
+> > > > + * Excess data will be discarded.
+> > > > + *
+> > > > + * RETURNS: payload in bytes on success, < 0 on error
+> > > > + */
+> > > > +int pci_doe_exchange_sync(struct pci_doe_dev *doe_dev,
+> > > > +                         struct pci_doe_exchange *ex)
+> > > > +{
+> > > > +       struct pci_doe *doe = dev_get_drvdata(&doe_dev->adev.dev);
+> > > > +       struct pci_doe_task task;
+> > > > +       DECLARE_COMPLETION_ONSTACK(c);
+> > > > +
+> > > > +       if (!doe)
+> > > > +               return -EAGAIN;
+> > > > +
+> > > > +       /* DOE requests must be a whole number of DW */
+> > > > +       if (ex->request_pl_sz % sizeof(u32))
+> > > > +               return -EINVAL;
+> > > > +
+> > > > +       task.ex = ex;
+> > > > +       task.cb = pci_doe_task_complete;
+> > > > +       task.private = &c;
+> > > > +
+> > > > +again:
+> > > > +       mutex_lock(&doe->state_lock);
+> > > > +       if (doe->cur_task) {
+> > > > +               mutex_unlock(&doe->state_lock);
+> > > > +               wait_event_interruptible(doe->wq, doe->cur_task == NULL);
+> > > > +               goto again;
+> > > > +       }
+> > > > +
+> > > > +       if (doe->dead) {
+> > > > +               mutex_unlock(&doe->state_lock);
+> > > > +               return -EIO;
+> > > > +       }
+> > > > +       doe->cur_task = &task;
+> > > > +       schedule_delayed_work(&doe->statemachine, 0);
+> > > > +       mutex_unlock(&doe->state_lock);
+> > > > +
+> > > > +       wait_for_completion(&c);  
+> > >
+> > > I would expect that the caller of this routine would want to specify
+> > > the task and end_task() callback and use that as the completion
+> > > signal. It may also want "no wait" behavior where it is prepared for
+> > > the DOE result to come back sometime later. With that change the
+> > > exchange fields can move into the task directly.  
+> >
+> > This is the simple synchronous wrapper around an async core.
+> > If we want an async path at somepoint in the future where we have
+> > someone using it then sure, we can have an async version that
+> > takes the callback.  
+> 
+> It just seems an unnecessary hunk of code for the core to carry when
+> it's trivial for a client of the core to do:
+> 
+> task->private = &completion;
+> task->end_task = complete_completion;
+> submit_task()
+> wait_for_completion(&completion);
+
+OK, we can move this to the callers though function obviously will
+also need renaming - I guess to pci_doe_exchange() and now need to take a
+task rather than the exchange.
+
+I personally slightly prefer the layered approach, but don't care that
+strongly.
+
+> 
+> > > > +       return task.rv;
+> > > > +}
+> > > > +EXPORT_SYMBOL_GPL(pci_doe_exchange_sync);
+> > > > +
+> > > > +/**
+> > > > + * pci_doe_supports_prot() - Return if the DOE instance supports the given
+> > > > + *                          protocol
+> > > > + * @pdev: Device on which to find the DOE instance
+> > > > + * @vid: Protocol Vendor ID
+> > > > + * @type: protocol type
+> > > > + *
+> > > > + * This device can then be passed to pci_doe_exchange_sync() to execute a
+> > > > + * mailbox exchange through that DOE mailbox.
+> > > > + *
+> > > > + * RETURNS: True if the DOE device supports the protocol specified
+> > > > + */
+> > > > +bool pci_doe_supports_prot(struct pci_doe_dev *doe_dev, u16 vid, u8 type)
+> > > > +{
+> > > > +       struct pci_doe *doe = dev_get_drvdata(&doe_dev->adev.dev);
+> > > > +       int i;
+> > > > +
+> > > > +       if (!doe)
+> > > > +               return false;
+> > > > +
+> > > > +       for (i = 0; i < doe->num_prots; i++)
+> > > > +               if ((doe->prots[i].vid == vid) &&
+> > > > +                   (doe->prots[i].type == type))
+> > > > +                       return true;
+> > > > +
+> > > > +       return false;
+> > > > +}
+> > > > +EXPORT_SYMBOL_GPL(pci_doe_supports_prot);
+> > > > +
+> > > > +static int pci_doe_discovery(struct pci_doe *doe, u8 *index, u16 *vid,
+> > > > +                            u8 *protocol)
+> > > > +{
+> > > > +       u32 request_pl = FIELD_PREP(PCI_DOE_DATA_OBJECT_DISC_REQ_3_INDEX,
+> > > > +                                   *index);
+> > > > +       u32 response_pl;
+> > > > +       struct pci_doe_exchange ex = {
+> > > > +               .prot.vid = PCI_VENDOR_ID_PCI_SIG,
+> > > > +               .prot.type = PCI_DOE_PROTOCOL_DISCOVERY,
+> > > > +               .request_pl = &request_pl,
+> > > > +               .request_pl_sz = sizeof(request_pl),
+> > > > +               .response_pl = &response_pl,
+> > > > +               .response_pl_sz = sizeof(response_pl),
+> > > > +       };
+> > > > +       int ret;
+> > > > +
+> > > > +       ret = pci_doe_exchange_sync(doe->doe_dev, &ex);
+> > > > +       if (ret < 0)
+> > > > +               return ret;
+> > > > +
+> > > > +       if (ret != sizeof(response_pl))
+> > > > +               return -EIO;
+> > > > +
+> > > > +       *vid = FIELD_GET(PCI_DOE_DATA_OBJECT_DISC_RSP_3_VID, response_pl);
+> > > > +       *protocol = FIELD_GET(PCI_DOE_DATA_OBJECT_DISC_RSP_3_PROTOCOL,
+> > > > +                             response_pl);
+> > > > +       *index = FIELD_GET(PCI_DOE_DATA_OBJECT_DISC_RSP_3_NEXT_INDEX,
+> > > > +                          response_pl);
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +static int pci_doe_cache_protocols(struct pci_doe *doe)
+> > > > +{
+> > > > +       u8 index = 0;
+> > > > +       int num_prots;
+> > > > +       int rc;
+> > > > +
+> > > > +       /* Discovery protocol must always be supported and must report itself */
+> > > > +       num_prots = 1;
+> > > > +       doe->prots = devm_kcalloc(&doe->doe_dev->adev.dev, num_prots,
+> > > > +                                 sizeof(*doe->prots), GFP_KERNEL);
+> > > > +       if (doe->prots == NULL)
+> > > > +               return -ENOMEM;
+> > > > +
+> > > > +       do {
+> > > > +               struct pci_doe_protocol *prot;
+> > > > +
+> > > > +               prot = &doe->prots[num_prots - 1];
+> > > > +               rc = pci_doe_discovery(doe, &index, &prot->vid, &prot->type);
+> > > > +               if (rc)
+> > > > +                       return rc;
+> > > > +
+> > > > +               if (index) {
+> > > > +                       struct pci_doe_protocol *prot_new;
+> > > > +
+> > > > +                       num_prots++;
+> > > > +                       prot_new = devm_krealloc(&doe->doe_dev->adev.dev,
+> > > > +                                                doe->prots,
+> > > > +                                                sizeof(*doe->prots) *
+> > > > +                                                       num_prots,
+> > > > +                                                GFP_KERNEL);
+> > > > +                       if (prot_new == NULL)
+> > > > +                               return -ENOMEM;
+> > > > +                       doe->prots = prot_new;
+> > > > +               }
+> > > > +       } while (index);
+> > > > +
+> > > > +       doe->num_prots = num_prots;
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +static int pci_doe_abort(struct pci_doe *doe)
+> > > > +{
+> > > > +       reinit_completion(&doe->abort_c);
+> > > > +       mutex_lock(&doe->state_lock);
+> > > > +       doe->abort = true;  
+> > >
+> > > Why not a flags field where atomic bitops can be used without need for a mutex.  
+> >
+> > I'll go the other way, why bother with atomics when this isn't a high performance
+> > path or something expected to happen often?  
+> 
+> It obfuscates what the lock is protecting if it's used for state
+> management and atomic flag management, but I am not holding the pen
+> here, so I can let this arbitrary trade-off go.
+
+Sure, given Ira is now doing the leg work, up to Ira or other reviewers.
+
+Jonathan
+
 
