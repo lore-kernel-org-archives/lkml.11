@@ -2,136 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87846C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:06:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238642AbiBISF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:05:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56280 "EHLO
+        id S238643AbiBISKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:10:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238664AbiBISFz (ORCPT
+        with ESMTP id S231624AbiBISKN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:05:55 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A7FC05CB8A
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 10:05:57 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id d187so5612769pfa.10
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 10:05:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cLKRoZKI4DKqnlTpSUuiPfKYmbbblSbQTVtpGt2hOnI=;
-        b=fg5mBfIO6Vmm49SxuTT0koEmgvh+HMrBCznuu+MWsGESFDGvWVtd5PIpDSq9DwZM+n
-         fcpiG1DhKB77jCXR7mMjE7jSo2sXAXGkBQcaGOfg9Ba6/2lKIxj3b6Q/2V3kQafiFcrn
-         R+XqNrKZY9x/dLCaBzi6QTIRBJ9VEKgWlsfWIZCr1ol4IARVu9gGzx1Augkxr1BwSVxe
-         NcW2tp73+8KY9VveaDGQBridg/26eGjTnveKmLPKTI++fz+eZdoAhCNFde5JhDl80RAd
-         ftpH/k0VdjUlBF7Cp9eQIi7NZoV0ppui574MmmnUWucwsp2mv0DA+DK8xv3rkRcRRY74
-         JIcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cLKRoZKI4DKqnlTpSUuiPfKYmbbblSbQTVtpGt2hOnI=;
-        b=40gFGseoM59g22AwXMFwF6ls9S9ea6+5MQlkwoKpLFusS/J2YChHSWUIuormgnEuRZ
-         u5QPkSpobznpNmDR4kD+kNEL08RdiCp3Gjrd19gPd9LAz8dvhXnjl+7IBKbXiJ/2+zGk
-         2cQCv4Klw8FVUy/i9RsNg4l23fVvZvaBqemX1G+zcKIi/xT4AzL9Y9nkN161Kjg3isMc
-         pnuBsXhhhgJ2oxc/4laE/ZEZYG+ZQv8GdMEtNBd+dKxm89BidT1RZ2bPMsTq521Nzqt6
-         RgkTUGRKwfI+TlUHqUOQwZ+CK0sqore+s3B7Uv/FoWkIoEbAN710THaI3vCIT12p6MNi
-         dJ+A==
-X-Gm-Message-State: AOAM531Bl86ecskwE2FUIqHCXUTMFQipGbL9pha0NhDN0Ulr0I0bzhDd
-        8JymXMyIdM82A8zyAy6571Zi1g==
-X-Google-Smtp-Source: ABdhPJwpI/L6rbiGhLckNIoByaFKGEzzVQZHGW9SUEbExOizaOg+SPFwwfRYBBmSIEoB3i+2JFnK9g==
-X-Received: by 2002:a05:6a00:22d1:: with SMTP id f17mr3509456pfj.13.1644429956839;
-        Wed, 09 Feb 2022 10:05:56 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id e13sm3783813pfv.3.2022.02.09.10.05.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 10:05:56 -0800 (PST)
-Date:   Wed, 9 Feb 2022 18:05:52 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, bp@alien8.de,
-        aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
-        dave.hansen@intel.com, david@redhat.com, hpa@zytor.com,
-        jgross@suse.com, jmattson@google.com, joro@8bytes.org,
-        jpoimboe@redhat.com, knsathya@kernel.org,
-        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
-        pbonzini@redhat.com, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org
-Subject: Re: [PATCHv2.1 05/29] x86/tdx: Add HLT support for TDX guests
-Message-ID: <YgQCgCx0R+RvFkyE@google.com>
-References: <YfVU01dBD36H0EIv@zn.tnic>
- <20220129223021.29417-1-kirill.shutemov@linux.intel.com>
- <874k5iz3ih.ffs@tglx>
- <20220202124830.yd4vkmy56j67tyz4@black.fi.intel.com>
- <875ypxur1n.ffs@tglx>
- <20220204165539.oqw7bj3ri4hzjiy6@black.fi.intel.com>
- <YgGioxo4hnJBJUgT@google.com>
- <20220209143407.by4s2h4zybfbvlhv@black.fi.intel.com>
+        Wed, 9 Feb 2022 13:10:13 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D57C0613C9;
+        Wed,  9 Feb 2022 10:10:15 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 549F41F395;
+        Wed,  9 Feb 2022 18:10:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1644430214; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+QlHruA1VMM96Mcdhik82zAIxY8wzek2RoiBYk+ZHyg=;
+        b=sEi+uC7WZVrXv4SGvq4AAVUxOmmsETE6xEb0U5GIJSL3ifI+uQmcRK6XW65LTp6jNHR7My
+        Kpk6929V4xxrGHt7nNB3XqdUMEs+dwX9setLUQ8NWXjvH2LSM2ecrAFJyvAJoQ3QRT6Bz5
+        keBK+THCgXiGUBzUmPG0lYrfpVuAh34=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1644430214;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+QlHruA1VMM96Mcdhik82zAIxY8wzek2RoiBYk+ZHyg=;
+        b=lNxqalVGKwyzg9XoAIjeFFK6yGjOn/WUoE9eTX3XEavwg9kh1fAK+vdtiWdd9M4BgbbX6a
+        SpIuRIHIRHjecACA==
+Received: from quack3.suse.cz (unknown [10.100.200.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A1254A3B81;
+        Wed,  9 Feb 2022 18:10:03 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id F1AC4A05B5; Wed,  9 Feb 2022 19:10:10 +0100 (CET)
+Date:   Wed, 9 Feb 2022 19:10:10 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     Qian Cai <quic_qiancai@quicinc.com>
+Cc:     Theodore Ts'o <tytso@mit.edu>, Jan Kara <jack@suse.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Boqun Feng <boqun.feng@gmail.com>, linux-ext4@vger.kernel.org,
+        rcu@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] jbd2: avoid __GFP_ZERO with SLAB_TYPESAFE_BY_RCU
+Message-ID: <20220209181010.gfn66rvip56i54df@quack3.lan>
+References: <20220209165742.5659-1-quic_qiancai@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220209143407.by4s2h4zybfbvlhv@black.fi.intel.com>
+In-Reply-To: <20220209165742.5659-1-quic_qiancai@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022, Kirill A. Shutemov wrote:
-> On Mon, Feb 07, 2022 at 10:52:19PM +0000, Sean Christopherson wrote:
-> .Lskip_sti:
-> 	tdcall
+On Wed 09-02-22 11:57:42, Qian Cai wrote:
+> Since the linux-next commit 120aa5e57479 (mm: Check for
+> SLAB_TYPESAFE_BY_RCU and __GFP_ZERO slab allocation), we will get a
+> boot warning. Avoid it by calling synchronize_rcu() before the zeroing.
 > 
-> 	/*
-> 	 * TDVMCALL leaf does not suppose to fail. If it fails something
-> 	 * is horribly wrong with TDX module. Stop the world.
-> 	 */
-> 	test %rax, %rax
-> 	je .Lsuccess
-> 	ud2
+> Signed-off-by: Qian Cai <quic_qiancai@quicinc.com>
 
-If the ud2 or call to an external "do panic" helper is out-of-line, then the happy
-path avoids a taken branch.  Not a big deal, but it's also trivial to do.
+No, the performance impact of this would be just horrible. Can you
+ellaborate a bit why SLAB_TYPESAFE_BY_RCU + __GFP_ZERO is a problem and why
+synchronize_rcu() would be needed here before the memset() please? I mean
+how is zeroing here any different from the memory just being used?
 
-> .Lsuccess:
-> 	/* TDVMCALL leaf return code is in R10 */
-> 	movq %r10, %rax
-> 
-> 	/* Copy hypercall result registers to arg struct if needed */
-> 	testq $TDX_HCALL_HAS_OUTPUT, %rsi
-> 	jz .Lout
-> 
-> 	movq %r10, TDX_HYPERCALL_r10(%rdi)
-> 	movq %r11, TDX_HYPERCALL_r11(%rdi)
-> 	movq %r12, TDX_HYPERCALL_r12(%rdi)
-> 	movq %r13, TDX_HYPERCALL_r13(%rdi)
-> 	movq %r14, TDX_HYPERCALL_r14(%rdi)
-> 	movq %r15, TDX_HYPERCALL_r15(%rdi)
-> .Lout:
-> 	/*
-> 	 * Zero out registers exposed to the VMM to avoid
-> 	 * speculative execution with VMM-controlled values.
-> 	 * This needs to include all registers present in
-> 	 * TDVMCALL_EXPOSE_REGS_MASK (except R12-R15).
-> 	 * R12-R15 context will be restored.
+								Honza
 
-This comment block should use the "full" 80 chars.
-
-> 	 */
-> 	xor %r10d, %r10d
-> 	xor %r11d, %r11d
+> ---
+>  fs/jbd2/journal.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
 > 
-> 	/* Restore callee-saved GPRs as mandated by the x86_64 ABI */
-> 	pop %r12
-> 	pop %r13
-> 	pop %r14
-> 	pop %r15
-> 
-> 	FRAME_END
-> 
-> 	retq
-> SYM_FUNC_END(__tdx_hypercall)
+> diff --git a/fs/jbd2/journal.c b/fs/jbd2/journal.c
+> index c2cf74b01ddb..323112de5921 100644
+> --- a/fs/jbd2/journal.c
+> +++ b/fs/jbd2/journal.c
+> @@ -2861,15 +2861,18 @@ static struct journal_head *journal_alloc_journal_head(void)
+>  #ifdef CONFIG_JBD2_DEBUG
+>  	atomic_inc(&nr_journal_heads);
+>  #endif
+> -	ret = kmem_cache_zalloc(jbd2_journal_head_cache, GFP_NOFS);
+> +	ret = kmem_cache_alloc(jbd2_journal_head_cache, GFP_NOFS);
+>  	if (!ret) {
+>  		jbd_debug(1, "out of memory for journal_head\n");
+>  		pr_notice_ratelimited("ENOMEM in %s, retrying.\n", __func__);
+> -		ret = kmem_cache_zalloc(jbd2_journal_head_cache,
+> +		ret = kmem_cache_alloc(jbd2_journal_head_cache,
+>  				GFP_NOFS | __GFP_NOFAIL);
+>  	}
+> -	if (ret)
+> +	if (ret) {
+> +		synchronize_rcu();
+> +		memset(ret, 0, sizeof(*ret));
+>  		spin_lock_init(&ret->b_state_lock);
+> +	}
+>  	return ret;
+>  }
+>  
 > -- 
->  Kirill A. Shutemov
+> 2.30.2
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
