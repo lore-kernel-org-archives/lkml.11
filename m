@@ -2,77 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C243AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C497DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235128AbiBIOkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 09:40:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
+        id S235138AbiBIOkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 09:40:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230511AbiBIOkM (ORCPT
+        with ESMTP id S230135AbiBIOku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 09:40:12 -0500
-X-Greylist: delayed 136 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 06:40:15 PST
-Received: from p3plsmtpa07-09.prod.phx3.secureserver.net (p3plsmtpa07-09.prod.phx3.secureserver.net [173.201.192.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34DBC06157B
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:40:15 -0800 (PST)
-Received: from localhost ([82.17.115.212])
-        by :SMTPAUTH: with ESMTPA
-        id Ho6WnCu31VyEtHo6Yn8W0P; Wed, 09 Feb 2022 07:37:58 -0700
-X-CMAE-Analysis: v=2.4 cv=YLFadTKx c=1 sm=1 tr=0 ts=6203d1c6
- a=9gipVNR6X1CoIeAWHwLoWw==:117 a=9gipVNR6X1CoIeAWHwLoWw==:17
- a=IkcTkHD0fZMA:10 a=9GtVR73LUgLZNubTt3gA:9 a=QEXdDO2ut3YA:10
-X-SECURESERVER-ACCT: atomlin@atomlin.com
-Date:   Wed, 9 Feb 2022 14:37:56 +0000
-From:   Aaron Tomlin <atomlin@atomlin.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Aaron Tomlin <atomlin@redhat.com>, mcgrof@kernel.org, cl@linux.com,
-        pmladek@suse.com, akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        live-patching@vger.kernel.org, ghalat@redhat.com,
-        allen.lkml@gmail.com, void@manifault.com, joe@perches.com
-Subject: Re: [RFC PATCH v4 07/13] module: Move extra signature support out of
- core code
-Message-ID: <20220209143756.53gw3ve46gaseqny@ava.usersys.com>
-References: <20220130213214.1042497-1-atomlin@redhat.com>
- <20220130213214.1042497-8-atomlin@redhat.com>
- <alpine.LSU.2.21.2202091526260.32090@pobox.suse.cz>
+        Wed, 9 Feb 2022 09:40:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CA0C06157B;
+        Wed,  9 Feb 2022 06:40:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C1C0B821EA;
+        Wed,  9 Feb 2022 14:40:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7EEFC340E7;
+        Wed,  9 Feb 2022 14:40:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644417650;
+        bh=EKM+E1m9ba2sJX02hB2POGkw8eHy06YZEclCbdBgMzk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Gd4eBN2kJN6Cej7pTFXXBVlm2f29VYufJ5BWji3yIEJbwSkZPY/2a6eHURR3B7MlR
+         2ku0uAblBicVjlEVqoThuWXqsMlMgp/evMhAsowoO4YvoYm3BeMC4Lfb+IrsAgv8Wc
+         07agruI8F+H45+mNuvfqK8dsbcmaRE2UmlrZaUCs1dSGQZIpnNaixVWpT0vaklpE3y
+         bR2B8P7SQsB/feEhKcN2RhJxXkeA1DXk84N5BEg0sWK+EwapF9Go6iv0c0yai0aEGk
+         uRN5gNFvLQAGyR/gPY8DN+iRi5bBt02shiA/KFhiFbH/nzqCmOMFyGWS7adpnNmye3
+         cSqOSKOtZ79dg==
+Received: by mail-wr1-f43.google.com with SMTP id i14so4390024wrc.10;
+        Wed, 09 Feb 2022 06:40:49 -0800 (PST)
+X-Gm-Message-State: AOAM532Rn8KLCWXrJlgU7I9T4yH9ClkHWlbnQic7FLd20JQEaf24ww7d
+        JRyMr7oaRghF1Yla+0Iv5GRzV95nTmTXY4g7Y2U=
+X-Google-Smtp-Source: ABdhPJwU5/brQVWCcjSn+cr+1zP4jzaM99RD1wh7T2UGLi8lltk3Oe1QBv6DoDXF8nW5icqRGfyX9dTStexpEUxWut8=
+X-Received: by 2002:a5d:500c:: with SMTP id e12mr2350249wrt.219.1644417648257;
+ Wed, 09 Feb 2022 06:40:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.2202091526260.32090@pobox.suse.cz>
-X-CMAE-Envelope: MS4xfEeLTpDb717gdYrJ8fyJj8u9SbuxXa0FoEtTxchN+RygMn6avjFjDz9N44ZAJn4NF09emarra7B7k6YWEXFkXy4jjlZTCK/syx62dS3QtHH4AyFDi5zi
- m3KD+EFRaWERrm8o5Igt7fu78oTLn6xk5Zkj3FXHz7HaGODGGQmWOWyMzbvVW7CwHzQdzgbx8hp+U4MN7AGTV7GhbgRIdXswj96qgg+FNkEJ8dFxdk7yeyRu
- 4lirWRDwcBzIXcYhHjCRR+4QuJNAkRWy724B7CCmb1PvjkcI2ynC43rJYjT2Jlm111JdHg7MTCoiEaehgYS6kJr8qQt+MIi577r4VcKn8CyJku6IErT8y51D
- bNiEZ9Pbo0WVSAWThlzavS0dLWzjuFnXayYFwGnTWibCR8UJzqjul4LVBlhDne2eQC0CjRWSH6Wwov1l91S2qbCAWg5znBfTaHGdI3luseoeHM+YR18mEAjw
- Qqvhk7Ynq/E2L0TzbaXhNXabcgiRv9ZGXVP37Rp/eUx3j2L8jHv1DZcbEjSWtBSN9skxXBTh1U2IA4vof5J0BzZAOD+eAO+uhDAul0YH8Cw0ZfQaRAOD2qML
- LS4=
+References: <CAK8P3a22ntk5fTuk6xjh1pyS-eVbGo7zDQSVkn2VG1xgp01D9g@mail.gmail.com>
+ <20220117132757.1881981-1-arnd@kernel.org> <CAHTX3dKyAha8_nu=7e413pKr+SAaPBLp9=FTdQ=GZNdjQHW+zA@mail.gmail.com>
+In-Reply-To: <CAHTX3dKyAha8_nu=7e413pKr+SAaPBLp9=FTdQ=GZNdjQHW+zA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 9 Feb 2022 15:40:31 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2Om2SYchx8q=ddkNeJ4o=1MVXD2MFSV2SGJ_vuTUcp0Q@mail.gmail.com>
+Message-ID: <CAK8P3a2Om2SYchx8q=ddkNeJ4o=1MVXD2MFSV2SGJ_vuTUcp0Q@mail.gmail.com>
+Subject: Re: [PATCH] microblaze: remove CONFIG_SET_FS
+To:     Michal Simek <monstr@monstr.eu>
+Cc:     Linux-Arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-02-09 15:28 +0100, Miroslav Benes wrote:
-> Please, drop these extern modifiers in front of function declarations. 
-> They are unnecessary. It applies to different patches of the set as well.
+On Wed, Feb 9, 2022 at 2:50 PM Michal Simek <monstr@monstr.eu> wrote:
+>
+> Hi Arnd,
+>
+> po 17. 1. 2022 v 14:28 odes=C3=ADlatel Arnd Bergmann <arnd@kernel.org> na=
+psal:
+> >
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > I picked microblaze as one of the architectures that still
+> > use set_fs() and converted it not to.
+>
+> Can you please update the commit message because what is above is not
+> the right one?
 
-Agreed - this was suggested previously.
-The next iteration should be published soon. Just waiting on 0-day.
+Ah, sorry about that. I think you can copy from the openrisc patch,
+see https://lore.kernel.org/lkml/20220208064905.199632-1-shorne@gmail.com/
 
-> > +#ifdef CONFIG_MODULE_SIG
-> > +extern int module_sig_check(struct load_info *info, int flags);
-> > +#else /* !CONFIG_MODULE_SIG */
-> > +static int module_sig_check(struct load_info *info, int flags)
-> > +{
-> > +	return 0;
-> > +}
-> 
-> I think it should be 
-> static inline int module_sig_check(struct load_info *info, int flags)
-
-Yes, indeed it should. Thanks for the feedback.
-
-
-Kind regards,
-
--- 
-Aaron Tomlin
+         Arnd
