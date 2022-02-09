@@ -2,117 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F8AC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234861AbiBIJKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:10:40 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51216 "EHLO
+        id S232172AbiBIJN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:13:57 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232848AbiBIJKe (ORCPT
+        with ESMTP id S230192AbiBIJNw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:10:34 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6A9E03CD97
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:10:29 -0800 (PST)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id C33B43FE41
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:07:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644397645;
-        bh=ukUcgEqDwtgLJM31dxy+4xX8XcrHusscNiWdsQHxisk=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=K5BTAT9OZLppVVCleY3m6YFExMG/1aHjtHlvFl6kP1Sj+PaqFB0ZtzT1fpw+hRQMn
-         ndf3GkG/gGNXF68LMwhBzdDpwtAD1q0SVe/Cca30JjXc/d/nK73IbX6vDxqSRciDU+
-         u6Zzy5MY9l8O/gtD8WniCBw/tS7LwYm0tjGQbMhK5DlJxx/Xj4z5y9tiMrKqPHkbj2
-         Y6DAVLON6CXL0CovoPGt7vlro8Y+oiUITb4EwOx/UGf5Qpu7U0831WHVB5yARYTUwa
-         bG3C+I9zyk8zzRuWt0WivLDc5nBLZWo3M4wQA6DPKqdIkTp//dszxfd6VPDWnEwgfy
-         IgG1KN3VBTxRQ==
-Received: by mail-ej1-f69.google.com with SMTP id z26-20020a1709067e5a00b006cbe0628826so885597ejr.10
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:07:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ukUcgEqDwtgLJM31dxy+4xX8XcrHusscNiWdsQHxisk=;
-        b=Ofd5NptPTtzUKEGlBd4jcPq61DTncworZ0PnBWbTCi3tjUH8IMy1tS85ez4jYrEwkV
-         /FfSgtwwixmPbYOGGn8+MP8TrheBFsWrj5rA1+Y/GLsE2uNC6k67yjlVxoF2sVS7oFut
-         AJzuVAWlB3kqNqT4o8x/PJiQ9VC0ZybIWCfNJTurTr6dCeom7Fp0fxyxl7zzMsJkD3PJ
-         00JTJ3nLe2cCqh4RPeMgH7INXng7SeDVu+40puC8RehBLfBF26/uL8r99+84TB4sXXjP
-         YLxfRPMGN9gG8+o39v9dHd+Zk1TqKJs7X4TAN4HyczEL0PnJngex8sFh/tuRCnZcilbt
-         uuzQ==
-X-Gm-Message-State: AOAM530uFCKVpI4UxaxLyVkrE0+dhThpMSKBKbn6FbKUBpw9JRns6mIn
-        TcCdr342hFVjAYlNVwaZbzcOp9oTtuQ9mvS2LgI4F1g4jTuC0PiY7guKaBUQc/hy37uVLwbc0fK
-        i+DgzTiuVhSkIt2gyj+BGbjhmYn6ChtuE+/xr27noPA==
-X-Received: by 2002:a17:907:948c:: with SMTP id dm12mr1116265ejc.770.1644397643747;
-        Wed, 09 Feb 2022 01:07:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy9uxWgVcPknk7fehf+KnxlsIBkuqa3Vzp0iYYmlZOw5P2qEBJnVCBCmibBMCkfMCTZST/mHg==
-X-Received: by 2002:a17:907:948c:: with SMTP id dm12mr1116243ejc.770.1644397643507;
-        Wed, 09 Feb 2022 01:07:23 -0800 (PST)
-Received: from [192.168.0.94] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id j20sm262008ejo.27.2022.02.09.01.07.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 01:07:23 -0800 (PST)
-Message-ID: <1196e292-23ea-78e5-7d72-38586f65e26e@canonical.com>
-Date:   Wed, 9 Feb 2022 10:07:22 +0100
+        Wed, 9 Feb 2022 04:13:52 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE2B3E081A03;
+        Wed,  9 Feb 2022 01:13:46 -0800 (PST)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nHj2Q-0001iT-6y; Wed, 09 Feb 2022 10:13:22 +0100
+Message-ID: <d2b054b6-0c32-ef04-134d-51f116d3e1d3@leemhuis.info>
+Date:   Wed, 9 Feb 2022 10:13:21 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v3] dt-bindings: timer: Convert faraday,fttmr010 to yaml
-Content-Language: en-US
-To:     Corentin Labbe <clabbe@baylibre.com>, daniel.lezcano@linaro.org,
-        robh+dt@kernel.org, tglx@linutronix.de
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220209090058.1472964-1-clabbe@baylibre.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220209090058.1472964-1-clabbe@baylibre.com>
+Subject: Re: [5.17 regression] "x86/PCI: Ignore E820 reservations for bridge
+ windows on newer systems" breaks suspend/resume
+Content-Language: en-BS
+To:     Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        linux-acpi <linux-acpi@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>, x86@kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Benoit_Gr=c3=a9goire?= <benoitg@coeus.ca>,
+        Hui Wang <hui.wang@canonical.com>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <a7ad05fe-c2ab-a6d9-b66e-68e8c5688420@redhat.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <a7ad05fe-c2ab-a6d9-b66e-68e8c5688420@redhat.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1644398026;7fca3f53;
+X-HE-SMSGID: 1nHj2Q-0001iT-6y
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/02/2022 10:00, Corentin Labbe wrote:
-> Converts timer/faraday,fttmr010.txt to yaml.
+[TLDR: I'm adding the regression report below to regzbot, the Linux
+kernel regression tracking bot; all text you find below is compiled from
+a few templates paragraphs you might have encountered already already
+from similar mails.]
 
-s/Converts/Convert/
+Hi, this is your Linux kernel regression tracker speaking.
 
+CCing the regression mailing list, as it should be in the loop for all
+regressions, as explained here:
+https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
+
+To be sure this issue doesn't fall through the cracks unnoticed, I'm
+adding it to regzbot, my Linux kernel regression tracking bot:
+
+#regzbot ^introduced 7f7b4236f204
+#regzbot title x86/PCI: "x86/PCI: Ignore E820 reservations for bridge
+windows on newer systems" breaks suspend/resume
+#regzbot ignore-activity
+
+Reminder for developers: when fixing the issue, please add a 'Link:'
+tags pointing to the report (the mail quoted above) using
+lore.kernel.org/r/, as explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'. This allows the bot to connect
+the report with any patches posted or committed to fix the issue; this
+again allows the bot to show the current status of regressions and
+automatically resolve the issue when the fix hits the right tree.
+
+I'm sending this to everyone that got the initial report, to make them
+aware of the tracking. I also hope that messages like this motivate
+people to directly get at least the regression mailing list and ideally
+even regzbot involved when dealing with regressions, as messages like
+this wouldn't be needed then.
+
+Don't worry, I'll send further messages wrt to this regression just to
+the lists (with a tag in the subject so people can filter them away), if
+they are relevant just for regzbot. With a bit of luck no such messages
+will be needed anyway.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
+
+On 08.02.22 16:25, Hans de Goede wrote:
+> Hi All,
 > 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
-> Changes since v1:
-> - added moxart example
-> - relaxed some contraints as driver only support one clock and one
->   interrupt (as used by moxa,moxart-timer)
-> Changes since v2:
-> - increased max size of interrupts
-> - fixed all issues reported by Rob https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20220126160021.3537591-1-clabbe@baylibre.com
+> Unfortunately I've just learned that commit 7f7b4236f204 ("x86/PCI:
+> Ignore E820 reservations for bridge windows on newer systems"):
 > 
-> All aspeed-bmc-vegman*dts are expected to fail and will be fixed via:
-> https://patchwork.ozlabs.org/project/linux-aspeed/patch/20220127141604.1163-1-a.kartashev@yadro.com/
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7f7b4236f2040d19df1ddaf30047128b41e78de7
+> 
+> breaks suspend/resume on at least one laptop model, the Lenovo ThinkPad
+> X1 gen 2, see:
+> https://bugzilla.redhat.com/show_bug.cgi?id=2029207
+> 
+> This regression was actually caught be Fedora already carrying this
+> patch for a while now and as such it has been reproduced with 5.15
+> with an older version of the patch which still allowed turning the
+> new behavior of by adding "pci=use_e820". Dmesg output with and
+> without the option has just been attached to the bug, I've not
+> analyzed this any further yet.
+> 
+> I guess that for now this means that we need to revert commit
+> 7f7b4236f204. Rafael, I'll send you a revert with a commit msg
+> explaining why this needs to be reverted tomorrow.
+> 
+> More interesting IMHO is finding out another solution. Both the touchpad
+> problem which got me looking into this:
+> https://bugzilla.redhat.com/show_bug.cgi?id=1868899
+> 
+> As well as the thunderbolt hotplug issue Mika was looking at:
+> https://bugzilla.kernel.org/show_bug.cgi?id=206459
+> 
+> both are cases where we fail to find a memory-window for a
+> BAR which has not been setup yet.
+> 
+> So I see a couple of options here:
+> 
+> 1. Detect that the e820 reservations fully cover (one of)
+> the PCI bridge main 32 bit memory windows and if that happens
+> ignore them. This actually was my first plan when I started
+> working on this. In the end I choose the other option
+> because Bjorn indicated that in hindsight honoring the e820
+> reservations might have been a mistake and maybe we should
+> get rid of honoring them all together.
+> 
+> 2. Have a flag which, when we fail to alloc a 32 bit
+> (or 64 bit) memory PCI BAR, is set if not already set
+> and then retry the alloc. And make the e820 reservation
+> carve-out get skipped in this case.
+> 
+> 3. When booting with pci=nocrs as a workaround for
+> the touchpad case a 64 but memory window ends up getting
+> used. There already is some special handling for some
+> AMD bridges where if there are no 64 bit memory Windows
+> in the _CRS for the bridge, one gets added. Maybe we need
+> to do the same for Intel bridges ?
+> 
+> Please let me know which of these options you think I should
+> try to implement next; of course alternative ideas for fixing
+> this are also welcome.
+> 
+> Regards,
+> 
+> Hans
 > 
 
-(...)
+-- 
+Additional information about regzbot:
 
-> +
-> +  syscon:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +
-> +additionalProperties: true
-> +
-This should be false (and was false in your v1).
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and the references documentation:
 
-Best regards,
-Krzysztof
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+CC the regression list and tell regzbot about the issue, as that ensures
+the regression makes it onto the radar of the Linux kernel's regression
+tracker -- that's in your interest, as it ensures your report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include 'Link:' tag in the patch descriptions pointing to all reports
+about the issue. This has been expected from developers even before
+regzbot showed up for reasons explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'.
