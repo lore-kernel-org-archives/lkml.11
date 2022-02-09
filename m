@@ -2,157 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B3BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D42EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:12:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345409AbiBIEMN (ORCPT
+        id S1345890AbiBIEMR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:12:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47654 "EHLO
+        Tue, 8 Feb 2022 23:12:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347379AbiBIDn6 (ORCPT
+        with ESMTP id S1346302AbiBIDXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:43:58 -0500
-Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC9BC0401C4
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:34:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1644377670; x=1675913670;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=ECyKNZsrCiAEyEZui/Gdj3P39GeKJgI9x3cOLnB6b1I=;
-  b=NtABWkB8uJKJwVIX3GXFHrh6qqu052xkVEjmxKz653hq3V97kFQHcrp/
-   5z+W8lGu6XgLwQpukmSpr+9DDcLs9cQAQvREbZlnd8NGjlbFN5lQDg7lB
-   qwx2LRj2/c8wiCfDbWFw+cSaZucfcR/EkKwwyUPHUPrN9THv5mTIKE+g3
-   6WwseJfk0xorfjgJVRMpTmM11eJgB8frA6EiM7lcYyeeuk6rotW/NF9EG
-   TrftntaAe7+do03F8sF+fiQF5eQVpoqparHqnSq68ACfz9//f0a8+WL/j
-   XSvnKL+MiPieiW76ftYuSAV+vhu07Z/IsQntm5hlcWS8XbRCTKV9eJFGp
-   g==;
-X-IronPort-AV: E=Sophos;i="5.88,354,1635177600"; 
-   d="scan'208";a="191411787"
-Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 09 Feb 2022 11:34:28 +0800
-IronPort-SDR: xaQrfv+ia8wzXo+suWcHIC3HwlVLcmM00Di+W8pFSYp/K3B4BIDI3Yf+EVz4yTxaMr5Nl97g22
- 6BWeGbWMJoz+NgbuGd4JJTTBikg+9D6SgXDU6MDJpoGjvcw5wFBWTiYGw3bkIGibdo0vjiK3N6
- e2QBdR5tiYtp1GA+IbGrQzps837in/UHSImcMXpRT09tKARFNmdnQJFEoiy4jvXCqAioJe/fcT
- BkLiB7y9d14CaoQMBafEsb0Kkm5X63Tr329nxlKQANZnDLvXyQWOWUPiIBeFB/MgJvFSK228eI
- 1KS1ewyvDOoZfm5n4MvscS4o
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 19:07:28 -0800
-IronPort-SDR: cApmr9vNjwkwMgD2J0tso2EY7822opmtZN8GZA16BH0lJy6x7AIg0IVHnMiRBGk83fPktd9k/L
- HZSXm4WpM0VUqadc3NEbWvuWCT2MooALnjWaN6tCNYgTnATN1C3mwmPvZ1+wAZPN9NXGfTBEht
- 5zuEM06zn5SCMNRJUdjKZ+ZEXaJhldni6vBAfNghGGE6HisHNgnFnMcxr/aMHA1AS835IVVdGi
- Bjz0N4WckmM6t/e2mGkYDk+AE4rR4M6uEhbxvsk2j+F0eCoE/GAzv5zovDYM/MSMU/VNhsCxBD
- LlA=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 19:34:29 -0800
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4JtlqS4VPPz1SVp5
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:34:28 -0800 (PST)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:references:to:from:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1644377667; x=1646969668; bh=ECyKNZsrCiAEyEZui/Gdj3P39GeKJgI9x3c
-        OLnB6b1I=; b=YXp/9r3fixxNDIKmKPOYx3RrHjtLqJJIN+Ni5/IZLSK3Pd7t1ym
-        ef3ynXSz0cM16OUsbc1TxHb2H1K6L9CxECfRDIzbP5sA2OHf9tmQK0IPe4yRjcXq
-        NRYeKtiGZWhxTxvtO8nAG/MSiC1a4rWgTFETD7aE2RpbskOzdAuqAhYDlgK/iw9r
-        0TcETHhaJLHuuFKvV8HMhH0pphtbLrm3uD0qWmp4HN2J8JFNOIX13JNv6Q86QIh5
-        MlHdDqm/rYDm/YLOEllVzPwT9aShMxXl/W4iS+0EKRCNPRsXh/nG0O+c4PG8EiLW
-        j3JtpHxQsXHPdBpFad8FYbtPJ/rBKSOP6Dg==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 6XwcasC8GnU9 for <linux-kernel@vger.kernel.org>;
-        Tue,  8 Feb 2022 19:34:27 -0800 (PST)
-Received: from [10.225.54.48] (unknown [10.225.54.48])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JtlqQ1rVMz1Rwrw;
-        Tue,  8 Feb 2022 19:34:26 -0800 (PST)
-Message-ID: <8d7d36e6-66ac-a318-dfce-6d5b01b51f3c@opensource.wdc.com>
-Date:   Wed, 9 Feb 2022 12:34:24 +0900
+        Tue, 8 Feb 2022 22:23:51 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4568FC061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:23:50 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B0CC2ED1;
+        Tue,  8 Feb 2022 19:23:49 -0800 (PST)
+Received: from [10.163.46.128] (unknown [10.163.46.128])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 512343F73B;
+        Tue,  8 Feb 2022 19:23:46 -0800 (PST)
+Subject: Re: [RFC V1 02/31] mm/mmap: Clarify protection_map[] indices
+To:     Firo Yang <firogm@gmail.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        hch@infradead.org, akpm@linux-foundation.org
+References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
+ <1643029028-12710-3-git-send-email-anshuman.khandual@arm.com>
+ <20220205091048.g3fk4eaw7p7itgil@gmail.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <83958cb9-cca7-1e48-f0c8-0d101dbeebc8@arm.com>
+Date:   Wed, 9 Feb 2022 08:53:44 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH] scsi: csiostor: replace snprintf with sysfs_emit
+In-Reply-To: <20220205091048.g3fk4eaw7p7itgil@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-To:     Joe Perches <joe@perches.com>, davidcomponentone@gmail.com,
-        jejb@linux.ibm.com
-Cc:     martin.petersen@oracle.com, bvanassche@acm.org,
-        yang.guang5@zte.com.cn, jiapeng.chong@linux.alibaba.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>
-References: <d711ec5a5f416204079155666d2de49d43070897.1644287527.git.yang.guang5@zte.com.cn>
- <148a5448-71f1-4f39-834b-eb9283de0bfb@opensource.wdc.com>
- <f4b63b5a4177e38dd80f102f87bbec3ea77d9fe8.camel@perches.com>
- <0093948e-a408-61dd-3b51-524b6d112e35@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <0093948e-a408-61dd-3b51-524b6d112e35@opensource.wdc.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/02/09 12:16, Damien Le Moal wrote:
-> On 2022/02/09 12:12, Joe Perches wrote:
->> On Wed, 2022-02-09 at 11:36 +0900, Damien Le Moal wrote:
->>> On 2/9/22 09:40, davidcomponentone@gmail.com wrote:
->>>> From: Yang Guang <yang.guang5@zte.com.cn>
->>>>
->>>> coccinelle report:
->>>> ./drivers/scsi/csiostor/csio_scsi.c:1433:8-16:
->>>> WARNING: use scnprintf or sprintf
->>>> ./drivers/scsi/csiostor/csio_scsi.c:1369:9-17:
->>>> WARNING: use scnprintf or sprintf
->>>> ./drivers/scsi/csiostor/csio_scsi.c:1479:8-16:
->>>> WARNING: use scnprintf or sprintf
->>>>
->>>> Use sysfs_emit instead of scnprintf or sprintf makes more sense.
->> []
->>>> diff --git a/drivers/scsi/csiostor/csio_scsi.c b/drivers/scsi/csiostor/csio_scsi.c
->> []
->>>> @@ -1366,9 +1366,9 @@ csio_show_hw_state(struct device *dev,
->>>>  	struct csio_hw *hw = csio_lnode_to_hw(ln);
->>>>  
->>>>  	if (csio_is_hw_ready(hw))
->>>> -		return snprintf(buf, PAGE_SIZE, "ready\n");
->>>> +		return sysfs_emit(buf, "ready\n");
->>>>  	else
->>>> -		return snprintf(buf, PAGE_SIZE, "not ready\n");
->>>> +		return sysfs_emit(buf, "not ready\n");
->>>
->>> While at it, you could remove the useless "else" above.
+
+
+On 2/5/22 2:40 PM, Firo Yang wrote:
+> The 01/24/2022 18:26, Anshuman Khandual wrote:
+>> protection_map[] maps vm_flags access combinations into page protection
+>> value as defined by the platform via __PXXX and __SXXX macros. The array
+>> indices in protection_map[], represents vm_flags access combinations but
+>> it's not very intuitive to derive. This makes it clear and explicit.
 >>
->> Or not.  It's fine as is.  It's just a style preference.
-> 
-> It is. I dislike the useless line of code in this case :)
-> 
+>> Cc: Andrew Morton <akpm@linux-foundation.org>
+>> Cc: linux-mm@kvack.org
+>> Cc: linux-kernel@vger.kernel.org
+>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>> ---
+>>  mm/mmap.c | 18 ++++++++++++++++--
+>>  1 file changed, 16 insertions(+), 2 deletions(-)
 >>
->> Another style option would be to use a ?: like any of
->>
->> 	return sysfs_emit(buf, "%sready\n", csio_is_hw_ready(hw) ? "" : "not ");
->> or
->> 	return sysfs_emit(buf, "%s\n", csio_is_hw_ready(hw) ? "ready" : "not ready");
->> or
->> 	return sysfs_emit(buf, csio_is_hw_ready(hw) ? "ready\n" : "not ready\n");
+>> diff --git a/mm/mmap.c b/mm/mmap.c
+>> index 1e8fdb0b51ed..254d716220df 100644
+>> --- a/mm/mmap.c
+>> +++ b/mm/mmap.c
+>> @@ -102,8 +102,22 @@ static void unmap_region(struct mm_struct *mm,
+>>   *								x: (yes) yes
+>>   */
+>>  pgprot_t protection_map[16] __ro_after_init = {
+>> -	__P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+>> -	__S000, __S001, __S010, __S011, __S100, __S101, __S110, __S111
+>> +	[VM_NONE]				= __P000,
+>> +	[VM_READ]				= __P001,
+>> +	[VM_WRITE]				= __P010,
+>> +	[VM_READ|VM_WRITE]			= __P011,
+>> +	[VM_EXEC]				= __P100,
+>> +	[VM_EXEC|VM_READ]			= __P101,
+>> +	[VM_EXEC|VM_WRITE]			= __P110,
+>> +	[VM_EXEC|VM_READ|VM_WRITE]		= __P111,
+>> +	[VM_SHARED]				= __S000,
+>> +	[VM_SHARED|VM_READ]			= __S001,
+>> +	[VM_SHARED|VM_WRITE]			= __S010,
+>> +	[VM_SHARED|VM_READ|VM_WRITE]		= __S011,
+>> +	[VM_SHARED|VM_EXEC]			= __S100,
+>> +	[VM_SHARED|VM_READ|VM_EXEC]		= __S101,
+>> +	[VM_SHARED|VM_WRITE|VM_EXEC]		= __S110,
+>> +	[VM_SHARED|VM_READ|VM_WRITE|VM_EXEC]	= __S111
 > 
-> That is nice and can make that
-> 	
-> 	return sysfs_emit(buf, "%sready\n", csio_is_hw_ready(hw) ? "" : "not ");
-
-Oops. You did have that one listed... Read too quickly...
-
+> Just a little bit picky:)
+> Would you mind rearranging vm_flags access commbination in the order as
+> the access bits appear in __SXXX or __PXXX? For example, change the following:
 > 
-> too :)
+> 	[VM_SHARED|VM_READ|VM_WRITE|VM_EXEC]    = __S111
+> to
+> 	[VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]	= __S111
 > 
+> I think it's would be more clear for looking.
 
+So the vm_flags combination set here (and like in the platforms)
+should be like the following ..
 
--- 
-Damien Le Moal
-Western Digital Research
+[VM_NONE]
+[VM_READ]
+[VM_WRITE]
+[VM_WRITE | VM_READ]
+[VM_EXEC]	
+[VM_EXEC|VM_READ]
+[VM_EXEC|VM_WRITE]
+[VM_EXEC|VM_WRITE | VM_READ]
+[VM_SHARED]
+[VM_SHARED|VM_READ]
+[VM_SHARED|VM_WRITE]
+[VM_SHARED|VM_WRITE | VM_READ]
+[VM_SHARED|VM_EXEC]
+[VM_SHARED|VM_EXEC | VM_READ]
+[VM_SHARED|VM_EXEC | VM_WRITE]
+[VM_SHARED|VM_EXEC | VM_WRITE | VM_READ]
+
+Implying the relative position for these flags among each other.
+ 
+[VM_SHARED] [VM_EXEC]  [VM_WRITE] [VM_WRITE]
+
+This makes sense, will change the series accordingly.
+
+- Anshuman
