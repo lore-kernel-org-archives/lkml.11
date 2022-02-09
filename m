@@ -2,99 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16006C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB26C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232689AbiBIVB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 16:01:28 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49852 "EHLO
+        id S232749AbiBIVCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 16:02:18 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232649AbiBIVB0 (ORCPT
+        with ESMTP id S232707AbiBIVCJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 16:01:26 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A93C035440
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 13:01:28 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id E99B01F391;
-        Wed,  9 Feb 2022 21:01:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644440486; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q81KcrINMylJ5+uqns4dLh+8xUMp5QZhdKl6MCEbW1k=;
-        b=dL/717QMasiax5WptP9WIZqCthi3hg7YFDjvRxMgPhkMMq49Ib72b2hF5RalmEYbo1+uNa
-        C3CW4D6/qwm/vZOnCBfft2n3GNXbf5JLSyYV9fpwk2vCAz9lLo+2Qfx8+QN/HzFeFjhktY
-        +ePf7Jnz/1cUmTbfpv/8NKk5eazJnCk=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9B9BBA3B84;
-        Wed,  9 Feb 2022 21:01:26 +0000 (UTC)
-Date:   Wed, 9 Feb 2022 22:01:24 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Hugh Dickins <hughd@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH 00/13] mm/munlock: rework of mlock+munlock page handling
-Message-ID: <YgQrpMpYiGZXqdbp@dhcp22.suse.cz>
-References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
- <YgPfX+/f0ksBpx6G@dhcp22.suse.cz>
- <147388c6-eb7-5c58-79a-7a8279c27fd@google.com>
+        Wed, 9 Feb 2022 16:02:09 -0500
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0C9C08C5F5;
+        Wed,  9 Feb 2022 13:02:11 -0800 (PST)
+Received: by mail-oo1-f46.google.com with SMTP id v17-20020a4ac911000000b002eac41bb3f4so3902456ooq.10;
+        Wed, 09 Feb 2022 13:02:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uqMJ5pzDSIfGFtp8phHCNpFXexGgfsJe1tkP341IGSw=;
+        b=eCaN/dAk9m9/Ot+H03Xylxi+leU18gPbg5dF529pD0LOOv/203smV8bzcaOMfZCjKy
+         2Eu33ZSyuRD/0TArn3dLnW5AoRcAWUIJwX6F3VTjUqNnfZMx68avaNW6Zfr54TQPNVRK
+         V52SQNI/FomvtE5BHv0mKTCO5Pznxmgz6kex7LRmP6oWY7Mft0we3rZ2NZhZovwMPXcE
+         9JeIKJXyug2y1Gdffawkt9AIdrdKFWluyB3JQFGtQB4/+arA7sNhdZuf64inZZAFK22f
+         O8QgHuUXrB4XM8RXtlvqj8S28ZfgOynSGPhTfKK2DloPITb0XpCsL0KKuMW7CNHYzTC1
+         c3VA==
+X-Gm-Message-State: AOAM532VjAZP91Q30Xi8rAjZ9O+4xn73gyeugHXClOHKFNKcrbHkx+/Y
+        8o97xcpVPBSSlBvpkCVT6Q==
+X-Google-Smtp-Source: ABdhPJzXACJWwdiM5VhZ/DDuTscLU4MFdCxK6TgQGBOID8HvPrRhukIR3/QEt6KA8gv9Ks5tKVBJ3Q==
+X-Received: by 2002:a05:6870:e7c5:: with SMTP id q5mr1605332oak.284.1644440530853;
+        Wed, 09 Feb 2022 13:02:10 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id l15sm7101269ots.28.2022.02.09.13.02.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 13:02:09 -0800 (PST)
+Received: (nullmailer pid 904638 invoked by uid 1000);
+        Wed, 09 Feb 2022 21:02:09 -0000
+Date:   Wed, 9 Feb 2022 15:02:08 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        alsa-devel@alsa-project.org, Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 5/6] ASoC: dt-bindings: samsung,snow: convert to
+ dtschema
+Message-ID: <YgQr0BTV4WDnDXrd@robh.at.kernel.org>
+References: <20220129122357.45545-1-krzysztof.kozlowski@canonical.com>
+ <20220129122430.45694-4-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <147388c6-eb7-5c58-79a-7a8279c27fd@google.com>
+In-Reply-To: <20220129122430.45694-4-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 09-02-22 08:21:17, Hugh Dickins wrote:
-> On Wed, 9 Feb 2022, Michal Hocko wrote:
-[...]
-> > The only thing that is not entirely clear to me at the moment is why you
-> > have chosen to ignore already mapped LOCKONFAULT pages. They will
-> > eventually get sorted out during the reclaim/migration but this can
-> > backfire if too many pages have been pre-faulted before LOCKONFAULT
-> > call. Maybe not an interesting case in the first place but I am still
-> > wondering why you have chosen that way.
+On Sat, 29 Jan 2022 13:24:29 +0100, Krzysztof Kozlowski wrote:
+> Convert the audio complex on Google Snow boards with Samsung Exynos SoC
+> to DT schema format.
 > 
-> I'm puzzled: what makes you think I'm ignoring already mapped LOCKONFAULT
-> pages?  I'd consider that a bug.
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  .../bindings/sound/samsung,snow.yaml          | 74 +++++++++++++++++++
+>  .../devicetree/bindings/sound/snow.txt        | 31 --------
+>  2 files changed, 74 insertions(+), 31 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/sound/samsung,snow.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/sound/snow.txt
+> 
 
-I've had the following path in mind
-__mm_populate
-  populate_vma_page_range
-    if (vma->vm_flags & VM_LOCKONFAULT)
-    	return nr_page
-
-which means that __get_user_pages is not called at all. This also means
-that follow_page_mask is skipped. The page table walk used to mark
-already mapped pages as mlocked so unless I miss some other path it
-would stay on its original LRU list and only get real mlock protection
-when encountered by the reclaim or migration.
- 
-> It is the case, isn't it, that a VM_LOCKONFAULT area always has VM_LOCKED
-> set too?  If I've got that wrong, yes, I'll need to revisit conditions.
-
-Yes, I did't really mean we would lose the mlock protection. We would
-just do the lazy mlock also on pages which are already mapped. This is
-certainly not a correctness issue - althoug stats might be off - but it
-could polute existing LRUs with mlocked pages rather easily.
-
-As I've said. Either I am still missing something or this might even not
-be a big deal in real life. I was mostly curious about the choice to
-exclude the page table walk for LOCKONFAULT.
--- 
-Michal Hocko
-SUSE Labs
+Reviewed-by: Rob Herring <robh@kernel.org>
