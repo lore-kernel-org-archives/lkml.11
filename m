@@ -2,78 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233401AbiBIVaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 16:30:14 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:57866 "EHLO
+        id S233419AbiBIVa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 16:30:58 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:58278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233314AbiBIVaJ (ORCPT
+        with ESMTP id S233405AbiBIVaz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 16:30:09 -0500
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B36C03BFF4;
-        Wed,  9 Feb 2022 13:30:11 -0800 (PST)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id BFD191C0B7A; Wed,  9 Feb 2022 22:30:10 +0100 (CET)
-Date:   Wed, 9 Feb 2022 22:30:10 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 0/3] 5.10.100-rc1 review
-Message-ID: <20220209213010.GB23031@duo.ucw.cz>
-References: <20220209191248.892853405@linuxfoundation.org>
+        Wed, 9 Feb 2022 16:30:55 -0500
+X-Greylist: delayed 323 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 13:30:57 PST
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91593C0045A5;
+        Wed,  9 Feb 2022 13:30:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644442254;
+        bh=PGc0WNXFAjQvHZe7dxOMXdROYvVfqvz2T9AO1zIL3gw=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=PDtQWwyctpDBrDVOCU09BSHEpR/edHJq7+XIdipKCdxaKePhx8d4kNjPwm/XzoD6u
+         QNheeLhJ8lcH1JSpxSFkfbxEy7w07NvODZRKdLWyiyA+sQDuF4WLsMDlKBhGhqyHi1
+         CrmT8KkVRI4wW7tuRc2HBkWyzJiVqhPEEmtvUsTE=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.150.166]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N1Obb-1oKiFR1jsh-012mVq; Wed, 09
+ Feb 2022 22:24:54 +0100
+Message-ID: <2bfcb259-5f81-2110-2027-cc9e61d4d671@gmx.de>
+Date:   Wed, 9 Feb 2022 22:24:47 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="f2QGlHpHGjS2mn6Y"
-Content-Disposition: inline
-In-Reply-To: <20220209191248.892853405@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] fbcon: use min() to make code cleaner
+Content-Language: en-US
+To:     Sam Ravnborg <sam@ravnborg.org>, cgel.zte@gmail.com
+Cc:     linux-fbdev@vger.kernel.org, ducheng2@gmail.com,
+        penguin-kernel@i-love.sakura.ne.jp, daniel.vetter@ffwll.ch,
+        Zeal Robot <zealci@zte.com.cn>, deng.changcheng@zte.com.cn,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        cssk@net-c.es, geert@linux-m68k.org, svens@stackframe.org
+References: <20220209084810.1561184-1-deng.changcheng@zte.com.cn>
+ <YgQN4WXXjSHVDiBK@ravnborg.org>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <YgQN4WXXjSHVDiBK@ravnborg.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:42z7V6HGvHKO01ZXFESGhB6onaGQz+EgEZLEwRYRWfcGOdxRYLD
+ 9+oR0V3WTV7T8z04HfUEJ9krjI09hKpvIApkF/inaY+3VN8FhRS5T7xTc3/mbgWl46Jcw5a
+ GDTLmkSaCOHMy9j+3jfEmdH51Jv17frlHfioXT30moKjj20PLKp7yzYo1xXVMfmltU4r5Qu
+ NQbRHW/tJd8r4apj1Lv/Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:LFaBDnAjjgs=:oJutcP91/Ce8HMOT70PlNe
+ 5mWkxdJ0sC53Ee/E2BXhrPATJ4lMVtjeXJVZm8LXA4voUlemoev4jgRI1g9IZLI+glVLTlMvL
+ cA6n2MgUqIZREBRmfyKfZW+S0v7aKvQkZK4Jl5L1BM0lWYisVa64xvpdraqfn3umMXmHk0ksP
+ Fyi0Pfkg1gVxkYDNRUaZU6II2POCWTdqCEbfNhnZHHOEQejb+U3cIJfQJVOFj8HcuV702Yey+
+ S+Mz56tkmsetWJaWQmltfuZHCu6XSsV/6XrKrMLnxhMp2Fu9aKwp6IDjhtEAoPAFqmJAO/U9T
+ /tiKkOVAaJdmtVBVeaidWxF6A/JlA72cVOudo8zspWjLX4upPP75HcRc93ImeIHigh4Aa8uZQ
+ Y96alAAg3oSLKpVEgf7MrNOkKdN0e+ov0TKimnpWRNda/81yUEX6+H4NZaW6BLUhVX7pwMNt/
+ 2ZGD54VDmviU0Ogy02GQOpBH5eWq7iuYr60XtkE7U0FvTuBoRBcP43yuX7KGcYHGpsR2zS3o0
+ Lvgkfs9VRVgNjXcTuoMunbXFX8ADeiWnQHOJ7bJ6IK5ERYwun/byEgJv4m/+y33UY6mfLwPpq
+ ypn1VJzMvaakK7SjHqEvVNRh1P/3+VvKIkKUqoVqdKjRJU4/oj5YdONnq12ycb4xWlx4E4TpN
+ CFSsa3eNhBEm+/iEIRRdQbPnp44ZCLlOtjSfvixTg+HNMAdaMJN347PUaql/Kf+tRiDEbhnf1
+ wKpq9JKw2id7vOinrsBJVgQvxEWiaRPrIR/lHLVixBTGerzF6UpqTS5o0NnZV4Tz3HfuixmOC
+ Ol63MW2po2LnTF6fiAnk3lGhtr2/t2mqAtleP4xeyamjHPWWot8E+5sCOsimwEFCeQryZVEJd
+ AhJGriZVy6aczmTdlpCZgXzaDdPyaVIDLG95KCccfoU51W9E3WaQ+6AMres7Qs+d7Iy1CorHT
+ tEhtiSjY1Mi3eQ3+iY/QwOm8iTtIpIET5B0CskcISit3teKLkQsGsSGAJeycI11G5wTrY5fIb
+ LaSNOjaBxZbcJMklNgJEiU4rZ7MGyVrkX/Vt7B33BTDB2aDpVk8J2O9BLJc13KIgc1V4s0kW9
+ OwH2EiKUoksplc=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2/9/22 19:54, Sam Ravnborg wrote:
+> On Wed, Feb 09, 2022 at 08:48:10AM +0000, cgel.zte@gmail.com wrote:
+>> From: Changcheng Deng <deng.changcheng@zte.com.cn>
+>>
+>> Use min() in order to make code cleaner.
+>>
+>> Reported-by: Zeal Robot <zealci@zte.com.cn>
+>> Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
+> Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
+>
+> I had preferred in minmax.h was included, but it has an indirect include
+> so shrug.
+>
+> I assume Daniel or Helge will pick it up.
 
---f2QGlHpHGjS2mn6Y
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Daniel has quite some upcoming changes to core/fbcon, so I prefer
+that he takes it when he thinks it's the right time...
 
-Hi!
+Helge
 
-> This is the start of the stable review cycle for the 5.10.100 release.
-> There are 3 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+>
+>> ---
+>>  drivers/video/fbdev/core/fbcon.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/cor=
+e/fbcon.c
+>> index f36829eeb5a9..61171159fee2 100644
+>> --- a/drivers/video/fbdev/core/fbcon.c
+>> +++ b/drivers/video/fbdev/core/fbcon.c
+>> @@ -602,7 +602,7 @@ static void fbcon_prepare_logo(struct vc_data *vc, =
+struct fb_info *info,
+>>  		save =3D kmalloc(array3_size(logo_lines, new_cols, 2),
+>>  			       GFP_KERNEL);
+>>  		if (save) {
+>> -			int i =3D cols < new_cols ? cols : new_cols;
+>> +			int i =3D min(cols, new_cols);
+>>  			scr_memsetw(save, erase, array3_size(logo_lines, new_cols, 2));
+>>  			r =3D q - step;
+>>  			for (cnt =3D 0; cnt < logo_lines; cnt++, r +=3D i)
+>> --
+>> 2.25.1
 
-CIP testing did not find any new kernel problems here (but we still
-hit the gmp.h compilation issue):
-
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-5.10.y
-
-Tested-by: Pavel Machek (CIP) <pavel@denx.de>
-
-Best regards,
-                                                                Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---f2QGlHpHGjS2mn6Y
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYgQyYgAKCRAw5/Bqldv6
-8lewAJ9G+ynOL/LGmPnN8gkcXyca95yhYQCggLZQmZfB7wGxNEVKTVQuBRn1jPM=
-=jTWm
------END PGP SIGNATURE-----
-
---f2QGlHpHGjS2mn6Y--
