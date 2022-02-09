@@ -2,55 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33142C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B92D1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231768AbiBIL5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:57:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
+        id S231226AbiBIL5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:57:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231811AbiBIL4G (ORCPT
+        with ESMTP id S231818AbiBIL4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 06:56:06 -0500
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C67E00FA48;
-        Wed,  9 Feb 2022 02:56:33 -0800 (PST)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 74C4F201432;
-        Wed,  9 Feb 2022 08:31:16 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 5EBE180F74; Wed,  9 Feb 2022 09:30:22 +0100 (CET)
-Date:   Wed, 9 Feb 2022 09:30:22 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tytso@mit.edu, ebiggers@kernel.org
-Subject: Re: [PATCH v2 8/9] random: use hash function for crng_slow_load()
-Message-ID: <YgN7nmv9A0+Zi5L8@owl.dominikbrodowski.net>
-References: <20220209011919.493762-1-Jason@zx2c4.com>
- <20220209011919.493762-9-Jason@zx2c4.com>
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AAEE03E231;
+        Wed,  9 Feb 2022 02:56:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644404201; x=1675940201;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=W/ACr337dCWxZ64atnDXrvUA4xLsoa1IEFVrCd8GQkg=;
+  b=Gzx/SQzb6dbXgj88lUo6DajTK4slC/uXScqj3biG0Vge3JEzC98lC3uk
+   RM2GYo5571PRBN9RwVtx0VD/Zu7WiRloIPkNoFeRlN8JtljFAx198I6VW
+   ltHWBkLe0aK2sufNjV0tqLSV4rcvQfcRWdNOG1tf+kfBSLuwSeORYeEem
+   87bOw3zvNE9OKWgM8SCJ6Ucw/ssvF98WbuN4qrkfgHBRC6xTGvuWBULcq
+   rDqZBigRTrB4jItnlnqMfnOkjgi6co1gMqefMDPQKoIdVkle1ce2CkT3m
+   MhOtr35XzYIpObiBcynOqcF/wtnighFDJA4JVEk9D3mAVo0raJ425kCUd
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229135463"
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="229135463"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 01:27:50 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="568178958"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga001.jf.intel.com with ESMTP; 09 Feb 2022 01:27:47 -0800
+To:     Hongyu Xie <xy521521@gmail.com>, gregkh@linuxfoundation.org,
+        mathias.nyman@intel.com
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hongyu Xie <xiehongyu1@kylinos.cn>, stable@vger.kernel.org
+References: <20220209025234.25230-1-xy521521@gmail.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH -next v2] xhci: fix two places when dealing with return
+ value of function xhci_check_args
+Message-ID: <89d59749-8ca3-b30b-4da6-a6e567528d1b@linux.intel.com>
+Date:   Wed, 9 Feb 2022 11:29:22 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209011919.493762-9-Jason@zx2c4.com>
+In-Reply-To: <20220209025234.25230-1-xy521521@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Wed, Feb 09, 2022 at 02:19:18AM +0100 schrieb Jason A. Donenfeld:
-> Since we have a hash function that's really fast, and the goal of
-> crng_slow_load() is reportedly to "touch all of the crng's state", we
-> can just hash the old state together with the new state and call it a
-> day. This way we dont need to reason about another LFSR or worry about
-> various attacks there. This code is only ever used at early boot and
-> then never again.
+On 9.2.2022 4.52, Hongyu Xie wrote:
+> From: Hongyu Xie <xiehongyu1@kylinos.cn>
+> 
+> xhci_check_args returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+> the return value of xhci_check_args <= 0.
+> This will cause a problem.
+> For example, r8152_submit_rx calling usb_submit_urb in
+> drivers/net/usb/r8152.c.
+> r8152_submit_rx will never get -ENODEV after submiting an urb
+> when xHC is halted,
+> because xhci_urb_enqueue returns -EINVAL in the very beginning.
+> 
+> Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+> ---
 
-	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Thanks, added to queue.
+Changed the commit message and header a bit:
 
-Thanks,
-	Dominik
+"xhci: Prevent futile URB re-submissions due to incorrect return value.
+    
+The -ENODEV return value from xhci_check_args() is incorrectly changed
+to -EINVAL in a couple places before propagated further.
+    
+xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+the return value of xhci_check_args <= 0.
+This causes problems for example r8152_submit_rx, calling usb_submit_urb
+in drivers/net/usb/r8152.c.
+r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
+is halted because xhci_urb_enqueue returns -EINVAL in the very beginning."
+
+Let me know if you disagree with this.
+
+Thanks
+-Mathias
