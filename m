@@ -2,148 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30276C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235823AbiBIP31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:29:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44750 "EHLO
+        id S235833AbiBIPaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:30:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbiBIP3Z (ORCPT
+        with ESMTP id S235824AbiBIPaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:29:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CA8C0613C9;
-        Wed,  9 Feb 2022 07:29:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9DE0B8220B;
-        Wed,  9 Feb 2022 15:29:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75677C340F3;
-        Wed,  9 Feb 2022 15:29:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644420565;
-        bh=QKbyaWB3S3fmmTgA9C2qMw6sAVk5oCS2HfXytBEO+XY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ukJE2TkoXsT/uqmJ0O6LJwl2PMoQvkVZbWaPzGS03qmkZoxX/qdsTBjbXKqXilt00
-         oPYkx1G9dBxdvIdrGckFZyX7gKokyQtcPxFS3bil1fXKinqzLMyxh+azL8i10bQnN3
-         Ox1qEI2xL/qEWIP98MEsxJnv0wOMPKYWpkaIJU1P5CcM82kJPeYvs7jU89m+NzcOFj
-         DoPfCX+K38cr1fSdaJgDNLo5vUGfGsbQohauiAY8/FwRt+IFlEdp0TAQ1ASxw/gjfe
-         trCfnU0TiYuMajx/sLvy+7Gyb5HcYTlPuiY/EzW+B0LqoHT+PeGU0aMF53qqYUOE6N
-         jdCh3qkO1Rxtg==
-Received: by mail-lj1-f173.google.com with SMTP id t14so3921123ljh.8;
-        Wed, 09 Feb 2022 07:29:25 -0800 (PST)
-X-Gm-Message-State: AOAM5323gRG7FY/v4+HQ5sMhAuR/Y5cMpqWMEN6v7R8zwgHID6azgOUw
-        DaseVSpAJ9wjVZgbUDLztlBZs8wHtuQIFCMawQ==
-X-Google-Smtp-Source: ABdhPJwwxaQps0NUGLhu/Gr6WrdxbjgZRuJ4qOOpjJzMqWWe1rlQob9iBwPKJirpJue2zFCjhtucaxxLr4aEziUXZe4=
-X-Received: by 2002:a17:906:f0cb:: with SMTP id dk11mr2432228ejb.20.1644420551949;
- Wed, 09 Feb 2022 07:29:11 -0800 (PST)
+        Wed, 9 Feb 2022 10:30:10 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02140C0613CA
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:30:14 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nHov5-0003JE-JH; Wed, 09 Feb 2022 16:30:11 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nHov5-00FX3x-4S; Wed, 09 Feb 2022 16:30:10 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nHov3-00DMcu-Px; Wed, 09 Feb 2022 16:30:09 +0100
+Date:   Wed, 9 Feb 2022 16:30:08 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Fabio Estevam <festevam@gmail.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        linux-serial@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-kernel@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Harald Seiler <hws@denx.de>, Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] tty: serial: imx: Add fast path when rs485 delays are 0
+Message-ID: <20220209153008.6qmt2t33ru7lhi6x@pengutronix.de>
+References: <20220119145204.238767-1-hws@denx.de>
+ <20220119151145.zft47rzebnabiej2@pengutronix.de>
+ <0df5d9ea2081f5d798f80297efb973f542dae183.camel@denx.de>
+ <20220119162122.jmnz2hxid76p4hli@pengutronix.de>
+ <5cab27cab5a39ef5e19992bc54e57c3f6106dafe.camel@denx.de>
+ <YgJADKxWfOZroS35@kroah.com>
+ <20220208111203.qi6fpo2l6um6znkz@pengutronix.de>
 MIME-Version: 1.0
-References: <20211228072645.32341-1-luizluca@gmail.com> <Ydx4+o5TsWZkZd45@robh.at.kernel.org>
- <CAJq09z4G40ttsTHXtOywjyusNLSjt_BQ9D78PhwSodJr=4p6OA@mail.gmail.com>
-In-Reply-To: <CAJq09z4G40ttsTHXtOywjyusNLSjt_BQ9D78PhwSodJr=4p6OA@mail.gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 9 Feb 2022 09:28:59 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJ4SsEzZz=JfFMDDUMXEDfybMZw4BVDcj1MoapM+8jQwg@mail.gmail.com>
-Message-ID: <CAL_JsqJ4SsEzZz=JfFMDDUMXEDfybMZw4BVDcj1MoapM+8jQwg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: net: dsa: realtek-smi: convert to YAML schema
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zhegztmaioghtjqo"
+Content-Disposition: inline
+In-Reply-To: <20220208111203.qi6fpo2l6um6znkz@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 10:02 AM Luiz Angelo Daros de Luca
-<luizluca@gmail.com> wrote:
->
-> Thanks Rob, now that the code side is merged, I'm back to docs.
 
-Sigh, bindings are supposed to be accepted first...
+--zhegztmaioghtjqo
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->
->
-> > > +      interrupt-controller:
-> > > +        description: see interrupt-controller/interrupts.txt
-> >
-> > Don't need generic descriptions. Just 'true' here is fine.
->
-> Do you really mean quoted true, like in "description: 'true' "?
-> Without quotes it will fail
+Hello Greg,
 
-interrupt-controller: true
+On Tue, Feb 08, 2022 at 12:12:03PM +0100, Uwe Kleine-K=F6nig wrote:
+> On Tue, Feb 08, 2022 at 11:03:56AM +0100, Greg Kroah-Hartman wrote:
+> > Uwe, any thoughts about if this patch should be taken or not?
+>=20
+> I will take a deeper look later today and tell you my thoughts.
 
-> >
-> > > +
-> > > +      interrupts:
-> > > +        description: TODO
-> >
-> > You have to define how many interrupts and what they are.
->
-> I didn't write the interruption code and Linus and Alvin might help here.
->
-> The switch has a single interrupt pin that signals an interruption happened.
+It took a bit longer, but after looking again with the driver open in my
+editor I agree that patch is fine.
 
-Then it's 1 interrupt?
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-> The code reads a register to multiplex to these interruptions:
->
-> INT_TYPE_LINK_STATUS = 0,
-> INT_TYPE_METER_EXCEED,
-> INT_TYPE_LEARN_LIMIT,
-> INT_TYPE_LINK_SPEED,
-> INT_TYPE_CONGEST,
-> INT_TYPE_GREEN_FEATURE,
-> INT_TYPE_LOOP_DETECT,
-> INT_TYPE_8051,
-> INT_TYPE_CABLE_DIAG,
-> INT_TYPE_ACL,
-> INT_TYPE_RESERVED, /* Unused */
-> INT_TYPE_SLIENT,
+Thanks
+Uwe
 
-Unless the DT needs to route all these interrupts to multiple nodes,
-then the switch needs to be an interrupt-controller.
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
->
-> And most of them, but not all, multiplex again to each port.
+--zhegztmaioghtjqo
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Now I'm lost. So it's 1 per port, not 1 for the switch?
+-----BEGIN PGP SIGNATURE-----
 
-> However, the linux driver today does not care about any of these
-> interruptions but INT_TYPE_LINK_STATUS. So it simply multiplex only
-> this the interruption to each port, in a n-cell map (n being number of
-> ports).
-> I don't know what to describe here as device-tree should be something
-> independent of a particular OS or driver.
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmID3f0ACgkQwfwUeK3K
+7AnwFAf/ak9YeP1DkOhL48uqmiyD6N1JIZCpjcPhBVlJEoUgkxH/Qb5ThAb13R4r
+tng7DlvdRKS6WHWiaILv6BmEw1rgOh4oyNaYdAI/8L9n8gC/YGDA03S6WI5MYQBj
+Q5kKUH34OGSvZGLPkKZ4EkSgjFZkkcwo+Ozr+Cr1knn1nJByTlYRTuzigua1Qu+X
+8h6hAeqM0RgBUbynzkmbRFtTU95hADWqDuARQuwHf5sLE6MrewZ0YKRjq0ynS8Ty
+TU0dvraeEI+COPFuP0pxCx3TVcCMIKhKA+zXlZf4IHwjQCi25sa6dMfmalAgnxWP
+OOdSBC8XMiDMdz5gQ7Xxn6Vz+/P8DQ==
+=RMjQ
+-----END PGP SIGNATURE-----
 
-You shouldn't need to know what Linux does to figure this out.
-
->
-> Anyway, I doubt someone might want to plug one of these interruptions
-> outside the switch driver. Could it be simple as this:
->
->       interrupts:
->        minItems: 3
->        maxItems: 10
->        description:
->          interrupt mapping one per switch port
->
-> Once realtek-smi.yaml settles, I'll also send the realtek-mdio.yaml.
->
-> Regards,
->
-> Luiz
+--zhegztmaioghtjqo--
