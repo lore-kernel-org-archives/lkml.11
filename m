@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E2D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240382AbiBISmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:42:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
+        id S236262AbiBISmJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:42:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240520AbiBISlQ (ORCPT
+        with ESMTP id S240411AbiBISlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:41:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C745C05CBB1;
-        Wed,  9 Feb 2022 10:40:44 -0800 (PST)
+        Wed, 9 Feb 2022 13:41:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC37C03BFC0;
+        Wed,  9 Feb 2022 10:40:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC70A60AFF;
-        Wed,  9 Feb 2022 18:40:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E7FCC36AE3;
-        Wed,  9 Feb 2022 18:40:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C00FC60906;
+        Wed,  9 Feb 2022 18:40:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 377D8C340E7;
+        Wed,  9 Feb 2022 18:40:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432043;
-        bh=bVSySelnyAeahJMSw/l2RKJiTmriqOVNBjS17DZ/XGc=;
+        s=k20201202; t=1644432023;
+        bh=wGO2C/+5/UpsUQ1fbHIpV6d7ywQrzR6tQA1uBrprlcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uqb5F9T5/+Mdnmya0HZdE0DTuPPReuGGKa6ateqjZpQ6NTmCVtlBdJ/+BqAUNq6cJ
-         6cZq/A9xn9POOo+CtOfgxn3wwJasBqxepc/OqQInVFceBTpLZOypYx93KpJC21uKMt
-         Q7M+DBPX61VXS+aSIGSlXZuK0wLb1TRBPgSkz8C11S6YyR16cLLSU/dB88PW54xs9k
-         UsLYPMoMR+wjHIohsTdLdAMDtXKwStUvGFT8+UcN2XPDiCJWybipFZ+3QiHMKNb73U
-         ICswZiknQ5ryNNZeuXGIwf4Wvk8VWL4ac+F1W9oWR0m/2JSCgM36HA8VqLMBg9ctMh
-         WzhpfdDepJiPw==
+        b=fzCJFXeqsTy6MepEezoxKWEZVdAPH+3CqCs89Aq8wuyiP8tmxh93bBlhmKiWCaKDo
+         ufxmK4kaB6eBVZd+kzx2fcrfALSTCgmpbmI+mwW2KyVDLUJfBY2IT1PMNUxTuyU+Ps
+         y8eVQQzG50MWW4f/6ZJa54S9xSvwKPvpDS2CItcSxK9w3RqO+veyiYFzVn9dKobfSa
+         sTn6jLtMZMs0Q0FTTT865uK0TmlwOCBY1xOXwpBTYw49+zvHlyfFe19MF76XdyZFP6
+         V+AeoTZ3ms29Kak2D94duLfPsuJZtB7kfJfpMtTm/ZhsveCjqVcaZbWfVllIOjrTY4
+         cfv31JxRQYngQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jan Beulich <jbeulich@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, xen-devel@lists.xenproject.org
-Subject: [PATCH AUTOSEL 5.15 33/36] x86/Xen: streamline (and fix) PV CPU enumeration
-Date:   Wed,  9 Feb 2022 13:37:56 -0500
-Message-Id: <20220209183759.47134-33-sashal@kernel.org>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        lijo.lazar@amd.com, Hawking.Zhang@amd.com, guchun.chen@amd.com,
+        sathishkumar.sundararaju@amd.com, shaoyun.liu@amd.com,
+        veerabadhran.gopalakrishnan@amd.com, nirmoy.das@amd.com,
+        Prike.Liang@amd.com, Pratik.Vishwakarma@amd.com, bp@suse.de,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 30/36] drm/amd: add support to check whether the system is set to s3
+Date:   Wed,  9 Feb 2022 13:37:53 -0500
+Message-Id: <20220209183759.47134-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
 References: <20220209183759.47134-1-sashal@kernel.org>
@@ -54,104 +57,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Beulich <jbeulich@suse.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit e25a8d959992f61b64a58fc62fb7951dc6f31d1f ]
+[ Upstream commit f52a2b8badbd24faf73a13c9c07fdb9d07352944 ]
 
-This started out with me noticing that "dom0_max_vcpus=<N>" with <N>
-larger than the number of physical CPUs reported through ACPI tables
-would not bring up the "excess" vCPU-s. Addressing this is the primary
-purpose of the change; CPU maps handling is being tidied only as far as
-is necessary for the change here (with the effect of also avoiding the
-setting up of too much per-CPU infrastructure, i.e. for CPUs which can
-never come online).
+This will be used to help make decisions on what to do in
+misconfigured systems.
 
-Noticing that xen_fill_possible_map() is called way too early, whereas
-xen_filter_cpu_maps() is called too late (after per-CPU areas were
-already set up), and further observing that each of the functions serves
-only one of Dom0 or DomU, it looked like it was better to simplify this.
-Use the .get_smp_config hook instead, uniformly for Dom0 and DomU.
-xen_fill_possible_map() can be dropped altogether, while
-xen_filter_cpu_maps() is re-purposed but not otherwise changed.
+v2: squash in semicolon fix from Stephen Rothwell
 
-Signed-off-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Link: https://lore.kernel.org/r/2dbd5f0a-9859-ca2d-085e-a02f7166c610@suse.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/xen/enlighten_pv.c |  4 ----
- arch/x86/xen/smp_pv.c       | 26 ++++++--------------------
- 2 files changed, 6 insertions(+), 24 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu.h      |  2 ++
+ drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c | 13 +++++++++++++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/arch/x86/xen/enlighten_pv.c b/arch/x86/xen/enlighten_pv.c
-index a7b7d674f5005..133ef31639df1 100644
---- a/arch/x86/xen/enlighten_pv.c
-+++ b/arch/x86/xen/enlighten_pv.c
-@@ -1364,10 +1364,6 @@ asmlinkage __visible void __init xen_start_kernel(void)
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+index c8d31a22176f3..7e73ac6fb21db 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+@@ -1410,9 +1410,11 @@ static inline int amdgpu_acpi_smart_shift_update(struct drm_device *dev,
+ #endif
  
- 		xen_acpi_sleep_register();
+ #if defined(CONFIG_ACPI) && defined(CONFIG_SUSPEND)
++bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev);
+ bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev);
+ #else
+ static inline bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev) { return false; }
++static inline bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev) { return false; }
+ #endif
  
--		/* Avoid searching for BIOS MP tables */
--		x86_init.mpparse.find_smp_config = x86_init_noop;
--		x86_init.mpparse.get_smp_config = x86_init_uint_noop;
--
- 		xen_boot_params_init_edd();
- 
- #ifdef CONFIG_ACPI
-diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
-index 7ed56c6075b0c..477c484eb202c 100644
---- a/arch/x86/xen/smp_pv.c
-+++ b/arch/x86/xen/smp_pv.c
-@@ -148,28 +148,12 @@ int xen_smp_intr_init_pv(unsigned int cpu)
- 	return rc;
+ int amdgpu_cs_find_mapping(struct amdgpu_cs_parser *parser,
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
+index b19d407518024..0e12315fa0cb8 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
+@@ -1032,6 +1032,19 @@ void amdgpu_acpi_detect(void)
  }
  
--static void __init xen_fill_possible_map(void)
--{
--	int i, rc;
--
--	if (xen_initial_domain())
--		return;
--
--	for (i = 0; i < nr_cpu_ids; i++) {
--		rc = HYPERVISOR_vcpu_op(VCPUOP_is_up, i, NULL);
--		if (rc >= 0) {
--			num_processors++;
--			set_cpu_possible(i, true);
--		}
--	}
--}
--
--static void __init xen_filter_cpu_maps(void)
-+static void __init _get_smp_config(unsigned int early)
- {
- 	int i, rc;
- 	unsigned int subtract = 0;
- 
--	if (!xen_initial_domain())
-+	if (early)
- 		return;
- 
- 	num_processors = 0;
-@@ -210,7 +194,6 @@ static void __init xen_pv_smp_prepare_boot_cpu(void)
- 		 * sure the old memory can be recycled. */
- 		make_lowmem_page_readwrite(xen_initial_gdt);
- 
--	xen_filter_cpu_maps();
- 	xen_setup_vcpu_info_placement();
- 
- 	/*
-@@ -486,5 +469,8 @@ static const struct smp_ops xen_smp_ops __initconst = {
- void __init xen_smp_init(void)
- {
- 	smp_ops = xen_smp_ops;
--	xen_fill_possible_map();
+ #if IS_ENABLED(CONFIG_SUSPEND)
++/**
++ * amdgpu_acpi_is_s3_active
++ *
++ * @adev: amdgpu_device_pointer
++ *
++ * returns true if supported, false if not.
++ */
++bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev)
++{
++	return !(adev->flags & AMD_IS_APU) ||
++		(pm_suspend_target_state == PM_SUSPEND_MEM);
++}
 +
-+	/* Avoid searching for BIOS MP tables */
-+	x86_init.mpparse.find_smp_config = x86_init_noop;
-+	x86_init.mpparse.get_smp_config = _get_smp_config;
- }
+ /**
+  * amdgpu_acpi_is_s0ix_active
+  *
 -- 
 2.34.1
 
