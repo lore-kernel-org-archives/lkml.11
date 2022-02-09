@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3601C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E59F6C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:29:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232153AbiBIT3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:29:04 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47010 "EHLO
+        id S234969AbiBIT3I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:29:08 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235171AbiBIT10 (ORCPT
+        with ESMTP id S235095AbiBIT1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:27:26 -0500
+        Wed, 9 Feb 2022 14:27:25 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1379EC1DC5C6;
-        Wed,  9 Feb 2022 11:19:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149E8C1DC5EB;
+        Wed,  9 Feb 2022 11:19:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 202C361990;
-        Wed,  9 Feb 2022 19:16:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F06E0C340E7;
-        Wed,  9 Feb 2022 19:16:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EB9D6193E;
+        Wed,  9 Feb 2022 19:15:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B54C340E7;
+        Wed,  9 Feb 2022 19:15:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644434161;
-        bh=NKitg86III0HiHKNBq7FPeJryZj/1Ffg7YHGquOQJFM=;
+        s=korg; t=1644434152;
+        bh=QeCxUFHPZAtlfe87gmSrJSiGPfQECvhSaF7Kp7KD990=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RWm3kFFwZC6unQ3FHu2q+ElQ9T6UHXeQYo3t4XTWmSDaAn8Ma2sq6wDkt1AkKiXjF
-         gG6k8kChRCdO9x5AxkFKs1hhiB0AxH8dXhQD7E2OUQx2I245Vtcy9vjH258zzr0N2M
-         fKU8POlPTDyDbT3dSqzqD654WzLteg0VygpHxdvE=
+        b=0xcBux5VdCY2jXKbJZS73gpMPfAwHbT7qFTP8mnACGBgrovWLFvqSmzTOWrtbBkPa
+         D/FRzL5y95Qslq2+jjLUr/8ETryEqjuGvKB8N8fNWo8mEzrlO9QKOSLtEQilQp6LE/
+         f7VH5OHonKOfsCugFMh/vdYLEmkRJ+mmKINeZTSY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steve French <smfrench@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        Namjae Jeon <linkinjeon@kernel.org>
-Subject: [PATCH 5.16 4/5] ksmbd: fix SMB 3.11 posix extension mount failure
-Date:   Wed,  9 Feb 2022 20:14:36 +0100
-Message-Id: <20220209191250.048258338@linuxfoundation.org>
+        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
+        Abderraouf Adjal <adjal.arf@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.16 1/5] ata: libata-core: Fix ata_dev_config_cpr()
+Date:   Wed,  9 Feb 2022 20:14:33 +0100
+Message-Id: <20220209191249.945825874@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220209191249.887150036@linuxfoundation.org>
 References: <20220209191249.887150036@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,36 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-commit 9ca8581e79e51c57e60b3b8e3b89d816448f49fe upstream.
+commit fda17afc6166e975bec1197bd94cd2a3317bce3f upstream.
 
-cifs client set 4 to DataLength of create_posix context, which mean
-Mode variable of create_posix context is only available. So buffer
-validation of ksmbd should check only the size of Mode except for
-the size of Reserved variable.
+The concurrent positioning ranges log page 47h is a general purpose log
+page and not a subpage of the indentify device log. Using
+ata_identify_page_supported() to test for concurrent positioning ranges
+support is thus wrong. ata_log_supported() must be used.
 
-Fixes: 8f77150c15f8 ("ksmbd: add buffer validation for SMB2_CREATE_CONTEXT")
-Cc: stable@vger.kernel.org # v5.15+
-Reported-by: Steve French <smfrench@gmail.com>
-Tested-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Furthermore, unlike other advanced ATA features (e.g. NCQ priority),
+accesses to the concurrent positioning ranges log page are not gated by
+a feature bit from the device IDENTIFY data. Since many older drives
+react badly to the READ LOG EXT and/or READ LOG DMA EXT commands isued
+to read device log pages, avoid problems with older drives by limiting
+the concurrent positioning ranges support detection to drives
+implementing at least the ACS-4 ATA standard (major version 11). This
+additional condition effectively turns ata_dev_config_cpr() into a nop
+for older drives, avoiding problems in the field.
+
+Fixes: fe22e1c2f705 ("libata: support concurrent positioning ranges log")
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215519
+Cc: stable@vger.kernel.org
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Tested-by: Abderraouf Adjal <adjal.arf@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/smb2pdu.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ata/libata-core.c |   14 ++++++--------
+ include/linux/ata.h       |    2 +-
+ 2 files changed, 7 insertions(+), 9 deletions(-)
 
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -2688,7 +2688,7 @@ int smb2_open(struct ksmbd_work *work)
- 					(struct create_posix *)context;
- 				if (le16_to_cpu(context->DataOffset) +
- 				    le32_to_cpu(context->DataLength) <
--				    sizeof(struct create_posix)) {
-+				    sizeof(struct create_posix) - 4) {
- 					rc = -EINVAL;
- 					goto err_out1;
- 				}
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -2486,23 +2486,21 @@ static void ata_dev_config_cpr(struct at
+ 	struct ata_cpr_log *cpr_log = NULL;
+ 	u8 *desc, *buf = NULL;
+ 
+-	if (!ata_identify_page_supported(dev,
+-				 ATA_LOG_CONCURRENT_POSITIONING_RANGES))
++	if (ata_id_major_version(dev->id) < 11 ||
++	    !ata_log_supported(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES))
+ 		goto out;
+ 
+ 	/*
+-	 * Read IDENTIFY DEVICE data log, page 0x47
+-	 * (concurrent positioning ranges). We can have at most 255 32B range
+-	 * descriptors plus a 64B header.
++	 * Read the concurrent positioning ranges log (0x47). We can have at
++	 * most 255 32B range descriptors plus a 64B header.
+ 	 */
+ 	buf_len = (64 + 255 * 32 + 511) & ~511;
+ 	buf = kzalloc(buf_len, GFP_KERNEL);
+ 	if (!buf)
+ 		goto out;
+ 
+-	err_mask = ata_read_log_page(dev, ATA_LOG_IDENTIFY_DEVICE,
+-				     ATA_LOG_CONCURRENT_POSITIONING_RANGES,
+-				     buf, buf_len >> 9);
++	err_mask = ata_read_log_page(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES,
++				     0, buf, buf_len >> 9);
+ 	if (err_mask)
+ 		goto out;
+ 
+--- a/include/linux/ata.h
++++ b/include/linux/ata.h
+@@ -324,12 +324,12 @@ enum {
+ 	ATA_LOG_NCQ_NON_DATA	= 0x12,
+ 	ATA_LOG_NCQ_SEND_RECV	= 0x13,
+ 	ATA_LOG_IDENTIFY_DEVICE	= 0x30,
++	ATA_LOG_CONCURRENT_POSITIONING_RANGES = 0x47,
+ 
+ 	/* Identify device log pages: */
+ 	ATA_LOG_SECURITY	  = 0x06,
+ 	ATA_LOG_SATA_SETTINGS	  = 0x08,
+ 	ATA_LOG_ZONED_INFORMATION = 0x09,
+-	ATA_LOG_CONCURRENT_POSITIONING_RANGES = 0x47,
+ 
+ 	/* Identify device SATA settings log:*/
+ 	ATA_LOG_DEVSLP_OFFSET	  = 0x30,
 
 
