@@ -2,129 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D78C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1527C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233087AbiBIFfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 00:35:01 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33536 "EHLO
+        id S233311AbiBIFfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 00:35:08 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240029AbiBIF2R (ORCPT
+        with ESMTP id S236417AbiBIFaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 00:28:17 -0500
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9E1C034022
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 21:28:21 -0800 (PST)
-Received: by mail-pj1-x104a.google.com with SMTP id f2-20020a17090a4a8200b001b7dac53bd6so1008393pjh.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 21:28:21 -0800 (PST)
+        Wed, 9 Feb 2022 00:30:06 -0500
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12413C03C180;
+        Tue,  8 Feb 2022 21:30:10 -0800 (PST)
+Received: by mail-qv1-xf42.google.com with SMTP id o5so1009675qvm.3;
+        Tue, 08 Feb 2022 21:30:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=rZmcqq9wo8YnIT5ye21K0NZ6qO5uZQZ73lL6JC7iEz8=;
-        b=V7pZi17UGh4z8xKEPrH1tHrUFmHaRAzvYAScVj9FqCzqJOPH1qxNvmVXTqmdmhDDja
-         fSevxqTLIKSXGes2Bc2yGMwmn7vJl0vbrogVI02WbymmV4+O5pyInoUXAt1zZDRNXNhD
-         z6epdNN7gu63acsXSIVLG/J0gBfUtBORK47KpxZN4ke2d9mQz/PmlvDccsPtR38X39Oq
-         6y1+YimogJQnshvrmsxFNBfNa0FWZbz4Fd+udxylcO1TK9rUtlqZbPfVTmUqk2FT8fE7
-         cC6zbqItrZi9fJeEySh/9QX8B+0DK8T/atnxM8CIqEO0AOqaa7lheUgGtPCgA2g42FVt
-         AYyA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BaM2nun77Ox90ylhwBob4weqZHSsb78qbeuJ150+3wM=;
+        b=oW0NyvBN2TbhYrgNRdS2CWDkzWBELZWKx9Mw9NFWZGaqSHOA5FoFfs2knAaMqk+Lsx
+         rWxIjv9Iyqwq9jlvTY5/NQDha/Z1Su0Ia0QI5Osmsc5KCy/off+8Bx1faPgqljKPmZTD
+         Qw5doEehfyG9dYn1coZm9+VkgxjR8UFz1wUNTobVI6rz67FL/WZ02T4OjfLt8Fv3x3+M
+         h1XOEsxpo8V/i3WXYL3jWcMkicgJvrUWtbLB5PeNEdgKFPIvcOEO8LNR6O43/0psDnU7
+         xBn01RXAkkE1fRIeigAaFaoOgFf+r13IkC2zN/w1y0oF9K8hfQCkGl/Jgd2pGYEU8PMD
+         Qj6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=rZmcqq9wo8YnIT5ye21K0NZ6qO5uZQZ73lL6JC7iEz8=;
-        b=dqquowZpt4TiZeowBJSEbpaY3Eg2+zCfAEAEki9XqVjracLHQAmtDanyYYhBDUvdKH
-         GJYVPGMbr/8N8ER94+wj3a0n8mCb95poL+oDErO6PNjdETa8F1BoeeK8YNd3DMvuP9uE
-         DSdW7rwzhzCrCeHaDG8hsWy0dg3ZYSq6laJ7xZYUqLKMuWUKHl/nnR4DpyTM8bdvi28S
-         oHzY6V57L5odoK3vdE5U5cZxoUF2DnefywExuc5EDYSL2bP1+ZiVaRnRWgDnbbZTQWRy
-         ACXRB9mXRtuOGTIQwcqaWyjCBVQXH/KAQ4te42Hw6J75WnYb06QRgTnx2D3aWJ4Jh3AY
-         a0wg==
-X-Gm-Message-State: AOAM530qOwGEoT/SrjHu4GZkxobPcTvyCzbQ1i0Hryyk+D9+6bAFvVSW
-        6OgLmG+oFPFZZPPjiFEJtOZQtIoHEPbuLg==
-X-Google-Smtp-Source: ABdhPJwyIfZyzDHRcKT+rTPIrUjaIig807SEciA4VZqtAc+0hggnYq8ijl+rHM47O4N+sK6xME3dZVt5hj3+aA==
-X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
- (user=davidgow job=sendgmr) by 2002:a17:903:24d:: with SMTP id
- j13mr545456plh.54.1644384500567; Tue, 08 Feb 2022 21:28:20 -0800 (PST)
-Date:   Wed,  9 Feb 2022 13:28:11 +0800
-Message-Id: <20220209052813.854014-1-davidgow@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-Subject: [PATCH v3 1/3] list: test: Add test for list_del_init_careful()
-From:   David Gow <davidgow@google.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Brendan Higgins <brendanhiggins@google.com>
-Cc:     David Gow <davidgow@google.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        kunit-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BaM2nun77Ox90ylhwBob4weqZHSsb78qbeuJ150+3wM=;
+        b=w0cArU7MPtrqg6GiJYt8Z5a4aF69CmvMWq/K8olYHMvF2zxC1gXDAvQ4WiAzRRo2pX
+         fRMgYDOdQMEEPPqyavuIhN2OZ435lLTPPg4vJOyXD28dOE1cBVJl2PsqB4aGSlFRvtwh
+         KbHR4VnjKlM/s+07pIotxiDjSQA0j5wb3yDfxaoe6pii+qGjX5v/DLELhr10dg6a3cXS
+         dwCGJfe/dC8Kmf3Hp51nTVoJBoJ1PLSwao0x+EfY21v/5V8VmuCsIIrGX+QSQIVgQOUH
+         JIm2Gn1IfhmK8dtzJD3jhhCTbrTYn6/fKPjY3Ln8dEChmFUaTtEwb1n5a0TBZ74p4wdw
+         23kg==
+X-Gm-Message-State: AOAM532/Xr0PS12m4lB+BA1NylfZUbvwFOEBsS98pcWLQxtXHwCEwUmW
+        eWmxBE+7hz0qV3ZhCjXFpdU=
+X-Google-Smtp-Source: ABdhPJxaXkYuErG/Usk8Th8d1w/eNR+TDPdBcWPz5mJUFFBM0jBbIzFtfCiDT7o7l4Yyvb0ydJVyDw==
+X-Received: by 2002:a05:6214:27ed:: with SMTP id jt13mr365729qvb.24.1644384606914;
+        Tue, 08 Feb 2022 21:30:06 -0800 (PST)
+Received: from lumia-dev.localdomain. (pool-96-225-98-253.nwrknj.fios.verizon.net. [96.225.98.253])
+        by smtp.googlemail.com with ESMTPSA id s1sm8712024qkp.40.2022.02.08.21.30.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 21:30:06 -0800 (PST)
+From:   Jack Matthews <jm5112356@gmail.com>
+Cc:     jm5112356@gmail.com, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ARM: dts: qcom: pm8226: add node for RTC
+Date:   Wed,  9 Feb 2022 05:29:28 +0000
+Message-Id: <20220209052929.651881-1-jm5112356@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The list_del_init_careful() function was added[1] after the list KUnit
-test. Add a very basic test to cover it.
+Add a node for PM8226's real time clock.
 
-Note that this test only covers the single-threaded behaviour (which
-matches list_del_init()), as is already the case with the test for
-list_empty_careful().
-
-[1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c6fe44d96fc1536af5b11cd859686453d1b7bfd1
-
-Signed-off-by: David Gow <davidgow@google.com>
+Signed-off-by: Jack Matthews <jm5112356@gmail.com>
 ---
+ arch/arm/boot/dts/qcom-pm8226.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Changes since v2:
-https://lore.kernel.org/linux-kselftest/20220208040122.695258-1-davidgow@google.com/
-- Fix the test calling list_del_init() instead of
-  list_del_init_careful()
-- Improve the comment noting we only test single-threaded behaviour.
-
-Changes since v1:
-https://lore.kernel.org/linux-kselftest/20220205061539.273330-1-davidgow@google.com/
-- Patch 1/3 unchanged
----
- lib/list-test.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
-diff --git a/lib/list-test.c b/lib/list-test.c
-index ee09505df16f..f82a3c7788b8 100644
---- a/lib/list-test.c
-+++ b/lib/list-test.c
-@@ -161,6 +161,25 @@ static void list_test_list_del_init(struct kunit *test)
- 	KUNIT_EXPECT_TRUE(test, list_empty_careful(&a));
- }
+diff --git a/arch/arm/boot/dts/qcom-pm8226.dtsi b/arch/arm/boot/dts/qcom-pm8226.dtsi
+index 04d070d98f97..ecc38ab1dc4b 100644
+--- a/arch/arm/boot/dts/qcom-pm8226.dtsi
++++ b/arch/arm/boot/dts/qcom-pm8226.dtsi
+@@ -17,6 +17,13 @@ pwrkey@800 {
+ 			bias-pull-up;
+ 		};
  
-+static void list_test_list_del_init_careful(struct kunit *test)
-+{
-+	/* NOTE: This test only checks the behaviour of this function in
-+	 * isolation. It does not verify memory model guarantees. */
-+	struct list_head a, b;
-+	LIST_HEAD(list);
++		rtc@6000 {
++			compatible = "qcom,pm8941-rtc";
++			reg = <0x6000>, <0x6100>;
++			reg-names = "rtc", "alarm";
++			interrupts = <0x0 0x61 0x1 IRQ_TYPE_EDGE_RISING>;
++		};
 +
-+	list_add_tail(&a, &list);
-+	list_add_tail(&b, &list);
-+
-+	/* before: [list] -> a -> b */
-+	list_del_init_careful(&a);
-+	/* after: [list] -> b, a initialised */
-+
-+	KUNIT_EXPECT_PTR_EQ(test, list.next, &b);
-+	KUNIT_EXPECT_PTR_EQ(test, b.prev, &list);
-+	KUNIT_EXPECT_TRUE(test, list_empty_careful(&a));
-+}
-+
- static void list_test_list_move(struct kunit *test)
- {
- 	struct list_head a, b;
-@@ -707,6 +726,7 @@ static struct kunit_case list_test_cases[] = {
- 	KUNIT_CASE(list_test_list_replace_init),
- 	KUNIT_CASE(list_test_list_swap),
- 	KUNIT_CASE(list_test_list_del_init),
-+	KUNIT_CASE(list_test_list_del_init_careful),
- 	KUNIT_CASE(list_test_list_move),
- 	KUNIT_CASE(list_test_list_move_tail),
- 	KUNIT_CASE(list_test_list_bulk_move_tail),
+ 		smbb: charger@1000 {
+ 			compatible = "qcom,pm8226-charger";
+ 			reg = <0x1000>;
 -- 
-2.35.0.263.gb82422642f-goog
+2.25.1
 
