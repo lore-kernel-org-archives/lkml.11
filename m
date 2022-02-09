@@ -2,123 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A256FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:49:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:50:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237476AbiBIQts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:49:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
+        id S237495AbiBIQuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:50:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237463AbiBIQtq (ORCPT
+        with ESMTP id S237463AbiBIQuA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:49:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48514C05CB86;
-        Wed,  9 Feb 2022 08:49:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E768EB82333;
-        Wed,  9 Feb 2022 16:49:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C070C340E7;
-        Wed,  9 Feb 2022 16:49:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644425386;
-        bh=kBxIrNEuH/U8BJq5dfqutQsGqFRhrpCG3nnGR2AIM4w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ks/NQFSVNzFY0yg/OWrI+1vCiJNuu5llOzoRFBjysiaU2c0/pP2yJe4zjapUVXvJm
-         QVtaDB5VIvIF92xWq3NDKuN5JtGF07n26Mp8AJ6RayGrQtt4x/lMhTUNgh3bRc3E+j
-         Nwt3EMQrf7CNuBVMmw5DUFlMtOUfEP0QdlJVeRDPQkp15+c8mznEbQR1tP4oJXNN2N
-         iPKjMkDzGAzZinVZ0SySl0S3b2CP0Usqodi51RN8C1mrgoRFKF783hgyWFjToFpCQX
-         mkGRwSnez+ipuOJkhLHgxL7hyaWxv5RO6iFztLmcNfIvcHdUH1RrJn0L07haOk/ZRX
-         zc3WEIChpELbQ==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nHpnO-006fgT-OB; Wed, 09 Feb 2022 16:26:18 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        kernel-team@android.com
-Subject: [PATCH 10/10] pinctrl: starfive: Switch to dynamic chip name output
-Date:   Wed,  9 Feb 2022 16:26:07 +0000
-Message-Id: <20220209162607.1118325-11-maz@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220209162607.1118325-1-maz@kernel.org>
-References: <20220209162607.1118325-1-maz@kernel.org>
+        Wed, 9 Feb 2022 11:50:00 -0500
+Received: from cavan.codon.org.uk (irc.codon.org.uk [IPv6:2a00:1098:84:22e::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB774C05CB8F;
+        Wed,  9 Feb 2022 08:49:59 -0800 (PST)
+Received: by cavan.codon.org.uk (Postfix, from userid 1000)
+        id D0B0740A63; Wed,  9 Feb 2022 16:49:57 +0000 (GMT)
+Date:   Wed, 9 Feb 2022 16:49:57 +0000
+From:   Matthew Garrett <mjg59@srcf.ucam.org>
+To:     Aditya Garg <gargaditya08@live.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Jeremy Kerr <jk@ozlabs.org>,
+        "joeyli.kernel@gmail.com" <joeyli.kernel@gmail.com>,
+        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "eric.snowberg@oracle.com" <eric.snowberg@oracle.com>,
+        "dhowells@redhat.com" <dhowells@redhat.com>,
+        "jlee@suse.com" <jlee@suse.com>,
+        "James.Bottomley@hansenpartnership.com" 
+        <James.Bottomley@HansenPartnership.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>,
+        "mic@digikod.net" <mic@digikod.net>,
+        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        Aun-Ali Zaidi <admin@kodeit.net>
+Subject: Re: [PATCH] efi: Do not import certificates from UEFI Secure Boot
+ for T2 Macs
+Message-ID: <20220209164957.GB12763@srcf.ucam.org>
+References: <9D0C961D-9999-4C41-A44B-22FEAF0DAB7F@live.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, matthias.bgg@gmail.com, grygorii.strashko@ti.com, ssantosh@kernel.org, khilman@kernel.org, tony@atomide.com, tglx@linutronix.de, vz@mleia.com, andrew@lunn.ch, gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com, kernel@esmil.dk, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9D0C961D-9999-4C41-A44B-22FEAF0DAB7F@live.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of overloading the name field, use the relevant callback to
-output the device name.
+On Wed, Feb 09, 2022 at 02:27:51PM +0000, Aditya Garg wrote:
+> From: Aditya Garg <gargaditya08@live.com>
+> 
+> On T2 Macs, the secure boot is handled by the T2 Chip. If enabled, only
+> macOS and Windows are allowed to boot on these machines. Thus we need to
+> disable secure boot for Linux. If we boot into Linux after disabling
+> secure boot, if CONFIG_LOAD_UEFI_KEYS is enabled, EFI Runtime services
+> fail to start, with the following logs in dmesg
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- drivers/pinctrl/pinctrl-starfive.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/pinctrl/pinctrl-starfive.c b/drivers/pinctrl/pinctrl-starfive.c
-index 5be9866c2b3c..f29d9ccf858b 100644
---- a/drivers/pinctrl/pinctrl-starfive.c
-+++ b/drivers/pinctrl/pinctrl-starfive.c
-@@ -15,6 +15,7 @@
- #include <linux/of.h>
- #include <linux/platform_device.h>
- #include <linux/reset.h>
-+#include <linux/seq_file.h>
- #include <linux/spinlock.h>
- 
- #include <linux/pinctrl/pinctrl.h>
-@@ -1163,12 +1164,20 @@ static int starfive_irq_set_type(struct irq_data *d, unsigned int trigger)
- 	return 0;
- }
- 
-+static void starfive_irq_print_chip(struct irq_data *d, struct seq_file *p)
-+{
-+	struct starfive_pinctrl *sfp = starfive_from_irq_data(d);
-+
-+	seq_printf(p, sfp->gc.label);
-+}
-+
- static struct irq_chip starfive_irq_chip = {
- 	.irq_ack = starfive_irq_ack,
- 	.irq_mask = starfive_irq_mask,
- 	.irq_mask_ack = starfive_irq_mask_ack,
- 	.irq_unmask = starfive_irq_unmask,
- 	.irq_set_type = starfive_irq_set_type,
-+	.irq_print_chip = starfive_irq_print_chip,
- 	.flags = IRQCHIP_SET_TYPE_MASKED,
- };
- 
-@@ -1307,8 +1316,6 @@ static int starfive_probe(struct platform_device *pdev)
- 	sfp->gc.base = -1;
- 	sfp->gc.ngpio = NR_GPIOS;
- 
--	starfive_irq_chip.name = sfp->gc.label;
--
- 	sfp->gc.irq.chip = &starfive_irq_chip;
- 	sfp->gc.irq.parent_handler = starfive_gpio_irq_handler;
- 	sfp->gc.irq.num_parents = 1;
--- 
-2.30.2
-
+Which specific variable request is triggering the failure? Do any 
+runtime variable accesses work on these machines?
