@@ -2,78 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34804C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A41FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:59:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241685AbiBIS7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:59:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33840 "EHLO
+        id S241690AbiBIS7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:59:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241349AbiBIS50 (ORCPT
+        with ESMTP id S241397AbiBIS50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 13:57:26 -0500
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133E5C050CF6;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2873C050CFA;
         Wed,  9 Feb 2022 10:57:24 -0800 (PST)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 850EB20140B;
-        Wed,  9 Feb 2022 18:57:21 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 6EB35803D6; Wed,  9 Feb 2022 19:57:06 +0100 (CET)
-Date:   Wed, 9 Feb 2022 19:57:06 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A . Donenfeld" <Jason@zx2c4.com>, tytso@mit.edu
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: [PATCH] random: fix locking for crng_init in crng_reseed()
-Message-ID: <YgQOgqWr0nwqZCh6@owl.dominikbrodowski.net>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DA2CB8238C;
+        Wed,  9 Feb 2022 18:57:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFB4CC340E7;
+        Wed,  9 Feb 2022 18:57:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644433042;
+        bh=o/sKIMrGLrAkYp8Q+KzdWoLa4OteYk6nG3L46DZRWxs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qiYgbOwIATjxhzgXClZddYE+2HuhSgTexjNdAvKGgpZY4h8R5kz0iSfiJ10ZTE+t9
+         o36ixpuCj/gyZXhoe9IynP95ZFkxTElksdGqi0aWMTqPQd7Bo/hsEy7C0+DEKXgxgO
+         ENU1Kr7gow4BLNT4YjCeZ4peQyNYXQVWNb228Vkg6SbMIAl37UnoXrZNucmCINpWlq
+         SfLEaxrMNe/b4wzlQW+gjmyai1tyk1IY83gfgjUxmeQSYnCot73bRXFn2teU9LPttP
+         53JQbiFmg5/Nfh0BhQ3m9ZpvVnObMUoW4QACY42lPf0S1uwHD8UJAJnWW+g6yuuqXm
+         xYMAbccc0/uYQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.10 3/6] KVM: nVMX: Also filter MSR_IA32_VMX_TRUE_PINBASED_CTLS when eVMCS
+Date:   Wed,  9 Feb 2022 13:57:10 -0500
+Message-Id: <20220209185714.48936-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209185714.48936-1-sashal@kernel.org>
+References: <20220209185714.48936-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-crng_init is protected by primary_crng->lock. Therefore, we need
-to hold this lock when increasing crng_init to 2. As we shouldn't
-hold this lock for too long, only hold it for those parts which
-require protection.
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+[ Upstream commit f80ae0ef089a09e8c18da43a382c3caac9a424a7 ]
+
+Similar to MSR_IA32_VMX_EXIT_CTLS/MSR_IA32_VMX_TRUE_EXIT_CTLS,
+MSR_IA32_VMX_ENTRY_CTLS/MSR_IA32_VMX_TRUE_ENTRY_CTLS pair,
+MSR_IA32_VMX_TRUE_PINBASED_CTLS needs to be filtered the same way
+MSR_IA32_VMX_PINBASED_CTLS is currently filtered as guests may solely rely
+on 'true' MSR data.
+
+Note, none of the currently existing Windows/Hyper-V versions are known
+to stumble upon the unfiltered MSR_IA32_VMX_TRUE_PINBASED_CTLS, the change
+is aimed at making the filtering future proof.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220112170134.1904308-2-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/x86/kvm/vmx/evmcs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index cc4d9d414df2..aee56032ebb4 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -497,6 +497,7 @@ static void crng_slow_load(const void *cp, unsigned int len)
- 
- static void crng_reseed(void)
- {
-+	bool complete_init = false;
- 	unsigned long flags;
- 	int entropy_count;
- 	unsigned long next_gen;
-@@ -526,12 +527,14 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	base_crng.birth = jiffies;
--	spin_unlock_irqrestore(&base_crng.lock, flags);
--	memzero_explicit(key, sizeof(key));
--
- 	if (crng_init < 2) {
- 		invalidate_batched_entropy();
- 		crng_init = 2;
-+		complete_init = true;
-+	}
-+	spin_unlock_irqrestore(&base_crng.lock, flags);
-+	memzero_explicit(key, sizeof(key));
-+	if (complete_init) {
- 		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
+diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+index c0d6fee9225fe..5b68034ec5f9c 100644
+--- a/arch/x86/kvm/vmx/evmcs.c
++++ b/arch/x86/kvm/vmx/evmcs.c
+@@ -361,6 +361,7 @@ void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata)
+ 	case MSR_IA32_VMX_PROCBASED_CTLS2:
+ 		ctl_high &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
+ 		break;
++	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
+ 	case MSR_IA32_VMX_PINBASED_CTLS:
+ 		ctl_high &= ~EVMCS1_UNSUPPORTED_PINCTRL;
+ 		break;
+-- 
+2.34.1
+
