@@ -2,56 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 810C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D46EDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:39:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237324AbiBIQi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:38:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
+        id S237340AbiBIQjz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:39:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235095AbiBIQi5 (ORCPT
+        with ESMTP id S234543AbiBIQjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:38:57 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5379BC0613C9;
-        Wed,  9 Feb 2022 08:39:00 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CD302ED1;
-        Wed,  9 Feb 2022 08:38:59 -0800 (PST)
-Received: from e123427-lin.arm.com (unknown [10.57.40.175])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 155163F70D;
-        Wed,  9 Feb 2022 08:38:57 -0800 (PST)
-From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To:     Zhiqiang Hou <Zhiqiang.Hou@nxp.com>, kishon@ti.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH] PCI: endpoint: Fix alignment fault error in copy tests
-Date:   Wed,  9 Feb 2022 16:38:50 +0000
-Message-Id: <164442471484.32537.8057098991529121924.b4-ty@arm.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20211217094708.28678-1-Zhiqiang.Hou@nxp.com>
-References: <20211217094708.28678-1-Zhiqiang.Hou@nxp.com>
+        Wed, 9 Feb 2022 11:39:53 -0500
+Received: from fwd1.porkbun.com (fwd1.porkbun.com [52.10.174.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8457C0612BE;
+        Wed,  9 Feb 2022 08:39:56 -0800 (PST)
+Received: by fwd1.porkbun.com (Postfix, from userid 497)
+        id 78B7C429CD; Wed,  9 Feb 2022 16:39:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ansari.sh;
+        s=default; t=1644424796;
+        bh=ooNj/8suxQGCS+iG0qUYChLq9ehXfq6KW/VZ9iEQVtM=;
+        h=From:To:Cc:Subject:Date;
+        b=m2Mzvb3yBRtES/mr4zsa1QF5lj5mhZS1V0C6oe92XDpcv5MPqBz/vU8gOtlrbORKR
+         Tt0RqZoBdYPdmZsDUpBxIPYrE5UnfhCnMpsu6k89T+MgqUrwY6FVkrIoJVnMoPveiy
+         8vYKvLi8nSFutE0FplWcPfZ3ZRuUbp7VUV9dmiNM=
+Received: from rayyan-pc.. (unknown [90.242.138.108])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: rayyan@ansari.sh)
+        by fwd1.porkbun.com (Postfix) with ESMTPSA id B8E4D41C54;
+        Wed,  9 Feb 2022 16:39:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ansari.sh;
+        s=default; t=1644424781;
+        bh=ooNj/8suxQGCS+iG0qUYChLq9ehXfq6KW/VZ9iEQVtM=;
+        h=From:To:Cc:Subject:Date;
+        b=ZM0LJZsYefdS00PyYlDAREOJZ+oo2lgbvjHxMsfx6vGyauOZP0s8MW22WeUp9KIBg
+         WPohoiTLEsz9SvHvTuB24ydfECHae4XNrRHeJsHRTEYFIdZRWdQ1M+5X0num9UF2ap
+         7u+fgkXSA0MqW4/hGjzKg4plnyZ1S8+ZMuGshFsg=
+From:   Rayyan Ansari <rayyan@ansari.sh>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Rayyan Ansari <rayyan@ansari.sh>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] ARM: dts: qcom: pm8226: Add VADC node
+Date:   Wed,  9 Feb 2022 16:38:40 +0000
+Message-Id: <20220209163841.7360-1-rayyan@ansari.sh>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 17 Dec 2021 17:47:08 +0800, Zhiqiang Hou wrote:
-> From: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
-> 
-> In the copy tests, it uses the memcpy() to copy data between
-> IO memory space. This can cause the alignment fualt error
-> (pasted the error logs below) due to the memcpy() may use
-> unaligned accesses.
-> 
-> [...]
+Add a node for the voltage ADC (VADC) found in PM8226.
 
-Applied to pci/endpoint, thanks!
+Signed-off-by: Rayyan Ansari <rayyan@ansari.sh>
+---
+ arch/arm/boot/dts/qcom-pm8226.dtsi | 34 ++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-[1/1] PCI: endpoint: Fix alignment fault error in copy tests
-      https://git.kernel.org/lpieralisi/pci/c/829cc0e2ea
+diff --git a/arch/arm/boot/dts/qcom-pm8226.dtsi b/arch/arm/boot/dts/qcom-pm8226.dtsi
+index b3d0f7b5874d..5e07f34e4ec4 100644
+--- a/arch/arm/boot/dts/qcom-pm8226.dtsi
++++ b/arch/arm/boot/dts/qcom-pm8226.dtsi
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/spmi/spmi.h>
++#include <dt-bindings/iio/qcom,spmi-vadc.h>
+ 
+ &spmi_bus {
+ 	pm8226_0: pm8226@0 {
+@@ -40,6 +41,39 @@ smbb: charger@1000 {
+ 			chg_otg: otg-vbus { };
+ 		};
+ 
++		pm8226_vadc: adc@3100 {
++			compatible = "qcom,spmi-vadc";
++			reg = <0x3100>;
++			interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			#io-channel-cells = <1>;
++
++			adc-chan@7 {
++				reg = <VADC_VSYS>;
++				qcom,pre-scaling = <1 3>;
++				label = "vph_pwr";
++			};
++			adc-chan@8 {
++				reg = <VADC_DIE_TEMP>;
++				label = "die_temp";
++			};
++			adc-chan@9 {
++				reg = <VADC_REF_625MV>;
++				label = "ref_625mv";
++			};
++			adc-chan@a {
++				reg = <VADC_REF_1250MV>;
++				label = "ref_1250mv";
++			};
++			adc-chan@e {
++				reg = <VADC_GND_REF>;
++			};
++			adc-chan@f {
++				reg = <VADC_VDD_VADC>;
++			};
++		};
++
+ 		pm8226_mpps: mpps@a000 {
+ 			compatible = "qcom,pm8226-mpp", "qcom,spmi-mpp";
+ 			reg = <0xa000>;
+-- 
+2.34.1
 
-Thanks,
-Lorenzo
