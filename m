@@ -2,52 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62557C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3761BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239966AbiBISiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:38:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
+        id S239216AbiBISi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:38:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239903AbiBISiQ (ORCPT
+        with ESMTP id S239926AbiBISiM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:38:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4A7C05CB9E;
-        Wed,  9 Feb 2022 10:38:08 -0800 (PST)
+        Wed, 9 Feb 2022 13:38:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E46BC0613C9;
+        Wed,  9 Feb 2022 10:38:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4045FB82384;
-        Wed,  9 Feb 2022 18:38:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16482C340F1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04583B82380;
         Wed,  9 Feb 2022 18:38:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8678C340E7;
+        Wed,  9 Feb 2022 18:38:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431886;
-        bh=6TGHFzWoBF8VCHFHfVRCuz5fx3lT8j5ALTDaaJYk2OE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qw0Etd3tRlKn+qSj1d1+xKSpVuGcFfD8XwQD3pUjnOwiM03pSrjPWXyaaioxsnvSY
-         cGe0IXsGfv6/MXrE/6k916i9Xq/knwzyZ6cJPx3nwT6AlN/xDJyx68HxpiziOYzxm1
-         UNYLXk8gXDkaqcpUsxTD/tR3YSgmrY/XB4FBaiMUpsr76RCH93+Qpea4gBUINGMKbV
-         sl7ivfU1DxyIt5jwnUN4RB48vMKmW+QAqoR7knfwKw6OUMpdtcFaXms3cZ4jGbEFEB
-         aNtuEak4/ol2BBMJ+eWx2UMZK8utWzt/FQIW8YzEgbwC58R8tmdxi9GkEnLmTGapal
-         33J2lzjT57n7g==
+        s=k20201202; t=1644431882;
+        bh=rJqkONifNZkKsNztAUsXBO+i58TXXXnD/CHomPNqq44=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Y5xOyygbuQTUcRVpEABbmN3Z0zm54CnJlUCE3pBgHf1yOf8Cn/8mP+kabHct+1Rsx
+         GLutJbeUDoSFeJHBXXpY/rD05WIQLRhYFbeiHItwOELuT1hzviM0n6PJROabOBgNp1
+         +7p62cr97kGNs9r4pQuDKwYNV1nY0bcqyK6u35/zl85HKNnsCrD6cqbiG/4/Sm5xf6
+         5O1LBpS/BLaD4XN3Oy6h86BgMrdx7nY2nAF/2AnRtykLu/bsNrDmJnHvzSh5za9/pY
+         y74hnukOLq2rfysDtF0A3NSOUahPsrJjYzCTK67Puv9lBkYTsfCQ6rum99f8ckwXfH
+         QFRpkx6I9WIiQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Micha=C5=82=20Winiarski?= <michal.winiarski@intel.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com
-Subject: [PATCH AUTOSEL 5.15 03/36] kunit: tool: Import missing importlib.abc
-Date:   Wed,  9 Feb 2022 13:37:26 -0500
-Message-Id: <20220209183759.47134-3-sashal@kernel.org>
+Cc:     Yuka Kawajiri <yukx00@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, markgross@kernel.org,
+        linux-input@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 01/36] platform/x86: touchscreen_dmi: Add info for the RWC NANOTE P8 AY07J 2-in-1
+Date:   Wed,  9 Feb 2022 13:37:24 -0500
+Message-Id: <20220209183759.47134-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
-References: <20220209183759.47134-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,40 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michał Winiarski <michal.winiarski@intel.com>
+From: Yuka Kawajiri <yukx00@gmail.com>
 
-[ Upstream commit 235528072f28b3b0a1446279b7eaddda36dbf743 ]
+[ Upstream commit 512eb73cfd1208898cf10cb06094e0ee0bb53b58 ]
 
-Python 3.10.0 contains:
-9e09849d20 ("bpo-41006: importlib.util no longer imports typing (GH-20938)")
+Add touchscreen info for RWC NANOTE P8 (AY07J) 2-in-1.
 
-It causes importlib.util to no longer import importlib.abs, which leads
-to the following error when trying to use kunit with qemu:
-AttributeError: module 'importlib' has no attribute 'abc'. Did you mean: '_abc'?
-
-Add the missing import.
-
-Signed-off-by: Michał Winiarski <michal.winiarski@intel.com>
-Reviewed-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Yuka Kawajiri <yukx00@gmail.com>
+Link: https://lore.kernel.org/r/20220111154019.4599-1-yukx00@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/kunit/kunit_kernel.py | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/platform/x86/touchscreen_dmi.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
-index 2c6f916ccbafa..0874e512d109b 100644
---- a/tools/testing/kunit/kunit_kernel.py
-+++ b/tools/testing/kunit/kunit_kernel.py
-@@ -6,6 +6,7 @@
- # Author: Felix Guo <felixguoxiuping@gmail.com>
- # Author: Brendan Higgins <brendanhiggins@google.com>
+diff --git a/drivers/platform/x86/touchscreen_dmi.c b/drivers/platform/x86/touchscreen_dmi.c
+index 033f797861d8a..c608078538a79 100644
+--- a/drivers/platform/x86/touchscreen_dmi.c
++++ b/drivers/platform/x86/touchscreen_dmi.c
+@@ -773,6 +773,21 @@ static const struct ts_dmi_data predia_basic_data = {
+ 	.properties	= predia_basic_props,
+ };
  
-+import importlib.abc
- import importlib.util
- import logging
- import subprocess
++static const struct property_entry rwc_nanote_p8_props[] = {
++	PROPERTY_ENTRY_U32("touchscreen-min-y", 46),
++	PROPERTY_ENTRY_U32("touchscreen-size-x", 1728),
++	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
++	PROPERTY_ENTRY_BOOL("touchscreen-inverted-y"),
++	PROPERTY_ENTRY_STRING("firmware-name", "gsl1680-rwc-nanote-p8.fw"),
++	PROPERTY_ENTRY_U32("silead,max-fingers", 10),
++	{ }
++};
++
++static const struct ts_dmi_data rwc_nanote_p8_data = {
++	.acpi_name = "MSSL1680:00",
++	.properties = rwc_nanote_p8_props,
++};
++
+ static const struct property_entry schneider_sct101ctm_props[] = {
+ 	PROPERTY_ENTRY_U32("touchscreen-size-x", 1715),
+ 	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
+@@ -1379,6 +1394,15 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
+ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
+ 		},
+ 	},
++	{
++		/* RWC NANOTE P8 */
++		.driver_data = (void *)&rwc_nanote_p8_data,
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "Default string"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "AY07J"),
++			DMI_MATCH(DMI_PRODUCT_SKU, "0001")
++		},
++	},
+ 	{
+ 		/* Schneider SCT101CTM */
+ 		.driver_data = (void *)&schneider_sct101ctm_data,
 -- 
 2.34.1
 
