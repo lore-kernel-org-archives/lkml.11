@@ -2,47 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 965DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50113C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240347AbiBISk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:40:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55240 "EHLO
+        id S239940AbiBISle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:41:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240157AbiBISkV (ORCPT
+        with ESMTP id S240253AbiBISk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:40:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549FFC05CBA2;
-        Wed,  9 Feb 2022 10:39:28 -0800 (PST)
+        Wed, 9 Feb 2022 13:40:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083CDC03E931;
+        Wed,  9 Feb 2022 10:39:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4602CB82385;
-        Wed,  9 Feb 2022 18:39:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F89CC340E7;
-        Wed,  9 Feb 2022 18:39:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96EF96006F;
+        Wed,  9 Feb 2022 18:39:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5D47C340E7;
+        Wed,  9 Feb 2022 18:39:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431966;
-        bh=tpTIEgFtRJWqT3NNoF4AEr5jm9yZ+qIsIk/1epK+Md0=;
+        s=k20201202; t=1644431990;
+        bh=nhUzr9lx0VmfQA3yfqnH6QBCTASMBayqS1H3ObjAQ6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YN60GeGMkD7qdv17+adYQEex8EGuQthJycuaoJo4BiMl1Zr9XPIEwA0AyhsK6HaM+
-         jZKmUMxxWNKwn9cDBZEYd7uBz1aFIbvUTir1EBM/AZIQLOdAoR0KlBSWgbkWgT5+KX
-         DNbpsHiaG+Dkz7AUz4NKMCVUutCkqxWpHKgsVGoRAtJlT4azeaGeMGknhI9b+jUD3G
-         Dqtcp6G0w+gIz3McQzZLAAfYZVArbF9S4PvI5UnfSGAX3MEvH80vNuuAz0YH02zx7u
-         gnJnf5IKglYwnk36VjDjFnOkbTEeLVi+4GCdMMPJZ/mr4aaheagtmMJfwzcHyLZtTb
-         t9f5BkE+e4VUA==
+        b=perOLt8jW98oyk7vAgo/G41UYJEuXyifw+0oAa++HQ9rYUf/gBelKSuuvaWpBDR2z
+         FB+fjdwqelBVuMSWfXgs4jfQ46tTmKKBLOMq9otyQSU0jGHj3DEZQOzz4RZCLjxLcW
+         k58jIXsCDUMrNsoZ5/gy3oNQt95OrbHVziiTzkg21foLIEPctXM9SMJyhYijUFrD5e
+         pvqaxWLzo9sfz7AJKVZ4wsI4nrCtrxOD1+sA059FQ6YrNUUKO3jG0se4XKs3jirNR7
+         +4UnzzlcFkwQp1rNWgQne0Kd/mFJo8rx3OizkbYjaad18MbA8MP0QuCIpsm5BwsGnb
+         XbnAYtXPZifvQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ajish Koshy <Ajish.Koshy@microchip.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Viswas G <Viswas.G@microchip.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
-        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 20/36] scsi: pm80xx: Fix double completion for SATA devices
-Date:   Wed,  9 Feb 2022 13:37:43 -0500
-Message-Id: <20220209183759.47134-20-sashal@kernel.org>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        Bjoren Dasse <bjoern.daase@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        lijo.lazar@amd.com, Hawking.Zhang@amd.com, guchun.chen@amd.com,
+        sathishkumar.sundararaju@amd.com,
+        veerabadhran.gopalakrishnan@amd.com, shaoyun.liu@amd.com,
+        nirmoy.das@amd.com, Prike.Liang@amd.com,
+        Pratik.Vishwakarma@amd.com, rdunlap@infradead.org, bp@suse.de,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 25/36] drm/amd: Warn users about potential s0ix problems
+Date:   Wed,  9 Feb 2022 13:37:48 -0500
+Message-Id: <20220209183759.47134-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
 References: <20220209183759.47134-1-sashal@kernel.org>
@@ -54,145 +59,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ajish Koshy <Ajish.Koshy@microchip.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit c26b85ea16365079be8d206b20556a60a0c69ad4 ]
+[ Upstream commit a6ed2035878e5ad2e43ed175d8812ac9399d6c40 ]
 
-Current code handles completions for SATA devices in mpi_sata_completion()
-and mpi_sata_event().
+On some OEM setups users can configure the BIOS for S3 or S2idle.
+When configured to S3 users can still choose 's2idle' in the kernel by
+using `/sys/power/mem_sleep`.  Before commit 6dc8265f9803 ("drm/amdgpu:
+always reset the asic in suspend (v2)"), the GPU would crash.  Now when
+configured this way, the system should resume but will use more power.
 
-However, at the time when any SATA event happens, for almost all the event
-types, the command is still in the target. It is therefore incorrect to
-complete the task in sata_event().
+As such, adjust the `amdpu_acpi_is_s0ix function` to warn users about
+potential power consumption issues during their first attempt at
+suspending.
 
-There are some events for which we get sata_completions, some need recovery
-procedure and others abort. All the tasks must be completed via
-sata_completion() path.
-
-Removed the task done related code from sata_events().  For tasks where we
-don't get completions, let top layer call abort() to abort the command post
-timeout.
-
-Link: https://lore.kernel.org/r/20220124082255.86223-1-Ajish.Koshy@microchip.com
-Acked-by: Jack Wang <jinpu.wang@ionos.com>
-Co-developed-by: Viswas G <Viswas.G@microchip.com>
-Signed-off-by: Viswas G <Viswas.G@microchip.com>
-Signed-off-by: Ajish Koshy <Ajish.Koshy@microchip.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Bjoren Dasse <bjoern.daase@gmail.com>
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1824
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 18 ------------------
- drivers/scsi/pm8001/pm80xx_hwi.c | 26 --------------------------
- 2 files changed, 44 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu.h      |  8 ++++++--
+ drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c | 24 +++++++++++++++++++-----
+ 2 files changed, 25 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 880e1f356defc..5e6b23da4157c 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -2695,7 +2695,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 	u32 tag = le32_to_cpu(psataPayload->tag);
- 	u32 port_id = le32_to_cpu(psataPayload->port_id);
- 	u32 dev_id = le32_to_cpu(psataPayload->device_id);
--	unsigned long flags;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+index f428f94b43c0a..c8d31a22176f3 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+@@ -1397,12 +1397,10 @@ int amdgpu_acpi_smart_shift_update(struct drm_device *dev, enum amdgpu_ss ss_sta
+ int amdgpu_acpi_pcie_notify_device_ready(struct amdgpu_device *adev);
  
- 	ccb = &pm8001_ha->ccb_info[tag];
+ void amdgpu_acpi_get_backlight_caps(struct amdgpu_dm_backlight_caps *caps);
+-bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev);
+ void amdgpu_acpi_detect(void);
+ #else
+ static inline int amdgpu_acpi_init(struct amdgpu_device *adev) { return 0; }
+ static inline void amdgpu_acpi_fini(struct amdgpu_device *adev) { }
+-static inline bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev) { return false; }
+ static inline void amdgpu_acpi_detect(void) { }
+ static inline bool amdgpu_acpi_is_power_shift_control_supported(void) { return false; }
+ static inline int amdgpu_acpi_power_shift_control(struct amdgpu_device *adev,
+@@ -1411,6 +1409,12 @@ static inline int amdgpu_acpi_smart_shift_update(struct drm_device *dev,
+ 						 enum amdgpu_ss ss_state) { return 0; }
+ #endif
  
-@@ -2735,8 +2734,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 		ts->resp = SAS_TASK_COMPLETE;
- 		ts->stat = SAS_DATA_OVERRUN;
- 		ts->residual = 0;
--		if (pm8001_dev)
--			atomic_dec(&pm8001_dev->running_req);
- 		break;
- 	case IO_XFER_ERROR_BREAK:
- 		pm8001_dbg(pm8001_ha, IO, "IO_XFER_ERROR_BREAK\n");
-@@ -2778,7 +2775,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 				IO_OPEN_CNX_ERROR_IT_NEXUS_LOSS);
- 			ts->resp = SAS_TASK_COMPLETE;
- 			ts->stat = SAS_QUEUE_FULL;
--			pm8001_ccb_task_free_done(pm8001_ha, t, ccb, tag);
- 			return;
- 		}
- 		break;
-@@ -2864,20 +2860,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 		ts->stat = SAS_OPEN_TO;
- 		break;
++#if defined(CONFIG_ACPI) && defined(CONFIG_SUSPEND)
++bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev);
++#else
++static inline bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev) { return false; }
++#endif
++
+ int amdgpu_cs_find_mapping(struct amdgpu_cs_parser *parser,
+ 			   uint64_t addr, struct amdgpu_bo **bo,
+ 			   struct amdgpu_bo_va_mapping **mapping);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
+index 4811b0faafd9a..b19d407518024 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
+@@ -1031,6 +1031,7 @@ void amdgpu_acpi_detect(void)
  	}
--	spin_lock_irqsave(&t->task_state_lock, flags);
--	t->task_state_flags &= ~SAS_TASK_STATE_PENDING;
--	t->task_state_flags &= ~SAS_TASK_AT_INITIATOR;
--	t->task_state_flags |= SAS_TASK_STATE_DONE;
--	if (unlikely((t->task_state_flags & SAS_TASK_STATE_ABORTED))) {
--		spin_unlock_irqrestore(&t->task_state_lock, flags);
--		pm8001_dbg(pm8001_ha, FAIL,
--			   "task 0x%p done with io_status 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
--			   t, event, ts->resp, ts->stat);
--		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
--	} else {
--		spin_unlock_irqrestore(&t->task_state_lock, flags);
--		pm8001_ccb_task_free_done(pm8001_ha, t, ccb, tag);
--	}
  }
  
- /*See the comments for mpi_ssp_completion */
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index ed02e1aaf868c..733781018c0ba 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -2828,7 +2828,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha,
- 	u32 tag = le32_to_cpu(psataPayload->tag);
- 	u32 port_id = le32_to_cpu(psataPayload->port_id);
- 	u32 dev_id = le32_to_cpu(psataPayload->device_id);
--	unsigned long flags;
- 
- 	ccb = &pm8001_ha->ccb_info[tag];
- 
-@@ -2866,8 +2865,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha,
- 		ts->resp = SAS_TASK_COMPLETE;
- 		ts->stat = SAS_DATA_OVERRUN;
- 		ts->residual = 0;
--		if (pm8001_dev)
--			atomic_dec(&pm8001_dev->running_req);
- 		break;
- 	case IO_XFER_ERROR_BREAK:
- 		pm8001_dbg(pm8001_ha, IO, "IO_XFER_ERROR_BREAK\n");
-@@ -2916,11 +2913,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha,
- 				IO_OPEN_CNX_ERROR_IT_NEXUS_LOSS);
- 			ts->resp = SAS_TASK_COMPLETE;
- 			ts->stat = SAS_QUEUE_FULL;
--			spin_unlock_irqrestore(&circularQ->oq_lock,
--					circularQ->lock_flags);
--			pm8001_ccb_task_free_done(pm8001_ha, t, ccb, tag);
--			spin_lock_irqsave(&circularQ->oq_lock,
--					circularQ->lock_flags);
- 			return;
- 		}
- 		break;
-@@ -3020,24 +3012,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha,
- 		ts->stat = SAS_OPEN_TO;
- 		break;
++#if IS_ENABLED(CONFIG_SUSPEND)
+ /**
+  * amdgpu_acpi_is_s0ix_active
+  *
+@@ -1040,11 +1041,24 @@ void amdgpu_acpi_detect(void)
+  */
+ bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev)
+ {
+-#if IS_ENABLED(CONFIG_AMD_PMC) && IS_ENABLED(CONFIG_SUSPEND)
+-	if (acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0) {
+-		if (adev->flags & AMD_IS_APU)
+-			return pm_suspend_target_state == PM_SUSPEND_TO_IDLE;
++	if (!(adev->flags & AMD_IS_APU) ||
++	    (pm_suspend_target_state != PM_SUSPEND_TO_IDLE))
++		return false;
++
++	if (!(acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0)) {
++		dev_warn_once(adev->dev,
++			      "Power consumption will be higher as BIOS has not been configured for suspend-to-idle.\n"
++			      "To use suspend-to-idle change the sleep mode in BIOS setup.\n");
++		return false;
  	}
--	spin_lock_irqsave(&t->task_state_lock, flags);
--	t->task_state_flags &= ~SAS_TASK_STATE_PENDING;
--	t->task_state_flags &= ~SAS_TASK_AT_INITIATOR;
--	t->task_state_flags |= SAS_TASK_STATE_DONE;
--	if (unlikely((t->task_state_flags & SAS_TASK_STATE_ABORTED))) {
--		spin_unlock_irqrestore(&t->task_state_lock, flags);
--		pm8001_dbg(pm8001_ha, FAIL,
--			   "task 0x%p done with io_status 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
--			   t, event, ts->resp, ts->stat);
--		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
--	} else {
--		spin_unlock_irqrestore(&t->task_state_lock, flags);
--		spin_unlock_irqrestore(&circularQ->oq_lock,
--				circularQ->lock_flags);
--		pm8001_ccb_task_free_done(pm8001_ha, t, ccb, tag);
--		spin_lock_irqsave(&circularQ->oq_lock,
--				circularQ->lock_flags);
--	}
+-#endif
++
++#if !IS_ENABLED(CONFIG_AMD_PMC)
++	dev_warn_once(adev->dev,
++		      "Power consumption will be higher as the kernel has not been compiled with CONFIG_AMD_PMC.\n");
+ 	return false;
++#else
++	return true;
++#endif /* CONFIG_AMD_PMC */
  }
- 
- /*See the comments for mpi_ssp_completion */
++
++#endif /* CONFIG_SUSPEND */
 -- 
 2.34.1
 
