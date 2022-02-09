@@ -2,392 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:18:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A79C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232758AbiBIGSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:18:04 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:54422 "EHLO
+        id S233774AbiBIGSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:18:09 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:58170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237739AbiBIGPX (ORCPT
+        with ESMTP id S234995AbiBIGRT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:15:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22DFDF28A20
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 22:15:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 9 Feb 2022 01:17:19 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D15C0045F1
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 22:17:22 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5E54B81F17
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:15:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B753DC340E7;
-        Wed,  9 Feb 2022 06:15:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644387305;
-        bh=OUPNHBAJBd42EIpzpVtb9lp5kMJbQTw7jGC1FYPoiXk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IGD42/2Jb0d5SZJjI471MYihxC7OM3utb9RbC8h+OjELkaeknbfHc2Ni209paihrU
-         kqLccFEAqqlInc/AHGaZB/ji+CAJKW5R1AfYYfulxbhW0EB1UgHvQNyRJvvoSnOMnt
-         FF0XeD7dfALhqVs7dxTAdJxRU5kFYzW4egFmXBx2hb2/ic6CPPBXF8l7Ts2LsiJAC8
-         tHoWBA2YbqM1HgTkiFhXUbP3apbqStVE8AXtdfqiCcd0nlNwK2qlvLY8d0w5RGcBs3
-         i2KavDo3xNE2NIqWrQT4OVzbfw4Oohgri5kHjPuMGfAWYgQtmpTyqDq0kcLRxeWBSA
-         EDIhrgIdTK8mw==
-Date:   Wed, 9 Feb 2022 07:14:59 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Lucas De Marchi <lucas.demarchi@intel.com>
-Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        John Harrison <John.C.Harrison@Intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Thomas =?UTF-8?B?SGVsbHN0csO2bQ==?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 02/18] iosys-map: Add a few more helpers
-Message-ID: <20220209071459.06d4d397@coco.lan>
-In-Reply-To: <20220208104524.2516209-3-lucas.demarchi@intel.com>
-References: <20220208104524.2516209-1-lucas.demarchi@intel.com>
-        <20220208104524.2516209-3-lucas.demarchi@intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 6179F1F390;
+        Wed,  9 Feb 2022 06:17:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644387441; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8zqt8N0X5y3qkwMq8LYdTdJJ2Zd61U3aplddbbV9Lbg=;
+        b=VRhqeV0JQvGq3Qi/qayiL7HbOi6BDVpjT2dRL6p+UpJh6CWMgCd+oO5XvKGQVEqqs0oD1/
+        aE5f3qe5RgvTLJjOykGn2GwXDDwoFS4KpyMc7eeI9/7o6wV/hkOTNMnKNzR6w43OliAmPr
+        jyC5pvmhEzutPCIjO/Csn0AI1QLj/Uc=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2776F13486;
+        Wed,  9 Feb 2022 06:17:21 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id LFgxB3FcA2ISbgAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 09 Feb 2022 06:17:21 +0000
+Message-ID: <b0995f72-1772-7c0a-155d-537b0df6569e@suse.com>
+Date:   Wed, 9 Feb 2022 07:17:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH] xen/pci: Make use of the helper macro LIST_HEAD()
+Content-Language: en-US
+To:     Cai Huoqing <cai.huoqing@linux.dev>
+Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+References: <20220209032842.38818-1-cai.huoqing@linux.dev>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <20220209032842.38818-1-cai.huoqing@linux.dev>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------JZwkKbvpmmzcfNSTYoYJ4OYv"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue,  8 Feb 2022 02:45:08 -0800
-Lucas De Marchi <lucas.demarchi@intel.com> escreveu:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------JZwkKbvpmmzcfNSTYoYJ4OYv
+Content-Type: multipart/mixed; boundary="------------JHAhS3DI07LY0b1HfLdRC3Vq";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Cai Huoqing <cai.huoqing@linux.dev>
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Stefano Stabellini <sstabellini@kernel.org>, xen-devel@lists.xenproject.org,
+ linux-kernel@vger.kernel.org
+Message-ID: <b0995f72-1772-7c0a-155d-537b0df6569e@suse.com>
+Subject: Re: [PATCH] xen/pci: Make use of the helper macro LIST_HEAD()
+References: <20220209032842.38818-1-cai.huoqing@linux.dev>
+In-Reply-To: <20220209032842.38818-1-cai.huoqing@linux.dev>
 
-> First the simplest ones:
->=20
-> 	- iosys_map_memset(): when abstracting system and I/O memory,
-> 	  just like the memcpy() use case, memset() also has dedicated
-> 	  functions to be called for using IO memory.
-> 	- iosys_map_memcpy_from(): we may need to copy data from I/O
-> 	  memory, not only to.
->=20
-> In certain situations it's useful to be able to read or write to an
-> offset that is calculated by having the memory layout given by a struct
-> declaration. Usually we are going to read/write a u8, u16, u32 or u64.
->=20
-> As a pre-requisite for the implementation, add iosys_map_memcpy_from()
-> to be the equivalent of iosys_map_memcpy_to(), but in the other
-> direction. Then add 2 pairs of macros:
->=20
-> 	- iosys_map_rd() / iosys_map_wr()
-> 	- iosys_map_rd_field() / iosys_map_wr_field()
->=20
-> The first pair takes the C-type and offset to read/write. The second
-> pair uses a struct describing the layout of the mapping in order to
-> calculate the offset and size being read/written.
->=20
-> We could use readb, readw, readl, readq and the write* counterparts,
-> however due to alignment issues this may not work on all architectures.
-> If alignment needs to be checked to call the right function, it's not
-> possible to decide at compile-time which function to call: so just leave
-> the decision to the memcpy function that will do exactly that.
->=20
-> Finally, in order to use the above macros with a map derived from
-> another, add another initializer: IOSYS_MAP_INIT_OFFSET().
->=20
-> v2:
->   - Rework IOSYS_MAP_INIT_OFFSET() so it doesn't rely on aliasing rules
->     within the union
->   - Add offset to both iosys_map_rd_field() and iosys_map_wr_field() to
->     allow the struct itself to be at an offset from the mapping
->   - Add documentation to iosys_map_rd_field() with example and expected
->     memory layout
->=20
-> Cc: Sumit Semwal <sumit.semwal@linaro.org>
-> Cc: Christian K=C3=B6nig <christian.koenig@amd.com>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+--------------JHAhS3DI07LY0b1HfLdRC3Vq
+Content-Type: multipart/mixed; boundary="------------8130HTxQhVjP7l15QOIqt60g"
 
-LGTM.
+--------------8130HTxQhVjP7l15QOIqt60g
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+T24gMDkuMDIuMjIgMDQ6MjgsIENhaSBIdW9xaW5nIHdyb3RlOg0KPiBSZXBsYWNlICJzdHJ1
+Y3QgbGlzdF9oZWFkIGhlYWQgPSBMSVNUX0hFQURfSU5JVChoZWFkKSIgd2l0aA0KPiAiTElT
+VF9IRUFEKGhlYWQpIiB0byBzaW1wbGlmeSB0aGUgY29kZS4NCj4gDQo+IFNpZ25lZC1vZmYt
+Ynk6IENhaSBIdW9xaW5nIDxjYWkuaHVvcWluZ0BsaW51eC5kZXY+DQoNClJldmlld2VkLWJ5
+OiBKdWVyZ2VuIEdyb3NzIDxqZ3Jvc3NAc3VzZS5jb20+DQoNCg0KSnVlcmdlbg0K
+--------------8130HTxQhVjP7l15QOIqt60g
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-Regards,
-Mauro
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-> ---
->  include/linux/iosys-map.h | 202 ++++++++++++++++++++++++++++++++++++++
->  1 file changed, 202 insertions(+)
->=20
-> diff --git a/include/linux/iosys-map.h b/include/linux/iosys-map.h
-> index edd730b1e899..c6b223534b21 100644
-> --- a/include/linux/iosys-map.h
-> +++ b/include/linux/iosys-map.h
-> @@ -6,6 +6,7 @@
->  #ifndef __IOSYS_MAP_H__
->  #define __IOSYS_MAP_H__
-> =20
-> +#include <linux/kernel.h>
->  #include <linux/io.h>
->  #include <linux/string.h>
-> =20
-> @@ -120,6 +121,45 @@ struct iosys_map {
->  		.is_iomem =3D false,	\
->  	}
-> =20
-> +/**
-> + * IOSYS_MAP_INIT_OFFSET - Initializes struct iosys_map from another ios=
-ys_map
-> + * @map_:	The dma-buf mapping structure to copy from
-> + * @offset_:	Offset to add to the other mapping
-> + *
-> + * Initializes a new iosys_map struct based on another passed as argumen=
-t. It
-> + * does a shallow copy of the struct so it's possible to update the back=
- storage
-> + * without changing where the original map points to. It is the equivale=
-nt of
-> + * doing:
-> + *
-> + * .. code-block:: c
-> + *
-> + *	iosys_map map =3D other_map;
-> + *	iosys_map_incr(&map, &offset);
-> + *
-> + * Example usage:
-> + *
-> + * .. code-block:: c
-> + *
-> + *	void foo(struct device *dev, struct iosys_map *base_map)
-> + *	{
-> + *		...
-> + *		struct iosys_map map =3D IOSYS_MAP_INIT_OFFSET(base_map, FIELD_OFFSE=
-T);
-> + *		...
-> + *	}
-> + *
-> + * The advantage of using the initializer over just increasing the offse=
-t with
-> + * iosys_map_incr() like above is that the new map will always point to =
-the
-> + * right place of the buffer during its scope. It reduces the risk of up=
-dating
-> + * the wrong part of the buffer and having no compiler warning about tha=
-t. If
-> + * the assignment to IOSYS_MAP_INIT_OFFSET() is forgotten, the compiler =
-can warn
-> + * about the use of uninitialized variable.
-> + */
-> +#define IOSYS_MAP_INIT_OFFSET(map_, offset_) ({				\
-> +	struct iosys_map copy =3D *map_;					\
-> +	iosys_map_incr(&copy, offset_);					\
-> +	copy;								\
-> +})
-> +
->  /**
->   * iosys_map_set_vaddr - Sets a iosys mapping structure to an address in=
- system memory
->   * @map:	The iosys_map structure
-> @@ -239,6 +279,26 @@ static inline void iosys_map_memcpy_to(struct iosys_=
-map *dst, size_t dst_offset,
->  		memcpy(dst->vaddr + dst_offset, src, len);
->  }
-> =20
-> +/**
-> + * iosys_map_memcpy_from - Memcpy from iosys_map into system memory
-> + * @dst:	Destination in system memory
-> + * @src:	The iosys_map structure
-> + * @src_offset:	The offset from which to copy
-> + * @len:	The number of byte in src
-> + *
-> + * Copies data from a iosys_map with an offset. The dest buffer is in
-> + * system memory. Depending on the mapping location, the helper picks the
-> + * correct method of accessing the memory.
-> + */
-> +static inline void iosys_map_memcpy_from(void *dst, const struct iosys_m=
-ap *src,
-> +					 size_t src_offset, size_t len)
-> +{
-> +	if (src->is_iomem)
-> +		memcpy_fromio(dst, src->vaddr_iomem + src_offset, len);
-> +	else
-> +		memcpy(dst, src->vaddr + src_offset, len);
-> +}
-> +
->  /**
->   * iosys_map_incr - Increments the address stored in a iosys mapping
->   * @map:	The iosys_map structure
-> @@ -255,4 +315,146 @@ static inline void iosys_map_incr(struct iosys_map =
-*map, size_t incr)
->  		map->vaddr +=3D incr;
->  }
-> =20
-> +/**
-> + * iosys_map_memset - Memset iosys_map
-> + * @dst:	The iosys_map structure
-> + * @offset:	Offset from dst where to start setting value
-> + * @value:	The value to set
-> + * @len:	The number of bytes to set in dst
-> + *
-> + * Set value in iosys_map. Depending on the buffer's location, the helper
-> + * picks the correct method of accessing the memory.
-> + */
-> +static inline void iosys_map_memset(struct iosys_map *dst, size_t offset,
-> +				    int value, size_t len)
-> +{
-> +	if (dst->is_iomem)
-> +		memset_io(dst->vaddr_iomem + offset, value, len);
-> +	else
-> +		memset(dst->vaddr + offset, value, len);
-> +}
-> +
-> +/**
-> + * iosys_map_rd - Read a C-type value from the iosys_map
-> + *
-> + * @map__:	The iosys_map structure
-> + * @offset__:	The offset from which to read
-> + * @type__:	Type of the value being read
-> + *
-> + * Read a C type value from iosys_map, handling possible un-aligned acce=
-sses to
-> + * the mapping.
-> + *
-> + * Returns:
-> + * The value read from the mapping.
-> + */
-> +#define iosys_map_rd(map__, offset__, type__) ({			\
-> +	type__ val;							\
-> +	iosys_map_memcpy_from(&val, map__, offset__, sizeof(val));	\
-> +	val;								\
-> +})
-> +
-> +/**
-> + * iosys_map_wr - Write a C-type value to the iosys_map
-> + *
-> + * @map__:	The iosys_map structure
-> + * @offset__:	The offset from the mapping to write to
-> + * @type__:	Type of the value being written
-> + * @val__:	Value to write
-> + *
-> + * Write a C-type value to the iosys_map, handling possible un-aligned a=
-ccesses
-> + * to the mapping.
-> + */
-> +#define iosys_map_wr(map__, offset__, type__, val__) ({			\
-> +	type__ val =3D (val__);						\
-> +	iosys_map_memcpy_to(map__, offset__, &val, sizeof(val));	\
-> +})
-> +
-> +/**
-> + * iosys_map_rd_field - Read a member from a struct in the iosys_map
-> + *
-> + * @map__:		The iosys_map structure
-> + * @struct_offset__:	Offset from the beggining of the map, where the str=
-uct
-> + *			is located
-> + * @struct_type__:	The struct describing the layout of the mapping
-> + * @field__:		Member of the struct to read
-> + *
-> + * Read a value from iosys_map considering its layout is described by a =
-C struct
-> + * starting at @struct_offset__. The field offset and size is calculated=
- and its
-> + * value read handling possible un-aligned memory accesses. For example:=
- suppose
-> + * there is a @struct foo defined as below and the value ``foo.field2.in=
-ner2``
-> + * needs to be read from the iosys_map:
-> + *
-> + * .. code-block:: c
-> + *
-> + *	struct foo {
-> + *		int field1;
-> + *		struct {
-> + *			int inner1;
-> + *			int inner2;
-> + *		} field2;
-> + *		int field3;
-> + *	} __packed;
-> + *
-> + * This is the expected memory layout of a buffer using iosys_map_rd_fie=
-ld():
-> + *
-> + * +------------------------------+--------------------------+
-> + * | Address                      | Content                  |
-> + * +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D+
-> + * | buffer + 0000                | start of mmapped buffer  |
-> + * |                              | pointed by iosys_map     |
-> + * +------------------------------+--------------------------+
-> + * | ...                          | ...                      |
-> + * +------------------------------+--------------------------+
-> + * | buffer + ``struct_offset__`` | start of ``struct foo``  |
-> + * +------------------------------+--------------------------+
-> + * | ...                          | ...                      |
-> + * +------------------------------+--------------------------+
-> + * | buffer + wwww                | ``foo.field2.inner2``    |
-> + * +------------------------------+--------------------------+
-> + * | ...                          | ...                      |
-> + * +------------------------------+--------------------------+
-> + * | buffer + yyyy                | end of ``struct foo``    |
-> + * +------------------------------+--------------------------+
-> + * | ...                          | ...                      |
-> + * +------------------------------+--------------------------+
-> + * | buffer + zzzz                | end of mmaped buffer     |
-> + * +------------------------------+--------------------------+
-> + *
-> + * Values automatically calculated by this macro or not needed are denot=
-ed by
-> + * wwww, yyyy and zzzz. This is the code to read that value:
-> + *
-> + * .. code-block:: c
-> + *
-> + *	x =3D iosys_map_rd_field(&map, offset, struct foo, field2.inner2);
-> + *
-> + * Returns:
-> + * The value read from the mapping.
-> + */
-> +#define iosys_map_rd_field(map__, struct_offset__, struct_type__, field_=
-_) ({	\
-> +	struct_type__ *s;							\
-> +	iosys_map_rd(map__, struct_offset__ + offsetof(struct_type__, field__),=
-	\
-> +		     typeof(s->field__));					\
-> +})
-> +
-> +/**
-> + * iosys_map_wr_field - Write to a member of a struct in the iosys_map
-> + *
-> + * @map__:		The iosys_map structure
-> + * @struct_offset__:	Offset from the beggining of the map, where the str=
-uct
-> + *			is located
-> + * @struct_type__:	The struct describing the layout of the mapping
-> + * @field__:		Member of the struct to read
-> + * @val__:		Value to write
-> + *
-> + * Write a value to the iosys_map considering its layout is described by=
- a C struct
-> + * starting at @struct_offset__. The field offset and size is calculated=
- and the
-> + * @val__ is written handling possible un-aligned memory accesses. Refer=
- to
-> + * iosys_map_rd_field() for expected usage and memory layout.
-> + */
-> +#define iosys_map_wr_field(map__, struct_offset__, struct_type__, field_=
-_, val__) ({	\
-> +	struct_type__ *s;								\
-> +	iosys_map_wr(map__, struct_offset__ + offsetof(struct_type__, field__),=
-		\
-> +		     typeof(s->field__), val__);					\
-> +})
-> +
->  #endif /* __IOSYS_MAP_H__ */
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
 
+--------------8130HTxQhVjP7l15QOIqt60g--
 
+--------------JHAhS3DI07LY0b1HfLdRC3Vq--
 
-Thanks,
-Mauro
+--------------JZwkKbvpmmzcfNSTYoYJ4OYv
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmIDXHAFAwAAAAAACgkQsN6d1ii/Ey9M
+NAgAjzETVMGEGSkZFIPBUtFM8mAY8iN7mu6clpkdWMYf3ei7FIqS+7eFX6SrChH3N4d74yc6rRNl
+aejllsTrgVizhAeotojOeztRkP2zP/3nMAEzWJrtNC90KTL4Qs1QIaddwFDsRIpBLklorrl/48LO
+UQf7RQ5HGZ9p822qFu3tdx7CAwTv+ZByiQQ1+1XCel2m0gleYFgik/99QI01YFaaR/ZcNoJXP5Uk
+hh1xV9SzX0XTM55Dd9vcSUeW/ZZK9nQUpGWBOSAtr3o+OE2SddJK9pcC5M0UukNHvMww08BO4nPQ
+lahjDPp5dAco6O2RJianproo/OcKWILNTI4zXf3dRA==
+=qGyV
+-----END PGP SIGNATURE-----
+
+--------------JZwkKbvpmmzcfNSTYoYJ4OYv--
