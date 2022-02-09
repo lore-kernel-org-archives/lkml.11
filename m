@@ -2,76 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A941C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 688CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232897AbiBIVIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 16:08:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33416 "EHLO
+        id S232938AbiBIVNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 16:13:11 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232842AbiBIVIO (ORCPT
+        with ESMTP id S230327AbiBIVNF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 16:08:14 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3AFC03C1B8;
-        Wed,  9 Feb 2022 13:08:16 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id e8so2770283ilm.13;
-        Wed, 09 Feb 2022 13:08:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VsilYW3DDh1toEVnhvN/0AB1n2KJSIEgQPDPpYS3ogg=;
-        b=lTCxyXVlpMZ7ZhnHlr0IFLmVb5WhXpMalHcioq+FeyOlAMckPjGFTC1N9qKM+0tJeQ
-         32xDRJmJn7C5ngTBYjkBu8ftFMiW8Jw7c3Xsbu/QtV8XG5pYYNdqTE5nl+KqN0QL/8pO
-         e602NNbmMWqt8hrx6QN2kpl+T4Nxun0BDnG28QRongQ/QyKL85nOQ6JhHB99N9pu81t5
-         vn4jeiRC4jJcX3/IcdKIHvKYS/ws+oug+cT5YiVk9GYasw3I5OsTeemgLi7nObhhipmG
-         AERACopq8wGlgJevfITcbiBtBg+qh4G70NATunGDSCdqrhcEecvYgJyaPxQLH5vw3tg6
-         1jUg==
+        Wed, 9 Feb 2022 16:13:05 -0500
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA30EC03BFF4;
+        Wed,  9 Feb 2022 13:13:08 -0800 (PST)
+Received: by mail-oo1-f49.google.com with SMTP id k13-20020a4a948d000000b003172f2f6bdfso3994250ooi.1;
+        Wed, 09 Feb 2022 13:13:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VsilYW3DDh1toEVnhvN/0AB1n2KJSIEgQPDPpYS3ogg=;
-        b=lSv2DG3+KmIMjhGdnLbo0E+voxH4LrnZx7+2GURuz/zywuIdkpFHR2FvPyyKxFH6qJ
-         PAc36qROoAKmsOCqywxUBiuUhp7ewh4Rkpq2ba1cnpe/0hHgFulSv+dqcNK3dH8EXIJ3
-         0iOf9yHasSWvnd9xU8V0FPRk41S4xBJP4toPD2WS/v7pF/DNxlT/B20PQEOwZytfwODJ
-         eujk94lngGcu4jqSd/UQcwwwSScgiriZet99dai+E5uroS02p5J+vlsazFgxl/WYiy3o
-         oZiwrgFOo6lYK4M4aK6MPSBF+q0eL5nlRSUF/w+07iKYSEDnP33U7A4N4N0b31kw2X2e
-         mElQ==
-X-Gm-Message-State: AOAM532ovB7LzJ06XeCbt7YoSJc8b1ZClOhWTK9wJJO/vE6t9YhZcgW/
-        0V4QyUFcLPkil/Ap4jC5a9AYbz+LudqAZOFEAVc=
-X-Google-Smtp-Source: ABdhPJwJrGQcC++AJxv7m7KPpMf0I6w86y2CQ/5IPmwRw3aecp3EqZ/n1Wd6sld664BgP/YVhBpLla98iuTmQWAaq9o=
-X-Received: by 2002:a05:6e02:1ba2:: with SMTP id n2mr2240764ili.5.1644440895628;
- Wed, 09 Feb 2022 13:08:15 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2d9uknkMXF1hP9/kz6yWKEZgfCAsCNW/6xcg2yf69Ks=;
+        b=Uj3e9hlTv2EWeprd/q/Phw0YGq5n4t/MzbEqatY7yrTwIO8CUQ9fQn3WAdKImEQaUy
+         yKYolM4+JAf6VvURG9l2DpqMyGi/Ef8lpLFNBWJCgd2Mg8U9rGnlsl5+cRgGAL/Ki5vw
+         1wCIJ0im60w5ONLCz/6tKe/sz0vHKgIzEENzxm194lcGLwaVcvUQK0x8lGtzs+VVBF3j
+         UV4XPXhnpmFR+IgXo97B3PN+duOa6yEXZ7kbInZYRkh0CfGl7B3UXNOOjXUSCwbOv0m7
+         Nx/KtcqSQybsNokDf3FOK0SCgfyozeCqX1TFoD9V5jWjsk2HKEd9ev46ZZ7A4V/pvLz8
+         vZZQ==
+X-Gm-Message-State: AOAM530ETfKNZJ9UNk2YxyQbTHbo1oYOdgXZIgfBkTsGldAXgHg6Rhua
+        R60xE9AoK0dDG0VYfON9HQ==
+X-Google-Smtp-Source: ABdhPJzaGPmfsdC4kTq9wcUQ8tghT7p5Au4l30tbl0kHd/2db1AL7QxTpJNzhEi3x80IVLemA2gNCA==
+X-Received: by 2002:a05:6870:6288:: with SMTP id s8mr1403442oan.269.1644441188101;
+        Wed, 09 Feb 2022 13:13:08 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id t21sm7066345otj.26.2022.02.09.13.13.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 13:13:07 -0800 (PST)
+Received: (nullmailer pid 923087 invoked by uid 1000);
+        Wed, 09 Feb 2022 21:13:06 -0000
+Date:   Wed, 9 Feb 2022 15:13:06 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH v2 6/6] ASoC: dt-bindings: samsung,tm2: convert to
+ dtschema
+Message-ID: <YgQuYoJai+fYuBtL@robh.at.kernel.org>
+References: <20220129122357.45545-1-krzysztof.kozlowski@canonical.com>
+ <20220129122430.45694-5-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-References: <20220201185054.1041917-1-german.gomez@arm.com>
- <CANiq72nb_M3PJLG=mFfQVgAd4fbkL=OhGKS_uQHNf8Jbef3hag@mail.gmail.com> <4632061c-ec87-c4d2-3387-fcfdccf1da6e@arm.com>
-In-Reply-To: <4632061c-ec87-c4d2-3387-fcfdccf1da6e@arm.com>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Wed, 9 Feb 2022 22:08:04 +0100
-Message-ID: <CANiq72muQyY_TkXdZEo=Ca3j16A8qATpOTSCB1WcOJZeeStPgg@mail.gmail.com>
-Subject: Re: [PATCH] perf symbols: Remove demangle-rust files as superfluous
-To:     German Gomez <german.gomez@arm.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220129122430.45694-5-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 9:55 PM German Gomez <german.gomez@arm.com> wrote:
->
-> Yes, I should've added these tags from the start. Sorry Eduard-Mihai.
+On Sat, 29 Jan 2022 13:24:30 +0100, Krzysztof Kozlowski wrote:
+> Convert the audio complex on Samsung TM2 boards with Samsung Exynos SoC
+> to DT schema format.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  .../bindings/sound/samsung,tm2-audio.txt      | 42 ----------
+>  .../bindings/sound/samsung,tm2.yaml           | 80 +++++++++++++++++++
+>  2 files changed, 80 insertions(+), 42 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/sound/samsung,tm2-audio.txt
+>  create mode 100644 Documentation/devicetree/bindings/sound/samsung,tm2.yaml
+> 
 
-No worries. Also my apologies: I noticed you dropped the patch looking
-at the archive after sending this, but I haven't got the other emails
-in the thread (yet?).
-
-Cheers,
-Miguel
+Reviewed-by: Rob Herring <robh@kernel.org>
