@@ -2,101 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B28F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:06:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235833AbiBIHGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 02:06:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33162 "EHLO
+        id S235939AbiBIHG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 02:06:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232532AbiBIHGM (ORCPT
+        with ESMTP id S232532AbiBIHGy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 02:06:12 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DBDC0613CB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 23:06:15 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id e3so2441688wra.0
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 23:06:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6ObdsU8xJPCCncm3b4zun78zfhQSiXHrwXPxP1BSB1g=;
-        b=5dVENlZcT2Twchomim/tmvpOhGJOLH11MAZSjkbYEPmgQjfFWoF+mYa2wG9p98Qyra
-         zuIhZabCMsV5NrrGowTm/pWkS6J/Pesc/345hZP6WO3fNy4KOjWJSGkUPTX83TOpU3dK
-         zDS3bjl5lS9sdSq6rwmFGinhYU+ZCiXhILpfbaUXdTlTBv2FABjlgYXp1mObLIbHF1IL
-         SW9ZswJpFr4T+/t68T9hgSjFNxPenxoPoaRcerKClDrEoyhoA1Yr0reWShJnWNe+ds2A
-         ArLFiFjg/9Zs6lG0aRmnq7osXMcHmfi4rsyHRnXL7q7KmCQM7PFX0C7AwKQBJocjnc2m
-         V7Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6ObdsU8xJPCCncm3b4zun78zfhQSiXHrwXPxP1BSB1g=;
-        b=ap+KDaL6fDOPqmukVi/FXz39szpmBSMKv/h4bH8tjRzTCxZ3ymC9BXrmBw/vQwbP8s
-         eGRCJu5hd7ERh7wyBXEd55t9kZeC0hOAz/8RExlFUnyIqT58oktpaX7Tiyiy0cMuWJ+d
-         UUYSqMLrjHJfpYai5mPS3KK5+diBdNrxFENE/TawTcsVcifAV3skDjDJnqUE1q8AreL0
-         KNHzxlTEB5mCoiFRHYCjsnvxWs3S+GiKVKqgiTS8/iH92Rgxo/upqG1Wen9JOGqocGw9
-         rb0VTG65s+KsFgJsp/qcrsXHu2P/B/1rhpFPowqJPgRYRafU3L5wvjLFFM7YnJi7qE3Q
-         q8gA==
-X-Gm-Message-State: AOAM530Y0odmMBkq6St60DOYL7+PcJMinfmd64A/opB0+mfodqep3k/i
-        ogfOgl8xsy2pTe/SoqITY8PqfQ==
-X-Google-Smtp-Source: ABdhPJx083h00yJ9wJBg8BzwxGv5QO29NKEvrGGAo9G3u9YLN4rgyVmq/wsSU2reR2oPp3RiR2+hBw==
-X-Received: by 2002:adf:e281:: with SMTP id v1mr870761wri.308.1644390374407;
-        Tue, 08 Feb 2022 23:06:14 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id n10sm8853553wrt.93.2022.02.08.23.06.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 23:06:13 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     davem@davemloft.net, gilad@benyossef.com,
-        herbert@gondor.apana.org.au
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH] crypto: ccree: fix xts-aes-ccree blocksize
-Date:   Wed,  9 Feb 2022 07:06:08 +0000
-Message-Id: <20220209070608.985213-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 9 Feb 2022 02:06:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9007BC0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 23:06:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A0A4B81F16
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:06:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10CB5C340F1
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:06:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644390416;
+        bh=IaS3n+YSyvbjKGntCu5fWfQp5qdKI/SX1N0ILn7hVFU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Y8w/wlhK/H1xRHOLXNeDLRPmVxGRf/tkGY2XhoQ1RNZxDN6KpE3nRX/PO0S85c4ND
+         CB28fc6d7cSyBFoqt1cLj/YeU8AA0KwOFIkLtz/HNG7RWgiydTbBD8iVTur1qsSMXs
+         ia+mRRFrHWL3F29Zl2mXlRsZRyOhvjgTW11lPMwChexeDpChc0FZYnsAeb7xeJHvYg
+         qfKQQUg0StYlhLbU33KjzcE2y2fQ+Pgjx3YFtUr7QxCACq2XMR8fcwUgzY5IoCullY
+         mcVlCfprJITpw0UCa5njqYOrn0y9LRqPjWTVBn4O9fxg/qMchKKokPQkhpdh1ZNM1n
+         Wy4LFpF3GjE6Q==
+Received: by mail-wm1-f51.google.com with SMTP id y6-20020a7bc186000000b0037bdc5a531eso1836036wmi.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 23:06:55 -0800 (PST)
+X-Gm-Message-State: AOAM5329Qk0i9pt29g+EcsecAlFGg4vmaE58lon0iTYRvx9lxOXfMzM6
+        C7PZ+Uts+vA5JiTxY1CwrimRWMrDSpmbvWxnypQ=
+X-Google-Smtp-Source: ABdhPJzX9jWLhzTjtjQU7wN7OVHKYBR8BpWTxogSCK0npxv6vZ89SR9rQCAouuuUi4Nxuv6jbnTSYXFfBTmTa5PVQXo=
+X-Received: by 2002:a1c:f309:: with SMTP id q9mr1267664wmq.173.1644390414247;
+ Tue, 08 Feb 2022 23:06:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <6fc4a81f-1a13-bff9-7b2e-d5bec382cb42@synopsys.com>
+ <9bab4777-3034-b789-fdf6-ca8d7e6a8c35@infradead.org> <CAOMZO5Aa4WxuadfoFGwwyYyD4UGPm-E258xTWU3-ozp_hwG-7g@mail.gmail.com>
+ <d8981e2a-4f61-72bb-e5cc-bf4ded29c08a@synopsys.com> <CAK8P3a3ELrSC=KX6cr8UnP6kkJN0AXeAE4EG4oUY=Zz7gG_dgg@mail.gmail.com>
+ <b44de208-6d5f-3fcd-0e36-f05745297747@synopsys.com> <CAK8P3a27RtHxYwtj=rjxcDzkMdKhC-w9ho=SApHpczma_vU8JQ@mail.gmail.com>
+ <6743d6b1-13fe-9c83-f706-82338dd03897@synopsys.com> <7ed6137e-cf19-3614-9404-e89389411a8f@infradead.org>
+ <992f01cc-eb0c-b503-f9b4-4a037c6cf67a@synopsys.com> <2434f050-b82c-03e6-ee8f-8c8799119815@infradead.org>
+ <1aef3a8f-f93e-2824-6b6e-8df8a1460f15@synopsys.com>
+In-Reply-To: <1aef3a8f-f93e-2824-6b6e-8df8a1460f15@synopsys.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 9 Feb 2022 08:06:38 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3bJcMKW5QJqoUT8jDe+cbK0A-zSbNZhveX0WwC=ZEUqw@mail.gmail.com>
+Message-ID: <CAK8P3a3bJcMKW5QJqoUT8jDe+cbK0A-zSbNZhveX0WwC=ZEUqw@mail.gmail.com>
+Subject: Re: Kconfig CONFIG_FB dependency regression
+To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        John Youn <John.Youn@synopsys.com>,
+        Bing Yuan <Bing.Yuan@synopsys.com>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-loading ccree on next-20220207 with CRYPTO_MANAGER_EXTRA_TESTS show a warning:
-alg: skcipher: blocksize for xts-aes-ccree (1) doesn't match generic impl (16)
-alg: self-tests for xts-aes-ccree (xts(aes)) failed (rc=-22)
+On Tue, Feb 8, 2022 at 11:42 PM Thinh Nguyen <Thinh.Nguyen@synopsys.com> wrote:
+> Randy Dunlap wrote:
+> > On 2/8/22 12:10, Thinh Nguyen wrote:
+> >> Randy Dunlap wrote:
+> >>> On 2/3/22 19:21, Thinh Nguyen wrote:
 
-After setting the correct blocksize, selftests pass.
+> Ah.. It's because I don't use old.config as the base config. I use
+> x86_64_defconfig as the base plus some additional configs I need, and it
+> has CONFIG_FB_EFI set by default.
 
-Fixes: 67caef08a71f ("crypto: ccree - enable CTS support in AES-XTS")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- drivers/crypto/ccree/cc_cipher.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Does it hang if you just disable CONFIG_FB_EFI on an otherwise working
+kernel? This is supposed to only disable the framebuffer, but it could be
+the actual cause if something else depends on its presence.
 
-diff --git a/drivers/crypto/ccree/cc_cipher.c b/drivers/crypto/ccree/cc_cipher.c
-index 78833491f534..d955fe15cf40 100644
---- a/drivers/crypto/ccree/cc_cipher.c
-+++ b/drivers/crypto/ccree/cc_cipher.c
-@@ -1010,7 +1010,7 @@ static const struct cc_alg_template skcipher_algs[] = {
- 	{
- 		.name = "xts(paes)",
- 		.driver_name = "xts-paes-ccree",
--		.blocksize = 1,
-+		.blocksize = XTS_BLOCK_SIZE,
- 		.template_skcipher = {
- 			.setkey = cc_cipher_sethkey,
- 			.encrypt = cc_cipher_encrypt,
-@@ -1140,7 +1140,7 @@ static const struct cc_alg_template skcipher_algs[] = {
- 		 */
- 		.name = "xts(aes)",
- 		.driver_name = "xts-aes-ccree",
--		.blocksize = 1,
-+		.blocksize = XTS_BLOCK_SIZE,
- 		.template_skcipher = {
- 			.setkey = cc_cipher_setkey,
- 			.encrypt = cc_cipher_encrypt,
--- 
-2.34.1
-
+        Arnd
