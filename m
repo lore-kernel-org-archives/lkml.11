@@ -2,99 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BFAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A835C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239230AbiBIS3I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:29:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48254 "EHLO
+        id S239268AbiBISbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:31:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239140AbiBIS3D (ORCPT
+        with ESMTP id S238761AbiBISb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:29:03 -0500
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CC8C05CB86;
-        Wed,  9 Feb 2022 10:29:06 -0800 (PST)
-Received: by mail-qv1-xf36.google.com with SMTP id p7so2502121qvk.11;
-        Wed, 09 Feb 2022 10:29:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PzVf0KveynQIygGhQd/LrRGeBUE4pFRytDZ84NY3N/g=;
-        b=T6lGBSaL/3OruJFHgArFuER/e/PKIJfjSbyW1s3fjGFfTBagY1y00u4MiJqe/+IPac
-         RkWMrFjNgwPDoP5JIjd2OVBx32XHJzBvlKhkIZDRSiEOeP7e0HBrdhfBcPlKDjglZxu9
-         X8pIUptfBcq8jDUMwW4DHurgFuH3Vr74wtRD4lSlJe/Pu6jwoBbhVkMYi1NwM4+jkc6+
-         I+6OFzvjSLt67MJ7bvabe+vDect8gtjKrgR0CjWTbAok6RhplZ5RAbmHC8IUmS2BGrXH
-         KkDSPDdRIyhNsJG3LgnFzAyX3XArdZzhZous5FNCmWGy7qDZ+cdmJxAD7j9mfJDUi8Z3
-         7YGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PzVf0KveynQIygGhQd/LrRGeBUE4pFRytDZ84NY3N/g=;
-        b=w7YkSCQyqaiGWfRTg7YnRrLT8NKCWMOft6Q0eaEYqzIa9ZpMM2FFjYf/0cK/f+MOLm
-         nTR7eaCHaMMYr6yoU8A68mcGYSktfoy214iIMZ5VkMF8OlbpWPtifOX9oDCPs9RXX2xR
-         kjtTgGLIcRbRWIwpcxhdlmdO58r1oSqbEGc1ugf6/bR0zbMYP1BR/GEe3oJsvdl40pZQ
-         H77WPcNN2lWZnXb5TR+GyY8AXSevG1qFeMAtUCapy0TdX5DaW9t7McoFdHsXeZ+b4Kdf
-         lhlQO6QoQp8B9zDEkV+wIkcdw3o0BTxndIFu0UbZgg5dhPqZDfxjsU98khf5SUIs/QL9
-         UwUQ==
-X-Gm-Message-State: AOAM5331WgdjDemvz6EUA7R/KX240QWOh0S9sJpCSwg9+2q5uOSSV+7H
-        b30tg8ZXYyv6IjuHWeGczU4=
-X-Google-Smtp-Source: ABdhPJyDVIivM6oORJ2ERX52QaSmjnCW422Y3k6n8aLbdRifSiUWu9R6XWlQWE7aVijGKenJFxoZww==
-X-Received: by 2002:ad4:5ec7:: with SMTP id jm7mr2559021qvb.46.1644431345933;
-        Wed, 09 Feb 2022 10:29:05 -0800 (PST)
-Received: from [192.168.1.201] (pool-108-18-137-133.washdc.fios.verizon.net. [108.18.137.133])
-        by smtp.googlemail.com with ESMTPSA id d6sm9209849qty.40.2022.02.09.10.29.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 10:29:05 -0800 (PST)
-Subject: Re: [PATCH] pinctrl: k210: Fix bias-pull-up
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org
-Cc:     Damien Le Moal <damien.lemoal@wdc.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220209182822.640905-1-seanga2@gmail.com>
-From:   Sean Anderson <seanga2@gmail.com>
-Message-ID: <9e10e17b-f815-46be-eec8-246c9d827444@gmail.com>
-Date:   Wed, 9 Feb 2022 13:29:05 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        Wed, 9 Feb 2022 13:31:26 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DA4C0613C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 10:31:29 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 8F09921107;
+        Wed,  9 Feb 2022 18:31:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1644431487; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yMhn/foFlPWj85JoD23YnerTlqudGiH7pAqZto4fg9U=;
+        b=etFlE1JMkGGbKv6nzsqVSgDCVnS9qgV4AWmz7Ytysy6AI87OYRQRRVglIx+dT0UmrhSIgA
+        jIsCL3X8Y/X/RyxIFEjxb/JHu5iL7IyaoKdjD9TpoDzV5SxEp4FjhQGzmQafM0WRPmvBmO
+        pbfq7R1on05QzcyFoT8JQsyNZRRAmTE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1644431487;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yMhn/foFlPWj85JoD23YnerTlqudGiH7pAqZto4fg9U=;
+        b=b2s2T20o/OE+G6C6c8NfWnD9vV2puA8DZ6pxtfEH73W3va/RzzB5l0LBsZxcsZQPXKSe9C
+        XCa8hkkFCG+IYuCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 58AE613D93;
+        Wed,  9 Feb 2022 18:31:27 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 6uHxFH8IBGLqZgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 09 Feb 2022 18:31:27 +0000
+Message-ID: <4a5bc989-e59a-d421-faf4-8156f700ec99@suse.cz>
+Date:   Wed, 9 Feb 2022 19:31:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <20220209182822.640905-1-seanga2@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
 Content-Language: en-US
+To:     Hugh Dickins <hughd@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Hildenbrand <david@redhat.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Rik van Riel <riel@surriel.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
+ <5ed1f01-3e7e-7e26-cc1-2b7a574e2147@google.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH 01/13] mm/munlock: delete page_mlock() and all its works
+In-Reply-To: <5ed1f01-3e7e-7e26-cc1-2b7a574e2147@google.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 1:28 PM, Sean Anderson wrote:
-> Using bias-pull-up would actually cause the pin to have its pull-down
-> enabled. Fix this.
+On 2/6/22 22:30, Hugh Dickins wrote:
+> We have recommended some applications to mlock their userspace, but that
+> turns out to be counter-productive: when many processes mlock the same
+> file, contention on rmap's i_mmap_rwsem can become intolerable at exit: it
+> is needed for write, to remove any vma mapping that file from rmap's tree;
+> but hogged for read by those with mlocks calling page_mlock() (formerly
+> known as try_to_munlock()) on *each* page mapped from the file (the
+> purpose being to find out whether another process has the page mlocked,
+> so therefore it should not be unmlocked yet).
 > 
-> Signed-off-by: Sean Anderson <seanga2@gmail.com>
-> ---
+> Several optimizations have been made in the past: one is to skip
+> page_mlock() when mapcount tells that nothing else has this page
+> mapped; but that doesn't help at all when others do have it mapped.
+> This time around, I initially intended to add a preliminary search
+> of the rmap tree for overlapping VM_LOCKED ranges; but that gets
+> messy with locking order, when in doubt whether a page is actually
+> present; and risks adding even more contention on the i_mmap_rwsem.
 > 
->   drivers/pinctrl/pinctrl-k210.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> A solution would be much easier, if only there were space in struct page
+> for an mlock_count... but actually, most of the time, there is space for
+> it - an mlocked page spends most of its life on an unevictable LRU, but
+> since 3.18 removed the scan_unevictable_pages sysctl, that "LRU" has
+> been redundant.  Let's try to reuse its page->lru.
 > 
-> diff --git a/drivers/pinctrl/pinctrl-k210.c b/drivers/pinctrl/pinctrl-k210.c
-> index 49e32684dbb2..1ad61b32ec88 100644
-> --- a/drivers/pinctrl/pinctrl-k210.c
-> +++ b/drivers/pinctrl/pinctrl-k210.c
-> @@ -527,7 +527,7 @@ static int k210_pinconf_set_param(struct pinctrl_dev *pctldev,
->   	case PIN_CONFIG_BIAS_PULL_UP:
->   		if (!arg)
->   			return -EINVAL;
-> -		val |= K210_PC_PD;
-> +		val |= K210_PC_PU;
->   		break;
->   	case PIN_CONFIG_DRIVE_STRENGTH:
->   		arg *= 1000;
+> But leave that until a later patch: in this patch, clear the ground by
+> removing page_mlock(), and all the infrastructure that has gathered
+> around it - which mostly hinders understanding, and will make reviewing
+> new additions harder.  Don't mind those old comments about THPs, they
+> date from before 4.5's refcounting rework: splitting is not a risk here.
 > 
+> Just keep a minimal version of munlock_vma_page(), as reminder of what it
+> should attend to (in particular, the odd way PGSTRANDED is counted out of
+> PGMUNLOCKED), and likewise a stub for munlock_vma_pages_range().  Move
+> unchanged __mlock_posix_error_return() out of the way, down to above its
+> caller: this series then makes no further change after mlock_fixup().
+> 
+> Signed-off-by: Hugh Dickins <hughd@google.com>
 
-This should have
+While I understand the reasons to clear the ground first, wonder what are
+the implications for bisectability - is there a risk of surprising failures?
+Maybe we should at least explicitly spell out the implications here?
+IIUC, pages that once become mlocked, will stay mlocked, implicating the
+Mlocked meminfo counter and inability to reclaim them. But if e.g. a process
+that did mlockall() exits, its exclusive pages will be freed anyway, so it's
+not a catastrophic kind of leak, right?
+Yet it differs from the existing "failure modes" where pages would be left
+as "stranded" due to failure of being isolated, because they would at least
+go through TestClearPageMlocked and counters update.
 
-Fixes: d4c34d09ab03 ("pinctrl: Add RISC-V Canaan Kendryte K210 FPIOA driver")
+>  
+>  /*
+> @@ -413,75 +136,11 @@ static unsigned long __munlock_pagevec_fill(struct pagevec *pvec,
+>   *
+>   * Returns with VM_LOCKED cleared.  Callers must be prepared to
+>   * deal with this.
+> - *
+> - * We don't save and restore VM_LOCKED here because pages are
+> - * still on lru.  In unmap path, pages might be scanned by reclaim
+> - * and re-mlocked by page_mlock/try_to_unmap before we unmap and
+> - * free them.  This will result in freeing mlocked pages.
+>   */
+>  void munlock_vma_pages_range(struct vm_area_struct *vma,
+>  			     unsigned long start, unsigned long end)
+>  {
+> -	vma->vm_flags &= VM_LOCKED_CLEAR_MASK;
+
+Should we at least keep doing the flags clearing? I haven't check if there
+are some VM_BUG_ONs that would trip on not cleared, but wouldn't be entirely
+surprised.
