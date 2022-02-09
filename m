@@ -2,105 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FDBC4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57723C35270
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242970AbiBIDCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:02:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
+        id S244021AbiBIDCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:02:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359432AbiBICvU (ORCPT
+        with ESMTP id S1359851AbiBIC4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:51:20 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E50E030E8A;
-        Tue,  8 Feb 2022 18:47:55 -0800 (PST)
-Received: from kwepemi100018.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Jtklr4LGKz9sYD;
-        Wed,  9 Feb 2022 10:46:16 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi100018.china.huawei.com (7.221.188.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 9 Feb 2022 10:47:47 +0800
-Received: from [10.174.178.208] (10.174.178.208) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 9 Feb 2022 10:47:46 +0800
-Subject: Re: [PATCH 4.19 00/86] 4.19.228-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <stable@vger.kernel.org>, <torvalds@linux-foundation.org>,
-        <akpm@linux-foundation.org>, <linux@roeck-us.net>,
-        <shuah@kernel.org>, <patches@kernelci.org>,
-        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
-        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
-        <sudipm.mukherjee@gmail.com>, <slade@sladewatkins.com>
-References: <20220207103757.550973048@linuxfoundation.org>
-From:   Samuel Zou <zou_wei@huawei.com>
-Message-ID: <dc0e92d0-2d68-eaca-d9b5-e83619c9a4b8@huawei.com>
-Date:   Wed, 9 Feb 2022 10:47:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Tue, 8 Feb 2022 21:56:47 -0500
+Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7545C0613CC;
+        Tue,  8 Feb 2022 18:56:46 -0800 (PST)
+Received: by mail-oo1-f52.google.com with SMTP id v17-20020a4ac911000000b002eac41bb3f4so933063ooq.10;
+        Tue, 08 Feb 2022 18:56:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YzpZJPyikOSmfz29HT3JMH8XzgvRS7QzufEjx8g74Lg=;
+        b=dYGbN8AqTwwCgki+KGOjHcqQNiQOUQz8+WDmJjhEJVK4LX9TyLrYCUOTpr/Aft23Wz
+         IJtJLhbL1fefm0vopTfDam7AZo9r9tZs2hKx14lLm2TjVWI9PMfQyja+PrZphN+FYUKo
+         UVH2UbXLWIdXrV4Qp/koCGJVcLUprO9lOgWDaGhSNyWWswMiCL0lB68wt0zUhdcTU8Ya
+         7EfkkmeSSRGrbouU3ysEM9gtkY6UlTn0keoQTpnuy3zuTK/oB1e1ig71VeJ+JEF9FwKd
+         usc897mxMkOdBfdxxUZe4abb6ni6cWYF4cEBznkbMhMAcRO0Fn568i8qKliuiHB+aSce
+         lItg==
+X-Gm-Message-State: AOAM533DmpR13ZXNxlP4UbXgAF8pzGA6o/1nZfoakKnWDKXBu0vEIf1R
+        AdjYXG1V8+CksBLZ5epPiQ==
+X-Google-Smtp-Source: ABdhPJx8V3Vh8nhOYS4sySuQMAt/hoYl9LLCFpXg/dcy/NCynV7bBxJjvdGsbHXMbzDyhHAgT6q25A==
+X-Received: by 2002:a05:6870:1116:: with SMTP id 22mr95514oaf.302.1644375405988;
+        Tue, 08 Feb 2022 18:56:45 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id b7sm6125944ooq.30.2022.02.08.18.56.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 18:56:45 -0800 (PST)
+Received: (nullmailer pid 3530627 invoked by uid 1000);
+        Wed, 09 Feb 2022 02:56:44 -0000
+Date:   Tue, 8 Feb 2022 20:56:44 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Zong Li <zong.li@sifive.com>
+Cc:     mturquette@baylibre.com, lee.jones@linaro.org, robh+dt@kernel.org,
+        palmer@dabbelt.com, linux-riscv@lists.infradead.org,
+        paul.walmsley@sifive.com, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sboyd@kernel.org
+Subject: Re: [PATCH 1/4] dt-bindings: change the macro name of prci in header
+ files and example
+Message-ID: <YgMtbBdt1RkHcqoa@robh.at.kernel.org>
+References: <cover.1642582832.git.zong.li@sifive.com>
+ <81d9a152e65374117b633f953aa31f378412acb5.1642582832.git.zong.li@sifive.com>
 MIME-Version: 1.0
-In-Reply-To: <20220207103757.550973048@linuxfoundation.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.208]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <81d9a152e65374117b633f953aa31f378412acb5.1642582832.git.zong.li@sifive.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/2/7 19:05, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.19.228 release.
-> There are 86 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Wed, 19 Jan 2022 17:28:38 +0800, Zong Li wrote:
+> We currently change the macro name for fu540 and fu740 by adding the
+> prefix respectively, the dt-bindings should be modified as well.
 > 
-> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.228-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> Signed-off-by: Zong Li <zong.li@sifive.com>
+> ---
+>  .../devicetree/bindings/gpio/sifive,gpio.yaml  |  2 +-
+>  .../bindings/pci/sifive,fu740-pcie.yaml        |  2 +-
+>  .../bindings/serial/sifive-serial.yaml         |  2 +-
+>  include/dt-bindings/clock/sifive-fu540-prci.h  |  8 ++++----
+>  include/dt-bindings/clock/sifive-fu740-prci.h  | 18 +++++++++---------
+>  5 files changed, 16 insertions(+), 16 deletions(-)
 > 
 
-Tested on arm64 and x86 for 4.19.228-rc1,
-
-Kernel repo:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-Branch: linux-4.19.y
-Version: 4.19.228-rc1
-Commit: b06b07466af8a89d8b0f135c98ada13f5f373d7a
-Compiler: gcc version 7.3.0 (GCC)
-
-arm64:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 8938
-passed: 8938
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-x86:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 8938
-passed: 8938
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-Tested-by: Hulk Robot <hulkrobot@huawei.com>
+Acked-by: Rob Herring <robh@kernel.org>
