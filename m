@@ -2,270 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4075FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233767AbiBIKIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:08:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58390 "EHLO
+        id S233876AbiBIKIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:08:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233083AbiBIKH7 (ORCPT
+        with ESMTP id S233140AbiBIKID (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:07:59 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C636E047DFA
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:07:18 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id r64-20020a17090a43c600b001b8854e682eso1802310pjg.0
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 02:07:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Vpuz8aXWI5EYcahKgpkMysw7/xzFPPTFLRAj0oOQKL8=;
-        b=P7hJLM6YZaZQPjLA1pOJ9yDXKcypTkzae/u7P8drrhPPD2UeEbBC3D8tc5qk6lbNju
-         UUjvdYWGRIVZKI6IHq/M/VB7T+UwFrWUMIi4ez2V+k6zOzZfi+sc/SPE9KUj7SEmI4rM
-         yM4ih83UEZJRNz2KPjIBZRHMPxf4jIMj4UWYGxRk05sltGmQqy40zMI40Lw52an1aVSI
-         IDp3xKOOo/lk2dHxEVQlyD6W5qQFoXKO5IUCHWyDKeIOBlTm7nZKC9t2Kq9CB+1O0FeK
-         rG71mOlquJbGbxLPEuix1V4Lck0DoZWbLfhj3Y+P7n8DW1NGyLIiKLFqFrx82MsZucEp
-         2B5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Vpuz8aXWI5EYcahKgpkMysw7/xzFPPTFLRAj0oOQKL8=;
-        b=Ul8P3AX+zCskiNsC9cY8zwYQn0iYE/mwYUohLttJV270+JcgRGrI7KPFQ66ufZy6v4
-         9Wn8ps564nX6haAEHj/khbvWX/C0FfyMPtHLCm7YENrheU+XU5eYZStaMwOXdEeW6IQc
-         aUnlGloyeV9QGKLdvIUapQIj6k1TQso+NXbn+ZrbCGui5fV6Rfo1z4YGiAifMGLXCqc6
-         5klhZnNmJut86rq75YycO6FBdOT3LKUweEd58jj3cMESc4qBRbvwQ4d+hKT69AgHqDGi
-         Aflq9qrvRgm14ZK2fKsLDajq1lcl988G7lP2z2rYluooyI2xEkD/wIOrVXbx4Gzu1J19
-         DLug==
-X-Gm-Message-State: AOAM5338NIfRrOqNoPBDL2xtkOKcgf8qqkaaXHA7ry2QiJqvXq+cfkKj
-        vOLbvibwQm28c7e3xFtjpcWQ
-X-Google-Smtp-Source: ABdhPJyGe+c34R7+fzQjF2ZfE3pPsI7szSOza+8jFqgVf5JakliHqCO6Kk3Ke7NR10PzObN6/ayWfw==
-X-Received: by 2002:a17:90b:3808:: with SMTP id mq8mr2562953pjb.225.1644401196016;
-        Wed, 09 Feb 2022 02:06:36 -0800 (PST)
-Received: from localhost.localdomain ([117.217.179.178])
-        by smtp.gmail.com with ESMTPSA id p2sm6722024pfo.125.2022.02.09.02.06.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 02:06:35 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        vbadigan@codeaurora.org, quic_cang@quicinc.com,
-        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, elder@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v2 15/23] bus: mhi: ep: Add support for processing MHI endpoint interrupts
-Date:   Wed,  9 Feb 2022 15:26:16 +0530
-Message-Id: <20220209095624.26389-16-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
-References: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
+        Wed, 9 Feb 2022 05:08:03 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A5CC014A95;
+        Wed,  9 Feb 2022 02:07:11 -0800 (PST)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2198d1Kx014683;
+        Wed, 9 Feb 2022 08:49:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=cJD+Hr0UhnxLjBiyoVnf2N+zOF8DSd40RDY7Fo305Zs=;
+ b=chZEeXBxyKk/HWnuSGCv6Q0MhHWXn755yxasV7J4XemPWlfKF3FmK1CC1G0Z5bmNXwoe
+ vEgk9vApDSAnZUFIUVqHi6N3ppdGnHguVv5z75JLqDXc52W0Oyt1k3l5hqHcvgGtPL8x
+ 4jmF9GpnF8oJtSqO5c1y6o5UsUcA0SSXpvJ+VAfxoiy3KjOw9Th0eQtEdsQ1QFAjl4SK
+ Ne4HMF46ovlZz9N7EgYZp70GJupHRBLqGPu1ApqVfAdloqv19vMV3t5o/QROV+6GEZBE
+ CW4VV29XPMUSPYvX+7x1nSl6SopDwLqYL59TcKINRQEXk5i7M4g5aS9LOHAIDNUdLD88 iw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e3fm5jywt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 08:49:28 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2198nS7B020171;
+        Wed, 9 Feb 2022 08:49:28 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e3fm5jyw1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 08:49:28 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2198n9ZW017773;
+        Wed, 9 Feb 2022 08:49:26 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 3e1gv9cv45-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 08:49:26 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2198nNtA38142310
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Feb 2022 08:49:23 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DBA534C04A;
+        Wed,  9 Feb 2022 08:49:22 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 486854C050;
+        Wed,  9 Feb 2022 08:49:22 +0000 (GMT)
+Received: from [9.171.75.42] (unknown [9.171.75.42])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Feb 2022 08:49:22 +0000 (GMT)
+Message-ID: <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
+Date:   Wed, 9 Feb 2022 09:49:21 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 05/11] KVM: s390: Add optional storage key checking to
+ MEMOP IOCTL
+Content-Language: en-US
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>
+Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+References: <20220207165930.1608621-1-scgl@linux.ibm.com>
+ <20220207165930.1608621-6-scgl@linux.ibm.com>
+ <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+In-Reply-To: <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 6H5ZBHzlShoJEgbn7yy_9fjsH2ZbRuer
+X-Proofpoint-GUID: lzPYz20MP0oCm-I0g6c1DlwDDIZ4H5Nu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_04,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ spamscore=0 bulkscore=0 impostorscore=0 priorityscore=1501 phishscore=0
+ mlxlogscore=999 clxscore=1015 adultscore=0 lowpriorityscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202090056
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for processing MHI endpoint interrupts such as control
-interrupt, command interrupt and channel interrupt from the host.
+On 2/9/22 08:34, Christian Borntraeger wrote:
+> Am 07.02.22 um 17:59 schrieb Janis Schoetterl-Glausch:
+>> User space needs a mechanism to perform key checked accesses when
+>> emulating instructions.
+>>
+>> The key can be passed as an additional argument.
+>> Having an additional argument is flexible, as user space can
+>> pass the guest PSW's key, in order to make an access the same way the
+>> CPU would, or pass another key if necessary.
+>>
+>> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+>> Acked-by: Janosch Frank <frankja@linux.ibm.com>
+>> Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+>> ---
+>>   arch/s390/kvm/kvm-s390.c | 49 +++++++++++++++++++++++++++++++---------
+>>   include/uapi/linux/kvm.h |  8 +++++--
+>>   2 files changed, 44 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+>> index cf347e1a4f17..71e61fb3f0d9 100644
+>> --- a/arch/s390/kvm/kvm-s390.c
+>> +++ b/arch/s390/kvm/kvm-s390.c
+>> @@ -32,6 +32,7 @@
+>>   #include <linux/sched/signal.h>
+>>   #include <linux/string.h>
+>>   #include <linux/pgtable.h>
+>> +#include <linux/bitfield.h>
+>>     #include <asm/asm-offsets.h>
+>>   #include <asm/lowcore.h>
+>> @@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
+>>       return r;
+>>   }
+>>   +static bool access_key_invalid(u8 access_key)
+>> +{
+>> +    return access_key > 0xf;
+>> +}
+>> +
+>>   long kvm_arch_vm_ioctl(struct file *filp,
+>>                  unsigned int ioctl, unsigned long arg)
+>>   {
+>> @@ -4687,34 +4693,54 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+>>                     struct kvm_s390_mem_op *mop)
+>>   {
+>>       void __user *uaddr = (void __user *)mop->buf;
+>> +    u8 access_key = 0, ar = 0;
+>>       void *tmpbuf = NULL;
+>> +    bool check_reserved;
+>>       int r = 0;
+>>       const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
+>> -                    | KVM_S390_MEMOP_F_CHECK_ONLY;
+>> +                    | KVM_S390_MEMOP_F_CHECK_ONLY
+>> +                    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
+>>   -    if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
+>> +    if (mop->flags & ~supported_flags || !mop->size)
+>>           return -EINVAL;
+>> -
+>>       if (mop->size > MEM_OP_MAX_SIZE)
+>>           return -E2BIG;
+>> -
+>>       if (kvm_s390_pv_cpu_is_protected(vcpu))
+>>           return -EINVAL;
+>> -
+>>       if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+>>           tmpbuf = vmalloc(mop->size);
+>>           if (!tmpbuf)
+>>               return -ENOMEM;
+>>       }
+>> +    ar = mop->ar;
+>> +    mop->ar = 0;
+> 
+> Why this assignment to 0?
 
-The interrupts will be generated in the endpoint device whenever host
-writes to the corresponding doorbell registers. The doorbell logic
-is handled inside the hardware internally.
+It's so the check of reserved below works like that, they're all part of the anonymous union.
+> 
+>> +    if (ar >= NUM_ACRS)
+>> +        return -EINVAL;
+>> +    if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+>> +        access_key = mop->key;
+>> +        mop->key = 0;
+> 
+> and this? I think we can leave mop unchanged.
+> 
+> In fact, why do we add the ar and access_key variable?
+> This breaks the check from above (if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size))  into two checks
+> and it will create a memleak for tmpbuf.
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/bus/mhi/ep/main.c | 113 +++++++++++++++++++++++++++++++++++++-
- include/linux/mhi_ep.h    |   2 +
- 2 files changed, 113 insertions(+), 2 deletions(-)
+I can move the allocation down, goto out or get rid of the reserved check and keep everything as before.
+First is simpler, but second makes handling that case more explicit and might help in the future.
+Patch 6 has the same issue in the vm ioctl handler.
+> 
+> Simply use mop->key and mop->ar below and get rid of the local variables.
+> The structure has no concurrency and gcc will handle that just as the local variable.
+> 
+> Other than that this looks good.
 
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index ed2427f954d7..fed18e34a1d1 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -184,6 +184,56 @@ static void mhi_ep_ring_worker(struct work_struct *work)
- 	}
- }
- 
-+static void mhi_ep_queue_channel_db(struct mhi_ep_cntrl *mhi_cntrl,
-+				    unsigned long ch_int, u32 ch_idx)
-+{
-+	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-+	struct mhi_ep_ring_item *item;
-+	struct mhi_ep_ring *ring;
-+	unsigned int i;
-+
-+	for_each_set_bit(i, &ch_int, 32) {
-+		/* Channel index varies for each register: 0, 32, 64, 96 */
-+		i += ch_idx;
-+		ring = &mhi_cntrl->mhi_chan[i].ring;
-+
-+		item = kmalloc(sizeof(*item), GFP_ATOMIC);
-+		item->ring = ring;
-+
-+		dev_dbg(dev, "Queuing doorbell interrupt for channel (%d)\n", i);
-+		spin_lock(&mhi_cntrl->list_lock);
-+		list_add_tail(&item->node, &mhi_cntrl->ch_db_list);
-+		spin_unlock(&mhi_cntrl->list_lock);
-+
-+		queue_work(mhi_cntrl->ring_wq, &mhi_cntrl->ring_work);
-+	}
-+}
-+
-+/*
-+ * Channel interrupt statuses are contained in 4 registers each of 32bit length.
-+ * For checking all interrupts, we need to loop through each registers and then
-+ * check for bits set.
-+ */
-+static void mhi_ep_check_channel_interrupt(struct mhi_ep_cntrl *mhi_cntrl)
-+{
-+	u32 ch_int, ch_idx;
-+	int i;
-+
-+	mhi_ep_mmio_read_chdb_status_interrupts(mhi_cntrl);
-+
-+	for (i = 0; i < MHI_MASK_ROWS_CH_EV_DB; i++) {
-+		ch_idx = i * MHI_MASK_CH_EV_LEN;
-+
-+		/* Only process channel interrupt if the mask is enabled */
-+		ch_int = (mhi_cntrl->chdb[i].status & mhi_cntrl->chdb[i].mask);
-+		if (ch_int) {
-+			mhi_ep_queue_channel_db(mhi_cntrl, ch_int, ch_idx);
-+			mhi_ep_mmio_write(mhi_cntrl, MHI_CHDB_INT_CLEAR_A7_n(i),
-+							mhi_cntrl->chdb[i].status);
-+		}
-+	}
-+}
-+
- static void mhi_ep_state_worker(struct work_struct *work)
- {
- 	struct mhi_ep_cntrl *mhi_cntrl = container_of(work, struct mhi_ep_cntrl, state_work);
-@@ -221,6 +271,53 @@ static void mhi_ep_state_worker(struct work_struct *work)
- 	}
- }
- 
-+static void mhi_ep_process_ctrl_interrupt(struct mhi_ep_cntrl *mhi_cntrl,
-+					 enum mhi_state state)
-+{
-+	struct mhi_ep_state_transition *item = kmalloc(sizeof(*item), GFP_ATOMIC);
-+
-+	item->state = state;
-+	spin_lock(&mhi_cntrl->list_lock);
-+	list_add_tail(&item->node, &mhi_cntrl->st_transition_list);
-+	spin_unlock(&mhi_cntrl->list_lock);
-+
-+	queue_work(mhi_cntrl->state_wq, &mhi_cntrl->state_work);
-+}
-+
-+/*
-+ * Interrupt handler that services interrupts raised by the host writing to
-+ * MHICTRL and Command ring doorbell (CRDB) registers for state change and
-+ * channel interrupts.
-+ */
-+static irqreturn_t mhi_ep_irq(int irq, void *data)
-+{
-+	struct mhi_ep_cntrl *mhi_cntrl = data;
-+	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-+	enum mhi_state state;
-+	u32 int_value;
-+
-+	/* Acknowledge the interrupts */
-+	int_value = mhi_ep_mmio_read(mhi_cntrl, MHI_CTRL_INT_STATUS_A7);
-+	mhi_ep_mmio_write(mhi_cntrl, MHI_CTRL_INT_CLEAR_A7, int_value);
-+
-+	/* Check for ctrl interrupt */
-+	if (FIELD_GET(MHI_CTRL_INT_STATUS_A7_MSK, int_value)) {
-+		dev_dbg(dev, "Processing ctrl interrupt\n");
-+		mhi_ep_process_ctrl_interrupt(mhi_cntrl, state);
-+	}
-+
-+	/* Check for command doorbell interrupt */
-+	if (FIELD_GET(MHI_CTRL_INT_STATUS_CRDB_MSK, int_value)) {
-+		dev_dbg(dev, "Processing command doorbell interrupt\n");
-+		queue_work(mhi_cntrl->ring_wq, &mhi_cntrl->ring_work);
-+	}
-+
-+	/* Check for channel interrupts */
-+	mhi_ep_check_channel_interrupt(mhi_cntrl);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static void mhi_ep_release_device(struct device *dev)
- {
- 	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
-@@ -408,7 +505,7 @@ int mhi_ep_register_controller(struct mhi_ep_cntrl *mhi_cntrl,
- 	struct mhi_ep_device *mhi_dev;
- 	int ret;
- 
--	if (!mhi_cntrl || !mhi_cntrl->cntrl_dev || !mhi_cntrl->mmio)
-+	if (!mhi_cntrl || !mhi_cntrl->cntrl_dev || !mhi_cntrl->mmio || !mhi_cntrl->irq)
- 		return -EINVAL;
- 
- 	ret = parse_ch_cfg(mhi_cntrl, config);
-@@ -453,12 +550,20 @@ int mhi_ep_register_controller(struct mhi_ep_cntrl *mhi_cntrl,
- 		goto err_destroy_state_wq;
- 	}
- 
-+	irq_set_status_flags(mhi_cntrl->irq, IRQ_NOAUTOEN);
-+	ret = request_irq(mhi_cntrl->irq, mhi_ep_irq, IRQF_TRIGGER_HIGH,
-+			  "doorbell_irq", mhi_cntrl);
-+	if (ret) {
-+		dev_err(mhi_cntrl->cntrl_dev, "Failed to request Doorbell IRQ\n");
-+		goto err_ida_free;
-+	}
-+
- 	/* Allocate the controller device */
- 	mhi_dev = mhi_ep_alloc_device(mhi_cntrl, MHI_DEVICE_CONTROLLER);
- 	if (IS_ERR(mhi_dev)) {
- 		dev_err(mhi_cntrl->cntrl_dev, "Failed to allocate controller device\n");
- 		ret = PTR_ERR(mhi_dev);
--		goto err_ida_free;
-+		goto err_free_irq;
- 	}
- 
- 	dev_set_name(&mhi_dev->dev, "mhi_ep%d", mhi_cntrl->index);
-@@ -476,6 +581,8 @@ int mhi_ep_register_controller(struct mhi_ep_cntrl *mhi_cntrl,
- 
- err_put_dev:
- 	put_device(&mhi_dev->dev);
-+err_free_irq:
-+	free_irq(mhi_cntrl->irq, mhi_cntrl);
- err_ida_free:
- 	ida_free(&mhi_ep_cntrl_ida, mhi_cntrl->index);
- err_destroy_state_wq:
-@@ -498,6 +605,8 @@ void mhi_ep_unregister_controller(struct mhi_ep_cntrl *mhi_cntrl)
- 	destroy_workqueue(mhi_cntrl->state_wq);
- 	destroy_workqueue(mhi_cntrl->ring_wq);
- 
-+	free_irq(mhi_cntrl->irq, mhi_cntrl);
-+
- 	kfree(mhi_cntrl->mhi_cmd);
- 	kfree(mhi_cntrl->mhi_chan);
- 
-diff --git a/include/linux/mhi_ep.h b/include/linux/mhi_ep.h
-index 72ce30cbe87e..a207058a4991 100644
---- a/include/linux/mhi_ep.h
-+++ b/include/linux/mhi_ep.h
-@@ -90,6 +90,7 @@ struct mhi_ep_db_info {
-  * @chdb_offset: Channel doorbell offset set by the host
-  * @erdb_offset: Event ring doorbell offset set by the host
-  * @index: MHI Endpoint controller index
-+ * @irq: IRQ used by the endpoint controller
-  */
- struct mhi_ep_cntrl {
- 	struct device *cntrl_dev;
-@@ -142,6 +143,7 @@ struct mhi_ep_cntrl {
- 	u32 chdb_offset;
- 	u32 erdb_offset;
- 	int index;
-+	int irq;
- };
- 
- /**
--- 
-2.25.1
+[...]
 
