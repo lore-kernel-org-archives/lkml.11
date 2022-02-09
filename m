@@ -2,150 +2,346 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC19C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 887D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234775AbiBIOI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 09:08:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
+        id S234784AbiBIOKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 09:10:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232625AbiBIOI4 (ORCPT
+        with ESMTP id S234816AbiBIOKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 09:08:56 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE5AC0613C9
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:08:59 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso5291330pjg.0
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 06:08:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4GSA+MzKjvqPDhg4I9J/SlptsUClj2HqyJ6LbJyLVRw=;
-        b=mQk7ituQamI7be7xkOztPf6yto+sOJQsoCO0cC9twSGfwdexyPIzNLL+0euyFTVtnd
-         /uyf8L0tExlUpzCRNkxDRG0ZPksNXVW07jejtlIHImbILg2XXpCVVcpXnmejMqVhKBFx
-         eBr2Fg1tWUD1hrEFWFfIbYontlHxsFVBA9R6Y7/DhN12WkqNdENOsr+S/a5Kw/to1GRg
-         t5uSnqkrydRufZE7KqQPDHFQydFvyMn7luw0qQdAx0YJ1XYU/QoUQoQkNtoStldbApEK
-         tAk7DFLUAsxCZJq3rYq0JNp/ddGfqzGpFkTtvGsf3X81sMVL23178BpXfjuxyhdKPIvA
-         sVfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4GSA+MzKjvqPDhg4I9J/SlptsUClj2HqyJ6LbJyLVRw=;
-        b=pEUGfWigeOGbYO9IEgjaPOs8RL6Eny0RCsy+y6/pZW+uVgEDzipPsvuRZYZnpefF6y
-         xiUti7gxyNcjrZPiOpn+/Cc0pirJ646kZL+8p/3/hXyc3zFmhhjAqGCgBizsNSdwqVyH
-         75gDb2eQ1Bvq+DUJEk4N2LY2dF7AufKNrfnR9CX7WT1CgubToKhtQiVamc5O0oQzUnXO
-         D5sRRnz3wBKtnGV2TLXDNOfnWDtXpUuq+7xDQvL74MH8PgGltC4XYZgzwq2FH2qnPXXR
-         RcwDoN8BnxYe+2nxg6XGavGrc7jVuI8ZMhULPlIU++1838BDt0aQLkjIui+mV3Toi0U2
-         uIzA==
-X-Gm-Message-State: AOAM531S5cTyNl+b6BdzklQsMPAs2jAtyJZNMj6/49qBUjBmTzo4brAN
-        pw/l3ioFDwWNzzc8TBM41OHQsBpZH3YQiiLim1D7W3rqpZA=
-X-Google-Smtp-Source: ABdhPJxwLukxDMwzR5g+uTLxH+x3XJwpanYZrXEh2OiNzPr2/JKq3KMK2jK5d4B4C1lVShqG6mh+QnMKxRe5+uUDfrI=
-X-Received: by 2002:a17:90b:1e50:: with SMTP id pi16mr3659910pjb.16.1644415739061;
- Wed, 09 Feb 2022 06:08:59 -0800 (PST)
-MIME-Version: 1.0
-References: <20220204093359.359059-1-jens.wiklander@linaro.org> <20220204093359.359059-9-jens.wiklander@linaro.org>
-In-Reply-To: <20220204093359.359059-9-jens.wiklander@linaro.org>
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-Date:   Wed, 9 Feb 2022 15:08:48 +0100
-Message-ID: <CAHUa44HkQtstCyUt_J962rzysFnOJOP+e3T2gL7nV+6V5hfa9A@mail.gmail.com>
-Subject: Re: [PATCH v4 08/10] KEYS: trusted: tee: use tee_shm_register_kernel_buf()
-To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     Sumit Garg <sumit.garg@linaro.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
-        Rijo Thomas <Rijo-john.Thomas@amd.com>,
-        David Howells <dhowells@redhat.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 9 Feb 2022 09:10:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF754C0613C9;
+        Wed,  9 Feb 2022 06:10:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F71361AB2;
+        Wed,  9 Feb 2022 14:10:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF8FC340E7;
+        Wed,  9 Feb 2022 14:10:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644415851;
+        bh=vcU8Cnp4MhOIK9JGxPGQPI/KYeuSWR1MWkb7GGQL5Jw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sPOQ88nOQc54EfxTLk4wZnLv6UK23tl6xYPyH51hfV8YZhaHzBvTcPBctVLAjUW11
+         lugXCZ3zdv8xXnFJIIuLBszggH0BLfFa6CIe9AlhtmfXp2LXIr15MXGDWcF+56MwbF
+         4lhlFYiGfXgor18lvwJkSmTHEq9wwEMpFoXvf4LDpHLEsrhSmFmWb9flkIXm5H88Zx
+         XW+lACyjZTEq8eGWa6lcIhio2rhOwUX00HadD3YVDKuxtc87mET3c2RzWP3ryvI4Uc
+         wKTIVKLHxkqQgSIy6ty3jd9OQiKF65OavAVO+la0k61BXqXmvuYgU85SEbLRJfLmN9
+         NziIAx1Lx9W+g==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nHngH-006di8-Au; Wed, 09 Feb 2022 14:10:49 +0000
+Date:   Wed, 09 Feb 2022 14:10:49 +0000
+Message-ID: <8735ks5dw6.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Sander Vanheule <sander@svanheule.net>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Birger Koblitz <mail@birger-koblitz.de>,
+        Bert Vermeulen <bert@biot.com>,
+        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 3/3] irqchip/realtek-rtl: use per-parent domains
+In-Reply-To: <54b9090510fe1a90fb7d335b680af3adeff9838a.1644165421.git.sander@svanheule.net>
+References: <cover.1644165421.git.sander@svanheule.net>
+        <54b9090510fe1a90fb7d335b680af3adeff9838a.1644165421.git.sander@svanheule.net>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: sander@svanheule.net, robh+dt@kernel.org, devicetree@vger.kernel.org, tglx@linutronix.de, mail@birger-koblitz.de, bert@biot.com, john@phrozen.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jarkko,
+On Sun, 06 Feb 2022 16:41:53 +0000,
+Sander Vanheule <sander@svanheule.net> wrote:
+> 
+> The interrupt router can connect each of its inputs to one of the parent
+> interrupts. These parent interrupts may be handled differently by their
+> interrupt controller. SoC interrupts should be treated per-parent, to
+> maintain this expected behaviour for routed child interrupts.
+> 
+> For example, it is possible that both networking interrupts and the
+> system event timer interrupts are routed through this controller. Even
+> under high network load, event timer interrupts should take precedence,
+> which can be ensured by routing them to a higher priority parent.
+> 
+> Rework the driver to use a separate domain for each output, using all
+> available parents interrupts (as specified in the devicetree). A
+> per-parent mask of child interrupts is used to keep track of which
+> domain should handle which interrupts.
 
-On Fri, Feb 4, 2022 at 10:34 AM Jens Wiklander
-<jens.wiklander@linaro.org> wrote:
->
-> Uses the new simplified tee_shm_register_kernel_buf() function instead
-> of the old tee_shm_alloc() function which required specific
-> TEE_SHM-flags
->
-> Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
-> Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+So you are encoding a particular priority scheme in the device tree
+even if this is really under SW control? That's pretty horrible.
+
+> 
+> Signed-off-by: Sander Vanheule <sander@svanheule.net>
 > ---
->  security/keys/trusted-keys/trusted_tee.c | 23 +++++++++--------------
->  1 file changed, 9 insertions(+), 14 deletions(-)
+>  drivers/irqchip/irq-realtek-rtl.c | 150 ++++++++++++++++++++++++------
+>  1 file changed, 124 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/irqchip/irq-realtek-rtl.c b/drivers/irqchip/irq-realtek-rtl.c
+> index 388f4a7bfb80..868eb9b25e84 100644
+> --- a/drivers/irqchip/irq-realtek-rtl.c
+> +++ b/drivers/irqchip/irq-realtek-rtl.c
+> @@ -22,12 +22,22 @@
+>  #define RTL_ICTL_IRR3		0x14
+>  
+>  #define RTL_ICTL_NUM_INPUTS	32
+> +#define RTL_ICTL_NUM_OUTPUTS	15
+>  
+>  #define REG(x)		(realtek_ictl_base + x)
+>  
+>  static DEFINE_RAW_SPINLOCK(irq_lock);
+>  static void __iomem *realtek_ictl_base;
+>  
+> +struct realtek_ictl_output {
+> +	/* IRQ controller data */
+> +	struct fwnode_handle *fwnode;
+> +	/* Output specific data */
+> +	unsigned int output_index;
+> +	struct irq_domain *domain;
+> +	u32 child_mask;
+> +};
+> +
+>  /*
+>   * IRR0-IRR3 store 4 bits per interrupt, but Realtek uses inverted numbering,
+>   * placing IRQ 31 in the first four bits. A routing value of '0' means the
+> @@ -37,6 +47,11 @@ static void __iomem *realtek_ictl_base;
+>  #define IRR_OFFSET(idx)		(4 * (3 - (idx * 4) / 32))
+>  #define IRR_SHIFT(idx)		((idx * 4) % 32)
+>  
+> +static inline u32 read_irr(void __iomem *irr0, int idx)
 
-Since this patch depends on other patches in this patch set and vice
-versa is it OK if I take this patch via my tree? I'm aiming for v5.18
-with this.
+You can drop the inline. The compiler is brave enough to try that itself.
+
+> +{
+> +	return (readl(irr0 + IRR_OFFSET(idx)) >> IRR_SHIFT(idx)) & 0xf;
+> +}
+> +
+>  static inline void write_irr(void __iomem *irr0, int idx, u32 value)
+>  {
+>  	unsigned int offset = IRR_OFFSET(idx);
+> @@ -84,51 +99,128 @@ static struct irq_chip realtek_ictl_irq = {
+>  
+>  static int intc_map(struct irq_domain *d, unsigned int irq, irq_hw_number_t hw)
+>  {
+> +	struct realtek_ictl_output *output = d->host_data;
+>  	unsigned long flags;
+> +	u32 routing_old;
+> +	int err = 0;
+> +
+> +	raw_spin_lock_irqsave(&irq_lock, flags);
+> +
+> +	/*
+> +	 * Inputs can only be routed to one output, so they shouldn't end up in
+> +	 * multiple domains. Perform this check in the same atomic context as
+> +	 * configuring the routing to prevent races.
+> +	 */
+> +	routing_old = read_irr(REG(RTL_ICTL_IRR0), hw);
+> +	if (routing_old && output->output_index != routing_old - 1) {
+> +		pr_err("int %ld already routed to output %d\n",
+> +			hw, routing_old - 1);
+> +		err = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	output->child_mask |= BIT(hw);
+> +	write_irr(REG(RTL_ICTL_IRR0), hw, output->output_index + 1);
+>  
+>  	irq_set_chip_and_handler(irq, &realtek_ictl_irq, handle_level_irq);
+>  
+> -	raw_spin_lock_irqsave(&irq_lock, flags);
+> -	write_irr(REG(RTL_ICTL_IRR0), hw, 1);
+> +out:
+>  	raw_spin_unlock_irqrestore(&irq_lock, flags);
+>  
+> -	return 0;
+> +	return err;
+> +}
+> +
+> +static int intc_select(struct irq_domain *d, struct irq_fwspec *fwspec,
+> +	enum irq_domain_bus_token bus_token)
+> +{
+> +	struct realtek_ictl_output *output = d->host_data;
+> +
+> +	if (fwspec->fwnode != output->fwnode)
+> +		return false;
+> +
+> +	/* Original specifiers only had one parameter */
+> +	if (WARN_ON_ONCE(fwspec->param_count < 2))
+> +		return true;
+
+You already warned when booting and finding the old binding. Doing it
+again probably is superfluous.
+
+> +
+> +	return fwspec->param[1] == output->output_index;
+>  }
+>  
+>  static const struct irq_domain_ops irq_domain_ops = {
+>  	.map = intc_map,
+> +	.select = intc_select,
+>  	.xlate = irq_domain_xlate_onecell,
+>  };
+>  
+>  static void realtek_irq_dispatch(struct irq_desc *desc)
+>  {
+> +	struct realtek_ictl_output *output = irq_desc_get_handler_data(desc);
+>  	struct irq_chip *chip = irq_desc_get_chip(desc);
+> -	struct irq_domain *domain;
+>  	unsigned long pending;
+>  	unsigned int soc_int;
+>  
+>  	chained_irq_enter(chip, desc);
+> -	pending = readl(REG(RTL_ICTL_GIMR)) & readl(REG(RTL_ICTL_GISR));
+> +	pending = readl(REG(RTL_ICTL_GIMR)) & readl(REG(RTL_ICTL_GISR))
+> +		& output->child_mask;
+>  
+>  	if (unlikely(!pending)) {
+>  		spurious_interrupt();
+>  		goto out;
+>  	}
+>  
+> -	domain = irq_desc_get_handler_data(desc);
+> -	for_each_set_bit(soc_int, &pending, 32)
+> -		generic_handle_domain_irq(domain, soc_int);
+> +	for_each_set_bit(soc_int, &pending, RTL_ICTL_NUM_INPUTS)
+> +		generic_handle_domain_irq(output->domain, soc_int);
+>  
+>  out:
+>  	chained_irq_exit(chip, desc);
+>  }
+>  
+> +static int __init setup_parent_interrupts(struct device_node *node, int *parents,
+> +	unsigned int num_parents)
+> +{
+> +	struct realtek_ictl_output *outputs;
+> +	struct realtek_ictl_output *output;
+> +	struct irq_domain *domain;
+> +	unsigned int p;
+> +
+> +	outputs = kcalloc(num_parents, sizeof(*outputs), GFP_KERNEL);
+> +	if (!outputs)
+> +		return -ENOMEM;
+> +
+> +	for (p = 0; p < num_parents; p++) {
+> +		output = outputs + p;
+> +
+> +		domain = irq_domain_add_simple(node, RTL_ICTL_NUM_INPUTS, 0,
+> +					       &irq_domain_ops, output);
+
+Consider using irq_domain_add_linear() instead. add_simple really is
+legacy compatibility cruft.
+
+> +		if (!domain)
+> +			goto domain_err;
+> +
+> +		output->fwnode = of_node_to_fwnode(node);
+> +		output->output_index = p;
+> +		output->domain = domain;
+> +
+> +		irq_set_chained_handler_and_data(parents[p], realtek_irq_dispatch, output);
+> +	}
+> +
+> +	return 0;
+> +
+> +domain_err:
+> +	while (p--) {
+> +		irq_set_chained_handler_and_data(parents[p], NULL, NULL);
+> +		irq_domain_remove(outputs[p].domain);
+> +	}
+> +
+> +	kfree(outputs);
+> +
+> +	return -ENOMEM;
+> +}
+> +
+>  static int __init realtek_rtl_of_init(struct device_node *node, struct device_node *parent)
+>  {
+> +	int parent_irqs[RTL_ICTL_NUM_OUTPUTS];
+>  	struct of_phandle_args oirq;
+> -	struct irq_domain *domain;
+> +	unsigned int num_parents;
+>  	unsigned int soc_irq;
+> -	int parent_irq;
+> +	unsigned int p;
+>  
+>  	realtek_ictl_base = of_iomap(node, 0);
+>  	if (!realtek_ictl_base)
+> @@ -139,37 +231,43 @@ static int __init realtek_rtl_of_init(struct device_node *node, struct device_no
+>  	for (soc_irq = 0; soc_irq < RTL_ICTL_NUM_INPUTS; soc_irq++)
+>  		write_irr(REG(RTL_ICTL_IRR0), soc_irq, 0);
+>  
+> -	if (WARN_ON(!of_irq_count(node))) {
+> +	num_parents = of_irq_count(node);
+> +	if (num_parents > RTL_ICTL_NUM_OUTPUTS) {
+> +		pr_err("too many parent interrupts\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	for (p = 0; p < num_parents; p++)
+> +		parent_irqs[p] = of_irq_get(node, p);
+> +
+> +	if (WARN_ON(!num_parents)) {
+>  		/*
+>  		 * If DT contains no parent interrupts, assume MIPS CPU IRQ 2
+>  		 * (HW0) is connected to the first output. This is the case for
+>  		 * all known hardware anyway. "interrupt-map" is deprecated, so
+>  		 * don't bother trying to parse that.
+> +		 * Since this is to account for old devicetrees with one-cell
+> +		 * interrupt specifiers, only one output domain is needed.
+>  		 */
+>  		oirq.np = of_find_compatible_node(NULL, NULL, "mti,cpu-interrupt-controller");
+>  		oirq.args_count = 1;
+>  		oirq.args[0] = 2;
+>  
+> -		parent_irq = irq_create_of_mapping(&oirq);
+> +		parent_irqs[0] = irq_create_of_mapping(&oirq);
+> +		num_parents = 1;
+>  
+>  		of_node_put(oirq.np);
+> -	} else {
+> -		parent_irq = of_irq_get(node, 0);
+>  	}
+>  
+> -	if (parent_irq < 0)
+> -		return parent_irq;
+> -	else if (!parent_irq)
+> -		return -ENODEV;
+> -
+> -	domain = irq_domain_add_simple(node, RTL_ICTL_NUM_INPUTS, 0,
+> -				       &irq_domain_ops, NULL);
+> -	if (!domain)
+> -		return -ENOMEM;
+> -
+> -	irq_set_chained_handler_and_data(parent_irq, realtek_irq_dispatch, domain);
+> +	/* Ensure we haven't collected any errors before proceeding */
+> +	for (p = 0; p < num_parents; p++) {
+> +		if (parent_irqs[p] < 0)
+> +			return parent_irqs[p];
+> +		if (!parent_irqs[p])
+> +			return -ENODEV;
+> +	}
+>  
+> -	return 0;
+> +	return setup_parent_interrupts(node, &parent_irqs[0], num_parents);
+
+Directly use 'parent' instead of &parent[0].
 
 Thanks,
-Jens
 
->
->
-> diff --git a/security/keys/trusted-keys/trusted_tee.c b/security/keys/trusted-keys/trusted_tee.c
-> index 2ce66c199e1d..c8626686ee1b 100644
-> --- a/security/keys/trusted-keys/trusted_tee.c
-> +++ b/security/keys/trusted-keys/trusted_tee.c
-> @@ -70,17 +70,15 @@ static int trusted_tee_seal(struct trusted_key_payload *p, char *datablob)
->         memset(&inv_arg, 0, sizeof(inv_arg));
->         memset(&param, 0, sizeof(param));
->
-> -       reg_shm_in = tee_shm_register(pvt_data.ctx, (unsigned long)p->key,
-> -                                     p->key_len, TEE_SHM_DMA_BUF |
-> -                                     TEE_SHM_KERNEL_MAPPED);
-> +       reg_shm_in = tee_shm_register_kernel_buf(pvt_data.ctx, p->key,
-> +                                                p->key_len);
->         if (IS_ERR(reg_shm_in)) {
->                 dev_err(pvt_data.dev, "key shm register failed\n");
->                 return PTR_ERR(reg_shm_in);
->         }
->
-> -       reg_shm_out = tee_shm_register(pvt_data.ctx, (unsigned long)p->blob,
-> -                                      sizeof(p->blob), TEE_SHM_DMA_BUF |
-> -                                      TEE_SHM_KERNEL_MAPPED);
-> +       reg_shm_out = tee_shm_register_kernel_buf(pvt_data.ctx, p->blob,
-> +                                                 sizeof(p->blob));
->         if (IS_ERR(reg_shm_out)) {
->                 dev_err(pvt_data.dev, "blob shm register failed\n");
->                 ret = PTR_ERR(reg_shm_out);
-> @@ -131,17 +129,15 @@ static int trusted_tee_unseal(struct trusted_key_payload *p, char *datablob)
->         memset(&inv_arg, 0, sizeof(inv_arg));
->         memset(&param, 0, sizeof(param));
->
-> -       reg_shm_in = tee_shm_register(pvt_data.ctx, (unsigned long)p->blob,
-> -                                     p->blob_len, TEE_SHM_DMA_BUF |
-> -                                     TEE_SHM_KERNEL_MAPPED);
-> +       reg_shm_in = tee_shm_register_kernel_buf(pvt_data.ctx, p->blob,
-> +                                                p->blob_len);
->         if (IS_ERR(reg_shm_in)) {
->                 dev_err(pvt_data.dev, "blob shm register failed\n");
->                 return PTR_ERR(reg_shm_in);
->         }
->
-> -       reg_shm_out = tee_shm_register(pvt_data.ctx, (unsigned long)p->key,
-> -                                      sizeof(p->key), TEE_SHM_DMA_BUF |
-> -                                      TEE_SHM_KERNEL_MAPPED);
-> +       reg_shm_out = tee_shm_register_kernel_buf(pvt_data.ctx, p->key,
-> +                                                 sizeof(p->key));
->         if (IS_ERR(reg_shm_out)) {
->                 dev_err(pvt_data.dev, "key shm register failed\n");
->                 ret = PTR_ERR(reg_shm_out);
-> @@ -192,8 +188,7 @@ static int trusted_tee_get_random(unsigned char *key, size_t key_len)
->         memset(&inv_arg, 0, sizeof(inv_arg));
->         memset(&param, 0, sizeof(param));
->
-> -       reg_shm = tee_shm_register(pvt_data.ctx, (unsigned long)key, key_len,
-> -                                  TEE_SHM_DMA_BUF | TEE_SHM_KERNEL_MAPPED);
-> +       reg_shm = tee_shm_register_kernel_buf(pvt_data.ctx, key, key_len);
->         if (IS_ERR(reg_shm)) {
->                 dev_err(pvt_data.dev, "key shm register failed\n");
->                 return PTR_ERR(reg_shm);
-> --
-> 2.31.1
->
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
