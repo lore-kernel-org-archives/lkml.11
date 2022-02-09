@@ -2,68 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B516AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:37:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230307AbiBIPgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:36:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
+        id S232353AbiBIPh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:37:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236242AbiBIPgh (ORCPT
+        with ESMTP id S236196AbiBIPfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:36:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A40EC050CDE;
-        Wed,  9 Feb 2022 07:36:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA1E7614F5;
-        Wed,  9 Feb 2022 15:36:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EACE0C340E7;
-        Wed,  9 Feb 2022 15:36:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644420998;
-        bh=AYiSnNGzd7sXenCfs60QjVqVRErTSfdKRWpFCVKKFQg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=sdQdEymDMm2ZzCxwgTKBq6KkUy4nsmX/Xn5tZBfJmB54+vP1mVscS9kTjMmg5I+HP
-         JOQkPPaj8u9SZrbVjVZzQFXqNNW1DQIqZnF3UhAII+SkXnuu4JrGUD42EAXPjYMkMd
-         1a5D+mS7NPEKwM/xDeM9Gg58ffg2s2LFGrpftCabW55o5HzgXfSZrvcDKlVn1NlcZR
-         cBQMQjJpKI+n495D1Xb/pBs3pSUFgwDfGeudwiz02L/yr0yk+0WOfmREhIkwG3c6LK
-         7EtkoSWUFLnr6ujaV9PYrT4RkRCt+vuTxjbDr6z5S/aJylqEjBaOilbdt0ffAecCXM
-         Gw+M2DBHNMhmg==
-Date:   Wed, 9 Feb 2022 09:36:36 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     l.stach@pengutronix.de, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, shawnguo@kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Subject: Re: [RFC 2/2] PCI: imx6: Enable imx6qp pcie power management support
-Message-ID: <20220209153636.GA557361@bhelgaas>
+        Wed, 9 Feb 2022 10:35:50 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 472A9C05CB9F
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:35:53 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E402812FC;
+        Wed,  9 Feb 2022 07:35:52 -0800 (PST)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CCF7B3F73B;
+        Wed,  9 Feb 2022 07:35:50 -0800 (PST)
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     ardb@kernel.org, bp@alien8.de, catalin.marinas@arm.com,
+        dave.hansen@linux.intel.com, frederic@kernel.org,
+        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, luto@kernel.org,
+        mark.rutland@arm.com, mingo@redhat.com, peterz@infradead.org,
+        tglx@linutronix.de, valentin.schneider@arm.com, will@kernel.org
+Subject: [PATCH v3 3/7] sched/preempt: simplify irqentry_exit_cond_resched() callers
+Date:   Wed,  9 Feb 2022 15:35:31 +0000
+Message-Id: <20220209153535.818830-4-mark.rutland@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220209153535.818830-1-mark.rutland@arm.com>
+References: <20220209153535.818830-1-mark.rutland@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1644390156-5940-2-git-send-email-hongxing.zhu@nxp.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In subject, s/pcie/PCIe/ or remove it altogether, since I don't think
-it adds useful information.
+Currently callers of irqentry_exit_cond_resched() need to be aware of
+whether the function should be indirected via a static call, leading to
+ugly ifdeffery in callers.
 
-On Wed, Feb 09, 2022 at 03:02:36PM +0800, Richard Zhu wrote:
-> i.MX6QP PCIe supports the RESET logic, thus it can support
-> the L2 exit by the reset mechanism.
-> Enable the i.MX6QP PCIe suspend/resume operations support.
+Save them the hassle with a static inline wrapper that does the right
+thing. The raw_irqentry_exit_cond_resched() will also be useful in
+subsequent patches which will add conditional wrappers for preemption
+functions.
 
-Add blank line between paragraphs or rewrap into a single paragraph.
+Note: in arch/x86/entry/common.c, xen_pv_evtchn_do_upcall() always calls
+irqentry_exit_cond_resched() directly, even when PREEMPT_DYNAMIC is in
+use. I believe this is a latent bug (which this patch corrects), but I'm
+not entirely certain this wasn't deliberate.
 
-Rewrap to fill 75 columns.
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Frederic Weisbecker <frederic@kernel.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Valentin Schneider <valentin.schneider@arm.com>
+---
+ include/linux/entry-common.h |  9 ++++++---
+ kernel/entry/common.c        | 12 ++++--------
+ 2 files changed, 10 insertions(+), 11 deletions(-)
 
-What does "L2 exit by reset mechanism" mean?  Is this an
-i.MX6-specific thing?  If not, can you point me to the relevant part
-of the PCIe spec?
+diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+index a01ac1a0a292..dfd84c59b144 100644
+--- a/include/linux/entry-common.h
++++ b/include/linux/entry-common.h
+@@ -454,11 +454,14 @@ irqentry_state_t noinstr irqentry_enter(struct pt_regs *regs);
+  *
+  * Conditional reschedule with additional sanity checks.
+  */
+-void irqentry_exit_cond_resched(void);
++void raw_irqentry_exit_cond_resched(void);
+ #ifdef CONFIG_PREEMPT_DYNAMIC
+-#define irqentry_exit_cond_resched_dynamic_enabled	irqentry_exit_cond_resched
++#define irqentry_exit_cond_resched_dynamic_enabled	raw_irqentry_exit_cond_resched
+ #define irqentry_exit_cond_resched_dynamic_disabled	NULL
+-DECLARE_STATIC_CALL(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
++DECLARE_STATIC_CALL(irqentry_exit_cond_resched, raw_irqentry_exit_cond_resched);
++#define irqentry_exit_cond_resched()	static_call(irqentry_exit_cond_resched)()
++#else
++#define irqentry_exit_cond_resched()	raw_irqentry_exit_cond_resched()
+ #endif
+ 
+ /**
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index bad713684c2e..1739ca79613b 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -380,7 +380,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
+ 	return ret;
+ }
+ 
+-void irqentry_exit_cond_resched(void)
++void raw_irqentry_exit_cond_resched(void)
+ {
+ 	if (!preempt_count()) {
+ 		/* Sanity check RCU and thread stack */
+@@ -392,7 +392,7 @@ void irqentry_exit_cond_resched(void)
+ 	}
+ }
+ #ifdef CONFIG_PREEMPT_DYNAMIC
+-DEFINE_STATIC_CALL(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
++DEFINE_STATIC_CALL(irqentry_exit_cond_resched, raw_irqentry_exit_cond_resched);
+ #endif
+ 
+ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+@@ -420,13 +420,9 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+ 		}
+ 
+ 		instrumentation_begin();
+-		if (IS_ENABLED(CONFIG_PREEMPTION)) {
+-#ifdef CONFIG_PREEMPT_DYNAMIC
+-			static_call(irqentry_exit_cond_resched)();
+-#else
++		if (IS_ENABLED(CONFIG_PREEMPTION))
+ 			irqentry_exit_cond_resched();
+-#endif
+-		}
++
+ 		/* Covers both tracing and lockdep */
+ 		trace_hardirqs_on();
+ 		instrumentation_end();
+-- 
+2.30.2
 
-Bjorn
