@@ -2,102 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 825C9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:30:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F997C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238325AbiBIRaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 12:30:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58718 "EHLO
+        id S238357AbiBIRfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 12:35:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232303AbiBIRaU (ORCPT
+        with ESMTP id S234972AbiBIRfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 12:30:20 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876C3C0613C9
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:30:23 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id q7so5227521wrc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 09:30:23 -0800 (PST)
+        Wed, 9 Feb 2022 12:35:05 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74348C0613C9;
+        Wed,  9 Feb 2022 09:35:07 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id i17so5561764lfg.11;
+        Wed, 09 Feb 2022 09:35:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ehqoee1bftUz/gLrW1kXxKGubBl5XYT7H+4O2R4yTN8=;
-        b=VMjXDE+UO+gQWCOdpRAssrTMjmcChF0PkTsdA/pDVovwZVbHIhStx3JqiJ/a20KM4Z
-         MwMrRkmTmt+j33cqEWQkKmi1eO7h0GgfsU9MNpgfa/L7MOEWCorP7gKfV/D9CEzZU079
-         i48eTrcaUHLrmuRrdvGwn17XJEPvsMNG2zyh12JOAqSC2tbgGd4kcPBWQrrp1HcW8gBa
-         QqvZfTgsYwqSwT39ryMehGflmq3B5cyMPJzNCcSpPsfCWt8/7E7Hnylj5HdbVEcq68ZX
-         QLSr5kMCYnMhUgUhaGbal0MHlpi+Qz/5ioAiactY0Jr+3fT/omajQq45q214YCTd9/jF
-         FDUg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8NIjqqLl8Q8d9yGDh9LTnBdmuxZgRMGqN0071eUrnzg=;
+        b=bgJPEUrvi/HTcJB2kr8J3TQqHRG6Xl82Im5VYrsuLLpEjt3Fyvx66kc7NebndQEIuZ
+         a4nNGkJWiwFRfgfTKzasa2Qb7cW+Sbi1iZNyynsWjfgpoKl3sSyCOPC4FPPou0VD6PES
+         e0R1D6ufDztwl74jVU24v8KI4H52gBaHBAqWfHMCTMfqyjVw9qEJDvFU7/Ndnvu14wHa
+         BZgr/fmERCdAfHHiXtQMS7+/7ZA+/F+hr748c0+XSk+k/hsLuz6mXibDQFJha29KZkzb
+         0ar42ni1u2Z4enA7Tr/ulznj9Fxz85LLkgjYRATISjB2wb7o7vdbYX71vvp0MKb4EJBh
+         cn7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ehqoee1bftUz/gLrW1kXxKGubBl5XYT7H+4O2R4yTN8=;
-        b=ensLXiRLMLJP5rROo4pteLwX6myqHZbvTnJayL1ldZmNVffO5IvmWG43rDmYH50B3J
-         4qs8zNoPWIAFsblUYG3FVswC2mBtCX02Mzo4ys24J8vleN+X76OnFmo6+aQcyH8PFBne
-         frHI160yDLkHfqiKaNmQenxqscjDrRXQ6bQ14wXBHBD+7WiBO9MJ5PVwmmiRT1Ouu776
-         9Yiwyx0S5EOFyGXwYHhC/baqDNbEvv/w/O/kqPxRe2LOplheXFYQZ+NqPkgynO8vTUcO
-         +9Q3uq+zb5UTLsT9cTtpdmInaikfq08FFRNG74NX0WuGLGxD3e1J9YGTkIbe30uvzW6v
-         ukDQ==
-X-Gm-Message-State: AOAM5327E13C8dk6odJAIUwI5gQ3uC0Jc0u2M/FfQNgN7jmopRxUhI7q
-        LZZzlQyQpHj+4mhdRSfeIw9KopqRoLAvbxV9mutsJA==
-X-Google-Smtp-Source: ABdhPJxcHlYmbzhD+PWuni/5H/29pARK10fgORVYSpw8hGMRlwOSJkVIKE/ZpZ51NnJKmYGamVUCtwVVKxJAadh6KaI=
-X-Received: by 2002:adf:ee81:: with SMTP id b1mr2877638wro.149.1644427821958;
- Wed, 09 Feb 2022 09:30:21 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8NIjqqLl8Q8d9yGDh9LTnBdmuxZgRMGqN0071eUrnzg=;
+        b=LGYV10doOeEzL92YrF8plEZ9Yc5xYMR0CEH4gyQ8zDgKt+LfxqwvdqJZYrPoWLtMxR
+         I+v0lYzjaNBP6BbHn82dERfGrc0WyN66lfn5RA0cfekArqc5aW01lvyRLG3rJ9XEgHsz
+         3xuL5hFScNU/Ln/p0tgjRZoHiZ3/LN+mcgZHBHhJFPZp7qcH3jfw8x6uLySyeUJPDmyZ
+         2vusvRg/8xm2+8GXN6ELEQXwJQ77Lafj5Bq1obflL995rJ/Xd8cpQ9NquZcT/Ikt3gqK
+         ghs0WVkMjjoF/c9dZbLMY+5gPA7fbv4LPnjimhcu37EKw+jMC56rLIEeV1jBsTuTI/F3
+         lUjA==
+X-Gm-Message-State: AOAM533C60WAew1s4UGdUGqqooE1erPqgtmz4JOdNnvZFwzsS5rAwiTM
+        Q4Vma4jpYRTcwC6B2Vgu8dpoOb1epufH8Q==
+X-Google-Smtp-Source: ABdhPJwE5Y+59qnObPBcVWqGD0RYLvE4fzpJxuV4YvPqdSwZMNvhqL65ykklDYjFLEOMG0iUKrsyDA==
+X-Received: by 2002:ac2:598e:: with SMTP id w14mr2271364lfn.218.1644428105714;
+        Wed, 09 Feb 2022 09:35:05 -0800 (PST)
+Received: from orome ([193.209.96.43])
+        by smtp.gmail.com with ESMTPSA id w11sm2451132lfr.201.2022.02.09.09.35.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 09:35:04 -0800 (PST)
+Date:   Wed, 9 Feb 2022 18:35:01 +0100
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Kartik <kkartik@nvidia.com>
+Cc:     linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jonathanh@nvidia.com, digetx@gmail.com, smangipudi@nvidia.com,
+        pshete@nvidia.com
+Subject: Re: [PATCH] soc/tegra: fuse: update nvmem cell list
+Message-ID: <YgP7RRy/PTuXZlw8@orome>
+References: <1638791565-3137-1-git-send-email-kkartik@nvidia.com>
 MIME-Version: 1.0
-References: <20220123184541.993212-1-daviddunn@google.com> <20220123184541.993212-2-daviddunn@google.com>
- <CALMp9eSuavLEJ0_jwuOgmSX+Y8iJLsJT0xkGfMZg6B7kGyDmBQ@mail.gmail.com> <09d8b472-000b-7150-f60d-ffb5706b164e@gmail.com>
-In-Reply-To: <09d8b472-000b-7150-f60d-ffb5706b164e@gmail.com>
-From:   David Dunn <daviddunn@google.com>
-Date:   Wed, 9 Feb 2022 09:30:10 -0800
-Message-ID: <CABOYuvZubA+Et9hzVrF03xCsNeAG4cz68_qG6KgAmTVHBvPoXw@mail.gmail.com>
-Subject: Re: [PATCH v5 1/3] KVM: x86: Provide per VM capability for disabling
- PMU virtualization
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     "Paolo Bonzini - Distinguished Engineer (kernel-recipes.org) (KVM HoF)" 
-        <pbonzini@redhat.com>, kvm@vger.kernel.org, seanjc@google.com,
-        Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="wlDecwlbAShuVnde"
+Content-Disposition: inline
+In-Reply-To: <1638791565-3137-1-git-send-email-kkartik@nvidia.com>
+User-Agent: Mutt/2.1.5 (31b18ae9) (2021-12-30)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks Like.
 
-I just sent a new v6 series with these minor merge conflicts resolved.
+--wlDecwlbAShuVnde
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Dave
+On Mon, Dec 06, 2021 at 05:22:45PM +0530, Kartik wrote:
+> From: kartik <kkartik@nvidia.com>
+>=20
+> Update tegra_fuse_cells with below entries:
+>  - gcplex-config-fuse:
+>      Configuration bits for GPU, used to enable/disable write protected
+>      region used for storing GPU firmware.
+>  - pdi0:
+>      Unique per chip public identifier.
+>  - pdi1:
+>      Unique per chip public identifier.
+>=20
+> Signed-off-by: Prathamesh Shete <pshete@nvidia.com>
+> Signed-off-by: kartik <kkartik@nvidia.com>
+> ---
+>  drivers/soc/tegra/fuse/fuse-tegra.c | 20 +++++++++++++++++++-
+>  1 file changed, 19 insertions(+), 1 deletion(-)
 
-On Wed, Feb 9, 2022 at 2:33 AM Like Xu <like.xu.linux@gmail.com> wrote:
->
-> cc LKML and full list of KVM reviewers.
->
-> On 25/1/2022 2:39 am, Jim Mattson wrote:
-> > On Sun, Jan 23, 2022 at 10:45 AM David Dunn <daviddunn@google.com> wrote:
-> >>
-> >> KVM_CAP_PMU_DISABLE is used to disable PMU virtualization on individual
-> >> x86 VMs.  PMU configuration must be done prior to creating VCPUs.
-> >>
-> >> To enable future extension, KVM_CAP_PMU_CAPABILITY reports available
-> >> settings via bitmask when queried via check_extension.
-> >>
-> >> For VMs that have PMU virtualization disabled, usermode will need to
-> >> clear CPUID leaf 0xA to notify guests.
-> >>
-> >> Signed-off-by: David Dunn <daviddunn@google.com>
-> >
-> > Nit: The two references to CPUID leaf 0xA should be qualified as
-> > applying only to Intel VMs.
-> >
-> > Reviewed-by: Jim Mattson <jmattson@google.com>
-> >
->
-> Nit: It looks like we already have "#define KVM_CAP_SYS_ATTRIBUTES 209".
->
-> Hope it helps a little:
->
-> Reviewed-by: Like Xu <likexu@tencent.com>
+Applied, thanks.
+
+Thierry
+
+--wlDecwlbAShuVnde
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmID+0MACgkQ3SOs138+
+s6FazA/+N8CLS2hBOqfp79hXy4cX5pQLIfdyWqOXE+8QAMy9+PMKYpPUFXqOFIGp
+7FVv1ymK5dmjp4NgNhDxiVUZEllhFmtNX8Is8P9S5HgQnOg6oT5AiWs9jvt1tB62
+NlhcpWc9vaiDDFLl3kEyfQIz9tCDkq2KU/yH0TrlPQ2jzGtT4D8WspMdtZrHIL24
+yIrZAXjooimuNTDgf7+pRBQMwpY7m+F/+IO+xtdU2vQzoNeGHaXm5pcn2xEyAGCm
+Hi51o+2+kuEBcr0DH3tSSJmxVgn0KVxZ/IsZ59FmKsoOwr/5OXf0EQRo2lPT4F1X
+rY15hESZSM4TDdS6QKtGZHfJ5tZzMFI5dEUkV1QjZsDQQnpCH5DChzOfnfwcKGG1
+NvHQ8rwkULn5WDfSBwFy5UWXah0kJDQ/9ocI3Fo0I0g5YeL1nmfEFN6IlY61sQbQ
+Cyu9OvyUeurOyRBqwyU9PVlDAdAvKHV4XHQdoDLirdk3AYocJPZGONzMc4wLm86O
+BkzhiFAjg5W5oRX3PehmkwyzGHiHXb62YB87k7jo/wBymIKp5azQ70rd/fNYjcCm
+go6BJ5N1c9OjCRC3/K3otGTaa8V/H5rUtHBEv+QtZpjEaj6WFcMtb9BClljtFUb5
+UX7YMMGox3lxmtUPc/enBEiUmw+gLfbpaC4+UAZwTMNxli6jhcE=
+=0yLe
+-----END PGP SIGNATURE-----
+
+--wlDecwlbAShuVnde--
