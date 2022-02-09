@@ -2,184 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B268FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:05:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E247C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:06:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236497AbiBIQFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:05:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40254 "EHLO
+        id S236509AbiBIQF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:05:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233209AbiBIQFO (ORCPT
+        with ESMTP id S236533AbiBIQFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:05:14 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00208C0613C9;
-        Wed,  9 Feb 2022 08:05:16 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id p63so3691307iod.11;
-        Wed, 09 Feb 2022 08:05:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1c/6l8Fp4RH5VPtrTh9qUA2jV+GD+5aUHsSlil0jKiA=;
-        b=RmxhaIRcr+PwhQu4PtzxQSrXEXKyLT5HnRTvT+BDinZcRUK81PdCfNC5t6nFX3qr8C
-         Lx3xEBUqecDkV+MHfhMouucqPtzvKsqRnTMjcLCscQ/AIZ/mJU7+rhkbWhYZ/lj4tYnW
-         QYtMP3fkC+vmqjRkdOsy57ykqyLVa/lgWcocGwOQuILqJPTpx+EDRPFvzPuqoRTZcuyW
-         8fRfsulDLSGHmU5/W3PnfzJ4xwp0k7hudmLhAUYDhDj9cKhHqy5aZqKJgMTQggp00/UF
-         ZMn5HZiBEiW4ihI7aq5Bjf3cqAIy3usaOLTfTkdxEGUg5QoadOQ4b851sQIDXzicxctu
-         NVZQ==
+        Wed, 9 Feb 2022 11:05:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC1B1C0612BE
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:05:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644422757;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5TAmHdeWTvg28aUVJ1ETzsjk2tMW9UdCMcB5C9Mn4Tw=;
+        b=VzOMnX0+TH8tk+uKw/VUJY4XcNv63/vRLop6sZI71RCwg75tnGihYZKet8ZUBhcAZa8byp
+        3vpe0/n/xRJNIQPwA65hBQjWl+9d68yNkMbLk7tKR52X0fgF1WpvYf2HRgFHZiKaaYw/da
+        A4R5IM+/QMNQ3QKxaEt99Qg3r5+YWMc=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-46-4QeUIfKmOOqueYTTV4ZIWA-1; Wed, 09 Feb 2022 11:05:55 -0500
+X-MC-Unique: 4QeUIfKmOOqueYTTV4ZIWA-1
+Received: by mail-wm1-f70.google.com with SMTP id bg23-20020a05600c3c9700b0034bb19dfdc0so254219wmb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 08:05:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1c/6l8Fp4RH5VPtrTh9qUA2jV+GD+5aUHsSlil0jKiA=;
-        b=aiBA2I+9qD0vN/pbi0BQhfY4sUeiiHVDmNJqNHuL+p0OhKEJrr9MX3yBP5k+oRDvz7
-         4OWessttlzo9IYYB0jbxUpzDKaLg69zBOHc+eq1Au1X2nXXza4o1Uls/YyYNdr3OgIHQ
-         BAqjjmUs6rw0iMYAiw8wRtdnXKDeS2Nq6VeDx+mLsXLm7EAAgkMlsrzUMCeFIdqpYNQ6
-         p8f3qPdgLxcpVPfz/yFjGp36DTuFY3Fdy/+VtV+aYO1NqLUJ96nm1soxXO+/b/+Rw3oI
-         fyFARwhEJ6iTlig+BxtZeqi85M4neHowZcrbze3WjV52AEmdxCOM96TMvo3kFhPRbG0w
-         +qTQ==
-X-Gm-Message-State: AOAM533KOSVvbJRuQ/TEsukbW6xLkOxGwlitznMN6BAbPn7x+5mgHUtF
-        y3lzehCcSMyHQMhZiNIQ0mymTI4taFWFBEkg+Pk=
-X-Google-Smtp-Source: ABdhPJzwUJh9RJL8FHv95KrO3ujW9aTtOQ3nrC3twvNd8fY/dXsrOtRrHd9PRm6dTN9PV+G+Q3G0ZbIpyQe+F3zYpnE=
-X-Received: by 2002:a05:6638:2606:: with SMTP id m6mr1297132jat.93.1644422716327;
- Wed, 09 Feb 2022 08:05:16 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5TAmHdeWTvg28aUVJ1ETzsjk2tMW9UdCMcB5C9Mn4Tw=;
+        b=f9TLY2bYsuiL67LkZ7m17DcJpvU7lJNQb3/hrSpHc82i9DpMahgOspp/hUI9/HlSvl
+         V83IEtlaCw07LmE+LbG9Xk0SJ7BYKxcLbQjRbv8SCMaqYkxmXFeeLkqrwf+bGiR0PxLE
+         0BrxXdNczfh41+8jIfdfvhufydKtaduAH2T2Dv5vkIHmMbMYQfg4HLlih8KylfBae1eH
+         BxpYJ5q95I0Wc0yrbDdxKutDGyY53Z2INvGjpgqDjPKxF7kHui/FIRjNuyWLJOnFQZHv
+         ACSK1QhEP6kU18tzL66tk1QzoC02wZQhUhFIDIUrRpVVUgl4epWgHvQwk1paPed+i/m4
+         +t3A==
+X-Gm-Message-State: AOAM531uKfHy2KRXLgfyjnOfiLU9anMj7o5GcLi7pZRKUNkIuSNwMdnH
+        xWqex66PdqoFLHQid6Y8h8lmNvMa6KqObQAdoiEnDv+YkNp9guZ+TgvnSs4tWmqx8jN7C0gjXMB
+        kiVw0uMDdn1aRmAB/4W5ETSkp
+X-Received: by 2002:adf:ffca:: with SMTP id x10mr2725662wrs.248.1644422754709;
+        Wed, 09 Feb 2022 08:05:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyQmH0hF86x5L3n3fUWIlDsIruVfpsZiFRZH6CEakA0J830BtIAGYu0zKtjzdbc8XMHNPqYCg==
+X-Received: by 2002:adf:ffca:: with SMTP id x10mr2725648wrs.248.1644422754526;
+        Wed, 09 Feb 2022 08:05:54 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id r2sm19113350wrz.76.2022.02.09.08.05.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 08:05:54 -0800 (PST)
+Message-ID: <af9959db-96cc-8d53-27c7-9a0db1bbfdbe@redhat.com>
+Date:   Wed, 9 Feb 2022 17:05:53 +0100
 MIME-Version: 1.0
-References: <20220202135333.190761-1-jolsa@kernel.org> <20220202135333.190761-3-jolsa@kernel.org>
- <CAEf4Bzbrj01RJq7ArAo-kX-+8rPx9j5OH1OvGHxVJxiq8rn3FA@mail.gmail.com> <YgPXVXJnPKQ7lOi9@krava>
-In-Reply-To: <YgPXVXJnPKQ7lOi9@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 9 Feb 2022 08:05:05 -0800
-Message-ID: <CAEf4BzYxtoE8Gu62oNSdVxvsv2K_5CPSdGS3Qd0Jgaegvw7sfw@mail.gmail.com>
-Subject: Re: [PATCH 2/8] bpf: Add bpf_get_func_ip kprobe helper for fprobe link
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 5/7] (WIP) drm/solomon: Add SSD130X OLED displays SPI
+ support
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <20220209091204.2513437-1-javierm@redhat.com>
+ <YgPa2AD727QnlRWW@smile.fi.intel.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <YgPa2AD727QnlRWW@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 7:01 AM Jiri Olsa <olsajiri@gmail.com> wrote:
->
-> On Mon, Feb 07, 2022 at 10:59:18AM -0800, Andrii Nakryiko wrote:
-> > On Wed, Feb 2, 2022 at 5:53 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > >
-> > > Adding support to call get_func_ip_fprobe helper from kprobe
-> > > programs attached by fprobe link.
-> > >
-> > > Also adding support to inline it, because it's single load
-> > > instruction.
-> > >
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > ---
-> > >  kernel/bpf/verifier.c    | 19 ++++++++++++++++++-
-> > >  kernel/trace/bpf_trace.c | 16 +++++++++++++++-
-> > >  2 files changed, 33 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > > index 1ae41d0cf96c..a745ded00635 100644
-> > > --- a/kernel/bpf/verifier.c
-> > > +++ b/kernel/bpf/verifier.c
-> > > @@ -13625,7 +13625,7 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
-> > >                         continue;
-> > >                 }
-> > >
-> > > -               /* Implement bpf_get_func_ip inline. */
-> > > +               /* Implement tracing bpf_get_func_ip inline. */
-> > >                 if (prog_type == BPF_PROG_TYPE_TRACING &&
-> > >                     insn->imm == BPF_FUNC_get_func_ip) {
-> > >                         /* Load IP address from ctx - 16 */
-> > > @@ -13640,6 +13640,23 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
-> > >                         continue;
-> > >                 }
-> > >
-> > > +               /* Implement kprobe/fprobe bpf_get_func_ip inline. */
-> > > +               if (prog_type == BPF_PROG_TYPE_KPROBE &&
-> > > +                   eatype == BPF_TRACE_FPROBE &&
-> > > +                   insn->imm == BPF_FUNC_get_func_ip) {
-> > > +                       /* Load IP address from ctx (struct pt_regs) ip */
-> > > +                       insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
-> > > +                                                 offsetof(struct pt_regs, ip));
-> >
-> > Isn't this architecture-specific? I'm starting to dislike this
->
-> ugh, it is.. I'm not sure we want #ifdef CONFIG_X86 in here,
-> or some arch_* specific function?
+On 2/9/22 16:16, Andy Shevchenko wrote:
+> On Wed, Feb 09, 2022 at 10:12:04AM +0100, Javier Martinez Canillas wrote:
+>> The ssd130x driver only provides the core support for these devices but it
+>> does not have any bus transport logic. Add a driver to interface over SPI.
+> 
+> Thanks!
+> 
+> Same set of comments as per I²C patch.
+> 
 
+Sure, thanks for your feedback!
 
-So not inlining it isn't even considered? this function will be called
-once or at most a few times per BPF program invocation. Anyone calling
-it in a tight loop is going to use it very-very suboptimally (and even
-then useful program logic will dominate). There is no point in
-inlining it.
+Best regards,
+-- 
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
->
-> jirka
->
-> > inlining whole more and more. It's just a complication in verifier
-> > without clear real-world benefits. We are clearly prematurely
-> > optimizing here. In practice you'll just call bpf_get_func_ip() once
-> > and that's it. Function call overhead will be negligible compare to
-> > other *userful* work you'll be doing in your BPF program.
-> >
-> >
-> > > +
-> > > +                       new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
-> > > +                       if (!new_prog)
-> > > +                               return -ENOMEM;
-> > > +
-> > > +                       env->prog = prog = new_prog;
-> > > +                       insn      = new_prog->insnsi + i + delta;
-> > > +                       continue;
-> > > +               }
-> > > +
-> > >  patch_call_imm:
-> > >                 fn = env->ops->get_func_proto(insn->imm, env->prog);
-> > >                 /* all functions that have prototype and verifier allowed
-> > > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > > index a2024ba32a20..28e59e31e3db 100644
-> > > --- a/kernel/trace/bpf_trace.c
-> > > +++ b/kernel/trace/bpf_trace.c
-> > > @@ -1036,6 +1036,19 @@ static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
-> > >         .arg1_type      = ARG_PTR_TO_CTX,
-> > >  };
-> > >
-> > > +BPF_CALL_1(bpf_get_func_ip_fprobe, struct pt_regs *, regs)
-> > > +{
-> > > +       /* This helper call is inlined by verifier. */
-> > > +       return regs->ip;
-> > > +}
-> > > +
-> > > +static const struct bpf_func_proto bpf_get_func_ip_proto_fprobe = {
-> > > +       .func           = bpf_get_func_ip_fprobe,
-> > > +       .gpl_only       = false,
-> > > +       .ret_type       = RET_INTEGER,
-> > > +       .arg1_type      = ARG_PTR_TO_CTX,
-> > > +};
-> > > +
-> > >  BPF_CALL_1(bpf_get_attach_cookie_trace, void *, ctx)
-> > >  {
-> > >         struct bpf_trace_run_ctx *run_ctx;
-> > > @@ -1279,7 +1292,8 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> > >                 return &bpf_override_return_proto;
-> > >  #endif
-> > >         case BPF_FUNC_get_func_ip:
-> > > -               return &bpf_get_func_ip_proto_kprobe;
-> > > +               return prog->expected_attach_type == BPF_TRACE_FPROBE ?
-> > > +                       &bpf_get_func_ip_proto_fprobe : &bpf_get_func_ip_proto_kprobe;
-> > >         case BPF_FUNC_get_attach_cookie:
-> > >                 return &bpf_get_attach_cookie_proto_trace;
-> > >         default:
-> > > --
-> > > 2.34.1
-> > >
