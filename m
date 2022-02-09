@@ -2,53 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A01D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B44FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240247AbiBISmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:42:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53558 "EHLO
+        id S235203AbiBISml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:42:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240159AbiBISkm (ORCPT
+        with ESMTP id S240509AbiBISlQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:40:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D491C03E941;
-        Wed,  9 Feb 2022 10:40:13 -0800 (PST)
+        Wed, 9 Feb 2022 13:41:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6076C05CBA4;
+        Wed,  9 Feb 2022 10:40:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFFF2B8238E;
-        Wed,  9 Feb 2022 18:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0557FC340EF;
-        Wed,  9 Feb 2022 18:40:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5219D60906;
+        Wed,  9 Feb 2022 18:40:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37942C340E7;
+        Wed,  9 Feb 2022 18:40:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432010;
-        bh=06AEE+dTILRtwDY8oQbRofaIwu30iB9WUEgyuAH6rvs=;
+        s=k20201202; t=1644432040;
+        bh=su5tWGjpZ4inHUxdAgviiH1QYt3xfVvRJgHlrKb+6GE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hteFlor3t86fgNkY2YFhewQuK9vhMWBn40QM2BrO5qrebYE1yPDgEW7dwCGMneTBz
-         OFDdWLKv+8fiIt2SjgKidAyglOGMIWCseqSd7gVLPKJgpwhWUPdJn5qwsWf1PQtK+T
-         ZSuJ2Gw4URcWjxRb9wSCoR0hDuvQqYAUpmS8y9I3ElIzunyzk9cLHFO1Stlg++yk/o
-         d7G8miyx3RmSje6o0NoBbpSFC7icUxAUHDzrHCUANqKgH50QP2AVZmiTkeBveCK4v1
-         dUdWajaYW8XbPlINV/fou6XnSdJUas5iXjF3hFD2dkGKYRJ4hI7ZnmB9GsmX/7rUkS
-         x+yADA+5cT84w==
+        b=Ayg5wjSSixFdVOAQtXdDLlfTnYordB/jILvAkJT5B7L3bZbKG2gbcmGwnGDTlREO3
+         tJdMAwYMTw5tvQ9P/5aYDmEXPDx22b+0NyevMQDsboSIGYNRgUCA7XbsytoZmJc/nY
+         x4wrlRD3ajRL0wn1rjNe5tQsDVNB932eCX+6OQUzw4vyxH/vNMKK/fBes7kl08EwFB
+         Cm564FTQ2lfrzdNIOvyIYF+OyFG2CcL10d4AeIogY9VZ9uYTTnlfHNTtLLpRBqxvCm
+         vhqp/oOAHJPDEEQ0MskEGVfBNtS8CClrq+H6xHgk8VYLZZh0T1vuRDhzfS9dAQdykF
+         9hfkfEobWyS7A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
-        UNGLinuxDriver@microchip.com, bjarni.jonasson@microchip.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 29/36] net: sparx5: do not refer to skb after passing it on
-Date:   Wed,  9 Feb 2022 13:37:52 -0500
-Message-Id: <20220209183759.47134-29-sashal@kernel.org>
+Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
+        airlied@linux.ie, daniel@ffwll.ch, nirmoy.das@amd.com,
+        Oak.Zeng@amd.com, kevin1.wang@amd.com, tzimmermann@suse.de,
+        Philip.Yang@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 32/36] drm/amdgpu: fix logic inversion in check
+Date:   Wed,  9 Feb 2022 13:37:55 -0500
+Message-Id: <20220209183759.47134-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
 References: <20220209183759.47134-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,38 +57,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steen Hegelund <steen.hegelund@microchip.com>
+From: Christian König <christian.koenig@amd.com>
 
-[ Upstream commit 81eb8b0b18789e647e65579303529fd52d861cc2 ]
+[ Upstream commit e8ae38720e1a685fd98cfa5ae118c9d07b45ca79 ]
 
-Do not try to use any SKB fields after the packet has been passed up in the
-receive stack.
+We probably never trigger this, but the logic inside the check is
+inverted.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Link: https://lore.kernel.org/r/20220202083039.3774851-1-steen.hegelund@microchip.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-index dc7e5ea6ec158..148d431fcde42 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-@@ -145,9 +145,9 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
- 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
- 	eth_skb_pad(skb);
- 	skb->protocol = eth_type_trans(skb, netdev);
--	netif_rx(skb);
- 	netdev->stats.rx_bytes += skb->len;
- 	netdev->stats.rx_packets++;
-+	netif_rx(skb);
- }
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+index 94126dc396888..8132f66177c27 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+@@ -1892,7 +1892,7 @@ int amdgpu_copy_buffer(struct amdgpu_ring *ring, uint64_t src_offset,
+ 	unsigned i;
+ 	int r;
  
- static int sparx5_inject(struct sparx5 *sparx5,
+-	if (direct_submit && !ring->sched.ready) {
++	if (!direct_submit && !ring->sched.ready) {
+ 		DRM_ERROR("Trying to move memory with ring turned off.\n");
+ 		return -EINVAL;
+ 	}
 -- 
 2.34.1
 
