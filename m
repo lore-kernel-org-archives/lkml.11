@@ -2,298 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE981C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:09:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65989C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232503AbiBIMJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:09:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47962 "EHLO
+        id S232716AbiBIMJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:09:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233066AbiBIMGe (ORCPT
+        with ESMTP id S233391AbiBIMGq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:06:34 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C379C05CB9E;
-        Wed,  9 Feb 2022 03:19:45 -0800 (PST)
-X-UUID: 6178447457b4491488bbf55058306cf0-20220209
-X-UUID: 6178447457b4491488bbf55058306cf0-20220209
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <leilk.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 9602998; Wed, 09 Feb 2022 19:19:42 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 9 Feb 2022 19:19:41 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 9 Feb 2022 19:19:40 +0800
-From:   Leilk Liu <leilk.liu@mediatek.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-        Leilk Liu <leilk.liu@mediatek.com>
-Subject: [PATCH 2/6] spi: mediatek: add IPM single mode design support
-Date:   Wed, 9 Feb 2022 19:19:34 +0800
-Message-ID: <20220209111938.16137-3-leilk.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209111938.16137-1-leilk.liu@mediatek.com>
-References: <20220209111938.16137-1-leilk.liu@mediatek.com>
+        Wed, 9 Feb 2022 07:06:46 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457CCE016CD8;
+        Wed,  9 Feb 2022 03:13:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644405212; x=1675941212;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CLhMlvEV+rn3VwrObHpuk3rd0PNcKIyWcU6fqh61PL0=;
+  b=sUIpL9FOAznQkfCu0DlA5cPaCCp9qzzxX8nzd7V1MiIgb1ilNMSTuK9u
+   +zILMC1fBg4y/0JFXR4ShxsZpLLBuEhV5no/MiU5NV4gDrU3wbQfzb59k
+   T2MlsCpq0iY+2SWB4xbibarGRqmyaLSN7ef/cDix06Rw9h/Sq5LHcW+3t
+   5JO5V84SwikU8J8cC83keoYiA73iZQd95YCyusk/pGNtJ9ypprGwS6F6T
+   tr1jKgd2DYTtudTmKGwZuZfe2akFqm1BmKkONWf/3Ptb+i3yE9KX9kFAW
+   SR1iN8hoIQucSdAPnZD/oRfMvOdTrQfENAPiLDjUJzX7JYGBc9uAYzLzl
+   w==;
+IronPort-SDR: zRl5OBvAiM2qFDpZMrVz0fW3VW1goqRqcuNeSeAhfZACzHgjQ+wtgByg1x2AwtdZ4SFpUQnpaN
+ StgWhqmeXjNMRy75MFws7T+4VM6wPt7h8P6q1wJfuIlfKj6q0U+dMdZIamZcBgxR+QinSTdAYY
+ yOuKsGd06fZtQov+Cl0dL5IAdkrzYbM+FUjftmQi2OPZQzXbKMwAwjKErZNKyVwpNl0G3S5/wV
+ VUVbfFAIZAK6RiBmUcRtBdB0D3wF+aBIdyqh97rhBpxrTEKxtgN0IZ1LnBv5OpBQM9gtUmb4V2
+ BU/01FxaDjRWfSsfZ24sh7MR
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="152974486"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Feb 2022 04:13:31 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Feb 2022 04:13:30 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 9 Feb 2022 04:13:27 -0700
+From:   <conor.dooley@microchip.com>
+To:     <harini.katakam@xilinx.com>, <andrei.pistirica@microchip.com>,
+        <claudiu.beznea@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <nicolas.ferre@microchip.com>
+CC:     <harinikatakamlinux@gmail.com>, <Conor.Dooley@microchip.com>,
+        <linux-kernel@vger.kernel.org>, <michal.simek@xilinx.com>,
+        <mstamand@ciena.com>, <netdev@vger.kernel.org>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH] net: macb: Align the dma and coherent dma masks
+Date:   Wed, 9 Feb 2022 11:15:56 +0000
+Message-ID: <20220209111555.4022923-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220209094325.8525-1-harini.katakam@xilinx.com>
+References: <20220209094325.8525-1-harini.katakam@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-this patch add the support of IPM single mode design.
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> From: Marc St-Amand <mstamand@ciena.com>
+> 
+> Single page and coherent memory blocks can use different DMA masks
+> when the macb accesses physical memory directly. The kernel is clever
+> enough to allocate pages that fit into the requested address width.
+> 
+> When using the ARM SMMU, the DMA mask must be the same for single
+> pages and big coherent memory blocks. Otherwise the translation
+> tables turn into one big mess.
+> 
+>   [   74.959909] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
+>   [   74.959989] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+>   [   75.173939] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
+>   [   75.173955] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+> 
+> Since using the same DMA mask does not hurt direct 1:1 physical
+> memory mappings, this commit always aligns DMA and coherent masks.
+> 
+> Signed-off-by: Marc St-Amand <mstamand@ciena.com>
+> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
 
-Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
----
- drivers/spi/spi-mt65xx.c | 103 +++++++++++++++++++++++++++++++++------
- 1 file changed, 87 insertions(+), 16 deletions(-)
+Tested-by: Conor Dooley <conor.dooley@microchip.com>
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index a15de10ee286..1e196fa8ac83 100644
---- a/drivers/spi/spi-mt65xx.c
-+++ b/drivers/spi/spi-mt65xx.c
-@@ -31,6 +31,7 @@
- #define SPI_CFG2_REG                      0x0028
- #define SPI_TX_SRC_REG_64                 0x002c
- #define SPI_RX_DST_REG_64                 0x0030
-+#define SPI_CFG3_IPM_REG                  0x0040
- 
- #define SPI_CFG0_SCK_HIGH_OFFSET          0
- #define SPI_CFG0_SCK_LOW_OFFSET           8
-@@ -48,6 +49,7 @@
- #define SPI_CFG1_CS_IDLE_MASK             0xff
- #define SPI_CFG1_PACKET_LOOP_MASK         0xff00
- #define SPI_CFG1_PACKET_LENGTH_MASK       0x3ff0000
-+#define SPI_CFG1_IPM_PACKET_LENGTH_MASK   GENMASK(31, 16)
- #define SPI_CFG2_SCK_HIGH_OFFSET          0
- #define SPI_CFG2_SCK_LOW_OFFSET           16
- 
-@@ -68,7 +70,13 @@
- #define SPI_CMD_TX_ENDIAN            BIT(15)
- #define SPI_CMD_FINISH_IE            BIT(16)
- #define SPI_CMD_PAUSE_IE             BIT(17)
-+#define SPI_CMD_IPM_NONIDLE_MODE     BIT(19)
-+#define SPI_CMD_IPM_SPIM_LOOP        BIT(21)
-+#define SPI_CMD_IPM_GET_TICKDLY_OFFSET    22
- 
-+#define SPI_CMD_IPM_GET_TICKDLY_MASK	GENMASK(24, 22)
-+#define SPI_CFG3_IPM_HALF_DUPLEX_DIR		BIT(2)
-+#define SPI_CFG3_IPM_HALF_DUPLEX_EN		BIT(3)
- #define MT8173_SPI_MAX_PAD_SEL 3
- 
- #define MTK_SPI_PAUSE_INT_STATUS 0x2
-@@ -78,6 +86,7 @@
- 
- #define MTK_SPI_MAX_FIFO_SIZE 32U
- #define MTK_SPI_PACKET_SIZE 1024
-+#define MTK_SPI_IPM_PACKET_SIZE SZ_64K
- #define MTK_SPI_32BITS_MASK  (0xffffffff)
- 
- #define DMA_ADDR_EXT_BITS (36)
-@@ -93,6 +102,9 @@ struct mtk_spi_compatible {
- 	bool dma_ext;
- 	/* some IC no need unprepare SPI clk */
- 	bool no_need_unprepare;
-+	/* IPM design improve some single mode features */
-+	bool ipm_design;
-+
- };
- 
- struct mtk_spi {
-@@ -116,6 +128,12 @@ static const struct mtk_spi_compatible mt2712_compat = {
- 	.must_tx = true,
- };
- 
-+static const struct mtk_spi_compatible ipm_compat_single = {
-+	.enhance_timing = true,
-+	.dma_ext = true,
-+	.ipm_design = true,
-+};
-+
- static const struct mtk_spi_compatible mt6765_compat = {
- 	.need_pad_sel = true,
- 	.must_tx = true,
-@@ -157,6 +175,9 @@ static const struct mtk_chip_config mtk_default_chip_info = {
- };
- 
- static const struct of_device_id mtk_spi_of_match[] = {
-+	{ .compatible = "mediatek,ipm-spi-single",
-+		.data = (void *)&ipm_compat_single,
-+	},
- 	{ .compatible = "mediatek,mt2701-spi",
- 		.data = (void *)&mtk_common_compat,
- 	},
-@@ -275,12 +296,11 @@ static int mtk_spi_set_hw_cs_timing(struct spi_device *spi)
- 	return 0;
- }
- 
--static int mtk_spi_prepare_message(struct spi_master *master,
--				   struct spi_message *msg)
-+static int mtk_spi_hw_init(struct spi_master *master,
-+			   struct spi_device *spi)
- {
- 	u16 cpha, cpol;
- 	u32 reg_val;
--	struct spi_device *spi = msg->spi;
- 	struct mtk_chip_config *chip_config = spi->controller_data;
- 	struct mtk_spi *mdata = spi_master_get_devdata(master);
- 
-@@ -288,6 +308,15 @@ static int mtk_spi_prepare_message(struct spi_master *master,
- 	cpol = spi->mode & SPI_CPOL ? 1 : 0;
- 
- 	reg_val = readl(mdata->base + SPI_CMD_REG);
-+	if (mdata->dev_comp->ipm_design) {
-+		/* SPI transfer without idle time until packet length done */
-+		reg_val |= SPI_CMD_IPM_NONIDLE_MODE;
-+		if (spi->mode & SPI_LOOP)
-+			reg_val |= SPI_CMD_IPM_SPIM_LOOP;
-+		else
-+			reg_val &= ~SPI_CMD_IPM_SPIM_LOOP;
-+	}
-+
- 	if (cpha)
- 		reg_val |= SPI_CMD_CPHA;
- 	else
-@@ -344,18 +373,33 @@ static int mtk_spi_prepare_message(struct spi_master *master,
- 		writel(mdata->pad_sel[spi->chip_select],
- 		       mdata->base + SPI_PAD_SEL_REG);
- 
--	/* tick delay */
--	reg_val = readl(mdata->base + SPI_CFG1_REG);
--	reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK;
--	reg_val |= ((chip_config->tick_delay & 0x7)
--		<< SPI_CFG1_GET_TICK_DLY_OFFSET);
--	writel(reg_val, mdata->base + SPI_CFG1_REG);
-+	if (mdata->dev_comp->enhance_timing) {
-+		if (mdata->dev_comp->ipm_design) {
-+			reg_val = readl(mdata->base + SPI_CMD_REG);
-+			reg_val &= ~SPI_CMD_IPM_GET_TICKDLY_MASK;
-+			reg_val |= ((chip_config->tick_delay & 0x7)
-+				   << SPI_CMD_IPM_GET_TICKDLY_OFFSET);
-+			writel(reg_val, mdata->base + SPI_CMD_REG);
-+		} else {
-+			reg_val = readl(mdata->base + SPI_CFG1_REG);
-+			reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK;
-+			reg_val |= ((chip_config->tick_delay & 0x7)
-+				<< SPI_CFG1_GET_TICK_DLY_OFFSET);
-+			writel(reg_val, mdata->base + SPI_CFG1_REG);
-+		}
-+	}
- 
- 	/* set hw cs timing */
- 	mtk_spi_set_hw_cs_timing(spi);
- 	return 0;
- }
- 
-+static int mtk_spi_prepare_message(struct spi_master *master,
-+				   struct spi_message *msg)
-+{
-+	return mtk_spi_hw_init(master, msg->spi);
-+}
-+
- static void mtk_spi_set_cs(struct spi_device *spi, bool enable)
- {
- 	u32 reg_val;
-@@ -377,13 +421,13 @@ static void mtk_spi_set_cs(struct spi_device *spi, bool enable)
- }
- 
- static void mtk_spi_prepare_transfer(struct spi_master *master,
--				     struct spi_transfer *xfer)
-+				     u32 speed_hz)
- {
- 	u32 div, sck_time, reg_val;
- 	struct mtk_spi *mdata = spi_master_get_devdata(master);
- 
--	if (xfer->speed_hz < mdata->spi_clk_hz / 2)
--		div = DIV_ROUND_UP(mdata->spi_clk_hz, xfer->speed_hz);
-+	if (speed_hz < mdata->spi_clk_hz / 2)
-+		div = DIV_ROUND_UP(mdata->spi_clk_hz, speed_hz);
- 	else
- 		div = 1;
- 
-@@ -414,12 +458,24 @@ static void mtk_spi_setup_packet(struct spi_master *master)
- 	u32 packet_size, packet_loop, reg_val;
- 	struct mtk_spi *mdata = spi_master_get_devdata(master);
- 
--	packet_size = min_t(u32, mdata->xfer_len, MTK_SPI_PACKET_SIZE);
-+	if (mdata->dev_comp->ipm_design)
-+		packet_size = min_t(u32,
-+				    mdata->xfer_len,
-+				    MTK_SPI_IPM_PACKET_SIZE);
-+	else
-+		packet_size = min_t(u32,
-+				    mdata->xfer_len,
-+				    MTK_SPI_PACKET_SIZE);
-+
- 	packet_loop = mdata->xfer_len / packet_size;
- 
- 	reg_val = readl(mdata->base + SPI_CFG1_REG);
--	reg_val &= ~(SPI_CFG1_PACKET_LENGTH_MASK | SPI_CFG1_PACKET_LOOP_MASK);
-+	if (mdata->dev_comp->ipm_design)
-+		reg_val &= ~SPI_CFG1_IPM_PACKET_LENGTH_MASK;
-+	else
-+		reg_val &= ~SPI_CFG1_PACKET_LENGTH_MASK;
- 	reg_val |= (packet_size - 1) << SPI_CFG1_PACKET_LENGTH_OFFSET;
-+	reg_val &= ~SPI_CFG1_PACKET_LOOP_MASK;
- 	reg_val |= (packet_loop - 1) << SPI_CFG1_PACKET_LOOP_OFFSET;
- 	writel(reg_val, mdata->base + SPI_CFG1_REG);
- }
-@@ -514,7 +570,7 @@ static int mtk_spi_fifo_transfer(struct spi_master *master,
- 	mdata->cur_transfer = xfer;
- 	mdata->xfer_len = min(MTK_SPI_MAX_FIFO_SIZE, xfer->len);
- 	mdata->num_xfered = 0;
--	mtk_spi_prepare_transfer(master, xfer);
-+	mtk_spi_prepare_transfer(master, xfer->speed_hz);
- 	mtk_spi_setup_packet(master);
- 
- 	if (xfer->tx_buf) {
-@@ -547,7 +603,7 @@ static int mtk_spi_dma_transfer(struct spi_master *master,
- 	mdata->cur_transfer = xfer;
- 	mdata->num_xfered = 0;
- 
--	mtk_spi_prepare_transfer(master, xfer);
-+	mtk_spi_prepare_transfer(master, xfer->speed_hz);
- 
- 	cmd = readl(mdata->base + SPI_CMD_REG);
- 	if (xfer->tx_buf)
-@@ -582,6 +638,19 @@ static int mtk_spi_transfer_one(struct spi_master *master,
- 				struct spi_device *spi,
- 				struct spi_transfer *xfer)
- {
-+	struct mtk_spi *mdata = spi_master_get_devdata(spi->master);
-+	u32 reg_val = 0;
-+
-+	/* prepare xfer direction and duplex mode */
-+	if (mdata->dev_comp->ipm_design) {
-+		if (!xfer->tx_buf || !xfer->rx_buf) {
-+			reg_val |= SPI_CFG3_IPM_HALF_DUPLEX_EN;
-+			if (xfer->rx_buf)
-+				reg_val |= SPI_CFG3_IPM_HALF_DUPLEX_DIR;
-+		}
-+		writel(reg_val, mdata->base + SPI_CFG3_IPM_REG);
-+	}
-+
- 	if (master->can_dma(master, spi, xfer))
- 		return mtk_spi_dma_transfer(master, spi, xfer);
- 	else
-@@ -746,6 +815,8 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 
- 	if (mdata->dev_comp->must_tx)
- 		master->flags = SPI_MASTER_MUST_TX;
-+	if (mdata->dev_comp->ipm_design)
-+		master->mode_bits |= SPI_LOOP;
- 
- 	if (mdata->dev_comp->need_pad_sel) {
- 		mdata->pad_num = of_property_count_u32_elems(
--- 
-2.25.1
+Fixes a DMA allocation failure for me on a non arm board, seen if
+I only assigned DDR to 64 bit addresses. Without the change I was
+getting the following page allocation error:
 
+Starting network:
+[    2.911830] ip: page allocation failure: order:2, mode:0xcc4(GFP_KERNEL|GFP_DMA32),nodemask=(null)
+[    2.921256] CPU: 3 PID: 171 Comm: ip Not tainted 5.17.0-rc1-00640-g6cc001edd9ad #1
+[    2.928915] Hardware name: Microchip PolarFire-SoC Icicle Kit (DT)
+[    2.935147] Call Trace:
+[    2.937626] [<ffffffff800047e0>] dump_backtrace+0x1c/0x24
+[    2.943087] [<ffffffff807fcfce>] dump_stack_lvl+0x40/0x58
+[    2.948547] [<ffffffff807fcffa>] dump_stack+0x14/0x1c
+[    2.953649] [<ffffffff80104bfc>] warn_alloc+0xd6/0x14c
+[    2.958849] [<ffffffff801053e0>] __alloc_pages_slowpath.constprop.0+0x76e/0x882
+[    2.966242] [<ffffffff80105618>] __alloc_pages+0x124/0x174
+[    2.971783] [<ffffffff80061440>] __dma_direct_alloc_pages+0x12c/0x28c
+[    2.978286] [<ffffffff800616f2>] dma_direct_alloc+0x40/0x13e
+[    2.983996] [<ffffffff80060bf2>] dma_alloc_attrs+0x78/0x86
+[    2.989541] [<ffffffff805cdfb6>] macb_open+0x84/0x42c
+[    2.994645] [<ffffffff806e2468>] __dev_open+0xb0/0x142
+[    2.999845] [<ffffffff806e2884>] __dev_change_flags+0x180/0x1ec
+[    3.005827] [<ffffffff806e290e>] dev_change_flags+0x1e/0x54
+[    3.011461] [<ffffffff8076960e>] devinet_ioctl+0x1fc/0x612
+[    3.017015] [<ffffffff8076b27e>] inet_ioctl+0x96/0xfa
+[    3.022109] [<ffffffff806bf5e2>] sock_ioctl+0x256/0x29e
+[    3.027396] [<ffffffff8012bc7c>] sys_ioctl+0x340/0x7f8
+[    3.032595] [<ffffffff80003014>] ret_from_syscall+0x0/0x2
+<snip>
+[    3.176712] macb 20110000.ethernet eth0: Unable to allocate DMA memory (error -12)
+ip: SIOCSIFFLAGS: Cannot allocate memory
+FAIL
