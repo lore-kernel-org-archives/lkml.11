@@ -2,114 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39667C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 740F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236459AbiBIQDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:03:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
+        id S236472AbiBIQDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:03:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236455AbiBIQDE (ORCPT
+        with ESMTP id S236460AbiBIQD0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:03:04 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8995C05CB82
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:03:05 -0800 (PST)
-Received: from mail-wm1-f44.google.com ([209.85.128.44]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MZCOl-1nmGTJ08sz-00VAKE; Wed, 09 Feb 2022 17:03:04 +0100
-Received: by mail-wm1-f44.google.com with SMTP id j5-20020a05600c1c0500b0034d2e956aadso1934394wms.4;
-        Wed, 09 Feb 2022 08:03:03 -0800 (PST)
-X-Gm-Message-State: AOAM530akN/TDGCXa5H0nGdasan9Ro+71bb/LQDY1pnVcYUhawDwHwb9
-        gq6rLjysbFb+UNGjvsAnhAHnYvcYyLQaK9OqEeg=
-X-Google-Smtp-Source: ABdhPJxHAcHzTkMru4eEbqCHHWwDwZqYvTFbBt81TVOW87gLftYxW0tO+QQP3beMBCNrl8y6eFs1QMk5c63m/k04/W8=
-X-Received: by 2002:a1c:f309:: with SMTP id q9mr3200865wmq.173.1644422583536;
- Wed, 09 Feb 2022 08:03:03 -0800 (PST)
-MIME-Version: 1.0
-References: <20211218165258.16716-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20211218165258.16716-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdUg3=q7gyaVHP0XcYUOo3PQUUv8Hc8wp5faVQ+bTBpg4A@mail.gmail.com>
- <042a2183-3f04-088c-1861-656de870337d@gmail.com> <CAK8P3a3owi7YWmq-tckD-C7NK5HaX+swGNW-QBkWQuQgVsVWrA@mail.gmail.com>
- <d74ab454-9337-d168-9b21-842569431b4a@gmail.com> <CAK8P3a20mwJXN4Mb063zQG+HAevj_Odpj58EzPHkX-p6pbtnGA@mail.gmail.com>
- <7c47ce67-88ee-9cba-3356-a530b0d3e657@gmail.com>
-In-Reply-To: <7c47ce67-88ee-9cba-3356-a530b0d3e657@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 9 Feb 2022 17:02:47 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0gf6TeK2vZ+u3NZ2VrrvrGUohAPz5WiZ4Mbk5QQg9FFg@mail.gmail.com>
-Message-ID: <CAK8P3a0gf6TeK2vZ+u3NZ2VrrvrGUohAPz5WiZ4Mbk5QQg9FFg@mail.gmail.com>
-Subject: Re: [PATCH 2/3] i2c: sh_mobile: Use platform_get_irq_optional() to
- get the interrupt
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Chris Brandt <chris.brandt@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Wed, 9 Feb 2022 11:03:26 -0500
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDAEC0613C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:03:30 -0800 (PST)
+Received: by mail-qk1-x735.google.com with SMTP id o25so1971284qkj.7
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 08:03:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=038Kq4HxYFM+fA4AaZi4fyE5bdjjt0bTEZgQgtvXcxo=;
+        b=abEhuyEoXj5fzKmch4cBB4p3U6tsw6pjAuCUQYzYkQ4U/RdCJVAXg6H3jCOjXD+6h0
+         mdayPkSRqrhmkOg54UpFoWXpXkxc8f55dlaV1DgPoEEhH9z8oBDdJXeyOoi66+QAkMGI
+         AX/99n+lZ6nYtC9WKiFmeqvnxVPBuG6xgyq667hYGdVlT3URrW/AMlMc/Vvdeb+j4QFX
+         S6Zggl1gO5lINVk1SqgS9uUPfP+VMXj47O3Zkikw8LUFptMbIjlpGzVWCLnwPpFxSfm2
+         94e67x1TsADR5GSl2mfbsZhRvuW7fSGtVdXeeimB+F7jChUg3NuubDS+qgkJbcucnyZt
+         7iuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=038Kq4HxYFM+fA4AaZi4fyE5bdjjt0bTEZgQgtvXcxo=;
+        b=T142dqg8pB/t+eFuchsqf2c4dBfZozq4ZMH/emrs9ozHzf9UCYb/gEDA/4ATz++anR
+         /K05UBluos8/rJezmAt6KI+CmpO1ZDqjLLcKa71oMjUtYxF8Nf4zYwSW+b30Qb4INgyF
+         IBD6UlMW//anYmSFP3yAizdvQ/iYgfvP4EYPsZcHv1E1pbplTkpTj0+hQdiLfTvRTlPp
+         0CsYNrQwgwK/DO58U5mN6y7obG0TPhFrcetBJh8ZwSTvJi3HbLjxkngQ1CNF1QUzf/eI
+         Dh4zJDkc/KkHpK/NfX/V8GOkQsN0+I9deifTUrjZnFfPHiTPOuBtJnjjmHzO/5qeXmrW
+         4hKg==
+X-Gm-Message-State: AOAM531r7bnSucqRlMDqTq+ofYyY8Q2nchkCJ95LVXi/f0saQd6XQFkd
+        ccCkkcSeLTUqfOqpMCQhItEWCQ==
+X-Google-Smtp-Source: ABdhPJx2JVEbpZB2x+O1x3TuEv2vgIEl5U5HQXJalRC5/IJOEZUcM0zOngvhe9acRuJ6uEJQCjhLZg==
+X-Received: by 2002:a05:620a:22d4:: with SMTP id o20mr1514481qki.90.1644422609083;
+        Wed, 09 Feb 2022 08:03:29 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id o1sm9318353qkp.49.2022.02.09.08.03.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 08:03:28 -0800 (PST)
+Date:   Wed, 9 Feb 2022 08:03:26 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Linux-sh list <linux-sh@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:oOnrIzxPcdoamCYqgJO/oc+l7Sjc2zyhd85HLNkgXcpsHQkF/b5
- RQh6FcYRuouqCm/fB4eenwPLcJvQbZTwxqZyA2xQ23XoSWQfp5eMgeAT9BO9Y7fiL2itSCJ
- i8k1NyxUoTjzMc7H8usXDRkXVBOPXWi53tNF5LopqmentlqSKiOr6vVxu9DM6CUoOdqOAUI
- eSQQ0eg3GmWVBtrz5tLYg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:y9HNKS2aIsc=:sf7z5ZBl7hPth9pwAT5VeT
- L9/Aq0bvqPBv6PUKl9OnsRFs1JNbUKfKCY8x88j5XLJITbSrC2nOM9zYxVHInzjj2BB6sHDfS
- So8+r37jxPhLAtUJp5oJ0oMbA/9007XIRZq6i9TWK9IPzZQOdq19hdF8vbBrnf5eUX0AzzIur
- Z7fK3iX/c3AY0Nt30rLthNQEELeHQL3FgzklpUlGRI6C5pEMzH2NYsW7LiJ206qM7VWPDKWBU
- J2UiVWzUxxdKM6QMEpOUnx8CqO7ilJE6NCP7Mf1cKL2PtH2HHsp4UTgLhT7OH8FkKlB83+Xlv
- HF6XR76NV8IaNDaMhfqyjltYmZYEz1ieeFHKmLlOYMtp0yGaC7+zyJwZrYX4rMbgYh0DMyTVk
- 15muLCo/tUhx4Cs84i7s2z1mmIXjs7ydxiesxeYtZs4NPhQnqJBGF30ng6MBN1BabCMMDLTgV
- OiQDjF601PkNRBBTejnuSIrjOM5aVjtH/FZR/XeVQVq6xyYC77UzC3NwVs/JaZewl7dxXSUr0
- PG1R+JVwj7Ho2SVvNMRftyYdkEvpDKgai6PfoHOB3o2k1sLfmVw6vbMdd0zEvKcV8H0CBu2nl
- Ei4l8NUhUyoyAhtAdyqnVCstM5oNthrbkWH7QphbqMHtv5f8kTEl0Ig+bXEWN5leljhyN/FLe
- vzM9gkVEQyevgLsqG4UVwVXWMVl3B9VPuqEyaGklCBZ777Ki2Ka/L6wfdXEHgso9UcHZpW3lh
- Gr8e61uArRuPAKvD0Y23JSw93VVEULV5ZDQlFXVMiLSaXlBnBaq1ZPODp/GNE3kJjiqnSDr3l
- 2xpPwtM7TP364g00qjHF9Tbj4sVXs5lNQ3wKUuX8/4l9wfCQ/4=
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warnings after merge of the akpm-current
+ tree
+In-Reply-To: <20220209170245.08968c92@canb.auug.org.au>
+Message-ID: <d2701072-99e6-762b-bc80-64bda193c792@google.com>
+References: <20220209170245.08968c92@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 4:48 PM Sergei Shtylyov
-<sergei.shtylyov@gmail.com> wrote:
-> On 2/9/22 6:18 PM, Arnd Bergmann wrote:
-> >>> since 2009 after 1e1030dccb10 ("sh: nmi_debug support."). On a
-> >>
-> >>    Mhm... this commit changes the SH3 code while SH778x are SH4A, no?
-> >
-> > This code is shared between both:
-> >
-> > arch/sh/kernel/cpu/sh4/Makefile:common-y        += $(addprefix
-> > ../sh3/, entry.o ex.o)
->
->    Ah, quite convoluted! :-)
->    So you mean thet broke the delivery of EVT 0x200 when mucking with NMI?
+On Wed, 9 Feb 2022, Stephen Rothwell wrote:
 
-Yes, exactly: If I read this right, the added code:
+> Hi all,
+> 
+> After merging the akpm-current tree, today's linux-next build (htmldocs)
+> produced these warnings:
+> 
+> include/linux/mm_types.h:272: warning: Function parameter or member '__filler' not described in 'folio'
+> include/linux/mm_types.h:272: warning: Function parameter or member 'mlock_count' not described in 'folio'
+> 
+> Introduced by commit
+> 
+>   60a5c5ab0ba7 ("mm/munlock: maintain page->mlock_count while unevictable")
 
-+       shlr2   r4
-+       shlr    r4
-+       mov     r4, r0          ! save vector->jmp table offset for later
-+
-+       shlr2   r4              ! vector to IRQ# conversion
-+       add     #-0x10, r4
-+
-+       cmp/pz  r4              ! is it a valid IRQ?
-+       bt      10f
+Thank you for including the patches and reporting this, Stephen.
+Is this a warning you can live with for a week or two?
 
-gets the vector (0x200 for this device), shifts it five bits to 0x10,
-and subtracts 0x10,
-then branches to do_IRQ if the interrupt number is non-zero, otherwise it goes
-through the exception_handling_table.
+I've never tried generating htmldocs (I'm tempted just to replace a few
+"/**"s by "/*"s!), and I'm fairly sure Matthew will have strong feelings
+about how this new union (or not) will be better foliated - me messing
+around with doc output here is unlikely to be helpful at this moment.
 
-         Arnd
+Hugh
