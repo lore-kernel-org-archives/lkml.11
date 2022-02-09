@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A41FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAB7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241690AbiBIS7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:59:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33806 "EHLO
+        id S241701AbiBIS7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:59:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241397AbiBIS50 (ORCPT
+        with ESMTP id S238908AbiBIS5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:57:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2873C050CFA;
-        Wed,  9 Feb 2022 10:57:24 -0800 (PST)
+        Wed, 9 Feb 2022 13:57:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA90C0401D1;
+        Wed,  9 Feb 2022 10:57:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DA2CB8238C;
-        Wed,  9 Feb 2022 18:57:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFB4CC340E7;
-        Wed,  9 Feb 2022 18:57:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB2C661736;
+        Wed,  9 Feb 2022 18:57:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0412C340E7;
+        Wed,  9 Feb 2022 18:57:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644433042;
-        bh=o/sKIMrGLrAkYp8Q+KzdWoLa4OteYk6nG3L46DZRWxs=;
+        s=k20201202; t=1644433047;
+        bh=a6lTLUlCPFqhaJW682/k6YpdxQGr5eC5ep3SweaQk3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qiYgbOwIATjxhzgXClZddYE+2HuhSgTexjNdAvKGgpZY4h8R5kz0iSfiJ10ZTE+t9
-         o36ixpuCj/gyZXhoe9IynP95ZFkxTElksdGqi0aWMTqPQd7Bo/hsEy7C0+DEKXgxgO
-         ENU1Kr7gow4BLNT4YjCeZ4peQyNYXQVWNb228Vkg6SbMIAl37UnoXrZNucmCINpWlq
-         SfLEaxrMNe/b4wzlQW+gjmyai1tyk1IY83gfgjUxmeQSYnCot73bRXFn2teU9LPttP
-         53JQbiFmg5/Nfh0BhQ3m9ZpvVnObMUoW4QACY42lPf0S1uwHD8UJAJnWW+g6yuuqXm
-         xYMAbccc0/uYQ==
+        b=rmkDeAlqRMpoA13xSxZGfs1642qIMoweeKl6Goo6vzt9DpVFc5Y+E7W7OF5YNu2sP
+         nepV954WisEQj86P3sUJVzrPvRHmyLJFK2M+W+iAp63P9JVxC/rhR/5SsJ/hSZNEOp
+         G/r1nKLIR8fQT02JYlnjfOLSagJ6Kd0MLfvGTH1FzU0PE9h4HIVCoSNEVqbtH5MbPD
+         EjRiLVQ76NxqY5WAXHFydMhldHDgqjlyoomcTCA+6yrTMjGV43rFoYwcQzghaeRctR
+         Y9XNBbYXg2speTDKw8RzqFWZlEJgEHFWgi9JL0l3CFrsCFtVQIj9xe+qc3hGA8MjoB
+         QxPuv7fmI1I2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Liam Merwick <liam.merwick@oracle.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.10 3/6] KVM: nVMX: Also filter MSR_IA32_VMX_TRUE_PINBASED_CTLS when eVMCS
-Date:   Wed,  9 Feb 2022 13:57:10 -0500
-Message-Id: <20220209185714.48936-3-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.10 5/6] KVM: SVM: Don't kill SEV guest if SMAP erratum triggers in usermode
+Date:   Wed,  9 Feb 2022 13:57:12 -0500
+Message-Id: <20220209185714.48936-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209185714.48936-1-sashal@kernel.org>
 References: <20220209185714.48936-1-sashal@kernel.org>
@@ -53,40 +54,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit f80ae0ef089a09e8c18da43a382c3caac9a424a7 ]
+[ Upstream commit cdf85e0c5dc766fc7fc779466280e454a6d04f87 ]
 
-Similar to MSR_IA32_VMX_EXIT_CTLS/MSR_IA32_VMX_TRUE_EXIT_CTLS,
-MSR_IA32_VMX_ENTRY_CTLS/MSR_IA32_VMX_TRUE_ENTRY_CTLS pair,
-MSR_IA32_VMX_TRUE_PINBASED_CTLS needs to be filtered the same way
-MSR_IA32_VMX_PINBASED_CTLS is currently filtered as guests may solely rely
-on 'true' MSR data.
+Inject a #GP instead of synthesizing triple fault to try to avoid killing
+the guest if emulation of an SEV guest fails due to encountering the SMAP
+erratum.  The injected #GP may still be fatal to the guest, e.g. if the
+userspace process is providing critical functionality, but KVM should
+make every attempt to keep the guest alive.
 
-Note, none of the currently existing Windows/Hyper-V versions are known
-to stumble upon the unfiltered MSR_IA32_VMX_TRUE_PINBASED_CTLS, the change
-is aimed at making the filtering future proof.
-
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220112170134.1904308-2-vkuznets@redhat.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
+Message-Id: <20220120010719.711476-10-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/evmcs.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kvm/svm/svm.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-index c0d6fee9225fe..5b68034ec5f9c 100644
---- a/arch/x86/kvm/vmx/evmcs.c
-+++ b/arch/x86/kvm/vmx/evmcs.c
-@@ -361,6 +361,7 @@ void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata)
- 	case MSR_IA32_VMX_PROCBASED_CTLS2:
- 		ctl_high &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
- 		break;
-+	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
- 	case MSR_IA32_VMX_PINBASED_CTLS:
- 		ctl_high &= ~EVMCS1_UNSUPPORTED_PINCTRL;
- 		break;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index fa543c355fbdb..d515c8e68314c 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4155,7 +4155,21 @@ static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, void *insn, int i
+ 			return true;
+ 
+ 		pr_err_ratelimited("KVM: SEV Guest triggered AMD Erratum 1096\n");
+-		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
++
++		/*
++		 * If the fault occurred in userspace, arbitrarily inject #GP
++		 * to avoid killing the guest and to hopefully avoid confusing
++		 * the guest kernel too much, e.g. injecting #PF would not be
++		 * coherent with respect to the guest's page tables.  Request
++		 * triple fault if the fault occurred in the kernel as there's
++		 * no fault that KVM can inject without confusing the guest.
++		 * In practice, the triple fault is moot as no sane SEV kernel
++		 * will execute from user memory while also running with SMAP=1.
++		 */
++		if (is_user)
++			kvm_inject_gp(vcpu, 0);
++		else
++			kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
+ 	}
+ 
+ 	return false;
 -- 
 2.34.1
 
