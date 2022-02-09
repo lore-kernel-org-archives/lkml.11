@@ -2,105 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CAFC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3601C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbiBIT24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:28:56 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45676 "EHLO
+        id S232153AbiBIT3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:29:04 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234875AbiBIT1X (ORCPT
+        with ESMTP id S235171AbiBIT10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:27:23 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9987E00D0EB;
-        Wed,  9 Feb 2022 11:19:14 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 219J5EXu106008;
-        Wed, 9 Feb 2022 13:05:14 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644433514;
-        bh=QFBm9dNFfRX8TxQN2dJMx+RT6cga02Ei3ZZsy4WZF5s=;
-        h=Date:From:Subject:To:CC:References:In-Reply-To;
-        b=HOeiQQfuKXsCyBaoHMugen0B9oxTy6tWjU59P1ZXsEs2sqz3eiavj0smWjfbTe1mW
-         6HV9k+vo/7bINMw7ZDTsS7BCSYfU0vwx9CYx/nwCspZP9XYykX24o8QEugpPGYpFKh
-         Xd4o4qtMRWZ6N9JENjZJsj7La+DvWzQujxSJ5NEo=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 219J5EXB008632
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 9 Feb 2022 13:05:14 -0600
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 9
- Feb 2022 13:05:14 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 9 Feb 2022 13:05:13 -0600
-Received: from [10.250.235.90] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 219J5AXB070883;
-        Wed, 9 Feb 2022 13:05:11 -0600
-Message-ID: <a2312248-f79d-4728-0257-5485d08dd6c9@ti.com>
-Date:   Thu, 10 Feb 2022 00:35:10 +0530
+        Wed, 9 Feb 2022 14:27:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1379EC1DC5C6;
+        Wed,  9 Feb 2022 11:19:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 202C361990;
+        Wed,  9 Feb 2022 19:16:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F06E0C340E7;
+        Wed,  9 Feb 2022 19:16:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644434161;
+        bh=NKitg86III0HiHKNBq7FPeJryZj/1Ffg7YHGquOQJFM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RWm3kFFwZC6unQ3FHu2q+ElQ9T6UHXeQYo3t4XTWmSDaAn8Ma2sq6wDkt1AkKiXjF
+         gG6k8kChRCdO9x5AxkFKs1hhiB0AxH8dXhQD7E2OUQx2I245Vtcy9vjH258zzr0N2M
+         fKU8POlPTDyDbT3dSqzqD654WzLteg0VygpHxdvE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Steve French <smfrench@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
+        Namjae Jeon <linkinjeon@kernel.org>
+Subject: [PATCH 5.16 4/5] ksmbd: fix SMB 3.11 posix extension mount failure
+Date:   Wed,  9 Feb 2022 20:14:36 +0100
+Message-Id: <20220209191250.048258338@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220209191249.887150036@linuxfoundation.org>
+References: <20220209191249.887150036@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [PATCH 5/5] arm64: dts: ti: Add support for AM62-SK
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220208131827.1430086-1-vigneshr@ti.com>
- <20220208131827.1430086-6-vigneshr@ti.com>
- <65bfa443-5117-9e69-8b6e-0c40099bd149@canonical.com>
-Content-Language: en-US
-In-Reply-To: <65bfa443-5117-9e69-8b6e-0c40099bd149@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Namjae Jeon <linkinjeon@kernel.org>
+
+commit 9ca8581e79e51c57e60b3b8e3b89d816448f49fe upstream.
+
+cifs client set 4 to DataLength of create_posix context, which mean
+Mode variable of create_posix context is only available. So buffer
+validation of ksmbd should check only the size of Mode except for
+the size of Reserved variable.
+
+Fixes: 8f77150c15f8 ("ksmbd: add buffer validation for SMB2_CREATE_CONTEXT")
+Cc: stable@vger.kernel.org # v5.15+
+Reported-by: Steve French <smfrench@gmail.com>
+Tested-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ksmbd/smb2pdu.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -2688,7 +2688,7 @@ int smb2_open(struct ksmbd_work *work)
+ 					(struct create_posix *)context;
+ 				if (le16_to_cpu(context->DataOffset) +
+ 				    le32_to_cpu(context->DataLength) <
+-				    sizeof(struct create_posix)) {
++				    sizeof(struct create_posix) - 4) {
+ 					rc = -EINVAL;
+ 					goto err_out1;
+ 				}
 
 
-On 08/02/22 10:38 pm, Krzysztof Kozlowski wrote:
-> On 08/02/2022 14:18, Vignesh Raghavendra wrote:
->> From: Nishanth Menon <nm@ti.com>
->>
-[...]
->> +	vmain_pd: fixed-regulator-vmain-pd {
->> +		/* TPS65988 PD CONTROLLER OUTPUT */
->> +		compatible = "regulator-fixed";
->> +		regulator-name = "vmain_pd";
->> +		regulator-min-microvolt = <5000000>;
->> +		regulator-max-microvolt = <5000000>;
->> +		regulator-always-on;
->> +		regulator-boot-on;
->> +	};
->> +
->> +	vcc_5v0: fixedregulator-vcc5v0 {
->> +		/* Output of LM34936 */
->> +		compatible = "regulator-fixed";
->> +		regulator-name = "vcc_5v0";
->> +		regulator-min-microvolt = <5000000>;
->> +		regulator-max-microvolt = <5000000>;
->> +		vin-supply = <&vmain_pd>;
->> +		regulator-always-on;
->> +		regulator-boot-on;
->> +	};
->> +
->> +	vcc_3v3_sys: fixedregulator-vcc-3v3-sys {
-> 
-> Generic node names (as in DT spec), so regulator-[0-9]. The label and
-> regulator-name property describe it's user-friendly purpose.
-
-Ah, yes, missed it, will fix in v2
-
-Thanks for the review!
-
-Regards
-Vignesh
