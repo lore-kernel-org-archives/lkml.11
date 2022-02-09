@@ -2,409 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ABEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBA5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235122AbiBICp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:45:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
+        id S231941AbiBICpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:45:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242686AbiBIBUA (ORCPT
+        with ESMTP id S241862AbiBIBHI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:20:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874B6C06157B;
-        Tue,  8 Feb 2022 17:19:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4212AB81E2F;
-        Wed,  9 Feb 2022 01:19:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48F07C340EF;
-        Wed,  9 Feb 2022 01:19:56 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="T3aPemOG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644369595;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SH99nwkvxSXBLdRm88mdpVcTnYVSOxzw1eCM6WxnXe4=;
-        b=T3aPemOG7ySqFT2ACGbCZ6md5Conxdg5iYKTWWySH/IlzjYbvRMTpMAEVzu4rqTQyvomeP
-        rZ+KjalZz3XaFilZFQSIw9eDnSSwZW14WeWzCSycyWJ0uuzzEmrgBR2xqomdE5qHZVqPZq
-        ndJLSNVpYUHx6CG2xG4x16G50bfCElA=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7e475f31 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 9 Feb 2022 01:19:55 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH v2 2/9] random: get rid of secondary crngs
-Date:   Wed,  9 Feb 2022 02:19:12 +0100
-Message-Id: <20220209011919.493762-3-Jason@zx2c4.com>
-In-Reply-To: <20220209011919.493762-1-Jason@zx2c4.com>
-References: <20220209011919.493762-1-Jason@zx2c4.com>
+        Tue, 8 Feb 2022 20:07:08 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A037C06157B;
+        Tue,  8 Feb 2022 17:07:07 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id c6so1652710ybk.3;
+        Tue, 08 Feb 2022 17:07:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gWLpVKRgj6qNlwd6T0x0f3bWJlz86m3X+7fitr5avvo=;
+        b=XQ5aPXyPPfTSGU97cIuuPkKprxaQDHXXpynMhRQNnPgBpmO1VP8qa5kw894N47Dy44
+         nZdGu6B2qEyq+wVnQGglFxldwcRVd2f2bGcdoA3OJpQH9qIMZPuZZO8ONRcyvoYwUf66
+         jhZcNpLH7VPHrEmrQvLGLrbV4dnkWQHJtaTnzIlqbqWbA/Cze3rs2GtmMv+AwuLZsxMZ
+         Gsn2adro83f7UCEbqwIEzbg6pg1ea4FpHoSDwdISH24kRkrtnX4qo4bYzPPwlHtpocUF
+         m24JYYUjpqnhjBtQm0J3EzeVL5fhibf0EG6IH/51z5AVo7d/1pq76yaQU+TVMHSNHC5t
+         lE5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gWLpVKRgj6qNlwd6T0x0f3bWJlz86m3X+7fitr5avvo=;
+        b=cdIpBhW1HRcZI1fuzowGCTZO7gB35EovVPCinQljZ6+y0o/eTjlMxmN2pB2getZj6P
+         X8mRXmgZ3+SWaCz3K55CZ3+U2XwQOw5wEpX0M9Cr+tPRtcVRA7GJh/CSp8iMRS92y+qI
+         HSa0hVB0KRkLlclQKxCaujFKiJJe1deyNpcGtJ8nQe0UGJ3lOPGekYoVWfdAF/Q+fmrI
+         9ptdNYzV0/+XvEadac4wC5OltPRGW0rbKW3zCkS6aWH4EON+J6CbYeMHe28sEAMusExN
+         uq6WHr417U3pCNVdNGWi//TeZzUREWl164U9T7gumnnta6YTYPY6XdMLeLTDA5zEV2qS
+         m4Mg==
+X-Gm-Message-State: AOAM533chkE/iFxAvnvvpjm1yC9DxrhQ7ukGPiIR2yHQ7s6ykz+tr3w8
+        4B8vaXfmO8dzUVO6SF3jVzkOaEfe74LP5GNwV7w=
+X-Google-Smtp-Source: ABdhPJzlQO7sorUpjUtav9AXsUukam3TPueefNCr8aWMRldfUKZZsyZ6hujYAVIXOSJOmcjlqOuIysdRK2Eg5Rf4S5w=
+X-Received: by 2002:a0d:c542:: with SMTP id h63mr7621202ywd.376.1644368826567;
+ Tue, 08 Feb 2022 17:07:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220208221911.57058-1-pmenzel@molgen.mpg.de> <20220208221911.57058-2-pmenzel@molgen.mpg.de>
+In-Reply-To: <20220208221911.57058-2-pmenzel@molgen.mpg.de>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Tue, 8 Feb 2022 17:06:55 -0800
+Message-ID: <CABBYNZ+33DB=r6w-aLw=+7S6Ryo0zM54A7gx0XpfsFx65Pxh4Q@mail.gmail.com>
+Subject: Re: [PATCH 2/2] Revert "Bluetooth: RFCOMM: Replace use of
+ memcpy_from_msg with bt_skb_sendmmsg"
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the comment said, this is indeed a "hack". Since it was introduced,
-it's been a constant state machine nightmare, with lots of subtle early
-boot issues and a wildly complex set of machinery to keep everything in
-sync. Rather than continuing to play whack-a-mole with this approach,
-this commit simply removes it entirely. This commit is preparation for
-"random: use simpler fast key erasure flow on per-cpu keys" in this
-series, which introduces a simpler (and faster) mechanism to accomplish
-the same thing.
+Hi Paul,
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 225 ++++++++++--------------------------------
- 1 file changed, 53 insertions(+), 172 deletions(-)
+On Tue, Feb 8, 2022 at 2:20 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+> This reverts commit 81be03e026dc0c16dc1c64e088b2a53b73caa895.
+>
+> Since the commit, transferring files greater than some bytes to the
+> Nokia N9 (MeeGo) or Jolla (Sailfish OS) is not possible anymore.
+>
+>     # obexctl
+>     [NEW] Client /org/bluez/obex
+>     [obex]# connect 40:98:4E:5B:CE:XX
+>     Attempting to connect to 40:98:4E:5B:CE:XX
+>     [NEW] Session /org/bluez/obex/client/session0 [default]
+>     [NEW] ObjectPush /org/bluez/obex/client/session0
+>     Connection successful
+>     [40:98:4E:5B:CE:XX]# send /lib/systemd/systemd
+>     Attempting to send /lib/systemd/systemd to /org/bluez/obex/client/session0
+>     [NEW] Transfer /org/bluez/obex/client/session0/transfer0
+>     Transfer /org/bluez/obex/client/session0/transfer0
+>         Status: queued
+>         Name: systemd
+>         Size: 1841712
+>         Filename: /lib/systemd/systemd
+>         Session: /org/bluez/obex/client/session0
+>     [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: active
+>     [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Transferred: 32737 (@32KB/s 00:55)
+>     [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: error
+>     [DEL] Transfer /org/bluez/obex/client/session0/transfer0
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index ce3c019e5f5f..4c79463464c7 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -323,14 +323,11 @@ static struct crng_state primary_crng = {
-  * its value (from 0->1->2).
-  */
- static int crng_init = 0;
--static bool crng_need_final_init = false;
- #define crng_ready() (likely(crng_init > 1))
- static int crng_init_cnt = 0;
--static unsigned long crng_global_init_time = 0;
- #define CRNG_INIT_CNT_THRESH (2 * CHACHA_KEY_SIZE)
--static void _extract_crng(struct crng_state *crng, u8 out[CHACHA_BLOCK_SIZE]);
--static void _crng_backtrack_protect(struct crng_state *crng,
--				    u8 tmp[CHACHA_BLOCK_SIZE], int used);
-+static void extract_crng(u8 out[CHACHA_BLOCK_SIZE]);
-+static void crng_backtrack_protect(u8 tmp[CHACHA_BLOCK_SIZE], int used);
- static void process_random_ready_list(void);
- static void _get_random_bytes(void *buf, int nbytes);
- 
-@@ -365,7 +362,7 @@ static struct {
- 
- static void extract_entropy(void *buf, size_t nbytes);
- 
--static void crng_reseed(struct crng_state *crng);
-+static void crng_reseed(void);
- 
- /*
-  * This function adds bytes into the entropy "pool".  It does not
-@@ -459,7 +456,7 @@ static void credit_entropy_bits(int nbits)
- 	trace_credit_entropy_bits(nbits, entropy_count, _RET_IP_);
- 
- 	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
--		crng_reseed(&primary_crng);
-+		crng_reseed();
- }
- 
- /*********************************************************************
-@@ -472,16 +469,7 @@ static void credit_entropy_bits(int nbits)
- 
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- 
--/*
-- * Hack to deal with crazy userspace progams when they are all trying
-- * to access /dev/urandom in parallel.  The programs are almost
-- * certainly doing something terribly wrong, but we'll work around
-- * their brain damage.
-- */
--static struct crng_state **crng_node_pool __read_mostly;
--
- static void invalidate_batched_entropy(void);
--static void numa_crng_init(void);
- 
- static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
- static int __init parse_trust_cpu(char *arg)
-@@ -490,24 +478,6 @@ static int __init parse_trust_cpu(char *arg)
- }
- early_param("random.trust_cpu", parse_trust_cpu);
- 
--static bool crng_init_try_arch(struct crng_state *crng)
--{
--	int i;
--	bool arch_init = true;
--	unsigned long rv;
--
--	for (i = 4; i < 16; i++) {
--		if (!arch_get_random_seed_long(&rv) &&
--		    !arch_get_random_long(&rv)) {
--			rv = random_get_entropy();
--			arch_init = false;
--		}
--		crng->state[i] ^= rv;
--	}
--
--	return arch_init;
--}
--
- static bool __init crng_init_try_arch_early(void)
- {
- 	int i;
-@@ -526,100 +496,17 @@ static bool __init crng_init_try_arch_early(void)
- 	return arch_init;
- }
- 
--static void crng_initialize_secondary(struct crng_state *crng)
--{
--	chacha_init_consts(crng->state);
--	_get_random_bytes(&crng->state[4], sizeof(u32) * 12);
--	crng_init_try_arch(crng);
--	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
--}
--
--static void __init crng_initialize_primary(void)
-+static void __init crng_initialize(void)
- {
- 	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
- 	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
--		numa_crng_init();
- 		crng_init = 2;
- 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
- 	}
- 	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
- }
- 
--static void crng_finalize_init(void)
--{
--	if (!system_wq) {
--		/* We can't call numa_crng_init until we have workqueues,
--		 * so mark this for processing later. */
--		crng_need_final_init = true;
--		return;
--	}
--
--	invalidate_batched_entropy();
--	numa_crng_init();
--	crng_init = 2;
--	crng_need_final_init = false;
--	process_random_ready_list();
--	wake_up_interruptible(&crng_init_wait);
--	kill_fasync(&fasync, SIGIO, POLL_IN);
--	pr_notice("crng init done\n");
--	if (unseeded_warning.missed) {
--		pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
--			  unseeded_warning.missed);
--		unseeded_warning.missed = 0;
--	}
--	if (urandom_warning.missed) {
--		pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
--			  urandom_warning.missed);
--		urandom_warning.missed = 0;
--	}
--}
--
--static void do_numa_crng_init(struct work_struct *work)
--{
--	int i;
--	struct crng_state *crng;
--	struct crng_state **pool;
--
--	pool = kcalloc(nr_node_ids, sizeof(*pool), GFP_KERNEL | __GFP_NOFAIL);
--	for_each_online_node(i) {
--		crng = kmalloc_node(sizeof(struct crng_state),
--				    GFP_KERNEL | __GFP_NOFAIL, i);
--		spin_lock_init(&crng->lock);
--		crng_initialize_secondary(crng);
--		pool[i] = crng;
--	}
--	/* pairs with READ_ONCE() in select_crng() */
--	if (cmpxchg_release(&crng_node_pool, NULL, pool) != NULL) {
--		for_each_node(i)
--			kfree(pool[i]);
--		kfree(pool);
--	}
--}
--
--static DECLARE_WORK(numa_crng_init_work, do_numa_crng_init);
--
--static void numa_crng_init(void)
--{
--	if (IS_ENABLED(CONFIG_NUMA))
--		schedule_work(&numa_crng_init_work);
--}
--
--static struct crng_state *select_crng(void)
--{
--	if (IS_ENABLED(CONFIG_NUMA)) {
--		struct crng_state **pool;
--		int nid = numa_node_id();
--
--		/* pairs with cmpxchg_release() in do_numa_crng_init() */
--		pool = READ_ONCE(crng_node_pool);
--		if (pool && pool[nid])
--			return pool[nid];
--	}
--
--	return &primary_crng;
--}
--
- /*
-  * crng_fast_load() can be called by code in the interrupt service
-  * path.  So we can't afford to dilly-dally. Returns the number of
-@@ -697,68 +584,71 @@ static int crng_slow_load(const u8 *cp, size_t len)
- 	return 1;
- }
- 
--static void crng_reseed(struct crng_state *crng)
-+static void crng_reseed(void)
- {
- 	unsigned long flags;
--	int i;
-+	int i, entropy_count;
- 	union {
- 		u8 block[CHACHA_BLOCK_SIZE];
- 		u32 key[8];
- 	} buf;
- 
--	if (crng == &primary_crng) {
--		int entropy_count;
--		do {
--			entropy_count = READ_ONCE(input_pool.entropy_count);
--			if (entropy_count < POOL_MIN_BITS)
--				return;
--		} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
--		extract_entropy(buf.key, sizeof(buf.key));
--		wake_up_interruptible(&random_write_wait);
--		kill_fasync(&fasync, SIGIO, POLL_OUT);
--	} else {
--		_extract_crng(&primary_crng, buf.block);
--		_crng_backtrack_protect(&primary_crng, buf.block,
--					CHACHA_KEY_SIZE);
--	}
--	spin_lock_irqsave(&crng->lock, flags);
-+	do {
-+		entropy_count = READ_ONCE(input_pool.entropy_count);
-+		if (entropy_count < POOL_MIN_BITS)
-+			return;
-+	} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
-+	extract_entropy(buf.key, sizeof(buf.key));
-+	wake_up_interruptible(&random_write_wait);
-+	kill_fasync(&fasync, SIGIO, POLL_OUT);
-+
-+	spin_lock_irqsave(&primary_crng.lock, flags);
- 	for (i = 0; i < 8; i++)
--		crng->state[i + 4] ^= buf.key[i];
-+		primary_crng.state[i + 4] ^= buf.key[i];
- 	memzero_explicit(&buf, sizeof(buf));
--	WRITE_ONCE(crng->init_time, jiffies);
--	spin_unlock_irqrestore(&crng->lock, flags);
--	if (crng == &primary_crng && crng_init < 2)
--		crng_finalize_init();
-+	WRITE_ONCE(primary_crng.init_time, jiffies);
-+	spin_unlock_irqrestore(&primary_crng.lock, flags);
-+	if (crng_init < 2) {
-+		invalidate_batched_entropy();
-+		crng_init = 2;
-+		process_random_ready_list();
-+		wake_up_interruptible(&crng_init_wait);
-+		kill_fasync(&fasync, SIGIO, POLL_IN);
-+		pr_notice("crng init done\n");
-+		if (unseeded_warning.missed) {
-+			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
-+				  unseeded_warning.missed);
-+			unseeded_warning.missed = 0;
-+		}
-+		if (urandom_warning.missed) {
-+			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
-+				  urandom_warning.missed);
-+			urandom_warning.missed = 0;
-+		}
-+	}
- }
- 
--static void _extract_crng(struct crng_state *crng, u8 out[CHACHA_BLOCK_SIZE])
-+static void extract_crng(u8 out[CHACHA_BLOCK_SIZE])
- {
- 	unsigned long flags, init_time;
- 
- 	if (crng_ready()) {
--		init_time = READ_ONCE(crng->init_time);
--		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
--		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
--			crng_reseed(crng);
-+		init_time = READ_ONCE(primary_crng.init_time);
-+		if (time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
-+			crng_reseed();
- 	}
--	spin_lock_irqsave(&crng->lock, flags);
--	chacha20_block(&crng->state[0], out);
--	if (crng->state[12] == 0)
--		crng->state[13]++;
--	spin_unlock_irqrestore(&crng->lock, flags);
--}
--
--static void extract_crng(u8 out[CHACHA_BLOCK_SIZE])
--{
--	_extract_crng(select_crng(), out);
-+	spin_lock_irqsave(&primary_crng.lock, flags);
-+	chacha20_block(&primary_crng.state[0], out);
-+	if (primary_crng.state[12] == 0)
-+		primary_crng.state[13]++;
-+	spin_unlock_irqrestore(&primary_crng.lock, flags);
- }
- 
- /*
-  * Use the leftover bytes from the CRNG block output (if there is
-  * enough) to mutate the CRNG key to provide backtracking protection.
-  */
--static void _crng_backtrack_protect(struct crng_state *crng,
--				    u8 tmp[CHACHA_BLOCK_SIZE], int used)
-+static void crng_backtrack_protect(u8 tmp[CHACHA_BLOCK_SIZE], int used)
- {
- 	unsigned long flags;
- 	u32 *s, *d;
-@@ -769,17 +659,12 @@ static void _crng_backtrack_protect(struct crng_state *crng,
- 		extract_crng(tmp);
- 		used = 0;
- 	}
--	spin_lock_irqsave(&crng->lock, flags);
-+	spin_lock_irqsave(&primary_crng.lock, flags);
- 	s = (u32 *)&tmp[used];
--	d = &crng->state[4];
-+	d = &primary_crng.state[4];
- 	for (i = 0; i < 8; i++)
- 		*d++ ^= *s++;
--	spin_unlock_irqrestore(&crng->lock, flags);
--}
--
--static void crng_backtrack_protect(u8 tmp[CHACHA_BLOCK_SIZE], int used)
--{
--	_crng_backtrack_protect(select_crng(), tmp, used);
-+	spin_unlock_irqrestore(&primary_crng.lock, flags);
- }
- 
- static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
-@@ -1381,10 +1266,7 @@ static void __init init_std_data(void)
- int __init rand_initialize(void)
- {
- 	init_std_data();
--	if (crng_need_final_init)
--		crng_finalize_init();
--	crng_initialize_primary();
--	crng_global_init_time = jiffies;
-+	crng_initialize();
- 	if (ratelimit_disable) {
- 		urandom_warning.interval = 0;
- 		unseeded_warning.interval = 0;
-@@ -1554,8 +1436,7 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
- 			return -EPERM;
- 		if (crng_init < 2)
- 			return -ENODATA;
--		crng_reseed(&primary_crng);
--		WRITE_ONCE(crng_global_init_time, jiffies - 1);
-+		crng_reseed();
- 		return 0;
- 	default:
- 		return -EINVAL;
+Would you please create a github issue
+(https://github.com/bluez/bluez/issues/) and attach the btmon trace so
+we can check what is the error, you might as well attach the obexd
+logs.
+
+> Reverting it, fixes the regression.
+>
+> Link: https://lore.kernel.org/linux-bluetooth/aa3ee7ac-6c52-3861-1798-3cc1a37f6ebf@molgen.mpg.de/T/#m1f9673e4ab0d55a7dccf87905337ab2e67d689f1
+> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
+> ---
+>  net/bluetooth/rfcomm/core.c | 50 ++++++-------------------------------
+>  net/bluetooth/rfcomm/sock.c | 46 ++++++++++++++++++++++++++--------
+>  2 files changed, 43 insertions(+), 53 deletions(-)
+>
+> diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
+> index 7324764384b6..f2bacb464ccf 100644
+> --- a/net/bluetooth/rfcomm/core.c
+> +++ b/net/bluetooth/rfcomm/core.c
+> @@ -549,58 +549,22 @@ struct rfcomm_dlc *rfcomm_dlc_exists(bdaddr_t *src, bdaddr_t *dst, u8 channel)
+>         return dlc;
+>  }
+>
+> -static int rfcomm_dlc_send_frag(struct rfcomm_dlc *d, struct sk_buff *frag)
+> -{
+> -       int len = frag->len;
+> -
+> -       BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
+> -
+> -       if (len > d->mtu)
+> -               return -EINVAL;
+> -
+> -       rfcomm_make_uih(frag, d->addr);
+> -       __skb_queue_tail(&d->tx_queue, frag);
+> -
+> -       return len;
+> -}
+> -
+>  int rfcomm_dlc_send(struct rfcomm_dlc *d, struct sk_buff *skb)
+>  {
+> -       unsigned long flags;
+> -       struct sk_buff *frag, *next;
+> -       int len;
+> +       int len = skb->len;
+>
+>         if (d->state != BT_CONNECTED)
+>                 return -ENOTCONN;
+>
+> -       frag = skb_shinfo(skb)->frag_list;
+> -       skb_shinfo(skb)->frag_list = NULL;
+> -
+> -       /* Queue all fragments atomically. */
+> -       spin_lock_irqsave(&d->tx_queue.lock, flags);
+> -
+> -       len = rfcomm_dlc_send_frag(d, skb);
+> -       if (len < 0 || !frag)
+> -               goto unlock;
+> -
+> -       for (; frag; frag = next) {
+> -               int ret;
+> -
+> -               next = frag->next;
+> -
+> -               ret = rfcomm_dlc_send_frag(d, frag);
+> -               if (ret < 0) {
+> -                       kfree_skb(frag);
+> -                       goto unlock;
+> -               }
+> +       BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
+>
+> -               len += ret;
+> -       }
+> +       if (len > d->mtu)
+> +               return -EINVAL;
+>
+> -unlock:
+> -       spin_unlock_irqrestore(&d->tx_queue.lock, flags);
+> +       rfcomm_make_uih(skb, d->addr);
+> +       skb_queue_tail(&d->tx_queue, skb);
+>
+> -       if (len > 0 && !test_bit(RFCOMM_TX_THROTTLED, &d->flags))
+> +       if (!test_bit(RFCOMM_TX_THROTTLED, &d->flags))
+>                 rfcomm_schedule();
+>         return len;
+>  }
+> diff --git a/net/bluetooth/rfcomm/sock.c b/net/bluetooth/rfcomm/sock.c
+> index 5938af3e9936..2c95bb58f901 100644
+> --- a/net/bluetooth/rfcomm/sock.c
+> +++ b/net/bluetooth/rfcomm/sock.c
+> @@ -575,20 +575,46 @@ static int rfcomm_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+>         lock_sock(sk);
+>
+>         sent = bt_sock_wait_ready(sk, msg->msg_flags);
+> +       if (sent)
+> +               goto done;
+>
+> -       release_sock(sk);
+> +       while (len) {
+> +               size_t size = min_t(size_t, len, d->mtu);
+> +               int err;
+>
+> -       if (sent)
+> -               return sent;
+> +               skb = sock_alloc_send_skb(sk, size + RFCOMM_SKB_RESERVE,
+> +                               msg->msg_flags & MSG_DONTWAIT, &err);
+> +               if (!skb) {
+> +                       if (sent == 0)
+> +                               sent = err;
+> +                       break;
+> +               }
+> +               skb_reserve(skb, RFCOMM_SKB_HEAD_RESERVE);
+> +
+> +               err = memcpy_from_msg(skb_put(skb, size), msg, size);
+> +               if (err) {
+> +                       kfree_skb(skb);
+> +                       if (sent == 0)
+> +                               sent = err;
+> +                       break;
+> +               }
+> +
+> +               skb->priority = sk->sk_priority;
+> +
+> +               err = rfcomm_dlc_send(d, skb);
+> +               if (err < 0) {
+> +                       kfree_skb(skb);
+> +                       if (sent == 0)
+> +                               sent = err;
+> +                       break;
+> +               }
+>
+> -       skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
+> -                             RFCOMM_SKB_TAIL_RESERVE);
+> -       if (IS_ERR_OR_NULL(skb))
+> -               return PTR_ERR(skb);
+> +               sent += size;
+> +               len  -= size;
+> +       }
+>
+> -       sent = rfcomm_dlc_send(d, skb);
+> -       if (sent < 0)
+> -               kfree_skb(skb);
+> +done:
+> +       release_sock(sk);
+>
+>         return sent;
+>  }
+> --
+> 2.34.1
+>
+
+
 -- 
-2.35.0
-
+Luiz Augusto von Dentz
