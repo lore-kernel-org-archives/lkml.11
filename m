@@ -2,178 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 390FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbiBIL6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:58:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
+        id S231665AbiBIL6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:58:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230081AbiBIL5K (ORCPT
+        with ESMTP id S231598AbiBIL5d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:57:10 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC13E03E22B;
-        Wed,  9 Feb 2022 02:56:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644404200; x=1675940200;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UjE7mw19dKJDom0MhaIR0CBU7W0myMKVcMbKBeE/xDk=;
-  b=LPHxBdeRsVsHIsNSq0c5Gh+z07PzXfK7N39AsS20LC1tjjEboHT68eRa
-   pdr8uQoXr66uAjYZjunamBTgjgeAswTWxWWXKnIe/DmkddDbuTyh1bmAy
-   YZqUGQAUv8t8Upon7UcSsNJj1oIAMuB0MorMiXTXsdf4Qz6o3M6+JlVV8
-   /bHjQAPDoevn+oruEZmaWA955MAZbhJNjohS1cV8lZOUkoY42OX8qwa5k
-   cF4UaaVay1x6NGg/RQ6VwPns39vdnjdTZlQqOuzH/18yqRlbJx1HYzGmf
-   1LNjjkKsW0aTnGejfKv5w0X2eRVHYi/erlR7iKJYrxYH5Y5nmckqmy5ur
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229128582"
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="229128582"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 00:49:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="568169205"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga001.jf.intel.com with ESMTP; 09 Feb 2022 00:49:38 -0800
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        kvm@vger.kernel.org, H Peter Anvin <hpa@zytor.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Wed, 9 Feb 2022 06:57:33 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CBBE00FA75;
+        Wed,  9 Feb 2022 02:57:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644404251; x=1675940251;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=78OKLaek/ZbtbekQeOWucIUqpCVDpKdzEfJC5ehx89o=;
+  b=OWcZ0Nw89JwLSwMbB8KUUtMwN7Chv7zN5DcZapjIck4KWJNUlaYY2mIM
+   Vlc/yhHJkrsO2eWJgXUQES9HDvUpK2/6VFl+v5ZD2YfnEZKrKtnalbVJq
+   nNhk+brsP3f11NK7HoEhEoyL8FWlvRiQG2FVlbTnIzC2sN/7g1TBxOEhB
+   0=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 09 Feb 2022 02:57:30 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 02:57:30 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 02:57:29 -0800
+Received: from jinlmao-gv.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 02:57:25 -0800
+From:   Mao Jinlong <quic_jinlmao@quicinc.com>
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
         Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH 02/11] perf/x86: Add support for TSC as a perf event clock
-Date:   Wed,  9 Feb 2022 10:49:20 +0200
-Message-Id: <20220209084929.54331-3-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209084929.54331-1-adrian.hunter@intel.com>
-References: <20220209084929.54331-1-adrian.hunter@intel.com>
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+CC:     Mao Jinlong <quic_jinlmao@quicinc.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <coresight@lists.linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>
+Subject: [PATCH v3 00/10] Coresight: Add support for TPDM and TPDA
+Date:   Wed, 9 Feb 2022 18:56:56 +0800
+Message-ID: <20220209105706.18852-1-quic_jinlmao@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, using Intel PT to trace a VM guest is limited to kernel space
-because decoding requires side band events such as MMAP and CONTEXT_SWITCH.
-While these events can be collected for the host, there is not a way to do
-that yet for a guest. One approach, would be to collect them inside the
-guest, but that would require being able to synchronize with host
-timestamps.
+This series adds support for the trace performance monitoring and
+diagnostics hardware (TPDM and TPDA). It is composed of two major
+elements.
+a) Changes for original coresight framework to support for TPDM and TPDA.
+b) Add driver code for TPDM and TPDA.
 
-The motivation for this patch is to provide a clock that can be used within
-a VM guest, and that correlates to a VM host clock. In the case of TSC, if
-the hypervisor leaves rdtsc alone, the TSC value will be subject only to
-the VMCS TSC Offset and Scaling. Adjusting for that would make it possible
-to inject events from a guest perf.data file, into a host perf.data file.
+Introduction of changes for original coresight framework
+Support TPDM as new coresight source.
+Since only STM and ETM are supported as coresight source originally.
+TPDM is a newly added coresight source. We need to change
+the original way of saving coresight path to support more types source
+for coresight driver.
+The following patch is to add support more coresight sources.
+    Use IDR to maintain all the enabled sources' paths.
+    coresight: Use bitmap to assign trace id to the sources
 
-Thus making possible the collection of VM guest side band for Intel PT
-decoding.
+Introduction of TPDM and TPDA
+TPDM - The trace performance monitoring and diagnostics monitor or TPDM in
+short serves as data collection component for various dataset types
+specified in the QPMDA(Qualcomm performance monitoring and diagnostics
+architecture) spec. The primary use case of the TPDM is to collect data
+from different data sources and send it to a TPDA for packetization,
+timestamping and funneling.
+    Coresight: Add coresight TPDM source driver
+    dt-bindings: arm: Adds CoreSight TPDM hardware definitions
+    coresight-tpdm: Add DSB dataset support
+    coresight-tpdm: Add integration test support
+    docs: sysfs: coresight: Add sysfs ABI documentation for TPDM
 
-There are other potential benefits of TSC as a perf event clock:
-	- ability to work directly with TSC
-	- ability to inject non-Intel-PT-related events from a guest
+TPDA - The trace performance monitoring and diagnostics aggregator or
+TPDA in short serves as an arbitration and packetization engine for the
+performance monitoring and diagnostics network as specified in the QPMDA
+(Qualcomm performance monitoring and diagnostics architecture)
+specification. The primary use case of the TPDA is to provide
+packetization, funneling and timestamping of Monitor data as specified
+in the QPMDA specification.
+The following patch is to add driver for TPDA.
+    Coresight: Add TPDA link driver
+    dt-bindings: arm: Adds CoreSight TPDA hardware definitions
 
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
- arch/x86/events/core.c            | 14 ++++++++++++++
- arch/x86/include/asm/perf_event.h |  3 +++
- include/uapi/linux/perf_event.h   |  8 ++++++++
- kernel/events/core.c              |  7 +++++++
- 4 files changed, 32 insertions(+)
+The last patch of this series is a device tree modification, which add
+the TPDM and TPDA configuration to device tree for validating.
+    ARM: dts: msm: Add coresight components for SM8250
 
-diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
-index e686c5e0537b..e2ad3f9cca93 100644
---- a/arch/x86/events/core.c
-+++ b/arch/x86/events/core.c
-@@ -2728,6 +2728,15 @@ void arch_perf_update_userpage(struct perf_event *event,
- 		!!(event->hw.flags & PERF_EVENT_FLAG_USER_READ_CNT);
- 	userpg->pmc_width = x86_pmu.cntval_bits;
- 
-+	if (event->attr.use_clockid && event->attr.clockid == CLOCK_PERF_HW_CLOCK) {
-+		userpg->cap_user_time_zero = 1;
-+		userpg->time_mult = 1;
-+		userpg->time_shift = 0;
-+		userpg->time_offset = 0;
-+		userpg->time_zero = 0;
-+		return;
-+	}
-+
- 	if (!using_native_sched_clock() || !sched_clock_stable())
- 		return;
- 
-@@ -2980,6 +2989,11 @@ unsigned long perf_misc_flags(struct pt_regs *regs)
- 	return misc;
- }
- 
-+u64 perf_hw_clock(void)
-+{
-+	return rdtsc_ordered();
-+}
-+
- void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
- {
- 	cap->version		= x86_pmu.version;
-diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
-index 58d9e4b1fa0a..5288ea1ae2ba 100644
---- a/arch/x86/include/asm/perf_event.h
-+++ b/arch/x86/include/asm/perf_event.h
-@@ -451,6 +451,9 @@ extern unsigned long perf_instruction_pointer(struct pt_regs *regs);
- extern unsigned long perf_misc_flags(struct pt_regs *regs);
- #define perf_misc_flags(regs)	perf_misc_flags(regs)
- 
-+extern u64 perf_hw_clock(void);
-+#define perf_hw_clock		perf_hw_clock
-+
- #include <asm/stacktrace.h>
- 
- /*
-diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
-index 82858b697c05..150d2b70a41f 100644
---- a/include/uapi/linux/perf_event.h
-+++ b/include/uapi/linux/perf_event.h
-@@ -290,6 +290,14 @@ enum {
- 	PERF_TXN_ABORT_SHIFT = 32,
- };
- 
-+/*
-+ * If supported, clockid value to select an architecture dependent hardware
-+ * clock. Note this means the unit of time is ticks not nanoseconds.
-+ * On x86, this is provided by the rdtsc instruction, and is not
-+ * paravirtualized.
-+ */
-+#define CLOCK_PERF_HW_CLOCK		0x10000000
-+
- /*
-  * The format of the data returned by read() on a perf event fd,
-  * as specified by attr.read_format:
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 57249f37c37d..aab78f033711 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -12035,6 +12035,13 @@ static int perf_event_set_clock(struct perf_event *event, clockid_t clk_id)
- 		event->clock = &ktime_get_clocktai_ns;
- 		break;
- 
-+#ifdef perf_hw_clock
-+	case CLOCK_PERF_HW_CLOCK:
-+		event->clock = &perf_hw_clock;
-+		nmi_safe = true;
-+		break;
-+#endif
-+
- 	default:
- 		return -EINVAL;
- 	}
+Once this series patches are applied properly, the tpdm and tpda nodes
+should be observed at the coresight path /sys/bus/coresight/devices
+e.g.
+/sys/bus/coresight/devices # ls -l | grep tpd
+tpda0 -> ../../../devices/platform/soc@0/6004000.tpda/tpda0
+tpdm0 -> ../../../devices/platform/soc@0/6c08000.mm.tpdm/tpdm0
+
+We can use the commands are similar to the below to validate TPDMs.
+Enable coresight sink first.
+
+echo 1 > /sys/bus/coresight/devices/tmc_etf0/enable_sink
+echo 1 > /sys/bus/coresight/devices/tpdm0/enable_source
+echo 1 > /sys/bus/coresight/devices/tpdm0/integration_test
+echo 2 > /sys/bus/coresight/devices/tpdm0/integration_test
+The test data will be collected in the coresight sink which is enabled.
+If rwp register of the sink is keeping updating when do
+integration_test (by cat tmc_etf0/mgmt/rwp), it means there is data
+generated from TPDM to sink.
+
+Changes from V2:
+1. Use bitmap to assign the trace id. (Mathieu Poirier)
+
+Mao Jinlong (10):
+  Use IDR to maintain all the enabled sources' paths.
+  coresight: Use bitmap to assign trace id to the sources
+  Coresight: Add coresight TPDM source driver
+  dt-bindings: arm: Adds CoreSight TPDM hardware definitions
+  coresight-tpdm: Add DSB dataset support
+  coresight-tpdm: Add integration test support
+  docs: sysfs: coresight: Add sysfs ABI documentation for TPDM
+  Coresight: Add TPDA link driver
+  dt-bindings: arm: Adds CoreSight TPDA hardware definitions
+  ARM: dts: msm: Add coresight components for SM8250
+
+ .../testing/sysfs-bus-coresight-devices-tpdm  |   6 +
+ .../bindings/arm/coresight-tpda.yaml          | 129 ++++
+ .../bindings/arm/coresight-tpdm.yaml          |  81 ++
+ .../devicetree/bindings/arm/coresight.txt     |   7 +
+ MAINTAINERS                                   |   1 +
+ .../arm64/boot/dts/qcom/sm8250-coresight.dtsi | 690 ++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8250.dtsi          |   2 +
+ drivers/hwtracing/coresight/Kconfig           |  33 +
+ drivers/hwtracing/coresight/Makefile          |   2 +
+ drivers/hwtracing/coresight/coresight-core.c  | 127 ++--
+ drivers/hwtracing/coresight/coresight-tpda.c  | 193 +++++
+ drivers/hwtracing/coresight/coresight-tpda.h  |  32 +
+ drivers/hwtracing/coresight/coresight-tpdm.c  | 270 +++++++
+ drivers/hwtracing/coresight/coresight-tpdm.h  |  57 ++
+ include/linux/coresight-pmu.h                 |  11 +
+ include/linux/coresight.h                     |   1 +
+ 16 files changed, 1592 insertions(+), 50 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-coresight-devices-tpdm
+ create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpda.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
+ create mode 100644 arch/arm64/boot/dts/qcom/sm8250-coresight.dtsi
+ create mode 100644 drivers/hwtracing/coresight/coresight-tpda.c
+ create mode 100644 drivers/hwtracing/coresight/coresight-tpda.h
+ create mode 100644 drivers/hwtracing/coresight/coresight-tpdm.c
+ create mode 100644 drivers/hwtracing/coresight/coresight-tpdm.h
+
 -- 
-2.25.1
+2.17.1
 
