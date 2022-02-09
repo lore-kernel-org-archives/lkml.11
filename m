@@ -2,68 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E349CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 358A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347794AbiBIEN4 (ORCPT
+        id S1347885AbiBIEOA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:13:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47656 "EHLO
+        Tue, 8 Feb 2022 23:14:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347380AbiBIDn7 (ORCPT
+        with ESMTP id S1347222AbiBIDjV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:43:59 -0500
-X-Greylist: delayed 540 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 19:34:47 PST
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD07C0401C6;
-        Tue,  8 Feb 2022 19:34:47 -0800 (PST)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1644377146;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=83BegJX/huvgt+XIVpOJvjJ7YdqmGJGb2aCYCp0Ow7Q=;
-        b=wltvPx+CnJG10maR4ffbxORT5+0NpeVCUfXYk5bMhU3Gq+FtZURQieE8KBPUjH3qH7eKMQ
-        MtjsDNJbb4TTLjcu/8NQvUNg2EjhwWQjICv11KjcUuvoIN/+wQuWUO1u9iwu7G6AU2899l
-        Tk3CIl8OuyBjrrrTMpR4z8c9ez7Brxs=
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     cai.huoqing@linux.dev
-Cc:     Selvin Xavier <selvin.xavier@broadcom.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] RDMA/bnxt_re: Make use of the helper macro LIST_HEAD()
-Date:   Wed,  9 Feb 2022 11:25:18 +0800
-Message-Id: <20220209032518.37960-1-cai.huoqing@linux.dev>
+        Tue, 8 Feb 2022 22:39:21 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F19C043180
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:32:11 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id i186so2082965pfe.0
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 19:32:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=U3YWRJiOX6r2DiP9iWkoebtSk7wb9LQgDyPaYKJpHzg=;
+        b=nXjf/f5LQhRawIBVlV+uE2HRNSdBDqb1TVkY42Ucyl1AFQmJYizT78Mo0V0i+FRlJX
+         rkXkKyZSaZlcW4b7o4vnjdFAzIGsQGWZtTQ7/n2MDm3LOZgspH4jaup9YKX7Wx3zDbR3
+         juZ78ajOOZPzoQDNqX6MLmJvQWkpMBlyfbem9XPtvyItr240K06KEWR9y9RDRFM9UwDD
+         /e8srRI7OVqLv/UhiVxWE+OcLqZ8CcEnoPei08wnD8RIWMa3AOL1Zqhoer3LI2XKwnZL
+         AAYXEaEfFaasSmXgNlKy3+Lj+QEo70qkWiARvzdtca4LrlUlK247CO0X+6C1oTXh2ih3
+         Qa6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=U3YWRJiOX6r2DiP9iWkoebtSk7wb9LQgDyPaYKJpHzg=;
+        b=eNdjHCFUwzRG6dPnDEkCUWQrJyjaEJ5yS55cRcgdS78ixuD7881AQqERh/YUVkSpwR
+         9zFKq6xK0nPN7KFeKAXzhJaRfWByFwwFm2lA15Fql3DwMQ174MSCYNbkWiCtu6Eo7Sq6
+         roIadbwbOkJLDbbang6QbDqdPTFcBQ1fUVZF20yZs2znetDFSlErDukNy4wORgA2UMgZ
+         GOjtuHWH4rzExeVx7wix4P55BqLaVJFKm3W2vOZuMthZc9uv5G8aoNdApwbda2D/NaG+
+         aVLK3jsGBMhxloSB07k91bpRPoAtPjOFvKH1rYSI0cqj6RmuuIJOmh1EMoBomqUHLKAj
+         LEIA==
+X-Gm-Message-State: AOAM531GLFZEmvYEXUHc0UzNe80DM3xoSep/ZIi7gaDYnRCtmFeMegEe
+        Q8766GXBuiWe70b8brMJgm1SQA==
+X-Google-Smtp-Source: ABdhPJy7m6DpHFgJiKhMcyEac2ifKifQfKmXJnjw5v0c9O67wVpVHjnzSDcZixIVJaVAmGOKe1cPxw==
+X-Received: by 2002:a63:2c92:: with SMTP id s140mr372406pgs.448.1644377530580;
+        Tue, 08 Feb 2022 19:32:10 -0800 (PST)
+Received: from google.com ([2401:fa00:1:10:4b6f:f14d:be50:86a])
+        by smtp.gmail.com with ESMTPSA id y15sm17012526pfi.87.2022.02.08.19.32.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 19:32:10 -0800 (PST)
+Date:   Wed, 9 Feb 2022 11:32:07 +0800
+From:   Tzung-Bi Shih <tzungbi@google.com>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
+        "open list:CHROMEOS EC USB TYPE-C DRIVER" 
+        <chrome-platform@lists.linux.dev>,
+        Guenter Roeck <groeck@chromium.org>
+Subject: Re: [PATCH v2 1/4] platform/chrome: cros_ec_typec: Move mux flag
+ checks
+Message-ID: <YgM1t3aJPwMbhEQt@google.com>
+References: <20220208184721.1697194-1-pmalani@chromium.org>
+ <20220208184721.1697194-2-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208184721.1697194-2-pmalani@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace "struct list_head head = LIST_HEAD_INIT(head)" with
-"LIST_HEAD(head)" to simplify the code.
+On Tue, Feb 08, 2022 at 06:47:18PM +0000, Prashant Malani wrote:
+> Move mux and role flag checks inside of cros_typec_configure_mux(),
+> which is a more logical location for them.
+> 
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
 
-Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
----
- drivers/infiniband/hw/bnxt_re/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/infiniband/hw/bnxt_re/main.c b/drivers/infiniband/hw/bnxt_re/main.c
-index 3d6834d3d4fb..8ceb07883d8e 100644
---- a/drivers/infiniband/hw/bnxt_re/main.c
-+++ b/drivers/infiniband/hw/bnxt_re/main.c
-@@ -74,7 +74,7 @@ MODULE_DESCRIPTION(BNXT_RE_DESC " Driver");
- MODULE_LICENSE("Dual BSD/GPL");
- 
- /* globals */
--static struct list_head bnxt_re_dev_list = LIST_HEAD_INIT(bnxt_re_dev_list);
-+static LIST_HEAD(bnxt_re_dev_list);
- /* Mutex to protect the list of bnxt_re devices added */
- static DEFINE_MUTEX(bnxt_re_dev_lock);
- static struct workqueue_struct *bnxt_re_wq;
--- 
-2.25.1
-
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
