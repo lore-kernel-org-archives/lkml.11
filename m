@@ -2,107 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4076C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:46:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241860AbiBICqD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:46:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        id S241949AbiBICqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:46:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234389AbiBIBTz (ORCPT
+        with ESMTP id S243512AbiBIBoz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:19:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9885EC061576;
-        Tue,  8 Feb 2022 17:19:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59A80B81E2D;
-        Wed,  9 Feb 2022 01:19:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC40C340EB;
-        Wed,  9 Feb 2022 01:19:51 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="O0ZcQX9E"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644369590;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=muXktWPwK3DXgvGz5zZKW5xbimKtTXaNSyPW53UCMxA=;
-        b=O0ZcQX9E98Ro83oI3AJua90Th0b6eTHZF8OPO6r+M38IeIA4iud6w0IeKwBG3jLWocZu4W
-        z8uvvcj05qxGS/sn2fPdztXPfPrx50I5qeIt6wlgRyJzZqHyLdIIJ1FUEBVmibohgPwbXr
-        X9WG9CLE/d2rec9DknY+ZB7MPq/JjBU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fca0fc21 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 9 Feb 2022 01:19:49 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH v2 0/9] random: cleanups around per-cpu crng & rdrand
-Date:   Wed,  9 Feb 2022 02:19:10 +0100
-Message-Id: <20220209011919.493762-1-Jason@zx2c4.com>
+        Tue, 8 Feb 2022 20:44:55 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C082C06173B;
+        Tue,  8 Feb 2022 17:44:54 -0800 (PST)
+X-UUID: 6638f119a89f4a0896225e435273151e-20220209
+X-UUID: 6638f119a89f4a0896225e435273151e-20220209
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <leilk.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 61713781; Wed, 09 Feb 2022 09:44:50 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 9 Feb 2022 09:44:49 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 9 Feb 2022 09:44:48 +0800
+From:   Leilk Liu <leilk.liu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>
+CC:     Matthias Brugger <matthias.bgg@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        Leilk Liu <leilk.liu@mediatek.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH V5 1/3] dt-bindings: spi: Convert spi-slave-mt27xx to json-schema
+Date:   Wed, 9 Feb 2022 09:44:41 +0800
+Message-ID: <20220209014443.12443-2-leilk.liu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220209014443.12443-1-leilk.liu@mediatek.com>
+References: <20220209014443.12443-1-leilk.liu@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series tackles a few issues that are intermingled with each other:
+Convert Mediatek ARM SOC's SPI Slave controller binding
+to json-schema format.
 
-- Using RDSEED when we can rather than using RDRAND.
+Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../spi/mediatek,spi-slave-mt27xx.yaml        | 58 +++++++++++++++++++
+ .../bindings/spi/spi-slave-mt27xx.txt         | 33 -----------
+ 2 files changed, 58 insertions(+), 33 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/spi/mediatek,spi-slave-mt27xx.yaml
+ delete mode 100644 Documentation/devicetree/bindings/spi/spi-slave-mt27xx.txt
 
-- Making sure RDRAND/RDSEED input always goes through the mixer rather
-  than being xor'd into our state directly, in part in order to prevent
-  ridiculous hypothetical cpu backdoors, and in part because it makes it
-  easier to model RDRAND/RDSEED as just another entropy input.
-
-- Untangling the never ending headache that is kmalloc'd NUMA secondary
-  CRNGs, and replacing these with leaner per-cpu ChaCha keys that don't
-  have all the state troubles. There are other patches pending my review
-  that take the current NUMA initialization code to yet another layer of
-  complexity, sort of driving home the point to me that the current code
-  is a can of worms. This patchset attempts a different direction there.
-
-- Enforcing "fast key erasure" expansion always, and not relying on
-  having a shared block counter that is bound to lead to troubles sooner
-  or later.
-
-- Nearly eliminating lock contention when several processes use the rng
-  at the same time. WireGuard, for example, processes packets in
-  parallel on all threads, and this packet processing requires frequent
-  calls to get_random_bytes().
-
-- Making sure we're never throwing away entropy from the irq handler,
-  since fast key erasure means we're overwriting keys.
-
-Because one design choice in here affects others, these issues are
-tackled by this same patchset. It's roughly divided into "things with
-RDSEED" and "things with struct crng", with the ordering of commits
-being important.
-
-Finally the series ends with a one-off patch removing an obsolete limit
-on /dev/urandom, and making crng_slow_load() more robust.
-
-v2 improves on v1 by adding the crng_{fast,slow}_load() improvements,
-adding a lot of comments regarding fast key erasure, correcting other
-comments, fixing the function signatures of two functions that return an
-array, and fixing some basic logic flow in checking crng_ready().
-
-Jason A. Donenfeld (9):
-  random: use RDSEED instead of RDRAND in entropy extraction
-  random: get rid of secondary crngs
-  random: inline leaves of rand_initialize()
-  random: ensure early RDSEED goes through mixer on init
-  random: do not xor RDRAND when writing into /dev/random
-  random: absorb fast pool into input pool after fast load
-  random: use simpler fast key erasure flow on per-cpu keys
-  random: use hash function for crng_slow_load()
-  random: remove outdated INT_MAX >> 6 check in urandom_read()
-
- drivers/char/random.c | 699 ++++++++++++++++++------------------------
- 1 file changed, 291 insertions(+), 408 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/spi/mediatek,spi-slave-mt27xx.yaml b/Documentation/devicetree/bindings/spi/mediatek,spi-slave-mt27xx.yaml
+new file mode 100644
+index 000000000000..7977799a8ee1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/spi/mediatek,spi-slave-mt27xx.yaml
+@@ -0,0 +1,58 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/spi/mediatek,spi-slave-mt27xx.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: SPI Slave controller for MediaTek ARM SoCs
++
++maintainers:
++  - Leilk Liu <leilk.liu@mediatek.com>
++
++allOf:
++  - $ref: "/schemas/spi/spi-controller.yaml#"
++
++properties:
++  compatible:
++    enum:
++      - mediatek,mt2712-spi-slave
++      - mediatek,mt8195-spi-slave
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    items:
++      - const: spi
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt2712-clk.h>
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    spi@10013000 {
++      compatible = "mediatek,mt2712-spi-slave";
++      reg = <0x10013000 0x100>;
++      interrupts = <GIC_SPI 283 IRQ_TYPE_LEVEL_LOW>;
++      clocks = <&infracfg CLK_INFRA_AO_SPI1>;
++      clock-names = "spi";
++      assigned-clocks = <&topckgen CLK_TOP_SPISLV_SEL>;
++      assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL1_D2>;
++    };
+diff --git a/Documentation/devicetree/bindings/spi/spi-slave-mt27xx.txt b/Documentation/devicetree/bindings/spi/spi-slave-mt27xx.txt
+deleted file mode 100644
+index 9192724540fd..000000000000
+--- a/Documentation/devicetree/bindings/spi/spi-slave-mt27xx.txt
++++ /dev/null
+@@ -1,33 +0,0 @@
+-Binding for MTK SPI Slave controller
+-
+-Required properties:
+-- compatible: should be one of the following.
+-    - mediatek,mt2712-spi-slave: for mt2712 platforms
+-    - mediatek,mt8195-spi-slave: for mt8195 platforms
+-- reg: Address and length of the register set for the device.
+-- interrupts: Should contain spi interrupt.
+-- clocks: phandles to input clocks.
+-  It's clock gate, and should be <&infracfg CLK_INFRA_AO_SPI1>.
+-- clock-names: should be "spi" for the clock gate.
+-
+-Optional properties:
+-- assigned-clocks: it's mux clock, should be <&topckgen CLK_TOP_SPISLV_SEL>.
+-- assigned-clock-parents: parent of mux clock.
+-  It's PLL, and should be one of the following.
+-   -  <&topckgen CLK_TOP_UNIVPLL1_D2>: specify parent clock 312MHZ.
+-				       It's the default one.
+-   -  <&topckgen CLK_TOP_UNIVPLL1_D4>: specify parent clock 156MHZ.
+-   -  <&topckgen CLK_TOP_UNIVPLL2_D4>: specify parent clock 104MHZ.
+-   -  <&topckgen CLK_TOP_UNIVPLL1_D8>: specify parent clock 78MHZ.
+-
+-Example:
+-- SoC Specific Portion:
+-spis1: spi@10013000 {
+-	compatible = "mediatek,mt2712-spi-slave";
+-	reg = <0 0x10013000 0 0x100>;
+-	interrupts = <GIC_SPI 283 IRQ_TYPE_LEVEL_LOW>;
+-	clocks = <&infracfg CLK_INFRA_AO_SPI1>;
+-	clock-names = "spi";
+-	assigned-clocks = <&topckgen CLK_TOP_SPISLV_SEL>;
+-	assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL1_D2>;
+-};
 -- 
-2.35.0
+2.25.1
+
