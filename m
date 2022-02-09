@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:01:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC84C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237653AbiBIRB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 12:01:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
+        id S236973AbiBIRBf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 12:01:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237730AbiBIRA7 (ORCPT
+        with ESMTP id S237657AbiBIRAv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 12:00:59 -0500
+        Wed, 9 Feb 2022 12:00:51 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FC83C05CB89
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:01:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A57A2C05CB86
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:00:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644426061;
+        s=mimecast20190719; t=1644426053;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=q9h2kopg+//QvhPwKzfjAfT60rLQ7JGTbMd+9FyXI5k=;
-        b=hmEbrXewAnqASuWuKzx6hWod6Z92RKl0XdgkGloLfrMEog15B8Ezf7BIqSOL9GPH0zM7vH
-        XqsFKJY/0Xw3XynYAbWrZ+2tH7VuWiU1RPTJO1lREP4f1rcTf8Xst1WOsFYHaPChmlprZ5
-        hxpM7orZXx9hRU8XDn9u6ohoJOCogP4=
+        bh=maNLEYrkI9/B7Gp1A8K9ykB0aRV+CgOE/hJeFpDr/sg=;
+        b=Tqnqmf2IAQMU+E7vrJ+3jpvxHPfWKhUSgL5YdpQKzWR2O3vv1s93JF9mZsaS3YMRSyrOzi
+        9wDk4FcgbcTcmElR6OZD30b460uI9Y3oKzhzyzo6stteN2uzx8jarTzYGw/id4ev2SOxn/
+        xghDbDrUiFpAgMc2oHGJAMciUEnqwgA=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-466-99PD-VGPP3C1-fXmnX7zuQ-1; Wed, 09 Feb 2022 12:00:59 -0500
-X-MC-Unique: 99PD-VGPP3C1-fXmnX7zuQ-1
+ us-mta-594-IT82pY6aOeenyWtwkXPNyg-1; Wed, 09 Feb 2022 12:00:50 -0500
+X-MC-Unique: IT82pY6aOeenyWtwkXPNyg-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 93570101F7A4;
-        Wed,  9 Feb 2022 17:00:53 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 35C388145EB;
+        Wed,  9 Feb 2022 17:00:49 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 178EE7CD6F;
-        Wed,  9 Feb 2022 17:00:53 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7E5017CD66;
+        Wed,  9 Feb 2022 17:00:41 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com,
         seanjc@google.com
-Subject: [PATCH 09/12] KVM: MMU: look for a cached PGD when going from 32-bit to 64-bit
-Date:   Wed,  9 Feb 2022 12:00:17 -0500
-Message-Id: <20220209170020.1775368-10-pbonzini@redhat.com>
+Subject: [PATCH 02/12] KVM: MMU: move MMU role accessors to header
+Date:   Wed,  9 Feb 2022 12:00:10 -0500
+Message-Id: <20220209170020.1775368-3-pbonzini@redhat.com>
 In-Reply-To: <20220209170020.1775368-1-pbonzini@redhat.com>
 References: <20220209170020.1775368-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -54,142 +54,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Right now, PGD caching avoids placing a PAE root in the cache by using the
-old value of mmu->root_level and mmu->shadow_root_level; it does not look
-for a cached PGD if the old root is a PAE one, and then frees it using
-kvm_mmu_free_roots.
-
-Change the logic instead to free the uncacheable root early.
-This way, __kvm_new_mmu_pgd is able to look up the cache when going from
-32-bit to 64-bit (if there is a hit, the invalid root becomes the least
-recently used).  An example of this is nested virtualization with shadow
-paging, when a 64-bit L1 runs a 32-bit L2.
-
-As a side effect (which is actually the reason why this patch was
-written), PGD caching does not use the old value of mmu->root_level
-and mmu->shadow_root_level anymore.
+We will use is_cr0_pg to check whether a page fault can be delivered.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 71 ++++++++++++++++++++++++++++++++----------
- 1 file changed, 54 insertions(+), 17 deletions(-)
+ arch/x86/kvm/mmu.h     | 21 +++++++++++++++++++++
+ arch/x86/kvm/mmu/mmu.c | 21 ---------------------
+ 2 files changed, 21 insertions(+), 21 deletions(-)
 
+diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+index a5a50cfeffff..b9d06a218b2c 100644
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -65,6 +65,27 @@ static __always_inline u64 rsvd_bits(int s, int e)
+ 	return ((2ULL << (e - s)) - 1) << s;
+ }
+ 
++/*
++ * The MMU itself (with a valid role) is the single source of truth for the
++ * MMU.  Do not use the regs used to build the MMU/role, nor the vCPU.  The
++ * regs don't account for dependencies, e.g. clearing CR4 bits if CR0.PG=1,
++ * and the vCPU may be incorrect/irrelevant.
++ */
++#define BUILD_MMU_ROLE_ACCESSOR(base_or_ext, reg, name)		\
++static inline bool __maybe_unused is_##reg##_##name(struct kvm_mmu *mmu)	\
++{								\
++	return !!(mmu->mmu_role. base_or_ext . reg##_##name);	\
++}
++BUILD_MMU_ROLE_ACCESSOR(ext,  cr0, pg);
++BUILD_MMU_ROLE_ACCESSOR(base, cr0, wp);
++BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, pse);
++BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, pae);
++BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, smep);
++BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, smap);
++BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, pke);
++BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, la57);
++BUILD_MMU_ROLE_ACCESSOR(base, efer, nx);
++
+ void kvm_mmu_set_mmio_spte_mask(u64 mmio_value, u64 mmio_mask, u64 access_mask);
+ void kvm_mmu_set_ept_masks(bool has_ad_bits, bool has_exec_only);
+ 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 95d0fa0bb876..f61208ccce43 100644
+index 296f8723f9ae..e0c0f0bc2e8b 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4087,20 +4087,20 @@ static inline bool is_root_usable(struct kvm_mmu_root_info *root, gpa_t pgd,
- 				  union kvm_mmu_page_role role)
- {
- 	return (role.direct || pgd == root->pgd) &&
--	       VALID_PAGE(root->hpa) && to_shadow_page(root->hpa) &&
-+	       VALID_PAGE(root->hpa) &&
- 	       role.word == to_shadow_page(root->hpa)->role.word;
- }
+@@ -223,27 +223,6 @@ BUILD_MMU_ROLE_REGS_ACCESSOR(cr4, la57, X86_CR4_LA57);
+ BUILD_MMU_ROLE_REGS_ACCESSOR(efer, nx, EFER_NX);
+ BUILD_MMU_ROLE_REGS_ACCESSOR(efer, lma, EFER_LMA);
  
- /*
-  * Find out if a previously cached root matching the new pgd/role is available.
-- * The current root is also inserted into the cache.
-- * If a matching root was found, it is assigned to kvm_mmu->root.hpa and true is
-- * returned.
-- * Otherwise, the LRU root from the cache is assigned to kvm_mmu->root.hpa and
-- * false is returned. This root should now be freed by the caller.
-+ * If a matching root is found, it is assigned to kvm_mmu->root and
-+ * true is returned.
-+ * If no match is found, the current root becomes the MRU of the cache
-+ * if valid (thus evicting the LRU root), kvm_mmu->root is left invalid,
-+ * and false is returned.
-  */
--static bool cached_root_available(struct kvm_vcpu *vcpu, gpa_t new_pgd,
--				  union kvm_mmu_page_role new_role)
-+static bool cached_root_find_and_promote(struct kvm_vcpu *vcpu, gpa_t new_pgd,
-+					 union kvm_mmu_page_role new_role)
- {
- 	uint i;
- 	struct kvm_mmu *mmu = vcpu->arch.mmu;
-@@ -4109,13 +4109,48 @@ static bool cached_root_available(struct kvm_vcpu *vcpu, gpa_t new_pgd,
- 		return true;
- 
- 	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++) {
-+		/*
-+		 * The swaps end up rotating the cache like this:
-+		 *   C   0 1 2 3   (on entry to the function)
-+		 *   0   C 1 2 3
-+		 *   1   C 0 2 3
-+		 *   2   C 0 1 3
-+		 *   3   C 0 1 2   (on exit from the loop)
-+		 */
- 		swap(mmu->root, mmu->prev_roots[i]);
+-/*
+- * The MMU itself (with a valid role) is the single source of truth for the
+- * MMU.  Do not use the regs used to build the MMU/role, nor the vCPU.  The
+- * regs don't account for dependencies, e.g. clearing CR4 bits if CR0.PG=1,
+- * and the vCPU may be incorrect/irrelevant.
+- */
+-#define BUILD_MMU_ROLE_ACCESSOR(base_or_ext, reg, name)		\
+-static inline bool __maybe_unused is_##reg##_##name(struct kvm_mmu *mmu)	\
+-{								\
+-	return !!(mmu->mmu_role. base_or_ext . reg##_##name);	\
+-}
+-BUILD_MMU_ROLE_ACCESSOR(ext,  cr0, pg);
+-BUILD_MMU_ROLE_ACCESSOR(base, cr0, wp);
+-BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, pse);
+-BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, pae);
+-BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, smep);
+-BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, smap);
+-BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, pke);
+-BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, la57);
+-BUILD_MMU_ROLE_ACCESSOR(base, efer, nx);
 -
- 		if (is_root_usable(&mmu->root, new_pgd, new_role))
--			break;
-+			return true;
- 	}
- 
--	return i < KVM_MMU_NUM_PREV_ROOTS;
-+	kvm_mmu_free_roots(vcpu, vcpu->arch.mmu, KVM_MMU_ROOT_CURRENT);
-+	return false;
-+}
-+
-+/*
-+ * Find out if a previously cached root matching the new pgd/role is available.
-+ * If a matching root is found, it is assigned to kvm_mmu->root and true
-+ * is returned.  The current, invalid root goes to the bottom of the cache.
-+ * If no match is found, kvm_mmu->root is left invalid and false is returned.
-+ */
-+static bool cached_root_find_and_replace(struct kvm_vcpu *vcpu, gpa_t new_pgd,
-+					 union kvm_mmu_page_role new_role)
-+{
-+	uint i;
-+	struct kvm_mmu *mmu = vcpu->arch.mmu;
-+
-+	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++)
-+		if (is_root_usable(&mmu->prev_roots[i], new_pgd, new_role))
-+			goto hit;
-+
-+	return false;
-+
-+hit:
-+	swap(mmu->root, mmu->prev_roots[i]);
-+	/* Bubble up the remaining roots.  */
-+	for (; i < KVM_MMU_NUM_PREV_ROOTS - 1; i++)
-+		mmu->prev_roots[i] = mmu->prev_roots[i + 1];
-+	mmu->prev_roots[i].hpa = INVALID_PAGE;
-+	return true;
- }
- 
- static bool fast_pgd_switch(struct kvm_vcpu *vcpu, gpa_t new_pgd,
-@@ -4124,22 +4159,24 @@ static bool fast_pgd_switch(struct kvm_vcpu *vcpu, gpa_t new_pgd,
- 	struct kvm_mmu *mmu = vcpu->arch.mmu;
- 
- 	/*
--	 * For now, limit the fast switch to 64-bit hosts+VMs in order to avoid
-+	 * For now, limit the caching to 64-bit hosts+VMs in order to avoid
- 	 * having to deal with PDPTEs. We may add support for 32-bit hosts/VMs
- 	 * later if necessary.
- 	 */
--	if (mmu->shadow_root_level >= PT64_ROOT_4LEVEL &&
--	    mmu->root_level >= PT64_ROOT_4LEVEL)
--		return cached_root_available(vcpu, new_pgd, new_role);
-+	if (VALID_PAGE(mmu->root.hpa) && !to_shadow_page(mmu->root.hpa))
-+		kvm_mmu_free_roots(vcpu, vcpu->arch.mmu, KVM_MMU_ROOT_CURRENT);
- 
--	return false;
-+	if (VALID_PAGE(mmu->root.hpa))
-+		return cached_root_find_and_promote(vcpu, new_pgd, new_role);
-+	else
-+		return cached_root_find_and_replace(vcpu, new_pgd, new_role);
- }
- 
- static void __kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd,
- 			      union kvm_mmu_page_role new_role)
+ static struct kvm_mmu_role_regs vcpu_to_role_regs(struct kvm_vcpu *vcpu)
  {
- 	if (!fast_pgd_switch(vcpu, new_pgd, new_role)) {
--		kvm_mmu_free_roots(vcpu, vcpu->arch.mmu, KVM_MMU_ROOT_CURRENT);
-+		/* kvm_mmu_ensure_valid_pgd will set up a new root.  */
- 		return;
- 	}
- 
+ 	struct kvm_mmu_role_regs regs = {
 -- 
 2.31.1
 
