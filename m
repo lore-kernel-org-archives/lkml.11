@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2258CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239834AbiBIShG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:37:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55244 "EHLO
+        id S238949AbiBIShM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:37:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239760AbiBISgy (ORCPT
+        with ESMTP id S239741AbiBISgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:36:54 -0500
+        Wed, 9 Feb 2022 13:36:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB371C05CBB1;
-        Wed,  9 Feb 2022 10:36:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C59CC05CBA3;
+        Wed,  9 Feb 2022 10:36:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5773B61C12;
-        Wed,  9 Feb 2022 18:36:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5A47C340ED;
-        Wed,  9 Feb 2022 18:36:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F96861B38;
+        Wed,  9 Feb 2022 18:36:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA17C340E9;
+        Wed,  9 Feb 2022 18:36:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431795;
-        bh=yOgw4Yd4WYCoi0YooHiYuwWDyvVW9wrXs/NRDkELzzY=;
+        s=k20201202; t=1644431792;
+        bh=+Y2jXDovMWPwfVBxYPnVbiXJyF4dnYA52EIXfnkRdCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gq8qHvIAkJT+gd9EPrZXlPFwuBi/AsJndKYQq72hkxwoViymL+SKK4vQMIoa37Gd/
-         pRb5QkB2MxgFAU8FBolKCz5a+6dBq1WQ+hwf5Xv/OmW8UBoiVNFmAXQ9fAbj50AalJ
-         VifH764mmoXCxt679g2yw9r4Qgtg1cJqStBuCed2Uffyl3L4wS/vhIyesh8peo/PH3
-         b/tb+rWyeSmugFKiPnW4jBuW98bkA67hSFSv4hRUJrDDCYlDWKvXnR81Vsz0PjWrjt
-         c+ldZ2d3QtHnbVOp3PfiybYZxQc+aLPcLstNHzJlNi5eFoE9Rf8YZibA7YKGi+OTwB
-         axrSGXqyRlWTg==
+        b=bOBstf6VLLmB6yEnA49mh9vLyWfub/OYQfvTQRJOER0R+m6mAuvHRHzOi00AtvfAq
+         2iqleoJux9Qp6dKe1hDwk9h/3sQZfSD4JSNENFlhMEFQk90Cp3dekrdJoG6hv7O323
+         SbDVAK19PskMxrvTJByvQ2FjbcAuTK2b4xiMxUS6dqJGEp0nlAFyFay5DVIzYP2YvI
+         UJ7ji6Bo1ow1dmGWe0+jilgbm3e97sH6FvIVM6MWkNVxQc/gPAXf+FXoQaLM5tPWUI
+         Af58J5GOYW66CE8xQO1tKVKrpZK18P4aMh+bpfrS3RAyWQxGveicCYuQdLqqQqgFiQ
+         WqGyiagJNbKPA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sagi Grimberg <sagi@grimberg.me>, Chris Leech <cleech@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 33/42] nvme-tcp: fix possible use-after-free in transport error_recovery work
-Date:   Wed,  9 Feb 2022 13:33:05 -0500
-Message-Id: <20220209183335.46545-33-sashal@kernel.org>
+Cc:     Christian Brauner <brauner@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, akpm@linux-foundation.org,
+        mkl@pengutronix.de, anup@brainfault.org, hverkuil-cisco@xs4all.nl,
+        mchehab+huawei@kernel.org, quic_abhinavk@quicinc.com,
+        willy@infradead.org, borntraeger@linux.ibm.com, alexs@kernel.org
+Subject: [PATCH AUTOSEL 5.16 31/42] mailmap: update Christian Brauner's email address
+Date:   Wed,  9 Feb 2022 13:33:03 -0500
+Message-Id: <20220209183335.46545-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209183335.46545-1-sashal@kernel.org>
 References: <20220209183335.46545-1-sashal@kernel.org>
@@ -51,37 +54,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Christian Brauner <brauner@kernel.org>
 
-[ Upstream commit ff9fc7ebf5c06de1ef72a69f9b1ab40af8b07f9e ]
+[ Upstream commit 1a2beb3d5a0b4051067ecf49ea799bee340e0e7c ]
 
-While nvme_tcp_submit_async_event_work is checking the ctrl and queue
-state before preparing the AER command and scheduling io_work, in order
-to fully prevent a race where this check is not reliable the error
-recovery work must flush async_event_work before continuing to destroy
-the admin queue after setting the ctrl state to RESETTING such that
-there is no race .submit_async_event and the error recovery handler
-itself changing the ctrl state.
+At least one of the addresses will stop functioning after February.
 
-Tested-by: Chris Leech <cleech@redhat.com>
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/tcp.c | 1 +
- 1 file changed, 1 insertion(+)
+ .mailmap | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index 4ceb28675fdf6..01e24b5703dbc 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -2096,6 +2096,7 @@ static void nvme_tcp_error_recovery_work(struct work_struct *work)
- 	struct nvme_ctrl *ctrl = &tcp_ctrl->ctrl;
- 
- 	nvme_stop_keep_alive(ctrl);
-+	flush_work(&ctrl->async_event_work);
- 	nvme_tcp_teardown_io_queues(ctrl, false);
- 	/* unquiesce to fail fast pending requests */
- 	nvme_start_queues(ctrl);
+diff --git a/.mailmap b/.mailmap
+index b344067e0acb6..3979fb166e0fd 100644
+--- a/.mailmap
++++ b/.mailmap
+@@ -74,6 +74,9 @@ Chris Chiu <chris.chiu@canonical.com> <chiu@endlessos.org>
+ Christian Borntraeger <borntraeger@linux.ibm.com> <borntraeger@de.ibm.com>
+ Christian Borntraeger <borntraeger@linux.ibm.com> <cborntra@de.ibm.com>
+ Christian Borntraeger <borntraeger@linux.ibm.com> <borntrae@de.ibm.com>
++Christian Brauner <brauner@kernel.org> <christian@brauner.io>
++Christian Brauner <brauner@kernel.org> <christian.brauner@canonical.com>
++Christian Brauner <brauner@kernel.org> <christian.brauner@ubuntu.com>
+ Christophe Ricard <christophe.ricard@gmail.com>
+ Christoph Hellwig <hch@lst.de>
+ Colin Ian King <colin.king@intel.com> <colin.king@canonical.com>
 -- 
 2.34.1
 
