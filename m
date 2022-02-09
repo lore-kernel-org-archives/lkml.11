@@ -2,105 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC8A1C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71ED6C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237774AbiBIJkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:40:02 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35040 "EHLO
+        id S237045AbiBIJjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:39:44 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239049AbiBIJhc (ORCPT
+        with ESMTP id S238517AbiBIJdR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:37:32 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC02E01565D
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:37:29 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id k25so5542518ejp.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:37:29 -0800 (PST)
+        Wed, 9 Feb 2022 04:33:17 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33EEE05B1D2
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:33:12 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id ka4so5414659ejc.11
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:33:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1wSk9Xt36kV2FvjM9SY4Lo33UdRRx+CQTWW3YPXvCO0=;
-        b=n+2+K1LbOOGjMhhnhmy75fEPspPfelWutSaVthdX8ZH/jfoZRfKHhJImYbGd/NgGb1
-         oJHmrkMdLvp5lh+dhqCRvSmG/BW9ejhZyHVXox8zD3O92aYkYGwv5q4GkaIyOLTWHTtX
-         V/6g3kQlYq4xaR0ahQdbrAoSbWco0zq+eVCpxfluOJQv2Yu5O4LtHXSvrDDn6KOsQRaq
-         fnR3uFQxk4R6KNMXwqe53CVUxBnMOQzxWuWbKhcjeqW1/SGSbXDti54VeMsKL0uCd/Gd
-         nw+jTZHyER3+vj7Q7ctdc68UmXaqG19apfrvZI6iWm4K9SnAKOtL8sbP67rZyqeak/pe
-         uuvw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZL5nsQJzlN6imps4+YiPtBhsGzf6yOFUap6AeTuCeNA=;
+        b=w6PJpjf74O74HjyL1Gj6ROIaBJicmTqsiYlGYWEZsKsyUkNTjPNiEpbRnjVh+P4NeF
+         WlM66ApstCsJi6ZyBn3sXMuPEvWWu9hqIoq0CHsKjOhhmk57u11PUNb7Tc641bueGcUk
+         9LLibEfyVfbOUR+kUcZK4aJ2ZuYGTKgO5jIEs7s8SfOBSP23gnWBPPukSS/QDNq35+Hk
+         Xq7tL8k+texo1S/u6BHcgF26AT61xhUe1vSg/e0Bv2U0318F4dDfkPTQpCDm6PuvVX+B
+         z8YMPepM9hBcUvms1dGNM9hVicB4rzQ4GmkI4EUXUw9gjUO/BEJg/RmlFoakrfEac+4H
+         s7AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1wSk9Xt36kV2FvjM9SY4Lo33UdRRx+CQTWW3YPXvCO0=;
-        b=skgF7x+9U0oA8oJrqtXVLxaFTh9AMvcecqYGYmS33Ft/NEtGdbS2a8ofnz8gcaa2mN
-         aSOKX4hZJujTen76SGFqV+H+5+sep/6t4ngsKy5bJhA+aHGCWDIjGCXM3yQbcSkawCPG
-         /jgnWRAGa1wBSdIVztkgDLvh02DKfudBdpFL3/MKsBNnvhLsVTWStInR/tntrdT7Eu+k
-         C/PmSvoTZrXECGAIXOK72aPN+Z72j0Z9Y/I8ytwNDl6EjJuUo4b+IsuU8ypKU/bfi/PJ
-         PbwuCV7KFM5tqTAOcLNxDibuK00PpXBRndnRihv69NAZDd0MuF7rD7aJQ5wEkK5vOgCs
-         3ZhQ==
-X-Gm-Message-State: AOAM533Xziqjumb2F26W4G2oNStq0wwiS057W+vlRTWF9DW1ve2nRyZt
-        QV7IxSTiUOV3auWPEdRI2GE=
-X-Google-Smtp-Source: ABdhPJwcnYNE2AzwYK9ERVMWT8V7BA7ZG0ZB+m32USahYgA7PpW7yWLUPnjZUE9xN6SJHE/1varxSg==
-X-Received: by 2002:a17:907:e91:: with SMTP id ho17mr1149690ejc.442.1644399447527;
-        Wed, 09 Feb 2022 01:37:27 -0800 (PST)
-Received: from centennial.enunes.eu (ip-78-45-67-25.net.upcbroadband.cz. [78.45.67.25])
-        by smtp.gmail.com with ESMTPSA id j24sm397106ejo.106.2022.02.09.01.37.26
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZL5nsQJzlN6imps4+YiPtBhsGzf6yOFUap6AeTuCeNA=;
+        b=P8ZhpVUDg1vxD/z5zP/NtlXFKj3Yf87qVmnVebjefR6DsBlc5XsH1X8MqNW9FvR1bd
+         lgkz2nyYIq2Fp4wZwTO/ZihbiuVyUsvhdD2teuyMg7R9x3i3ovHmOaD7oETSMuU5FI6P
+         FlnprZ11aH4h1RwF1ByFCdT1KxUrLFMq8ND21jtC+cmpqL95F84CHYPIO1p/8YXuy33i
+         7hcV2B93iiuhTE9WTmxcfExTJgb0m11i1lu7blcter4LATRwT5iAV309lGktbOc01sMI
+         9PmJrtSqFWjYlKOYFxpmfodUqdhGyCmw2jVvCMT13NU+ods8kNMhUGlkC87o6nzd8cEz
+         fCzA==
+X-Gm-Message-State: AOAM532H0/N+lyFFdOx+7c8+6BnIjnvu4KcK+egJuu6iD68AgLtcwx4i
+        Ehl8nTyvtMacYyzJmdQpfX6ULw==
+X-Google-Smtp-Source: ABdhPJwj2ogtAm01Cn4fpJI3qhVdtBFd94vapf/jKbUe9O7RLyxnsCzDlZd5IAM4WWK17xSSvSr2/A==
+X-Received: by 2002:a17:906:7948:: with SMTP id l8mr1126088ejo.636.1644399188930;
+        Wed, 09 Feb 2022 01:33:08 -0800 (PST)
+Received: from leoy-ThinkPad-X240s ([104.245.96.65])
+        by smtp.gmail.com with ESMTPSA id g9sm5796897ejm.152.2022.02.09.01.33.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 01:37:27 -0800 (PST)
-From:   Erico Nunes <nunes.erico@gmail.com>
-To:     Qiang Yu <yuq825@gmail.com>, dri-devel@lists.freedesktop.org
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        lima@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Erico Nunes <nunes.erico@gmail.com>,
-        Javier Martinez Canillas <javierm@redhat.com>
-Subject: [PATCH v2] drm/lima: avoid error task dump attempt when not enabled
-Date:   Wed,  9 Feb 2022 10:37:00 +0100
-Message-Id: <20220209093700.30901-1-nunes.erico@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 09 Feb 2022 01:33:08 -0800 (PST)
+Date:   Wed, 9 Feb 2022 17:33:04 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 RESEND 1/4] coresight: etm4x: Add lock for reading
+ virtual context ID comparator
+Message-ID: <20220209093304.GA334894@leoy-ThinkPad-X240s>
+References: <20220204152403.71775-1-leo.yan@linaro.org>
+ <20220204152403.71775-2-leo.yan@linaro.org>
+ <6b91293a-1149-2c77-04a4-421a45d4e1e0@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6b91293a-1149-2c77-04a4-421a45d4e1e0@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently when users try to run an application with lima and that hits
-an issue such as a timeout, a message saying "fail to save task state"
-and "error task list is full" is shown in dmesg.
+Hi Suzuki,
 
-The error task dump is a debug feature disabled by default, so the
-error task list is usually not going to be available at all.
-The message can be misleading and creates confusion in bug reports.
+On Wed, Feb 09, 2022 at 05:47:24AM +0000, Suzuki Kuruppassery Poulose wrote:
+> Hi Leo
+> 
+> On 04/02/2022 15:24, Leo Yan wrote:
+> > Updates to the values and the index are protected via the spinlock.
+> > Ensure we use the same lock to read the value safely.
+> > 
+> > Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> > Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+> > ---
+> >   drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 2 ++
+> >   1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> > index 10ef2a29006e..2f3b4eef8261 100644
+> > --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> > +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> > @@ -2111,7 +2111,9 @@ static ssize_t vmid_val_show(struct device *dev,
+> >   	struct etmv4_drvdata *drvdata = dev_get_drvdata(dev->parent);
+> >   	struct etmv4_config *config = &drvdata->config;
+> > +	spin_lock(&drvdata->spinlock);
+> >   	val = (unsigned long)config->vmid_val[config->vmid_idx];
+> > +	spin_unlock(&drvdata->spinlock);
+> >   	return scnprintf(buf, PAGE_SIZE, "%#lx\n", val);
+> >   }
+> 
+> 
+> I have queued this patch.
 
-We can avoid that code path and that particular message when the user
-has not explicitly set the max_error_tasks parameter to enable the
-feature.
+Thanks!
 
-Signed-off-by: Erico Nunes <nunes.erico@gmail.com>
-Reviewed-by: Qiang Yu <yuq825@gmail.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
----
-v2:
-- collect review tags
-- update summary line to "drm/lima:"
----
- drivers/gpu/drm/lima/lima_sched.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> For the rest, we would need to wait until the helper lands in the rc.
 
-diff --git a/drivers/gpu/drm/lima/lima_sched.c b/drivers/gpu/drm/lima/lima_sched.c
-index 5612d73f238f..12437e42cc76 100644
---- a/drivers/gpu/drm/lima/lima_sched.c
-+++ b/drivers/gpu/drm/lima/lima_sched.c
-@@ -409,7 +409,8 @@ static enum drm_gpu_sched_stat lima_sched_timedout_job(struct drm_sched_job *job
- 
- 	drm_sched_increase_karma(&task->base);
- 
--	lima_sched_build_error_task_list(task);
-+	if (lima_max_error_tasks)
-+		lima_sched_build_error_task_list(task);
- 
- 	pipe->task_error(pipe);
- 
--- 
-2.34.1
+The helper function patch has been landed on the mainline kernel,
+it would be safe to merge the rest patches.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d7e4f8545b497b3f5687e592f1c355cbaee64c8c
 
+BTW, I think you could pick another two refactoring patches:
+https://lore.kernel.org/lkml/20220204135051.60639-2-leo.yan@linaro.org/
+https://lore.kernel.org/lkml/20220204135051.60639-3-leo.yan@linaro.org/
+
+Thanks,
+Leo
