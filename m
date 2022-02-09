@@ -2,92 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E02C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F170C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235733AbiBIPVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:21:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60946 "EHLO
+        id S235735AbiBIPWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:22:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235704AbiBIPVI (ORCPT
+        with ESMTP id S229900AbiBIPWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:21:08 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E53C061355;
-        Wed,  9 Feb 2022 07:21:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644420071; x=1675956071;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1qF9ZzEYHSVAbbuXXq6Cc2EQ1ZCdoWN2hl6SvPjqJd0=;
-  b=HFa5AO8I0O9MQaHYOArgmR6l+Wwn4ebgbVz9tfS51VD7kjdJhVtDUMUR
-   wHJyA+vospkkyCRzdJA9qel1+no1dRtbw1m4igU38d0jY2AWA9ZC0u/jc
-   n/T6jAu2hyDWdKiyA6OmDpW4PV3MkH5iAqok6GVaoHDM5PTrn2+Ex2S4N
-   TyQmXabLODlD6IoCp0ym3mmQjOTMV7dW5DoMyn/P7x621Srw66ZfZCea2
-   5C8RBL1ThMj4C2GYUfdykCCeS9LoiYsJ0DLL4bgaO9AbD6TnvOe9TvIjH
-   Sgi6UDG0vufdxl2AQllr5MV25zadElER6aCXp/JN77s5aS3NfQ88LBKrr
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="236631481"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="236631481"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 07:20:50 -0800
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="701284968"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 07:20:48 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nHol4-002ebE-4m;
-        Wed, 09 Feb 2022 17:19:50 +0200
-Date:   Wed, 9 Feb 2022 17:19:49 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>
-Subject: Re: [PATCH v3 5/7] (WIP) drm/solomon: Add SSD130X OLED displays SPI
- support
-Message-ID: <YgPbleB+LAQ5ZXyB@smile.fi.intel.com>
-References: <20220209090314.2511959-1-javierm@redhat.com>
- <20220209091204.2513437-1-javierm@redhat.com>
- <CAMuHMdWSDBjpYJv6JtgvyaKiFKh_eqbvH78TR6VBtpDeFJvqFQ@mail.gmail.com>
- <e6efb2fd-300e-5282-1f2e-a68130d0b45a@redhat.com>
+        Wed, 9 Feb 2022 10:22:41 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A059C0613C9;
+        Wed,  9 Feb 2022 07:22:45 -0800 (PST)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 219EMANK010887;
+        Wed, 9 Feb 2022 15:22:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=PDPgdRq5kmBOP+iD3Nr/K8GbRWCQaVotmuHtKHIMnrQ=;
+ b=W9mdVvOQJbN6I3OE4GFKIVC2gK7D+EcZJYodLEOyh1gh6ZG8Q+iLdZLJK5fmAVNEOVLV
+ 789Nx9y+VbUhzi2mhGW9/xrKbdEtKQJEs/0PxjmRq5LJFOBimU5IXsd6hnsgeuNYzutv
+ TmkoY/FbpWtW0z0P1fGnOWAYDzvWbAY6KAL+TwyaVhHNe0eZ9QRm5Qm7IHhsx129Qdm0
+ fEh5+YkMXwvEi8Xz7/RR/W5IBttNSwA/ZrLpWICbEbQyQ7xfMUBybuFxHVEzbvBeIMVb
+ W1u7QYnj7vSF7682XGgWUpfMmjwP4BfOwJDutMAsqVVOEWW2hmCOzNblxmZyu4qOzX3B fQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e418347cg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 15:22:44 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 219FMinc003471;
+        Wed, 9 Feb 2022 15:22:44 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e418347b2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 15:22:44 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 219FJIZC002903;
+        Wed, 9 Feb 2022 15:22:41 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma01fra.de.ibm.com with ESMTP id 3e1gv9phfj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 15:22:41 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 219FMceC42139992
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Feb 2022 15:22:38 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 39F7A11C058;
+        Wed,  9 Feb 2022 15:22:38 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D82D411C050;
+        Wed,  9 Feb 2022 15:22:37 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Feb 2022 15:22:37 +0000 (GMT)
+From:   Michael Mueller <mimu@linux.ibm.com>
+To:     kvm@vger.kernel.org
+Cc:     cohuck@redhat.com, borntraeger@de.ibm.com, frankja@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, david@redhat.com,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Mueller <mimu@linux.ibm.com>
+Subject: [PATCH v3 0/1] KVM: s390: pv: make use of ultravisor AIV support
+Date:   Wed,  9 Feb 2022 16:22:16 +0100
+Message-Id: <20220209152217.1793281-1-mimu@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: VC6tczq0g_i8IE5PuqVrtiVZNHE01DWQ
+X-Proofpoint-GUID: p5AAFkbSYKFKfD1xQ7XD3MSdDaBl6atE
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e6efb2fd-300e-5282-1f2e-a68130d0b45a@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_08,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ malwarescore=0 lowpriorityscore=0 mlxlogscore=402 priorityscore=1501
+ clxscore=1015 impostorscore=0 bulkscore=0 spamscore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202090085
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 02:04:17PM +0100, Javier Martinez Canillas wrote:
-> On 2/9/22 13:25, Geert Uytterhoeven wrote:
-> > On Wed, Feb 9, 2022 at 10:12 AM Javier Martinez Canillas
-> > <javierm@redhat.com> wrote:
+This patch enables the ultravisor adapter interruption vitualization
+support.
 
-> Yes, I know. Didn't feel like it, because the patch is a WIP anyways
-> (I haven't tested it but was included just for illustration purposes).
-> 
-> If someone confirms that works then I will include a proper DT binding
-> in the next revision.
+Changes in v3:
+- cache and test GISA descriptor only once in kvm_s390_gisa_enable()
+- modified some comments
+- removed some whitespace issues
 
-In a few weeks I hope I can do this.
+Changes in v2:
+- moved GISA disable into "put CPUs in PV mode" routine
+- moved GISA enable into "pull CPUs out of PV mode" routine 
 
-But you know Linux is almost always broken (*) on the certain embedded device
-if nobody keep an eye each rc cycle. It might take time to return it in shape
-first.
+[1] https://lore.kernel.org/lkml/ae7c65d8-f632-a7f4-926a-50b9660673a1@linux.ibm.com/T/#mcb67699bf458ba7482f6b7529afe589d1dbb5930
+[2] https://lore.kernel.org/kvm/20220208165310.3905815-1-mimu@linux.ibm.com/T/#e0ecf74ad7fdccc5ed22007e783106d4ef7b849df 
 
-*) Speaking out of my own experience with device(s) that I possess.
+Michael Mueller (1):
+  KVM: s390: pv: make use of ultravisor AIV support
+
+ arch/s390/include/asm/uv.h |  1 +
+ arch/s390/kvm/interrupt.c  | 56 ++++++++++++++++++++++++++++++++++----
+ arch/s390/kvm/kvm-s390.c   | 11 ++++++--
+ arch/s390/kvm/kvm-s390.h   | 11 ++++++++
+ 4 files changed, 70 insertions(+), 9 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.32.0
 
