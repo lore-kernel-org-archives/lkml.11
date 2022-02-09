@@ -2,255 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB63C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4687BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237198AbiBIQdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:33:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41722 "EHLO
+        id S237153AbiBIQd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:33:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237092AbiBIQdI (ORCPT
+        with ESMTP id S236367AbiBIQd4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:33:08 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD4AC05CB82
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:33:10 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 9 Feb 2022 11:33:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8562C0612BE;
+        Wed,  9 Feb 2022 08:33:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 90B4F223F7;
-        Wed,  9 Feb 2022 17:33:08 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1644424388;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oWIl78GqYSzWlRAKxA/9nteEF71Uw8hQ3rTS+tBIPlE=;
-        b=dVOhokUYMqLfVeJ/hfbDGAB4ZMMGKSFbdkIKc7kM6ZFNm8T5yfb2mvuSKDkcabvm7HjLtJ
-        RF97V036OLZGnfOOq9mFjUCuASle2BfQWYkg9vCsr9cJSQtQZ2bw4To513RjkoB0qRn//U
-        K6IwaOvICq1+EREdsJvpYg347EadHa8=
-From:   Michael Walle <michael@walle.cc>
-To:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Li Yang <leoyang.li@nxp.com>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Sudeep Holla <Sudeep.Holla@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 6/7] soc: fsl: guts: drop platform driver
-Date:   Wed,  9 Feb 2022 17:32:41 +0100
-Message-Id: <20220209163242.430265-7-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220209163242.430265-1-michael@walle.cc>
-References: <20220209163242.430265-1-michael@walle.cc>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58E3A6173F;
+        Wed,  9 Feb 2022 16:33:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A36AC340E7;
+        Wed,  9 Feb 2022 16:33:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644424438;
+        bh=A3C28su2GZHYfO1uG6hQ8cQQJH4qr+JQ5ZUOFe6PLu4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SO/PkyjuoxW60tdmyRombK4TTlrUuwvcr0PZyxlW5yZxml0l4FIAUGSLU3JvJfQqQ
+         NGagnR3Gypm6RSWnahBf2FHq/JfYyr6oECie4w+YkQgZdTBdMDcPVRka8MiwQ24HRH
+         +ay4J2oUQU6ZduMuTebvtWKsz0DeElrGQR3cJpYmQJ6GT9Xl1CNT5HRxf+c3FRiO+2
+         dsrlfDKGZKQD2MnN0NrAleMzEBF4/trXnofZnXWvbu7mZ3pKbW/aCbASyjrGZTVZ/N
+         N7tepjI22myMHRkd3/HPGeuYAy16ijvNQ09MK2baYvZiscmlQFDkI4iXO7Zt31+Kx9
+         1Hf6rHBu4QCrg==
+Date:   Wed, 9 Feb 2022 16:33:53 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     trix@redhat.com
+Cc:     lhjeff911@gmail.com, nathan@kernel.org, ndesaulniers@google.com,
+        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] spi: initialize ret variable
+Message-ID: <YgPs8U85ZFbDWYlx@sirena.org.uk>
+References: <20220209163029.2299009-1-trix@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Mu0AE5F/1tDJX1na"
+Content-Disposition: inline
+In-Reply-To: <20220209163029.2299009-1-trix@redhat.com>
+X-Cookie: Disc space -- the final frontier!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This driver cannot be unloaded and it will be needed very early in the
-boot process because other driver (weakly) depend on it (eg. for chip
-errata handling). Drop all the platform driver and devres stuff and
-simply make it a core_initcall.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/soc/fsl/guts.c | 134 ++++++++++++++++++++++-------------------
- 1 file changed, 71 insertions(+), 63 deletions(-)
+--Mu0AE5F/1tDJX1na
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
-index 13d07cc19f45..370be923aa0f 100644
---- a/drivers/soc/fsl/guts.c
-+++ b/drivers/soc/fsl/guts.c
-@@ -110,21 +110,59 @@ static const struct fsl_soc_die_attr *fsl_soc_die_match(
- 	return NULL;
- }
- 
--static int fsl_guts_probe(struct platform_device *pdev)
-+/*
-+ * Table for matching compatible strings, for device tree
-+ * guts node, for Freescale QorIQ SOCs.
-+ */
-+static const struct of_device_id fsl_guts_of_match[] = {
-+	{ .compatible = "fsl,qoriq-device-config-1.0", },
-+	{ .compatible = "fsl,qoriq-device-config-2.0", },
-+	{ .compatible = "fsl,p1010-guts", },
-+	{ .compatible = "fsl,p1020-guts", },
-+	{ .compatible = "fsl,p1021-guts", },
-+	{ .compatible = "fsl,p1022-guts", },
-+	{ .compatible = "fsl,p1023-guts", },
-+	{ .compatible = "fsl,p2020-guts", },
-+	{ .compatible = "fsl,bsc9131-guts", },
-+	{ .compatible = "fsl,bsc9132-guts", },
-+	{ .compatible = "fsl,mpc8536-guts", },
-+	{ .compatible = "fsl,mpc8544-guts", },
-+	{ .compatible = "fsl,mpc8548-guts", },
-+	{ .compatible = "fsl,mpc8568-guts", },
-+	{ .compatible = "fsl,mpc8569-guts", },
-+	{ .compatible = "fsl,mpc8572-guts", },
-+	{ .compatible = "fsl,ls1021a-dcfg", },
-+	{ .compatible = "fsl,ls1043a-dcfg", },
-+	{ .compatible = "fsl,ls2080a-dcfg", },
-+	{ .compatible = "fsl,ls1088a-dcfg", },
-+	{ .compatible = "fsl,ls1012a-dcfg", },
-+	{ .compatible = "fsl,ls1046a-dcfg", },
-+	{ .compatible = "fsl,lx2160a-dcfg", },
-+	{ .compatible = "fsl,ls1028a-dcfg", },
-+	{}
-+};
-+
-+static int __init fsl_guts_init(void)
- {
--	struct device_node *np = pdev->dev.of_node;
- 	struct soc_device_attribute *soc_dev_attr;
- 	static struct soc_device *soc_dev;
--	struct device *dev = &pdev->dev;
- 	const struct fsl_soc_die_attr *soc_die;
- 	struct ccsr_guts __iomem *regs;
- 	const char *machine = NULL;
-+	struct device_node *np;
- 	bool little_endian;
- 	u32 svr;
-+	int ret;
-+
-+	np = of_find_matching_node_and_match(NULL, fsl_guts_of_match, NULL);
-+	if (!np)
-+		return 0;
- 
- 	regs = of_iomap(np, 0);
--	if (IS_ERR(regs))
-+	if (IS_ERR(regs)) {
-+		of_node_put(np);
- 		return PTR_ERR(regs);
-+	}
- 
- 	little_endian = of_property_read_bool(np, "little-endian");
- 	if (little_endian)
-@@ -132,92 +170,62 @@ static int fsl_guts_probe(struct platform_device *pdev)
- 	else
- 		svr = ioread32be(&regs->svr);
- 	iounmap(regs);
-+	of_node_put(np);
- 
- 	/* Register soc device */
--	soc_dev_attr = devm_kzalloc(dev, sizeof(*soc_dev_attr), GFP_KERNEL);
-+	soc_dev_attr = kzalloc(sizeof(*soc_dev_attr), GFP_KERNEL);
- 	if (!soc_dev_attr)
- 		return -ENOMEM;
- 
- 	if (of_property_read_string(of_root, "model", &machine))
- 		of_property_read_string_index(of_root, "compatible", 0, &machine);
- 	if (machine) {
--		soc_dev_attr->machine = devm_kstrdup(dev, machine, GFP_KERNEL);
-+		soc_dev_attr->machine = kstrdup(machine, GFP_KERNEL);
- 		if (!soc_dev_attr->machine)
--			return -ENOMEM;
-+			goto err_nomem;
- 	}
- 
- 	soc_die = fsl_soc_die_match(svr, fsl_soc_die);
- 	if (soc_die) {
--		soc_dev_attr->family = devm_kasprintf(dev, GFP_KERNEL,
--						      "QorIQ %s", soc_die->die);
-+		soc_dev_attr->family = kasprintf(GFP_KERNEL, "QorIQ %s",
-+						 soc_die->die);
- 	} else {
--		soc_dev_attr->family = devm_kasprintf(dev, GFP_KERNEL, "QorIQ");
-+		soc_dev_attr->family = kasprintf(GFP_KERNEL, "QorIQ");
- 	}
- 	if (!soc_dev_attr->family)
--		return -ENOMEM;
--	soc_dev_attr->soc_id = devm_kasprintf(dev, GFP_KERNEL,
--					     "svr:0x%08x", svr);
-+		goto err_nomem;
-+
-+	soc_dev_attr->soc_id = kasprintf(GFP_KERNEL, "svr:0x%08x", svr);
- 	if (!soc_dev_attr->soc_id)
--		return -ENOMEM;
--	soc_dev_attr->revision = devm_kasprintf(dev, GFP_KERNEL, "%d.%d",
--					       (svr >>  4) & 0xf, svr & 0xf);
-+		goto err_nomem;
-+
-+	soc_dev_attr->revision = kasprintf(GFP_KERNEL, "%d.%d",
-+					   (svr >>  4) & 0xf, svr & 0xf);
- 	if (!soc_dev_attr->revision)
--		return -ENOMEM;
-+		goto err_nomem;
- 
- 	soc_dev = soc_device_register(soc_dev_attr);
--	if (IS_ERR(soc_dev))
--		return PTR_ERR(soc_dev);
-+	if (IS_ERR(soc_dev)) {
-+		ret = PTR_ERR(soc_dev);
-+		goto err;
-+	}
- 
- 	pr_info("Machine: %s\n", soc_dev_attr->machine);
- 	pr_info("SoC family: %s\n", soc_dev_attr->family);
- 	pr_info("SoC ID: %s, Revision: %s\n",
- 		soc_dev_attr->soc_id, soc_dev_attr->revision);
--	return 0;
--}
- 
--/*
-- * Table for matching compatible strings, for device tree
-- * guts node, for Freescale QorIQ SOCs.
-- */
--static const struct of_device_id fsl_guts_of_match[] = {
--	{ .compatible = "fsl,qoriq-device-config-1.0", },
--	{ .compatible = "fsl,qoriq-device-config-2.0", },
--	{ .compatible = "fsl,p1010-guts", },
--	{ .compatible = "fsl,p1020-guts", },
--	{ .compatible = "fsl,p1021-guts", },
--	{ .compatible = "fsl,p1022-guts", },
--	{ .compatible = "fsl,p1023-guts", },
--	{ .compatible = "fsl,p2020-guts", },
--	{ .compatible = "fsl,bsc9131-guts", },
--	{ .compatible = "fsl,bsc9132-guts", },
--	{ .compatible = "fsl,mpc8536-guts", },
--	{ .compatible = "fsl,mpc8544-guts", },
--	{ .compatible = "fsl,mpc8548-guts", },
--	{ .compatible = "fsl,mpc8568-guts", },
--	{ .compatible = "fsl,mpc8569-guts", },
--	{ .compatible = "fsl,mpc8572-guts", },
--	{ .compatible = "fsl,ls1021a-dcfg", },
--	{ .compatible = "fsl,ls1043a-dcfg", },
--	{ .compatible = "fsl,ls2080a-dcfg", },
--	{ .compatible = "fsl,ls1088a-dcfg", },
--	{ .compatible = "fsl,ls1012a-dcfg", },
--	{ .compatible = "fsl,ls1046a-dcfg", },
--	{ .compatible = "fsl,lx2160a-dcfg", },
--	{ .compatible = "fsl,ls1028a-dcfg", },
--	{}
--};
--MODULE_DEVICE_TABLE(of, fsl_guts_of_match);
-+	return 0;
- 
--static struct platform_driver fsl_guts_driver = {
--	.driver = {
--		.name = "fsl-guts",
--		.of_match_table = fsl_guts_of_match,
--	},
--	.probe = fsl_guts_probe,
--};
-+err_nomem:
-+	ret = -ENOMEM;
-+err:
-+	kfree(soc_dev_attr->machine);
-+	kfree(soc_dev_attr->family);
-+	kfree(soc_dev_attr->soc_id);
-+	kfree(soc_dev_attr->revision);
-+	kfree(soc_dev_attr);
- 
--static int __init fsl_guts_init(void)
--{
--	return platform_driver_register(&fsl_guts_driver);
-+	return ret;
- }
- core_initcall(fsl_guts_init);
--- 
-2.30.2
+On Wed, Feb 09, 2022 at 08:30:29AM -0800, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+>=20
+> Clang build fails with
+> spi-sunplus-sp7021.c:405:2: error: variable 'ret' is used
+>   uninitialized whenever switch default is taken
+>         default:
+>         ^~~~~~~
+>=20
+> Restore initializing ret.
 
+Are you sure this is a good fix and that the compiler hasn't instead
+identifed that we should be returning an error in the default case?
+
+--Mu0AE5F/1tDJX1na
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmID7PEACgkQJNaLcl1U
+h9DXDQf/d8oWsM8LqjI3JFg83YZWTgTnqvzABNlCFu6Pqc7x8gKpeLY76jEejVK3
+MwBzj34sZgjQNpo4Ah8Lze+CGJi3dK1Ic1nGK8woFMJJ7FX/vKWcMWQB49GQT4uv
+nt0HvfituvT8Rzic252jaGaQnMslhLH04vrFmjxgCMaQof/SKOYgLUECzdLP6x8x
+OSFGpC32VeuZaVwaJbmXIrsoNyZ9rp+AWjA1Xzcz321TwsB6Sja16pd+VcYTWA5i
+3Pv6T0mPVd345pG4blfqWUo2eaQPyem5ZtxrcGBq07BNGWnaxNOG0F0MDBA/Xe9E
+FdHPeuZBSNxjXY9liEcXkZTmrDRSoA==
+=pALL
+-----END PGP SIGNATURE-----
+
+--Mu0AE5F/1tDJX1na--
