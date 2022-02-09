@@ -2,73 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDFAC3525A
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:09:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52369C4707F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233286AbiBIFHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 00:07:11 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56656 "EHLO
+        id S235014AbiBIFHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 00:07:30 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbiBIFCS (ORCPT
+        with ESMTP id S230197AbiBIEqF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 00:02:18 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C81C03E926;
-        Tue,  8 Feb 2022 21:02:19 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R821e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V3ze3Rg_1644382934;
-Received: from 30.225.24.53(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V3ze3Rg_1644382934)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Feb 2022 13:02:15 +0800
-Message-ID: <4da041e7-d88c-16ba-d180-f8e8b8c2ef31@linux.alibaba.com>
-Date:   Wed, 9 Feb 2022 13:02:13 +0800
+        Tue, 8 Feb 2022 23:46:05 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBB3C061578;
+        Tue,  8 Feb 2022 20:46:09 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JtnQ60Fbjz4xNq;
+        Wed,  9 Feb 2022 15:46:06 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1644381966;
+        bh=4LBu3b4sqV42JJCmT2RvLfUf47/jOabbpGeO17DWNxg=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=VpsRKjTOAuTL4YVFAXqLwlQNTVN2PnFaRNMaDdmekioS+Axih9wqxwuuZXvgF38GV
+         BtlQrTRz2IAQ9QmpujmvPxeEPJBOCKQODVTttnlXUqTA3LNbZRxgAs7FMDYFW7UAzp
+         hNZMjJnJRRBuEQsm/scDVGFl3F1CnxD/UQBFK7HXqfl2FNQM9xzVfhzm6vaSQz1Oui
+         eoQoylhJFl+fMdpPBEWkx0gW9z1nkkfG9Ee4wjyAlpTXz2FASBp3lrsVq34UIp87iV
+         WiyxUBkfMXtIWN/O5RXzGc5uFFcCQQWtagfWwXYs+Xzz/Ci/ixvZSY69tgrW3wLzm6
+         VxO4WOGIITJUw==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Luis Chamberlain <mcgrof@kernel.org>,
+        Michal Suchanek <msuchanek@suse.de>,
+        David Howells <dhowells@redhat.com>,
+        Aaron Tomlin <atomlin@redhat.com>
+Cc:     keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-integrity@vger.kernel.org, kexec@lists.infradead.org,
+        Philipp Rudo <prudo@redhat.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Nayna <nayna@linux.vnet.ibm.com>, Rob Herring <robh@kernel.org>,
+        linux-s390@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
+        David Howells <dhowells@redhat.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        Frank van der Linden <fllinden@amazon.com>,
+        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
+        Daniel Axtens <dja@axtens.net>, buendgen@de.ibm.com,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Baoquan He <bhe@redhat.com>,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v5 0/6] KEXEC_SIG with appended signature
+In-Reply-To: <YfBd/EDGUx9UIHcb@bombadil.infradead.org>
+References: <cover.1641900831.git.msuchanek@suse.de>
+ <YfBd/EDGUx9UIHcb@bombadil.infradead.org>
+Date:   Wed, 09 Feb 2022 15:46:05 +1100
+Message-ID: <87pmnwlkaa.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.0
-Subject: Re: [syzbot] BUG: MAX_LOCK_DEPTH too low! (3)
-To:     syzbot <syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net,
-        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-References: <0000000000006d045e05d78776f6@google.com>
-From:   Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <0000000000006d045e05d78776f6@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Luis Chamberlain <mcgrof@kernel.org> writes:
+> On Tue, Jan 11, 2022 at 12:37:42PM +0100, Michal Suchanek wrote:
+>> Hello,
+>> 
+>> This is a refresh of the KEXEC_SIG series.
+>> 
+>> This adds KEXEC_SIG support on powerpc and deduplicates the code dealing
+>> with appended signatures in the kernel.
+>> 
+>> powerpc supports IMA_KEXEC but that's an exception rather than the norm.
+>> On the other hand, KEXEC_SIG is portable across platforms.
+>> 
+>> For distributions to have uniform security features across platforms one
+>> option should be used on all platforms.
+>> 
+>> Thanks
+>> 
+>> Michal
+>> 
+>> Previous revision: https://lore.kernel.org/linuxppc-dev/cover.1637862358.git.msuchanek@suse.de/
+>> Patched kernel tree: https://github.com/hramrach/kernel/tree/kexec_sig
+>> 
+>> Michal Suchanek (6):
+>>   s390/kexec_file: Don't opencode appended signature check.
+>>   powerpc/kexec_file: Add KEXEC_SIG support.
+>>   kexec_file: Don't opencode appended signature verification.
+>>   module: strip the signature marker in the verification function.
+>>   module: Use key_being_used_for for log messages in
+>>     verify_appended_signature
+>>   module: Move duplicate mod_check_sig users code to mod_parse_sig
+>
+> What tree should this go through? I'd prefer if over through modules
+> tree as it can give a chance for Aaron Tomlin to work with this for his
+> code refactoring of kernel/module*.c to kernel/module/
 
+Yeah that's fine by me, the arch changes are pretty minimal and unlikely
+to conflict much.
 
-On 2022/2/9 4:21 am, syzbot wrote:
-
-> 
-> The issue was bisected to:
-> 
-> commit 341adeec9adad0874f29a0a1af35638207352a39
-> Author: Wen Gu <guwen@linux.alibaba.com>
-> Date:   Wed Jan 26 15:33:04 2022 +0000
-> 
->      net/smc: Forward wakeup to smc socket waitqueue after fallback
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11c2637c700000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=13c2637c700000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=15c2637c700000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com
-> Fixes: 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback")
-> 
-> BUG: MAX_LOCK_DEPTH too low!
-> turning off the locking correctness validator.
-> depth: 48  max: 48!
-
-Thanks for syzbot's report.
-
-I will look into this issue and give feedback as soon as possible.
-
-Thanks,
-Wen Gu
+cheers
