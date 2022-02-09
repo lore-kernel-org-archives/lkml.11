@@ -2,63 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1F9C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D78C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233488AbiBIFYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 00:24:34 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45674 "EHLO
+        id S233087AbiBIFfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 00:35:01 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232786AbiBIFSp (ORCPT
+        with ESMTP id S240029AbiBIF2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 00:18:45 -0500
-X-Greylist: delayed 10646 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 21:18:48 PST
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202FFC03FEEE
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 21:18:47 -0800 (PST)
-Received: (Authenticated sender: joao@overdrivepizza.com)
-        by mail.gandi.net (Postfix) with ESMTPA id 5123B1C0002;
-        Wed,  9 Feb 2022 05:18:44 +0000 (UTC)
-MIME-Version: 1.0
-Date:   Tue, 08 Feb 2022 21:18:44 -0800
-From:   Joao Moreira <joao@overdrivepizza.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        hjl.tools@gmail.com, jpoimboe@redhat.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, samitolvanen@google.com,
-        llvm@lists.linux.dev
-Subject: Re: [RFC][PATCH 6/6] objtool: Add IBT validation / fixups
-In-Reply-To: <202202082003.FA77867@keescook>
-References: <20211122170301.764232470@infradead.org>
- <20211122170805.338489412@infradead.org>
- <6ebb0ab131c522f20c094294d49091fc@overdrivepizza.com>
- <202202081541.900F9E1B@keescook>
- <ad6c2633f39e39583bc5c5eaf7ccbe52@overdrivepizza.com>
- <202202082003.FA77867@keescook>
-Message-ID: <9ea50c51ee8db366430c9dc697a83923@overdrivepizza.com>
-X-Sender: joao@overdrivepizza.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+        Wed, 9 Feb 2022 00:28:17 -0500
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9E1C034022
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 21:28:21 -0800 (PST)
+Received: by mail-pj1-x104a.google.com with SMTP id f2-20020a17090a4a8200b001b7dac53bd6so1008393pjh.4
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 21:28:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=rZmcqq9wo8YnIT5ye21K0NZ6qO5uZQZ73lL6JC7iEz8=;
+        b=V7pZi17UGh4z8xKEPrH1tHrUFmHaRAzvYAScVj9FqCzqJOPH1qxNvmVXTqmdmhDDja
+         fSevxqTLIKSXGes2Bc2yGMwmn7vJl0vbrogVI02WbymmV4+O5pyInoUXAt1zZDRNXNhD
+         z6epdNN7gu63acsXSIVLG/J0gBfUtBORK47KpxZN4ke2d9mQz/PmlvDccsPtR38X39Oq
+         6y1+YimogJQnshvrmsxFNBfNa0FWZbz4Fd+udxylcO1TK9rUtlqZbPfVTmUqk2FT8fE7
+         cC6zbqItrZi9fJeEySh/9QX8B+0DK8T/atnxM8CIqEO0AOqaa7lheUgGtPCgA2g42FVt
+         AYyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=rZmcqq9wo8YnIT5ye21K0NZ6qO5uZQZ73lL6JC7iEz8=;
+        b=dqquowZpt4TiZeowBJSEbpaY3Eg2+zCfAEAEki9XqVjracLHQAmtDanyYYhBDUvdKH
+         GJYVPGMbr/8N8ER94+wj3a0n8mCb95poL+oDErO6PNjdETa8F1BoeeK8YNd3DMvuP9uE
+         DSdW7rwzhzCrCeHaDG8hsWy0dg3ZYSq6laJ7xZYUqLKMuWUKHl/nnR4DpyTM8bdvi28S
+         oHzY6V57L5odoK3vdE5U5cZxoUF2DnefywExuc5EDYSL2bP1+ZiVaRnRWgDnbbZTQWRy
+         ACXRB9mXRtuOGTIQwcqaWyjCBVQXH/KAQ4te42Hw6J75WnYb06QRgTnx2D3aWJ4Jh3AY
+         a0wg==
+X-Gm-Message-State: AOAM530qOwGEoT/SrjHu4GZkxobPcTvyCzbQ1i0Hryyk+D9+6bAFvVSW
+        6OgLmG+oFPFZZPPjiFEJtOZQtIoHEPbuLg==
+X-Google-Smtp-Source: ABdhPJwyIfZyzDHRcKT+rTPIrUjaIig807SEciA4VZqtAc+0hggnYq8ijl+rHM47O4N+sK6xME3dZVt5hj3+aA==
+X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
+ (user=davidgow job=sendgmr) by 2002:a17:903:24d:: with SMTP id
+ j13mr545456plh.54.1644384500567; Tue, 08 Feb 2022 21:28:20 -0800 (PST)
+Date:   Wed,  9 Feb 2022 13:28:11 +0800
+Message-Id: <20220209052813.854014-1-davidgow@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+Subject: [PATCH v3 1/3] list: test: Add test for list_del_init_careful()
+From:   David Gow <davidgow@google.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>
+Cc:     David Gow <davidgow@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        kunit-dev@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Ah, excellent, thanks for the pointers. There's also this in the works:
-> https://reviews.llvm.org/D119296 (a new CFI mode, designed to play nice
-> to objtool, IBT, etc.)
+The list_del_init_careful() function was added[1] after the list KUnit
+test. Add a very basic test to cover it.
 
-Oh, great! Thanks for pointing it out. I guess I saw something with a 
-similar name before ;) 
-https://www.blackhat.com/docs/asia-17/materials/asia-17-Moreira-Drop-The-Rop-Fine-Grained-Control-Flow-Integrity-For-The-Linux-Kernel.pdf
+Note that this test only covers the single-threaded behaviour (which
+matches list_del_init()), as is already the case with the test for
+list_empty_careful().
 
-Jokes aside (and perhaps questions more targeted to Sami), from a 
-diagonal look it seems that this follows the good old tag approach 
-proposed by PaX/grsecurity, right? If this is the case, should I assume 
-it could also benefit from features like -mibt-seal? Also are you 
-considering that perhaps we can use alternatives to flip different CFI 
-instrumentation as suggested by PeterZ in another thread?
+[1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c6fe44d96fc1536af5b11cd859686453d1b7bfd1
 
-Tks,
-Joao
+Signed-off-by: David Gow <davidgow@google.com>
+---
+
+Changes since v2:
+https://lore.kernel.org/linux-kselftest/20220208040122.695258-1-davidgow@google.com/
+- Fix the test calling list_del_init() instead of
+  list_del_init_careful()
+- Improve the comment noting we only test single-threaded behaviour.
+
+Changes since v1:
+https://lore.kernel.org/linux-kselftest/20220205061539.273330-1-davidgow@google.com/
+- Patch 1/3 unchanged
+---
+ lib/list-test.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/lib/list-test.c b/lib/list-test.c
+index ee09505df16f..f82a3c7788b8 100644
+--- a/lib/list-test.c
++++ b/lib/list-test.c
+@@ -161,6 +161,25 @@ static void list_test_list_del_init(struct kunit *test)
+ 	KUNIT_EXPECT_TRUE(test, list_empty_careful(&a));
+ }
+ 
++static void list_test_list_del_init_careful(struct kunit *test)
++{
++	/* NOTE: This test only checks the behaviour of this function in
++	 * isolation. It does not verify memory model guarantees. */
++	struct list_head a, b;
++	LIST_HEAD(list);
++
++	list_add_tail(&a, &list);
++	list_add_tail(&b, &list);
++
++	/* before: [list] -> a -> b */
++	list_del_init_careful(&a);
++	/* after: [list] -> b, a initialised */
++
++	KUNIT_EXPECT_PTR_EQ(test, list.next, &b);
++	KUNIT_EXPECT_PTR_EQ(test, b.prev, &list);
++	KUNIT_EXPECT_TRUE(test, list_empty_careful(&a));
++}
++
+ static void list_test_list_move(struct kunit *test)
+ {
+ 	struct list_head a, b;
+@@ -707,6 +726,7 @@ static struct kunit_case list_test_cases[] = {
+ 	KUNIT_CASE(list_test_list_replace_init),
+ 	KUNIT_CASE(list_test_list_swap),
+ 	KUNIT_CASE(list_test_list_del_init),
++	KUNIT_CASE(list_test_list_del_init_careful),
+ 	KUNIT_CASE(list_test_list_move),
+ 	KUNIT_CASE(list_test_list_move_tail),
+ 	KUNIT_CASE(list_test_list_bulk_move_tail),
+-- 
+2.35.0.263.gb82422642f-goog
+
