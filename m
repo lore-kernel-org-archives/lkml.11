@@ -2,110 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BF1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B268FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:05:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236490AbiBIQDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:03:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
+        id S236497AbiBIQFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:05:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236473AbiBIQDn (ORCPT
+        with ESMTP id S233209AbiBIQFO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:03:43 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA62C0612BE;
-        Wed,  9 Feb 2022 08:03:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644422625; x=1675958625;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=aafKnGCoEaqvsnU9LCDeEaZ8jYeHAC9CSnldTj89q44=;
-  b=TTwcDJl80fT72VCLGnDEo8wnr2JH3WUpwCtWc0c0hLyxN1GndEZrDkIR
-   6D7IvWELbhJrVR2BC5+15yzisOeTyxw4De4XCe9osfOgbNQ0/mXnRrIeI
-   +RO9IyvAkym489zfhC+kkW2IF/F3ZHBUth72zg/h4PbniyTKATjmR+ODI
-   1X39HaK1MXUdF40XX8yTRnPe/wNMeXAJa4Dri07vaFKIfLD4SYDuNXF61
-   YIIdbrwaT2GU4FMNLU9WMsf1/os8UFpW0qbFFWJ6Ma+zfI79X3HSTO+FR
-   xEh+/8Robkh+ry/YOt3+pX/88ykN4VSOb1xaq/jM2wftajztKCg1b1hQd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229205198"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="229205198"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 08:03:25 -0800
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="622317188"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 08:03:21 -0800
-Received: by lahna (sSMTP sendmail emulation); Wed, 09 Feb 2022 18:01:07 +0200
-Date:   Wed, 9 Feb 2022 18:01:07 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        linux-acpi <linux-acpi@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>, x86@kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Benoit =?iso-8859-1?Q?Gr=E9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>
-Subject: Re: [5.17 regression] "x86/PCI: Ignore E820 reservations for bridge
- windows on newer systems" breaks suspend/resume
-Message-ID: <YgPlQ6UK3+4/yzLk@lahna>
-References: <a7ad05fe-c2ab-a6d9-b66e-68e8c5688420@redhat.com>
- <697aaf96-ec60-4e11-b011-0e4151e714d7@redhat.com>
- <YgKcl9YX4HfjqZxS@lahna>
- <02994528-aaad-5259-1774-19aeacdd18fc@redhat.com>
+        Wed, 9 Feb 2022 11:05:14 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00208C0613C9;
+        Wed,  9 Feb 2022 08:05:16 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id p63so3691307iod.11;
+        Wed, 09 Feb 2022 08:05:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1c/6l8Fp4RH5VPtrTh9qUA2jV+GD+5aUHsSlil0jKiA=;
+        b=RmxhaIRcr+PwhQu4PtzxQSrXEXKyLT5HnRTvT+BDinZcRUK81PdCfNC5t6nFX3qr8C
+         Lx3xEBUqecDkV+MHfhMouucqPtzvKsqRnTMjcLCscQ/AIZ/mJU7+rhkbWhYZ/lj4tYnW
+         QYtMP3fkC+vmqjRkdOsy57ykqyLVa/lgWcocGwOQuILqJPTpx+EDRPFvzPuqoRTZcuyW
+         8fRfsulDLSGHmU5/W3PnfzJ4xwp0k7hudmLhAUYDhDj9cKhHqy5aZqKJgMTQggp00/UF
+         ZMn5HZiBEiW4ihI7aq5Bjf3cqAIy3usaOLTfTkdxEGUg5QoadOQ4b851sQIDXzicxctu
+         NVZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1c/6l8Fp4RH5VPtrTh9qUA2jV+GD+5aUHsSlil0jKiA=;
+        b=aiBA2I+9qD0vN/pbi0BQhfY4sUeiiHVDmNJqNHuL+p0OhKEJrr9MX3yBP5k+oRDvz7
+         4OWessttlzo9IYYB0jbxUpzDKaLg69zBOHc+eq1Au1X2nXXza4o1Uls/YyYNdr3OgIHQ
+         BAqjjmUs6rw0iMYAiw8wRtdnXKDeS2Nq6VeDx+mLsXLm7EAAgkMlsrzUMCeFIdqpYNQ6
+         p8f3qPdgLxcpVPfz/yFjGp36DTuFY3Fdy/+VtV+aYO1NqLUJ96nm1soxXO+/b/+Rw3oI
+         fyFARwhEJ6iTlig+BxtZeqi85M4neHowZcrbze3WjV52AEmdxCOM96TMvo3kFhPRbG0w
+         +qTQ==
+X-Gm-Message-State: AOAM533KOSVvbJRuQ/TEsukbW6xLkOxGwlitznMN6BAbPn7x+5mgHUtF
+        y3lzehCcSMyHQMhZiNIQ0mymTI4taFWFBEkg+Pk=
+X-Google-Smtp-Source: ABdhPJzwUJh9RJL8FHv95KrO3ujW9aTtOQ3nrC3twvNd8fY/dXsrOtRrHd9PRm6dTN9PV+G+Q3G0ZbIpyQe+F3zYpnE=
+X-Received: by 2002:a05:6638:2606:: with SMTP id m6mr1297132jat.93.1644422716327;
+ Wed, 09 Feb 2022 08:05:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <02994528-aaad-5259-1774-19aeacdd18fc@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220202135333.190761-1-jolsa@kernel.org> <20220202135333.190761-3-jolsa@kernel.org>
+ <CAEf4Bzbrj01RJq7ArAo-kX-+8rPx9j5OH1OvGHxVJxiq8rn3FA@mail.gmail.com> <YgPXVXJnPKQ7lOi9@krava>
+In-Reply-To: <YgPXVXJnPKQ7lOi9@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 9 Feb 2022 08:05:05 -0800
+Message-ID: <CAEf4BzYxtoE8Gu62oNSdVxvsv2K_5CPSdGS3Qd0Jgaegvw7sfw@mail.gmail.com>
+Subject: Re: [PATCH 2/8] bpf: Add bpf_get_func_ip kprobe helper for fprobe link
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hans,
+On Wed, Feb 9, 2022 at 7:01 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+>
+> On Mon, Feb 07, 2022 at 10:59:18AM -0800, Andrii Nakryiko wrote:
+> > On Wed, Feb 2, 2022 at 5:53 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > >
+> > > Adding support to call get_func_ip_fprobe helper from kprobe
+> > > programs attached by fprobe link.
+> > >
+> > > Also adding support to inline it, because it's single load
+> > > instruction.
+> > >
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> > >  kernel/bpf/verifier.c    | 19 ++++++++++++++++++-
+> > >  kernel/trace/bpf_trace.c | 16 +++++++++++++++-
+> > >  2 files changed, 33 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > > index 1ae41d0cf96c..a745ded00635 100644
+> > > --- a/kernel/bpf/verifier.c
+> > > +++ b/kernel/bpf/verifier.c
+> > > @@ -13625,7 +13625,7 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
+> > >                         continue;
+> > >                 }
+> > >
+> > > -               /* Implement bpf_get_func_ip inline. */
+> > > +               /* Implement tracing bpf_get_func_ip inline. */
+> > >                 if (prog_type == BPF_PROG_TYPE_TRACING &&
+> > >                     insn->imm == BPF_FUNC_get_func_ip) {
+> > >                         /* Load IP address from ctx - 16 */
+> > > @@ -13640,6 +13640,23 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
+> > >                         continue;
+> > >                 }
+> > >
+> > > +               /* Implement kprobe/fprobe bpf_get_func_ip inline. */
+> > > +               if (prog_type == BPF_PROG_TYPE_KPROBE &&
+> > > +                   eatype == BPF_TRACE_FPROBE &&
+> > > +                   insn->imm == BPF_FUNC_get_func_ip) {
+> > > +                       /* Load IP address from ctx (struct pt_regs) ip */
+> > > +                       insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
+> > > +                                                 offsetof(struct pt_regs, ip));
+> >
+> > Isn't this architecture-specific? I'm starting to dislike this
+>
+> ugh, it is.. I'm not sure we want #ifdef CONFIG_X86 in here,
+> or some arch_* specific function?
 
-Thanks for looking into this!
 
-On Wed, Feb 09, 2022 at 04:12:32PM +0100, Hans de Goede wrote:
-> An alternative, much more elaborate fix would be to:
-> 
-> 1. Add E820_TYPE_MMIO and E820_TYPE_MMIO_PCI_BRIDGE_WINDOW types to
->    enum e820_type and modify the 2 places which check for type == reserved
->    to treat these both as reserved too, so as to not have any functional
->    changes there
-> 
-> 2. Modify the code building e820 tables from the EFI memmap to use
->    E820_TYPE_MMIO for MMIO EFI memmap entries and make e820_nomerge()
->    treat E820_TYPE_MMIO as non mergable to retain these as is
-> 
-> 3. Modify pci_acpi_root_prepare_resources() to compare ACPI provided
->    bridge mmio windows against E820_TYPE_MMIO e820_Table entries and
->    if there is an exact match (as is the case on the Yoga C940)
->    then change the e820 type to E820_TYPE_MMIO_PCI_BRIDGE_WINDOW
-> 
->    This means that we are now very narrowly treating EFI MMIO marked
->    regions special, in the special case where they are a 1:1 map
->    to an ACPI PCI bridge window resource.
-> 
->    Note since we treat both E820_TYPE_MMIO and E820_TYPE_MMIO_PCI_BRIDGE_WINDOW
->    identical to the old RESERVED everywhere there is no functional change
->    here.
-> 
-> 4. Modify arch/x86/kernel/resource.c: remove_e820_regions() to skip
->    e820 table entries with a type of E820_TYPE_MMIO_PCI_BRIDGE_WINDOW,
->    this would actually be a functional change and should fix the
->    issues we are trying to fix.
-> 
-> Note an alternative would be to skip having the extra E820_TYPE_MMIO_PCI_BRIDGE_WINDOW
-> type and to skip step 3. above. That would boil down to doing the same
-> as your original patch in a somewhat cleaner manner.
+So not inlining it isn't even considered? this function will be called
+once or at most a few times per BPF program invocation. Anyone calling
+it in a tight loop is going to use it very-very suboptimally (and even
+then useful program logic will dominate). There is no point in
+inlining it.
 
-I agree and my vote goes for this last alternative (e.g skipping step 3).
-That would also make it slightly easier to follow the logic if someone
-in the future needs to investigate possible issues around this, I think.
+>
+> jirka
+>
+> > inlining whole more and more. It's just a complication in verifier
+> > without clear real-world benefits. We are clearly prematurely
+> > optimizing here. In practice you'll just call bpf_get_func_ip() once
+> > and that's it. Function call overhead will be negligible compare to
+> > other *userful* work you'll be doing in your BPF program.
+> >
+> >
+> > > +
+> > > +                       new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
+> > > +                       if (!new_prog)
+> > > +                               return -ENOMEM;
+> > > +
+> > > +                       env->prog = prog = new_prog;
+> > > +                       insn      = new_prog->insnsi + i + delta;
+> > > +                       continue;
+> > > +               }
+> > > +
+> > >  patch_call_imm:
+> > >                 fn = env->ops->get_func_proto(insn->imm, env->prog);
+> > >                 /* all functions that have prototype and verifier allowed
+> > > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > > index a2024ba32a20..28e59e31e3db 100644
+> > > --- a/kernel/trace/bpf_trace.c
+> > > +++ b/kernel/trace/bpf_trace.c
+> > > @@ -1036,6 +1036,19 @@ static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
+> > >         .arg1_type      = ARG_PTR_TO_CTX,
+> > >  };
+> > >
+> > > +BPF_CALL_1(bpf_get_func_ip_fprobe, struct pt_regs *, regs)
+> > > +{
+> > > +       /* This helper call is inlined by verifier. */
+> > > +       return regs->ip;
+> > > +}
+> > > +
+> > > +static const struct bpf_func_proto bpf_get_func_ip_proto_fprobe = {
+> > > +       .func           = bpf_get_func_ip_fprobe,
+> > > +       .gpl_only       = false,
+> > > +       .ret_type       = RET_INTEGER,
+> > > +       .arg1_type      = ARG_PTR_TO_CTX,
+> > > +};
+> > > +
+> > >  BPF_CALL_1(bpf_get_attach_cookie_trace, void *, ctx)
+> > >  {
+> > >         struct bpf_trace_run_ctx *run_ctx;
+> > > @@ -1279,7 +1292,8 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> > >                 return &bpf_override_return_proto;
+> > >  #endif
+> > >         case BPF_FUNC_get_func_ip:
+> > > -               return &bpf_get_func_ip_proto_kprobe;
+> > > +               return prog->expected_attach_type == BPF_TRACE_FPROBE ?
+> > > +                       &bpf_get_func_ip_proto_fprobe : &bpf_get_func_ip_proto_kprobe;
+> > >         case BPF_FUNC_get_attach_cookie:
+> > >                 return &bpf_get_attach_cookie_proto_trace;
+> > >         default:
+> > > --
+> > > 2.34.1
+> > >
