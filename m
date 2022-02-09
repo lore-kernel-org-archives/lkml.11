@@ -2,96 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18246C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 00:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F13B7C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240869AbiBIApf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 19:45:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44118 "EHLO
+        id S234741AbiBICjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:39:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240765AbiBIApd (ORCPT
+        with ESMTP id S242676AbiBIBT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 19:45:33 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B05C06157B;
-        Tue,  8 Feb 2022 16:45:32 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id i30so1365699pfk.8;
-        Tue, 08 Feb 2022 16:45:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9DZVh/N3QbZRm9DhcTCQab8GXfTQimnfiKDgzwLsBNU=;
-        b=CWnYqVOGH2x1KQBjU1bF6IcAP9hIoQswcMOkRfxerNHyy5bVaxkup0fit/QRJw9Kvg
-         EYTjRVwmzTXsJOZDu2xkGiezAp4meZuan7A6TC1jlv0QQa82mDw2bulMWft459yKSsLW
-         YDQYoGxHA8GdqlEcOjerHkYv2Yv8QYaCVhoSMIcR43r9thRalo3ZRsCxy0YasTB3F6el
-         rDqCcZgIzr8eRbGCAwH/rdgTmRbISEFkthNmC97Ng1r/n1/ADyGUpvCFpAz+79199+mk
-         IwRGimCSV/Wa1J/BwNjZLPN4oK6DUkX4L6jt0w6oQ7+lbYScrvV/RbO23q3BmwLTFCvU
-         +YUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9DZVh/N3QbZRm9DhcTCQab8GXfTQimnfiKDgzwLsBNU=;
-        b=DYiWvt6GwECUHTO6LlYs/3GpRiYRvfVWDT8oM5tVscV1iGMssAd3bNit6pAKjHoaOd
-         81RK9GwgY6xNBjt9B/Ebr6Mx+1DfXBcwbu5T80jrQDKDoGcOJvqZ6DyFd5PDlvgPgLf+
-         HJihju2Ww518Bxc6GFsY1HojDRPZkwqsZHPzxir98aJh3gLMIaYfaFBBRLMeZOtVB3l6
-         1Vc8m2KhyVdRClvQPzieMWkk9VURMC9xB1bednz6CyAZjYtDGhEzA/hSUnvVWS1cku5s
-         H8sSx2gJ1Mnud/oqhizwIWrWmfS5U70vTCEGGgqFotQ1kS9v5DVbxP9rWYI3KpDB/V4i
-         vFYA==
-X-Gm-Message-State: AOAM533Qv5U3MHi02z1UhTmPy9xA7zh9j8RLfDPQiaJdq/GVPjYWDF2m
-        y+N2Pey/Uqf81lRXbwRhuFk=
-X-Google-Smtp-Source: ABdhPJxh2vJJjJtZRhTaTcyMu/WE50NXh6IQ5JI9R0o4ajiGaxrShq0Ar6+kiSDbsmbqZsF8vDH9iA==
-X-Received: by 2002:a05:6a00:1acb:: with SMTP id f11mr6876757pfv.28.1644367531887;
-        Tue, 08 Feb 2022 16:45:31 -0800 (PST)
-Received: from localhost.localdomain (192.243.120.166.16clouds.com. [192.243.120.166])
-        by smtp.gmail.com with ESMTPSA id c11sm17391258pfv.76.2022.02.08.16.45.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 16:45:31 -0800 (PST)
-From:   davidcomponentone@gmail.com
-To:     erazor_de@users.sourceforge.net
-Cc:     davidcomponentone@gmail.com, jikos@kernel.org,
-        benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] hid: roccat-isku: replace snprintf with sysfs_emit
-Date:   Wed,  9 Feb 2022 08:45:19 +0800
-Message-Id: <e409636333fd11c58847a86aa30239e7f71b2112.1644285832.git.yang.guang5@zte.com.cn>
-X-Mailer: git-send-email 2.30.2
+        Tue, 8 Feb 2022 20:19:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F672C061576;
+        Tue,  8 Feb 2022 17:19:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F9B4B81E2E;
+        Wed,  9 Feb 2022 01:19:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63807C340EB;
+        Wed,  9 Feb 2022 01:19:54 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="flziGrYH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644369593;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=awLAlfu0dEawTGo7j7bialpwVA3+UDTfPgufirjHqnI=;
+        b=flziGrYHxi9FMOZQDeOPRS1Ww+nzdVXJmFKRqJkRKtFe6iGSxTYeGXs7uiw1kmD6d8wn36
+        E8JAAnH/vQgL3tpLP4r+HXawGrSLn1pjKQFdyI44Ofdh7j2HyBV8AEUlC4P4Y2egGZ/rLc
+        dTokiqRSYonn2nt8otyF/nfBsVhqzZE=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 14f224b6 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 9 Feb 2022 01:19:52 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Eric Biggers <ebiggers@google.com>
+Subject: [PATCH v2 1/9] random: use RDSEED instead of RDRAND in entropy extraction
+Date:   Wed,  9 Feb 2022 02:19:11 +0100
+Message-Id: <20220209011919.493762-2-Jason@zx2c4.com>
+In-Reply-To: <20220209011919.493762-1-Jason@zx2c4.com>
+References: <20220209011919.493762-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+When /dev/random was directly connected with entropy extraction, without
+any expansion stage, extract_buf() was called for every 10 bytes of data
+read from /dev/random. For that reason, RDRAND was used rather than
+RDSEED. At the same time, crng_reseed() was still only called every 5
+minutes, so there RDSEED made sense.
 
-coccinelle report:
-./drivers/hid/hid-roccat-isku.c:66:8-16:
-WARNING: use scnprintf or sprintf
+Those olden days were also a time when the entropy collector did not use
+a cryptographic hash function, which meant most bets were off in terms
+of real preimage resistance. For that reason too it didn't matter
+_that_ much whether RDSEED was mixed in before or after entropy
+extraction; both choices were sort of bad.
 
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+But now we have a cryptographic hash function at work, and with that we
+get real preimage resistance. We also now only call extract_entropy()
+every 5 minutes, rather than every 10 bytes. This allows us to do two
+important things.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
+First, we can switch to using RDSEED in extract_entropy(), as Dominik
+suggested. Second, we can ensure that RDSEED input always goes into the
+cryptographic hash function with other things before being used
+directly. This eliminates a category of attacks in which the CPU knows
+the current state of the crng and knows that we're going to xor RDSEED
+into it, and so it computes a malicious RDSEED. By going through our
+hash function, it would require the CPU to compute a preimage on the
+fly, which isn't going to happen.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Suggested-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/hid/hid-roccat-isku.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/hid/hid-roccat-isku.c b/drivers/hid/hid-roccat-isku.c
-index e95d59cd8d07..d356a0ac770c 100644
---- a/drivers/hid/hid-roccat-isku.c
-+++ b/drivers/hid/hid-roccat-isku.c
-@@ -63,7 +63,7 @@ static ssize_t isku_sysfs_show_actual_profile(struct device *dev,
- {
- 	struct isku_device *isku =
- 			hid_get_drvdata(dev_get_drvdata(dev->parent->parent));
--	return snprintf(buf, PAGE_SIZE, "%d\n", isku->actual_profile);
-+	return sysfs_emit(buf, "%d\n", isku->actual_profile);
- }
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 22d12213d548..ce3c019e5f5f 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -722,13 +722,8 @@ static void crng_reseed(struct crng_state *crng)
+ 					CHACHA_KEY_SIZE);
+ 	}
+ 	spin_lock_irqsave(&crng->lock, flags);
+-	for (i = 0; i < 8; i++) {
+-		unsigned long rv;
+-		if (!arch_get_random_seed_long(&rv) &&
+-		    !arch_get_random_long(&rv))
+-			rv = random_get_entropy();
+-		crng->state[i + 4] ^= buf.key[i] ^ rv;
+-	}
++	for (i = 0; i < 8; i++)
++		crng->state[i + 4] ^= buf.key[i];
+ 	memzero_explicit(&buf, sizeof(buf));
+ 	WRITE_ONCE(crng->init_time, jiffies);
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+@@ -1064,16 +1059,17 @@ static void extract_entropy(void *buf, size_t nbytes)
+ 	unsigned long flags;
+ 	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
+ 	struct {
+-		unsigned long rdrand[32 / sizeof(long)];
++		unsigned long rdseed[32 / sizeof(long)];
+ 		size_t counter;
+ 	} block;
+ 	size_t i;
  
- static ssize_t isku_sysfs_set_actual_profile(struct device *dev,
+ 	trace_extract_entropy(nbytes, input_pool.entropy_count);
+ 
+-	for (i = 0; i < ARRAY_SIZE(block.rdrand); ++i) {
+-		if (!arch_get_random_long(&block.rdrand[i]))
+-			block.rdrand[i] = random_get_entropy();
++	for (i = 0; i < ARRAY_SIZE(block.rdseed); ++i) {
++		if (!arch_get_random_seed_long(&block.rdseed[i]) &&
++		    !arch_get_random_long(&block.rdseed[i]))
++			block.rdseed[i] = random_get_entropy();
+ 	}
+ 
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+@@ -1081,7 +1077,7 @@ static void extract_entropy(void *buf, size_t nbytes)
+ 	/* seed = HASHPRF(last_key, entropy_input) */
+ 	blake2s_final(&input_pool.hash, seed);
+ 
+-	/* next_key = HASHPRF(seed, RDRAND || 0) */
++	/* next_key = HASHPRF(seed, RDSEED || 0) */
+ 	block.counter = 0;
+ 	blake2s(next_key, (u8 *)&block, seed, sizeof(next_key), sizeof(block), sizeof(seed));
+ 	blake2s_init_key(&input_pool.hash, BLAKE2S_HASH_SIZE, next_key, sizeof(next_key));
+@@ -1091,7 +1087,7 @@ static void extract_entropy(void *buf, size_t nbytes)
+ 
+ 	while (nbytes) {
+ 		i = min_t(size_t, nbytes, BLAKE2S_HASH_SIZE);
+-		/* output = HASHPRF(seed, RDRAND || ++counter) */
++		/* output = HASHPRF(seed, RDSEED || ++counter) */
+ 		++block.counter;
+ 		blake2s(buf, (u8 *)&block, seed, i, sizeof(block), sizeof(seed));
+ 		nbytes -= i;
 -- 
-2.30.2
+2.35.0
 
