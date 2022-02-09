@@ -2,106 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A91C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:01:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F21C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237788AbiBIRBI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 12:01:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
+        id S237753AbiBIRBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 12:01:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237672AbiBIRAz (ORCPT
+        with ESMTP id S237681AbiBIRAz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 12:00:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CCFF6C05CB89
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:00:57 -0800 (PST)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E60BC05CB88
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:00:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644426057;
+        s=mimecast20190719; t=1644426058;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1FNh7pkHY41jFWmZFdVN600EQqaJlF1A+HaHz0XISvI=;
-        b=g69tFctEqKOBTb+dhc3dxSdte1herpcLLpe/t2UWB3wBQP5/eQDNqULiF2N4IltTSp/CTe
-        24rvCffgC0sK/V5QjJddFzV/DC1ynZsQW9hcnLxLFL2GvpLAbFucuta+pqjLxBafF1qGu4
-        mtMCNVjGAAHk7HUdBR4GEsfve+pt5e0=
+        bh=IQ8QeMPdVkeRP9kEW9HbE/igjhwB/TDxHP64swgeSBk=;
+        b=FCnAENX1nraIheQFZ93wVJuV4ghcYzv0DaXIqnybcOOrSDluw/d3eGGihDNMtiYScoia1T
+        MvO5L4fe0r/b6BNJYAAHsNjdBdMpDUpFHdINKhQQUgyxAi8XIFC3BKN/UYK7y2J/ULyb0R
+        nP0TSdRSjp7IFtaBBM1zkgB7ZlvIXtQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-282-bhh_Xgj_PXqfi1V8wlP2YA-1; Wed, 09 Feb 2022 12:00:54 -0500
-X-MC-Unique: bhh_Xgj_PXqfi1V8wlP2YA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+ us-mta-211-fVeOpJBmPhOlv92GnKX_mg-1; Wed, 09 Feb 2022 12:00:57 -0500
+X-MC-Unique: fVeOpJBmPhOlv92GnKX_mg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B7C2718397A7;
-        Wed,  9 Feb 2022 17:00:51 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7F7DE92500;
+        Wed,  9 Feb 2022 17:00:55 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3B8BD7CD66;
-        Wed,  9 Feb 2022 17:00:51 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D122674E8C;
+        Wed,  9 Feb 2022 17:00:54 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com,
         seanjc@google.com
-Subject: [PATCH 06/12] KVM: MMU: rename kvm_mmu_reload
-Date:   Wed,  9 Feb 2022 12:00:14 -0500
-Message-Id: <20220209170020.1775368-7-pbonzini@redhat.com>
+Subject: [PATCH 11/12] KVM: MMU: remove kvm_mmu_calc_root_page_role
+Date:   Wed,  9 Feb 2022 12:00:19 -0500
+Message-Id: <20220209170020.1775368-12-pbonzini@redhat.com>
 In-Reply-To: <20220209170020.1775368-1-pbonzini@redhat.com>
 References: <20220209170020.1775368-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The name of kvm_mmu_reload is very confusing for two reasons:
-first, KVM_REQ_MMU_RELOAD actually does not call it; second,
-it only does anything if there is no valid root.
+Since the guest PGD is now loaded after the MMU has been set up
+completely, the desired role for a cache hit is simply the current
+mmu_role.  There is no need to compute it again, so __kvm_mmu_new_pgd
+can be folded in kvm_mmu_new_pgd.
 
-Rename it to kvm_mmu_ensure_valid_root, which matches the actual
-behavior better.
+For the !tdp_enabled case, it would also have been possible to use
+the role that is already in vcpu->arch.mmu.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu.h | 2 +-
- arch/x86/kvm/x86.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 29 ++++-------------------------
+ 1 file changed, 4 insertions(+), 25 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index b9d06a218b2c..c9f1c2162ade 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -104,7 +104,7 @@ void kvm_mmu_unload(struct kvm_vcpu *vcpu);
- void kvm_mmu_sync_roots(struct kvm_vcpu *vcpu);
- void kvm_mmu_sync_prev_roots(struct kvm_vcpu *vcpu);
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index df9e0a43513c..38b40ddcaad7 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -190,8 +190,6 @@ struct kmem_cache *mmu_page_header_cache;
+ static struct percpu_counter kvm_total_used_mmu_pages;
  
--static inline int kvm_mmu_reload(struct kvm_vcpu *vcpu)
-+static inline int kvm_mmu_ensure_valid_root(struct kvm_vcpu *vcpu)
+ static void mmu_spte_set(u64 *sptep, u64 spte);
+-static union kvm_mmu_page_role
+-kvm_mmu_calc_root_page_role(struct kvm_vcpu *vcpu);
+ 
+ struct kvm_mmu_role_regs {
+ 	const unsigned long cr0;
+@@ -4172,9 +4170,9 @@ static bool fast_pgd_switch(struct kvm_vcpu *vcpu, gpa_t new_pgd,
+ 		return cached_root_find_and_replace(vcpu, new_pgd, new_role);
+ }
+ 
+-static void __kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd,
+-			      union kvm_mmu_page_role new_role)
++void kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd)
  {
- 	if (likely(vcpu->arch.mmu->root_hpa != INVALID_PAGE))
- 		return 0;
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 98aca0f2af12..2685fb62807e 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9976,7 +9976,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 		}
++	union kvm_mmu_page_role new_role = vcpu->arch.mmu->mmu_role.base;
+ 	if (!fast_pgd_switch(vcpu, new_pgd, new_role)) {
+ 		/* kvm_mmu_ensure_valid_pgd will set up a new root.  */
+ 		return;
+@@ -4209,11 +4207,6 @@ static void __kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd,
+ 		__clear_sp_write_flooding_count(
+ 				to_shadow_page(vcpu->arch.mmu->root.hpa));
+ }
+-
+-void kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd)
+-{
+-	__kvm_mmu_new_pgd(vcpu, new_pgd, kvm_mmu_calc_root_page_role(vcpu));
+-}
+ EXPORT_SYMBOL_GPL(kvm_mmu_new_pgd);
+ 
+ static unsigned long get_cr3(struct kvm_vcpu *vcpu)
+@@ -4883,7 +4876,7 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
+ 	new_role = kvm_calc_shadow_npt_root_page_role(vcpu, &regs);
+ 
+ 	shadow_mmu_init_context(vcpu, context, &regs, new_role);
+-	__kvm_mmu_new_pgd(vcpu, nested_cr3, new_role.base);
++	kvm_mmu_new_pgd(vcpu, nested_cr3);
+ }
+ EXPORT_SYMBOL_GPL(kvm_init_shadow_npt_mmu);
+ 
+@@ -4939,7 +4932,7 @@ void kvm_init_shadow_ept_mmu(struct kvm_vcpu *vcpu, bool execonly,
+ 		reset_ept_shadow_zero_bits_mask(context, execonly);
  	}
  
--	r = kvm_mmu_reload(vcpu);
-+	r = kvm_mmu_ensure_valid_root(vcpu);
- 	if (unlikely(r)) {
- 		goto cancel_injection;
- 	}
-@@ -12164,7 +12164,7 @@ void kvm_arch_async_page_ready(struct kvm_vcpu *vcpu, struct kvm_async_pf *work)
- 	      work->wakeup_all)
- 		return;
+-	__kvm_mmu_new_pgd(vcpu, new_eptp, new_role.base);
++	kvm_mmu_new_pgd(vcpu, new_eptp);
+ }
+ EXPORT_SYMBOL_GPL(kvm_init_shadow_ept_mmu);
  
--	r = kvm_mmu_reload(vcpu);
-+	r = kvm_mmu_ensure_valid_root(vcpu);
- 	if (unlikely(r))
- 		return;
+@@ -5024,20 +5017,6 @@ void kvm_init_mmu(struct kvm_vcpu *vcpu)
+ }
+ EXPORT_SYMBOL_GPL(kvm_init_mmu);
  
+-static union kvm_mmu_page_role
+-kvm_mmu_calc_root_page_role(struct kvm_vcpu *vcpu)
+-{
+-	struct kvm_mmu_role_regs regs = vcpu_to_role_regs(vcpu);
+-	union kvm_mmu_role role;
+-
+-	if (tdp_enabled)
+-		role = kvm_calc_tdp_mmu_root_page_role(vcpu, &regs, true);
+-	else
+-		role = kvm_calc_shadow_mmu_root_page_role(vcpu, &regs, true);
+-
+-	return role.base;
+-}
+-
+ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ {
+ 	/*
 -- 
 2.31.1
 
