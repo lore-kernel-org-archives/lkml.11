@@ -2,240 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A975C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D140C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:40:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243460AbiBICk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:40:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60528 "EHLO
+        id S1343853AbiBICk2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:40:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243903AbiBIBzA (ORCPT
+        with ESMTP id S241295AbiBIAwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:55:00 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA60C06157B;
-        Tue,  8 Feb 2022 17:54:58 -0800 (PST)
-X-UUID: 327fe49623704569b14410ec47a335d1-20220209
-X-UUID: 327fe49623704569b14410ec47a335d1-20220209
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <chun-jie.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 530702992; Wed, 09 Feb 2022 09:54:55 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 9 Feb 2022 09:54:53 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 9 Feb 2022 09:54:53 +0800
-Message-ID: <caebc48b7704f5e90a7513e9857644fea29b39a6.camel@mediatek.com>
-Subject: Re: [v2 3/3] clk: mediatek: Integrate vppsys with mtk-mmsys in
- MT8195
-From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        srv_heupstream <srv_heupstream@mediatek.com>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Wed, 9 Feb 2022 09:54:53 +0800
-In-Reply-To: <e5ca60a0-4fee-0d6b-0714-77dc51f5a7cf@collabora.com>
-References: <20220110005902.27148-1-chun-jie.chen@mediatek.com>
-         <20220110005902.27148-4-chun-jie.chen@mediatek.com>
-         <e5ca60a0-4fee-0d6b-0714-77dc51f5a7cf@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 8 Feb 2022 19:52:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200D4C061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 16:52:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 867916184D
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:52:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7537C004E1;
+        Wed,  9 Feb 2022 00:52:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644367951;
+        bh=86D5WV13YhdEOmavdvFHUeROq/zSqXd3iNHx2jJQIv0=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=fFcHtG3wP7lWwBBeHEaU2Q8dnzUtCE9vXaTQI9Dq7zxKutCCe+H6gIVO6FZkJyE8R
+         wn4qlaScfksnWwl2YJ3XFsMAbEI7o0U2I//Rn8h/1dT9AOHp3Wzt04cy2oLPTJTYB6
+         o3OcS7LlglcV+XzwCmxFh1HCivOBYG9cInmriK1BQ7KOnP2f+/ENkAeDb1ovpaWyga
+         oUIv3aCZL4aVZl+oyjeYzQdB9x0nPpekxu7iSXAmcV3tGRct7cGwksL1veBaCcjNPw
+         a2+is164UpkMNMvz0Vg6LjqtA9qhjIFxTTYWHFLdnzuVAiv1YSd57GQr18k/j+TMex
+         vvFPBAxFuhhvg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 9C20E5C0825; Tue,  8 Feb 2022 16:52:31 -0800 (PST)
+Date:   Tue, 8 Feb 2022 16:52:31 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: Re: [PATCH 0/3] tick: Fix softirq related warnings
+Message-ID: <20220209005231.GW4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220208161635.544701-1-frederic@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208161635.544701-1-frederic@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-01-10 at 22:36 +0800, AngeloGioacchino Del Regno wrote:
-> Il 10/01/22 01:59, Chun-Jie Chen ha scritto:
-> > Integrate vpp0 and vpp1 with mtk-mmsys driver which
-> > will populate device by platform_device_register_data
-> > to start vppsys clock driver.
-> > 
-> > Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+On Tue, Feb 08, 2022 at 05:16:32PM +0100, Frederic Weisbecker wrote:
+> Some cleanups and debug rework.
 > 
-> Hello Chun-Jie,
+> git://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
+> 	timers/core
 > 
-> I agree with this series and I would be happy to give you my R-b, but
-> this patch will make these clocks to *never* probe in in the targeted
-> kernel version.
+> HEAD: 18b00369d58da4c73946d5f8ebed8e8c7ade89e2
 > 
-> You forgot to mention that this patch will break vpp0/vpp1 clocks
-> entirely
-> unless applied on top of patch series [1].
+> Thanks,
+> 	Frederic
+> ---
 > 
-> Please, either mention that said series is *required* for this one to
-> work
-> as expected, or move series [1], patches 6 and 7 to this series
-> instead;
-> since the MDP3 driver will need quite a while to get merged, I would
-> suggest
-> to move the patches here, as to get something "complete" to merge.
-> 
-> [1]: 
-> https://urldefense.com/v3/__https://patchwork.kernel.org/project/linux-mediatek/list/?series=568283__;!!CTRNKA9wMg0ARbw!wmrogRswnz6kpeUHCcHn5KDCMwLDf-hiX-e2cPQgx_5-V6YnB_dAbRZRayxp0K_Jbu00$
->  
-> 
+> Frederic Weisbecker (3):
+>       tick/rcu: Remove obsolete rcu_needs_cpu() parameters
+>       tick/rcu: Stop allowing RCU_SOFTIRQ in idle
+>       lib/irq_poll: Declare IRQ_POLL softirq vector as ksoftirqd-parking safe
 
-Thanks for your reminder, I only mention the dependence patch in v1,
-but forgot it in v2.
+I have queued these for local testing, but I am guessing that you would
+like them to go up some other path.
 
+							Thanx, Paul
 
-> > ---
-> >   drivers/clk/mediatek/clk-mt8195-vpp0.c | 42 +++++++++++++++++--
-> > -------
-> >   drivers/clk/mediatek/clk-mt8195-vpp1.c | 42 +++++++++++++++++--
-> > -------
-> >   2 files changed, 56 insertions(+), 28 deletions(-)
-> > 
-> > diff --git a/drivers/clk/mediatek/clk-mt8195-vpp0.c
-> > b/drivers/clk/mediatek/clk-mt8195-vpp0.c
-> > index c3241466a8d0..68c375bfce8b 100644
-> > --- a/drivers/clk/mediatek/clk-mt8195-vpp0.c
-> > +++ b/drivers/clk/mediatek/clk-mt8195-vpp0.c
-> > @@ -86,25 +86,39 @@ static const struct mtk_gate vpp0_clks[] = {
-> >   	GATE_VPP0_2(CLK_VPP0_WARP1_MDP_DL_ASYNC,
-> > "vpp0_warp1_mdp_dl_async", "top_wpe_vpp", 3),
-> >   };
-> >   
-> > -static const struct mtk_clk_desc vpp0_desc = {
-> > -	.clks = vpp0_clks,
-> > -	.num_clks = ARRAY_SIZE(vpp0_clks),
-> > -};
-> > +static int clk_mt8195_vpp0_probe(struct platform_device *pdev)
-> > +{
-> > +	struct device *dev = &pdev->dev;
-> > +	struct device_node *node = dev->parent->of_node;
-> > +	struct clk_onecell_data *clk_data;
-> > +	int r;
-> >   
-> > -static const struct of_device_id of_match_clk_mt8195_vpp0[] = {
-> > -	{
-> > -		.compatible = "mediatek,mt8195-vppsys0",
-> > -		.data = &vpp0_desc,
-> > -	}, {
-> > -		/* sentinel */
-> > -	}
-> > -};
-> > +	clk_data = mtk_alloc_clk_data(CLK_VPP0_NR_CLK);
-> > +	if (!clk_data)
-> > +		return -ENOMEM;
-> > +
-> > +	r = mtk_clk_register_gates(node, vpp0_clks,
-> > ARRAY_SIZE(vpp0_clks), clk_data);
-> > +	if (r)
-> > +		goto free_vpp0_data;
-> > +
-> > +	r = of_clk_add_provider(node, of_clk_src_onecell_get,
-> > clk_data);
-> > +	if (r)
-> > +		goto unregister_clk;
-> > +
-> > +	return r;
-> > +
-> > +unregister_clk:
-> > +	mtk_clk_unregister(clk_data);
-> > +
-> > +free_vpp0_data:
-> > +	mtk_free_clk_data(clk_data);
-> > +	return r;
-> > +}
-> >   
-> >   static struct platform_driver clk_mt8195_vpp0_drv = {
-> > -	.probe = mtk_clk_simple_probe,
-> > +	.probe = clk_mt8195_vpp0_probe,
-> >   	.driver = {
-> >   		.name = "clk-mt8195-vpp0",
-> > -		.of_match_table = of_match_clk_mt8195_vpp0,
-> >   	},
-> >   };
-> >   builtin_platform_driver(clk_mt8195_vpp0_drv);
-> > diff --git a/drivers/clk/mediatek/clk-mt8195-vpp1.c
-> > b/drivers/clk/mediatek/clk-mt8195-vpp1.c
-> > index ce0b9a40a179..237077c60f54 100644
-> > --- a/drivers/clk/mediatek/clk-mt8195-vpp1.c
-> > +++ b/drivers/clk/mediatek/clk-mt8195-vpp1.c
-> > @@ -84,25 +84,39 @@ static const struct mtk_gate vpp1_clks[] = {
-> >   	GATE_VPP1_1(CLK_VPP1_VPP_SPLIT_26M, "vpp1_vpp_split_26m",
-> > "clk26m", 26),
-> >   };
-> >   
-> > -static const struct mtk_clk_desc vpp1_desc = {
-> > -	.clks = vpp1_clks,
-> > -	.num_clks = ARRAY_SIZE(vpp1_clks),
-> > -};
-> > +static int clk_mt8195_vpp1_probe(struct platform_device *pdev)
-> > +{
-> > +	struct device *dev = &pdev->dev;
-> > +	struct device_node *node = dev->parent->of_node;
-> > +	struct clk_onecell_data *clk_data;
-> > +	int r;
-> >   
-> > -static const struct of_device_id of_match_clk_mt8195_vpp1[] = {
-> > -	{
-> > -		.compatible = "mediatek,mt8195-vppsys1",
-> > -		.data = &vpp1_desc,
-> > -	}, {
-> > -		/* sentinel */
-> > -	}
-> > -};
-> > +	clk_data = mtk_alloc_clk_data(CLK_VPP1_NR_CLK);
-> > +	if (!clk_data)
-> > +		return -ENOMEM;
-> > +
-> > +	r = mtk_clk_register_gates(node, vpp1_clks,
-> > ARRAY_SIZE(vpp1_clks), clk_data);
-> > +	if (r)
-> > +		goto free_vpp1_data;
-> > +
-> > +	r = of_clk_add_provider(node, of_clk_src_onecell_get,
-> > clk_data);
-> > +	if (r)
-> > +		goto unregister_clk;
-> > +
-> > +	return r;
-> > +
-> > +unregister_clk:
-> > +	mtk_clk_unregister(clk_data);
-> > +
-> > +free_vpp1_data:
-> > +	mtk_free_clk_data(clk_data);
-> > +	return r;
-> > +}
-> >   
-> >   static struct platform_driver clk_mt8195_vpp1_drv = {
-> > -	.probe = mtk_clk_simple_probe,
-> > +	.probe = clk_mt8195_vpp1_probe,
-> >   	.driver = {
-> >   		.name = "clk-mt8195-vpp1",
-> > -		.of_match_table = of_match_clk_mt8195_vpp1,
-> >   	},
-> >   };
-> >   builtin_platform_driver(clk_mt8195_vpp1_drv);
-> > 
-> 
-> 
-> -- 
-> AngeloGioacchino Del Regno
-> Software Engineer
-> 
-> Collabora Ltd.
-> Platinum Building, St John's Innovation Park, Cambridge CB4 0DS, UK
-> Registered in England & Wales, no. 5513718
-
+>  include/linux/interrupt.h | 11 ++++++++-
+>  include/linux/rcutiny.h   |  3 +--
+>  include/linux/rcutree.h   |  2 +-
+>  kernel/rcu/tree.c         |  3 +--
+>  kernel/time/tick-sched.c  | 60 ++++++++++++++++++++++++++++++++++-------------
+>  5 files changed, 57 insertions(+), 22 deletions(-)
