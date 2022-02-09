@@ -2,447 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69EFAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232358AbiBIMJb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:09:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48038 "EHLO
+        id S232680AbiBIMJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:09:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233072AbiBIMGe (ORCPT
+        with ESMTP id S232676AbiBIMGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:06:34 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC34C10346C;
-        Wed,  9 Feb 2022 03:19:47 -0800 (PST)
-X-UUID: 04712767ed694fcba9f90228fcdd9d07-20220209
-X-UUID: 04712767ed694fcba9f90228fcdd9d07-20220209
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <leilk.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1851044961; Wed, 09 Feb 2022 19:19:44 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 9 Feb 2022 19:19:42 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 9 Feb 2022 19:19:42 +0800
-From:   Leilk Liu <leilk.liu@mediatek.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Wed, 9 Feb 2022 07:06:05 -0500
+X-Greylist: delayed 2225 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 03:26:24 PST
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73FBC03BFF6
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 03:26:24 -0800 (PST)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2199mRen022696;
+        Wed, 9 Feb 2022 11:49:03 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=selector1;
+ bh=24MjF0dFTU7NbfTaD8f88stD/b7vEPeeuJ/9sopfTKw=;
+ b=ho7KLtbzFvjNTNHuzuHUBCDHyHvgBdQNEfBvO0W4/op+4E5ecNZagUJ4F4Tkqvq3VCNM
+ q73NrhkO3Z1DJobVnqIS059V5nnRBHMF4zv8axlR+UmBi0QjmYZGFQbK0cOr+PYJrGle
+ sqViNvr4sh40J38qTdVs4eAcZ8Np1SkELXQiooFZZRvX2dSB7tELGM5ov8D+jB5EDUdc
+ O1Dlj2zRuhyNGkjsTbdc0r+BxOb/6s/uO7tlHw2TOdkPALQl2o9LY+Hi+dkMO0mNPZSR
+ HjawSgm9ivRy+n6TZ9CyzOUxrYOP6NnLtVY0SsDretJDEQ9iQqVVUG9FQszjZWRM3OXF DQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e4ba9gc9s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 11:49:03 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3199F10002A;
+        Wed,  9 Feb 2022 11:49:03 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 24FAE217B60;
+        Wed,  9 Feb 2022 11:49:03 +0100 (CET)
+Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 9 Feb 2022 11:49:02
+ +0100
+From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To:     <alexandre.torgue@foss.st.com>, <robh+dt@kernel.org>
+CC:     <olivier.moysan@foss.st.com>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-        Leilk Liu <leilk.liu@mediatek.com>
-Subject: [PATCH 4/6] spi: mediatek: add spi memory support
-Date:   Wed, 9 Feb 2022 19:19:36 +0800
-Message-ID: <20220209111938.16137-5-leilk.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209111938.16137-1-leilk.liu@mediatek.com>
-References: <20220209111938.16137-1-leilk.liu@mediatek.com>
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <fabrice.gasnier@foss.st.com>
+Subject: [PATCH 2/2] ARM: dts: stm32: remove timer5 duplicate unit-address on stm32f7 series
+Date:   Wed, 9 Feb 2022 11:48:49 +0100
+Message-ID: <1644403729-22665-3-git-send-email-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644403729-22665-1-git-send-email-fabrice.gasnier@foss.st.com>
+References: <1644403729-22665-1-git-send-email-fabrice.gasnier@foss.st.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_05,2022-02-09_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-this patch add the support of spi-mem.
+Remove the following warnings seen when building with W=1.
+Warning (unique_unit_address): /soc/timer@40000c00: duplicate unit-address
+(also used in node /soc/timers@40000c00)
+This approach is based on some discussions[1], to restructure the dtsi
+and dts files.
 
-Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+Timer5 is enabled by default on stm32f7 series, to act as clockevent. In
+order to get rid of the W=1 warning, and be compliant with dt-schemas
+(e.g. dtbs_check):
+- In stm32f746.dtsi:
+  . Keep the more complete timers5 description
+  . Remove the most simple timer5 node that is duplicate
+- In each board:
+  . adopt "st,stm32-timer" compatible for timers5, also add the interrupt
+  . use /delete-property/ and /delete-node/ so the it matches the
+    clockevent bindings
+
+Note: all this is done in one shot (e.g. not split) to keep clockevent
+functionality.
+
+[1] https://lore.kernel.org/linux-arm-kernel/Yaf4jiZIp8+ndaXs@robh.at.kernel.org/
+
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 ---
- drivers/spi/spi-mt65xx.c | 310 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 309 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/stm32746g-eval.dts  | 12 ++++++++++++
+ arch/arm/boot/dts/stm32f746-disco.dts | 12 ++++++++++++
+ arch/arm/boot/dts/stm32f746.dtsi      |  7 -------
+ arch/arm/boot/dts/stm32f769-disco.dts | 12 ++++++++++++
+ 4 files changed, 36 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index 1e196fa8ac83..9a40c6cd13ab 100644
---- a/drivers/spi/spi-mt65xx.c
-+++ b/drivers/spi/spi-mt65xx.c
-@@ -17,6 +17,7 @@
- #include <linux/platform_data/spi-mt65xx.h>
- #include <linux/pm_runtime.h>
- #include <linux/spi/spi.h>
-+#include <linux/spi/spi-mem.h>
- #include <linux/dma-mapping.h>
+diff --git a/arch/arm/boot/dts/stm32746g-eval.dts b/arch/arm/boot/dts/stm32746g-eval.dts
+index 327613f..a293e651 100644
+--- a/arch/arm/boot/dts/stm32746g-eval.dts
++++ b/arch/arm/boot/dts/stm32746g-eval.dts
+@@ -194,6 +194,18 @@
+ 	bus-width = <4>;
+ };
  
- #define SPI_CFG0_REG                      0x0000
-@@ -75,8 +76,21 @@
- #define SPI_CMD_IPM_GET_TICKDLY_OFFSET    22
++&timers5 {
++	/* Override timer5 to act as clockevent */
++	compatible = "st,stm32-timer";
++	interrupts = <50>;
++	status = "okay";
++	/delete-property/#address-cells;
++	/delete-property/#size-cells;
++	/delete-property/clock-names;
++	/delete-node/pwm;
++	/delete-node/timer@4;
++};
++
+ &usart1 {
+ 	pinctrl-0 = <&usart1_pins_a>;
+ 	pinctrl-names = "default";
+diff --git a/arch/arm/boot/dts/stm32f746-disco.dts b/arch/arm/boot/dts/stm32f746-disco.dts
+index 569d23c..c11616e 100644
+--- a/arch/arm/boot/dts/stm32f746-disco.dts
++++ b/arch/arm/boot/dts/stm32f746-disco.dts
+@@ -109,6 +109,18 @@
+ 	bus-width = <4>;
+ };
  
- #define SPI_CMD_IPM_GET_TICKDLY_MASK	GENMASK(24, 22)
++&timers5 {
++	/* Override timer5 to act as clockevent */
++	compatible = "st,stm32-timer";
++	interrupts = <50>;
++	status = "okay";
++	/delete-property/#address-cells;
++	/delete-property/#size-cells;
++	/delete-property/clock-names;
++	/delete-node/pwm;
++	/delete-node/timer@4;
++};
 +
-+#define PIN_MODE_CFG(x)	((x) / 2)
-+
-+#define SPI_CFG3_IPM_PIN_MODE_OFFSET		0
- #define SPI_CFG3_IPM_HALF_DUPLEX_DIR		BIT(2)
- #define SPI_CFG3_IPM_HALF_DUPLEX_EN		BIT(3)
-+#define SPI_CFG3_IPM_XMODE_EN			BIT(4)
-+#define SPI_CFG3_IPM_NODATA_FLAG		BIT(5)
-+#define SPI_CFG3_IPM_CMD_BYTELEN_OFFSET		8
-+#define SPI_CFG3_IPM_ADDR_BYTELEN_OFFSET	12
-+
-+#define SPI_CFG3_IPM_CMD_PIN_MODE_MASK		GENMASK(1, 0)
-+#define SPI_CFG3_IPM_CMD_BYTELEN_MASK		GENMASK(11, 8)
-+#define SPI_CFG3_IPM_ADDR_BYTELEN_MASK		GENMASK(15, 12)
-+
- #define MT8173_SPI_MAX_PAD_SEL 3
+ &usart1 {
+ 	pinctrl-0 = <&usart1_pins_b>;
+ 	pinctrl-names = "default";
+diff --git a/arch/arm/boot/dts/stm32f746.dtsi b/arch/arm/boot/dts/stm32f746.dtsi
+index a4f5c6a..dc868e6 100644
+--- a/arch/arm/boot/dts/stm32f746.dtsi
++++ b/arch/arm/boot/dts/stm32f746.dtsi
+@@ -141,13 +141,6 @@
+ 			};
+ 		};
  
- #define MTK_SPI_PAUSE_INT_STATUS 0x2
-@@ -87,6 +101,8 @@
- #define MTK_SPI_MAX_FIFO_SIZE 32U
- #define MTK_SPI_PACKET_SIZE 1024
- #define MTK_SPI_IPM_PACKET_SIZE SZ_64K
-+#define MTK_SPI_IPM_PACKET_LOOP SZ_256
-+
- #define MTK_SPI_32BITS_MASK  (0xffffffff)
- 
- #define DMA_ADDR_EXT_BITS (36)
-@@ -104,7 +120,8 @@ struct mtk_spi_compatible {
- 	bool no_need_unprepare;
- 	/* IPM design improve some single mode features */
- 	bool ipm_design;
+-		timer5: timer@40000c00 {
+-			compatible = "st,stm32-timer";
+-			reg = <0x40000c00 0x400>;
+-			interrupts = <50>;
+-			clocks = <&rcc 0 STM32F7_APB1_CLOCK(TIM5)>;
+-		};
 -
-+	/* IPM design that support quad mode */
-+	bool support_quad;
+ 		timers5: timers@40000c00 {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm/boot/dts/stm32f769-disco.dts b/arch/arm/boot/dts/stm32f769-disco.dts
+index be943b7..b038d0e 100644
+--- a/arch/arm/boot/dts/stm32f769-disco.dts
++++ b/arch/arm/boot/dts/stm32f769-disco.dts
+@@ -137,6 +137,18 @@
+ 	bus-width = <4>;
  };
  
- struct mtk_spi {
-@@ -120,6 +137,11 @@ struct mtk_spi {
- 	u32 tx_sgl_len, rx_sgl_len;
- 	const struct mtk_spi_compatible *dev_comp;
- 	u32 spi_clk_hz;
-+	struct completion spimem_done;
-+	bool use_spimem;
-+	struct device *dev;
-+	dma_addr_t tx_dma;
-+	dma_addr_t rx_dma;
- };
- 
- static const struct mtk_spi_compatible mtk_common_compat;
-@@ -134,6 +156,13 @@ static const struct mtk_spi_compatible ipm_compat_single = {
- 	.ipm_design = true,
- };
- 
-+static const struct mtk_spi_compatible ipm_compat_quad = {
-+	.enhance_timing = true,
-+	.dma_ext = true,
-+	.ipm_design = true,
-+	.support_quad = true,
++&timers5 {
++	/* Override timer5 to act as clockevent */
++	compatible = "st,stm32-timer";
++	interrupts = <50>;
++	status = "okay";
++	/delete-property/#address-cells;
++	/delete-property/#size-cells;
++	/delete-property/clock-names;
++	/delete-node/pwm;
++	/delete-node/timer@4;
 +};
 +
- static const struct mtk_spi_compatible mt6765_compat = {
- 	.need_pad_sel = true,
- 	.must_tx = true,
-@@ -178,6 +207,9 @@ static const struct of_device_id mtk_spi_of_match[] = {
- 	{ .compatible = "mediatek,ipm-spi-single",
- 		.data = (void *)&ipm_compat_single,
- 	},
-+	{ .compatible = "mediatek,ipm-spi-quad",
-+		.data = (void *)&ipm_compat_quad,
-+	},
- 	{ .compatible = "mediatek,mt2701-spi",
- 		.data = (void *)&mtk_common_compat,
- 	},
-@@ -693,6 +725,13 @@ static irqreturn_t mtk_spi_interrupt(int irq, void *dev_id)
- 	else
- 		mdata->state = MTK_SPI_IDLE;
- 
-+	/* SPI-MEM ops */
-+	if (mdata->use_spimem) {
-+		complete(&mdata->spimem_done);
-+
-+		return IRQ_HANDLED;
-+	}
-+
- 	if (!master->can_dma(master, master->cur_msg->spi, trans)) {
- 		if (trans->rx_buf) {
- 			cnt = mdata->xfer_len / 4;
-@@ -776,6 +815,266 @@ static irqreturn_t mtk_spi_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
-+static int mtk_spi_mem_adjust_op_size(struct spi_mem *mem,
-+				      struct spi_mem_op *op)
-+{
-+	int opcode_len;
-+
-+	if (op->data.dir != SPI_MEM_NO_DATA) {
-+		opcode_len = 1 + op->addr.nbytes + op->dummy.nbytes;
-+		if (opcode_len + op->data.nbytes > MTK_SPI_IPM_PACKET_SIZE) {
-+			op->data.nbytes = MTK_SPI_IPM_PACKET_SIZE - opcode_len;
-+			/* force data buffer dma-aligned. */
-+			op->data.nbytes -= op->data.nbytes % 4;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static bool mtk_spi_mem_supports_op(struct spi_mem *mem,
-+				    const struct spi_mem_op *op)
-+{
-+	if (op->data.buswidth > 4 || op->addr.buswidth > 4 ||
-+	    op->dummy.buswidth > 4 || op->cmd.buswidth > 4)
-+		return false;
-+
-+	if (op->addr.nbytes && op->dummy.nbytes &&
-+	    op->addr.buswidth != op->dummy.buswidth)
-+		return false;
-+
-+	if (op->addr.nbytes + op->dummy.nbytes > 16)
-+		return false;
-+
-+	if (op->data.nbytes > MTK_SPI_IPM_PACKET_SIZE) {
-+		if (op->data.nbytes / MTK_SPI_IPM_PACKET_SIZE >
-+		    MTK_SPI_IPM_PACKET_LOOP ||
-+		    op->data.nbytes % MTK_SPI_IPM_PACKET_SIZE != 0)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
-+static void mtk_spi_mem_setup_dma_xfer(struct spi_master *master,
-+				       const struct spi_mem_op *op)
-+{
-+	struct mtk_spi *mdata = spi_master_get_devdata(master);
-+
-+	writel((u32)(mdata->tx_dma & MTK_SPI_32BITS_MASK),
-+	       mdata->base + SPI_TX_SRC_REG);
-+#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
-+	if (mdata->dev_comp->dma_ext)
-+		writel((u32)(mdata->tx_dma >> 32),
-+		       mdata->base + SPI_TX_SRC_REG_64);
-+#endif
-+
-+	if (op->data.dir == SPI_MEM_DATA_IN) {
-+		writel((u32)(mdata->rx_dma & MTK_SPI_32BITS_MASK),
-+		       mdata->base + SPI_RX_DST_REG);
-+#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
-+		if (mdata->dev_comp->dma_ext)
-+			writel((u32)(mdata->rx_dma >> 32),
-+			       mdata->base + SPI_RX_DST_REG_64);
-+#endif
-+	}
-+}
-+
-+static int mtk_spi_transfer_wait(struct spi_mem *mem,
-+				 const struct spi_mem_op *op)
-+{
-+	struct mtk_spi *mdata = spi_master_get_devdata(mem->spi->master);
-+	unsigned long long ms = 1;
-+
-+	if (op->data.dir == SPI_MEM_NO_DATA)
-+		ms = 8LL * 1000LL * 32;
-+	else
-+		ms = 8LL * 1000LL * op->data.nbytes;
-+	do_div(ms, mem->spi->max_speed_hz);
-+	ms += ms + 1000; /* 1s tolerance */
-+
-+	if (ms > UINT_MAX)
-+		ms = UINT_MAX;
-+
-+	if (!wait_for_completion_timeout(&mdata->spimem_done,
-+					 msecs_to_jiffies(ms))) {
-+		dev_err(mdata->dev, "spi-mem transfer timeout\n");
-+		return -ETIMEDOUT;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mtk_spi_mem_exec_op(struct spi_mem *mem,
-+			       const struct spi_mem_op *op)
-+{
-+	struct mtk_spi *mdata = spi_master_get_devdata(mem->spi->master);
-+	u32 reg_val, nio = 1, tx_size;
-+	char *tx_tmp_buf, *rx_tmp_buf;
-+	int ret = 0;
-+
-+	mdata->use_spimem = true;
-+	reinit_completion(&mdata->spimem_done);
-+
-+	mtk_spi_reset(mdata);
-+	mtk_spi_hw_init(mem->spi->master, mem->spi);
-+	mtk_spi_prepare_transfer(mem->spi->master, mem->spi->max_speed_hz);
-+
-+	reg_val = readl(mdata->base + SPI_CFG3_IPM_REG);
-+	/* opcode byte len */
-+	reg_val &= ~SPI_CFG3_IPM_CMD_BYTELEN_MASK;
-+	reg_val |= 1 << SPI_CFG3_IPM_CMD_BYTELEN_OFFSET;
-+
-+	/* addr & dummy byte len */
-+	reg_val &= ~SPI_CFG3_IPM_ADDR_BYTELEN_MASK;
-+	if (op->addr.nbytes || op->dummy.nbytes)
-+		reg_val |= (op->addr.nbytes + op->dummy.nbytes) <<
-+			    SPI_CFG3_IPM_ADDR_BYTELEN_OFFSET;
-+
-+	/* data byte len */
-+	if (op->data.dir == SPI_MEM_NO_DATA) {
-+		reg_val |= SPI_CFG3_IPM_NODATA_FLAG;
-+		writel(0, mdata->base + SPI_CFG1_REG);
-+	} else {
-+		reg_val &= ~SPI_CFG3_IPM_NODATA_FLAG;
-+		mdata->xfer_len = op->data.nbytes;
-+		mtk_spi_setup_packet(mem->spi->master);
-+	}
-+
-+	if (op->addr.nbytes || op->dummy.nbytes) {
-+		if (op->addr.buswidth == 1 || op->dummy.buswidth == 1)
-+			reg_val |= SPI_CFG3_IPM_XMODE_EN;
-+		else
-+			reg_val &= ~SPI_CFG3_IPM_XMODE_EN;
-+	}
-+
-+	if (op->addr.buswidth == 2 ||
-+	    op->dummy.buswidth == 2 ||
-+	    op->data.buswidth == 2)
-+		nio = 2;
-+	else if (op->addr.buswidth == 4 ||
-+		 op->dummy.buswidth == 4 ||
-+		 op->data.buswidth == 4)
-+		nio = 4;
-+
-+	reg_val &= ~SPI_CFG3_IPM_CMD_PIN_MODE_MASK;
-+	reg_val |= PIN_MODE_CFG(nio) << SPI_CFG3_IPM_PIN_MODE_OFFSET;
-+
-+	reg_val |= SPI_CFG3_IPM_HALF_DUPLEX_EN;
-+	if (op->data.dir == SPI_MEM_DATA_IN)
-+		reg_val |= SPI_CFG3_IPM_HALF_DUPLEX_DIR;
-+	else
-+		reg_val &= ~SPI_CFG3_IPM_HALF_DUPLEX_DIR;
-+	writel(reg_val, mdata->base + SPI_CFG3_IPM_REG);
-+
-+	tx_size = 1 + op->addr.nbytes + op->dummy.nbytes;
-+	if (op->data.dir == SPI_MEM_DATA_OUT)
-+		tx_size += op->data.nbytes;
-+
-+	tx_size = max_t(u32, tx_size, 32);
-+
-+	tx_tmp_buf = kzalloc(tx_size, GFP_KERNEL | GFP_DMA);
-+	if (!tx_tmp_buf)
-+		return -ENOMEM;
-+
-+	tx_tmp_buf[0] = op->cmd.opcode;
-+
-+	if (op->addr.nbytes) {
-+		int i;
-+
-+		for (i = 0; i < op->addr.nbytes; i++)
-+			tx_tmp_buf[i + 1] = op->addr.val >>
-+					(8 * (op->addr.nbytes - i - 1));
-+	}
-+
-+	if (op->dummy.nbytes)
-+		memset(tx_tmp_buf + op->addr.nbytes + 1,
-+		       0xff,
-+		       op->dummy.nbytes);
-+
-+	if (op->data.nbytes && op->data.dir == SPI_MEM_DATA_OUT)
-+		memcpy(tx_tmp_buf + op->dummy.nbytes + op->addr.nbytes + 1,
-+		       op->data.buf.out,
-+		       op->data.nbytes);
-+
-+	mdata->tx_dma = dma_map_single(mdata->dev, tx_tmp_buf,
-+				       tx_size, DMA_TO_DEVICE);
-+	if (dma_mapping_error(mdata->dev, mdata->tx_dma)) {
-+		ret = -ENOMEM;
-+		goto err_exit;
-+	}
-+
-+	if (op->data.dir == SPI_MEM_DATA_IN) {
-+		if (!IS_ALIGNED((size_t)op->data.buf.in, 4)) {
-+			rx_tmp_buf = kzalloc(op->data.nbytes,
-+					     GFP_KERNEL | GFP_DMA);
-+			if (!rx_tmp_buf) {
-+				ret = -ENOMEM;
-+				goto unmap_tx_dma;
-+			}
-+		} else {
-+			rx_tmp_buf = op->data.buf.in;
-+		}
-+
-+		mdata->rx_dma = dma_map_single(mdata->dev,
-+					       rx_tmp_buf,
-+					       op->data.nbytes,
-+					       DMA_FROM_DEVICE);
-+		if (dma_mapping_error(mdata->dev, mdata->rx_dma)) {
-+			ret = -ENOMEM;
-+			goto kfree_rx_tmp_buf;
-+		}
-+	}
-+
-+	reg_val = readl(mdata->base + SPI_CMD_REG);
-+	reg_val |= SPI_CMD_TX_DMA;
-+	if (op->data.dir == SPI_MEM_DATA_IN)
-+		reg_val |= SPI_CMD_RX_DMA;
-+	writel(reg_val, mdata->base + SPI_CMD_REG);
-+
-+	mtk_spi_mem_setup_dma_xfer(mem->spi->master, op);
-+
-+	mtk_spi_enable_transfer(mem->spi->master);
-+
-+	/* Wait for the interrupt. */
-+	ret = mtk_spi_transfer_wait(mem, op);
-+	if (ret)
-+		goto unmap_rx_dma;
-+
-+	/* spi disable dma */
-+	reg_val = readl(mdata->base + SPI_CMD_REG);
-+	reg_val &= ~SPI_CMD_TX_DMA;
-+	if (op->data.dir == SPI_MEM_DATA_IN)
-+		reg_val &= ~SPI_CMD_RX_DMA;
-+	writel(reg_val, mdata->base + SPI_CMD_REG);
-+
-+unmap_rx_dma:
-+	if (op->data.dir == SPI_MEM_DATA_IN) {
-+		dma_unmap_single(mdata->dev, mdata->rx_dma,
-+				 op->data.nbytes, DMA_FROM_DEVICE);
-+		if (!IS_ALIGNED((size_t)op->data.buf.in, 4))
-+			memcpy(op->data.buf.in, rx_tmp_buf, op->data.nbytes);
-+	}
-+kfree_rx_tmp_buf:
-+	if (op->data.dir == SPI_MEM_DATA_IN &&
-+	    !IS_ALIGNED((size_t)op->data.buf.in, 4))
-+		kfree(rx_tmp_buf);
-+unmap_tx_dma:
-+	dma_unmap_single(mdata->dev, mdata->tx_dma,
-+			 tx_size, DMA_TO_DEVICE);
-+err_exit:
-+	kfree(tx_tmp_buf);
-+	mdata->use_spimem = false;
-+
-+	return ret;
-+}
-+
-+static const struct spi_controller_mem_ops mtk_spi_mem_ops = {
-+	.adjust_op_size = mtk_spi_mem_adjust_op_size,
-+	.supports_op = mtk_spi_mem_supports_op,
-+	.exec_op = mtk_spi_mem_exec_op,
-+};
-+
- static int mtk_spi_probe(struct platform_device *pdev)
- {
- 	struct spi_master *master;
-@@ -818,6 +1117,15 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 	if (mdata->dev_comp->ipm_design)
- 		master->mode_bits |= SPI_LOOP;
- 
-+	if (mdata->dev_comp->support_quad) {
-+		master->mem_ops = &mtk_spi_mem_ops;
-+		master->mode_bits |= SPI_RX_DUAL | SPI_TX_DUAL |
-+				     SPI_RX_QUAD | SPI_TX_QUAD;
-+
-+		mdata->dev = &pdev->dev;
-+		init_completion(&mdata->spimem_done);
-+	}
-+
- 	if (mdata->dev_comp->need_pad_sel) {
- 		mdata->pad_num = of_property_count_u32_elems(
- 			pdev->dev.of_node,
+ &usart1 {
+ 	pinctrl-0 = <&usart1_pins_a>;
+ 	pinctrl-names = "default";
 -- 
-2.25.1
+2.7.4
 
