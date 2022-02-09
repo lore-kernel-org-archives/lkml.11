@@ -2,210 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2941CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 23:15:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66ECCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 23:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229522AbiBIXO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 18:14:59 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46220 "EHLO
+        id S230316AbiBIXPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 18:15:52 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234898AbiBIXO0 (ORCPT
+        with ESMTP id S231983AbiBIXPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 18:14:26 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FFEE050B81;
-        Wed,  9 Feb 2022 15:14:29 -0800 (PST)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 219KYQum020178;
-        Wed, 9 Feb 2022 23:14:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references :
- content-transfer-encoding : content-type : mime-version;
- s=corp-2021-07-09; bh=ejzW0VqgQdVY08sCESJZErpFCOudvGY9O+7ETievUYY=;
- b=orttwnEgjYH7p6Az1IvNTU61x4nQ4j1NR6J5Q/meTrOnqN5FyBh9IVOrIWoqmlrWiwHw
- YYhvlxy0fMzBy6w1JwRA7JFMbYA9dnIT0w87veDTNc/IG/2RSkI9ft6iDKtV7FR+V69d
- 2VYuSsy4ojMuaCojP210e2xO2ZSbTDZK9ySoFj9zRJX8w8vVHcLRrcJpGm35dHFXbWKO
- Onwxo0CYgaWVzLzqEbBS5CQvJFm+EjjFppxRsWKnVbYmwKVmlHM1epAE/wdCJBRZp1fK
- OXDbzkALLifSXqwXUVQLxhmJyINl+X21X2RR6/HkqliiomcOiyoNsu52H5FAivYMKThH 8w== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e366wybq7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Feb 2022 23:14:22 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 219NAQr7039265;
-        Wed, 9 Feb 2022 23:14:21 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2045.outbound.protection.outlook.com [104.47.66.45])
-        by userp3020.oracle.com with ESMTP id 3e1jptxr01-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Feb 2022 23:14:21 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Iotmn/2fo/RFlhI0IY7w+mQJ1SawUzErwear5UcIBxhppVuCdinNroxdMWowsK+ZxzmcQdZpwZL6oqVKhPr/9jbqGY7uLqMUDlz+AAHPW3PhRksHMnHvJ8xf0npkM29qQaktMThE12k9GnlKMpAlyK3/ARrZ+zf7p4e02aCoDVTvbkKHRQQvRcZAFbV1kGL6HkFChoE52z5RnryzPj0xocdzYDCfcz2/dI+q4JYX+V4RzKlqavYCCpJpk678JYydbjmtGmxmSjLJHkEOYBPEKfYyvRWW7o7KlXIjws7E9m0EQZivDIu/JeJYZA/YQCuHq9MMd6F75f4nT74PCET9Mw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ejzW0VqgQdVY08sCESJZErpFCOudvGY9O+7ETievUYY=;
- b=Kh5fCTzzVZ8YNZMNh3zX9RtFhsfyPSFCbHY0XAXPt8U7pDtoB30tIUcwuALzNHXdQJfNpMR6oTjA4/IvxF517sdjbGgBc19d1fx0vBx6MPh13Ma5hFY8nRR6T3JozIwIZVO2kNRT28OjB5pNHWp9D+axLVSNEnrzg8f8fwLSb6ErxmMGHKFVXibWUeE+USkratBzKxJ9w/OhrmbinllpCCK0ZItDyTWO+OCpzeGkyLnx/nCnbyayno2PQIzPCdgEHxw8L0em604Y5exyvcVf7n8bhcGgzpYTOX3UIi/tBiZnkvuQkLL9Tv8hjRUynHJWNEgtNNlFlH81ixYKOm+9hg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
+        Wed, 9 Feb 2022 18:15:35 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18FB4E0542B1
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 15:15:23 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id s185so4198747oie.3
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 15:15:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ejzW0VqgQdVY08sCESJZErpFCOudvGY9O+7ETievUYY=;
- b=x0cN7SH4+RH+xXWIETkYlfhfePmFZ4pxKAmzYPOuMLqcvYR4iqVVFVuzemwU0X51R5nn39enofIIa1Sifwbi5tZ1By+WSN97BRBTnTTS3kn7xBki6v/dt8Sb38lJcB8yTdFfrB8us1lPUA/1TBt5qTB7jogzIHDH7cIVqWyXAIo=
-Received: from CH2PR10MB4166.namprd10.prod.outlook.com (2603:10b6:610:78::20)
- by BLAPR10MB4884.namprd10.prod.outlook.com (2603:10b6:208:30c::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Wed, 9 Feb
- 2022 23:14:18 +0000
-Received: from CH2PR10MB4166.namprd10.prod.outlook.com
- ([fe80::f4d7:8817:4bf5:8f2a]) by CH2PR10MB4166.namprd10.prod.outlook.com
- ([fe80::f4d7:8817:4bf5:8f2a%4]) with mapi id 15.20.4951.018; Wed, 9 Feb 2022
- 23:14:18 +0000
-From:   Stephen Brennan <stephen.s.brennan@oracle.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>
-Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
-        linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jan Kara <jack@suse.cz>, linux-fsdevel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH v2 4/4] dcache: stop walking siblings if remaining dentries all negative
-Date:   Wed,  9 Feb 2022 15:14:06 -0800
-Message-Id: <20220209231406.187668-5-stephen.s.brennan@oracle.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220209231406.187668-1-stephen.s.brennan@oracle.com>
-References: <20220209231406.187668-1-stephen.s.brennan@oracle.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SA0PR13CA0018.namprd13.prod.outlook.com
- (2603:10b6:806:130::23) To CH2PR10MB4166.namprd10.prod.outlook.com
- (2603:10b6:610:78::20)
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ktkjxd3U0JmlaFnaNcBberOjA7QvY7xZY4GMDZF6GTs=;
+        b=rT3vggge4MvLAYz8ehb1gDHsIZQ2jYCjwcS7hvkQ4ulgYOQ+OvFiB4kq2Xz/bnyGIq
+         hQ65+ocP8xocxt8jz9ZixNlEAgKq/sdXbO64IZ9j5DovrQIPVczcuJyb/l7BwWEP5t52
+         G50Kdx96U8b442xnWvePHyAahkttBkSzzlk7CYZWbvZa0pyU9Wz8NcNhe5CajSA4wYTr
+         YRg2E5b3ANb1+cLPrYfySKkeaDYhrrx/ex/zQxYrwWv3s+rVbynh9+II2kuWkyg+/B+5
+         ueJRH9wrgNv7liccRp58MR6VN7yvOm+4AfMpc+jDoXQBZ597Kq2GxP9XVugN3eUtN8KB
+         6klw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ktkjxd3U0JmlaFnaNcBberOjA7QvY7xZY4GMDZF6GTs=;
+        b=ppqw2V11hRDYmpzKoNJyRS9CHom5lkd5tF4qtyodPAzKfB47sii63/o8iJI/U+YD6a
+         goMrCBY2PzatPL1/6PBjR7OiZvbX0/x0x2uYvK2lIrUQ+UDIl53lBDt4rJ6HYgWDEo3q
+         dvR03lqCnn+rphUHn/BYv9+DcRG7SXSgnpMvkQsIVZr5kTrIC/O+qI2wR6gT0sEN+0l8
+         ofr8ZwIZ1HR/9eJ9EScO1XgkUvfGYlGbaShnPhIgnJ35zeh3fLv9jdbvYmdaaXSxTXHQ
+         ksqqSrdHoSY6WDEgxVSWg2qZgadaW3t4m6ZelnCU82ivvpcJcYur9BIW24oJTcdU5MAW
+         2Dqg==
+X-Gm-Message-State: AOAM530R8x8ZYqBeNPjJESjPDwQvbE11XA6U6dU70MktYv+SaWJAENn4
+        gf/+i3YC5sSMb1oL2tj4egb/1g==
+X-Google-Smtp-Source: ABdhPJwSwIG6P4P9VqVnQt3T5UfuEZz7hxUA4IZtMOLvLySVMm87BKO4mFMFZWwtpNO+Ms2lI8o/kw==
+X-Received: by 2002:a05:6808:1897:: with SMTP id bi23mr2151901oib.217.1644448522445;
+        Wed, 09 Feb 2022 15:15:22 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id c29sm7147074otk.16.2022.02.09.15.15.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 15:15:21 -0800 (PST)
+Date:   Wed, 9 Feb 2022 15:17:38 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: soc: qcom: add qcom,tcsr bindings
+Message-ID: <YgRLkrowk56YtjtY@ripper>
+References: <20220122001609.15904-1-ansuelsmth@gmail.com>
+ <20220122001609.15904-2-ansuelsmth@gmail.com>
+ <Yfhzqvrj6bIPmV2S@builder.lan>
+ <Yfmq3IpjHZXdtEQR@Ansuel-xps.localdomain>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0a31cfea-42a2-4e54-95ff-08d9ec21e610
-X-MS-TrafficTypeDiagnostic: BLAPR10MB4884:EE_
-X-Microsoft-Antispam-PRVS: <BLAPR10MB48842EB7715C81DB70435E95DB2E9@BLAPR10MB4884.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:115;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ucxoMeSg03HfKvQ74qt/5pnCb7DqKhU5eUWXos0SgXTVJiEkAZFp1CWCSJFx1pMG4QnCy19B5RacG2Cn9RFVBQ+l7//dYAAifG7/ZkWCC7anjYJcb/Zm6H0xIVH0u4Dh+vag6DTzvYFQEgjH0Hx3JYFrLzCi1I8+HjHIqBvn+p+Q1g+4B6nWilCausT5F4gf5EIs7hzbMWeuRyJzRHpGklvSp8x2ix52lFyjFnwJBe6DY2Lo3HLqdQRt7YGUeWoluoq6aOaBd1/B8vGQJt3oJAqTMwJVqlurhQSmGMzHAj4vti6XDrb+VcHQZcyFeGTZ09iX4w6dIo7jWf1wHopmFog4sZ8j6+44mBGiyOtHgS7guwoU33OrpCJfTmtfOaOoOPI9v9XT3ivpswbq2igsS4nFcCGW9HZgtezMVye2sHw0E1gmwYry+bxa5w8MkVwqOfHk94rj+ENcFZ/I0SPAs1eIEgAa/Mtx+XmckmwODv+6CMPMWle1vPhtKT6LyNlccVG93X5O1de819MjhHzjMeYSVU0KrQYBXcU4ztst5bd7dM1oQE+WeP99U4gMvf2BqTaXenGiCmqm9+JxhUN0boShCFS978bxuUHUuhmL45MzjTNFOB3EpBoBXxslkIpAXK0CObifmvsfPQTOp39wGXS0Vnp0hgCvBWgBc6TooXwhAvNPG9qcE73SGPSXMi671xoe96pQrsOpe3+JqRxReA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR10MB4166.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66476007)(86362001)(52116002)(8676002)(6666004)(6506007)(8936002)(103116003)(66946007)(83380400001)(66556008)(508600001)(4326008)(2616005)(38100700002)(1076003)(186003)(26005)(54906003)(2906002)(5660300002)(6486002)(38350700002)(6916009)(36756003)(316002)(6512007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nO6rmJCpwVgiNVBJc6HkOKarNnUJ2w43PuCQIbIAaLB3rsQ42qW7xzxqly0g?=
- =?us-ascii?Q?aCL4TRNrfT9w1I1VlopJwpvlprGrZdjSR/F6ZifMsGu+TM8Q2u1g+sa3XR57?=
- =?us-ascii?Q?k3KqgEdOgBS32i/h9XsCVAfd0ntnk/J2jTWG7W+YuhrQQzUCADvJiUu5DGfN?=
- =?us-ascii?Q?JruacZ5ajsgM++Zrm9ld/8S/XIqvkpOWfKFDw0U412wryVbfT/NRc9twofPe?=
- =?us-ascii?Q?ta2XDPGYGs3IDsvWAw1s2YMrYxiAFm3KWCoDjceocKIAYS+gmsVrfEQycxHJ?=
- =?us-ascii?Q?EjTsAuyzu5q9ZobYALXaA9LoE+5/1VeFj8g9SGQAVaSxVBhZ52cqMWl/KBYO?=
- =?us-ascii?Q?uTx5A9/Q0uMt2pjZ2PLxQtTGQjJ9LwdrNdTjGSdIGNjgmatr5REtc6wUA67I?=
- =?us-ascii?Q?FrIhuVw2pWq3a05x3xQ9pNK7vWldxt1UWWg6GKrvwXHAfdEZoXmXHLM9tG9M?=
- =?us-ascii?Q?QcnT/WcgOg0czchcvbgV8XEmxAuw3B0aFfs2spptHV9vuWR8VIxZwWynl0Tc?=
- =?us-ascii?Q?d3twJCwLK23hunJUF18Sw2Lb4qcGpPuTqCUSlbPt7QEdpcYa+SngH+wFfoYq?=
- =?us-ascii?Q?xjD27/loeFaqzHKAJPkCXfBZUs/dg+q5tjjS5jIYF9Fq7YhaBp0oTu8ZTNN1?=
- =?us-ascii?Q?YGVDHqZIIIVkwWNqIk8SkpJbE7OoPQgNqndaxXxG3NPY1f5hOU/t6LxfLnHk?=
- =?us-ascii?Q?8bS992575vXdLH9k6NIYvm/EILn2uooWLKiJ7T3dYRLias8oa4UyjES6e06D?=
- =?us-ascii?Q?oefu1ZTEb8vo19W/EqJZ0pdY5D89F1dqfyvW4KpHAwWVYi2xnKka+ao49ZLD?=
- =?us-ascii?Q?eEPdK+ss8cf3aVvUHMdU3f3O6dySlhNEe/SKtsPwsmWn6b+NhlkRybWC82Vj?=
- =?us-ascii?Q?pzLEBQ0E1Hb4Msfw3F/J6gEsIiOcon64eLN09JkH3Nasw1Y3DKIN+SsH9Uw0?=
- =?us-ascii?Q?XFwekEsrWXeaO4c8tedDNi/lXYUPJzprt3/KtjR/5nzccy9tGk82yjtx0Dwa?=
- =?us-ascii?Q?0zdNKiBnRcW6uv5/WpFT9xzDpXroRoyP7JWVuwCOM2L3tM6a7INQV/rhburO?=
- =?us-ascii?Q?Fg6T7UlsLiyXAjVSvMMnyJ6y+LkexTcG70LJ09djukQ4EiAjOVg7g5VbvNqa?=
- =?us-ascii?Q?nQ6MjagenqqN5M5xnu/vP2XYaLmBSygSyZ9t1PlElJqdXLfK2CK0Xm2t/Uyt?=
- =?us-ascii?Q?sNrqRbXu9F9xmqMJurYoY09nHXdrquqzdYV4LDwqZH5SFgJL4TZDUZmVKtC6?=
- =?us-ascii?Q?sjlFCOMsZY5lqaucZ6xnqbbi4BIAP9wqo/m8ijmG2lMbZscOAJr1EIjlHBQy?=
- =?us-ascii?Q?H0wi9qb4pOjjfAt5/xjolM+fQ2a3bTFmj6raatGYyiZgx+m8oJBRjusWI14G?=
- =?us-ascii?Q?QaOVeP5G5AuIGfIy0ykzhlYV3y7b5Ek+BmKU+Lg0wbDlDH4jYpMuG/FCZmON?=
- =?us-ascii?Q?PfWt3UQcOsdo/fEJVbDrIMIFP6E7YqqlOK/N6IL1X57puS/Ef0EeFf71g69d?=
- =?us-ascii?Q?w+8OQ7f9TmMzpOsnnqRXZVbc7EBluMvJkSljZaq5WBRahEydD7cKuIDEePKA?=
- =?us-ascii?Q?IEDrfXuTJ8Gfu28212Ik/gclTihzr0RZjSs99AT4Adsj3rzVYlpKdS/IDVvR?=
- =?us-ascii?Q?wE6sGvk0ABnHqusaoNxzNATk9jglKHe9NZxrUDLra1r6PMpP8BNPTGYJDiO9?=
- =?us-ascii?Q?deTj8g=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0a31cfea-42a2-4e54-95ff-08d9ec21e610
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR10MB4166.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 23:14:18.8964
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6S0zAcyCq3CYjRMRUQ7NO6ncJe5QnVil3EO75o2MsWbEMG4N4chiNKmJx/nIoI6ydAnb2OnVNKueQPMbtX0bT/RNoQQKnHYnPDa/enZGzTQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR10MB4884
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10253 signatures=673431
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 mlxscore=0 bulkscore=0
- malwarescore=0 suspectscore=0 phishscore=0 adultscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202090121
-X-Proofpoint-GUID: zibqtQpcc6YnNWemx6tb3GRAy9FmN7rv
-X-Proofpoint-ORIG-GUID: zibqtQpcc6YnNWemx6tb3GRAy9FmN7rv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yfmq3IpjHZXdtEQR@Ansuel-xps.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+On Tue 01 Feb 13:49 PST 2022, Ansuel Smith wrote:
 
-Most walkers are interested only in positive dentries.
+> On Mon, Jan 31, 2022 at 05:41:30PM -0600, Bjorn Andersson wrote:
+> > On Fri 21 Jan 18:16 CST 2022, Ansuel Smith wrote:
+> > 
+> > > Add qcom,tcsr-ipq8064 and qcom,tcsr-ipq4019 Documentation for the
+> > > tcsr present in ipq8064 and ipa4019 required to configure and
+> > > set various peripherals present in the SoC.
+> > > 
+> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > ---
+> > >  .../bindings/soc/qcom/qcom,tcsr-ipq4019.yaml  | 93 +++++++++++++++++++
+> > >  .../bindings/soc/qcom/qcom,tcsr-ipq8064.yaml  | 47 ++++++++++
+> > >  2 files changed, 140 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq4019.yaml
+> > >  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq8064.yaml
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq4019.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq4019.yaml
+> > > new file mode 100644
+> > > index 000000000000..3a82ccbb6588
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq4019.yaml
+> > > @@ -0,0 +1,93 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: "http://devicetree.org/schemas/soc/qcom/qcom,tcsr-ipq4019.yaml#"
+> > > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> > > +
+> > > +title: Qualcomm Top Control and Status Registers binding for IPQ4019
+> > > +
+> > > +maintainers:
+> > > +  - Ansuel Smith <ansuelsmth@gmail.com>
+> > > +
+> > > +description: |
+> > > +  This binding describes the Qualcomm Top Control and Status Registers, used
+> > > +  for accessing configuration and mux settings for a variety of peripherals
+> > > +  for ipq4019.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    items:
+> > > +      - const: qcom,tcsr-ipq4019
+> > > +      - const: syscon
+> > > +
+> > > +  reg:
+> > > +    maxItems: 1
+> > > +
+> > > +  qcom,usb-hsphy-mode-select:
+> > > +    description: Select usb hsphy mode for ipq4019
+> > 
+> > Why isn't this driven by the USB node, where I presume you otherwise
+> > need to duplicate this decision?
+> > 
+> 
+> From what I understand this is global, setting this will apply on any
+> usb present.
+> 
+> > Is this platform not capable of OTG?
+> > 
+> 
+> I assume it's capable by selecting the correct mode using tcsr.
+> 
 
-Changes in simple_* libfs helpers are mostly cosmetic: it shouldn't cache
-negative dentries unless uses d_delete other than always_delete_dentry().
+I expect that the USB controller will receive extcon (or
+usb_role_switch) requests to flip between the modes based on something.
 
-Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
-Signed-off-by: Gautham Ananthakrishna <gautham.ananthakrishna@oracle.com>
-Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
----
- fs/dcache.c | 9 +++++++++
- fs/libfs.c  | 3 +++
- 2 files changed, 12 insertions(+)
+When this happens it sounds like the USB controller would have to
+propagate that change to the TCSR bits as well, and if the USB
+controller driver is able to flip the bits then this shouldn't be needed
+here?
 
-diff --git a/fs/dcache.c b/fs/dcache.c
-index 8809643a4d5b..e98079ed86be 100644
---- a/fs/dcache.c
-+++ b/fs/dcache.c
-@@ -1530,6 +1530,8 @@ static enum d_walk_ret path_check_mount(void *data, struct dentry *dentry)
- 	struct check_mount *info = data;
- 	struct path path = { .mnt = info->mnt, .dentry = dentry };
- 
-+	if (d_is_tail_negative(dentry))
-+		return D_WALK_SKIP_SIBLINGS;
- 	if (likely(!d_mountpoint(dentry)))
- 		return D_WALK_CONTINUE;
- 	if (__path_is_mountpoint(&path)) {
-@@ -1776,6 +1778,10 @@ void shrink_dcache_for_umount(struct super_block *sb)
- static enum d_walk_ret find_submount(void *_data, struct dentry *dentry)
- {
- 	struct dentry **victim = _data;
-+
-+	if (d_is_tail_negative(dentry))
-+		return D_WALK_SKIP_SIBLINGS;
-+
- 	if (d_mountpoint(dentry)) {
- 		__dget_dlock(dentry);
- 		*victim = dentry;
-@@ -3256,6 +3262,9 @@ static enum d_walk_ret d_genocide_kill(void *data, struct dentry *dentry)
- {
- 	struct dentry *root = data;
- 	if (dentry != root) {
-+		if (d_is_tail_negative(dentry))
-+			return D_WALK_SKIP_SIBLINGS;
-+
- 		if (d_unhashed(dentry) || !dentry->d_inode)
- 			return D_WALK_SKIP;
- 
-diff --git a/fs/libfs.c b/fs/libfs.c
-index ba7438ab9371..13cb44cf158e 100644
---- a/fs/libfs.c
-+++ b/fs/libfs.c
-@@ -411,6 +411,9 @@ int simple_empty(struct dentry *dentry)
- 
- 	spin_lock(&dentry->d_lock);
- 	list_for_each_entry(child, &dentry->d_subdirs, d_child) {
-+		if (d_is_tail_negative(child))
-+			break;
-+
- 		spin_lock_nested(&child->d_lock, DENTRY_D_LOCK_NESTED);
- 		if (simple_positive(child)) {
- 			spin_unlock(&child->d_lock);
--- 
-2.30.2
-
+Regards,
+Bjorn
