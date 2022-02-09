@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB655C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E33A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241468AbiBIS6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:58:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59412 "EHLO
+        id S241094AbiBIS6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:58:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241380AbiBIS4t (ORCPT
+        with ESMTP id S241365AbiBIS4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 13:56:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2BEC03E941;
-        Wed,  9 Feb 2022 10:56:42 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022F2C0613C9;
+        Wed,  9 Feb 2022 10:56:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFD08617EB;
-        Wed,  9 Feb 2022 18:56:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49505C340E9;
-        Wed,  9 Feb 2022 18:56:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9BB6B82384;
+        Wed,  9 Feb 2022 18:56:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD2DC340EE;
+        Wed,  9 Feb 2022 18:56:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644433001;
-        bh=nFogxA/LDVBd0MRKb6HyR9kxQCK/ufUVnj0yDYGaXbo=;
+        s=k20201202; t=1644433007;
+        bh=BFTHCpZ1/SIbOxk+XGOkTGnoxwcW3Ax11G8e/zCiqw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NAcDrRoAdjjClU5QNQJ5JuRK64pGv5yG3XSeQaO2zHc1tPxWfa4CosBE4vJ2y5Qqa
-         pV/b6Un7T9ne0Xiqll40M69VR5WyWGy7yRZY1KYxm3AZ5MiMAv/7Kbu6hcntMKimiJ
-         LJfyQutX/j+HJPSZOFXwTLcVeQHxSlM8jQkcw2IRg7mjVEQOpDgP4J5k4dXQoMb2RJ
-         YH1pF3SVb7o5JPU5hjnBdlM8d6R3a1/TQuXBh6OqtvFMDE6+JRXxzTsbF/TF95kQQ1
-         7rV6EKMWwGSbDCDXbst0oBDzM8hykrV06VHlUnRrhNuLlEmr/ZkrfIuMOYqI7gj7qS
-         sNvn52Ib1ID8A==
+        b=kT2o4MAXktl8aNuzB5vChg+s9PMW99co67Gq/A9i59OE9RvG6zje/zB+S2aaGITs6
+         df/aonqfu9Sn6SO/651CS8p+mBOrMBeT43fKMVHti64rPe4119QumYAeEGy1eJKoSN
+         LxRx4ZSSxkAgWcPo2I2N78FzF+KDfvGsOCyaG5cocdb7YQa79w+Ojw7wC2RalbnM9I
+         u7tg5xSL8nmzYwEBV0Yl0/cCJ9zXpr6IsF+xARqoJlMBkPX6MDhpga99Ij6br6DlF+
+         qgSNFL6SZN5vmMTvkcjU+Eu/9ugaaRuMdYBL5HondwCi+kmMBM4HHIn2mTMMhn2ZX6
+         q3QF5lfGpgdkg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Liam Merwick <liam.merwick@oracle.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.16 3/8] KVM: nVMX: Also filter MSR_IA32_VMX_TRUE_PINBASED_CTLS when eVMCS
-Date:   Wed,  9 Feb 2022 13:56:29 -0500
-Message-Id: <20220209185635.48730-3-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.16 6/8] KVM: SVM: Explicitly require DECODEASSISTS to enable SEV support
+Date:   Wed,  9 Feb 2022 13:56:32 -0500
+Message-Id: <20220209185635.48730-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209185635.48730-1-sashal@kernel.org>
 References: <20220209185635.48730-1-sashal@kernel.org>
@@ -53,40 +54,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit f80ae0ef089a09e8c18da43a382c3caac9a424a7 ]
+[ Upstream commit c532f2903b69b775d27016511fbe29a14a098f95 ]
 
-Similar to MSR_IA32_VMX_EXIT_CTLS/MSR_IA32_VMX_TRUE_EXIT_CTLS,
-MSR_IA32_VMX_ENTRY_CTLS/MSR_IA32_VMX_TRUE_ENTRY_CTLS pair,
-MSR_IA32_VMX_TRUE_PINBASED_CTLS needs to be filtered the same way
-MSR_IA32_VMX_PINBASED_CTLS is currently filtered as guests may solely rely
-on 'true' MSR data.
+Add a sanity check on DECODEASSIST being support if SEV is supported, as
+KVM cannot read guest private memory and thus relies on the CPU to
+provide the instruction byte stream on #NPF for emulation.  The intent of
+the check is to document the dependency, it should never fail in practice
+as producing hardware that supports SEV but not DECODEASSISTS would be
+non-sensical.
 
-Note, none of the currently existing Windows/Hyper-V versions are known
-to stumble upon the unfiltered MSR_IA32_VMX_TRUE_PINBASED_CTLS, the change
-is aimed at making the filtering future proof.
-
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220112170134.1904308-2-vkuznets@redhat.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
+Message-Id: <20220120010719.711476-5-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/evmcs.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kvm/svm/sev.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-index 09fac0ddac8bd..87e3dc10edf40 100644
---- a/arch/x86/kvm/vmx/evmcs.c
-+++ b/arch/x86/kvm/vmx/evmcs.c
-@@ -361,6 +361,7 @@ void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata)
- 	case MSR_IA32_VMX_PROCBASED_CTLS2:
- 		ctl_high &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
- 		break;
-+	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
- 	case MSR_IA32_VMX_PINBASED_CTLS:
- 		ctl_high &= ~EVMCS1_UNSUPPORTED_PINCTRL;
- 		break;
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index be28831412209..932afd713a02c 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -2099,8 +2099,13 @@ void __init sev_hardware_setup(void)
+ 	if (!sev_enabled || !npt_enabled)
+ 		goto out;
+ 
+-	/* Does the CPU support SEV? */
+-	if (!boot_cpu_has(X86_FEATURE_SEV))
++	/*
++	 * SEV must obviously be supported in hardware.  Sanity check that the
++	 * CPU supports decode assists, which is mandatory for SEV guests to
++	 * support instruction emulation.
++	 */
++	if (!boot_cpu_has(X86_FEATURE_SEV) ||
++	    WARN_ON_ONCE(!boot_cpu_has(X86_FEATURE_DECODEASSISTS)))
+ 		goto out;
+ 
+ 	/* Retrieve SEV CPUID information */
 -- 
 2.34.1
 
