@@ -2,116 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52369C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41EFEC35273
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235014AbiBIFHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 00:07:30 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43416 "EHLO
+        id S234166AbiBIFH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 00:07:29 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:41426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbiBIEqF (ORCPT
+        with ESMTP id S244865AbiBIEjW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 23:46:05 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBB3C061578;
-        Tue,  8 Feb 2022 20:46:09 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JtnQ60Fbjz4xNq;
-        Wed,  9 Feb 2022 15:46:06 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1644381966;
-        bh=4LBu3b4sqV42JJCmT2RvLfUf47/jOabbpGeO17DWNxg=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=VpsRKjTOAuTL4YVFAXqLwlQNTVN2PnFaRNMaDdmekioS+Axih9wqxwuuZXvgF38GV
-         BtlQrTRz2IAQ9QmpujmvPxeEPJBOCKQODVTttnlXUqTA3LNbZRxgAs7FMDYFW7UAzp
-         hNZMjJnJRRBuEQsm/scDVGFl3F1CnxD/UQBFK7HXqfl2FNQM9xzVfhzm6vaSQz1Oui
-         eoQoylhJFl+fMdpPBEWkx0gW9z1nkkfG9Ee4wjyAlpTXz2FASBp3lrsVq34UIp87iV
-         WiyxUBkfMXtIWN/O5RXzGc5uFFcCQQWtagfWwXYs+Xzz/Ci/ixvZSY69tgrW3wLzm6
-         VxO4WOGIITJUw==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Luis Chamberlain <mcgrof@kernel.org>,
-        Michal Suchanek <msuchanek@suse.de>,
-        David Howells <dhowells@redhat.com>,
-        Aaron Tomlin <atomlin@redhat.com>
-Cc:     keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, kexec@lists.infradead.org,
-        Philipp Rudo <prudo@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Nayna <nayna@linux.vnet.ibm.com>, Rob Herring <robh@kernel.org>,
-        linux-s390@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
-        David Howells <dhowells@redhat.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Frank van der Linden <fllinden@amazon.com>,
-        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
-        Daniel Axtens <dja@axtens.net>, buendgen@de.ibm.com,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Baoquan He <bhe@redhat.com>,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v5 0/6] KEXEC_SIG with appended signature
-In-Reply-To: <YfBd/EDGUx9UIHcb@bombadil.infradead.org>
-References: <cover.1641900831.git.msuchanek@suse.de>
- <YfBd/EDGUx9UIHcb@bombadil.infradead.org>
-Date:   Wed, 09 Feb 2022 15:46:05 +1100
-Message-ID: <87pmnwlkaa.fsf@mpe.ellerman.id.au>
+        Tue, 8 Feb 2022 23:39:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF977C061577
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 20:39:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644381560;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1kf6j/pfO95p2NADuTOz6pxSpChN6rEDgT0nLmQL7w4=;
+        b=W1wfG42ZaAg3XL012mAnW20azBmDFI13ZIiQ/FyZf+hvOnlaXlis7Xkhxyxqt0B5zCE8hc
+        NFjemdLxolcdUOeIx5USpaMc6nhvk271zsURbfd7CEHkcPOpRlH5FhIUrM+EAPlN0F0Sdi
+        7jInAQIrWYawhdT5VYSkYlrjmWrkP70=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-580-jTajIHK0OYewXNGgoKjTIg-1; Tue, 08 Feb 2022 23:39:18 -0500
+X-MC-Unique: jTajIHK0OYewXNGgoKjTIg-1
+Received: by mail-pf1-f199.google.com with SMTP id a12-20020aa7864c000000b004e04f6a41deso931248pfo.8
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 20:39:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1kf6j/pfO95p2NADuTOz6pxSpChN6rEDgT0nLmQL7w4=;
+        b=aPiJf1Rac9QVgkrbaO11DU/BB75UaltmoWHxNTkQIkcIQICMaFGJt9zP0LFJu1iJm1
+         Clb+bg+xjnE8gbZuuaxTPx8C4Ut3H5q52d/L9DRPBRo/vc8Au/KtDngM92B2P2flCo0q
+         y0qtHGlK3JXHkwT8DN3z25DjcprMkow/sFVhvoGZxPJI4JuvIWw7V27Um43abdI663lR
+         uUShgwZ8daNh8Oz507Kyz/3dUKPBfvWPLaacO4j6YcJQPSzn2DjFYb9eb9L198TLcx4I
+         H6XRlxorjWJY9/0rI+QEVvvjakzzQymmfG+wE8DLXoUxYh1y3MeGbBZJPI4ZSRLuqaKe
+         V5Hg==
+X-Gm-Message-State: AOAM532Y+Qqgx3hCFTwsI+ASe0awwHmJXRNMj0NIaxiqFbQeG2b/n84N
+        1SvGMZXAD4zIN7KIDqS13S2H3fEKmrwRXxB5w2tXawYNBNwrQCdeSVqENXEK5RNJFaSkXOG7PqC
+        KkP/bIIkGKM2+u0DfOtvsu2T2
+X-Received: by 2002:a17:90b:351:: with SMTP id fh17mr1494247pjb.28.1644381557331;
+        Tue, 08 Feb 2022 20:39:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyMXR6X2J1CaA2tRB0gLeu4mXToGnDAqW9oiqkiF+2CcatJHXLt3XWFCBXLi/0YasKKk8UpiQ==
+X-Received: by 2002:a17:90b:351:: with SMTP id fh17mr1494231pjb.28.1644381557019;
+        Tue, 08 Feb 2022 20:39:17 -0800 (PST)
+Received: from [10.72.13.141] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id j10sm17444059pfu.93.2022.02.08.20.39.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Feb 2022 20:39:16 -0800 (PST)
+Message-ID: <5ac96035-2448-2a25-5bc9-677a7eb0a271@redhat.com>
+Date:   Wed, 9 Feb 2022 12:39:10 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [RFC PATCH 2/5] driver/net/tun: Added features for USO.
+Content-Language: en-US
+To:     Andrew Melnychenko <andrew@daynix.com>, davem@davemloft.net,
+        kuba@kernel.org, mst@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     yuri.benditovich@daynix.com, yan@daynix.com
+References: <20220125084702.3636253-1-andrew@daynix.com>
+ <20220125084702.3636253-3-andrew@daynix.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220125084702.3636253-3-andrew@daynix.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Luis Chamberlain <mcgrof@kernel.org> writes:
-> On Tue, Jan 11, 2022 at 12:37:42PM +0100, Michal Suchanek wrote:
->> Hello,
->> 
->> This is a refresh of the KEXEC_SIG series.
->> 
->> This adds KEXEC_SIG support on powerpc and deduplicates the code dealing
->> with appended signatures in the kernel.
->> 
->> powerpc supports IMA_KEXEC but that's an exception rather than the norm.
->> On the other hand, KEXEC_SIG is portable across platforms.
->> 
->> For distributions to have uniform security features across platforms one
->> option should be used on all platforms.
->> 
->> Thanks
->> 
->> Michal
->> 
->> Previous revision: https://lore.kernel.org/linuxppc-dev/cover.1637862358.git.msuchanek@suse.de/
->> Patched kernel tree: https://github.com/hramrach/kernel/tree/kexec_sig
->> 
->> Michal Suchanek (6):
->>   s390/kexec_file: Don't opencode appended signature check.
->>   powerpc/kexec_file: Add KEXEC_SIG support.
->>   kexec_file: Don't opencode appended signature verification.
->>   module: strip the signature marker in the verification function.
->>   module: Use key_being_used_for for log messages in
->>     verify_appended_signature
->>   module: Move duplicate mod_check_sig users code to mod_parse_sig
+
+在 2022/1/25 下午4:46, Andrew Melnychenko 写道:
+> Added support for USO4 and USO6, also added code for new ioctl TUNGETSUPPORTEDOFFLOADS.
+> For now, to "enable" USO, it's required to set both USO4 and USO6 simultaneously.
+> USO enables NETIF_F_GSO_UDP_L4.
 >
-> What tree should this go through? I'd prefer if over through modules
-> tree as it can give a chance for Aaron Tomlin to work with this for his
-> code refactoring of kernel/module*.c to kernel/module/
+> Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+> ---
+>   drivers/net/tap.c | 18 ++++++++++++++++--
+>   drivers/net/tun.c | 15 ++++++++++++++-
+>   2 files changed, 30 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+> index 8e3a28ba6b28..82d742ba78b1 100644
+> --- a/drivers/net/tap.c
+> +++ b/drivers/net/tap.c
+> @@ -940,6 +940,10 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
+>   			if (arg & TUN_F_TSO6)
+>   				feature_mask |= NETIF_F_TSO6;
+>   		}
+> +
+> +		/* TODO: for now USO4 and USO6 should work simultaneously */
+> +		if (arg & (TUN_F_USO4 | TUN_F_USO6) == (TUN_F_USO4 | TUN_F_USO6))
+> +			features |= NETIF_F_GSO_UDP_L4;
 
-Yeah that's fine by me, the arch changes are pretty minimal and unlikely
-to conflict much.
 
-cheers
+If kernel doesn't want to split the GSO_UDP features, I wonder how much 
+value to keep separated features for TUN and virtio.
+
+Thanks
+
+
+>   	}
+>   
+>   	/* tun/tap driver inverts the usage for TSO offloads, where
+> @@ -950,7 +954,8 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
+>   	 * When user space turns off TSO, we turn off GSO/LRO so that
+>   	 * user-space will not receive TSO frames.
+>   	 */
+> -	if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6))
+> +	if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6) ||
+> +	    feature_mask & (TUN_F_USO4 | TUN_F_USO6) == (TUN_F_USO4 | TUN_F_USO6))
+>   		features |= RX_OFFLOADS;
+>   	else
+>   		features &= ~RX_OFFLOADS;
+> @@ -979,6 +984,7 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
+>   	unsigned short u;
+>   	int __user *sp = argp;
+>   	struct sockaddr sa;
+> +	unsigned int supported_offloads;
+>   	int s;
+>   	int ret;
+>   
+> @@ -1074,7 +1080,8 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
+>   	case TUNSETOFFLOAD:
+>   		/* let the user check for future flags */
+>   		if (arg & ~(TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
+> -			    TUN_F_TSO_ECN | TUN_F_UFO))
+> +			    TUN_F_TSO_ECN | TUN_F_UFO |
+> +			    TUN_F_USO4 | TUN_F_USO6))
+>   			return -EINVAL;
+>   
+>   		rtnl_lock();
+> @@ -1082,6 +1089,13 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
+>   		rtnl_unlock();
+>   		return ret;
+>   
+> +	case TUNGETSUPPORTEDOFFLOADS:
+> +		supported_offloads = TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
+> +						TUN_F_TSO_ECN | TUN_F_UFO | TUN_F_USO4 | TUN_F_USO6;
+> +		if (copy_to_user(&arg, &supported_offloads, sizeof(supported_offloads)))
+> +			return -EFAULT;
+> +		return 0;
+> +
+>   	case SIOCGIFHWADDR:
+>   		rtnl_lock();
+>   		tap = tap_get_tap_dev(q);
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index fed85447701a..4f2105d1e6f1 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -185,7 +185,7 @@ struct tun_struct {
+>   	struct net_device	*dev;
+>   	netdev_features_t	set_features;
+>   #define TUN_USER_FEATURES (NETIF_F_HW_CSUM|NETIF_F_TSO_ECN|NETIF_F_TSO| \
+> -			  NETIF_F_TSO6)
+> +			  NETIF_F_TSO6 | NETIF_F_GSO_UDP_L4)
+>   
+>   	int			align;
+>   	int			vnet_hdr_sz;
+> @@ -2821,6 +2821,12 @@ static int set_offload(struct tun_struct *tun, unsigned long arg)
+>   		}
+>   
+>   		arg &= ~TUN_F_UFO;
+> +
+> +		/* TODO: for now USO4 and USO6 should work simultaneously */
+> +		if (arg & TUN_F_USO4 && arg & TUN_F_USO6) {
+> +			features |= NETIF_F_GSO_UDP_L4;
+> +			arg &= ~(TUN_F_USO4 | TUN_F_USO6);
+> +		}
+>   	}
+>   
+>   	/* This gives the user a way to test for new features in future by
+> @@ -2991,6 +2997,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+>   	int sndbuf;
+>   	int vnet_hdr_sz;
+>   	int le;
+> +	unsigned int supported_offloads;
+>   	int ret;
+>   	bool do_notify = false;
+>   
+> @@ -3154,6 +3161,12 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+>   	case TUNSETOFFLOAD:
+>   		ret = set_offload(tun, arg);
+>   		break;
+> +	case TUNGETSUPPORTEDOFFLOADS:
+> +		supported_offloads = TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
+> +				TUN_F_TSO_ECN | TUN_F_UFO | TUN_F_USO4 | TUN_F_USO6;
+> +		if (copy_to_user(&arg, &supported_offloads, sizeof(supported_offloads)))
+> +			ret = -EFAULT;
+> +		break;
+>   
+>   	case TUNSETTXFILTER:
+>   		/* Can be set only for TAPs */
+
