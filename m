@@ -2,130 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6DF8C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 775B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233619AbiBISrl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:47:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33672 "EHLO
+        id S232273AbiBISrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:47:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240825AbiBISpy (ORCPT
+        with ESMTP id S240834AbiBISpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 13:45:54 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B368C03F938;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B06C03F93C;
         Wed,  9 Feb 2022 10:43:27 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id i21so4332857pfd.13;
-        Wed, 09 Feb 2022 10:43:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=++8mApk7RkWt9IYMQQmWE9VHiPI6DBwLCpnWFPssygI=;
-        b=qGy++wR4TC8B3MD+skcOoU0Rz0NlIDn//t1PfiTRzziEWiC1QzxRUkyF3jiknY45eG
-         MVQ1DwUkKDi3GRrni4fQawxf3YkxOlRs64seslgvIUD3L0SeJOyAGvrCse0s5u6wfwL6
-         oG5fIm+bBQ4JYQC80X97WqYBXewbVESuOD3ySzW1MD9KHJQ71miaauYI01NuBqL8sX0w
-         AOM9pD6xeYX5HlmeErEWysd++M+ebcvTQJnfVFrBc13ZBRbCGljmQth2gKDJaW9rOyLd
-         jN8qOtjLjM/3TQ2yST8qk0H34cgEevysDmnCEi2YjnKnvn9lQWK/Uq/Zd9lConzXy+oo
-         /cSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=++8mApk7RkWt9IYMQQmWE9VHiPI6DBwLCpnWFPssygI=;
-        b=NahHbVmPIsJL4R7rcRWaf2Mce3piCOgOs/P6uNW088XRkYc4uvhccdQXpSsNajrtRy
-         5ROjxyfuQcx8Ww7iHOWFEtvyfeTbLtdt10bTG9SW7ErwDSOSTkvameW7V9UtzWyOth4x
-         FXcy29OI2naOiSCmxmouh4XuOgQoaHH7M8GywnPBO+pRYUI5Q0wbSV37wDECEYd/sPc4
-         xh3BBqhcX3e8CdmOZPmAfHTe1hnPzI5nAstXmUoUjyTUglF4XEFAVqYeILFjsULe9QE/
-         zoqAYjUrtsU34KaY7etvj7A2oFi/Q7kEj25ADxbz8Ex7G5/lKToJC4TgCKk/4I0Y/OJl
-         cv6w==
-X-Gm-Message-State: AOAM533nkqijhXfn4m3cKwN5GDOOfGrYZDqnyRSIfJKUckaVU2Gl8boO
-        99PrysjkJxpVeFpB8liA4VicweWJV5gWMC4IGZ0nJ2r0K7GgOR4s
-X-Google-Smtp-Source: ABdhPJzoiadJc5PSqYDMUBE96R7/2wNLf+6aj2O+i3AwgRvSjPRvqapEiu8YingYuFXFOgzq0w+N7jlBAFrrthRVY2A=
-X-Received: by 2002:a63:6c01:: with SMTP id h1mr2996139pgc.118.1644432206694;
- Wed, 09 Feb 2022 10:43:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46C5CB82215;
+        Wed,  9 Feb 2022 18:43:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 470F7C340E7;
+        Wed,  9 Feb 2022 18:43:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644432194;
+        bh=OSHo2PJpIYtB2DIHy0v4CkW2SRFnO9seM4Vk8G09WJg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qmyw8nhLqHFXjx1RJSrJ0PKNOnw7N0YWvo60eDDuyoX9qW90iNWXHL5jtlSbhiFs4
+         vI5qgcAFywLpQUxpvOQlWYqh8tl1CNLrib2szxP7v3NX2TxAzH1YCV1Fh3sojftj+A
+         21VkXtZn+mCCx84GiVEq9AbjKAt5oGV3rZQYJ/ae4Afp51efuW3Fvq2XLz0vMLFrbB
+         m0pv5Jbh+sVeKBwypgoJkY4v8J9vXzzzm6SVcfoFlof2NJAC/EE3eU3HLOlgQkp477
+         raxc7CXdY/WWSkhvJ/HBtHOck2UN/0zLUb/pwrLnAiVVPzL4dRGVsPTHjZEToa4mOc
+         apx8XEMfXKB+g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yang Xu <xuyang2018.jy@fujitsu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 04/15] selftests/zram: Skip max_comp_streams interface on newer kernel
+Date:   Wed,  9 Feb 2022 13:42:50 -0500
+Message-Id: <20220209184305.47983-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209184305.47983-1-sashal@kernel.org>
+References: <20220209184305.47983-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20211228072645.32341-1-luizluca@gmail.com> <Ydx4+o5TsWZkZd45@robh.at.kernel.org>
- <CAJq09z4G40ttsTHXtOywjyusNLSjt_BQ9D78PhwSodJr=4p6OA@mail.gmail.com>
- <CAL_JsqJ4SsEzZz=JfFMDDUMXEDfybMZw4BVDcj1MoapM+8jQwg@mail.gmail.com>
- <87zgn0gf3k.fsf@bang-olufsen.dk> <YgP7jgswRQ+GR4P2@lunn.ch>
-In-Reply-To: <YgP7jgswRQ+GR4P2@lunn.ch>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Wed, 9 Feb 2022 15:43:15 -0300
-Message-ID: <CAJq09z49EEMxtBTs9q0sg3nn0VrSi0M=DkQTJ_n=QmgTr1aonw@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: net: dsa: realtek-smi: convert to YAML schema
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        Rob Herring <robh@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > However, the linux driver today does not care about any of these
-> > interruptions but INT_TYPE_LINK_STATUS. So it simply multiplex only
-> > this the interruption to each port, in a n-cell map (n being number of
-> > ports).
-> > I don't know what to describe here as device-tree should be something
-> > independent of a particular OS or driver.
->
-> You shouldn't need to know what Linux does to figure this out.
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-The Linux driver is masquerading all those interruptions into a single
-"link status changed". If interrupts property is about what the HW
-sends to us, it is a single pin.
+[ Upstream commit fc4eb486a59d70bd35cf1209f0e68c2d8b979193 ]
 
-  interrupt-controller:
-   type: object
-   description: |
-     This defines an interrupt controller with an IRQ line (typically
-     a GPIO) that will demultiplex and handle the interrupt from the single
-     interrupt line coming out of one of the Realtek switch chips. It most
-     importantly provides link up/down interrupts to the PHY blocks inside
-     the ASIC.
+Since commit 43209ea2d17a ("zram: remove max_comp_streams internals"), zram
+has switched to per-cpu streams. Even kernel still keep this interface for
+some reasons, but writing to max_comp_stream doesn't take any effect. So
+skip it on newer kernel ie 4.7.
 
-   properties:
+The code that comparing kernel version is from xfstests testsuite ext4/053.
 
-     interrupt-controller: true
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/zram/zram_lib.sh | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-     interrupts:
-       maxItems: 1
-       description:
-         A single IRQ line from the switch, either active LOW or HIGH
+diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
+index 6f872f266fd11..f47fc0f27e99e 100755
+--- a/tools/testing/selftests/zram/zram_lib.sh
++++ b/tools/testing/selftests/zram/zram_lib.sh
+@@ -11,6 +11,9 @@ dev_mounted=-1
+ 
+ # Kselftest framework requirement - SKIP code is 4.
+ ksft_skip=4
++kernel_version=`uname -r | cut -d'.' -f1,2`
++kernel_major=${kernel_version%.*}
++kernel_minor=${kernel_version#*.}
+ 
+ trap INT
+ 
+@@ -25,6 +28,20 @@ check_prereqs()
+ 	fi
+ }
+ 
++kernel_gte()
++{
++	major=${1%.*}
++	minor=${1#*.}
++
++	if [ $kernel_major -gt $major ]; then
++		return 0
++	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then
++		return 0
++	fi
++
++	return 1
++}
++
+ zram_cleanup()
+ {
+ 	echo "zram cleanup"
+@@ -86,6 +103,13 @@ zram_max_streams()
+ {
+ 	echo "set max_comp_streams to zram device(s)"
+ 
++	kernel_gte 4.7
++	if [ $? -eq 0 ]; then
++		echo "The device attribute max_comp_streams was"\
++		               "deprecated in 4.7"
++		return 0
++	fi
++
+ 	local i=0
+ 	for max_s in $zram_max_streams; do
+ 		local sys_path="/sys/block/zram${i}/max_comp_streams"
+-- 
+2.34.1
 
-     '#address-cells':
-       const: 0
-
-     '#interrupt-cells':
-       const: 1
-
-   required:
-     - interrupt-controller
-     - '#address-cells'
-     - '#interrupt-cells'
-
-Now as it is also an interrupt-controller, shouldn't I document what it emits?
-I've just sent the new version and we can discuss it there.
-
-> >  - one interrupt for the switch
-> >  - the switch is an interrupt-controller
-> >  - ... and is the interrupt-parent for the phy nodes.
->
-> This pattern is pretty common for DSA switches, which have internal
-> PHYs. You can see this in the mv88e6xxx binding for example.
-
-The issue is that those similar devices are still not in yaml format.
-
->       Andrew
