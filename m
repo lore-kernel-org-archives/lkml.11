@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE3A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BA9FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238971AbiBISot (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:44:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
+        id S231612AbiBISo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:44:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240553AbiBISny (ORCPT
+        with ESMTP id S240461AbiBISoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:43:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B77C094CA5;
-        Wed,  9 Feb 2022 10:42:31 -0800 (PST)
+        Wed, 9 Feb 2022 13:44:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810CAC02B658;
+        Wed,  9 Feb 2022 10:42:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2A65B821BD;
-        Wed,  9 Feb 2022 18:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8BA5C340ED;
-        Wed,  9 Feb 2022 18:42:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E057B8238C;
+        Wed,  9 Feb 2022 18:42:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CFB9C340F5;
+        Wed,  9 Feb 2022 18:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432148;
-        bh=suJKmzrOF/tZPhzi4HoXLU0tOFV3oTTcddXjrt1lGu8=;
+        s=k20201202; t=1644432156;
+        bh=LVhx2ZtmY6kksmFne2psdMuePMhtztetOJrJizL7un4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pl2coBZ2wriT7RDsF6Lr82T5oDBnQMVgQwVwE6sN8+/Hy1C7p9mUqiwYTY1fknctX
-         /0vLr3pChnLSDxSxM5UXBOoTwFXGDk4ID2GkSHRTbDklpmCDVfEXTXIu4LU/KH1WXn
-         tOX8Lomx75UpU7GlhBhfsb3uAxNXodVUE1OfXDCilAxPm/VxUV+FzFuH3SSpKpUHNP
-         jEjQgA0rQrxKh2XnO2Urn54ia4ACY6SQZGRuASMBYBYaeTlc3UIMQAno+Sb84rIPlv
-         GxHe4wVdDY1g1P7oUzu4gwlec4kaEcS3bMgisY6RnYtTgZd2rO1YZ3O5IPHZ5/cyoe
-         QjrYlKNmwVuYQ==
+        b=tI3x42hjED9V4sLMRUZD/LcMIn9onFHPrtvgQdGPQ4iLz2TV1Q5URqy2wqujGFfCz
+         9posFcxYkw9IJKZG9M93RldljYUmQ2GBKH6tnUCgtPOQi5Idxy/rPRt0GgfQfZohjD
+         D9OsH0iFJ0D3i7QUD4X6JTLvdBAIVZOWZ9VsxmlcfpVmfPHcS6AxPPe/qP1J3Gnm30
+         Ehfy2stRqfbIeaL1sVzyqSYbgzsS8W2kfM/xB1E0cCmesc+urgyfC5HpLXA3xE6zSJ
+         J2rQ5c08yLRvRcTf3Y92uR6vIdW7FayVK1m3IwPN0LD/0Ge7TFH04LRTiPGEmaiXlL
+         1Kykuetw3KZnQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vijayanand Jitta <quic_vjitta@quicinc.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
-        will@kernel.org, iommu@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.10 17/27] iommu: Fix potential use-after-free during probe
-Date:   Wed,  9 Feb 2022 13:40:53 -0500
-Message-Id: <20220209184103.47635-17-sashal@kernel.org>
+Cc:     Sagi Grimberg <sagi@grimberg.me>, Chris Leech <cleech@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 21/27] nvme-tcp: fix possible use-after-free in transport error_recovery work
+Date:   Wed,  9 Feb 2022 13:40:57 -0500
+Message-Id: <20220209184103.47635-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209184103.47635-1-sashal@kernel.org>
 References: <20220209184103.47635-1-sashal@kernel.org>
@@ -53,147 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijayanand Jitta <quic_vjitta@quicinc.com>
+From: Sagi Grimberg <sagi@grimberg.me>
 
-[ Upstream commit b54240ad494300ff0994c4539a531727874381f4 ]
+[ Upstream commit ff9fc7ebf5c06de1ef72a69f9b1ab40af8b07f9e ]
 
-Kasan has reported the following use after free on dev->iommu.
-when a device probe fails and it is in process of freeing dev->iommu
-in dev_iommu_free function, a deferred_probe_work_func runs in parallel
-and tries to access dev->iommu->fwspec in of_iommu_configure path thus
-causing use after free.
+While nvme_tcp_submit_async_event_work is checking the ctrl and queue
+state before preparing the AER command and scheduling io_work, in order
+to fully prevent a race where this check is not reliable the error
+recovery work must flush async_event_work before continuing to destroy
+the admin queue after setting the ctrl state to RESETTING such that
+there is no race .submit_async_event and the error recovery handler
+itself changing the ctrl state.
 
-BUG: KASAN: use-after-free in of_iommu_configure+0xb4/0x4a4
-Read of size 8 at addr ffffff87a2f1acb8 by task kworker/u16:2/153
-
-Workqueue: events_unbound deferred_probe_work_func
-Call trace:
- dump_backtrace+0x0/0x33c
- show_stack+0x18/0x24
- dump_stack_lvl+0x16c/0x1e0
- print_address_description+0x84/0x39c
- __kasan_report+0x184/0x308
- kasan_report+0x50/0x78
- __asan_load8+0xc0/0xc4
- of_iommu_configure+0xb4/0x4a4
- of_dma_configure_id+0x2fc/0x4d4
- platform_dma_configure+0x40/0x5c
- really_probe+0x1b4/0xb74
- driver_probe_device+0x11c/0x228
- __device_attach_driver+0x14c/0x304
- bus_for_each_drv+0x124/0x1b0
- __device_attach+0x25c/0x334
- device_initial_probe+0x24/0x34
- bus_probe_device+0x78/0x134
- deferred_probe_work_func+0x130/0x1a8
- process_one_work+0x4c8/0x970
- worker_thread+0x5c8/0xaec
- kthread+0x1f8/0x220
- ret_from_fork+0x10/0x18
-
-Allocated by task 1:
- ____kasan_kmalloc+0xd4/0x114
- __kasan_kmalloc+0x10/0x1c
- kmem_cache_alloc_trace+0xe4/0x3d4
- __iommu_probe_device+0x90/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
-
-Freed by task 1:
- kasan_set_track+0x4c/0x84
- kasan_set_free_info+0x28/0x4c
- ____kasan_slab_free+0x120/0x15c
- __kasan_slab_free+0x18/0x28
- slab_free_freelist_hook+0x204/0x2fc
- kfree+0xfc/0x3a4
- __iommu_probe_device+0x284/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
-
-Fix this by setting dev->iommu to NULL first and
-then freeing dev_iommu structure in dev_iommu_free
-function.
-
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Vijayanand Jitta <quic_vjitta@quicinc.com>
-Link: https://lore.kernel.org/r/1643613155-20215-1-git-send-email-quic_vjitta@quicinc.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Tested-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/iommu.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/nvme/host/tcp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index bcf060b5cf85b..9d65557dfb2ce 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -185,9 +185,14 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index e99d439894187..45b3a919ac281 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -2069,6 +2069,7 @@ static void nvme_tcp_error_recovery_work(struct work_struct *work)
+ 	struct nvme_ctrl *ctrl = &tcp_ctrl->ctrl;
  
- static void dev_iommu_free(struct device *dev)
- {
--	iommu_fwspec_free(dev);
--	kfree(dev->iommu);
-+	struct dev_iommu *param = dev->iommu;
-+
- 	dev->iommu = NULL;
-+	if (param->fwspec) {
-+		fwnode_handle_put(param->fwspec->iommu_fwnode);
-+		kfree(param->fwspec);
-+	}
-+	kfree(param);
- }
- 
- static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
+ 	nvme_stop_keep_alive(ctrl);
++	flush_work(&ctrl->async_event_work);
+ 	nvme_tcp_teardown_io_queues(ctrl, false);
+ 	/* unquiesce to fail fast pending requests */
+ 	nvme_start_queues(ctrl);
 -- 
 2.34.1
 
