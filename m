@@ -2,342 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81FA8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F20DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:28:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233856AbiBIJXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:23:48 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39504 "EHLO
+        id S233818AbiBIJ23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:28:29 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiBIJXp (ORCPT
+        with ESMTP id S229544AbiBIJ21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:23:45 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F81E0AA462
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:23:41 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id c8-20020a17090a674800b001b91184b732so2071921pjm.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:23:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=JK/vxlNdT7JFNpKXya4qcBlyZK3+Mgah0JCZD6Vpyng=;
-        b=Dd9ehfWl2Y6WKNAFgrGKr9CVtZ1St2YwveTIwLh40r2xNqNNv4hfP3lIxok/CJbpbb
-         lCBQFXHhalZXWsgQG6emIqVTccv8VkQDyQUD1cq5hdYemUNtFvdmQZ2/1Mm5M5aUD0nP
-         9mV3/4iQPPLOGCrGIFGt8yp9wDPcybqlFoKKQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JK/vxlNdT7JFNpKXya4qcBlyZK3+Mgah0JCZD6Vpyng=;
-        b=b7BBawaU7Yb1Esf6c5GGt7YgwOCXpcNrgS7BBzVL/Kx2VGSsNoCWDe8YivYyA9MT28
-         R/6MioyXUWjI+4E9vCCcoWY3J5d9WBsopBR5cJMne+lM1aJ3ZMiz1XmIZfv/NLx17QeJ
-         FaOQjZVyZ8uKw4P5hdRjlvETuTcQjcXleMGwIiUegWJDmugIUs+C9wxMadbxqBfj1B43
-         /kR9GbVexyjcmkbGO1gAdrAy10kmn878AJtmTHuiIeEMw2xXPKZoN2cb2XyCiRBX0mgh
-         W09gqt81tSaNlFvY+oxa44KTRJE7ecsmpHYmis8MC41f8j3ogSgdZ7aiFaV2pIhOmtwA
-         xjxA==
-X-Gm-Message-State: AOAM5331VhTb+O/2/LIRo5ZgboVevLK1541RWwxSDz4VIE5MAbvJFgRy
-        PxfzerFIr2bjj5uP2JsFuDJ9ag==
-X-Google-Smtp-Source: ABdhPJwJAeFEelD78q6rYpvvQ6JxuZtvcWF/AFitGSSMgHKpRLSybFUYGC+pdSrjsP540fmNOXEUIg==
-X-Received: by 2002:a17:90a:3:: with SMTP id 3mr335438pja.211.1644398595054;
-        Wed, 09 Feb 2022 01:23:15 -0800 (PST)
-Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
-        by smtp.gmail.com with UTF8SMTPSA id k14sm19262194pff.25.2022.02.09.01.23.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 01:23:14 -0800 (PST)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     josephsih@google.com, chromeos-bluetooth-upstreaming@chromium.org,
-        Joseph Hwang <josephsih@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 3/3] Bluetooth: mgmt: add set_quality_report for MGMT_OP_SET_QUALITY_REPORT
-Date:   Wed,  9 Feb 2022 17:23:00 +0800
-Message-Id: <20220209092312.751426-1-josephsih@chromium.org>
-X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
-In-Reply-To: <20220209172233.v3.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
-References: <20220209172233.v3.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+        Wed, 9 Feb 2022 04:28:27 -0500
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FD7E040DF7;
+        Wed,  9 Feb 2022 01:28:22 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4JtvXs5xjjz9sks;
+        Wed,  9 Feb 2022 10:22:21 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
+        t=1644398539;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CgbpLpaaEGPG47I00MAmDGZQfBwt9YRqZQjIkK1jtMg=;
+        b=UkIoleO0FfNvl+C1vKOXO28em+LOYURsmKJpnglQz5VNxESxpVa6x19Rh2ECJhgCE60NiO
+        6dZCoqq9C/qHDJX7eLAactdnDlgtJ8S5geppzhlG7avqviUefgnDp9Jk8Pcf6MjQnnrV89
+        TK2A+VcF67IbvQj4zfl7PfVHyw5OioDp9yeHQ5GgStzQFbkreQISSw5Q8GmIgPiCSBkxag
+        4KEnKexJIUEqqVQBTswnWqpEaK4TGcG8qPfhDf44Px5AEwudNxuD6WExWYQDtD+uTZWrS+
+        Ah/YLnnP7ROJhm0xLhwJlcdLgB4Io332vv/nJOKLoxy++ZeGh4iY99Fev2W4Iw==
+Message-ID: <b213a0f4a2baac25f5758acbce222d0ace0e5b35.camel@sylv.io>
+Subject: Re: [PATCH v1 0/4] Support bcm6123 Bus Converter
+From:   sylv <sylv@sylv.io>
+To:     linux-hwmon@vger.kernel.org
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-kernel@vger.kernel.org
+Date:   Wed, 09 Feb 2022 10:22:02 +0100
+In-Reply-To: <cover.1642434222.git.sylv@sylv.io>
+References: <cover.1642434222.git.sylv@sylv.io>
+Content-Type: text/plain; charset="UTF-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds a new set_quality_report mgmt handler to set
-the quality report feature. The feature is removed from the
-experimental features at the same time.
+Hi,
 
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
----
+since this driver actually implements the supervisor pli1209bc,
+see this patch set as discontinued. A new patch set will be uploaded
+soon.
 
-Changes in v3:
-- This is a new patch to enable the quality report feature.
-  The reading and setting of the quality report feature are
-  removed from the experimental features.
+Thanks,
+Marcello
 
- include/net/bluetooth/mgmt.h |   7 ++
- net/bluetooth/mgmt.c         | 164 +++++++++++++++--------------------
- 2 files changed, 77 insertions(+), 94 deletions(-)
-
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 03204b4ba641..236e042fbc1c 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -109,6 +109,7 @@ struct mgmt_rp_read_index_list {
- #define MGMT_SETTING_STATIC_ADDRESS	0x00008000
- #define MGMT_SETTING_PHY_CONFIGURATION	0x00010000
- #define MGMT_SETTING_WIDEBAND_SPEECH	0x00020000
-+#define MGMT_SETTING_QUALITY_REPORT	0x00040000
- 
- #define MGMT_OP_READ_INFO		0x0004
- #define MGMT_READ_INFO_SIZE		0
-@@ -838,6 +839,12 @@ struct mgmt_cp_add_adv_patterns_monitor_rssi {
- } __packed;
- #define MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE	8
- 
-+#define MGMT_OP_SET_QUALITY_REPORT		0x0057
-+struct mgmt_cp_set_quality_report {
-+	__u8	action;
-+} __packed;
-+#define MGMT_SET_QUALITY_REPORT_SIZE		1
-+
- #define MGMT_EV_CMD_COMPLETE		0x0001
- struct mgmt_ev_cmd_complete {
- 	__le16	opcode;
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index cab79f480a21..92de8e669897 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -857,6 +857,10 @@ static u32 get_supported_settings(struct hci_dev *hdev)
- 
- 	settings |= MGMT_SETTING_PHY_CONFIGURATION;
- 
-+	if (hdev && (aosp_has_quality_report(hdev) ||
-+		     hdev->set_quality_report))
-+		settings |= MGMT_SETTING_QUALITY_REPORT;
-+
- 	return settings;
- }
- 
-@@ -928,6 +932,9 @@ static u32 get_current_settings(struct hci_dev *hdev)
- 	if (hci_dev_test_flag(hdev, HCI_WIDEBAND_SPEECH_ENABLED))
- 		settings |= MGMT_SETTING_WIDEBAND_SPEECH;
- 
-+	if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
-+		settings |= MGMT_SETTING_QUALITY_REPORT;
-+
- 	return settings;
- }
- 
-@@ -3871,12 +3878,6 @@ static const u8 debug_uuid[16] = {
- };
- #endif
- 
--/* 330859bc-7506-492d-9370-9a6f0614037f */
--static const u8 quality_report_uuid[16] = {
--	0x7f, 0x03, 0x14, 0x06, 0x6f, 0x9a, 0x70, 0x93,
--	0x2d, 0x49, 0x06, 0x75, 0xbc, 0x59, 0x08, 0x33,
--};
--
- /* a6695ace-ee7f-4fb9-881a-5fac66c629af */
- static const u8 offload_codecs_uuid[16] = {
- 	0xaf, 0x29, 0xc6, 0x66, 0xac, 0x5f, 0x1a, 0x88,
-@@ -3898,7 +3899,7 @@ static const u8 rpa_resolution_uuid[16] = {
- static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
- 				  void *data, u16 data_len)
- {
--	char buf[102];   /* Enough space for 5 features: 2 + 20 * 5 */
-+	char buf[82];   /* Enough space for 4 features: 2 + 20 * 4 */
- 	struct mgmt_rp_read_exp_features_info *rp = (void *)buf;
- 	u16 idx = 0;
- 	u32 flags;
-@@ -3939,18 +3940,6 @@ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
- 		idx++;
- 	}
- 
--	if (hdev && (aosp_has_quality_report(hdev) ||
--		     hdev->set_quality_report)) {
--		if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
--			flags = BIT(0);
--		else
--			flags = 0;
--
--		memcpy(rp->features[idx].uuid, quality_report_uuid, 16);
--		rp->features[idx].flags = cpu_to_le32(flags);
--		idx++;
--	}
--
- 	if (hdev && hdev->get_data_path_id) {
- 		if (hci_dev_test_flag(hdev, HCI_OFFLOAD_CODECS_ENABLED))
- 			flags = BIT(0);
-@@ -4163,80 +4152,6 @@ static int set_rpa_resolution_func(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
- 
--static int set_quality_report_func(struct sock *sk, struct hci_dev *hdev,
--				   struct mgmt_cp_set_exp_feature *cp,
--				   u16 data_len)
--{
--	struct mgmt_rp_set_exp_feature rp;
--	bool val, changed;
--	int err;
--
--	/* Command requires to use a valid controller index */
--	if (!hdev)
--		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
--				       MGMT_OP_SET_EXP_FEATURE,
--				       MGMT_STATUS_INVALID_INDEX);
--
--	/* Parameters are limited to a single octet */
--	if (data_len != MGMT_SET_EXP_FEATURE_SIZE + 1)
--		return mgmt_cmd_status(sk, hdev->id,
--				       MGMT_OP_SET_EXP_FEATURE,
--				       MGMT_STATUS_INVALID_PARAMS);
--
--	/* Only boolean on/off is supported */
--	if (cp->param[0] != 0x00 && cp->param[0] != 0x01)
--		return mgmt_cmd_status(sk, hdev->id,
--				       MGMT_OP_SET_EXP_FEATURE,
--				       MGMT_STATUS_INVALID_PARAMS);
--
--	hci_req_sync_lock(hdev);
--
--	val = !!cp->param[0];
--	changed = (val != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
--
--	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
--		err = mgmt_cmd_status(sk, hdev->id,
--				      MGMT_OP_SET_EXP_FEATURE,
--				      MGMT_STATUS_NOT_SUPPORTED);
--		goto unlock_quality_report;
--	}
--
--	if (changed) {
--		if (hdev->set_quality_report)
--			err = hdev->set_quality_report(hdev, val);
--		else
--			err = aosp_set_quality_report(hdev, val);
--
--		if (err) {
--			err = mgmt_cmd_status(sk, hdev->id,
--					      MGMT_OP_SET_EXP_FEATURE,
--					      MGMT_STATUS_FAILED);
--			goto unlock_quality_report;
--		}
--
--		if (val)
--			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
--		else
--			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
--	}
--
--	bt_dev_dbg(hdev, "quality report enable %d changed %d", val, changed);
--
--	memcpy(rp.uuid, quality_report_uuid, 16);
--	rp.flags = cpu_to_le32(val ? BIT(0) : 0);
--	hci_sock_set_flag(sk, HCI_MGMT_EXP_FEATURE_EVENTS);
--
--	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_EXP_FEATURE, 0,
--				&rp, sizeof(rp));
--
--	if (changed)
--		exp_feature_changed(hdev, quality_report_uuid, val, sk);
--
--unlock_quality_report:
--	hci_req_sync_unlock(hdev);
--	return err;
--}
--
- static int set_offload_codec_func(struct sock *sk, struct hci_dev *hdev,
- 				  struct mgmt_cp_set_exp_feature *cp,
- 				  u16 data_len)
-@@ -4363,7 +4278,6 @@ static const struct mgmt_exp_feature {
- 	EXP_FEAT(debug_uuid, set_debug_func),
- #endif
- 	EXP_FEAT(rpa_resolution_uuid, set_rpa_resolution_func),
--	EXP_FEAT(quality_report_uuid, set_quality_report_func),
- 	EXP_FEAT(offload_codecs_uuid, set_offload_codec_func),
- 	EXP_FEAT(le_simultaneous_roles_uuid, set_le_simultaneous_roles_func),
- 
-@@ -8656,6 +8570,67 @@ static int get_adv_size_info(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
- 
-+static int set_quality_report(struct sock *sk, struct hci_dev *hdev,
-+			      void *data, u16 data_len)
-+{
-+	struct mgmt_cp_set_quality_report *cp = data;
-+	bool enable, changed;
-+	int err;
-+
-+	/* Command requires to use a valid controller index */
-+	if (!hdev)
-+		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
-+				       MGMT_OP_SET_QUALITY_REPORT,
-+				       MGMT_STATUS_INVALID_INDEX);
-+
-+	/* Only 0 (off) and 1 (on) is supported */
-+	if (cp->action != 0x00 && cp->action != 0x01)
-+		return mgmt_cmd_status(sk, hdev->id,
-+				       MGMT_OP_SET_QUALITY_REPORT,
-+				       MGMT_STATUS_INVALID_PARAMS);
-+
-+	hci_req_sync_lock(hdev);
-+
-+	enable = !!cp->action;
-+	changed = (enable != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
-+
-+	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
-+		err = mgmt_cmd_status(sk, hdev->id,
-+				      MGMT_OP_SET_QUALITY_REPORT,
-+				      MGMT_STATUS_NOT_SUPPORTED);
-+		goto unlock_quality_report;
-+	}
-+
-+	if (changed) {
-+		if (hdev->set_quality_report)
-+			err = hdev->set_quality_report(hdev, enable);
-+		else
-+			err = aosp_set_quality_report(hdev, enable);
-+
-+		if (err) {
-+			err = mgmt_cmd_status(sk, hdev->id,
-+					      MGMT_OP_SET_QUALITY_REPORT,
-+					      MGMT_STATUS_FAILED);
-+			goto unlock_quality_report;
-+		}
-+
-+		if (enable)
-+			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
-+		else
-+			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
-+	}
-+
-+	bt_dev_dbg(hdev, "quality report enable %d changed %d",
-+		   enable, changed);
-+
-+	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_QUALITY_REPORT, 0,
-+				NULL, 0);
-+
-+unlock_quality_report:
-+	hci_req_sync_unlock(hdev);
-+	return err;
-+}
-+
- static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ NULL }, /* 0x0000 (no command) */
- 	{ read_version,            MGMT_READ_VERSION_SIZE,
-@@ -8782,6 +8757,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ add_adv_patterns_monitor_rssi,
- 				   MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE,
- 						HCI_MGMT_VAR_LEN },
-+	{ set_quality_report,      MGMT_SET_QUALITY_REPORT_SIZE },
- };
- 
- void mgmt_index_added(struct hci_dev *hdev)
--- 
-2.35.0.263.gb82422642f-goog
+On Mon, 2022-01-17 at 17:12 +0100, Marcello Sylvester Bauer wrote:
+> Hi,
+> 
+> This patchset adds support for BCM6123 Bus Converter from Vicor
+> Corporation.
+> 
+> Marcello Sylvester Bauer (3):
+>   dt-bindings: vendor-prefixes: add Vicor Corporation
+>   dt-bindings: hwmon/pmbus: Add vicor,bcm6123 Bus Converter
+>   pmbus: remove trailing whitespaces
+> 
+> Patrick Rudolph (1):
+>   pmbus: Add support for bcm6123 Bus Converter
+> 
+>  .../bindings/hwmon/pmbus/vicor,bcm6123.yaml   | 41 +++++++++
+>  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+>  drivers/hwmon/pmbus/Kconfig                   | 13 ++-
+>  drivers/hwmon/pmbus/Makefile                  |  1 +
+>  drivers/hwmon/pmbus/bcm6123.c                 | 90
+> +++++++++++++++++++
+>  5 files changed, 145 insertions(+), 2 deletions(-)
+>  create mode 100644
+> Documentation/devicetree/bindings/hwmon/pmbus/vicor,bcm6123.yaml
+>  create mode 100644 drivers/hwmon/pmbus/bcm6123.c
+> 
 
