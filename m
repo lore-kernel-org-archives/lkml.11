@@ -2,97 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE106C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9EA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:38:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242103AbiBIIhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:37:22 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34808 "EHLO
+        id S242215AbiBIIiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:38:06 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:40058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242063AbiBIIg7 (ORCPT
+        with ESMTP id S232550AbiBIIiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:36:59 -0500
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4DFC03BFD6;
-        Wed,  9 Feb 2022 00:36:57 -0800 (PST)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id B75ED20140B;
-        Wed,  9 Feb 2022 08:30:59 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 8D9BE80892; Wed,  9 Feb 2022 09:29:02 +0100 (CET)
-Date:   Wed, 9 Feb 2022 09:29:02 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tytso@mit.edu, ebiggers@kernel.org,
-        Eric Biggers <ebiggers@google.com>
-Subject: Re: [PATCH v2 6/9] random: absorb fast pool into input pool after
- fast load
-Message-ID: <YgN7TvD5rs/5i1dQ@owl.dominikbrodowski.net>
-References: <20220209011919.493762-1-Jason@zx2c4.com>
- <20220209011919.493762-7-Jason@zx2c4.com>
+        Wed, 9 Feb 2022 03:38:03 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA65C094CB0;
+        Wed,  9 Feb 2022 00:38:00 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id d187so3013710pfa.10;
+        Wed, 09 Feb 2022 00:38:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=22Xi1z/ScqVSExlbxCk1GGbcWjUYoCEzTiIBgifbR8k=;
+        b=XYCAQTI45l9GPO+hXmMbN+HqvTO6Luiwt337miZ/r8Qj8Hld+/3tuyT2zYGQhNOCvv
+         80AceUYqEdoJHxmnmIo8Er6kBSjMvZX/RDTqUt536+uYcmJ1LkX5yrv+iYBQPZJ1zgHf
+         kcFjiPAKN2rA7olq5IT7pl8frpdXSyTpKpfdJTIGKwPfz0CVa2MloGKQr7aSPdOTEmml
+         Bmba8grwjsbSaIYnmjQAe07ua+OqBkarVDtnKBGxR1ZaFDyK4eOtp7Oo/mn+vItvi4hN
+         fSgMX5H4CZv0wAXyvccIzuVp9XQx8mWAtmNZtHGaDkEr7NX/UiLpmBU1XZAld1IVNIr3
+         bHkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=22Xi1z/ScqVSExlbxCk1GGbcWjUYoCEzTiIBgifbR8k=;
+        b=3N7fstn8mh45s1IbgpGeH3brIZlVnDKBZOEEl52ctWk2MXpv+pVLV6LiDB/p9+qq6s
+         QTzGakTarbXoYJPjYu2C/K3wq7AfK+7eooin1BvreoGZ+oFZgzE01mqdrdlj/9275+f/
+         CL2ltxlzBdxtOY/Yotrs3FjJcOuru7y/z7E0R/P+OoMrvwj4WiIqII8oUxR3nHNl8jCM
+         PBM9HwQYdMvqfEMl8z07LqC+2BEK/G8ieFMoT0WT5gJ/5NGzGsRS2Qt4TjogfKusuBd5
+         TScWMBF7G4expMjVwXNax1X/xvgqgfRGBz7b888Y922/J7J2lfNRnz2RXSR1uoaMlFBe
+         NN5Q==
+X-Gm-Message-State: AOAM530LEE3aqw4FuFWqBpXci6oa2ZqGoo/xy9vrbGNK1j99opH2DJwu
+        ouiZb+IzTxdX2whtYsDnIGRoWe2TnHw7WfU/Axg=
+X-Google-Smtp-Source: ABdhPJxWr0Kbq83LpjlqWfmGu30DOKd4Oo70si+5KGXccF9/zMwD3H9w+YFnjXYls53fU6SGRXrxkD/bWGFXE3vSYOM=
+X-Received: by 2002:a63:6c84:: with SMTP id h126mr1043241pgc.456.1644395877349;
+ Wed, 09 Feb 2022 00:37:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209011919.493762-7-Jason@zx2c4.com>
+References: <20211228072645.32341-1-luizluca@gmail.com> <Ydx4+o5TsWZkZd45@robh.at.kernel.org>
+ <CAJq09z4G40ttsTHXtOywjyusNLSjt_BQ9D78PhwSodJr=4p6OA@mail.gmail.com>
+ <7d6231f1-a45d-f53e-77d9-3e8425996662@arinc9.com> <CAJq09z7n_RZpsZS+RNpdzzYzhiogHfWmfpOF5CJCLBL6gurS_Q@mail.gmail.com>
+ <a9571486-1efd-49a7-aa26-c582d493ead6@gmail.com>
+In-Reply-To: <a9571486-1efd-49a7-aa26-c582d493ead6@gmail.com>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Wed, 9 Feb 2022 05:37:46 -0300
+Message-ID: <CAJq09z7xGADn9u6Bu8MNeQGcR-T4s_wRuun2r+KO8Jh4fmYYjg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: net: dsa: realtek-smi: convert to YAML schema
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Wed, Feb 09, 2022 at 02:19:16AM +0100 schrieb Jason A. Donenfeld:
-> During crng_init == 0, we never credit entropy in add_interrupt_
-> randomness(), but instead dump it directly into the base_crng. That's
-> fine, except for the fact that we then wind up throwing away that
-> entropy later when we switch to extracting from the input pool and
-> overwriting the base_crng key. The two other early init sites --
-> add_hwgenerator_randomness()'s use crng_fast_load() and add_device_
-> randomness()'s use of crng_slow_load() -- always additionally give their
-> inputs to the input pool. But not add_interrupt_randomness().
+> If there
+> are properties that only apply to SPI or MDIO, you can make use of
+> conditionals within the YAML file to enforce those. Having a single
+> binding file would be very helpful to make sure all eggs are in the same
+> basket.
 
-Hm, up to this patch there is no base_crng key. So maybe change the ordering
-of the patches?
+Sorry Florian but I failed to find a way to test the parent node
+(platform or mdio) and conditionally offer properties.
+What I did was to guess if it is an mdio driver or not by checking the
+"reg" property. Is there a better way to solve it?
 
-> This commit fixes that shortcoming by calling mix_pool_bytes() after
-> crng_fast_load() in add_interrupt_randomness(). That's partially
-> verboten on PREEMPT_RT, where it implies taking spinlock_t from an IRQ
-> handler. But this also only happens during early boot and then never
-> again after that. Should this turn into a larger problem later for some
-> esoteric reason, we can always use `if (IS_ENABLED(PREEMPT_RT))` or
-> something similar to that. But for now, this should do.
-> 
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Suggested-by: Eric Biggers <ebiggers@google.com>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  drivers/char/random.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index 785a4545c9d7..20374bce9a07 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -864,6 +864,13 @@ void add_interrupt_randomness(int irq)
->  		    crng_fast_load((u8 *)fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
->  			fast_pool->count = 0;
->  			fast_pool->last = now;
-> +
-> +			/* Technically this call means that we're using a spinlock_t
-> +			 * in the IRQ handler, which isn't terrific for PREEMPT_RT.
-> +			 * However, this only happens during very early boot, and then
+Luiz
 
-Whether it's only during "very early" boot depends on how fast we progress
-to crng_init = 2. So maybe just "during boot"?
-
-Otherwise, all fine, so
-
-	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-
-Thanks,
-	Dominik
+PS: I might post the merged v2 doc soon.
