@@ -2,92 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62C58C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30ED0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237365AbiBIQkR convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:40:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48008 "EHLO
+        id S237403AbiBIQl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:41:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237342AbiBIQkM (ORCPT
+        with ESMTP id S237397AbiBIQlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:40:12 -0500
-X-Greylist: delayed 357 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 08:40:14 PST
-Received: from unicorn.mansr.com (unicorn.mansr.com [81.2.72.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6745C0612BE;
-        Wed,  9 Feb 2022 08:40:14 -0800 (PST)
-Received: from raven.mansr.com (raven.mansr.com [81.2.72.235])
-        by unicorn.mansr.com (Postfix) with ESMTPS id 2948D15360;
-        Wed,  9 Feb 2022 16:34:15 +0000 (GMT)
-Received: by raven.mansr.com (Postfix, from userid 51770)
-        id 1F5CD21588D; Wed,  9 Feb 2022 16:34:15 +0000 (GMT)
-From:   =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Juergen Borleis <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: lan9303: fix reset on probe
-References: <20220209145454.19749-1-mans@mansr.com> <YgPlVGclJOkvLZ1i@lunn.ch>
-Date:   Wed, 09 Feb 2022 16:34:15 +0000
-In-Reply-To: <YgPlVGclJOkvLZ1i@lunn.ch> (Andrew Lunn's message of "Wed, 9 Feb
-        2022 17:01:24 +0100")
-Message-ID: <yw1x1r0c5794.fsf@mansr.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        Wed, 9 Feb 2022 11:41:24 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D285C05CB8E;
+        Wed,  9 Feb 2022 08:41:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644424884; x=1675960884;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=r9L2ApNXksnGqO8AjDsuLj/L+RaApKpFYz722Z9aqx4=;
+  b=n0X+kD9aFzQkzbxN1rb8OKL3uK5VoIejB1X9LewuF9jCRbUE1mX9ltoS
+   FzLVkfY93xVH0he898WHFEKIE33KgZnXp0xV4z17CXoam7ao+SL/Blzlv
+   c3RpMEIDn5sL9MmuTXwR6LYZw7OvGplCtCbLY8zajjE6WuZ3iez495fTl
+   yuCaNxrN0xsZU1/lOik5wnZQNe86gG4jfmEol0CRRx1Xl00Lh2TJLUt+k
+   EEDyilYXPUyQl3ZBgUucf3XOljyb9W2QA0p49CxUPVqjv2tqq1irvKguB
+   /xW/YpF+Wbd14YY6mGHT4N6MaG9v/dvdWikLpjvmDllhb4Ado5ryt4RNg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="312539880"
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="312539880"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 08:41:23 -0800
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="482386274"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 08:41:21 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nHq11-002g3O-CS;
+        Wed, 09 Feb 2022 18:40:23 +0200
+Date:   Wed, 9 Feb 2022 18:40:23 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>
+Subject: Re: [PATCH v3 5/7] (WIP) drm/solomon: Add SSD130X OLED displays SPI
+ support
+Message-ID: <YgPudz6YTweyx8pg@smile.fi.intel.com>
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <20220209091204.2513437-1-javierm@redhat.com>
+ <CAMuHMdWSDBjpYJv6JtgvyaKiFKh_eqbvH78TR6VBtpDeFJvqFQ@mail.gmail.com>
+ <YgPbAL0I8Wn7nnNb@smile.fi.intel.com>
+ <d32c731b-c06f-2dcb-5a6d-1a84351719b2@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d32c731b-c06f-2dcb-5a6d-1a84351719b2@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Andrew Lunn <andrew@lunn.ch> writes:
+On Wed, Feb 09, 2022 at 05:07:03PM +0100, Javier Martinez Canillas wrote:
+> On 2/9/22 16:17, Andy Shevchenko wrote:
+> > On Wed, Feb 09, 2022 at 01:25:46PM +0100, Geert Uytterhoeven wrote:
+> >> On Wed, Feb 9, 2022 at 10:12 AM Javier Martinez Canillas
+> >> <javierm@redhat.com> wrote:
+> > 
+> > ...
+> > 
+> >>> +               .compatible = "solomon,ssd1305fb-spi",
+> >>
+> >> This needs an update to the DT bindings.
+> >> Hence this may be a good time to deprecate the existing
+> >> "solomon,ssd130*fb-i2c" compatible values, and switch to
+> >> "solomon,ssd130*fb" instead, for both I2C and SPI.
+> > 
+> > Agree!
+> > 
+> 
+> Did you see my comment about automatic module loading ? I think
+> that would be an issue if we use the same compatible for both
+> I2C and SPI drivers.
 
-> On Wed, Feb 09, 2022 at 02:54:54PM +0000, Mans Rullgard wrote:
->> The reset input to the LAN9303 chip is active low, and devicetree
->> gpio handles reflect this.  Therefore, the gpio should be requested
->> with an initial state of high in order for the reset signal to be
->> asserted.  Other uses of the gpio already use the correct polarity.
->> 
->> Signed-off-by: Mans Rullgard <mans@mansr.com>
->> ---
->>  drivers/net/dsa/lan9303-core.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->> 
->> diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
->> index aa1142d6a9f5..2de67708bbd2 100644
->> --- a/drivers/net/dsa/lan9303-core.c
->> +++ b/drivers/net/dsa/lan9303-core.c
->> @@ -1301,7 +1301,7 @@ static int lan9303_probe_reset_gpio(struct lan9303 *chip,
->>  				     struct device_node *np)
->>  {
->>  	chip->reset_gpio = devm_gpiod_get_optional(chip->dev, "reset",
->> -						   GPIOD_OUT_LOW);
->> +						   GPIOD_OUT_HIGH);
->>  	if (IS_ERR(chip->reset_gpio))
->>  		return PTR_ERR(chip->reset_gpio);
->
-> lan9303_handle_reset() does a sleep and then releases the reset. I
-> don't see anywhere in the driver which asserts the reset first. So is
-> it actually asserted as part of this getting the GPIO? And if so, does
-> not this change actually break the reset?
-
-The GPIOD_OUT_xxx flags to gpiod_get() request that the pin be
-configured as output and set to high/low initially.  The GPIOD_OUT_LOW
-currently used by the lan9303 driver together with GPIO_ACTIVE_LOW in
-the devicetrees results in the actual voltage being set high.  The
-driver then sleeps for a bit before setting the gpio value to zero,
-again translated to a high output voltage.  That is, the value set after
-the sleep is the same as it was initially.  This is obviously not the
-intent.
-
-With the patch applied, I can measure the reset signal pulse low for the
-configured duration when the device is probed.  Without the patch, the
-reset signal remains high and no reset of the device occurs.
+Bug in OF code? This is not a problem in ACPI AFAICT.
 
 -- 
-Måns Rullgård
+With Best Regards,
+Andy Shevchenko
+
+
