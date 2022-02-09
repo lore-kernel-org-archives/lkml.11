@@ -2,82 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB620C4707A
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:09:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6360C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244087AbiBIDCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:02:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52608 "EHLO
+        id S244919AbiBIDIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:08:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351596AbiBICtk (ORCPT
+        with ESMTP id S1352784AbiBIDHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:49:40 -0500
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67918C0401C1;
-        Tue,  8 Feb 2022 18:43:50 -0800 (PST)
-Received: by mail-oo1-f44.google.com with SMTP id u25-20020a4ad0d9000000b002e8d4370689so892494oor.12;
-        Tue, 08 Feb 2022 18:43:50 -0800 (PST)
+        Tue, 8 Feb 2022 22:07:19 -0500
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181EEC061355;
+        Tue,  8 Feb 2022 19:07:19 -0800 (PST)
+Received: by mail-oi1-f176.google.com with SMTP id s185so1195804oie.3;
+        Tue, 08 Feb 2022 19:07:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=8UkTgHS+mgwp4w2JOUl++8XSEMif+O0IMskLaUahjeo=;
-        b=49Jm8VdmV2FRHV6KX/A1D8RjhIMsEARm0HZ9kMd3znKMivfENolDH/TZQaScUczN4A
-         TBefSjWzmFwUXz3+5ub/XZqmW90K1hsrmPxpcZSQ4JEaSjV+c6STuNkgJAQhrPGm0wV+
-         upmYAgbowX/rlhnTXc6RGXHEL7NqK6G05RiNYbbGssKY/Ke2/U/LmzQDO/ksbl2xVqHF
-         Lgkb5o4zvXSMGuDYPaGPW2LFNWStZmWn9UZcd8QsCzcHgjlDoJQg+mIZOJ2Dweu080uq
-         DaUdni1xIryNzH3FPMo53C99jAFRAoFA3RnvsLGN8lGQeNjwq/ITOeGe+vaPl8TDW+Kd
-         cvXQ==
-X-Gm-Message-State: AOAM533aWRmUy+i7xFQLWxoqeTaNgiWAv+637WLyZEAXw4uvSW2bHu6Q
-        R6TGg9CrzthqucJUt1VVbuj+L1vm8A==
-X-Google-Smtp-Source: ABdhPJwWrE9A5vBbeCZNjyS81I2QJrp+p1XO4NAPxKOqEzsyDqVdsnvrjzvn1Y2Eo1ZsR/2i6baE+w==
-X-Received: by 2002:a05:6870:73c3:: with SMTP id a3mr260715oan.293.1644374615894;
-        Tue, 08 Feb 2022 18:43:35 -0800 (PST)
+        bh=4zK4mNlft0YSBrS1EUUtnZ1eiCxH6p/RVKxlEycE1ok=;
+        b=zV+UL1/rq+QB5T/bBSZz/acLjAkQWz86ys0sPEk5LPlA6KCUA7lGxzcVJZqfCoLh2i
+         r6b1RDOe5UOn2wTodFJeOp2TkGACi5bHKuw0BPHldY846Xq/TWLGjaepGLTXI/Jf7CXh
+         9CAb/olwD9XUTCPFhSJeuDxy19BJSA67E7R73CR6Axr6nPqtizPAqtSncVk89UgKxHka
+         DJCWayy3uHuSVF/HqSj2YZ2afmwHODXJ5UJqtTv3uhqWRVn3qUVDWHeEhPt9E0QY3+fD
+         eoeEuGHCBdVscU+g1ijTbB9AFtjd4I72hKvujPVRnYeMkmRlL1ZBonRU0J26M3W+gM6n
+         Zz7A==
+X-Gm-Message-State: AOAM530stBboYCnt5M6TJv/p9e8sDzSbuH3hbJckNvLf8JvvIO8F7OIO
+        lNDdkBRpJKBmevGPhW8+KA==
+X-Google-Smtp-Source: ABdhPJxVQa/OMB3jeFEviv/+OHHc5hTS47P1H6zGuk+DV0L87x8EQ3rVWsVnMJo7VRW3gI2yQeavOg==
+X-Received: by 2002:a05:6808:158b:: with SMTP id t11mr435650oiw.250.1644376038421;
+        Tue, 08 Feb 2022 19:07:18 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id t22sm6382076oiw.2.2022.02.08.18.43.34
+        by smtp.gmail.com with ESMTPSA id g34sm6140107ooi.48.2022.02.08.19.07.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 18:43:34 -0800 (PST)
-Received: (nullmailer pid 3510501 invoked by uid 1000);
-        Wed, 09 Feb 2022 02:43:34 -0000
-Date:   Tue, 8 Feb 2022 20:43:34 -0600
+        Tue, 08 Feb 2022 19:07:17 -0800 (PST)
+Received: (nullmailer pid 3547540 invoked by uid 1000);
+        Wed, 09 Feb 2022 03:07:16 -0000
+Date:   Tue, 8 Feb 2022 21:07:16 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] mfd: ab8500: Rewrite bindings in YAML
-Message-ID: <YgMqVqS9MWmq++GI@robh.at.kernel.org>
-References: <20220115002649.1526163-1-linus.walleij@linaro.org>
+To:     Caleb Connolly <caleb@connolly.tech>
+Cc:     Tony Luck <tony.luck@intel.com>, Rob Herring <robh+dt@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Henrik Rydberg <rydberg@bitmath.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        Anton Vorontsov <anton@enomsg.org>,
+        linux-arm-msm@vger.kernel.org, Colin Cross <ccross@android.com>,
+        linux-input@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexander Martinz <amartinz@shiftphones.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Harigovindan P <harigovi@codeaurora.org>,
+        dri-devel@lists.freedesktop.org, Andy Gross <agross@kernel.org>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 5/6] dt-bindings: vendor-prefixes: add vendor prefix for
+ SHIFT
+Message-ID: <YgMv5A7gwz9a8VNK@robh.at.kernel.org>
+References: <20220123173650.290349-6-caleb@connolly.tech>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220115002649.1526163-1-linus.walleij@linaro.org>
+In-Reply-To: <20220123173650.290349-6-caleb@connolly.tech>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 15 Jan 2022 01:26:49 +0100, Linus Walleij wrote:
-> This rewrites the former text based AB8500 bindings in YAML.
+On Sun, 23 Jan 2022 17:38:08 +0000, Caleb Connolly wrote:
+> Add SHIFT vendor prefix, SHIFT make various devices such as the SHIF6mq
+> phone.
 > 
-> When the AB8500 bindings were first written (in 2012) we
-> were not strict on some things and node names were definitely
-> not standardized.
-> 
-> This patch uses standard node names to most of the subnodes
-> on the AB8500 and is accompanied by another patch fixing
-> all the DTS files to conform to this.
-> 
-> The bindings are not as perfect as newly written bindings
-> would be, it is a best effort to deal with the legacy.
-> 
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Caleb Connolly <caleb@connolly.tech>
 > ---
->  .../devicetree/bindings/mfd/ab8500.txt        | 282 ----------
->  .../bindings/mfd/stericsson,ab8500.yaml       | 500 ++++++++++++++++++
->  .../bindings/mfd/stericsson,db8500-prcmu.yaml |   1 +
->  3 files changed, 501 insertions(+), 282 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/mfd/ab8500.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/stericsson,ab8500.yaml
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
