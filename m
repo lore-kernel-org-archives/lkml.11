@@ -2,101 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D69C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234861AbiBIJps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:45:48 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39252 "EHLO
+        id S230397AbiBIJtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:49:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbiBIJpp (ORCPT
+        with ESMTP id S230160AbiBIJth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:45:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDA3E0699AE
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:45:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 9 Feb 2022 04:49:37 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEBFE01A2E8;
+        Wed,  9 Feb 2022 01:49:27 -0800 (PST)
+Received: from [192.168.0.2] (ip5f5aee30.dynamic.kabel-deutschland.de [95.90.238.48])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7DA4619BA
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:42:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A61F4C340E7;
-        Wed,  9 Feb 2022 09:42:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644399739;
-        bh=Hj4guPRHDf34ilQhSL4H2ZHu0uoUXzIKahEM2dGbhc4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dBIiEUglGNaozi8wCk7JEHogC+s6n2oGOegdedQLT58ZmDH4oLBynvio9o6Z9Hke7
-         H3C1fXPgBPsynjoLfyixntDZb2Zrvj4+mp0US991qnja3Z19YxJyn95o+QD/ZHoCuK
-         OH5ayPgSRzULSPTnUjTnBChmgu03SeV6jIo49U/zRfru8G7UItNu+/Gm/Ozvkb3uX+
-         TbSMW/+uLI8ryzHRee4iD8ZuZ+3XVhQWV7fHJ/11caNrAopel4SD63Ehw3BSKb2uac
-         ssBzq4/0eax4rwqbOICH8md5mUX/em9RC7gI1DiC+tS3ETTojG0nhulpd5P13nvZwp
-         vTKgxCQSSxpjQ==
-From:   SeongJae Park <sj@kernel.org>
-To:     akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        SeongJae Park <sj@kernel.org>, apopple@nvidia.com
-Subject: [PATCH for-mm 2/2] mm/gup: Make migrate_device_page() fails always if !CONFIG_DEVICE_PRIVATE
-Date:   Wed,  9 Feb 2022 09:41:58 +0000
-Message-Id: <20220209094158.21941-3-sj@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220209094158.21941-1-sj@kernel.org>
-References: <20220209094158.21941-1-sj@kernel.org>
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id D9D6561EA1923;
+        Wed,  9 Feb 2022 10:06:28 +0100 (CET)
+Message-ID: <f790f9aa-fcb7-d163-9c1c-9eb107d4b1bd@molgen.mpg.de>
+Date:   Wed, 9 Feb 2022 10:06:28 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2] media: aspeed: Use full swing as JFIF to fix incorrect
+ color
+Content-Language: en-US
+To:     Jammy Huang <jammy_huang@aspeedtech.com>
+References: <20220209084225.4456-1-jammy_huang@aspeedtech.com>
+Cc:     eajames@linux.ibm.com, mchehab@kernel.org, joel@jms.id.au,
+        andrew@aj.id.au, linux-media@vger.kernel.org,
+        openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220209084225.4456-1-jammy_huang@aspeedtech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 7059ac82be44 ("mm/gup.c: migrate device coherent pages when
-pinning instead of failing") in -mm tree[1] introduces
-'migrate_device_page()', which uses several functions that defined under
-CONFIG_DEVICE_RIVATE.  As a result, build under 'CONFIG_MIGRATION &&
-!CONFIG_DEVICE_PRIVATE' fails as below.
+Dear Jammy,
 
-      LD      .tmp_vmlinux.kallsyms1
-    mm/gup.o: In function `migrate_device_page':
-    /linux/mm/gup.c:1856: undefined reference to `migrate_vma_setup'
-    /linux/mm/gup.c:1876: undefined reference to `migrate_vma_pages'
-    /linux/mm/gup.c:1879: undefined reference to `migrate_vma_finalize'
-    /linux/Makefile:1222: recipe for target 'vmlinux' failed
-    make[1]: *** [vmlinux] Error 1
 
-This commit fixes it by implementing an always-failing version of the
-function for !CONFIG_DEVICE_PRIVATE'.
+Am 09.02.22 um 09:42 schrieb Jammy Huang:
+> Current settings for video capture rgb-2-yuv is BT.601(studio swing),
+> but JFIF uses BT.601(full swing) to deocde. This mismatch will lead
+> to incorrect color. For example, input RGB value, (0, 0, 255), will
+> become (16, 16, 235) after jpg decoded.
+> 
+> Add an enum, aspeed_video_capture_format, to define VR008[7:6]
+> capture format and correct default settings for video capture to fix
+> the problem.
 
-[1] https://www.ozlabs.org/~akpm/mmotm/broken-out/mm-gupc-migrate-device-coherent-pages-when-pinning-instead-of-failing.patch
+Maybe quote the datasheet:
 
-Signed-off-by: SeongJae Park <sj@kernel.org>
----
- mm/gup.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+VR008[7:6] will decide the data format for video capture:
+00: CCIR601 studio swing compliant YUV format
+01: CCIR601 full swing compliant YUV format
+10: RGB format
+11: Gray color mode
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 1df99a5e90cf..0cf59858114d 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -1834,6 +1834,7 @@ struct page *get_dump_page(unsigned long addr)
- #endif /* CONFIG_ELF_CORE */
- 
- #ifdef CONFIG_MIGRATION
-+#ifdef CONFIG_DEVICE_PRIVATE
- /*
-  * Migrates a device coherent page back to normal memory. Caller should have a
-  * reference on page which will be copied to the new page if migration is
-@@ -1887,6 +1888,14 @@ static struct page *migrate_device_page(struct page *page,
- 
- 	return dpage;
- }
-+#else
-+static inline struct page *migrate_device_page(struct page *page,
-+					unsigned int gup_flags)
-+{
-+	return NULL;
-+}
-+#endif /* CONFIG_DEVICE_PRIVATE */
-+
- 
- /*
-  * Check whether all pages are pinnable, if so return number of pages.  If some
--- 
-2.17.1
+> Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+> ---
+> v2:
+>   - update subject from 'media: aspeed: Fix-incorrect-color' to
+>     'media: aspeed: Use full swing as JFIF to fix incorrect'
+>   - update commit message
+>   - add enum, aspeed_video_capture_format, to define VR008[7:6]
+> ---
+>   drivers/media/platform/aspeed-video.c | 14 +++++++++++---
+>   1 file changed, 11 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+> index eb9c17ac0e14..5bcf60b4628b 100644
+> --- a/drivers/media/platform/aspeed-video.c
+> +++ b/drivers/media/platform/aspeed-video.c
+> @@ -86,8 +86,6 @@
+>   #define  VE_CTRL_SOURCE			BIT(2)
+>   #define  VE_CTRL_INT_DE			BIT(4)
+>   #define  VE_CTRL_DIRECT_FETCH		BIT(5)
+> -#define  VE_CTRL_YUV			BIT(6)
+> -#define  VE_CTRL_RGB			BIT(7)
+>   #define  VE_CTRL_CAPTURE_FMT		GENMASK(7, 6)
+>   #define  VE_CTRL_AUTO_OR_CURSOR		BIT(8)
+>   #define  VE_CTRL_CLK_INVERSE		BIT(11)
+> @@ -202,6 +200,15 @@ enum {
+>   	VIDEO_CLOCKS_ON,
+>   };
+>   
+> +// for VE_CTRL_CAPTURE_FMT
+> +enum aspeed_video_capture_format {
+> +	VIDEO_CAP_FMT_YUV_STUDIO = 0,
 
+Maybe also append `_SWING`?
+
+> +	VIDEO_CAP_FMT_YUV_FULL,
+> +	VIDEO_CAP_FMT_RGB,
+> +	VIDEO_CAP_FMT_GRAY,
+> +	VIDEO_CAP_FMT_MAX
+> +};
+> +
+>   struct aspeed_video_addr {
+>   	unsigned int size;
+>   	dma_addr_t dma;
+> @@ -1089,7 +1096,8 @@ static void aspeed_video_init_regs(struct aspeed_video *video)
+>   	u32 comp_ctrl = VE_COMP_CTRL_RSVD |
+>   		FIELD_PREP(VE_COMP_CTRL_DCT_LUM, video->jpeg_quality) |
+>   		FIELD_PREP(VE_COMP_CTRL_DCT_CHR, video->jpeg_quality | 0x10);
+> -	u32 ctrl = VE_CTRL_AUTO_OR_CURSOR;
+> +	u32 ctrl = VE_CTRL_AUTO_OR_CURSOR |
+> +		FIELD_PREP(VE_CTRL_CAPTURE_FMT, VIDEO_CAP_FMT_YUV_FULL);
+>   	u32 seq_ctrl = video->jpeg_mode;
+>   
+>   	if (video->frame_rate)
+
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+
+
+Kind regards,
+
+Paul
