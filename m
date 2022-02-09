@@ -2,68 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D69C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE50C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347302AbiBIEJk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:09:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44004 "EHLO
+        id S238241AbiBIEJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 23:09:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346476AbiBID3M (ORCPT
+        with ESMTP id S245752AbiBIEGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:29:12 -0500
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC91C061576
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:29:11 -0800 (PST)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1644377349;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=nk/ogVvZ6G5p1cloPOlhe43E5L3x/YQoDgays1J5zEo=;
-        b=YTNfyWsWjeJQ7m69DfJep2bexhfoncZFU2rMNsW4qldVIB7maRAB1nHaZFqcNEJzq2/C/1
-        ZUnfPMHwcteobZMIJHyRu12rAbk45ppIlMie46CnYKwVBaeDYzogpJvA356JdasE+lqArv
-        +Fr5kmRgoqRvn6NvKzY55QorpXznHVY=
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     cai.huoqing@linux.dev
-Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] xen/pci: Make use of the helper macro LIST_HEAD()
-Date:   Wed,  9 Feb 2022 11:28:41 +0800
-Message-Id: <20220209032842.38818-1-cai.huoqing@linux.dev>
+        Tue, 8 Feb 2022 23:06:12 -0500
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE55C061577;
+        Tue,  8 Feb 2022 20:06:11 -0800 (PST)
+Received: by mail-oi1-f181.google.com with SMTP id q8so1285560oiw.7;
+        Tue, 08 Feb 2022 20:06:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=b6SaNmycVybeDF6G9H1cZ2sPN7HYXMYSiZUwDNcdJwM=;
+        b=yRrRwzQpeeJbtx73KF3TpQJHdwGpN38npfxfI7hoPplEAvAGnVNzZySZMF+GBBmz/g
+         2W2XcO60Yg6VqBKEgE6c7DkqXuoS28mWYvDUhwm/TgOf5Cy3pwzkHVIJ+c5jgWRbDQGr
+         FHtrBJzrkEca7uAg7nxZEZSo8gG0AL1TojG+I1v5GqgSbhu7AozFnniMQsnY4P80seW9
+         3J4g0SFxqcD/oZk42yV2oGlUQ6H9n9ImPJ/nh7NJqr9pFbREHyanBzXtqIZKARUCTndv
+         OFMPa526iFoHPN5kJfhCBPh8QDOICnn7SzqZ3sTTpMpiEHcDhPTUlCLUw9rIXxkp2ENn
+         xjNA==
+X-Gm-Message-State: AOAM530Uvru0+nMyCFTbDSpuv8By6aiLZtPiqEppky9xDfiL6tb/rut4
+        xPqNbCMzu8C2v/fs4qUqKQ==
+X-Google-Smtp-Source: ABdhPJw2/c9hvOCvmPL3xtMWamQugOcPTEH7IK/GU9FaJtJSa+90xaUuLZm6DsV+LDiNAcr17ndPVg==
+X-Received: by 2002:aca:1011:: with SMTP id 17mr154742oiq.27.1644379570470;
+        Tue, 08 Feb 2022 20:06:10 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id i21sm6856720oao.35.2022.02.08.20.06.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 20:06:09 -0800 (PST)
+Received: (nullmailer pid 3634884 invoked by uid 1000);
+        Wed, 09 Feb 2022 04:06:08 -0000
+Date:   Tue, 8 Feb 2022 22:06:08 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Icenowy Zheng <icenowy@nucleisys.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>,
+        devicetree@vger.kernel.org, Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+Subject: Re: [PATCH 06/12] dt-bindings: serial: add compatible string for
+ Nuclei DemoSoC UART
+Message-ID: <YgM9sDyF+dx9JwOG@robh.at.kernel.org>
+References: <20220127151647.2375449-1-icenowy@nucleisys.com>
+ <20220127151647.2375449-7-icenowy@nucleisys.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127151647.2375449-7-icenowy@nucleisys.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace "struct list_head head = LIST_HEAD_INIT(head)" with
-"LIST_HEAD(head)" to simplify the code.
+On Thu, 27 Jan 2022 23:16:41 +0800, Icenowy Zheng wrote:
+> Nuclei DemoSoC design integrates the UART controller from SiFive.
+> 
+> Add a compatible string for it.
+> 
+> Signed-off-by: Icenowy Zheng <icenowy@nucleisys.com>
+> ---
+>  Documentation/devicetree/bindings/serial/sifive-serial.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
----
- drivers/xen/pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/xen/pci.c b/drivers/xen/pci.c
-index 2c890f4f2cbc..72d4e3f193af 100644
---- a/drivers/xen/pci.c
-+++ b/drivers/xen/pci.c
-@@ -264,7 +264,7 @@ struct xen_device_domain_owner {
- };
- 
- static DEFINE_SPINLOCK(dev_domain_list_spinlock);
--static struct list_head dev_domain_list = LIST_HEAD_INIT(dev_domain_list);
-+static LIST_HEAD(dev_domain_list);
- 
- static struct xen_device_domain_owner *find_device(struct pci_dev *dev)
- {
--- 
-2.25.1
-
+Acked-by: Rob Herring <robh@kernel.org>
