@@ -2,98 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B92D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 997E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231226AbiBIL5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:57:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57810 "EHLO
+        id S231624AbiBIL5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:57:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231818AbiBIL4G (ORCPT
+        with ESMTP id S231808AbiBIL4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 06:56:06 -0500
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AAEE03E231;
-        Wed,  9 Feb 2022 02:56:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 943DAE03E230
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:56:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1644404201; x=1675940201;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=W/ACr337dCWxZ64atnDXrvUA4xLsoa1IEFVrCd8GQkg=;
-  b=Gzx/SQzb6dbXgj88lUo6DajTK4slC/uXScqj3biG0Vge3JEzC98lC3uk
-   RM2GYo5571PRBN9RwVtx0VD/Zu7WiRloIPkNoFeRlN8JtljFAx198I6VW
-   ltHWBkLe0aK2sufNjV0tqLSV4rcvQfcRWdNOG1tf+kfBSLuwSeORYeEem
-   87bOw3zvNE9OKWgM8SCJ6Ucw/ssvF98WbuN4qrkfgHBRC6xTGvuWBULcq
-   rDqZBigRTrB4jItnlnqMfnOkjgi6co1gMqefMDPQKoIdVkle1ce2CkT3m
-   MhOtr35XzYIpObiBcynOqcF/wtnighFDJA4JVEk9D3mAVo0raJ425kCUd
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229135463"
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=k4hLpxCP5zG4YqnamMN0O5VXPbh5iT9Em3+ShBxtEzQ=;
+  b=axZpmKuSrrplNlJ/dmgF2+Ed7DUL2WxIMfNRpIj4Mb0Lv4WXX6fg8XaT
+   J2HB91VWbxpL3TD0lhTIgvscPYTcqDGg1A4EGytYiJrFJSOqBO49XGLi+
+   WfAgJovWFTFf1YT08I4bPwbP81bMItt8kZJ0C69nXRSQVPqzAE7ZRCGnu
+   OWmnP+0LlfUI90Fi/5GbUmdNTOGWLW5jyV9gitJ4J43OkPPl3vZZN8hQm
+   itByyFOQjMC2ztiR33rnNHQGfmz21DSyLqqopFM/YrKkPDn5GoDKxhW4x
+   I+pbhmJbndvd7glG2/+yuLAGJNpB2B9lWMHNm7ciYcDxW5U6VRz1VbfK/
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229131597"
 X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="229135463"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 01:27:50 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="229131597"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 01:05:03 -0800
 X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="568178958"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga001.jf.intel.com with ESMTP; 09 Feb 2022 01:27:47 -0800
-To:     Hongyu Xie <xy521521@gmail.com>, gregkh@linuxfoundation.org,
-        mathias.nyman@intel.com
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hongyu Xie <xiehongyu1@kylinos.cn>, stable@vger.kernel.org
-References: <20220209025234.25230-1-xy521521@gmail.com>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH -next v2] xhci: fix two places when dealing with return
- value of function xhci_check_args
-Message-ID: <89d59749-8ca3-b30b-4da6-a6e567528d1b@linux.intel.com>
-Date:   Wed, 9 Feb 2022 11:29:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+   d="scan'208";a="485168645"
+Received: from rcallina-mobl3.ger.corp.intel.com (HELO localhost) ([10.252.18.41])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 01:04:59 -0800
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Zhi Wang <zhi.wang.linux@gmail.com>, hch@lst.de, jgg@nvidia.com,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Vivi Rodrigo <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Terrence Xu <terrence.xu@intel.com>
+Subject: Re: [PATCH v6 1/3] i915/gvt: Introduce the mmio table to support
+ VFIO new mdev API
+In-Reply-To: <20220209072805.GA9050@lst.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220208111151.13115-1-zhi.a.wang@intel.com>
+ <871r0dqtjf.fsf@intel.com> <20220209072805.GA9050@lst.de>
+Date:   Wed, 09 Feb 2022 11:04:57 +0200
+Message-ID: <87v8xopg06.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220209025234.25230-1-xy521521@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 9.2.2022 4.52, Hongyu Xie wrote:
-> From: Hongyu Xie <xiehongyu1@kylinos.cn>
-> 
-> xhci_check_args returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
-> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
-> the return value of xhci_check_args <= 0.
-> This will cause a problem.
-> For example, r8152_submit_rx calling usb_submit_urb in
-> drivers/net/usb/r8152.c.
-> r8152_submit_rx will never get -ENODEV after submiting an urb
-> when xHC is halted,
-> because xhci_urb_enqueue returns -EINVAL in the very beginning.
-> 
-> Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
-> ---
+On Wed, 09 Feb 2022, Christoph Hellwig <hch@lst.de> wrote:
+> On Tue, Feb 08, 2022 at 05:15:00PM +0200, Jani Nikula wrote:
+>> >  #ifdef CONFIG_DRM_I915_GVT
+>> > +
+>> > +#define D_BDW   (1 << 0)
+>> > +#define D_SKL	(1 << 1)
+>> > +#define D_KBL	(1 << 2)
+>> > +#define D_BXT	(1 << 3)
+>> > +#define D_CFL	(1 << 4)
+>> > +
+>> > +#define D_GEN9PLUS	(D_SKL | D_KBL | D_BXT | D_CFL)
+>> > +#define D_GEN8PLUS	(D_BDW | D_SKL | D_KBL | D_BXT | D_CFL)
+>> > +
+>> > +#define D_SKL_PLUS	(D_SKL | D_KBL | D_BXT | D_CFL)
+>> > +#define D_BDW_PLUS	(D_BDW | D_SKL | D_KBL | D_BXT | D_CFL)
+>> > +
+>> > +#define D_PRE_SKL	(D_BDW)
+>> > +#define D_ALL		(D_BDW | D_SKL | D_KBL | D_BXT | D_CFL)
+>> 
+>> If these really need to be in a header in i915/, I think they need to be
+>> longer with some namespacing or something. I do wish these could be
+>> hidden though.
+>
+> I think we could actually kill them off entirely.  They are used as
+> arguments to the macros that setup the mmio table.
+>
+> Thefunctions to build these tabls are already organized by families,
+> so we'd need relatively few conditions to just build them the right
+> way.  There also are some runtime checks in the callbacks, but they
+> seem entirely superflous as far as I can tell.
+>
+> Only the cmd parser is a bit messy.  So maybe we could keep these
+> constants just for the cmd parser inside of gvt for now (and clean
+> that up later) and remove them entirely from the mmio table.
 
-Thanks, added to queue.
-Changed the commit message and header a bit:
+I'm fine with cleaning this up in follow-up, provided the follow-up
+actually happens! ;)
 
-"xhci: Prevent futile URB re-submissions due to incorrect return value.
-    
-The -ENODEV return value from xhci_check_args() is incorrectly changed
-to -EINVAL in a couple places before propagated further.
-    
-xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
-xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
-the return value of xhci_check_args <= 0.
-This causes problems for example r8152_submit_rx, calling usb_submit_urb
-in drivers/net/usb/r8152.c.
-r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
-is halted because xhci_urb_enqueue returns -EINVAL in the very beginning."
+BR,
+Jani.
 
-Let me know if you disagree with this.
 
-Thanks
--Mathias
+-- 
+Jani Nikula, Intel Open Source Graphics Center
