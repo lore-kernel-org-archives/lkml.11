@@ -2,99 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F53BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8745AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:42:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240785AbiBICmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:42:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52478 "EHLO
+        id S241247AbiBICmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:42:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242717AbiBIBUJ (ORCPT
+        with ESMTP id S244610AbiBICNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:20:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289B5C061576;
-        Tue,  8 Feb 2022 17:20:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1A6761763;
-        Wed,  9 Feb 2022 01:20:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86DEBC340EB;
-        Wed,  9 Feb 2022 01:20:07 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LbVQ1yQa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644369607;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wXavouTsQZ5PSiUPlPfFOTYKfyF5MOClkib1Muwy8ho=;
-        b=LbVQ1yQaX0XnR9YA1TWG+hQ5BfXyK622xfHx3opb2x6tgbGo/jBw8JCMZIiyZIH0IxqsAz
-        74ZIBN00RM21n2u3BktGY7PZusz0n8F35HH6Y3mj2VdNrO2JExH1plKxrhO6Oz6djsqIlJ
-        LP0WUMCXroLlRqFUNCFoWJoGU6JMmpE=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 67f28a20 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 9 Feb 2022 01:20:06 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Eric Biggers <ebiggers@google.com>
-Subject: [PATCH v2 6/9] random: absorb fast pool into input pool after fast load
-Date:   Wed,  9 Feb 2022 02:19:16 +0100
-Message-Id: <20220209011919.493762-7-Jason@zx2c4.com>
-In-Reply-To: <20220209011919.493762-1-Jason@zx2c4.com>
-References: <20220209011919.493762-1-Jason@zx2c4.com>
+        Tue, 8 Feb 2022 21:13:00 -0500
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41FBC06157B;
+        Tue,  8 Feb 2022 18:12:59 -0800 (PST)
+Received: by mail-oi1-f180.google.com with SMTP id s185so1094891oie.3;
+        Tue, 08 Feb 2022 18:12:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=r5gCY8AxP7VeaG+k6jS1gI6uSgHlAryZ8BxlEn4k9Rc=;
+        b=UkJDCfwIHyquATNakP/z4pc3wpMctudxOoWr99WRIkYJ86bpMO4rZLW6O9pD+4BzD7
+         bW1ctiFAM/A0eocviRtEf7TYccxzKjpWo4Vel2hXmq9xbsl2MrDFXeExXbP8+aptAqhV
+         WLh0fnXDgq01NchIzgtwLTXHoPnxUwwROm1AKPBRkpAE6/mJzqoNUoNVcJ2Mx7qWoXHs
+         1WllZL7bEMhl9Hq+kPKkN9tn1ZbHQIj/XB0sV8gs806OO4GEIY+9ughTgIrJidCTs9YZ
+         Y/gW0PY3P/oByQ1yNgyjw1U+7O+byHIFXP6fPlSj2AiuPcRwvIXa92XQueXoF4HOARfl
+         Bg3w==
+X-Gm-Message-State: AOAM532z9k6zqLugve1jjlOMjX8dAzlsISBzDU2SYjs38xXY4BKlGTRD
+        Ms9fIqXqwkFhL2rVdHpbtQ==
+X-Google-Smtp-Source: ABdhPJyybaBExBPo3whsZHrm5eZwynXqvVsKrJ51MSnzvXPpLlZfZ5bu+CINFJwXbnhU5wvMT7zyTg==
+X-Received: by 2002:a05:6808:148b:: with SMTP id e11mr390463oiw.163.1644372779024;
+        Tue, 08 Feb 2022 18:12:59 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id v26sm5989448ooq.20.2022.02.08.18.12.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 18:12:58 -0800 (PST)
+Received: (nullmailer pid 3465770 invoked by uid 1000);
+        Wed, 09 Feb 2022 02:12:57 -0000
+Date:   Tue, 8 Feb 2022 20:12:57 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Luca Weiss <luca@z3ntu.xyz>
+Cc:     devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 04/15] mfd: qcom-spmi-pmic: Add pm8953 compatible
+Message-ID: <YgMjKSNEpTLe8tsE@robh.at.kernel.org>
+References: <20220112194118.178026-1-luca@z3ntu.xyz>
+ <20220112194118.178026-5-luca@z3ntu.xyz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220112194118.178026-5-luca@z3ntu.xyz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During crng_init == 0, we never credit entropy in add_interrupt_
-randomness(), but instead dump it directly into the base_crng. That's
-fine, except for the fact that we then wind up throwing away that
-entropy later when we switch to extracting from the input pool and
-overwriting the base_crng key. The two other early init sites --
-add_hwgenerator_randomness()'s use crng_fast_load() and add_device_
-randomness()'s use of crng_slow_load() -- always additionally give their
-inputs to the input pool. But not add_interrupt_randomness().
+On Wed, 12 Jan 2022 20:40:53 +0100, Luca Weiss wrote:
+> Document the compatible for pm8953 as found in msm8953.
+> 
+> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> ---
+>  Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-This commit fixes that shortcoming by calling mix_pool_bytes() after
-crng_fast_load() in add_interrupt_randomness(). That's partially
-verboten on PREEMPT_RT, where it implies taking spinlock_t from an IRQ
-handler. But this also only happens during early boot and then never
-again after that. Should this turn into a larger problem later for some
-esoteric reason, we can always use `if (IS_ENABLED(PREEMPT_RT))` or
-something similar to that. But for now, this should do.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Suggested-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 785a4545c9d7..20374bce9a07 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -864,6 +864,13 @@ void add_interrupt_randomness(int irq)
- 		    crng_fast_load((u8 *)fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
- 			fast_pool->count = 0;
- 			fast_pool->last = now;
-+
-+			/* Technically this call means that we're using a spinlock_t
-+			 * in the IRQ handler, which isn't terrific for PREEMPT_RT.
-+			 * However, this only happens during very early boot, and then
-+			 * never again, so we live with it.
-+			 */
-+			mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
- 		}
- 		return;
- 	}
--- 
-2.35.0
-
+Acked-by: Rob Herring <robh@kernel.org>
