@@ -2,118 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00933C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34CCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241704AbiBIS76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:59:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33960 "EHLO
+        id S241515AbiBITAD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:00:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241615AbiBIS7j (ORCPT
+        with ESMTP id S241773AbiBIS7o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:59:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED76C03BFD7;
-        Wed,  9 Feb 2022 10:57:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74A80B8238B;
-        Wed,  9 Feb 2022 18:57:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F120DC340E9;
-        Wed,  9 Feb 2022 18:57:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644433061;
-        bh=XsjJlOdpGpZb296y+UI/bJTYqDpon73xor3FNeJnAYE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RdE6g74YQ9ADFoHrVf2Yk3dlnTpE2v1V87I0QnAuHcjrocebjJZhgoiuFnTAu7JUn
-         pO1ih2l7R1xmTnpigEYNS9c8La+/Vp1HBGs9K2kbng7QY1h0n+HZbA7KmV+f/r/LMk
-         RGK8mmDrjkvWQEUiJkutvsulGJQ0lgzpJaa9Cv0F9d6WEgbk6/dpyPgcjBEJpzTFJp
-         wu/GlQ6W02oOPa4XNiZtNuERTar7CT8zZ8/YeVSuku67eW4oIP8B23Jg1RKZKxo+6M
-         gGuM5tn73iLwv6OaxBJxdF7T3eOVx2qs6ZfGw56ES/L44du3PF6yllzSW/Z+KowdQ4
-         xPm9Ft3gHadgw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.4 2/2] KVM: nVMX: WARN on any attempt to allocate shadow VMCS for vmcs02
-Date:   Wed,  9 Feb 2022 13:57:31 -0500
-Message-Id: <20220209185733.49157-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209185733.49157-1-sashal@kernel.org>
-References: <20220209185733.49157-1-sashal@kernel.org>
+        Wed, 9 Feb 2022 13:59:44 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016C6C05CB88;
+        Wed,  9 Feb 2022 10:57:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644433073; x=1675969073;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=blQ5+6q/LUbVLtrZhxoQdICeLoyj5HXqRvqkBFLbaVU=;
+  b=I2mu5Bt9CFFerjym4wTfFklZXhg8HBcKrHN/ajQDJj1s/GiVbFW6IGRQ
+   8Ca+wOAe5ScRdKsCjwWEW5glP+ZQ5t2NE1Jsq3ekvsaMC0bSGZe7Eeh5s
+   F2FzLRxRpNNIWwkyERkWLvGSBV+1rsp2xveo7m0bQzRqsllGIGerGcOw7
+   8=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 09 Feb 2022 10:57:52 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 10:57:52 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 10:57:51 -0800
+Received: from jhugo-lnx.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 10:57:50 -0800
+From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
+To:     <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <corbet@lwn.net>
+CC:     <dri-devel@lists.freedesktop.org>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Jeffrey Hugo <quic_jhugo@quicinc.com>
+Subject: [PATCH] drm/doc: Clarify what ioctls can be used on render nodes
+Date:   Wed, 9 Feb 2022 11:57:27 -0700
+Message-ID: <1644433047-20753-1-git-send-email-quic_jhugo@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+The documentation for render nodes indicates that only "PRIME-related"
+ioctls are valid on render nodes, but the documentation does not clarify
+what that means.  If the reader is not familiar with PRIME, they may
+beleive this to be only the ioctls with "PRIME" in the name and not other
+ioctls such as set of syncobj ioctls.  Clarify the situation for the
+reader by referencing where the reader will find a current list of valid
+ioctls.
 
-[ Upstream commit d6e656cd266cdcc95abd372c7faef05bee271d1a ]
-
-WARN if KVM attempts to allocate a shadow VMCS for vmcs02.  KVM emulates
-VMCS shadowing but doesn't virtualize it, i.e. KVM should never allocate
-a "real" shadow VMCS for L2.
-
-The previous code WARNed but continued anyway with the allocation,
-presumably in an attempt to avoid NULL pointer dereference.
-However, alloc_vmcs (and hence alloc_shadow_vmcs) can fail, and
-indeed the sole caller does:
-
-	if (enable_shadow_vmcs && !alloc_shadow_vmcs(vcpu))
-		goto out_shadow_vmcs;
-
-which makes it not a useful attempt.
-
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220125220527.2093146-1-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
 ---
- arch/x86/kvm/vmx/nested.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 3041015b05f71..44e11f6db3efe 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4360,18 +4360,20 @@ static struct vmcs *alloc_shadow_vmcs(struct kvm_vcpu *vcpu)
- 	struct loaded_vmcs *loaded_vmcs = vmx->loaded_vmcs;
- 
- 	/*
--	 * We should allocate a shadow vmcs for vmcs01 only when L1
--	 * executes VMXON and free it when L1 executes VMXOFF.
--	 * As it is invalid to execute VMXON twice, we shouldn't reach
--	 * here when vmcs01 already have an allocated shadow vmcs.
-+	 * KVM allocates a shadow VMCS only when L1 executes VMXON and frees it
-+	 * when L1 executes VMXOFF or the vCPU is forced out of nested
-+	 * operation.  VMXON faults if the CPU is already post-VMXON, so it
-+	 * should be impossible to already have an allocated shadow VMCS.  KVM
-+	 * doesn't support virtualization of VMCS shadowing, so vmcs01 should
-+	 * always be the loaded VMCS.
- 	 */
--	WARN_ON(loaded_vmcs == &vmx->vmcs01 && loaded_vmcs->shadow_vmcs);
-+	if (WARN_ON(loaded_vmcs != &vmx->vmcs01 || loaded_vmcs->shadow_vmcs))
-+		return loaded_vmcs->shadow_vmcs;
-+
-+	loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
-+	if (loaded_vmcs->shadow_vmcs)
-+		vmcs_clear(loaded_vmcs->shadow_vmcs);
- 
--	if (!loaded_vmcs->shadow_vmcs) {
--		loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
--		if (loaded_vmcs->shadow_vmcs)
--			vmcs_clear(loaded_vmcs->shadow_vmcs);
--	}
- 	return loaded_vmcs->shadow_vmcs;
- }
- 
+I was confused by this when reading the documentation.  Now that I have
+figured out what the documentation means, I would like to add a clarification
+for the next reader which would have helped me.
+
+ Documentation/gpu/drm-uapi.rst | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/gpu/drm-uapi.rst b/Documentation/gpu/drm-uapi.rst
+index 199afb5..ce47b42 100644
+--- a/Documentation/gpu/drm-uapi.rst
++++ b/Documentation/gpu/drm-uapi.rst
+@@ -148,7 +148,9 @@ clients together with the legacy drmAuth authentication procedure.
+ If a driver advertises render node support, DRM core will create a
+ separate render node called renderD<num>. There will be one render node
+ per device. No ioctls except PRIME-related ioctls will be allowed on
+-this node. Especially GEM_OPEN will be explicitly prohibited. Render
++this node. Especially GEM_OPEN will be explicitly prohibited. For a
++complete list of driver-independent ioctls that can be used on render
++nodes, see the ioctls marked DRM_RENDER_ALLOW in drm_ioctl.c  Render
+ nodes are designed to avoid the buffer-leaks, which occur if clients
+ guess the flink names or mmap offsets on the legacy interface.
+ Additionally to this basic interface, drivers must mark their
 -- 
-2.34.1
+2.7.4
 
