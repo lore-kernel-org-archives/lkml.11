@@ -2,56 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA73C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5990EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236729AbiBIQS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:18:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
+        id S236740AbiBIQSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:18:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236430AbiBIQSA (ORCPT
+        with ESMTP id S236490AbiBIQSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 11:18:00 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28774C05CB89
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:18:00 -0800 (PST)
-Date:   Wed, 09 Feb 2022 16:17:58 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40EFC05CB95
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:18:02 -0800 (PST)
+Date:   Wed, 09 Feb 2022 16:18:00 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644423479;
+        s=2020; t=1644423481;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ypww1JCXZxV4juqQanEBvrbVLYhupf/9bMzDU8WWl/c=;
-        b=eoBUZAIF28uC6Ao9Q/h3stNxt6O8Z59Bpz3n+XC30Knb+0l2EHMfXEQv5wv9MZDI7qPbL6
-        pw6x36qbC+pZ2th73n8UEcLTQjO3RjN11meEQY+n3XB43JC/YpgTT7CJpLl5SxWji409wn
-        g2gPI0pFZmzjMx173mwckFmpUHFPu4+argW1Qm4fmcEbXSfhKT/XtPeExPuv1lOi0x39B/
-        wKleRbM+NDVbZR6bxJvRQqqwjvcHiNK+c8ojSnXUr89r3Yu74+AkJeGsBKZl6FrvtdVfZF
-        GNYpS6Dm3A8m6GQS9u2E54+SU5WNQ5sUEoHD3Ouojh8Mr2ye2c1Riwtw+BHqxg==
+        bh=QzFjmjmxe8Nd/RfQt5SciQe4zR5L0wLeEFsLkBZnnUg=;
+        b=oCyTBvBBR7FqUiGVnd/jGco0KxQeS/aRX6K1oaNgCz8xabwdTnSHxmo7y30hxDUT5iJgBB
+        pg11NyHB0fLhleWZX2NdoOHgQOiA3oiTNLySBzqqP9B+Y0RRRP/f6QibUKGR/GdzFnkjyE
+        X4NsJnOhNiqbw5kTvSy4d55lePPqH2eUi9ahP9InlGJn00Yx/YxC7G2tfMl3HbGtw7IE85
+        aW5pM/6zg2cMosldHznAjA1C7iwhysQ+C9YrjnDJDjAqlRtpjGtHj457fCWlOTuJ12OlQz
+        lYF4IB89/aL5KFjaDTgotLWKqRxFwDLe+gUFN7eWJBjENrLDdL7pdHAK2/BBHA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644423479;
+        s=2020e; t=1644423481;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ypww1JCXZxV4juqQanEBvrbVLYhupf/9bMzDU8WWl/c=;
-        b=wGzLMJY3S4rvM7wDY9IMCRNgiBAnINwESYfcefFAZJ0Lqop/mdwPhh4iAJiDyZXXPpQLi4
-        1/XZtyLjjiXR5jBg==
+        bh=QzFjmjmxe8Nd/RfQt5SciQe4zR5L0wLeEFsLkBZnnUg=;
+        b=Lly6GTIyCU1MkNENvLdCLZkeQO/YoorhGMIUOFMekpKOww9nxq3hWw+YYnj/oadrqfYxnf
+        rlsboQNw1zVpEpCw==
 From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/renesas-irqc: Move PM device over
- to irq domain
+Subject: [irqchip: irq/irqchip-next] irqchip/gic: Move PM device over to irq domain
 Cc:     Marc Zyngier <maz@kernel.org>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Bartosz Golaszewski <brgl@bgdev.pl>, tglx@linutronix.de
-In-Reply-To: <20220201120310.878267-5-maz@kernel.org>
-References: <20220201120310.878267-5-maz@kernel.org>
+In-Reply-To: <20220201120310.878267-3-maz@kernel.org>
+References: <20220201120310.878267-3-maz@kernel.org>
 MIME-Version: 1.0
-Message-ID: <164442347847.16921.17634566936062737702.tip-bot2@tip-bot2>
+Message-ID: <164442348025.16921.15496974487364454668.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,43 +61,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Commit-ID:     c3ec838e3a390e62cb71a11041db43d0b3b42c99
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/c3ec838e3a390e62cb71a11041db43d0b3b42c99
+Commit-ID:     e95f3efdeb499accf2b05333a1eac7862f5a10f6
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/e95f3efdeb499accf2b05333a1eac7862f5a10f6
 Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Tue, 01 Feb 2022 12:03:02 
+AuthorDate:    Tue, 01 Feb 2022 12:03:00 
 Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Wed, 09 Feb 2022 13:36:53 
+CommitterDate: Wed, 09 Feb 2022 13:35:56 
 
-irqchip/renesas-irqc: Move PM device over to irq domain
+irqchip/gic: Move PM device over to irq domain
 
-Move the reference to the device over to the irq domain.
+Move the reference to the GIC device over to the irq domain.
+This allows for some localised cleanup.
 
 Signed-off-by: Marc Zyngier <maz@kernel.org>
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Link: https://lore.kernel.org/r/20220201120310.878267-5-maz@kernel.org
+Link: https://lore.kernel.org/r/20220201120310.878267-3-maz@kernel.org
 ---
- drivers/irqchip/irq-renesas-irqc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/irqchip/irq-gic.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/irqchip/irq-renesas-irqc.c b/drivers/irqchip/irq-renesas-irqc.c
-index 909325f..1ee5e99 100644
---- a/drivers/irqchip/irq-renesas-irqc.c
-+++ b/drivers/irqchip/irq-renesas-irqc.c
-@@ -188,13 +188,14 @@ static int irqc_probe(struct platform_device *pdev)
- 	p->gc->reg_base = p->cpu_int_base;
- 	p->gc->chip_types[0].regs.enable = IRQC_EN_SET;
- 	p->gc->chip_types[0].regs.disable = IRQC_EN_STS;
--	p->gc->chip_types[0].chip.parent_device = dev;
- 	p->gc->chip_types[0].chip.irq_mask = irq_gc_mask_disable_reg;
- 	p->gc->chip_types[0].chip.irq_unmask = irq_gc_unmask_enable_reg;
- 	p->gc->chip_types[0].chip.irq_set_type	= irqc_irq_set_type;
- 	p->gc->chip_types[0].chip.irq_set_wake	= irqc_irq_set_wake;
- 	p->gc->chip_types[0].chip.flags	= IRQCHIP_MASK_ON_SUSPEND;
+diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
+index b8bb46c..fb741b4 100644
+--- a/drivers/irqchip/irq-gic.c
++++ b/drivers/irqchip/irq-gic.c
+@@ -1127,13 +1127,12 @@ static const struct irq_domain_ops gic_irq_domain_ops = {
+ 	.unmap = gic_irq_domain_unmap,
+ };
  
-+	irq_domain_set_pm_device(p->irq_domain, dev);
-+
- 	/* request interrupts one by one */
- 	for (k = 0; k < p->number_of_irqs; k++) {
- 		if (devm_request_irq(dev, p->irq[k].requested_irq,
+-static void gic_init_chip(struct gic_chip_data *gic, struct device *dev,
+-			  const char *name, bool use_eoimode1)
++static void gic_init_chip(struct gic_chip_data *gic, const char *name,
++			  bool use_eoimode1)
+ {
+ 	/* Initialize irq_chip */
+ 	gic->chip = gic_chip;
+ 	gic->chip.name = name;
+-	gic->chip.parent_device = dev;
+ 
+ 	if (use_eoimode1) {
+ 		gic->chip.irq_mask = gic_eoimode1_mask_irq;
+@@ -1268,10 +1267,10 @@ static int __init __gic_init_bases(struct gic_chip_data *gic,
+ 
+ 	if (static_branch_likely(&supports_deactivate_key) && gic == &gic_data[0]) {
+ 		name = kasprintf(GFP_KERNEL, "GICv2");
+-		gic_init_chip(gic, NULL, name, true);
++		gic_init_chip(gic, name, true);
+ 	} else {
+ 		name = kasprintf(GFP_KERNEL, "GIC-%d", (int)(gic-&gic_data[0]));
+-		gic_init_chip(gic, NULL, name, false);
++		gic_init_chip(gic, name, false);
+ 	}
+ 
+ 	ret = gic_init_bases(gic, handle);
+@@ -1460,7 +1459,7 @@ int gic_of_init_child(struct device *dev, struct gic_chip_data **gic, int irq)
+ 	if (!*gic)
+ 		return -ENOMEM;
+ 
+-	gic_init_chip(*gic, dev, dev->of_node->name, false);
++	gic_init_chip(*gic, dev->of_node->name, false);
+ 
+ 	ret = gic_of_setup(*gic, dev->of_node);
+ 	if (ret)
+@@ -1472,6 +1471,7 @@ int gic_of_init_child(struct device *dev, struct gic_chip_data **gic, int irq)
+ 		return ret;
+ 	}
+ 
++	irq_domain_set_pm_device((*gic)->domain, dev);
+ 	irq_set_chained_handler_and_data(irq, gic_handle_cascade_irq, *gic);
+ 
+ 	return 0;
