@@ -2,121 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10307C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:21:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 919D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235784AbiBIGTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:19:00 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33508 "EHLO
+        id S234225AbiBIGYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:24:46 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234471AbiBIGSq (ORCPT
+        with ESMTP id S234200AbiBIGXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:18:46 -0500
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE452E019272
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 22:18:49 -0800 (PST)
-Received: by mail-qv1-xf32.google.com with SMTP id fh9so1075575qvb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 22:18:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=exMN9hAxxiEMO/FaVJ75eo6ul4DNqSXK6//YgwXm8Cg=;
-        b=Y8EwLL3ReHFFxYhkjKqf4k1GMObv3YS1AIi7mcPmn1aeZWILKvQihJZSxiw8+kMsT7
-         NZLhgQWAhAu77XF+6vKVLxMPNtShJ10yHD1zrDtEJf3adtEU0uFPHxtXj1M7LTTwySx9
-         lLYZmdBMURpuQ7lR0E2RDkJk2gCP9qYsT+IiBKiD19irs/yZcri9Evk4F+j3Iu6YSNkW
-         jPjhBA+yldYWTVv1eg0iAwCBCL+bvtBbl+Q4MXD8wEknDE5uKBxMX6VjUBRo9lh0PlCt
-         LufTfHwzGPx4u+UM6QF05J8WoxLrnzsXGlgHAIKJ/QV8ThDJA+elDArDnwxTF4dOsuRO
-         93/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=exMN9hAxxiEMO/FaVJ75eo6ul4DNqSXK6//YgwXm8Cg=;
-        b=3yvypb1LqczrZeoxz/y8OAkSFhAn20ZQ0K50Mz1stHk0xKsE9/vgLBAHLf6vV6pI/b
-         rZZ24+xWuXwl2bN7xLGjvLeeauS6Gz4vPd+HRrBR82QhyIr/YpLX9LAcoDvsSnEvLikZ
-         s2GdzcBvo9tGQPAOWhC4a/BkBF33CnqtUDXhVEJIwZ3F4I4j2ce8fUrjtXe9KA+7VXBJ
-         Xxqe44H23mZfEJF4UbKNyylJEW4xFLfqhbgJVW7fWuPg2eAABSGpT5HtU7yKeSauwzfl
-         hd/PhrZSFos8Ny0Mx+0mxGnem+KHP7Oeuw3/ulqFl+G40+u7xM3krCIzmgYh5o6dmh9R
-         GILA==
-X-Gm-Message-State: AOAM5317ozQvFGls+hUoT2m3ZU/WbG81eA2wHHCZegHvRZvUfTeoy8bN
-        tndvhrUpjotFs4AuVZ9O5Zzcbc7Ar0xQqg==
-X-Google-Smtp-Source: ABdhPJwyqQQ6p2MsIgY2z1xP9Am295gOZq/0gFQqRfcChOUsog8I9H/6d0YUrgjQyeLH7dGfSlFCQg==
-X-Received: by 2002:a05:6214:20ca:: with SMTP id 10mr519601qve.96.1644387511409;
-        Tue, 08 Feb 2022 22:18:31 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id n19sm8339013qkp.52.2022.02.08.22.18.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 22:18:30 -0800 (PST)
-Date:   Tue, 8 Feb 2022 22:18:28 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Borislav Petkov <bp@alien8.de>
-cc:     Hugh Dickins <hughd@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org, x86@kernel.org
-Subject: Re: x86: should clear_user() have alternatives?
-In-Reply-To: <YgJnhB+bAxoNsiSB@zn.tnic>
-Message-ID: <9d3b36e9-f752-22bd-4ea3-cf169fa26e9b@google.com>
-References: <2f5ca5e4-e250-a41c-11fb-a7f4ebc7e1c9@google.com> <YgJnhB+bAxoNsiSB@zn.tnic>
+        Wed, 9 Feb 2022 01:23:23 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3375EE00FEF0;
+        Tue,  8 Feb 2022 22:23:24 -0800 (PST)
+Received: from [192.168.0.2] (ip5f5aee30.dynamic.kabel-deutschland.de [95.90.238.48])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id A85D361E64846;
+        Wed,  9 Feb 2022 07:23:21 +0100 (CET)
+Message-ID: <554448a9-bc65-7c0b-9878-fb2c0fe9bfe4@molgen.mpg.de>
+Date:   Wed, 9 Feb 2022 07:23:21 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v1] media: aspeed: Fix incorrect color
+Content-Language: en-US
+To:     Jammy Huang <jammy_huang@aspeedtech.com>
+References: <20220209024312.2218-1-jammy_huang@aspeedtech.com>
+Cc:     eajames@linux.ibm.com, mchehab@kernel.org, joel@jms.id.au,
+        andrew@aj.id.au, linux-media@vger.kernel.org,
+        openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220209024312.2218-1-jammy_huang@aspeedtech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Feb 2022, Borislav Petkov wrote:
-> Hi Hugh,
-> 
-> On Mon, Feb 07, 2022 at 09:45:36PM -0800, Hugh Dickins wrote:
-> > I realize that dd'ing from /dev/zero to /dev/null, and sparse files on
-> > tmpfs, are not prime candidates for optimization; and I've no idea how
-> > much clear_user() normally gets used for long clears.
-> 
-> Right, we usually don't take such "optimizations" because the folks who
-> send them always come up with either microbenchmarks or only test on a
-> single machine.
-> 
-> > If I were capable of compiler asm, with alternatives, and knew at what
-> > length ERMS becomes advantageous when clearing, I would be sending you
-> > a proper patch.  As it is, I'm hoping to tempt someone else to do the
-> > work!  Or reject it as too niche to bother with.
-> 
-> Yap, looking at arch/x86/lib/clear_page_64.S - that's straight-forward
-> asm without special-cases noodles like __copy_user_nocache, for example,
-> so I wouldn't be opposed to someone
-> 
->  - remodelling it so that you can have clear_user* variants there too,
->  with the length supplied so that you can call a common function with
->  arbitrary length and clear_page* can call it too. And then call them in
->  a clear_user() version just like the clear_page() one which selects the
->  proper target based on CPU feature flags.
-> 
->  - testing this on bunch of modern machines with, say, a kernel build or
->  some sensible benchmark so that we at least have some coverage
-> 
-> If the numbers are worth it - and judging by your quick testing above
-> they should be - then I don't mind taking that at all.
-> 
-> If only someone would have the time and diligence to do it properly...
+Dear Jammy,
 
-Thanks a lot for setting out what's needed.  Remodelling so there can be
-commonality, that's attractive and intriguing.  But I'm disqualified in
-several ways (if we tactfully leave out questions of my competence, I'm
-still lacking time, and wide machine pool, and expertise with latter):
-so I'm responding mainly to make it clear that I shall not be pursuing
-this, but hope somebody can eventually.
 
-Thanks,
-Hugh
+Am 09.02.22 um 03:43 schrieb Jammy Huang:
+> Current settings for rgb-2-yuv is BT.601(studio swing), but JFIF
+> uses BT.601(full swing).
 
+Could you please describe the problem in a little more detail? On an 
+attached monitor to the BMC (which one) what incorrect colors are seen?
+
+Maybe use:
+
+> media: aspeed: Use full swing for JFIF to fix incorrect color
+
+> Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+> ---
+>   drivers/media/platform/aspeed-video.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> :-)
-> 
-> Thx.
-> 
-> -- 
-> Regards/Gruss,
->     Boris.
-> 
-> https://people.kernel.org/tglx/notes-about-netiquette
+> diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+> index eb9c17ac0e14..08b63b8297f0 100644
+> --- a/drivers/media/platform/aspeed-video.c
+> +++ b/drivers/media/platform/aspeed-video.c
+> @@ -1089,7 +1089,7 @@ static void aspeed_video_init_regs(struct aspeed_video *video)
+>   	u32 comp_ctrl = VE_COMP_CTRL_RSVD |
+>   		FIELD_PREP(VE_COMP_CTRL_DCT_LUM, video->jpeg_quality) |
+>   		FIELD_PREP(VE_COMP_CTRL_DCT_CHR, video->jpeg_quality | 0x10);
+> -	u32 ctrl = VE_CTRL_AUTO_OR_CURSOR;
+> +	u32 ctrl = VE_CTRL_AUTO_OR_CURSOR | VE_CTRL_YUV;
+
+Excuse my ignorance, but reading [1][2] YUV can be represented by studio 
+and full swing. How is the register/bit described in the datasheet, and 
+can the macro name be improved?
+
+>   	u32 seq_ctrl = video->jpeg_mode;
+>   
+>   	if (video->frame_rate)
+
+
+Kind regards,
+
+Paul
+
+
+[1]: https://mymusing.co/bt601-yuv-to-rgb-conversion-color/
+[2]: https://www.hisour.com/yuv-color-system-25916/
