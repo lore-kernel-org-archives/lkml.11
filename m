@@ -2,130 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F557C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B656EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234789AbiBIORM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 09:17:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52582 "EHLO
+        id S234887AbiBIOR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 09:17:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234584AbiBIORJ (ORCPT
+        with ESMTP id S232169AbiBIORx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 09:17:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94DEAC0613C9
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:17:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644416231;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KRUhAeA84UjsLS4HbxlBt5EQCd/sdN8Mn9sTcjqUddo=;
-        b=NIAaEpmof7H5RhU0lmHdzWZdwSXrpjrDkO98lcuA5Ev473FUYO1fj2jMkQG1c2n4UpZdoQ
-        4QLsF86yM0PusKT/BbusN0wz6ODCWCJyrYLiEFgXVGXCVLhwKjulRtszRi8PuCiS0LO8J9
-        YqYauhabXcmOcjhQX+LcURVCL5IUKwY=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-528-tdE84yNwNu2WQQBHyumhZA-1; Wed, 09 Feb 2022 09:17:09 -0500
-X-MC-Unique: tdE84yNwNu2WQQBHyumhZA-1
-Received: by mail-wr1-f72.google.com with SMTP id h24-20020adfaa98000000b001e33eb81e71so1163423wrc.9
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 06:17:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KRUhAeA84UjsLS4HbxlBt5EQCd/sdN8Mn9sTcjqUddo=;
-        b=IYvkbn4S8V3bCbKITjSZEk4vvi7xi54D6AulxTMo+bNhqx7dyOVg+mvoVydI4y1tx7
-         +XlNluD1/EiaziOaDzZNlugpgeWdouErZA5r+HkvDTciS4nnqLqvVmE9SXYSq/KiiVSf
-         8VqkEBc7arqcDdKO1qr5M1oERZzUDiY+JrclM9hZi/+Vwl+NhsrLpcC8alpVRdRfB69k
-         s4iUcYt/u3Vu7p1k5+famx6LzHSzS+/rUlVol8DflYFUpWSnuEhgA08HbBV8GU0GcLVj
-         olAEZpEaHr6Cv7shJQ5d+zbZ3mRkHqTIlXqdVpAxk0qQSQKe4CXaIYLD5Gg07wmfoKre
-         X1oA==
-X-Gm-Message-State: AOAM532Y1xEd6mg19gHTwsLcd6ucVkYbcuByGEnozdEPmoYF/flcdcAP
-        nPROBw+OOKL0Rcs5SnagkkfQAwm8LZIV8tcuCGLe/E7wjfEp1dmzpfH6f8GmyDvsN55Vu1VRi8I
-        0cTIQZYiaeOVFYTGiiyn4FXzD
-X-Received: by 2002:a05:600c:4e16:: with SMTP id b22mr2290151wmq.8.1644416228503;
-        Wed, 09 Feb 2022 06:17:08 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxwIzQ5Y+IJIHsSpt0Pgn2iyoVM/suryQvdT8KlECfzPpYA1vTVAA9aQ4WkCb9TTM9E2pUG9Q==
-X-Received: by 2002:a05:600c:4e16:: with SMTP id b22mr2290117wmq.8.1644416228230;
-        Wed, 09 Feb 2022 06:17:08 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id f13sm5562779wmq.29.2022.02.09.06.17.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 06:17:07 -0800 (PST)
-Message-ID: <d1025530-90e1-fbc5-c06b-f62ed83f2f19@redhat.com>
-Date:   Wed, 9 Feb 2022 15:17:06 +0100
+        Wed, 9 Feb 2022 09:17:53 -0500
+X-Greylist: delayed 491 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 06:17:54 PST
+Received: from forward401o.mail.yandex.net (forward401o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::694])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C3FC06157B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:17:54 -0800 (PST)
+Received: from myt6-1d5cc1e732c7.qloud-c.yandex.net (myt6-1d5cc1e732c7.qloud-c.yandex.net [IPv6:2a02:6b8:c12:400d:0:640:1d5c:c1e7])
+        by forward401o.mail.yandex.net (Yandex) with ESMTP id 12643132BE5D;
+        Wed,  9 Feb 2022 17:09:41 +0300 (MSK)
+Received: from 2a02:6b8:c12:3ea4:0:640:a551:2e99 (2a02:6b8:c12:3ea4:0:640:a551:2e99 [2a02:6b8:c12:3ea4:0:640:a551:2e99])
+        by myt6-1d5cc1e732c7.qloud-c.yandex.net (mxback/Yandex) with HTTP id d9aY5k0cNOs1-9ecmFMq6;
+        Wed, 09 Feb 2022 17:09:40 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxt.ru; s=mail; t=1644415780;
+        bh=5ulkJqajbHG9J23l0qCLkGERVMQ9orcqxfnm8rT6Fyw=;
+        h=Message-Id:Date:Subject:To:From;
+        b=h4+jJ164rHZPVkXJ/eIWkrU5kqR733nUGGFEvo7PEEMqOl5XJ2eK3JITXUcTMoj/4
+         5YpyXJn17adziOWSZwAgDSamj/o1MW/qDaoRfu+vlVJ4iX9gEK/fxDbC9/MYkFRvL9
+         IwU9NaPJTDlevla9lnLvddfMHaBxgng9g+hlpEXA=
+Authentication-Results: myt6-1d5cc1e732c7.qloud-c.yandex.net; dkim=pass header.i=@nxt.ru
+Received: by myt5-a5512e99e394.qloud-c.yandex.net with HTTP;
+        Wed, 09 Feb 2022 17:09:40 +0300
+From:   Aleksandr Fedorov <sanekf@nxt.ru>
+To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu: explicitly check for NULL in iommu_dma_get_resv_regions()
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 3/7] drm: Add driver for Solomon SSD130X OLED displays
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-fbdev@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        linux-pwm@vger.kernel.org
-References: <20220209090314.2511959-1-javierm@redhat.com>
- <20220209090314.2511959-4-javierm@redhat.com>
- <YgPE8Z7HxU2wv7J/@sirena.org.uk>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <YgPE8Z7HxU2wv7J/@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8
+X-Mailer: Yamail [ http://yandex.ru ] 5.0
+Date:   Wed, 09 Feb 2022 17:09:40 +0300
+Message-Id: <5481021644415780@myt5-a5512e99e394.qloud-c.yandex.net>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Mark,
+iommu_dma_get_resv_regions() assumes that iommu_fwspec field for
+corresponding device is set which is not always true.  Since
+iommu_dma_get_resv_regions() seems to be a future-proof generic API
+that can be used by any iommu driver, add an explicit check for NULL.
 
-Thanks for your feedback.
+Currently it can work by accident since compiler can eliminate
+the 'iommu_fwspec' check altogether when CONFIG_ACPI_IORT=n, but
+code elimination from optimizations is not reliable.
 
-On 2/9/22 14:43, Mark Brown wrote:
-> On Wed, Feb 09, 2022 at 10:03:10AM +0100, Javier Martinez Canillas wrote:
-> 
->> +	if (ssd130x->vbat_reg) {
->> +		ret = regulator_enable(ssd130x->vbat_reg);
->> +		if (ret) {
->> +			dev_err(dev, "Failed to enable VBAT: %d\n", ret);
->> +			return ret;
->> +		}
->> +	}
-> 
-> Unless the device supports power being physically omitted regulator
-> usage should not be optional, it's just more code and a recipie for poor
-> error handling.
+Signed-off-by: Aleksandr Fedorov <halcien@gmail.com>
+---
+A compilation failure has been observed on a gcc-compatible compiler based on EDG.
 
-The device has a VCC pin but in most cases this is just connected to a
-power provided by the board in its pinout header. For example, I've it
-connected to a rpi4 3.3v pin.
-
-I guess in that case what we should do then is to just have a regulator
-fixed as the vbat-supply in the Device Tree, that's regulator-always-on.
-
-The old ssd1307fb fbdev driver also had this as optional and I wanted to
-keep the new driver as backward compatible. But I understand now that is
-not describing the hardware properly by making this regulator optional.
-
-Best regards,
--- 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index d85d54f2b549..474b1b7211d7 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -382,10 +382,10 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+  */
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
+ {
++	struct iommu_fwspec *iommu_fwspec = dev_iommu_fwspec_get(dev);
+ 
+-	if (!is_of_node(dev_iommu_fwspec_get(dev)->iommu_fwnode))
++	if (iommu_fwspec && !is_of_node(iommu_fwspec->iommu_fwnode))
+ 		iort_iommu_msi_get_resv_regions(dev, list);
+-
+ }
+ EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+ 
