@@ -2,84 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF02FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB04C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:21:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236165AbiBIQTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:19:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
+        id S236768AbiBIQVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:21:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236927AbiBIQTb (ORCPT
+        with ESMTP id S234050AbiBIQV2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:19:31 -0500
-Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3952DC050CC5
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:19:24 -0800 (PST)
-Received: by mail-vk1-f169.google.com with SMTP id d27so1463613vkn.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 08:19:24 -0800 (PST)
+        Wed, 9 Feb 2022 11:21:28 -0500
+Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B47CC0613C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:21:31 -0800 (PST)
+Received: by mail-oo1-xc35.google.com with SMTP id p190-20020a4a2fc7000000b0031820de484aso2988197oop.9
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 08:21:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=eWTUS3VqmsjwF4c8OTdfF5F0odt3UsQcGtmj9YbWaEk=;
+        b=EIBIj1i0RF6eGofIPoMkdMlxqqoTb5r4muwHZujQjmjolPsYNoxgUKu/jT8Fu3jKkB
+         /qytsaekGzVAdDUOk9HLhTVb5vW1puLgQSvn/tRDl2t1ebbB7Vue9+rxQEeIiYcc8KAO
+         oSp8/xPz4a5wHhxGGDkWnXqrbZX0WI29dV4cSPUjoKv486QCfHtYEiBjzC5Em3E7KIVd
+         c9o0+uldteFR96I3dhMGpuEfgcGB4LTR4wSzfkl0tqz3xWkFUlkEsL9Bws0D19G6SHsj
+         qi02gEjgAm5UvcWjIkqPqFpGRuP/+8TMwuUvKw6hSsxPmc4VxhJS4XjMtIc9hQq8+lMZ
+         7eYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Bnya6VmSL6leRIRse/uCEksReFzWugbjTC+ac8YkiUs=;
-        b=6U3OmFhKPy0DV7IA0CXx6dmQrv7Pdg1eAfqTXYPZD3matBPQdxcSAB9/XNMDRxviEM
-         vWUR+ErcY8/pAKZPgEbqbXp5VzmswIhsn5z1911BJjtGyUPOxWNuwh6e/Nb0XzCocmbV
-         F/aPZyf1nKWxuc3RtNnYeaPVRt/qSj+aEfZVWTFlgNe6zNfXKPB365vepcpTlRzC7ts4
-         J+Bh6zkFjDYxaOwhBbkazu2c0YwXk97Ks8UrYVy6Rk7BhmlttWqyPMP0lavBaAxxMcbY
-         AjYEO8rPT5K1u5/Ue5AEWydqLORXfJjM1XOY/CvCSmZesRO4ewh8782DUg4ng863BIvw
-         dI5w==
-X-Gm-Message-State: AOAM530Nj1oaHlsWdM+CeqIJIJ8aPeEhaX13OsTWPkRpuNiQw5sgDbU6
-        EWaBTyxq5FavvMVD3sybm0/NMcuDsHgspA==
-X-Google-Smtp-Source: ABdhPJyQk0Kpuiu4XFzYmOCTq+75cpoNxTJyKWBIyydQO1QGLelWpXaWwqcC8UQ8Vz+lOxWC99iSFg==
-X-Received: by 2002:a1f:2ac3:: with SMTP id q186mr247809vkq.33.1644423563248;
-        Wed, 09 Feb 2022 08:19:23 -0800 (PST)
-Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com. [209.85.217.50])
-        by smtp.gmail.com with ESMTPSA id d202sm3389710vkd.38.2022.02.09.08.19.22
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 08:19:22 -0800 (PST)
-Received: by mail-vs1-f50.google.com with SMTP id t184so3136169vst.13
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 08:19:22 -0800 (PST)
-X-Received: by 2002:a67:a401:: with SMTP id n1mr910748vse.38.1644423562636;
- Wed, 09 Feb 2022 08:19:22 -0800 (PST)
-MIME-Version: 1.0
-References: <20220209094158.21941-1-sj@kernel.org> <20220209094158.21941-2-sj@kernel.org>
- <715a8b2e-1048-c098-8b89-bcf3c13cbd75@google.com>
-In-Reply-To: <715a8b2e-1048-c098-8b89-bcf3c13cbd75@google.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 9 Feb 2022 17:19:11 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdV7EaHK5zJAbLU9eKwMYxFdAQ0TiS+Ydg56mGkBv09dHA@mail.gmail.com>
-Message-ID: <CAMuHMdV7EaHK5zJAbLU9eKwMYxFdAQ0TiS+Ydg56mGkBv09dHA@mail.gmail.com>
-Subject: Re: [PATCH for-mm 1/2] mm/internal: Implement no-op
- mlock_page_drain() for !CONFIG_MMU
-To:     Hugh Dickins <hughd@google.com>
-Cc:     SeongJae Park <sj@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=eWTUS3VqmsjwF4c8OTdfF5F0odt3UsQcGtmj9YbWaEk=;
+        b=J5Pv+KvFbo0Upz3uNPCmW/oXBgZwHQ139+AhhfJnyh9x+0VjU+5lRtypZR4rNrV5Er
+         IhEvw2FKN+gbwonZLhHu5WsA/Ui41ZWhqBAWU8jz+ORpGat75H+vHR7wjAHZckG2LFaR
+         1MkpJ8FjkJkhMNSyH7ZAvuBo8C8l3lYuG+J4D+si1kamO3rnz8TrW0t+vP3KW15PjskH
+         9UDjJEl4Qptv7NR6ApbkMcqif3Z0U4pAQvAXV/6s4t3FAsXbuvXsG2nXg0BRxOVwYHLZ
+         0HMH3Ywsd8kUDYUfXHPWm2FuZnQqC4oZVFwXrldh+E9cstB3kGuztL5ZXnkIlMVHCVVA
+         zLmw==
+X-Gm-Message-State: AOAM531/Y4m2+NCJODRlpfm3Zk9rzCeQgtPnYkeTM7d15EHI4mpzu6xJ
+        B7/JXdE0388Xh3ibyh0ix+Ai+A==
+X-Google-Smtp-Source: ABdhPJy0j7eWBmlJVk4eLI22dh3gUmeOg6uBbExzigwzZo5sR81MUFVc0DE25/D1z6UEH3jHHDWPPw==
+X-Received: by 2002:a4a:1d42:: with SMTP id 63mr326326oog.80.1644423690443;
+        Wed, 09 Feb 2022 08:21:30 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id el40sm7504405oab.22.2022.02.09.08.21.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 08:21:29 -0800 (PST)
+Date:   Wed, 9 Feb 2022 08:21:17 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Michal Hocko <mhocko@suse.com>
+cc:     Hugh Dickins <hughd@google.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Hildenbrand <david@redhat.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Rik van Riel <riel@surriel.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 00/13] mm/munlock: rework of mlock+munlock page
+ handling
+In-Reply-To: <YgPfX+/f0ksBpx6G@dhcp22.suse.cz>
+Message-ID: <147388c6-eb7-5c58-79a-7a8279c27fd@google.com>
+References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com> <YgPfX+/f0ksBpx6G@dhcp22.suse.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hugh,
+On Wed, 9 Feb 2022, Michal Hocko wrote:
+> 
+> So far I have only managed to read through the series and trying to put
+> all the pieces together (so far I have given up on the THP part) and my
+> undestanding is far from complete. But I have to say I like the general
+> approach and overall simplification.
 
-On Wed, Feb 9, 2022 at 4:38 PM Hugh Dickins <hughd@google.com> wrote:
-> The thing is, SeongJae's patch makes me wonder, why did it not need a
-> !CONFIG_MMU definition for need_mlock_page_drain() too?  That's because
-> mm/swap.c's call to it is under an #ifdef CONFIG_SMP, and I imagine that
-> CONFIG_MMU=n usually goes along with (but does not necessarily imply?)
-> CONFIG_SMP=n.  It'll be safer to add a need_mlock_page_drain() stub too.
+Many thanks for looking, Michal, and for all the positivity!
 
-RISC-V K210 is SMP without MMU.
+> 
+> The only thing that is not entirely clear to me at the moment is why you
+> have chosen to ignore already mapped LOCKONFAULT pages. They will
+> eventually get sorted out during the reclaim/migration but this can
+> backfire if too many pages have been pre-faulted before LOCKONFAULT
+> call. Maybe not an interesting case in the first place but I am still
+> wondering why you have chosen that way.
 
-Gr{oetje,eeting}s,
+I'm puzzled: what makes you think I'm ignoring already mapped LOCKONFAULT
+pages?  I'd consider that a bug.
 
-                        Geert
+It is the case, isn't it, that a VM_LOCKONFAULT area always has VM_LOCKED
+set too?  If I've got that wrong, yes, I'll need to revisit conditions.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> 
+> I will be off next couple of days and plan to revisit this afterwards
+> (should time allow). Anyway thanks a lot Hugh!
+> -- 
+> Michal Hocko
+> SUSE Labs
