@@ -2,189 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E41C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:46:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F30EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:48:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236256AbiBIPqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:46:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58930 "EHLO
+        id S236265AbiBIPsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:48:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232680AbiBIPqc (ORCPT
+        with ESMTP id S232272AbiBIPsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:46:32 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60086.outbound.protection.outlook.com [40.107.6.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6E5C0613C9;
-        Wed,  9 Feb 2022 07:46:35 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AW1OBEbLbWIPLxa4Q9C1fs3r9ob9XTe+RQ+F4Vek34YmfPVX5wUGqZCWp1TJkwSShT28qukFeIcndRD7+SxefxVhuFgp5ljXK6uz7dfmyZh2a9yYBUNipJdVnXe+HLRqFb9g7oeoV60fcjdmvS5KvSDGiQXH7Z6xD2GtuNBzamnURI2aY4wSrUn3HFznKgAJ/8kKm57HnImFKSQztcOv8q2l2/OxZbzbIBaahiB47vi+Joz4SNYDBBzJR96c/1HmMSTNmlNdGsdHl2+bxtFrn+eXCdYFDyFTa9+/l/CZsgBmlu75HzX8sRsaEpdlIT0vDTu1l4FGqMU/ADVUb1El2Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jtlXlYYQjxc4Fso6Exv7WJdMfYM6dIaovu4dInEN6wI=;
- b=bXp+X277i/aFlzKKKoDBy3B8tBwTtu2h+azZQHjAaaoJs3hfy9UGnk/aQillhta76Lv9TVOTVQFnFWfxmB5zZl8OW9I1D+6ASJQmpJr9ViMcs3xX2qQE5MUBihliWDN1sOYYR4Fv6gz7+nSivmpkI9qUm3gWhDPSPUd9uWDLvUGYnhSuqSmM6124XBVFjG3kiNvmcnGkNC8WtXZztkJcrvxrBxa2VwfRiDKVtFyZyDPOHzlp4i7YwYZQCdS7zYb30q38QI9K9KueXZF6ci2PR356Fu4p0uil/geyD80aGgRl7M9CpnsU/8NDxd3qQ7u3qGTVS/TkRx8FuFXbJ46/zA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jtlXlYYQjxc4Fso6Exv7WJdMfYM6dIaovu4dInEN6wI=;
- b=arZYbsSsS7XO0Fi6QCCnXRvRDmVDZ7zzi6PlvrZWS4v7LRMvP0OUDkyAzciI4KZcKhK44Tk7dy9ymM7mzFJ6tsfgJSAIfDsvHubU9AVf18l4v65UGujz+L+5wi6XXUkLJsjO6sT6c68XeAMHETpEYXH6rr9UVt132KsZ84tH3NA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=wolfvision.net;
-Received: from HE1PR0802MB2426.eurprd08.prod.outlook.com (2603:10a6:3:e1::23)
- by VI1PR0802MB2160.eurprd08.prod.outlook.com (2603:10a6:800:9b::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Wed, 9 Feb
- 2022 15:46:31 +0000
-Received: from HE1PR0802MB2426.eurprd08.prod.outlook.com
- ([fe80::e14f:197:5001:4c56]) by HE1PR0802MB2426.eurprd08.prod.outlook.com
- ([fe80::e14f:197:5001:4c56%3]) with mapi id 15.20.4951.019; Wed, 9 Feb 2022
- 15:46:30 +0000
-Message-ID: <01b78d95-fdf3-060a-831d-dae2abbc7109@wolfvision.net>
-Date:   Wed, 9 Feb 2022 16:46:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v5 1/5] dt-bindings: gpu: mali-bifrost: describe clocks
- for the rk356x gpu
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, Peter Geis <pgwipeout@gmail.com>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        linux-kernel@vger.kernel.org, Liang Chen <cl@rock-chips.com>,
-        devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>,
-        Alex Bee <knaerzche@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Rob Herring <robh+dt@kernel.org>
-References: <20220209085110.3588035-1-michael.riesch@wolfvision.net>
- <20220209085110.3588035-2-michael.riesch@wolfvision.net>
- <1644420908.380944.391811.nullmailer@robh.at.kernel.org>
-From:   Michael Riesch <michael.riesch@wolfvision.net>
-In-Reply-To: <1644420908.380944.391811.nullmailer@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: ZR0P278CA0045.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:1d::14) To HE1PR0802MB2426.eurprd08.prod.outlook.com
- (2603:10a6:3:e1::23)
+        Wed, 9 Feb 2022 10:48:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B9FC0613C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:48:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF385616A6
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 15:48:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC0BBC340E7;
+        Wed,  9 Feb 2022 15:48:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644421698;
+        bh=ydI6wA0BIuYvOXrXY9CUl5qi1UHpv72mNeIvpa+eqPA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rZQaSpMx0kjFhT/ei7BdBsGVR/rjZfx9rELeh35bisczGkBsk3LRFiQq+RtJCqfiY
+         MLbz3G7gzKvQvVNmd1OBQK90IMqohtICWL3jAj3Y8lj0TQaBD2/fDH2JBnVx7e8FRc
+         q3tu2XPcunDEAzGFYLst7zwVjTi4lgeMyr1XSwsuE80CH7dWXnIXr1yusLdJXvm3iM
+         RYzlWkv0cdWGxNuqWHEEwh23T0kVKLVFTtzwMoEqaTbPwZfysfmRD9J34kTNhJ4GsO
+         h3gBr0vQaaGiDpsyuIfOE2bVocjeXGJ6SX+aXFjlH5NT5ElunLhMn2yYKhgmkphFLX
+         E5OIXxs7VnWbA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 17222400FE; Wed,  9 Feb 2022 12:47:46 -0300 (-03)
+Date:   Wed, 9 Feb 2022 12:47:46 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Stephane Eranian <eranian@google.com>
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
+        kim.phillips@amd.com, acme@redhat.com, jolsa@redhat.com,
+        songliubraving@fb.com
+Subject: Re: [PATCH v6 10/12] perf tools: Improve IBS error handling
+Message-ID: <YgPiItRLaEJ75dUU@kernel.org>
+References: <20220208211637.2221872-1-eranian@google.com>
+ <20220208211637.2221872-11-eranian@google.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d80a2475-0211-45e1-3070-08d9ebe35754
-X-MS-TrafficTypeDiagnostic: VI1PR0802MB2160:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0802MB216074FA670C666B9775D9E1F22E9@VI1PR0802MB2160.eurprd08.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EJyLcg/KC9QFwL64O8qjSdnuoZeoKmBPTsHiU0VKAvgmqQWwpKKK9NfnsCqpOFKBLHwh39bWoUjUGmSRA7nu3slo01OMbQMqY0nIGroQ1C6r5QhRdsX8LPIkIsth+6SUIAYcj58PlJUiQpKTLXgKRkZgOjn5111lpjJNXtyp3zH0v7LqUnqyH7DJispaUztyPvaamvksqmC9GTQZ41bOIPzaQ49iYUE8Ef3H+BdqTlvvrBaTHxLPuBIuy0MZ9OMtHOONDBNgmu7z1idTmHqSnBiGnz0/BABs0ozNK5NsMFA/rZweyx8+2Ezh9A6QlKN/j13xAw8EPvBb2+xygEpJmdiZX8pbGLc9lYFdGVJoY1XEE2ctdHaNn1PpB+yXB3JMgHMMwoV6C+r1jbcmXIzPBgiCcQM4GU0hWXcaUYrKgMhdWPu8CIWEh5Xg/+Ue0P/OR1KZlc/L5xAq8/AturfNTViHqs+rXEi8mjIWG7mgJDiMys7SKmlfISJNYnh4CTjB47lBYjMibOWgJ75QOb/bYM/5ETMqf4Y1Kp2i36v7DwaUUZEak/K39bTYZ8FRbxR+drJeAf6ijPitZHQqpO5Ty2IBfKCnTvl66IimLr0LGutCzTsbZTw1iXHD6aahwwiMvu2bFpLGbIuQoCJsOAE8aFEhgnZnqqiaXRAH1q6Bdbp6bNftiDAZwhxgvWP2YIFj6hbhja3A3V7qqARxTCkI0433Q9VCd7nl17eGebV6botC2YLwzj5JfC+QIrCJPuYj/bHO67pc8RV+xVo4F/41ybM6rBGCmFKpBqfrKCmFsYa1m7voMRwV2vNIwbkbN5nh
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2426.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(38100700002)(66476007)(4326008)(8936002)(53546011)(508600001)(966005)(66946007)(6486002)(66556008)(8676002)(2906002)(54906003)(86362001)(36756003)(52116002)(83380400001)(2616005)(6916009)(44832011)(186003)(7416002)(6512007)(31696002)(5660300002)(316002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aXZyWW40RmV0bEtWanRPOG1wWXVmTmt3S05tSjZsMDNwMTZlTFFTdzJuWlJx?=
- =?utf-8?B?ZE1zNXdxYmU1SmhiZWpGYXhqeXZCZnZTbTN4SkF1Tlo0TnZlYXgzV1JRc0FB?=
- =?utf-8?B?YVVYamhrU0JSa2ZOYklBdjlTSGNFL2JEbnhBaW5xTHE4ZlI4bnVWZFphdVlS?=
- =?utf-8?B?UDhZbkFCcW1CUXU1SFV1SkZmT3FNLzhSbDd1L2tmSk5yZDZtTU05enlpM1dS?=
- =?utf-8?B?akFtWWhoeGZKOUt6d2FITURtNnh0a0VYWmZhQ1k5OWsrNHEvaHFHQ1E5RjRI?=
- =?utf-8?B?WVQ4Y2hka3htUWptR1ZCdGFVNTRQMXVHdFhuT1VLckNFUHhqUElMU3VMRER4?=
- =?utf-8?B?Z2lLK0cyenhQMVY2UjY3ZFRrVHZlUVdnZUFTbHB3cEZDUTQrUEExVnJYa2VO?=
- =?utf-8?B?T2VseUdrUVZXSHJZdVlzU1BqNmw5SGdWc0JONXllRmN0ZlZmTm1LdWEzbU1I?=
- =?utf-8?B?Sm5hK3FTT2R1aVZTcjRIREtDa0dRRnZpK3h5eEpkaDFkWmJESSsySmlyaDRB?=
- =?utf-8?B?QzB1eDNqb3J2RXpQdWxzVXJDTmFLdEp3MThBRkxQUE9aQnhuL3JvbUNtL1Fi?=
- =?utf-8?B?TkcvYkRwLzd1eUJVRjBmbjZDeGtTZ1ZCazRtUHlEMktvVW1tVHpyTkM1VnhN?=
- =?utf-8?B?cGVMNlpFTW5MZTBXUFdwa1hGaGlVcGZHYjYrUFJYRXhwdGxjLzFhSkhpUXpp?=
- =?utf-8?B?R2FZZm9IbmNuNG1yZDBJemNobytpU0hnNHdMcTkwQnI3NXRleWRVS2d1TTNv?=
- =?utf-8?B?U0huTE1Talc1N3drMDQ1dzhQSzQwRzB5bjYrSmszQUo0ZEpMUmNGcFQxM2tX?=
- =?utf-8?B?WktXU2ZERGw1dWtPa01LRkZnU0ZxM2hJTzNEb09SYXdjUTRTZWtKYk9MSmNV?=
- =?utf-8?B?WHpWUFVPR0kyWkhPRFVBdXBOb0FPSXJiQ21ucitTV1Faa1BVdExleGdQVVBO?=
- =?utf-8?B?YjJnVkhsaXg2L1kzbGxoRHQ0b0w3a0dXUTlGYnBqSDNRSzhFZjl1bGxpbldV?=
- =?utf-8?B?QkFNTXlyOTU1L2d5V2NkWW45U1lqbU9Jbk0zRG9uaVBPSVFnTVRsMExQY2hM?=
- =?utf-8?B?SU44bi9STkJGL3F3SjBLbG9VL3hVSWdzUlhWM2QrcllXOFFra1Z5dXA0b1Zw?=
- =?utf-8?B?RUd2UWswRmliSGkrQ1NIek1OazY0emNwNGJXVFF6UjhQVXZwenpsV1UrL29D?=
- =?utf-8?B?VHFtQzV5TkdPRnZlcm5hQy8wRWZ0b3I1WVdBZ1pVQXNnT0gwdGJIYllYUE0z?=
- =?utf-8?B?KzhrRUR6MFFUOTZpRVVZVHdmUmNBYXZTOWgva1BDd2R5dmhuQVBYWFZJbFdF?=
- =?utf-8?B?RGg3RUcwMjhIaEtHOVVyd25WZzZBZXVXdlc1eFlaUWRXckRBbW05K0ZxWi9V?=
- =?utf-8?B?V2c5NVQ0RkVpNWpoT2JLS1h6U0pjY1hXdHloNFZYWjcxN0RBSlZPQUZlMkFp?=
- =?utf-8?B?ajk4eGQ3bWgyclhlZmVsNHgxYk9BSXE2aS9JcmpFMVZFTjlxT01wSENrWUMw?=
- =?utf-8?B?WEMxQ1pUdm9EeGhRcDJ2UXpsMGtYVVlVVm1VTnVrQXlpTit1SXhJQit4SkYr?=
- =?utf-8?B?Ung5UVNEdm1MbFowazF4V2tmNEhEN1lHenhwTzlHRW5pYU05V045cE4yc0VV?=
- =?utf-8?B?OHdzTUxvUTRUL1puMDFNWGhIMXRHRDlySE4yRHpMcFVzMVRQUHJxODRCNE9x?=
- =?utf-8?B?aU5oNmVNR2FXMTNQdnpMaUIrWjRYQkdvZ1h2MEJvRy90Slc4OS9LQW9CeG1j?=
- =?utf-8?B?SHFPSEc1RzRBRjFFWlhQbWhwNjVKdzE5N0JSdVlzVzBFbUxUaFkxRXUzSWVE?=
- =?utf-8?B?enNPV2pMTi96S0s2MkFpSlhnbmdBamtjRHlybU01dmZrcjlvalkyWjJud2RK?=
- =?utf-8?B?eHVma1F3aFhxVXZlbGFxVmNsanJvU2oyK0xkcHI4ZEVZTWxRR05xbVYyZHVy?=
- =?utf-8?B?NXdvMTZwc2VqOVBtTGVJU3dQanY5UDdVbGdKcHpGUVdxVFYwVzFKWXo1bC9V?=
- =?utf-8?B?YjVCVnErbjE1VkR1QjJRZm1mNjd2TWR5V3M2S1RRYmd3NWplMmFsbGR1SGhh?=
- =?utf-8?B?YUN6WUJGQ2psNC9kL1ZBeTRFMDRzTGNyUlFTRXhkenRUa2NjTzZEZFAwSEhI?=
- =?utf-8?B?SGRTeEhla1hwU0xGZHRGTlcvcUFxa2Z2WlJUT3VMaEJUUmNpT3NxU3R4aTZp?=
- =?utf-8?B?aVJNNldXN3hubDlIOEpDZDZlK1RxT3hpSzlZZjJUM3NreDJFUStMTkZIdmJV?=
- =?utf-8?B?WWhlOEJLbzRSYlVTRU01b2pLZWFIRytFNDU4dzBka1VxS1JwMW5WdG1DTFhp?=
- =?utf-8?B?NGdjaTFleUkyR3RlNWMvNGY0QVVmLzFLSXBBNVRoT1FGdnBNZnZpVHppWHJY?=
- =?utf-8?Q?kU9iVq59UgLi8+98=3D?=
-X-OriginatorOrg: wolfvision.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: d80a2475-0211-45e1-3070-08d9ebe35754
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR0802MB2426.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 15:46:30.7530
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: e94ec9da-9183-471e-83b3-51baa8eb804f
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iD5Isqs7TgXEZOEialdEPdobBBF1YP4NfbfUqfFg23B+YN2J8r+41QjvGd6X/moBiU5ImMEysG4DHKWM+e7DL4WUSbT6T4EXSBFrZ8Uu5TM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0802MB2160
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208211637.2221872-11-eranian@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
+Em Tue, Feb 08, 2022 at 01:16:35PM -0800, Stephane Eranian escreveu:
+> From: Kim Phillips <kim.phillips@amd.com>
+> 
+> improve the error message returned on failed perf_event_open() on AMD when
+> using IBS.
+> 
+> Output of executing 'perf record -e ibs_op// true' BEFORE this patch:
+> 
+> The sys_perf_event_open() syscall returned with 22 (Invalid argument)for event (ibs_op//u).
+> /bin/dmesg | grep -i perf may provide additional information.
 
-On 2/9/22 16:35, Rob Herring wrote:
-> On Wed, 09 Feb 2022 09:51:06 +0100, Michael Riesch wrote:
->> From: Alex Bee <knaerzche@gmail.com>
->>
->> The Bifrost GPU in Rockchip RK356x SoCs has a core and a bus clock.
->> Reflect this in the SoC specific part of the binding.
->>
->> Signed-off-by: Alex Bee <knaerzche@gmail.com>
->> [move the changes to the SoC section]
->> Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
->> ---
->>  .../devicetree/bindings/gpu/arm,mali-bifrost.yaml | 15 +++++++++++++++
->>  1 file changed, 15 insertions(+)
->>
-> 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> 
-> yamllint warnings/errors:
-> ./Documentation/devicetree/bindings/gpu/arm,mali-bifrost.yaml:173:12: [warning] wrong indentation: expected 12 but found 11 (indentation)
+Humm, here on a
 
-D'oh! Sorry for the stupid mistake, I found that yamllint was indeed
-missing.
+  $ grep -m1 'model name' /proc/cpuinfo
+  model name	: AMD Ryzen 9 5950X 16-Core Processor
+  $ ls -la /sys/devices/ibs_op
+  total 0
+  drwxr-xr-x.  4 root root    0 Feb  9 07:12 .
+  drwxr-xr-x. 21 root root    0 Feb  9 07:12 ..
+  drwxr-xr-x.  2 root root    0 Feb  9 12:17 format
+  -rw-r--r--.  1 root root 4096 Feb  9 12:21 perf_event_mux_interval_ms
+  drwxr-xr-x.  2 root root    0 Feb  9 12:21 power
+  lrwxrwxrwx.  1 root root    0 Feb  9 07:12 subsystem -> ../../bus/event_source
+  -r--r--r--.  1 root root 4096 Feb  9 12:17 type
+  -rw-r--r--.  1 root root 4096 Feb  9 07:12 uevent
+  $ cat /sys/devices/ibs_op/type
+  9
+  $
 
-Lines 173 and 174 need an extra space. In the case that a v6 is required
-I'll fix this. But of course I wouldn't say no if this could be fixed
-when the patch is applied :-)
+Running without this patch:
 
-Best regards,
-Michael
+  $ uname -a
+  Linux five 5.15.14-100.fc34.x86_64 #1 SMP Tue Jan 11 16:53:51 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+  $
 
+  $ cat /etc/redhat-release
+  Fedora release 34 (Thirty Four)
+  $
+
+  $ perf record -e ibs_op// true
+  Error:
+  Invalid event (ibs_op//u) in per-thread mode, enable system wide with '-a'.
+  $
+
+Trying with system wide:
+
+  $ perf record -a -e ibs_op// true
+  Error:
+  The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (ibs_op//u).
+  /bin/dmesg | grep -i perf may provide additional information.
+  
+  $
+
+So you're missing -a in all examples? Am I missing something?
+
+> Output after:
 > 
-> dtschema/dtc warnings/errors:
+> AMD IBS cannot exclude kernel events.  Try running at a higher privilege level.
 > 
-> doc reference errors (make refcheckdocs):
+> Output of executing 'sudo perf record -e ibs_op// true' BEFORE this patch:
 > 
-> See https://patchwork.ozlabs.org/patch/1590238
+> Error:
+> The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (ibs_op//).
+> /bin/dmesg | grep -i perf may provide additional information.
+
+Here, as root:
+
+[root@five ~]# perf record -e ibs_op// true
+Error:
+Invalid event (ibs_op//) in per-thread mode, enable system wide with '-a'.
+[root@five ~]# perf record -a -e ibs_op// true
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 1.482 MB perf.data (175 samples) ]
+[root@five ~]#
+
+- Arnaldo
+ 
+> Output after:
 > 
-> This check can fail if there are any dependencies. The base for a patch
-> series is generally the most recent rc1.
+> Error:
+> AMD IBS may only be available in system-wide/per-cpu mode.  Try using -a, or -C and workload affinity
 > 
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> date:
+> Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+> Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+> Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+> Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+> Cc: Ian Rogers <irogers@google.com>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Jiri Olsa <jolsa@redhat.com>
+> Cc: Joao Martins <joao.m.martins@oracle.com>
+> Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: Michael Petlan <mpetlan@redhat.com>
+> Cc: Namhyung Kim <namhyung@kernel.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Robert Richter <robert.richter@amd.com>
+> Cc: Stephane Eranian <eranian@google.com>
+> ---
+>  tools/perf/util/evsel.c | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
 > 
-> pip3 install dtschema --upgrade
-> 
-> Please check and re-submit.
-> 
+> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+> index 22d3267ce294..d42f63a484df 100644
+> --- a/tools/perf/util/evsel.c
+> +++ b/tools/perf/util/evsel.c
+> @@ -2847,9 +2847,22 @@ static bool find_process(const char *name)
+>  	return ret ? false : true;
+>  }
+>  
+> +static bool is_amd(const char *arch, const char *cpuid)
+> +{
+> +	return arch && !strcmp("x86", arch) && cpuid && strstarts(cpuid, "AuthenticAMD");
+> +}
+> +
+> +static bool is_amd_ibs(struct evsel *evsel)
+> +{
+> +	return evsel->core.attr.precise_ip || !strncmp(evsel->pmu_name, "ibs", 3);
+> +}
+> +
+>  int evsel__open_strerror(struct evsel *evsel, struct target *target,
+>  			 int err, char *msg, size_t size)
+>  {
+> +	struct perf_env *env = evsel__env(evsel);
+> +	const char *arch = perf_env__arch(env);
+> +	const char *cpuid = perf_env__cpuid(env);
+>  	char sbuf[STRERR_BUFSIZE];
+>  	int printed = 0, enforced = 0;
+>  
+> @@ -2949,6 +2962,17 @@ int evsel__open_strerror(struct evsel *evsel, struct target *target,
+>  			return scnprintf(msg, size,
+>  	"Invalid event (%s) in per-thread mode, enable system wide with '-a'.",
+>  					evsel__name(evsel));
+> +		if (is_amd(arch, cpuid)) {
+> +			if (is_amd_ibs(evsel)) {
+> +				if (evsel->core.attr.exclude_kernel)
+> +					return scnprintf(msg, size,
+> +	"AMD IBS can't exclude kernel events.  Try running at a higher privilege level.");
+> +				if (!evsel->core.system_wide)
+> +					return scnprintf(msg, size,
+> +	"AMD IBS may only be available in system-wide/per-cpu mode.  Try using -a, or -C and workload affinity");
+> +			}
+> +		}
+> +
+>  		break;
+>  	case ENODATA:
+>  		return scnprintf(msg, size, "Cannot collect data source with the load latency event alone. "
+> -- 
+> 2.35.0.263.gb82422642f-goog
+
+-- 
+
+- Arnaldo
