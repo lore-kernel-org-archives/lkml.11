@@ -2,100 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF59CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49809C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232016AbiBIHs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 02:48:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43636 "EHLO
+        id S239317AbiBIHtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 02:49:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237374AbiBIHsz (ORCPT
+        with ESMTP id S238992AbiBIHs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 02:48:55 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E30C0613CB;
-        Tue,  8 Feb 2022 23:48:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644392939; x=1675928939;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UHxQ0y6ReTg5fAil+JKwO37ROUMI1ZBKsYOkDDrvDa0=;
-  b=JAKJTt7lQ3ErEl1627tkNZltivTKJCYgoSsISDIzydbmgqDXe5PULrxB
-   EIfJx62CVNN6HebphBDc/DnD+HsJW+d3nPGZvogpDXBV8gHgPFl9Ii5oC
-   V9atX26WowaahJXqHSYPu5Bl65ZAOx+vOKQKHd1I6rQkUyL4UDlZJQCH+
-   5AMwdrkE0Pw18bdf5ceUMNHldCzx4c9Bqo+gSo+8HqagjS7R0K0i0QKl6
-   Aih6qw0SL+oZrC1yCNFsgdtOFgEad2wDOD4fewyNeGRxOxZ1uNwtEp8KA
-   lEintS/aIaQq0l308ODwwZJQ4PqmwnNbg3BE4JYvp4vsfh/gfGY6I70fL
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="273682787"
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="273682787"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 23:48:59 -0800
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="525893576"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 23:48:56 -0800
-Date:   Wed, 9 Feb 2022 15:59:51 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, kevin.tian@intel.com,
-        tglx@linutronix.de, John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Tony Lindgren <tony@atomide.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] KVM: Rename and move CPUHP_AP_KVM_STARTING to
- ONLINE section
-Message-ID: <20220209075950.GA7943@gao-cwp>
-References: <20220118064430.3882337-1-chao.gao@intel.com>
- <20220118064430.3882337-4-chao.gao@intel.com>
- <YgMLBYl7P1jFA2xe@google.com>
+        Wed, 9 Feb 2022 02:48:57 -0500
+X-Greylist: delayed 1206 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 23:48:56 PST
+Received: from mail1.wrs.com (unknown-3-146.windriver.com [147.11.3.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1BAC0613CA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 23:48:56 -0800 (PST)
+Received: from mail.windriver.com (mail.wrs.com [147.11.1.11])
+        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 2197SOgk009635
+        (version=TLSv1.1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
+        Tue, 8 Feb 2022 23:28:24 -0800
+Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
+        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id 2197SNeJ005157
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 8 Feb 2022 23:28:23 -0800 (PST)
+Received: from ala-exchng01.corp.ad.wrs.com (147.11.82.252) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Tue, 8 Feb 2022 23:28:23 -0800
+Received: from pek-lpd-ccm2.wrs.com (128.224.179.210) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server id
+ 15.1.2242.12 via Frontend Transport; Tue, 8 Feb 2022 23:28:20 -0800
+From:   Dongyang Wang <dongyang.wang@windriver.com>
+To:     <manfred@colorfullife.com>
+CC:     <akpm@linux-foundation.org>, <christian.brauner@ubuntu.com>,
+        <dave@stgolabs.net>, <dongyang.wang@windriver.com>,
+        <ebiederm@xmission.com>, <legion@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <varad.gautam@suse.com>
+Subject: Re: [PATCH] To fix the below failure of handling page fault caused by the invalid input from user.
+Date:   Wed, 9 Feb 2022 15:28:20 +0800
+Message-ID: <20220209072820.18238-1-dongyang.wang@windriver.com>
+X-Mailer: git-send-email 2.26.1
+In-Reply-To: <56982041-c7ac-fc68-f5df-12a11d351ed6@colorfullife.com>
+References: <56982041-c7ac-fc68-f5df-12a11d351ed6@colorfullife.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgMLBYl7P1jFA2xe@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 12:29:57AM +0000, Sean Christopherson wrote:
->On Tue, Jan 18, 2022, Chao Gao wrote:
->> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
->> index 148f7169b431..528741601122 100644
->> --- a/virt/kvm/kvm_main.c
->> +++ b/virt/kvm/kvm_main.c
->> @@ -4856,13 +4856,25 @@ static void hardware_enable_nolock(void *junk)
->>  	}
->>  }
->>  
->> -static int kvm_starting_cpu(unsigned int cpu)
->> +static int kvm_online_cpu(unsigned int cpu)
->>  {
->> +	int ret = 0;
->> +
->>  	raw_spin_lock(&kvm_count_lock);
->> -	if (kvm_usage_count)
->> +	/*
->> +	 * Abort the CPU online process if hardware virtualization cannot
->> +	 * be enabled. Otherwise running VMs would encounter unrecoverable
->> +	 * errors when scheduled to this CPU.
->> +	 */
->> +	if (kvm_usage_count) {
->
->
->>  		hardware_enable_nolock(NULL);
->> +		if (atomic_read(&hardware_enable_failed)) {
->
->This needs:
->
->		atomic_set(&hardware_enable_failed, 0);
->
->otherwise failure to online one CPU will prevent onlining other non-broken CPUs.
->It's probably worth adding a WARN_ON_ONCE above this too, e.g.
+Hi Manfred, 
 
-Thanks. All your comments to this series make sense. I just post a revised
-version.
+I'm sorry for the late reply (we have a Chinese Lunar New Year).
+
+>>> On 1/26/22 03:42, Andrew Morton wrote:
+>>>> On Tue, 18 Jan 2022 17:19:52 +0800 Dongyang Wang <dongyang.wang@windriver.com> wrote:
+>>>>
+>>>>> [786058.308965] Unable to handle kernel paging request at virtual address 01000004
+>>>>> [786058.316286] pgd = 38a99693
+>>>>> [786058.319080] [01000004] *pgd=07800003, *pmd=00000000
+>>>>> [786058.324056] Internal error: Oops: 206 [#1] PREEMPT SMP ARM
+>>>>> [786058.324100] CPU:  PID: Comm:  Tainted: G         C
+>>>>> [786058.324102] Hardware name:
+>>>>> [786058.324114] PC is at __copy_to_user_std+0x4c/0x3c4
+>>>>> [786058.324120] LR is at store_msg+0xc0/0xe8
+>>>>> [786058.324124] pc : [<c0c0587c>]    lr : [<c0871d04>]    psr: 20010013
+>>>>> [786058.324126] sp : c3503ec4  ip : 00000000  fp : b4c9a660
+>>>>> [786058.324129] r10: c4228dc0  r9 : c3502000  r8 : 00000ffc
+>>>>> [786058.324132] r7 : 01000000  r6 : 546d3f8b  r5 : b4911690  r4 : 00000ffc
+>>>>> [786058.324134] r3 : 00000000  r2 : 00000f7c  r1 : 01000004  r0 : b4911690
+>>>>> [786058.324139] Flags: nzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
+>>>>> [786058.324142] Control: 30c5387d  Table: 0edc2040  DAC: 55555555
+>>>>> [786058.324145] Process  (pid: , stack limit = 0x25018bdf)
+>>> Why is process and pid: empty? Is this some kind of kernel process calling?
+>> The pid is 8369, it's a userspace app.
+>>
+>>>>> [786058.324148] Stack: (0xc3503ec4 to 0xc3504000)
+>>>>> [786058.324153] 3ec0:          b4911690 546d3f8b 01000000 00000ffc b4911690 00000ffc 00000000
+>>>>> [786058.324157] 3ee0: 00000ffc c0871d04 546d4f73 c3407801 c3503f28 c3407800 00000000 b49106a8
+>>>>> [786058.324161] 3f00: c4228dc0 c087abd4 00000002 b49106a8 617b9d03 00000000 00000000 c121d508
+>>>>> [786058.324165] 3f20: 00000000 bf06a1a8 d1b634cc 16b26e77 c5af5280 00000100 00000200 db806540
+>>>>> [786058.324170] 3f40: 00000001 c121d508 00000008 0000005c 00000000 00010008 b49106a8 c0601208
+>>>>> [786058.324173] 3f60: c3502000 00000040 b4c9a660 c087b474 c3503f78 c121d508 617b9d03 00000000
+>>>>> [786058.324177] 3f80: 2303d6cc 00000115 c0601208 c121d508 b4c9a660 b4c9a660 00000001 b49106a8
+>>>>> [786058.324181] 3fa0: 00000115 c06011dc b4c9a660 00000001 0000005c b49106a8 00010008 00000000
+>>>>> [786058.324185] 3fc0: b4c9a660 00000001 b49106a8 00000115 00000000 b4c9b400 00000000 b4c9a660
+>>>>> [786058.324189] 3fe0: 00000115 b4c9a650 b6b253bd b6b254b6 800d0030 0000005c 00000000 00000000
+>>>>> [786058.324201] [<c0c0587c>] (__copy_to_user_std) from [<c0871d04>] (store_msg+0xc0/0xe8)
+>
+>I would search here: __copy_to_user_std should fail if the address is 
+>invalid.
+>
+>For whatever reasons, it produces a page fault.
+
+Totally agree with you. 
+
+>First: Is this reproducible? Does it fail immediately if you pass an 
+>invalid value to mq_timedreceive()?
+
+This crash info is from another team. It can't be reproduced until now.
+Yesterday, I changed the 'u_msg_ptr' and 'msg_ptr->m_ts' to a wrong value, but don't cause crash. 
+I will watch this part. 
+
+>https://elixir.bootlin.com/linux/v4.18.20/source/arch/arm/include/asm/uaccess.h#L464
+>
+>It seems ARM has special optimizations (CONFIG_UACCESS_WITH_MEMCPY), and 
+>I cannot see if this is MMU or NO_MMU
+
+This is MMU. 
+
