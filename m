@@ -2,149 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD11C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C41FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238512AbiBIRyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 12:54:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50162 "EHLO
+        id S238516AbiBIR5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 12:57:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238497AbiBIRyk (ORCPT
+        with ESMTP id S232353AbiBIR5L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 12:54:40 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A581DC05CB82
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:54:43 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id w20so2844523plq.12
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 09:54:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=bn+NqQc+WkBL0eCTGvSDZFvqDNmAbZwHfh1WyoVIqEU=;
-        b=gDzGvDYK+kanW1ZjdlzJIIEDIOwcDawCy2/WkAvLy+okpF1wNXDa6i2bZo/mYN0yKl
-         M5ofOfdjO8Zlz/FGkjY8tI9264lB59SUqwDecmo037jiNWuD7yV3+HyGvNqwV+YUv1CQ
-         IEjipzEqzwTiYLOSJzKFRJrGEfAMC/H3Pg77gMNkdPN9y4qlO5U5nOU/w8vY13caF7WY
-         v+VVu0DHZjZCxM9zhvhqhxB7jiU8Z7/e9TwkESuCrdgQGH/vkvA7Kv1bc+dWKYTuctmc
-         RV8Ebzs/wibJzv/LKWZwTjEnWPi1DuTxW3OuAT7VLQ1toSc+6gROC0oD/hjzfjjSFKeh
-         BD9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=bn+NqQc+WkBL0eCTGvSDZFvqDNmAbZwHfh1WyoVIqEU=;
-        b=mAbdamYfxKdWX9ePnvj0DM7c4Pns/ldl/la4zelP8wrh+oT1SLLYXxiLVrdNYPQIhp
-         V7wsB4s2vnXlIi5MaD03Kgyl9c7+HcdwUsf5y+NZmLoFcKxKjs3KKx4/BK+FAXx+m01e
-         Ul1aGLnUEs+ba//og9vHQq9HFEOu2nyR3zz0S5GeMGFPQ56JfolMgzQtbkS5kG2WzEdr
-         RN/Z9TgM7mjXx5+DhE2VfpYkCqxtPuS4mTw3oH182mJbL8IycoxRA4nOYqEC85/v4zA0
-         jw3fzOcOfBxhnscMCvlm1gm/gdKYIEMXjamOKznwhKZv60yx7Rsfs3VlpUidCHpDqTq8
-         PflA==
-X-Gm-Message-State: AOAM531wTYaRAW3Nucs7s8UUfUxt24w7RbApPpxzI+fWLH/Rp9d0ddLH
-        6YMMAGJyy/QQHmx5fc2kaAKcZQ==
-X-Google-Smtp-Source: ABdhPJykGUyrR/mKjFE3vXyI8yjLyylaCf25jTwCP3hhwtnACLmb9FM8ZJUGa2VrGt/lbOLtgaRmnw==
-X-Received: by 2002:a17:90b:1e50:: with SMTP id pi16mr4732745pjb.16.1644429282853;
-        Wed, 09 Feb 2022 09:54:42 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h6sm20257216pfc.35.2022.02.09.09.54.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 09:54:42 -0800 (PST)
-Date:   Wed, 9 Feb 2022 17:54:38 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org, x86@kernel.org,
-        mlevitsk@redhat.com, pbonzini@redhat.com, joro@8bytes.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        peterz@infradead.org, hpa@zytor.com, jon.grimm@amd.com,
-        wei.huang2@amd.com, terry.bowman@amd.com
-Subject: Re: [PATCH v5] KVM: SVM: Allow AVIC support on system w/ physical
- APIC ID > 255
-Message-ID: <YgP/3u2UjqzG4C/M@google.com>
-References: <20220209152038.12303-1-suravee.suthikulpanit@amd.com>
+        Wed, 9 Feb 2022 12:57:11 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB61C0613C9;
+        Wed,  9 Feb 2022 09:57:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5C00ECE2253;
+        Wed,  9 Feb 2022 17:57:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DBE7C340E9;
+        Wed,  9 Feb 2022 17:57:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644429430;
+        bh=iOxYp/R4z6NyCd4CMctrHVzFrNaRVI37GlqDqEU6psI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gQbP413M18GeHBjrV/vjinZHhOzGZMJZ6pHXdH/yNQLJ675oDAEskxhGDuqhftcSS
+         ROlfUZvpjGqjojoJZ85WrCEardNq5D3mMhQDJSzsLO1gH1+Wf8mm4XI2O446r8TmJl
+         uTBLjK2DBH8l0wSBzm8XNFzRDlFIW4YFeOSonQd9RxpoFxLHMq3iNCEekd6J/xzAwB
+         eecKsemaKrIU95miFZupeAkvItH4v/aoCPxU8wzm2KE3aSUHFi6XdYdUWEoZHdKSJC
+         9AMzp8Qcth27749Vdhr8WxgRuyf185fo3c2F+5lD16DF8uIIykAxbJMpzFLQgBOC0h
+         bmTTmkqZ4HYWA==
+Date:   Thu, 10 Feb 2022 01:49:19 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, wefu@redhat.com, liush@allwinnertech.com,
+        guoren@kernel.org, atishp@atishpatra.org, anup@brainfault.org,
+        drew@beagleboard.org, hch@lst.de, arnd@arndb.de, wens@csie.org,
+        maxime@cerno.tech, gfavor@ventanamicro.com,
+        andrea.mondelli@huawei.com, behrensj@mit.edu, xinhaoqu@huawei.com,
+        huffman@cadence.com, mick@ics.forth.gr,
+        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
+        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
+        philipp.tomsich@vrull.eu
+Subject: Re: [PATCH v6 00/14] riscv: support for Svpbmt and D1 memory types
+Message-ID: <YgP+n5OMhQPSbICV@xhacker>
+References: <20220209123800.269774-1-heiko@sntech.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220209152038.12303-1-suravee.suthikulpanit@amd.com>
+In-Reply-To: <20220209123800.269774-1-heiko@sntech.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022, Suravee Suthikulpanit wrote:
-> AVIC physical APIC ID table entry contains host physical
-> APIC ID field, which is used by the hardware to keep track of where
-> each vCPU is running. Originally, this field is 8-bit when AVIC was
-> introduced.
->
-> The AMD64 Architecture Programmer’s Manual Volume 2 revision 3.38
-> specify the physical APIC ID table entry bit [11:8] as reserved
-> for older generation of AVIC hardware.
-
-I'd prefer to explicitly call out that older versions of the APM were buggy, it's
-easy to overlook the importance of the "revision 3.38" blurb.
-
-> For newer hardware, this field is used to specify host physical APIC ID
-> larger than 255.
-
-For all intents and purposed the field was _architecturally_ always 12 bits, the
-APM just did a poor job of documenting that the number of bits that are actually
-consumed by the CPU is model specific behavior.
-
-> Unfortunately, there is no CPUID bit to help determine if AVIC hardware
-> can support 12-bit host physical APIC ID. For older system, since
-> the reserved bits [11:8] is documented as should be zero, it should be safe
-
-Please don't hedge, "it should be safe" implies we aren't confident about writing
-zeroes, but KVM already writes zeroes to the reserved bits.  The changelog could
-instead call out that KVM trusts hardware to (a) not generate bogus x2APIC IDs and
-(b) to always support at least 8 bits.
-
-> to increase the host physical ID mask to 12 bits and clear the field
-> when programing new physical APIC ID.
-
-E.g.
-
-  Expand KVM's mask for the AVIC host physical ID to the full 12 bits defined
-  by the architecture.  The number of bits consumed by hardware is model
-  specific, e.g. early CPUs ignored bits 11:8, but there is no way for KVM
-  to enumerate the "true" size.  So, KVM must allow using all bits, else it
-  risks rejecting completely legal x2APIC IDs on newer CPUs.
- 
-  This means KVM relies on hardware to not assign x2APIC IDs that exceed the
-  "true" width of the field, but presmuably hardware is smart enough to tie
-  the width to the max x2APIC ID.  KVM also relies on hardware to support at
-  least 8 bits, as the legacy xAPIC ID is writable by software.  But, those
-  assumptions are unavoidable due to the lack of any way to enumerate the
-  "true" width.
-
-  Note, older versions of the APM state that bits 11:8 are reserved for
-  legacy xAPIC, but consumed for x2APIC.  Revision 3.38 corrected this to
-  state that bits 11:8 are "should be zero" on older hardware.
-
-> Suggested-by: Sean Christopherson <seanjc@google.com>
-> Cc: Maxim Levitsky <mlevitsk@redhat.com>
-
-Cc: stable@vger.kernel.org
-Fixes: 44a95dae1d22 ("KVM: x86: Detect and Initialize AVIC support")
-
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/kvm/svm/avic.c | 8 ++------
->  arch/x86/kvm/svm/svm.h  | 2 +-
->  2 files changed, 3 insertions(+), 7 deletions(-)
+On Wed, Feb 09, 2022 at 01:37:46PM +0100, Heiko Stuebner wrote:
+> Svpbmt is an extension defining "Supervisor-mode: page-based memory types"
+> for things like non-cacheable pages or I/O memory pages.
 > 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index 90364d02f22a..54ad98731181 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -19,6 +19,7 @@
->  #include <linux/amd-iommu.h>
->  #include <linux/kvm_host.h>
->  
-> +#include <asm/apic.h>
+> 
+> So this is my 2nd try at implementing Svpbmt (and the diverging D1 memory
+> types) using the alternatives framework.
+> 
+> This includes a number of changes to the alternatives mechanism itself.
+> The biggest one being the move to a more central location, as I expect
+> in the future, nearly every chip needing some sort of patching, be it
+> either for erratas or for optional features (svpbmt or others).
+> 
+> The dt-binding for svpbmt itself is of course not finished and is still
+> using the binding introduced in previous versions, as where to put
+> a svpbmt-property in the devicetree is still under dicussion.
+> Atish seems to be working on a framework for extensions [0],
+> 
+> The series also introduces support for the memory types of the D1
+> which are implemented differently to svpbmt. But when patching anyway
+> it's pretty clean to add the D1 variant via ALTERNATIVE_2 to the same
+> location.
+> 
+> The only slightly bigger difference is that the "normal" type is not 0
+> as with svpbmt, so kernel patches for this PMA type need to be applied
+> even before the MMU is brought up, so the series introduces a separate
+> stage for that.
+> 
+> 
+> In theory this series is 3 parts:
+> - sbi cache-flush / null-ptr
+> - alternatives improvements
+> - svpbmt+d1
+> 
+> So expecially patches from the first 2 areas could be applied when
+> deemed ready, I just thought to keep it together to show-case where
+> the end-goal is and not requiring jumping between different series.
+> 
+> 
+> The sbi cache-flush patch is based on Atish's sparse-hartid patch [1],
+> as it touches a similar area in mm/cacheflush.c
+> 
+> 
+> I picked the recipient list from the previous version, hopefully
+> I didn't forget anybody.
+> 
+> changes in v6:
+> - rebase onto 5.17-rc1
+> - handle sbi null-ptr differently
+> - improve commit messages
+> - use riscv,mmu as property name
+> 
+> changes in v5:
+> - move to use alternatives for runtime-patching
 
-Unnecessary new include.
+Hi,
 
-With the above addressed,
+another choice is using static key mechanism. Pros: no need to coding
+in asm, all in c.
 
-Reviewed-by: Sean Christopherson <seanjc@google.com>
+To support new arch features, I see other arch sometimes use static
+key, sometimes use alternative mechanism, so one question here would
+be which mechanism is better? Any guide?
+
+Thanks in advance
