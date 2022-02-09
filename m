@@ -2,242 +2,559 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbiBIKM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:12:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
+        id S232631AbiBIKN2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:13:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230053AbiBIKM4 (ORCPT
+        with ESMTP id S231812AbiBIKNZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:12:56 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2071.outbound.protection.outlook.com [40.107.236.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7153FE049A5F
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:10:11 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KAOVCYFtEyXnMccmZWGkH/KKntXeIGJ3EnoOLY3MfJ19+LMW37V95ts4nvbkEsQ5OvFVlvjDLjqv7a2v0G1rJ6jK5GdVO6KVoHd8DZ/Fyi8SphZOTnDjh2BvsQTAVYpiqff4Yl8+5u9vTMLEP519oAJ5PlBHowju/8o7EgbiY7Txpt58BKBByC5lkdT5FYVTmEKEls1FpB01GmNps8gCgsAaIrlaX29Erc+TQ0ZF9Bab7G+c2JGIxKXcOho11JtgFrzIHqZkRJfv4vZbOrJeoi0Xbkwpd43GV68Jiyn2Y6/J8zD/dW+ob3EqrQOGoBYElEVXS3e2OIzfrIa/9XrdcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SawBbmLcqX59DO08kmVoxx8yclRRXi+dBXHq4BLdwKQ=;
- b=PUP/kX9G3U/1cFwrRVWJW1t/zyYFKgWyRBNyC5w2afAh9Oow0FhIqibH2IzbO00VZrBIl0yTyzfLXXWXGHZ1d9KJioDogpF9EbkuUEneqFmqLjjOeYG1QCLt/5HN3+2izeVH3nPJWA7MrRrtfpzY4lv0wVvz0+irI15rikGiG8DP1NDiCtOifzD/SHt0I8+tna9FZTEy1oC/Rb1rIfGARdyWzx0Tc/Bmdv0oewYZ1/umXgwMTInzeIE76px+Ot0nxebrNKMLHCtu/hoUxSZEt5Rfa8wx3u0xcbp2v7Yj/eeMRv5i1SaKBXhxYa0gMF86wO4y+RResdEP+ElcX4tyOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SawBbmLcqX59DO08kmVoxx8yclRRXi+dBXHq4BLdwKQ=;
- b=AVe4stYBePLwMs97fZYBxGdmGQBdsp6JIfnMZOTdyggjqr0U6Z9aEZPjBlmGvW3ib1PXXSB0JL13NqlfrVLXuJm9n+LnwKeKRXTyXhqzJ6DBP/yacMxbty0mm9csPcG45vZLr+vARvUQihxnr/ROmK87FVh5XPeukTz0GNZiFMc=
-Received: from BN6PR1401CA0009.namprd14.prod.outlook.com
- (2603:10b6:405:4b::19) by PH7PR12MB5688.namprd12.prod.outlook.com
- (2603:10b6:510:13c::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Wed, 9 Feb
- 2022 10:07:00 +0000
-Received: from BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:4b:cafe::bb) by BN6PR1401CA0009.outlook.office365.com
- (2603:10b6:405:4b::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
- Transport; Wed, 9 Feb 2022 10:06:59 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT005.mail.protection.outlook.com (10.13.176.69) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4975.11 via Frontend Transport; Wed, 9 Feb 2022 10:06:59 +0000
-Received: from BLR5CG134614W.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 9 Feb
- 2022 04:06:53 -0600
-From:   K Prateek Nayak <kprateek.nayak@amd.com>
-To:     <peterz@infradead.org>
-CC:     <aubrey.li@linux.intel.com>, <efault@gmx.de>,
-        <gautham.shenoy@amd.com>, <linux-kernel@vger.kernel.org>,
-        <mgorman@techsingularity.net>, <mingo@kernel.org>,
-        <song.bao.hua@hisilicon.com>, <srikar@linux.vnet.ibm.com>,
-        <valentin.schneider@arm.com>, <vincent.guittot@linaro.org>,
-        K Prateek Nayak <kprateek.nayak@amd.com>
-Subject: [PATCH v2] sched/fair: Consider cpu affinity when allowing NUMA imbalance in find_idlest_group
-Date:   Wed, 9 Feb 2022 15:35:34 +0530
-Message-ID: <20220209100534.12813-1-kprateek.nayak@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 9 Feb 2022 05:13:25 -0500
+X-Greylist: delayed 318 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 02:10:37 PST
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4104FE02F6D2
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:10:36 -0800 (PST)
+Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1N1PGx-1oIgX01xGd-012r6D;
+ Wed, 09 Feb 2022 11:01:33 +0100
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Adam Ford <aford173@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 04/12] arm64: defconfig: re-order default configuration
+Date:   Wed,  9 Feb 2022 11:00:47 +0100
+Message-Id: <20220209100055.181389-5-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220209100055.181389-1-marcel@ziswiler.com>
+References: <20220209100055.181389-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1db1e145-9374-4690-4ce2-08d9ebb3e97b
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5688:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB5688A396FAAEC242103893E0982E9@PH7PR12MB5688.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: N/d3WFoYrxCzRfgtFuFT6LdTdyPSH/oJh1ME85g2H0Xs9OHZKxjj4Eqks72PS7qtASlfMG4Lf3eogG1RhHT73xZJCEEuMeovWIWoAKPXAHzBcSZ+BR12lm7dZlFGNXyssWNHxDLKiq94KxWXhAhdLg7P9LNAyj57Ozq/NB9CWH2ParSquFWFlipkuvnXWO1AdvkYseXR1kgkbZh8uvOCWhNV1tycq4bMijCHrw6KFsG75vPEg9K7t7Bzd7VYj2Lxcpw7MDT6HCZVdlzJt/YFmDDuwmK8f+KVgYHrbjCPOO3wjPRYD613iCHVwWY52fSlEg0EY4JXsLElvPaS9rHshVFwq6+HdVMdEqfqW01o+tuwaLMYXlvCHc94wZGYxeoxTz1DTAUKsfZA2cbMsg1W1tnhCjAI4oOZzSbBx9y76ZkMBXnX5jQAJWkmHmJXQ+6IqjB0M+N6ghweiKWeAKfazP7oYnEOvZ4+zvgpYxGDj59dvBhtX47Hmgw65gAeaICLLkJObPq1+Ny9NjWlzSXGBomCvdO7+N4NMG8wuCwukch4heKtGwglGw1/sTT6ONKhbRGDwSKkCKAOUVnyJCLxTfW4NLEXTz4DM1Fjdjwnn4XN5NwGRtgpDHz8TqfMGsJpdsCuBae6yXt+CJjiot+T4ZuGORLa1QGATN6D+m/Lx8d5LLXUKiil/G/pcmPSw0kiU4eyjK2qGDmJo32ZMfTOaqYs1oRjtTx+K/XLVzDzv9Vv95/pgVVxfgKEnIh1U3qIGWvj1mkdg7qM5kAZhVILNZL3XCd2dXGWoYK//+d/5aM=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(47076005)(36860700001)(8676002)(966005)(2616005)(36756003)(54906003)(40460700003)(6916009)(2906002)(7696005)(6666004)(508600001)(8936002)(316002)(86362001)(82310400004)(7416002)(426003)(4326008)(356005)(336012)(26005)(70586007)(70206006)(5660300002)(83380400001)(81166007)(186003)(16526019)(1076003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 10:06:59.7856
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1db1e145-9374-4690-4ce2-08d9ebb3e97b
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5688
+X-Provags-ID: V03:K1:0gj8zFIuo6CqMjSnZbdiKf/SBskkK8QYBP7wbyo9/Toltk2YA/n
+ dkQQj4fpsYkL696h7ose8uTH56oKwo1G4tZT3SKEZAerxV2bAL1JzmWe0eyjNc4dy/0pCNx
+ ZLkQfp81jFqt7lA+i8b+138uZ+m/azaAkc+FMPBOVJPXn6TZ9XQSZhWA3TeK9Fc+T4ff8pL
+ XUMhaIdsszXVVaamLbITw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:AptMiHdZAhg=:4uePhyR7xhhIk5P7IDr3hI
+ IUy/Rr1rYjymvaXl/DvNcU4ZSez8PzRyN9UKB8EWNVrmT6N1TGoV2Q0QrbOrDLyO+zWhnWng4
+ 8n7U9irJ7hzwli2V4/DUisB7kvY5+5fhfEbH571zVAzcrpFDa/Pl+H8fE1HXEekiJLCPMyRJb
+ lXaKrx9k91LjsHDKIAxZnqAQ4xiP27gWHTjt0TOR4XhQJXo6V8fu/rqYgGw5ZjlxgytL2XVqb
+ SmgMgwue+sH4BpCpPDH445WSZpy2rFfgP5tRT7ST3gALvzDWTt5ErhUplYV2OcSMd6aLTgBOT
+ Ty2ilUTgtAwcuBIX9ilseUxZO4I61UXAVlVnKsbYiV+V+AgAmS2qzTmtRc3GKLGlS+clbQSjs
+ URNYqcActUue6xJFYexFvJMJHxOQQR1wNoEOb94ugLgSMF+W0W0rhRUx5vGpQxfF59ZVc6OCh
+ wLpmAsGClNItNxqvsZaUMWlZ0BwS0vcBYPKtv+ApjpKCEO9fadipq4+bPGEfnafxksWguIUXT
+ HtD1biYJVAEe6IIFmBZtLIsBh8rCRJtijUuYgSbCIUtb97YlG8Gp6BUoZXZj3f/z7VDSqrlWE
+ EKUeNDCOg0hftiN2aWtck+eMM0vqS66DxWsuBUDOHxoqf5HlLM3JzGcY/EQnCl1ic9eZhbkab
+ 38ZXPn4zTx3r7N27BkTNesGU6U2MIOTrzizhWm9uPS6r+Mkb9uHqwpx8LEO8keGmRUqajf2Py
+ jxC4Qf2Lmm2VJnsK
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, sched/tip allows a generous amount of NUMA imbalance when it
-comes to task wakeup. In case of processes affined to a subset of cpus
-in the NUMA group, the current behavior can lead to piling of processes
-on allowed cpus of one NUMA group when there exists an opportunity to
-run it on a cpu of different NUMA group.
-Mel Gorman's NUMA balance across LLCs v6 patchset [1] improves the
-behavior of task placement on systems with smaller LLCs. However, there
-still exists an opportunity to aggressively balance in case of processes
-affined to a subset of group cpus.
-A good placement makes a difference especially in case of short lived
-tasks where the delay in load balancer kicking in can cause degradation
-in performance.
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Benchmark is performed using pinned run of STREAM, parallelized with OMP,
-on a Zen3 machine. STREAM is configured to run 8 threads with CPU affinity
-set to cpus 0,16,32,48,64,80,96,112.
-This ensures an even distribution of allowed cpus across the NUMA groups
-in NPS1, NPS2 and NPS4 modes.
-The script running the stream itself is pinned to cpus 8-15 to maintain
-consistency across runs and to make sure the script runs on an LLC
-not part of stream cpulist so as to not interfere with the benchmark.
+Use "make defconfig", "make savedefconfig" and friends to just assess
+re-ordering of configuration items in defconfig.
 
-Changes are based on top of v6 of Mel's patchset
-"Adjust NUMA imbalance for multiple LLCs" [1]
+This re-ordered the following configuration options:
 
-Following are the results:
+CONFIG_BPF_JIT=y
+CONFIG_SECCOMP=y
+CONFIG_ARM_SCMI_PROTOCOL=y
+CONFIG_ARM_SCPI_PROTOCOL=y
+CONFIG_RASPBERRYPI_FIRMWARE=y
+CONFIG_INTEL_STRATIX10_SERVICE=y
+CONFIG_INTEL_STRATIX10_RSU=m
+CONFIG_QCOM_SCM=y
+CONFIG_EFI_CAPSULE_LOADER=y
+CONFIG_IMX_SCU=y
+CONFIG_IMX_SCU_PD=y
+CONFIG_CAN_FLEXCAN=m
+CONFIG_PCIE_LAYERSCAPE_GEN4=y
+CONFIG_FSL_MC_BUS=y
+CONFIG_MTK_DEVAPC=m
+CONFIG_SPI_CADENCE_QUADSPI=y
+CONFIG_MDIO_BUS_MUX_MMIOREG=y
+CONFIG_MDIO_BUS_MUX_MULTIPLEXER=y
+CONFIG_MESON_GXL_PHY=m
+CONFIG_PINCTRL_SINGLE=y
+CONFIG_QCOM_CPR=y
+CONFIG_ROCKCHIP_IODOMAIN=y
+CONFIG_SENSORS_ARM_SCMI=y
+CONFIG_QORIQ_THERMAL=m
+CONFIG_SUN8I_THERMAL=y
+CONFIG_TEGRA_BPMP_THERMAL=m
+CONFIG_ARM_SMC_WATCHDOG=y
+CONFIG_MFD_CROS_EC_DEV=y
+CONFIG_MEDIA_PLATFORM_SUPPORT=y
+CONFIG_VIDEO_QCOM_CAMSS=m
+CONFIG_DRM_PANEL_BOE_TV101WUM_NL6=m
+CONFIG_DRM_NWL_MIPI_DSI=m
+CONFIG_DRM_LONTIUM_LT9611UXC=m
+CONFIG_SND_SOC_FSL_SAI=m
+CONFIG_SND_SOC_IMX_AUDMIX=m
+CONFIG_TYPEC_HD3SS3220=m
+CONFIG_COMMON_CLK_SCMI=y
+CONFIG_COMMON_CLK_ZYNQMP=y
+CONFIG_IPQ_GCC_8074=y
+CONFIG_SM_DISPCC_8250=y
+CONFIG_QCOM_WCNSS_CTRL=m
+CONFIG_ARCH_R8A774A1=y
+CONFIG_ARCH_R8A774B1=y
+CONFIG_ARCH_R8A774C0=y
+CONFIG_ARCH_R8A774E1=y
+CONFIG_ARCH_R8A77995=y
+CONFIG_ARCH_R8A77990=y
+CONFIG_ARCH_R8A77965=y
+CONFIG_ARCH_R8A77970=y
+CONFIG_ARCH_R8A779F0=y
+CONFIG_HISI_PMU=y
+CONFIG_QCOM_QFPROM=y
+CONFIG_MUX_MMIO=y
 
-	 5.17.0-rc1              5.17.0-rc1              5.17.0-rc1
-	 tip sched/core          tip sched/core          tip sched/core
-				 + mel-v6                + mel-v6
-							 + this-fix
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-NPS Mode - NPS1
-
- Copy:   93918.06 (0.00 pct)     109462.74 (16.55 pct)   159529.28 (69.86 pct)
-Scale:   93587.15 (0.00 pct)     107532.66 (14.90 pct)   149857.47 (60.12 pct)
-  Add:   109049.25 (0.00 pct)    125020.15 (14.64 pct)   187370.68 (71.82 pct)
-Triad:   110837.20 (0.00 pct)    120235.47 (8.47 pct)    184970.30 (66.88 pct)
-
-NPS Mode - NPS2
-
- Copy:   72897.93 (0.00 pct)     67735.80 (-7.08 pct)    158353.23 (117.22 pct)
-Scale:   67053.02 (0.00 pct)     63938.28 (-4.64 pct)    151405.05 (125.79 pct)
-  Add:   82369.06 (0.00 pct)     79950.10 (-2.93 pct)    195779.90 (137.68 pct)
-Triad:   86169.70 (0.00 pct)     83096.03 (-3.56 pct)    192829.44 (123.77 pct)
-
-NPS Mode - NPS4
-
- Copy:   47215.25 (0.00 pct)     76329.25 (61.66 pct)    166127.12 (251.85 pct)
-Scale:   44749.85 (0.00 pct)     68847.86 (53.85 pct)    157443.02 (251.82 pct)
-  Add:   56184.15 (0.00 pct)     92570.93 (64.76 pct)    199190.89 (254.53 pct)
-Triad:   52530.37 (0.00 pct)     88348.62 (68.18 pct)    197430.72 (275.84 pct)
-
-
-The following sched_wakeup_new tracepoint output shows the initial
-placement of tasks in mel-v6 in NPS2 mode:
-
-stream-5261    [016] d..2.   262.189413: sched_wakeup_new: comm=stream pid=5263 prio=120 target_cpu=000
-stream-5261    [016] d..2.   262.189459: sched_wakeup_new: comm=stream pid=5264 prio=120 target_cpu=016
-stream-5261    [016] d..2.   262.189568: sched_wakeup_new: comm=stream pid=5265 prio=120 target_cpu=016
-stream-5261    [016] d..2.   262.189621: sched_wakeup_new: comm=stream pid=5266 prio=120 target_cpu=048
-stream-5261    [016] d..2.   262.189678: sched_wakeup_new: comm=stream pid=5267 prio=120 target_cpu=032
-stream-5261    [016] d..2.   262.189720: sched_wakeup_new: comm=stream pid=5268 prio=120 target_cpu=016
-stream-5261    [016] d..2.   262.189758: sched_wakeup_new: comm=stream pid=5269 prio=120 target_cpu=016
-
-Four stream threads pile up on cpu 16 initially and in case of
-short runs, where the load balancer doesn't have enough time to kick in
-to migrate task, performance might suffer. This pattern is observed
-consistently where tasks pile on one cpu of the group where the
-runner script is pinned to.
-
-The following sched_wakeup_new tracepoint output shows the initial
-placement of tasks with this fix in NPS2 mode:
-
-stream-5260    [016] d..2.   212.794629: sched_wakeup_new: comm=stream pid=5262 prio=120 target_cpu=000
-stream-5260    [016] d..2.   212.794683: sched_wakeup_new: comm=stream pid=5263 prio=120 target_cpu=048
-stream-5260    [016] d..2.   212.794789: sched_wakeup_new: comm=stream pid=5264 prio=120 target_cpu=032
-stream-5260    [016] d..2.   212.794850: sched_wakeup_new: comm=stream pid=5265 prio=120 target_cpu=112
-stream-5260    [016] d..2.   212.794903: sched_wakeup_new: comm=stream pid=5266 prio=120 target_cpu=096
-stream-5260    [016] d..2.   212.794961: sched_wakeup_new: comm=stream pid=5267 prio=120 target_cpu=080
-stream-5260    [016] d..2.   212.795018: sched_wakeup_new: comm=stream pid=5268 prio=120 target_cpu=064
-
-The tasks have been distributed evenly across all the allowed cpus
-and no pile up can be seen.
-
-
-Aggressive NUMA balancing is only done when needed. We select the
-minimum of number of allowed cpus in sched group and the calculated
-sd.imb_numa_nr as our imbalance threshold and the default behavior
-of mel-v5 is only modified when the former is smaller than
-the latter.
-
-This can help is case of embarrassingly parallel programs with tight
-cpus affinity set.
-
-
-[1] https://lore.kernel.org/lkml/20220208094334.16379-1-mgorman@techsingularity.net/
-
-Signed-off-by: K Prateek Nayak <kprateek.nayak@amd.com>
 ---
-Changelog v1-->v2:
- -  Rebase changes on top of v6 of Mel's
-    "Adjust NUMA imbalance for multiple LLCs" patchset
- -  Reuse select_idle_mask ptr to store result of cpumask_and based
-    on Mel's suggestion
----
- kernel/sched/fair.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 5c4bfffe8c2c..6e875f1f34e2 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -9130,6 +9130,8 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
- 
- 	case group_has_spare:
- 		if (sd->flags & SD_NUMA) {
-+			struct cpumask *cpus;
-+			int imb;
- #ifdef CONFIG_NUMA_BALANCING
- 			int idlest_cpu;
- 			/*
-@@ -9147,10 +9149,15 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
- 			 * Otherwise, keep the task close to the wakeup source
- 			 * and improve locality if the number of running tasks
- 			 * would remain below threshold where an imbalance is
--			 * allowed. If there is a real need of migration,
--			 * periodic load balance will take care of it.
-+			 * allowed while accounting for the possibility the
-+			 * task is pinned to a subset of CPUs. If there is a
-+			 * real need of migration, periodic load balance will
-+			 * take care of it.
- 			 */
--			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, sd->imb_numa_nr))
-+			cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
-+			cpumask_and(cpus, sched_group_span(local), p->cpus_ptr);
-+			imb = min(cpumask_weight(cpus), sd->imb_numa_nr);
-+			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, imb))
- 				return NULL;
- 		}
- 
+(no changes since v3)
+
+Changes in v3:
+- New separate patch only for re-ordering as suggested by Krzysztof.
+
+ arch/arm64/configs/defconfig | 106 +++++++++++++++++------------------
+ 1 file changed, 53 insertions(+), 53 deletions(-)
+
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index c37dace3e89d..25a4eff126d4 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -3,6 +3,7 @@ CONFIG_POSIX_MQUEUE=y
+ CONFIG_AUDIT=y
+ CONFIG_NO_HZ_IDLE=y
+ CONFIG_HIGH_RES_TIMERS=y
++CONFIG_BPF_JIT=y
+ CONFIG_PREEMPT=y
+ CONFIG_IRQ_TIME_ACCOUNTING=y
+ CONFIG_BSD_PROCESS_ACCT=y
+@@ -67,7 +68,6 @@ CONFIG_ARM64_VA_BITS_48=y
+ CONFIG_SCHED_MC=y
+ CONFIG_SCHED_SMT=y
+ CONFIG_NUMA=y
+-CONFIG_SECCOMP=y
+ CONFIG_KEXEC=y
+ CONFIG_KEXEC_FILE=y
+ CONFIG_CRASH_DUMP=y
+@@ -98,15 +98,6 @@ CONFIG_ARM_RASPBERRYPI_CPUFREQ=m
+ CONFIG_ARM_SCMI_CPUFREQ=y
+ CONFIG_ARM_TEGRA186_CPUFREQ=y
+ CONFIG_QORIQ_CPUFREQ=y
+-CONFIG_ARM_SCMI_PROTOCOL=y
+-CONFIG_ARM_SCPI_PROTOCOL=y
+-CONFIG_RASPBERRYPI_FIRMWARE=y
+-CONFIG_INTEL_STRATIX10_SERVICE=y
+-CONFIG_INTEL_STRATIX10_RSU=m
+-CONFIG_QCOM_SCM=y
+-CONFIG_EFI_CAPSULE_LOADER=y
+-CONFIG_IMX_SCU=y
+-CONFIG_IMX_SCU_PD=y
+ CONFIG_ACPI=y
+ CONFIG_ACPI_APEI=y
+ CONFIG_ACPI_APEI_GHES=y
+@@ -128,6 +119,7 @@ CONFIG_CRYPTO_AES_ARM64_CE_BLK=y
+ CONFIG_CRYPTO_CHACHA20_NEON=m
+ CONFIG_CRYPTO_AES_ARM64_BS=m
+ CONFIG_JUMP_LABEL=y
++CONFIG_SECCOMP=y
+ CONFIG_MODULES=y
+ CONFIG_MODULE_UNLOAD=y
+ # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
+@@ -183,11 +175,10 @@ CONFIG_NET_ACT_GATE=m
+ CONFIG_QRTR=m
+ CONFIG_QRTR_SMD=m
+ CONFIG_QRTR_TUN=m
+-CONFIG_BPF_JIT=y
+ CONFIG_CAN=m
++CONFIG_CAN_FLEXCAN=m
+ CONFIG_CAN_RCAR=m
+ CONFIG_CAN_RCAR_CANFD=m
+-CONFIG_CAN_FLEXCAN=m
+ CONFIG_BT=m
+ CONFIG_BT_HIDP=m
+ # CONFIG_BT_HS is not set
+@@ -230,7 +221,6 @@ CONFIG_PCIE_ROCKCHIP_HOST=m
+ CONFIG_PCIE_BRCMSTB=m
+ CONFIG_PCI_IMX6=y
+ CONFIG_PCI_LAYERSCAPE=y
+-CONFIG_PCIE_LAYERSCAPE_GEN4=y
+ CONFIG_PCI_HISI=y
+ CONFIG_PCIE_QCOM=y
+ CONFIG_PCIE_ARMADA_8K=y
+@@ -238,6 +228,7 @@ CONFIG_PCIE_KIRIN=y
+ CONFIG_PCIE_HISI_STB=y
+ CONFIG_PCIE_TEGRA194_HOST=m
+ CONFIG_PCIE_VISCONTI_HOST=y
++CONFIG_PCIE_LAYERSCAPE_GEN4=y
+ CONFIG_PCI_ENDPOINT=y
+ CONFIG_PCI_ENDPOINT_CONFIGFS=y
+ CONFIG_PCI_EPF_TEST=m
+@@ -245,8 +236,17 @@ CONFIG_DEVTMPFS=y
+ CONFIG_DEVTMPFS_MOUNT=y
+ CONFIG_FW_LOADER_USER_HELPER=y
+ CONFIG_HISILICON_LPC=y
+-CONFIG_FSL_MC_BUS=y
+ CONFIG_TEGRA_ACONNECT=m
++CONFIG_FSL_MC_BUS=y
++CONFIG_ARM_SCMI_PROTOCOL=y
++CONFIG_ARM_SCPI_PROTOCOL=y
++CONFIG_RASPBERRYPI_FIRMWARE=y
++CONFIG_INTEL_STRATIX10_SERVICE=y
++CONFIG_INTEL_STRATIX10_RSU=m
++CONFIG_QCOM_SCM=y
++CONFIG_EFI_CAPSULE_LOADER=y
++CONFIG_IMX_SCU=y
++CONFIG_IMX_SCU_PD=y
+ CONFIG_GNSS=m
+ CONFIG_GNSS_MTK_SERIAL=m
+ CONFIG_MTD=y
+@@ -266,8 +266,6 @@ CONFIG_MTD_NAND_MARVELL=y
+ CONFIG_MTD_NAND_FSL_IFC=y
+ CONFIG_MTD_NAND_QCOM=y
+ CONFIG_MTD_SPI_NOR=y
+-CONFIG_MTK_DEVAPC=m
+-CONFIG_SPI_CADENCE_QUADSPI=y
+ CONFIG_BLK_DEV_LOOP=y
+ CONFIG_BLK_DEV_NBD=m
+ CONFIG_VIRTIO_BLK=y
+@@ -353,13 +351,11 @@ CONFIG_SNI_NETSEC=y
+ CONFIG_STMMAC_ETH=m
+ CONFIG_TI_K3_AM65_CPSW_NUSS=y
+ CONFIG_QCOM_IPA=m
+-CONFIG_MDIO_BUS_MUX_MMIOREG=y
+-CONFIG_MDIO_BUS_MUX_MULTIPLEXER=y
++CONFIG_MESON_GXL_PHY=m
+ CONFIG_AQUANTIA_PHY=y
+ CONFIG_BCM54140_PHY=m
+ CONFIG_MARVELL_PHY=m
+ CONFIG_MARVELL_10G_PHY=m
+-CONFIG_MESON_GXL_PHY=m
+ CONFIG_MICREL_PHY=y
+ CONFIG_MICROSEMI_PHY=y
+ CONFIG_AT803X_PHY=y
+@@ -367,6 +363,8 @@ CONFIG_REALTEK_PHY=y
+ CONFIG_ROCKCHIP_PHY=y
+ CONFIG_DP83867_PHY=y
+ CONFIG_VITESSE_PHY=y
++CONFIG_MDIO_BUS_MUX_MULTIPLEXER=y
++CONFIG_MDIO_BUS_MUX_MMIOREG=y
+ CONFIG_USB_PEGASUS=m
+ CONFIG_USB_RTL8150=m
+ CONFIG_USB_RTL8152=m
+@@ -475,6 +473,7 @@ CONFIG_SPI=y
+ CONFIG_SPI_ARMADA_3700=y
+ CONFIG_SPI_BCM2835=m
+ CONFIG_SPI_BCM2835AUX=m
++CONFIG_SPI_CADENCE_QUADSPI=y
+ CONFIG_SPI_DESIGNWARE=m
+ CONFIG_SPI_DW_DMA=y
+ CONFIG_SPI_DW_MMIO=m
+@@ -497,8 +496,8 @@ CONFIG_SPI_SH_MSIOF=m
+ CONFIG_SPI_SUN6I=y
+ CONFIG_SPI_SPIDEV=m
+ CONFIG_SPMI=y
+-CONFIG_PINCTRL_SINGLE=y
+ CONFIG_PINCTRL_MAX77620=y
++CONFIG_PINCTRL_SINGLE=y
+ CONFIG_PINCTRL_OWL=y
+ CONFIG_PINCTRL_S700=y
+ CONFIG_PINCTRL_S900=y
+@@ -547,8 +546,6 @@ CONFIG_GPIO_BD9571MWV=m
+ CONFIG_GPIO_MAX77620=y
+ CONFIG_GPIO_SL28CPLD=m
+ CONFIG_POWER_AVS=y
+-CONFIG_QCOM_CPR=y
+-CONFIG_ROCKCHIP_IODOMAIN=y
+ CONFIG_POWER_RESET_MSM=y
+ CONFIG_POWER_RESET_QCOM_PON=m
+ CONFIG_POWER_RESET_XGENE=y
+@@ -556,10 +553,10 @@ CONFIG_POWER_RESET_SYSCON=y
+ CONFIG_SYSCON_REBOOT_MODE=y
+ CONFIG_BATTERY_SBS=m
+ CONFIG_BATTERY_BQ27XXX=y
+-CONFIG_SENSORS_ARM_SCMI=y
+ CONFIG_BATTERY_MAX17042=m
+ CONFIG_CHARGER_BQ25890=m
+ CONFIG_CHARGER_BQ25980=m
++CONFIG_SENSORS_ARM_SCMI=y
+ CONFIG_SENSORS_ARM_SCPI=y
+ CONFIG_SENSORS_JC42=m
+ CONFIG_SENSORS_LM90=m
+@@ -571,10 +568,10 @@ CONFIG_SENSORS_INA3221=m
+ CONFIG_THERMAL_GOV_POWER_ALLOCATOR=y
+ CONFIG_CPU_THERMAL=y
+ CONFIG_THERMAL_EMULATION=y
+-CONFIG_QORIQ_THERMAL=m
+-CONFIG_SUN8I_THERMAL=y
+ CONFIG_IMX_SC_THERMAL=m
+ CONFIG_IMX8MM_THERMAL=m
++CONFIG_QORIQ_THERMAL=m
++CONFIG_SUN8I_THERMAL=y
+ CONFIG_ROCKCHIP_THERMAL=m
+ CONFIG_RCAR_THERMAL=y
+ CONFIG_RCAR_GEN3_THERMAL=y
+@@ -583,8 +580,8 @@ CONFIG_BCM2711_THERMAL=m
+ CONFIG_BCM2835_THERMAL=m
+ CONFIG_BRCMSTB_THERMAL=m
+ CONFIG_EXYNOS_THERMAL=y
+-CONFIG_TEGRA_BPMP_THERMAL=m
+ CONFIG_TEGRA_SOCTHERM=m
++CONFIG_TEGRA_BPMP_THERMAL=m
+ CONFIG_QCOM_TSENS=y
+ CONFIG_QCOM_SPMI_TEMP_ALARM=m
+ CONFIG_QCOM_LMH=m
+@@ -593,7 +590,6 @@ CONFIG_WATCHDOG=y
+ CONFIG_SL28CPLD_WATCHDOG=m
+ CONFIG_ARM_SP805_WATCHDOG=y
+ CONFIG_ARM_SBSA_WATCHDOG=y
+-CONFIG_ARM_SMC_WATCHDOG=y
+ CONFIG_S3C2410_WATCHDOG=y
+ CONFIG_DW_WATCHDOG=y
+ CONFIG_SUNXI_WATCHDOG=m
+@@ -602,6 +598,7 @@ CONFIG_IMX_SC_WDT=m
+ CONFIG_QCOM_WDT=m
+ CONFIG_MESON_GXBB_WATCHDOG=m
+ CONFIG_MESON_WATCHDOG=m
++CONFIG_ARM_SMC_WATCHDOG=y
+ CONFIG_RENESAS_WDT=y
+ CONFIG_UNIPHIER_WATCHDOG=y
+ CONFIG_BCM2835_WDT=y
+@@ -609,6 +606,7 @@ CONFIG_MFD_ALTERA_SYSMGR=y
+ CONFIG_MFD_BD9571MWV=y
+ CONFIG_MFD_AXP20X_I2C=y
+ CONFIG_MFD_AXP20X_RSB=y
++CONFIG_MFD_CROS_EC_DEV=y
+ CONFIG_MFD_EXYNOS_LPASS=m
+ CONFIG_MFD_HI6421_PMIC=y
+ CONFIG_MFD_HI655X_PMIC=y
+@@ -654,13 +652,14 @@ CONFIG_MEDIA_CAMERA_SUPPORT=y
+ CONFIG_MEDIA_ANALOG_TV_SUPPORT=y
+ CONFIG_MEDIA_DIGITAL_TV_SUPPORT=y
+ CONFIG_MEDIA_SDR_SUPPORT=y
++CONFIG_MEDIA_PLATFORM_SUPPORT=y
+ CONFIG_MEDIA_CONTROLLER=y
+ CONFIG_VIDEO_V4L2_SUBDEV_API=y
+-CONFIG_MEDIA_PLATFORM_SUPPORT=y
+ # CONFIG_DVB_NET is not set
+ CONFIG_MEDIA_USB_SUPPORT=y
+ CONFIG_USB_VIDEO_CLASS=m
+ CONFIG_V4L_PLATFORM_DRIVERS=y
++CONFIG_VIDEO_QCOM_CAMSS=m
+ CONFIG_VIDEO_RCAR_CSI2=m
+ CONFIG_VIDEO_RCAR_VIN=m
+ CONFIG_VIDEO_SUN6I_CSI=m
+@@ -677,7 +676,6 @@ CONFIG_VIDEO_RCAR_DRIF=m
+ CONFIG_VIDEO_IMX219=m
+ CONFIG_VIDEO_OV5640=m
+ CONFIG_VIDEO_OV5645=m
+-CONFIG_VIDEO_QCOM_CAMSS=m
+ CONFIG_DRM=m
+ CONFIG_DRM_I2C_NXP_TDA998X=m
+ CONFIG_DRM_MALI_DISPLAY=m
+@@ -704,24 +702,24 @@ CONFIG_DRM_SUN8I_DW_HDMI=m
+ CONFIG_DRM_SUN8I_MIXER=m
+ CONFIG_DRM_MSM=m
+ CONFIG_DRM_TEGRA=m
++CONFIG_DRM_PANEL_BOE_TV101WUM_NL6=m
+ CONFIG_DRM_PANEL_LVDS=m
+ CONFIG_DRM_PANEL_SIMPLE=m
+ CONFIG_DRM_PANEL_EDP=m
+-CONFIG_DRM_PANEL_BOE_TV101WUM_NL6=m
+ CONFIG_DRM_PANEL_MANTIX_MLAF057WE51=m
+ CONFIG_DRM_PANEL_RAYDIUM_RM67191=m
+ CONFIG_DRM_PANEL_SITRONIX_ST7703=m
+ CONFIG_DRM_PANEL_TRULY_NT35597_WQXGA=m
+ CONFIG_DRM_DISPLAY_CONNECTOR=m
+ CONFIG_DRM_LONTIUM_LT8912B=m
+-CONFIG_DRM_NWL_MIPI_DSI=m
+ CONFIG_DRM_LONTIUM_LT9611=m
++CONFIG_DRM_LONTIUM_LT9611UXC=m
++CONFIG_DRM_NWL_MIPI_DSI=m
+ CONFIG_DRM_PARADE_PS8640=m
+ CONFIG_DRM_SII902X=m
+ CONFIG_DRM_SIMPLE_BRIDGE=m
+ CONFIG_DRM_THINE_THC63LVD1024=m
+ CONFIG_DRM_TI_SN65DSI86=m
+-CONFIG_DRM_LONTIUM_LT9611UXC=m
+ CONFIG_DRM_I2C_ADV7511=m
+ CONFIG_DRM_I2C_ADV7511_AUDIO=y
+ CONFIG_DRM_DW_HDMI_AHB_AUDIO=m
+@@ -752,15 +750,15 @@ CONFIG_SND_HDA_TEGRA=m
+ CONFIG_SND_HDA_CODEC_HDMI=m
+ CONFIG_SND_SOC=y
+ CONFIG_SND_BCM2835_SOC_I2S=m
+-CONFIG_SND_SOC_FSL_SAI=m
+ CONFIG_SND_SOC_FSL_ASRC=m
++CONFIG_SND_SOC_FSL_SAI=m
+ CONFIG_SND_SOC_FSL_MICFIL=m
+ CONFIG_SND_SOC_FSL_EASRC=m
+ CONFIG_SND_IMX_SOC=m
+ CONFIG_SND_SOC_IMX_SGTL5000=m
+ CONFIG_SND_SOC_IMX_SPDIF=m
+-CONFIG_SND_SOC_IMX_AUDMIX=m
+ CONFIG_SND_SOC_FSL_ASOC_CARD=m
++CONFIG_SND_SOC_IMX_AUDMIX=m
+ CONFIG_SND_MESON_AXG_SOUND_CARD=m
+ CONFIG_SND_MESON_GX_SOUND_CARD=m
+ CONFIG_SND_SOC_QCOM=m
+@@ -865,8 +863,8 @@ CONFIG_TYPEC=m
+ CONFIG_TYPEC_TCPM=m
+ CONFIG_TYPEC_TCPCI=m
+ CONFIG_TYPEC_FUSB302=m
+-CONFIG_TYPEC_HD3SS3220=m
+ CONFIG_TYPEC_TPS6598X=m
++CONFIG_TYPEC_HD3SS3220=m
+ CONFIG_MMC=y
+ CONFIG_MMC_BLOCK_MINORS=32
+ CONFIG_MMC_ARMMMCI=y
+@@ -964,7 +962,6 @@ CONFIG_VIRTIO_BALLOON=y
+ CONFIG_VIRTIO_MMIO=y
+ CONFIG_XEN_GNTDEV=y
+ CONFIG_XEN_GRANT_DEV_ALLOC=y
+-CONFIG_MFD_CROS_EC_DEV=y
+ CONFIG_STAGING=y
+ CONFIG_STAGING_MEDIA=y
+ CONFIG_VIDEO_HANTRO=m
+@@ -974,15 +971,14 @@ CONFIG_CROS_EC=y
+ CONFIG_CROS_EC_I2C=y
+ CONFIG_CROS_EC_SPI=y
+ CONFIG_CROS_EC_CHARDEV=m
+-CONFIG_COMMON_CLK_SCMI=y
+ CONFIG_COMMON_CLK_RK808=y
++CONFIG_COMMON_CLK_SCMI=y
+ CONFIG_COMMON_CLK_SCPI=y
+ CONFIG_COMMON_CLK_CS2000_CP=y
+ CONFIG_COMMON_CLK_FSL_SAI=y
+ CONFIG_COMMON_CLK_S2MPS11=y
+ CONFIG_COMMON_CLK_PWM=y
+ CONFIG_COMMON_CLK_VC5=y
+-CONFIG_COMMON_CLK_ZYNQMP=y
+ CONFIG_COMMON_CLK_BD718XX=m
+ CONFIG_CLK_RASPBERRYPI=m
+ CONFIG_CLK_IMX8MM=y
+@@ -998,8 +994,8 @@ CONFIG_QCOM_CLK_APCS_MSM8916=y
+ CONFIG_QCOM_CLK_APCC_MSM8996=y
+ CONFIG_QCOM_CLK_SMD_RPM=y
+ CONFIG_QCOM_CLK_RPMH=y
+-CONFIG_IPQ_GCC_8074=y
+ CONFIG_IPQ_GCC_6018=y
++CONFIG_IPQ_GCC_8074=y
+ CONFIG_MSM_GCC_8916=y
+ CONFIG_MSM_GCC_8994=y
+ CONFIG_MSM_MMCC_8996=y
+@@ -1012,15 +1008,16 @@ CONFIG_SDM_GCC_845=y
+ CONFIG_SDM_GPUCC_845=y
+ CONFIG_SDM_VIDEOCC_845=y
+ CONFIG_SDM_DISPCC_845=y
++CONFIG_SM_DISPCC_8250=y
+ CONFIG_SM_GCC_8150=y
+ CONFIG_SM_GCC_8250=y
+ CONFIG_SM_GCC_8350=y
+ CONFIG_SM_GPUCC_8150=y
+ CONFIG_SM_GPUCC_8250=y
+-CONFIG_SM_DISPCC_8250=y
+ CONFIG_QCOM_HFPLL=y
+ CONFIG_CLK_GFM_LPASS_SM8250=m
+ CONFIG_CLK_RCAR_USB2_CLOCK_SEL=y
++CONFIG_COMMON_CLK_ZYNQMP=y
+ CONFIG_HWSPINLOCK=y
+ CONFIG_HWSPINLOCK_QCOM=y
+ CONFIG_ARM_MHU=y
+@@ -1051,9 +1048,11 @@ CONFIG_RASPBERRYPI_POWER=y
+ CONFIG_FSL_DPAA=y
+ CONFIG_FSL_MC_DPIO=y
+ CONFIG_FSL_RCPM=y
++CONFIG_MTK_DEVAPC=m
+ CONFIG_MTK_PMIC_WRAP=y
+ CONFIG_QCOM_AOSS_QMP=y
+ CONFIG_QCOM_COMMAND_DB=y
++CONFIG_QCOM_CPR=y
+ CONFIG_QCOM_GENI_SE=y
+ CONFIG_QCOM_RMTFS_MEM=m
+ CONFIG_QCOM_RPMH=y
+@@ -1064,25 +1063,26 @@ CONFIG_QCOM_SMD_RPM=y
+ CONFIG_QCOM_SMP2P=y
+ CONFIG_QCOM_SMSM=y
+ CONFIG_QCOM_SOCINFO=m
+-CONFIG_QCOM_WCNSS_CTRL=m
+ CONFIG_QCOM_STATS=m
++CONFIG_QCOM_WCNSS_CTRL=m
+ CONFIG_QCOM_APR=m
+-CONFIG_ARCH_R8A774A1=y
+-CONFIG_ARCH_R8A774B1=y
+-CONFIG_ARCH_R8A774C0=y
+-CONFIG_ARCH_R8A774E1=y
++CONFIG_ARCH_R8A77995=y
++CONFIG_ARCH_R8A77990=y
+ CONFIG_ARCH_R8A77950=y
+ CONFIG_ARCH_R8A77951=y
++CONFIG_ARCH_R8A77965=y
+ CONFIG_ARCH_R8A77960=y
+ CONFIG_ARCH_R8A77961=y
+-CONFIG_ARCH_R8A77965=y
+-CONFIG_ARCH_R8A77970=y
++CONFIG_ARCH_R8A779F0=y
+ CONFIG_ARCH_R8A77980=y
+-CONFIG_ARCH_R8A77990=y
+-CONFIG_ARCH_R8A77995=y
++CONFIG_ARCH_R8A77970=y
+ CONFIG_ARCH_R8A779A0=y
+-CONFIG_ARCH_R8A779F0=y
++CONFIG_ARCH_R8A774C0=y
++CONFIG_ARCH_R8A774E1=y
++CONFIG_ARCH_R8A774A1=y
++CONFIG_ARCH_R8A774B1=y
+ CONFIG_ARCH_R9A07G044=y
++CONFIG_ROCKCHIP_IODOMAIN=y
+ CONFIG_ROCKCHIP_PM_DOMAINS=y
+ CONFIG_ARCH_TEGRA_132_SOC=y
+ CONFIG_ARCH_TEGRA_210_SOC=y
+@@ -1161,13 +1161,13 @@ CONFIG_PHY_UNIPHIER_USB3=y
+ CONFIG_PHY_TEGRA_XUSB=y
+ CONFIG_ARM_SMMU_V3_PMU=m
+ CONFIG_FSL_IMX8_DDR_PMU=m
+-CONFIG_HISI_PMU=y
+ CONFIG_QCOM_L2_PMU=y
+ CONFIG_QCOM_L3_PMU=y
++CONFIG_HISI_PMU=y
+ CONFIG_NVMEM_IMX_OCOTP=y
+ CONFIG_NVMEM_IMX_OCOTP_SCU=y
+-CONFIG_QCOM_QFPROM=y
+ CONFIG_MTK_EFUSE=y
++CONFIG_QCOM_QFPROM=y
+ CONFIG_ROCKCHIP_EFUSE=y
+ CONFIG_NVMEM_SUNXI_SID=y
+ CONFIG_UNIPHIER_EFUSE=y
+@@ -1181,10 +1181,10 @@ CONFIG_FPGA_REGION=m
+ CONFIG_OF_FPGA_REGION=m
+ CONFIG_TEE=y
+ CONFIG_OPTEE=y
++CONFIG_MUX_MMIO=y
+ CONFIG_SLIMBUS=m
+ CONFIG_SLIM_QCOM_CTRL=m
+ CONFIG_SLIM_QCOM_NGD_CTRL=m
+-CONFIG_MUX_MMIO=y
+ CONFIG_INTERCONNECT=y
+ CONFIG_INTERCONNECT_IMX=m
+ CONFIG_INTERCONNECT_IMX8MM=m
 -- 
-2.25.1
+2.33.1
 
