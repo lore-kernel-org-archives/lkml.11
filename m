@@ -2,94 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 806D9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6230FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:24:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232257AbiBITSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:18:49 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56324 "EHLO
+        id S233886AbiBITYc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:24:32 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:40478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230497AbiBITSr (ORCPT
+        with ESMTP id S233839AbiBITYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:18:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8A2E00D119;
-        Wed,  9 Feb 2022 11:18:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BFD961987;
-        Wed,  9 Feb 2022 19:15:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C374C340E7;
-        Wed,  9 Feb 2022 19:15:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644434138;
-        bh=7kk9Lfg3RNYsiFu0qA1BFD41TbB4U5hzFtBATuwovDk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OfBrFUpYOaVUgOPLG1aM/GyhRYmx5h9EXlnsL4208wzkqlkXYNkVwYrgdz9l5ZU9I
-         qftiOWVUS2OtE9ZkbwvGzji+lkDc553TKjOIYut0Bj444N+ZuVbEwV39RMiU/slJJ5
-         9b1R2hd2i8wFgyQH68lhPvBB/zIp5V0zlP0zoN2s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Suzuki Poulose <suzuki.poulose@arm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-Subject: [PATCH 5.15 2/5] arm64: Add Cortex-A510 CPU part definition
-Date:   Wed,  9 Feb 2022 20:14:27 +0100
-Message-Id: <20220209191250.067270808@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220209191249.980911721@linuxfoundation.org>
-References: <20220209191249.980911721@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 9 Feb 2022 14:24:25 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2539CE00D0E3
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 11:24:25 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id v12so5840600wrv.2
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 11:24:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6ruVJG7HncR2N0k4CIyXD71cI4+MqIoBGL55+c9rkl0=;
+        b=GpwsqEJGmeJNlJDm+BtsMicSlQhMnINXJWUKxAHh/wcRlEe/gCxWSLkUQXj0IKQOP1
+         pARJjQJnmjjYATq0E86iV722i7CmTzZgMxL281ND+XIinpdaNSIRERuFaorO1aVrLRBU
+         Udm+lv+WZ/cAKqV1rEJ9sVhJhypZ5rn2/DB8Afuwsubcj97UMPJXrr+gukNVAXAMblV9
+         XjVlieT2Wqt9TPcOmmR1WXvcPoWfoHUK7mCUUWDYslCAvkokP1oMKKnr4wQJ5qE7qRf9
+         zDMMhKC1pLQzw6RiXNl1+89KMO6DwZ06rGOkPSAzIEDI6kBSkFUN0I9ukaPiGly7TRVJ
+         Xl3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6ruVJG7HncR2N0k4CIyXD71cI4+MqIoBGL55+c9rkl0=;
+        b=bJI80elgIbbh5Z6hVeQlZIwxu6SRLlRUip+8CHuQjSdMnr2+uDtjtVmiTHr1uRcNDD
+         gKjEA2gjl5UsvPFLWbf8UodvtbvR3MR/0ydXFJSS4NcTXetPVXuaW2aJ+z20cLKvhAw8
+         eblKW1sT2fnvNmvMHiAbe+6yQ2xfklW/PRPQFjrBgPpicmCCqEiZiOg0Lg8MYiCDhyZW
+         T2jEgS28SlUS5lxNwOTWuo1fga2jKI3ig2ztUQPOKy+iUVFjMYIRyZlEoHUKaOfJjeoD
+         wbjbEnb7jTDsVUzs/lnMy5rUaw5DecxYz3n+dugwOsUdHo49uagJKB51b/b50sHqtkr4
+         HjyA==
+X-Gm-Message-State: AOAM531YnPElQx1/NnZM6ZvQdWrbZJA4x40/cV2zbNZZm+Hqn86l+Q5o
+        vaWx/tJrKQgskaaVLcuS2IvArDqVVFGcH0tb+TeRBA==
+X-Google-Smtp-Source: ABdhPJy2gu0tDC5WhYjHtQF6czHGKSOazQIK8LghHcIk5r+jBxkKau7i12HuAvABjkDaXo4YADzfuQ3fil8BbswFE98=
+X-Received: by 2002:adf:f50a:: with SMTP id q10mr3373731wro.252.1644434663498;
+ Wed, 09 Feb 2022 11:24:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220117085307.93030-1-likexu@tencent.com> <20220117085307.93030-3-likexu@tencent.com>
+ <20220202144308.GB20638@worktop.programming.kicks-ass.net>
+ <CALMp9eRBOmwz=mspp0m5Q093K3rMUeAsF3vEL39MGV5Br9wEQQ@mail.gmail.com>
+ <YgO/3usazae9rCEh@hirez.programming.kicks-ass.net> <69c0fc41-a5bd-fea9-43f6-4724368baf66@intel.com>
+ <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com> <67a731dd-53ba-0eb8-377f-9707e5c9be1b@intel.com>
+In-Reply-To: <67a731dd-53ba-0eb8-377f-9707e5c9be1b@intel.com>
+From:   David Dunn <daviddunn@google.com>
+Date:   Wed, 9 Feb 2022 11:24:11 -0800
+Message-ID: <CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com>
+Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
+ perfmon_event_map[] directly
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Jim Mattson <jmattson@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Like Xu <like.xu.linux@gmail.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anshuman Khandual <anshuman.khandual@arm.com>
+Dave,
 
-commit 53960faf2b731dd2f9ed6e1334634b8ba6286850 upstream.
+In my opinion, the right policy depends on what the host owner and
+guest owner are trying to achieve.
 
-Add the CPU Partnumbers for the new Arm designs.
+If the PMU is being used to locate places where performance could be
+improved in the system, there are two sub scenarios:
+   - The host and guest are owned by same entity that is optimizing
+overall system.  In this case, the guest doesn't need PMU access and
+better information is provided by profiling the entire system from the
+host.
+   - The host and guest are owned by different entities.  In this
+case, profiling from the host can identify perf issues in the guest.
+But what action can be taken?  The host entity must communicate issues
+back to the guest owner through some sort of out-of-band information
+channel.  On the other hand, preempting the host PMU to give the guest
+a fully functional PMU serves this use case well.
 
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Suzuki Poulose <suzuki.poulose@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Link: https://lore.kernel.org/r/1643120437-14352-2-git-send-email-anshuman.khandual@arm.com
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/include/asm/cputype.h |    2 ++
- 1 file changed, 2 insertions(+)
+TDX and SGX (outside of debug mode) strongly assume different
+entities.  And Intel is doing this to reduce insight of the host into
+guest operations.  So in my opinion, preemption makes sense.
 
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -73,6 +73,7 @@
- #define ARM_CPU_PART_CORTEX_A76		0xD0B
- #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
- #define ARM_CPU_PART_CORTEX_A77		0xD0D
-+#define ARM_CPU_PART_CORTEX_A510	0xD46
- 
- #define APM_CPU_PART_POTENZA		0x000
- 
-@@ -113,6 +114,7 @@
- #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
- #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
- #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
-+#define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
- #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
- #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
- #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
+There are also scenarios where the host owner is trying to identify
+systemwide impacts of guest actions.  For example, detecting memory
+bandwidth consumption or split locks.  In this case, host control
+without preemption is necessary.
 
+To address these various scenarios, it seems like the host needs to be
+able to have policy control on whether it is willing to have the PMU
+preempted by the guest.
 
+But I don't see what scenario is well served by the current situation
+in KVM.  Currently the guest will either be told it has no PMU (which
+is fine) or that it has full control of a PMU.  If the guest is told
+it has full control of the PMU, it actually doesn't.  But instead of
+losing counters on well defined events (from the guest perspective),
+they simply stop counting depending on what the host is doing with the
+PMU.
+
+On the other hand, if we flip it around the semantics are more clear.
+A guest will be told it has no PMU (which is fine) or that it has full
+control of the PMU.  If the guest is told that it has full control of
+the PMU, it does.  And the host (which is the thing that granted the
+full PMU to the guest) knows that events inside the guest are not
+being measured.  This results in all entities seeing something that
+can be reasoned about from their perspective.
+
+Thanks,
+
+Dave Dunn
+
+On Wed, Feb 9, 2022 at 10:57 AM Dave Hansen <dave.hansen@intel.com> wrote:
+
+> > I was referring to gaps in the collection of data that the host perf
+> > subsystem doesn't know about if ATTRIBUTES.PERFMON is set for a TDX
+> > guest. This can potentially be a problem if someone is trying to
+> > measure events per unit of time.
+>
+> Ahh, that makes sense.
+>
+> Does SGX cause problem for these people?  It can create some of the same
+> collection gaps:
+>
+>         performance monitoring activities are suppressed when entering
+>         an opt-out (of performance monitoring) enclave.
