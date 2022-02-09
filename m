@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF12C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234038AbiBIT0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:26:33 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46152 "EHLO
+        id S234352AbiBIT0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:26:37 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234385AbiBIT0I (ORCPT
+        with ESMTP id S234758AbiBIT0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:26:08 -0500
+        Wed, 9 Feb 2022 14:26:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049D5C102FED;
-        Wed,  9 Feb 2022 11:19:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD88C1DC5FA;
+        Wed,  9 Feb 2022 11:19:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C3DEB8238C;
-        Wed,  9 Feb 2022 19:14:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C001C340E7;
-        Wed,  9 Feb 2022 19:14:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E31A6B82393;
+        Wed,  9 Feb 2022 19:15:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06E4CC340E7;
+        Wed,  9 Feb 2022 19:15:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644434092;
-        bh=eoZDwWkV4rsrAJOY5F0LAs5kTxbQ7KPvapYjwLwSSJI=;
+        s=korg; t=1644434158;
+        bh=IrgqHa2QwSbIxMhpEksDKoTT5fvgIWnKZ7/Ytsgb0oY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kEi4yUF0j+4L2R7nkzZenYZutTMROVoJH+mMSQYop0n9IQFzvo6F2PAOTCsmbOrxf
-         d7Wj+PUuuR3EYo3YlCcJJALAnj10VbXMvVpvCVcW8zg5VelhDKsgpU/+tEQfEfox0f
-         nQO7lcjw4dXIuKbyKihcJegDtcw5kK2pKGMxnxvg=
+        b=gQ9CET9EWCYBZ65v4/no2lhFxSBHPHFufGKjdv/jVC0GUiupeypFKhr3gdJWYe1Og
+         w9qTd10FvFzoSvQLwO02FBEm+JFOFo7Eh4uibD0aLxZ0EsRd8kkxq7QEqoO4CDWobz
+         MFqVDPz9+pak2CyqskHDBFTZhNi5LCz6LhqgTXhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        linux-mmc@vger.kernel.org, whitehat002 <hackyzh002@gmail.com>
-Subject: [PATCH 4.9 2/2] moxart: fix potential use-after-free on remove path
-Date:   Wed,  9 Feb 2022 20:13:33 +0100
-Message-Id: <20220209191247.913724368@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>
+Subject: [PATCH 5.16 3/5] KVM: s390: Return error on SIDA memop on normal guest
+Date:   Wed,  9 Feb 2022 20:14:35 +0100
+Message-Id: <20220209191250.009221364@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220209191247.830371456@linuxfoundation.org>
-References: <20220209191247.830371456@linuxfoundation.org>
+In-Reply-To: <20220209191249.887150036@linuxfoundation.org>
+References: <20220209191249.887150036@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,46 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
 
-commit bd2db32e7c3e35bd4d9b8bbff689434a50893546 upstream.
+commit 2c212e1baedcd782b2535a3f86bc491977677c0e upstream.
 
-It was reported that the mmc host structure could be accessed after it
-was freed in moxart_remove(), so fix this by saving the base register of
-the device and using it instead of the pointer dereference.
+Refuse SIDA memops on guests which are not protected.
+For normal guests, the secure instruction data address designation,
+which determines the location we access, is not under control of KVM.
 
-Cc: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Cc: Xin Xiong <xiongx18@fudan.edu.cn>
-Cc: Xin Tan <tanxin.ctf@gmail.com>
-Cc: Tony Lindgren <tony@atomide.com>
-Cc: Yang Li <yang.lee@linux.alibaba.com>
-Cc: linux-mmc@vger.kernel.org
-Cc: stable <stable@vger.kernel.org>
-Reported-by: whitehat002 <hackyzh002@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220127071638.4057899-1-gregkh@linuxfoundation.org
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: 19e122776886 (KVM: S390: protvirt: Introduce instruction data area bounce buffer)
+Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/moxart-mmc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/kvm/kvm-s390.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/mmc/host/moxart-mmc.c
-+++ b/drivers/mmc/host/moxart-mmc.c
-@@ -698,12 +698,12 @@ static int moxart_remove(struct platform
- 		if (!IS_ERR(host->dma_chan_rx))
- 			dma_release_channel(host->dma_chan_rx);
- 		mmc_remove_host(mmc);
--		mmc_free_host(mmc);
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -4711,6 +4711,8 @@ static long kvm_s390_guest_sida_op(struc
+ 		return -EINVAL;
+ 	if (mop->size + mop->sida_offset > sida_size(vcpu->arch.sie_block))
+ 		return -E2BIG;
++	if (!kvm_s390_pv_cpu_is_protected(vcpu))
++		return -EINVAL;
  
- 		writel(0, host->base + REG_INTERRUPT_MASK);
- 		writel(0, host->base + REG_POWER_CONTROL);
- 		writel(readl(host->base + REG_CLOCK_CONTROL) | CLK_OFF,
- 		       host->base + REG_CLOCK_CONTROL);
-+		mmc_free_host(mmc);
- 	}
- 	return 0;
- }
+ 	switch (mop->op) {
+ 	case KVM_S390_MEMOP_SIDA_READ:
 
 
