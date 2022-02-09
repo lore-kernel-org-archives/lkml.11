@@ -2,101 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9852CC3526F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A85C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232665AbiBIGRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:17:54 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:54470 "EHLO
+        id S233106AbiBIGR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:17:59 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237976AbiBIGPZ (ORCPT
+        with ESMTP id S243063AbiBIGLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:15:25 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1014E00ED57
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 22:15:29 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id n23so2599533pfo.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 22:15:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=4l/aFNwd63uVLKNzeMm/2/pR6vs/tYGDEs6LgxVDxlI=;
-        b=r1fiqywmY+ZXjFns4iy4OyiewaVgMm0NsTnoz629RyyIhdlq8v/wSp0eNSiEThtCR+
-         tbze/g+/ol7lhlw5SoWxsXGKGJm/BGjeK2OgefivPq8rC/kd69by2eh/XAqS08Sz/yOp
-         oRdKYg4ECKxNmOp8ch3Adi0KmBe6qZnsrDnjvAtP0A0IKsdlBEfJKAgoSI9agqb90W/b
-         NysePOlOF4FtXKvvLKwcGXHSMGRgspJpDIYkrZ247uRQLIvuqe9vSvTGqQNBvKuSTBvb
-         FEn9RBMF7W0H69VY3UD26kT52kWkGmcpqOVYYvyY8A448QS24UGkCk/tQsaqo6X3Pt14
-         4MzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=4l/aFNwd63uVLKNzeMm/2/pR6vs/tYGDEs6LgxVDxlI=;
-        b=QokFqKm44alTcLaxNbStMCEJCcjlVHD6RkLeVdN3WBe7NP4+1Ccldvdd0o3l9Gi2gA
-         8jXSIVfm7uqet89xOLYLCoyrlRkK6053walWNuk1X4SZ42pV60Bem1LK6oaZahwRREW/
-         6ji9xJ1WDdVXy6FP/8KZo+Dd/HIiQtnZn5Ewjkq0D5UkOTeqsI/8w7FagoWskhaM0Fkb
-         4yHZ50JIljLjswBs4BB9xK1IwiksfkWAV8P7+Nbk7VaVMNYNLr9EwxxHWqSn4JDKPcgw
-         kU3+zU6QYGxt3ZxJaCb17UN1Bzf/gZbLVNjOorcDLYTByciD22ezuJcl+Gnt02Ev37Al
-         TnKQ==
-X-Gm-Message-State: AOAM530/g4gTPaLAX7htuPhQYqh5FVzz5pwd44xh1q9AYQ8rAFithr4o
-        UkrQZeG3G2j8/7kCvYOr5qCydA==
-X-Google-Smtp-Source: ABdhPJw6hRR+tHVYkKn3k15p+UCUOzqAo6H+niApeRvxhdpTbpiTd9O3cmPCS3R7fY6sD2XFQhj5iQ==
-X-Received: by 2002:a63:f50f:: with SMTP id w15mr716344pgh.113.1644387321236;
-        Tue, 08 Feb 2022 22:15:21 -0800 (PST)
-Received: from localhost ([136.185.132.167])
-        by smtp.gmail.com with ESMTPSA id o2sm6879778pga.57.2022.02.08.22.15.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 22:15:20 -0800 (PST)
-Date:   Wed, 9 Feb 2022 11:45:18 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 16/54] cpufreq: replace cpumask_weight with cpumask_empty
- where appropriate
-Message-ID: <20220209061518.4xxc3hsswrfgg5u4@vireshk-i7>
-References: <20220123183925.1052919-1-yury.norov@gmail.com>
- <20220123183925.1052919-17-yury.norov@gmail.com>
+        Wed, 9 Feb 2022 01:11:54 -0500
+X-Greylist: delayed 1846 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 22:11:03 PST
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C9FE00E16F;
+        Tue,  8 Feb 2022 22:11:01 -0800 (PST)
+Received: from relay12.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::232])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 4895AC439F;
+        Wed,  9 Feb 2022 05:28:24 +0000 (UTC)
+Received: (Authenticated sender: frank@zago.net)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id C4DA0200002;
+        Wed,  9 Feb 2022 05:28:19 +0000 (UTC)
+From:   frank zago <frank@zago.net>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        frank zago <frank@zago.net>
+Subject: [PATCH] HID: Add support for Mega World controller force feedback
+Date:   Tue,  8 Feb 2022 23:28:07 -0600
+Message-Id: <20220209052807.138007-1-frank@zago.net>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220123183925.1052919-17-yury.norov@gmail.com>
-User-Agent: NeoMutt/20180716-391-311a52
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23-01-22, 10:38, Yury Norov wrote:
-> drivers/cpufreq calls cpumask_weight() to check if any bit of a given
-> cpumask is set. We can do it more efficiently with cpumask_empty() because
-> cpumask_empty() stops traversing the cpumask as soon as it finds first set
-> bit, while cpumask_weight() counts all bits unconditionally.
-> 
-> Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> ---
->  drivers/cpufreq/qcom-cpufreq-hw.c | 2 +-
->  drivers/cpufreq/scmi-cpufreq.c    | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+This patch adds support for one of the several Mega World USB game
+controller with integrated force feedback. It is a HID based
+memory-less game controller, with a weak motor on the left, and a
+strong one on the right.
 
-Applied. Thanks.
+Signed-off-by: frank zago <frank@zago.net>
+---
+ drivers/hid/Kconfig         |  14 ++++
+ drivers/hid/Makefile        |   1 +
+ drivers/hid/hid-ids.h       |   3 +
+ drivers/hid/hid-megaworld.c | 136 ++++++++++++++++++++++++++++++++++++
+ 4 files changed, 154 insertions(+)
+ create mode 100644 drivers/hid/hid-megaworld.c
 
+diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
+index f5544157576c..2344830d3680 100644
+--- a/drivers/hid/Kconfig
++++ b/drivers/hid/Kconfig
+@@ -684,6 +684,20 @@ config HID_MAYFLASH
+ 	Say Y here if you have HJZ Mayflash PS3 game controller adapters
+ 	and want to enable force feedback support.
+ 
++config HID_MEGAWORLD
++	tristate "Mega World based game controller support"
++	depends on HID
++	help
++	  Say Y here if you have a Mega World based game controller.
++
++config MEGAWORLD_FF
++	bool "Mega World based game controller force feedback support"
++	depends on HID_MEGAWORLD
++	select INPUT_FF_MEMLESS
++	help
++	  Say Y here if you have a Mega World based game controller and want
++	  to have force feedback support for it.
++
+ config HID_REDRAGON
+ 	tristate "Redragon keyboards"
+ 	depends on HID
+diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
+index 6d3e630e81af..4f333881560e 100644
+--- a/drivers/hid/Makefile
++++ b/drivers/hid/Makefile
+@@ -76,6 +76,7 @@ obj-$(CONFIG_HID_MAGICMOUSE)	+= hid-magicmouse.o
+ obj-$(CONFIG_HID_MALTRON)	+= hid-maltron.o
+ obj-$(CONFIG_HID_MCP2221)	+= hid-mcp2221.o
+ obj-$(CONFIG_HID_MAYFLASH)	+= hid-mf.o
++obj-$(CONFIG_HID_MEGAWORLD)	+= hid-megaworld.o
+ obj-$(CONFIG_HID_MICROSOFT)	+= hid-microsoft.o
+ obj-$(CONFIG_HID_MONTEREY)	+= hid-monterey.o
+ obj-$(CONFIG_HID_MULTITOUCH)	+= hid-multitouch.o
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index 85975031389b..2588d933c2b5 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -860,6 +860,9 @@
+ #define USB_VENDOR_ID_MCS		0x16d0
+ #define USB_DEVICE_ID_MCS_GAMEPADBLOCK	0x0bcc
+ 
++#define USB_VENDOR_MEGAWORLD		0x07b5
++#define USB_DEVICE_ID_MEGAWORLD_GAMEPAD	0x0312
++
+ #define USB_VENDOR_ID_MGE		0x0463
+ #define USB_DEVICE_ID_MGE_UPS		0xffff
+ #define USB_DEVICE_ID_MGE_UPS1		0x0001
+diff --git a/drivers/hid/hid-megaworld.c b/drivers/hid/hid-megaworld.c
+new file mode 100644
+index 000000000000..3ac247d7bd54
+--- /dev/null
++++ b/drivers/hid/hid-megaworld.c
+@@ -0,0 +1,136 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Vibration support for Mega World controllers
++ *
++ * Copyright 2022 Frank Zago
++ *
++ * Derived from hid-zpff.c:
++ *   Copyright (c) 2005, 2006 Anssi Hannula <anssi.hannula@gmail.com>
++ */
++
++#include <linux/hid.h>
++#include <linux/input.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++
++#include "hid-ids.h"
++
++#ifdef CONFIG_MEGAWORLD_FF
++
++struct mwctrl_device {
++	struct hid_report *report;
++	s32 *weak;
++	s32 *strong;
++};
++
++static int mwctrl_play(struct input_dev *dev, void *data,
++		       struct ff_effect *effect)
++{
++	struct hid_device *hid = input_get_drvdata(dev);
++	struct mwctrl_device *mwctrl = data;
++
++	*mwctrl->strong = effect->u.rumble.strong_magnitude >> 8;
++	*mwctrl->weak = effect->u.rumble.weak_magnitude >> 8;
++
++	hid_hw_request(hid, mwctrl->report, HID_REQ_SET_REPORT);
++
++	return 0;
++}
++
++static int mwctrl_init(struct hid_device *hid)
++{
++	struct mwctrl_device *mwctrl;
++	struct hid_report *report;
++	struct hid_input *hidinput;
++	struct input_dev *dev;
++	int i, error;
++
++	if (list_empty(&hid->inputs)) {
++		hid_err(hid, "no inputs found\n");
++		return -ENODEV;
++	}
++	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
++	dev = hidinput->input;
++
++	for (i = 0; i < 4; i++) {
++		report = hid_validate_values(hid, HID_OUTPUT_REPORT, 0, i, 1);
++		if (!report)
++			return -ENODEV;
++	}
++
++	mwctrl = kzalloc(sizeof(struct mwctrl_device), GFP_KERNEL);
++	if (!mwctrl)
++		return -ENOMEM;
++
++	set_bit(FF_RUMBLE, dev->ffbit);
++
++	error = input_ff_create_memless(dev, mwctrl, mwctrl_play);
++	if (error) {
++		kfree(mwctrl);
++		return error;
++	}
++
++	mwctrl->report = report;
++
++	/* Field 0 is always 2, and field 1 is always 0. The original
++	 * windows driver has a 5 bytes command, where the 5th byte is
++	 * a repeat of the 3rd byte, however the device has only 4
++	 * fields. It could be a bug in the driver, or there is a
++	 * different device that needs it.
++	 */
++	report->field[0]->value[0] = 0x02;
++
++	mwctrl->strong = &report->field[2]->value[0];
++	mwctrl->weak = &report->field[3]->value[0];
++
++	return 0;
++}
++
++#else
++
++static int mwctrl_init(struct hid_device *hid)
++{
++	return 0;
++}
++
++#endif
++
++static int mwctrl_probe(struct hid_device *hdev, const struct hid_device_id *id)
++{
++	int ret;
++
++	ret = hid_parse(hdev);
++	if (ret) {
++		hid_err(hdev, "parse failed\n");
++		return ret;
++	}
++
++	ret = hid_hw_start(hdev, HID_CONNECT_DEFAULT & ~HID_CONNECT_FF);
++	if (ret) {
++		hid_err(hdev, "hw start failed\n");
++		return ret;
++	}
++
++	ret = mwctrl_init(hdev);
++	if (ret)
++		hid_hw_stop(hdev);
++
++	return ret;
++}
++
++static const struct hid_device_id mwctrl_devices[] = {
++	{ HID_USB_DEVICE(USB_VENDOR_MEGAWORLD,
++			 USB_DEVICE_ID_MEGAWORLD_GAMEPAD) },
++	{ }
++};
++MODULE_DEVICE_TABLE(hid, mwctrl_devices);
++
++static struct hid_driver mwctrl_driver = {
++	.name = "megaworld",
++	.id_table = mwctrl_devices,
++	.probe = mwctrl_probe,
++};
++
++module_hid_driver(mwctrl_driver);
++
++MODULE_LICENSE("GPL");
 -- 
-viresh
+2.32.0
+
