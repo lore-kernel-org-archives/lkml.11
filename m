@@ -2,255 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EFA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 20:05:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 20:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbiBIUFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 15:05:16 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51818 "EHLO
+        id S231271AbiBIUIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 15:08:07 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbiBIUFN (ORCPT
+        with ESMTP id S231176AbiBIUH4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 15:05:13 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3864E0519B1;
-        Wed,  9 Feb 2022 12:05:14 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 219J4AVL057913;
-        Wed, 9 Feb 2022 13:04:10 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644433450;
-        bh=vXr7PyHlLCxr3Mak7Y1E4B+7VKMEhpaIDB2baQk3cqo=;
-        h=Date:From:Subject:To:CC:References:In-Reply-To;
-        b=Qiuic9MyT7YPTF3NsyzPWE2eki3y33Q7UryiKPFQLQMbXR5FiUh1vNdCskDqTI/7A
-         AVa7O750kXDVYllFTQMtxgpjJ4zjt7IuxSlqXe97sFtEn4vVPFr1MtF3nyLykBDMSv
-         aOwqPUWqSmF5GQ0h+kTJMCH8XKDeJ3+YW++psHU4=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 219J4ATI007704
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 9 Feb 2022 13:04:10 -0600
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 9
- Feb 2022 13:04:10 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 9 Feb 2022 13:04:10 -0600
-Received: from [10.250.235.90] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 219J47po019361;
-        Wed, 9 Feb 2022 13:04:08 -0600
-Message-ID: <b32d1d4b-4188-2e35-6242-5217f1d955d7@ti.com>
-Date:   Thu, 10 Feb 2022 00:34:06 +0530
+        Wed, 9 Feb 2022 15:07:56 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A5FE079D0C
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 12:07:57 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id v5-20020a17090a4ec500b001b8b702df57so6241397pjl.2
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 12:07:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=V2Zrre00TNTEedxC/ZG0lSRvO9PMNVjhgf6zFope9rg=;
+        b=OSs6kNg2PSSA7aVcIkUpDfbe+Qg5Cezsu9BBK4ruy1EEvba5x35rMDkGALUUeHvQu4
+         0j7Nay1LsagRugHsqNCRJBJp0u97bnDfw1Vxg/iXKnf/3SxGTEBBAkcEKgfTE9AKHE1L
+         Y2wj4NnmpJvWJLY0UyhkNyrzxqYDeYYstEuV4tAX6H0gfrWUgMkqL1F8bowFYXKLyh86
+         AQhbcs9E0GlP5ueJdVL/Uj8pqcDBz0ZnWtU3F3eXCCCE/llFm7U5AEZD9UymboV62msZ
+         nmm6WBHal3C58wvY4W8IMr+pYTqJOMZ5Pp7rgZdMdKxmOHDQzvV7rIFo1qn0xpL+5jR0
+         kVtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=V2Zrre00TNTEedxC/ZG0lSRvO9PMNVjhgf6zFope9rg=;
+        b=TYSW/9LNdq+hc0IVqO+iGHGOoSwRZp8HljlKoxHe+iJUKdoQe0kwP0S8MiyfFJFBt9
+         Rd2uL2iBO1BnFvv9iZw5n+h+u93jEGgxsoihBnNU4Qxoe5TcEfvuVGN8xjAEboKDzMcb
+         h6gTmLa4oWNxnJXDE20NJJeAVTGmVdR/G9A+fD+qFVfpQgmMKnymvfxn2njnWMxhOomu
+         XiqPBoF4Wp1zt5rwLHt/npaSIzUDMT3c7/Rd0lCPg8oIL6iErNswHMAdlB6eA4RXCVCP
+         SNYD3/fgfRGKKIjAO5TpF6pbYyJLjh39K8sFDQCytaRIpIrO2KVniRf5FPkzwsDt65kn
+         /cQA==
+X-Gm-Message-State: AOAM5330UHQe5sRZX83Hq4HITdM1+0cAR/JbjcRuvWrw0puYr5TgnGWl
+        hZZyUVq8YOxaYKKr9uc7NjYRoA==
+X-Google-Smtp-Source: ABdhPJw3MqX0zAdYK1YOj194RLs5MpvuyRtdTTvZ3txUns9HbZyHiO1Ck4eNT+SQfSz4jxAa2OZ33w==
+X-Received: by 2002:a17:902:e74e:: with SMTP id p14mr3838573plf.95.1644437276682;
+        Wed, 09 Feb 2022 12:07:56 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id kk17sm7374060pjb.21.2022.02.09.12.07.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 12:07:56 -0800 (PST)
+Date:   Wed, 9 Feb 2022 20:07:52 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Kai Huang <kai.huang@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, tony.luck@intel.com,
+        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 00/29] TDX Guest: TDX core support
+Message-ID: <YgQfGKXOemtXnFau@google.com>
+References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
+ <20220209235613.652f5720cd196331d7a220ec@intel.com>
+ <YgOgog9Pb886lfsv@zn.tnic>
+ <20220210003033.e57c2925b69bab5cfabf7292@intel.com>
+ <YgOoId+vyd1VhIqQ@zn.tnic>
+ <20220210004831.03dea501738bee060003d040@intel.com>
+ <YgOr6tZjsooJgAi9@zn.tnic>
+ <YgPwwI2+16/7jQC4@google.com>
+ <YgQR/S67Fqz9PanR@zn.tnic>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [PATCH 4/5] arm64: dts: ti: Introduce base support for AM62x SoC
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220208131827.1430086-1-vigneshr@ti.com>
- <20220208131827.1430086-5-vigneshr@ti.com>
- <3221dd42-7a14-7ac6-0b61-634a77a45753@canonical.com>
-Content-Language: en-US
-In-Reply-To: <3221dd42-7a14-7ac6-0b61-634a77a45753@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgQR/S67Fqz9PanR@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
-
-On 08/02/22 10:35 pm, Krzysztof Kozlowski wrote:
-[...]
+On Wed, Feb 09, 2022, Borislav Petkov wrote:
+> On Wed, Feb 09, 2022 at 04:50:08PM +0000, Sean Christopherson wrote:
+> > An alternative idea would be to mirror what generic KVM does (virt/kvm/), and do:
+> > 
+> >   arch/x86/coco/<guest stuff>
+> >   arch/x86/virt/<"generic" x86 host virtualization stuff>
+> >   arch/x86/virt/coco/<host coco stuff>
+> >   arch/x86/virt/kvm/
+> > 
+> > Though I can already hear the stable trees and downstream kernels crying out in
+> > horror at moving arch/x86/kvm :-)
 > 
-> (...)
+> Hmmm, so I am still thinking about guest-only when we're talking about
+> arch/x86/coco/.
 > 
->> diff --git a/arch/arm64/boot/dts/ti/k3-am62.dtsi b/arch/arm64/boot/dts/ti/k3-am62.dtsi
->> new file mode 100644
->> index 000000000000..f1a46be27c37
->> --- /dev/null
->> +++ b/arch/arm64/boot/dts/ti/k3-am62.dtsi
->> @@ -0,0 +1,104 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * Device Tree Source for AM62 SoC Family
->> + *
->> + * Copyright (C) 2020-2022 Texas Instruments Incorporated - https://www.ti.com/
->> + */
->> +
->> +#include <dt-bindings/gpio/gpio.h>
->> +#include <dt-bindings/interrupt-controller/irq.h>
->> +#include <dt-bindings/interrupt-controller/arm-gic.h>
->> +#include <dt-bindings/pinctrl/k3.h>
->> +#include <dt-bindings/soc/ti,sci_pm_domain.h>
->> +
->> +/ {
->> +	model = "Texas Instruments K3 AM625 SoC";
->> +	compatible = "ti,am625";
+> Lemme look at the other virt things:
 > 
-> This is am625, but the file is am62. Why having the split?
-
-
-Hierarchy is:
-
-am62.dtsi:
--> base SoC skeleton ie arch timers and interconnects which is common
-across am62xx family of SoCs
- -> includes am62-main.dtsi, am62-mcu.dtsi and am62-wakeup.dtsi
-representing 3 domains and peripherals in each of these domain
--> describes all peripherals in the family (except CPU cluster)
-
-
-am625.dtsi:
--> describes CPU cluster (Quad A53s). Since, am625 is a current superset
-device with all peripherals, am625.dtsi includes am62.dtsi completing
-SoC definition.
--> individual EVMs using this SoC will just need to include am625.dtsi
-thus making things easier for Board and SOM Vendors.
-
-
-In future:
-am62{1-9}{1-9}.dtsi:
--> Includes am625.dtsi
--> Overrides top compatible: ti,am62{1-9}{1-9}
--> disables CPUs and peripherals not present (cutdowns of current SoC).
--> -> individual EVM dts files using this SoC will just need to include
-am625.dtsi as starting point, thus making things easier for Board and
-SOM Vendors.
-
-Top level compatible is set to "ti,am625.dtsi" which is first device in
-family and superset.
-
-Hope this clears up? Will add this to commit msg
-
+> the kvm host virt stuff is in:
 > 
->> +	interrupt-parent = <&gic500>;
->> +	#address-cells = <2>;
->> +	#size-cells = <2>;
->> +
->> +	chosen { };
->> +
->> +	firmware {
->> +		optee {
->> +			compatible = "linaro,optee-tz";
->> +			method = "smc";
->> +		};
->> +
->> +		psci: psci {
->> +			compatible = "arm,psci-1.0";
->> +			method = "smc";
->> +		};
->> +	};
->> +
->> +	a53_timer0: timer-cl0-cpu0 {
->> +		compatible = "arm,armv8-timer";
->> +		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>, /* cntpsirq */
->> +			     <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW>, /* cntpnsirq */
->> +			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>, /* cntvirq */
->> +			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>; /* cnthpirq */
->> +	};
->> +
->> +	pmu: pmu {
->> +		compatible = "arm,cortex-a53-pmu";
->> +		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
->> +	};
->> +
->> +	cbass_main: bus@f0000 {
->> +		compatible = "simple-bus";
->> +		#address-cells = <2>;
->> +		#size-cells = <2>;
->> +
->> +		ranges = <0x00 0x000f0000 0x00 0x000f0000 0x00 0x00030000>, /* Main MMRs */
->> +			 <0x00 0x30040000 0x00 0x30040000 0x00 0x00080000>, /* PRUSS-M */
->> +			 <0x00 0x00600000 0x00 0x00600000 0x00 0x00001100>, /* GPIO */
->> +			 <0x00 0x00703000 0x00 0x00703000 0x00 0x00000200>, /* USB0 debug trace */
->> +			 <0x00 0x0070C000 0x00 0x0070C000 0x00 0x00000200>, /* USB1 debug trace */
->> +			 <0x00 0x00a40000 0x00 0x00a40000 0x00 0x00000800>, /* Timesync router */
->> +			 <0x00 0x0fd00000 0x00 0x0fd00000 0x00 0x00020000>, /* GPU */
->> +			 <0x00 0x01000000 0x00 0x01000000 0x00 0x01b28400>, /* First peripheral window */
->> +			 <0x00 0x60000000 0x00 0x60000000 0x00 0x08000000>, /* FSS0 DAT1 */
->> +			 <0x00 0x70000000 0x00 0x70000000 0x00 0x00010000>, /* OCSRAM */
->> +			 <0x00 0x08000000 0x00 0x08000000 0x00 0x00200000>, /* Main CPSW */
->> +			 <0x00 0x0e000000 0x00 0x0e000000 0x00 0x01d20000>, /* Second peripheral window */
->> +			 <0x00 0x20000000 0x00 0x20000000 0x00 0x0a008000>, /* Third peripheral window */
->> +			 <0x00 0x30200000 0x00 0x30200000 0x00 0x00010000>, /* DSS */
->> +			 <0x00 0x43600000 0x00 0x43600000 0x00 0x00010000>, /* sa3 sproxy data */
->> +			 <0x00 0x44043000 0x00 0x44043000 0x00 0x00000fe0>, /* TI SCI DEBUG */
->> +			 <0x00 0x44860000 0x00 0x44860000 0x00 0x00040000>, /* sa3 sproxy config */
->> +			 <0x00 0x48000000 0x00 0x48000000 0x00 0x06400000>, /* DMSS */
->> +			 <0x00 0x60000000 0x00 0x60000000 0x00 0x08000000>, /* FSS0 DAT1 */
->> +			 <0x05 0x00000000 0x05 0x00000000 0x01 0x00000000>, /* FSS0 DAT3 */
->> +			 <0x00 0x31000000 0x00 0x31000000 0x00 0x00050000>, /* USB0 DWC3 Core window */
->> +			 <0x00 0x31100000 0x00 0x31100000 0x00 0x00050000>, /* USB1 DWC3 Core window */
->> +			 <0x00 0x30101000 0x00 0x30101000 0x00 0x00010100>, /* CSI window */
->> +
->> +			 /* MCU Domain Range */
->> +			 <0x00 0x04000000 0x00 0x04000000 0x00 0x01ff1400>,
->> +
->> +			 /* Wakeup Domain Range */
->> +			 <0x00 0x2b000000 0x00 0x2b000000 0x00 0x00300400>,
->> +			 <0x00 0x43000000 0x00 0x43000000 0x00 0x00020000>;
->> +
->> +		cbass_mcu: bus@4000000 {
->> +			compatible = "simple-bus";
->> +			#address-cells = <2>;
->> +			#size-cells = <2>;
->> +			ranges = <0x00 0x04000000 0x00 0x04000000 0x00 0x01ff1400>; /* Peripheral window */
->> +		};
->> +
->> +		cbass_wakeup: bus@2b000000 {
->> +			compatible = "simple-bus";
->> +			#address-cells = <2>;
->> +			#size-cells = <2>;
->> +			ranges = <0x00 0x2b000000 0x00 0x2b000000 0x00 0x00300400>, /* Peripheral Window */
->> +				 <0x00 0x43000000 0x00 0x43000000 0x00 0x00020000>;
->> +		};
->> +	};
->> +};
->> +
->> +/* Now include the peripherals for each bus segments */
->> +#include "k3-am62-main.dtsi"
->> +#include "k3-am62-mcu.dtsi"
->> +#include "k3-am62-wakeup.dtsi"
->> diff --git a/arch/arm64/boot/dts/ti/k3-am625.dtsi b/arch/arm64/boot/dts/ti/k3-am625.dtsi
->> new file mode 100644
->> index 000000000000..887f31c23fef
->> --- /dev/null
->> +++ b/arch/arm64/boot/dts/ti/k3-am625.dtsi
->> @@ -0,0 +1,103 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * Device Tree Source for AM625 SoC family in Quad core configuration
->> + *
->> + * TRM: https://www.ti.com/lit/pdf/spruiv7
->> + *
->> + * Copyright (C) 2020-2022 Texas Instruments Incorporated - https://www.ti.com/
->> + */
->> +
->> +/dts-v1/;
->> +
->> +#include "k3-am62.dtsi"
->> +
->> +/ {
->> +	cpus {
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +
+> arch/x86/kvm/
 > 
-> This file is not included anywhere, so does it mean that your SoC comes
-> without the cores and each board designer plugs the cores separately?
+>  (btw, this is where the SEV host stuff is: arch/x86/kvm/svm/sev.c)
 > 
+> arch/x86/hyperv/ - looks like hyperv guest stuff
+> 
+> arch/x86/xen/ - xen guest stuff
+> 
+> arch/x86/kernel/cpu/vmware.c - vmware guest stuff
+> 
+> arch/x86/kernel/cpu/acrn.c - Acorn guest stuff
+> 
+> So we have a real mess. :-(
 
-Please see above for explanation. File is included in am625-sk.dts (see
-5/5).
+Don't forget :-)
 
+  arch/x86/kernel/kvm.c - KVM guest stuff
+
+> Not surprised though. So that last thing you're suggesting kinda makes
+> sense but lemme tweak it a bit:
 > 
-> Best regards,
-> Krzysztof
+> arch/x86/coco/<guest stuff>
+> arch/x86/virt/<"generic" x86 host virtualization stuff>
+> arch/x86/virt/tdx/ - no need for the "coco" thing - TDX is nothing but coco. TDX host
+> stuff
+> 
+> arch/x86/virt/sev/ - ditto
+> 
+> and we'll keep arch/x86/kvm because of previous precedents with other
+> things I've enumerated above.
+> 
+> Hmmm?
+
+No objection to omitting "coco".  Though what about using "vmx" and "svm" instead
+of "tdx" and "sev".  We lose the more explicit tie to coco, but it would mirror the
+sub-directories in arch/x86/kvm/ and would avoid a mess in the scenario where tdx
+or sev needs to share code with the non-coco side, e.g. I'm guessing TDX will need
+to do VMXON.
+
+  arch/x86/virt/vmx/
+  	tdx.c
+	vmx.c
+
+  arch/x86/virt/svm/
+  	sev.c
+	sev-es.c
+	sev-snp.c
+  	svm.c
+
