@@ -2,150 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4136DC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:14:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232830AbiBIMOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:14:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60536 "EHLO
+        id S232913AbiBIMOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:14:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232841AbiBIMNp (ORCPT
+        with ESMTP id S232828AbiBIMNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:13:45 -0500
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850D5E01A22A;
-        Wed,  9 Feb 2022 03:58:30 -0800 (PST)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21996C76083007;
-        Wed, 9 Feb 2022 03:06:12 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644397572;
-        bh=Fn0tXBQRpBz/aFWd0LHh4mdtpypyY2LI48sKNyRaWbs=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=LgumQn26hUfrJRqhpE74LR89hwQXUutNLELMIwHTpgtIAQJPE65MZF8coAZy4Fybz
-         685grtGdv/LvWxwSA19Bi/OUrcEEDZOMoEPkpaOFfBaSX1UZs/Po2/Z3fQROoVTO+n
-         MP0qsxbJYl3k+H2Rcx4dqex6FMB4O1f212+D6Hvs=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21996CjP045827
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 9 Feb 2022 03:06:12 -0600
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 9
- Feb 2022 03:06:12 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 9 Feb 2022 03:06:12 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21996A0b040498;
-        Wed, 9 Feb 2022 03:06:11 -0600
-From:   Puranjay Mohan <p-mohan@ti.com>
-To:     <puranjay12@gmail.com>, <kishon@ti.com>, <vigneshr@ti.com>,
-        <s-anna@ti.com>, <bjorn.andersson@linaro.org>,
-        <mathieu.poirier@linaro.org>, <linux-remoteproc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     Puranjay Mohan <p-mohan@ti.com>
-Subject: [PATCH v4 1/2] remoteproc: Introduce deny_sysfs_ops flag
-Date:   Wed, 9 Feb 2022 14:33:41 +0530
-Message-ID: <20220209090342.13220-2-p-mohan@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220209090342.13220-1-p-mohan@ti.com>
-References: <20220209090342.13220-1-p-mohan@ti.com>
+        Wed, 9 Feb 2022 07:13:43 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F54E01A20B;
+        Wed,  9 Feb 2022 03:58:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644407903; x=1675943903;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=L+DVxKDfG93QZEDonoeWEpsQmWNBO1hMRpHRORp3+5E=;
+  b=xtpShl7N4LMsdTyeEPxGJ0EJR8Xu4y5JWkEphO4lVm2zx+D/TXeMRzEk
+   xQ6/WDGZvGjGQHtELEJXPfb5NLyZ+6XaDLD1p1wYkzEYbePg3OqZBguTt
+   iN0bTXR9dAmFS6ZRYyvxuvADTqRcnt3/g4oQ2zFkM5pg2RErilbaVKXbM
+   DDYTa4U8RNptiJqRVVKUN2uy0Lm1Qaf/JHw4U9KVh7VPYJUlL341rQX4h
+   dGSYT7YVI/wsOZ/JroWCNsLHWNk4RapZetmuH2TIYfkiE00WCyvIhoJS8
+   lXMKUEQ7LuMHL34CmjSoTW0xwJfJShlmzsxOkv078aBfGCJ980NAdkO0f
+   Q==;
+IronPort-SDR: YFl071Mzo9w43N4n90fHqb+clQMo7iQRI0BZuCdWaTJF0bJ9CARUQH0h6NYVzy3MiHj169rWpt
+ c21LZqFu5ihhxONKqOnRiJ7tCWzh1N85yLi6N4L89UDd9QggKc+wbgxlYp0szxPzCtDt+WTULI
+ fM10Qd/x39Ik43qks4njs/5fcKpPNohuLrHdZtaNL5SuyE8UM8LhpPkUoKBtcT3QWx5Bkpftrb
+ Ef2FV2jUHiHpxBAHUz9frwVdK87xJinwRkIR8+8Af12Frk1EC0IWz06N6j3kqSdTBBgXMytUVu
+ OrIhT7vr3BYNmpUGRonBebHu
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="145385622"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Feb 2022 04:58:22 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Feb 2022 04:58:22 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 9 Feb 2022 04:58:14 -0700
+Message-ID: <ebf1b233da821e2cd3586f403a1cdc2509671cde.camel@microchip.com>
+Subject: Re: [PATCH v8 net-next 01/10] dt-bindings: net: dsa: dt bindings
+ for microchip lan937x
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>, <andrew@lunn.ch>,
+        <netdev@vger.kernel.org>, <olteanv@gmail.com>, <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <devicetree@vger.kernel.org>, Rob Herring <robh@kernel.org>
+Date:   Wed, 9 Feb 2022 17:28:12 +0530
+In-Reply-To: <88caec5c-c509-124e-5f6b-22b94f968aea@gmail.com>
+References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
+         <20220207172204.589190-2-prasanna.vengateshan@microchip.com>
+         <88caec5c-c509-124e-5f6b-22b94f968aea@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The remoteproc framework provides sysfs interfaces for changing
-the firmware name and for starting/stopping a remote processor
-through the sysfs files 'state' and 'firmware'. The 'recovery'
-sysfs file can also be used similarly to control the error recovery
-state machine of a remoteproc. These interfaces are currently
-allowed irrespective of how the remoteprocs were booted (like
-remoteproc self auto-boot, remoteproc client-driven boot etc).
-These interfaces can adversely affect a remoteproc and its clients
-especially when a remoteproc is being controlled by a remoteproc
-client driver(s). Also, not all remoteproc drivers may want to
-support the sysfs interfaces by default.
+On Mon, 2022-02-07 at 18:53 -0800, Florian Fainelli wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+> content is safe
+> 
+> On 2/7/2022 9:21 AM, Prasanna Vengateshan wrote:
+> > Documentation in .yaml format and updates to the MAINTAINERS
+> > Also 'make dt_binding_check' is passed.
+> > 
+> > RGMII internal delay values for the mac is retrieved from
+> > rx-internal-delay-ps & tx-internal-delay-ps as per the feedback from
+> > v3 patch series.
+> > https://lore.kernel.org/netdev/20210802121550.gqgbipqdvp5x76ii@skbuf/
+> > 
+> > It supports only the delay value of 0ns and 2ns.
+> > 
+> > Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > ---
+> >   .../bindings/net/dsa/microchip,lan937x.yaml   | 179 ++++++++++++++++++
+> >   MAINTAINERS                                   |   1 +
+> >   2 files changed, 180 insertions(+)
+> >   create mode 100644
+> > Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+> > 
+> > +    maxItems: 1
+> > +
+> > +  mdio:
+> > +    $ref: /schemas/net/mdio.yaml#
+> > +    unevaluatedProperties: false
+> 
+> This should be moved to dsa.yaml since this is about describing the
+> switch's internal MDIO bus controller. This is applicable to any switch,
+> really.
 
-Add support to deny the sysfs state/firmware/recovery change by
-introducing a state flag 'deny_sysfs_ops' that the individual
-remoteproc drivers can set based on their usage needs. The default
-behavior is to allow the sysfs operations as before.
+Thanks for your review and feedback. Do you mean that 'mdio' to be added in
+dsa.yaml instead adding here?
 
-Implement attribute_group->is_visible() to hide the sysfs
-state/firmware/recovery entries when deny_sysfs_ops flag is set.
+> 
+> > +
+> > +patternProperties:
+> > +  "^(ethernet-)?ports$":
+> > +    patternProperties:
+> > +      "^(ethernet-)?port@[0-7]+$":
+> > +        allOf:
+> > +          - if:
+> > +              properties:
+> > +                phy-mode:
+> > +                  contains:
+> > +                    enum:
+> > +                      - rgmii
+> > +                      - rgmii-rxid
+> > +                      - rgmii-txid
+> > +                      - rgmii-id
+> > +            then:
+> > +              properties:
+> > +                rx-internal-delay-ps:
+> > +                  $ref: "#/$defs/internal-delay-ps"
+> > +                tx-internal-delay-ps:
+> > +                  $ref: "#/$defs/internal-delay-ps"
+> 
+> Likewise, this should actually be changed in ethernet-controller.yaml
 
-Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
----
-Changes in v3->v4:
-Use mode = 0444 in rproc_is_visible() to make the sysfs entries
-read-only when the deny_sysfs_ops flag is set.
----
- drivers/remoteproc/remoteproc_sysfs.c | 18 +++++++++++++++++-
- include/linux/remoteproc.h            |  2 ++
- 2 files changed, 19 insertions(+), 1 deletion(-)
+There is *-internal-delay-ps property defined for mac in ethernet-
+controller.yaml. Should that be changed like above? 
 
-diff --git a/drivers/remoteproc/remoteproc_sysfs.c b/drivers/remoteproc/remoteproc_sysfs.c
-index ea8b89f97d7b..da2d0eecfa44 100644
---- a/drivers/remoteproc/remoteproc_sysfs.c
-+++ b/drivers/remoteproc/remoteproc_sysfs.c
-@@ -230,6 +230,21 @@ static ssize_t name_show(struct device *dev, struct device_attribute *attr,
- }
- static DEVICE_ATTR_RO(name);
- 
-+static umode_t rproc_is_visible(struct kobject *kobj, struct attribute *attr,
-+				int n)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
-+	struct rproc *rproc = to_rproc(dev);
-+	umode_t mode = attr->mode;
-+
-+	if (rproc->deny_sysfs_ops && (attr == &dev_attr_recovery.attr ||
-+				      attr == &dev_attr_firmware.attr ||
-+				      attr == &dev_attr_state.attr))
-+		mode = 0444;
-+
-+	return mode;
-+}
-+
- static struct attribute *rproc_attrs[] = {
- 	&dev_attr_coredump.attr,
- 	&dev_attr_recovery.attr,
-@@ -240,7 +255,8 @@ static struct attribute *rproc_attrs[] = {
- };
- 
- static const struct attribute_group rproc_devgroup = {
--	.attrs = rproc_attrs
-+	.attrs = rproc_attrs,
-+	.is_visible = rproc_is_visible,
- };
- 
- static const struct attribute_group *rproc_devgroups[] = {
-diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
-index e0600e1e5c17..3849c66ce38f 100644
---- a/include/linux/remoteproc.h
-+++ b/include/linux/remoteproc.h
-@@ -523,6 +523,7 @@ struct rproc_dump_segment {
-  * @table_sz: size of @cached_table
-  * @has_iommu: flag to indicate if remote processor is behind an MMU
-  * @auto_boot: flag to indicate if remote processor should be auto-started
-+ * @deny_sysfs_ops: flag to not permit sysfs operations on state, firmware and recovery
-  * @dump_segments: list of segments in the firmware
-  * @nb_vdev: number of vdev currently handled by rproc
-  * @elf_class: firmware ELF class
-@@ -562,6 +563,7 @@ struct rproc {
- 	size_t table_sz;
- 	bool has_iommu;
- 	bool auto_boot;
-+	bool deny_sysfs_ops;
- 	struct list_head dump_segments;
- 	int nb_vdev;
- 	u8 elf_class;
--- 
-2.17.1
+
+Prasanna V
 
