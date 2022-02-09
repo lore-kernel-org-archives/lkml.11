@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF7BAC46467
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:09:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71D81C47080
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233303AbiBIFHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 00:07:13 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:42696 "EHLO
+        id S237435AbiBIFHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 00:07:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352211AbiBIEou (ORCPT
+        with ESMTP id S1377741AbiBIEcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 23:44:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8690FC061578
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 20:44:54 -0800 (PST)
+        Tue, 8 Feb 2022 23:32:04 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1DDAC0613C9
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 20:26:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644381893;
+        s=mimecast20190719; t=1644380764;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=a8gj37MRQ8xwMURk0vAQh2NMA0eBwSyEISE9txFEN/4=;
-        b=OQD73OTcwzfE9aHAz6ocTDKhHyRmXun78GnNfF823oa/s2PjeuCkjcHyMIhIFuLmrQkPX8
-        grzuyQnuUDlywShenl1s//tdlU0ft3ro7TZwqlafLtcBoICkF0eMlFQ77HD8ZdrNHOLtxK
-        6fMXHd6906iVWLssctxmxvBfshEo+SQ=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=8mY8elVfyQglRlLXkjN7Nh6smhNHX9r1QRGNGZo7nas=;
+        b=Ydg9kdCgjsyeH75vEjAHfAJvCJYZNpGNlQHutgvEXcMbMvrxO90uphX19pNVKJmM2c6FEY
+        miM1QXtsPWZVUTGNVeFxlXIyeLWAWb7B4SgdJZO9iVLjqkavNOZ0LrFf32Us2V35Y7ipY4
+        fsq897Pn9fpB/7IIaHK5Kkov0EGVQgA=
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
+ [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-564-ynG28QrKNqK5oZOYxMRk1Q-1; Tue, 08 Feb 2022 23:44:52 -0500
-X-MC-Unique: ynG28QrKNqK5oZOYxMRk1Q-1
-Received: by mail-pj1-f70.google.com with SMTP id e1-20020a17090ada0100b001b83a55e809so927011pjv.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 20:44:52 -0800 (PST)
+ us-mta-81--wvj7-MvNQykq7nv3ao17Q-1; Tue, 08 Feb 2022 23:26:03 -0500
+X-MC-Unique: -wvj7-MvNQykq7nv3ao17Q-1
+Received: by mail-pj1-f69.google.com with SMTP id 62-20020a17090a09c400b001b80b0742b0so891677pjo.8
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 20:26:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=a8gj37MRQ8xwMURk0vAQh2NMA0eBwSyEISE9txFEN/4=;
-        b=vQODyKhF+3BdTSjOcaNLaVlcFW8itU9Uqa5JTFU0796K/KHBErO3LnHEmKmoh3+mOY
-         uEYjK+IlCKVUe6ldHCVSIyayXNghCyJwANkxno1r++opov7aSFmX3ZOrl0DFqEvBQrU+
-         z0n4UQGCLnQohyL0FuNWkKM5ylSLA4keXnZSXcCY+SgQsEObigYHwdcZ36NeyUNOWSEI
-         yD91vo6LNj8dIf+E4beAgQpaViV3y0X4dn/guf+oQ0g12nAm2kqltNX400WtOHo8JWXS
-         hwWhohUownBSxSkbtkrH0gFbIA3YcZKgRj7s5vX7k4mckkAIRIizC/RFBPJ4Asy0vpmH
-         G8XQ==
-X-Gm-Message-State: AOAM530YpFrAdDTrdZTw4cTgpnR4WPywk7vcPm6Vwx2gyhWl37WzyQBi
-        cEX/baNHXzKve95TjC1OGX8uu3CJzDYqY+3VUhzxLpFUSOUI2lyRqw0qw8VH5/KmB/7g1lRZeFQ
-        ospZy3MUjGOqqwmU8EwoIQu2k
-X-Received: by 2002:a17:90b:a06:: with SMTP id gg6mr1452900pjb.153.1644381891254;
-        Tue, 08 Feb 2022 20:44:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwT+QxXjlJ0SaaM0kkOKxf0X5GYo0uqNI3uLhER1MI1QJk1PxbBUXYbpF29jjDOGwJPE6rDxg==
-X-Received: by 2002:a17:90b:a06:: with SMTP id gg6mr1452886pjb.153.1644381890996;
-        Tue, 08 Feb 2022 20:44:50 -0800 (PST)
+        bh=8mY8elVfyQglRlLXkjN7Nh6smhNHX9r1QRGNGZo7nas=;
+        b=Y9JtM5ZHccx7i1XRuuPm99L50oH6ZScoHxGm/D4gvBDa+SXsOOKnl24k3st/94kFSe
+         WRQzDRV89LksGA3AqNNuBHKewcxVMpgin9C5lLpBWwJoywjMa5mL48ig0p6WTdreYJRL
+         4q7Ov70BgoS7lP4QGfXhJWNKm2dfGMhBrEK4uEYDn5spqXX8R/Qt1w0Rt3VGY+PQdX/v
+         0jaD58FbDSPGwC2V8HA0naZorYC1QvqxBEUUUjuxOnm6Blj9Mzn/+54CgZqCiZmsu2qW
+         GBj8ooqlw6+sIlOHS+QLBPyUMAAm4VBUvb3WhuJWcPk8BL3WJRUrvQZuf9yfHXIlZamY
+         EW6A==
+X-Gm-Message-State: AOAM531PsMcqJGQFFW3xdOzBWBFN/FgzRsUE2+R7+a2b+ENiW49BkK25
+        fbuiMdhNFb+gF/Sly/f3cMMUX9qEtvpzVm7uuxsomeXZciBdkbIK6XN6C6Y5qfbFDolVspumEkd
+        /86rcFGxXxG892P7BLvNVzr+9
+X-Received: by 2002:a17:902:d4d2:: with SMTP id o18mr689058plg.70.1644380762289;
+        Tue, 08 Feb 2022 20:26:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJykaFv2k/rU0QWZ6U8v2dqzYGXw3Od1HYD//YNB9h1Dzi13vXmiZ2WWJpeEOkwfNhTZU6a1Xw==
+X-Received: by 2002:a17:902:d4d2:: with SMTP id o18mr689040plg.70.1644380761987;
+        Tue, 08 Feb 2022 20:26:01 -0800 (PST)
 Received: from [10.72.13.141] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v12sm12234256pgr.68.2022.02.08.20.44.46
+        by smtp.gmail.com with ESMTPSA id z15sm10137088pfh.82.2022.02.08.20.25.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Feb 2022 20:44:50 -0800 (PST)
-Message-ID: <6d74c8f6-ddf8-9258-cb99-80e0e8efbf38@redhat.com>
-Date:   Wed, 9 Feb 2022 12:44:45 +0800
+        Tue, 08 Feb 2022 20:26:01 -0800 (PST)
+Message-ID: <06a90de0-57ae-9315-dc2c-03cc74b4ae0c@redhat.com>
+Date:   Wed, 9 Feb 2022 12:25:54 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [RFC PATCH 5/5] drivers/net/virtio_net.c: Added USO support.
+Subject: Re: [RFC PATCH 1/5] uapi/linux/if_tun.h: Added new ioctl for tun/tap.
 Content-Language: en-US
 To:     Andrew Melnychenko <andrew@daynix.com>, davem@davemloft.net,
         kuba@kernel.org, mst@redhat.com, netdev@vger.kernel.org,
@@ -69,9 +69,9 @@ To:     Andrew Melnychenko <andrew@daynix.com>, davem@davemloft.net,
         virtualization@lists.linux-foundation.org
 Cc:     yuri.benditovich@daynix.com, yan@daynix.com
 References: <20220125084702.3636253-1-andrew@daynix.com>
- <20220125084702.3636253-6-andrew@daynix.com>
+ <20220125084702.3636253-2-andrew@daynix.com>
 From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220125084702.3636253-6-andrew@daynix.com>
+In-Reply-To: <20220125084702.3636253-2-andrew@daynix.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -79,93 +79,61 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-在 2022/1/25 下午4:47, Andrew Melnychenko 写道:
-> Now, it possible to enable GSO_UDP_L4("tx-udp-segmentation") for VirtioNet.
->
-> Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
-> ---
->   drivers/net/virtio_net.c | 22 ++++++++++++++++++----
->   1 file changed, 18 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index a801ea40908f..a45eee022be4 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -60,13 +60,17 @@ static const unsigned long guest_offloads[] = {
->   	VIRTIO_NET_F_GUEST_TSO6,
->   	VIRTIO_NET_F_GUEST_ECN,
->   	VIRTIO_NET_F_GUEST_UFO,
-> -	VIRTIO_NET_F_GUEST_CSUM
-> +	VIRTIO_NET_F_GUEST_CSUM,
-> +	VIRTIO_NET_F_GUEST_USO4,
-> +	VIRTIO_NET_F_GUEST_USO6
->   };
->   
->   #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
->   				(1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
->   				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
-> -				(1ULL << VIRTIO_NET_F_GUEST_UFO))
-> +				(1ULL << VIRTIO_NET_F_GUEST_UFO)  | \
-> +				(1ULL << VIRTIO_NET_F_GUEST_USO4) | \
-> +				(1ULL << VIRTIO_NET_F_GUEST_USO6))
->   
->   struct virtnet_stat_desc {
->   	char desc[ETH_GSTRING_LEN];
-> @@ -2530,7 +2534,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
->   	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO6) ||
->   	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
->   		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
-> -		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
-> +		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM) ||
-> +		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_USO4) ||
-> +		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_USO6))) {
->   		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW/CSUM, disable GRO_HW/CSUM first");
->   		return -EOPNOTSUPP;
->   	}
-> @@ -3155,6 +3161,8 @@ static int virtnet_probe(struct virtio_device *vdev)
->   			dev->hw_features |= NETIF_F_TSO6;
->   		if (virtio_has_feature(vdev, VIRTIO_NET_F_HOST_ECN))
->   			dev->hw_features |= NETIF_F_TSO_ECN;
-> +		if (virtio_has_feature(vdev, VIRTIO_NET_F_HOST_USO))
-> +			dev->hw_features |= NETIF_F_GSO_UDP_L4;
->   
->   		dev->features |= NETIF_F_GSO_ROBUST;
->   
-> @@ -3169,6 +3177,9 @@ static int virtnet_probe(struct virtio_device *vdev)
->   		dev->features |= NETIF_F_GRO_HW;
->   	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
->   		dev->hw_features |= NETIF_F_GRO_HW;
-> +	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO4) ||
-> +	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO6))
-> +		dev->hw_features |= NETIF_F_LRO;
+在 2022/1/25 下午4:46, Andrew Melnychenko 写道:
+> Added TUNGETSUPPORTEDOFFLOADS that should allow
+> to get bits of supported offloads.
 
 
-I think we need to use GRO_HW, see dbcf24d153884 ("virtio-net: use 
-NETIF_F_GRO_HW instead of NETIF_F_LRO"
+So we don't use dedicated ioctls in the past, instead, we just probing 
+by checking the return value of TUNSETOFFLOADS.
+
+E.g qemu has the following codes:
+
+int tap_probe_has_ufo(int fd)
+{
+     unsigned offload;
+
+     offload = TUN_F_CSUM | TUN_F_UFO;
+
+     if (ioctl(fd, TUNSETOFFLOAD, offload) < 0)
+         return 0;
+
+     return 1;
+}
+
+Any reason we can't keep using that?
 
 Thanks
 
 
+> Added 2 additional offlloads for USO(IPv4 & IPv6).
+> Separate offloads are required for Windows VM guests,
+> g.e. Windows may set USO rx only for IPv4.
+>
+> Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+> ---
+>   include/uapi/linux/if_tun.h | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_tun.h
+> index 454ae31b93c7..07680fae6e18 100644
+> --- a/include/uapi/linux/if_tun.h
+> +++ b/include/uapi/linux/if_tun.h
+> @@ -61,6 +61,7 @@
+>   #define TUNSETFILTEREBPF _IOR('T', 225, int)
+>   #define TUNSETCARRIER _IOW('T', 226, int)
+>   #define TUNGETDEVNETNS _IO('T', 227)
+> +#define TUNGETSUPPORTEDOFFLOADS _IOR('T', 228, unsigned int)
 >   
->   	dev->vlan_features = dev->features;
+>   /* TUNSETIFF ifr flags */
+>   #define IFF_TUN		0x0001
+> @@ -88,6 +89,8 @@
+>   #define TUN_F_TSO6	0x04	/* I can handle TSO for IPv6 packets */
+>   #define TUN_F_TSO_ECN	0x08	/* I can handle TSO with ECN bits. */
+>   #define TUN_F_UFO	0x10	/* I can handle UFO packets */
+> +#define TUN_F_USO4	0x20	/* I can handle USO for IPv4 packets */
+> +#define TUN_F_USO6	0x40	/* I can handle USO for IPv6 packets */
 >   
-> @@ -3200,7 +3211,9 @@ static int virtnet_probe(struct virtio_device *vdev)
->   	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
->   	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6) ||
->   	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_ECN) ||
-> -	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO))
-> +	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO) ||
-> +	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO4) ||
-> +	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO6))
->   		vi->big_packets = true;
->   
->   	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
-> @@ -3400,6 +3413,7 @@ static struct virtio_device_id id_table[] = {
->   	VIRTIO_NET_F_HOST_TSO4, VIRTIO_NET_F_HOST_UFO, VIRTIO_NET_F_HOST_TSO6, \
->   	VIRTIO_NET_F_HOST_ECN, VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6, \
->   	VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_UFO, \
-> +	VIRTIO_NET_F_HOST_USO, VIRTIO_NET_F_GUEST_USO4, VIRTIO_NET_F_GUEST_USO6, \
->   	VIRTIO_NET_F_MRG_RXBUF, VIRTIO_NET_F_STATUS, VIRTIO_NET_F_CTRL_VQ, \
->   	VIRTIO_NET_F_CTRL_RX, VIRTIO_NET_F_CTRL_VLAN, \
->   	VIRTIO_NET_F_GUEST_ANNOUNCE, VIRTIO_NET_F_MQ, \
+>   /* Protocol info prepended to the packets (when IFF_NO_PI is not set) */
+>   #define TUN_PKT_STRIP	0x0001
 
