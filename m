@@ -2,95 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89895C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C71C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230462AbiBILdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:33:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33968 "EHLO
+        id S229976AbiBILox (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:44:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiBILde (ORCPT
+        with ESMTP id S229696AbiBILoq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:33:34 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D20C1DC2EA
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:25:55 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A27973F1E6
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 10:25:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644402353;
-        bh=i2KI5hMSSyeIYLLHODdHiXGfEoepYgSQjsAA0Z52iOo=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=cHy/gcYuNa4aV5WtsXg6UHbTzStbmAI6AOs0V2LeKkJ8WichnkXKjSTGR+hXNF61z
-         oT9Mtr49CYXfCI7jwAoKhF0tutaLF5OtnoVGFVXEUk25tDmRzoCt4SSBJe6QODkAYk
-         oIgkYQZdkBNmf9L6g6ZX8AtLW9B5wzug8hvoisGZJe4Rflzsc5xYA6i3Fug3Y+wBg4
-         odnLjUKiZe2pu2LHoFLbFtHpaxmi9YqAhCrcMN3s3pJVMWbZWyWqs3Ml8dLVh1GUnW
-         2VmNXPpqMtiwLwdqBtx+SGWGb811IAKgOCbKLCG9Lc+qtXZu2FN4tuDULE9ELelntw
-         2lHjSlISeJJNg==
-Received: by mail-ed1-f71.google.com with SMTP id s7-20020a508dc7000000b0040f29ccd65aso1131312edh.1
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 02:25:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i2KI5hMSSyeIYLLHODdHiXGfEoepYgSQjsAA0Z52iOo=;
-        b=vYdMtsovnjGkgKKahzNDuC29M+ccJzOu5dqi3YqkSX/mwLL5Qle/H0/f5t1R1mTkLr
-         vHqkBguT7an403uHqdfrofEX7QMdUcWxdx7b1Fb7enfYfsB7WxL94twkdY6R9cGAGbu9
-         Guu9bZGUlueMSFQT+yBvkqwHmYZhMRd3SrrWhKjInZjw9jjTNMqeGOUwwMufwhyIEyyn
-         p7GUoeoyE1HAg6h0jRj3cl1Q2g10D6LmbkcZuWU7CjD2cQng1LxAzthKWe/3hMvTVadg
-         6BvlwKkZUgJ8PEdpsSyvjfcBSt02mfvUZVYgnZ+ClEUB/1ad0fMIlWJYbK567RiBYbbF
-         X9lA==
-X-Gm-Message-State: AOAM531LtebQGCNvsz4bCl9eK2tYv9k2MqQk60M89ASJa/bKYJT0nOaD
-        gfHEHysbr7dcAoJP9Erg8VmiPIQMw/Cfa9cKSU/T7yioTKMZbilnUEz4N6lZMcJ2JAvcJCY6Y2x
-        KccuL40xxGIJFlvX1nVgU04nlgL4L1UTcS6ahuxLeR5YiUtxGGo5VrCMkUg==
-X-Received: by 2002:a17:907:1c1c:: with SMTP id nc28mr1295629ejc.651.1644402352732;
-        Wed, 09 Feb 2022 02:25:52 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzRaSoiC+XlrvlLAdpRn5m2h3uJb8sozRIUppuILQY5sQ+ZHYc6VwQrATFbYHecvSmkHWdwQvCCJZlalnZpyhA=
-X-Received: by 2002:a17:907:1c1c:: with SMTP id nc28mr1295621ejc.651.1644402352590;
- Wed, 09 Feb 2022 02:25:52 -0800 (PST)
+        Wed, 9 Feb 2022 06:44:46 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF17E1763DE
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:35:16 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2197XP2k000630;
+        Wed, 9 Feb 2022 09:51:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=FBc1yle+q0wuZRZ4tpqxW2cNz1n6PyppucbNSOseIXE=;
+ b=U1mv6LilcCjIoUPJ+TS0BLJvasFcizV1nYqbqLYmfN4vY8KcG9LcEuYkCzwg3xON8KL9
+ 5IKsWEDTajBFhFMt/JpoXiOLwcPadqGGU1m+U0U4/G1CSur1Vs930BVbTWQsLwCUeXXw
+ Pwq1LAzoRvXQphliq7Veqyjlh2KhB8p2b9Klm0yImEKlRNRXtXvE97kHEB2gnf4zXUEt
+ imagsK9gBz6JcJqFkCz7r6PVOUQiCVBmsP68PH+7CVXaZe48CoZWET/arXmQr6dmwutk
+ Y3xwJfxyfVSMWbRvD+O2ZVsR2Os+hA0jyZQcmzqjcPylPMta8c0XgVLt4lteSc7Z/U0f 5w== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e44v6rp7y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 09:51:29 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2199ovD4026224;
+        Wed, 9 Feb 2022 09:51:27 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggk5ewu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 09:51:27 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2199fIrC41025980
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Feb 2022 09:41:18 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 47925A405F;
+        Wed,  9 Feb 2022 09:51:25 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0D84EA405B;
+        Wed,  9 Feb 2022 09:51:25 +0000 (GMT)
+Received: from [9.145.34.127] (unknown [9.145.34.127])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Feb 2022 09:51:24 +0000 (GMT)
+Message-ID: <0747d192-b348-892a-59ec-669209d9b7c7@linux.ibm.com>
+Date:   Wed, 9 Feb 2022 10:51:24 +0100
 MIME-Version: 1.0
-References: <20220209101439.1657557-1-clabbe@baylibre.com>
-In-Reply-To: <20220209101439.1657557-1-clabbe@baylibre.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Date:   Wed, 9 Feb 2022 11:25:41 +0100
-Message-ID: <CA+Eumj7sWb9JCi4MzRj0bkBBD9LjsVBuZwimen11uLNapK73CA@mail.gmail.com>
-Subject: Re: [PATCH] ARM: dts: rk3288: fix a typo on crypto-controller
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     heiko@sntech.de, robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] ocxl: Make use of the helper macro LIST_HEAD()
+Content-Language: en-US
+To:     Cai Huoqing <cai.huoqing@linux.dev>
+Cc:     Andrew Donnellan <ajd@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20220209032421.37725-1-cai.huoqing@linux.dev>
+From:   Frederic Barrat <fbarrat@linux.ibm.com>
+In-Reply-To: <20220209032421.37725-1-cai.huoqing@linux.dev>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 4z0OLEj3HVbQB3pCV6jGOQe3j_bFJsbQ
+X-Proofpoint-ORIG-GUID: 4z0OLEj3HVbQB3pCV6jGOQe3j_bFJsbQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_04,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 bulkscore=0 suspectscore=0 malwarescore=0 phishscore=0
+ mlxlogscore=999 clxscore=1011 priorityscore=1501 mlxscore=0 adultscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202090062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Feb 2022 at 11:14, Corentin Labbe <clabbe@baylibre.com> wrote:
->
-> crypto-controller had a typo, fix it.
->
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+
+
+On 09/02/2022 04:24, Cai Huoqing wrote:
+> Replace "struct list_head head = LIST_HEAD_INIT(head)" with
+> "LIST_HEAD(head)" to simplify the code.
+> 
+> Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
 > ---
->  arch/arm/boot/dts/rk3288.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-> index aaaa61875701..a0d29de3acf7 100644
-> --- a/arch/arm/boot/dts/rk3288.dtsi
-> +++ b/arch/arm/boot/dts/rk3288.dtsi
-> @@ -971,7 +971,7 @@ i2s: i2s@ff890000 {
->                 status = "disabled";
->         };
->
-> -       crypto: cypto-controller@ff8a0000 {
-> +       crypto: crypto-controller@ff8a0000 {
 
-This should be rather "crypto" as a generic name (see list of examples
-for generic naming in DT spec).
+Thanks!
+Acked-by: Frederic Barrat <fbarrat@linux.ibm.com>
 
-Best regards,
-Krzysztof
+
+>   drivers/misc/ocxl/link.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/misc/ocxl/link.c b/drivers/misc/ocxl/link.c
+> index ab039c115381..9670d02c927f 100644
+> --- a/drivers/misc/ocxl/link.c
+> +++ b/drivers/misc/ocxl/link.c
+> @@ -94,7 +94,7 @@ struct ocxl_link {
+>   	struct spa *spa;
+>   	void *platform_data;
+>   };
+> -static struct list_head links_list = LIST_HEAD_INIT(links_list);
+> +static LIST_HEAD(links_list);
+>   static DEFINE_MUTEX(links_list_lock);
+>   
+>   enum xsl_response {
