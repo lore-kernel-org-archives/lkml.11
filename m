@@ -2,80 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 627D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16AD5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232897AbiBIMR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:17:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57652 "EHLO
+        id S232903AbiBIMRg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:17:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232530AbiBIMPg (ORCPT
+        with ESMTP id S233654AbiBIMQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:15:36 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98EB7C014F3B;
-        Wed,  9 Feb 2022 04:01:15 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id CEDA51EC00F8;
-        Wed,  9 Feb 2022 13:01:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644408069;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XkJ1KUdpW9iJEEP+6FMRKN1HXiI8x6PSyvRRxME19yw=;
-        b=gSTAcCWSnXVzRquK6CCuV354Ta3+IffxeW2vxCLqnyQvVc2lYRGJPB4iiSSMCLcB2msUiJ
-        DF2OLP3wuUM1A7oxejUygpwemyqjG9k8E2I0C15DTP1pfNBPXy8X/IEItOMkdFU4h2PUJ/
-        peP+4iFqOtaOrfr1kx/4/nyA9w6xXp8=
-Date:   Wed, 9 Feb 2022 13:01:09 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     lostway <lostway@zju.edu.cn>
-Cc:     "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "tony.luck@intel.com" <tony.luck@intel.com>
-Subject: Re: [PATCH v2] RAS: Report ARM processor information to userspace
-Message-ID: <YgOtBcxNU3Hi4k3O@zn.tnic>
-References: <20220126030906.56765-1-lostway@zju.edu.cn>
- <Yfl83r+gPOe9vzed@FVFF77S0Q05N>
- <185FED5B-4C49-4DE1-95D8-594E81B57E31@zju.edu.cn>
+        Wed, 9 Feb 2022 07:16:44 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6808EDF48F0D
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 04:04:02 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id f17so3698514wrx.1
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 04:04:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LuQ+t7txbXIU7O+D0qY3XOtYqJoUWTZj2gqA0c0RP1Y=;
+        b=V2NqRr+XhvuOeZj+iuQVuPoiizd+ZriYPR7aMPdWrE3EWBIyxJGVJzC4vJ0UpFj4DX
+         LIRcNuILzPkd/h7V5szegEdmHFmifdGrnVJdZlbvO7bybg6vnJKBwx9lvd3Zm/FhSOnT
+         lyIgubYyaTBAFy2KasuqKboyHAMOf0u9UFcb/GnzdTH6tYF5Qfk3Y0qIVJ+/8p80vpk1
+         XvxqvLUh3NvLBovLbV/BkoIvQs0jQlwiUTWdHZ1ImCa3BOsr0iN6kSVE3jY8Ccr9pvuR
+         pizhiOGfzD7TUksGiJygVa+714ibkvQmXcMYE7u5oBMJ4x44OBbDJXyJp4Nh2MZ07MuI
+         fdEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LuQ+t7txbXIU7O+D0qY3XOtYqJoUWTZj2gqA0c0RP1Y=;
+        b=wXh7OFJVuVoR78gC6ABf49p4hW+h8seL9DxHDw3LZqvjq0/It7I+SZsUV1tn+DG6f/
+         koykwRYxCnAJNmT9yPpqfLtFy2KhU8ZzTDu4LJ7VrfcjgdzihqXPhoY386FQRJRuL4K1
+         zb6SOqyacqsGK1BLW157tK6Ke5whhEbAUDe15V7nY4TnvddThXDS/J3dPyJ8ZLqZd/Yd
+         nF6192nkABuFq4j31CU49ioz2kJFsaGQ5sW2yTmqrXucryJPAFG9UaxK4LZD33BTSeM0
+         rX7DLRK9gVgUACiSsQcg4Hiot50Jd/nooRth7cIY11DMXDyR/Ys3ycXll/38MHR0SfHw
+         3EPQ==
+X-Gm-Message-State: AOAM533tSgmuvPTQ0NpoHuWnjkdoHJzHcTDXiusZiMyWDX/xb+TO+I8t
+        1V9pYxczWekJKq3VYKHLyJyYdkbnnFupQQ==
+X-Google-Smtp-Source: ABdhPJwQMhdX+Yxksxzbkh3C+D0HAP+5HMpyzJPfMag6iT/NNqvVOLmInZKwunnyDJNHU+/k4cxKDQ==
+X-Received: by 2002:a5d:6d88:: with SMTP id l8mr1781243wrs.458.1644408241021;
+        Wed, 09 Feb 2022 04:04:01 -0800 (PST)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id l26sm1062989wms.24.2022.02.09.04.04.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 04:04:00 -0800 (PST)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     heiko@sntech.de, krzysztof.kozlowski@canonical.com,
+        robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v2] ARM: dts: rk3288: fix a typo on crypto-controller
+Date:   Wed,  9 Feb 2022 12:03:55 +0000
+Message-Id: <20220209120355.1985707-1-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <185FED5B-4C49-4DE1-95D8-594E81B57E31@zju.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 09:41:50AM +0800, lostway wrote:
-> <html>
-> <head>
->     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
-> </head>
-> <body>
-> <style>
->     font{
->         line-height: 1.6;
->     }
->     ul,ol{
->         padding-left: 20px;
->         list-style-position: inside;
->     }
-> </style>
-> <div style = 'font-family:微软雅黑,Verdana,&quot;Microsoft Yahei&quot;,SimSun,sans-serif;font-size:14px; line-height:1.6;'>
+crypto-controller had a typo, fix it.
+In the same time, rename it to just crypto
 
-...
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+---
+Change since v1:
+- rename crypto-controller to crypto
 
-You need to fix your mail client not to send html crap:
+ arch/arm/boot/dts/rk3288.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Documentation/process/email-clients.rst
-
+diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+index aaaa61875701..45a9d9b908d2 100644
+--- a/arch/arm/boot/dts/rk3288.dtsi
++++ b/arch/arm/boot/dts/rk3288.dtsi
+@@ -971,7 +971,7 @@ i2s: i2s@ff890000 {
+ 		status = "disabled";
+ 	};
+ 
+-	crypto: cypto-controller@ff8a0000 {
++	crypto: crypto@ff8a0000 {
+ 		compatible = "rockchip,rk3288-crypto";
+ 		reg = <0x0 0xff8a0000 0x0 0x4000>;
+ 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
