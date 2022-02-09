@@ -2,76 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D09C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:48:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF5D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233855AbiBIVsA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 16:48:00 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59714 "EHLO
+        id S233988AbiBIVsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 16:48:12 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233832AbiBIVr5 (ORCPT
+        with ESMTP id S233949AbiBIVsK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 16:47:57 -0500
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D135DF28AD4;
-        Wed,  9 Feb 2022 13:47:59 -0800 (PST)
-Received: by mail-oi1-f178.google.com with SMTP id ay7so3946947oib.8;
-        Wed, 09 Feb 2022 13:47:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kGhpnlTbtjYsSq5zazJhFiflsCrF3KnRdsz6OiouwQI=;
-        b=qamdzFMud5U9X6Dh77p2qVmFHBbrbG/ER9S6KqlKMHeR0MNqurKVMROqexQf+kgO/c
-         yAvim34/YW2Ufteo5NjJWe+l7+duN3Y/FBpjOdsQHgqqIIh7PtLgHZmsj+5Wiuz8bvyK
-         2xH1ElYu8L7ZOtO9eXE3O28sgfceL4SfDqNb2QHSZMEbw7xoTemWKymTs3QxOwllKHlu
-         zTQ4z2qbMAJGdcBiPca1pTwszQx0keIfg6CKPATfT+0qzdz9+QGMNF7kODc0jy2peSLb
-         /tRuyg+2H3nM61d8PrYrtZh29O770O1KecqNJXQg+2Y9RHrdVxbyKy7egXPxb667LW9K
-         rpdA==
-X-Gm-Message-State: AOAM531DLmSSGYfft3JP46BoAXYOUumN4c5RrU+8qq7Wo5Pk+FrmKsgY
-        nDxasUlz4cW6jy5pLyz5tw==
-X-Google-Smtp-Source: ABdhPJwR4IULQkZYDWpmYiVNM6/vuOdPEw5tt9Mv3+Z+92V+CtzPO1gVjBgSpEoPjs579T2nPQK4Mw==
-X-Received: by 2002:a05:6808:1304:: with SMTP id y4mr2082906oiv.29.1644443278920;
-        Wed, 09 Feb 2022 13:47:58 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id bc36sm7314731oob.45.2022.02.09.13.47.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 13:47:58 -0800 (PST)
-Received: (nullmailer pid 981849 invoked by uid 1000);
-        Wed, 09 Feb 2022 21:47:57 -0000
-Date:   Wed, 9 Feb 2022 15:47:57 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     linux-arm-kernel@lists.infradead.org, kuba@kernel.org,
-        robh+dt@kernel.org, linus.walleij@linaro.org,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        ulli.kroll@googlemail.com
-Subject: Re: [PATCH v2] dt-bindings: net: convert net/cortina,gemini-ethernet
- to yaml
-Message-ID: <YgQ2jTOI96In6tAs@robh.at.kernel.org>
-References: <20220201144940.2488782-1-clabbe@baylibre.com>
+        Wed, 9 Feb 2022 16:48:10 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C6AC03BFF4
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 13:48:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644443293; x=1675979293;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=V5OdOIqmi/bDeET25hsIIG70BcxGdiVQ/wOGG3RvjWs=;
+  b=RxsgkOfkh3nWUispqOb1gdzUi6dIyn2IZHnitLvq/Quy8VjliuthUBCY
+   33KPZs3FuO4quwjnKcC/SCyChce43IRHpdAf5v99LpeWKSi+kG7aGRY5i
+   3LR+zBNYKbIlTRYMULL0irUTep90q40HaKELFNZulC/QZA8kxPhqzZuVb
+   GZpDxK8kEoXSFqF7ta/0ISUgGkxVAzWmYB4SEHnyXxPky+sNT0Zuyg9AS
+   ug0QWHtXjxi7v/dLtlD4CvIzA0p27Ad7NTvpE61aGE1XDLg6vtncXc0K0
+   wPbx2hKidQk0FZXqW3lzGBddkGJS4Gn1cCh9Ho5Gznj5K0M9RM2OqTmuX
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="246928718"
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="246928718"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 13:48:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="629443306"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 09 Feb 2022 13:48:11 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nHuot-0002JE-7I; Wed, 09 Feb 2022 21:48:11 +0000
+Date:   Thu, 10 Feb 2022 05:47:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Liu Yi L <yi.l.liu@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [luxis1999-iommufd:iommufd-v5.17-rc1 14/28] ERROR: modpost:
+ "vfio_platform_ops" [drivers/vfio/platform/vfio-amba.ko] undefined!
+Message-ID: <202202100548.m45ZFnHj-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220201144940.2488782-1-clabbe@baylibre.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 01 Feb 2022 14:49:40 +0000, Corentin Labbe wrote:
-> Converts net/cortina,gemini-ethernet.txt to yaml
-> This permits to detect some missing properties like interrupts
-> 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
-> Change since v1:
-> - fixed report done by Rob's bot
->  .../bindings/net/cortina,gemini-ethernet.txt  |  92 ------------
->  .../bindings/net/cortina,gemini-ethernet.yaml | 137 ++++++++++++++++++
->  2 files changed, 137 insertions(+), 92 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
->  create mode 100644 Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
-> 
+tree:   https://github.com/luxis1999/iommufd iommufd-v5.17-rc1
+head:   ebf68af0385d0d5c209e63e8065d31db938275d8
+commit: 92b20d75d7b30d1c70dd13b1be97a7bb00d5910b [14/28] vifo_platform: Use vfio_alloc/put_device()
+config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220210/202202100548.m45ZFnHj-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/luxis1999/iommufd/commit/92b20d75d7b30d1c70dd13b1be97a7bb00d5910b
+        git remote add luxis1999-iommufd https://github.com/luxis1999/iommufd
+        git fetch --no-tags luxis1999-iommufd iommufd-v5.17-rc1
+        git checkout 92b20d75d7b30d1c70dd13b1be97a7bb00d5910b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
 
-Applied, thanks!
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "vfio_platform_ops" [drivers/vfio/platform/vfio-amba.ko] undefined!
+ERROR: modpost: "vfio_platform_ops" [drivers/vfio/platform/vfio-platform.ko] undefined!
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
