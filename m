@@ -2,187 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE00FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02569C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236851AbiBIQZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:25:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        id S231720AbiBIQ0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:26:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236836AbiBIQZi (ORCPT
+        with ESMTP id S236838AbiBIQ0F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:25:38 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2910C05CB98;
-        Wed,  9 Feb 2022 08:25:39 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: detlev)
-        with ESMTPSA id 5F18F1F437E9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644423938;
-        bh=pBEyIXjpERGXALEgiE/cj9eaQwG8uWLOPvKmRjcAppI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YU3f9cxu/cubduUwHyPaXqJfmVzO1AIBcw7ukZIUY2PnYUiJc4a6fVTFZmmhAtM/U
-         3xM1jLqaKpzjA+yO7MriBzSGEcwCE6eKiFdCq9kYM8AaJZrba/YWwzvAb5UvmGucpA
-         XbnFXA5ZkhkJAf4HCnqS8VBl+j0GlLRco7fwatR9Tzy0B1efxmcZPzN4ygD3isokdG
-         KwkEYw04gGc9chNaQNV1GDynM5FJevzxjKB0h6DHJA9SzCiJHRJWtIIzlT2as8PSf5
-         4TrowIUvpDZja4RiiYuQb6OjoTGtxLopbGrOAslfBMamBk02o6odXK+hf+Hbh0R8mD
-         LppKl0N5NNbhw==
-From:   Detlev Casanova <detlev.casanova@collabora.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Detlev Casanova <detlev.casanova@collabora.com>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org (maintainer:ARM AND ARM64 SoC SUB-ARCHITECTURES (COMMON
-        PARTS)), Rob Herring <robh+dt@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM
-        BCM281XX/BCM11XXX/BCM216XX ARM ARCHITE...),
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM AND ARM64 SoC
-        SUB-ARCHITECTURES (COMMON PARTS)),
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        linux-rpi-kernel@lists.infradead.org (moderated list:BROADCOM
-        BCM2711/BCM2835 ARM ARCHITECTURE)
-Subject: [PATCH 1/2] ARM: dts: bcm2*: Demux i2c0 with a pinctrl
-Date:   Wed,  9 Feb 2022 11:25:11 -0500
-Message-Id: <20220209162515.706729-2-detlev.casanova@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220209162515.706729-1-detlev.casanova@collabora.com>
-References: <20220209162515.706729-1-detlev.casanova@collabora.com>
+        Wed, 9 Feb 2022 11:26:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 227A1C0613C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:26:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644423967;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=T9tzfRXX9aIJ3ddS/ncBHLRQCL4mho0HZX6VdWoJ+48=;
+        b=GNnxncPrtewnvqLHH/PbSOGrwX7X2CZU5xoxbnbRUZd3nj4a0lvpR1KGw8cJZTquWSfx7A
+        zvQkfxF6OQVraHGj6GRXrUOLRqB4bw8BQQTjXl3Gbv7K/WSXddqzPbu1+exjh3haEWHVfu
+        OOnnGQ1f7f5N5RAf7gG8ktNqcPyDZOA=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-319-qUmzi6XTOlO5qdTvDrJk7w-1; Wed, 09 Feb 2022 11:26:04 -0500
+X-MC-Unique: qUmzi6XTOlO5qdTvDrJk7w-1
+Received: by mail-wr1-f71.google.com with SMTP id j8-20020adfc688000000b001e3322ced69so1296613wrg.13
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 08:26:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=T9tzfRXX9aIJ3ddS/ncBHLRQCL4mho0HZX6VdWoJ+48=;
+        b=a6WZN+qDne2K1hji1diTst5236qO3fog7tsoWVPCQiNHkYrGXiJOcRwT3yTg8IIzQX
+         CSmHofGKioS4mnU2CXdO6Y7O26GuYkH/ZxjmsTYTtuXYGfnon+JfsWx8LccIMQYAu1TD
+         7QUdvsGZBx3XCjN5bMFAxeoTVqUkWeyy0XT03dpSBCrvGryCfEW4hmDOza5Oj5T5gjoQ
+         mHQ+8djl5H5Im9mc2L0cEfLpi4929g/mWrdvoJDHHJbMYlyn1OiqBvJ0fjr6IiK1PIX+
+         31KwOGR+sHe5M2j8QVkGkGEgUjhK01A+eUSE1l6YrGKAIlU4f0Za9hg3q6xDVuSWOQAG
+         j4IA==
+X-Gm-Message-State: AOAM5325C3gi2B/A8ElzV2jOaXrslFhPNLn82GNIH9s18YD6GYldSf+T
+        Fa1k+rgwmlQxFSns0zWnXdMlZYuhM4C4SmE0/nlZDLYll9PENnh4okM1iB7alvX8744ji223Trp
+        iro3LP6mHVmJjXLRe6BuYqSy5
+X-Received: by 2002:a05:600c:3549:: with SMTP id i9mr2759711wmq.23.1644423962957;
+        Wed, 09 Feb 2022 08:26:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzKaf2S5vQEeUlpONN8Lw24iZWfuG6UcC4phWOJMjQWloR3GX0YNxop48TsjVq5kgNCNsqZBA==
+X-Received: by 2002:a05:600c:3549:: with SMTP id i9mr2759672wmq.23.1644423962457;
+        Wed, 09 Feb 2022 08:26:02 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id p14sm17885082wrr.7.2022.02.09.08.26.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 08:26:02 -0800 (PST)
+Message-ID: <406152d8-13e4-de8a-9542-bf1d96dbab0a@redhat.com>
+Date:   Wed, 9 Feb 2022 17:26:00 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 3/7] drm: Add driver for Solomon SSD130X OLED displays
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-fbdev@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        linux-pwm@vger.kernel.org
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <20220209090314.2511959-4-javierm@redhat.com>
+ <YgPZ3W0e7N7JQ1dT@smile.fi.intel.com>
+ <e29eaccc-863a-21d4-e669-0b708604d723@redhat.com>
+ <YgPnE0yj0Y0OJxq6@smile.fi.intel.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <YgPnE0yj0Y0OJxq6@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c0 device has 2 different busses controlled by a pinctrl.
-This commit separates the device node into 2 i2c devices:
- * pin 0: Base i2c bus
- * pin 44: DSI i2c bus
+On 2/9/22 17:08, Andy Shevchenko wrote:
 
-i2c0 is renamed to i2c0if so that device-trees referencing i2c0 don't
-break and use the i2c0 node defined in i2c0mux node.
+[snip]
 
-i2c_csi_dsi can be used to control devices via the DSI i2c bus, used for
-DSI displays.
+>> Agreed, as mentioned I'll give it a try to sending all the data as a
+>> bulk write with regmap.
+> 
+> Ah, it might be that it should be noinc bulk op. Need to be checked anyway.
+>
 
-Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
----
- arch/arm/boot/dts/bcm2711-rpi-4-b.dts         |  1 +
- arch/arm/boot/dts/bcm2711.dtsi                |  2 +-
- arch/arm/boot/dts/bcm2835-rpi.dtsi            |  9 ++++---
- .../boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi    |  4 +++
- arch/arm/boot/dts/bcm283x.dtsi                | 26 ++++++++++++++++++-
- 5 files changed, 37 insertions(+), 5 deletions(-)
- create mode 100644 arch/arm/boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi
+Yeah, I'll give it a try for v4. Let's see how it goes.
 
-diff --git a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-index 4432412044de..5dcce58817e6 100644
---- a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-+++ b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-@@ -4,6 +4,7 @@
- #include "bcm2711-rpi.dtsi"
- #include "bcm283x-rpi-usb-peripheral.dtsi"
- #include "bcm283x-rpi-wifi-bt.dtsi"
-+#include "bcm283x-rpi-i2c0mux_0_44.dtsi"
+[snip]
+
+>>>
+>>> A-ha, why not in the callee?
+>>>
+>>
+>> I think is easier to read when doing it in the caller, specially since there
+>> is only a single call. Than calling it unconditionally and making it a no-op
+>> if there isn't a reset GPIO.
+> 
+> It doesn't matter where the check is and checking that in the callee seems
+> better as it relies on the reset functionality. Caller in such case shouldn't
+> even think if it's supported or not, not their business.
+>
+
+Ok, no strong opinions really so I will change it.
  
- / {
- 	compatible = "raspberrypi,4-model-b", "brcm,bcm2711";
-diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
-index 3b60297af7f6..bf6e8251c2c7 100644
---- a/arch/arm/boot/dts/bcm2711.dtsi
-+++ b/arch/arm/boot/dts/bcm2711.dtsi
-@@ -1037,7 +1037,7 @@ &cma {
- 	alloc-ranges = <0x0 0x00000000 0x40000000>;
- };
- 
--&i2c0 {
-+&i2c0if {
- 	compatible = "brcm,bcm2711-i2c", "brcm,bcm2835-i2c";
- 	interrupts = <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>;
- };
-diff --git a/arch/arm/boot/dts/bcm2835-rpi.dtsi b/arch/arm/boot/dts/bcm2835-rpi.dtsi
-index 87ddcad76083..1e38f9f0e80e 100644
---- a/arch/arm/boot/dts/bcm2835-rpi.dtsi
-+++ b/arch/arm/boot/dts/bcm2835-rpi.dtsi
-@@ -49,13 +49,16 @@ alt0: alt0 {
- 	};
- };
- 
--&i2c0 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&i2c0_gpio0>;
-+&i2c0if {
- 	status = "okay";
- 	clock-frequency = <100000>;
- };
- 
-+&i2c0mux {
-+	pinctrl-0 = <&i2c0_gpio0>;
-+	status = "okay";
-+};
-+
- &i2c1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&i2c1_gpio2>;
-diff --git a/arch/arm/boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi b/arch/arm/boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi
-new file mode 100644
-index 000000000000..119946d878db
---- /dev/null
-+++ b/arch/arm/boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi
-@@ -0,0 +1,4 @@
-+&i2c0mux {
-+	pinctrl-0 = <&i2c0_gpio0>;
-+	pinctrl-1 = <&i2c0_gpio44>;
-+};
-diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
-index a3e06b680947..06d04cde52b9 100644
---- a/arch/arm/boot/dts/bcm283x.dtsi
-+++ b/arch/arm/boot/dts/bcm283x.dtsi
-@@ -334,7 +334,7 @@ spi: spi@7e204000 {
- 			status = "disabled";
- 		};
- 
--		i2c0: i2c@7e205000 {
-+		i2c0if: i2c@7e205000 {
- 			compatible = "brcm,bcm2835-i2c";
- 			reg = <0x7e205000 0x200>;
- 			interrupts = <2 21>;
-@@ -344,6 +344,30 @@ i2c0: i2c@7e205000 {
- 			status = "disabled";
- 		};
- 
-+		i2c0mux: i2c0mux {
-+			compatible = "i2c-mux-pinctrl";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			i2c-parent = <&i2c0if>;
-+
-+			pinctrl-names = "i2c0", "i2c_csi_dsi";
-+
-+			status = "disabled";
-+
-+			i2c0: i2c@0 {
-+				reg = <0>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+			};
-+
-+			i2c_csi_dsi: i2c@1 {
-+				reg = <1>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+			};
-+		};
-+
- 		dpi: dpi@7e208000 {
- 			compatible = "brcm,bcm2835-dpi";
- 			reg = <0x7e208000 0x8c>;
+> Last, but not least, if you think of power management, you probably want to
+> assert reset there as well, means additional checks?
+> 
+>>>> +		ssd130x_reset(ssd130x);
+> 
+> ...
+> 
+>>>> +	if (IS_ERR(ssd130x)) {
+>>>
+>>>> +		dev_err(dev, "Failed to allocate DRM device: %d\n", ret);
+>>>> +		return ssd130x;
+>>>
+>>> return dev_err_probe() ?
+>>>
+>>
+>> No, because this isn't a resource provided by other driver. If this
+>> failed is mostly due a memory allocation error.
+> 
+> Is it a problem? dev_err_probe() got update in the documentation explaining
+> that's fine to call even in such cases. The outcome is less amount of LOCs.
+>
+
+Thanks for pointing out. In my mind that was a way to denote in the code that
+a probe deferral was possible and that the message should be debug but now I
+went and read the comment as you suggested:
+
+ * Note that it is deemed acceptable to use this function for error
+ * prints during probe even if the @err is known to never be -EPROBE_DEFER.
+ * The benefit compared to a normal dev_err() is the standardized format
+ * of the error code and the fact that the error code is returned
+
+So you are correct and using it is preferred even when no probe defer error
+will be returned. I'll do that here and in the other places you mentioned.
+
+[snip] 
+
+>>> I have feelings that half of my comments were ignored...
+>>> Maybe I missed the discussion(s).
+>>
+>> I assure you that no comments from you or anyone were ignored.
+>>
+>> I may had missed something but if if I did was a mistake and
+>> not intentionally. I keep a changelog for each revision in
+>> the patches with the name of the reviewer so people can check
+>> and compare.
+>>
+>> If something that you mentioned is not there, I apologize and
+>> please point me out so I can address it in v4.
+> 
+> It's just a feeling, because I repeating that dev_err_probe() a lot :-)
+> Nevertheless, now I see at least your point why you went that way.
+> But see my comments on it.
+
+And I did use dev_err_probe() in the places that could cause a probe
+deferral so it wasn't (completely) ignored.
+
+On that topic, I even typed a SPI driver because of your feedback :)
+
+Best regards,
 -- 
-2.35.1
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
