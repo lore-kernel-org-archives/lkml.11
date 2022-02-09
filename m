@@ -2,150 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC9DC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79AF2C3525C
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345382AbiBICpB (ORCPT
+        id S1344899AbiBICo4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:45:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
+        Tue, 8 Feb 2022 21:44:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233796AbiBIChl (ORCPT
+        with ESMTP id S241003AbiBIAsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:37:41 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92866C061355;
-        Tue,  8 Feb 2022 18:37:40 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id z18so606374iln.2;
-        Tue, 08 Feb 2022 18:37:40 -0800 (PST)
+        Tue, 8 Feb 2022 19:48:09 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544AFC061576;
+        Tue,  8 Feb 2022 16:48:08 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id y5so1405060pfe.4;
+        Tue, 08 Feb 2022 16:48:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=J2A+sjZnS5cRMoX3xrf2NiPs/KWZ3vKvmI0duGN4ktY=;
-        b=S8cMgrKplxI50Aumzypa+57fs1D2jx+SSXm19HgRZ1KkM/J7s5Bit0ZDnxpGQkfnCm
-         kYhc1+m+fPk5w64tsFAJlyRtiOh+6rK6xJjVIkzj2Fg3quIEHYo9nhCHyX6ny7wTlXoA
-         rw6++R8VC+iZXy9c8xTS+BfttUupCo5Tm/0n1/FnsFsMSV48dLxUuse6+unLrf/woFzM
-         I/j7wszoIl0+JhmQzkGjEW9NmiZ1Mj1TzCU16xa1HQfLXkXEmLA4RjnUrMWp8b9oYjLI
-         Tto1xS1Yy9Qyeqa/+vPUi/kIsh+PE7GvUcFecVTc55q/JR3muPZrIp1UH4qZmeV9WGtn
-         yE/Q==
+        bh=DxejLyJZOr+Wj9kJP5Bh3+D+UCu71YvuxzkpYt5n3nQ=;
+        b=ArHH/2BI46pSXLM93jBgG29wqGQ8UCztyzoxY8wYh+tDQ+LWbFQO4mEOozYkwuhLD0
+         ct1V56llS6x6hlyWQWOT/Mrs2LCthjkG66S6QankTK071FrAmUZbYc5H1WMwk4HTKG0x
+         JQvJhNgc13yjToQM4r0cL9SH9qrG2oON+rEge6jK7WYIpaqT3AlnZsSU7qgDEXzfpSMz
+         3jXCd+k5ob9o9VE2/RHIvYLL2jgm0DLwp0LSZYWzF4+RKmmt0oX3u44EvSRmR6hxRWLC
+         0rPspknfR4ed4C8X3m0lpDx+522dO01k9EpahIaQuIwMnL2XypDlXwmYWAkSxnjCmhjI
+         laWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=J2A+sjZnS5cRMoX3xrf2NiPs/KWZ3vKvmI0duGN4ktY=;
-        b=b2r5TZ6pVRShWYdIc0d3NMNm3EH6kTD2FjGrT5CG6sDHfE8I47AnCIVicLC2zw+Ech
-         tW98Eq9DBNye0fKzt+aX+YB3Cye4gS2qlMpg3aTJEjCcpyLxUMFbCSbnVTG6VvBC1J5t
-         w8OtPs93o/GUZKNVIa+3/nRvZybyH+SJGZH5Itg77WKZEm/vHBi9To8/I7n6xOkVUZht
-         vA6dMFb760e+KJ8TxmBL99QkbgWEfWRV4IhSAKhfaQx/ca8EekJCKzExsXBdp0YmH+6G
-         GVUbM9r+Rxt4zNXWvvqw6RpP+fkr1i1ag6wRzf3hD22JwRPOldX+On8TigBAauqC/vvt
-         dG2w==
-X-Gm-Message-State: AOAM533R+BBHY5N88LUy69AGxXwGQcgQx2/EksWPpRc2fM/He8MzEXi3
-        sFQ5wq8x9k2Ou5JuEe0IdGQ=
-X-Google-Smtp-Source: ABdhPJzO/bwJZAuNb/YObVBnUoezD2/wuk46qw3zm3oPQ0zePvcUEqZbtucXf7YxO+GRY3zW3EEJ8Q==
-X-Received: by 2002:a05:6e02:1aa2:: with SMTP id l2mr65090ilv.111.1644374258027;
-        Tue, 08 Feb 2022 18:37:38 -0800 (PST)
-Received: from auth2-smtp.messagingengine.com (auth2-smtp.messagingengine.com. [66.111.4.228])
-        by smtp.gmail.com with ESMTPSA id p5sm8957352iof.50.2022.02.08.18.37.36
+        bh=DxejLyJZOr+Wj9kJP5Bh3+D+UCu71YvuxzkpYt5n3nQ=;
+        b=UXRQIHHkYyROjIQK2bjT+JXKFmvfEGds3R6839psyHFgePfEFobjhn8kSClioe3igm
+         f+bF22p1uZLm0+Der4VLYW0u3VGft8EnCWPKqmq65tipyfkak0zLyCYiZ1s+HAJ4Txr/
+         ve72MbWH9SyWwaGkgKbdx0CJ/JBQXqRcLfruzjyuXn8GC7yJNGr4p/Y9jtdmyQtcPWiM
+         VZl8OX7Tew4J2ye+Uojh3+LTaHVs9a+iI1n+hdjJHjD7xcaPXe9SBnD5Q8KgiAMtWgFa
+         KEPTNsfyu7EZJq2Yss70bTngfLBocAbL/OOkW2N4211q3q0jsL/0nx9ctHz8VngRApd3
+         KHuw==
+X-Gm-Message-State: AOAM531hd1nbpNwXVIVY+diJc8nx5ytiLSVFUeulao8ya/nKfl32T1yg
+        3YVZzpkfvOiU9+zLEY9pv34=
+X-Google-Smtp-Source: ABdhPJzphsSMkiPhojvBatZrHfBuu0GRELRnZ5kBq4wN8yungzUl2GYKsMC8I3TevIAcEVFsPd27dA==
+X-Received: by 2002:a63:914b:: with SMTP id l72mr2989198pge.223.1644367687889;
+        Tue, 08 Feb 2022 16:48:07 -0800 (PST)
+Received: from localhost.localdomain (192.243.120.166.16clouds.com. [192.243.120.166])
+        by smtp.gmail.com with ESMTPSA id t9sm3826518pjg.44.2022.02.08.16.48.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 18:37:37 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 1FF9227C0054;
-        Tue,  8 Feb 2022 21:37:35 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Tue, 08 Feb 2022 21:37:36 -0500
-X-ME-Sender: <xms:7ygDYjr7dx3TR8Q-fRFbaegqjzVPWZMZYv2TxueDedGvDmEB85KdNg>
-    <xme:7ygDYtovOoWQe4OCsCAFASQR92NIDYQg-14X3R6QIWN8AMnEXspcO8N2PITUvKA4B
-    -Wa_n7t-oGWnUiTfw>
-X-ME-Received: <xmr:7ygDYgOUHCE7QkWmVsKloXRIP6mF-OlH5D6NKGf2yQjj76ZuwOyFf-gB>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheekgdegiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepuehoqhhunhcuhfgv
-    nhhguceosghoqhhunhdrfhgvnhhgsehgmhgrihhlrdgtohhmqeenucggtffrrghtthgvrh
-    hnpeeijefhledvtdegudfhffeugeetveeluefgkeevhfeuudeuudfgveevhfetvdeuvden
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegsohhquh
-    hnodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdeiledvgeehtdeigedqudej
-    jeekheehhedvqdgsohhquhhnrdhfvghngheppehgmhgrihhlrdgtohhmsehfihigmhgvrd
-    hnrghmvg
-X-ME-Proxy: <xmx:7ygDYm4jzRc-M5hmb86t7Mbohn9y40_vJq62PExmC7lsAak20b8GkQ>
-    <xmx:7ygDYi6u2LkEKybkab_lWDVOdr1FwqgUmFS-VggvsKwDY_cHGhNmyQ>
-    <xmx:7ygDYugZDsVYd2Y2Qy9EzVc0T99jB1AbgXPICSajc8Ksz0ZHsxl6Qg>
-    <xmx:7ygDYiz5HXC2wyrtVIbrimxH8rIlMSDm28FHsgwvLqgK9gg7YVQAhE4ZOqc>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 8 Feb 2022 21:37:34 -0500 (EST)
-From:   Boqun Feng <boqun.feng@gmail.com>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Wei Liu <wei.liu@kernel.org>
-Cc:     Sunil Muthuswamy <sunilmut@linux.microsoft.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC PATCH] PCI: hv: Avoid the retarget interrupt hypercall in irq_unmask() on ARM64
-Date:   Wed,  9 Feb 2022 10:37:20 +0800
-Message-Id: <20220209023722.2866009-1-boqun.feng@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 08 Feb 2022 16:48:07 -0800 (PST)
+From:   davidcomponentone@gmail.com
+To:     jejb@linux.ibm.com
+Cc:     davidcomponentone@gmail.com, martin.petersen@oracle.com,
+        yang.guang5@zte.com.cn, bvanassche@acm.org,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] scsi: arcmsr: replace snprintf with sysfs_emit
+Date:   Wed,  9 Feb 2022 08:47:55 +0800
+Message-Id: <1c5ade32e6e60c94dd357c4a159df64a7e311459.1644283712.git.yang.guang5@zte.com.cn>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On ARM64 Hyper-V guests, SPIs are used for the interrupts of virtual PCI
-devices, and SPIs can be managed directly via GICD registers. Therefore
-the retarget interrupt hypercall is not needed on ARM64.
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-The retarget interrupt hypercall related code is now put in a helper
-function and only called on x86.
+coccinelle report:
+./drivers/scsi/arcmsr/arcmsr_attr.c:297:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:273:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:285:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:261:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:374:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:309:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:348:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:335:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:361:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/arcmsr/arcmsr_attr.c:322:8-16:
+WARNING: use scnprintf or sprintf
 
-Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
 ---
- drivers/pci/controller/pci-hyperv.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/scsi/arcmsr/arcmsr_attr.c | 30 ++++++++++--------------------
+ 1 file changed, 10 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index 20ea2ee330b8..80aa33ef5bf0 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1457,7 +1457,7 @@ static void hv_irq_mask(struct irq_data *data)
+diff --git a/drivers/scsi/arcmsr/arcmsr_attr.c b/drivers/scsi/arcmsr/arcmsr_attr.c
+index baeb5e795690..e66d761926e9 100644
+--- a/drivers/scsi/arcmsr/arcmsr_attr.c
++++ b/drivers/scsi/arcmsr/arcmsr_attr.c
+@@ -258,8 +258,7 @@ static ssize_t
+ arcmsr_attr_host_driver_version(struct device *dev,
+ 				struct device_attribute *attr, char *buf)
+ {
+-	return snprintf(buf, PAGE_SIZE,
+-			"%s\n",
++	return sysfs_emit(buf, "%s\n",
+ 			ARCMSR_DRIVER_VERSION);
  }
  
- /**
-- * hv_irq_unmask() - "Unmask" the IRQ by setting its current
-+ * __hv_irq_unmask() - "Unmask" the IRQ by setting its current
-  * affinity.
-  * @data:	Describes the IRQ
-  *
-@@ -1466,7 +1466,7 @@ static void hv_irq_mask(struct irq_data *data)
-  * is built out of this PCI bus's instance GUID and the function
-  * number of the device.
-  */
--static void hv_irq_unmask(struct irq_data *data)
-+static void __hv_irq_unmask(struct irq_data *data)
- {
- 	struct msi_desc *msi_desc = irq_data_get_msi_desc(data);
- 	struct hv_retarget_device_interrupt *params;
-@@ -1569,6 +1569,13 @@ static void hv_irq_unmask(struct irq_data *data)
- 	if (!hv_result_success(res) && hbus->state != hv_pcibus_removing)
- 		dev_err(&hbus->hdev->device,
- 			"%s() failed: %#llx", __func__, res);
-+}
-+
-+static void hv_irq_unmask(struct irq_data *data)
-+{
-+	/* Only use a hypercall on x86 */
-+	if (IS_ENABLED(CONFIG_X86))
-+		__hv_irq_unmask(data);
+@@ -270,8 +269,7 @@ arcmsr_attr_host_driver_posted_cmd(struct device *dev,
+ 	struct Scsi_Host *host = class_to_shost(dev);
+ 	struct AdapterControlBlock *acb =
+ 		(struct AdapterControlBlock *) host->hostdata;
+-	return snprintf(buf, PAGE_SIZE,
+-			"%4d\n",
++	return sysfs_emit(buf, "%4d\n",
+ 			atomic_read(&acb->ccboutstandingcount));
+ }
  
- 	if (data->parent_data->chip->irq_unmask)
- 		irq_chip_unmask_parent(data);
+@@ -282,8 +280,7 @@ arcmsr_attr_host_driver_reset(struct device *dev,
+ 	struct Scsi_Host *host = class_to_shost(dev);
+ 	struct AdapterControlBlock *acb =
+ 		(struct AdapterControlBlock *) host->hostdata;
+-	return snprintf(buf, PAGE_SIZE,
+-			"%4d\n",
++	return sysfs_emit(buf, "%4d\n",
+ 			acb->num_resets);
+ }
+ 
+@@ -294,8 +291,7 @@ arcmsr_attr_host_driver_abort(struct device *dev,
+ 	struct Scsi_Host *host = class_to_shost(dev);
+ 	struct AdapterControlBlock *acb =
+ 		(struct AdapterControlBlock *) host->hostdata;
+-	return snprintf(buf, PAGE_SIZE,
+-			"%4d\n",
++	return sysfs_emit(buf, "%4d\n",
+ 			acb->num_aborts);
+ }
+ 
+@@ -306,8 +302,7 @@ arcmsr_attr_host_fw_model(struct device *dev, struct device_attribute *attr,
+ 	struct Scsi_Host *host = class_to_shost(dev);
+ 	struct AdapterControlBlock *acb =
+ 		(struct AdapterControlBlock *) host->hostdata;
+-	return snprintf(buf, PAGE_SIZE,
+-			"%s\n",
++	return sysfs_emit(buf, "%s\n",
+ 			acb->firm_model);
+ }
+ 
+@@ -319,8 +314,7 @@ arcmsr_attr_host_fw_version(struct device *dev,
+ 	struct AdapterControlBlock *acb =
+ 			(struct AdapterControlBlock *) host->hostdata;
+ 
+-	return snprintf(buf, PAGE_SIZE,
+-			"%s\n",
++	return sysfs_emit(buf, "%s\n",
+ 			acb->firm_version);
+ }
+ 
+@@ -332,8 +326,7 @@ arcmsr_attr_host_fw_request_len(struct device *dev,
+ 	struct AdapterControlBlock *acb =
+ 		(struct AdapterControlBlock *) host->hostdata;
+ 
+-	return snprintf(buf, PAGE_SIZE,
+-			"%4d\n",
++	return sysfs_emit(buf, "%4d\n",
+ 			acb->firm_request_len);
+ }
+ 
+@@ -345,8 +338,7 @@ arcmsr_attr_host_fw_numbers_queue(struct device *dev,
+ 	struct AdapterControlBlock *acb =
+ 		(struct AdapterControlBlock *) host->hostdata;
+ 
+-	return snprintf(buf, PAGE_SIZE,
+-			"%4d\n",
++	return sysfs_emit(buf, "%4d\n",
+ 			acb->firm_numbers_queue);
+ }
+ 
+@@ -358,8 +350,7 @@ arcmsr_attr_host_fw_sdram_size(struct device *dev,
+ 	struct AdapterControlBlock *acb =
+ 		(struct AdapterControlBlock *) host->hostdata;
+ 
+-	return snprintf(buf, PAGE_SIZE,
+-			"%4d\n",
++	return sysfs_emit(buf, "%4d\n",
+ 			acb->firm_sdram_size);
+ }
+ 
+@@ -371,8 +362,7 @@ arcmsr_attr_host_fw_hd_channels(struct device *dev,
+ 	struct AdapterControlBlock *acb =
+ 		(struct AdapterControlBlock *) host->hostdata;
+ 
+-	return snprintf(buf, PAGE_SIZE,
+-			"%4d\n",
++	return sysfs_emit(buf, "%4d\n",
+ 			acb->firm_hd_channels);
+ }
+ 
 -- 
-2.35.1
+2.30.2
 
