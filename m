@@ -2,76 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE28C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5989C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237574AbiBIH2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 02:28:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
+        id S237581AbiBIHaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 02:30:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233163AbiBIH2F (ORCPT
+        with ESMTP id S229925AbiBIHaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 02:28:05 -0500
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B647FC0612C3
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 23:28:09 -0800 (PST)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 10BB668AFE; Wed,  9 Feb 2022 08:28:06 +0100 (CET)
-Date:   Wed, 9 Feb 2022 08:28:05 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Jani Nikula <jani.nikula@linux.intel.com>
-Cc:     Zhi Wang <zhi.wang.linux@gmail.com>, hch@lst.de, jgg@nvidia.com,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Vivi Rodrigo <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Terrence Xu <terrence.xu@intel.com>
-Subject: Re: [PATCH v6 1/3] i915/gvt: Introduce the mmio table to support
- VFIO new mdev API
-Message-ID: <20220209072805.GA9050@lst.de>
-References: <20220208111151.13115-1-zhi.a.wang@intel.com> <871r0dqtjf.fsf@intel.com>
+        Wed, 9 Feb 2022 02:30:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E57C0613CB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 23:30:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09565B81F16
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFA90C340E7;
+        Wed,  9 Feb 2022 07:30:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644391819;
+        bh=RXiGHfQUfMek72sc59qczlVrxf0dk4OSwG3q/IG71Lc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XdEBxd+8pVtQF637wjQxd60R9OhkV54fjWDkcCpX+dc89WHuWTFOqS54GH1NJ2VLr
+         P3cIkSzymv0FP0LuZenf+WaZwdDRSYsSgrSYSkOZtdTDEyZfwvXL5x1lUWqrnOegyF
+         +DlcdKMRbha3KJLOEu4Ki2LNL9YOOmuKLLnb2Mil9gn571DDx9bFOET1Hhtd/q06dk
+         Ii9T0hC4luctD3upyI5fVQNouyE5o2Bmza5h0xWB1DZvj6nvAuCrlfhdxN0hTdfQSt
+         jhJwFdAt39XcjWREh37ZC4ETNNwjYid9TDJX9JS2nQDy1ZWgu01Sb5PXjLsJ7exmer
+         LeWjI05R+wS3w==
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Karolina Drobnik <karolinadrobnik@gmail.com>, linux-mm@kvack.org
+Cc:     Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org
+Subject: Re: [PATCH v2 00/16] Introduce memblock simulator
+Date:   Wed,  9 Feb 2022 09:30:13 +0200
+Message-Id: <164439164219.933239.11298672957013820702.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1643796665.git.karolinadrobnik@gmail.com>
+References: <cover.1643796665.git.karolinadrobnik@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <871r0dqtjf.fsf@intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 05:15:00PM +0200, Jani Nikula wrote:
-> >  #ifdef CONFIG_DRM_I915_GVT
-> > +
-> > +#define D_BDW   (1 << 0)
-> > +#define D_SKL	(1 << 1)
-> > +#define D_KBL	(1 << 2)
-> > +#define D_BXT	(1 << 3)
-> > +#define D_CFL	(1 << 4)
-> > +
-> > +#define D_GEN9PLUS	(D_SKL | D_KBL | D_BXT | D_CFL)
-> > +#define D_GEN8PLUS	(D_BDW | D_SKL | D_KBL | D_BXT | D_CFL)
-> > +
-> > +#define D_SKL_PLUS	(D_SKL | D_KBL | D_BXT | D_CFL)
-> > +#define D_BDW_PLUS	(D_BDW | D_SKL | D_KBL | D_BXT | D_CFL)
-> > +
-> > +#define D_PRE_SKL	(D_BDW)
-> > +#define D_ALL		(D_BDW | D_SKL | D_KBL | D_BXT | D_CFL)
+On Wed, 2 Feb 2022 12:02:59 +0100, Karolina Drobnik wrote:
+> Memblock is a boot time memory allocator, which allows managing memory
+> regions before the actual memory management is initialized. Because it is
+> used so early during the booting process, testing and debugging it is
+> difficult. As memblock has few kernel dependencies, it is possible to
+> simulate its runtime behaviour in userspace after stubbing a couple of
+> structs and functions.
 > 
-> If these really need to be in a header in i915/, I think they need to be
-> longer with some namespacing or something. I do wish these could be
-> hidden though.
+> [...]
 
-I think we could actually kill them off entirely.  They are used as
-arguments to the macros that setup the mmio table.
+Applied, thanks!
 
-Thefunctions to build these tabls are already organized by families,
-so we'd need relatively few conditions to just build them the right
-way.  There also are some runtime checks in the callbacks, but they
-seem entirely superflous as far as I can tell.
+[01/16] tools: Move gfp.h and slab.h from radix-tree to lib
+        commit: 5a198c3f9b0bf67ede95c1c065b8584b55f3f87a
+[02/16] tools/include: Add phys_addr_t to types.h
+        commit: 4c12918f1086a824082a95f633f501c20ced63a4
+[03/16] tools/include: Add _RET_IP_ and math definitions to kernel.h
+        commit: 826c23e10ee43cc2e65203403e4b606de6388a1f
+[04/16] tools/include: Update atomic definitions
+        commit: 24af9a87ae817400feca949dd4bc94b5779e7481
+[05/16] tools/include: Add mm.h file
+        commit: bad5c52beb213369fa218c88bf2a84e36cf099d9
+[06/16] tools/include: Add cache.h stub
+        commit: f181e1e4009b5a4d52ac7a0870bfa4cb608da71d
+[07/16] tools/include: Add io.h stub
+        commit: e4e9850709f98c6880e289dd6c364ef08a856dea
+[08/16] tools/include: Add pfn.h stub
+        commit: e97362caf658718a63ff08fd557299c583b1f953
+[09/16] tools/include: Add debugfs.h stub
+        commit: ab1f3ebd520caae193725043c70f5762f197241f
+[10/16] memblock tests: Add skeleton of the memblock simulator
+        commit: 46ad27eef5220e3cda0fe263e8a9f785896f7aec
+[11/16] memblock tests: Add memblock reset function
+        commit: d047055e609e23190c4d46899816dc32a6cc297b
+[12/16] memblock tests: Add memblock_add tests
+        commit: c294f4708f0116a0e5a9695a471a0cafd05d2899
+[13/16] memblock tests: Add memblock_reserve tests
+        commit: 7ee605ba936534c001c2b4b0b6f5f925d86fef6b
+[14/16] memblock tests: Add memblock_remove tests
+        commit: ed7b7402f9c9f37fd29267ee3c9a6a3eca8871c0
+[15/16] memblock tests: Add memblock_add_node test
+        commit: be95b2fb44340a00065f3153d75ab6c797c23740
+[16/16] memblock tests: Add memblock_free tests
+        commit: 5b3408a4e5ff7609cc5b06da255b973ca0ab66d1
 
-Only the cmd parser is a bit messy.  So maybe we could keep these
-constants just for the cmd parser inside of gvt for now (and clean
-that up later) and remove them entirely from the mmio table.
+Best regards,
+-- 
+Sincerely yours,
+Mike.
+
