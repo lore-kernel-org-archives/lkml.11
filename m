@@ -2,92 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1971BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:45:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1499C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236768AbiBIIpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:45:36 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43882 "EHLO
+        id S242767AbiBIIqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:46:11 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236668AbiBIIp1 (ORCPT
+        with ESMTP id S242489AbiBIIp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:45:27 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB65CDF48F30;
-        Wed,  9 Feb 2022 00:45:21 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id p21so2325127ljn.13;
-        Wed, 09 Feb 2022 00:45:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=N7l+9Q3ZbYKnRblvKhK4ZFvRYFW4s+Ggznb+bCIOL84=;
-        b=P1ISCF7QFW/wQMWGWkkhsucsTYEDNNHdWyRWuGC/YcgrdYOCxU6uhL0SIQB6CuPNUt
-         Th88IPkkAETe7IKcuEdXS8ZvC5n2VYR4RmWdWoUSQZOi/PJN4hHLx/W2MRvcHF1s+jVC
-         iZ/2nIWYaaqxe7kmdpbL95TMEyJAzsg9u3vrfV9AcqdMph9Mw81bpoT2kQIjexEqu967
-         23cleR/wc8wivOfHBWuX4fGa37z3jRIngks/MCYwUaa2j5V2ZRqKLijhbRVajTV/lh7G
-         Nj7hUGxfcTJI9LmGAHjIq3SHpzM1XxcVq5XPk4g6bOI/CHAzvAuTis+toiuqp28HEhsK
-         axDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=N7l+9Q3ZbYKnRblvKhK4ZFvRYFW4s+Ggznb+bCIOL84=;
-        b=FC2mudEdJLIOdIzlgnorze1/EHFYjOUKW9ns9OKyAeJlsFw/oODcyszIHeBE9U4vBH
-         8J+cekVLz3AYQ2kUok/Q4suapZQ8XxFq4tBIDyUTCQBpk8s4HBoCxVYCwUlPVVJ04ujN
-         4PJATmgIXR85HtfVEnRjC9J0Uo413NTvlp5rlIaCaOx+ved7hBCluT7sYoGymaTzLUVf
-         Bo273IWDHhaQCoGLoI+itEI1F1YtYJBOey7BBP+jlxehp43ZRQSJJ3yOS3oTsds0mVDw
-         MuJ5pnlpQi7qqqZ7pPHQhPiUPiWdnI4drMNNqA6Ub9EXWs5USCgU5aRTBooetGE43zHw
-         a9SA==
-X-Gm-Message-State: AOAM5312+68/L5emO0zCglgk8I9vj/icCEG6WKwgqHQeWXR4gwGa6xUV
-        9Q60GnzAiNgucvGcNnFMt+gAS/TMKJZ+btVauUUDtA==
-X-Google-Smtp-Source: ABdhPJw0ar4oP76VUNH1nOGbF4UnZQE5IVHHEfbQkFW9UBNVqyZk6bDQ4CcTPRQjaKXHpCTPQ4gneg==
-X-Received: by 2002:a05:651c:1305:: with SMTP id u5mr807263lja.339.1644396279093;
-        Wed, 09 Feb 2022 00:44:39 -0800 (PST)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
-        by smtp.gmail.com with ESMTPSA id b8sm2265030lfb.22.2022.02.09.00.44.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 00:44:38 -0800 (PST)
-Message-ID: <62037ef6.1c69fb81.44b8c.90ab@mx.google.com>
-Date:   Wed, 09 Feb 2022 00:44:38 -0800 (PST)
-X-Google-Original-Date: Wed, 09 Feb 2022 08:44:33 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220207133903.595766086@linuxfoundation.org>
-Subject: RE: [PATCH 5.15 000/111] 5.15.22-rc2 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        Wed, 9 Feb 2022 03:45:59 -0500
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on20706.outbound.protection.outlook.com [IPv6:2a01:111:f400:feab::706])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA78C02B64C;
+        Wed,  9 Feb 2022 00:45:54 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iLsXvINHlzcRhUtQC1qlH3cNGs1wFhobVdQ+qC77ElAtc7knT3IuM+ggVyOTzIJa0/ikHH3kbZYL0MjVT/7ivkySlj739JSc2vWhkiftP7f6/c+boLTQ7lxoxaTRSuWq13NqGawSewYLDb2WhREoEGv8Mz0TmpuefRNFiuqvRra3suW+iGeRjQA44fBjrF5IqINOsftJtf5IT9biY39gSBMwWOZKCQKxLS3pvunaA+j41sD7qs98XxAqXMk0uvaFtxM82vEFxCBfhn+yj7VTymZ8kmubev1JrhJCYINEiQGPlrU0l/fRQKm1mtJZeyVlH9Hu1Tb6FRG2KojVpLTXIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Fy1pirMYwcJbp5qsalfXm+LghMjolsmI1AScfV6O3Pg=;
+ b=PO09So7MWbZldw++OlGrtJZFf77jBmui+cIrpwXeDDkICzXMjP7HntPIQbGjENyGenKQsfD7mxiEFdFSOPjnrt62CnD8mpmxSFj4dWR1vpm6Dbd5lQAxSzU/JDSng2XQmLbFy9K7FN8CojkbS03q4x5Ahk111dg47x+KJY63G2p5Srwdxl6zKdTM/mdAk48ymUBLVtbJwyViYrNOkwWLLaMqaX7IwfdjFDSryblH4ViFamgfQEw04NIiGnyTG2EvuaM1EBlBn2bApjGRy2zFLh7kYxMII6RSUBTPitBscbsNuyr7SDtjmAeADKaGZZz7J04ptfNdxerjVKK6lUhCZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fy1pirMYwcJbp5qsalfXm+LghMjolsmI1AScfV6O3Pg=;
+ b=St0mVUG+slmIIDZDJnq4v8xz5hZQ3HGaF0EDxXJjvph6VP6VINKxBNsvSi8s9rJlfhFM+2BgbT2oTqkAP4MO0o3/Kb7q3/ptrPoSHAQgY+xf7S+TfyYmZMgunpMkorC4PugIN5BWsFlJ+X0vwnRkqkamFYA5cdYt4gOzct2J+7M=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
+ by PS2PR06MB3559.apcprd06.prod.outlook.com (2603:1096:300:6b::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Wed, 9 Feb
+ 2022 08:37:25 +0000
+Received: from SL2PR06MB3082.apcprd06.prod.outlook.com
+ ([fe80::80b4:e787:47a9:41bb]) by SL2PR06MB3082.apcprd06.prod.outlook.com
+ ([fe80::80b4:e787:47a9:41bb%4]) with mapi id 15.20.4975.011; Wed, 9 Feb 2022
+ 08:37:25 +0000
+From:   Qing Wang <wangqing@vivo.com>
+To:     Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Cc:     Wang Qing <wangqing@vivo.com>
+Subject: [PATCH] gpu: drm: msm: use div64_u64() instead of do_div()
+Date:   Wed,  9 Feb 2022 00:37:17 -0800
+Message-Id: <1644395837-3845-1-git-send-email-wangqing@vivo.com>
+X-Mailer: git-send-email 2.7.4
+Content-Type: text/plain
+X-ClientProxiedBy: SGAP274CA0006.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::18)
+ To SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 27d35d51-edd8-41be-a475-08d9eba765ea
+X-MS-TrafficTypeDiagnostic: PS2PR06MB3559:EE_
+X-Microsoft-Antispam-PRVS: <PS2PR06MB3559940EA90B7CBFF9CD69DBBD2E9@PS2PR06MB3559.apcprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5gWAT3H8xFFuQqoUCX3iu/whfkJerl5Fq68j1PnAe2F8zx2kuterMK/cQJBJVrVMv2YL9rNsAGa6rVIFSobKvuKv5MLPMrEeGYRnroudhxEicP/n2bjDc6Za+3/8v/tqVFKcC4+L4BTt7S7HD8rGBsXeUBZ31b1txCxGzDvO5oiZcpMAMMZ+XXScHk4iZfZavG3dxdiGTd+6BkEePVX9+OwybcpDVi4IhO+CPGrCrlPY/vScHGW/HVVL9MfhpgZ+vr7A1fQssqZpszMzLdjkjcZmK5WmOc2GSPneFChbpCnmcnUDaCvv4CrvrWqngAJ1mYlh/7FAoOs7wnmk3k8DxCp3UgNmm+sAETU+36hg7exlO/2bKTDudUM0731fS1Bd+gAPB/f+X2+sf+8zfOU0azP+LTmlTzpiXPRQpTO0Zl+vfzZeR9k5J56ra8sit91PAHr5eX8sJxXCwR3vWecwHAitgB0gHDKGycAO1GAs4EqWpztyJLIfDTn/6gUsW6kn/K5+qt3WYfK/KBmhPPRfsZOArlkyrKyQQ7eR0uG7RyVOyy/MGsianVMMxfWKHI9irg95NFQO+/dh3kA18g3s6leL/V1PMbTJCY6zqqfQKz2tFSgFhREi0+E2xMo8xRxVte283cDPCwHmRPLC71UAhMK07vtrZ+UsqRt25oI1Z36oa79LRzoJI65GL0Gq7rR5tA3yjE9k0GqoxD6SxhrCvA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3082.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(8676002)(4326008)(66946007)(66556008)(66476007)(186003)(26005)(6486002)(107886003)(6512007)(38350700002)(6666004)(86362001)(6506007)(38100700002)(316002)(110136005)(8936002)(52116002)(4744005)(508600001)(36756003)(2906002)(83380400001)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p7bICybPQ806gzeBzsIlC5jH2n9rQ+WJTE7a+KMHJiKXr9trv23w1EzrvNG7?=
+ =?us-ascii?Q?fMttR4t+QM/DHKDg7W5cikzRqJKXhFL+p3WsegqEN7PrroC5Hv9TE491AXtW?=
+ =?us-ascii?Q?DoMhv5b+NOjROa7ERfJ0+6h7OPQjrPwE1HfinkALnOpytJw/857A5npkKpKR?=
+ =?us-ascii?Q?oxyqoyWsqsNSxOAbQl9qy1LVmYljIq9pG/AhHG1T0X+W6/yAWP4b6wtF1Fdx?=
+ =?us-ascii?Q?viF7t9rFQfCV5/lMDU44o52CXnxhFmTa0CxHniMVtt1YgBtRWEyakhV7k/RA?=
+ =?us-ascii?Q?91hmo4PGA/KvuFUWWNxXGHE+BsizUapjrcg9aAGaVc2sKY5DS85+asP3fkoz?=
+ =?us-ascii?Q?Zga+25QVSnoxrhb3kKyThBm5SxT5QWN15SblPCLTbMnawIKZz1eiqUPZX5I+?=
+ =?us-ascii?Q?4JKxh9chLAktc5ROJIFKkJ5dVtq5fbnJUjDl8vWuh1SvepN+EdnWoS4SLr50?=
+ =?us-ascii?Q?IHyhArSf+v4/o1Szscld3UhAa9lYrxautkBmEZuhRRwQ3Q/Gw+uqO8SlWRG2?=
+ =?us-ascii?Q?jhjB7kn5Ut9nZFzSmdRzGOHZV0nehzyLGNOqYVYX5JV8hmnVOJ/VK3qflu7y?=
+ =?us-ascii?Q?luzaOwoiRT2bBhBZpU0BuBqQpLeovpHXbu5v4V0sn9Ioh8PcCh3dUy21N6Dq?=
+ =?us-ascii?Q?9s8C0iJ29NVXk2XhVscURi5BbUDMvBU1od0W1Lh2s+Q6kfSZCTEtebEmQuPK?=
+ =?us-ascii?Q?8UaOJk82Ikrd5rBBH5S9aAFdvrJ1O94L38J/VuqTUb9mvKR1OgMPE887WlLL?=
+ =?us-ascii?Q?WCT2FmduDs4C27w5bWviXvJ6SxfpLPDT76+Wk42uRVhVTS4K6qhwVw4hhPXL?=
+ =?us-ascii?Q?sWLCnReYxOkH8Oyz+waXL9DKvG5phvCCj0gOyv0iYskQ6XyQUYIj+ZE5rO+D?=
+ =?us-ascii?Q?VuqOmFFsTuYSd5zOIb3Tp5eG3TXOeq8oJD9ttkbfcGdWSSLOoh8dKypFqxfq?=
+ =?us-ascii?Q?s/lIMVcYEJ6OqHiwyL5W15rm4zKPpa5b8AIbu65bxBzUcLGPxlLS8O+6NhbJ?=
+ =?us-ascii?Q?+u68yzoUFcjP+rMGBB7w8FrabSiu22hbRg180XnkeJ6QSH4imhtetj3QTZSV?=
+ =?us-ascii?Q?1dFJWcHB1+GjqEnnB38lf/xUe9zLXsN3vTv2LuyLAcvQH2BBKCguCsLO1F6J?=
+ =?us-ascii?Q?bRW9wTFWs6CtZeSOmISoFQ6Gngh2AxkK28IAn3G+kj/2BnNQVbRma5rIAA2r?=
+ =?us-ascii?Q?cCC9gOjul7FA8wjd16ICQCwvH9cyrwnBUQZBWT/TApV/di97+OC98LkIYWx7?=
+ =?us-ascii?Q?l90WukQCpHYnxeorUDpo38CAdsNFX9n8+m7/hyqsFUa4JHOR3JB7AmHYRdFr?=
+ =?us-ascii?Q?owwIWE0LoUbnvJXxx1pcAtW0YRIixE2JilMKrOI++G5a3Hzf0//l1Rr3vQ69?=
+ =?us-ascii?Q?kCHwTA9jrq57Dal5XU3xmQpftnkNLVfp5aUG5DUZgLKgW3SyzaZmWQxiswOV?=
+ =?us-ascii?Q?lDJLtGUMKLCB+nkX+lrpDee4TIF87oxfe3zWeLUEXIglj0bhYvMdkYTypztq?=
+ =?us-ascii?Q?WCDi5T7JAiM8PmEmG5iavHbF5Wy9/G8d+Ndadcly1upxglu2iGknQaOopY8y?=
+ =?us-ascii?Q?g9WrkR76/aIWA4AQaZQTqFnqQC5fpyJMFCvMBdS1Z2Nzx50WO2XDbW7OrO9J?=
+ =?us-ascii?Q?ZLS80N2Sg9T2juplfCBKugk=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27d35d51-edd8-41be-a475-08d9eba765ea
+X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3082.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 08:37:25.3452
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eDv6QqhTuxOIJ29k9+GlOwFPGrEE6Kb97/11tmvQjZPEVuyrtOAB0cML46OtwRc4IpejfIJ4m2bfTQ/t0yNGGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS2PR06MB3559
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  7 Feb 2022 15:04:35 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.15.22 release.
-> There are 111 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 09 Feb 2022 13:38:43 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.22-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+From: Wang Qing <wangqing@vivo.com>
 
-5.15.22-rc2 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+do_div() does a 64-by-32 division.
+When the divisor is u64, do_div() truncates it to 32 bits, this means it
+can test non-zero and be truncated to zero for division.
+
+fix do_div.cocci warning:
+do_div() does a 64-by-32 division, please consider using div64_u64 instead.
+
+Signed-off-by: Wang Qing <wangqing@vivo.com>
+---
+ drivers/gpu/drm/msm/msm_gpu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+index 2c1049c..aa4617b
+--- a/drivers/gpu/drm/msm/msm_gpu.c
++++ b/drivers/gpu/drm/msm/msm_gpu.c
+@@ -648,7 +648,7 @@ static void retire_submit(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
+ 	/* Calculate the clock frequency from the number of CP cycles */
+ 	if (elapsed) {
+ 		clock = (stats->cpcycles_end - stats->cpcycles_start) * 1000;
+-		do_div(clock, elapsed);
++		div64_u64(clock, elapsed);
+ 	}
+ 
+ 	trace_msm_gpu_submit_retired(submit, elapsed, clock,
+-- 
+2.7.4
 
